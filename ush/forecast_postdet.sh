@@ -37,7 +37,7 @@ FV3_postdet() {
     fi
 
     # Get list of FV3 restart files
-    local file_list 
+    local file_list
     file_list=$(FV3_restarts)
     echo "Copying FV3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
     local fv3_file restart_file
@@ -60,6 +60,24 @@ FV3_postdet() {
           break
         fi
       done
+      # Replace fv_tracer with aeroanl_fv_tracer restart files from current cycle (if found)
+      local nn
+      local use_anl_aero="YES"
+      for (( nn = 1; nn <= ntiles; nn++ )); do
+        test_tracer_file="${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc"
+        if [[ ! -f  "${test_tracer_file}" ]]; then
+          use_anl_aero="NO"
+          echo "WARNING: File ${test_tracer_file} does not exist, will not replace any files from the aerosol analysis"
+          break
+        fi
+      done
+      if [[ ${use_anl_aero} == "YES" ]]; then
+        for (( nn = 1; nn <= ntiles; nn++ )); do
+          rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
+          ${NCP} "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
+                 "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
+        done
+      fi # if [[ ${use_anl_aero} == "YES" ]]; then
     fi  # if [[ "${RERUN}" != "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
@@ -215,14 +233,14 @@ EOF
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${f_hhmmss}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${f_hhmmss}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${f_hhmmss}"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "cubed_sphere_grid_atmf${f_hhmmss}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "cubed_sphere_grid_sfcf${f_hhmmss}.nc"
       else
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "cubed_sphere_grid_atmf${FH3}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "cubed_sphere_grid_sfcf${FH3}.nc"
+        if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
+          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "cubed_sphere_grid_atmf${FH3}.nc"
+          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "cubed_sphere_grid_sfcf${FH3}.nc"
+        fi
       fi
       if [[ "${WRITE_DOPOST}" == ".true." ]]; then
         ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}" "GFSPRS.GrbF${FH2}"
@@ -265,7 +283,7 @@ FV3_out() {
   ${NCP} "${DATA}/model_configure" "${COMOUT_CONF}/ufs.model_configure"
   ${NCP} "${DATA}/ufs.configure" "${COMOUT_CONF}/ufs.ufs.configure"
   ${NCP} "${DATA}/diag_table" "${COMOUT_CONF}/ufs.diag_table"
- 
+
 
   # Determine the dates for restart files to be copied to COM
   local restart_date restart_dates

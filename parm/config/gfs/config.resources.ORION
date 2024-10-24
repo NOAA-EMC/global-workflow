@@ -3,14 +3,35 @@
 # Orion-specific job resources
 
 case ${step} in
+  "prep")
+    # Run on 2 nodes for memory requirement
+    # This may not be enough and may need to run on more nodes.
+    export tasks_per_node=7
+    ;;
+
   "anal")
     # TODO:
     # On Orion, after Rocky 9 upgrade, GSI performance is degraded.
     # Remove this block once GSI issue is resolved
     # https://github.com/NOAA-EMC/GSI/pull/764
     # https://github.com/JCSDA/spack-stack/issues/1166
-    export wtime_anal_gdas="02:40:00"
-    export wtime_anal_gfs="02:00:00"
+    export walltime_gdas="02:40:00"
+    export walltime_gfs="02:00:00"
+  ;;
+  "eobs")
+    # TODO:
+    # Remove this block once the GSI issue is resolved.
+    export walltime="00:45:00"
+  ;;
+  "atmanlvar")
+    # Run on 8 nodes for memory requirement
+    export tasks_per_node=8
+    export walltime="00:45:00"
+  ;;
+  "atmensanlobs")
+    # Run on 8 nodes for memory requirement
+    export tasks_per_node=8
+    export walltime="00:45:00"
   ;;
   *)
   ;;

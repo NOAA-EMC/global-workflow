@@ -1,11 +1,12 @@
-BASE_GIT: '/lfs4/HFIP/hfv3gfs/glopara/git'
-DMPDIR: '/lfs4/HFIP/hfv3gfs/glopara/dump'
-BASE_IC: '/mnt/lfs4/HFIP/hfv3gfs/glopara/data/ICSDIR'
-PACKAGEROOT: '/lfs4/HFIP/hfv3gfs/glopara/nwpara'
-COMINsyn: '/lfs4/HFIP/hfv3gfs/glopara/com/gfs/prod/syndat'
-HOMEDIR: '/lfs4/HFIP/hfv3gfs/${USER}'
-STMP: '/lfs4/HFIP/hfv3gfs/${USER}/stmp'
-PTMP: '/lfs4/HFIP/hfv3gfs/${USER}/ptmp'
+BASE_GIT: '/lfs5/HFIP/hfv3gfs/glopara/git'
+DMPDIR: '/lfs5/HFIP/hfv3gfs/glopara/dump'
+BASE_DATA: '/lfs5/HFIP/hfv3gfs/glopara/data'
+BASE_IC: '/mnt/lfs5/HFIP/hfv3gfs/glopara/data/ICSDIR'
+PACKAGEROOT: '/lfs5/HFIP/hfv3gfs/glopara/nwpara'
+COMINsyn: '/lfs5/HFIP/hfv3gfs/glopara/com/gfs/prod/syndat'
+HOMEDIR: '/lfs5/HFIP/hfv3gfs/${USER}'
+STMP: '/lfs5/HFIP/hfv3gfs/${USER}/stmp'
+PTMP: '/lfs5/HFIP/hfv3gfs/${USER}/ptmp'
 NOSCRUB: $HOMEDIR
 ACCOUNT: hfv3gfs
 SCHEDULER: slurm
@@ -24,6 +25,6 @@ ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
 SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
-COMINecmwf: /mnt/lfs4/HFIP/hfv3gfs/glopara/data/external_gempak/ecmwf
-COMINnam: /mnt/lfs4/HFIP/hfv3gfs/glopara/data/external_gempak/nam
-COMINukmet: /mnt/lfs4/HFIP/hfv3gfs/glopara/data/external_gempak/ukmet
+COMINecmwf: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/ecmwf
+COMINnam: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/nam
+COMINukmet: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/ukmet

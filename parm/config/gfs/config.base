@@ -63,6 +63,9 @@ export NOSCRUB="@NOSCRUB@"
 # Base directories for various builds
 export BASE_GIT="@BASE_GIT@"
 
+# Base directory for staged data
+export BASE_DATA="@BASE_DATA@"
+
 # Toggle to turn on/off GFS downstream processing.
 export DO_GOES="@DO_GOES@"               # GOES products
 export DO_BUFRSND="@DO_BUFRSND@"         # BUFR sounding products
@@ -95,7 +98,7 @@ export MODE="@MODE@" # cycled/forecast-only
 # Build paths relative to $HOMEgfs
 export FIXgsi="${HOMEgfs}/fix/gsi"
 export HOMEpost="${HOMEgfs}"
-export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-1.1.2}"
+export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -280,7 +283,8 @@ export FHOUT_ICE=3
 export EUPD_CYC="@EUPD_CYC@"
 
 # GFS cycle info
-export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
+export INTERVAL_GFS=@INTERVAL_GFS@ # Frequency of GFS forecast
+export SDATE_GFS=@SDATE_GFS@
 
 # GFS output and frequency
 export FHMIN_GFS=0
@@ -299,11 +303,7 @@ export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
 export FHMAX_WAV=${FHMAX:-9}
 export FHMAX_WAV_GFS=${FHMAX_GFS}
-if (( gfs_cyc != 0 )); then
-    export STEP_GFS=$(( 24 / gfs_cyc ))
-else
-    export STEP_GFS="0"
-fi
+
 # TODO: Change gempak to use standard out variables (#2348)
 export ILPOST=${FHOUT_HF_GFS}           # gempak output frequency up to F120
 if (( FHMAX_HF_GFS < 120 )); then
@@ -489,6 +489,14 @@ if [[ "${machine}" =~ "PW" ]]; then
    export DO_TRACKER="NO"
    export DO_GENESIS="NO"
    export DO_METP="NO"
+   export DO_WAVE="NO"
+fi
+
+# The tracker and genesis are not installed on Orion/Hercules yet; this requires spack-stack builds of the package.
+# TODO: we should place these in workflow/hosts/[orion|hercules].yaml.
+if [[ "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
+   export DO_TRACKER="NO"
+   export DO_GENESIS="NO"
 fi
 
 echo "END: config.base"

@@ -4,15 +4,15 @@ enkf:
     required:
         # Logs
         {% for mem in range(1, nmem_ens + 1) %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}fcst_mem{{ '%03d' % mem }}.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_mem{{ '%03d' % mem }}.log"
         {% endfor %}
         {% for fhr in range(fhmin, fhmax + 1, fhout) %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}epos{{ '%03d' % (fhr - fhmin) }}.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % (fhr - fhmin) }}.log"
         {% endfor %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}echgres.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}esfc.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_echgres.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc.log"
         {% for grp in range(IAUFHRS | length) %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}ecen{{ '%03d' % grp }}.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_ecen{{ '%03d' % grp }}.log"
         {% endfor %}
 
         {% if lobsdiag_forenkf %}
@@ -27,13 +27,13 @@ enkf:
            {% else %}
               {% set steps = ["eobs", "eupd"] %}
               {% for mem in range(1, nmem_ens + 1) %}
-                 {% do steps.append("eomg_mem{{ '%03d' % mem }}") %}
+                 {% do steps.append("eomg_mem" ~ '%03d' % mem) %}
               {% endfor %}
            {% endif %}
         {% endif %}
 
         {% for step in steps %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}{{ step }}.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_{{ step }}.log"
         {% endfor %}
 
         # Ensemble mean and spread
@@ -54,12 +54,14 @@ enkf:
                            "radstat.ensmean"] %}
         {% else %}
         {% if lobsdiag_forenkf %}
-        {% set da_files = ["atmens_observer.yaml",
-                           "atmens_solver.yaml",
+        {% set da_files = ["atmensanlobs.yaml",
+                           "atmensanlsol.yaml",
+                           "atmensanlfv3inc.yaml",
                            "atminc.ensmean.nc",
                            "atmensstat"] %}
         {% else %}
-        {% set da_files = ["atmens.yaml",
+        {% set da_files = ["atmensanlletkf.yaml",
+                           "atmensanlfv3inc.yaml",
                            "atminc.ensmean.nc",
                            "atmensstat"] %}
         {% endif %}

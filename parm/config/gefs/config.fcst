@@ -255,7 +255,7 @@ else
 fi
 
 # Write gfs restart files to rerun fcst from any break point
-export restart_interval=${restart_interval_gfs:-12}
+export restart_interval="${FHMAX}"
 
 # Turn off dry mass adjustment in GFS
 export adjust_dry_mass=".false."

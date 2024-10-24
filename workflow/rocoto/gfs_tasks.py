@@ -1,6 +1,6 @@
 from applications.applications import AppConfig
 from rocoto.tasks import Tasks
-from wxflow import timedelta_to_HMS
+from wxflow import timedelta_to_HMS, to_timedelta
 import rocoto.rocoto as rocoto
 import numpy as np
 
@@ -21,7 +21,7 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half' if self.run in ['gdas', 'enkfgdas'] else self.run
 
         resources = self.get_resource('stage_ic')
-        task_name = f'{self.run}stage_ic'
+        task_name = f'{self.run}_stage_ic'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
@@ -39,7 +39,6 @@ class GFSTasks(Tasks):
     def prep(self):
 
         dump_suffix = self._base["DUMP_SUFFIX"]
-        gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
         dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
@@ -48,10 +47,10 @@ class GFSTasks(Tasks):
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_runs else False
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': 'gdasatmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'gdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dump_path}/{self.run}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
@@ -59,11 +58,11 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and gfs_cyc != 4:
+        if self.run in ['gfs'] and gfs_enkf and self.app_config.interval_gfs != 6:
             cycledef = 'gdas'
 
         resources = self.get_resource('prep')
-        task_name = f'{self.run}prep'
+        task_name = f'{self.run}_prep'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -86,14 +85,14 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
         if self.app_config.mode in ['cycled']:
             deps = []
-            dep_dict = {'type': 'task', 'name': f'{self.run}prep'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self.run in ['gdas']:
-                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+                dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
-        task_name = f'{self.run}waveinit'
+        task_name = f'{self.run}_waveinit'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -112,12 +111,12 @@ class GFSTasks(Tasks):
     def waveprep(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}waveinit'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
         resources = self.get_resource('waveprep')
-        task_name = f'{self.run}waveprep'
+        task_name = f'{self.run}_waveprep'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -168,7 +167,7 @@ class GFSTasks(Tasks):
 
         cycledef = 'gfs_seq'
         resources = self.get_resource('aerosol_init')
-        task_name = f'{self.run}aerosol_init'
+        task_name = f'{self.run}_aerosol_init'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -186,17 +185,17 @@ class GFSTasks(Tasks):
 
     def anal(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('anal')
-        task_name = f'{self.run}anal'
+        task_name = f'{self.run}_anal'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -216,19 +215,19 @@ class GFSTasks(Tasks):
 
         deps = []
         if self.app_config.do_jediatmvar:
-            dep_dict = {'type': 'task', 'name': f'{self.run}atmanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}anal'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jedisnowda:
-            dep_dict = {'type': 'task', 'name': f'{self.run}snowanl'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('sfcanl')
-        task_name = f'{self.run}sfcanl'
+        task_name = f'{self.run}_sfcanl'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -248,19 +247,19 @@ class GFSTasks(Tasks):
 
         deps = []
         if self.app_config.do_jediatmvar:
-            dep_dict = {'type': 'task', 'name': f'{self.run}atmanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}anal'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}sfcanl'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar and self.run in ['gdas']:
-            dep_dict = {'type': 'task', 'name': 'enkfgdasechgres', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            dep_dict = {'type': 'task', 'name': 'enkfgdas_echgres', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('analcalc')
-        task_name = f'{self.run}analcalc'
+        task_name = f'{self.run}_analcalc'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -279,12 +278,12 @@ class GFSTasks(Tasks):
     def analdiag(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}anal'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('analdiag')
-        task_name = f'{self.run}analdiag'
+        task_name = f'{self.run}_analdiag'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -303,12 +302,12 @@ class GFSTasks(Tasks):
     def prepatmiodaobs(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('prepatmiodaobs')
-        task_name = f'{self.run}prepatmiodaobs'
+        task_name = f'{self.run}_prepatmiodaobs'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -327,24 +326,24 @@ class GFSTasks(Tasks):
     def atmanlinit(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}prepatmiodaobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prepatmiodaobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dependencies = rocoto.create_dependency(dep=deps)
 
-        gfs_cyc = self._base["gfs_cyc"]
+        interval_gfs = self._base["INTERVAL_GFS"]
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_runs else False
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and gfs_cyc != 4:
+        if self.run in ['gfs'] and gfs_enkf and interval_gfs != 6:
             cycledef = 'gdas'
 
         resources = self.get_resource('atmanlinit')
-        task_name = f'{self.run}atmanlinit'
+        task_name = f'{self.run}_atmanlinit'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -363,12 +362,12 @@ class GFSTasks(Tasks):
     def atmanlvar(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}atmanlinit'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('atmanlvar')
-        task_name = f'{self.run}atmanlvar'
+        task_name = f'{self.run}_atmanlvar'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -387,12 +386,12 @@ class GFSTasks(Tasks):
     def atmanlfv3inc(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}atmanlvar'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('atmanlfv3inc')
-        task_name = f'{self.run}atmanlfv3inc'
+        task_name = f'{self.run}_atmanlfv3inc'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -411,12 +410,12 @@ class GFSTasks(Tasks):
     def atmanlfinal(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}atmanlfv3inc'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfv3inc'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('atmanlfinal')
-        task_name = f'{self.run}atmanlfinal'
+        task_name = f'{self.run}_atmanlfinal'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -434,12 +433,12 @@ class GFSTasks(Tasks):
 
     def prepobsaero(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('prepobsaero')
-        task_name = f'{self.run}prepobsaero'
+        task_name = f'{self.run}_prepobsaero'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -455,17 +454,45 @@ class GFSTasks(Tasks):
 
         return task
 
+    def aeroanlgenb(self):
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('aeroanlgenb')
+        task_name = f'{self.run}_aeroanlgenb'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': 'gdas_half,gdas',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/aeroanlgenb.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def aeroanlinit(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}prep'}
-        if self.app_config.do_prep_obs_aero:
-            dep_dict = {'type': 'task', 'name': f'{self.run}prepobsaero'}
+        dep_dict = {'type': 'task', 'name': 'gdas_aeroanlgenb', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+
+        if self.app_config.do_prep_obs_aero:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_prepobsaero'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('aeroanlinit')
-        task_name = f'{self.run}aeroanlinit'
+        task_name = f'{self.run}_aeroanlinit'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -481,21 +508,28 @@ class GFSTasks(Tasks):
 
         return task
 
-    def aeroanlrun(self):
+    def aeroanlvar(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}aeroanlinit'}
+        dep_dict = {
+            'type': 'task', 'name': f'gdas_aeroanlgenb',
+            'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}",
+        }
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {
+            'type': 'task', 'name': f'{self.run}_aeroanlinit',
+        }
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('aeroanlrun')
-        task_name = f'{self.run}aeroanlrun'
+        resources = self.get_resource('aeroanlvar')
+        task_name = f'{self.run}_aeroanlvar'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/aeroanlrun.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/aeroanlvar.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -508,12 +542,12 @@ class GFSTasks(Tasks):
     def aeroanlfinal(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}aeroanlrun'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('aeroanlfinal')
-        task_name = f'{self.run}aeroanlfinal'
+        task_name = f'{self.run}_aeroanlfinal'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -532,12 +566,12 @@ class GFSTasks(Tasks):
     def prepsnowobs(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('prepsnowobs')
-        task_name = f'{self.run}prepsnowobs'
+        task_name = f'{self.run}_prepsnowobs'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -556,12 +590,12 @@ class GFSTasks(Tasks):
     def snowanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}prepsnowobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prepsnowobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('snowanl')
-        task_name = f'{self.run}snowanl'
+        task_name = f'{self.run}_snowanl'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -579,16 +613,16 @@ class GFSTasks(Tasks):
     def esnowrecen(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}prepsnowobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prepsnowobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}snowanl'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_snowanl'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}epmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('esnowrecen')
-        task_name = f'{self.run}esnowrecen'
+        task_name = f'{self.run}_esnowrecen'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -609,12 +643,12 @@ class GFSTasks(Tasks):
 
         deps = []
         data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('prepoceanobs')
-        task_name = f'{self.run}prepoceanobs'
+        task_name = f'{self.run}_prepoceanobs'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -636,12 +670,12 @@ class GFSTasks(Tasks):
 
         deps = []
         data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('marinebmat')
-        task_name = f'{self.run}marinebmat'
+        task_name = f'{self.run}_marinebmat'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -657,25 +691,25 @@ class GFSTasks(Tasks):
 
         return task
 
-    def ocnanalprep(self):
+    def marineanlinit(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}prepoceanobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prepoceanobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}marinebmat'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_marinebmat'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'gdasfcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'gdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('ocnanalprep')
-        task_name = f'{self.run}ocnanalprep'
+        resources = self.get_resource('marineanlinit')
+        task_name = f'{self.run}_marineanlinit'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalprep.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/marineanlinit.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -685,21 +719,21 @@ class GFSTasks(Tasks):
 
         return task
 
-    def ocnanalrun(self):
+    def marineanlvar(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalprep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('ocnanalrun')
-        task_name = f'{self.run}ocnanalrun'
+        resources = self.get_resource('marineanlvar')
+        task_name = f'{self.run}_marineanlvar'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalrun.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/marineanlvar.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -712,12 +746,12 @@ class GFSTasks(Tasks):
     def ocnanalecen(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalrun'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('ocnanalecen')
-        task_name = f'{self.run}ocnanalecen'
+        task_name = f'{self.run}_ocnanalecen'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -733,13 +767,13 @@ class GFSTasks(Tasks):
 
         return task
 
-    def ocnanalchkpt(self):
+    def marineanlchkpt(self):
 
         deps = []
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalecen'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_ocnanalecen'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalrun'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_mergensst:
             data = f'&ROTDIR;/{self.run}.@Y@m@d/@H/atmos/{self.run}.t@Hz.sfcanl.nc'
@@ -747,14 +781,14 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('ocnanalchkpt')
-        task_name = f'{self.run}ocnanalchkpt'
+        resources = self.get_resource('marineanlchkpt')
+        task_name = f'{self.run}_marineanlchkpt'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalchkpt.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/marineanlchkpt.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -764,21 +798,21 @@ class GFSTasks(Tasks):
 
         return task
 
-    def ocnanalpost(self):
+    def marineanlfinal(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalchkpt'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlchkpt'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('ocnanalpost')
-        task_name = f'{self.run}ocnanalpost'
+        resources = self.get_resource('marineanlfinal')
+        task_name = f'{self.run}_marineanlfinal'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/ocnanalpost.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/marineanlfinal.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -791,12 +825,12 @@ class GFSTasks(Tasks):
     def ocnanalvrfy(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalpost'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ocnanalvrfy')
-        task_name = f'{self.run}ocnanalvrfy'
+        task_name = f'{self.run}_ocnanalvrfy'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -820,8 +854,8 @@ class GFSTasks(Tasks):
         try:
             task = fcst_map[self.app_config.mode]()
         except KeyError:
-            raise NotImplementedError(f'{self.app_config.mode} is not a valid type.\n' +
-                                      'Currently supported forecast types are:\n' +
+            raise NotImplementedError(f'{self.app_config.mode} is not a valid type.\n'
+                                      f'Currently supported forecast types are:\n'
                                       f'{" | ".join(fcst_map.keys())}')
 
         return task
@@ -829,12 +863,12 @@ class GFSTasks(Tasks):
     def _fcst_forecast_only(self):
         dependencies = []
 
-        dep_dict = {'type': 'task', 'name': f'{self.run}stage_ic'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_wave and self.run in self.app_config.wave_runs:
             wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
-            dep_dict = {'type': 'task', 'name': f'{self.run}{wave_job}'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_aero and \
@@ -843,12 +877,12 @@ class GFSTasks(Tasks):
             # Calculate offset based on RUN = gfs | gdas
             interval = None
             if self.run in ['gfs']:
-                interval = self._base['INTERVAL_GFS']
+                interval = to_timedelta(f"{self._base['INTERVAL_GFS']}H")
             elif self.run in ['gdas']:
-                interval = self._base['INTERVAL']
+                interval = self._base['assim_freq']
             offset = timedelta_to_HMS(-interval)
             deps = []
-            dep_dict = {'type': 'task', 'name': f'{self.run}aerosol_init'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_aerosol_init'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -867,7 +901,7 @@ class GFSTasks(Tasks):
             fcst_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('fcst')
-        task_name = f'{self.run}fcst_seg#seg#'
+        task_name = f'{self.run}_fcst_seg#seg#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -880,7 +914,7 @@ class GFSTasks(Tasks):
                      }
 
         seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
-        metatask_dict = {'task_name': f'{self.run}fcst',
+        metatask_dict = {'task_name': f'{self.run}_fcst',
                          'is_serial': True,
                          'var_dict': seg_var_dict,
                          'task_dict': task_dict
@@ -892,31 +926,31 @@ class GFSTasks(Tasks):
 
     def _fcst_cycled(self):
 
-        dep_dict = {'type': 'task', 'name': f'{self.run}sfcanl'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
         dep = rocoto.add_dependency(dep_dict)
         dependencies = rocoto.create_dependency(dep=dep)
 
         if self.app_config.do_jediocnvar:
-            dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalpost'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_aero and self.run in self.app_config.aero_anl_runs:
-            dep_dict = {'type': 'task', 'name': f'{self.run}aeroanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_jedisnowda:
-            dep_dict = {'type': 'task', 'name': f'{self.run}snowanl'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         if self.run in ['gdas']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}stage_ic'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
         if self.app_config.do_wave and self.run in self.app_config.wave_runs:
-            dep_dict = {'type': 'task', 'name': f'{self.run}waveprep'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_waveprep'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
@@ -933,7 +967,7 @@ class GFSTasks(Tasks):
             fcst_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('fcst')
-        task_name = f'{self.run}fcst_seg#seg#'
+        task_name = f'{self.run}_fcst_seg#seg#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -946,7 +980,7 @@ class GFSTasks(Tasks):
                      }
 
         seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
-        metatask_dict = {'task_name': f'{self.run}fcst',
+        metatask_dict = {'task_name': f'{self.run}_fcst',
                          'is_serial': True,
                          'var_dict': seg_var_dict,
                          'task_dict': task_dict
@@ -976,7 +1010,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         resources = self.get_resource('upp')
-        task_name = f'{self.run}atmanlupp'
+        task_name = f'{self.run}_atmanlupp'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1005,7 +1039,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         resources = self.get_resource('atmos_products')
-        task_name = f'{self.run}atmanlprod'
+        task_name = f'{self.run}_atmanlprod'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1054,7 +1088,7 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
         resources = self.get_resource('upp')
 
-        task_name = f'{self.run}{task_id}_f#fhr#'
+        task_name = f'{self.run}_{task_id}_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1069,7 +1103,7 @@ class GFSTasks(Tasks):
         fhrs = self._get_forecast_hours(self.run, self._configs['upp'])
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
-        metatask_dict = {'task_name': f'{self.run}{task_id}',
+        metatask_dict = {'task_name': f'{self.run}_{task_id}',
                          'task_dict': task_dict,
                          'var_dict': fhr_var_dict
                          }
@@ -1114,14 +1148,14 @@ class GFSTasks(Tasks):
         data = f'{history_path}/{history_file_tmpl}'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
         resources = self.get_resource(component_dict['config'])
 
-        task_name = f'{self.run}{component}_prod_f#fhr#'
+        task_name = f'{self.run}_{component}_prod_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1143,7 +1177,7 @@ class GFSTasks(Tasks):
         if component in ['ocean']:
             fhrs_next = fhrs[1:] + [fhrs[-1] + (fhrs[-1] - fhrs[-2])]
             fhr_var_dict['fhr_next'] = ' '.join([f"{fhr:03d}" for fhr in fhrs_next])
-        metatask_dict = {'task_name': f'{self.run}{component}_prod',
+        metatask_dict = {'task_name': f'{self.run}_{component}_prod',
                          'task_dict': task_dict,
                          'var_dict': fhr_var_dict}
 
@@ -1153,15 +1187,12 @@ class GFSTasks(Tasks):
 
     def wavepostsbs(self):
         deps = []
-        for wave_grid in self._configs['wavepostsbs']['waveGRD'].split():
-            wave_hist_path = self._template_to_rocoto_cycstring(self._base["COM_WAVE_HISTORY_TMPL"])
-            data = f'{wave_hist_path}/{self.run}wave.out_grd.{wave_grid}.@Y@m@d.@H0000'
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('wavepostsbs')
-        task_name = f'{self.run}wavepostsbs'
+        task_name = f'{self.run}_wavepostsbs'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1179,12 +1210,12 @@ class GFSTasks(Tasks):
 
     def wavepostbndpnt(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('wavepostbndpnt')
-        task_name = f'{self.run}wavepostbndpnt'
+        task_name = f'{self.run}_wavepostbndpnt'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1213,7 +1244,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('wavepostbndpntbll')
-        task_name = f'{self.run}wavepostbndpntbll'
+        task_name = f'{self.run}_wavepostbndpntbll'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1231,15 +1262,15 @@ class GFSTasks(Tasks):
 
     def wavepostpnt(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave_bnd:
-            dep_dict = {'type': 'task', 'name': f'{self.run}wavepostbndpntbll'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpntbll'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('wavepostpnt')
-        task_name = f'{self.run}wavepostpnt'
+        task_name = f'{self.run}_wavepostpnt'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1257,12 +1288,12 @@ class GFSTasks(Tasks):
 
     def wavegempak(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}wavepostsbs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('wavegempak')
-        task_name = f'{self.run}wavegempak'
+        task_name = f'{self.run}_wavegempak'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1280,14 +1311,14 @@ class GFSTasks(Tasks):
 
     def waveawipsbulls(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}wavepostsbs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}wavepostpnt'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('waveawipsbulls')
-        task_name = f'{self.run}waveawipsbulls'
+        task_name = f'{self.run}_waveawipsbulls'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1305,12 +1336,12 @@ class GFSTasks(Tasks):
 
     def waveawipsgridded(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}wavepostsbs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('waveawipsgridded')
-        task_name = f'{self.run}waveawipsgridded'
+        task_name = f'{self.run}_waveawipsgridded'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1328,12 +1359,12 @@ class GFSTasks(Tasks):
 
     def postsnd(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('postsnd')
-        task_name = f'{self.run}postsnd'
+        task_name = f'{self.run}_postsnd'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1370,7 +1401,7 @@ class GFSTasks(Tasks):
         # prematurely starting with partial files. Unfortunately, the
         # ability to "group" post would make this more convoluted than
         # it should be and not worth the complexity.
-        task_name = f'{self.run}fbwind'
+        task_name = f'{self.run}_fbwind'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1425,7 +1456,7 @@ class GFSTasks(Tasks):
     def awips_20km_1p0deg(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1442,7 +1473,7 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('awips')
 
-        task_name = f'{self.run}awips_20km_1p0deg#{varname1}#'
+        task_name = f'{self.run}_awips_20km_1p0deg#{varname1}#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1454,7 +1485,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}awips_20km_1p0deg',
+        metatask_dict = {'task_name': f'{self.run}_awips_20km_1p0deg',
                          'task_dict': task_dict,
                          'var_dict': var_dict
                          }
@@ -1466,7 +1497,7 @@ class GFSTasks(Tasks):
     def gempak(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}atmos_prod_f#fhr#'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_prod_f#fhr#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1476,7 +1507,7 @@ class GFSTasks(Tasks):
             gempak_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('gempak')
-        task_name = f'{self.run}gempak_f#fhr#'
+        task_name = f'{self.run}_gempak_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1491,7 +1522,7 @@ class GFSTasks(Tasks):
         fhrs = self._get_forecast_hours(self.run, self._configs['gempak'])
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
-        fhr_metatask_dict = {'task_name': f'{self.run}gempak',
+        fhr_metatask_dict = {'task_name': f'{self.run}_gempak',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 
@@ -1501,12 +1532,12 @@ class GFSTasks(Tasks):
 
     def gempakmeta(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}gempak'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempak')
-        task_name = f'{self.run}gempakmeta'
+        task_name = f'{self.run}_gempakmeta'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1524,12 +1555,12 @@ class GFSTasks(Tasks):
 
     def gempakmetancdc(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}gempak'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempak')
-        task_name = f'{self.run}gempakmetancdc'
+        task_name = f'{self.run}_gempakmetancdc'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1547,12 +1578,12 @@ class GFSTasks(Tasks):
 
     def gempakncdcupapgif(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}gempak'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempak')
-        task_name = f'{self.run}gempakncdcupapgif'
+        task_name = f'{self.run}_gempakncdcupapgif'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1570,7 +1601,7 @@ class GFSTasks(Tasks):
 
     def gempakpgrb2spec(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}npoess_pgrb2_0p5deg'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1580,7 +1611,7 @@ class GFSTasks(Tasks):
             gempak_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('gempak')
-        task_name = f'{self.run}gempakgrb2spec_f#fhr#'
+        task_name = f'{self.run}_gempakgrb2spec_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1604,7 +1635,7 @@ class GFSTasks(Tasks):
         fhrs = self._get_forecast_hours(self.run, local_config)
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
-        fhr_metatask_dict = {'task_name': f'{self.run}gempakgrb2spec',
+        fhr_metatask_dict = {'task_name': f'{self.run}_gempakgrb2spec',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 
@@ -1615,14 +1646,14 @@ class GFSTasks(Tasks):
     def npoess_pgrb2_0p5deg(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}atmanlprod'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}goesupp'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_goesupp'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         resources = self.get_resource('npoess')
-        task_name = f'{self.run}npoess_pgrb2_0p5deg'
+        task_name = f'{self.run}_npoess_pgrb2_0p5deg'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1640,12 +1671,12 @@ class GFSTasks(Tasks):
 
     def verfozn(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}analdiag'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_analdiag'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('verfozn')
-        task_name = f'{self.run}verfozn'
+        task_name = f'{self.run}_verfozn'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1663,12 +1694,12 @@ class GFSTasks(Tasks):
 
     def verfrad(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}analdiag'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_analdiag'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('verfrad')
-        task_name = f'{self.run}verfrad'
+        task_name = f'{self.run}_verfrad'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1686,12 +1717,12 @@ class GFSTasks(Tasks):
 
     def vminmon(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}anal'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('vminmon')
-        task_name = f'{self.run}vminmon'
+        task_name = f'{self.run}_vminmon'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1709,12 +1740,12 @@ class GFSTasks(Tasks):
 
     def tracker(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('tracker')
-        task_name = f'{self.run}tracker'
+        task_name = f'{self.run}_tracker'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1732,12 +1763,12 @@ class GFSTasks(Tasks):
 
     def genesis(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('genesis')
-        task_name = f'{self.run}genesis'
+        task_name = f'{self.run}_genesis'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1755,12 +1786,12 @@ class GFSTasks(Tasks):
 
     def genesis_fsu(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('genesis_fsu')
-        task_name = f'{self.run}genesis_fsu'
+        task_name = f'{self.run}_genesis_fsu'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1778,12 +1809,12 @@ class GFSTasks(Tasks):
 
     def fit2obs(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('fit2obs')
-        task_name = f'{self.run}fit2obs'
+        task_name = f'{self.run}_fit2obs'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1801,16 +1832,29 @@ class GFSTasks(Tasks):
 
     def metp(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}arch'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        if self.app_config.interval_gfs < to_timedelta('24H'):
+            n_lookback = self.app_config.interval_gfs // to_timedelta('6H')
+            for lookback in range(1, n_lookback + 1):
+                deps2 = []
+                dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch', 'condition': 'not'}
+                deps2.append(rocoto.add_dependency(dep_dict))
+                for lookback2 in range(1, lookback):
+                    offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback2}H'))
+                    dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
+                    deps2.append(rocoto.add_dependency(dep_dict))
+
+                offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback}H'))
+                dep_dict = {'type': 'task', 'name': f'{self.run}_arch', 'offset': offset}
+                deps2.append(rocoto.add_dependency(dep_dict))
+                deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
+
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         metpenvars = self.envars.copy()
-        if self.app_config.mode in ['cycled']:
-            metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE_GFS').strftime("%Y%m%d%H"),
-                              'EDATE_GFS': self._base.get('EDATE_GFS').strftime("%Y%m%d%H")}
-        elif self.app_config.mode in ['forecast-only']:
-            metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE').strftime("%Y%m%d%H")}
+        metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE_GFS').strftime("%Y%m%d%H"),
+                          'EDATE_GFS': self._base.get('EDATE').strftime("%Y%m%d%H")}
         metpenvar_dict['METPCASE'] = '#metpcase#'
         for key, value in metpenvar_dict.items():
             metpenvars.append(rocoto.create_envar(name=key, value=str(value)))
@@ -1821,19 +1865,19 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('metp')
 
-        task_name = f'{self.run}metp#{varname1}#'
+        task_name = f'{self.run}_metp#{varname1}#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': metpenvars,
-                     'cycledef': self.run.replace('enkf', ''),
+                     'cycledef': 'metp,last_gfs',
                      'command': f'{self.HOMEgfs}/jobs/rocoto/metp.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}metp',
+        metatask_dict = {'task_name': f'{self.run}_metp',
                          'is_serial': True,
                          'task_dict': task_dict,
                          'var_dict': var_dict,
@@ -1845,12 +1889,12 @@ class GFSTasks(Tasks):
 
     def mos_stn_prep(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_stn_prep')
-        task_name = f'{self.run}mos_stn_prep'
+        task_name = f'{self.run}_mos_stn_prep'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1868,12 +1912,12 @@ class GFSTasks(Tasks):
 
     def mos_grd_prep(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_grd_prep')
-        task_name = f'{self.run}mos_grd_prep'
+        task_name = f'{self.run}_mos_grd_prep'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1891,12 +1935,12 @@ class GFSTasks(Tasks):
 
     def mos_ext_stn_prep(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_ext_stn_prep')
-        task_name = f'{self.run}mos_ext_stn_prep'
+        task_name = f'{self.run}_mos_ext_stn_prep'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1914,12 +1958,12 @@ class GFSTasks(Tasks):
 
     def mos_ext_grd_prep(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_ext_grd_prep')
-        task_name = f'{self.run}mos_ext_grd_prep'
+        task_name = f'{self.run}_mos_ext_grd_prep'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1937,12 +1981,12 @@ class GFSTasks(Tasks):
 
     def mos_stn_fcst(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_stn_prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_stn_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_stn_fcst')
-        task_name = f'{self.run}mos_stn_fcst'
+        task_name = f'{self.run}_mos_stn_fcst'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1960,15 +2004,15 @@ class GFSTasks(Tasks):
 
     def mos_grd_fcst(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_stn_prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_stn_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_grd_prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_grd_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_grd_fcst')
-        task_name = f'{self.run}mos_grd_fcst'
+        task_name = f'{self.run}_mos_grd_fcst'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1986,15 +2030,15 @@ class GFSTasks(Tasks):
 
     def mos_ext_stn_fcst(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_ext_stn_prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_ext_stn_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_stn_prdgen'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_stn_prdgen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_ext_stn_fcst')
-        task_name = f'{self.run}mos_ext_stn_fcst'
+        task_name = f'{self.run}_mos_ext_stn_fcst'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2012,18 +2056,18 @@ class GFSTasks(Tasks):
 
     def mos_ext_grd_fcst(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_ext_stn_prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_ext_stn_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_ext_grd_prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_ext_grd_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_grd_fcst'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_grd_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_ext_grd_fcst')
-        task_name = f'{self.run}mos_ext_grd_fcst'
+        task_name = f'{self.run}_mos_ext_grd_fcst'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2041,12 +2085,12 @@ class GFSTasks(Tasks):
 
     def mos_stn_prdgen(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_stn_fcst'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_stn_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_stn_prdgen')
-        task_name = f'{self.run}mos_stn_prdgen'
+        task_name = f'{self.run}_mos_stn_prdgen'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2064,15 +2108,15 @@ class GFSTasks(Tasks):
 
     def mos_grd_prdgen(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_grd_fcst'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_grd_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_stn_prdgen'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_stn_prdgen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_grd_prdgen')
-        task_name = f'{self.run}mos_grd_prdgen'
+        task_name = f'{self.run}_mos_grd_prdgen'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2090,15 +2134,15 @@ class GFSTasks(Tasks):
 
     def mos_ext_stn_prdgen(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_ext_stn_fcst'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_ext_stn_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_stn_prdgen'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_stn_prdgen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_ext_stn_prdgen')
-        task_name = f'{self.run}mos_ext_stn_prdgen'
+        task_name = f'{self.run}_mos_ext_stn_prdgen'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2116,18 +2160,18 @@ class GFSTasks(Tasks):
 
     def mos_ext_grd_prdgen(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_ext_grd_fcst'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_ext_grd_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_grd_prdgen'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_grd_prdgen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_ext_stn_prdgen'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_ext_stn_prdgen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_ext_grd_prdgen')
-        task_name = f'{self.run}mos_ext_grd_prdgen'
+        task_name = f'{self.run}_mos_ext_grd_prdgen'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2145,12 +2189,12 @@ class GFSTasks(Tasks):
 
     def mos_wx_prdgen(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_grd_prdgen'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_grd_prdgen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('mos_wx_prdgen')
-        task_name = f'{self.run}mos_wx_prdgen'
+        task_name = f'{self.run}_mos_wx_prdgen'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2168,15 +2212,15 @@ class GFSTasks(Tasks):
 
     def mos_wx_ext_prdgen(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_ext_grd_prdgen'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_ext_grd_prdgen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        dep_dict = {'type': 'task', 'name': f'{self.run}mos_wx_prdgen'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_mos_wx_prdgen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('mos_wx_ext_prdgen')
-        task_name = f'{self.run}mos_wx_ext_prdgen'
+        task_name = f'{self.run}_mos_wx_ext_prdgen'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2196,53 +2240,53 @@ class GFSTasks(Tasks):
         deps = []
         if self.app_config.mode in ['cycled']:
             if self.run in ['gfs']:
-                dep_dict = {'type': 'task', 'name': f'{self.run}atmanlprod'}
+                dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_vminmon:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}vminmon'}
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
             elif self.run in ['gdas']:
-                dep_dict = {'type': 'task', 'name': f'{self.run}atmanlprod'}
+                dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_fit2obs:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}fit2obs'}
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_fit2obs'}
                     deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_verfozn:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}verfozn'}
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_verfozn'}
                     deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_verfrad:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}verfrad'}
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_verfrad'}
                     deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_vminmon:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}vminmon'}
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
         if self.run in ['gfs'] and self.app_config.do_tracker:
-            dep_dict = {'type': 'task', 'name': f'{self.run}tracker'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_tracker'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.run in ['gfs'] and self.app_config.do_genesis:
-            dep_dict = {'type': 'task', 'name': f'{self.run}genesis'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_genesis'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.run in ['gfs'] and self.app_config.do_genesis_fsu:
-            dep_dict = {'type': 'task', 'name': f'{self.run}genesis_fsu'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_genesis_fsu'}
             deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_wave:
-            dep_dict = {'type': 'task', 'name': f'{self.run}wavepostsbs'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': f'{self.run}wavepostpnt'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self.app_config.do_wave_bnd:
-                dep_dict = {'type': 'task', 'name': f'{self.run}wavepostbndpnt'}
+                dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ocean:
             if self.run in ['gfs']:
-                dep_dict = {'type': 'metatask', 'name': f'{self.run}ocean_prod'}
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ice:
             if self.run in ['gfs']:
-                dep_dict = {'type': 'metatask', 'name': f'{self.run}ice_prod'}
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
         # MOS job dependencies
         if self.run in ['gfs'] and self.app_config.do_mos:
@@ -2251,13 +2295,13 @@ class GFSTasks(Tasks):
                         "stn_prdgen", "grd_prdgen", "ext_stn_prdgen", "ext_grd_prdgen",
                         "wx_prdgen", "wx_ext_prdgen"]
             for job in mos_jobs:
-                dep_dict = {'type': 'task', 'name': f'{self.run}mos_{job}'}
+                dep_dict = {'type': 'task', 'name': f'{self.run}_mos_{job}'}
                 deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('arch')
-        task_name = f'{self.run}arch'
+        task_name = f'{self.run}_arch'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2277,31 +2321,40 @@ class GFSTasks(Tasks):
     def cleanup(self):
         deps = []
         if 'enkf' in self.run:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}eamn'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_eamn'}
             deps.append(rocoto.add_dependency(dep_dict))
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}arch'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
             deps.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_gempak:
             if self.run in ['gdas']:
-                dep_dict = {'type': 'task', 'name': f'{self.run}gempakmetancdc'}
+                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmetancdc'}
                 deps.append(rocoto.add_dependency(dep_dict))
             elif self.run in ['gfs']:
-                dep_dict = {'type': 'task', 'name': f'{self.run}gempakmeta'}
+                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmeta'}
                 deps.append(rocoto.add_dependency(dep_dict))
-                dep_dict = {'type': 'task', 'name': f'{self.run}gempakncdcupapgif'}
+                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_goes:
-                    dep_dict = {'type': 'metatask', 'name': f'{self.run}gempakgrb2spec'}
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
                     deps.append(rocoto.add_dependency(dep_dict))
-                    dep_dict = {'type': 'task', 'name': f'{self.run}npoess_pgrb2_0p5deg'}
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
                     deps.append(rocoto.add_dependency(dep_dict))
+
+        if self.app_config.do_metp and self.run in ['gfs']:
+            deps2 = []
+            # taskvalid only handles regular tasks, so just check the first metp job exists
+            dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_metpg2g1', 'condition': 'not'}
+            deps2.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_metp'}
+            deps2.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('cleanup')
-        task_name = f'{self.run}cleanup'
+        task_name = f'{self.run}_cleanup'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2320,14 +2373,14 @@ class GFSTasks(Tasks):
     # Start of ensemble tasks
     def eobs(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('eobs')
-        task_name = f'{self.run}eobs'
+        task_name = f'{self.run}_eobs'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2345,7 +2398,7 @@ class GFSTasks(Tasks):
 
     def eomg(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}eobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_eobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -2357,7 +2410,7 @@ class GFSTasks(Tasks):
             eomgenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('eomg')
-        task_name = f'{self.run}eomg_mem#member#'
+        task_name = f'{self.run}_eomg_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2370,7 +2423,7 @@ class GFSTasks(Tasks):
                      }
 
         member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
-        metatask_dict = {'task_name': f'{self.run}eomg',
+        metatask_dict = {'task_name': f'{self.run}_eomg',
                          'var_dict': member_var_dict,
                          'task_dict': task_dict,
                          }
@@ -2381,12 +2434,12 @@ class GFSTasks(Tasks):
 
     def ediag(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}eobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_eobs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('ediag')
-        task_name = f'{self.run}ediag'
+        task_name = f'{self.run}_ediag'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2405,14 +2458,14 @@ class GFSTasks(Tasks):
     def eupd(self):
         deps = []
         if self.app_config.lobsdiag_forenkf:
-            dep_dict = {'type': 'task', 'name': f'{self.run}ediag'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_ediag'}
         else:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}eomg'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_eomg'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('eupd')
-        task_name = f'{self.run}eupd'
+        task_name = f'{self.run}_eupd'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2430,15 +2483,15 @@ class GFSTasks(Tasks):
 
     def atmensanlinit(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}prepatmiodaobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prepatmiodaobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = "gdas"
         resources = self.get_resource('atmensanlinit')
-        task_name = f'{self.run}atmensanlinit'
+        task_name = f'{self.run}_atmensanlinit'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2457,14 +2510,14 @@ class GFSTasks(Tasks):
     def atmensanlobs(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlinit'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('atmensanlobs')
-        task_name = f'{self.run}atmensanlobs'
+        task_name = f'{self.run}_atmensanlobs'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2483,14 +2536,14 @@ class GFSTasks(Tasks):
     def atmensanlsol(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('atmensanlsol')
-        task_name = f'{self.run}atmensanlsol'
+        task_name = f'{self.run}_atmensanlsol'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2509,14 +2562,14 @@ class GFSTasks(Tasks):
     def atmensanlletkf(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlinit'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('atmensanlletkf')
-        task_name = f'{self.run}atmensanlletkf'
+        task_name = f'{self.run}_atmensanlletkf'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2536,16 +2589,16 @@ class GFSTasks(Tasks):
 
         deps = []
         if self.app_config.lobsdiag_forenkf:
-            dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlsol'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlsol'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlletkf'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlletkf'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('atmensanlfv3inc')
-        task_name = f'{self.run}atmensanlfv3inc'
+        task_name = f'{self.run}_atmensanlfv3inc'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2564,12 +2617,12 @@ class GFSTasks(Tasks):
     def atmensanlfinal(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlfv3inc'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfv3inc'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('atmensanlfinal')
-        task_name = f'{self.run}atmensanlfinal'
+        task_name = f'{self.run}_atmensanlfinal'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2611,12 +2664,12 @@ class GFSTasks(Tasks):
             return grp, dep, lst
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediatmens:
-            dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}eupd'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2632,7 +2685,7 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('ecen')
 
-        task_name = f'{self.run}ecen#{varname1}#'
+        task_name = f'{self.run}_ecen#{varname1}#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2644,7 +2697,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}ecmn',
+        metatask_dict = {'task_name': f'{self.run}_ecmn',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
@@ -2657,20 +2710,20 @@ class GFSTasks(Tasks):
         # eupd_run = 'gdas' if 'gdas' in self.app_config.eupd_runs else 'gfs'
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}analcalc'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediatmens:
-            dep_dict = {'type': 'task', 'name': f'{self.run}atmensanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}eupd'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jedisnowda:
-            dep_dict = {'type': 'task', 'name': f'{self.run}esnowrecen'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_esnowrecen'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('esfc')
-        task_name = f'{self.run}esfc'
+        task_name = f'{self.run}_esfc'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2689,12 +2742,12 @@ class GFSTasks(Tasks):
     def efcs(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}ecmn'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}esfc'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        dep_dict = {'type': 'task', 'name': f'{self.run}stage_ic'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
@@ -2708,7 +2761,7 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.run in ['enkfgdas'] else self.run.replace('enkf', '')
         resources = self.get_resource('efcs')
 
-        task_name = f'{self.run}fcst_mem#member#'
+        task_name = f'{self.run}_fcst_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2721,7 +2774,7 @@ class GFSTasks(Tasks):
                      }
 
         member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
-        metatask_dict = {'task_name': f'{self.run}fcst',
+        metatask_dict = {'task_name': f'{self.run}_fcst',
                          'var_dict': member_var_dict,
                          'task_dict': task_dict
                          }
@@ -2735,16 +2788,16 @@ class GFSTasks(Tasks):
         self._is_this_a_gdas_task(self.run, 'echgres')
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run.replace("enkf","")}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run.replace("enkf","")}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}fcst_mem001'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mem001'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = 'gdas_half,gdas' if self.run in ['enkfgdas'] else self.run
 
         resources = self.get_resource('echgres')
-        task_name = f'{self.run}echgres'
+        task_name = f'{self.run}_echgres'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2785,7 +2838,7 @@ class GFSTasks(Tasks):
             return grp, dep, lst
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -2803,7 +2856,7 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('epos')
 
-        task_name = f'{self.run}epos#{varname1}#'
+        task_name = f'{self.run}_epos#{varname1}#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2815,7 +2868,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}epmn',
+        metatask_dict = {'task_name': f'{self.run}_epmn',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
@@ -2827,7 +2880,7 @@ class GFSTasks(Tasks):
     def earc(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}epmn'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -2842,7 +2895,7 @@ class GFSTasks(Tasks):
 
         var_dict = {'grp': groups}
 
-        task_name = f'{self.run}earc#grp#'
+        task_name = f'{self.run}_earc#grp#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2854,7 +2907,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}eamn',
+        metatask_dict = {'task_name': f'{self.run}_eamn',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
