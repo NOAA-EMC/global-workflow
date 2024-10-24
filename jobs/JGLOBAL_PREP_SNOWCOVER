@@ -2,7 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 export DATA=${DATA:-${DATAROOT}/${RUN}snowanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prepsnowobs" -c "base prepsnowobs"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepsnowcover" -c "base prepsnowcover"
 
 ##############################################
 # Set variables used in the script
@@ -25,7 +25,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 ###############################################################
 # Run relevant script
-EXSCRIPT=${GDASSNOWPREPPY:-${SCRgfs}/exglobal_prep_snow_obs.py}
+EXSCRIPT=${GDASSNOWPREPPY:-${SCRgfs}/exglobal_prep_snowcover.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && (echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}")

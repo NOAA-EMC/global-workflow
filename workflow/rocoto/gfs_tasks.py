@@ -563,21 +563,21 @@ class GFSTasks(Tasks):
 
         return task
 
-    def prepsnowobs(self):
+    def prepsnowcover(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('prepsnowobs')
-        task_name = f'{self.run}_prepsnowobs'
+        resources = self.get_resource('prepsnowcover')
+        task_name = f'{self.run}_prepsnowcover'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/prepsnowobs.sh',
+                     'cycledef': 'gdas_prep_snocvr',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/prepsnowcover.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -590,9 +590,17 @@ class GFSTasks(Tasks):
     def snowanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_prepsnowobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prepsnowcover'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+
+        deps2 = []
+        dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_prepsnowcover', 'condition': 'not'}
+        deps2.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
+        deps2.append(rocoto.add_dependency(dep_dict))
+        deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
+
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         resources = self.get_resource('snowanl')
         task_name = f'{self.run}_snowanl'
@@ -613,7 +621,7 @@ class GFSTasks(Tasks):
     def esnowrecen(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prepsnowobs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prepsnowcover'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_snowanl'}
         deps.append(rocoto.add_dependency(dep_dict))
