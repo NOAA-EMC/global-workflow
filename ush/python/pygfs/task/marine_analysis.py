@@ -192,7 +192,7 @@ class MarineAnalysis(Task):
         mdau.gen_bkg_list(bkg_path='./bkg',
                           window_begin=self.task_config.MARINE_WINDOW_BEGIN,
                           yaml_name='bkg_list.yaml')
-        
+
         # Make a copy of the env config before modifying to avoid breaking something else
         envconfig_jcb = copy.deepcopy(self.task_config)
         logger.info(f"---------------- Prepare the yaml configuration")
