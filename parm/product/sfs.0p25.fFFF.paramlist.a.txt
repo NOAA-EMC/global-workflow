@@ -1,0 +1,52 @@
+:PRMSL:mean sea level:
+:PRES:surface:
+:TMP:surface:
+:TMP:2 m above ground:
+:TMP:850 mb:
+:TMP:500 mb:
+:TMP:200 mb:
+:TMAX:2 m above ground:
+:TMIN:2 m above ground:
+:RH:2 m above ground:
+:DPT:2 m above ground:
+:UGRD:10 m above ground:
+:UGRD:850 mb:
+:UGRD:500 mb:
+:UGRD:200 mb:
+:VGRD:10 m above ground:
+:VGRD:850 mb:
+:VGRD:500 mb:
+:VGRD:200 mb:
+:HGT:850 mb:
+:HGT:500 mb:
+:HGT:200 mb:
+:APCP:surface:
+:CRAIN:surface:
+:CSNOW:surface:
+:CFRZR:surface:
+:CICEP:surface:
+:FDNSSTMP:surface:
+:PWAT:entire atmosphere (considered as a single layer):
+:CAPE:180-0 mb above ground:
+:CAPE:surface:
+:CIN:180-0 mb above ground:
+:CIN:surface:
+:HLCY:3000-0 m above ground:
+:TCDC:entire atmosphere (considered as a single layer):
+:WEASD:surface:
+:SNOD:surface:
+:ULWRF:top of atmosphere:
+:DSWRF:surface:
+:CPOFP:surface:
+:DLWRF:surface:
+:USWRF:surface:
+:ULWRF:surface:
+:GUST:surface:
+:SHTFL:surface:
+:LHTFL:surface:
+:ICETK:surface:
+:TSOIL:0-0.1
+:SOILW:0-0.1
+:MSLET:mean sea level:
+:VIS:surface:
+:HGT:cloud ceiling:

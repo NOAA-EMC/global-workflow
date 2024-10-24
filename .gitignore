@@ -69,6 +69,7 @@ parm/post/params_grib2_tbl_new
 parm/post/post_tag_gfs128
 parm/post/gfs
 parm/post/gefs
+parm/post/sfs
 parm/post/ocean.csv
 parm/post/ice.csv
 parm/post/ocnicepost.nml.jinja2
