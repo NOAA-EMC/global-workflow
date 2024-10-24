@@ -235,7 +235,7 @@ class MarineAnalysis(Task):
 
         # Current hack so that this is not done directly in the JCB base yaml
         jcb_config['marine_pseudo_model_states'] = parse_yaml('bkg_list.yaml')
-        
+
         # Render the full JEDI configuration file using JCB
         jedi_config = render(jcb_config)
 
