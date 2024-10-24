@@ -111,7 +111,7 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@SDATE@": datetime_to_YMDH(inputs.idate),
         "@EDATE@": datetime_to_YMDH(inputs.edate),
         "@CASECTL@": f'C{inputs.resdetatmos}',
-        "@OCNRES@": f"{int(100.*inputs.resdetocean):03d}",
+        "@OCNRES@": f"{int(100. * inputs.resdetocean):03d}",
         "@EXPDIR@": inputs.expdir,
         "@COMROOT@": inputs.comroot,
         "@EXP_WARM_START@": is_warm_start,

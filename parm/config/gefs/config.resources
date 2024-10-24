@@ -82,7 +82,7 @@ case ${step} in
     export ntasks=1
     export threads_per_task=1
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export memory="1GB"
+    export memory="20GB"
     ;;
 
   "fcst" | "efcs")

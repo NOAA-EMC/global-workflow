@@ -28,7 +28,7 @@ def main():
     for key in keys:
         # Make sure OCNRES is three digits
         if key == "OCNRES":
-            stage.task_config.OCNRES = f"{stage.task_config.OCNRES :03d}"
+            stage.task_config.OCNRES = f"{stage.task_config.OCNRES:03d}"
         stage_dict[key] = stage.task_config[key]
 
     # Also import all COM* directory and template variables

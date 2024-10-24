@@ -1,0 +1,8 @@
+#====== BIOMASS BURNING EMISSIONS =======================================
+
+# Blended Emissions
+#--------------------------------------------------------------------------------------------------------------------------------
+SU_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 SO2 gefs.%y4%m2%d2.gefs_blended_emissions.nc
+OC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 OC gefs.%y4%m2%d2.gefs_blended_emissions.nc
+BC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 BC gefs.%y4%m2%d2.gefs_blended_emissions.nc
+# EMI_NH3_BB NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 NH3 gefs.%y4%m2%d2.gefs_blended_emissions.nc
