@@ -1,5 +1,6 @@
 from applications.applications import AppConfig
 from wxflow import Configuration
+from typing import Dict, Any
 
 
 class GFSForecastOnlyAppConfig(AppConfig):
@@ -11,62 +12,70 @@ class GFSForecastOnlyAppConfig(AppConfig):
         super().__init__(conf)
 
         base = conf.parse_config('config.base')
-        self.aero_fcst_run = base.get('AERO_FCST_RUN', 'BOTH').lower()
         self.run = base.get('RUN', 'gfs')
-        self.exp_warm_start = base.get('EXP_WARM_START', False)
+        self.runs = [self.run]
 
-    def _get_app_configs(self):
+    def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
+
+        run_options = super()._get_run_options(conf)
+
+        run_options[self.run]['exp_warm_start'] = conf.parse_config('config.base').get('EXP_WARM_START', False)
+
+        return run_options
+
+    def _get_app_configs(self, run):
         """
         Returns the config_files that are involved in the forecast-only app
         """
 
+        options = self.run_options[run]
         configs = ['stage_ic', 'fcst', 'arch', 'cleanup']
 
-        if self.do_atm:
+        if options['do_atm']:
 
-            if self.do_upp or self.do_goes:
+            if options['do_upp'] or options['do_goes']:
                 configs += ['upp']
 
             configs += ['atmos_products']
 
-            if self.do_aero:
-                if not self.exp_warm_start:
+            if options['do_aero_fcst']:
+                if not options['exp_warm_start']:
                     configs += ['aerosol_init']
 
-            if self.do_tracker:
+            if options['do_tracker']:
                 configs += ['tracker']
 
-            if self.do_genesis:
+            if options['do_genesis']:
                 configs += ['genesis']
 
-            if self.do_genesis_fsu:
+            if options['do_genesis_fsu']:
                 configs += ['genesis_fsu']
 
-            if self.do_metp:
+            if options['do_metp']:
                 configs += ['metp']
 
-            if self.do_bufrsnd:
+            if options['do_bufrsnd']:
                 configs += ['postsnd']
 
-            if self.do_gempak:
+            if options['do_gempak']:
                 configs += ['gempak']
 
-            if self.do_awips:
+            if options['do_awips']:
                 configs += ['awips']
 
-        if self.do_ocean or self.do_ice:
+        if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        if self.do_wave:
+        if options['do_wave']:
             configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
-            if self.do_wave_bnd:
+            if options['do_wave_bnd']:
                 configs += ['wavepostbndpnt', 'wavepostbndpntbll']
-            if self.do_gempak:
+            if options['do_gempak']:
                 configs += ['wavegempak']
-            if self.do_awips:
+            if options['do_awips']:
                 configs += ['waveawipsbulls', 'waveawipsgridded']
 
-        if self.do_mos:
+        if options['do_mos']:
             configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
                         'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
                         'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
@@ -90,66 +99,64 @@ class GFSForecastOnlyAppConfig(AppConfig):
         """
 
         tasks = ['stage_ic']
+        options = self.run_options[self.run]
 
-        if self.do_aero:
-            aero_fcst_run = self.aero_fcst_run
-            if self.run in aero_fcst_run or aero_fcst_run == "both":
-                if not self.exp_warm_start:
-                    tasks += ['aerosol_init']
+        if options['do_aero_fcst'] and not options['exp_warm_start']:
+            tasks += ['aerosol_init']
 
-        if self.do_wave:
+        if options['do_wave']:
             tasks += ['waveinit']
             # tasks += ['waveprep']  # TODO - verify if waveprep is executed in forecast-only mode when APP=ATMW|S2SW
 
         tasks += ['fcst']
 
-        if self.do_atm:
+        if options['do_atm']:
 
-            if self.do_upp:
+            if options['do_upp']:
                 tasks += ['atmupp']
 
             tasks += ['atmos_prod']
 
-            if self.do_goes:
+            if options['do_goes']:
                 tasks += ['goesupp']
 
-            if self.do_tracker:
+            if options['do_tracker']:
                 tasks += ['tracker']
 
-            if self.do_genesis:
+            if options['do_genesis']:
                 tasks += ['genesis']
 
-            if self.do_genesis_fsu:
+            if options['do_genesis_fsu']:
                 tasks += ['genesis_fsu']
 
-            if self.do_metp:
+            if options['do_metp']:
                 tasks += ['metp']
 
-            if self.do_bufrsnd:
+            if options['do_bufrsnd']:
                 tasks += ['postsnd']
 
-            if self.do_gempak:
+            if options['do_gempak']:
                 tasks += ['gempak', 'gempakmeta', 'gempakncdcupapgif', 'gempakpgrb2spec']
 
-            if self.do_awips:
+            if options['do_awips']:
                 tasks += ['awips_20km_1p0deg', 'fbwind']
 
-        if self.do_ocean:
+        if options['do_ocean']:
             tasks += ['ocean_prod']
 
-        if self.do_ice:
+        if options['do_ice']:
             tasks += ['ice_prod']
 
-        if self.do_wave:
-            if self.do_wave_bnd:
+        if options['do_wave']:
+            if options['do_wave_bnd']:
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostsbs', 'wavepostpnt']
-            if self.do_gempak:
+            if options['do_gempak']:
                 tasks += ['wavegempak']
-            if self.do_awips:
+            if options['do_awips']:
                 tasks += ['waveawipsbulls', 'waveawipsgridded']
 
-        if self.do_mos:
+        if options['do_mos']:
             tasks += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
                       'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
                       'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',

@@ -44,7 +44,7 @@ class GFSTasks(Tasks):
         dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
                                                        {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
 
-        gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_runs else False
+        gfs_enkf = True if self.options['do_hybvar'] and 'gfs' in self.app_config.ens_runs else False
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
@@ -58,7 +58,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and self.app_config.interval_gfs != 6:
+        if self.run in ['gfs'] and gfs_enkf and self._base['INTERVAL_GFS'] != 6:
             cycledef = 'gdas'
 
         resources = self.get_resource('prep')
@@ -148,9 +148,9 @@ class GFSTasks(Tasks):
         # Calculate offset based on RUN = gfs | gdas
         interval = None
         if self.run in ['gfs']:
-            interval = self._base['INTERVAL_GFS']
+            interval = self._base['interval_gfs']
         elif self.run in ['gdas']:
-            interval = self._base['INTERVAL']
+            interval = self._base['interval']
         offset = timedelta_to_HMS(-interval)
 
         # Files from previous cycle
@@ -187,7 +187,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_hybvar:
+        if self.options['do_hybvar']:
             dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -214,12 +214,12 @@ class GFSTasks(Tasks):
     def sfcanl(self):
 
         deps = []
-        if self.app_config.do_jediatmvar:
+        if self.options['do_jediatmvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jedisnowda:
+        if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -246,14 +246,14 @@ class GFSTasks(Tasks):
     def analcalc(self):
 
         deps = []
-        if self.app_config.do_jediatmvar:
+        if self.options['do_jediatmvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_hybvar and self.run in ['gdas']:
+        if self.options['do_hybvar'] and self.run in ['gdas']:
             dep_dict = {'type': 'task', 'name': 'enkfgdas_echgres', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -328,7 +328,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_prepatmiodaobs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_hybvar:
+        if self.options['do_hybvar']:
             dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -336,7 +336,7 @@ class GFSTasks(Tasks):
             dependencies = rocoto.create_dependency(dep=deps)
 
         interval_gfs = self._base["INTERVAL_GFS"]
-        gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_runs else False
+        gfs_enkf = True if self.options['do_hybvar'] and 'gfs' in self.app_config.ens_runs else False
 
         cycledef = self.run
         if self.run in ['gfs'] and gfs_enkf and interval_gfs != 6:
@@ -486,7 +486,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_prep_obs_aero:
+        if self.options['do_prep_obs_aero']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_prepobsaero'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -770,12 +770,12 @@ class GFSTasks(Tasks):
     def marineanlchkpt(self):
 
         deps = []
-        if self.app_config.do_hybvar:
+        if self.options['do_hybvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_ocnanalecen'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_mergensst:
+        if self.options['do_mergensst']:
             data = f'&ROTDIR;/{self.run}.@Y@m@d/@H/atmos/{self.run}.t@Hz.sfcanl.nc'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -866,18 +866,16 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_wave and self.run in self.app_config.wave_runs:
-            wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
+        if self.options['do_wave']:
+            wave_job = 'waveprep' if self.options['app'] in ['ATMW'] else 'waveinit'
             dep_dict = {'type': 'task', 'name': f'{self.run}_{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero and \
-           self.run in self.app_config.aero_fcst_runs and \
-           not self._base['EXP_WARM_START']:
+        if self.options['do_aero_fcst'] and not self._base['EXP_WARM_START']:
             # Calculate offset based on RUN = gfs | gdas
             interval = None
             if self.run in ['gfs']:
-                interval = to_timedelta(f"{self._base['INTERVAL_GFS']}H")
+                interval = self._base['interval_gfs']
             elif self.run in ['gdas']:
                 interval = self._base['assim_freq']
             offset = timedelta_to_HMS(-interval)
@@ -891,7 +889,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         if self.run in ['gfs']:
-            num_fcst_segments = len(self.app_config.fcst_segments) - 1
+            num_fcst_segments = len(self.options['fcst_segments']) - 1
         else:
             num_fcst_segments = 1
 
@@ -930,15 +928,15 @@ class GFSTasks(Tasks):
         dep = rocoto.add_dependency(dep_dict)
         dependencies = rocoto.create_dependency(dep=dep)
 
-        if self.app_config.do_jediocnvar:
+        if self.options['do_jediocnvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero and self.run in self.app_config.aero_anl_runs:
+        if self.options['do_aero_anl']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_jedisnowda:
+        if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
@@ -949,7 +947,7 @@ class GFSTasks(Tasks):
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
-        if self.app_config.do_wave and self.run in self.app_config.wave_runs:
+        if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_waveprep'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
@@ -957,7 +955,7 @@ class GFSTasks(Tasks):
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
 
         if self.run in ['gfs']:
-            num_fcst_segments = len(self.app_config.fcst_segments) - 1
+            num_fcst_segments = len(self.options['fcst_segments']) - 1
         else:
             num_fcst_segments = 1
 
@@ -1264,7 +1262,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_wave_bnd:
+        if self.options['do_wave_bnd']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpntbll'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -1834,8 +1832,8 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.interval_gfs < to_timedelta('24H'):
-            n_lookback = self.app_config.interval_gfs // to_timedelta('6H')
+        if self._base["interval_gfs"] < to_timedelta("24H"):
+            n_lookback = self._base["interval_gfs"] // to_timedelta("6H")
             for lookback in range(1, n_lookback + 1):
                 deps2 = []
                 dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch', 'condition': 'not'}
@@ -2242,54 +2240,54 @@ class GFSTasks(Tasks):
             if self.run in ['gfs']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
                 deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_vminmon:
+                if self.options['do_vminmon']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
             elif self.run in ['gdas']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
                 deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_fit2obs:
+                if self.options['do_fit2obs']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_fit2obs'}
                     deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_verfozn:
+                if self.options['do_verfozn']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_verfozn'}
                     deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_verfrad:
+                if self.options['do_verfrad']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_verfrad'}
                     deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_vminmon:
+                if self.options['do_vminmon']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
-        if self.run in ['gfs'] and self.app_config.do_tracker:
+        if self.run in ['gfs'] and self.options['do_tracker']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_tracker'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.run in ['gfs'] and self.app_config.do_genesis:
+        if self.run in ['gfs'] and self.options['do_genesis']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_genesis'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.run in ['gfs'] and self.app_config.do_genesis_fsu:
+        if self.run in ['gfs'] and self.options['do_genesis_fsu']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_genesis_fsu'}
             deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_wave:
+        if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_wave_bnd:
+            if self.options['do_wave_bnd']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_ocean:
+        if self.options['do_ocean']:
             if self.run in ['gfs']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_ice:
+        if self.options['do_ice']:
             if self.run in ['gfs']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
         # MOS job dependencies
-        if self.run in ['gfs'] and self.app_config.do_mos:
+        if self.run in ['gfs'] and self.options['do_mos']:
             mos_jobs = ["stn_prep", "grd_prep", "ext_stn_prep", "ext_grd_prep",
                         "stn_fcst", "grd_fcst", "ext_stn_fcst", "ext_grd_fcst",
                         "stn_prdgen", "grd_prdgen", "ext_stn_prdgen", "ext_grd_prdgen",
@@ -2327,7 +2325,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
             deps.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_gempak:
+        if self.options['do_gempak']:
             if self.run in ['gdas']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmetancdc'}
                 deps.append(rocoto.add_dependency(dep_dict))
@@ -2336,13 +2334,13 @@ class GFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
                 deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_goes:
+                if self.options['do_goes']:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
                     deps.append(rocoto.add_dependency(dep_dict))
                     dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
                     deps.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_metp and self.run in ['gfs']:
+        if self.options['do_metp'] and self.run in ['gfs']:
             deps2 = []
             # taskvalid only handles regular tasks, so just check the first metp job exists
             dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_metpg2g1', 'condition': 'not'}
@@ -2457,7 +2455,7 @@ class GFSTasks(Tasks):
 
     def eupd(self):
         deps = []
-        if self.app_config.lobsdiag_forenkf:
+        if self.options['lobsdiag_forenkf']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_ediag'}
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_eomg'}
@@ -2588,7 +2586,7 @@ class GFSTasks(Tasks):
     def atmensanlfv3inc(self):
 
         deps = []
-        if self.app_config.lobsdiag_forenkf:
+        if self.options['lobsdiag_forenkf']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlsol'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlletkf'}
@@ -2666,7 +2664,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jediatmens:
+        if self.options['do_jediatmens']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
@@ -2707,17 +2705,15 @@ class GFSTasks(Tasks):
 
     def esfc(self):
 
-        # eupd_run = 'gdas' if 'gdas' in self.app_config.eupd_runs else 'gfs'
-
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jediatmens:
+        if self.options['do_jediatmens']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jedisnowda:
+        if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esnowrecen'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
