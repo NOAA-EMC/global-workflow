@@ -15,6 +15,24 @@ export SOCA_FIX_YAML_TMPL="${PARMgfs}/gdas/soca/soca_fix_stage_${OCNRES}.yaml.j2
 export MARINE_UTILITY_YAML_TMPL="${PARMgfs}/gdas/soca/soca_utils_stage.yaml.j2"
 export MARINE_ENSDA_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/ensda/stage_ens_mem.yaml.j2"
 export MARINE_DET_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_bkg_stage.yaml.j2"
-export MARINE_JCB_GDAS_ALGO="${PARMgfs}/gdas/jcb-gdas/algorithm/marine"
+
+export JCB_BASE_YAML="${PARMgfs}/gdas/soca/marine-jcb-base.yaml"
+
+export JCB_ALGO_GRIDGEN="soca_gridgen"
+export JCB_ALGO_DIAGB="soca_diagb"
+export JCB_ALGO_SETCORSCALES="soca_setcorscales"
+export JCB_ALGO_PARAMETERS_DIFFUSION_HZ="soca_parameters_diffusion_hz"
+export JCB_ALGO_VTSCALES="soca_vtscales"
+export JCB_ALGO_PARAMETERS_DIFFUSION_VT="soca_parameters_diffusion_vt"
+export JCB_ALGO_ENSB="soca_ensb"
+export JCB_ALGO_ENSWEIGHTS="soca_ensweights"
+
+export JEDIEXE_GRIDGEN="${EXECgfs}/gdas_soca_gridgen.x"
+export JEDIEXE_DIAGB="${EXECgfs}/gdas_soca_diagb.x"
+export JEDIEXE_SETCORSCALES="${EXECgfs}/gdas_soca_setcorscales.x"
+export JEDIEXE_PARAMETERS_DIFFUSION_HZ="${EXECgfs}/gdas_soca_error_covariance_toolbox.x"
+export JEDIEXE_PARAMETERS_DIFFUSION_VT="${EXECgfs}/gdas_soca_error_covariance_toolbox.x"
+export JEDIEXE_ENSB="${EXECgfs}/gdas_ens_handler.x"
+export JEDIEXE_ENSWEIGHTS="${EXECgfs}/gdas_socahybridweights.x"
 
 echo "END: config.marineanl"
