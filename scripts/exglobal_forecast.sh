@@ -133,8 +133,8 @@ FV3_nml
 [[ ${cplice} = .true. ]] && CICE_nml
 [[ ${cplchm} = .true. ]] && GOCART_rc
 UFS_configure
-echo "MAIN: Name lists and model configuration written"
 
+echo "MAIN: Name lists and model configuration written"
 #------------------------------------------------------------------
 # run the executable
 
