@@ -38,7 +38,7 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-j n][-v][-w]
   -w:
     Use structured wave grid
   -y:
-    Use hystrostatic version of FV3
+    Use hydrostatic version of FV3
 EOF
   exit 1
 }
