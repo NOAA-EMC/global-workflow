@@ -242,8 +242,8 @@ JCAP=${JCAP:--9999} # there is no jcap in these files
 
 # Get header information from Ensemble Guess files
 if [ ${DOHYBVAR} = "YES" ]; then
-   SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COM_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}sfcf006.ensmean.nc}
-   export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COM_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc}
+   SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMOUT_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}sfcf006.ensmean.nc}
+   export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMOUT_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc}
    LONB_ENKF=${LONB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_xt)} # get LONB_ENKF
    LATB_ENKF=${LATB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_yt)} # get LATB_ENFK
    LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} pfull)} # get LATB_ENFK
