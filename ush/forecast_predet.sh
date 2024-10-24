@@ -398,12 +398,17 @@ FV3_predet(){
       n_var_lndp=$(echo "${lndp_var_list}" | wc -w)
     fi
 
-  fi  # end of ensemble member specific options
+  else
 
-  if [[ "${DO_CA:-}" == "YES" ]]; then
-    do_ca=".true."
-    ISEED_CA=$(( (base_seed + 18) % 2147483647 ))
-  fi
+    local imem=${MEMBER#0}
+    local base_seed=$((current_cycle*10000 + imem*100))
+
+    if [[ "${DO_CA:-}" == "YES" ]]; then
+      do_ca=".true."
+      ISEED_CA=$(( (base_seed + 18) % 2147483647 ))
+    fi
+
+  fi  # end of ensemble member specific options
 
   #--------------------------------------------------------------------------
 
