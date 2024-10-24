@@ -367,6 +367,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
                        "fv3jedi_plot_field.x" \
                        "gdasapp_chem_diagb.x" \
                        "fv3jedi_fv3inc.x" \
+                       "fv3jedi_analcalc.x" \
                        "gdas_ens_handler.x" \
                        "gdas_incr_handler.x" \
                        "gdas_obsprovider2ioda.x" \

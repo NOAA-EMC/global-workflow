@@ -362,6 +362,7 @@ FV3_predet(){
   warm_start=".false."
   read_increment=".false."
   res_latlon_dynamics='""'
+  increment_file_on_native_grid=".true."
 
   # Stochastic Physics Options
   do_skeb=".false."

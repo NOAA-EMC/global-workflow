@@ -243,7 +243,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def analcalc(self):
+    def analcalc_fv3jedi(self):
 
         deps = []
         if self.app_config.do_jediatmvar:
@@ -258,14 +258,43 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('analcalc')
-        task_name = f'{self.run}_analcalc'
+        resources = self.get_resource('analcalc_fv3jedi')
+        task_name = f'{self.run}_analcalc_fv3jedi'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/analcalc.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/analcalc_fv3jedi.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def analcalc_gsi(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}anal'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}sfcanl'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_hybvar and self.run in ['gdas']:
+            dep_dict = {'type': 'task', 'name': 'enkfgdasechgres', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('analcalc_gsi')
+        task_name = f'{self.run}analcalc_gsi'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/analcalc_gsi.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -2664,13 +2693,16 @@ class GFSTasks(Tasks):
             return grp, dep, lst
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
-        deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediatmens:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc_fv3jedi'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
         else:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc_gsi'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
-        deps.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         ecenenvars = self.envars.copy()
@@ -2710,13 +2742,16 @@ class GFSTasks(Tasks):
         # eupd_run = 'gdas' if 'gdas' in self.app_config.eupd_runs else 'gfs'
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
-        deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediatmens:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc_fv3jedi'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
         else:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc_gsi'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
-        deps.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jedisnowda:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esnowrecen'}
             deps.append(rocoto.add_dependency(dep_dict))
