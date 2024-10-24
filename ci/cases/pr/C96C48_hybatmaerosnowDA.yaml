@@ -18,6 +18,7 @@ arguments:
   yaml: {{ HOMEgfs }}/ci/cases/yamls/atmaerosnowDA_defaults_ci.yaml
 
 skip_ci_on_hosts:
+  - wcoss2
   - orion
   - gaea
   - hercules
