@@ -167,10 +167,10 @@ function cleanup_experiment() {
     local ARCDIR
 
     PSLOT_PATH="$1"
-    pslot=$(basename "${PSLOT_PATH}")
-    ARCDIR=$(grep 'export ARCDIR=' "${PSLOT_PATH}/config.base" | cut -d'=' -f2 | tr -d '[:space:]"' | envsubst || true) || true
+    pslot=$(basename "${EXPDIR}")
+    ARCDIR=$(grep 'export ARCDIR=' "${EXPDIR}/config.base" | cut -d'=' -f2 | tr -d '[:space:]"' | envsubst || true) || true
 
     rm -Rf "${ARCDIR:?}"
-    rm -Rf "${PSLOT_PATH}"
-    rm -Rf "${PSLOT_PATH}/../COMROOT/${pslot}"
+    rm -Rf "${EXPDIR}"
+    rm -Rf "${EXPDIR}/../COMROOT/${pslot}"
 }
