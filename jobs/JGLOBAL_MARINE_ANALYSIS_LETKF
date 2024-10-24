@@ -1,6 +1,13 @@
 #!/bin/bash
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanalletkf" -c "base ocnanal marineanalletkf"
+
+export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATA="${DATAjob}/${jobid}"
+# Create the directory to hold ensemble perturbations
+export DATAens="${DATAjob}/ensdata"
+if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf" -c "base marineanl marineanlletkf"
 
 ##############################################
 # Set variables used in the script
@@ -11,12 +18,18 @@ GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
+export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
+export OPREFIX="${RUN}.t${cyc}z."
 
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-   COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-   COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+  COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+  COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL 
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMIN_OBS:COM_OBS_TMPL \
+  COMOUT_OCEAN_LETKF:COM_OCEAN_LETKF_TMPL \
+  COMOUT_ICE_LETKF:COM_ICE_LETKF_TMPL
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -25,7 +38,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNLETKFPY:-${HOMEgfs}/scripts/exgdas_global_marine_analysis_letkf.py}
+EXSCRIPT=${GDASOCNLETKFPY:-${HOMEgfs}/scripts/exglobal_marine_analysis_letkf.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

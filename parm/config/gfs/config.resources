@@ -601,7 +601,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "marineanalletkf")
+  "marineanlletkf")
     ntasks=16
     case ${OCNRES} in
       "025")
