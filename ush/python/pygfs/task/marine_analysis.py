@@ -15,7 +15,7 @@ from jcb import render
 from wxflow import (AttrDict,
                     FileHandler,
                     add_to_datetime, to_timedelta, to_YMD,
-                    parse_j2yaml,
+                    parse_j2yaml, parse_yaml,
                     logit,
                     Executable,
                     Task,
@@ -192,7 +192,7 @@ class MarineAnalysis(Task):
         mdau.gen_bkg_list(bkg_path='./bkg',
                           window_begin=self.task_config.MARINE_WINDOW_BEGIN,
                           yaml_name='bkg_list.yaml')
-
+        
         # Make a copy of the env config before modifying to avoid breaking something else
         envconfig_jcb = copy.deepcopy(self.task_config)
         logger.info(f"---------------- Prepare the yaml configuration")
@@ -225,7 +225,7 @@ class MarineAnalysis(Task):
         jcb_algo_config = YAMLFile(path=jcb_algo_yaml)
         jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
         jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
-
+        
         # Override base with the application specific config
         jcb_config = {**jcb_base_config, **jcb_algo_config}
 
@@ -233,6 +233,9 @@ class MarineAnalysis(Task):
         jcb_config['window_begin'] = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y-%m-%dT%H:%M:%SZ')
         jcb_config['window_middle'] = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
 
+        # Current hack so that this is not done directly in the JCB base yaml
+        jcb_config['marine_pseudo_model_states'] = parse_yaml('bkg_list.yaml')
+        
         # Render the full JEDI configuration file using JCB
         jedi_config = render(jcb_config)
 
