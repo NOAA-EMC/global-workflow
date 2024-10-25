@@ -33,7 +33,7 @@ class GFSCycledRocotoXML(RocotoXML):
             is_warm_start = self._base.get('EXP_WARM_START', False)
             first_full_cycle = sdate if is_warm_start else sdate + assim_freq
             sdate_snocvr = (first_full_cycle if first_full_cycle.hour == 0 else
-                           (first_full_cycle + interval_snocvr).replace(hour=0, minute=0, second=0))
+                            (first_full_cycle + interval_snocvr).replace(hour=0, minute=0, second=0))
 
             sdate_snocvr_str = sdate_snocvr.strftime("%Y%m%d%H%M")
             edate_snocvr_str = edate_snocvr.strftime("%Y%m%d%H%M")
