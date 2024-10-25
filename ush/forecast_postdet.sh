@@ -339,7 +339,7 @@ WW3_postdet() {
     fi
     echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
     ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
-    if [[ ! -f "${ww3_restart_file}" ]]; then
+    if [[ -f "${ww3_restart_file}" ]]; then
       ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
       || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
     else
