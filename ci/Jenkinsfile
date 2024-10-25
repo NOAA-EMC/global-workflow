@@ -104,6 +104,7 @@ pipeline {
                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             script {
                                 def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}" // local HOMEgfs is used to build the system on per system basis under the custome workspace for each buile system
+                                env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                                 sh(script: "mkdir -p ${HOMEgfs}")
                                 ws(HOMEgfs) {
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
@@ -194,10 +195,11 @@ pipeline {
                             stage("Create ${caseName}") {
                                     catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                         script {
+                                                def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
+                                                env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                                                 sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp")
                                                 def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp"
                                                 system = yaml_case.experiment.system
-                                                def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
                                                 env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
                                                 try {
                                                     error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
@@ -213,6 +215,7 @@ pipeline {
                                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                                         script {
                                                 HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
+                                                env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                                                 def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${caseName}", returnStdout: true).trim()
                                                 def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
                                                 sh(script: " rm -f ${error_file}")
@@ -273,6 +276,7 @@ pipeline {
             agent { label NodeName[machine].toLowerCase() }
             steps {
                 script {
+                    env.HOME_GFS = "${CUSTOM_WORKSPACE}/gfs" // setting path to HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                     sh(script: """
                         labels=\$(${GH} pr view ${env.CHANGE_ID} --repo ${repo_url} --json labels --jq '.labels[].name')
                         for label in \$labels; do
