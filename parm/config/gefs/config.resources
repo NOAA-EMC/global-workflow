@@ -61,11 +61,11 @@ export max_tasks_per_node
 case ${step} in
 
   "stage_ic")
-    export walltime="00:15:00"
+    export walltime="06:00:00"
     export ntasks=1
     export tasks_per_node=1
     export threads_per_task=1
-    export is_exclusive=True
+    export memory="4096M"
     ;;
 
   "waveinit")

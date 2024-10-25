@@ -338,6 +338,9 @@ export ARCH_CYC=00           # Archive data at this cycle for warm_start capabil
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
+export DO_DOWNLOAD_ICS="YES" # Set to YES to download ICs from HPSS, set to NO to copy ICs locally
+export HPSSICARCH="/NCEPDEV/emc-marine/2year/Neil.Barton/ICS/HR4/C384mx025" # ICs directory on HPSS
+
 export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
 
 # Number of regional collectives to create soundings for
