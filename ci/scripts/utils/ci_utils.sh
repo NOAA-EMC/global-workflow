@@ -171,6 +171,6 @@ function cleanup_experiment() {
     ARCDIR=$(grep 'export ARCDIR=' "${EXPDIR}/config.base" | cut -d'=' -f2 | tr -d '[:space:]"' | envsubst || true) || true
 
     rm -Rf "${ARCDIR:?}"
-    rm -Rf "${EXPDIR}"
     rm -Rf "${EXPDIR}/../COMROOT/${pslot}"
+    rm -Rf "${EXPDIR}"
 }
