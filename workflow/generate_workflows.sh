@@ -71,6 +71,9 @@ function _usage() {
        If this option is not specified, then the existing email address in
        the crontab will be preserved.
 
+    -t Add a 'tag' to the end of the case names in the pslots to distinguish
+       pslots between multiple sets of tests.
+
     -v Verbose mode.  Prints output of all commands to stdout.
 
     -V Very verbose mode.  Passes -v to all commands and prints to stdout.
@@ -101,6 +104,7 @@ _hpc_account=""
 _set_account=false
 _update_cron=false
 _email=""
+_tag=""
 _set_email=false
 _verbose=false
 _very_verbose=false
@@ -111,7 +115,7 @@ _runtests="${RUNTESTS:-${_runtests:-}}"
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-   while getopts ":H:bB:uy:Y:GESA:ce:vVdh" option; do
+   while getopts ":H:bB:uy:Y:GESA:ce:t:vVdh" option; do
       case "${option}" in
         H)
            HOMEgfs="${OPTARG}"
@@ -138,6 +142,7 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
         S) _run_all_sfs=true ;;
         c) _update_cron=true ;;
         e) _email="${OPTARG}" && _set_email=true ;;
+        t) _tag="_${OPTARG}" ;;
         v) _verbose=true ;;
         V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
         d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v" && PS4='${LINENO}: ' ;;
@@ -454,11 +459,12 @@ echo "Running create_experiment.py for ${#_yaml_list[@]} cases"
 [[ "${_verbose}" == true ]] && printf "Selected cases: %s\n\n" "${_yaml_list[*]}"
 for _case in "${_yaml_list[@]}"; do
    [[ "${_verbose}" == false ]] && echo "${_case}"
+   _pslot="${_case}${_tag}"
    _create_exp_cmd="./create_experiment.py -y ../ci/cases/pr/${_case}.yaml --overwrite"
    if [[ "${_verbose}" == true ]]; then
-      pslot=${_case} RUNTESTS=${_runtests} ${_create_exp_cmd}
+      pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd}
    else
-      if ! pslot=${_case} RUNTESTS=${_runtests} ${_create_exp_cmd} 2> stderr 1> stdout; then
+      if ! pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd} 2> stderr 1> stdout; then
          _output=$(cat stdout stderr)
          _message="The create_experiment command (${_create_exp_cmd}) failed with a non-zero status.  Output:"
          _message="${_message}"$'\n'"${_output}"
@@ -471,7 +477,7 @@ for _case in "${_yaml_list[@]}"; do
       fi
       rm -f stdout stderr
    fi
-   grep "${_case}" "${_runtests}/EXPDIR/${_case}/${_case}.crontab" >> tests.cron
+   grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
 done
 echo
 
