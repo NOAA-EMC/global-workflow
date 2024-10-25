@@ -48,13 +48,13 @@ class Stage(Task):
         None
         """
 
-        if stage_dict.DO_DOWNLOAD_ICS == True:
+        if stage_dict.DO_DOWNLOAD_ICS is True:
             # Download ICs from HPSS to ICSDIR
             self.tar_cmd = "htar"
             self.hsi = Hsi()
             self.htar = Htar()
             self.xvf = self.htar.xvf
-            self.xvf(stage_dict.HPSSICARCH+"/"+to_YMDH(stage_dict.current_cycle)+".tar")
+            self.xvf(stage_dict.HPSSICARCH + "/" + to_YMDH(stage_dict.current_cycle) + ".tar")
 
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
