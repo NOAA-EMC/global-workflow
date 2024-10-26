@@ -101,7 +101,7 @@ pipeline {
                 stages {
                     stage('Building') {
                         steps {
-                           // catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                          catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             script {
                                 def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}" // local HOMEgfs is used to build the system on per system basis under the custome workspace for each buile system
                                 env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
@@ -132,8 +132,7 @@ pipeline {
                                         def build_args = build_args_list[system].join(' ').trim().replaceAll('null', '')
                                         dir("${HOMEgfs}/sorc") {
                                             try {
-                                                //sh(script: "${build_args}")
-                                                echo "SKIPPIG ${build_args}"
+                                                sh(script: "${build_args}")
                                             } catch (Exception error_build) {
                                                 echo "Failed to build system: ${error_build.getMessage()}"
                                                 if ( fileExists("logs/error.logs") ) {
@@ -176,8 +175,8 @@ pipeline {
                                         cases = sh(script: "source ${HOMEgfs}/workflow/gw_setup.sh;${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
                                     }
                                }
-                           }
-                          // }
+                            }
+                          }
                         }
                     }
                 }
