@@ -172,7 +172,7 @@ pipeline {
                                         }
                                     }
                                     if (system == 'gfs') {
-                                        cases = sh(script: "source ${HOMEgfs}/workflow/gw_setup.sh;${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
+                                        cases = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
                                     }
                                }
                             }
