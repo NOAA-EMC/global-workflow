@@ -62,8 +62,10 @@ class Stage(Task):
 
         if stage_dict.DO_REPAIR_REPLAY is True:
             # Download f03 replay analysis
-            subprocess.run("aws s3 cp --no-sign-request s3://noaa-ufs-gefsv13replay-pds/" + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSPRS.GrbF03 ./", shell=True)
-            subprocess.run("aws s3 cp --no-sign-request s3://noaa-ufs-gefsv13replay-pds/" + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSFLX.GrbF03 ./", shell=True)
+            aws_cmd = "aws s3 cp --no-sign-request"
+            aws_url = "s3://noaa-ufs-gefsv13replay-pds/"
+            subprocess.run(aws_cmd + " " + aws_url + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSPRS.GrbF03 ./", shell=True)
+            subprocess.run(aws_cmd + " " + aws_url + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSFLX.GrbF03 ./", shell=True)
 
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
