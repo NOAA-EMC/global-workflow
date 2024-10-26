@@ -14,7 +14,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_SB
+${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_SBS
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 
