@@ -33,7 +33,8 @@
 # 0.  Preparations
 
 source "${USHgfs}/preamble.sh"
-
+#set FORECAST_HOUR
+export FORECAST_HOUR=$(( 10#${FHR3} ))
 # 0.a Basic modes of operation
 
   # Set wave model ID tag to include member number

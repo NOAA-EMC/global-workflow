@@ -11,7 +11,6 @@ status=$?
 
 export job="wavepostsbs"
 export jobid="${job}.$$"
-export FORECAST_HOUR=$(( 10#${FHR3} ))
 ###############################################################
 # Execute the JJOB
 ${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_SBS
