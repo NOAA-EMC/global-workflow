@@ -11,6 +11,7 @@ status=$?
 
 export job="wavepostsbs"
 export jobid="${job}.$$"
+
 ###############################################################
 # Execute the JJOB
 ${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_SB
