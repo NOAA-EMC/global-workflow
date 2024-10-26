@@ -196,11 +196,13 @@ pipeline {
                             stage("Create ${caseName}") {
                                   //  catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                         script {
-                                                def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
                                                 // env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                                                 sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp")
+                                                sh(script: "echo '}' >> ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.test.tmp")
+                                                sh(script: "ls -l ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr")
                                                 def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp"
-                                                // system = yaml_case.experiment.system
+                                                build_system = yaml_case.experiment.system
+                                                def HOMEgfs = "${CUSTOM_WORKSPACE}/${build_system}"   // local HOMEgfs is used to populate the XML on per system basis
                                                 env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
                                                 try {
                                                     error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
