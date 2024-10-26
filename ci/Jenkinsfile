@@ -194,24 +194,20 @@ pipeline {
                     def parallelStages = cases.collectEntries { caseName ->
                         ["${caseName}": {
                             stage("Create ${caseName}") {
-                                  //  catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                                        script {
-                                                // env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
-                                                sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp")
-                                                sh(script: "echo '}' >> ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.test.tmp")
-                                                sh(script: "ls -l ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr")
-                                                def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp"
-                                                build_system = yaml_case.experiment.system
-                                                def HOMEgfs = "${CUSTOM_WORKSPACE}/${build_system}"   // local HOMEgfs is used to populate the XML on per system basis
-                                                env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
-                                                try {
-                                                    error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
-                                                } catch (Exception error_create) {
-                                                    sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
-                                                    error("Case ${caseName} failed to create experment directory")
-                                                }
+                                script {
+                                        sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp")
+                                        def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp"
+                                        build_system = yaml_case.experiment.system
+                                        def HOMEgfs = "${CUSTOM_WORKSPACE}/${build_system}"   // local HOMEgfs is used to populate the XML on per system basis
+                                        env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
+                                        env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
+                                        try {
+                                              error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
+                                        } catch (Exception error_create) {
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
+                                            error("Case ${caseName} failed to create experment directory")
                                         }
-                                //}
+                                     }
                             }
 
                             stage("Running ${caseName}") {
