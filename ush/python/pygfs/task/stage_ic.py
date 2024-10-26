@@ -4,12 +4,12 @@ import glob
 import os
 from logging import getLogger
 from typing import Any, Dict, List
+import subprocess
 
 from wxflow import (AttrDict, FileHandler, Task, cast_strdict_as_dtypedict,
                     logit, parse_j2yaml, strftime, to_YMD, to_YMDH,
                     add_to_datetime, to_timedelta, Template, TemplateConstants,
                     Hsi, Htar)
-import subprocess
 
 logger = getLogger(__name__.split('.')[-1])
 
