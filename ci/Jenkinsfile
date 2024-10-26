@@ -194,7 +194,7 @@ pipeline {
                     def parallelStages = cases.collectEntries { caseName ->
                         ["${caseName}": {
                             stage("Create ${caseName}") {
-                                    catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                                  //  catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                         script {
                                                 def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
                                                 env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
@@ -209,7 +209,7 @@ pipeline {
                                                     error("Case ${caseName} failed to create experment directory")
                                                 }
                                         }
-                                }
+                                //}
                             }
 
                             stage("Running ${caseName}") {
