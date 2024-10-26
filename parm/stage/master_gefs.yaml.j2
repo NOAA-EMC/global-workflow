@@ -120,6 +120,12 @@
 {% endfilter %}
 {% endif %}
 
+{% if DO_REPAIR_REPLAY %}
+{% filter indent(width=4) %}
+{% include "atmosphere_replay.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
 {% if DO_ICE %}
 {% filter indent(width=4) %}
 {% include "ice.yaml.j2" %}

@@ -9,6 +9,7 @@ from wxflow import (AttrDict, FileHandler, Task, cast_strdict_as_dtypedict,
                     logit, parse_j2yaml, strftime, to_YMD, to_YMDH,
                     add_to_datetime, to_timedelta, Template, TemplateConstants,
                     Hsi, Htar)
+import subprocess
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -47,6 +48,9 @@ class Stage(Task):
         -------
         None
         """
+        YYYYMMDDHH = to_YMDH(stage_dict.current_cycle)
+        YYYY = YYYYMMDDHH[0:4]
+        MM = YYYYMMDDHH[4:6]
 
         if stage_dict.DO_DOWNLOAD_ICS is True:
             # Download ICs from HPSS to ICSDIR
@@ -54,7 +58,12 @@ class Stage(Task):
             self.hsi = Hsi()
             self.htar = Htar()
             self.xvf = self.htar.xvf
-            self.xvf(stage_dict.HPSSICARCH + "/" + to_YMDH(stage_dict.current_cycle) + ".tar")
+            self.xvf(stage_dict.HPSSICARCH + "/" + YYYYMMDDHH + ".tar")
+
+        if stage_dict.DO_REPAIR_REPLAY is True:
+            # Download f03 replay analysis
+            subprocess.run("aws s3 cp --no-sign-request s3://noaa-ufs-gefsv13replay-pds/" + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSPRS.GrbF03 ./", shell=True)
+            subprocess.run("aws s3 cp --no-sign-request s3://noaa-ufs-gefsv13replay-pds/" + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSFLX.GrbF03 ./", shell=True)
 
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")

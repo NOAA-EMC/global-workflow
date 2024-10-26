@@ -23,7 +23,8 @@ def main():
             'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR',
             'OCNRES', 'waveGRD', 'ntiles', 'DOIAU', 'DO_JEDIOCNVAR',
             'REPLAY_ICS', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST',
-            'HPSSICARCH', 'DO_DOWNLOAD_ICS']
+            'HPSSICARCH', 'DO_DOWNLOAD_ICS',
+            'DO_REPAIR_REPLAY']
 
     stage_dict = AttrDict()
     for key in keys:
