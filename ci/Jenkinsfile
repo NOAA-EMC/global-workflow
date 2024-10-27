@@ -132,8 +132,7 @@ pipeline {
                                         def build_args = build_args_list[system].join(' ').trim().replaceAll('null', '')
                                         dir("${HOMEgfs}/sorc") {
                                             try {
-                                                //sh(script: "${build_args}")
-                                                echo "Building system ${system} on ${Machine} SKIPPING"
+                                                sh(script: "${build_args}")
                                             } catch (Exception error_build) {
                                                 echo "Failed to build system: ${error_build.getMessage()}"
                                                 if ( fileExists("logs/error.logs") ) {
@@ -212,7 +211,7 @@ pipeline {
                             }
 
                             stage("Running ${caseName}") {
-                                    //catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                                         script {
                                                 HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                                 env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
@@ -264,7 +263,7 @@ pipeline {
                                                     }
                                                 }
                                         }
-                                    //}
+                                    }
                             }
                         }]
                     }
@@ -272,7 +271,6 @@ pipeline {
                 }
             }
         }
-
 
         stage( '5. FINALIZE' ) {
             agent { label NodeName[machine].toLowerCase() }
