@@ -197,9 +197,8 @@ pipeline {
                             stage("Create ${caseName}") {
                                 script {
                                         sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp")
-                                        sh(script: "ls -lrth ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr")
                                         def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp"
-                                        build_system = yaml_case.experiment.system
+                                        def build_system = yaml_case.experiment.system
                                         def HOMEgfs = "${CUSTOM_WORKSPACE}/${build_system}"   // local HOMEgfs is used to populate the XML on per system basis
                                         env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                                         env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
@@ -220,10 +219,10 @@ pipeline {
                                                 def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${caseName}", returnStdout: true).trim()
                                                 def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
                                                 sh(script: " rm -f ${error_file}")
-                                                sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
+                                                def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp"
+                                                def build_system = yaml_case.experiment.system
                                                 try {
-                                                    // sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
-                                                    echo "Running experiment ${caseName} on ${Machine} in ${pslot}"
+                                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${build_system}")
                                                 } catch (Exception error_experment) {
                                                     sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
                                                     ws(CUSTOM_WORKSPACE) {
