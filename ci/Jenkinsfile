@@ -202,8 +202,7 @@ pipeline {
                                         env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                                         env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
                                         try {
-                                              //error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
-                                              echo "Creating experiment ${caseName} on ${Machine} SKIPPING"
+                                              error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
                                         } catch (Exception error_create) {
                                             sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
                                             error("Case ${caseName} failed to create experment directory")
