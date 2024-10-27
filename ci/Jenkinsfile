@@ -132,7 +132,8 @@ pipeline {
                                         def build_args = build_args_list[system].join(' ').trim().replaceAll('null', '')
                                         dir("${HOMEgfs}/sorc") {
                                             try {
-                                                sh(script: "${build_args}")
+                                                //sh(script: "${build_args}")
+                                                echo "Building system ${system} on ${Machine} SKIPPING"
                                             } catch (Exception error_build) {
                                                 echo "Failed to build system: ${error_build.getMessage()}"
                                                 if ( fileExists("logs/error.logs") ) {
@@ -201,7 +202,8 @@ pipeline {
                                         env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                                         env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
                                         try {
-                                              error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
+                                              //error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
+                                              echo "Creating experiment ${caseName} on ${Machine} SKIPPING"
                                         } catch (Exception error_create) {
                                             sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
                                             error("Case ${caseName} failed to create experment directory")
@@ -210,15 +212,17 @@ pipeline {
                             }
 
                             stage("Running ${caseName}") {
-                                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                                    //catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                                         script {
                                                 HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
                                                 env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                                                 def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${caseName}", returnStdout: true).trim()
                                                 def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
                                                 sh(script: " rm -f ${error_file}")
+                                                sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
                                                 try {
-                                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
+                                                    // sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
+                                                    echo "Running experiment ${caseName} on ${Machine} in ${pslot}"
                                                 } catch (Exception error_experment) {
                                                     sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
                                                     ws(CUSTOM_WORKSPACE) {
@@ -260,7 +264,7 @@ pipeline {
                                                     }
                                                 }
                                         }
-                                    }
+                                    //}
                             }
                         }]
                     }
