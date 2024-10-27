@@ -174,6 +174,7 @@ pipeline {
                                     }
                                     if (system == 'gfs') {
                                         cases = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
+                                        echo "Cases to run: ${cases}"
                                     }
                                }
                             }
@@ -196,6 +197,7 @@ pipeline {
                             stage("Create ${caseName}") {
                                 script {
                                         sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp")
+                                        sh(script: "ls -lrth ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr")
                                         def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp"
                                         build_system = yaml_case.experiment.system
                                         def HOMEgfs = "${CUSTOM_WORKSPACE}/${build_system}"   // local HOMEgfs is used to populate the XML on per system basis
