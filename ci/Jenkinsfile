@@ -5,7 +5,7 @@ def cases = ''
 def GH = 'none'
 // Location of the custom workspaces for each machine in the CI system.  They are persitent for each iteration of the PR.
 def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaea: 'Gaea']
-def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/stmp/CI/HERCULES', gaea: '/gpfs/f5/epic/proj-shared/global/CI']
+def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/global/CI/HERCULES', gaea: '/gpfs/f5/epic/proj-shared/global/CI']
 def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
 def STATUS = 'Passed'
 
@@ -101,9 +101,10 @@ pipeline {
                 stages {
                     stage('Building') {
                         steps {
-                           catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                          catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             script {
                                 def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}" // local HOMEgfs is used to build the system on per system basis under the custome workspace for each buile system
+                                env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                                 sh(script: "mkdir -p ${HOMEgfs}")
                                 ws(HOMEgfs) {
                                     if (fileExists("${HOMEgfs}/sorc/BUILT_semaphor")) { // if the system is already built, skip the build in the case of re-runs
@@ -172,9 +173,10 @@ pipeline {
                                     }
                                     if (system == 'gfs') {
                                         cases = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
+                                        echo "Cases to run: ${cases}"
                                     }
                                }
-                           }
+                            }
                           }
                         }
                     }
@@ -192,32 +194,34 @@ pipeline {
                     def parallelStages = cases.collectEntries { caseName ->
                         ["${caseName}": {
                             stage("Create ${caseName}") {
-                                    catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                                        script {
-                                                sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp")
-                                                def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp"
-                                                system = yaml_case.experiment.system
-                                                def HOMEgfs = "${CUSTOM_WORKSPACE}/${system}"   // local HOMEgfs is used to populate the XML on per system basis
-                                                env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
-                                                try {
-                                                    error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
-                                                } catch (Exception error_create) {
-                                                    sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
-                                                    error("Case ${caseName} failed to create experment directory")
-                                                }
+                                script {
+                                        sh(script: "sed -n '/{.*}/!p' ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml > ${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp")
+                                        def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp"
+                                        def build_system = yaml_case.experiment.system
+                                        def HOMEgfs = "${CUSTOM_WORKSPACE}/${build_system}"   // local HOMEgfs is used to populate the XML on per system basis
+                                        env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
+                                        env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
+                                        try {
+                                              error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
+                                        } catch (Exception error_create) {
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
+                                            error("Case ${caseName} failed to create experment directory")
                                         }
-                                }
+                                     }
                             }
 
                             stage("Running ${caseName}") {
                                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                                         script {
                                                 HOMEgfs = "${CUSTOM_WORKSPACE}/gfs"  // common HOMEgfs is used to launch the scripts that run the experiments
+                                                env.HOME_GFS = HOMEgfs // setting path in HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                                                 def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${caseName}", returnStdout: true).trim()
                                                 def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
                                                 sh(script: " rm -f ${error_file}")
+                                                def yaml_case = readYaml file: "${CUSTOM_WORKSPACE}/gfs/ci/cases/pr/${caseName}.yaml.tmp"
+                                                def build_system = yaml_case.experiment.system
                                                 try {
-                                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${system}")
+                                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${build_system}")
                                                 } catch (Exception error_experment) {
                                                     sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
                                                     ws(CUSTOM_WORKSPACE) {
@@ -268,11 +272,11 @@ pipeline {
             }
         }
 
-
         stage( '5. FINALIZE' ) {
             agent { label NodeName[machine].toLowerCase() }
             steps {
                 script {
+                    env.HOME_GFS = "${CUSTOM_WORKSPACE}/gfs" // setting path to HOMEgfs as an environment variable HOME_GFS for some systems that using the path in its .bashrc
                     sh(script: """
                         labels=\$(${GH} pr view ${env.CHANGE_ID} --repo ${repo_url} --json labels --jq '.labels[].name')
                         for label in \$labels; do

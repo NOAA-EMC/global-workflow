@@ -57,7 +57,8 @@ class Tasks:
             self.nmem = int(self._base['NMEM_ENS_GFS'])
         else:
             self.nmem = int(self._base['NMEM_ENS'])
-        self._base['cycle_interval'] = to_timedelta(f'{self._base["assim_freq"]}H')
+        self._base['interval_gdas'] = to_timedelta(f'{self._base["assim_freq"]}H')
+        self._base['interval_gfs'] = to_timedelta(f'{self._base["INTERVAL_GFS"]}H')
 
         self.n_tiles = 6  # TODO - this needs to be elsewhere
 

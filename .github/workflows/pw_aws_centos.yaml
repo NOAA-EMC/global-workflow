@@ -1,4 +1,4 @@
-name: gw-ci-orion
+name: gw-ci-aws-centos
 
 on: [workflow_dispatch]
 
@@ -15,28 +15,32 @@ on: [workflow_dispatch]
 #         └── ${pslot}
 env:
   TEST_DIR: ${{ github.workspace }}/${{ github.run_id }}
-  MACHINE_ID: orion
+  MACHINE_ID: noaacloud
 
 jobs:
-  checkout-build-link:
-    runs-on: [self-hosted, orion-ready]
+  checkout:
+    runs-on: [self-hosted, aws, parallelworks, centos]
     timeout-minutes: 600
 
     steps:
-    - name: Checkout global-workflow
-      uses: actions/checkout@v3
-      with:
-        path: ${{ github.run_id }}/HOMEgfs  # This path needs to be relative
 
-    - name: Checkout components
-      run: |
-        cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
-        ./checkout.sh -c -g  # Options e.g. -u can be added late
+    - name: Checkout global-workflow
+      uses: actions/checkout@v4
+      with:
+        path: ${{ github.run_id }}/HOMEgfs
+        submodules: 'recursive'
+        ref: ${{ github.event.pull_request.head.ref }}
+
+  build-link:      
+    runs-on: [self-hosted, aws, parallelworks, centos]
+    needs: checkout
+
+    steps:
 
     - name: Build components
       run: |
         cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
-        ./build_all.sh
+        ./build_all.sh -j 8
 
     - name: Link artifacts
       run: |
@@ -44,43 +48,42 @@ jobs:
         ./link_workflow.sh
 
   create-experiments:
-    needs: checkout-build-link
-    runs-on: [self-hosted, orion-ready]
+    needs: checkout
+    runs-on: [self-hosted, aws, parallelworks, centos]
     strategy:
       matrix:
-        case: ["C48_S2S", "C96_atm3DVar"]
+        case: ["C48_ATM"]
 
     steps:
       - name: Create Experiments ${{ matrix.case }}
         env:
-          HOMEgfs_PR: ${{ env.TEST_DIR }}/HOMEgfs
           RUNTESTS: ${{ env.TEST_DIR }}/RUNTESTS
           pslot: ${{ matrix.case }}.${{ github.run_id }}
         run: |
+          mkdir -p ${{ env.RUNTESTS }}
           cd ${{ env.TEST_DIR }}/HOMEgfs
           source workflow/gw_setup.sh
-          source ci/platforms/orion.sh
-          ./ci/scripts/create_experiment.py --yaml ci/cases/${{ matrix.case }}.yaml --dir ${{ env.HOMEgfs_PR }}
+          source ci/platforms/config.noaacloud
+          ./workflow/create_experiment.py --yaml ci/cases/pr/${{ matrix.case }}.yaml --overwrite
 
   run-experiments:
     needs: create-experiments
-    runs-on: [self-hosted, orion-ready]
+    runs-on: [self-hosted, aws, parallelworks, centos]
     strategy:
       max-parallel: 2
       matrix:
-        case: ["C48_S2S", "C96_atm3DVar"]
+        case: ["C48_ATM"]
     steps:
       - name: Run Experiment ${{ matrix.case }}
         run: |
           cd ${{ env.TEST_DIR }}/HOMEgfs
-          ./ci/scripts/run-check_ci.sh ${{ env.TEST_DIR }} ${{ matrix.case }}.${{ github.run_id }}
+          ./ci/scripts/run-check_ci.sh ${{ env.TEST_DIR }} ${{ matrix.case }}.${{ github.run_id }} HOMEgfs
 
   clean-up:
     needs: run-experiments
-    runs-on: [self-hosted, orion-ready]
+    runs-on: [self-hosted, aws, parallelworks, centos]
     steps:
       - name: Clean-up
         run: |
           cd ${{ github.workspace }}
           rm -rf ${{ github.run_id }}
-

@@ -90,9 +90,9 @@ Optimizing the global workflow on S4
 
 The S4 cluster is relatively small and so optimizations are recommended to improve cycled runtimes. Please contact Innocent Souopgui (innocent.souopgui@noaa.gov) if you are planning on running a cycled experiment on this system to obtain optimized configuration files.
 
-========================================
+==================================================
 Stacksize on R&Ds (Hera, Orion, Hercules, Jet, S4)
-========================================
+==================================================
 
 Some GFS components, like the UPP, need an unlimited stacksize. Add the following setting into your appropriate .*rc file to support these components:
 

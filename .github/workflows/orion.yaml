@@ -9,7 +9,7 @@ on:
 jobs:
 
   getlabels:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       labels: ${{ steps.id.outputs.labels }}
     steps:
@@ -27,7 +27,7 @@ jobs:
 
   passed:
     if: contains( needs.getlabels.outputs.labels, 'CI-Orion-Passed') && github.event.pull_request.merged
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs:
      - getlabels
 

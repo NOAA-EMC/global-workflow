@@ -21,7 +21,7 @@ jobs:
     permissions:
       pull-requests: 'write'
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Build and deploy documentation
 
     steps:
