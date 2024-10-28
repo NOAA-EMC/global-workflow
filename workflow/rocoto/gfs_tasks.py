@@ -621,17 +621,11 @@ class GFSTasks(Tasks):
     def esnowrecen(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_prepsnowcover'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_snowanl'}
         deps.append(rocoto.add_dependency(dep_dict))
-
-        deps2 = []
-        dep_dict = {'type': 'taskvalid', 'name': f'{self.run.replace("enkf","")}_prepsnowcover', 'condition': 'not'}
-        deps2.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
-        deps2.append(rocoto.add_dependency(dep_dict))
-        deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
-
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('esnowrecen')
         task_name = f'{self.run}_esnowrecen'
