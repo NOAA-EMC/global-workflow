@@ -53,8 +53,6 @@ class Stage(Task):
 
         if stage_dict.DO_DOWNLOAD_ICS is True:
             # Download ICs from HPSS to ICSDIR
-            self.tar_cmd = "htar"
-            self.hsi = Hsi()
             self.htar = Htar()
             self.xvf = self.htar.xvf
             self.xvf(stage_dict.HPSSICARCH + "/" + YYYYMMDDHH + ".tar")
