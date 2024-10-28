@@ -4,12 +4,11 @@ import glob
 import os
 from logging import getLogger
 from typing import Any, Dict, List
-import subprocess
 
 from wxflow import (AttrDict, FileHandler, Task, cast_strdict_as_dtypedict,
                     logit, parse_j2yaml, strftime, to_YMD, to_YMDH,
                     add_to_datetime, to_timedelta, Template, TemplateConstants,
-                    Hsi, Htar)
+                    Hsi, Htar, which)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -62,10 +61,14 @@ class Stage(Task):
 
         if stage_dict.DO_REPAIR_REPLAY and stage_dict.DO_DOWNLOAD_ANLY is True:
             # Download f03 replay analysis
-            aws_cmd = "aws s3 cp --no-sign-request"
+            aws_cmd = which("aws")
+            aws_cmd.add_default_arg("s3")
+            aws_cmd.add_default_arg("cp")
+            aws_cmd.add_default_arg("--no-sign-request")
             aws_url = "s3://noaa-ufs-gefsv13replay-pds/"
-            subprocess.run(aws_cmd + " " + aws_url + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSPRS.GrbF03 ./", shell=True)
-            subprocess.run(aws_cmd + " " + aws_url + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSFLX.GrbF03 ./", shell=True)
+
+            aws_cmd(aws_url + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSPRS.GrbF03", "./")
+            aws_cmd(aws_url + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSFLX.GrbF03", "./")
 
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
