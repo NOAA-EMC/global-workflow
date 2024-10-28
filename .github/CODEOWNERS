@@ -208,3 +208,6 @@ ush/python/pygfs/ufswm/gfs.py @aerorahul
 ush/python/pygfs/ufswm/ufs.py @aerorahul
 ush/python/pygfs/utils/__init__.py @aerorahul
 ush/python/pygfs/utils/marine_da_utils.py @guillaumevernieres @AndrewEichmann-NOAA
+
+# Specific workflow scripts
+workflow/generate_workflows.sh @DavidHuber-NOAA

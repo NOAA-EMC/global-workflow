@@ -7,14 +7,13 @@ Entry point for setting up an experiment in the global-workflow
 import os
 import glob
 import shutil
-import warnings
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS
 
 from hosts import Host
 
 from wxflow import parse_j2yaml
 from wxflow import AttrDict
-from wxflow import to_datetime, to_timedelta, datetime_to_YMDH
+from wxflow import to_datetime, datetime_to_YMDH
 
 
 _here = os.path.dirname(__file__)
@@ -303,7 +302,7 @@ def query_and_clean(dirname, force_clean=False):
     if os.path.exists(dirname):
         print(f'\ndirectory already exists in {dirname}')
         if force_clean:
-            overwrite = True
+            overwrite = "YES"
             print(f'removing directory ........ {dirname}\n')
         else:
             overwrite = input('Do you wish to over-write [y/N]: ')
