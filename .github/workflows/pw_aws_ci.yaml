@@ -15,9 +15,9 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 'Pull Request Number'
+        description: 'Pull Request Number (use 0 for non-PR)'
         required: true
-        default: ''
+        default: '0'
       os:
         description: 'Operating System'
         required: true
