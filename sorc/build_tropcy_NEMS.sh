@@ -33,7 +33,7 @@ export LIBS_SUP="${W3EMC_LIBd} ${W3NCO_LIBd}"
 echo lset
 echo lset
  export LIBS_REL="${W3NCO_LIB4}"
-export LIBS_REL="${NEMSIOGFS_LIB} ${NEMSIO_LIB} ${LIBS_REL} ${SIGIO_LIB} ${BACIO_LIB4} ${SP_LIBd}"
+export LIBS_REL="${NEMSIO_LIB} ${LIBS_REL} ${SIGIO_LIB} ${BACIO_LIB4} ${SP_LIBd}"
 export LIBS_SIG="${SIGIO_INC}"
 export LIBS_SYN_GET="${W3NCO_LIB4}"
 export LIBS_SYN_MAK="${W3NCO_LIB4} ${BACIO_LIB4}"

@@ -64,6 +64,7 @@ def main():
     steps = steps + wav_steps if _base.get('DO_WAVE', 'NO') == 'YES' else steps
     steps = steps + wav_steps_gempak if _base.get('DO_GEMPAK', 'NO') == 'YES' else steps
     steps = steps + wav_steps_awips if _base.get('DO_AWIPS', 'NO') == 'YES' else steps
+    steps = steps + ['wdqms'] if _base.get('DO_WDQMS', 'NO') == 'YES' else steps
 
     dict_configs = wfu.source_configs(configs, steps)
 
@@ -243,6 +244,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_wafs = base.get('WAFSF', 'NO').upper()
     do_metp = base.get('DO_METP', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
+    do_wdqms = base.get('DO_WDQMS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     reservation = base.get('RESERVATION', 'NONE').upper()
@@ -252,6 +254,8 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
 
     if cdump in ['gdas']:
         tasks += ['analdiag']
+        if do_wdqms in ['Y', 'YES']:
+            tasks += ['wdqms']
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
         tasks += ['gldas']
     if cdump in ['gdas'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GDAS', 'BOTH']:
@@ -411,6 +415,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     do_wafs = base.get('WAFSF', 'NO').upper()
     do_metp = base.get('DO_METP', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
+    do_wdqms = base.get('DO_WDQMS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
@@ -521,6 +526,18 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         task = wfu.create_wf_task('analdiag', cdump=cdump, envar=envars, dependency=dependencies2)
 
         dict_tasks[f'{cdump}analdiag'] = task
+
+    # wdqms
+    if cdump in ['gdas'] and do_wdqms in ['Y', 'YES']:
+        deps1 = []
+        dep_dict = {'type': 'task', 'name': f'{cdump}analdiag'}
+        deps1.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
+        deps1.append(rocoto.add_dependency(dep_dict))
+        dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
+
+        task = wfu.create_wf_task('wdqms', cdump=cdump, envar=envars, dependency=dependencies1)
+        dict_tasks[f'{cdump}wdqms'] = task
 
     # gldas
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:

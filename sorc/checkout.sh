@@ -26,7 +26,7 @@ echo $topdir
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    git clone --recursive --branch GFS.v16.3.0 https://github.com/ufs-community/ufs-weather-model.git fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    git clone --recursive --branch GFS.v16.3.1 https://github.com/ufs-community/ufs-weather-model.git fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
@@ -35,7 +35,7 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
-    git clone --recursive --branch gfsda.v16.3.7 https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
+    git clone --recursive --branch gfsda.v16.3.19 https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
     git submodule update --init
     cd ${topdir}
@@ -64,7 +64,7 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone ${gtg_git_args:-} --branch upp_v8.2.0 https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
+    git clone ${gtg_git_args:-} --branch upp_v8.3.0 https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     ################################################################################
     # checkout_gtg
     ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
@@ -87,7 +87,7 @@ if [[ ${checkout_wafs} == "YES" ]] ; then
   echo EMC_gfs_wafs checkout ...
   if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
-    git clone --recursive --branch gfs_wafs.v6.3.1 https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
+    git clone --recursive --branch gfs_wafs.v6.3.3 https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd ${topdir}
   else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
