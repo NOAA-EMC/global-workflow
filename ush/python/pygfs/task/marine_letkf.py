@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import f90nml
+import pygfs.utils.marine_da_utils as mdau
 from logging import getLogger
 import os
 from pygfs.task.analysis import Analysis
@@ -161,25 +162,13 @@ class MarineLETKF(Analysis):
         exec_cmd_gridgen.add_default_arg(self.task_config.GRIDGEN_EXEC)
         exec_cmd_gridgen.add_default_arg(self.task_config.GRIDGEN_YAML)
 
-        try:
-            logger.debug(f"Executing {exec_cmd_gridgen}")
-            exec_cmd_gridgen()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd_gridgen}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd_gridgen}")
+        mdau.run(exec_cmd_gridgen)
 
         exec_cmd_letkf = Executable(self.task_config.APRUN_MARINEANLLETKF)
         for letkf_exec_arg in self.task_config.letkf_exec_args:
             exec_cmd_letkf.add_default_arg(letkf_exec_arg)
 
-        try:
-            logger.debug(f"Executing {exec_cmd_letkf}")
-            exec_cmd_letkf()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd_letkf}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd_letkf}")
+        mdau.run(exec_cmd_letkf)
 
     @logit(logger)
     def finalize(self):
