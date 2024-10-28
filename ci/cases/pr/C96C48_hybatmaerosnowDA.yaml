@@ -13,11 +13,12 @@ arguments:
   idate: 2021122012
   edate: 2021122100
   nens: 2
-  gfs_cyc: 1
+  interval: 24
   start: cold
   yaml: {{ HOMEgfs }}/ci/cases/yamls/atmaerosnowDA_defaults_ci.yaml
 
 skip_ci_on_hosts:
+  - wcoss2
   - orion
   - gaea
   - hercules

@@ -24,7 +24,7 @@ device="nc | ${metaname}"
 
 export COMIN="gfs.multi"
 mkdir "${COMIN}"
-for cycle in $(seq -f "%02g" -s ' ' 0  "${STEP_GFS}" "${cyc}"); do
+for cycle in $(seq -f "%02g" -s ' ' 0  "${INTERVAL_GFS}" "${cyc}"); do
     YMD=${PDY} HH=${cycle} GRID="1p00" declare_from_tmpl gempak_dir:COM_ATMOS_GEMPAK_TMPL
     for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
         file_out="${COMIN}/$(basename "${file_in}")"
