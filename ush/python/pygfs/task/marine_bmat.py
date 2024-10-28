@@ -43,7 +43,8 @@ class MarineBMat(Task):
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
+                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES))
             }
         )
 
