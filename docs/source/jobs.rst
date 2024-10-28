@@ -8,7 +8,7 @@ GFS Configuration
 
 The sequence of jobs that are run for an end-to-end (analysis+forecast+post processing+verification) GFS configuration using the Global Workflow is shown above. The system utilizes a collection of scripts that perform the tasks for each step.
 
-For any cycle the system consists of two suites -- the "gdas" suite which provides the initial guess fields, and the "gfs" suite which creates the initial conditions and forecast of the system. As with the operational system, the gdas runs for each cycle (00, 06, 12, and 18 UTC), however, to save time and space in experiments, the gfs (right side of the diagram) is initially setup to run for only the 00 UTC cycle (See the "run GFS this cycle?" portion of the diagram). The option to run the GFS for all four cycles is available (see the ``gfs_cyc`` variable in configuration file).
+For any cycle the system consists of two suites -- the "gdas" suite which provides the initial guess fields, and the "gfs" suite which creates the initial conditions and forecast of the system.
 
 An experimental run is different from operations in the following ways:
 

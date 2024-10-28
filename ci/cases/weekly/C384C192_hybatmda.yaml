@@ -14,6 +14,6 @@ arguments:
   idate: 2023040118
   edate: 2023040200
   nens: 2
-  gfs_cyc: 1
+  interval: 24
   start: cold
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml
