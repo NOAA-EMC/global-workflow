@@ -60,7 +60,7 @@ class Stage(Task):
             self.xvf = self.htar.xvf
             self.xvf(stage_dict.HPSSICARCH + "/" + YYYYMMDDHH + ".tar")
 
-        if stage_dict.DO_REPAIR_REPLAY is True:
+        if stage_dict.DO_REPAIR_REPLAY and stage_dict.DO_DOWNLOAD_ANLY is True:
             # Download f03 replay analysis
             aws_cmd = "aws s3 cp --no-sign-request"
             aws_url = "s3://noaa-ufs-gefsv13replay-pds/"

@@ -8,6 +8,13 @@ if [[ "${DO_DOWNLOAD_ICS}" == "YES" ]]; then
   export ICSDIR=${DATA}
 fi
 
+if [[ "${DO_REPAIR_REPLAY}" == "YES" ]]; then
+  # Since replay analysis will download to DATA if DO_DOWNLOAD_ANLY is YES, set ICSDIR to DATA
+  if [[ "${DO_DOWNLOAD_ANLY}" == "YES" ]]; then
+    export ANLYDIR=${DATA}
+  fi
+fi
+
 # Execute staging
 "${SCRgfs}/exglobal_stage_ic.py"
 err=$?

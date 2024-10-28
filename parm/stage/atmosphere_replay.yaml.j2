@@ -3,5 +3,5 @@ atmosphere_replay:
         {% set COMOUT_ATMOS_INPUT_MEM = COMOUT_ATMOS_INPUT_MEM_list[0] %}
         - "{{ COMOUT_ATMOS_INPUT_MEM }}"
     copy:
-        - ["{{ ICSDIR }}/GFSPRS.GrbF03", "{{ COMOUT_ATMOS_INPUT_MEM }}"]
-        - ["{{ ICSDIR }}/GFSFLX.GrbF03", "{{ COMOUT_ATMOS_INPUT_MEM }}"]
+        - ["{{ ANLYDIR }}/GFSPRS.GrbF03", "{{ COMOUT_ATMOS_INPUT_MEM }}"]
+        - ["{{ ANLYDIR }}/GFSFLX.GrbF03", "{{ COMOUT_ATMOS_INPUT_MEM }}"]

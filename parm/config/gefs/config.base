@@ -337,6 +337,9 @@ export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs foreca
 export DO_DOWNLOAD_ICS="YES" # Set to YES to download ICs from HPSS, set to NO to copy ICs locally
 export HPSSICARCH="/NCEPDEV/emc-marine/2year/Neil.Barton/ICS/HR4/C384mx025" # ICs directory on HPSS
 
+export DO_DOWNLOAD_ANLY="YES" # Set to YES to download f03 replay analysis from AWS, set to NO to copy f03 analysis locally
+export ANLYDIR="" # f03 replay analysis directory on disk. May be left blank if DO_DOWNLOAD_ANLY is set to YES
+
 export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
 
 # Number of regional collectives to create soundings for
