@@ -1,3 +1,5 @@
+.. _experiment-setup:
+
 ================
 Experiment Setup
 ================
@@ -32,7 +34,7 @@ The following command examples include variables for reference but users should 
 ::
 
    cd workflow
-   ./setup_expt.py gfs forecast-only --idate $IDATE --edate $EDATE [--app $APP] [--start $START] [--gfs_cyc $GFS_CYC] [--resdetatmos $RESDETATMOS] [--resdetocean $RESDETOCEAN]
+   ./setup_expt.py gfs forecast-only --idate $IDATE --edate $EDATE [--app $APP] [--start $START] [--interval $INTERVAL_GFS] [--resdetatmos $RESDETATMOS] [--resdetocean $RESDETOCEAN]
      [--pslot $PSLOT] [--configdir $CONFIGDIR] [--comroot $COMROOT] [--expdir $EXPDIR]
 
 where:
@@ -51,12 +53,12 @@ where:
 
    * ``$START`` is the start type (warm or cold [default])
    * ``$IDATE`` is the initial start date of your run (first cycle CDATE, YYYYMMDDCC)
-   * ``$EDATE`` is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete
+   * ``$EDATE`` is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete [default: $IDATE]
    * ``$PSLOT`` is the name of your experiment [default: test]
    * ``$CONFIGDIR`` is the path to the ``/config`` folder under the copy of the system you're using [default: $TOP_OF_CLONE/parm/config/]
    * ``$RESDETATMOS`` is the resolution of the atmosphere component of the system (i.e. 768 for C768) [default: 384]
    * ``$RESDETOCEAN`` is the resolution of the ocean component of the system (i.e. 0.25 for 1/4 degree) [default: 0.; determined based on atmosphere resolution]
-   * ``$GFS_CYC`` is the forecast frequency (0 = none, 1 = 00z only [default], 2 = 00z & 12z, 4 = all cycles)
+   * ``$INTERVAL_GFS`` is the forecast interval in hours [default: 6]
    * ``$COMROOT`` is the path to your experiment output directory. Your ``ROTDIR`` (rotating com directory) will be created using ``COMROOT`` and ``PSLOT``. [default: $HOME (but do not use default due to limited space in home directories normally, provide a path to a larger scratch space)]
    * ``$EXPDIR`` is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you. [default: $HOME]
 
@@ -67,7 +69,7 @@ Atm-only:
 ::
 
    cd workflow
-   ./setup_expt.py gfs forecast-only --pslot test --idate 2020010100 --edate 2020010118 --resdetatmos 384 --gfs_cyc 4 --comroot /some_large_disk_area/Joe.Schmo/comroot --expdir /some_safe_disk_area/Joe.Schmo/expdir
+   ./setup_expt.py gfs forecast-only --pslot test --idate 2020010100 --edate 2020010118 --resdetatmos 384 --interval 6 --comroot /some_large_disk_area/Joe.Schmo/comroot --expdir /some_safe_disk_area/Joe.Schmo/expdir
 
 Coupled:
 
@@ -144,7 +146,8 @@ The following command examples include variables for reference but users should 
 ::
 
    cd workflow
-   ./setup_expt.py gfs cycled --idate $IDATE --edate $EDATE [--app $APP] [--start $START] [--gfs_cyc $GFS_CYC]
+   ./setup_expt.py gfs cycled --idate $IDATE --edate $EDATE [--app $APP] [--start $START]
+     [--interval $INTERVAL_GFS] [--sdate_gfs $SDATE_GFS]
      [--resdetatmos $RESDETATMOS] [--resdetocean $RESDETOCEAN] [--resensatmos $RESENSATMOS] [--nens $NENS] [--run $RUN]
      [--pslot $PSLOT] [--configdir $CONFIGDIR] [--comroot $COMROOT] [--expdir $EXPDIR] [--icsdir $ICSDIR]
 
@@ -163,9 +166,10 @@ where:
      - S2SWA: atm-ocean-ice-wave-aerosols
 
    * ``$IDATE`` is the initial start date of your run (first cycle CDATE, YYYYMMDDCC)
-   * ``$EDATE`` is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete
+   * ``$EDATE`` is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete [default: $IDATE]
    * ``$START`` is the start type (warm or cold [default])
-   * ``$GFS_CYC`` is the forecast frequency (0 = none, 1 = 00z only [default], 2 = 00z & 12z, 4 = all cycles)
+   * ``$INTERVAL_GFS`` is the forecast interval in hours [default: 6]
+   * ``$SDATE_GFS`` cycle to begin GFS forecast [default: $IDATE + 6]
    * ``$RESDETATMOS`` is the resolution of the atmosphere component of the deterministic forecast [default: 384]
    * ``$RESDETOCEAN`` is the resolution of the ocean component of the deterministic forecast [default: 0.; determined based on atmosphere resolution]
    * ``$RESENSATMOS`` is the resolution of the atmosphere component of the ensemble forecast [default: 192]
@@ -177,14 +181,12 @@ where:
    * ``$EXPDIR`` is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you. [default: $HOME]
    * ``$ICSDIR`` is the path to the ICs for your run if generated separately. [default: None]
 
-.. [#]  More Coupled configurations in cycled mode are currently under development and not yet available
-
 Example:
 
 ::
 
    cd workflow
-   ./setup_expt.py gfs cycled --pslot test --configdir /home/Joe.Schmo/git/global-workflow/parm/config --idate 2020010100 --edate 2020010118 --comroot /some_large_disk_area/Joe.Schmo/comroot --expdir /some_safe_disk_area/Joe.Schmo/expdir --resdetatmos 384 --resensatmos 192 --nens 80 --gfs_cyc 4
+   ./setup_expt.py gfs cycled --pslot test --configdir /home/Joe.Schmo/git/global-workflow/parm/config --idate 2020010100 --edate 2020010118 --comroot /some_large_disk_area/Joe.Schmo/comroot --expdir /some_safe_disk_area/Joe.Schmo/expdir --resdetatmos 384 --resensatmos 192 --nens 80 --interval 6
 
 Example ``setup_expt.py`` on Orion:
 
