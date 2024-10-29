@@ -344,11 +344,11 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
           if [ "$ifirst" = 'yes' ]; then
             echo "#!/bin/sh" > cmdmfile.$nfile
             echo "$nfile cmdmfile.$nfile" >> cmdmprog
-            chmod 744 cmdmfile.$nfile
+            chmod 744 "cmdmfile.$nfile"
           fi
-          echo $line >> cmdmfile.$nfile
+          echo $line >> "cmdmfile.$nfile"
           nfile=$(( nfile + 1 ))
-          if [ $nfile -eq $NTASKS ]; then
+          if [ $nfile -eq "$NTASKS" ]; then
             nfile=0
             ifirst='no'
           fi
@@ -392,7 +392,7 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
       echo ' '
       set_trace
       err=4; export err;${errchk}
-      exit $err
+      exit "$err"
     fi
 
     rm -f out_grd.* # Remove large binary grid output files
@@ -400,7 +400,7 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
     cd $DATA
 
     FHINCG=$(( DTFLD_WAV / 3600 ))
-    if [ $fhr = $fhrg ]
+    if [ "$fhr" = "$fhrg" ]
     then
 # Check if grib2 file created
       ENSTAG=""
@@ -416,16 +416,16 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
         echo ' '
         set_trace
         err=5; export err;${errchk}
-        exit $err
+        exit "$err"
       fi
-      if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
+      if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ "$fhr" -lt $FHMAX_HF_WAV ]; then
         FHINCG=$FHOUT_HF_WAV
       else
         FHINCG=$FHOUT_WAV
       fi
       fhrg=$((fhr+FHINCG))
     fi
-    echo $fhrg
+    echo "$fhrg"
 
     fhr=$fhrg #loop with out_grd stride
 
