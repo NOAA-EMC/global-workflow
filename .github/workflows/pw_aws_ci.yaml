@@ -1,7 +1,4 @@
-name: gw-ci-aws-centos
-
-on: [workflow_dispatch]
-
+name: gw-ci-aws
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
 # 2. RUNTESTS: A directory containing EXPDIR and COMROT for experiments
@@ -10,33 +7,73 @@ on: [workflow_dispatch]
 # ├── HOMEgfs
 # └── RUNTESTS
 #     ├── COMROT
-#     │   └── ${pslot}
+#     │   └── ${pslot}
 #     └── EXPDIR
 #         └── ${pslot}
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull Request Number (use 0 for non-PR)'
+        required: true
+        default: '0'
+      os:
+        description: 'Operating System'
+        required: true
+        type: choice
+        options:
+          - rocky
+          - centos
+
 env:
   TEST_DIR: ${{ github.workspace }}/${{ github.run_id }}
   MACHINE_ID: noaacloud
 
 jobs:
-  checkout:
-    runs-on: [self-hosted, aws, parallelworks, centos]
-    timeout-minutes: 600
-
+  fetch-branch:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
+    outputs:
+      branch: ${{ steps.get-branch.outputs.branch }}
     steps:
+    - name: Fetch branch name for PR
+      id: get-branch
+      run: |
+        pr_number=${{ github.event.inputs.pr_number }}
+        repo=${{ github.repository }}
+        if [ "$pr_number" -eq "0" ]; then
+          branch=${{ github.event.inputs.ref }}
+        else
+          branch=$(gh pr view $pr_number --repo $repo --json headRefName --jq '.headRefName')
+        fi
+        echo "::set-output name=branch::$branch"
 
+  checkout:
+    needs: fetch-branch
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
+    timeout-minutes: 600
+    steps:
     - name: Checkout global-workflow
       uses: actions/checkout@v4
       with:
         path: ${{ github.run_id }}/HOMEgfs
         submodules: 'recursive'
-        ref: ${{ github.event.pull_request.head.ref }}
+        ref: ${{ needs.fetch-branch.outputs.branch }}
 
   build-link:      
-    runs-on: [self-hosted, aws, parallelworks, centos]
     needs: checkout
-
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
     steps:
-
     - name: Build components
       run: |
         cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
@@ -48,12 +85,15 @@ jobs:
         ./link_workflow.sh
 
   create-experiments:
-    needs: checkout
-    runs-on: [self-hosted, aws, parallelworks, centos]
+    needs: build-link
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
     strategy:
       matrix:
         case: ["C48_ATM"]
-
     steps:
       - name: Create Experiments ${{ matrix.case }}
         env:
@@ -68,9 +108,12 @@ jobs:
 
   run-experiments:
     needs: create-experiments
-    runs-on: [self-hosted, aws, parallelworks, centos]
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
     strategy:
-      max-parallel: 2
       matrix:
         case: ["C48_ATM"]
     steps:
@@ -81,9 +124,13 @@ jobs:
 
   clean-up:
     needs: run-experiments
-    runs-on: [self-hosted, aws, parallelworks, centos]
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
     steps:
-      - name: Clean-up
+      - name: Clean up workspace
         run: |
-          cd ${{ github.workspace }}
-          rm -rf ${{ github.run_id }}
+          echo "Cleaning up workspace"
+          rm -rf ${{ env.TEST_DIR }}
