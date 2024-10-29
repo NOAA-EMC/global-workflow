@@ -12,8 +12,7 @@ from wxflow import (AttrDict,
                     logit,
                     parse_j2yaml,
                     to_timedelta,
-                    to_YMDH,
-                    WorkflowException)
+                    to_YMDH)
 
 logger = getLogger(__name__.split('.')[-1])
 
