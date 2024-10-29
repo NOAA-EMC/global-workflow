@@ -348,7 +348,7 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
           fi
           echo $line >> "cmdmfile.$nfile"
           nfile=$(( nfile + 1 ))
-          if [ $nfile -eq "$NTASKS" ]; then
+          if [ "$nfile" -eq "$NTASKS" ]; then
             nfile=0
             ifirst='no'
           fi
