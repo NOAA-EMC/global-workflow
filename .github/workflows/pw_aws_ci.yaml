@@ -31,24 +31,29 @@ env:
   MACHINE_ID: noaacloud
 
 jobs:
+
   fetch-branch:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
     outputs:
       branch: ${{ steps.get-branch.outputs.branch }}
+      repo: ${{ steps.get-branch.outputs.repo }}
     steps:
-    - name: Fetch branch name for PR
+    - name: Fetch branch name and repo for PR
       id: get-branch
       run: |
         pr_number=${{ github.event.inputs.pr_number }}
         repo=${{ github.repository }}
         if [ "$pr_number" -eq "0" ]; then
           branch=${{ github.event.inputs.ref }}
+          repo_url="https://github.com/${{ github.repository_owner }}/${{ github.repository }}.git"
         else
           branch=$(gh pr view $pr_number --repo $repo --json headRefName --jq '.headRefName')
+          repo_url=$(gh pr view $pr_number --repo $repo --json headRepository --jq '.headRepository.url')
         fi
         echo "::set-output name=branch::$branch"
+        echo "::set-output name=repo::$repo_url"
 
   checkout:
     needs: fetch-branch
@@ -64,6 +69,7 @@ jobs:
       with:
         path: ${{ github.run_id }}/HOMEgfs
         submodules: 'recursive'
+        repository: ${{ needs.fetch-branch.outputs.repo }}
         ref: ${{ needs.fetch-branch.outputs.branch }}
 
   build-link:      
