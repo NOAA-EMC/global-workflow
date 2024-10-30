@@ -20,5 +20,5 @@ if __name__ == '__main__':
     # Create an instance of the MarineBMat task
     marineBMat = MarineBMat(config)
     marineBMat.initialize()
-    marineBMat.execute()
+    marineBMat.execute(config.APRUN_MARINEBMAT)
     marineBMat.finalize()

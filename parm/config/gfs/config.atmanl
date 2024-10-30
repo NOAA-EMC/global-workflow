@@ -6,7 +6,8 @@
 echo "BEGIN: config.atmanl"
 
 export JCB_BASE_YAML="${PARMgfs}/gdas/atm/jcb-base.yaml.j2"
-export JCB_ALGO_YAML=@JCB_ALGO_YAML@
+export JCB_ALGO_YAML_VAR=@JCB_ALGO_YAML_VAR@
+export JCB_ALGO_FV3INC="fv3jedi_fv3inc_variational"
 
 export STATICB_TYPE=@STATICB_TYPE@
 export LOCALIZATION_TYPE="bump"
@@ -33,6 +34,7 @@ export layout_y_atmanl=@LAYOUT_Y_ATMANL@
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
-export JEDIEXE=${EXECgfs}/gdas.x
+export JEDIEXE_VAR="${EXECgfs}/gdas.x"
+export JEDIEXE_FV3INC="${EXECgfs}/fv3jedi_fv3inc.x"
 
 echo "END: config.atmanl"
