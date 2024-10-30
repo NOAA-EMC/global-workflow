@@ -570,13 +570,17 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        cycledef = 'gdas_prep_snocvr'
+        if self.run in ['gfs']:
+            cycledef = self.run
+
         resources = self.get_resource('prepsnowcover')
         task_name = f'{self.run}_prepsnowcover'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': 'gdas_prep_snocvr',
+                     'cycledef': cycledef,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/prepsnowcover.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
