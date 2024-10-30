@@ -155,7 +155,9 @@ and are being retired from the WAFS package:
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.20
+* Updates to improve the enkfgdas_update job runtime stability.
+  * Run with `--cpu-bind core` instead of `--cpu-bind depth`
+  * Change tasks to 280 and threads to 16
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
