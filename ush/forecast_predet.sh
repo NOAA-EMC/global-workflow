@@ -379,8 +379,6 @@ FV3_predet(){
   fi
 
   if (( MEMBER > 0 )); then  # these are only applicable for ensemble members
-    local imem=${MEMBER#0}
-    local base_seed=$((current_cycle*10000 + imem*100))
 
     if [[ "${DO_SKEB:-}" == "YES" ]]; then
       do_skeb=".true."
