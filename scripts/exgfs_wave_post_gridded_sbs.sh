@@ -222,21 +222,21 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
 # 1.a.2 Loop over forecast time to generate post files
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
 # Contingency for RERUN=YES
-  if [ "${RERUN:-NO}" = "YES" ]; then
-    fhr=$((FHRUN + FHMIN_WAV))
-    if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
-      FHINCG=$FHOUT_HF_WAV
-    else
-      FHINCG=$FHOUT_WAV
-    fi
-    fhr=$((FORECAST_HOUR + FHINCG))
-  else
-    fhr=$FORECAST_HOUR
-  fi
+#  if [ "${RERUN:-NO}" = "YES" ]; then
+#    fhr=$((FHRUN + FHMIN_WAV))
+#    if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
+#     FHINCG=$FHOUT_HF_WAV
+#    else
+#     FHINCG=$FHOUT_WAV
+#    fi
+#    fhr=$((FORECAST_HOUR + FHINCG))
+#  else
+#    fhr=$FORECAST_HOUR
+#  fi
   fhrg=$fhr
   sleep_interval=10
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
-  if [ $fhr -le $FHMAX_WAV ]; then
+#  if [ $fhr -le $FHMAX_WAV ]; then
     ymdh=$($NDATE $fhr ${PDY}${cyc})
     YMD=$(echo $ymdh | cut -c1-8)
     HMS="$(echo $ymdh | cut -c9-10)0000"
@@ -418,18 +418,18 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
         err=5; export err;${errchk}
         exit "$err"
       fi
-      if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ "$fhr" -lt $FHMAX_HF_WAV ]; then
-        FHINCG=$FHOUT_HF_WAV
-      else
-        FHINCG=$FHOUT_WAV
-      fi
-      fhrg=$((fhr+FHINCG))
+#      if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ "$fhr" -lt $FHMAX_HF_WAV ]; then
+#        FHINCG=$FHOUT_HF_WAV
+#      else
+#        FHINCG=$FHOUT_WAV
+#      fi
+#      fhrg=$((fhr+FHINCG))
     fi
-    echo "$fhrg"
+#    echo "$fhrg"
 
-    fhr=$fhrg #loop with out_grd stride
+#    fhr=$fhrg #loop with out_grd stride
 
-  fi
+#  fi
 
 # --------------------------------------------------------------------------- #
 # 7.  Ending output
