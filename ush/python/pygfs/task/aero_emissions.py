@@ -363,7 +363,7 @@ class AerosolEmissions(Task):
         ratio_interp = ratio.sel(lat=clim.lat, lon=clim.lon, method="nearest")
 
         # Loop through each time slice and scale the climatology
-        for index, time_slice in enumerate(clim.time):
+        for index in range(0, clim.time):
             # Get the current time slice of the climatology
             clim_slice = clim.data[index, :, :]
 
