@@ -369,6 +369,15 @@ FV3_predet(){
   do_sppt=".false."
   do_ca=".false."
   ISEED=0
+
+  local imem=${MEMBER#0}
+  local base_seed=$((current_cycle*10000 + imem*100))
+
+  if [[ "${DO_CA:-}" == "YES" ]]; then
+    do_ca=".true."
+    ISEED_CA=$(( base_seed % 2147483647 ))
+  fi
+
   if (( MEMBER > 0 )); then  # these are only applicable for ensemble members
     local imem=${MEMBER#0}
     local base_seed=$((current_cycle*10000 + imem*100))
@@ -396,16 +405,6 @@ FV3_predet(){
       lndp_var_list=${lndp_var_list:-"'smc', 'vgf',"}
       lndp_prt_list=${lndp_prt_list:-"0.2,0.1"}
       n_var_lndp=$(echo "${lndp_var_list}" | wc -w)
-    fi
-
-  else
-
-    local imem=${MEMBER#0}
-    local base_seed=$((current_cycle*10000 + imem*100))
-
-    if [[ "${DO_CA:-}" == "YES" ]]; then
-      do_ca=".true."
-      ISEED_CA=$(( (base_seed + 18) % 2147483647 ))
     fi
 
   fi  # end of ensemble member specific options
