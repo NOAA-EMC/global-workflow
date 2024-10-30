@@ -278,7 +278,7 @@ class AerosolEmissions(Task):
         logger.info("  Opening Climatology File: {filename}".format(filename=fname[0]))
         xr.open_dataset(files[0])
         for i, f in enumerate(files):
-            logger.info("  Opening Climatology File: {filename}".format(filename=f))
+            logger.info(f"  Opening Climatology File: {filename}")
             try:
                 with xr.open_dataset(f, engine="netcdf4") as da:
                     das.append(da)
