@@ -44,10 +44,10 @@ class AerosolEmissions(Task):
         """
         super().__init__(config)
 
-        current_datetime = self.task_config.PDY
         nforecast_hours = self.task_config["FHMAX_GFS"]
-        nforecast_days = nforecast_hours // 24 + 1
-        forecast_dates = [current_datetime + timedelta(days=i) for i in range(nforecast_days)]
+        blend_start_date = self.task_config.PDY
+        blend_end_date = blend_start_date + to_timedelta(f'{nforecast_hours+24}H')
+        forecast_dates = list(rrule(freq=DAILY, dtstart=blend_start_date, until=blend_end_date))
 
         localdict = AttrDict(
             {"cdate": current_datetime, "nforecast_days": nforecast_days, "forecast_dates": forecast_dates}
