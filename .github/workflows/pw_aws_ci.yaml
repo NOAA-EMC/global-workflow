@@ -34,6 +34,8 @@ jobs:
 
   run-start-clusters:
     runs-on: ubuntu-latest
+    env:
+      PW_PLATFORM_HOST=noaa.parallel.works
     steps:
     - name: Checkout pw-cluster-automation repository
       uses: actions/checkout@v4
@@ -49,7 +51,7 @@ jobs:
         chmod 600 ~/.ssh/id_rsa_aws
         chmod 600 ~/.ssh/pw_api.key
 
-    - name: Run startClusters.py
+    - name: Run startClusters
       run: |
         if [ "${{ github.event.inputs.os }}" == "rocky" ]; then
           clustername="globalworkflowciplatformrocky8"
