@@ -35,7 +35,7 @@ jobs:
   run-start-clusters:
     runs-on: ubuntu-latest
     env:
-      PW_PLATFORM_HOST=noaa.parallel.works
+      PW_PLATFORM_HOST: noaa.parallel.works
     steps:
     - name: Checkout pw-cluster-automation repository
       uses: actions/checkout@v4
