@@ -32,7 +32,34 @@ env:
 
 jobs:
 
+  run-start-clusters:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout pw-cluster-automation repository
+      uses: actions/checkout@v4
+      with:
+        repository: TerrenceMcGuinness-NOAA/pw-cluster-automation
+        path: pw-cluster-automation
+
+    - name: Add SSH keys
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.ID_RSA_AWS }}" > ~/.ssh/id_rsa_aws
+        echo "${{ secrets.PW_API_KEY }}" > ~/.ssh/pw_api.key
+        chmod 600 ~/.ssh/id_rsa_aws
+        chmod 600 ~/.ssh/pw_api.key
+
+    - name: Run startClusters.py
+      run: |
+        if [ "${{ github.event.inputs.os }}" == "rocky" ]; then
+          clustername="globalworkflowciplatformrocky8"
+        elif [ "${{ github.event.inputs.os }}" == "centos" ]; then
+          clustername="awsemctmcgc7i48xlargeciplatform"
+        fi
+        python3 pw-cluster-automation/startClusters.py $clustername
+
   fetch-branch:
+    needs: run-start-clusters
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
