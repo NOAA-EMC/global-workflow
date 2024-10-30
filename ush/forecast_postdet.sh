@@ -466,12 +466,13 @@ MOM6_postdet() {
     fi
 
     # GEFS perturbations
-    # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
-    #     to ensure it does not interfere with the GFS when ensemble is updated in the GFS
-    if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-      ${NCP} "${COMIN_OCEAN_ANALYSIS}/mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc" \
-      || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
-    fi
+    if [[ "${RUN}" == "gefs" ]]; then 
+    #     to ensure it does not interfere with the GFS
+      if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
+        ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
+        || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
+      fi
+    fi # if [[ "${RUN}" == "gefs" ]]; then 
   fi  # if [[ "${RERUN}" == "NO" ]]; then
 
   # Link output files
