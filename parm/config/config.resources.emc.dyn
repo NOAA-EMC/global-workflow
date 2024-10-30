@@ -318,8 +318,8 @@ elif [ $step = "eupd" ]; then
 	export npe_eupd=960
         export nth_eupd=7
       elif [[ "$machine" = "WCOSS2" ]]; then
-        export npe_eupd=315
-        export nth_eupd=14
+        export npe_eupd=280
+        export nth_eupd=16
       fi
     elif [ $CASE = "C384" ]; then
       export npe_eupd=270
