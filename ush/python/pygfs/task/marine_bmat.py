@@ -21,7 +21,7 @@ logger = getLogger(__name__.split('.')[-1])
 
 class MarineBMat(Task):
     """
-    Class for global marine B-matrix tasks
+    Class for global marine B-matrix tasks.
     """
     @logit(logger, name="MarineBMat")
     def __init__(self, config):
