@@ -326,7 +326,7 @@ FV3_out() {
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
 
-  local ww3_grid
+  local ww3_grid first_ww3_restart_out ww3_restart_file
   # Copy initial condition files:
   if [[ "${warm_start}" == ".true." ]]; then
     local restart_date restart_dir
@@ -338,28 +338,34 @@ WW3_postdet() {
       restart_dir="${COMIN_WAVE_RESTART_PREV}"
     fi
     echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
-    local ww3_restart_file
-    for ww3_grid in ${waveGRD} ; do
-      ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.${ww3_grid}"
-      if [[ ! -f "${ww3_restart_file}" ]]; then
-        echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
-        if [[ "${RERUN}" == "YES" ]]; then
-          # In the case of a RERUN, the WW3 restart file is required
-          echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
-          exit 1
-        fi
-      fi
-      if [[ "${waveMULTIGRID}" == ".true." ]]; then
-        ${NCP} "${ww3_restart_file}" "${DATA}/restart.${ww3_grid}" \
-        || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+    ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
+    if [[ -f "${ww3_restart_file}" ]]; then
+      ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
+      || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+    else
+      if [[ "${RERUN}" == "YES" ]]; then
+        # In the case of a RERUN, the WW3 restart file is required
+        echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+        exit 1
       else
-        ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
-        || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+        echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
       fi
-    done
+    fi
+
+    first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   else  # cold start
     echo "WW3 will start from rest!"
+    first_ww3_restart_out="${model_start_date_current_cycle}"
   fi  # [[ "${warm_start}" == ".true." ]]
+
+  # Link restart files
+  local ww3_restart_file
+  # Use restart_date if it was determined above, otherwise use initialization date
+  for (( vdate = first_ww3_restart_out; vdate <= forecast_end_cycle;
+         vdate = $(date --utc -d "${vdate:0:8} ${vdate:8:2} + ${restart_interval} hours" +%Y%m%d%H) )); do
+    ww3_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3"
+    ${NLN} "${DATArestart}/WW3_RESTART/${ww3_restart_file}" "${ww3_restart_file}"
+  done
 
   # Link output files
   local wavprfx="${RUN}wave${WAV_MEMBER:-}"
@@ -460,12 +466,13 @@ MOM6_postdet() {
     fi
 
     # GEFS perturbations
-    # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
-    #     to ensure it does not interfere with the GFS when ensemble is updated in the GFS
-    if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-      ${NCP} "${COMIN_OCEAN_ANALYSIS}/mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc" \
-      || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
-    fi
+    if [[ "${RUN}" == "gefs" ]]; then 
+    #     to ensure it does not interfere with the GFS
+      if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
+        ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
+        || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
+      fi
+    fi # if [[ "${RUN}" == "gefs" ]]; then 
   fi  # if [[ "${RERUN}" == "NO" ]]; then
 
   # Link output files
