@@ -27,8 +27,9 @@ export OPREFIX="${RUN/enkf}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
-mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+	COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 
 ###############################################################
 # Run relevant script
