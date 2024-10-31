@@ -15,7 +15,7 @@ if (( $# != 1 )); then
     echo "prep prepsnowobs prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal"
-    echo "snowanl esnowrecen"
+    echo "snowanl esnowanl"
     echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
@@ -357,7 +357,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "esnowrecen")
+  "esnowanl")
     # below lines are for creating JEDI YAML
     case ${CASE} in
       "C768")
