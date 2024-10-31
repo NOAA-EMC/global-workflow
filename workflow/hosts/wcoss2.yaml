@@ -19,7 +19,7 @@ CHGRP_RSTPROD: 'YES'
 CLUSTERS: ''
 CHGRP_CMD: 'chgrp rstprod'
 HPSSARCH: 'YES'
-HPSS_PROJECT: emc-global
+HPSS_PROJECT: emc-ensemble
 LOCALARCH: 'NO'
 ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
