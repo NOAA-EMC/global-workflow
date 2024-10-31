@@ -9,5 +9,9 @@ wave:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_WAVE_RESTART_PREV_MEM = COMOUT_WAVE_RESTART_PREV_MEM_list[imem] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_WAVE_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.restart.{{ waveGRD }}", "{{ COMOUT_WAVE_RESTART_PREV_MEM }}"]
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_WAVE_RESTART_PREV_MEM | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".restart." ~ waveGRD) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_WAVE_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.restart.{{ waveGRD }}", "{{ COMOUT_WAVE_RESTART_PREV_MEM }}/{{ m_prefix }}.restart.ww3"]
+        {% else %}
+        - ["{{ ICSDIR }}/{{ COMOUT_WAVE_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.restart.ww3", "{{ COMOUT_WAVE_RESTART_PREV_MEM }}"]
+        {% endif %}
         {% endfor %} # mem loop
