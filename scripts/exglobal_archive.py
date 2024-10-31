@@ -36,6 +36,9 @@ def main():
 
     archive_dict = AttrDict()
     for key in keys:
+        # Make sure OCNRES is three digits
+        if key == "OCNRES":
+            archive.task_config.OCNRES = f"{archive.task_config.OCNRES :03d}"
         archive_dict[key] = archive.task_config.get(key)
         if archive_dict[key] is None:
             print(f"Warning: key ({key}) not found in task_config!")
