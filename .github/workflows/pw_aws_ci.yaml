@@ -47,10 +47,10 @@ jobs:
     - name: Run startClusters
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.ID_RSA_AWS }}" > ~/.ssh/id_rsa_aws
+        echo "${{ secrets.ID_RSA_AWS }}" > ~/.ssh/id_rsa
         echo "${{ secrets.PW_API_KEY }}" > ~/.ssh/pw_api.key
         chmod 700 ~/.ssh
-        chmod 600 ~/.ssh/id_rsa_aws
+        chmod 600 ~/.ssh/id_rsa
         chmod 600 ~/.ssh/pw_api.key
         ls -l ~/.ssh
         ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null Terry.McGuinness@107.22.156.241 sinfo
