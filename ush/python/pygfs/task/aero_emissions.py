@@ -64,7 +64,7 @@ class AerosolEmissions(Task):
         hfedfiles = [os.path.basename(fname[0]) for fname in config['data_in']['hfed']['copy']]
         gbbepxfiles = [os.path.basename(fname[0]) for fname in config['data_in']['gbbepx']['copy']]
         climofiles = [os.path.basename(fname[0]) for fname in config['data_in']['climo']['copy']]
-        print(climofiles)
+        n_persist = config['n_persist']
 
         localdict = AttrDict(
             {
@@ -78,7 +78,8 @@ class AerosolEmissions(Task):
                 'climofiles': climofiles,
                 'qfedfiles': qfedfiles,
                 'hfedfiles': hfedfiles,
-                'gbbepxfiles': gbbepxfiles
+                'gbbepxfiles': gbbepxfiles,
+                'n_persist': n_persist
             }
         )
 
@@ -135,8 +136,6 @@ class AerosolEmissions(Task):
         --------
         None
         """
-
-        print(self.task_config)
         Config_dict = self.task_config['config']
         emistype = self.task_config['emistype']
         ratio = Config_dict['ratio']
@@ -145,6 +144,7 @@ class AerosolEmissions(Task):
         output_vars = Config_dict['output_vars']
         input_vars = Config_dict['input_vars']
         current_date = self.task_config['current_date']
+        n_persist = Config_dict['n_persist']
 
         emission_map = {'qfed': self.task_config['qfedfiles'],
                         'gbbepx': self.task_config['gbbepxfiles'],
@@ -167,7 +167,8 @@ class AerosolEmissions(Task):
                 coarsen_scale=coarsen_scale,
                 obsfile=basefile,
                 output_vars=output_vars,
-                input_vars=input_vars)
+                input_vars=input_vars,
+                n_persist=n_persist)
 
             AerosolEmissions.write_ncf(dset, Config_dict.data_out['copy'][0][0])
 
@@ -388,6 +389,7 @@ class AerosolEmissions(Task):
         obsfile: str,
         output_vars: Union[str, list],
         input_vars: list,
+        n_persist: int,
     ) -> xr.Dataset:
         """
         Generate fire emissions data for a given date and forecast period.
@@ -408,6 +410,8 @@ class AerosolEmissions(Task):
             Path to the file containing observed fire emissions data.
         climo_directory: str
             Directory containing climatology files.
+        n_persist: int
+            Assumed number of days that are able to be persistant fire emissions
 
         Returns:
         --------
@@ -442,7 +446,7 @@ class AerosolEmissions(Task):
 
             for v in ObsEmis.data_vars:
                 if not scale_climo:
-                    if tslice > 5:
+                    if tslice > n_persist:
                         # kk = ratio * dset[v] + (1 - ratio) * climo[v].data[tslice, :, :]
                         dset[v].data = (
                             ratio * dset[v] + (1 - ratio) * climo[v].data[tslice, :, :]
@@ -454,7 +458,7 @@ class AerosolEmissions(Task):
                             ObsEmisC[v], climo[v], lon_coarse=150, lat_coarse=150
                         )
                     else:
-                        if tslice > 5:
+                        if tslice > n_persist:
                             dset[v].data = (
                                 ratio * dset[v] + (1 - ratio) * climo_scaled[v].data[tslice, :, :]
                             )
