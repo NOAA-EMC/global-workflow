@@ -42,17 +42,15 @@ jobs:
       with:
         repository: TerrenceMcGuinness-NOAA/pw-cluster-automation
         path: pw-cluster-automation
+        ref: pw_cluster_noaa
 
-    - name: Add SSH keys
+    - name: Run startClusters
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.ID_RSA_AWS }}" > ~/.ssh/id_rsa_aws
         echo "${{ secrets.PW_API_KEY }}" > ~/.ssh/pw_api.key
         chmod 600 ~/.ssh/id_rsa_aws
         chmod 600 ~/.ssh/pw_api.key
-
-    - name: Run startClusters
-      run: |
         if [ "${{ github.event.inputs.os }}" == "rocky" ]; then
           clustername="globalworkflowciplatformrocky8"
         elif [ "${{ github.event.inputs.os }}" == "centos" ]; then
