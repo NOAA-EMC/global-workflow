@@ -8,9 +8,9 @@ HOMEDIR: '/lfs/h2/emc/global/noscrub/${USER}'
 STMP: '/lfs/h2/emc/stmp/${USER}'
 PTMP: '/lfs/h2/emc/ptmp/${USER}'
 NOSCRUB: $HOMEDIR
-ACCOUNT: 'GFS-DEV'
+ACCOUNT: 'GEFS-DEV'
 SCHEDULER: pbspro
-QUEUE: 'dev'
+QUEUE: 'devmax'
 QUEUE_SERVICE: 'dev_transfer'
 PARTITION_BATCH: ''
 PARTITION_SERVICE: ''
