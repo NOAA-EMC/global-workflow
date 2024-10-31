@@ -72,4 +72,5 @@ Example:
 - [ ] My changes generate no new warnings
 - [ ] New and existing tests pass with my changes
 - [ ] This change is covered by an existing CI test or a new one has been added
+- [ ] Any new scripts have been added to the .github/CODEOWNERS file with owners
 - [ ] I have made corresponding changes to the system documentation if necessary

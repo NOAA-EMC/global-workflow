@@ -68,6 +68,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         self.nens = base.get('NMEM_ENS', 0)
         self.fcst_segments = base.get('FCST_SEGMENTS', None)
+        self.interval_gfs = to_timedelta(f"{base.get('INTERVAL_GFS')}H")
 
         if not AppConfig.is_monotonic(self.fcst_segments):
             raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
@@ -108,9 +109,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         # Save base in the internal state since it is often needed
         base = self.configs['_no_run']['base']
-
-        # Get more configuration options into the class attributes
-        self.gfs_cyc = base.get('gfs_cyc')
 
         # Get task names for the application
         self.task_names = self.get_task_names()
@@ -198,19 +196,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         '''
         pass
-
-    @staticmethod
-    def get_gfs_interval(gfs_cyc: int) -> timedelta:
-        """
-        return interval in hours based on gfs_cyc
-        """
-
-        gfs_internal_map = {'1': '24H', '2': '12H', '4': '6H'}
-
-        try:
-            return to_timedelta(gfs_internal_map[str(gfs_cyc)])
-        except KeyError:
-            raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')
 
     @staticmethod
     def is_monotonic(test_list: List, check_decreasing: bool = False) -> bool:

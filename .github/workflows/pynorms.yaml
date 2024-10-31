@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   check_norms:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Check Python coding norms with pycodestyle
 
     steps:

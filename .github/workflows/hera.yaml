@@ -9,7 +9,7 @@ on:
 jobs:
 
   getlabels:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       labels: ${{ steps.id.outputs.labels }}
     steps:

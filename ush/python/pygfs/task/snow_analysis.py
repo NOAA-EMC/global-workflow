@@ -158,7 +158,7 @@ class SnowAnalysis(Task):
         logger.info("Stage files for static background error")
         berror_staging_dict = parse_j2yaml(self.task_config.BERROR_STAGING_YAML, self.task_config)
         FileHandler(berror_staging_dict).sync()
-        logger.debug(f"Background error files:\n{pformat(berror_staging_dict)}")        
+        logger.debug(f"Background error files:\n{pformat(berror_staging_dict)}")
 
         # need output dir for diags and anl
         logger.debug("Create empty output [anl, diags] directories to receive output from executable")
@@ -291,8 +291,6 @@ class SnowAnalysis(Task):
             logger.info(f"Executing {self.jedi.exe} {self.jedi.yaml}")
 
         self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
-    #logger.info("Creating analysis from backgrounds and increments")
-    #self.add_increments(localconf)
 
     @logit(logger)
     def finalize(self) -> None:
