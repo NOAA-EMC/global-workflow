@@ -1224,7 +1224,7 @@ class GFSTasks(Tasks):
         for key, value in wave_post_dict.items():
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        cycledef = 'gdas_half, gdas' if self.run in ['gdas'] else self.run
+        cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
         task_name = f'gfs_wave_post_grid_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
