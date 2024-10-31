@@ -8,6 +8,7 @@ from glob import glob
 import numpy as np
 import xarray as xr
 from datetime import timedelta
+from dateutil.rrule import rrule, DAILY
 
 from wxflow import (
     AttrDict,
@@ -46,30 +47,48 @@ class AerosolEmissions(Task):
 
         nforecast_hours = self.task_config["FHMAX_GFS"]
         blend_start_date = self.task_config.PDY
-        blend_end_date = blend_start_date + to_timedelta(f'{nforecast_hours+24}H')
+        blend_end_date = blend_start_date + to_timedelta(f'{nforecast_hours + 24}H')
         forecast_dates = list(rrule(freq=DAILY, dtstart=blend_start_date, until=blend_end_date))
 
+        # add forecast_dates to the task_config for parsing yaml file
+        localdict = AttrDict({"forecast_dates": forecast_dates})
+        self.task_config = AttrDict(**self.task_config, **localdict)
+
+        # populate yaml file and add to task_config=
+        logger.info(f"Read the prep_emission configuration yaml file {self.task_config.PREP_EMISSION_CONFIG}")
+        self.task_config.aero_emission_yaml = parse_j2yaml(self.task_config.PREP_EMISSION_CONFIG, self.task_config)
+        logger.debug(f"aero_emission_yaml:\n{pformat(self.task_config.aero_emission_yaml)}")
+
+        config = self.task_config.aero_emission_yaml['aero_emissions']['config']
+        qfedfiles = [os.path.basename(fname[0]) for fname in config['data_in']['qfed']['copy']]
+        hfedfiles = [os.path.basename(fname[0]) for fname in config['data_in']['hfed']['copy']]
+        gbbepxfiles = [os.path.basename(fname[0]) for fname in config['data_in']['gbbepx']['copy']]
+        climofiles = [os.path.basename(fname[0]) for fname in config['data_in']['climo']['copy']]
+        print(climofiles)
+
         localdict = AttrDict(
-            {"cdate": current_datetime, "nforecast_days": nforecast_days, "forecast_dates": forecast_dates}
+            {
+                "cdate": blend_start_date,
+                "nforecast_days": nforecast_hours // 24,
+                # "forecast_dates": forecast_dates,
+                "workdir": self.task_config.DATA,
+                "current_date": self.task_config.PDY,
+                'config': config,
+                'emistype': config['emistype'],
+                'climofiles': climofiles,
+                'qfedfiles': qfedfiles,
+                'hfedfiles': hfedfiles,
+                'gbbepxfiles': gbbepxfiles
+            }
         )
 
         # Extend task_config with localdict
         self.task_config = AttrDict(**self.task_config, **localdict)
 
         # Read the aero_emission.yaml file for common configuration
-        logger.info(
-            f"Read the prep_emission configuration yaml file {self.task_config.PREP_EMISSION_CONFIG}"
-        )
-        self.task_config.aero_emission_yaml = parse_j2yaml(
-            self.task_config.PREP_EMISSION_CONFIG, self.task_config
-        )
-        logger.debug(
-            f"aero_emission_yaml:\n{pformat(self.task_config.aero_emission_yaml)}"
-        )
 
-    @staticmethod
     @logit(logger)
-    def initialize(aero_emission_yaml: Dict) -> None:
+    def initialize(self) -> None:
         """Initialize the work directory by copying all the common fix data
 
         Parameters
@@ -83,25 +102,21 @@ class AerosolEmissions(Task):
         """
         logger.info("Copy Static Data to run directory")
 
+        data_in = self.task_config.config.data_in
+        emistype = self.task_config.emistype
+
         # Copy climatology files to run directory except for HFED
-        if aero_emission_yaml.emistype.lower() != 'hfed':
+        if emistype.lower() != 'hfed':
             logger.info(
-                f"Copy Climatology '{aero_emission_yaml.data_in.climo}' data to run directory"
+                f"Copy HFED '{data_in.hfed}' data to run directory"
             )
-            FileHandler(aero_emission_yaml.data_in.climo).sync()
-        logger.info(f"Copy {aero_emission_yaml.emistype} data to run directory")
-        FileHandler(aero_emission_yaml.data_in[aero_emission_yaml.emistype.lower()]).sync()
+        logger.info(f"Copy climotology data to run directory")
+        FileHandler(data_in.climo).sync()
+        logger.info(f"Copy {emistype} data to run directory")
+        FileHandler(data_in[emistype.lower()]).sync()
 
-    @staticmethod
     @logit(logger)
-    def configure(aero_emission_yaml: Dict) -> None:
-        """Configure the artifacts in the work directory.
-        Copy run specific data to run directory
-        """
-
-    @classmethod
-    @logit(logger)
-    def run(cls, workdir: Union[str, os.PathLike], current_date: str = None, forecast_dates: list = None, Config_dict: Dict = {}) -> None:
+    def run(self) -> None:
         """
         Run the AerosolEmissions task with the given parameters.
 
@@ -120,20 +135,24 @@ class AerosolEmissions(Task):
         --------
         None
         """
-        emistype = Config_dict.emistype
-        ratio = Config_dict.ratio
-        climfiles = np.sort(glob("{}{}".format(Config_dict.climfile_str, "*.nc")))
-        coarsen_scale = Config_dict.coarsen_scale
-        output_vars = Config_dict.output_vars
-        input_vars = Config_dict.input_vars
 
-        emission_map = {'qfed': 'qfed2.emis_*.nc4',
-                        'gbbepx': 'GBBEPx_all01GRID.emissions_v*.nc',
-                        'hfed': 'hfed.emis_*.x576_y361.*nc4'}
+        print(self.task_config)
+        Config_dict = self.task_config['config']
+        emistype = self.task_config['emistype']
+        ratio = Config_dict['ratio']
+        climfiles = self.task_config['climofiles']
+        coarsen_scale = Config_dict['coarsen_scale']
+        output_vars = Config_dict['output_vars']
+        input_vars = Config_dict['input_vars']
+        current_date = self.task_config['current_date']
+
+        emission_map = {'qfed': self.task_config['qfedfiles'],
+                        'gbbepx': self.task_config['gbbepxfiles'],
+                        'hfed': self.task_config['hfedfiles']}
 
         if emistype.lower() != 'blended':
             try:
-                basefile = glob(emission_map[emistype.lower()])
+                basefile = emission_map[emistype.lower()]
             except KeyError as err:
                 raise KeyError(f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!")
 
@@ -175,16 +194,8 @@ class AerosolEmissions(Task):
         """
         vrs = out_vars
         invars = input_vars
-
-        try:
-            if len(files) == 0:
-                raise Exception("FATAL ERROR: No HFED files were found")
-        except Exception as ee:
-            logger.exception("FATAL ERROR: HFED files not found.")
-            raise Exception(f"FATAL ERROR: Unable to find files, ABORT")
-
-        found_species = []
-        dset_dict = {}
+        if len(files) == 0:
+            raise Exception("FATAL ERROR: Received empty list of HFED files")
         for f in files:
             index_good = [[i, v] for i, v in enumerate(invars) if v in f]
             good = index_good[0][0]
@@ -204,7 +215,7 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def open_qfed(fname: Union[str, os.PathLike], out_vars: list = None, input_vars: list = None) -> xr.Dataset:
+    def open_qfed(fname: Union[str, os.PathLike], out_vars: list = None, input_vars: list = None, forecast_dates: list = None) -> xr.Dataset:
         """
         Open QFED2 fire emissions data and renames variables to a standard (using the GBBEPx names to start with).
 
@@ -223,15 +234,9 @@ class AerosolEmissions(Task):
 
         if len(fname) > 1:
             files = np.sort(fname)
-        else:
-            files = np.sort(glob(fname))
 
-        try:
-            if files.size == 0:
-                raise Exception("FATAL ERROR: No QFED files were found")
-        except Exception as ee:
-            logger.exception("FATAL ERROR: QFED files not found.")
-            raise Exception(f"FATAL ERROR: Unable to find files, ABORT")
+        if len(files) == 0:
+            raise Exception("FATAL ERROR: Received empty list of QFED files")
         found_species = []
         dset_dict = {}
         for f in files:
@@ -245,7 +250,6 @@ class AerosolEmissions(Task):
                     da.name = vrs[good]
                     dset_dict[vrs[good]] = da
             except Exception as ee:
-                logger.exception("FATAL ERROR: unable to read dataset {error}".format(error=ee))
                 raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
 
         dset = xr.Dataset(dset_dict)
@@ -271,16 +275,14 @@ class AerosolEmissions(Task):
 
         if len(fname) > 1:
             files = np.sort(fname)
-        else:
-            files = np.sort(glob(fname))
-        
+
         logger.info("Process Climatlogy Files")
         logger.info("  Opening Climatology File: {filename}".format(filename=fname[0]))
         xr.open_dataset(files[0])
-        for i, f in enumerate(files):
+        for filename in files:
             logger.info(f"  Opening Climatology File: {filename}")
             try:
-                with xr.open_dataset(f, engine="netcdf4") as da:
+                with xr.open_dataset(filename, engine="netcdf4") as da:
                     das.append(da)
             except Exception as ee:
                 logger.exception("Encountered an error reading climatology file, {error}".format(error=ee))
@@ -363,7 +365,7 @@ class AerosolEmissions(Task):
         ratio_interp = ratio.sel(lat=clim.lat, lon=clim.lon, method="nearest")
 
         # Loop through each time slice and scale the climatology
-        for index in range(0, clim.time):
+        for index in range(0, len(clim.time)):
             # Get the current time slice of the climatology
             clim_slice = clim.data[index, :, :]
 
@@ -416,29 +418,29 @@ class AerosolEmissions(Task):
         if isinstance(obsfile, (str, bytes)):
             obsfile = [obsfile]
         if "QFED".lower() in obsfile[0].lower():
-            g = AerosolEmissions.open_qfed(obsfile, out_vars=output_vars, input_vars=input_vars)
+            ObsEmis = AerosolEmissions.open_qfed(obsfile, out_vars=output_vars, input_vars=input_vars)
         else:
-            g = xr.open_mfdataset(obsfile, decode_cf=False)
+            ObsEmis = xr.open_mfdataset(obsfile, decode_cf=False)
 
         # open climotology
         climo = AerosolEmissions.open_climatology(climos)
-        climo = climo.sel(lat=g["lat"], lon=g["lon"], method="nearest")
+        climo = climo.sel(lat=ObsEmis["lat"], lon=ObsEmis["lon"], method="nearest")
 
         # make weighted climo
-        gc = g.coarsen(lat=coarsen_scale, lon=coarsen_scale, boundary="trim").sum()
+        ObsEmisC = ObsEmis.coarsen(lat=coarsen_scale, lon=coarsen_scale, boundary="trim").sum()
 
         dsets = []
         climo_scaled = {}
         for tslice in np.arange(len(climos)):
             # make copy of original data
             if tslice == 0:
-                dset = g.copy()
+                dset = ObsEmis.copy()
             else:
                 dset = dsets[tslice - 1].copy()
             dset.update({"time": [float(tslice * 24)]})
-            dset.time.attrs = g.time.attrs
+            dset.time.attrs = ObsEmis.time.attrs
 
-            for v in g.data_vars:
+            for v in ObsEmis.data_vars:
                 if not scale_climo:
                     if tslice > 5:
                         # kk = ratio * dset[v] + (1 - ratio) * climo[v].data[tslice, :, :]
@@ -447,9 +449,9 @@ class AerosolEmissions(Task):
                         )
                 else:
                     if tslice == 0:
-                        
+
                         climo_scaled[v] = AerosolEmissions.create_climatology(
-                            gc[v], climo[v], lon_coarse=150, lat_coarse=150
+                            ObsEmisC[v], climo[v], lon_coarse=150, lat_coarse=150
                         )
                     else:
                         if tslice > 5:
@@ -458,13 +460,12 @@ class AerosolEmissions(Task):
                             )
                         else:
                             dset[v] = dset[v]
-            
+
             dsets.append(dset)
         return xr.concat(dsets, dim="time")
 
-    @staticmethod
     @logit(logger)
-    def finalize(Config_dict: Dict) -> None:
+    def finalize(self) -> None:
         """Perform closing actions of the task.
         Copy data back from the DATA/ directory to COM/
 
@@ -477,6 +478,6 @@ class AerosolEmissions(Task):
         -------
         None
         """
-        
-        logger.info(f"Copy '{Config_dict.data_out}' processed data to COM/ directory")
-        FileHandler(Config_dict.data_out).sync()
+
+        logger.info(f"Copy '{self.task_config.config.data_out}' processed data to COM/ directory")
+        FileHandler(self.task_config.config.data_out).sync()
