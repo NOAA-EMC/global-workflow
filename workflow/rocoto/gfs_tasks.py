@@ -1241,8 +1241,8 @@ class GFSTasks(Tasks):
 
         member_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
         metatask_dict = {'task_name': f'gfs_wave_post_grid',
-                                'task_dict': task_dict,
-                                'var_dict': member_var_dict}
+                         'task_dict': task_dict,
+                         'var_dict': member_var_dict}
 
         task = rocoto.create_task(metatask_dict)
 
