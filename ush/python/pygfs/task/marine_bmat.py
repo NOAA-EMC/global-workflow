@@ -318,7 +318,7 @@ class MarineBMat(Task):
         FileHandler({'copy': diagb_list}).sync()
 
         # Copy the ensemble perturbation diagnostics to the ROTDIR
-        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 3:
+        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
             window_middle_iso = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
             weight_list = []
             src = os.path.join(self.task_config.DATA, f"ocn.ens_weights.incr.{window_middle_iso}.nc")
