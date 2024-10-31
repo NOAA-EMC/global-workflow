@@ -10,6 +10,7 @@ arguments:
   resdetocean: 5.0
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  # TODO: Stage IC's on HPC
   #icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20240610
   icsdir: /work/noaa/da/gvernier/ensda/ictest
   #icsdir: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/prepics/ictest/
