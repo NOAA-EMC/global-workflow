@@ -10,7 +10,7 @@ arguments:
   resdetocean: 0.25
   nens: 30
   interval: 0
-  start: warm #cold
+  start: warm
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2021063018
