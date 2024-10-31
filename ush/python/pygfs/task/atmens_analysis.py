@@ -72,62 +72,7 @@ class AtmEnsAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create dictionary of JEDI objects
-        self.jedi = AttrDict()
-
-        # atmensanlobs
-        self.jedi['atmensanlobs'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'atmensanlobs',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_LETKF,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': None,
-                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_OBS,
-                'jedi_args': ['fv3jedi', 'localensembleda']
-            }
-        ))
-
-        # atmensanlsol
-        self.jedi['atmensanlsol'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'atmensanlsol',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_LETKF,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': None,
-                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_SOL,
-                'jedi_args': ['fv3jedi', 'localensembleda']
-            }
-        ))
-
-        # atmensanlfv3inc
-        self.jedi['atmensanlfv3inc'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'atmensanlfv3inc',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_FV3INC,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': self.task_config.JCB_ALGO_FV3INC,
-                'jcb_algo_yaml': None,
-                'jedi_args': None
-            }
-        ))
-
-        # Note: Since we now use the split observer-solvers, the following
-        #       is only for testing.
-
-        # atmensanlletkf
-        self.jedi['atmensanlletkf'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'atmensanlletkf',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_LETKF,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': None,
-                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_LETKF,
-                'jedi_args': ['fv3jedi', 'localensembleda']
-            }
-        ))
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -154,25 +99,25 @@ class AtmEnsAnalysis(Task):
 
         # initialize JEDI LETKF observer application
         logger.info(f"Initializing JEDI LETKF observer application")
-        self.jedi['atmensanlobs'].initialize(self.task_config)
+        self.jedi_dict['atmensanlobs'].initialize(self.task_config)
 
         # initialize JEDI LETKF solver application
         logger.info(f"Initializing JEDI LETKF solver application")
-        self.jedi['atmensanlsol'].initialize(self.task_config)
+        self.jedi_dict['atmensanlsol'].initialize(self.task_config)
 
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")
-        self.jedi['atmensanlfv3inc'].initialize(self.task_config)
+        self.jedi_dict['atmensanlfv3inc'].initialize(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files")
-        obs_dict = self.jedi['atmensanlobs'].render_jcb(self.task_config, 'atm_obs_staging')
+        obs_dict = self.jedi_dict['atmensanlobs'].render_jcb(self.task_config, 'atm_obs_staging')
         FileHandler(obs_dict).sync()
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files")
-        bias_dict = self.jedi['atmensanlobs'].render_jcb(self.task_config, 'atm_bias_staging')
+        bias_dict = self.jedi_dict['atmensanlobs'].render_jcb(self.task_config, 'atm_bias_staging')
         bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")

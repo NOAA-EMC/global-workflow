@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # Initalize JEDI ensemble DA application
     # Note: This is normally done in AtmEnsAnl.initialize(), but that method now
     #       initializes the split observer-solver. This case is just for testing.
-    AtmEnsAnl.jedi['atmensanlletkf'].initialize(AtmEnsAnl.task_config)
+    AtmEnsAnl.jedi_dict['atmensanlletkf'].initialize(AtmEnsAnl.task_config)
 
     # Execute the JEDI ensemble DA analysis
-    AtmEnsAnl.jedi['atmensanlletkf'].execute(config.APRUN_ATMENSANLLETKF)
+    AtmEnsAnl.jedi_dict['atmensanlletkf'].execute(config.APRUN_ATMENSANLLETKF)

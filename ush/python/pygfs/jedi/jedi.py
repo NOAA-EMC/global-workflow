@@ -14,11 +14,13 @@ from wxflow import (AttrDict, FileHandler, Task, Executable,
 
 logger = getLogger(__name__.split('.')[-1])
 
+jedi_key_list = ['rundir', 'exe_src', 'jcb_base_yaml', 'jcb_algo', 'jcb_algo_yaml', 'jedi_args']
 
 class Jedi:
     """
     Class for initializing and executing JEDI applications
     """
+    
     @logit(logger, name="Jedi")
     def __init__(self, config) -> None:
         """Constructor for JEDI objects
@@ -38,8 +40,9 @@ class Jedi:
         None
         """
 
-        _key_list = ['yaml_name', 'rundir', 'exe_src', 'jcb_base_yaml', 'jcb_algo', 'jcb_algo_yaml', 'jedi_args']
-        for key in _key_list:
+        if 'yaml_name' not in config:
+            raise KeyError(f"Key 'yaml_name' not found in the nested dictionary")
+        for key in jedi_key_list:
             if key not in config:
                 raise KeyError(f"Key '{key}' not found in the nested dictionary")
 
@@ -195,6 +198,29 @@ class Jedi:
         if not os.path.exists(self.jedi_config.exe):
             os.symlink(self.jedi_config.exe_src, self.jedi_config.exe)
 
+    @staticmethod
+    @logit(logger)
+    def get_jedi_dict(jedi_config_yaml: str, task_config: AttrDict):
+        # Initialize dictionary of Jedi objects
+        jedi_dict = AttrDict()
+
+        # Parse J2-YAML file for dictionary of JEDI configuration dictionaries
+        jedi_config_dict = parse_j2yaml(jedi_config_yaml, task_config)
+
+        # Loop through dictionary of Jedi configuration dictionaries
+        for yaml_name in jedi_config_dict:
+            # Make sure all required keys present or set to None
+            jedi_config_dict[yaml_name]['yaml_name'] = yaml_name
+            for key in jedi_key_list:
+                if key not in jedi_config_dict[yaml_name]:
+                    jedi_config_dict[yaml_name][key] = None
+
+            # Construct JEDI object        
+            jedi_dict[yaml_name] = Jedi(jedi_config_dict[yaml_name])
+
+        # Return dictionary of JEDI objects
+        return jedi_dict     
+            
     @staticmethod
     @logit(logger)
     def remove_redundant(input_list: List) -> List:
