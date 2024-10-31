@@ -63,6 +63,7 @@ class MarineBMat(Task):
                 'MARINE_WINDOW_END': _window_end,
                 'MARINE_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
                 'ENSPERT_RELPATH': _enspert_relpath,
+                'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES)),
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
             }
@@ -72,98 +73,7 @@ class MarineBMat(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create dictionary of Jedi objects
-        self.jedi = AttrDict()
-
-        # gridgen
-        self.jedi['gridgen'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'gridgen',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_GRIDGEN,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': self.task_config.JCB_ALGO_GRIDGEN,
-                'jcb_algo_yaml': None,
-                'jedi_args': None
-            }
-        ))
-
-        # soca_diagb
-        self.jedi['soca_diagb'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'soca_diagb',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_DIAGB,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': self.task_config.JCB_ALGO_DIAGB,
-                'jcb_algo_yaml': None,
-                'jedi_args': None
-            }
-        ))
-
-        # soca_parameters_diffusion_vt
-        self.jedi['soca_parameters_diffusion_vt'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'soca_parameters_diffusion_vt',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_PARAMETERS_DIFFUSION_VT,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': self.task_config.JCB_ALGO_PARAMETERS_DIFFUSION_VT,
-                'jcb_algo_yaml': None,
-                'jedi_args': None
-            }
-        ))
-
-        # soca_setcorscales
-        self.jedi['soca_setcorscales'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'soca_setcorscales',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_SETCORSCALES,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': self.task_config.JCB_ALGO_SETCORSCALES,
-                'jcb_algo_yaml': None,
-                'jedi_args': None
-            }
-        ))
-
-        # soca_parameters_diffusion_hz
-        self.jedi['soca_parameters_diffusion_hz'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'soca_parameters_diffusion_hz',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_PARAMETERS_DIFFUSION_HZ,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': self.task_config.JCB_ALGO_PARAMETERS_DIFFUSION_HZ,
-                'jcb_algo_yaml': None,
-                'jedi_args': None
-            }
-        ))
-
-        # soca_ensb
-        self.jedi['soca_ensb'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'soca_ensb',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_ENSB,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': self.task_config.JCB_ALGO_ENSB,
-                'jcb_algo_yaml': None,
-                'jedi_args': None
-            }
-        ))
-
-        # soca_ensweights
-        self.jedi['soca_ensb'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'soca_ensb',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_ENSWEIGHTS,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': self.task_config.JCB_ALGO_ENSWEIGHTS,
-                'jcb_algo_yaml': None,
-                'jedi_args': None
-            }
-        ))
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config)
 
     @logit(logger)
     def initialize(self: Task) -> None:
@@ -207,20 +117,20 @@ class MarineBMat(Task):
         FileHandler(soca_utility_list).sync()
 
         # initialize vtscales python script
-        vtscales_config = self.jedi['soca_parameters_diffusion_vt'].render_jcb(self.task_config, 'soca_vtscales')
+        vtscales_config = self.jedi_dict['soca_parameters_diffusion_vt'].render_jcb(self.task_config, 'soca_vtscales')
         save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
         FileHandler({'copy': [[os.path.join(self.task_config.CALC_SCALE_EXEC),
                                os.path.join(self.task_config.DATA, 'calc_scales.x')]]}).sync()
 
         # initialize JEDI applications
-        self.jedi['gridgen'].initialize(self.task_config)
-        self.jedi['soca_diagb'].initialize(self.task_config)
-        self.jedi['soca_parameters_diffusion_vt'].initialize(self.task_config)
-        self.jedi['soca_setcorscales'].initialize(self.task_config)
-        self.jedi['soca_parameters_diffusion_hz'].initialize(self.task_config)
+        self.jedi_dict['gridgen'].initialize(self.task_config)
+        self.jedi_dict['soca_diagb'].initialize(self.task_config)
+        self.jedi_dict['soca_parameters_diffusion_vt'].initialize(self.task_config)
+        self.jedi_dict['soca_setcorscales'].initialize(self.task_config)
+        self.jedi_dict['soca_parameters_diffusion_hz'].initialize(self.task_config)
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
-            self.jedi['soca_ensb'].initialize(self.task_config)
-            self.jedi['soca_ensweights'].initialize(self.task_config)
+            self.jedi_dict['soca_ensb'].initialize(self.task_config)
+            self.jedi_dict['soca_ensweights'].initialize(self.task_config)
 
         # stage ensemble members for the hybrid background error
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
@@ -276,15 +186,15 @@ class MarineBMat(Task):
         None
         """
 
-        self.jedi['gridgen'].execute(aprun_cmd)  # TODO: This should be optional in case the geometry file was staged
-        self.jedi['soca_diagb'].execute(aprun_cmd)
-        self.jedi['soca_setcorscales'].execute(aprun_cmd)  # TODO: Make this optional once we've converged on an acceptable set of scales
-        self.jedi['soca_parameters_diffusion_hz'].execute(aprun_cmd)  # TODO: Make this optional once we've converged on an acceptable set of scales
+        self.jedi_dict['gridgen'].execute(aprun_cmd)  # TODO: This should be optional in case the geometry file was staged
+        self.jedi_dict['soca_diagb'].execute(aprun_cmd)
+        self.jedi_dict['soca_setcorscales'].execute(aprun_cmd)  # TODO: Make this optional once we've converged on an acceptable set of scales
+        self.jedi_dict['soca_parameters_diffusion_hz'].execute(aprun_cmd)  # TODO: Make this optional once we've converged on an acceptable set of scales
         self.execute_vtscales()
-        self.jedi['soca_parameters_diffusion_vt'].execute(aprun_cmd)
+        self.jedi_dict['soca_parameters_diffusion_vt'].execute(aprun_cmd)
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
-            self.jedi['soca_ensb'].execute(self.task_config)  # TODO: refactor this from the old scripts
-            self.jedi['soca_ensweights'].execute(self.task_config)  # TODO: refactor this from the old scripts
+            self.jedi_dict['soca_ensb'].execute(self.task_config)  # TODO: refactor this from the old scripts
+            self.jedi_dict['soca_ensweights'].execute(self.task_config)  # TODO: refactor this from the old scripts
 
     @logit(logger)
     def finalize(self: Task) -> None:
