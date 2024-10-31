@@ -16,11 +16,12 @@ logger = getLogger(__name__.split('.')[-1])
 
 jedi_key_list = ['rundir', 'exe_src', 'jcb_base_yaml', 'jcb_algo', 'jcb_algo_yaml', 'jedi_args']
 
+
 class Jedi:
     """
     Class for initializing and executing JEDI applications
     """
-    
+
     @logit(logger, name="Jedi")
     def __init__(self, config) -> None:
         """Constructor for JEDI objects
@@ -215,12 +216,12 @@ class Jedi:
                 if key not in jedi_config_dict[yaml_name]:
                     jedi_config_dict[yaml_name][key] = None
 
-            # Construct JEDI object        
+            # Construct JEDI object
             jedi_dict[yaml_name] = Jedi(jedi_config_dict[yaml_name])
 
         # Return dictionary of JEDI objects
-        return jedi_dict     
-            
+        return jedi_dict
+
     @staticmethod
     @logit(logger)
     def remove_redundant(input_list: List) -> List:
