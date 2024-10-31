@@ -52,9 +52,6 @@ jobs:
         chmod 700 ~/.ssh
         chmod 600 ~/.ssh/id_rsa
         chmod 600 ~/.ssh/pw_api.key
-        ls -l ~/.ssh
-        ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null Terry.McGuinness@107.22.156.241 sinfo
-        exit 0
         if [ "${{ github.event.inputs.os }}" == "rocky" ]; then
           clustername="globalworkflowciplatformrocky8"
         elif [ "${{ github.event.inputs.os }}" == "centos" ]; then
