@@ -1212,6 +1212,7 @@ class GFSTasks(Tasks):
         return task
 
     def wavepostsbs(self):
+
         resources = self.get_resource('wavepostsbs')
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
@@ -1237,7 +1238,7 @@ class GFSTasks(Tasks):
                      }
 
         fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'])
- 
+
         member_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
         metatask_dict = {'task_name': f'gfs_wave_post_grid',
                                 'task_dict': task_dict,
