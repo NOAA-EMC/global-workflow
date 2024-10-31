@@ -399,7 +399,7 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
 
     cd $DATA
 
-    FHINCG=$(( DTFLD_WAV / 3600 ))
+  #  FHINCG=$(( DTFLD_WAV / 3600 ))
     if [ "$fhr" = "$fhrg" ]
     then
 # Check if grib2 file created
