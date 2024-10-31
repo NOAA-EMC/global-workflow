@@ -233,6 +233,7 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
 #  else
 #    fhr=$FORECAST_HOUR
 #  fi
+  fhr=$FORECAST_HOUR
   fhrg=$fhr
   sleep_interval=10
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
