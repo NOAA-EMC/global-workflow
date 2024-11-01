@@ -151,7 +151,6 @@
 :O3MR:5 mb:
 :O3MR:70 mb:
 :O3MR:7 mb:
-:PEVPR:surface:
 :PLI:30-0 mb above ground:
 :PLPL:255-0 mb above ground:
 :POT:0.995 sigma level:
