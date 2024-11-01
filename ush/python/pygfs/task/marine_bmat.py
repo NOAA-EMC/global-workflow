@@ -186,7 +186,7 @@ class MarineBMat(Task):
         """
 
         # TODO: This should be optional in case the geometry file was staged
-        self.jedi_dict['gridgen'].execute(self.task_config.APRUN_MARINEBMAT)      
+        self.jedi_dict['gridgen'].execute(self.task_config.APRUN_MARINEBMAT)
         self.jedi_dict['soca_diagb'].execute(self.task_config.APRUN_MARINEBMAT)
         # TODO: Make this optional once we've converged on an acceptable set of scales
         self.jedi_dict['soca_setcorscales'].execute(self.task_config.APRUN_MARINEBMAT)

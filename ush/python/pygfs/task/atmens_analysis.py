@@ -317,6 +317,6 @@ class AtmEnsAnalysis(Task):
                 'copy': [[src, dest]]
             }
             FileHandler(inc_copy).sync()
-            
+
     def clean(self):
         super().clean()
