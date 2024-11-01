@@ -531,9 +531,6 @@ class GEFSTasks(Tasks):
         if self.app_config.do_ocean:
             dep_dict = {'type': 'metatask', 'name': 'gefs_ocean_prod_#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_ice:
-            dep_dict = {'type': 'metatask', 'name': 'gefs_ice_prod_#member#'}
-            deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_atm:
             dep_dict = {'type': 'metatask', 'name': 'gefs_atmos_prod_#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -574,9 +571,6 @@ class GEFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'gefs_atmos_ensstat'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_ice:
-            dep_dict = {'type': 'metatask', 'name': 'gefs_ice_prod'}
-            deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ocean:
             dep_dict = {'type': 'metatask', 'name': 'gefs_ocean_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
