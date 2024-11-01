@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import f90nml
+import pygfs.utils.marine_da_utils as mdau
 from logging import getLogger
 import os
 from pygfs.task.analysis import Analysis
 from typing import Dict
 from wxflow import (AttrDict,
+                    Executable,
                     FileHandler,
                     logit,
                     parse_j2yaml,
@@ -41,6 +43,8 @@ class MarineLETKF(Analysis):
                             'soca',
                             'localensembleda',
                             _letkf_yaml_file]
+        # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
+        _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
 
         self.task_config.WINDOW_MIDDLE = self.task_config.current_cycle
         self.task_config.WINDOW_BEGIN = self.task_config.current_cycle - _half_assim_freq
@@ -49,6 +53,7 @@ class MarineLETKF(Analysis):
         self.task_config.mom_input_nml_tmpl = os.path.join(self.task_config.DATA, 'mom_input.nml.tmpl')
         self.task_config.mom_input_nml = os.path.join(self.task_config.DATA, 'mom_input.nml')
         self.task_config.obs_dir = os.path.join(self.task_config.DATA, 'obs')
+        self.task_config.ENSPERT_RELPATH = _enspert_relpath
 
     @logit(logger)
     def initialize(self):
@@ -64,26 +69,50 @@ class MarineLETKF(Analysis):
         logger.info("initialize")
 
         # make directories and stage ensemble background files
-        ensbkgconf = AttrDict()
-        keys = ['previous_cycle', 'current_cycle', 'DATA', 'NMEM_ENS',
-                'PARMgfs', 'ROTDIR', 'COM_OCEAN_HISTORY_TMPL', 'COM_ICE_HISTORY_TMPL']
-        for key in keys:
-            ensbkgconf[key] = self.task_config[key]
-        ensbkgconf.RUN = 'enkfgdas'
-        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.SOCA_ENS_BKG_STAGE_YAML_TMPL, ensbkgconf)
-        FileHandler(soca_ens_bkg_stage_list).sync()
         soca_fix_stage_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_stage_list).sync()
-        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, self.task_config)
+        stageconf = AttrDict()
+        keys = ['current_cycle',
+                'previous_cycle',
+                'COM_ICE_LETKF_TMPL',
+                'COM_OCEAN_LETKF_TMPL',
+                'COM_ICE_HISTORY_TMPL',
+                'COM_OCEAN_HISTORY_TMPL',
+                'COMIN_OCEAN_HISTORY_PREV',
+                'COMIN_ICE_HISTORY_PREV',
+                'COMOUT_ICE_LETKF',
+                'COMOUT_OCEAN_LETKF',
+                'DATA',
+                'ENSPERT_RELPATH',
+                'GDUMP_ENS',
+                'NMEM_ENS',
+                'OPREFIX',
+                'PARMgfs',
+                'ROTDIR',
+                'RUN',
+                'WINDOW_BEGIN',
+                'WINDOW_MIDDLE']
+        for key in keys:
+            stageconf[key] = self.task_config[key]
+
+        # stage ensemble background files
+        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, stageconf)
+        FileHandler(soca_ens_bkg_stage_list).sync()
+
+        # stage letkf-specific files
+        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, stageconf)
         FileHandler(letkf_stage_list).sync()
 
-        obs_list = parse_j2yaml(self.task_config.OBS_YAML, self.task_config)
+        obs_list = parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, self.task_config)
 
         # get the list of observations
         obs_files = []
         for ob in obs_list['observers']:
             obs_name = ob['obs space']['name'].lower()
-            obs_filename = f"{self.task_config.RUN}.t{self.task_config.cyc}z.{obs_name}.{to_YMDH(self.task_config.current_cycle)}.nc"
+            # TODO(AFE) - this should be removed when the obs config yamls are jinjafied
+            if 'distribution' not in ob['obs space']:
+                ob['obs space']['distribution'] = {'name': 'Halo', 'halo size': self.task_config['DIST_HALO_SIZE']}
+            obs_filename = f"{self.task_config.RUN}.t{self.task_config.cyc}z.{obs_name}.{to_YMDH(self.task_config.current_cycle)}.nc4"
             obs_files.append((obs_filename, ob))
 
         obs_files_to_copy = []
@@ -102,12 +131,7 @@ class MarineLETKF(Analysis):
         FileHandler({'copy': obs_files_to_copy}).sync()
 
         # make the letkf.yaml
-        letkfconf = AttrDict()
-        keys = ['WINDOW_BEGIN', 'WINDOW_MIDDLE', 'RUN', 'gcyc', 'NMEM_ENS']
-        for key in keys:
-            letkfconf[key] = self.task_config[key]
-        letkfconf.RUN = 'enkfgdas'
-        letkf_yaml = parse_j2yaml(self.task_config.MARINE_LETKF_YAML_TMPL, letkfconf)
+        letkf_yaml = parse_j2yaml(self.task_config.MARINE_LETKF_YAML_TMPL, stageconf)
         letkf_yaml.observations.observers = obs_to_use
         letkf_yaml.save(self.task_config.letkf_yaml_file)
 
@@ -133,6 +157,18 @@ class MarineLETKF(Analysis):
 
         logger.info("run")
 
+        exec_cmd_gridgen = Executable(self.task_config.APRUN_MARINEANLLETKF)
+        exec_cmd_gridgen.add_default_arg(self.task_config.GRIDGEN_EXEC)
+        exec_cmd_gridgen.add_default_arg(self.task_config.GRIDGEN_YAML)
+
+        mdau.run(exec_cmd_gridgen)
+
+        exec_cmd_letkf = Executable(self.task_config.APRUN_MARINEANLLETKF)
+        for letkf_exec_arg in self.task_config.letkf_exec_args:
+            exec_cmd_letkf.add_default_arg(letkf_exec_arg)
+
+        mdau.run(exec_cmd_letkf)
+
     @logit(logger)
     def finalize(self):
         """Method finalize for ocean and sea ice LETKF task
@@ -145,3 +181,11 @@ class MarineLETKF(Analysis):
         """
 
         logger.info("finalize")
+
+        letkfsaveconf = AttrDict()
+        keys = ['current_cycle', 'DATA', 'NMEM_ENS', 'WINDOW_BEGIN', 'GDUMP_ENS',
+                'PARMgfs', 'ROTDIR', 'COM_OCEAN_LETKF_TMPL', 'COM_ICE_LETKF_TMPL']
+        for key in keys:
+            letkfsaveconf[key] = self.task_config[key]
+        letkf_save_list = parse_j2yaml(self.task_config.MARINE_LETKF_SAVE_YAML_TMPL, letkfsaveconf)
+        FileHandler(letkf_save_list).sync()

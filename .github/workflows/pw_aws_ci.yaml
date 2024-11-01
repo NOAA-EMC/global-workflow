@@ -1,0 +1,170 @@
+name: gw-ci-aws
+# TEST_DIR contains 2 directories;
+# 1. HOMEgfs: clone of the global-workflow
+# 2. RUNTESTS: A directory containing EXPDIR and COMROT for experiments
+# e.g. $> tree ./TEST_DIR
+# ./TEST_DIR
+# ├── HOMEgfs
+# └── RUNTESTS
+#     ├── COMROT
+#     │   └── ${pslot}
+#     └── EXPDIR
+#         └── ${pslot}
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull Request Number (use 0 for non-PR)'
+        required: true
+        default: '0'
+      os:
+        description: 'Operating System'
+        required: true
+        type: choice
+        options:
+          - rocky
+          - centos
+
+env:
+  TEST_DIR: ${{ github.workspace }}/${{ github.run_id }}
+  MACHINE_ID: noaacloud
+
+jobs:
+
+  run-start-clusters:
+    runs-on: ubuntu-latest
+    env:
+      PW_PLATFORM_HOST: noaa.parallel.works
+    steps:
+    - name: Checkout pw-cluster-automation repository
+      uses: actions/checkout@v4
+      with:
+        repository: TerrenceMcGuinness-NOAA/pw-cluster-automation
+        path: pw-cluster-automation
+        ref: pw_cluster_noaa
+
+    - name: Run startClusters
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.ID_RSA_AWS }}" > ~/.ssh/id_rsa
+        echo "${{ secrets.PW_API_KEY }}" > ~/.ssh/pw_api.key
+        chmod 700 ~/.ssh
+        chmod 600 ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/pw_api.key
+        if [ "${{ github.event.inputs.os }}" == "rocky" ]; then
+          clustername="globalworkflowciplatformrocky8"
+        elif [ "${{ github.event.inputs.os }}" == "centos" ]; then
+          clustername="awsemctmcgc7i48xlargeciplatform"
+        fi
+        python3 pw-cluster-automation/startClusters.py $clustername
+
+  fetch-branch:
+    needs: run-start-clusters
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
+    outputs:
+      branch: ${{ steps.get-branch.outputs.branch }}
+      repo: ${{ steps.get-branch.outputs.repo }}
+    steps:
+    - name: Fetch branch name and repo for PR
+      id: get-branch
+      run: |
+        pr_number=${{ github.event.inputs.pr_number }}
+        repo=${{ github.repository }}
+        if [ "$pr_number" -eq "0" ]; then
+          branch=${{ github.event.inputs.ref }}
+          repo_url="https://github.com/${{ github.repository_owner }}/${{ github.repository }}.git"
+        else
+          branch=$(gh pr view $pr_number --repo $repo --json headRefName --jq '.headRefName')
+          repo_url=$(gh pr view $pr_number --repo $repo --json headRepository --jq '.headRepository.url')
+        fi
+        echo "::set-output name=branch::$branch"
+        echo "::set-output name=repo::$repo_url"
+
+  checkout:
+    needs: fetch-branch
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
+    timeout-minutes: 600
+    steps:
+    - name: Checkout global-workflow
+      uses: actions/checkout@v4
+      with:
+        path: ${{ github.run_id }}/HOMEgfs
+        submodules: 'recursive'
+        repository: ${{ needs.fetch-branch.outputs.repo }}
+        ref: ${{ needs.fetch-branch.outputs.branch }}
+
+  build-link:      
+    needs: checkout
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
+    steps:
+    - name: Build components
+      run: |
+        cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
+        ./build_all.sh -j 8
+
+    - name: Link artifacts
+      run: |
+        cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
+        ./link_workflow.sh
+
+  create-experiments:
+    needs: build-link
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
+    strategy:
+      matrix:
+        case: ["C48_ATM"]
+    steps:
+      - name: Create Experiments ${{ matrix.case }}
+        env:
+          RUNTESTS: ${{ env.TEST_DIR }}/RUNTESTS
+          pslot: ${{ matrix.case }}.${{ github.run_id }}
+        run: |
+          mkdir -p ${{ env.RUNTESTS }}
+          cd ${{ env.TEST_DIR }}/HOMEgfs
+          source workflow/gw_setup.sh
+          source ci/platforms/config.noaacloud
+          ./workflow/create_experiment.py --yaml ci/cases/pr/${{ matrix.case }}.yaml --overwrite
+
+  run-experiments:
+    needs: create-experiments
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
+    strategy:
+      matrix:
+        case: ["C48_ATM"]
+    steps:
+      - name: Run Experiment ${{ matrix.case }}
+        run: |
+          cd ${{ env.TEST_DIR }}/HOMEgfs
+          ./ci/scripts/run-check_ci.sh ${{ env.TEST_DIR }} ${{ matrix.case }}.${{ github.run_id }} HOMEgfs
+
+  clean-up:
+    needs: run-experiments
+    runs-on: 
+      - self-hosted
+      - aws
+      - parallelworks
+      - ${{ github.event.inputs.os }}
+    steps:
+      - name: Clean up workspace
+        run: |
+          echo "Cleaning up workspace"
+          rm -rf ${{ env.TEST_DIR }}
