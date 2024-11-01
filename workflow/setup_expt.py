@@ -50,18 +50,30 @@ def fill_EXPDIR(inputs):
 def update_configs(host, inputs):
 
     def _update_defaults(dict_in: dict) -> dict:
+        # Given an input dict_in of the form
+        # {defaults: {config_name: {var1: value1, ...}, }, config_name: {var1: value1, ...}}
+        # Replace values in ['defaults']['config_name']['var1'] with ['config_name']['var1']
+        # and return the ['defaults'] subdictionary as its own new dictionary.
         defaults = dict_in.pop('defaults', AttrDict())
         defaults.update(dict_in)
         return defaults
 
-    # Read in the YAML file to fill out templates and override host defaults
+    # Convert the inputs to an AttrDict
+    # data = AttrDict(**inputs.__dict__)
     data = AttrDict(host.info, **inputs.__dict__)
+
+    # Read in the YAML file to fill out templates
     data.HOMEgfs = _top
     yaml_path = inputs.yaml
     if not os.path.exists(yaml_path):
-        raise IOError(f'YAML file does not exist, check path:' + yaml_path)
-    yaml_dict = _update_defaults(AttrDict(parse_j2yaml(yaml_path, data)))
+        raise FileNotFoundError(f'YAML file does not exist, check path: {yaml_path}')
+    yaml_dict = parse_j2yaml(yaml_path, data)
 
+    # yaml_dict is in the form {defaults: {key1: val1, ...}, base: {key1: val1, ...}, ...}
+    # _update_defaults replaces any keys/values in defaults with matching keys in base
+    yaml_dict = _update_defaults(yaml_dict)
+
+    # Override the YAML defaults with the host-specific capabilities
     # First update config.base
     edit_baseconfig(host, inputs, yaml_dict)
 
@@ -92,20 +104,19 @@ def edit_baseconfig(host, inputs, yaml_dict):
     to `EXPDIR/pslot/config.base`
     """
 
-    tmpl_dict = {
+    # Create base_dict which holds templated variables to be written to config.base
+    base_dict = {
         "@HOMEgfs@": _top,
         "@MACHINE@": host.machine.upper()}
-
-    # Replace host related items
-    extend_dict = get_template_dict(host.info)
-    tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     if inputs.start in ["warm"]:
         is_warm_start = ".true."
     elif inputs.start in ["cold"]:
         is_warm_start = ".false."
+    else:
+        raise ValueError(f"Invalid start type: {inputs.start}")
 
-    extend_dict = dict()
+    # Construct a dictionary from user inputs
     extend_dict = {
         "@PSLOT@": inputs.pslot,
         "@SDATE@": datetime_to_YMDH(inputs.idate),
@@ -121,35 +132,37 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@APP@": inputs.app,
         "@NMEM_ENS@": getattr(inputs, 'nens', 0)
     }
-    tmpl_dict = dict(tmpl_dict, **extend_dict)
 
-    extend_dict = dict()
     if getattr(inputs, 'nens', 0) > 0:
-        extend_dict = {
-            "@CASEENS@": f'C{inputs.resensatmos}',
-        }
-        tmpl_dict = dict(tmpl_dict, **extend_dict)
+        extend_dict['@CASEENS@'] = f'C{inputs.resensatmos}'
 
-    extend_dict = dict()
     if inputs.mode in ['cycled']:
-        extend_dict = {
-            "@DOHYBVAR@": "YES" if inputs.nens > 0 else "NO",
-        }
-        tmpl_dict = dict(tmpl_dict, **extend_dict)
+        extend_dict["@DOHYBVAR@"] = "YES" if inputs.nens > 0 else "NO"
 
-    try:
-        tmpl_dict = dict(tmpl_dict, **get_template_dict(yaml_dict['base']))
-    except KeyError:
-        pass
+    # Further extend/redefine base_dict with extend_dict
+    base_dict = dict(base_dict, **extend_dict)
+
+    # Add/override 'base'-specific declarations in base_dict
+    if 'base' in yaml_dict:
+        base_dict = dict(base_dict, **get_template_dict(yaml_dict['base']))
+
+    # Finally, override defaults with machine-specific capabilties
+    # e.g. some machines are not able to run metp jobs
+    host_dict = get_template_dict(host.info)
+    base_dict = dict(base_dict, **host_dict)
 
     base_input = f'{inputs.configdir}/config.base'
     base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
-    edit_config(base_input, base_output, tmpl_dict)
+    edit_config(base_input, base_output, base_dict)
 
     return
 
 
 def edit_config(input_config, output_config, config_dict):
+    """
+    Given a templated input_config filename, parse it based on config_dict and
+    write it out to the output_config filename.
+    """
 
     # Read input config
     with open(input_config, 'rt') as fi:
