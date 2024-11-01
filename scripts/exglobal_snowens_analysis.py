@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-# exgdas_enkf_snow_analysis.py
+# exglobal_snowens_analysis.py
 # This script creates an SnowEnsAnalysis class,
 # which will compute the ensemble mean of the snow forecast,
-# run a 2DVar analysis,
-# then will recenter the ensemble mean to the
-# deterministic analysis and provide increments
+# run a 2DVar analysis, and provide increments
 # to create an ensemble of snow analyses
 import os
 
@@ -21,7 +19,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the snow ensemble analysis task
-    SnowEnsAnl = SnowEnsAnalysis(config, 'snowanl')
+    SnowEnsAnl = SnowEnsAnalysis(config, 'esnowanl')
 
     # Initialize JEDI 2DVar snow analysis
     SnowEnsAnalysis.initialize_jedi()

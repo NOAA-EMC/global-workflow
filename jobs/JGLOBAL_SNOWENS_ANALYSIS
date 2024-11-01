@@ -34,7 +34,7 @@ done
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exgdas_enkf_snow_analysis.py}
+EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snowens_analysis.py}
 ${EXSCRIPT}
 status=$?
 (( status != 0 )) && exit "${status}"
