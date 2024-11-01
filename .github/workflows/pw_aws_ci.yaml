@@ -80,8 +80,10 @@ jobs:
           branch=$(gh pr view $pr_number --repo $repo --json headRefName --jq '.headRefName')
           repo_url=$(gh pr view $pr_number --repo $repo --json headRepository --jq '.headRepository.url')
         fi
-        echo "::set-output name=branch::$branch"
-        echo "::set-output name=repo::$repo_url"
+        {
+          echo "BRANCH=$branch"
+          echo "REPO=$repo_url"
+        } >> $GITHUB_OUTPUT
 
   checkout:
     needs: fetch-branch
@@ -97,8 +99,8 @@ jobs:
       with:
         path: ${{ github.run_id }}/HOMEgfs
         submodules: 'recursive'
-        repository: ${{ needs.fetch-branch.outputs.repo }}
-        ref: ${{ needs.fetch-branch.outputs.branch }}
+        repository: ${{ steps.git-branch.outputs.BRANCH }}
+        ref: ${{ steps.git-branch.outputs.REPO }}
 
   build-link:      
     needs: checkout
