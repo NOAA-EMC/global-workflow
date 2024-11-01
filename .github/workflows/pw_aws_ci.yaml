@@ -101,8 +101,8 @@ jobs:
       with:
         path: ${{ github.run_id }}/HOMEgfs
         submodules: 'recursive'
-        repository: ${{ needs.fetch-branch.outputs.branch }}
-        ref: ${{ needs.fetch-branch.outputs.repo }}
+        repository: ${{ needs.fetch-branch.outputs.repo }}
+        ref: ${{ needs.fetch-branch.outputs.branch }}
 
   build-link:      
     needs: checkout
