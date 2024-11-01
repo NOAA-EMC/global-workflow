@@ -84,7 +84,7 @@ jobs:
         fi
         {
           echo "branch=$branch"
-          echo "repo=$repo_url"
+          echo "repo=$repo"
         } >> $GITHUB_OUTPUT
 
   checkout:
