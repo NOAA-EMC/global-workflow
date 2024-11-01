@@ -31,24 +31,57 @@ env:
   MACHINE_ID: noaacloud
 
 jobs:
+
+  run-start-clusters:
+    runs-on: ubuntu-latest
+    env:
+      PW_PLATFORM_HOST: noaa.parallel.works
+    steps:
+    - name: Checkout pw-cluster-automation repository
+      uses: actions/checkout@v4
+      with:
+        repository: TerrenceMcGuinness-NOAA/pw-cluster-automation
+        path: pw-cluster-automation
+        ref: pw_cluster_noaa
+
+    - name: Run startClusters
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.ID_RSA_AWS }}" > ~/.ssh/id_rsa
+        echo "${{ secrets.PW_API_KEY }}" > ~/.ssh/pw_api.key
+        chmod 700 ~/.ssh
+        chmod 600 ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/pw_api.key
+        if [ "${{ github.event.inputs.os }}" == "rocky" ]; then
+          clustername="globalworkflowciplatformrocky8"
+        elif [ "${{ github.event.inputs.os }}" == "centos" ]; then
+          clustername="awsemctmcgc7i48xlargeciplatform"
+        fi
+        python3 pw-cluster-automation/startClusters.py $clustername
+
   fetch-branch:
+    needs: run-start-clusters
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
     outputs:
       branch: ${{ steps.get-branch.outputs.branch }}
+      repo: ${{ steps.get-branch.outputs.repo }}
     steps:
-    - name: Fetch branch name for PR
+    - name: Fetch branch name and repo for PR
       id: get-branch
       run: |
         pr_number=${{ github.event.inputs.pr_number }}
         repo=${{ github.repository }}
         if [ "$pr_number" -eq "0" ]; then
           branch=${{ github.event.inputs.ref }}
+          repo_url="https://github.com/${{ github.repository_owner }}/${{ github.repository }}.git"
         else
           branch=$(gh pr view $pr_number --repo $repo --json headRefName --jq '.headRefName')
+          repo_url=$(gh pr view $pr_number --repo $repo --json headRepository --jq '.headRepository.url')
         fi
         echo "::set-output name=branch::$branch"
+        echo "::set-output name=repo::$repo_url"
 
   checkout:
     needs: fetch-branch
@@ -64,6 +97,7 @@ jobs:
       with:
         path: ${{ github.run_id }}/HOMEgfs
         submodules: 'recursive'
+        repository: ${{ needs.fetch-branch.outputs.repo }}
         ref: ${{ needs.fetch-branch.outputs.branch }}
 
   build-link:      
