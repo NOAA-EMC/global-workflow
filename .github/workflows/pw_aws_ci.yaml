@@ -75,12 +75,12 @@ jobs:
         repo=${{ github.repository }}
         if [ "$pr_number" -eq "0" ]; then
           branch=${{ github.event.inputs.ref }}
-          repo_url="https://github.com/${{ github.repository_owner }}/${{ github.repository }}.git"
+          repo="{{ github.repository_owner }}/${{ github.repository }}"
         else
           branch=$(gh pr view $pr_number --repo $repo --json headRefName --jq '.headRefName')
           repo_owner=$(gh pr view $pr_number --repo $repo --json headRepositoryOwner --jq '.headRepositoryOwner.login')
           repo_name=$(gh pr view $pr_number --repo $repo --json headRepository --jq '.headRepository.name')
-          repo_url="https://github.com/$repo_owner/$repo_name.git"
+          repo="$repo_owner/$repo_name"
         fi
         {
           echo "branch=$branch"
