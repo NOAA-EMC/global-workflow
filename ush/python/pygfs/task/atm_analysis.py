@@ -164,6 +164,36 @@ class AtmAnalysis(Task):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
+    def execute_var(self) -> None:
+        """Execute JEDI variational analysis application
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+        
+        self.jedi_dict['atmanlvar'].execute(self.task_config.APRUN_ATMANLVAR)
+
+    @logit(logger)
+    def execute_fv3inc(self) -> None:
+        """Execute JEDI FV3 increment converter application
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+        
+        self.jedi_dict['atmanlfv3inc'].execute(self.task_config.APRUN_ATMANLFV3INC)        
+        
+    @logit(logger)
     def finalize(self) -> None:
         """Finalize a global atm analysis
 

@@ -169,7 +169,7 @@ class MarineBMat(Task):
         mdau.run(exec_cmd)
 
     @logit(logger)
-    def execute(self, aprun_cmd: str) -> None:
+    def execute(self) -> None:
         """Generate the full B-matrix
 
         This method will generate the full B-matrix according to the configuration.
@@ -178,23 +178,22 @@ class MarineBMat(Task):
 
         Parameters
         ----------
-        aprun_cmd: str
-            String comprising the run command for the JEDI executable.
+        None
 
         Returns
         ----------
         None
         """
 
-        self.jedi_dict['gridgen'].execute(aprun_cmd)  # TODO: This should be optional in case the geometry file was staged
-        self.jedi_dict['soca_diagb'].execute(aprun_cmd)
-        self.jedi_dict['soca_setcorscales'].execute(aprun_cmd)  # TODO: Make this optional once we've converged on an acceptable set of scales
-        self.jedi_dict['soca_parameters_diffusion_hz'].execute(aprun_cmd)  # TODO: Make this optional once we've converged on an acceptable set of scales
+        self.jedi_dict['gridgen'].execute(self.task_config.APRUN_MARINEBMAT)  # TODO: This should be optional in case the geometry file was staged
+        self.jedi_dict['soca_diagb'].execute(self.task_config.APRUN_MARINEBMAT)
+        self.jedi_dict['soca_setcorscales'].execute(self.task_config.APRUN_MARINEBMAT)  # TODO: Make this optional once we've converged on an acceptable set of scales
+        self.jedi_dict['soca_parameters_diffusion_hz'].execute(self.task_config.APRUN_MARINEBMAT)  # TODO: Make this optional once we've converged on an acceptable set of scales
         self.execute_vtscales()
-        self.jedi_dict['soca_parameters_diffusion_vt'].execute(aprun_cmd)
+        self.jedi_dict['soca_parameters_diffusion_vt'].execute(self.task_config.APRUN_MARINEBMAT)
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
-            self.jedi_dict['soca_ensb'].execute(self.task_config)  # TODO: refactor this from the old scripts
-            self.jedi_dict['soca_ensweights'].execute(self.task_config)  # TODO: refactor this from the old scripts
+            self.jedi_dict['soca_ensb'].execute(self.task_config.APRUN_MARINEBMAT)  # TODO: refactor this from the old scripts
+            self.jedi_dict['soca_ensweights'].execute(self.task_config.APRUN_MARINEBMAT)  # TODO: refactor this from the old scripts
 
     @logit(logger)
     def finalize(self: Task) -> None:

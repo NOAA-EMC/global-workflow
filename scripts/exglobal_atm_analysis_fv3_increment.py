@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # exglobal_atm_analysis_fv3_increment.py
 # This script creates an AtmAnalysis object
-# and runs the execute method of its Jedi
-# object attribute
+# and runs the execute method which runs the JEDI
+# FV3 increment converter
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
@@ -21,4 +21,4 @@ if __name__ == '__main__':
     AtmAnl = AtmAnalysis(config)
 
     # Initialize and execute FV3 increment converter
-    AtmAnl.jedi_dict['atmanlfv3inc'].execute(config.APRUN_ATMANLFV3INC)
+    AtmAnl.execute_fv3inc()

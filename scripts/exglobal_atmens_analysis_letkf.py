@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # exglobal_atmens_analysis_letkf.py
 # This script creates an AtmEnsAnalysis object
-# and runs the execute method of its Jedi object attribute
-# which executes the global atm local ensemble analysis
+# and initializes and runs the full JEDI LETKF
+# application
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
@@ -20,10 +20,8 @@ if __name__ == '__main__':
     # Instantiate the atmens analysis task
     AtmEnsAnl = AtmEnsAnalysis(config)
 
-    # Initalize JEDI ensemble DA application
-    # Note: This is normally done in AtmEnsAnl.initialize(), but that method now
-    #       initializes the split observer-solver. This case is just for testing.
-    AtmEnsAnl.jedi_dict['atmensanlletkf'].initialize(AtmEnsAnl.task_config)
+    # Initalize JEDI full ensemble DA application
+    AtmEnsAnl.initialize_letkf()
 
     # Execute the JEDI ensemble DA analysis
-    AtmEnsAnl.jedi_dict['atmensanlletkf'].execute(config.APRUN_ATMENSANLLETKF)
+    AtmEnsAnl.execute_letkf()

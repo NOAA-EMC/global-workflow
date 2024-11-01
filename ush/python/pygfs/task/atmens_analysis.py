@@ -152,6 +152,87 @@ class AtmEnsAnalysis(Task):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
+    def initialize_letkf(self) -> None:
+        """Initialize a global atmens analysis
+
+        Note: This would normally be done in AtmEnsAnalysis.initialize(), but that method
+              now initializes the split observer-solver. This case is just for testing.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        self.jedi_dict['atmensanlletkf'].initialize(self.task_config)
+        
+    @logit(logger)
+    def execute_obs(self) -> None:
+        """Execute JEDI LETKF application in observer mode
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        self.jedi_dict['atmensanlobs'].execute(self.task_config.APRUN_ATMENSANLOBS)
+
+    @logit(logger)
+    def execute_sol(self) -> None:
+        """Execute JEDI LETKF application in solver mode
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        self.jedi_dict['atmensanlsol'].execute(self.task_config.APRUN_ATMENSANLSOL)
+
+    @logit(logger)
+    def execute_fv3inc(self) -> None:
+        """Execute FV3 increment converter
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        self.jedi_dict['atmensanlfv3inc'].execute(self.task_config.APRUN_ATMENSANLFV3INC)
+        
+    @logit(logger)
+    def execute_letkf(self) -> None:
+        """Execute full JEDI LETKF application
+
+        Note: This is just for testing. Operationally, we plan to split the LETKF
+              into observer and solver modes.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        self.jedi_dict['atmensanlletkf'].execute(self.task_config.APRUN_ATMENSANLLETKF)
+        
+    @logit(logger)
     def finalize(self) -> None:
         """Finalize a global atmens analysis
 
@@ -237,5 +318,7 @@ class AtmEnsAnalysis(Task):
             }
             FileHandler(inc_copy).sync()
 
+    
+            
     def clean(self):
         super().clean()
