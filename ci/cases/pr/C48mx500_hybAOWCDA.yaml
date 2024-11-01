@@ -1,0 +1,26 @@
+experiment:
+  system: gfs
+  mode: cycled
+
+arguments:
+  pslot: {{ 'pslot' | getenv }}
+  app: S2S
+  resdetatmos: 48
+  resdetocean: 5.0
+  resensatmos: 48
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20240610
+  idate: 2021032412
+  edate: 2021032418
+  nens: 3
+  interval: 0
+  start: warm
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/soca_gfs_defaults_ci.yaml
+
+skip_ci_on_hosts:
+  - wcoss2
+  - orion
+  - hercules
+  - hera
+  - gaea
