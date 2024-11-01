@@ -15,7 +15,7 @@ export OBS_YAML=${OBS_LIST}
 
 # ocean analysis needs own dmpdir until standard dmpdir has full ocean obs
 use_exp_obs="@use_exp_obs@"
-if [[ "use_exp_obs" == "YES" ]]; then
+if [[ "${use_exp_obs}" == "YES" ]]; then
     dmpdir_exp="@dmpdir_exp@"
 fi
 
