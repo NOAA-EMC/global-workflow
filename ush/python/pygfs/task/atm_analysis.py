@@ -175,7 +175,7 @@ class AtmAnalysis(Task):
         ----------
         None
         """
-        
+
         self.jedi_dict['atmanlvar'].execute(self.task_config.APRUN_ATMANLVAR)
 
     @logit(logger)
@@ -190,9 +190,9 @@ class AtmAnalysis(Task):
         ----------
         None
         """
-        
-        self.jedi_dict['atmanlfv3inc'].execute(self.task_config.APRUN_ATMANLFV3INC)        
-        
+
+        self.jedi_dict['atmanlfv3inc'].execute(self.task_config.APRUN_ATMANLFV3INC)
+
     @logit(logger)
     def finalize(self) -> None:
         """Finalize a global atm analysis

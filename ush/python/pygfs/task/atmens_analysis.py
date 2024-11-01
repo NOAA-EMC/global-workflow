@@ -168,7 +168,7 @@ class AtmEnsAnalysis(Task):
         """
 
         self.jedi_dict['atmensanlletkf'].initialize(self.task_config)
-        
+
     @logit(logger)
     def execute_obs(self) -> None:
         """Execute JEDI LETKF application in observer mode
@@ -213,7 +213,7 @@ class AtmEnsAnalysis(Task):
         """
 
         self.jedi_dict['atmensanlfv3inc'].execute(self.task_config.APRUN_ATMENSANLFV3INC)
-        
+
     @logit(logger)
     def execute_letkf(self) -> None:
         """Execute full JEDI LETKF application
@@ -231,7 +231,7 @@ class AtmEnsAnalysis(Task):
         """
 
         self.jedi_dict['atmensanlletkf'].execute(self.task_config.APRUN_ATMENSANLLETKF)
-        
+
     @logit(logger)
     def finalize(self) -> None:
         """Finalize a global atmens analysis
@@ -317,8 +317,6 @@ class AtmEnsAnalysis(Task):
                 'copy': [[src, dest]]
             }
             FileHandler(inc_copy).sync()
-
-    
             
     def clean(self):
         super().clean()

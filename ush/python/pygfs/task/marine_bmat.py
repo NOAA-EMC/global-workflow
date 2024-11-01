@@ -185,15 +185,19 @@ class MarineBMat(Task):
         None
         """
 
-        self.jedi_dict['gridgen'].execute(self.task_config.APRUN_MARINEBMAT)  # TODO: This should be optional in case the geometry file was staged
+        # TODO: This should be optional in case the geometry file was staged
+        self.jedi_dict['gridgen'].execute(self.task_config.APRUN_MARINEBMAT)      
         self.jedi_dict['soca_diagb'].execute(self.task_config.APRUN_MARINEBMAT)
-        self.jedi_dict['soca_setcorscales'].execute(self.task_config.APRUN_MARINEBMAT)  # TODO: Make this optional once we've converged on an acceptable set of scales
-        self.jedi_dict['soca_parameters_diffusion_hz'].execute(self.task_config.APRUN_MARINEBMAT)  # TODO: Make this optional once we've converged on an acceptable set of scales
+        # TODO: Make this optional once we've converged on an acceptable set of scales
+        self.jedi_dict['soca_setcorscales'].execute(self.task_config.APRUN_MARINEBMAT)
+        # TODO: Make this optional once we've converged on an acceptable set of scales
+        self.jedi_dict['soca_parameters_diffusion_hz'].execute(self.task_config.APRUN_MARINEBMAT)
         self.execute_vtscales()
         self.jedi_dict['soca_parameters_diffusion_vt'].execute(self.task_config.APRUN_MARINEBMAT)
+        # TODO: refactor this from the old scripts
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
-            self.jedi_dict['soca_ensb'].execute(self.task_config.APRUN_MARINEBMAT)  # TODO: refactor this from the old scripts
-            self.jedi_dict['soca_ensweights'].execute(self.task_config.APRUN_MARINEBMAT)  # TODO: refactor this from the old scripts
+            self.jedi_dict['soca_ensb'].execute(self.task_config.APRUN_MARINEBMAT)
+            self.jedi_dict['soca_ensweights'].execute(self.task_config.APRUN_MARINEBMAT)
 
     @logit(logger)
     def finalize(self: Task) -> None:
