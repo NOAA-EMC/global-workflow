@@ -47,9 +47,15 @@ class Stage(Task):
         -------
         None
         """
+
         YYYYMMDDHH = to_YMDH(stage_dict.current_cycle)
-        YYYY = YYYYMMDDHH[0:4]
-        MM = YYYYMMDDHH[4:6]
+
+        next_cycle = add_to_datetime(stage_dict.current_cycle, +to_timedelta(f"{self._config['assim_freq']}H"))
+        logger.debug(f"next cycle: {next_cycle}")
+
+        YYYYMMDDHH_next = to_YMDH(next_cycle)
+        YYYY_next = YYYYMMDDHH_next[0:4]
+        MM_next = YYYYMMDDHH_next[4:6]
 
         if stage_dict.DO_DOWNLOAD_ICS is True:
             # Download ICs from HPSS to ICSDIR
@@ -65,8 +71,8 @@ class Stage(Task):
             aws_cmd.add_default_arg("--no-sign-request")
             aws_url = "s3://noaa-ufs-gefsv13replay-pds/"
 
-            aws_cmd(aws_url + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSPRS.GrbF03", "./")
-            aws_cmd(aws_url + YYYY + "/" + MM + "/" + YYYYMMDDHH + "/GFSFLX.GrbF03", "./")
+            aws_cmd(aws_url + YYYY_next + "/" + MM_next + "/" + YYYYMMDDHH_next + "/GFSPRS.GrbF03", "./")
+            aws_cmd(aws_url + YYYY_next + "/" + MM_next + "/" + YYYYMMDDHH_next + "/GFSFLX.GrbF03", "./")
 
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
