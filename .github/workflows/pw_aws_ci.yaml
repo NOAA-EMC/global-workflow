@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 'Pull Request Number (use 0 for non-PR)'
+        description: 'PR Number (use 0 for non-PR)'
         required: true
         default: '0'
       os:
@@ -72,16 +72,19 @@ jobs:
       id: get-branch
       run: |
         pr_number=${{ github.event.inputs.pr_number }}
-        repo=${{ github.repository }}
         if [ "$pr_number" -eq "0" ]; then
           branch=${{ github.event.inputs.ref }}
-          repo_url="https://github.com/${{ github.repository_owner }}/${{ github.repository }}.git"
+          repo=${{ github.repository }}
         else
           branch=$(gh pr view $pr_number --repo $repo --json headRefName --jq '.headRefName')
-          repo_url=$(gh pr view $pr_number --repo $repo --json headRepository --jq '.headRepository.url')
+          repo_owner=$(gh pr view $pr_number --repo $repo --json headRepositoryOwner --jq '.headRepositoryOwner.login')
+          repo_name=$(gh pr view $pr_number --repo $repo --json headRepository --jq '.headRepository.name')
+          repo="$repo_owner/$repo_name"
         fi
-        echo "::set-output name=branch::$branch"
-        echo "::set-output name=repo::$repo_url"
+        {
+          echo "branch=$branch"
+          echo "repo=$repo"
+        } >> $GITHUB_OUTPUT
 
   checkout:
     needs: fetch-branch
