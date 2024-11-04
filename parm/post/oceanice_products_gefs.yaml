@@ -33,7 +33,7 @@ ocean:
     {% elif model_grid == 'mx500' %}
     ocean_levels: [5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 226, 241, 267]
     {% endif %}
-  subset: ['SSH', 'SST', 'SSS', 'speed', 'MLD_003', 'latent', 'sensible', 'SW', 'LW', 'LwLatSens', 'Heat_PmE', 'SSU', 'SSV', 'taux', 'tauy', 'temp', 'so', 'uo', 'vo']
+  subset: ['SSH', 'SST', 'SSS', 'speed', 'MLD_003', 'latent', 'sensible', 'SW', 'LW', 'LwLatSens', 'Heat_PmE', 'SSU', 'SSV', 'taux', 'tauy', 'temp', 'tob', 'so', 'uo', 'vo']
   data_in:
     copy:
       - ["{{ COM_OCEAN_HISTORY }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
