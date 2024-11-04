@@ -2,7 +2,7 @@
 
 import os
 from logging import getLogger
-from typing import Dict, List, Any
+from typing import Dict, List, Optional, Any
 import netCDF4 as nc
 import numpy as np
 
@@ -12,27 +12,45 @@ from wxflow import (AttrDict,
                     rm_p, chdir,
                     parse_j2yaml, save_as_yaml,
                     Jinja,
+                    Task,
                     logit,
                     Executable,
                     WorkflowException)
-from pygfs.task.analysis import Analysis
+from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class SnowEnsAnalysis(Analysis):
+class SnowEnsAnalysis(Task):
     """
-    Class for global ensemble snow analysis tasks
+    Class for JEDI-based global ensemble snow analysis tasks
     """
 
     @logit(logger, name="SnowEnsAnalysis")
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, Any], yaml_name: Optional[str] = None):
+        """Constructor global ensemble snow analysis task
+
+        This method will construct a global ensemble snow analysis task.
+        This includes:
+        - extending the task_config attribute AttrDict to include parameters required for this task
+        - instantiate the Jedi attribute object
+
+        Parameters
+        ----------
+        config: Dict
+            dictionary object containing task configuration
+        yaml_name: str, optional
+            name of YAML file for JEDI configuration
+
+        Returns
+        ----------
+        None
+        """
         super().__init__(config)
 
         _res_det = int(self.task_config['CASE'][1:])
         _res_ens = int(self.task_config['CASE_ENS'][1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
-        _recenter_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config['cyc']:02d}z.land_recenter.yaml")
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -47,7 +65,9 @@ class SnowEnsAnalysis(Analysis):
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'jedi_yaml': _recenter_yaml,
+                'GPREFIX': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'snow_obsdatain_path': f"{self.task_config.DATA}/obs/",
+                'snow_obsdataout_path': f"{self.task_config.DATA}/diags/",
             }
         )
         bkg_time = _window_begin if self.task_config.DOIAU else self.task_config.current_cycle
@@ -55,6 +75,104 @@ class SnowEnsAnalysis(Analysis):
 
         # task_config is everything that this task should need
         self.task_config = AttrDict(**self.task_config, **local_dict)
+
+        # Create JEDI object
+        self.jedi = Jedi(self.task_config, yaml_name)
+
+    @logit(logger)
+    def initialize_jedi(self):
+        """Initialize JEDI application
+
+        This method will initialize a JEDI application used in the global ensemble snow analysis.
+        This includes:
+        - generating and saving JEDI YAML config
+        - linking the JEDI executable
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        # get JEDI config
+        logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
+        self.jedi.set_config(self.task_config)
+        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
+
+        # save JEDI config to YAML file
+        logger.debug(f"Writing JEDI YAML config to: {self.jedi.yaml}")
+        save_as_yaml(self.jedi.config, self.jedi.yaml)
+
+        # link JEDI executable
+        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
+        self.jedi.link_exe(self.task_config)
+
+    @logit(logger)
+    def initialize_analysis(self) -> None:
+        """Initialize a global ensemble snow analysis
+
+        This method will initialize a global ensemble snow analysis.
+        This includes:
+        - staging model backgrounds
+        - staging observation files
+        - staging FV3-JEDI fix files
+        - staging B error files
+        - creating output directories
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+        super().initialize()
+
+        # stage backgrounds
+        logger.info(f"Staging background files from {self.task_config.SNOW_ENS_STAGE_TMPL}")
+        bkg_staging_dict = parse_j2yaml(self.task_config.SNOW_ENS_STAGE_TMPL, self.task_config)
+        FileHandler(bkg_staging_dict).sync()
+        logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}")
+
+        # stage orography files
+        logger.info(f"Staging orography files specified in {self.task_config.SNOW_OROG_STAGE_TMPL}")
+        snow_orog_stage_list = parse_j2yaml(self.task_config.SNOW_OROG_STAGE_TMPL, self.task_config)
+        FileHandler(snow_orog_stage_list).sync()
+
+        # stage observations
+        logger.info(f"Staging list of observation files generated from JEDI config")
+        obs_dict = self.jedi.get_obs_dict(self.task_config)
+        FileHandler(obs_dict).sync()
+        logger.debug(f"Observation files:\n{pformat(obs_dict)}")
+
+        # stage GTS bufr2ioda mapping YAML files
+        logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.GTS_SNOW_STAGE_YAML}")
+        gts_mapping_list = parse_j2yaml(self.task_config.GTS_SNOW_STAGE_YAML, self.task_config)
+        FileHandler(gts_mapping_list).sync()
+
+        # stage FV3-JEDI fix files
+        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        FileHandler(jedi_fix_dict).sync()
+        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
+
+        # staging B error files
+        logger.info("Stage files for static background error")
+        berror_staging_dict = parse_j2yaml(self.task_config.BERROR_STAGING_YAML, self.task_config)
+        FileHandler(berror_staging_dict).sync()
+        logger.debug(f"Background error files:\n{pformat(berror_staging_dict)}")
+
+        # need output dir for diags and anl
+        logger.debug("Create empty output [anl, diags] directories to receive output from executable")
+        newdirs = [
+            os.path.join(self.task_config.DATA, 'anl'),
+            os.path.join(self.task_config.DATA, 'diags'),
+        ]
+        FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
     def initialize(self) -> None:

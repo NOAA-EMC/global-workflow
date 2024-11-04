@@ -96,7 +96,7 @@ class SnowAnalysis(Task):
         None
         """
 
-        # get JEDI-to-FV3 increment converter config and save to YAML file
+        # get JEDI config
         logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
         self.jedi.set_config(self.task_config)
         logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
@@ -194,10 +194,6 @@ class SnowAnalysis(Task):
         for key in keys:
             localconf[key] = self.task_config[key]
 
-        # stage backgrounds
-        logger.info("Staging backgrounds")
-        FileHandler(self.get_bkg_dict(localconf)).sync()
-
         # Read and render the IMS_OBS_LIST yaml
         logger.info(f"Reading {self.task_config.IMS_OBS_LIST}")
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, localconf)
@@ -259,12 +255,12 @@ class SnowAnalysis(Task):
             raise WorkflowException(f"An error occured during execution of {exe}")
 
         # Ensure the IODA snow depth IMS file is produced by the IODA converter
-        # If so, copy to COM_OBS/
+        # If so, copy to DATA/obs/
         if not os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
             logger.exception(f"{self.task_config.IMS2IODACONV} failed to produce {output_file}")
             raise FileNotFoundError(f"{os.path.join(localconf.DATA, output_file)}")
         else:
-            logger.info(f"Copy {output_file} to {self.task_config.COM_OBS}")
+            logger.info(f"Copy {output_file} to {os.path.join(localconf.DATA, 'obs')}")
             FileHandler(prep_ims_config.ims2ioda).sync()
 
     @logit(logger)

@@ -22,11 +22,11 @@ if __name__ == '__main__':
     SnowEnsAnl = SnowEnsAnalysis(config, 'esnowanl')
 
     # Initialize JEDI 2DVar snow analysis
-    SnowEnsAnalysis.initialize_jedi()
-    SnowEnsAnalysis.initialize_analysis()
+    SnowEnsAnl.initialize_jedi()
+    SnowEnsAnl.initialize_analysis()
 
-    # anl = SnowEnsAnalysis(config)
-    # anl.initialize()
+    #anl = SnowEnsAnalysis(config)
+    #anl.initialize()
     # anl.genWeights()
     # anl.genMask()
     # anl.regridDetBkg()
