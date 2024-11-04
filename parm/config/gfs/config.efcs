@@ -59,6 +59,7 @@ export SPPT_TAU=21600.
 export SPPT_LSCALE=500000.
 export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
+export DO_CA="YES"
 
 if [[ "${QUILTING}" == ".true." ]] && [[ "${OUTPUT_GRID}" == "gaussian_grid" ]]; then
     export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da"
