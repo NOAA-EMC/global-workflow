@@ -9,5 +9,5 @@ ocean_ens_perturbation:
         {% for mem in range(first_mem + 1, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_OCEAN_ANALYSIS_MEM = COMOUT_OCEAN_ANALYSIS_MEM_list[imem] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.mom6_perturbation.nc", "{{ COMOUT_OCEAN_ANALYSIS_MEM }}/mom6_increment.nc"]
+        - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.mom6_perturbation.nc", "{{ COMOUT_OCEAN_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.ocninc.nc"]
         {% endfor %} # mem loop
