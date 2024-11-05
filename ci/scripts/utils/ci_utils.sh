@@ -137,7 +137,6 @@ function publish_logs() {
     local PR_header="$1"
     local dir_path="$2"
     local file="$3"
-
     local full_paths=""
     while IFS= read -r line; do
         full_path="${dir_path}/${line}"
@@ -157,20 +156,24 @@ function publish_logs() {
 }
 
 function cleanup_experiment() {
-    # cleanup_experiment function removes:
-    #   1 The directory path of an EXPDIR (given as an argument)
-    #   2 The adjadjacent COMROOT directory (uses basename of EXPDIR for pslot)
-    #   3 The ARCDIR directory (uses ARCDIR from config.base file in EXPDIR)
 
     local EXPDIR="$1"
     local pslot
     local ARCDIR
+    local ATARDIR
 
     EXPDIR="$1"
     pslot=$(basename "${EXPDIR}")
-    ARCDIR=$(grep 'export ARCDIR=' "${EXPDIR}/config.base" | cut -d'=' -f2 | tr -d '[:space:]"' | envsubst || true) || true
+
+    # Use the Python utility to get the required variables
+    read -r ATARDIR < <("${HOMEgfs}/ci/scripts/utils/get_config_var.py" ATARDIR "${EXPDIR}")
+    read -r ARCDIR < <("${HOMEgfs}/ci/scripts/utils/get_config_var.py" ARCDIR "${EXPDIR}")
+
+    echo -e "Cleaning up:\t\n${EXPDIR}\t\n${EXPDIR}/../COMROOT/${pslot}\t\n${ARCDIR}\t\n${ATARDIR}"
+    exit 0
 
     rm -Rf "${ARCDIR:?}"
+    rm -Rf "${ATARDIR:?}"
     rm -Rf "${EXPDIR}/../COMROOT/${pslot}"
     rm -Rf "${EXPDIR}"
 }
