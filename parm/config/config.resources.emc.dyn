@@ -44,7 +44,7 @@ if [ $step = "sfcprep" ]; then
     export nth_sfcprep=1
     export npe_node_sfcprep=1
     export NTASKS=$npe_sfcprep
-    export memory_sfcprep="2GB"
+    export memory_sfcprep="10GB"
 
 elif [ $step = "prep" -o $step = "prepbufr" ]; then
 
@@ -274,7 +274,7 @@ elif [ $step = "wafsgrib20p25" ]; then
 
 elif [ $step = "wafsblending0p25" ]; then
 
-    export wtime_wafsblending0p25="00:30:00"
+    export wtime_wafsblending0p25="00:40:00"
     export npe_wafsblending0p25=1
     export npe_node_wafsblending0p25=$npe_wafsblending0p25
     export nth_wafsblending0p25=1
