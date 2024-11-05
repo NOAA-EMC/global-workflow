@@ -53,6 +53,9 @@ class SnowEnsAnalysis(Task):
         _res_ens = int(self.task_config['CASE_ENS'][1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
 
+        # fix ocnres
+        self.task_config.OCNRES = f"{self.task_config.OCNRES :03d}"
+
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
