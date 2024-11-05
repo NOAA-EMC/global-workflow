@@ -34,7 +34,7 @@ export GSUFFIX=".ensmean.nc"
 # Generate COM variables from templates
 RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
 MEMDIR='ensstat' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
-declare -rx COM_ATMOS_ANALYSIS_ENS="${COM_ATMOS_ANALYSIS}"
+declare -rx COMOUT_ATMOS_ANALYSIS_ENS="${COM_ATMOS_ANALYSIS}"
 
 RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -r COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
