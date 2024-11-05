@@ -160,20 +160,16 @@ function cleanup_experiment() {
     local EXPDIR="$1"
     local pslot
     local ARCDIR
-    local ATARDIR
+    local ATADIR
 
     EXPDIR="$1"
     pslot=$(basename "${EXPDIR}")
 
     # Use the Python utility to get the required variables
-    read -r ATARDIR < <("${HOMEgfs}/ci/scripts/utils/get_config_var.py" ATARDIR "${EXPDIR}")
-    read -r ARCDIR < <("${HOMEgfs}/ci/scripts/utils/get_config_var.py" ARCDIR "${EXPDIR}")
-
-    echo -e "Cleaning up:\t\n${EXPDIR}\t\n${EXPDIR}/../COMROOT/${pslot}\t\n${ARCDIR}\t\n${ATARDIR}"
-    exit 0
+    read -r ARCDIR ATADIR < <("${HOMEgfs}/ci/scripts/utils/get_config_var.py" ARCDIR ATADIR "${EXPDIR}")
 
     rm -Rf "${ARCDIR:?}"
-    rm -Rf "${ATARDIR:?}"
+    rm -Rf "${ATADIR:?}"
     rm -Rf "${EXPDIR}/../COMROOT/${pslot}"
     rm -Rf "${EXPDIR}"
 }
