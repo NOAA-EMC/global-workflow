@@ -29,7 +29,7 @@ class Jedi:
         This method will construct a Jedi object.
         This includes:
         - create the jedi_config AttrDict and extend it with additional required entries
-        - save a coy of jedi_config
+        - save a copy of jedi_config
 
         Parameters
         ----------
