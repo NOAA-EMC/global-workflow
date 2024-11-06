@@ -43,10 +43,12 @@ class Jedi:
 
         # Make sure input dictionary for Jedi class constructor has the required keys
         if 'yaml_name' not in config:
-            raise KeyError(f"Key 'yaml_name' not found in the nested dictionary")
+            logger.error(f"FATAL ERROR: Key 'yaml_name' not found in the nested dictionary")
+            raise KeyError(f"FATAL ERROR: Key 'yaml_name' not found in the nested dictionary")
         for key in jedi_key_list:
             if key not in config:
-                raise KeyError(f"Key '{key}' not found in the nested dictionary")
+                logger.error(f"FATAL ERROR: Key '{key}' not found in the nested dictionary")
+                raise KeyError(f"FATAL ERROR: Key '{key}' not found in the nested dictionary")
 
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
@@ -120,8 +122,10 @@ class Jedi:
         try:
             exec_cmd()
         except OSError:
+            logger.error(f"FATAL ERROR: Failed to execute {exec_cmd}")
             raise OSError(f"FATAL ERROR: Failed to execute {exec_cmd}")
         except Exception:
+            logger.error(f"FATAL ERROR: An error occurred during execution of {exec_cmd}")
             raise WorkflowException(f"FATAL ERROR: An error occurred during execution of {exec_cmd}")
 
     @logit(logger)
@@ -146,6 +150,7 @@ class Jedi:
         if self.jedi_config.jcb_base_yaml:
             jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         else:
+            logger.error(f"FATAL ERROR: JEDI configuration dictionary must contain jcb_base_yaml.")
             raise KeyError(f"FATAL ERROR: JEDI configuration dictionary must contain jcb_base_yaml.")
 
         # Add JCB algorithm YAML, if it exists, to JCB config dictionary
@@ -160,6 +165,8 @@ class Jedi:
         elif 'algorithm' in jcb_config:
             pass
         else:
+            logger.error(f"FATAL ERROR: JCB algorithm must be specified as input to jedi.render_jcb(), " +
+                         "in JEDI configuration dictionary as jcb_algo, or in JCB algorithm YAML")
             raise Exception(f"FATAL ERROR: JCB algorithm must be specified as input to jedi.render_jcb(), " +
                             "in JEDI configuration dictionary as jcb_algo, or in JCB algorithm YAML")
 
@@ -226,8 +233,10 @@ class Jedi:
         if expected_keys:
             for jedi_dict_key in expected_keys:
                 if jedi_dict_key not in jedi_dict:
+                    logger.error(f"FATAL ERROR: {jedi_dict_key} not present {jedi_config_yaml}")
                     raise Exception(f"FATAL ERROR: {jedi_dict_key} not present {jedi_config_yaml}")
             if len(jedi_dict) > len(expected_keys):
+                logger.error(f"FATAL ERROR: {jedi_config_yaml} specifies more Jedi objects than expected.")
                 raise Exception(f"FATAL ERROR: {jedi_config_yaml} specifies more Jedi objects than expected.")
 
         # Return dictionary of JEDI objects
