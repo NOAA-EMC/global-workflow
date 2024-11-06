@@ -168,9 +168,9 @@ function cleanup_experiment() {
     pslot=$(basename "${EXPDIR}")
 
     # Use the Python utility to get the required variables
-    read -r ARCDIR ATARDIR DATAROOT COMROOT < <("${HOMEgfs}/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR DATAROOT COMROOT "${EXPDIR}") || true
+    read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEgfs}/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
 
-    rm -Rf "${DATAROOT:?}"
+    rm -Rf "${STMP}/RUNDIRS/${pslot}"
     rm -Rf "${ARCDIR:?}"
     rm -Rf "${ATARDIR:?}"
     rm -Rf "${COMROOT:?}"
