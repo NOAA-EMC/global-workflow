@@ -115,9 +115,12 @@ class AtmAnalysis(Task):
         # stage bias corrections
         logger.info(f"Staging list of bias correction files")
         bias_dict = self.jedi_dict['atmanlvar'].render_jcb(self.task_config, 'atm_bias_staging')
-        bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
-        FileHandler(bias_dict).sync()
-        logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+        if bias_dict['copy'] is None:
+            logger.info(f"No bias correction files to stage")
+        else:
+            bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
+            FileHandler(bias_dict).sync()
+            logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
         # extract bias corrections
         Jedi.extract_tar_from_filehandler_dict(bias_dict)
