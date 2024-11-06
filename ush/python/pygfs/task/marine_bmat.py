@@ -147,30 +147,6 @@ class MarineBMat(Task):
         os.symlink(link_target, link_name)
 
     @logit(logger)
-    def execute_vtscales(self: Task) -> None:
-        """Execute vertical diffusion coefficients generator
-
-        This method will execute a Python script which generatres the vertical diffusion coefficients
-        This includes:
-        - constructing the executable object
-        - running the executable object
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-        # compute the vertical correlation scales based on the MLD
-        exec_cmd = Executable("python")
-        exec_name = os.path.join(self.task_config.DATA, 'calc_scales.x')
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg('soca_vtscales.yaml')
-        mdau.run(exec_cmd)
-
-    @logit(logger)
     def execute(self) -> None:
         """Generate the full B-matrix
 
@@ -187,16 +163,25 @@ class MarineBMat(Task):
         None
         """
 
-        # TODO: This should be optional in case the geometry file was staged
         self.jedi_dict['gridgen'].execute()
+
+        # variance partitioning
         self.jedi_dict['soca_diagb'].execute()
-        # TODO: Make this optional once we've converged on an acceptable set of scales
+
+        # horizontal diffusion
         self.jedi_dict['soca_setcorscales'].execute()
-        # TODO: Make this optional once we've converged on an acceptable set of scales
         self.jedi_dict['soca_parameters_diffusion_hz'].execute()
-        self.execute_vtscales()
+        
+        # vertical diffusion
+        exec_cmd = Executable("python")
+        exec_name = os.path.join(self.task_config.DATA, 'calc_scales.x')
+        exec_cmd.add_default_arg(exec_name)
+        exec_cmd.add_default_arg('soca_vtscales.yaml')
+        mdau.run(exec_cmd)            
+
         self.jedi_dict['soca_parameters_diffusion_vt'].execute()
-        # TODO: refactor this from the old scripts
+
+        # hybrid EnVAR case
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
             self.jedi_dict['soca_ensb'].execute()
             self.jedi_dict['soca_ensweights'].execute()
