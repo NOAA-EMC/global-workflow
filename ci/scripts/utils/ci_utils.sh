@@ -162,6 +162,7 @@ function cleanup_experiment() {
     local ARCDIR
     local ATARDIR
     local DATAROOT
+    local COMROOT
 
     EXPDIR="$1"
     pslot=$(basename "${EXPDIR}")
