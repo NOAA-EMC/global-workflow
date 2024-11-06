@@ -79,8 +79,8 @@ class Jedi:
         Returns
         ----------
         None
-        """        
-        
+        """
+
         # Render JEDI config dictionary
         logger.info(f"Generating JEDI YAML config: {self.jedi_config.yaml}")
         self.jedi_config.input_config = self.render_jcb(task_config)
@@ -198,13 +198,13 @@ class Jedi:
             path to YAML specifying configuration dictionaries for Jedi objects
         task_config : str
             attribute-dictionary of all configuration variables associated with a GDAS task
-        
+
 
         Returns
         ----------
         None
         """
-        
+
         # Initialize dictionary of Jedi objects
         jedi_dict = AttrDict()
 
@@ -229,7 +229,7 @@ class Jedi:
                     raise Exception(f"FATAL ERROR: {jedi_dict_key} not present {jedi_config_yaml}")
             if len(jedi_dict) > len(expected_keys):
                 raise Exception(f"FATAL ERROR: {jedi_config_yaml} specifies more Jedi objects than expected.")
-            
+
         # Return dictionary of JEDI objects
         return jedi_dict
 
