@@ -346,7 +346,7 @@ def extract_tar(tar_file: str) -> None:
             raise tarfile.ReadError(f"FATAL ERROR: tar archive {tar_file} could not be read")
         else:
             logger.error(f"FATAL ERROR: {tar_file} is not a tar archive")
-            raise tarfile.ReadError(f"FATAL ERROR: {tar_file} is not a tar archive")            
+            raise tarfile.ReadError(f"FATAL ERROR: {tar_file} is not a tar archive")
     except tarfile.ExtractError as err:
         logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
         raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")

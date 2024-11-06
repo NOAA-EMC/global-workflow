@@ -1,15 +1,15 @@
 atmensanlobs:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/gdas.x'
-  jedi_args: ['fv3jedi', 'localensembleda']
   mpi_cmd: '{{ APRUN_ATMENSANLOBS }}'
+  jedi_args: ['fv3jedi', 'localensembleda']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
   jcb_algo_yaml: '{{ JCB_ALGO_YAML_OBS }}'
 atmensanlsol:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/gdas.x'
-  jedi_args: ['fv3jedi', 'localensembleda']
   mpi_cmd: '{{ APRUN_ATMENSANLSOL }}'
+  jedi_args: ['fv3jedi', 'localensembleda']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
   jcb_algo_yaml: '{{ JCB_ALGO_YAML_SOL }}'
 atmensanlfv3inc:
@@ -21,7 +21,7 @@ atmensanlfv3inc:
 atmensanlletkf:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/gdas.x'
-  jedi_args: ['fv3jedi', 'localensembleda']
   mpi_cmd: '{{ APRUN_ATMENSANLLETKF }}'
+  jedi_args: ['fv3jedi', 'localensembleda']  
   jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
   jcb_algo_yaml: '{{ JCB_ALGO_YAML_LETKF }}'
