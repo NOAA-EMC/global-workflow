@@ -17,6 +17,7 @@ logger = getLogger(__name__.split('.')[-1])
 required_jedi_keys = ['rundir', 'exe_src', 'mpi_cmd']
 optional_jedi_keys = ['jedi_args', 'jcb_base_yaml', 'jcb_algo', 'jcb_algo_yaml']
 
+
 class Jedi:
     """
     Class for initializing and executing JEDI applications
@@ -64,7 +65,7 @@ class Jedi:
         for key in optional_jedi_keys:
             if key not in self.jedi_config:
                 self.jedi_config[key] = None
-        
+
         # Save a copy of jedi_config
         self._jedi_config = self.jedi_config.deepcopy()
 
@@ -118,7 +119,7 @@ class Jedi:
 
         exec_cmd = Executable(self.jedi_config.mpi_cmd)
         exec_cmd.add_default_arg(self.jedi_config.exe)
-        if not self.jedi_config.jedi_args is None:
+        if self.jedi_config.jedi_args is not None:
             for arg in self.jedi_config.jedi_args:
                 exec_cmd.add_default_arg(arg)
         exec_cmd.add_default_arg(self.jedi_config.yaml)
@@ -152,20 +153,20 @@ class Jedi:
         """
 
         # Fill JCB base YAML template and build JCB config dictionary
-        if not self.jedi_config.jcb_base_yaml is None:
+        if self.jedi_config.jcb_base_yaml is not None:
             jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         else:
             logger.error(f"FATAL ERROR: JCB base YAML must be specified in order  to render YAML using JCB")
             raise KeyError(f"FATAL ERROR: JCB base YAML must be specified in order to render YAML using JCB")
 
         # Add JCB algorithm YAML, if it exists, to JCB config dictionary
-        if not self.jedi_config.jcb_algo_yaml is None:
+        if self.jedi_config.jcb_algo_yaml is not None:
             jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
 
         # Set algorithm in JCB config dictionary
-        if not algorithm is None:
+        if algorithm is not None:
             jcb_config['algorithm'] = algorithm
-        elif not self.jedi_config.jcb_algo is None:
+        elif self.jedi_config.jcb_algo is not None:
             jcb_config['algorithm'] = self.jedi_config.jcb_algo
         elif 'algorithm' in jcb_config:
             pass
@@ -228,7 +229,7 @@ class Jedi:
         for block_name in jedi_config_dict:
             # yaml_name key is set to name for this block
             jedi_config_dict[block_name]['yaml_name'] = block_name
-            
+
             # Make sure all required keys present
             for key in required_jedi_keys:
                 if key not in jedi_config_dict[block_name]:
@@ -237,7 +238,7 @@ class Jedi:
 
             # Set optional keys to None
             for key in optional_jedi_keys:
-                if key not in jedi_config_dict[block_name]:                
+                if key not in jedi_config_dict[block_name]:
                     jedi_config_dict[block_name][key] = None
 
             # Construct JEDI object
@@ -348,75 +349,3 @@ def extract_tar(tar_file: str) -> None:
     except tarfile.ExtractError as err:
         logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
         raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
-
-
-# TODO: remove since no longer used
-@logit(logger)
-def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
-    """
-    Recursively search through a nested dictionary and return the value for the target key.
-    This returns the first target key it finds.  So if a key exists in a subsequent
-    nested dictionary, it will not be found.
-
-    Parameters
-    ----------
-    nested_dict : Dict
-        Dictionary to search
-    target_key : str
-        Key to search for
-
-    Returns
-    -------
-    Any
-        Value of the target key
-
-    Raises
-    ------
-    KeyError
-        If key is not found in dictionary
-
-    TODO: if this gives issues due to landing on an incorrect key in the nested
-    dictionary, we will have to implement a more concrete method to search for a key
-    given a more complete address.  See resolved conversations in PR 2387
-
-    # Example usage:
-    nested_dict = {
-        'a': {
-            'b': {
-                'c': 1,
-                'd': {
-                    'e': 2,
-                    'f': 3
-                }
-            },
-            'g': 4
-        },
-        'h': {
-            'i': 5
-        },
-        'j': {
-            'k': 6
-        }
-    }
-
-    user_key = input("Enter the key to search for: ")
-    result = find_value_in_nested_dict(nested_dict, user_key)
-    """
-
-    if not isinstance(nested_dict, dict):
-        raise TypeError(f"Input is not of type(dict)")
-
-    result = nested_dict.get(target_key)
-    if result is not None:
-        return result
-
-    for value in nested_dict.values():
-        if isinstance(value, dict):
-            try:
-                result = find_value_in_nested_dict(value, target_key)
-                if result is not None:
-                    return result
-            except KeyError:
-                pass
-
-    raise KeyError(f"Key '{target_key}' not found in the nested dictionary")
