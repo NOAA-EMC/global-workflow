@@ -8,7 +8,6 @@ from wxflow import Configuration
 def get_config_vars(var_names, config_path):
     """
     GET_CONFIG_VARS Get configuration variables from a config file or directory.
-    
     Parameters:
     var_names (list of str): The names of the configuration variables to retrieve.
     config_path (str): The path to the configuration file or directory.
