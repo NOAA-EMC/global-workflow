@@ -4,6 +4,7 @@ import os
 import argparse
 from wxflow import Configuration
 
+
 def get_config_vars(var_names, config_path):
     """
     GET_CONFIG_VARS Get configuration variables from a config file or directory.
