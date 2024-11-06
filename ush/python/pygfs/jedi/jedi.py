@@ -23,7 +23,7 @@ class Jedi:
     """
 
     @logit(logger, name="Jedi")
-    def __init__(self, config) -> None:
+    def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for JEDI objects
 
         This method will construct a Jedi object.
