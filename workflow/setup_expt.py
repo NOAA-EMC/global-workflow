@@ -55,11 +55,12 @@ def update_configs(host, inputs):
         # Replace values in ['defaults']['config_name']['var1'] with ['config_name']['var1']
         # and return the ['defaults'] subdictionary as its own new dictionary.
         defaults = dict_in.pop('defaults', AttrDict())
+        if 'defaults' in defaults:
+            _update_defaults(defaults)
         defaults.update(dict_in)
         return defaults
 
     # Convert the inputs to an AttrDict
-    # data = AttrDict(**inputs.__dict__)
     data = AttrDict(host.info, **inputs.__dict__)
 
     # Read in the YAML file to fill out templates

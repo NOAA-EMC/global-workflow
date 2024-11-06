@@ -329,7 +329,7 @@ export MAKE_NSSTBUFR="@MAKE_NSSTBUFR@"
 export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
 
 # Verification options
-export DO_METP="@DO_METP@"  # Run METPLUS jobs - set METPLUS settings in config.metp
+export DO_METP="NO"         # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="NO"      # Run fit to observations package
 
 # Archiving options
