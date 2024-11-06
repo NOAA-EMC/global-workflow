@@ -187,54 +187,6 @@ class AtmEnsAnalysis(Task):
         self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
-    def execute_sol(self) -> None:
-        """Execute JEDI LETKF application in solver mode
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-
-        self.jedi_dict['atmensanlsol'].execute(self.task_config.APRUN_ATMENSANLSOL)
-
-    @logit(logger)
-    def execute_fv3inc(self) -> None:
-        """Execute FV3 increment converter
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-
-        self.jedi_dict['atmensanlfv3inc'].execute(self.task_config.APRUN_ATMENSANLFV3INC)
-
-    @logit(logger)
-    def execute_letkf(self) -> None:
-        """Execute full JEDI LETKF application
-
-        Note: This is just for testing. Operationally, we plan to split the LETKF
-              into observer and solver modes.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-
-        self.jedi_dict['atmensanlletkf'].execute(self.task_config.APRUN_ATMENSANLLETKF)
-
-    @logit(logger)
     def finalize(self) -> None:
         """Finalize a global atmens analysis
 
