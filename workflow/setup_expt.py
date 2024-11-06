@@ -85,7 +85,7 @@ def update_configs(host, inputs):
     stage_dict = dict(stage_dict, **host_dict)
     stage_input = f'{inputs.configdir}/config.stage_ic'
     stage_output = f'{inputs.expdir}/{inputs.pslot}/config.stage_ic'
-    edit_config(stage_input, stage_output, stage_dict)
+    edit_config(stage_input, stage_output, host_dict, stage_dict)
 
     # Loop over other configs and update them with defaults
     for cfg in yaml_dict.keys():
@@ -93,7 +93,7 @@ def update_configs(host, inputs):
             continue
         cfg_file = f'{inputs.expdir}/{inputs.pslot}/config.{cfg}'
         cfg_dict = get_template_dict(yaml_dict[cfg])
-        edit_config(cfg_file, cfg_file, cfg_dict)
+        edit_config(cfg_file, cfg_file, host_dict, cfg_dict)
 
     return
 
@@ -146,23 +146,23 @@ def edit_baseconfig(host, inputs, yaml_dict):
     if 'base' in yaml_dict:
         base_dict = dict(base_dict, **get_template_dict(yaml_dict['base']))
 
-    # Finally, override defaults with machine-specific capabilties
-    # e.g. some machines are not able to run metp jobs
-    host_dict = get_template_dict(host.info)
-    base_dict = dict(base_dict, **host_dict)
-
     base_input = f'{inputs.configdir}/config.base'
     base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
-    edit_config(base_input, base_output, base_dict)
+    edit_config(base_input, base_output, host.info, base_dict)
 
     return
 
 
-def edit_config(input_config, output_config, config_dict):
+def edit_config(input_config, output_config, host_info, config_dict):
     """
     Given a templated input_config filename, parse it based on config_dict and
-    write it out to the output_config filename.
+    host_info and write it out to the output_config filename.
     """
+
+    # Override defaults with machine-specific capabilties
+    # e.g. some machines are not able to run metp jobs
+    host_dict = get_template_dict(host_info)
+    config_dict = dict(config_dict, **host_dict)
 
     # Read input config
     with open(input_config, 'rt') as fi:
@@ -186,9 +186,17 @@ def edit_config(input_config, output_config, config_dict):
 
 
 def get_template_dict(input_dict):
+    # Reads a templated input dictionary and updates the output
+
     output_dict = dict()
+
     for key, value in input_dict.items():
-        output_dict[f'@{key}@'] = value
+        # In some cases, the same config may be templated twice
+        # Prevent adding additional "@"s
+        if "@" in key:
+            output_dict[f'{key}'] = value
+        else:
+            output_dict[f'@{key}@'] = value
 
     return output_dict
 

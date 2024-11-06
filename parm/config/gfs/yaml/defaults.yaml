@@ -63,3 +63,7 @@ prepoceanobs:
   OBSPREP_YAML: "${PARMgfs}/gdas/soca/obsprep/obsprep_config.yaml"
   use_exp_obs: "YES"
   dmpdir_exp: "${BASE_DATA}/experimental_obs"
+
+# config.aero has just a system-specific path to add.
+# This is handled by the setup_expt.py, but it has to be told to write to it.
+aero: {}
