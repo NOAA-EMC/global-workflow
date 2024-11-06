@@ -213,7 +213,7 @@ case "${APP}" in
     fi
     ;;
   *)
-    echo "Unrecognized APP: '${APP}'"
+    echo "FATAL ERROR: Unrecognized APP: '${APP}'"
     exit 2
     ;;
 esac
