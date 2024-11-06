@@ -5,9 +5,7 @@
 
 echo "BEGIN: config.atmanl"
 
-export JCB_BASE_YAML="${PARMgfs}/gdas/atm/jcb-base.yaml.j2"
 export JCB_ALGO_YAML_VAR=@JCB_ALGO_YAML_VAR@
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/atmanl_jedi_config.yaml.j2"
 
 export STATICB_TYPE=@STATICB_TYPE@
 export LOCALIZATION_TYPE="bump"
@@ -24,6 +22,8 @@ fi
 
 export CRTM_FIX_YAML="${PARMgfs}/gdas/atm_crtm_coeff.yaml.j2"
 export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
+
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/atmanl_jedi_config.yaml.j2"
 export VAR_BKG_STAGING_YAML="${PARMgfs}/gdas/staging/atm_var_bkg.yaml.j2"
 export BERROR_STAGING_YAML="${PARMgfs}/gdas/staging/atm_berror_${STATICB_TYPE}.yaml.j2"
 export FV3ENS_STAGING_YAML="${PARMgfs}/gdas/staging/atm_var_fv3ens.yaml.j2"

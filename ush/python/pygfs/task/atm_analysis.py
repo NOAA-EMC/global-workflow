@@ -71,7 +71,8 @@ class AtmAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create dictionary of Jedi objects
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config)
+        expected_keys = ['atmanlvar', 'atmanlfv3inc']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -164,34 +165,20 @@ class AtmAnalysis(Task):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def execute_var(self) -> None:
-        """Execute JEDI variational analysis application
+    def execute(self, jedi_dict_key: str) -> None:
+        """Execute JEDI application of atm analysis
 
         Parameters
         ----------
-        None
+        jedi_dict_key
+            key specifying particular Jedi object in self.jedi_dict
 
         Returns
         ----------
         None
         """
 
-        self.jedi_dict['atmanlvar'].execute(self.task_config.APRUN_ATMANLVAR)
-
-    @logit(logger)
-    def execute_fv3inc(self) -> None:
-        """Execute JEDI FV3 increment converter application
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-
-        self.jedi_dict['atmanlfv3inc'].execute(self.task_config.APRUN_ATMANLFV3INC)
+        self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
     def finalize(self) -> None:

@@ -73,7 +73,9 @@ class MarineBMat(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create dictionary of Jedi objects
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config)
+        expected_keys = ['gridgen', 'soca_diagb', 'soca_parameters_diffusion_vt', 'soca_setcorscales',
+                         'soca_parameters_diffusion_hz', 'soca_ensb', 'soca_ensweights']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self: Task) -> None:
@@ -186,18 +188,18 @@ class MarineBMat(Task):
         """
 
         # TODO: This should be optional in case the geometry file was staged
-        self.jedi_dict['gridgen'].execute(self.task_config.APRUN_MARINEBMAT)
-        self.jedi_dict['soca_diagb'].execute(self.task_config.APRUN_MARINEBMAT)
+        self.jedi_dict['gridgen'].execute()
+        self.jedi_dict['soca_diagb'].execute()
         # TODO: Make this optional once we've converged on an acceptable set of scales
-        self.jedi_dict['soca_setcorscales'].execute(self.task_config.APRUN_MARINEBMAT)
+        self.jedi_dict['soca_setcorscales'].execute()
         # TODO: Make this optional once we've converged on an acceptable set of scales
-        self.jedi_dict['soca_parameters_diffusion_hz'].execute(self.task_config.APRUN_MARINEBMAT)
+        self.jedi_dict['soca_parameters_diffusion_hz'].execute()
         self.execute_vtscales()
-        self.jedi_dict['soca_parameters_diffusion_vt'].execute(self.task_config.APRUN_MARINEBMAT)
+        self.jedi_dict['soca_parameters_diffusion_vt'].execute()
         # TODO: refactor this from the old scripts
         if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
-            self.jedi_dict['soca_ensb'].execute(self.task_config.APRUN_MARINEBMAT)
-            self.jedi_dict['soca_ensweights'].execute(self.task_config.APRUN_MARINEBMAT)
+            self.jedi_dict['soca_ensb'].execute()
+            self.jedi_dict['soca_ensweights'].execute()
 
     @logit(logger)
     def finalize(self: Task) -> None:

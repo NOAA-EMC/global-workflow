@@ -24,4 +24,4 @@ if __name__ == '__main__':
     AtmEnsAnl.initialize_letkf()
 
     # Execute the JEDI ensemble DA analysis
-    AtmEnsAnl.execute_letkf()
+    AtmEnsAnl.execute('atmensanlletkf')

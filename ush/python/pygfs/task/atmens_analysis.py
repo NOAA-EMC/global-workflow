@@ -72,7 +72,8 @@ class AtmEnsAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create dictionary of JEDI objects
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config)
+        expected_keys = ['atmensanlobs', 'atmensanlsol', 'atmensanlfv3inc', 'atmensanlletkf']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -156,7 +157,7 @@ class AtmEnsAnalysis(Task):
         """Initialize a global atmens analysis
 
         Note: This would normally be done in AtmEnsAnalysis.initialize(), but that method
-              now initializes the split observer-solver. This case is just for testing.
+              now initializes the split observer-solver. This method is just for testing.
 
         Parameters
         ----------
@@ -170,19 +171,20 @@ class AtmEnsAnalysis(Task):
         self.jedi_dict['atmensanlletkf'].initialize(self.task_config)
 
     @logit(logger)
-    def execute_obs(self) -> None:
-        """Execute JEDI LETKF application in observer mode
+    def execute(self, jedi_dict_key: str) -> None:
+        """Execute JEDI application of atmens analysis
 
         Parameters
         ----------
-        None
+        jedi_dict_key
+            key specifying a particular Jedi object in self.jedi_dict
 
         Returns
         ----------
         None
         """
 
-        self.jedi_dict['atmensanlobs'].execute(self.task_config.APRUN_ATMENSANLOBS)
+        self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
     def execute_sol(self) -> None:

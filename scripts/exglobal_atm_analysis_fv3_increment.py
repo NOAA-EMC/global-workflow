@@ -21,4 +21,4 @@ if __name__ == '__main__':
     AtmAnl = AtmAnalysis(config)
 
     # Initialize and execute FV3 increment converter
-    AtmAnl.execute_fv3inc()
+    AtmAnl.execute('atmanlfv3inc')

@@ -21,4 +21,4 @@ if __name__ == '__main__':
     AtmEnsAnl = AtmEnsAnalysis(config)
 
     # Execute JEDI ensembler DA analysis in observer mode
-    AtmEnsAnl.execute_obs()
+    AtmEnsAnl.execute('atmensanlobs')

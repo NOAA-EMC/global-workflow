@@ -14,7 +14,7 @@ from wxflow import (AttrDict, FileHandler, Task, Executable,
 
 logger = getLogger(__name__.split('.')[-1])
 
-jedi_key_list = ['rundir', 'exe_src', 'jcb_base_yaml', 'jcb_algo', 'jcb_algo_yaml', 'jedi_args']
+jedi_key_list = ['rundir', 'exe_src', 'jedi_args', 'mpi_cmd', 'jcb_base_yaml', 'jcb_algo', 'jcb_algo_yaml']
 
 
 class Jedi:
@@ -41,6 +41,7 @@ class Jedi:
         None
         """
 
+        # Make sure input dictionary for Jedi class constructor has the required keys
         if 'yaml_name' not in config:
             raise KeyError(f"Key 'yaml_name' not found in the nested dictionary")
         for key in jedi_key_list:
@@ -60,14 +61,6 @@ class Jedi:
         # Save a copy of jedi_config
         self._jedi_config = self.jedi_config.deepcopy()
 
-        # Create a dictionary of dictionaries for saving copies of the jcb_config
-        # associated with each algorithm
-        self._jcb_config_dict = AttrDict()
-
-        # Create a dictionary of dictionaries for saving copies of the task_config
-        # used to render each JCB template
-        self._task_config_dict = AttrDict()
-
     @logit(logger)
     def initialize(self, task_config: AttrDict) -> None:
         """Initialize JEDI application
@@ -86,8 +79,8 @@ class Jedi:
         Returns
         ----------
         None
-        """
-
+        """        
+        
         # Render JEDI config dictionary
         logger.info(f"Generating JEDI YAML config: {self.jedi_config.yaml}")
         self.jedi_config.input_config = self.render_jcb(task_config)
@@ -102,13 +95,12 @@ class Jedi:
         self.link_exe()
 
     @logit(logger)
-    def execute(self, aprun_cmd: str) -> None:
+    def execute(self) -> None:
         """Execute JEDI application
 
         Parameters
         ----------
-        aprun_cmd: str
-            String comprising the run command for the JEDI executable.
+        None
 
         Returns
         ----------
@@ -117,7 +109,7 @@ class Jedi:
 
         chdir(self.jedi_config.rundir)
 
-        exec_cmd = Executable(aprun_cmd)
+        exec_cmd = Executable(self.jedi_config.mpi_cmd)
         exec_cmd.add_default_arg(self.jedi_config.exe)
         if self.jedi_config.jedi_args:
             for arg in self.jedi_config.jedi_args:
@@ -174,10 +166,6 @@ class Jedi:
         # Generate JEDI YAML config by rendering JCB config dictionary
         jedi_input_config = render(jcb_config)
 
-        # Save copies of the task_config and jcb_config used to render this JCB template
-        self._task_config_dict[jcb_config['algorithm']] = task_config.deepcopy()
-        self._jcb_config_dict[jcb_config['algorithm']] = jcb_config.deepcopy()
-
         return jedi_input_config
 
     @logit(logger)
@@ -201,7 +189,22 @@ class Jedi:
 
     @staticmethod
     @logit(logger)
-    def get_jedi_dict(jedi_config_yaml: str, task_config: AttrDict):
+    def get_jedi_dict(jedi_config_yaml: str, task_config: AttrDict, expected_keys: Optional[list] = None):
+        """Get dictionary of Jedi objects from YAML specifying their configuration dictionaries
+
+        Parameters
+        ----------
+        jedi_config_yaml : str
+            path to YAML specifying configuration dictionaries for Jedi objects
+        task_config : str
+            attribute-dictionary of all configuration variables associated with a GDAS task
+        
+
+        Returns
+        ----------
+        None
+        """
+        
         # Initialize dictionary of Jedi objects
         jedi_dict = AttrDict()
 
@@ -219,6 +222,14 @@ class Jedi:
             # Construct JEDI object
             jedi_dict[yaml_name] = Jedi(jedi_config_dict[yaml_name])
 
+        # Make sure jedi_dict has the keys we expect
+        if expected_keys:
+            for jedi_dict_key in expected_keys:
+                if jedi_dict_key not in jedi_dict:
+                    raise Exception(f"FATAL ERROR: {jedi_dict_key} not present {jedi_config_yaml}")
+            if len(jedi_dict) > len(expected_keys):
+                raise Exception(f"FATAL ERROR: {jedi_config_yaml} specifies more Jedi objects than expected.")
+            
         # Return dictionary of JEDI objects
         return jedi_dict
 
