@@ -342,10 +342,11 @@ def extract_tar(tar_file: str) -> None:
         raise tarfile.FileExistsError(f"FATAL ERROR: {tar_file} does not exist")
     except tarfile.ReadError as err:
         if tarfile.is_tarfile(tar_file):
-            logger.error(f"FATAL ERROR: {tar_file} could not be read")
-            raise tarfile.ReadError(f"FATAL ERROR: unable to read {tar_file}")
+            logger.error(f"FATAL ERROR: tar archive {tar_file} could not be read")
+            raise tarfile.ReadError(f"FATAL ERROR: tar archive {tar_file} could not be read")
         else:
-            logger.info()
+            logger.error(f"FATAL ERROR: {tar_file} is not a tar archive")
+            raise tarfile.ReadError(f"FATAL ERROR: {tar_file} is not a tar archive")            
     except tarfile.ExtractError as err:
         logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
         raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
