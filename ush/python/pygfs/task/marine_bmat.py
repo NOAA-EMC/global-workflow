@@ -171,13 +171,13 @@ class MarineBMat(Task):
         # horizontal diffusion
         self.jedi_dict['soca_setcorscales'].execute()
         self.jedi_dict['soca_parameters_diffusion_hz'].execute()
-        
+
         # vertical diffusion
         exec_cmd = Executable("python")
         exec_name = os.path.join(self.task_config.DATA, 'calc_scales.x')
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg('soca_vtscales.yaml')
-        mdau.run(exec_cmd)            
+        mdau.run(exec_cmd)
 
         self.jedi_dict['soca_parameters_diffusion_vt'].execute()
 
