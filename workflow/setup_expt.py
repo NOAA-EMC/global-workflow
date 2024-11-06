@@ -7,7 +7,6 @@ Entry point for setting up an experiment in the global-workflow
 import os
 import glob
 import shutil
-import warnings
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, ArgumentTypeError
 
 from hosts import Host
@@ -29,7 +28,7 @@ def makedirs_if_missing(dirname):
         os.makedirs(dirname)
 
 
-def fill_EXPDIR(inputs):
+def fill_expdir(inputs):
     """
     Method to copy config files from workflow to experiment directory
     INPUTS:
@@ -415,7 +414,7 @@ def main(*argv):
 
     if create_expdir:
         makedirs_if_missing(expdir)
-        fill_EXPDIR(user_inputs)
+        fill_expdir(user_inputs)
         update_configs(host, user_inputs)
 
     print(f"*" * 100)
