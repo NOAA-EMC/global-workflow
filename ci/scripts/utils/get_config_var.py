@@ -24,6 +24,7 @@ def get_config_vars(var_names, config_path):
     config_data = config.parse_config(config_file)
     return [config_data[var_name] for var_name in var_names]
 
+
 if __name__ == "__main__":
     """
     Main entry point for the script.
