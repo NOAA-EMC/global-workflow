@@ -693,18 +693,16 @@ MOM6_predet(){
 
   # If using stochastic parameterizations, create a seed that does not exceed the
   # largest signed integer
-  # if (( MEMBER > 0 )); then  # these are only applicable for ensemble members
-    local imem=${MEMBER#0}
-    local base_seed=$((current_cycle*10000 + imem*100))
+  local imem=${MEMBER#0}
+  local base_seed=$((current_cycle*10000 + imem*100))
 
-    if [[ "${DO_OCN_SPPT:-}" == "YES" ]]; then
-      ISEED_OCNSPPT=$((base_seed + 8)),$((base_seed + 9)),$((base_seed + 10)),$((base_seed + 11)),$((base_seed + 12))
-    fi
+  if [[ "${DO_OCN_SPPT:-}" == "YES" ]]; then
+    ISEED_OCNSPPT=$((base_seed + 8)),$((base_seed + 9)),$((base_seed + 10)),$((base_seed + 11)),$((base_seed + 12))
+  fi
 
-    if [[ "${DO_OCN_PERT_EPBL:-}" == "YES" ]]; then
-      ISEED_EPBL=$((base_seed + 13)),$((base_seed + 14)),$((base_seed + 15)),$((base_seed + 16)),$((base_seed + 17))
-    fi
-  # fi
+  if [[ "${DO_OCN_PERT_EPBL:-}" == "YES" ]]; then
+    ISEED_EPBL=$((base_seed + 13)),$((base_seed + 14)),$((base_seed + 15)),$((base_seed + 16)),$((base_seed + 17))
+  fi
 
   # Fix files
   ${NCP} "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
