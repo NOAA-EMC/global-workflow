@@ -20,6 +20,8 @@ export SNOW_ENS_FINALIZE_TMPL="${PARMgfs}/gdas/snow_finalize_ens_update.yaml.j2"
 export APPLY_INCR_EXE="${EXECgfs}/apply_incr.exe"
 export ENS_APPLY_INCR_NML_TMPL="${PARMgfs}/gdas/snow/letkfoi/ens_apply_incr_nml.j2"
 
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/esnowanl_jedi_config.yaml.j2"
+
 export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
