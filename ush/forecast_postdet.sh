@@ -48,13 +48,17 @@ FV3_postdet() {
     done
 
     if [[ "${RERUN}" == "YES" ]]; then
-      file_list=$(stoch_restarts)
-      echo "Copying stochastic restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
-      for stoch_file in $(stoch_restarts); do
-        restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${stoch_file}"
-        ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${stoch_file}" \
-        || ( echo "FATAL ERROR: Unable to copy stochastic restart, ABORT!"; exit 1 )
-      done
+      if [[ "${DO_SPPT:-}" == "YES" || "${DO_SKEB:-}" == "YES" || \
+            "${DO_SHUM:-}" == "YES" || "${DO_LAND_PERT:-}" == "YES" ]]; then
+        stochini=".true."
+        file_list=$(stoch_restarts)
+        echo "Copying stochastic restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
+        for stoch_file in $(stoch_restarts); do
+          restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${stoch_file}"
+          ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${stoch_file}" \
+          || ( echo "FATAL ERROR: Unable to copy stochastic restart, ABORT!"; exit 1 )
+        done
+      fi
     else
       # Replace sfc_data with sfcanl_data restart files from current cycle (if found)
       local nn
