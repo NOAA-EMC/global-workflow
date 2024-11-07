@@ -11,13 +11,13 @@ INPUTS
 ---------
 This script requires the following environment variables be set beforehand:
 
-CDATE: 		Initial time in YYYYMMDDHH format
-STEP_GFS: 	Forecast cadence (frequency) in hours
-FHMAX_GFS: 	Forecast length in hours
-RUN: 		Forecast phase (gfs or gdas). Currently always expected to be gfs.
-ROTDIR: 	Rotating (COM) directory
-USHgfs: 	Path to global-workflow `ush` directory
-PARMgfs: 	Path to global-workflow `parm` directory
+CDATE:        Initial time in YYYYMMDDHH format
+INTERVAL_GFS: Forecast cadence (frequency) in hours
+FHMAX_GFS:    Forecast length in hours
+RUN:          Forecast phase (gfs or gdas). Currently always expected to be gfs.
+ROTDIR:       Rotating (COM) directory
+USHgfs:       Path to global-workflow `ush` directory
+PARMgfs:      Path to global-workflow `parm` directory
 
 Additionally, the following data files are used:
 
@@ -41,10 +41,10 @@ from datetime import datetime, timedelta
 from functools import partial
 
 # Constants
-atm_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model_data/atmos/input"         # Location of atmosphere ICs
+atm_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model/atmos/input"         # Location of atmosphere ICs
 atm_file_pattern = "{path}/gfs_data.{tile}.nc"                                # Atm IC file names
 atm_ctrl_pattern = "{path}/gfs_ctrl.nc"                                       # Atm IC control file name
-restart_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model_data/atmos/restart"   # Location of restart files (time of previous run)
+restart_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model/atmos/restart"   # Location of restart files (time of previous run)
 restart_file_pattern = "{file_base}/{timestamp}fv_core.res.{tile}.nc"         # Name of restart data files (time when restart is valid)
 tracer_file_pattern = "{file_base}/{timestamp}fv_tracer.res.{tile}.nc"        # Name of restart tracer files (time when restart is valid)
 dycore_file_pattern = "{file_base}/{timestamp}fv_core.res.nc"                 # Name of restart dycore file (time when restart is valid)
@@ -66,7 +66,7 @@ tiles = list(map(lambda t: "tile{t}".format(t=t), range(1, n_tiles + 1)))
 def main() -> None:
     # Read in environment variables and make sure they exist
     cdate = get_env_var("CDATE")
-    incr = int(get_env_var('STEP_GFS'))
+    incr = int(get_env_var('INTERVAL_GFS'))
     fcst_length = int(get_env_var('FHMAX_GFS'))
     run = get_env_var("RUN")
     rot_dir = get_env_var("ROTDIR")

@@ -1,0 +1,14 @@
+defaults:
+  !INC {{ HOMEgfs }}/parm/config/gefs/yaml/defaults.yaml
+base:
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
+  REPLAY_ICS: "YES"
+  FCST_BREAKPOINTS: ""
+  FHMAX_GFS: 48
+  FHMAX_HF_GFS: 24
+  DO_EXTRACTVARS: "YES"
+  FHOUT_HF_GFS: 3
+  FHOUT_OCN_GFS: 24
+  FHOUT_ICE_GFS: 24
+  HOMEDIR: {{ 'RUNTESTS' | getenv }}/GLOBAL
+

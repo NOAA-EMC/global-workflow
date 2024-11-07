@@ -8,4 +8,12 @@ echo "BEGIN: config.marinebmat"
 # Get task specific resources
 . "${EXPDIR}/config.resources" marinebmat
 
+export BERROR_DIAGB_YAML="${PARMgfs}/gdas/soca/berror/soca_diagb.yaml.j2"
+export BERROR_VTSCALES_YAML="${PARMgfs}/gdas/soca/berror/soca_vtscales.yaml.j2"
+export BERROR_DIFFV_YAML="${PARMgfs}/gdas/soca/berror/soca_parameters_diffusion_vt.yaml.j2"
+export BERROR_HZSCALES_YAML="${PARMgfs}/gdas/soca/berror/soca_setcorscales.yaml"
+export BERROR_DIFFH_YAML="${PARMgfs}/gdas/soca/berror/soca_parameters_diffusion_hz.yaml.j2"
+export BERROR_ENS_RECENTER_YAML="${PARMgfs}/gdas/soca/berror/soca_ensb.yaml.j2"
+export BERROR_HYB_WEIGHTS_YAML="${PARMgfs}/gdas/soca/berror/soca_ensweights.yaml.j2"
+
 echo "END: config.marinebmat"

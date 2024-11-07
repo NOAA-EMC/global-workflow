@@ -67,7 +67,7 @@ if [[ -d /lfs/h3 ]]; then
 elif [[ -d /lfs/h1 && ! -d /lfs/h3 ]]; then
   # We are on NOAA TDS Acorn
   MACHINE_ID=acorn
-elif [[ -d /mnt/lfs1 ]]; then
+elif [[ -d /mnt/lfs5 ]]; then
   # We are on NOAA Jet
   MACHINE_ID=jet
 elif [[ -d /scratch1 ]]; then

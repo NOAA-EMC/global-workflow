@@ -21,4 +21,6 @@ if __name__ == '__main__':
 
     # Instantiate the atm analysis task
     AtmAnl = AtmAnalysis(config)
+
+    # Finalize JEDI variational analysis
     AtmAnl.finalize()

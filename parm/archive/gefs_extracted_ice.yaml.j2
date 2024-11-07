@@ -1,0 +1,33 @@
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN + ".ice.t" + cycle_HH + "z." %}
+
+gefs_ice:
+    name: "GEFS_ICE"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gefs_ice.tar"
+    required:
+#select mem%03d and ensstat files required
+{% set members = [] %}
+{% for mem_nm in range(0, NMEM_ENS + 1) %}
+    {% do members.append("mem" ~ '%03d' % mem_nm ) %}
+{% endfor %}
+
+{% for mem in members %}
+    {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                          '${RUN}':RUN,
+                          '${YMD}':cycle_YMD,
+                          '${HH}':cycle_HH,
+                          '${MEMDIR}':mem }) %}
+
+    {% set COMIN_ICE_HISTORY = COM_ICE_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
+
+# Select netcdf files to copy to the atardir
+    {% if path_exists(COMIN_ICE_HISTORY) %}
+        {% for fhr in range(FHMIN_GFS + FHOUT_ICE_GFS, FHMAX_GFS + FHOUT_ICE_GFS, FHOUT_ICE_GFS) %}
+            {% set file_name = head ~ FHOUT_ICE_GFS ~ "hr_avg" ~ ".f" ~ '%03d'|format(fhr) ~ ".nc" %}
+            {% set file_path = COMIN_ICE_HISTORY ~ "/" ~ file_name %}
+            - "{{ file_path | relpath(ROTDIR)}}"
+        {% endfor %}
+    {% endif %}
+{% endfor %}

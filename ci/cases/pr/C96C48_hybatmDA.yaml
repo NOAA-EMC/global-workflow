@@ -10,10 +10,10 @@ arguments:
   resensatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20240610
   idate: 2021122018
   edate: 2021122106
   nens: 2
-  gfs_cyc: 1
+  interval: 24
   start: cold
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml

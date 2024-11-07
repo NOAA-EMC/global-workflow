@@ -13,4 +13,3 @@ Here we will show how you can run an experiment using the Global Workflow. The G
    start.rst
    monitor_rocoto.rst
    view.rst
-   errors_faq.rst

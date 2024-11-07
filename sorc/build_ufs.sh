@@ -41,30 +41,9 @@ COMPILE_NR=0
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
-if [[ "${MACHINE_ID}" != "noaacloud" ]]; then
-  BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
-  mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
-  mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
-  cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
-else
-
-  if [[ "${PW_CSP:-}" == "aws" ]]; then
-    set +x
-    # TODO: This will need to be addressed further when the EPIC stacks are available/supported.
-    module use /contrib/spack-stack/envs/ufswm/install/modulefiles/Core
-    module load stack-intel
-    module load stack-intel-oneapi-mpi
-    module load ufs-weather-model-env/1.0.0
-    # TODO: It is still uncertain why this is the only module that is
-    # missing; check the spack build as this needed to be added manually.
-    module load w3emc/2.9.2 # TODO: This has similar issues for the EPIC stack.
-    module list
-    set -x
-  fi
-
-  export CMAKE_FLAGS="${MAKE_OPT}"
-  BUILD_JOBS=${BUILD_JOBS:-8} ./build.sh
-  mv "${cwd}/ufs_model.fd/build/ufs_model" "${cwd}/ufs_model.fd/tests/ufs_model.x"
-fi
+BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
+mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
+mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
+cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 
 exit 0

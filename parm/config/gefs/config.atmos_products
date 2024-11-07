@@ -16,7 +16,12 @@ export INTERP_ATMOS_MASTERSH="${USHgfs}/interp_atmos_master.sh"
 export INTERP_ATMOS_SFLUXSH="${USHgfs}/interp_atmos_sflux.sh"
 
 export downset=2
-export FHOUT_PGBS=${FHOUT_GFS:-3}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
+
+if [[ "${FHMAX_HF_GFS:-0}" == "0" ]]; then
+    export FHOUT_PGBS=${FHOUT_GFS:-3}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
+else
+    export FHOUT_PGBS=${FHOUT_HF_GFS:-1}
+fi
 export FLXGF="NO"  # Create interpolated sflux.1p00 file
 
 # paramlist files for the different forecast hours and downsets

@@ -4,8 +4,8 @@ on: [pull_request, push, workflow_dispatch]
 jobs:
 
   ci_pytest:
-      runs-on: ubuntu-latest
-      name: Run unit tests on CI system      
+      runs-on: ubuntu-22.04
+      name: Run unit tests on CI system
       permissions:
         checks: write
 

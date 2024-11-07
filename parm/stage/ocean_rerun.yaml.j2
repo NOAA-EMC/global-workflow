@@ -1,0 +1,13 @@
+ocean_rerun:
+    mkdir:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_OCEAN_ANALYSIS_MEM = COMOUT_OCEAN_ANALYSIS_MEM_list[imem] %}
+        - "{{ COMOUT_OCEAN_ANALYSIS_MEM }}"
+        {% endfor %} # mem loop
+    copy:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_OCEAN_ANALYSIS_MEM = COMOUT_OCEAN_ANALYSIS_MEM_list[imem] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.ocninc.nc", "{{ COMOUT_OCEAN_ANALYSIS_MEM }}"]
+        {% endfor %} # mem loop

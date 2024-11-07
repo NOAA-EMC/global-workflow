@@ -1,0 +1,28 @@
+ice:
+    {% if DO_JEDIOCNVAR == True %}
+    mkdir:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_ICE_ANALYSIS_MEM = COMOUT_ICE_ANALYSIS_MEM_list[imem] %}
+        - "{{ COMOUT_ICE_ANALYSIS_MEM }}"
+        {% endfor %} # mem loop
+    copy:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_ICE_ANALYSIS_MEM = COMOUT_ICE_ANALYSIS_MEM_list[imem] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ICE_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.cice_model_anl.res.nc", "{{ COMOUT_ICE_ANALYSIS_MEM }}"]
+        {% endfor %} # mem loop
+    {% else %}
+    mkdir:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_ICE_RESTART_PREV_MEM = COMOUT_ICE_RESTART_PREV_MEM_list[imem] %}
+        - "{{ COMOUT_ICE_RESTART_PREV_MEM }}"
+        {% endfor %} # mem loop
+    copy:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_ICE_RESTART_PREV_MEM = COMOUT_ICE_RESTART_PREV_MEM_list[imem] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ICE_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.cice_model.res.nc", "{{ COMOUT_ICE_RESTART_PREV_MEM }}"]
+        {% endfor %} # mem loop
+    {% endif %}

@@ -1,0 +1,38 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+export WIPE_DATA="NO"
+export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATA="${DATAjob}/marinevariational"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlvar" -c "base marineanl marineanlvar"
+
+##############################################
+# Set variables used in the script
+##############################################
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASMARINERUNSH:-${SCRgfs}/exglobal_marine_analysis_variational.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+exit 0

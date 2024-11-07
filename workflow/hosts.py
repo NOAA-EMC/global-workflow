@@ -16,7 +16,8 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'ORION', 'JET', 'HERCULES',
-                       'WCOSS2', 'S4', 'CONTAINER', 'AWSPW', 'GAEA']
+                       'WCOSS2', 'S4', 'CONTAINER', 'GAEA',
+                       'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
     def __init__(self, host=None):
 
@@ -41,7 +42,7 @@ class Host:
             machine = 'HERA'
         elif os.path.exists('/work/noaa'):
             machine = socket.gethostname().split("-", 1)[0].upper()
-        elif os.path.exists('/lfs4/HFIP'):
+        elif os.path.exists('/lfs5/HFIP'):
             machine = 'JET'
         elif os.path.exists('/lfs/f1'):
             machine = 'WCOSS2'
@@ -52,7 +53,7 @@ class Host:
         elif container is not None:
             machine = 'CONTAINER'
         elif pw_csp is not None:
-            if pw_csp.lower() not in ['azure', 'aws', 'gcp']:
+            if pw_csp.lower() not in ['azure', 'aws', 'google']:
                 raise ValueError(
                     f'NOAA cloud service provider "{pw_csp}" is not supported.')
             machine = f"{pw_csp.upper()}PW"

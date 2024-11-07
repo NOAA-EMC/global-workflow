@@ -1,0 +1,35 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+export WIPE_DATA="NO"
+export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlvar" -c "base aeroanl aeroanlvar"
+
+##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASAEROVARSH:-${SCRgfs}/exglobal_aero_analysis_variational.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+exit 0

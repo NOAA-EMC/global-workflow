@@ -26,18 +26,6 @@ source "${EXPDIR}/config.ufs" ${string}
 # Get task specific resources
 source "${EXPDIR}/config.resources" efcs
 
-# nggps_diag_nml
-export FHOUT=${FHOUT_ENKF:-3}
-if [[ "${RUN}" == "enkfgfs" ]]; then
-    export FHOUT=${FHOUT_ENKF_GFS:-${FHOUT}}
-fi
-
-# model_configure
-export FHMAX=${FHMAX_ENKF:-9}
-if [[ "${RUN}" == "enkfgfs" ]]; then
-   export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX}}
-fi
-
 # Stochastic physics parameters (only for ensemble forecasts)
 export DO_SKEB="YES"
 export SKEB="0.8,-999,-999,-999,-999"
@@ -46,10 +34,6 @@ export SKEB_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
 export SKEBNORM=1
 export SKEB_NPASS=30
 export SKEB_VDOF=5
-export DO_SHUM="YES"
-export SHUM=0.005
-export SHUM_TAU=21600.
-export SHUM_LSCALE=500000.
 export DO_SPPT="YES"
 export SPPT="0.56,0.28,0.14,0.056,0.028"
 export SPPT_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
@@ -78,6 +62,6 @@ if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
 else
     export ODA_INCUPD="False"
 fi
-export restart_interval="${restart_interval_enkfgfs:-12}"
+export restart_interval="${restart_interval_gfs:-12}"
 
 echo "END: config.efcs"

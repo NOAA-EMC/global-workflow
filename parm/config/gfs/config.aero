@@ -24,7 +24,7 @@ case ${machine} in
     AERO_INPUTS_DIR="/gpfs/f5/epic/proj-shared/global/glopara/data/gocart_emissions"
     ;;
   "JET")
-    AERO_INPUTS_DIR="/lfs4/HFIP/hfv3gfs/glopara/data/gocart_emissions"
+    AERO_INPUTS_DIR="/lfs5/HFIP/hfv3gfs/glopara/data/gocart_emissions"
     ;;
   *)
     echo "FATAL ERROR: Machine ${machine} unsupported for aerosols"

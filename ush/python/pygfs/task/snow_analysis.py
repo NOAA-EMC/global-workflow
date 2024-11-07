@@ -55,83 +55,6 @@ class SnowAnalysis(Analysis):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
     @logit(logger)
-    def prepare_GTS(self) -> None:
-        """Prepare the GTS data for a global snow analysis
-
-        This method will prepare GTS data for a global snow analysis using JEDI.
-        This includes:
-        - processing GTS bufr snow depth observation data to IODA format
-
-        Parameters
-        ----------
-        Analysis: parent class for GDAS task
-
-        Returns
-        ----------
-        None
-        """
-
-        # create a temporary dict of all keys needed in this method
-        localconf = AttrDict()
-        keys = ['HOMEgfs', 'DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
-                'OPREFIX', 'CASE', 'OCNRES', 'ntiles']
-        for key in keys:
-            localconf[key] = self.task_config[key]
-
-        # Read and render the GTS_OBS_LIST yaml
-        logger.info(f"Reading {self.task_config.GTS_OBS_LIST}")
-        prep_gts_config = parse_j2yaml(self.task_config.GTS_OBS_LIST, localconf)
-        logger.debug(f"{self.task_config.GTS_OBS_LIST}:\n{pformat(prep_gts_config)}")
-
-        # copy the GTS obs files from COM_OBS to DATA/obs
-        logger.info("Copying GTS obs for bufr2ioda.x")
-        FileHandler(prep_gts_config.gtsbufr).sync()
-
-        logger.info("Link BUFR2IODAX into DATA/")
-        exe_src = self.task_config.BUFR2IODAX
-        exe_dest = os.path.join(localconf.DATA, os.path.basename(exe_src))
-        if os.path.exists(exe_dest):
-            rm_p(exe_dest)
-        os.symlink(exe_src, exe_dest)
-
-        # Create executable instance
-        exe = Executable(self.task_config.BUFR2IODAX)
-
-        def _gtsbufr2iodax(exe, yaml_file):
-            if not os.path.isfile(yaml_file):
-                logger.exception(f"FATAL ERROR: {yaml_file} not found")
-                raise FileNotFoundError(yaml_file)
-
-            logger.info(f"Executing {exe}")
-            try:
-                exe(yaml_file)
-            except OSError:
-                raise OSError(f"Failed to execute {exe} {yaml_file}")
-            except Exception:
-                raise WorkflowException(f"An error occured during execution of {exe} {yaml_file}")
-
-        # Loop over entries in prep_gts_config.bufr2ioda keys
-        # 1. generate bufr2ioda YAML files
-        # 2. execute bufr2ioda.x
-        for name in prep_gts_config.bufr2ioda.keys():
-            gts_yaml = os.path.join(self.task_config.DATA, f"bufr_{name}_snow.yaml")
-            logger.info(f"Generate BUFR2IODA YAML file: {gts_yaml}")
-            temp_yaml = parse_j2yaml(prep_gts_config.bufr2ioda[name], localconf)
-            save_as_yaml(temp_yaml, gts_yaml)
-            logger.info(f"Wrote bufr2ioda YAML to: {gts_yaml}")
-
-            # execute BUFR2IODAX to convert {name} bufr data into IODA format
-            _gtsbufr2iodax(exe, gts_yaml)
-
-        # Ensure the IODA snow depth GTS file is produced by the IODA converter
-        # If so, copy to COM_OBS/
-        try:
-            FileHandler(prep_gts_config.gtsioda).sync()
-        except OSError as err:
-            logger.exception(f"{self.task_config.BUFR2IODAX} failed to produce GTS ioda files")
-            raise OSError(err)
-
-    @logit(logger)
     def prepare_IMS(self) -> None:
         """Prepare the IMS data for a global snow analysis
 
@@ -248,7 +171,7 @@ class SnowAnalysis(Analysis):
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
-        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
+        keys = ['PARMgfs', 'DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
                 'OPREFIX', 'CASE', 'OCNRES', 'ntiles']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -267,6 +190,11 @@ class SnowAnalysis(Analysis):
         # stage backgrounds
         logger.info("Staging ensemble backgrounds")
         FileHandler(self.get_ens_bkg_dict(localconf)).sync()
+
+        # stage GTS bufr2ioda mapping YAML files
+        logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.GTS_SNOW_STAGE_YAML}")
+        gts_mapping_list = parse_j2yaml(self.task_config.GTS_SNOW_STAGE_YAML, localconf)
+        FileHandler(gts_mapping_list).sync()
 
         # Write out letkfoi YAML file
         save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)

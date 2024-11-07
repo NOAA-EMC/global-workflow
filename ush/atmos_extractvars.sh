@@ -31,7 +31,16 @@ for outtype in "f2d" "f3d"; do
   outdirpre="${subdata}/${outtype}"
   [[ -d "${outdirpre}" ]] || mkdir -p "${outdirpre}"
 
-  nh=${FHMIN}
+  if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+    if [[ "${outtype}" == "f2d" ]]; then
+      nh=${OFFSET_START_HOUR}
+    elif [[ "${outtype}" == "f3d" ]]; then
+      nh=${FHOUT_GFS}
+    fi
+  else
+    nh=${FHMIN}
+  fi
+
   while (( nh <= FHMAX_GFS )); do
     fnh=$(printf "%3.3d" "${nh}")
 
@@ -45,11 +54,15 @@ for outtype in "f2d" "f3d"; do
       outres="1p00"
     fi
 
-    if (( nh <= FHMAX_HF_GFS )); then
-      outfreq=${FHOUT_HF_GFS}
-    else
-      outfreq=${FHOUT_GFS}
-    fi                                      
+    if [[ "${outtype}" == "f2d" ]]; then
+      if (( nh < FHMAX_HF_GFS )); then
+        outfreq=${FHOUT_HF_GFS}
+      else
+        outfreq=${FHOUT_GFS}
+      fi
+    elif [[ "${outtype}" == "f3d" ]]; then
+     outfreq=${FHOUT_GFS}
+    fi
 
     com_var="COMIN_ATMOS_GRIB_${outres}"
     infile1="${!com_var}/${RUN}.t${cyc}z.pgrb2.${outres}.f${fnh}"

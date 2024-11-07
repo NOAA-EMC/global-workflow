@@ -36,14 +36,14 @@ enkf_restarta_grp:
         {% endif %}
 
         # Member increments
-        {% for iaufhr in iaufhrs if iaufhr != 6 %}
+        {% for iaufhr in IAUFHRS if iaufhr != 6 %}
         {% set iaufhr = iaufhr %}
         {% if do_calc_increment %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % iaufhr }}.nc"
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
         {% endif %}
-        {% endfor %}  # iaufhr in iaufhrs
+        {% endfor %}  # iaufhr in IAUFHRS
 
         # Conventional data
         {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}

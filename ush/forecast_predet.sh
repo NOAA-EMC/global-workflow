@@ -77,6 +77,7 @@ common_predet(){
 
   CDATE=${CDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}
+  MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 
   # Define significant cycles
   half_window=$(( assim_freq / 2 ))
@@ -145,6 +146,7 @@ FV3_predet(){
   fi
 
   # Convert output settings into an explicit list for FV3
+  # Create an FV3 fhr list to be used in the filenames
   FV3_OUTPUT_FH=""
   local fhr=${FHMIN}
   if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
@@ -153,8 +155,36 @@ FV3_predet(){
   fi
   FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
+  # Create an FV3 fhr list to be used in the namelist
+  # The FV3 fhr list for the namelist and the FV3 fhr list for the filenames
+  # are only different when REPLAY_ICS is set to YES
+  if [[ "${REPLAY_ICS:-NO}" == "YES"  ]]; then
+    local FV3_OUTPUT_FH_s
+    FV3_OUTPUT_FH_NML="$(echo "scale=5; ${OFFSET_START_HOUR}+(${DELTIM}/3600)" | bc -l)"
+    FV3_OUTPUT_FH_s=$(( OFFSET_START_HOUR * 3600 + DELTIM ))
+    local fhr=${FHOUT}
+    if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
+      FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "$(( OFFSET_START_HOUR + FHOUT_HF ))" "${FHOUT_HF}" "${FHMAX_HF}")"
+      FV3_OUTPUT_FH_s="${FV3_OUTPUT_FH_s} $(seq -s ' ' "$(( OFFSET_START_HOUR * 3600 + FHOUT_HF * 3600 ))" "$(( FHOUT_HF * 3600 ))" "$(( FHMAX_HF * 3600 ))")"
+      fhr=${FHMAX_HF}
+    fi
+    FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
+    FV3_OUTPUT_FH_s="${FV3_OUTPUT_FH_s} $(seq -s ' ' "$(( fhr * 3600 ))" "$(( FHOUT * 3600 ))" "$(( FHMAX * 3600 ))")"
+    local hh mm ss s_total
+    FV3_OUTPUT_FH_hhmmss=""
+    for s_total in ${FV3_OUTPUT_FH_s}; do
+      # Convert seconds to HHH:MM:SS
+      (( ss = s_total, mm = ss / 60, ss %= 60, hh = mm / 60, mm %= 60 )) || true
+      FV3_OUTPUT_FH_hhmmss="${FV3_OUTPUT_FH_hhmmss} $(printf "%03d-%02d-%02d" "${hh}" "${mm}" "${ss}")"
+    done
+    # Create a string from an array
+  else # If non-replay ICs are being used
+    # The FV3 fhr list for the namelist and the FV3 fhr list for the filenames
+    # are identical when REPLAY_ICS is set to NO
+    FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH}"
+  fi
+
   # Other options
-  MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
   # IAU options
@@ -274,6 +304,7 @@ FV3_predet(){
     phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
     use_hydro_pressure=".false."   # use hydrostatic pressure for physics
     make_nh=".true."               # running in non-hydrostatic mode
+    pass_full_omega_to_physics_in_non_hydrostatic_mode=".true."
   else  # hydrostatic options
     hydrostatic=".true."
     phys_hydrostatic=".false."     # ignored when hydrostatic = T
@@ -467,7 +498,7 @@ FV3_predet(){
     local month mm
     for (( month = 1; month <=12; month++ )); do
       mm=$(printf %02d "${month}")
-      ${NCP} "${FIXgfs}/aer/merra2.aerclim.2003-2014.m${mm}.nc" "aeroclim.m${mm}.nc"
+      ${NCP} "${FIXgfs}/aer/merra2.aerclim.2014-2023.m${mm}.nc" "aeroclim.m${mm}.nc"
     done
   fi
 
@@ -506,12 +537,17 @@ FV3_predet(){
 
   # Inline UPP fix files
   if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
-    ${NCP} "${PARMgfs}/post/post_tag_gfs${LEVS}"                              "${DATA}/itag"
-    ${NCP} "${FLTFILEGFS:-${PARMgfs}/post/postxconfig-NT-GFS-TWO.txt}"        "${DATA}/postxconfig-NT.txt"
-    ${NCP} "${FLTFILEGFSF00:-${PARMgfs}/post/postxconfig-NT-GFS-F00-TWO.txt}" "${DATA}/postxconfig-NT_FH00.txt"
-    ${NCP} "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}"             "${DATA}/params_grib2_tbl_new"
+    ${NCP} "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}" "${DATA}/params_grib2_tbl_new"
+    ${NCP} "${PARMgfs}/ufs/post_itag_gfs"                         "${DATA}/itag"  # TODO: Need a GEFS version when available in the UFS-weather-model
+    # TODO: These should be replaced with ones from the ufs-weather-model when available there
+    if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gfs" ]]; then  # RUN = gdas | enkfgdas | gfs | enkfgfs
+      ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt"     "${DATA}/postxconfig-NT.txt"
+      ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
+    elif [[ "${RUN}" == "gefs" ]]; then  # RUN = gefs
+      ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt"       "${DATA}/postxconfig-NT.txt"
+      ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
+    fi
   fi
-
 }
 
 # Disable variable not used warnings
@@ -520,10 +556,10 @@ WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
 
   if [[ ! -d "${COMOUT_WAVE_HISTORY}" ]]; then mkdir -p "${COMOUT_WAVE_HISTORY}"; fi
-  if [[ ! -d "${COMOUT_WAVE_RESTART}" ]]; then mkdir -p "${COMOUT_WAVE_RESTART}" ; fi
+  if [[ ! -d "${COMOUT_WAVE_RESTART}" ]]; then mkdir -p "${COMOUT_WAVE_RESTART}"; fi
 
-  if [[ ! -d "${DATArestart}/WAVE_RESTART" ]]; then mkdir -p "${DATArestart}/WAVE_RESTART"; fi
-  ${NLN} "${DATArestart}/WAVE_RESTART" "${DATA}/restart_wave"
+  if [[ ! -d "${DATArestart}/WW3_RESTART" ]]; then mkdir -p "${DATArestart}/WW3_RESTART"; fi
+  # Wave restarts are linked in postdet to only create links for files that will be created
 
   # Files from wave prep and wave init jobs
   # Copy mod_def files for wave grids
@@ -605,15 +641,8 @@ CICE_predet(){
 
   # CICE does not have a concept of high frequency output like FV3
   # Convert output settings into an explicit list for CICE
-  if (( $(( ( cyc + FHMIN ) % FHOUT_ICE )) == 0 )); then
-    # shellcheck disable=SC2312
-    mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || exit 10
-  else
-    CICE_OUTPUT_FH=("${FHMIN}")
-    # shellcheck disable=SC2312
-    mapfile -t -O "${#CICE_OUTPUT_FH[@]}" CICE_OUTPUT_FH < <(seq "$(( FHMIN + $(( ( cyc + FHMIN ) % FHOUT_ICE )) ))" "${FHOUT_ICE}" "${FHMAX}") || exit 10
-    CICE_OUTPUT_FH+=("${FHMAX}")
-  fi
+  # shellcheck disable=SC2312
+  mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || exit 10
 
   # Fix files
   ${NCP} "${FIXgfs}/cice/${ICERES}/${CICE_GRID}" "${DATA}/"

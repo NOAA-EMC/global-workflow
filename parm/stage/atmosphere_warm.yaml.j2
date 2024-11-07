@@ -1,0 +1,28 @@
+atmosphere_warm:
+    mkdir:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_ATMOS_RESTART_PREV_MEM = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
+        - "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"
+        {% endfor %} # mem loop
+    copy:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_ATMOS_RESTART_PREV_MEM = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".atm_stoch.res.nc") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.atm_stoch.res.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        {% endif %} # path_exists
+        {% for ftype in ["coupler.res", "fv_core.res.nc"] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        {% endfor %}
+        {% for ftype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
+        {% for ntile in range(1, ntiles + 1) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        {% endfor %} # ntile
+        {% endfor %} # ftype
+        {% for ntile in range(1, ntiles + 1) %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) ~ "/" ~ p_prefix ~ ".sfcanl_data.tile" ~ ntile ~ ".nc") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ p_prefix }}.sfcanl_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        {% endif %} # path_exists
+        {% endfor %} # ntile
+        {% endfor %} # mem loop

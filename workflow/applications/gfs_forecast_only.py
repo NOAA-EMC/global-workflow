@@ -10,6 +10,11 @@ class GFSForecastOnlyAppConfig(AppConfig):
     def __init__(self, conf: Configuration):
         super().__init__(conf)
 
+        base = conf.parse_config('config.base')
+        self.aero_fcst_run = base.get('AERO_FCST_RUN', 'BOTH').lower()
+        self.run = base.get('RUN', 'gfs')
+        self.exp_warm_start = base.get('EXP_WARM_START', False)
+
     def _get_app_configs(self):
         """
         Returns the config_files that are involved in the forecast-only app
@@ -25,7 +30,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
             configs += ['atmos_products']
 
             if self.do_aero:
-                if not self._base['EXP_WARM_START']:
+                if not self.exp_warm_start:
                     configs += ['aerosol_init']
 
             if self.do_tracker:
@@ -70,10 +75,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
         return configs
 
     @staticmethod
-    def update_base(base_in):
+    def _update_base(base_in):
 
         base_out = base_in.copy()
-        base_out['INTERVAL_GFS'] = AppConfig.get_gfs_interval(base_in['gfs_cyc'])
         base_out['RUN'] = 'gfs'
 
         return base_out
@@ -88,9 +92,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
         tasks = ['stage_ic']
 
         if self.do_aero:
-            aero_fcst_run = self._base.get('AERO_FCST_RUN', 'BOTH').lower()
-            if self._base['RUN'] in aero_fcst_run or aero_fcst_run == "both":
-                if not self._base['EXP_WARM_START']:
+            aero_fcst_run = self.aero_fcst_run
+            if self.run in aero_fcst_run or aero_fcst_run == "both":
+                if not self.exp_warm_start:
                     tasks += ['aerosol_init']
 
         if self.do_wave:
@@ -153,4 +157,4 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
         tasks += ['arch', 'cleanup']  # arch and cleanup **must** be the last tasks
 
-        return {f"{self._base['RUN']}": tasks}
+        return {f"{self.run}": tasks}

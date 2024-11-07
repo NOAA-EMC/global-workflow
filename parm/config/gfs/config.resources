@@ -14,9 +14,9 @@ if (( $# != 1 )); then
     echo "stage_ic aerosol_init"
     echo "prep prepsnowobs prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
-    echo "atmensanlinit atmensanlletkf atmensanlfv3inc atmensanlfinal"
-    echo "snowanl"
-    echo "prepobsaero aeroanlinit aeroanlrun aeroanlfinal"
+    echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal"
+    echo "snowanl esnowrecen"
+    echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
@@ -26,7 +26,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "ocnanalprep prepoceanobs marinebmat ocnanalrun ocnanalecen marineanalletkf ocnanalchkpt ocnanalpost ocnanalvrfy"
+    echo "marineanlinit prepoceanobs marinebmat marineanlvar ocnanalecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
     exit 1
 
 fi
@@ -38,6 +38,7 @@ echo "BEGIN: config.resources"
 case ${machine} in
   "WCOSS2")
               max_tasks_per_node=128
+              # WCOSS2 nodes have 512GB of RAM, but only 500GB are reservable
               # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
@@ -54,12 +55,12 @@ case ${machine} in
   "ORION")
               max_tasks_per_node=40
               # shellcheck disable=SC2034
-              mem_node_max="192GB"
+              mem_node_max="180GB"
     ;;
   "HERCULES")
               max_tasks_per_node=80
               # shellcheck disable=SC2034
-              mem_node_max="512GB"
+              mem_node_max="500GB"
     ;;
   "JET")
     case ${PARTITION_BATCH} in
@@ -106,8 +107,25 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    max_tasks_per_node=40
+    npe_node_max=36
+    max_tasks_per_node=36
     # TODO Supply a max mem/node value for AWS
+    # shellcheck disable=SC2034
+    mem_node_max=""
+    ;;
+  "AZUREPW")
+    export PARTITION_BATCH="compute"
+    npe_node_max=24
+    max_tasks_per_node=24
+    # TODO Supply a max mem/node value for AZURE
+    # shellcheck disable=SC2034
+    mem_node_max=""
+    ;;
+  "GOOGLEPW")
+    export PARTITION_BATCH="compute"
+    npe_node_max=30
+    max_tasks_per_node=30
+    # TODO Supply a max mem/node value for GOOGLE
     # shellcheck disable=SC2034
     mem_node_max=""
     ;;
@@ -128,10 +146,10 @@ export max_tasks_per_node
 case ${step} in
   "prep")
     walltime='00:30:00'
-    ntasks=4
-    tasks_per_node=2
+    ntasks=14
+    tasks_per_node=14
     threads_per_task=1
-    memory="40GB"
+    memory="${mem_node_max}"
     ;;
 
   "prepsnowobs")
@@ -269,7 +287,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    memory="3072M"
+    memory="4GB"
     ;;
 
   "atmanlvar")
@@ -339,6 +357,35 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
+  "esnowrecen")
+    # below lines are for creating JEDI YAML
+    case ${CASE} in
+      "C768")
+        layout_x=6
+        layout_y=6
+        ;;
+      "C384")
+        layout_x=5
+        layout_y=5
+        ;;
+      "C192" | "C96" | "C48")
+        layout_x=1
+        layout_y=1
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+        exit 4
+    esac
+
+    export layout_x
+    export layout_y
+
+    walltime="00:15:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
   "prepobsaero")
     walltime="00:30:00"
     ntasks=1
@@ -355,12 +402,12 @@ case ${step} in
         layout_y=8
         ;;
       "C384")
-        layout_x=8
-        layout_y=8
+        layout_x=6
+        layout_y=6
         ;;
       "C192" | "C96")
-        layout_x=8
-        layout_y=8
+        layout_x=4
+        layout_y=4
         ;;
       "C48" )
         # this case is for testing only
@@ -381,19 +428,19 @@ case ${step} in
     memory="3072M"
     ;;
 
-  "aeroanlrun")
+  "aeroanlvar")
     case ${CASE} in
       "C768")
         layout_x=8
         layout_y=8
         ;;
       "C384")
-        layout_x=8
-        layout_y=8
+        layout_x=6
+        layout_y=6
         ;;
       "C192" | "C96")
-        layout_x=8
-        layout_y=8
+        layout_x=4
+        layout_y=4
         ;;
       "C48" )
         # this case is for testing only
@@ -415,6 +462,42 @@ case ${step} in
     export is_exclusive=True
     ;;
 
+  "aeroanlgenb")
+    case ${CASE} in
+      "C768")
+        layout_x=8
+        layout_y=8
+        ;;
+      "C384")
+        layout_x=6
+        layout_y=6
+        ;;
+      "C192" | "C96")
+        layout_x=4
+        layout_y=4
+        ;;
+      "C48" )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${job} at resolution ${CASE}"
+        exit 4
+    esac
+
+    export layout_x
+    export layout_y
+
+    walltime="00:30:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
+
+    ;;
+
+
   "aeroanlfinal")
     walltime="00:10:00"
     ntasks=1
@@ -423,7 +506,7 @@ case ${step} in
     memory="3072M"
     ;;
 
-  "ocnanalprep")
+  "marineanlinit")
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
@@ -445,6 +528,7 @@ case ${step} in
     case ${OCNRES} in
       "025") ntasks=480;;
       "050")  ntasks=16;;
+      "100")  ntasks=16;;
       "500")  ntasks=16;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
@@ -457,7 +541,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "ocnanalrun")
+  "marineanlvar")
     ntasks=16
     case ${OCNRES} in
       "025")
@@ -465,6 +549,10 @@ case ${step} in
         memory="96GB"
         ;;
       "050")
+        ntasks=16
+        memory="96GB"
+        ;;
+      "100")
         ntasks=16
         memory="96GB"
         ;;
@@ -494,6 +582,10 @@ case ${step} in
         ntasks=16
         memory="96GB"
         ;;
+      "100")
+        ntasks=16
+        memory="96GB"
+        ;;
       "500")
         ntasks=16
         memory="24GB"
@@ -509,7 +601,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "marineanalletkf")
+  "marineanlletkf")
     ntasks=16
     case ${OCNRES} in
       "025")
@@ -520,6 +612,10 @@ case ${step} in
         ntasks=16
         memory="96GB"
         ;;
+      "100")
+        ntasks=16
+        memory="96GB"
+        ;;
       "500")
         ntasks=16
         memory="24GB"
@@ -536,7 +632,7 @@ case ${step} in
     ;;
 
 
-  "ocnanalchkpt")
+  "marineanlchkpt")
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
@@ -548,6 +644,9 @@ case ${step} in
       "050")
         memory="32GB"
         ntasks=16;;
+      "100")
+        memory="32GB"
+        ntasks=16;;
       "500")
         memory="32GB"
         ntasks=8;;
@@ -557,7 +656,7 @@ case ${step} in
     esac
     ;;
 
-  "ocnanalpost")
+  "marineanlfinal")
     walltime="00:30:00"
     ntasks=${max_tasks_per_node}
     threads_per_task=1
@@ -829,7 +928,7 @@ case ${step} in
     ;;
 
   "verfozn")
-    walltime="00:05:00"
+    walltime="00:10:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
@@ -956,6 +1055,30 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="3072M"
+    ;;
+
+  "atmensanlobs")
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
+
+    walltime="00:30:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="96GB"
+    export is_exclusive=True
+    ;;
+
+  "atmensanlsol")
+    export layout_x=${layout_x_atmensanl}
+    export layout_y=${layout_y_atmensanl}
+
+    walltime="00:30:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="96GB"
+    export is_exclusive=True
     ;;
 
   "atmensanlletkf")
@@ -1085,10 +1208,22 @@ case ${step} in
 
   "postsnd")
     walltime="02:00:00"
-    ntasks=40
-    threads_per_task=8
-    tasks_per_node=10
+    export ntasks=141
     export ntasks_postsndcfp=9
+    case ${CASE} in
+      "C768")
+        tasks_per_node=21
+        threads_per_task=6
+        ;;
+      "C1152")
+        tasks_per_node=9
+        threads_per_task=14
+        ;;
+      *)
+        tasks_per_node=21
+        threads_per_task=6
+        ;;
+    esac
     export tasks_per_node_postsndcfp=1
     postsnd_req_cores=$(( tasks_per_node * threads_per_task ))
     if (( postsnd_req_cores > max_tasks_per_node )); then

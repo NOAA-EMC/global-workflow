@@ -6,7 +6,11 @@
 echo "BEGIN: config.atmensanl"
 
 export JCB_BASE_YAML="${PARMgfs}/gdas/atm/jcb-base.yaml.j2"
-export JCB_ALGO_YAML=@JCB_ALGO_YAML@
+if [[ ${lobsdiag_forenkf} = ".false." ]] ; then
+    export JCB_ALGO_YAML=@JCB_ALGO_YAML_LETKF@
+else
+    export JCB_ALGO_YAML=@JCB_ALGO_YAML_OBS@
+fi    
 
 export INTERP_METHOD='barycentric'
 

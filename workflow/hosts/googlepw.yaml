@@ -1,0 +1,27 @@
+BASE_GIT: '' #TODO: This does not yet exist.
+DMPDIR: '' # TODO: This does not yet exist.
+PACKAGEROOT: '' #TODO: This does not yet exist.
+COMINsyn: '' #TODO: This does not yet exist.
+HOMEDIR: '/contrib/${USER}'
+STMP: '/lustre/${USER}/stmp/'
+PTMP: '/lustre/${USER}/ptmp/'
+NOSCRUB: '${HOMEDIR}'
+ACCOUNT: '${USER}'
+SCHEDULER: slurm
+QUEUE: batch
+QUEUE_SERVICE: batch
+PARTITION_BATCH: compute
+PARTITION_SERVICE: compute
+RESERVATION: ''
+CLUSTERS: ''
+CHGRP_RSTPROD: 'YES'
+CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
+HPSSARCH: 'NO'
+HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
+BASE_DATA: '/bucket/global-workflow-shared-data'
+BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
+LOCALARCH: 'NO'
+ATARDIR: '' # TODO: This will not yet work from GOOGLE.
+MAKE_NSSTBUFR: 'NO'
+MAKE_ACFTBUFR: 'NO'
+SUPPORTED_RESOLUTIONS: ['C48', 'C96'] # TODO: Test and support all cubed-sphere resolutions.

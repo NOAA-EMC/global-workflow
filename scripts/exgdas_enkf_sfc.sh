@@ -69,16 +69,6 @@ APRUN_ESFC=${APRUN_ESFC:-${APRUN:-""}}
 NTHREADS_ESFC=${NTHREADS_ESFC:-${NTHREADS:-1}}
 
 ################################################################################
-# Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
-cd $DATA || exit 99
-
-
-################################################################################
 # Update surface fields in the FV3 restart's using global_cycle.
 
 # Ignore possible spelling error (nothing is misspelled)
@@ -137,6 +127,7 @@ if [ $DOIAU = "YES" ]; then
 
         export TILE_NUM=$n
 
+        # Copy inputs from COMIN to DATA
         for imem in $(seq 1 $NMEM_ENS); do
             smem=$((imem + mem_offset))
             if (( smem > NMEM_ENS_MAX )); then
@@ -150,24 +141,31 @@ if [ $DOIAU = "YES" ]; then
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
             MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
-                COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+                COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+                COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
+
+            # determine where the input snow restart files come from
+            if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
+                sfcdata_dir="${COMIN_SNOW_ANALYSIS_MEM}"
+            else
+                sfcdata_dir="${COMIN_ATMOS_RESTART_MEM_PREV}"
+            fi
+
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
-            ${NCP} "${COM_ATMOS_RESTART_MEM_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
-                "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
-            ${NLN} "${COM_ATMOS_RESTART_MEM_PREV}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
+            ${NCP} "${sfcdata_dir}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
                 "${DATA}/fnbgsi.${cmem}"
-            ${NLN} "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc" \
-                "${DATA}/fnbgso.${cmem}"
-            ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
-            ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
+            ${NCP} "${DATA}/fnbgsi.${cmem}" "${DATA}/fnbgso.${cmem}"
+            ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
+            ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ ${GSI_SOILANAL} = "YES" ]]; then
                 FHR=6
-                ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+                ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                    "${DATA}/lnd_incr.${cmem}"
             fi
         done # ensembles
@@ -175,15 +173,7 @@ if [ $DOIAU = "YES" ]; then
         CDATE="${PDY}${cyc}" ${CYCLESH}
         export err=$?; err_chk
 
-    done
-
-fi
-
-if [ $DOSFCANL_ENKF = "YES" ]; then
-    for n in $(seq 1 $ntiles); do
-
-        export TILE_NUM=$n
-
+        # Copy outputs from DATA to COMOUT
         for imem in $(seq 1 $NMEM_ENS); do
             smem=$((imem + mem_offset))
             if (( smem > NMEM_ENS_MAX )); then
@@ -196,24 +186,81 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
-                COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+                COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
+            cpfs "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
 
-            ${NCP} "${COM_ATMOS_RESTART_MEM_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
-                "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
-            ${NLN} "${COM_ATMOS_RESTART_MEM_PREV}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
+
+            if [[ ${GSI_SOILANAL} = "YES" ]]; then
+                FHR=6
+                ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+                   "${DATA}/lnd_incr.${cmem}"
+            fi
+        done # ensembles
+
+    done
+
+fi
+
+if [ $DOSFCANL_ENKF = "YES" ]; then
+    for n in $(seq 1 $ntiles); do
+
+        export TILE_NUM=$n
+
+        # Copy inputs from COMIN to DATA
+        for imem in $(seq 1 $NMEM_ENS); do
+            smem=$((imem + mem_offset))
+            if (( smem > NMEM_ENS_MAX )); then
+               smem=$((smem - NMEM_ENS_MAX))
+            fi
+            gmemchar="mem"$(printf %03i "$smem")
+            cmem=$(printf %03i $imem)
+            memchar="mem$cmem"
+
+            RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+                COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
+
+            RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
+                COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+
+            # determine where the input snow restart files come from
+            if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
+                sfcdata_dir="${COMIN_SNOW_ANALYSIS_MEM}"
+            else
+                sfcdata_dir="${COMIN_ATMOS_RESTART_MEM_PREV}"
+            fi
+
+            ${NCP} "${sfcdata_dir}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc" \
                 "${DATA}/fnbgsi.${cmem}"
-            ${NLN} "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc" \
-                "${DATA}/fnbgso.${cmem}"
-            ${NLN} "${FIXorog}/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
-            ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
+            ${NCP} "${DATA}/fnbgsi.${cmem}" "${DATA}/fnbgso.${cmem}"
+            ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
+            ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
         done
 
         CDATE="${PDY}${cyc}" ${CYCLESH}
         export err=$?; err_chk
+
+        # Copy outputs from DATA to COMOUT
+        for imem in $(seq 1 "${NMEM_ENS}"); do
+            smem=$((imem + mem_offset))
+            if (( smem > NMEM_ENS_MAX )); then
+               smem=$((smem - NMEM_ENS_MAX))
+            fi
+            gmemchar="mem"$(printf %03i "${smem}")
+            cmem=$(printf %03i "${imem}")
+            memchar="mem${cmem}"
+
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+                COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+
+            [[ ! -d "${COM_ATMOS_RESTART_MEM}" ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
+
+            cpfs "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+
+        done
 
     done
 fi
@@ -222,8 +269,7 @@ fi
 
 ################################################################################
 # Postprocessing
-cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+cd "${pwd}" || exit 1
 
 
-exit $err
+exit ${err}

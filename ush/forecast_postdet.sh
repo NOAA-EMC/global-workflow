@@ -37,7 +37,7 @@ FV3_postdet() {
     fi
 
     # Get list of FV3 restart files
-    local file_list 
+    local file_list
     file_list=$(FV3_restarts)
     echo "Copying FV3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
     local fv3_file restart_file
@@ -60,6 +60,24 @@ FV3_postdet() {
           break
         fi
       done
+      # Replace fv_tracer with aeroanl_fv_tracer restart files from current cycle (if found)
+      local nn
+      local use_anl_aero="YES"
+      for (( nn = 1; nn <= ntiles; nn++ )); do
+        test_tracer_file="${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc"
+        if [[ ! -f  "${test_tracer_file}" ]]; then
+          use_anl_aero="NO"
+          echo "WARNING: File ${test_tracer_file} does not exist, will not replace any files from the aerosol analysis"
+          break
+        fi
+      done
+      if [[ ${use_anl_aero} == "YES" ]]; then
+        for (( nn = 1; nn <= ntiles; nn++ )); do
+          rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
+          ${NCP} "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
+                 "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
+        done
+      fi # if [[ ${use_anl_aero} == "YES" ]]; then
     fi  # if [[ "${RERUN}" != "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
@@ -206,11 +224,24 @@ EOF
     for fhr in ${FV3_OUTPUT_FH}; do
       FH3=$(printf %03i "${fhr}")
       FH2=$(printf %02i "${fhr}")
-      ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}.nc"
-      ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}.nc"
-      ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}"
-      ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "cubed_sphere_grid_atmf${FH3}.nc"
-      ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "cubed_sphere_grid_sfcf${FH3}.nc"
+      # When replaying, the time format outputted by model in filename is HH-MM-SS
+      # because first fhr is a decimal number
+      if [[ ${REPLAY_ICS:-NO} == "YES" ]] && (( fhr >= OFFSET_START_HOUR )); then
+        local hhmmss_substring=${FV3_OUTPUT_FH_hhmmss/" ${FH3}-"*/} # Extract substring that contains all lead times up to the one space before target lead HHH-MM-SS
+        local hhmmss_substring_len=$(( ${#hhmmss_substring} + 1 )) # Get the size of the substring and add 1 to account for space
+        local f_hhmmss=${FV3_OUTPUT_FH_hhmmss:${hhmmss_substring_len}:9} # extract HHH-MM-SS for target lead time
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${f_hhmmss}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${f_hhmmss}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${f_hhmmss}"
+      else
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}"
+        if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
+          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "cubed_sphere_grid_atmf${FH3}.nc"
+          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "cubed_sphere_grid_sfcf${FH3}.nc"
+        fi
+      fi
       if [[ "${WRITE_DOPOST}" == ".true." ]]; then
         ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}" "GFSPRS.GrbF${FH2}"
         ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}"
@@ -252,7 +283,7 @@ FV3_out() {
   ${NCP} "${DATA}/model_configure" "${COMOUT_CONF}/ufs.model_configure"
   ${NCP} "${DATA}/ufs.configure" "${COMOUT_CONF}/ufs.ufs.configure"
   ${NCP} "${DATA}/diag_table" "${COMOUT_CONF}/ufs.diag_table"
- 
+
 
   # Determine the dates for restart files to be copied to COM
   local restart_date restart_dates
@@ -295,7 +326,7 @@ FV3_out() {
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
 
-  local ww3_grid
+  local ww3_grid first_ww3_restart_out ww3_restart_file
   # Copy initial condition files:
   if [[ "${warm_start}" == ".true." ]]; then
     local restart_date restart_dir
@@ -307,28 +338,34 @@ WW3_postdet() {
       restart_dir="${COMIN_WAVE_RESTART_PREV}"
     fi
     echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
-    local ww3_restart_file
-    for ww3_grid in ${waveGRD} ; do
-      ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.${ww3_grid}"
-      if [[ ! -f "${ww3_restart_file}" ]]; then
-        echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
-        if [[ "${RERUN}" == "YES" ]]; then
-          # In the case of a RERUN, the WW3 restart file is required
-          echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
-          exit 1
-        fi
-      fi
-      if [[ "${waveMULTIGRID}" == ".true." ]]; then
-        ${NCP} "${ww3_restart_file}" "${DATA}/restart.${ww3_grid}" \
-        || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+    ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
+    if [[ -f "${ww3_restart_file}" ]]; then
+      ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
+      || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+    else
+      if [[ "${RERUN}" == "YES" ]]; then
+        # In the case of a RERUN, the WW3 restart file is required
+        echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+        exit 1
       else
-        ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
-        || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+        echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
       fi
-    done
+    fi
+
+    first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   else  # cold start
     echo "WW3 will start from rest!"
+    first_ww3_restart_out="${model_start_date_current_cycle}"
   fi  # [[ "${warm_start}" == ".true." ]]
+
+  # Link restart files
+  local ww3_restart_file
+  # Use restart_date if it was determined above, otherwise use initialization date
+  for (( vdate = first_ww3_restart_out; vdate <= forecast_end_cycle;
+         vdate = $(date --utc -d "${vdate:0:8} ${vdate:8:2} + ${restart_interval} hours" +%Y%m%d%H) )); do
+    ww3_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3"
+    ${NLN} "${DATArestart}/WW3_RESTART/${ww3_restart_file}" "${ww3_restart_file}"
+  done
 
   # Link output files
   local wavprfx="${RUN}wave${WAV_MEMBER:-}"
@@ -429,12 +466,13 @@ MOM6_postdet() {
     fi
 
     # GEFS perturbations
-    # TODO if [[ $RUN} == "gefs" ]] block maybe be needed
-    #     to ensure it does not interfere with the GFS when ensemble is updated in the GFS
-    if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-      ${NCP} "${COMIN_OCEAN_ANALYSIS}/mom6_increment.nc" "${DATA}/INPUT/mom6_increment.nc" \
-      || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
-    fi
+    if [[ "${RUN}" == "gefs" ]]; then 
+    #     to ensure it does not interfere with the GFS
+      if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
+        ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
+        || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
+      fi
+    fi # if [[ "${RUN}" == "gefs" ]]; then 
   fi  # if [[ "${RERUN}" == "NO" ]]; then
 
   # Link output files
@@ -454,10 +492,19 @@ MOM6_postdet() {
       (( midpoint = last_fhr + interval/2 ))
 
       vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-      vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
+      #If OFFSET_START_HOUR is greater than 0, OFFSET_START_HOUR should be added to the midpoint for first lead time
+      if (( OFFSET_START_HOUR > 0 )) &&  (( fhr == FHOUT_OCN ));then
+        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $(( midpoint + OFFSET_START_HOUR )) hours" +%Y%m%d%H)
+      else
+        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
+      fi
 
       # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
-      source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+      if (( OFFSET_START_HOUR > 0 )) &&  (( fhr == FHOUT_OCN ));then
+        source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+      else
+        source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+      fi
       dest_file="${RUN}.ocean.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
       ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATA}/MOM6_OUTPUT/${source_file}"
 

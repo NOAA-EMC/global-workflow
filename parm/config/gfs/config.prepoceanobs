@@ -8,7 +8,7 @@ export OCNOBS2IODAEXEC=${HOMEgfs}/sorc/gdas.cd/build/bin/gdas_obsprovider2ioda.x
 
 export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@
 
-export OBS_YAML_DIR="${PARMgfs}/gdas/soca/obs/config"
+export MARINE_OBS_YAML_DIR="${PARMgfs}/gdas/soca/obs/config"
 export OBSPREP_YAML=@OBSPREP_YAML@
 export OBS_LIST=@SOCA_OBS_LIST@
 export OBS_YAML=${OBS_LIST}

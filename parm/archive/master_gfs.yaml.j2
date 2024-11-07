@@ -3,18 +3,6 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 
-# Split IAUFHRS into a list; typically either "3,6,9" or 6 (integer)
-{% if IAUFHRS is string %}
-    # "3,6,9"
-    {% set iaufhrs = [] %}
-    {% for iaufhr in IAUFHRS.split(",") %}
-        {% do iaufhrs.append(iaufhr | int) %}
-    {% endfor %}
-{% else %}
-    # 6 (integer)
-    {% set iaufhrs = [IAUFHRS] %}
-{% endif %}
-
 # Determine which data to archive
 datasets:
 # Always archive atmosphere forecast/analysis data

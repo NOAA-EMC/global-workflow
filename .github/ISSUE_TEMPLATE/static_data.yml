@@ -1,0 +1,134 @@
+name: Static Data Update
+description: Request static data be added or updated
+labels: ["Static Data Mgmt"]
+assignees:
+  - KateFriedman-NOAA
+  - WalterKolczynski-NOAA
+
+body:
+  - type: dropdown
+    attributes:
+      label: Type of static data
+      description: |
+        - Fix: large static files needed to run global-workflow
+        - Initial conditions: ICs needed to run one of global-workflow's included tests
+        - Experimental data: Temporary datasets needed for development that will be replaced by other sources for operations (e.g. data that will be in DCOM)
+      options:
+        - Fix
+        - Initial conditions
+        - Experimental data
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Target directory
+      options:
+        - "Fix: aer"
+        - "Fix: am"
+        - "Fix: chem"
+        - "Fix: cice"
+        - "Fix: cpl"
+        - "Fix: datm"
+        - "Fix: gdas/crtm"
+        - "Fix: gdas/fv3jedi"
+        - "Fix: gdas/gsibec"
+        - "Fix: gldas"
+        - "Fix: glwu"
+        - "Fix: gsi"
+        - "Fix: lut"
+        - "Fix: mom6"
+        - "Fix: orog"
+        - "Fix: raw"
+        - "Fix: reg2grb2"
+        - "Fix: sfc_climo"
+        - "Fix: ugwd"
+        - "Fix: verif"
+        - "Fix: wave"
+        - "Fix: *NEW*"
+        - "ICs: C48/C48 mx500"
+        - "ICs: C96/C48"
+        - "ICs: C96 mx100"
+        - "ICs: C384/C192"
+        - "ICs: C384 mx025"
+        - "ICs: C768 mx025"
+        - "ICs: C1152 mx025"
+        - "ICs: *NEW RESOLUTION*"
+        - "Exp Data: GOCART emissions"
+        - "Exp Data: JEDI obs"
+        - "Exp Data: *NEW*"
+      multiple: true
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: Type of change
+      options:
+        - label: Update existing files (Version update needed)
+        - label: Remove files (Version update needed)
+        - label: Add new files to existing directory
+        - label: Add new directory (Version update needed if fix)
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Any workflow changes needed?
+      description: |
+        ANY fix or IC change other than adding files will require at least a new version.
+      options:
+        - No change needed
+        - Fix/IC version update only
+        - Fix/IC version update + additional changes
+        - Non-version changes only
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: |
+        Please list all related issues. If this request requires a workflow update (including a fix version update), please open a *separate* global-workflow issue to track the change.
+      description: Please link any related issues
+      placeholder: NOAA-EMC/repo#1234
+    validations:
+      required: false
+
+  - type: input
+    attributes:
+      label: Pickup location
+      description: |
+        Please provide a path to the data on either Hera or WCOSS.
+
+        If this requires a version update, please provide a CLEAN copy of the *entire* directory, including the structure and unchanged files from current directory.
+
+        If this is just adding additional files, you may provide just the new files. The directory structure should still match the target.
+      placeholder: '/path/to/new/data'
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Size
+      description: How much data needs to be copied (size of pickup location in MB)?
+      placeholder: '0'
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: |
+        Please provide any additional information needed for this request. If this is a new directory, please provide a short description and a point of contact.
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        # Tasks
+        - [ ] Discuss needs with global-workflow developer assigned to request
+        - [ ] Stage a CLEAN copy of data on Hera or WCOSS in the location provided above
+        - [ ] [global-workflow CM] Update data in "glopara"-managed space on supported platforms
+        - [ ] [Fix only] Update "Fix File Management" [spreadsheet](https://docs.google.com/spreadsheets/d/1BeIvcz6TO3If4YCqkUK-oz_kGS9q2wTjwLS-BBemSEY/edit?usp=sharing)
+        - [ ] Make related workflow/component updates (if any)

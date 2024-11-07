@@ -11,20 +11,21 @@ class GFSCycledAppConfig(AppConfig):
 
     def __init__(self, conf: Configuration):
         super().__init__(conf)
-        self.do_hybvar = self._base.get('DOHYBVAR', False)
-        self.do_fit2obs = self._base.get('DO_FIT2OBS', True)
-        self.do_jediatmvar = self._base.get('DO_JEDIATMVAR', False)
-        self.do_jediatmens = self._base.get('DO_JEDIATMENS', False)
-        self.do_jediocnvar = self._base.get('DO_JEDIOCNVAR', False)
-        self.do_jedisnowda = self._base.get('DO_JEDISNOWDA', False)
-        self.do_mergensst = self._base.get('DO_MERGENSST', False)
-        self.do_vrfy_oceanda = self._base.get('DO_VRFY_OCEANDA', False)
+        base = conf.parse_config('config.base')
+        self.do_hybvar = base.get('DOHYBVAR', False)
+        self.do_fit2obs = base.get('DO_FIT2OBS', True)
+        self.do_jediatmvar = base.get('DO_JEDIATMVAR', False)
+        self.do_jediatmens = base.get('DO_JEDIATMENS', False)
+        self.do_jediocnvar = base.get('DO_JEDIOCNVAR', False)
+        self.do_jedisnowda = base.get('DO_JEDISNOWDA', False)
+        self.do_mergensst = base.get('DO_MERGENSST', False)
+        self.do_vrfy_oceanda = base.get('DO_VRFY_OCEANDA', False)
 
         self.lobsdiag_forenkf = False
         self.eupd_runs = None
         if self.do_hybvar:
-            self.lobsdiag_forenkf = self._base.get('lobsdiag_forenkf', False)
-            eupd_run = self._base.get('EUPD_CYC', 'gdas').lower()
+            self.lobsdiag_forenkf = base.get('lobsdiag_forenkf', False)
+            eupd_run = base.get('EUPD_CYC', 'gdas').lower()
             if eupd_run in ['both']:
                 self.eupd_runs = ['gfs', 'gdas']
             elif eupd_run in ['gfs', 'gdas']:
@@ -43,21 +44,21 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['anal', 'analdiag']
 
         if self.do_jediocnvar:
-            configs += ['prepoceanobs', 'ocnanalprep', 'marinebmat', 'ocnanalrun']
+            configs += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
             if self.do_hybvar:
-                configs += ['ocnanalecen']
-            configs += ['ocnanalchkpt', 'ocnanalpost']
+                configs += ['marineanlletkf', 'ocnanalecen']
+            configs += ['marineanlchkpt', 'marineanlfinal']
             if self.do_vrfy_oceanda:
                 configs += ['ocnanalvrfy']
 
         if self.do_ocean or self.do_ice:
             configs += ['oceanice_products']
 
-        configs += ['sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
 
         if self.do_hybvar:
             if self.do_jediatmens:
-                configs += ['atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
+                configs += ['atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
@@ -107,12 +108,14 @@ class GFSCycledAppConfig(AppConfig):
                 configs += ['waveawipsbulls', 'waveawipsgridded']
 
         if self.do_aero:
-            configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+            configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
             if self.do_prep_obs_aero:
                 configs += ['prepobsaero']
 
         if self.do_jedisnowda:
             configs += ['prepsnowobs', 'snowanl']
+            if self.do_hybvar:
+                configs += ['esnowrecen']
 
         if self.do_mos:
             configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
@@ -123,9 +126,9 @@ class GFSCycledAppConfig(AppConfig):
         return configs
 
     @staticmethod
-    def update_base(base_in):
+    def _update_base(base_in):
 
-        return GFSCycledAppConfig.get_gfs_cyc_dates(base_in)
+        return base_in
 
     def get_task_names(self):
         """
@@ -143,10 +146,10 @@ class GFSCycledAppConfig(AppConfig):
             gdas_gfs_common_tasks_before_fcst += ['anal']
 
         if self.do_jediocnvar:
-            gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'ocnanalprep', 'marinebmat', 'ocnanalrun']
+            gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
             if self.do_hybvar:
-                gdas_gfs_common_tasks_before_fcst += ['ocnanalecen']
-            gdas_gfs_common_tasks_before_fcst += ['ocnanalchkpt', 'ocnanalpost']
+                gdas_gfs_common_tasks_before_fcst += ['marineanlletkf', 'ocnanalecen']
+            gdas_gfs_common_tasks_before_fcst += ['marineanlchkpt', 'marineanlfinal']
             if self.do_vrfy_oceanda:
                 gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
 
@@ -163,11 +166,14 @@ class GFSCycledAppConfig(AppConfig):
         hybrid_after_eupd_tasks = []
         if self.do_hybvar:
             if self.do_jediatmens:
-                hybrid_tasks += ['atmensanlinit', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'echgres']
+                hybrid_tasks += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'echgres']
+                hybrid_tasks += ['atmensanlobs', 'atmensanlsol'] if self.lobsdiag_forenkf else ['atmensanlletkf']
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
-            hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
+            if self.do_jedisnowda:
+                hybrid_tasks += ['esnowrecen']
+            hybrid_after_eupd_tasks += ['stage_ic', 'ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
@@ -179,11 +185,11 @@ class GFSCycledAppConfig(AppConfig):
             gdas_tasks += wave_prep_tasks
 
         if self.do_aero and 'gdas' in self.aero_anl_runs:
-            gdas_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+            gdas_tasks += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
             if self.do_prep_obs_aero:
                 gdas_tasks += ['prepobsaero']
 
-        gdas_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
+        gdas_tasks += ['stage_ic', 'atmanlupp', 'atmanlprod', 'fcst']
 
         if self.do_upp:
             gdas_tasks += ['atmupp']
@@ -218,7 +224,7 @@ class GFSCycledAppConfig(AppConfig):
             gfs_tasks += wave_prep_tasks
 
         if self.do_aero and 'gfs' in self.aero_anl_runs:
-            gfs_tasks += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+            gfs_tasks += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
             if self.do_prep_obs_aero:
                 gfs_tasks += ['prepobsaero']
 
@@ -291,58 +297,13 @@ class GFSCycledAppConfig(AppConfig):
             tasks['enkfgdas'] = enkfgdas_tasks
 
         # Add RUN=gfs tasks if running early cycle
-        if self.gfs_cyc > 0:
+        if self.interval_gfs > to_timedelta("0H"):
             tasks['gfs'] = gfs_tasks
 
             if self.do_hybvar and 'gfs' in self.eupd_runs:
                 enkfgfs_tasks = hybrid_tasks + hybrid_after_eupd_tasks
                 enkfgfs_tasks.remove("echgres")
+                enkfgfs_tasks.remove("esnowrecen")
                 tasks['enkfgfs'] = enkfgfs_tasks
 
         return tasks
-
-    @staticmethod
-    def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Generate GFS dates from experiment dates and gfs_cyc choice
-        """
-
-        base_out = base.copy()
-
-        sdate = base['SDATE']
-        edate = base['EDATE']
-        base_out['INTERVAL'] = to_timedelta(f"{base['assim_freq']}H")
-
-        # Set GFS cycling dates
-        gfs_cyc = base['gfs_cyc']
-        if gfs_cyc != 0:
-            interval_gfs = AppConfig.get_gfs_interval(gfs_cyc)
-            hrinc = 0
-            hrdet = 0
-            if gfs_cyc == 1:
-                hrinc = 24 - sdate.hour
-                hrdet = edate.hour
-            elif gfs_cyc == 2:
-                if sdate.hour in [0, 12]:
-                    hrinc = 12
-                elif sdate.hour in [6, 18]:
-                    hrinc = 6
-                if edate.hour in [6, 18]:
-                    hrdet = 6
-            elif gfs_cyc == 4:
-                hrinc = 6
-            sdate_gfs = sdate + timedelta(hours=hrinc)
-            edate_gfs = edate - timedelta(hours=hrdet)
-            if sdate_gfs > edate:
-                print('W A R N I N G!')
-                print('Starting date for GFS cycles is after Ending date of experiment')
-                print(f'SDATE = {sdate.strftime("%Y%m%d%H")},     EDATE = {edate.strftime("%Y%m%d%H")}')
-                print(f'SDATE_GFS = {sdate_gfs.strftime("%Y%m%d%H")}, EDATE_GFS = {edate_gfs.strftime("%Y%m%d%H")}')
-                gfs_cyc = 0
-
-            base_out['gfs_cyc'] = gfs_cyc
-            base_out['SDATE_GFS'] = sdate_gfs
-            base_out['EDATE_GFS'] = edate_gfs
-            base_out['INTERVAL_GFS'] = interval_gfs
-
-        return base_out

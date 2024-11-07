@@ -33,32 +33,32 @@
 :CAPE:255-0 mb above ground:
 :CDUVB:surface:
 :CIN:255-0 mb above ground:
-:CLWMR:1000 mb:
-:CLWMR:100 mb:
-:CLWMR:10 mb:
-:CLWMR:150 mb:
-:CLWMR:200 mb:
-:CLWMR:20 mb:
-:CLWMR:250 mb:
-:CLWMR:300 mb:
-:CLWMR:30 mb:
-:CLWMR:350 mb:
-:CLWMR:400 mb:
-:CLWMR:450 mb:
-:CLWMR:500 mb:
-:CLWMR:50 mb:
-:CLWMR:550 mb:
-:CLWMR:600 mb:
-:CLWMR:650 mb:
-:CLWMR:700 mb:
-:CLWMR:70 mb:
-:CLWMR:750 mb:
-:CLWMR:800 mb:
-:CLWMR:850 mb:
-:CLWMR:900 mb:
-:CLWMR:925 mb:
-:CLWMR:950 mb:
-:CLWMR:975 mb:
+:CLMR:1000 mb:
+:CLMR:100 mb:
+:CLMR:10 mb:
+:CLMR:150 mb:
+:CLMR:200 mb:
+:CLMR:20 mb:
+:CLMR:250 mb:
+:CLMR:300 mb:
+:CLMR:30 mb:
+:CLMR:350 mb:
+:CLMR:400 mb:
+:CLMR:450 mb:
+:CLMR:500 mb:
+:CLMR:50 mb:
+:CLMR:550 mb:
+:CLMR:600 mb:
+:CLMR:650 mb:
+:CLMR:700 mb:
+:CLMR:70 mb:
+:CLMR:750 mb:
+:CLMR:800 mb:
+:CLMR:850 mb:
+:CLMR:900 mb:
+:CLMR:925 mb:
+:CLMR:950 mb:
+:CLMR:975 mb:
 :CNWAT:surface:
 :CPRAT:surface:
 :CWAT:entire atmosphere (considered as a single layer):
@@ -151,7 +151,6 @@
 :O3MR:5 mb:
 :O3MR:70 mb:
 :O3MR:7 mb:
-:PEVPR:surface:
 :PLI:30-0 mb above ground:
 :PLPL:255-0 mb above ground:
 :POT:0.995 sigma level:
@@ -276,9 +275,9 @@
 :TCDC:475 mb:
 :TCDC:boundary layer cloud layer:
 :TCDC:convective cloud layer:
-:TCDC:high cloud layer:
-:TCDC:low cloud layer:
-:TCDC:middle cloud layer:
+:HCDC:high cloud layer:
+:LCDC:low cloud layer:
+:MCDC:middle cloud layer:
 :TMP:0.995 sigma level:
 :TMP:1000 mb:
 :TMP:100 m above ground:
@@ -346,6 +345,7 @@
 :TMP:surface:
 :TMP:tropopause:
 :TOZNE:entire atmosphere (considered as a single layer):
+:TSNOWP:surface:
 :TSOIL:0.1-0.4 m below ground:
 :TSOIL:0.4-1 m below ground:
 :TSOIL:1-2 m below ground:

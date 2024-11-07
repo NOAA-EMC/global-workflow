@@ -116,6 +116,17 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || true
-[[ "${KEEPDATA}" == "NO" ]] && rm -rf "${DATA}" "${DATArestart}"  # do not remove DATAjob. It contains DATAoutput
+# do not remove DATAjob. It contains DATAoutput
+if [[ "${KEEPDATA}" == "NO" ]]; then
+  rm -rf "${DATA}"
+
+  # Determine if this is the last segment
+  commas="${FCST_SEGMENTS//[^,]}"
+  n_segs=${#commas}
+  if (( n_segs - 1 == ${FCST_SEGMENT:-0} )); then
+    # Only delete temporary restarts if it is the last segment
+    rm -rf "${DATArestart}"
+  fi
+fi
 
 exit 0

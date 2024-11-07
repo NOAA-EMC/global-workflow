@@ -3,15 +3,16 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 
-# Restart conditions for GFS cycle come from GDAS
-# shellcheck disable=SC2153
-rCDUMP=${RUN}
-# shellcheck disable=SC2153
-[[ ${RUN} = "gfs" ]] && export rCDUMP="gdas"
-export rCDUMP
+# Execute staging
+"${SCRgfs}/exglobal_stage_ic.py"
+err=$?
 
-# Execute the Script
-"${SCRgfs}/exglobal_stage_ic.sh"
+###############################################################
+# Check for errors and exit if any of the above failed
+if [[ "${err}" -ne 0 ]]; then
+  echo "FATAL ERROR: Unable to copy ICs to ${ROTDIR}; ABORT!"
+  exit "${err}"
+fi
 
 ##########################################
 # Remove the Temporary working directory

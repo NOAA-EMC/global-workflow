@@ -4,5 +4,5 @@ export spack_env=gsi-addon-env
 
 export ncl_ver=6.4.0-precompiled
 
-source "${HOMEgfs:-}/versions/run.spack.ver"
+source "${HOMEgfs:-}/versions/spack.ver"
 export spack_mod_path="/data/prod/jedi/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
