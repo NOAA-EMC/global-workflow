@@ -219,21 +219,6 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
   echo '   Making command file for sbs grib2 and GRID Interpolation '
   set_trace
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   fhrg=$fhr
   sleep_interval=10
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
@@ -419,18 +404,7 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
       err=5; export err;${errchk}
       exit "$err"
     fi
-
-
-
-
-
-
   fi
-
-
-
-
-
 
 # --------------------------------------------------------------------------- #
 # 7.  Ending output
