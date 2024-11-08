@@ -1213,7 +1213,6 @@ class GFSTasks(Tasks):
 
     def wavepostsbs(self):
 
-        resources = self.get_resource('wavepostsbs')
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1224,13 +1223,13 @@ class GFSTasks(Tasks):
         for key, value in wave_post_dict.items():
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
+        resources = self.get_resource('wavepostsbs')
         task_name = f'{self.run}_wavepostsbs_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': wave_post_envars,
-                     'cycledef': cycledef,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostsbs.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',

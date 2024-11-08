@@ -313,7 +313,6 @@ class GEFSTasks(Tasks):
         return task
 
     def wavepostsbs(self):
-        resources = self.get_resource('wavepostsbs')
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'gefs_fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -327,6 +326,8 @@ class GEFSTasks(Tasks):
         for key, value in wave_post_dict.items():
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
+        resources = self.get_resource('wavepostsbs')
+        
         task_name = f'gefs_wave_post_grid_mem#member#_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
