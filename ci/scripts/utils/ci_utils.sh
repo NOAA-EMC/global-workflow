@@ -123,6 +123,7 @@ function create_experiment () {
   source "${HOMEgfs}/workflow/gw_setup.sh"
 
   # Remove RUNDIRS dir incase this is a retry
+  STMP=$(grep STMP "workflow/hosts/${MACHIND_ID}.yaml" | cut -d: -f2 | sed 's/[ "'\''"]*//g')
   rm -Rf "${STMP}/RUNDIRS/${pslot}"
 
   "${HOMEgfs}/${system}/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
@@ -169,7 +170,7 @@ function cleanup_experiment() {
     # Use the Python utility to get the required variables
     read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEgfs}/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
 
-    rm -Rf "${STMP}/RUNDIRS/${pslot}"
+    #rm -Rf "${STMP}/RUNDIRS/${pslot}"
     rm -Rf "${ARCDIR:?}"
     rm -Rf "${ATARDIR:?}"
     rm -Rf "${COMROOT:?}"
