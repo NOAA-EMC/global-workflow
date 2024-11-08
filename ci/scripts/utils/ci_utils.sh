@@ -137,7 +137,6 @@ function publish_logs() {
     local PR_header="$1"
     local dir_path="$2"
     local file="$3"
-
     local full_paths=""
     while IFS= read -r line; do
         full_path="${dir_path}/${line}"
@@ -154,4 +153,26 @@ function publish_logs() {
         URL="$("${HOMEgfs}/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
     fi
     echo "${URL}"
+}
+
+function cleanup_experiment() {
+
+    local EXPDIR="$1"
+    local pslot
+    local ARCDIR
+    local ATARDIR
+    local DATAROOT
+    local COMROOT
+
+    EXPDIR="$1"
+    pslot=$(basename "${EXPDIR}")
+
+    # Use the Python utility to get the required variables
+    read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEgfs}/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
+
+    rm -Rf "${STMP}/RUNDIRS/${pslot}"
+    rm -Rf "${ARCDIR:?}"
+    rm -Rf "${ATARDIR:?}"
+    rm -Rf "${COMROOT:?}"
+    rm -Rf "${EXPDIR}"
 }
