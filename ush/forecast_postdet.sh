@@ -719,7 +719,6 @@ GOCART_out() {
   local fhr
   local vdate
   for fhr in ${GOCART_OUTPUT_FH}; do
-    if (( fhr == 0 )); then continue; fi
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
     ${NCP} "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
       "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
