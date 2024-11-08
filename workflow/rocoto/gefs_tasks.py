@@ -327,7 +327,7 @@ class GEFSTasks(Tasks):
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('wavepostsbs')
-        
+
         task_name = f'gefs_wave_post_grid_mem#member#_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
