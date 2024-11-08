@@ -22,20 +22,22 @@ if __name__ == '__main__':
     SnowEnsAnl = SnowEnsAnalysis(config)
 
     # Initialize JEDI 2DVar snow analysis
-    SnowAnl.initialize()
+    SnowEnsAnl.initialize()
 
     # Calculate ensemble mean
-    SnowAnl.execute('esnowanlensmean')
+    SnowEnsAnl.execute('esnowanlensmean')
+
+    # stage ensemble mean backgrounds
 
     # Process IMS snow cover (if applicable)
-    if SnowAnl.task_config.cyc == 0:
-        SnowAnl.prepare_IMS()
+    if SnowEnsAnl.task_config.cyc == 0:
+        SnowEnsAnl.prepare_IMS()
 
     # Execute JEDI snow analysis
-    SnowAnl.execute('esnowanlvar')
+    SnowEnsAnl.execute('snowanlvar')
 
     # Add increments
-    SnowAnl.add_increments()
+    SnowEnsAnl.add_increments()
 
     # Finalize JEDI snow analysis
-    SnowAnl.finalize()
+    SnowEnsAnl.finalize()
