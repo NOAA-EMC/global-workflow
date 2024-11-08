@@ -161,7 +161,6 @@ function cleanup_experiment() {
     local pslot
     local ARCDIR
     local ATARDIR
-    local DATAROOT
     local COMROOT
 
     EXPDIR="$1"
