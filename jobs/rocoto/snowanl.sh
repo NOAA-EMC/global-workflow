@@ -14,8 +14,9 @@ export jobid="${job}.$$"
 ###############################################################
 # setup python path for ioda utilities
 # shellcheck disable=SC2311
-pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python$(detect_py_ver)/"
-gdasappPATH="${HOMEgfs}/sorc/gdas.cd/sorc/iodaconv/src:${pyiodaPATH}"
+pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib64/python$(detect_py_ver)/"
+bufrPATH="${HOMEgfs}/sorc/gdas.cd/build/lib64/python$(detect_py_ver)/site-packages/"
+gdasappPATH="${HOMEgfs}/sorc/gdas.cd/sorc/iodaconv/src:${pyiodaPATH}:${bufrPATH}"
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}:${gdasappPATH}"
 export PYTHONPATH
 
