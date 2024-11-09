@@ -123,7 +123,7 @@ function create_experiment () {
   source "${HOMEgfs}/workflow/gw_setup.sh"
 
   # Remove RUNDIRS dir incase this is a retry (STMP now in host file)
-  STMP=$("${HOMEgfs}/ci/scripts/utils/parse_yaml.py -y ${HOMEgfs}/workflow/hosts/${MACHINE_ID}.yaml -k STMP -s")
+  STMP=$("${HOMEgfs}/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs}/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
   echo "Removing ${STMP}/RUNDIRS/${pslot} directory incase this is a retry"
   rm -Rf "${STMP}/RUNDIRS/${pslot}"
 
