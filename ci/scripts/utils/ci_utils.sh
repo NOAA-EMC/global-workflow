@@ -173,7 +173,7 @@ function cleanup_experiment() {
 
     rm -Rf "${ARCDIR:?}"
     rm -Rf "${ATARDIR:?}"
-    rm -Rf "${COMROOT}/${pslot}"
-    rm -Rf "${EXPDIR}/${pslot}"
-    rm -Rf "${STMP}/RUNDIRS/${pslot}"
+    rm -Rf "${COMROOT}/${pslot:?}"
+    rm -Rf "${EXPDIR}/${pslot:?}"
+    rm -Rf "${STMP}/RUNDIRS/${pslot:?}"
 }
