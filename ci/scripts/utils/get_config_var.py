@@ -33,7 +33,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Get configuration variables from a config file or directory.")
     parser.add_argument("var_names", nargs='+', help="The names of the configuration variables to retrieve.")
     parser.add_argument("config_path", help="The path to the configuration file or directory.")
-    
+
     args = parser.parse_args()
 
     var_names = args.var_names
