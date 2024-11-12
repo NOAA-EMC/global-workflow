@@ -440,7 +440,6 @@ class AerosolEmissions(Task):
             for v in ObsEmis.data_vars:
                 if not scale_climo:
                     if tslice > n_persist:
-                        # kk = ratio * dset[v] + (1 - ratio) * climo[v].data[tslice, :, :]
                         dset[v].data = (
                             ratio * dset[v] + (1 - ratio) * climo[v].data[tslice, :, :]
                         )
