@@ -29,13 +29,13 @@ export GPREFIX="${GDUMP}.t${gcyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
+  COMIN_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COM_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+  COMOUT_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
 
 MEMDIR="ensstat" RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-  COM_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
+  COMIN_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
 
 
 ###############################################################

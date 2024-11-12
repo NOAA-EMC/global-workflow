@@ -19,6 +19,8 @@ if __name__ == '__main__':
 
     # Instantiate the snow analysis task
     anl = SnowAnalysis(config)
+    if anl.task_config.cyc == 0:
+        anl.prepare_IMS()
     anl.initialize()
     anl.execute()
     anl.finalize()
