@@ -123,14 +123,7 @@ class AerosolEmissions(Task):
 
         Parameters:
         -----------
-        workdir : Union[str, os.PathLike])
-            The working directory path.
-        current_date: (str, optional)
-            The current date for fire emissions generation.
-        forecast_dates: list, optional
-            List of forecast dates.
-        Config_dict:  Dict
-            Configuration dictionary for the task.
+        None
 
         Returns:
         --------
