@@ -70,7 +70,6 @@ class AerosolEmissions(Task):
             {
                 "cdate": blend_start_date,
                 "nforecast_days": nforecast_hours // 24,
-                # "forecast_dates": forecast_dates,
                 "workdir": self.task_config.DATA,
                 "current_date": self.task_config.PDY,
                 'config': config,
