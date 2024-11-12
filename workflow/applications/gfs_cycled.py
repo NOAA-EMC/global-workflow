@@ -135,7 +135,7 @@ class GFSCycledAppConfig(AppConfig):
                 configs += ['prepobsaero']
 
         if options['do_jedisnowda']:
-            configs += ['prepsnowobs', 'snowanl']
+            configs += ['snowanl']
             if options['do_hybvar']:
                 configs += ['esnowrecen']
 
@@ -184,7 +184,7 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run] += ['sfcanl', 'analcalc']
 
                 if options['do_jedisnowda']:
-                    task_names[run] += ['prepsnowobs', 'snowanl']
+                    task_names[run] += ['snowanl']
 
                 wave_prep_tasks = ['waveinit', 'waveprep']
                 wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
