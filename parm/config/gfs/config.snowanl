@@ -19,6 +19,12 @@ export JEDIYAML="${PARMgfs}/gdas/snow/letkfoi/letkfoi.yaml.j2"
 export SNOWDEPTHVAR="snodl"
 export BESTDDEV="30."  # Background Error Std. Dev. for LETKFOI
 
+# Process IMS snowcover into snow depth
+export IMS_OBS_LIST="${PARMgfs}/gdas/snow/prep/prep_ims.yaml.j2"
+export CALCFIMSEXE="${EXECgfs}/calcfIMS.exe"
+export FIMS_NML_TMPL="${PARMgfs}/gdas/snow/prep/fims.nml.j2"
+export IMS2IODACONV="${USHgfs}/imsfv3_scf2ioda.py"
+
 # Name of the executable that applies increment to bkg and its namelist template
 export APPLY_INCR_EXE="${EXECgfs}/apply_incr.exe"
 export APPLY_INCR_NML_TMPL="${PARMgfs}/gdas/snow/letkfoi/apply_incr_nml.j2"
