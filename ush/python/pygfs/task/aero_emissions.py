@@ -136,7 +136,7 @@ class AerosolEmissions(Task):
         --------
         None
         """
-        Config_dict = self.task_config['config']
+        config_dict = self.task_config['config']
         emistype = self.task_config['emistype']
         ratio = Config_dict['ratio']
         climfiles = self.task_config['climofiles']
