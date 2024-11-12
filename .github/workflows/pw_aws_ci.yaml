@@ -72,7 +72,7 @@ jobs:
       id: get-branch
       run: |
         pr_number=${{ github.event.inputs.pr_number }}
-        repo={{ github.repository }}
+        repo=${{ github.repository }}
         if [ "$pr_number" -eq "0" ]; then
           branch=${{ github.event.inputs.ref }}
         else
