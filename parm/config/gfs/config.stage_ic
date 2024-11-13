@@ -15,7 +15,7 @@ export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gfs.yaml.j2"
 # Set ICSDIR (if not defined)
 if [[ -z "${ICSDIR}" ]] ; then
 
-  ic_ver="20240829"
+  ic_ver="20240610"
 
   if (( NMEM_ENS > 0 )) ; then
     ensic="${CASE_ENS}"
