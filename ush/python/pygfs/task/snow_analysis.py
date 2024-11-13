@@ -70,6 +70,7 @@ class SnowAnalysis(Task):
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'snow_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'snow_obsdataout_path': f"{self.task_config.DATA}/diags/",
+                'snow_bkg_path': './bkg',
             }
         )
 
