@@ -2,36 +2,8 @@
 
 # UFS-Aerosols settings
 
-# Turn off warnings about unused variables
-# shellcheck disable=SC2034
-
-
 # Path to the input data tree
-case ${machine} in
-  "HERA")
-    AERO_INPUTS_DIR="/scratch1/NCEPDEV/global/glopara/data/gocart_emissions"
-    ;;
-  "ORION" | "HERCULES")
-    AERO_INPUTS_DIR="/work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions"
-    ;;
-  "S4")
-    AERO_INPUTS_DIR="/data/prod/glopara/gocart_emissions"
-    ;;
-  "WCOSS2")
-    AERO_INPUTS_DIR="/lfs/h2/emc/global/noscrub/emc.global/data/gocart_emissions"
-    ;;
-  "GAEA")
-    AERO_INPUTS_DIR="/gpfs/f5/epic/proj-shared/global/glopara/data/gocart_emissions"
-    ;;
-  "JET")
-    AERO_INPUTS_DIR="/lfs5/HFIP/hfv3gfs/glopara/data/gocart_emissions"
-    ;;
-  *)
-    echo "FATAL ERROR: Machine ${machine} unsupported for aerosols"
-    exit 2
-    ;;
-esac
-export AERO_INPUTS_DIR
+export AERO_INPUTS_DIR=@AERO_INPUTS_DIR@
 
 export AERO_DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table.aero"
 export AERO_FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table.aero"
