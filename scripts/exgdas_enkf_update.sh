@@ -288,7 +288,7 @@ cat > enkf.nml << EOFnml
    univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
    letkf_flag=${letkf_flag},nobsl_max=${nobsl_max},denkf=${denkf},getkf=${getkf}.,
    nhr_anal=${IAUFHRS_ENKF},nhr_state=${IAUFHRS_ENKF},
-   lobsdiag_forenkf=$lobsdiag_forenkf,taperanalperts=$taperanalperts,
+   lobsdiag_forenkf=${lobsdiag_forenkf},taperanalperts=${taperanalperts},
    write_spread_diag=$write_spread_diag,
    modelspace_vloc=$modelspace_vloc,
    use_correlated_oberrs=${use_correlated_oberrs},
