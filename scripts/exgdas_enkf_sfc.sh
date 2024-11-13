@@ -144,7 +144,7 @@ if [ $DOIAU = "YES" ]; then
                 COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+                COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
@@ -165,7 +165,7 @@ if [ $DOIAU = "YES" ]; then
 
             if [[ ${GSI_SOILANAL} = "YES" ]]; then
                 FHR=6
-                ${NCP} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+                ${NCP} "${COMIN_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                    "${DATA}/lnd_incr.${cmem}"
             fi
         done # ensembles
@@ -187,15 +187,15 @@ if [ $DOIAU = "YES" ]; then
                 COMOUT_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+                COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
-            cpfs "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
+            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
+            cpfs "${DATA}/fnbgso.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
 
 
             if [[ ${GSI_SOILANAL} = "YES" ]]; then
                 FHR=6
-                ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+                ${NCP} "${COMIN_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                    "${DATA}/lnd_incr.${cmem}"
             fi
         done # ensembles
