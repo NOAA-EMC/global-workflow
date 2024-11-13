@@ -128,7 +128,7 @@ class SnowEnsAnalysis(Task):
         # note JEDI will try to read the orog files for each member, let's just symlink
         logger.info("Linking orography files for each member")
         oro_files = glob.glob(os.path.join(self.task_config.DATA, 'orog', 'ens', '*'))
-        for mem in range(1, self.task_config.NMEM_ENS+1):
+        for mem in range(1, self.task_config.NMEM_ENS + 1):
             dest = os.path.join(self.task_config.DATA, 'bkg', f"mem{mem:03}")
             for oro_file in oro_files:
                 os.symlink(oro_file, os.path.join(dest, os.path.basename(oro_file)))
@@ -136,7 +136,7 @@ class SnowEnsAnalysis(Task):
         dest = os.path.join(self.task_config.DATA, 'bkg', 'ensmean')
         for oro_file in oro_files:
             os.symlink(oro_file, os.path.join(dest, os.path.basename(oro_file)))
-        
+
         # stage observations
         logger.info(f"Staging list of observation files generated from JEDI config")
         obs_dict = self.jedi_dict['snowanlvar'].render_jcb(self.task_config, 'snow_obs_staging')
@@ -380,7 +380,7 @@ class SnowEnsAnalysis(Task):
                 dest = os.path.join(self.task_config.DATA, 'anl', filename_out)
                 inclist.append([src, dest])
             FileHandler({'copy': inclist}).sync()
-        
+
         bkgtimes = []
         if self.task_config.DOIAU:
             # need both beginning and middle of window
@@ -389,7 +389,7 @@ class SnowEnsAnalysis(Task):
 
         # loop over members
         # TODO, make this better, or rewrite code to run in parallel
-        for mem in range(1, self.task_config.NMEM_ENS+1):
+        for mem in range(1, self.task_config.NMEM_ENS + 1):
             logger.info(f"Processing member mem{mem:03d}")
             # loop over times to apply increments
             for bkgtime in bkgtimes:
