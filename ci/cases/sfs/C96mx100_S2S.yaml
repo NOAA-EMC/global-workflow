@@ -1,0 +1,19 @@
+experiment:
+  system: gefs
+  mode: forecast-only
+
+arguments:
+  idate: 1994050100 
+  edate: 1994050100
+  pslot: {{ 'pslot' | getenv }}
+  app: S2S
+  resdetatmos: 96
+  resensatmos: 96
+  resdetocean: 1
+  start: 'cold'
+  nens: 10
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'TOPICDIR' | getenv }}/HR4/C96mx100
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/sfs_defaults.yaml
+

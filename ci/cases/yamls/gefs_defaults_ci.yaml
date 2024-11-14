@@ -2,3 +2,11 @@ defaults:
   !INC {{ HOMEgfs }}/parm/config/gefs/yaml/defaults.yaml
 base:
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
+  SFS_POST: "NO"
+  FHOUT_GFS: 6
+stage_ic:
+  USE_OCN_ENS_PERTURB_FILES: "NO"
+  USE_ATM_ENS_PERTURB_FILES: "NO"
+ocn:
+  MOM6_INTERP_ICS: "NO"
+

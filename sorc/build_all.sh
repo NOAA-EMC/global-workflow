@@ -16,7 +16,7 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-j n][-v][-w]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-j n][-v][-w][-y]
   -a UFS_app:
     Build a specific UFS app instead of the default
   -d:
@@ -37,6 +37,8 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-j n][-v][-w]
     Execute all build scripts with -v option to turn on verbose where supported
   -w:
     Use structured wave grid
+  -y:
+    Use hydrostatic version of FV3
 EOF
   exit 1
 }
@@ -51,11 +53,12 @@ _build_gsi="NO"
 _build_debug=""
 _verbose_opt=""
 _wave_opt=""
+_hydro_opt=""
 _build_job_max=20
 _quick_kill="NO"
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:dfghj:kuvw" option; do
+while getopts ":a:dfghj:kuvwy" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
     f) _build_ufs_opt+="-f ";;
@@ -67,6 +70,7 @@ while getopts ":a:dfghj:kuvw" option; do
     u) _build_ufsda="YES" ;;
     v) _verbose_opt="-v";;
     w) _wave_opt="-w";;
+    y) _hydro_opt="-y";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       _usage
@@ -129,7 +133,7 @@ declare -A build_opts
 big_jobs=0
 build_jobs["ufs"]=8
 big_jobs=$((big_jobs+1))
-build_opts["ufs"]="${_wave_opt} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
+build_opts["ufs"]="${_wave_opt} ${_hydro_opt} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
 
 build_jobs["upp"]=1
 build_opts["upp"]="${_build_debug}"
