@@ -28,3 +28,4 @@ SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
 COMINecmwf: /scratch1/NCEPDEV/global/glopara/data/external_gempak/ecmwf
 COMINnam: /scratch1/NCEPDEV/global/glopara/data/external_gempak/nam
 COMINukmet: /scratch1/NCEPDEV/global/glopara/data/external_gempak/ukmet
+AERO_INPUTS_DIR: /scratch1/NCEPDEV/global/glopara/data/gocart_emissions

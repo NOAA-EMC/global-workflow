@@ -24,4 +24,5 @@ LOCALARCH: 'NO'
 ATARDIR: '' # TODO: This will not yet work from GOOGLE.
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
+SUPPORT_WAVES: 'NO'
 SUPPORTED_RESOLUTIONS: ['C48', 'C96'] # TODO: Test and support all cubed-sphere resolutions.

@@ -27,7 +27,11 @@ source "${EXPDIR}/config.ufs" ${string}
 source "${EXPDIR}/config.resources" efcs
 
 # Stochastic physics parameters (only for ensemble forecasts)
-export DO_SKEB="YES"
+if [[ "${CASE}" == "C96" ]] ; then
+    export DO_SKEB="NO" # SKEB turned off for C96
+else
+    export DO_SKEB="YES" # SKEB turned on for all other resolutions
+fi
 export SKEB="0.8,-999,-999,-999,-999"
 export SKEB_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
 export SKEB_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
