@@ -718,7 +718,12 @@ GOCART_out() {
   # TODO: this should be linked but there are issues where gocart crashing if it is linked
   local fhr
   local vdate
-  for fhr in ${GOCART_OUTPUT_FH}; do
+  local aero_min
+  local gocart_output_fh
+  aero_min=$(( ${IAU_FHROT:-0} > FHMIN ? IAU_FHROT + FHOUT_AERO : FHMIN + FHOUT_AERO ))
+  gocart_output_fh=$(seq -s ' ' "$(( aero_min ))" "${FHOUT_AERO}" "${FHMAX}")
+
+  for fhr in ${gocart_output_fh}; do
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
     ${NCP} "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
       "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"

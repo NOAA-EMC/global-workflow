@@ -713,6 +713,5 @@ GOCART_predet(){
 
   if [[ ! -d "${COMOUT_CHEM_HISTORY}" ]]; then mkdir -p "${COMOUT_CHEM_HISTORY}"; fi
 
-  local aero_min=$(( ${FHROT:-0} > FHMIN ? FHROT + FHOUT_AERO : FHMIN + FHOUT_AERO ))
-  GOCART_OUTPUT_FH=$(seq -s ' ' "$(( aero_min ))" "${FHOUT_AERO}" "${FHMAX}")
+  # GOCART output times can't be computed here because they may depend on FHROT
 }
