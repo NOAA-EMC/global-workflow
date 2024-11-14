@@ -44,6 +44,7 @@ export FHOUT=${FHOUT_GFS}
 export FHOUT_HF=${FHOUT_HF_GFS}
 export FHOUT_OCN=${FHOUT_OCN_GFS}
 export FHOUT_ICE=${FHOUT_ICE_GFS}
+export FHZER=@FHZER@
 
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst
@@ -66,8 +67,8 @@ export FCSTEXEC="ufs_model.x"
 
 #######################################################################
 # Model configuration
-export TYPE="nh"
-export MONO="non-mono"
+export TYPE=@TYPE@
+export MONO=@MONO@
 
 # Use stratosphere h2o physics
 export h2o_phys=".true."
@@ -201,6 +202,11 @@ case ${imp_physics} in
         export hord_xx_nh_nonmono=5
         export vtdm4_nh_nonmono=0.02
         export nord=2
+        if [[ "${TYPE}" == "nh"* ]]; then
+            export dddmp=0.1
+        else
+            export dddmp=0.
+	    fi
         export dddmp=0.1
         export d4_bg=0.12
         ;;
@@ -221,7 +227,11 @@ case ${imp_physics} in
         export vtdm4_nh_nonmono=0.02
         export nord=2
         export d4_bg=0.12
-        export dddmp=0.1
+        if [[ "${TYPE}" == "nh"* ]]; then
+            export dddmp=0.1
+        else
+            export dddmp=0.
+	    fi
         ;;
     *) echo "Unknown microphysics option, ABORT!" ;;
 esac
@@ -268,9 +278,7 @@ else
   export io_layout="1,1"
 fi
 
-if (( OFFSET_START_HOUR != 0 )); then
-    export reforecast="YES"
-fi
+export reforecast=@reforecast@
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst
