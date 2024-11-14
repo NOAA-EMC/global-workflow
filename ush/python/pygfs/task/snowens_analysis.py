@@ -298,7 +298,7 @@ class SnowEnsAnalysis(Task):
 
         # ---- tar up diags
         # path of output tar statfile
-        snowstat = os.path.join(self.task_config.COM_SNOW_ANALYSIS, f"{self.task_config.APREFIX}snowstat")
+        snowstat = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, f"{self.task_config.APREFIX}snowstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
@@ -325,7 +325,7 @@ class SnowEnsAnalysis(Task):
         for src in yamls:
             yaml_base = os.path.splitext(os.path.basename(src))[0]
             dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
-            dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, dest_yaml_name)
+            dest = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
                 'copy': [[src, dest]]
@@ -339,13 +339,15 @@ class SnowEnsAnalysis(Task):
             bkgtimes.append(self.task_config.SNOW_WINDOW_BEGIN)
         bkgtimes.append(self.task_config.current_cycle)
         anllist = []
-        for bkgtime in bkgtimes:
-            template = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
-            for itile in range(1, self.task_config.ntiles + 1):
-                filename = template.format(tilenum=itile)
-                src = os.path.join(self.task_config.DATA, 'anl', filename)
-                dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename)
-                anllist.append([src, dest])
+        for mem in range(1, self.task_config.NMEM_ENS + 1):
+            for bkgtime in bkgtimes:
+                template = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
+                for itile in range(1, self.task_config.ntiles + 1):
+                    filename = template.format(tilenum=itile)
+                    src = os.path.join(self.task_config.DATA, 'anl', f"mem{mem:03d}", filename)
+                    COMOUT_SNOW_ANALYSIS = self.task_config.COMOUT_SNOW_ANALYSIS.replace('ensstat', f"mem{mem:03d}")
+                    dest = os.path.join(COMOUT_SNOW_ANALYSIS, filename)
+                    anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
         logger.info('Copy increments to COM')
@@ -354,7 +356,7 @@ class SnowEnsAnalysis(Task):
         for itile in range(1, self.task_config.ntiles + 1):
             filename = template.format(tilenum=itile)
             src = os.path.join(self.task_config.DATA, 'anl', filename)
-            dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename)
+            dest = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, filename)
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
 
@@ -393,7 +395,7 @@ class SnowEnsAnalysis(Task):
             logger.info(f"Processing member mem{mem:03d}")
             # loop over times to apply increments
             for bkgtime in bkgtimes:
-                logger.info("Processing analysis valid: {bkgtime}")
+                logger.info(f"Processing analysis valid: {bkgtime}")
                 logger.info("Create namelist for APPLY_INCR_EXE")
                 nml_template = self.task_config.ENS_APPLY_INCR_NML_TMPL
                 nml_config = {
