@@ -21,4 +21,4 @@ skip_ci_on_hosts:
   - gaea
   - orion
   - hercules
-  
+  - wcoss2
