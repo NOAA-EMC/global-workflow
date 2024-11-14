@@ -164,7 +164,7 @@ class SnowAnalysis(Task):
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
-        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
+        keys = ['DATA', 'current_cycle', 'COMIN_OBS', 'COMIN_ATMOS_RESTART_PREV',
                 'OPREFIX', 'CASE', 'OCNRES', 'ntiles', 'FIXgfs']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -174,7 +174,7 @@ class SnowAnalysis(Task):
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, localconf)
         logger.debug(f"{self.task_config.IMS_OBS_LIST}:\n{pformat(prep_ims_config)}")
 
-        # copy the IMS obs files from COM_OBS to DATA/obs
+        # copy the IMS obs files from COMIN_OBS to DATA/obs
         logger.info("Copying IMS obs for CALCFIMSEXE")
         FileHandler(prep_ims_config.calcfims).sync()
 
@@ -273,7 +273,7 @@ class SnowAnalysis(Task):
 
         # ---- tar up diags
         # path of output tar statfile
-        snowstat = os.path.join(self.task_config.COM_SNOW_ANALYSIS, f"{self.task_config.APREFIX}snowstat")
+        snowstat = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, f"{self.task_config.APREFIX}snowstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
@@ -300,7 +300,7 @@ class SnowAnalysis(Task):
         for src in yamls:
             yaml_base = os.path.splitext(os.path.basename(src))[0]
             dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
-            dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, dest_yaml_name)
+            dest = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
                 'copy': [[src, dest]]
@@ -319,7 +319,7 @@ class SnowAnalysis(Task):
             for itile in range(1, self.task_config.ntiles + 1):
                 filename = template.format(tilenum=itile)
                 src = os.path.join(self.task_config.DATA, 'anl', filename)
-                dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename)
+                dest = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, filename)
                 anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
@@ -329,7 +329,7 @@ class SnowAnalysis(Task):
         for itile in range(1, self.task_config.ntiles + 1):
             filename = template.format(tilenum=itile)
             src = os.path.join(self.task_config.DATA, 'anl', filename)
-            dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename)
+            dest = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, filename)
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
 
@@ -355,7 +355,7 @@ class SnowAnalysis(Task):
             template = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
             for itile in range(1, self.task_config.ntiles + 1):
                 filename = template.format(tilenum=itile)
-                src = os.path.join(self.task_config.COM_ATMOS_RESTART_PREV, filename)
+                src = os.path.join(self.task_config.COMIN_ATMOS_RESTART_PREV, filename)
                 dest = os.path.join(self.task_config.DATA, "anl", filename)
                 anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
