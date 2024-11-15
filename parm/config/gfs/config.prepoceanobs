@@ -14,7 +14,12 @@ export OBS_LIST=@SOCA_OBS_LIST@
 export OBS_YAML=${OBS_LIST}
 
 # ocean analysis needs own dmpdir until standard dmpdir has full ocean obs
-export DMPDIR=@DMPDIR@
+use_exp_obs="@use_exp_obs@"
+if [[ "${use_exp_obs}" == "YES" ]]; then
+    dmpdir_exp="@dmpdir_exp@"
+fi
+
+export DMPDIR="${dmpdir_exp:-${DMPDIR}}"
 
 # For BUFR2IODA json and python scripts
 export JSON_TMPL_DIR="${PARMgfs}/gdas/ioda/bufr2ioda"

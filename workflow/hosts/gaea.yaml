@@ -26,3 +26,4 @@ ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
 SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
+AERO_INPUTS_DIR: /gpfs/f5/epic/proj-shared/global/glopara/data/gocart_emissions

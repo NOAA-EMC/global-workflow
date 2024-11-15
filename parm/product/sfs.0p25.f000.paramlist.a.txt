@@ -1,3 +1,4 @@
+:HGT:surface:
 :PRMSL:mean sea level:
 :PRES:surface:
 :TMP:2 m above ground:
@@ -12,20 +13,18 @@
 :CSNOW:surface:
 :CFRZR:surface:
 :CICEP:surface:
-:FDNSSTMP:surface:
 :PWAT:entire atmosphere (considered as a single layer):
 :CAPE:180-0 mb above ground:
 :CAPE:surface:
 :CIN:180-0 mb above ground:
 :CIN:surface:
+:CPOFP:surface:
 :HLCY:3000-0 m above ground:
-:PEVPR:surface:
-:TCDC:entire atmosphere (considered as a single layer):
+:TCDC:entire atmosphere:
 :WEASD:surface:
 :SNOD:surface:
 :ULWRF:top of atmosphere:
 :DSWRF:surface:
-:CPOFP:surface:
 :DLWRF:surface:
 :USWRF:surface:
 :ULWRF:surface:
