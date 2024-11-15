@@ -189,7 +189,7 @@ class SnowEnsAnalysis(Task):
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
-        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
+        keys = ['DATA', 'current_cycle', 'COMIN_OBS',
                 'OPREFIX', 'CASE', 'OCNRES', 'ntiles', 'FIXgfs']
         for key in keys:
             localconf[key] = self.task_config[key]
@@ -199,7 +199,7 @@ class SnowEnsAnalysis(Task):
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, localconf)
         logger.debug(f"{self.task_config.IMS_OBS_LIST}:\n{pformat(prep_ims_config)}")
 
-        # copy the IMS obs files from COM_OBS to DATA/obs
+        # copy the IMS obs files from COMIN_OBS to DATA/obs
         logger.info("Copying IMS obs for CALCFIMSEXE")
         FileHandler(prep_ims_config.calcfims).sync()
 

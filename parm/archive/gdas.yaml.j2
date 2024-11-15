@@ -75,7 +75,7 @@ gdas:
         - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aerorawobs"
             {% endif %}
             {% if DO_JEDISNOWDA %}
-        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
+        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowstat"
             {% endif %}
 
         # Ozone verification
