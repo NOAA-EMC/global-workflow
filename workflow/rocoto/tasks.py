@@ -136,7 +136,7 @@ class Tasks:
         # Make a local copy of the config to avoid modifying the original
         local_config = config.copy()
         # Ocean/Ice components do not have a HF output option like the atmosphere
-        if component in ['ocean', 'ice']:
+        if component in ['ocean', 'ice', 'wave']:
             local_config['FHMAX_HF_GFS'] = 0
 
         if component in ['ocean']:
@@ -148,6 +148,11 @@ class Tasks:
             local_config['FHOUT_HF_GFS'] = config['FHOUT_ICE_GFS']
             local_config['FHOUT_GFS'] = config['FHOUT_ICE_GFS']
             local_config['FHOUT'] = config['FHOUT_ICE']
+
+        if component in ['wave']:
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_GFS']
+            local_config['FHOUT_GFS'] = config['FHOUT_GFS']
+            local_config['FHOUT'] = config['FHOUT_WAV']
 
         fhmin = local_config['FHMIN']
 

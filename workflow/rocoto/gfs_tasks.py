@@ -1210,12 +1210,12 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'])
+        fhrs = self._get_forecast_hours('gfs', self._configs['wavepostsbs'], 'wave')
 
-        member_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+        fhr_metatask_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
         metatask_dict = {'task_name': f'{self.run}_wavepostsbs',
                          'task_dict': task_dict,
-                         'var_dict': member_var_dict}
+                         'var_dict': fhr_metatask_dict}
 
         task = rocoto.create_task(metatask_dict)
 

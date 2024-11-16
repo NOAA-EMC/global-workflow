@@ -340,7 +340,7 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'])
+        fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'], 'wave')
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'gefs_wave_post_grid_#member#',
