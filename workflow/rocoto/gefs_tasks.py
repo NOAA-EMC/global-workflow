@@ -341,6 +341,11 @@ class GEFSTasks(Tasks):
                      }
 
         fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'], 'wave')
+
+        is_replay = self._configs['wavepostsbs']['REPLAY_ICS']
+        if is_replay and 0 in fhrs:
+            fhrs.remove(0)
+
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'gefs_wave_post_grid_#member#',
