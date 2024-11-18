@@ -82,6 +82,10 @@ UFS_det(){
       # TODO: add checks for other MOM6 restarts as well
         mom6_rst_ok="NO"
       fi
+      MOM6_RESTART_SETTING='r'
+      MOM6_INIT_FROM_Z=True
+      MOM6_WARMSTART_FILE="none"
+      MOM6_INIT_UV="zero"
     fi
 
     # Check for CICE6 restart availability

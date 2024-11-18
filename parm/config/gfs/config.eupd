@@ -28,7 +28,7 @@ export lnsigcutoff=2.75          # ignored if modelspace_vloc=.true.
 
 export lobsdiag_forenkf=".true." # use jacobian.  must be .true. if modelspace_vloc=".true."
                                  # need to specify .true. setting since config.anal sets to .false.
-
+export taperanalperts=".true."
 export NAM_ENKF="smoothparm=35,"
 
 echo "END: config.eupd"

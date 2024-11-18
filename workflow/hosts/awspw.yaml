@@ -24,4 +24,8 @@ LOCALARCH: 'NO'
 ATARDIR: '' # TODO: This will not yet work from AWS.
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
+DO_TRACKER: 'NO'
+DO_GENESIS: 'NO'
+DO_METP: 'NO'
+SUPPORT_WAVES: 'NO'
 SUPPORTED_RESOLUTIONS: ['C48', 'C96'] # TODO: Test and support all cubed-sphere resolutions.
