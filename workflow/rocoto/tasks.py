@@ -149,6 +149,11 @@ class Tasks:
             local_config['FHOUT_GFS'] = config['FHOUT_ICE_GFS']
             local_config['FHOUT'] = config['FHOUT_ICE']
 
+        if component in ['wave']:
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_HF_WAV']
+            local_config['FHOUT_GFS'] = config['FHOUT_WAV']
+            local_config['FHOUT'] = config['FHOUT_WAVE']
+
         fhmin = local_config['FHMIN']
 
         # Get a list of all forecast hours
