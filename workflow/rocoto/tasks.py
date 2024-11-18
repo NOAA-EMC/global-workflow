@@ -153,6 +153,10 @@ class Tasks:
             local_config['FHOUT_HF_GFS'] = config['FHOUT_HF_GFS']
             local_config['FHOUT_GFS'] = config['FHOUT_GFS']
             local_config['FHOUT'] = config['FHOUT']
+            local_config['FHMAX_GFS'] = config['FHMAX_GFS']
+            local_config['FHOUT_GFS'] = config['FHOUT_GFS']
+            local_config['FHMAX_HF_GFS'] = config['FHMAX_HF_GFS']
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_HF_GFS']
 
         fhmin = local_config['FHMIN']
 
