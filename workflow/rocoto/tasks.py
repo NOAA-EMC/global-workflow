@@ -152,7 +152,7 @@ class Tasks:
         if component in ['wave']:
             local_config['FHOUT_HF_GFS'] = config['FHOUT_HF_GFS']
             local_config['FHOUT_GFS'] = config['FHOUT_GFS']
-            local_config['FHOUT'] = config['FHOUT_WAV']
+            local_config['FHOUT'] = config['FHOUT']
 
         fhmin = local_config['FHMIN']
 
