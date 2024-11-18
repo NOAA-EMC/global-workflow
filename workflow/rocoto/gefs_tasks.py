@@ -343,8 +343,10 @@ class GEFSTasks(Tasks):
         fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'], 'wave')
 
         is_replay = self._configs['wavepostsbs']['REPLAY_ICS']
-        if is_replay and 0 in fhrs:
-            fhrs.remove(0)
+        if is_replay:
+            for hour in [0, 1, 2]:
+                if hour in fhrs:
+                    fhrs.remove(hour)
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
