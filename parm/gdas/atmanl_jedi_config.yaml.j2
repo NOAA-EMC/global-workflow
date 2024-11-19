@@ -1,0 +1,13 @@
+atmanlvar:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas.x'
+  mpi_cmd: '{{ APRUN_ATMANLVAR }}'
+  jedi_args: ['fv3jedi', 'variational']
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
+  jcb_algo_yaml: '{{ JCB_ALGO_YAML_VAR }}'
+atmanlfv3inc:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/fv3jedi_fv3inc.x'
+  mpi_cmd: '{{ APRUN_ATMANLFV3INC }}'
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
+  jcb_algo: fv3jedi_fv3inc_variational

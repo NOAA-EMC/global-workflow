@@ -14,7 +14,7 @@ export MARINE_LETKF_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/letkf/letkf_stage.yaml
 export MARINE_LETKF_SAVE_YAML_TMPL="${PARMgfs}/gdas/soca/letkf/letkf_save.yaml.j2"
 
 export GRIDGEN_EXEC="${EXECgfs}/gdas_soca_gridgen.x"
-export GRIDGEN_YAML="${PARMgfs}/gdas/soca/gridgen/gridgen.yaml"
+export GRIDGEN_YAML="${HOMEgfs}/sorc/gdas.cd/parm/jcb-gdas/algorithm/marine/soca_gridgen.yaml.j2"
 export DIST_HALO_SIZE=500000
 
 echo "END: config.marineanlletkf"
