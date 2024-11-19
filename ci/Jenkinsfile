@@ -222,6 +222,7 @@ pipeline {
                                                 def build_system = yaml_case.experiment.system
                                                 try {
                                                     sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} ${build_system}")
+                                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cleanup_experiment ${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}")
                                                 } catch (Exception error_experment) {
                                                     sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
                                                     ws(CUSTOM_WORKSPACE) {

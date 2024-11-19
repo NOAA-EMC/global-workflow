@@ -28,20 +28,18 @@ class AtmEnsAnalysis(Task):
     Class for JEDI-based global atmens analysis tasks
     """
     @logit(logger, name="AtmEnsAnalysis")
-    def __init__(self, config: Dict[str, Any], yaml_name: Optional[str] = None):
+    def __init__(self, config: Dict[str, Any]):
         """Constructor global atmens analysis task
 
         This method will construct a global atmens analysis task.
         This includes:
         - extending the task_config attribute AttrDict to include parameters required for this task
-        - instantiate the Jedi attribute object
+        - instantiate the Jedi attribute objects
 
         Parameters
         ----------
         config: Dict
             dictionary object containing task configuration
-        yaml_name: str, optional
-            name of YAML file for JEDI configuration
 
         Returns
         ----------
@@ -73,46 +71,17 @@ class AtmEnsAnalysis(Task):
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
-        # Create JEDI object
-        self.jedi = Jedi(self.task_config, yaml_name)
+        # Create dictionary of JEDI objects
+        expected_keys = ['atmensanlobs', 'atmensanlsol', 'atmensanlfv3inc', 'atmensanlletkf']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
-    def initialize_jedi(self):
-        """Initialize JEDI application
-
-        This method will initialize a JEDI application used in the global atmens analysis.
-        This includes:
-        - generating and saving JEDI YAML config
-        - linking the JEDI executable
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-
-        # get JEDI config and save to YAML file
-        logger.info(f"Generating JEDI config: {self.jedi.yaml}")
-        self.jedi.set_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
-
-        # save JEDI config to YAML file
-        logger.info(f"Writing JEDI config to YAML file: {self.jedi.yaml}")
-        save_as_yaml(self.jedi.config, self.jedi.yaml)
-
-        # link JEDI-to-FV3 increment converter executable
-        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
-        self.jedi.link_exe(self.task_config)
-
-    @logit(logger)
-    def initialize_analysis(self) -> None:
+    def initialize(self) -> None:
         """Initialize a global atmens analysis
 
         This method will initialize a global atmens analysis.
         This includes:
+        - initialize JEDI applications
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -128,26 +97,34 @@ class AtmEnsAnalysis(Task):
         ----------
         None
         """
-        super().initialize()
+
+        # initialize JEDI LETKF observer application
+        logger.info(f"Initializing JEDI LETKF observer application")
+        self.jedi_dict['atmensanlobs'].initialize(self.task_config)
+
+        # initialize JEDI LETKF solver application
+        logger.info(f"Initializing JEDI LETKF solver application")
+        self.jedi_dict['atmensanlsol'].initialize(self.task_config)
+
+        # initialize JEDI FV3 increment conversion application
+        logger.info(f"Initializing JEDI FV3 increment conversion application")
+        self.jedi_dict['atmensanlfv3inc'].initialize(self.task_config)
 
         # stage observations
-        logger.info(f"Staging list of observation files generated from JEDI config")
-        obs_dict = self.jedi.get_obs_dict(self.task_config)
+        logger.info(f"Staging list of observation files")
+        obs_dict = self.jedi_dict['atmensanlobs'].render_jcb(self.task_config, 'atm_obs_staging')
         FileHandler(obs_dict).sync()
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # stage bias corrections
-        logger.info(f"Staging list of bias correction files generated from JEDI config")
-        self.task_config.VarBcDir = f"{self.task_config.COM_ATMOS_ANALYSIS_PREV}"
-        bias_file = f"rad_varbc_params.tar"
-        bias_dict = self.jedi.get_bias_dict(self.task_config, bias_file)
+        logger.info(f"Staging list of bias correction files")
+        bias_dict = self.jedi_dict['atmensanlobs'].render_jcb(self.task_config, 'atm_bias_staging')
+        bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
         FileHandler(bias_dict).sync()
         logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
         # extract bias corrections
-        tar_file = os.path.join(self.task_config.DATA, 'obs', f"{self.task_config.GPREFIX}{bias_file}")
-        logger.info(f"Extract bias correction files from {tar_file}")
-        self.jedi.extract_tar(tar_file)
+        Jedi.extract_tar_from_filehandler_dict(bias_dict)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
@@ -176,28 +153,38 @@ class AtmEnsAnalysis(Task):
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
-    def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
-        """Run JEDI executable
+    def initialize_letkf(self) -> None:
+        """Initialize a global atmens analysis
 
-        This method will run JEDI executables for the global atmens analysis
+        Note: This would normally be done in AtmEnsAnalysis.initialize(), but that method
+              now initializes the split observer-solver. This method is just for testing.
 
         Parameters
         ----------
-        aprun_cmd : str
-           Run command for JEDI application on HPC system
-        jedi_args : List
-           List of additional optional arguments for JEDI application
+        None
+
         Returns
         ----------
         None
         """
 
-        if jedi_args:
-            logger.info(f"Executing {self.jedi.exe} {' '.join(jedi_args)} {self.jedi.yaml}")
-        else:
-            logger.info(f"Executing {self.jedi.exe} {self.jedi.yaml}")
+        self.jedi_dict['atmensanlletkf'].initialize(self.task_config)
 
-        self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
+    @logit(logger)
+    def execute(self, jedi_dict_key: str) -> None:
+        """Execute JEDI application of atmens analysis
+
+        Parameters
+        ----------
+        jedi_dict_key
+            key specifying a particular Jedi object in self.jedi_dict
+
+        Returns
+        ----------
+        None
+        """
+
+        self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
     def finalize(self) -> None:
