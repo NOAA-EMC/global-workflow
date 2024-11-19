@@ -168,10 +168,10 @@ class Tasks:
             fhout_hf = local_config['FHOUT_HF_GFS']
 
             if component in ['ocean', 'ice']:
-                fhmax_hf = local_config['FHMAX_HF_GFS']
+                fhmax_hf = config['FHMAX_HF_GFS']
 
             if component in ['wave']:
-                fhmax_hf = local_config['FHMAX_HF_WAV']
+                fhmax_hf = config['FHMAX_HF_WAV']
 
             fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
