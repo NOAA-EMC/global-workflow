@@ -716,7 +716,7 @@ GOCART_output_fh() {
   local aero_min
   local gocart_output_fh
   aero_min=$(( ${IAU_FHROT:-0} > FHMIN ? IAU_FHROT + FHOUT_AERO : FHMIN + FHOUT_AERO ))
-  gocart_output_fh=$(seq -s ' ' "$(( aero_min ))" "${FHOUT_AERO}" "${FHMAX}")
+  gocart_output_fh=$(seq -s ' ' "$(( aero_min ))" "${FHOUT_AERO}" "${GOCART_MAX}")
 
   echo "${gocart_output_fh}"
 }

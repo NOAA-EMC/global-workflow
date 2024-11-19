@@ -724,5 +724,8 @@ GOCART_predet(){
 
   if [[ ! -d "${COMOUT_CHEM_HISTORY}" ]]; then mkdir -p "${COMOUT_CHEM_HISTORY}"; fi
 
+  # FHMAX gets modified when IAU is on, so keep origianl value for GOCART output
+  GOCART_MAX=${FHMAX}
+
   # GOCART output times can't be computed here because they may depend on FHROT
 }
