@@ -34,7 +34,6 @@
 
 source "${USHgfs}/preamble.sh"
 
-export FORECAST_HOUR=$(( 10#${FHR3} ))
 # 0.a Basic modes of operation
 
   # Set wave model ID tag to include member number
@@ -218,7 +217,7 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
   set +x
   echo '   Making command file for sbs grib2 and GRID Interpolation '
   set_trace
-  fhr=$FORECAST_HOUR
+  fhr=$(( 10#${FHR3} ))
   fhrg=$fhr
   sleep_interval=10
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
@@ -247,12 +246,10 @@ export FORECAST_HOUR=$(( 10#${FHR3} ))
   then
     for wavGRD in ${waveGRD}; do
       gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
-      if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
-        echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID}"
-        echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
+      if [[ -s "${gfile}" ]]; then
+        echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
         err=3; export err; "${errchk}"
         exit "${err}"
-      fi
       ${NLN} "${gfile}" "./out_grd.${wavGRD}"
     done
 
