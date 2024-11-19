@@ -21,9 +21,11 @@ base:
   GSI_SOILANAL: "NO"
   EUPD_CYC: "gdas"
   FHMAX_ENKF_GFS: 12
+  DO_JEDI_TESTING: "NO"
 
 atmanl:
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"
+  JCB_ALGO_YAML_FV3INC: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar-fv3inc.yaml.j2"
   STATICB_TYPE: "gsibec"
   LAYOUT_X_ATMANL: 8
   LAYOUT_Y_ATMANL: 8
@@ -34,6 +36,7 @@ atmensanl:
   JCB_ALGO_YAML_LETKF: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf.yaml.j2"
   JCB_ALGO_YAML_OBS: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_observer.yaml.j2"
   JCB_ALGO_YAML_SOL: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_solver.yaml.j2"
+  JCB_ALGO_YAML_FV3INC: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf-fv3inc.yaml.j2"
   LAYOUT_X_ATMENSANL: 8
   LAYOUT_Y_ATMENSANL: 8
   IO_LAYOUT_X: 1

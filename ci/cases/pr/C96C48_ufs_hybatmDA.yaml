@@ -1,3 +1,6 @@
+base:
+  DO_JEDI_TESTING: "YES"
+
 experiment:
   system: gfs
   mode: cycled
