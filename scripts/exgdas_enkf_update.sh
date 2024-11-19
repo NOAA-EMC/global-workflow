@@ -77,6 +77,7 @@ write_spread_diag=${write_spread_diag:-".false."}
 cnvw_option=${cnvw_option:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
+taperanalperts=${taperanalperts:-".false."}
 IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
 NMEM_ENS_MAX=${NMEM_ENS:-80}
 if [ "${RUN}" = "enkfgfs" ]; then
@@ -287,7 +288,7 @@ cat > enkf.nml << EOFnml
    univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
    letkf_flag=${letkf_flag},nobsl_max=${nobsl_max},denkf=${denkf},getkf=${getkf}.,
    nhr_anal=${IAUFHRS_ENKF},nhr_state=${IAUFHRS_ENKF},
-   lobsdiag_forenkf=$lobsdiag_forenkf,
+   lobsdiag_forenkf=${lobsdiag_forenkf},taperanalperts=${taperanalperts},
    write_spread_diag=$write_spread_diag,
    modelspace_vloc=$modelspace_vloc,
    use_correlated_oberrs=${use_correlated_oberrs},

@@ -6,7 +6,7 @@ gfs_downstream:
         - "{{ COMIN_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.sfc"
         - "{{ COMIN_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.snd"
         {% for i in range(1, NUM_SND_COLLECTIVES) %}
-        - "{{ COMIN_ATMOS_WMO | relpath(ROTDIR) }}/gfs_collective{{ i }}.postsnd_{{ cycle_HH }}"
+        - "{{ COMIN_ATMOS_BUFR | relpath(ROTDIR) }}/gfs_collective{{ i }}.fil"
         {% endfor %}
-        - "{{ COMIN_ATMOS_BUFR | relpath(ROTDIR) }}/bufr.t{{ cycle_HH }}z"
+        - "{{ COMIN_ATMOS_BUFR | relpath(ROTDIR) }}/bufr.??????.{{ cycle_YMDH }}"
         - "{{ COMIN_ATMOS_BUFR | relpath(ROTDIR) }}/gfs.t{{ cycle_HH }}z.bufrsnd.tar.gz"
