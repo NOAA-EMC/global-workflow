@@ -250,6 +250,7 @@ source "${USHgfs}/preamble.sh"
         echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
         err=3; export err; "${errchk}"
         exit "${err}"
+      fi
       ${NLN} "${gfile}" "./out_grd.${wavGRD}"
     done
 
