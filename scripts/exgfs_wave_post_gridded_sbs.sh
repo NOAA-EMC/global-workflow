@@ -219,7 +219,6 @@ source "${USHgfs}/preamble.sh"
   set_trace
   fhr=$(( 10#${FHR3} ))
   fhrg=$fhr
-  sleep_interval=10
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
 
   ymdh=$($NDATE $fhr ${PDY}${cyc})
