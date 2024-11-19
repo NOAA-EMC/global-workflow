@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # exglobal_atmens_analysis_sol.py
 # This script creates an AtmEnsAnalysis object
-# and runs the execute method
-# which executes the global atm local ensemble analysis in solver mode
+# and runs the execute method which runs the JEDI LETKF
+# application in solver mode
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
@@ -18,8 +18,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atmens analysis task
-    AtmEnsAnl = AtmEnsAnalysis(config, 'atmensanlsol')
+    AtmEnsAnl = AtmEnsAnalysis(config)
 
-    # Initialize and execute JEDI ensemble DA analysis in solver mode
-    AtmEnsAnl.initialize_jedi()
-    AtmEnsAnl.execute(config.APRUN_ATMENSANLSOL, ['fv3jedi', 'localensembleda'])
+    # Execute JEDI ensemble DA analysis in solver mode
+    AtmEnsAnl.execute('atmensanlsol')

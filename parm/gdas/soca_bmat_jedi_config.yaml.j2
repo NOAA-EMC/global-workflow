@@ -1,0 +1,42 @@
+gridgen:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas_soca_gridgen.x'
+  mpi_cmd: '{{ APRUN_MARINEBMAT }}'
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'
+  jcb_algo: soca_gridgen
+soca_diagb:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas_soca_diagb.x'
+  mpi_cmd: '{{ APRUN_MARINEBMAT }}'
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'  
+  jcb_algo: soca_diagb
+soca_parameters_diffusion_vt:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas_soca_error_covariance_toolbox.x'
+  mpi_cmd: '{{ APRUN_MARINEBMAT }}'  
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'  
+  jcb_algo: soca_parameters_diffusion_vt
+soca_setcorscales:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas_soca_setcorscales.x'
+  mpi_cmd: '{{ APRUN_MARINEBMAT }}'  
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'  
+  jcb_algo: soca_setcorscales
+soca_parameters_diffusion_hz:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas_soca_error_covariance_toolbox.x'
+  mpi_cmd: '{{ APRUN_MARINEBMAT }}'  
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'  
+  jcb_algo: soca_parameters_diffusion_hz
+soca_ensb:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas_ens_handler.x'
+  mpi_cmd: '{{ APRUN_MARINEBMAT }}'  
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'  
+  jcb_algo: soca_ensb
+soca_ensweights:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas_socahybridweights.x'
+  mpi_cmd: '{{ APRUN_MARINEBMAT }}'  
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'  
+  jcb_algo: soca_ensweights  
