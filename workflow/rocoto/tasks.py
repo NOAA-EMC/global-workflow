@@ -172,7 +172,7 @@ class Tasks:
 
             if component in ['wave']:
                 fhmax_hf = local_config['FHMAX_HF_WAV']
-            
+
             fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
