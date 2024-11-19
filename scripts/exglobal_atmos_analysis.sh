@@ -893,7 +893,6 @@ OBS_INPUT::
    ompstcbufr     ompstc8     n21         ompstc8_n21          0.0     2     0
    gomebufr       gome        metop-c     gome_metop-c         0.0     2     0
    iasingbufr     iasi-ng     metop-sg-a1 iasi-ng_metop-sg-a1  0.0     1     0
-   sstmetimage    metimage    metop-sg-a1 metimage_metop-sg-a1 0.0     1     0
 ::
 &SUPEROB_RADAR
   ${SUPERRAD}
