@@ -356,6 +356,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
                        "gdassoca_obsstats.x" \
                        "gdasapp_land_ensrecenter.x" \
                        "bufr2ioda.x" \
+                       "ioda-stats.x"\
                        "calcfIMS.exe" \
                        "apply_incr.exe" )
   for gdasexe in "${JEDI_EXE[@]}"; do

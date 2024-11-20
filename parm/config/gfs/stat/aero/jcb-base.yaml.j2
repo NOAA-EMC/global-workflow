@@ -1,0 +1,24 @@
+# Search path for model and obs for JCB
+# -------------------------------------
+algorithm_path: "{{PARMgfs}}/gdas/jcb-algorithms"
+app_path_algorithm: "{{PARMgfs}}/gdas/jcb-gdas/algorithm/obstats/aero"
+
+window_begin: "{{ STAT_WINDOW_BEGIN | to_isotime }}"
+window_YMDH: "{{ STAT_WINDOW_BEGIN | to_YMDH }}"
+window_length: "{{ STAT_WINDOW_LENGTH }}"
+
+# Inputted list of ob spaces
+# --------------------------
+obspaces: {{ OBSPACES_LIST }}
+
+# Obspace variable things
+# -----------------------
+aero_obsdatain_path: "{{ DATA }}"
+aero_obsdatatin_simulated_variables: ['aerosolOpticalDepth']
+aero_obsdatain_observed_variables: ['aerosolOpticalDepth']
+
+# Variables
+# ---------
+aero_variables: ['aerosolOpticalDepth']
+aero_file_groups: ['bkgmob', 'bkgmob1']
+aero_file_qc_groups: ['EffectiveQC0', 'EffectiveQC1']
