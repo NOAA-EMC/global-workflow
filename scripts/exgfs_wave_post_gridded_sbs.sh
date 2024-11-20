@@ -219,8 +219,6 @@ source "${USHgfs}/preamble.sh"
   set_trace
   fhr=$(( 10#${FHR3} ))
   fhrg=$fhr
-  sleep_interval=10
-  iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   ymdh=$($NDATE $fhr ${PDY}${cyc})
   YMD=$(echo $ymdh | cut -c1-8)
   HMS="$(echo $ymdh | cut -c9-10)0000"
@@ -245,9 +243,8 @@ source "${USHgfs}/preamble.sh"
   then
     for wavGRD in ${waveGRD}; do
       gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
-        if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
+        if [[ ! -s "${gfile}" ]]; then
           echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID}"
-          echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
           err=3; export err; "${errchk}"
           exit "${err}"
         fi
