@@ -244,7 +244,7 @@ source "${USHgfs}/preamble.sh"
     for wavGRD in ${waveGRD}; do
       gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
         if [[ ! -s "${gfile}" ]]; then
-          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${grdID}"
+          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
           err=3; export err; "${errchk}"
           exit "${err}"
         fi
