@@ -344,7 +344,7 @@ class GEFSTasks(Tasks):
 
         is_replay = self._configs['wavepostsbs']['REPLAY_ICS']
         if is_replay:
-            fhrs = [ fhr for fhr in fhrs if fhr not in [0, 1, 2] ]
+            fhrs = [fhr for fhr in fhrs if fhr not in [0, 1, 2]]
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
