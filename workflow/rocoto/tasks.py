@@ -151,8 +151,10 @@ class Tasks:
 
         if component in ['wave']:
             local_config['FHOUT_HF_GFS'] = config['FHOUT_HF_WAV']
+            local_config['FHMAX_HF_GFS'] = config['FHMAX_HF_WAV']
             local_config['FHOUT_GFS'] = config['FHOUT_WAV']
             local_config['FHOUT'] = config['FHOUT_WAV']
+            
 
         fhmin = local_config['FHMIN']
 
@@ -167,9 +169,6 @@ class Tasks:
             fhout = local_config['FHOUT_GFS']
             fhout_hf = local_config['FHOUT_HF_GFS']
             fhmax_hf = local_config['FHMAX_HF_GFS']
-
-            if component in ['wave']:
-                fhmax_hf = local_config['FHMAX_HF_WAV']
             fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
