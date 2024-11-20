@@ -341,7 +341,6 @@ class GEFSTasks(Tasks):
                      }
 
         fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'], 'wave')
-
         is_replay = self._configs['wavepostsbs']['REPLAY_ICS']
         if is_replay:
             fhrs = [fhr for fhr in fhrs if fhr not in [0, 1, 2]]
