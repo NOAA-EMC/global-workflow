@@ -94,11 +94,6 @@
                                     '${YMD}':previous_cycle_YMD,
                                     '${HH}':previous_cycle_HH,
                                     '${MEMDIR}': mem_char }) %}
-    {% set previous_cycle_and_run_dict = ({ '${ROTDIR}':ROTDIR,
-                                            '${RUN}':RUN,
-                                            '${YMD}':previous_cycle_YMD,
-                                            '${HH}':previous_cycle_HH,
-                                            '${MEMDIR}': mem_char }) %}
 
     {% set COMOUT_ATMOS_INPUT_MEM = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_cycle_dict) %}
     {% set COMOUT_ATMOS_RESTART_PREV_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
