@@ -154,7 +154,6 @@ class Tasks:
             local_config['FHMAX_HF_GFS'] = config['FHMAX_HF_WAV']
             local_config['FHOUT_GFS'] = config['FHOUT_WAV']
             local_config['FHOUT'] = config['FHOUT_WAV']
-            
 
         fhmin = local_config['FHMIN']
 

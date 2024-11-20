@@ -1174,6 +1174,7 @@ class GFSTasks(Tasks):
             fhrs.remove(0)
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+
         if component in ['ocean']:
             fhrs_next = fhrs[1:] + [fhrs[-1] + (fhrs[-1] - fhrs[-2])]
             fhr_var_dict['fhr_next'] = ' '.join([f"{fhr:03d}" for fhr in fhrs_next])
