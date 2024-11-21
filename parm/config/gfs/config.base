@@ -474,6 +474,14 @@ if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
+   export DO_ANLSTAT="YES"    # JEDI-based analysis statistics
+else
+   export DO_VERFOZN="YES"    # Ozone data assimilation monitoring
+   export DO_VERFRAD="YES"    # Radiance data assimilation monitoring
+   export DO_VMINMON="YES"    # GSI minimization monitoring
+   if [[ ${DO_AERO} = "YES" || ${DO_JEDIOCNVAR} = "YES" || ${DO_JEDISNOWDA} = "YES " ]]; then
+     export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
+   fi
 fi
 
 # If starting ICs that are not at cycle hour
