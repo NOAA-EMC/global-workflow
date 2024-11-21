@@ -682,7 +682,6 @@ GOCART_rc() {
   # set input directory containing GOCART input data and configuration files
   # this variable is platform-dependent and should be set via a YAML file
 
-  local vdate
   # link directory containing GOCART input dataset, if provided
   if [[ -n "${AERO_INPUTS_DIR}" ]]; then
     ${NLN} "${AERO_INPUTS_DIR}" "${DATA}/ExtData"
@@ -692,7 +691,7 @@ GOCART_rc() {
 
   # Link blending emissions if AERO_EMIS_FIRE == blending
   if [[ "${AERO_EMIS_FIRE}" == "blending" && "${RUN}" == "gefs" ]]; then 
-    ${NCP} "${COMOUT_CHEM_HISTORY}/${RUN}.${vdate:0:8}.${RUN}.blended_emissions.nc" "${DATA}"
+    ${NCP} "${COMOUT_CHEM_HISTORY}/${RUN}.${current_cycle:0:8}.${RUN}.blended_emissions.nc" "${DATA}"
   fi 
 
   # copying GOCART configuration files
