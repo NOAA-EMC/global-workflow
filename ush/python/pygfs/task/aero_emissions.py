@@ -191,6 +191,8 @@ class AerosolEmissions(Task):
         """
         if len(files) == 0:
             raise Exception("FATAL ERROR: Received empty list of HFED files")
+        found_species = []
+        dset_dict = {}
         for f in files:
             index_good = [[i, v] for i, v in enumerate(input_vars) if v in f]
             good = index_good[0][0]
