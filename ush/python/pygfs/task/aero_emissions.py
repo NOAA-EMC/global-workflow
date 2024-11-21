@@ -3,9 +3,8 @@
 import os
 from logging import getLogger
 from pprint import pformat
-from typing import Any, Dict, Union
+from typing import Any, Dict
 
-import numpy as np
 import xarray as xr
 from dateutil.rrule import DAILY, rrule
 from wxflow import (
@@ -126,8 +125,7 @@ class AerosolEmissions(Task):
         ratio = config_dict['ratio']
         climfiles = self.task_config['climofiles']
         coarsen_scale = config_dict['coarsen_scale']
-        output_vars = config_dict['output_vars']
-        input_vars = config_dict['input_vars']
+        out_var_dict = config_dict['output_var_map']
         current_date = self.task_config['current_date']
         n_persist = config_dict['n_persist']
 
@@ -145,8 +143,7 @@ class AerosolEmissions(Task):
             AerosolEmissions.process_hfed(
                 files=basefile,
                 out_name=config_dict.data_out['copy'][0][0],
-                out_vars=output_vars,
-                input_vars=input_vars)
+                out_var_dict=out_var_dict)
         else:
             dset = AerosolEmissions.make_fire_emission(
                 d=current_date,
@@ -155,15 +152,14 @@ class AerosolEmissions(Task):
                 scale_climo=True,
                 coarsen_scale=coarsen_scale,
                 obsfile=basefile,
-                output_vars=output_vars,
-                input_vars=input_vars,
+                out_var_dict=out_var_dict,
                 n_persist=n_persist)
 
             AerosolEmissions.write_ncf(dset, config_dict.data_out['copy'][0][0])
 
     @staticmethod
     @logit(logger)
-    def process_hfed(files: list, out_name: str, out_vars: list = None, input_vars: list = None) -> None:
+    def process_hfed(files: list, out_name: str, out_var_dict: dict[str, str] = None) -> None:
         """
         Process HFED files to generate fire emissions data.
 
@@ -171,33 +167,33 @@ class AerosolEmissions(Task):
         -----------
         files : list
             List of HFED files to process.
-        out_name: str
+        out_name : str
             Name of the output file to save the processed data.
-        out_vars: list, optional
-            List of output variables. Default is None.
-        input_vars: list, optional
-            List of input variables. Default is None.
+        out_var_dict : list, optional
+            Mapping of input variable name to desired (output) variable name.
 
         Returns:
         --------
         None
         """
+        if out_var_dict is None:
+            raise Exception("FATAL ERROR: No output variable mapping provided")
+
         if len(files) == 0:
             raise Exception("FATAL ERROR: Received empty list of HFED files")
 
         found_species = []
         dset_dict = {}
         for f in sorted(files):
-            index_good = [[i, v] for i, v in enumerate(input_vars) if v in f]
-            good = index_good[0][0]
-            found_species.append(index_good[0][1])
+            logger.info(f"Opening HFED file: {f}")
+            _, input_var = os.path.basename(f).split(".")[1].split("_")
+            found_species.append(input_var)
             try:
-                logger.info("Opening HFED file: {filename}".format(filename=f))
                 with xr.open_dataset(f, decode_cf=False).biomass as da:
-                    da.name = out_vars[good]
-                    dset_dict[out_vars[good]] = da
+                    da.name = out_var_dict[input_var]
+                    dset_dict[da.name] = da
             except Exception as ee:
-                logger.exception("FATAL ERROR: unable to read dataset {error}".format(error=ee))
+                logger.exception(f"FATAL ERROR: unable to read dataset {ee}")
                 raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
 
         dset = xr.Dataset(dset_dict)
@@ -206,7 +202,7 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def open_qfed(files: list, out_vars: list = None, input_vars: list = None) -> xr.Dataset:
+    def open_qfed(files: list, out_var_dict: dict[str, str] = None) -> xr.Dataset:
         """
         Open QFED2 fire emissions data and renames variables to a standard (using the GBBEPx names to start with).
 
@@ -214,14 +210,16 @@ class AerosolEmissions(Task):
         ----------
         files : list
             Paths to the QFED2 fire emissions files
+        out_var_dict : dict
+            Mapping of input variable name to desired (output) variable name.
 
         Returns
         -------
         xr.Dataset
             Dataset containing the fire emissions data
         """
-        # out_vars  # ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
-        qfed_vars = input_vars  # ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
+        if out_var_dict is None:
+            raise Exception("FATAL ERROR: No output variable mapping provided")
 
         if len(files) == 0:
             raise Exception("FATAL ERROR: Received empty list of QFED files")
@@ -229,19 +227,19 @@ class AerosolEmissions(Task):
         found_species = []
         dset_dict = {}
         for f in sorted(files):
-            index_good = [[i, v] for i, v in enumerate(qfed_vars) if v in f]
-            good = index_good[0][0]
-            found_species.append(index_good[0][1])
-
+            logger.info(f"Opening QFED file: {f}")
+            _, input_var = os.path.basename(f).split(".")[1].split("_")
+            found_species.append(input_var)
             try:
-                logger.info("Opening QFED file: {filename}".format(filename=f))
                 with xr.open_dataset(f, decode_cf=False).biomass as da:
-                    da.name = out_vars[good]
-                    dset_dict[out_vars[good]] = da
+                    da.name = out_var_dict[input_var]
+                    dset_dict[da.name] = da
             except Exception as ee:
-                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!") from ee
+                logger.exception(f"FATAL ERROR: unable to read dataset {ee}")
+                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
 
         dset = xr.Dataset(dset_dict)
+
         return dset
 
     @staticmethod
@@ -369,8 +367,7 @@ class AerosolEmissions(Task):
         scale_climo: bool,
         coarsen_scale: int,
         obsfile: str,
-        output_vars: Union[str, list],
-        input_vars: list,
+        out_var_dict: dict[str, str],
         n_persist: int,
     ) -> xr.Dataset:
         """
@@ -378,21 +375,21 @@ class AerosolEmissions(Task):
 
         Parameters:
         -----------
-        d: str or pd.Timestamp
+        d : str or pd.Timestamp
             The date for which fire emissions are generated.
-        climos: list
+        climos : list
             List of pre-calculated climatology data files for scaling.
-        ratio: float
+        ratio : float
             The ratio of original data to climatology data for blending.
-        scale_climo: bool
+        scale_climo : bool
             Flag indicating whether to scale the climatology data.
-        n_forecast_days: int
+        n_forecast_days : int
             Number of forecast days.
-        obsfile: str
+        obsfile : str
             Path to the file containing observed fire emissions data.
-        climo_directory: str
+        climo_directory : str
             Directory containing climatology files.
-        n_persist: int
+        n_persist : int
             Assumed number of days that are able to be persistant fire emissions
 
         Returns:
@@ -404,7 +401,7 @@ class AerosolEmissions(Task):
         if isinstance(obsfile, (str, bytes)):
             obsfile = [obsfile]
         if "QFED".lower() in obsfile[0].lower():
-            ObsEmis = AerosolEmissions.open_qfed(obsfile, out_vars=output_vars, input_vars=input_vars)
+            ObsEmis = AerosolEmissions.open_qfed(obsfile, out_var_dict=out_var_dict)
         else:
             ObsEmis = xr.open_mfdataset(obsfile, decode_cf=False)
 
