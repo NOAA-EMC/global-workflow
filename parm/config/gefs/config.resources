@@ -41,7 +41,7 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    max_tasks_per_node=36
+    max_tasks_per_node=48
     ;;
   "AZUREPW")
     export PARTITION_BATCH="compute"
