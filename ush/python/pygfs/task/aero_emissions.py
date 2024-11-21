@@ -220,7 +220,7 @@ class AerosolEmissions(Task):
         xr.Dataset
             Dataset containing the fire emissions data
         """
-        vrs = out_vars  # ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
+        # out_vars  # ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
         qfed_vars = input_vars  # ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
 
         if len(files) == 0:
@@ -236,8 +236,8 @@ class AerosolEmissions(Task):
             try:
                 logger.info("Opening QFED file: {filename}".format(filename=f))
                 with xr.open_dataset(f, decode_cf=False).biomass as da:
-                    da.name = vrs[good]
-                    dset_dict[vrs[good]] = da
+                    da.name = out_vars[good]
+                    dset_dict[out_vars[good]] = da
             except Exception as ee:
                 raise Exception("FATAL ERROR: Unable to read dataset, ABORT!") from ee
 
