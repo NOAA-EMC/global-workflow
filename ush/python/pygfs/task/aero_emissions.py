@@ -3,7 +3,7 @@
 import os
 from logging import getLogger
 from pprint import pformat
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import xarray as xr
 from dateutil.rrule import DAILY, rrule
@@ -24,7 +24,8 @@ class AerosolEmissions(Task):
 
     @logit(logger, name="AerosolEmissions")
     def __init__(self, config: Dict[str, Any]) -> None:
-        """Constructor for the Aerosol Emissions task
+        """
+        Constructor for the Aerosol Emissions task
 
         Parameters
         ----------
@@ -46,7 +47,7 @@ class AerosolEmissions(Task):
         localdict = AttrDict({"forecast_dates": forecast_dates})
         self.task_config = AttrDict(**self.task_config, **localdict)
 
-        # populate yaml file and add to task_config=
+        # populate yaml file and add to task_config
         logger.info(f"Read the prep_emission configuration yaml file {self.task_config.PREP_EMISSION_CONFIG}")
         self.task_config.aero_emission_yaml = parse_j2yaml(self.task_config.PREP_EMISSION_CONFIG, self.task_config)
         logger.debug(f"aero_emission_yaml:\n{pformat(self.task_config.aero_emission_yaml)}")
@@ -77,18 +78,16 @@ class AerosolEmissions(Task):
         # Extend task_config with localdict
         self.task_config = AttrDict(**self.task_config, **localdict)
 
-        # Read the aero_emission.yaml file for common configuration
-
     @logit(logger)
     def initialize(self) -> None:
-        """Initialize the work directory by copying all the common fix data
+        """
+        Initialize the work directory by copying all the common fix data
 
         Parameters
         ----------
-        aero_emission_yaml: Dict
-            Fully resolved aero_emissions.yaml dictionary
+        None
 
-         Returns
+        Returns
         -------
         None
         """
@@ -102,7 +101,7 @@ class AerosolEmissions(Task):
             logger.info(
                 f"Copy HFED '{data_in.hfed}' data to run directory"
             )
-        logger.info("Copy climotology data to run directory")
+        logger.info("Copy climatology data to run directory")
         FileHandler(data_in.climo).sync()
         logger.info(f"Copy {emistype} data to run directory")
         FileHandler(data_in[emistype.lower()]).sync()
@@ -112,12 +111,12 @@ class AerosolEmissions(Task):
         """
         Run the AerosolEmissions task with the given parameters.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         None
 
-        Returns:
-        --------
+        Returns
+        -------
         None
         """
         config_dict = self.task_config['config']
@@ -159,21 +158,21 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def process_hfed(files: list, out_name: str, out_var_dict: dict[str, str] = None) -> None:
+    def process_hfed(files: List[str], out_name: str, out_var_dict: Dict[str, str] = None) -> None:
         """
         Process HFED files to generate fire emissions data.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         files : list
             List of HFED files to process.
         out_name : str
             Name of the output file to save the processed data.
-        out_var_dict : list, optional
+        out_var_dict : dict, optional
             Mapping of input variable name to desired (output) variable name.
 
-        Returns:
-        --------
+        Returns
+        -------
         None
         """
         if out_var_dict is None:
@@ -202,7 +201,7 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def open_qfed(files: list, out_var_dict: dict[str, str] = None) -> xr.Dataset:
+    def open_qfed(files: List[str], out_var_dict: Dict[str, str] = None) -> xr.Dataset:
         """
         Open QFED2 fire emissions data and renames variables to a standard (using the GBBEPx names to start with).
 
@@ -244,18 +243,19 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def open_climatology(files: list) -> xr.Dataset:
+    def open_climatology(files: List[str]) -> xr.Dataset:
         """
         Open climatology files and concatenate them along the time dimension.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         files : list
             Paths to the climatology files.
 
-        Returns:
-        --------
-            xr.Dataset: Concatenated dataset containing the climatology data.
+        Returns
+        -------
+        xr.Dataset
+            Concatenated dataset containing the climatology data.
         """
         das = []
 
@@ -277,15 +277,15 @@ class AerosolEmissions(Task):
         """
         Write the given dataset to a NetCDF file with specified encoding.
 
-        Parameters:
-        -----------
-        dset: xarray.Dataset
+        Parameters
+        ----------
+        dset : xarray.Dataset
             The dataset to be written to the NetCDF file.
-        outfile: str
+        outfile : str
             The path and filename of the output NetCDF file.
 
-        Returns:
-        --------
+        Returns
+        -------
         None
         """
         encoding = {}
@@ -313,21 +313,21 @@ class AerosolEmissions(Task):
         """
         Create scaled climatology data based on emission data.
 
-        Parameters:
-        -----------
-        emissions: xarray.DataArray
+        Parameters
+        ----------
+        emissions : xarray.DataArray
             Emission data.
-        climatology:  xarray.Dataset
+        climatology :  xarray.Dataset
             Input climatology data.
-        lat_coarse: int, optional)
+        lat_coarse : int, optional
             Coarsening factor for latitude. Defaults to 50.
-        lon_coarse: int, optional)
+        lon_coarse : int, optional
             Coarsening factor for longitude. Defaults to 50.
 
-        Returns:
-        --------
-        xarray.Dataset: Scaled climatology data.
-
+        Returns
+        -------
+        xarray.Dataset
+            Scaled climatology data.
         """
         # Create a copy of the climatology
         clim = climatology.copy()
@@ -362,19 +362,19 @@ class AerosolEmissions(Task):
     @logit(logger)
     def make_fire_emission(
         d: str,
-        climos: list,
+        climos: List[str],
         ratio: float,
         scale_climo: bool,
         coarsen_scale: int,
         obsfile: str,
-        out_var_dict: dict[str, str],
+        out_var_dict: Dict[str, str],
         n_persist: int,
     ) -> xr.Dataset:
         """
         Generate fire emissions data for a given date and forecast period.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         d : str or pd.Timestamp
             The date for which fire emissions are generated.
         climos : list
@@ -390,12 +390,12 @@ class AerosolEmissions(Task):
         climo_directory : str
             Directory containing climatology files.
         n_persist : int
-            Assumed number of days that are able to be persistant fire emissions
+            Assumed number of days that are able to be persistent fire emissions
 
-        Returns:
-        --------
-        xr.Dataset:
-           xarray.Dataset object representing fire emissions data for each forecast day.
+        Returns
+        -------
+        xr.Dataset
+            xarray Dataset object representing fire emissions data for each forecast day.
         """
         # open fire emission
         if isinstance(obsfile, (str, bytes)):
@@ -405,7 +405,7 @@ class AerosolEmissions(Task):
         else:
             ObsEmis = xr.open_mfdataset(obsfile, decode_cf=False)
 
-        # open climotology
+        # open climatology
         climo = AerosolEmissions.open_climatology(climos)
         climo = climo.sel(lat=ObsEmis["lat"], lon=ObsEmis["lon"], method="nearest")
 
@@ -448,18 +448,17 @@ class AerosolEmissions(Task):
 
     @logit(logger)
     def finalize(self) -> None:
-        """Perform closing actions of the task.
+        """
+        Perform closing actions of the task.
         Copy data back from the DATA/ directory to COM/
 
-        Paramaters:
-        -----------
-        config : Dict[str, Any]
-            Incoming configuration for the task from the environment
+        Parameters
+        ----------
+        None
 
         Returns
         -------
         None
         """
-
         logger.info(f"Copy '{self.task_config.config.data_out}' processed data to COM/ directory")
         FileHandler(self.task_config.config.data_out).sync()
