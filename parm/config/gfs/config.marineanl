@@ -5,6 +5,8 @@
 
 echo "BEGIN: config.marineanl"
 
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/soca_bmat_jedi_config.yaml.j2"
+
 export MARINE_OBS_YAML_DIR="${PARMgfs}/gdas/soca/obs/config"
 export MARINE_OBS_LIST_YAML=@SOCA_OBS_LIST@
 export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@

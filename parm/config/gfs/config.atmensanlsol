@@ -8,6 +8,4 @@ echo "BEGIN: config.atmensanlsol"
 # Get task specific resources
 . "${EXPDIR}/config.resources" atmensanlsol
 
-export JCB_ALGO_YAML=@JCB_ALGO_YAML@
-
 echo "END: config.atmensanlsol"

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # exglobal_atm_analysis_variational.py
 # This script creates an AtmAnalysis object
-# and runs the execute method
-# which executes the global atm variational analysis
+# and runs the execute method which runs the JEDI
+# variational analysis application
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the atm analysis task
-    AtmAnl = AtmAnalysis(config, 'atmanlvar')
+    AtmAnl = AtmAnalysis(config)
 
     # Execute JEDI variational analysis
-    AtmAnl.execute(config.APRUN_ATMANLVAR, ['fv3jedi', 'variational'])
+    AtmAnl.execute('atmanlvar')
