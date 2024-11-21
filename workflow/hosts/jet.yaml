@@ -28,3 +28,4 @@ SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
 COMINecmwf: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/ecmwf
 COMINnam: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/nam
 COMINukmet: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/ukmet
+AERO_INPUTS_DIR: /lfs5/HFIP/hfv3gfs/glopara/data/gocart_emissions

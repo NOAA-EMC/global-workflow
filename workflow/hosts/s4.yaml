@@ -25,3 +25,4 @@ ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
 MAKE_NSSTBUFR: 'YES'
 MAKE_ACFTBUFR: 'YES'
 SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
+AERO_INPUTS_DIR: /data/prod/glopara/gocart_emissions
