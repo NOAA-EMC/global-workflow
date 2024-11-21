@@ -1,5 +1,5 @@
 base:
-  DO_JEDI_TESTING: "YES"
+  DO_TEST_MODE: "YES"
 
 experiment:
   system: gfs

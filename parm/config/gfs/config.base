@@ -88,6 +88,7 @@ export REALTIME="YES"
 
 # Experiment mode (cycled or forecast-only)
 export MODE="@MODE@" # cycled/forecast-only
+export DO_TEST_MODE="@DO_TEST_MODE@" # option to change configuration for automated testing
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -482,8 +483,5 @@ export OFFSET_START_HOUR=0
 
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
-
-# Regression testing for JEDI CI in the Global Workflow
-export DO_JEDI_TESTING=@DO_JEDI_TESTING@
 
 echo "END: config.base"
