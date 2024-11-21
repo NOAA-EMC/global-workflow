@@ -189,19 +189,17 @@ class AerosolEmissions(Task):
         --------
         None
         """
-        vrs = out_vars
-        invars = input_vars
         if len(files) == 0:
             raise Exception("FATAL ERROR: Received empty list of HFED files")
         for f in files:
-            index_good = [[i, v] for i, v in enumerate(invars) if v in f]
+            index_good = [[i, v] for i, v in enumerate(input_vars) if v in f]
             good = index_good[0][0]
             found_species.append(index_good[0][1])
             try:
                 logger.info("Opening HFED file: {filename}".format(filename=f))
                 with xr.open_dataset(f, decode_cf=False).biomass as da:
-                    da.name = vrs[good]
-                    dset_dict[vrs[good]] = da
+                    da.name = out_vars[good]
+                    dset_dict[out_vars[good]] = da
             except Exception as ee:
                 logger.exception("FATAL ERROR: unable to read dataset {error}".format(error=ee))
                 raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
