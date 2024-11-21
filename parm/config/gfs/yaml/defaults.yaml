@@ -22,6 +22,7 @@ base:
   GSI_SOILANAL: "NO"
   EUPD_CYC: "gdas"
   FHMAX_ENKF_GFS: 12
+  DOHYBVAR_OCN: "NO"
 
 atmanl:
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"

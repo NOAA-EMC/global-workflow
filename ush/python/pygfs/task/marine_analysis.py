@@ -111,7 +111,7 @@ class MarineAnalysis(Task):
         os.symlink('../staticb', 'staticb')
 
         # hybrid EnVAR case
-        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS >= 3:
+        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
             # stage the ensemble weights
             logger.debug(f"Stage ensemble weights for the hybrid background error")
             FileHandler({'copy': [[os.path.join(self.task_config.COMIN_OCEAN_BMATRIX, f'{self.task_config.APREFIX}ocean.ens_weights.nc'),
