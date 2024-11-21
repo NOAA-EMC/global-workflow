@@ -169,7 +169,7 @@ class AerosolEmissions(Task):
 
         Parameters:
         -----------
-        files: list
+        files : list
             List of HFED files to process.
         out_name: str
             Name of the output file to save the processed data.
@@ -184,9 +184,10 @@ class AerosolEmissions(Task):
         """
         if len(files) == 0:
             raise Exception("FATAL ERROR: Received empty list of HFED files")
+
         found_species = []
         dset_dict = {}
-        for f in files:
+        for f in sorted(files):
             index_good = [[i, v] for i, v in enumerate(input_vars) if v in f]
             good = index_good[0][0]
             found_species.append(index_good[0][1])
@@ -205,14 +206,14 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def open_qfed(fname: Union[str, os.PathLike], out_vars: list = None, input_vars: list = None) -> xr.Dataset:
+    def open_qfed(files: list, out_vars: list = None, input_vars: list = None) -> xr.Dataset:
         """
         Open QFED2 fire emissions data and renames variables to a standard (using the GBBEPx names to start with).
 
         Parameters
         ----------
-        fname : str or list of str
-            Path(s) to the QFED2 fire emissions files
+        files : list
+            Paths to the QFED2 fire emissions files
 
         Returns
         -------
@@ -222,14 +223,12 @@ class AerosolEmissions(Task):
         vrs = out_vars  # ["BC", "CH4", "CO", "CO2", "NH3", "NOx", "OC", "PM2.5", "SO2"]
         qfed_vars = input_vars  # ["bc", "ch4", "co", "co2", "nh3", "no", "oc", "pm25", "so2"]
 
-        if len(fname) > 1:
-            files = np.sort(fname)
-
         if len(files) == 0:
             raise Exception("FATAL ERROR: Received empty list of QFED files")
+
         found_species = []
         dset_dict = {}
-        for f in files:
+        for f in sorted(files):
             index_good = [[i, v] for i, v in enumerate(qfed_vars) if v in f]
             good = index_good[0][0]
             found_species.append(index_good[0][1])
@@ -247,29 +246,23 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def open_climatology(fname: list = None) -> xr.Dataset:
+    def open_climatology(files: list) -> xr.Dataset:
         """
         Open climatology files and concatenate them along the time dimension.
 
         Parameters:
         -----------
-        fname: str or list of str
-            Path(s) to the climatology files.
+        files : list
+            Paths to the climatology files.
 
         Returns:
         --------
             xr.Dataset: Concatenated dataset containing the climatology data.
         """
-        # array to house datasets
         das = []
 
-        if len(fname) > 1:
-            files = np.sort(fname)
-
-        logger.info("Process Climatlogy Files")
-        logger.info("  Opening Climatology File: {filename}".format(filename=fname[0]))
-        xr.open_dataset(files[0])
-        for filename in files:
+        logger.info("Process Climatology Files")
+        for filename in sorted(files):
             logger.info(f"  Opening Climatology File: {filename}")
             try:
                 with xr.open_dataset(filename, engine="netcdf4") as da:
@@ -371,7 +364,7 @@ class AerosolEmissions(Task):
     @logit(logger)
     def make_fire_emission(
         d: str,
-        climos: dict,
+        climos: list,
         ratio: float,
         scale_climo: bool,
         coarsen_scale: int,
@@ -387,8 +380,8 @@ class AerosolEmissions(Task):
         -----------
         d: str or pd.Timestamp
             The date for which fire emissions are generated.
-        climos: dict
-            Dictionary containing pre-calculated climatology data for scaling.
+        climos: list
+            List of pre-calculated climatology data files for scaling.
         ratio: float
             The ratio of original data to climatology data for blending.
         scale_climo: bool
@@ -424,7 +417,7 @@ class AerosolEmissions(Task):
 
         dsets = []
         climo_scaled = {}
-        for tslice in np.arange(len(climos)):
+        for tslice in range(len(climos)):
             # make copy of original data
             if tslice == 0:
                 dset = ObsEmis.copy()
