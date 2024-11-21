@@ -103,7 +103,7 @@ class AerosolEmissions(Task):
             logger.info(
                 f"Copy HFED '{data_in.hfed}' data to run directory"
             )
-        logger.info(f"Copy climotology data to run directory")
+        logger.info("Copy climotology data to run directory")
         FileHandler(data_in.climo).sync()
         logger.info(f"Copy {emistype} data to run directory")
         FileHandler(data_in[emistype.lower()]).sync()
@@ -139,7 +139,7 @@ class AerosolEmissions(Task):
             try:
                 basefile = emission_map[emistype.lower()]
             except KeyError as err:
-                raise KeyError(f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!")
+                raise KeyError(f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!") from err
 
         if emistype.lower() == 'hfed':
             AerosolEmissions.process_hfed(
@@ -205,7 +205,7 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def open_qfed(fname: Union[str, os.PathLike], out_vars: list = None, input_vars: list = None, forecast_dates: list = None) -> xr.Dataset:
+    def open_qfed(fname: Union[str, os.PathLike], out_vars: list = None, input_vars: list = None) -> xr.Dataset:
         """
         Open QFED2 fire emissions data and renames variables to a standard (using the GBBEPx names to start with).
 
@@ -240,7 +240,7 @@ class AerosolEmissions(Task):
                     da.name = vrs[good]
                     dset_dict[vrs[good]] = da
             except Exception as ee:
-                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
+                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!") from ee
 
         dset = xr.Dataset(dset_dict)
         return dset
