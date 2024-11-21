@@ -115,8 +115,8 @@ case ${machine} in
     ;;
   "AZUREPW")
     export PARTITION_BATCH="compute"
-    npe_node_max=24
-    max_tasks_per_node=24
+    npe_node_max=36
+    max_tasks_per_node=36
     # TODO Supply a max mem/node value for AZURE
     # shellcheck disable=SC2034
     mem_node_max=""
