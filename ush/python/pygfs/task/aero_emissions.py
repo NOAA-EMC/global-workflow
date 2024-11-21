@@ -149,7 +149,11 @@ class AerosolEmissions(Task):
                 raise KeyError(f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!")
 
         if emistype.lower() == 'hfed':
-            AerosolEmissions.process_hfed(files=basefile, out_name=config_dict.data_out['copy'][0][0], out_vars=output_vars, input_vars=input_vars)
+            AerosolEmissions.process_hfed(
+                files=basefile,
+                out_name=config_dict.data_out['copy'][0][0],
+                out_vars=output_vars,
+                input_vars=input_vars)
         else:
             dset = AerosolEmissions.make_fire_emission(
                 d=current_date,
