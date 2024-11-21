@@ -45,7 +45,7 @@ case ${machine} in
     ;;
   "AZUREPW")
     export PARTITION_BATCH="compute"
-    max_tasks_per_node=24
+    max_tasks_per_node=36
     ;;
   "GOOGLEPW")
     export PARTITION_BATCH="compute"
