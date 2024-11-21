@@ -130,13 +130,13 @@ class AerosolEmissions(Task):
         """
         config_dict = self.task_config['config']
         emistype = self.task_config['emistype']
-        ratio = Config_dict['ratio']
+        ratio = config_dict['ratio']
         climfiles = self.task_config['climofiles']
-        coarsen_scale = Config_dict['coarsen_scale']
-        output_vars = Config_dict['output_vars']
-        input_vars = Config_dict['input_vars']
+        coarsen_scale = config_dict['coarsen_scale']
+        output_vars = config_dict['output_vars']
+        input_vars = config_dict['input_vars']
         current_date = self.task_config['current_date']
-        n_persist = Config_dict['n_persist']
+        n_persist = config_dict['n_persist']
 
         emission_map = {'qfed': self.task_config['qfedfiles'],
                         'gbbepx': self.task_config['gbbepxfiles'],
@@ -149,7 +149,7 @@ class AerosolEmissions(Task):
                 raise KeyError(f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!")
 
         if emistype.lower() == 'hfed':
-            AerosolEmissions.process_hfed(files=basefile, out_name=Config_dict.data_out['copy'][0][0], out_vars=output_vars, input_vars=input_vars)
+            AerosolEmissions.process_hfed(files=basefile, out_name=config_dict.data_out['copy'][0][0], out_vars=output_vars, input_vars=input_vars)
         else:
             dset = AerosolEmissions.make_fire_emission(
                 d=current_date,
@@ -162,7 +162,7 @@ class AerosolEmissions(Task):
                 input_vars=input_vars,
                 n_persist=n_persist)
 
-            AerosolEmissions.write_ncf(dset, Config_dict.data_out['copy'][0][0])
+            AerosolEmissions.write_ncf(dset, config_dict.data_out['copy'][0][0])
 
     @staticmethod
     @logit(logger)
