@@ -241,7 +241,6 @@ export DO_SPPT="NO"
 export DO_SKEB="NO"
 export DO_SHUM="NO"
 export DO_LAND_PERT="NO"
-export DO_CA="NO"
 export DO_OCN_SPPT="NO"
 export DO_OCN_PERT_EPBL="NO"
 

@@ -448,6 +448,15 @@ export INCVARS_EFOLD="5"
 export netcdf_diag=".true."
 export binary_diag=".false."
 
+# Cellular automata
+case ${RUN} in
+    'gdas') export DO_CA="NO";;
+    'enkfgdas') export DO_CA="YES";;
+    'gfs')  export DO_CA="NO";;
+    'enkfgfs') export DO_CA="YES";;
+    *) export DO_CA="NO" ;;
+esac
+
 # Verification options
 export DO_METP="@DO_METP@"   # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
