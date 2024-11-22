@@ -724,6 +724,8 @@ GOCART_predet(){
 
   if [[ ! -d "${COMOUT_CHEM_HISTORY}" ]]; then mkdir -p "${COMOUT_CHEM_HISTORY}"; fi
 
-  GOCART_OUTPUT_FH=$(seq -s ' ' "${FHMIN}" "6" "${FHMAX}")
-  # TODO: AERO_HISTORY.rc has hardwired output frequency to 6 hours
+  # FHMAX gets modified when IAU is on, so keep origianl value for GOCART output
+  GOCART_MAX=${FHMAX}
+
+  # GOCART output times can't be computed here because they may depend on FHROT
 }
