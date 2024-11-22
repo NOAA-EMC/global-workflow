@@ -4,10 +4,10 @@
 Configuring NOAA Cloud Service Providers
 ########################################
 
-The NOAA Cloud Service Providers (CSP) support the forecast-only,
-coupled, and GEFS configurations for the global-workflow.
+The NOAA Cloud Service Providers (CSPs) support the forecast-only,
+coupled, and GEFS configurations for global-workflow.
 Once a suitable CSP instance and cluster is defined/created,
-the global-workflow may be executed similarly to the on-premisss (on-prem) machines.
+the global-workflow may be executed similarly to the on-premises (on-prem) machines.
 Currently, the global-workflow supports the following
 instance and storage types as a function of CSP and forecast
 resolution.
@@ -49,12 +49,10 @@ clusters follow.
 Login to the NOAA CSP
 *********************
 
-.. role:: bluetext
-
 Log in to the `NOAA cloud <http://noaa.parallel.works/login>`, and into
 the resources configuration. The user should arrive at the following
 screen as in :numref:`Figure %s <pw-home>`.
-Click the :bluetext:`blue` box indicated by the red arrow to login.
+Click the "blue" box indicated by the red arrow to login.
 
 .. _pw-home:
 
@@ -63,7 +61,7 @@ Click the :bluetext:`blue` box indicated by the red arrow to login.
    :class: with-border
    :align: center
 
-   NOAA-PARALLElWORKS Home Page
+   NOAA-PARALLELWORKS Home Page
 
 As shown in :numref:`Figure %s <login2>`, Fill the ``Username / Email`` box with your username or NOAA email (usually in "FirstName.LastName" format).
 Note that the ``Username or email`` query field is case-sensitive.
@@ -86,7 +84,7 @@ Configure the NOAA CSP Instance
 Once logged into the NOAA CSP, navigate to the ``Marketplace`` section
 in the left sidebar as indicated by the red arrow in :numref:`Figure %s <pw-marketplace>`, and click.
 Scroll down to select "AWS EPIC Wei CentOS", circled in red.
-Note that the current global-workflow is still using CentOS built spack-stack,
+Note that the current global-workflow is still using CentOS-built spack-stack,
 but it will be updated to Rocky 8 soon.
 
 .. _pw-marketplace:
@@ -96,7 +94,7 @@ but it will be updated to Rocky 8 soon.
    :class: with-border
    :align: center
 
-   ParallWork Marketplace
+   ParallelWorks Marketplace
 
 Next, click "Fork latest" as shown in the red-circle in :numref:`Figure %s<fork-latest>`.
 
@@ -123,7 +121,7 @@ Click ``Fork`` (in the red-circle) to fork an instance.
 
    Create the Fork
 
-Now, an instance is forked, and it is time to configure the cluster. Fellow these steps as shown in Figure 6:
+Now, an instance is forked, and it is time to configure the cluster. Follow these steps as shown in :numref:`Figure %s <config-cluster>`:
 
 #. Select a *Resource Account*; usually it is *NOAA AWS Commercial Vault*.
 #. Select a *Group*, which will be something like: ``ca-epic``, ``ca-sfs-emc``, etc.
@@ -131,7 +129,7 @@ Now, an instance is forked, and it is time to configure the cluster. Fellow thes
 #. Modify *User Bootstrap*. If you are not using the ``ca-epic`` group, please UNCOMMENT line 2.
 #. Keep *Health Check* as it is.
 
-Click ``Save Changes`` at top-right as shown in red circle.
+Click *Save Changes* at the top-right as shown in the red circle.
 
 .. _config-cluster:
 
@@ -156,8 +154,8 @@ Add CSP Lustre Filesystem
 To run global-workflow on CSPs, we need to attach the ``/lustre`` filesystem as a run directory.
 First, we need to add/define our ``/lustre`` filesystem.
 To do so, navigate to the middle of the NOAA PW website left side panel and select *Lustre*
-(see the red arrow in :numref:`Figure %s <select-lustre>`), and then click "Add Storage"
-at the top right as shown in the red-circle.
+(see the red arrow in :numref:`Figure %s <select-lustre>`), and then click *Add Storage*
+at the top right, as shown in the red circle.
 
 .. _select-lustre:
 
@@ -190,9 +188,8 @@ This will create a ``/lustre`` filesystem template after clicking on the red squ
    Define Lustre Attributes
 	   
 After creating the template, we need to fill in information for this ``/lustre`` filesystem.
-To do so, go to the NOAA PW website, and click *Lustre* on the left side panel,
-as indicated by red arrow 1 in :numref:`Figure %s <check-lustre>`.
-Then select the filesystem defined by *Resource name* in :numref:`Figure %s above <define-lustre>`,
+To do so, go to the NOAA PW website, and click *Lustre* on the left side panel, as
+indicated by red arrow 1 in :numref:`Figure %s <check-lustre>`. Then select the filesystem defined by *Resource name* in :numref:`Figure %s above <define-lustre>`,
 as shown in the red box. Here, the user can delete this resource if not needed by
 clicking the trash can (indicated by red arrow 2 in :numref:`Figure %s <check-lustre>`).
 
@@ -203,7 +200,7 @@ clicking the trash can (indicated by red arrow 2 in :numref:`Figure %s <check-lu
    :class: with-border
    :align: center
 
-   Show the Lustre in PW page
+   Show Lustre on the PW page
 
 By clicking the filesystem in the red box of the image above,
 users will be led to the ``/lustre`` definition page.
@@ -213,7 +210,7 @@ Then follow the steps illustrated in :numref:`Figure %s <config-lustre>` below:
 #. Choose a size in the *Storage Capacity (GB)* box, as indicated by red arrow 1.
    There is a minimum of 1200 for AWS. For the C48 ATM/GEFS case this will be enough.
    For SFS-C96 case or C768 ATM/S2S case, it should probably be increased to 12000.
-#. For *File System Deployment*, choose ``SCRATCH_2`` for now as indicated by red arrow 2.
+#. For *File System Deployment*, choose "SCRATCH_2" for now as indicated by red arrow 2.
    Do not use SCRATCH_1, as it is used for testing by PW.
 #. Choose **NONE** for *File System Compression* as pointed by red arrow 3.
    Only choose LZ4 if you understand what it means.
@@ -231,7 +228,7 @@ Then follow the steps illustrated in :numref:`Figure %s <config-lustre>` below:
 
 For the storage to be allocated for the global-workflow application,
 it is suggested that the ``Mount Point`` be ``/lustre``. Once the storage
-has been configured, following the steps below to attach the ``/lustre`` Filesystem.
+has been configured, follow the steps below to attach the ``/lustre`` filesystem.
 
 ******************************
 Attach CSP Lustre Filesystem
@@ -239,11 +236,9 @@ Attach CSP Lustre Filesystem
 
 Now we need to attach the defined filesystem to our cluster.
 Go back to our the NOAA PW website (https://noaa.parallel.works), and click *Cluster*
-as shown in :numref:`Figure %s <select-cluster>` below,
-then select the cluster you made (e.g., ``AWS EPIC Wei CentOS example`` cluster, as show in the red box below).
-
+as shown in :numref:`Figure %s <select-cluster>` below, then select the cluster you made (e.g., ``AWS EPIC Wei CentOS example`` cluster, as shown in the red box below).
 Note, one can remove/delete this cluster if no longer needed by
-clicking the trash-can shown in the red-circle at right.
+clicking the trash can shown in the red circle at right.
 
 .. _select-cluster:
 
@@ -297,7 +292,7 @@ If you have a S3 bucket, one can attached as:
    :class: with-border
    :align: center
 
-      Adjust Attached ``/lustre`` and/or ``/bucket`` Filesystem Settings
+   Adjust Attached ``/lustre`` and/or ``/bucket`` Filesystem Settings
 
 Always remember to click *Save Changes* after making any changes to the cluster.
 
@@ -320,7 +315,7 @@ the cluster varies and is not immediate; it may take several minutes (often 10-2
 
    Activate the Cluster
 
-When the cluster is activated, users will see the following indicators of success listed below as seen in :numref:`Figure %s <cluster-success>`:
+When the cluster is activated, users will see the following indicators of success listed below as seen in :numref:`Figure %s <cluster-on>`:
 
 #. A green dot on the left beside the AWS logo means that the cluster is active (indicated by red arrow 1).
 #. A green dot on the right labeled "active" means that the cluster is active (indicated by red arrow 2).
@@ -336,7 +331,7 @@ As this cluster is exclusive for yourself, AWS keeps charging you as long as the
 For running global-workflow, one needs to keep the cluster active if there are any Rocoto jobs running
 because Rocoto uses `crontab`, which needs the cluster active all the time, or the crontab job will be terminated.
 
-.. _knowing-cluster:
+.. _cluster-on:
 
 .. figure:: https://raw.githubusercontent.com/wiki/NOAA-EMC/global-workflow/images/noaacsp_using_2.png
    :name: noaacsp_using_2
@@ -369,7 +364,7 @@ or accessing the cluster from your web terminal, you can start to clone, compile
 
    .. code-block:: console
 
-      cd /contrib/$USER   #you should have a username, and have a directory at /contrib where we save our permanent files.
+      cd /contrib/$USER   #you should have a username and have a directory at /contrib, where we save our permanent files.
       git clone --recursive git@github.com:NOAA-EMC/global-workflow.git global-workflow
       #or the develop fork at EPIC:
       git clone --recursive git@github.com:NOAA-EPIC/global-workflow-cloud.git global-workflow-cloud
@@ -384,7 +379,7 @@ or accessing the cluster from your web terminal, you can start to clone, compile
       link_workflow.sh  # after build_all.sh finished successfully
 
 #. As users may define a very small cluster as controller, one may use the script below to compile in compute node.
-   Save the this script in a file, say, com.slurm, and submit this job with command ``sbatch com.slurm``:
+   Save the this script in a file, say, ``com.slurm``, and submit this job with command ``sbatch com.slurm``:
 
    .. code-block:: console
 
@@ -398,7 +393,7 @@ or accessing the cluster from your web terminal, you can start to clone, compile
       #SBATCH -o compile.%J.log
       #SBATCH --exclusive
 
-      gwhome=/contrib/Wei.Huang/src/global-workflow-cloud  # Change this to your own "global-workflow" source diretory
+      gwhome=/contrib/Wei.Huang/src/global-workflow-cloud  # Change this to your own "global-workflow" source directory
       cd ${gwhome}/sorc
       source ${gwhome}/workflow/gw_setup.sh
       #build_all.sh
@@ -418,7 +413,8 @@ or accessing the cluster from your web terminal, you can start to clone, compile
       cd /lustre/$USER/run/EXPDIR/c48atm
       crontab c48atm.crontab
 
-EPIC has copied the C48 and C96 ATM, GEFS and some other data to AWS, and the current code has setup to use those data.
-If user wants to run own case, user needs to make changes to the IC path and others to make it work.
+EPIC has copied the C48 and C96 ATM, GEFS, and some other data to AWS, and the current code has been set up to use those data.
+If users want to run their own case, they need to make changes to the IC path and others to make it work.
 The execution of the global-workflow should now follow the same steps
 as those for the RDHPCS on-premises hosts.
+
