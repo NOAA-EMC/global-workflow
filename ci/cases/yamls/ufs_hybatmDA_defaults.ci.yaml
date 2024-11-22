@@ -5,6 +5,7 @@ base:
   DO_JEDIATMVAR: "YES"
   DO_JEDIATMENS: "YES"
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
+  DO_TEST_MODE: "YES"
 atmanl:
   LAYOUT_X_ATMANL: 4
   LAYOUT_Y_ATMANL: 4
