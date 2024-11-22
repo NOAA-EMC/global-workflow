@@ -57,7 +57,10 @@ FV3_restarts(){
   # Create an array of FV3 restart files
   local fv3_restart_files tile_files
   fv3_restart_files=(coupler.res fv_core.res.nc)
-  tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
+  tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data)
+  if [[ ${DO_CA:-"NO"} == "YES" ]]; then
+    tile_files+=(ca_data)
+  fi
   local nn tt
   for (( nn = 1; nn <= ntiles; nn++ )); do
     for tt in "${tile_files[@]}"; do
