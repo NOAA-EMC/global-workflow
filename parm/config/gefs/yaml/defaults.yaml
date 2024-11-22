@@ -21,6 +21,7 @@ base:
   HPSSARCH: "NO"
   LOCALARCH: "NO"
   SFS_POST: "NO"
+  DO_TEST_MODE: "NO"
 fcst:
   reforecast: "NO"
   FHZER: 6
