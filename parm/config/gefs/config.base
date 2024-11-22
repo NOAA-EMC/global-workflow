@@ -202,7 +202,6 @@ case "${APP}" in
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
-        export WAVE_RUN="both"
     fi
     ;;
   *)
@@ -217,6 +216,7 @@ export FHMAX=9
 export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
 export FHOUT_OCN=3
 export FHOUT_ICE=3
+export FHOUT_AERO=3
 
 # GFS cycle info
 export INTERVAL_GFS=@INTERVAL_GFS@ # Frequency of GFS forecast
