@@ -450,11 +450,11 @@ export binary_diag=".false."
 
 # Cellular automata
 case ${RUN} in
-    'gdas') export DO_CA="NO";;
+    'gdas') export DO_CA="YES";;
     'enkfgdas') export DO_CA="YES";;
-    'gfs')  export DO_CA="NO";;
+    'gfs')  export DO_CA="YES";;
     'enkfgfs') export DO_CA="YES";;
-    *) export DO_CA="NO" ;;
+    *) export DO_CA="YES" ;;
 esac
 
 # Verification options

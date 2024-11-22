@@ -296,7 +296,7 @@ export MEMDIR="mem${ENSMEM}"
 
 # cellular automata
 if (( ENSMEM == 0 )); then
-    export DO_CA="NO"
+    export DO_CA="YES"
 else
     export DO_CA="YES"
 fi
