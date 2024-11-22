@@ -715,6 +715,8 @@ GOCART_output_fh() {
   # This has to be called during postdet after FHROT has been set
   local aero_min
   local gocart_output_fh
+  # GOCART produces no AOD files at the initial forecast time, so start the time
+  #   after the forecast start (accounting for FHROT)
   aero_min=$(( ${IAU_FHROT:-0} > FHMIN ? IAU_FHROT + FHOUT_AERO : FHMIN + FHOUT_AERO ))
   gocart_output_fh=$(seq -s ' ' "$(( aero_min ))" "${FHOUT_AERO}" "${GOCART_MAX}")
 
