@@ -262,18 +262,12 @@ esac
 
 # Aerosol forecasts and analyses may be RUN-dependent
 if [[ "${DO_AERO}" == "YES" ]]; then
-   for aero_run in ${aero_anl_runs}; do
-      if [[ "${aero_run}" == "${RUN}" ]]; then
-         export DO_AERO_ANL="YES"
-         break
-      fi
-   done
-   for aero_run in ${aero_fcst_runs}; do
-      if [[ "${aero_run}" == "${RUN}" ]]; then
-         export DO_AERO_FCST="YES"
-         break
-      fi
-   done
+  if [[ ${aero_anl_runs} =~ ${RUN} ]]; then
+    export DO_AERO_ANL="YES"
+  fi
+  if [[ ${aero_fcst_runs} =~ ${RUN} ]]; then
+    export DO_AERO_FSCT="YES"
+  fi
 fi
 
 # Surface cycle update frequency

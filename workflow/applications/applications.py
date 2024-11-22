@@ -61,7 +61,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         for run in self.runs:
             self.configs[run] = self._source_configs(conf, run=run, log=False)
 
-    @abstractmethod
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
         '''
         Determine the do_* and APP options for each RUN by sourcing config.base
