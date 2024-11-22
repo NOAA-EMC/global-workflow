@@ -33,7 +33,7 @@ datasets:
     {% endfilter %}
 {% endif %}
 
-{% if AERO_FCST_RUN == "gfs" or AERO_FCST_RUN == "both" %}
+{% if DO_AERO and (AERO_FCST_RUN == "gfs" or AERO_FCST_RUN == "both") %}
     # Aerosol forecasts
     {% filter indent(width=4) %}
 {% include "chem.yaml.j2" %}
