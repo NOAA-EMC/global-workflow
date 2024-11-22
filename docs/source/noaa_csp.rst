@@ -49,11 +49,11 @@ clusters follow.
 Login to the NOAA CSP
 *********************
 
+.. role:: bluetext
+
 Log in to the `NOAA cloud <http://noaa.parallel.works/login>`, and into
 the resources configuration. The user should arrive at the following
 screen as in :numref:`Figure %s <pw-home>`.
-.. role:: bluetext
-
 Click the :bluetext:`blue` box indicated by the red arrow to login.
 
 .. _pw-home:
