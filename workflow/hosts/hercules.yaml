@@ -24,7 +24,10 @@ LOCALARCH: 'NO'
 ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
+DO_TRACKER: 'NO'
+DO_GENESIS: 'NO'
 SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
 COMINecmwf: /work/noaa/global/glopara/data/external_gempak/ecmwf
 COMINnam: /work/noaa/global/glopara/data/external_gempak/nam
 COMINukmet: /work/noaa/global/glopara/data/external_gempak/ukmet
+AERO_INPUTS_DIR: /work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions
