@@ -211,6 +211,8 @@ class MarineAnalysis(Task):
         envconfig_jcb['SOCA_NINNER'] = self.task_config.SOCA_NINNER
         envconfig_jcb['obs_list'] = ['adt_rads_all']
         envconfig_jcb['MOM6_LEVS'] = mdau.get_mom6_levels(str(self.task_config.OCNRES))
+        envconfig_jcb['HOMEgfs'] = self.task_config.HOMEgfs
+        envconfig_jcb['DO_TEST_MODE'] = self.task_config.DO_TEST_MODE
 
         # Write obs_list_short
         save_as_yaml(parse_obs_list_file(self.task_config.MARINE_OBS_LIST_YAML), 'obs_list_short.yaml')
@@ -220,12 +222,8 @@ class MarineAnalysis(Task):
         jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-base.yaml')
         jcb_algo_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-3dfgat.yaml.j2')
 
-        jcb_base_config = YAMLFile(path=jcb_base_yaml)
-        jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
-        jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
-        jcb_algo_config = YAMLFile(path=jcb_algo_yaml)
-        jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
-        jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
+        jcb_base_config = parse_j2yaml(jcb_base_yaml, envconfig_jcb)
+        jcb_algo_config = parse_j2yaml(jcb_algo_yaml, envconfig_jcb)
 
         # Override base with the application specific config
         jcb_config = {**jcb_base_config, **jcb_algo_config}
@@ -284,7 +282,7 @@ class MarineAnalysis(Task):
 
         # render the SOCA to CICE YAML file for the Arctic and Antarctic
         logger.info("render the SOCA to CICE YAML file for the Arctic and Antarctic")
-        varchgyamls = ['soca_2cice_arctic.yaml', 'soca_2cice_antarctic.yaml']
+        varchgyamls = ['soca_2cice_global.yaml']
         for varchgyaml in varchgyamls:
             soca2cice_config = parse_j2yaml(path=os.path.join(self.task_config.MARINE_JCB_GDAS_ALGO, f'{varchgyaml}.j2'),
                                             data=soca2cice_param)
