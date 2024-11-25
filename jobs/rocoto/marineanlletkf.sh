@@ -8,19 +8,16 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export job="prepsnowobs"
+export job="marineanlletkf"
 export jobid="${job}.$$"
 
 ###############################################################
-# setup python path for ioda utilities
-# shellcheck disable=SC2311
-pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python$(detect_py_ver)/"
-gdasappPATH="${HOMEgfs}/sorc/gdas.cd/sorc/iodaconv/src:${pyiodaPATH}"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}:${gdasappPATH}"
+# Setup Python path for GDASApp ush
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
 export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_PREP_SNOW_OBS"
+"${HOMEgfs}/jobs/JGLOBAL_MARINE_ANALYSIS_LETKF"
 status=$?
 exit "${status}"

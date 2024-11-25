@@ -25,7 +25,8 @@ case ${step} in
   ;;
   "atmanlvar")
     # Run on 8 nodes for memory requirement
-    export tasks_per_node=8
+    export tasks_per_node_gdas=8
+    export tasks_per_node_gfs=8      
     export walltime="00:45:00"
   ;;
   "atmensanlobs")

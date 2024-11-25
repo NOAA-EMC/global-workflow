@@ -150,10 +150,12 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
         :)
           echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
           _usage
+          exit 1
           ;;
         *)
           echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
           _usage
+          exit 1
           ;;
       esac
    done

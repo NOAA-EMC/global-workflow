@@ -70,34 +70,9 @@ class AtmAnalysis(Task):
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
-        # Create dictionary of JEDI objects
-        self.jedi = AttrDict()
-
-        # atmanlvar
-        self.jedi['atmanlvar'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'atmanlvar',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_VAR,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': None,
-                'jcb_algo_yaml': self.task_config.JCB_ALGO_YAML_VAR,
-                'jedi_args': ['fv3jedi', 'variational']
-            }
-        ))
-
-        # atmanlfv3inc
-        self.jedi['atmanlfv3inc'] = Jedi(AttrDict(
-            {
-                'yaml_name': 'atmanlfv3inc',
-                'rundir': self.task_config.DATA,
-                'exe_src': self.task_config.JEDIEXE_FV3INC,
-                'jcb_base_yaml': self.task_config.JCB_BASE_YAML,
-                'jcb_algo': self.task_config.JCB_ALGO_FV3INC,
-                'jcb_algo_yaml': None,
-                'jedi_args': None
-            }
-        ))
+        # Create dictionary of Jedi objects
+        expected_keys = ['atmanlvar', 'atmanlfv3inc']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -125,27 +100,30 @@ class AtmAnalysis(Task):
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi['atmanlvar'].initialize(self.task_config)
+        self.jedi_dict['atmanlvar'].initialize(self.task_config)
 
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")
-        self.jedi['atmanlfv3inc'].initialize(self.task_config)
+        self.jedi_dict['atmanlfv3inc'].initialize(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files")
-        obs_dict = self.jedi['atmanlvar'].render_jcb(self.task_config, 'atm_obs_staging')
+        obs_dict = self.jedi_dict['atmanlvar'].render_jcb(self.task_config, 'atm_obs_staging')
         FileHandler(obs_dict).sync()
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # stage bias corrections
         logger.info(f"Staging list of bias correction files")
-        bias_dict = self.jedi['atmanlvar'].render_jcb(self.task_config, 'atm_bias_staging')
-        bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
-        FileHandler(bias_dict).sync()
-        logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+        bias_dict = self.jedi_dict['atmanlvar'].render_jcb(self.task_config, 'atm_bias_staging')
+        if bias_dict['copy'] is None:
+            logger.info(f"No bias correction files to stage")
+        else:
+            bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
+            FileHandler(bias_dict).sync()
+            logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
-        # extract bias corrections
-        Jedi.extract_tar_from_filehandler_dict(bias_dict)
+            # extract bias corrections
+            Jedi.extract_tar_from_filehandler_dict(bias_dict)
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
@@ -188,6 +166,22 @@ class AtmAnalysis(Task):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
+
+    @logit(logger)
+    def execute(self, jedi_dict_key: str) -> None:
+        """Execute JEDI application of atm analysis
+
+        Parameters
+        ----------
+        jedi_dict_key
+            key specifying particular Jedi object in self.jedi_dict
+
+        Returns
+        ----------
+        None
+        """
+
+        self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
     def finalize(self) -> None:
