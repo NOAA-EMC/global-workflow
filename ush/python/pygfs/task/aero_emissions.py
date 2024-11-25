@@ -135,8 +135,11 @@ class AerosolEmissions(Task):
         if emistype.lower() != 'blended':
             try:
                 basefile = emission_map[emistype.lower()]
-            except KeyError as err:
-                raise KeyError(f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!") from err
+            except KeyError as e:
+                logger.exception(f"{emistype.lower()} is not a supported emission type")
+                raise Exception(
+                    f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!"
+                ) from e
 
         if emistype.lower() == 'hfed':
             AerosolEmissions.process_hfed(
@@ -176,9 +179,11 @@ class AerosolEmissions(Task):
         None
         """
         if out_var_dict is None:
+            logger.info("No output variable mapping provided")
             raise Exception("FATAL ERROR: No output variable mapping provided")
 
         if len(files) == 0:
+            logger.info("No files provided")
             raise Exception("FATAL ERROR: Received empty list of HFED files")
 
         found_species = []
@@ -191,9 +196,9 @@ class AerosolEmissions(Task):
                 with xr.open_dataset(f, decode_cf=False).biomass as da:
                     da.name = out_var_dict[input_var]
                     dset_dict[da.name] = da
-            except Exception as ee:
-                logger.exception(f"FATAL ERROR: unable to read dataset {ee}")
-                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
+            except Exception as e:
+                logger.exception(f"Unable to read dataset: {f}")
+                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!") from e
 
         dset = xr.Dataset(dset_dict)
 
@@ -218,9 +223,11 @@ class AerosolEmissions(Task):
             Dataset containing the fire emissions data
         """
         if out_var_dict is None:
+            logger.info("No output variable mapping provided")
             raise Exception("FATAL ERROR: No output variable mapping provided")
 
         if len(files) == 0:
+            logger.info("No files provided")
             raise Exception("FATAL ERROR: Received empty list of QFED files")
 
         found_species = []
@@ -233,9 +240,9 @@ class AerosolEmissions(Task):
                 with xr.open_dataset(f, decode_cf=False).biomass as da:
                     da.name = out_var_dict[input_var]
                     dset_dict[da.name] = da
-            except Exception as ee:
-                logger.exception(f"FATAL ERROR: unable to read dataset {ee}")
-                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!")
+            except Exception as e:
+                logger.exception(f"Unable to read dataset: {f}")
+                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!") from e
 
         dset = xr.Dataset(dset_dict)
 
@@ -260,14 +267,14 @@ class AerosolEmissions(Task):
         das = []
 
         logger.info("Process Climatology Files")
-        for filename in sorted(files):
-            logger.info(f"  Opening Climatology File: {filename}")
+        for f in sorted(files):
+            logger.info(f"Opening Climatology File: {f}")
             try:
-                with xr.open_dataset(filename, engine="netcdf4") as da:
+                with xr.open_dataset(f, engine="netcdf4") as da:
                     das.append(da)
-            except Exception as ee:
-                logger.exception("Encountered an error reading climatology file, {error}".format(error=ee))
-                raise Exception("FATAL ERROR: Unable to read file, ABORT!")
+            except Exception as e:
+                logger.exception(f"Encountered an error reading climatology file: {f}")
+                raise Exception("FATAL ERROR: Unable to read file, ABORT!") from e
 
         return xr.concat(das, dim="time")
 
@@ -301,9 +308,9 @@ class AerosolEmissions(Task):
             encoding["time"] = dict(dtype="i4")
         try:
             dset.load().to_netcdf(outfile, encoding=encoding)
-        except Exception as ee:
-            logger.exception("Encountered an exception in writing dataset, {}".format(ee))
-            raise Exception("FATAL ERROR: Unable to write dataset, ABORT!")
+        except Exception as e:
+            logger.exception("Encountered an error writing dataset")
+            raise Exception("FATAL ERROR: Unable to write dataset, ABORT!") from e
 
     @staticmethod
     @logit(logger)
