@@ -24,6 +24,5 @@ if __name__ == '__main__':
     # Prepare the SOCA increment for MOM6 IAU
     MarineAnl.checkpoint_mom6_iau('socaincr2mom6.yaml')
 
-    # Insert the seaice analysis into the CICE6 restarts in 2 sequential stages
-    MarineAnl.checkpoint_cice6('soca_2cice_arctic.yaml')
-    MarineAnl.checkpoint_cice6('soca_2cice_antarctic.yaml')
+    # Insert the seaice analysis into the CICE6 restart
+    MarineAnl.checkpoint_cice6('soca_2cice_global.yaml')
