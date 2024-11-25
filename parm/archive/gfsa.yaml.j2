@@ -38,7 +38,7 @@ gfsa:
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
         {% endif %}
-        {% if AERO_ANL_RUN == "gfs" or AERO_ANL_RUN == "both" %}
+        {% if DO_AERO and (AERO_ANL_RUN == "gfs" or AERO_ANL_RUN == "both") %}
         - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
         {% endif %}
         {% if DO_PREP_OBS_AERO %}
