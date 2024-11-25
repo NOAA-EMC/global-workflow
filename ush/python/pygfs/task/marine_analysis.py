@@ -284,7 +284,7 @@ class MarineAnalysis(Task):
 
         # render the SOCA to CICE YAML file for the Arctic and Antarctic
         logger.info("render the SOCA to CICE YAML file for the Arctic and Antarctic")
-        varchgyamls = ['soca_2cice_arctic.yaml', 'soca_2cice_antarctic.yaml']
+        varchgyamls = ['soca_2cice_global.yaml']
         for varchgyaml in varchgyamls:
             soca2cice_config = parse_j2yaml(path=os.path.join(self.task_config.MARINE_JCB_GDAS_ALGO, f'{varchgyaml}.j2'),
                                             data=soca2cice_param)
