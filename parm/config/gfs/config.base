@@ -267,7 +267,7 @@ if [[ "${DO_AERO}" == "YES" ]]; then
     export DO_AERO_ANL="YES"
   fi
   if [[ ${aero_fcst_runs} =~ ${RUN} ]]; then
-    export DO_AERO_FSCT="YES"
+    export DO_AERO_FCST="YES"
   fi
 fi
 
