@@ -445,13 +445,7 @@ export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Cellular automata
-case ${RUN} in
-    'gdas') export DO_CA="YES";;
-    'enkfgdas') export DO_CA="YES";;
-    'gfs')  export DO_CA="YES";;
-    'enkfgfs') export DO_CA="YES";;
-    *) export DO_CA="YES" ;;
-esac
+export DO_CA="YES"
 
 # Verification options
 export DO_METP="@DO_METP@"   # Run METPLUS jobs - set METPLUS settings in config.metp
