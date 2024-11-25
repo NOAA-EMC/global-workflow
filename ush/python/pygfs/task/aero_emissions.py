@@ -440,8 +440,6 @@ class AerosolEmissions(Task):
                             dset[v].data = (
                                 ratio * dset[v] + (1 - ratio) * climo_scaled[v].data[tslice, :, :]
                             )
-                        else:
-                            dset[v] = dset[v]
 
             dsets.append(dset)
         return xr.concat(dsets, dim="time")
