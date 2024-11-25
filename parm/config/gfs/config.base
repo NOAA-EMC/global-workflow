@@ -88,6 +88,7 @@ export REALTIME="YES"
 
 # Experiment mode (cycled or forecast-only)
 export MODE="@MODE@" # cycled/forecast-only
+export DO_TEST_MODE="@DO_TEST_MODE@" # option to change configuration for automated testing
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -176,9 +177,9 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
 export DO_PREP_OBS_AERO="NO"
-export AERO_FCST_RUN="" # When to run aerosol forecast: gdas, gfs, or both
-export AERO_ANL_RUN="" # When to run aerosol analysis: gdas, gfs, or both
-export WAVE_RUN="" # When to include wave suite: gdas, gfs, or both
+export AERO_FCST_RUN="gdas" # When to run aerosol forecast: gdas, gfs, or both
+export AERO_ANL_RUN="both" # When to run aerosol analysis: gdas, gfs, or both
+export WAVE_RUN="both" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
@@ -229,13 +230,10 @@ case "${APP}" in
     ;;
   ATMA)
     export DO_AERO="YES"
-    export AERO_ANL_RUN="both"
-    export AERO_FCST_RUN="gdas"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
-    export WAVE_RUN="both"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -249,13 +247,10 @@ case "${APP}" in
 
     if [[ "${APP}" =~ A$ ]]; then
         export DO_AERO="YES"
-        export AERO_ANL_RUN="both"
-        export AERO_FCST_RUN="gdas"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
-        export WAVE_RUN="both"
     fi
     ;;
   *)
@@ -278,6 +273,7 @@ export FHMAX=9
 export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
 export FHOUT_OCN=3
 export FHOUT_ICE=3
+export FHOUT_AERO=3
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
 export EUPD_CYC="@EUPD_CYC@"
