@@ -19,7 +19,7 @@ class AerosolBMatrix(Task):
     Class for global aerosol BMatrix tasks
     """
     @logit(logger, name="AerosolBMatrix")
-    def __init__(self, config: Dict[str, Any], yaml_name: Optional[str] = None):
+    def __init__(self, config):
         """Constructor global aero analysis bmatrix task
 
         This method will construct a global aero bmatrix task object.
@@ -31,8 +31,6 @@ class AerosolBMatrix(Task):
         ----------
         config: Dict
             dictionary object containing task configuration
-        yaml_name: str, optional
-            name of YAML file for JEDI configuration
 
         Returns
         ----------
@@ -68,17 +66,19 @@ class AerosolBMatrix(Task):
         # task_config is everything that this task should need
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
-        # Create JEDI object
-        self.jedi = Jedi(self.task_config, yaml_name)
+        # Create dictionary of Jedi objects
+        expected_keys = ['aero_interpbkg', 'aero_diagb', 'aero_diffusion']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
-    def initialize_jedi(self, algorithm: Optional[str] = None):
-        """Initialize JEDI application
+    def initialize(self: Task) -> None:
+        """Initialize a global aerosol B-matrix
 
-        This method will initialize a JEDI application used in the global aero analysis.
+        This method will initialize a global aerosol B-Matrix.
         This includes:
-        - generating and saving JEDI YAML config
-        - linking the JEDI executable
+        - staging the determinstic backgrounds
+        - staging fix files
+        - initializing the JEDI applications
 
         Parameters
         ----------
@@ -89,28 +89,6 @@ class AerosolBMatrix(Task):
         None
         """
 
-        # get JEDI config
-        logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
-        self.jedi.set_config(self.task_config, algorithm)
-        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
-
-        # save JEDI config to YAML file
-        logger.debug(f"Writing JEDI YAML config to: {self.jedi.yaml}")
-        save_as_yaml(self.jedi.config, self.jedi.yaml)
-
-        # link JEDI executable
-        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
-        self.jedi.link_exe(self.task_config)
-
-    @logit(logger)
-    def initialize_genb(self) -> None:
-        """Initialize a global aerosol bmatrix
-
-        This method will initialize a global aerosol bmatrix using JEDI.
-        This includes:
-        - staging fix files
-        - staging model backgrounds
-        """
         # stage fix files
         logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
         jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
@@ -121,30 +99,36 @@ class AerosolBMatrix(Task):
         aero_bmat_stage_list = parse_j2yaml(self.task_config.AERO_BMATRIX_STAGE_TMPL, self.task_config)
         FileHandler(aero_bmat_stage_list).sync()
 
-    @logit(logger)
-    def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
-        """Run JEDI executable
+        # initialize JEDI applications
+        self.jedi_dict['aero_interpbkg'].initialize(self.task_config)
+        self.jedi_dict['aero_diagb'].initialize(self.task_config)
+        self.jedi_dict['aero_diffusion'].initialize(self.task_config)
 
-        This method will run JEDI executables for the global aero analysis
+    @logit(logger)
+    def execute(self) -> None:
+        """Generate the full B-matrix
+
+        This method will generate the full B-matrix according to the configuration.
+        This includes:
+        - running all JEDI applications required to generate the B-matrix
 
         Parameters
         ----------
-        aprun_cmd : str
-           Run command for JEDI application on HPC system
-        jedi_args : List
-           List of additional optional arguments for JEDI application
+        None
 
         Returns
         ----------
         None
         """
 
-        if jedi_args:
-            logger.info(f"Executing {self.jedi.exe} {' '.join(jedi_args)} {self.jedi.yaml}")
-        else:
-            logger.info(f"Executing {self.jedi.exe} {self.jedi.yaml}")
+        # interpolate backgrounds to analysis resolution
+        self.jedi_dict['aero_interpbkg'].execute()
 
-        self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
+        # variance partitioning
+        self.jedi_dict['aero_diagb'].execute()
+
+        # diffusion
+        self.jedi_dict['aero_diffusion'].execute()
 
     @logit(logger)
     def finalize(self) -> None:

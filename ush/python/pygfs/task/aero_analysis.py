@@ -29,7 +29,7 @@ class AerosolAnalysis(Task):
     Class for JEDI-based global aerosol analysis tasks
     """
     @logit(logger, name="AerosolAnalysis")
-    def __init__(self, config: Dict[str, Any], yaml_name: Optional[str] = None):
+    def __init__(self, config):
         """Constructor global aero analysis task
 
         This method will construct a global aero analysis task.
@@ -79,46 +79,17 @@ class AerosolAnalysis(Task):
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
-        # Create JEDI object
-        self.jedi = Jedi(self.task_config, yaml_name)
+        # Create dictionary of Jedi objects
+        expected_keys = ['aeroanlvar']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
-    def initialize_jedi(self):
-        """Initialize JEDI application
-
-        This method will initialize a JEDI application used in the global aero analysis.
-        This includes:
-        - generating and saving JEDI YAML config
-        - linking the JEDI executable
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-
-        # get JEDI config
-        logger.info(f"Generating JEDI YAML config: {self.jedi.yaml}")
-        self.jedi.set_config(self.task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.jedi.config)}")
-
-        # save JEDI config to YAML file
-        logger.debug(f"Writing JEDI YAML config to: {self.jedi.yaml}")
-        save_as_yaml(self.jedi.config, self.jedi.yaml)
-
-        # link JEDI executable
-        logger.info(f"Linking JEDI executable {self.task_config.JEDIEXE} to {self.jedi.exe}")
-        self.jedi.link_exe(self.task_config)
-
-    @logit(logger)
-    def initialize_analysis(self) -> None:
+    def initialize(self) -> None:
         """Initialize a global aerosol analysis
 
         This method will initialize a global aerosol analysis using JEDI.
         This includes:
+        - initialize JEDI applications
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -127,52 +98,63 @@ class AerosolAnalysis(Task):
         - staging model backgrounds
         - creating output directories
         """
-        super().initialize()
+
+        # initialize JEDI variational application
+        logger.info(f"Initializing JEDI variational DA application")
+        self.jedi_dict['aeroanlvar'].initialize(self.task_config)
+
         # stage observations
         logger.info(f"Staging list of observation files generated from JEDI config")
-        obs_dict = self.jedi.get_obs_dict(self.task_config)
+        obs_dict = self.jedi_dict['aeroanlvar'].render_jcb(self.task_config, 'aero_obs_staging')
         FileHandler(obs_dict).sync()
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
+        # # stage bias corrections
+        # logger.info(f"Staging list of bias correction files")
+        # bias_dict = self.jedi_dict['aeroanlvar'].render_jcb(self.task_config, 'aero_bias_staging')
+        # if bias_dict['copy'] is None:
+        #     logger.info(f"No bias correction files to stage")
+        # else:
+        #     bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
+        #     FileHandler(bias_dict).sync()
+        #     logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+
+        #     # extract bias corrections
+        #     Jedi.extract_tar_from_filehandler_dict(bias_dict)
+
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
-        crtm_fix_list = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
-        FileHandler(crtm_fix_list).sync()
+        crtm_fix_dict = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
+        FileHandler(crtm_fix_dict).sync()
+        logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
 
         # stage fix files
         logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_list).sync()
+        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        FileHandler(jedi_fix_dict).sync()
+        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # stage files from COM and create working directories
         logger.info(f"Staging files prescribed from {self.task_config.AERO_STAGE_VARIATIONAL_TMPL}")
-        aero_var_stage_list = parse_j2yaml(self.task_config.AERO_STAGE_VARIATIONAL_TMPL, self.task_config)
-        FileHandler(aero_var_stage_list).sync()
+        aero_var_stage_dict = parse_j2yaml(self.task_config.AERO_STAGE_VARIATIONAL_TMPL, self.task_config)
+        FileHandler(aero_var_stage_dict).sync()
+        logger.debug(f"Staging from COM:\n{pformat(aero_var_stage_dict)}")
 
     @logit(logger)
-    def execute(self, aprun_cmd: str, jedi_args: Optional[str] = None) -> None:
-        """Run JEDI executable
-
-        This method will run JEDI executables for the global aero analysis
+    def execute(self, jedi_dict_key: str) -> None:
+        """Execute JEDI application of aero analysis
 
         Parameters
         ----------
-        aprun_cmd : str
-           Run command for JEDI application on HPC system
-        jedi_args : List
-           List of additional optional arguments for JEDI application
+        jedi_dict_key
+            key specifying particular Jedi object in self.jedi_dict
 
         Returns
         ----------
         None
         """
 
-        if jedi_args:
-            logger.info(f"Executing {self.jedi.exe} {' '.join(jedi_args)} {self.jedi.yaml}")
-        else:
-            logger.info(f"Executing {self.jedi.exe} {self.jedi.yaml}")
-
-        self.jedi.execute(self.task_config, aprun_cmd, jedi_args)
+        self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
     def finalize(self) -> None:
@@ -204,6 +186,9 @@ class AerosolAnalysis(Task):
         # ---- add increments to RESTART files
         logger.info('Adding increments to RESTART files')
         self._add_fms_cube_sphere_increments()
+
+        # tar up bias correction files
+        # NOTE TODO
 
         # copy files back to COM
         logger.info(f"Copying files to COM based on {self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL}")
