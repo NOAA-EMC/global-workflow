@@ -2286,7 +2286,7 @@ class GFSTasks(Tasks):
         # Post job dependencies
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_wave:
+        if self.options['do_wave']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
