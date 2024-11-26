@@ -97,14 +97,13 @@ class AerosolEmissions(Task):
         emistype = self.task_config.emistype
 
         # Copy climatology files to run directory except for HFED
+        # HFED is already smoothed, monthly data
+        # QFED or GBBBEPx will be blended with climatology
         if emistype.lower() != 'hfed':
-            logger.info(
-                f"Copy HFED '{data_in.hfed}' data to run directory"
-            )
-        logger.info("Copy climatology data to run directory")
-        FileHandler(data_in.climo).sync()
-        logger.info(f"Copy {emistype} data to run directory")
-        FileHandler(data_in[emistype.lower()]).sync()
+            logger.info("Copy climatology data to run directory")
+            FileHandler(data_in.climo).sync()
+            logger.info(f"Copy {emistype} data to run directory")
+            FileHandler(data_in[emistype.lower()]).sync()
 
     @logit(logger)
     def run(self) -> None:
