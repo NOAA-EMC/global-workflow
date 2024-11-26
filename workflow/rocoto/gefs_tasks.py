@@ -1,7 +1,6 @@
 from applications.applications import AppConfig
 from rocoto.tasks import Tasks
 import rocoto.rocoto as rocoto
-from datetime import datetime, timedelta
 
 
 class GEFSTasks(Tasks):
@@ -44,10 +43,6 @@ class GEFSTasks(Tasks):
         return task
 
     def prep_emissions(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'gefs_stage_ic'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('prep_emissions')
         task_name = 'gefs_prep_emissions'
@@ -69,17 +64,17 @@ class GEFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'gefs_stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_wave:
+        if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'gefs_wave_init'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero:
+        if self.options['do_aero_fcst']:
             dep_dict = {'type': 'task', 'name': f'gefs_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
-        num_fcst_segments = len(self.app_config.fcst_segments) - 1
+        num_fcst_segments = len(self.options['fcst_segments']) - 1
 
         fcst_vars = self.envars.copy()
         fcst_envars_dict = {'FCST_SEGMENT': '#seg#'}
@@ -115,17 +110,17 @@ class GEFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'gefs_stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_wave:
+        if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'gefs_wave_init'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero:
+        if self.options['do_aero_fcst']:
             dep_dict = {'type': 'task', 'name': f'gefs_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
-        num_fcst_segments = len(self.app_config.fcst_segments) - 1
+        num_fcst_segments = len(self.options['fcst_segments']) - 1
         resources = self.get_resource('efcs')
 
         # Kludge to work around bug in rocoto with serial metatasks nested
@@ -434,7 +429,7 @@ class GEFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'gefs_fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_wave_bnd:
+        if self.options['do_wave_bnd']:
             dep_dict = {'type': 'task', 'name': f'gefs_wave_post_bndpnt_bull_mem#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -471,16 +466,16 @@ class GEFSTasks(Tasks):
 
     def extractvars(self):
         deps = []
-        if self.app_config.do_wave:
+        if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': 'gefs_wave_post_grid_mem#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_ocean:
+        if self.options['do_ocean']:
             dep_dict = {'type': 'metatask', 'name': 'gefs_ocean_prod_#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_ice:
+        if self.options['do_ice']:
             dep_dict = {'type': 'metatask', 'name': 'gefs_ice_prod_#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_atm:
+        if self.options['do_atm']:
             dep_dict = {'type': 'metatask', 'name': 'gefs_atmos_prod_#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -520,23 +515,23 @@ class GEFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'gefs_atmos_ensstat'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_ice:
+        if self.options['do_ice']:
             dep_dict = {'type': 'metatask', 'name': 'gefs_ice_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_ocean:
+        if self.options['do_ocean']:
             dep_dict = {'type': 'metatask', 'name': 'gefs_ocean_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_wave:
+        if self.options['do_wave']:
             dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_grid'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_pnt'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_wave_bnd:
+            if self.options['do_wave_bnd']:
                 dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_bndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_bndpnt_bull'}
                 deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_extractvars:
+        if self.options['do_extractvars']:
             dep_dict = {'type': 'metatask', 'name': 'gefs_extractvars'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
@@ -560,7 +555,7 @@ class GEFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        if self.app_config.do_extractvars:
+        if self.options['do_extractvars']:
             dep_dict = {'type': 'task', 'name': 'arch'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
@@ -569,18 +564,18 @@ class GEFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'metatask', 'name': 'gefs_atmos_ensstat'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_ice:
+            if self.options['do_ice']:
                 dep_dict = {'type': 'metatask', 'name': 'gefs_ice_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_ocean:
+            if self.options['do_ocean']:
                 dep_dict = {'type': 'metatask', 'name': 'gefs_ocean_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_wave:
+            if self.options['do_wave']:
                 dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_grid'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_pnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_wave_bnd:
+                if self.options['do_wave_bnd']:
                     dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_bndpnt'}
                     deps.append(rocoto.add_dependency(dep_dict))
                     dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_bndpnt_bull'}

@@ -50,7 +50,7 @@
                                     ARCDIR ~ "/snowstat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
     {% endif %}
 
-    {% if DO_AERO and (AERO_ANL_RUN == RUN or AERO_ANL_RUN == "both") %}
+    {% if DO_AERO_ANL %}
         {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat",
                                     ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% endif %}
