@@ -53,10 +53,9 @@ class AerosolEmissions(Task):
         logger.debug(f"aero_emission_yaml:\n{pformat(self.task_config.aero_emission_yaml)}")
 
         config = self.task_config.aero_emission_yaml['aero_emissions']['config']
-        qfedfiles = [os.path.basename(fname[0]) for fname in config['data_in']['qfed']['copy']]
-        hfedfiles = [os.path.basename(fname[0]) for fname in config['data_in']['hfed']['copy']]
-        gbbepxfiles = [os.path.basename(fname[0]) for fname in config['data_in']['gbbepx']['copy']]
-        climofiles = [os.path.basename(fname[0]) for fname in config['data_in']['climo']['copy']]
+        emission_files = {}
+        for emission_type in ['qfed', 'hfed', 'gbbepx', 'climo']:
+            emission_files[emission_type] = [os.path.basename(fname[0]) for fname in config['data_in'][emission_type]['copy']]
         n_persist = config['n_persist']
 
         localdict = AttrDict(
