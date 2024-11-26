@@ -9,7 +9,7 @@ STMP: '/work/noaa/stmp/${USER}/HERCULES'
 PTMP: '/work/noaa/stmp/${USER}/HERCULES'
 NOSCRUB: $HOMEDIR
 SCHEDULER: slurm
-ACCOUNT: fv3-cpu
+ACCOUNT: da-cpu
 QUEUE: batch
 QUEUE_SERVICE: batch
 PARTITION_BATCH: hercules

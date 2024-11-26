@@ -458,7 +458,7 @@ class MarineAnalysis(Task):
 
             # get the variable name, assume 1 variable per file
             nc = netCDF4.Dataset(obsfile, 'r')
-            variable = next(iter(nc.groups["ObsValue"].variables))
+            variable = next(iter(nc.groups["ombg"].variables))
             nc.close()
 
             # filling values for the templated yaml
