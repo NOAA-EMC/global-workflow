@@ -7,18 +7,15 @@ import tarfile
 from logging import getLogger
 from pprint import pformat
 from netCDF4 import Dataset
-from typing import Dict, List, Any, Optional
+from typing import Dict, List
 
 from wxflow import (AttrDict,
                     FileHandler,
                     add_to_datetime, to_fv3time, to_timedelta,
-                    chdir,
                     to_fv3time,
                     Task,
-                    YAMLFile, parse_j2yaml, save_as_yaml,
-                    logit,
-                    Executable,
-                    WorkflowException)
+                    YAMLFile, parse_j2yaml,
+                    logit)
 from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
@@ -41,8 +38,6 @@ class AerosolAnalysis(Task):
         ----------
         config: Dict
             dictionary object containing task configuration
-        yaml_name: str, optional
-            name of YAML file for JEDI configuration
 
         Returns
         ----------
