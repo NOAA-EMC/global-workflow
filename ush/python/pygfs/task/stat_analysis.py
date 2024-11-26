@@ -65,7 +65,8 @@ class StatAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create dictionary of Jedi objects
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config)
+        expected_keys = ['anlstat']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -112,4 +113,53 @@ class StatAnalysis(Task):
 
         # initialize JEDI application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['statanl'].initialize(self.task_config)
+        self.jedi_dict['anlstat'].initialize(self.task_config)
+
+    @logit(logger)
+    def execute(self, jedi_dict_key: str) -> None:
+        """Execute JEDI application of atm analysis
+
+        Parameters
+        ----------
+        jedi_dict_key
+            key specifying particular Jedi object in self.jedi_dict
+
+        Returns
+        ----------
+        None
+        """
+
+        self.jedi_dict[jedi_dict_key].execute()
+
+    @logit(logger)
+    def finalize(self) -> None:
+        """Finalize a global atm analysis
+
+        This method will finalize a global atm analysis using JEDI.
+        This includes:
+        - tar output diag files and place in ROTDIR
+        - copy the generated YAML file from initialize to the ROTDIR
+        - copy the updated bias correction files to ROTDIR
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        # get list of output diag files
+        diags = glob.glob(os.path.join(self.task_config.DATA, '*output_aod.nc'))
+
+        logger.debug(f"diag files: {diags}")
+
+        for diagfile in diags:
+            outfile = os.path.basename(diagfile)
+            dest = os.path.join(self.task_config.STAT_OUTDIR, f'{outfile}')
+            logger.debug(f"copying {diagfile} to {dest}")
+            diag_copy = {
+                'copy': [[diagfile, dest]]
+            }
+            FileHandler(diag_copy).sync()

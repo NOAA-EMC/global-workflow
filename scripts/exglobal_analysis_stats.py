@@ -25,3 +25,5 @@ if __name__ == '__main__':
 
     # Initialize JEDI variational analysis
     StatAnl.initialize()
+    StatAnl.execute('anlstat')
+    StatAnl.finalize()
