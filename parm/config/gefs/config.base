@@ -135,10 +135,8 @@ export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
-export DO_AERO="NO"
 export DO_EXTRACTVARS="@DO_EXTRACTVARS@" # Option to process and extract a subset of products to save on disk
-export AERO_FCST_RUN="gefs" # When to run aerosol forecast: gdas, gfs, or both
-export WAVE_RUN="gefs" # When to include wave suite: gdas, gfs, or both
+export DO_AERO_FCST="NO"
 export DOBNDPNT_WAVE="NO" # The GEFS buoys file does not currently have any boundary points
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
@@ -183,7 +181,7 @@ case "${APP}" in
   ATM)
     ;;
   ATMA)
-    export DO_AERO="YES"
+    export DO_AERO_FCST="YES"
     ;;
   ATMW)
     export DO_COUPLED="YES"
@@ -200,7 +198,7 @@ case "${APP}" in
     export DO_ICE="YES"
 
     if [[ "${APP}" =~ A$ ]]; then
-        export DO_AERO="YES"
+        export DO_AERO_FCST="YES"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
