@@ -3,3 +3,4 @@ defaults:
 base:
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
   DO_JEDIOCNVAR: "YES"
+  DO_TEST_MODE: "YES"
