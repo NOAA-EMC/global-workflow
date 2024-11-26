@@ -67,7 +67,7 @@ gdas:
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
             {% endif %}
-            {% if DO_AERO and (AERO_ANL_RUN == "gdas" or AERO_ANL_RUN == "both") %}
+            {% if DO_AERO_ANL %}
         - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
             {% endif %}
             {% if DO_PREP_OBS_AERO %}
