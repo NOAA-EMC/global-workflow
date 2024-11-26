@@ -55,7 +55,10 @@ class AerosolEmissions(Task):
         config = self.task_config.aero_emission_yaml['aero_emissions']['config']
         emission_files = {}
         for emission_type in ['qfed', 'hfed', 'gbbepx', 'climo']:
-            emission_files[emission_type] = [os.path.basename(fname[0]) for fname in config['data_in'][emission_type]['copy']]
+            emission_files[emission_type] = [
+                os.path.basename(src)
+                for src, _ in config['data_in'][emission_type]['copy']
+            ]
         n_persist = config['n_persist']
 
         localdict = AttrDict(
@@ -66,10 +69,7 @@ class AerosolEmissions(Task):
                 "current_date": self.task_config.PDY,
                 'config': config,
                 'emistype': config['emistype'],
-                'climofiles': climofiles,
-                'qfedfiles': qfedfiles,
-                'hfedfiles': hfedfiles,
-                'gbbepxfiles': gbbepxfiles,
+                'emisfiles': emission_files,
                 'n_persist': n_persist
             }
         )
@@ -122,17 +122,13 @@ class AerosolEmissions(Task):
         config_dict = self.task_config['config']
         emistype = self.task_config['emistype']
         ratio = config_dict['ratio']
-        climfiles = self.task_config['climofiles']
+        climfiles = self.task_config['emisfiles']['climo']
         coarsen_scale = config_dict['coarsen_scale']
         out_var_dict = config_dict['output_var_map']
         n_persist = config_dict['n_persist']
 
-        emission_map = {'qfed': self.task_config['qfedfiles'],
-                        'gbbepx': self.task_config['gbbepxfiles'],
-                        'hfed': self.task_config['hfedfiles']}
-
         try:
-            basefile = emission_map[emistype.lower()]
+            basefile = self.task_config['emisfiles'][emistype.lower()]
         except KeyError as e:
             logger.exception(f"{emistype.lower()} is not a supported emission type")
             raise Exception(
