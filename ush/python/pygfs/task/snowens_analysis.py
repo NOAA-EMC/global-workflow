@@ -194,6 +194,7 @@ class SnowEnsAnalysis(Task):
         for key in keys:
             localconf[key] = self.task_config[key]
 
+        localconf['ims_fcst_path'] = './bkg/ensmean/'
         # Read and render the IMS_OBS_LIST yaml
         logger.info(f"Reading {self.task_config.IMS_OBS_LIST}")
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, localconf)
