@@ -41,5 +41,6 @@ Table of Contents
    hpc.rst
    output.rst
    run.rst
+   wave.rst
    noaa_csp.rst
    errors_faq.rst
