@@ -21,5 +21,5 @@ if __name__ == '__main__':
     # Create an instance of the AerosolBMatrix task
     aeroBMat = AerosolBMatrix(config)
     aeroBMat.initialize()
-    aeroBMat.execute(config.APRUN_AEROANLGENB)
+    aeroBMat.execute()
     aeroBMat.finalize()

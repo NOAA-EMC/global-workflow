@@ -4,7 +4,7 @@
 {% set background_time = current_cycle | add_to_datetime(offset_td) %}
 copy:
 ### copy YAMLs used
-{% set yaml_list = ['aero_diagb.yaml', 'aero_diffusion.yaml', 'aero_convertstate.yaml'] %}
+{% set yaml_list = ['aero_diagb.yaml', 'aero_diffusion.yaml', 'aero_interpbkg.yaml'] %}
 {% for fname in yaml_list %}
 - ["{{ DATA }}/{{ fname }}", "{{ COMOUT_CHEM_BMAT }}/{{ HEAD }}{{ fname }}"]
 {% endfor %}
