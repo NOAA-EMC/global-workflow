@@ -29,6 +29,11 @@ fi
 export lobsdiag_forenkf=".false."  # anal does not need to write out jacobians
                    # set to .true. in config.eobs and config.eupd
 
+# Reduce number of iterations for testing mode
+if [[ ${DO_TEST_MODE} = "YES" ]]; then
+  export SETUP="${SETUP:-}niter(1)=5,niter(2)=5,"
+fi
+
 # Do not process the following datasets
 export GSNDBF=${GSNDBF:-/dev/null}
 export AMSREBF=${AMSREBF:-/dev/null}
