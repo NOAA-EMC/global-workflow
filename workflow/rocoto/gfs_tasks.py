@@ -1741,22 +1741,22 @@ class GFSTasks(Tasks):
     def anlstat(self):
         deps = []
         if self.app_config.do_jediatmvar:
-            dep_dict = {'type': 'task', 'name': f'{self.run}atmanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediocnvar:
-            dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalpost'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_ocnanalpost'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jedisnowda:
-            dep_dict = {'type': 'task', 'name': f'{self.run}snowanl'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_aero:
-            dep_dict = {'type': 'task', 'name': f'{self.run}aeroanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('anlstat')
-        task_name = f'{self.run}anlstat'
+        task_name = f'{self.run}_anlstat'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2280,7 +2280,7 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_anlstat:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}anlstat'}
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                     deps.append(rocoto.add_dependency(dep_dict))
             elif self.run in ['gdas']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
@@ -2298,7 +2298,7 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.do_anlstat:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}anlstat'}
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                     deps.append(rocoto.add_dependency(dep_dict))
         if self.run in ['gfs'] and self.app_config.do_tracker:
             dep_dict = {'type': 'task', 'name': f'{self.run}_tracker'}
