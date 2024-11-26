@@ -75,6 +75,8 @@ class AerosolEmissions(Task):
             }
         )
 
+        # TODO: if AERO_EMIS_FIRE is not 'blended' we don't want to do anything!
+
         # Extend task_config with localdict
         self.task_config = AttrDict(**self.task_config, **localdict)
 
@@ -124,30 +126,22 @@ class AerosolEmissions(Task):
         climfiles = self.task_config['climofiles']
         coarsen_scale = config_dict['coarsen_scale']
         out_var_dict = config_dict['output_var_map']
-        current_date = self.task_config['current_date']
         n_persist = config_dict['n_persist']
 
         emission_map = {'qfed': self.task_config['qfedfiles'],
                         'gbbepx': self.task_config['gbbepxfiles'],
                         'hfed': self.task_config['hfedfiles']}
 
-        if emistype.lower() != 'blended':
-            try:
-                basefile = emission_map[emistype.lower()]
-            except KeyError as e:
-                logger.exception(f"{emistype.lower()} is not a supported emission type")
-                raise Exception(
-                    f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!"
-                ) from e
+        try:
+            basefile = emission_map[emistype.lower()]
+        except KeyError as e:
+            logger.exception(f"{emistype.lower()} is not a supported emission type")
+            raise Exception(
+                f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!"
+            ) from e
 
-        if emistype.lower() == 'hfed':
-            AerosolEmissions.process_hfed(
-                files=basefile,
-                out_name=config_dict.data_out['copy'][0][0],
-                out_var_dict=out_var_dict)
-        else:
+        if emistype.lower() != 'hfed':
             dset = AerosolEmissions.make_fire_emission(
-                d=current_date,
                 climos=climfiles,
                 ratio=ratio,
                 scale_climo=True,
@@ -160,54 +154,10 @@ class AerosolEmissions(Task):
 
     @staticmethod
     @logit(logger)
-    def process_hfed(files: List[str], out_name: str, out_var_dict: Dict[str, str] = None) -> None:
-        """
-        Process HFED files to generate fire emissions data.
-
-        Parameters
-        ----------
-        files : list
-            List of HFED files to process.
-        out_name : str
-            Name of the output file to save the processed data.
-        out_var_dict : dict, optional
-            Mapping of input variable name to desired (output) variable name.
-
-        Returns
-        -------
-        None
-        """
-        if out_var_dict is None:
-            logger.info("No output variable mapping provided")
-            raise Exception("FATAL ERROR: No output variable mapping provided")
-
-        if len(files) == 0:
-            logger.info("No files provided")
-            raise Exception("FATAL ERROR: Received empty list of HFED files")
-
-        found_species = []
-        dset_dict = {}
-        for f in sorted(files):
-            logger.info(f"Opening HFED file: {f}")
-            _, input_var = os.path.basename(f).split(".")[1].split("_")
-            found_species.append(input_var)
-            try:
-                with xr.open_dataset(f, decode_cf=False).biomass as da:
-                    da.name = out_var_dict[input_var]
-                    dset_dict[da.name] = da
-            except Exception as e:
-                logger.exception(f"Unable to read dataset: {f}")
-                raise Exception("FATAL ERROR: Unable to read dataset, ABORT!") from e
-
-        dset = xr.Dataset(dset_dict)
-
-        AerosolEmissions.write_ncf(dset, out_name)
-
-    @staticmethod
-    @logit(logger)
     def open_qfed(files: List[str], out_var_dict: Dict[str, str] = None) -> xr.Dataset:
         """
-        Open QFED2 fire emissions data and renames variables to a standard (using the GBBEPx names to start with).
+        Open QFED2 fire emissions data combining files into one Dataset
+        and renaming variables to standard (GBBEPx) names.
 
         Parameters
         ----------
@@ -317,18 +267,18 @@ class AerosolEmissions(Task):
         emissions: xr.DataArray, climatology: xr.DataArray, lat_coarse: int = 50, lon_coarse: int = 50
     ) -> xr.Dataset:
         """
-        Create scaled climatology data based on emission data.
+        Create scaled daily climatology data based on observed emission data.
 
         Parameters
         ----------
         emissions : xarray.DataArray
-            Emission data.
+            Emission data. Just one time step. Same grid as the climatology.
         climatology :  xarray.Dataset
-            Input climatology data.
+            Input climatology data. Multiple days of daily data.
         lat_coarse : int, optional
-            Coarsening factor for latitude. Defaults to 50.
+            Coarsening factor for latitude. Defaults to 50 (0.1 deg -> 5 deg).
         lon_coarse : int, optional
-            Coarsening factor for longitude. Defaults to 50.
+            Coarsening factor for longitude. Defaults to 50 (0.1 deg -> 5 deg).
 
         Returns
         -------
@@ -338,36 +288,27 @@ class AerosolEmissions(Task):
         # Create a copy of the climatology
         clim = climatology.copy()
 
-        # Coarsen the climatology
-        clim_coarse = climatology.coarsen(
-            lat=lat_coarse, lon=lon_coarse, boundary="trim"
-        ).sum()
+        # We coarsen for regional scaling, to avoid small differences in fire locations
+        coarsen_kws = dict(lat=lat_coarse, lon=lon_coarse, boundary="trim")
+        clim_coarse = climatology.coarsen(**coarsen_kws).sum()
+        obs_coarse = emissions.squeeze().coarsen(**coarsen_kws).sum()
 
-        # Calculate the ratio of emissions to climatology and handle NaN values
-        ratio = (emissions.squeeze().data / clim_coarse.where(clim_coarse > 0)).fillna(
-            0
-        )
+        # Calculate the coarse ratio of emissions to climatology
+        # Where climatology is not positive, the ratio will be 0
+        ratio_coarse = (obs_coarse.data / clim_coarse.where(clim_coarse > 0)).fillna(0)
 
-        # Interpolate the ratio to match the coordinates of the climatology
-        ratio_interp = ratio.sel(lat=clim.lat, lon=clim.lon, method="nearest")
+        # Interpolate (uncoarsen) the ratio to match the coordinates of the climatology
+        # (this should be the same grid as the QFED/GBBEPx emissions)
+        ratio = ratio_coarse.sel(lat=clim.lat, lon=clim.lon, method="nearest")
 
-        # Loop through each time slice and scale the climatology
-        for index in range(0, len(clim.time)):
-            # Get the current time slice of the climatology
-            clim_slice = clim.data[index, :, :]
-
-            # Scale the current time slice
-            scaled_slice = clim_slice * ratio_interp[index, :, :]
-
-            # Update the climatology with the scaled time slice
-            clim.data[index, :, :] = scaled_slice.squeeze().data
+        # Scale data
+        clim.data = clim.data * ratio.data
 
         return clim.compute()
 
     @staticmethod
     @logit(logger)
     def make_fire_emission(
-        d: str,
         climos: List[str],
         ratio: float,
         scale_climo: bool,
@@ -381,8 +322,6 @@ class AerosolEmissions(Task):
 
         Parameters
         ----------
-        d : str or pd.Timestamp
-            The date for which fire emissions are generated.
         climos : list
             List of pre-calculated climatology data files for scaling.
         ratio : float
@@ -403,33 +342,31 @@ class AerosolEmissions(Task):
         xr.Dataset
             xarray Dataset object representing fire emissions data for each forecast day.
         """
-        # open fire emission
+        # Open fire emissions
         if isinstance(obsfile, (str, bytes)):
             obsfile = [obsfile]
-        if "QFED".lower() in obsfile[0].lower():
-            ObsEmis = AerosolEmissions.open_qfed(obsfile, out_var_dict=out_var_dict)
+        if "qfed" in obsfile[0].lower():
+            obs = AerosolEmissions.open_qfed(obsfile, out_var_dict=out_var_dict)
         else:
-            ObsEmis = xr.open_mfdataset(obsfile, decode_cf=False)
+            # GBBEPx, already combined and with correct names
+            obs = xr.open_mfdataset(obsfile, decode_cf=False)
 
-        # open climatology
+        # Open climatology
         climo = AerosolEmissions.open_climatology(climos)
-        climo = climo.sel(lat=ObsEmis["lat"], lon=ObsEmis["lon"], method="nearest")
+        climo = climo.sel(lat=obs["lat"], lon=obs["lon"], method="nearest")
 
-        # make weighted climo
-        ObsEmisC = ObsEmis.coarsen(lat=coarsen_scale, lon=coarsen_scale, boundary="trim").sum()
-
+        # Blend
         dsets = []
         climo_scaled = {}
         for tslice in range(len(climos)):
-            # make copy of original data
             if tslice == 0:
-                dset = ObsEmis.copy()
+                dset = obs.copy()
             else:
                 dset = dsets[tslice - 1].copy()
             dset.update({"time": [float(tslice * 24)]})
-            dset.time.attrs = ObsEmis.time.attrs
+            dset.time.attrs = obs.time.attrs
 
-            for v in ObsEmis.data_vars:
+            for v in obs.data_vars:
                 if not scale_climo:
                     if tslice > n_persist:
                         dset[v].data = (
@@ -437,9 +374,8 @@ class AerosolEmissions(Task):
                         )
                 else:
                     if tslice == 0:
-
                         climo_scaled[v] = AerosolEmissions.create_climatology(
-                            ObsEmisC[v], climo[v], lon_coarse=150, lat_coarse=150
+                            obs[v], climo[v], lon_coarse=coarsen_scale, lat_coarse=coarsen_scale
                         )
                     else:
                         if tslice > n_persist:
@@ -448,6 +384,7 @@ class AerosolEmissions(Task):
                             )
 
             dsets.append(dset)
+
         return xr.concat(dsets, dim="time")
 
     @logit(logger)

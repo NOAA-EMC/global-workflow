@@ -689,8 +689,8 @@ GOCART_rc() {
     [[ ${status} -ne 0 ]] && exit "${status}"
   fi
 
-  # Link blending emissions if AERO_EMIS_FIRE == blending
-  if [[ "${AERO_EMIS_FIRE}" == "blending" && "${RUN}" == "gefs" ]]; then 
+  # Link blended emissions if AERO_EMIS_FIRE is 'blended'
+  if [[ "${AERO_EMIS_FIRE}" == "blended" && "${RUN}" == "gefs" ]]; then
     ${NCP} "${COMOUT_CHEM_HISTORY}/${RUN}.${current_cycle:0:8}.${RUN}_blended_emissions.nc" "${DATA}"
   fi 
 

@@ -1,11 +1,11 @@
 aero_emissions:
   config:
     debug: False
-    ratio: 0.95                                    # weighting ratio
-    emistype: 'QFED'                               # EMission Type, Valid answers: 'QFED, GBBEPx, HFED'
+    ratio: 0.95                                    # weighting ratio for obs
+    emistype: 'QFED'                               # emission type {'QFED', 'GBBEPx', 'HFED'}
     climfile_str: 'GBBEPx-all01GRID_v4r0_climMean' # climate file base string used for glob later
-    GBBEPx_version: 'v4r0'                         # gbbepx version
-    qfed_version: '006'                            # qfed version
+    gbbepx_version: 'v4r0'                         # GBBEPx version
+    qfed_version: '006'                            # QFED version
     species: ['so2', 'oc', 'bc']                   # species to be used
     historical: False                              # set to true to just use true data for the given day
     coarsen_scale: 150                             # scale for coarsen function to generate weights
