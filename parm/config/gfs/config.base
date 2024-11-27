@@ -160,6 +160,7 @@ export APP=@APP@
 
 shopt -s extglob
 # Adjust APP based on RUN
+# If a component (WAVES, etc) needs to be turned off by RUN, set it here
 case "${RUN}" in
     enkf*) # Turn off aerosols and waves
         APP="${APP/%+([WA])}"
@@ -175,11 +176,12 @@ export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
-export DO_AERO="NO"
+DO_AERO="NO"
 export DO_PREP_OBS_AERO="NO"
-export AERO_FCST_RUN="gdas" # When to run aerosol forecast: gdas, gfs, or both
-export AERO_ANL_RUN="both" # When to run aerosol analysis: gdas, gfs, or both
-export WAVE_RUN="both" # When to include wave suite: gdas, gfs, or both
+aero_fcst_runs="gdas" # When to run aerosol forecast: gdas, gfs, or both
+aero_anl_runs="gdas gfs" # When to run aerosol analysis: gdas, gfs, or both
+export DO_AERO_FCST="NO"
+export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO"
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
@@ -221,7 +223,7 @@ case "${CASE}" in
         ;;
     *)
         echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
-        exit 1
+        exit 2
         ;;
 esac
 
@@ -229,7 +231,7 @@ case "${APP}" in
   ATM)
     ;;
   ATMA)
-    export DO_AERO="YES"
+    DO_AERO="YES"
     ;;
   ATMW)
     export DO_COUPLED="YES"
@@ -246,7 +248,7 @@ case "${APP}" in
     export DO_ICE="YES"
 
     if [[ "${APP}" =~ A$ ]]; then
-        export DO_AERO="YES"
+        DO_AERO="YES"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
@@ -254,10 +256,20 @@ case "${APP}" in
     fi
     ;;
   *)
-    echo "Unrecognized APP: '${APP}'"
-    exit 2
+    echo "FATAL ERROR: Unrecognized APP: '${APP}'"
+    exit 3
     ;;
 esac
+
+# Aerosol forecasts and analyses may be RUN-dependent
+if [[ "${DO_AERO}" == "YES" ]]; then
+  if [[ ${aero_anl_runs} =~ ${RUN} ]]; then
+    export DO_AERO_ANL="YES"
+  fi
+  if [[ ${aero_fcst_runs} =~ ${RUN} ]]; then
+    export DO_AERO_FCST="YES"
+  fi
+fi
 
 # Surface cycle update frequency
 if [[ "${RUN}" =~ "gdas" ]] ; then
@@ -457,8 +469,8 @@ export FHMAX_FITS=132
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export LOCALARCH="@LOCALARCH@"        # save data to local archive
 if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
-   echo "Both HPSS and local archiving selected.  Please choose one or the other."
-   exit 3
+   echo "FATAL ERROR: Both HPSS and local archiving selected.  Please choose one or the other."
+   exit 4
 fi
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
