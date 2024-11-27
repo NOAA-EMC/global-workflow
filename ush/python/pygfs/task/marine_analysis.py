@@ -213,6 +213,8 @@ class MarineAnalysis(Task):
         envconfig_jcb['MOM6_LEVS'] = mdau.get_mom6_levels(str(self.task_config.OCNRES))
         envconfig_jcb['HOMEgfs'] = self.task_config.HOMEgfs
         envconfig_jcb['DO_TEST_MODE'] = self.task_config.DO_TEST_MODE
+        envconfig_jcb['RUN'] = self.task_config.RUN
+        envconfig_jcb['current_cycle'] = self.task_config.current_cycle        
 
         # Write obs_list_short
         save_as_yaml(parse_obs_list_file(self.task_config.MARINE_OBS_LIST_YAML), 'obs_list_short.yaml')
