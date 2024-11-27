@@ -1172,6 +1172,7 @@ class GFSTasks(Tasks):
             fhrs.remove(0)
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+
         if component in ['ocean']:
             fhrs_next = fhrs[1:] + [fhrs[-1] + (fhrs[-1] - fhrs[-2])]
             fhr_var_dict['fhr_next'] = ' '.join([f"{fhr:03d}" for fhr in fhrs_next])
@@ -1184,17 +1185,23 @@ class GFSTasks(Tasks):
         return task
 
     def wavepostsbs(self):
+
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        wave_post_envars = self.envars.copy()
+        postenvar_dict = {'FHR3': '#fhr#'}
+        for key, value in postenvar_dict.items():
+            wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
         resources = self.get_resource('wavepostsbs')
-        task_name = f'{self.run}_wavepostsbs'
+        task_name = f'{self.run}_wavepostsbs_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': wave_post_envars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostsbs.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -1202,7 +1209,14 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        fhrs = self._get_forecast_hours('gfs', self._configs['wavepostsbs'], 'wave')
+
+        fhr_metatask_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
+        metatask_dict = {'task_name': f'{self.run}_wavepostsbs',
+                         'task_dict': task_dict,
+                         'var_dict': fhr_metatask_dict}
+
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -1286,7 +1300,7 @@ class GFSTasks(Tasks):
 
     def wavegempak(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1309,7 +1323,7 @@ class GFSTasks(Tasks):
 
     def waveawipsbulls(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1334,7 +1348,7 @@ class GFSTasks(Tasks):
 
     def waveawipsgridded(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -2271,7 +2285,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
             deps.append(rocoto.add_dependency(dep_dict))
