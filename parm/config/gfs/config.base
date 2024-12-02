@@ -311,6 +311,10 @@ export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
 export FHMAX_WAV=${FHMAX:-9}
 export FHMAX_WAV_GFS=${FHMAX_GFS}
+export FHMAX_HF_GFS=$(( FHMAX_HF_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_HF_GFS ))
+export FHMAX_WAV=$(( FHMAX_WAV > FHMAX ? FHMAX : FHMAX_WAV ))
+export FHMAX_WAV_GFS=$(( FHMAX_WAV_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_WAV_GFS ))
+export FHMAX_HF_WAV=$(( FHMAX_HF_WAV > FHMAX_WAV_GFS ? FHMAX_WAV_GFS : FHMAX_HF_WAV ))
 
 # TODO: Change gempak to use standard out variables (#2348)
 export ILPOST=${FHOUT_HF_GFS}           # gempak output frequency up to F120
