@@ -45,7 +45,7 @@ export SPPT_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
 export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
 # OCN options
-if (( OCNRES > 100 )); then
+if (( OCNRES <= 100 )); then
     # Ocean stochastic options not supported at 5p00
     export DO_OCN_SPPT="YES"
     export OCNSPPT="0.8,0.4,0.2,0.08,0.04"
