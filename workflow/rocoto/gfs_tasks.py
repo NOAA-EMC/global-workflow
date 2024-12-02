@@ -774,7 +774,7 @@ class GFSTasks(Tasks):
     def marineanlchkpt(self):
 
         deps = []
-        if self.options['do_hybvar']:
+        if self.options['do_hybvar_ocn']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_ocnanalecen'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
