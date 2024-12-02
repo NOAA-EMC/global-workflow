@@ -4,3 +4,5 @@ base:
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
   DO_JEDIOCNVAR: "YES"
   DO_TEST_MODE: "YES"
+marineanl:
+  JCB_ALGO_YAML_VAR: "{{ HOMEgfs }}/sorc/gdas.cd/test/gw-ci/soca/jcb-prototype_3dfgat_C48mx500_3DVarAOWCDA.yaml.j2"

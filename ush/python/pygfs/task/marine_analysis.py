@@ -225,7 +225,7 @@ class MarineAnalysis(Task):
         jcb_algo_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-3dfgat.yaml.j2')
 
         jcb_base_config = parse_j2yaml(jcb_base_yaml, envconfig_jcb)
-        jcb_algo_config = parse_j2yaml(jcb_algo_yaml, envconfig_jcb)
+        jcb_algo_config = parse_j2yaml(self.task_config.JCB_ALGO_YAML_VAR, envconfig_jcb)
 
         # Override base with the application specific config
         jcb_config = {**jcb_base_config, **jcb_algo_config}
