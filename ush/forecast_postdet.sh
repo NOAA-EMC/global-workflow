@@ -583,13 +583,14 @@ CICE_postdet() {
   else  # "${RERUN}" == "NO"
     restart_date="${model_start_date_current_cycle}"
     cice_restart_file="${COMIN_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
-    # Start the deterministic from the JEDI/SOCA analysis if the Marine DA in ON
-    if (( MEMBER == 0 )) && [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
-      cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
-    fi
-    # Ignore the JEDI/SOCA ensemble analysis for the ensemble members if DO_START_FROM_JEDIICE is OFF
-    if (( MEMBER > 0 )) && [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] && [[ "${DO_STARTMEM_FROM_JEDIICE:-NO}" == "YES" ]]; then
-      cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+    if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
+      if (( MEMBER == 0 )); then
+        # Start the deterministic from the JEDI/SOCA analysis if the Marine DA in ON
+        cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+      elif (( MEMBER > 0 ))  && [[ "${DO_STARTMEM_FROM_JEDIICE:-NO}" == "YES" ]]; then
+        # Ignore the JEDI/SOCA ensemble analysis for the ensemble members if DO_START_FROM_JEDIICE is OFF
+        cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+      fi
     fi
   fi
 
