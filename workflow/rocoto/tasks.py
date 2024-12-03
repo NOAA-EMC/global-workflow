@@ -10,7 +10,7 @@ __all__ = ['Tasks']
 
 
 class Tasks:
-    SERVICE_TASKS = ['arch', 'earc']
+    SERVICE_TASKS = ['arch', 'earc', 'stage_ic', 'cleanup']
     VALID_TASKS = ['aerosol_init', 'stage_ic',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
@@ -43,6 +43,9 @@ class Tasks:
 
         # Get the configs for the specified RUN
         self._configs = self.app_config.configs[run]
+
+        # Get the workflow options for the specified RUN
+        self.options = self.app_config.run_options[run]
 
         # Update the base config for the application
         self._configs['base'] = self.app_config._update_base(self._configs['base'])
@@ -149,6 +152,12 @@ class Tasks:
             local_config['FHOUT_GFS'] = config['FHOUT_ICE_GFS']
             local_config['FHOUT'] = config['FHOUT_ICE']
 
+        if component in ['wave']:
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_HF_WAV']
+            local_config['FHMAX_HF_GFS'] = config['FHMAX_HF_WAV']
+            local_config['FHOUT_GFS'] = config['FHOUT_WAV']
+            local_config['FHOUT'] = config['FHOUT_WAV']
+
         fhmin = local_config['FHMIN']
 
         # Get a list of all forecast hours
@@ -160,8 +169,8 @@ class Tasks:
         elif run in ['gfs', 'gefs']:
             fhmax = local_config['FHMAX_GFS']
             fhout = local_config['FHOUT_GFS']
-            fhmax_hf = local_config['FHMAX_HF_GFS']
             fhout_hf = local_config['FHOUT_HF_GFS']
+            fhmax_hf = local_config['FHMAX_HF_GFS']
             fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
@@ -245,6 +254,6 @@ class Tasks:
         try:
             return getattr(self, task_name, *args, **kwargs)()
         except AttributeError:
-            raise AttributeError(f'"{task_name}" is not a valid task.\n' +
-                                 'Valid tasks are:\n' +
+            raise AttributeError(f'"{task_name}" is not a valid task.\n'
+                                 f'Valid tasks are:\n'
                                  f'{", ".join(Tasks.VALID_TASKS)}')

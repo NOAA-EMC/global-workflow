@@ -10,7 +10,7 @@ arguments:
   resensatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20240610
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20241120
   idate: 2021032412
   edate: 2021032418
   nens: 3
