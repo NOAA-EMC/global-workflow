@@ -130,7 +130,7 @@ class AerosolEmissions(Task):
         try:
             basefile = self.task_config['emisfiles'][emistype.lower()]
         except KeyError as e:
-            logger.exception(f"{emistype.lower()} is not a supported emission type")
+            logger.exception(f"FATAL ERROR: {emistype.lower()} is not a supported emission type")
             raise Exception(
                 f"FATAL ERROR: {emistype.lower()} is not a supported emission type, ABORT!"
             ) from e
@@ -185,7 +185,7 @@ class AerosolEmissions(Task):
                     da.name = out_var_dict[input_var]
                     dset_dict[da.name] = da
             except Exception as e:
-                logger.exception(f"Unable to read dataset: {f}")
+                logger.exception(f"FATAL ERROR: Unable to read dataset: {f}")
                 raise Exception("FATAL ERROR: Unable to read dataset, ABORT!") from e
 
         dset = xr.Dataset(dset_dict)
@@ -217,7 +217,7 @@ class AerosolEmissions(Task):
                 with xr.open_dataset(f, engine="netcdf4") as da:
                     das.append(da)
             except Exception as e:
-                logger.exception(f"Encountered an error reading climatology file: {f}")
+                logger.exception(f"FATAL ERROR: Encountered an error reading climatology file: {f}")
                 raise Exception("FATAL ERROR: Unable to read file, ABORT!") from e
 
         return xr.concat(das, dim="time")
@@ -253,7 +253,7 @@ class AerosolEmissions(Task):
         try:
             dset.load().to_netcdf(outfile, encoding=encoding)
         except Exception as e:
-            logger.exception("Encountered an error writing dataset")
+            logger.exception("FATAL ERROR: Encountered an error writing dataset")
             raise Exception("FATAL ERROR: Unable to write dataset, ABORT!") from e
 
     @staticmethod
