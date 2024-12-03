@@ -176,16 +176,16 @@ class AerosolEmissions(Task):
 
         found_species = []
         dset_dict = {}
-        for f in sorted(files):
-            logger.info(f"Opening QFED file: {f}")
-            _, input_var = os.path.basename(f).split(".")[1].split("_")
+        for filepath in sorted(files):
+            logger.info(f"Opening QFED file: {filepath}")
+            _, input_var = os.path.basename(filepath).split(".")[1].split("_")
             found_species.append(input_var)
             try:
-                with xr.open_dataset(f, decode_cf=False).biomass as da:
+                with xr.open_dataset(filepath, decode_cf=False).biomass as da:
                     da.name = out_var_dict[input_var]
                     dset_dict[da.name] = da
             except Exception as e:
-                logger.exception(f"FATAL ERROR: Unable to read dataset: {f}")
+                logger.exception(f"FATAL ERROR: Unable to read dataset: {filepath}")
                 raise Exception("FATAL ERROR: Unable to read dataset, ABORT!") from e
 
         dset = xr.Dataset(dset_dict)
@@ -211,13 +211,13 @@ class AerosolEmissions(Task):
         das = []
 
         logger.info("Process Climatology Files")
-        for f in sorted(files):
-            logger.info(f"Opening Climatology File: {f}")
+        for filepath in sorted(files):
+            logger.info(f"Opening Climatology File: {filepath}")
             try:
-                with xr.open_dataset(f, engine="netcdf4") as da:
+                with xr.open_dataset(filepath, engine="netcdf4") as da:
                     das.append(da)
             except Exception as e:
-                logger.exception(f"FATAL ERROR: Encountered an error reading climatology file: {f}")
+                logger.exception(f"FATAL ERROR: Encountered an error reading climatology file: {filepath}")
                 raise Exception("FATAL ERROR: Unable to read file, ABORT!") from e
 
         return xr.concat(das, dim="time")
