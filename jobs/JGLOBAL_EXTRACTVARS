@@ -10,6 +10,12 @@ for grid in '0p25' '0p50' '1p00'; do
   if [[ ! -d "${!prod_dir}" ]]; then mkdir -p "${!prod_dir}"; fi
 done
 
+for grid in '0p25' '0p50' '1p00'; do
+  prod_dir="COMIN_WAVE_GRID_${grid}"
+  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_WAVE_GRID_RES_TMPL"
+  if [[ ! -d "${!prod_dir}" ]]; then mkdir -p "${!prod_dir}"; fi
+done
+
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
     "COMIN_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL" \
     "COMIN_OCEAN_GRIB:COM_OCEAN_GRIB_TMPL" \
