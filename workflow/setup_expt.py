@@ -235,6 +235,7 @@ def input_args(*argv):
         parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                             required=True, type=lambda dd: to_datetime(dd))
         parser.add_argument('--edate', help='end date experiment', required=False, type=lambda dd: to_datetime(dd))
+        parser.add_argument('--account', help='HPC account to use; default is host-dependent', required=False, default=os.getenv('HPC_ACCOUNT'))
         parser.add_argument('--interval', help='frequency of forecast (in hours); must be a multiple of 6', type=_validate_interval, required=False, default=6)
         parser.add_argument('--icsdir', help='full path to user initial condition directory', type=str, required=False, default='')
         parser.add_argument('--overwrite', help='overwrite previously created experiment (if it exists)',
@@ -406,6 +407,10 @@ def main(*argv):
     host = Host()
 
     validate_user_request(host, user_inputs)
+
+    # Update the default host account if the user supplied one
+    if user_inputs.account is not None:
+        host.info.ACCOUNT = user_inputs.account
 
     # Determine ocean resolution if not provided
     if user_inputs.resdetocean <= 0:
