@@ -459,7 +459,6 @@ MOM6_postdet() {
       || ( echo "FATAL ERROR: Unable to copy MOM6 increment, ABORT!"; exit 1 )
     fi
 
-    # GEFS perturbations
     if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
       ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
       || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
