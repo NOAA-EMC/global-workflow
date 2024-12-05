@@ -72,7 +72,7 @@ for grdID in ${wavepostGRD} ${waveinterpGRD}; do
 	    ao_20m) GRDRES=0p33;;
 	    so_20m) GRDRES=0p33;;
 	    gwes_30m) GRDRES=0p50;;
-		*)
+        *)
         echo "FATAL ERROR: No grid specific wave config values exist for ${grdID}. Aborting."
         exit 1;;
 	esac
