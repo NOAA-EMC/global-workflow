@@ -13,10 +13,37 @@ export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-for grid in "0p25" "0p50" "1p00"; do
-    YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
-       "COMIN_WAVE_GRID_${grid}:COM_WAVE_GRID_RES_TMPL"
+for grdID in ${wavepostGRD} ${waveinterpGRD}; do
+    case ${grdID} in
+        glo_15mxt) GRDRES=0p25;;
+        reg025) GRDRES=0p25;;
+        glo_025) GRDRES=0p25;;
+        glo_100) GRDRES=1p00;;
+        glo_200) GRDRES=2p00;;
+        glo_500) GRDRES=5p00;;
+        glo_30mxt) GRDRES=0p50;;
+        glo_30m) GRDRES=0p50;;
+        at_10m) GRDRES=0p16;;
+        ep_10m) GRDRES=0p16 ;;
+        wc_10m) GRDRES=0p16;;
+        ak_10m) GRDRES=0p16;;
+        ant_9km) GRDRES=9km;;
+        glo_10m) GRDRES=0p16;;
+        gnh_10m) GRDRES=0p16;;
+        gsh_15m) GRDRES=0p25;;
+        glo_15m) GRDRES=0p25;;
+        ao_20m) GRDRES=0p33;;
+        so_20m) GRDRES=0p33;;
+        gwes_30m) GRDRES=0p50;;
+        *)
+        echo "FATAL ERROR: No grid specific wave config values exist for ${GRDRES}. Aborting."
+        exit 1;;
+    esac
 done
+
+
+YMD=${PDY} HH=${cyc} GRID=${GRDRES} declare_from_tmpl -rx \
+    "COMIN_WAVE_GRID_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \

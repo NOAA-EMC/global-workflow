@@ -79,7 +79,7 @@ for grdID in ${wavepostGRD} ${waveinterpGRD}; do
 done
 
 YMD=${PDY} HH=${cyc} GRID=${GRDRES} declare_from_tmpl -rx \
-	       "COMIN_WAVE_GRID_${grid}:COM_WAVE_GRID_RES_TMPL"
+	       "COMIN_WAVE_GRID_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
 
 ###############################################################
 # Run archive script
