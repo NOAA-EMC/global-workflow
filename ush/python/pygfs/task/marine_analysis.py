@@ -15,7 +15,7 @@ from jcb import render
 from wxflow import (AttrDict,
                     FileHandler,
                     add_to_datetime, to_timedelta, to_YMD,
-                    parse_j2yaml,
+                    parse_j2yaml, parse_yaml,
                     logit,
                     Executable,
                     Task,
@@ -200,7 +200,7 @@ class MarineAnalysis(Task):
 
         # Add the things to the envconfig in order to template JCB files
         envconfig_jcb['PARMgfs'] = self.task_config.PARMgfs
-        envconfig_jcb['nmem_ens'] = self.task_config.NMEM_ENS
+        envconfig_jcb['NMEM_ENS'] = self.task_config.NMEM_ENS
         envconfig_jcb['berror_model'] = 'marine_background_error_static_diffusion'
         if self.task_config.NMEM_ENS > 3:
             envconfig_jcb['berror_model'] = 'marine_background_error_hybrid_diffusion_diffusion'
@@ -233,6 +233,9 @@ class MarineAnalysis(Task):
         # convert datetime to string
         jcb_config['window_begin'] = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y-%m-%dT%H:%M:%SZ')
         jcb_config['window_middle'] = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+        # Current hack so that this is not done directly in the JCB base yaml
+        jcb_config['marine_pseudo_model_states'] = parse_yaml('bkg_list.yaml')
 
         # Render the full JEDI configuration file using JCB
         jedi_config = render(jcb_config)
@@ -281,7 +284,7 @@ class MarineAnalysis(Task):
 
         # render the SOCA to CICE YAML file for the Arctic and Antarctic
         logger.info("render the SOCA to CICE YAML file for the Arctic and Antarctic")
-        varchgyamls = ['soca_2cice_arctic.yaml', 'soca_2cice_antarctic.yaml']
+        varchgyamls = ['soca_2cice_global.yaml']
         for varchgyaml in varchgyamls:
             soca2cice_config = parse_j2yaml(path=os.path.join(self.task_config.MARINE_JCB_GDAS_ALGO, f'{varchgyaml}.j2'),
                                             data=soca2cice_param)

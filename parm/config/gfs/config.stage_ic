@@ -12,10 +12,10 @@ export BASE_IC="@BASE_IC@" # Platform home for staged ICs
 
 export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gfs.yaml.j2"
 
+source "${HOMEgfs}/versions/ic.ver"
+
 # Set ICSDIR (if not defined)
 if [[ -z "${ICSDIR}" ]] ; then
-
-  ic_ver="20240610"
 
   if (( NMEM_ENS > 0 )) ; then
     ensic="${CASE_ENS}"
@@ -25,7 +25,10 @@ if [[ -z "${ICSDIR}" ]] ; then
     ocnic="mx${OCNRES}"
   fi
 
-  export ICSDIR="${BASE_IC}/${CASE}${ensic:-}${ocnic:-}/${ic_ver}"
+  dir_name="${CASE}${ensic:-}${ocnic:-}"
+  ic_ver="${ic_versions[${dir_name}]}"
+
+  export ICSDIR="${BASE_IC}/${dir_name}/${ic_ver}"
 
 fi
 
