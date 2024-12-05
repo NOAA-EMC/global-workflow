@@ -44,7 +44,7 @@ ${SCRgfs}/exgfs_wave_post_gridded_sbs.sh
 err=$?
 if [ ${err} -ne 0 ]; then
   echo "FATAL ERROR: ex-script of GWES_POST failed!"
-  exit ${err}
+  exit "${err}"
 fi
 
 ##########################################

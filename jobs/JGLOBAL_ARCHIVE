@@ -51,7 +51,7 @@ for grid in "0p25" "0p50" "1p00"; do
 done
 
 for grdID in ${wavepostGRD} ${waveinterpGRD}; do
-	case $grdID in
+	case ${grdID} in
 	    glo_15mxt) GRDRES=0p25;;
 	    reg025) GRDRES=0p25;;
 	    glo_025) GRDRES=0p25;;
