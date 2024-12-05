@@ -73,6 +73,7 @@ for grdID in ${wavepostGRD} ${waveinterpGRD}; do
 	    so_20m) GRDRES=0p33;;
 	    gwes_30m) GRDRES=0p50;;
 	esac
+done
 
 YMD=${PDY} HH=${cyc} GRID=${GRDRES} declare_from_tmpl -rx \
 	       "COMIN_WAVE_GRID_${grid}:COM_WAVE_GRID_RES_TMPL"
