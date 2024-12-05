@@ -47,14 +47,12 @@ for grdID in ${wavepostGRD} ${waveinterpGRD}; do
     esac
 done
 
-
 GRID=${grdID} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     "COMOUT_WAVE_GRID_${grdID}:COM_WAVE_GRID_RES_TMPL"
 COMOUT=COMOUT_WAVE_GRID_${grdID}
 if [[ ! -d "${COMOUT}" ]]; then
     mkdir -m 775 -p "${COMOUT}"
 fi
-
 
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
