@@ -245,14 +245,12 @@ case ${imp_physics} in
 esac
 
 # Stochastic physics
-export DO_SPPT=${DO_SPPT:-"NO"}
-export DO_SKEB=${DO_SKEB:-"NO"}
-export DO_SHUM=${DO_SHUM:-"NO"}
-export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
-export DO_CA=${DO_CA:-"YES"}
-if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-  export DO_CA="NO"  # CA does not work with nesting.
-fi
+export DO_SPPT="NO"
+export DO_SKEB="NO"
+export DO_SHUM="NO"
+export DO_LAND_PERT="NO"
+export DO_OCN_SPPT="NO"
+export DO_OCN_PERT_EPBL="NO"
 
 #coupling settings
 export cplmode="ufs.frac"
