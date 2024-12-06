@@ -57,7 +57,10 @@ FV3_restarts(){
   # Create an array of FV3 restart files
   local fv3_restart_files tile_files
   fv3_restart_files=(coupler.res fv_core.res.nc)
-  tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data ca_data)
+  tile_files=(fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data)
+  if [[ ${DO_CA:-"NO"} == "YES" ]]; then
+    tile_files+=(ca_data)
+  fi
   local nn tt
   for (( nn = 1; nn <= ntiles; nn++ )); do
     for tt in "${tile_files[@]}"; do
@@ -66,6 +69,22 @@ FV3_restarts(){
   done
   # Create a comma separated string from array using IFS
   IFS=, echo "${fv3_restart_files[*]}"
+}
+
+stoch_restarts(){
+  # These only get copied for reruns
+  local stoch_restart_files
+  stoch_restart_files=(  )
+
+  if [[ "${DO_SPPT:-}" == "YES" || "${DO_SKEB:-}" == "YES" || \
+        "${DO_SHUM:-}" == "YES" || "${DO_LAND_PERT:-}" == "YES" ]]; then
+    stoch_restart_files+=(atm_stoch.res.nc)
+  fi
+  if [[ "${DO_OCN:-}" == "YES" && ( "${DO_OCN_SPPT:-}" == "YES" || "${DO_OCN_PERT_EPBL}" == "YES" ) ]]; then
+    stoch_restart_files+=(ocn_stoch.res.nc)
+  fi
+  # Create a comma separated string from array using IFS
+  IFS=, echo "${stoch_restart_files[*]}"
 }
 
 # shellcheck disable=SC2034
@@ -377,41 +396,38 @@ FV3_predet(){
   do_sppt=".false."
   do_ca=".false."
   ISEED=0
-  if (( MEMBER > 0 )); then  # these are only applicable for ensemble members
-    local imem=${MEMBER#0}
-    local base_seed=$((current_cycle*10000 + imem*100))
+  local imem=${MEMBER#0}
+  local base_seed=$((current_cycle*10000 + imem*100))
 
-    if [[ "${DO_SKEB:-}" == "YES" ]]; then
-      do_skeb=".true."
-      ISEED_SKEB=$((base_seed + 1))
-    fi
+  if [[ "${DO_SKEB:-}" == "YES" ]]; then
+    do_skeb=".true."
+    ISEED_SKEB=$((base_seed + 1))
+  fi
 
-    if [[ "${DO_SHUM:-}" == "YES" ]]; then
-      do_shum=".true."
-      ISEED_SHUM=$((base_seed + 2))
-    fi
+  if [[ "${DO_SHUM:-}" == "YES" ]]; then
+    do_shum=".true."
+    ISEED_SHUM=$((base_seed + 2))
+  fi
 
-    if [[ "${DO_SPPT:-}" == "YES" ]]; then
-      do_sppt=".true."
-      ISEED_SPPT=$((base_seed + 3)),$((base_seed + 4)),$((base_seed + 5)),$((base_seed + 6)),$((base_seed + 7))
-    fi
+  if [[ "${DO_SPPT:-}" == "YES" ]]; then
+    do_sppt=".true."
+    ISEED_SPPT=$((base_seed + 3)),$((base_seed + 4)),$((base_seed + 5)),$((base_seed + 6)),$((base_seed + 7))
+  fi
 
-    if [[ "${DO_CA:-}" == "YES" ]]; then
-      do_ca=".true."
-      ISEED_CA=$(( (base_seed + 18) % 2147483647 ))
-    fi
+  if [[ "${DO_CA:-}" == "YES" ]]; then
+    do_ca=".true."
+    ISEED_CA=$(( (base_seed + 18) % 2147483647 ))
+  fi
 
-    if [[ "${DO_LAND_PERT:-}" == "YES" ]]; then
-      lndp_type=${lndp_type:-2}
-      ISEED_LNDP=$(( (base_seed + 5) % 2147483647 ))
-      LNDP_TAU=${LNDP_TAU:-21600}
-      LNDP_SCALE=${LNDP_SCALE:-500000}
-      lndp_var_list=${lndp_var_list:-"'smc', 'vgf',"}
-      lndp_prt_list=${lndp_prt_list:-"0.2,0.1"}
-      n_var_lndp=$(echo "${lndp_var_list}" | wc -w)
-    fi
-
-  fi  # end of ensemble member specific options
+  if [[ "${DO_LAND_PERT:-}" == "YES" ]]; then
+    lndp_type=${lndp_type:-2}
+    ISEED_LNDP=$(( (base_seed + 5) % 2147483647 ))
+    LNDP_TAU=${LNDP_TAU:-21600}
+    LNDP_SCALE=${LNDP_SCALE:-500000}
+    lndp_var_list=${lndp_var_list:-"'smc', 'vgf',"}
+    lndp_prt_list=${lndp_prt_list:-"0.2,0.1"}
+    n_var_lndp=$(echo "${lndp_var_list}" | wc -w)
+  fi
 
   #--------------------------------------------------------------------------
 
@@ -680,17 +696,15 @@ MOM6_predet(){
 
   # If using stochastic parameterizations, create a seed that does not exceed the
   # largest signed integer
-  if (( MEMBER > 0 )); then  # these are only applicable for ensemble members
-    local imem=${MEMBER#0}
-    local base_seed=$((current_cycle*10000 + imem*100))
+  local imem=${MEMBER#0}
+  local base_seed=$((current_cycle*10000 + imem*100))
 
-    if [[ "${DO_OCN_SPPT:-}" == "YES" ]]; then
-      ISEED_OCNSPPT=$((base_seed + 8)),$((base_seed + 9)),$((base_seed + 10)),$((base_seed + 11)),$((base_seed + 12))
-    fi
+  if [[ "${DO_OCN_SPPT:-}" == "YES" ]]; then
+    ISEED_OCNSPPT=$((base_seed + 8)),$((base_seed + 9)),$((base_seed + 10)),$((base_seed + 11)),$((base_seed + 12))
+  fi
 
-    if [[ "${DO_OCN_PERT_EPBL:-}" == "YES" ]]; then
-      ISEED_EPBL=$((base_seed + 13)),$((base_seed + 14)),$((base_seed + 15)),$((base_seed + 16)),$((base_seed + 17))
-    fi
+  if [[ "${DO_OCN_PERT_EPBL:-}" == "YES" ]]; then
+    ISEED_EPBL=$((base_seed + 13)),$((base_seed + 14)),$((base_seed + 15)),$((base_seed + 16)),$((base_seed + 17))
   fi
 
   # Fix files

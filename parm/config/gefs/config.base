@@ -287,9 +287,16 @@ export DO_MERGENSST="NO"
 export NMEM_ENS=@NMEM_ENS@
 
 # set default member number memdir for control
-# this will be overwritten for the perturbed members
+# this will be overwridden for the perturbed members
 export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
+
+# cellular automata
+if (( ENSMEM == 0 )); then
+    export DO_CA="YES"
+else
+    export DO_CA="YES"
+fi
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 

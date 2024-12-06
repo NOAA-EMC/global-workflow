@@ -29,7 +29,7 @@ def main():
             'DOIAU', 'OCNRES', 'ICERES', 'NUM_SND_COLLECTIVES', 'FHOUT_WAV',
             'FHOUT_HF_WAV', 'FHMAX_WAV', 'FHMAX_HF_WAV', 'FHMAX_WAV_GFS',
             'restart_interval_gdas', 'restart_interval_gfs',
-            'DO_AERO_ANL', 'DO_AERO_FCST', 'DOIBP_WAV', 'DO_JEDIOCNVAR',
+            'DO_AERO_ANL', 'DO_AERO_FCST', 'DO_CA', 'DOIBP_WAV', 'DO_JEDIOCNVAR',
             'NMEM_ENS', 'DO_JEDIATMVAR', 'DO_VRFY_OCEANDA', 'FHMAX_FITS', 'waveGRD',
             'IAUFHRS', 'DO_FIT2OBS', 'NET', 'FHOUT_HF_GFS', 'FHMAX_HF_GFS', 'REPLAY_ICS',
             'OFFSET_START_HOUR']
