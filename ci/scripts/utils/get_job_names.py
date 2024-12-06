@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 from lxml import etree
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, ArgumentTypeError
 
 def valid_file_path(path):
     """
@@ -19,7 +19,7 @@ def valid_file_path(path):
     if os.path.isfile(path):
         return os.path.abspath(path)
     else:
-        raise argparse.ArgumentTypeError(f"Invalid file path: {path}")
+        raise ArgumentTypeError(f"Invalid file path: {path}")
 
 def input_args():
 
