@@ -12,32 +12,39 @@ done
 
 for grdID in ${wavepostGRD} ${waveinterpGRD}; do
     case ${grdID} in
-        glo_15mxt) GRDRES=0p25;;
-        reg025) GRDRES=0p25;;
-        glo_025) GRDRES=0p25;;
-        glo_100) GRDRES=1p00;;
-        glo_200) GRDRES=2p00;;
-        glo_500) GRDRES=5p00;;
-        glo_30mxt) GRDRES=0p50;;
-        glo_30m) GRDRES=0p50;;
-        at_10m) GRDRES=0p16;;
-        ep_10m) GRDRES=0p16 ;;
-        wc_10m) GRDRES=0p16;;
-        ak_10m) GRDRES=0p16;;
-        ant_9km) GRDRES=9km;;
-        glo_10m) GRDRES=0p16;;
-        gnh_10m) GRDRES=0p16;;
-        gsh_15m) GRDRES=0p25;;
-        glo_15m) GRDRES=0p25;;
-        ao_20m) GRDRES=0p33;;
-        so_20m) GRDRES=0p33;;
-        gwes_30m) GRDRES=0p50;;
+        glo_15mxt) GRDNAME='global' ; GRDRES=0p25;;
+        reg025) GRDNAME='global' ; GRDRES=0p25 ; ;;
+        glo_025) GRDNAME='global' ; GRDRES=0p25 ;;
+        glo_100) GRDNAME='global' ; GRDRES=1p00;;
+        glo_200) GRDNAME='global' ; GRDRES=2p00;;
+        glo_500) GRDNAME='global' ; GRDRES=5p00;;
+        glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ;;
+        glo_30m) GRDNAME='global' ; GRDRES=0p50 ;;
+        at_10m) GRDNAME='atlocn' ; GRDRES=0p16 ;;
+        ep_10m) GRDNAME='epacif' ; GRDRES=0p16;;
+        wc_10m) GRDNAME='wcoast' ; GRDRES=0p16 ;;
+        ak_10m) GRDNAME='alaska' ; GRDRES=0p16;;
+        aoc_9km) GRDNAME='arctic' ; GRDRES=9km;;
+        ant_9km) GRDNAME='antarc' ; GRDRES=9km ;;
+        glo_10m) GRDNAME='global' ; GRDRES=0p16;;
+        gnh_10m) GRDNAME='global' ; GRDRES=0p16;;
+        gsh_15m) GRDNAME='gsouth' ; GRDRES=0p25;;
+        glo_15m) GRDNAME='global' ; GRDRES=0p25;;
+        ao_20m) GRDNAME='arctic' ; GRDRES=0p33;;
+        so_20m) GRDNAME='antarc' ; GRDRES=0p33;;
+        glo_15mxt) GRDNAME='global' ; GRDRES=0p25;;
+        reg025) GRDNAME='global' ; GRDRES=0p25;;
+        glo_025) GRDNAME='global' ; GRDRES=0p25;;
+        glo_100) GRDNAME='global' ; GRDRES=1p00;;
+        glo_200) GRDNAME='global' ; GRDRES=2p00;;
+        glo_500) GRDNAME='global' ; GRDRES=5p00;;
+        gwes_30m) GRDNAME='global' ; GRDRES=0p50;;
         *)
         echo "FATAL ERROR: No grid specific wave config values exist for ${grdID}. Aborting."
         exit 1;;
     esac
-    prod_dir="COMIN_WAVE_GRID_${GRDRES}"
-    YMD=${PDY} HH=${cyc} GRID=${GRDRES} declare_from_tmpl -rx \
+    prod_dir="COMIN_WAVE_GRID_${GRDNAME}.${GRDRES}"
+    YMD=${PDY} HH=${cyc} GRID="${GRDNAME}.${GRDRES}" declare_from_tmpl -rx \
     "${prod_dir}:COM_WAVE_GRID_RES_TMPL"
     if [[ ! -d "${!prod_dir}" ]]; then mkdir -p "${!prod_dir}"; fi
 done
