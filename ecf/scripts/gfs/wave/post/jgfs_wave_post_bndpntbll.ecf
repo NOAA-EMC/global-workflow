@@ -26,6 +26,8 @@ module load intel/${intel_ver}
 module load cray-pals/${cray_pals_ver}
 module load cfp/${cfp_ver}
 
+module load cmdaccel/${cmdaccel_ver}
+
 module list
 
 ############################################################
