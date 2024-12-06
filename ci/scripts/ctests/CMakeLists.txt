@@ -17,22 +17,23 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-add_test(NAME CreateExperiment
-	COMMAND bash ${HOMEgfs}/workflow/generate_workflows.sh -H ${HOMEgfs} -y ${YAMLS} -t ${GIT_HASH} ${RUNTESTS})
+execute_process(NAME CreateExperiment
+	COMMAND bash ${HOMEgfs}/workflow/generate_workflows.sh -H ${HOMEgfs} -y ${YAMLS} -t ${GIT_HASH} ${RUNTESTS}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
 
-
-execute_process(
-    COMMAND ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.py get_pslot_list  ${RUNTESTS}
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+execute_process(NAME GetPslotList
+    COMMAND ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.py get_pslot_list ${RUNTESTS}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     OUTPUT_VARIABLE PSLOT_LIST
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-execute_process(
-    COMMAND ${HOMEgfs}/ci/scripts/utils/git_job_names.py -xml ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+execute_process(NAME GetJobNames
+    OUTPUT ${CMAKE_BINARY_DIR}/job_names.txt
+    COMMAND ${HOMEgfs}/ci/scripts/utils/git_job_names.py --xmlfile ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml
     OUTPUT_VARIABLE JOB_NAMES
-    OUTPUT_STRIP_TRAILING_WHITESPACE
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
 # Output the job names
