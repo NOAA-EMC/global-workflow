@@ -76,10 +76,11 @@ for grdID in ${wavepostGRD} ${waveinterpGRD}; do
         echo "FATAL ERROR: No grid specific wave config values exist for ${grdID}. Aborting."
         exit 1;;
     esac
+	YMD=${PDY} HH=${cyc} GRID=${GRDRES} declare_from_tmpl -rx \
+	    "COMIN_WAVE_GRID_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
 done
 
-YMD=${PDY} HH=${cyc} GRID=${GRDRES} declare_from_tmpl -rx \
-	       "COMIN_WAVE_GRID_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+
 
 ###############################################################
 # Run archive script

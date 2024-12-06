@@ -45,14 +45,15 @@ for grdID in ${wavepostGRD} ${waveinterpGRD}; do
         echo "FATAL ERROR: No grid specific wave config values exist for ${GRDRES}. Aborting."
         exit 1;;
     esac
+    GRID=${GRDRES} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+        "COMOUT_WAVE_GRID_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+    COMOUT=COMOUT_WAVE_GRID_${GRDRES}
+    if [[ ! -d "${COMOUT}" ]]; then
+    mkdir -m 775 -p "${COMOUT}"
+    fi
 done
 
-GRID=${GRDRES} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    "COMOUT_WAVE_GRID_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
-COMOUT=COMOUT_WAVE_GRID_${GRDRES}
-if [[ ! -d "${COMOUT}" ]]; then
-    mkdir -m 775 -p "${COMOUT}"
-fi
+
 
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
