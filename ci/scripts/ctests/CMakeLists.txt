@@ -4,16 +4,10 @@ project(FunctionalTests)
 
 enable_testing()
 
-# Add a custom build step to run a script
-add_custom_target(BuildScript
-    COMMAND bash ${CMAKE_SOURCE_DIR}/sorc/build_all.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Running custom build script"
-)
-
 # Add a CTest to run the generate_workflows.sh script with additional arguments
 set(YAMLS "C48_ATM.yaml" CACHE STRING "YAML files separated by spaces")
 set(RUNTESTS "${CMAKE_BINARY_DIR}/RUNTESTS" )
+set(HOMEgfs ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
 
 # Get the Git hash
 execute_process(
@@ -24,4 +18,4 @@ execute_process(
 )
 
 add_test(NAME CreateExperiment
-         COMMAND bash ${CMAKE_SOURCE_DIR}/workflow/generate_workflows.sh -y ${YAMLS} -t ${GIT_HASH} ${RUNTESTS})
+	COMMAND bash ${HOMEgfs}/workflow/generate_workflows.sh -H ${HOMEgfs} -y ${YAMLS} -t ${GIT_HASH} ${RUNTESTS})

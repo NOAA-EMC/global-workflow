@@ -462,7 +462,7 @@ echo "Running create_experiment.py for ${#_yaml_list[@]} cases"
 for _case in "${_yaml_list[@]}"; do
    [[ "${_verbose}" == false ]] && echo "${_case}"
    _pslot="${_case}${_tag}"
-   _create_exp_cmd="./create_experiment.py -y ../ci/cases/pr/${_case}.yaml --overwrite"
+   _create_exp_cmd="${HOMEgfs}/workflow/create_experiment.py -y ${HOMEgfs}/ci/cases/pr/${_case}.yaml --overwrite"
    if [[ "${_verbose}" == true ]]; then
       pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd}
    else
