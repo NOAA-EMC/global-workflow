@@ -7,7 +7,7 @@ enable_testing()
 # Add a CTest to run the generate_workflows.sh script with additional arguments
 set(YAMLS "C48_ATM.yaml" CACHE STRING "YAML files separated by spaces")
 set(RUNTESTS "${CMAKE_BINARY_DIR}/RUNTESTS" )
-set(HOMEGFS ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
+set(HOMEgfs ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
 
 # Get the Git hash
 execute_process(
@@ -17,29 +17,23 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-execute_process(
-    COMMAND bash ${HOMEGFS}/workflow/generate_workflows.sh -u -H ${HOMEGFS} -y ${YAMLS} -t ${GIT_HASH} ${RUNTESTS}
+execute_process(NAME CreateExperiment
+	COMMAND bash ${HOMEgfs}/workflow/generate_workflows.sh -H ${HOMEgfs} -y ${YAMLS} -t ${GIT_HASH} ${RUNTESTS}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-execute_process(
-    COMMAND ${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list ${RUNTESTS}
+execute_process(NAME GetPslotList
+    COMMAND ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.py get_pslot_list ${RUNTESTS}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     OUTPUT_VARIABLE PSLOT_LIST
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-message(STATUS "pslots: ${PSLOT_LIST}")
-message(STATUS "xmlfile: ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml")
-
 execute_process(
-    COMMAND ${HOMEGFS}/ci/scripts/utils/get_job_names.py --xmlfile ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml
-    COMMAND_ECHO STDOUT
+    COMMAND ${HOMEgfs}/ci/scripts/utils/get_job_names.py --xmlfile ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    ENCODING UTF-8
-    OUTPUT_VARIABLE JOB_NAMES
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    OUTPUT_FILE job_names.txt
+    OUTPUT_FILE ${CMAKE_BINARY_DIR}/job_names.txt
 )
 
-message(STATUS "Job Names: \"${JOB_NAMES}\"")
+file(READ ${CMAKE_BINARY_DIR}/job_names.txt JOB_NAMES)
+message(STATUS "Job names: ${JOB_NAMES}")
