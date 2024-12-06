@@ -4,7 +4,7 @@ GFS V16.3.20 RELEASE NOTES
 PRELUDE
 -------
 
-Annual CO2 fix file update for 2025. Additionally, the GSI is updated to switch on PlanetIQ GPSRO data.
+Annual CO2 fix file update for 2025. Additionally, the GSI is updated to turn on assimilation of PlanetiQ GPS Radio Occultation (GPS-RO) data.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
