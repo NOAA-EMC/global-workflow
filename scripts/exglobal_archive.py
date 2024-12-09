@@ -3,7 +3,7 @@
 import os
 
 from pygfs.task.archive import Archive
-from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit
+from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit, chdir
 
 # initialize root logger
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
@@ -32,7 +32,8 @@ def main():
             'DO_AERO_ANL', 'DO_AERO_FCST', 'DO_CA', 'DOIBP_WAV', 'DO_JEDIOCNVAR',
             'NMEM_ENS', 'DO_JEDIATMVAR', 'DO_VRFY_OCEANDA', 'FHMAX_FITS', 'waveGRD',
             'IAUFHRS', 'DO_FIT2OBS', 'NET', 'FHOUT_HF_GFS', 'FHMAX_HF_GFS', 'REPLAY_ICS',
-            'OFFSET_START_HOUR']
+            'OFFSET_START_HOUR', 'ARCH_EXPDIR', 'EXPDIR', 'ARCH_EXPDIR_FREQ', 'ARCH_HASHES',
+            'ARCH_DIFFS', 'SDATE', 'EDATE', 'HOMEgfs']
 
     archive_dict = AttrDict()
     for key in keys:
@@ -47,21 +48,20 @@ def main():
             if archive_dict[key] is None:
                 print(f"Warning: key ({key}) not found in task_config!")
 
-    cwd = os.getcwd()
+    with chdir(config.ROTDIR):
 
-    os.chdir(config.ROTDIR)
+        # Determine which archives to create
+        arcdir_set, atardir_sets = archive.configure(archive_dict)
 
-    # Determine which archives to create
-    arcdir_set, atardir_sets = archive.configure(archive_dict)
+        # Populate the product archive (ARCDIR)
+        archive.execute_store_products(arcdir_set)
 
-    # Populate the product archive (ARCDIR)
-    archive.execute_store_products(arcdir_set)
+        # Create the backup tarballs and store in ATARDIR
+        for atardir_set in atardir_sets:
+            archive.execute_backup_dataset(atardir_set)
 
-    # Create the backup tarballs and store in ATARDIR
-    for atardir_set in atardir_sets:
-        archive.execute_backup_dataset(atardir_set)
-
-    os.chdir(cwd)
+        # Clean up any temporary files
+        archive.clean()
 
 
 if __name__ == '__main__':
