@@ -21,8 +21,3 @@ marineanl:
   SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
   SOCA_OBS_LIST: {{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml
   SOCA_NINNER: 100
-
-prepoceanobs:
-  SOCA_OBS_LIST: {{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml
-  OBSPREP_YAML: {{ HOMEgfs }}/sorc/gdas.cd/parm/soca/obsprep/obsprep_config.yaml
-  DMPDIR: /scratch1/NCEPDEV/da/common/
