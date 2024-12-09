@@ -479,9 +479,13 @@ if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
    echo "FATAL ERROR: Both HPSS and local archiving selected.  Please choose one or the other."
    exit 4
 fi
-export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
-export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
+export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
+export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
+export ARCH_EXPDIR='YES'     # Archive the EXPDIR configs, XML, and database
+export ARCH_EXPDIR_FREQ=0    # How often to archive the EXPDIR in hours or 0 for first and last cycle only
+export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and 'git status' for each; requires ARCH_EXPDIR
+export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
 
 # The monitor jobs are not yet supported for JEDIATMVAR.
 if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
