@@ -54,7 +54,7 @@ def get_names_from_tags(xml_file):
 # Example usage
 if __name__ == "__main__":
     args = input_args()
-    xml_file = args.xmlfile
+    xml_file = args.xml
     job_names = get_names_from_tags(xml_file)
     for job_name in job_names:
         if "#" not in job_name:

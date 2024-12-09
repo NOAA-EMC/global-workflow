@@ -39,9 +39,9 @@ function(GenerateJobWorkflows CASE)
     string(REGEX MATCHALL "${CASE}_[^;]+" PSLOT_LIST "${PSLOT_LIST}")
     message(STATUS "Filtered PSLOT list: ${PSLOT_LIST}\n\n")
     
-    message(STATUS "Executing: ${HOMEGFS}/ci/scripts/utils/get_job_names.py --xmlfile ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml")
+    message(STATUS "Executing: ${HOMEGFS}/ci/scripts/utils/get_job_names.py --xml ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml")
     execute_process(
-        COMMAND ${HOMEGFS}/ci/scripts/utils/get_job_names.py --xmlfile ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml
+        COMMAND ${HOMEGFS}/ci/scripts/utils/get_job_names.py --xml ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         OUTPUT_FILE ${CMAKE_BINARY_DIR}/${CASE}_jobs.txt
     )
@@ -51,9 +51,9 @@ function(GenerateJobWorkflows CASE)
     
     foreach(JOB IN LISTS JOB_NAMES)
         string(REGEX REPLACE "^${CASE}_" "" JOB_MODIFIED ${JOB})
-    	    message(STATUS "Executing: bash ${HOMEGFS}/workflow/generate_workflows.sh -V -H ${HOMEGFS} -y ${CASE}.yaml -t ${JOB_MODIFIED} ${RUNTESTS}")
+        message(STATUS "Executing: bash ${HOMEGFS}/workflow/generate_workflows.sh -V -H ${HOMEGFS} -y ${CASE}.yaml -t ${JOB_MODIFIED} ${RUNTESTS}")
         execute_process(
-            COMMAND bash ${HOMEGFS}/workflow/generate_workflows.sh -V -H ${HOMEGFS} -y ${CASE}.yaml -t ${JOB_MODIFIED} ${RUNTESTS}
+            COMMAND bash ${HOMEGFS}/workflow/generate_workflows.sh -V -H ${HOMEGFS} -y ${CASE}.yaml -t ${JOB_MODIFIED}_${GIT_HASH} ${RUNTESTS}
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
     endforeach()
