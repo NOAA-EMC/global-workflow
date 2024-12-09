@@ -368,9 +368,11 @@ export DO_JEDIATMENS="@DO_JEDIATMENS@"
 export DO_JEDIOCNVAR="@DO_JEDIOCNVAR@"
 export DO_JEDISNOWDA="@DO_JEDISNOWDA@"
 export DO_MERGENSST="@DO_MERGENSST@"
+export DO_STARTMEM_FROM_JEDIICE="@DO_STARTMEM_FROM_JEDIICE@"
 
 # Hybrid related
 export DOHYBVAR="@DOHYBVAR@"
+export DOHYBVAR_OCN="@DOHYBVAR_OCN@"
 export NMEM_ENS=@NMEM_ENS@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
@@ -489,7 +491,7 @@ export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requ
 
 # The monitor jobs are not yet supported for JEDIATMVAR.
 if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
-   export DO_FIT2OBS="NO"     # Run fit to observations package    
+   export DO_FIT2OBS="NO"     # Run fit to observations package
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
