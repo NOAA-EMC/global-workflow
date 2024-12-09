@@ -48,12 +48,15 @@ The global-workflow configs contain switches that change how the system runs. Ma
 |                  | (.true.) or cold (.false)?       |               |             | be set when running ``setup_expt.py`` script with |
 |                  |                                  |               |             | the ``--start`` flag (e.g. ``--start warm``)      |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
-| HPSSARCH         | Archive to HPPS                  | NO            | Possibly    | Whether to save output to tarballs on HPPS        |
+| HPSSARCH         | Archive to HPPS                  | NO            | NO          | Whether to save output to tarballs on HPPS.       |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
-| LOCALARCH        | Archive to a local directory     | NO            | Possibly    | Instead of archiving data to HPSS, archive to a   |
-|                  |                                  |               |             | local directory, specified by ATARDIR. If         |
-|                  |                                  |               |             | LOCALARCH=YES, then HPSSARCH must =NO. Changing   |
-|                  |                                  |               |             | HPSSARCH from YES to NO will adjust the XML.      |
+| LOCALARCH        | Archive to a local directory     | NO            | NO          | Whether to save output to tarballs locally. For   |
+|                  |                                  |               |             | HPSSARCH and LOCALARCH, ARCDIR specifies the      |
+|                  |                                  |               |             | directory. These options are mutually exclusive.  |
++------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
+| ARCH_EXPDIR      | Archive the EXPDIR               | NO            | NO          | Whether to create a tarball of the EXPDIR.        |
+|                  |                                  |               |             | ARCH_HASHES and ARCH_DIFFS generate text files    |
+|                  |                                  |               |             | of git output that are archived with the EXPDIR.  |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
 | QUILTING         | Use I/O quilting                 | .true.        | NO          | If .true. choose OUTPUT_GRID as cubed_sphere_grid |
 |                  |                                  |               |             | in netcdf or gaussian_grid                        |
