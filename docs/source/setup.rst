@@ -35,7 +35,7 @@ The following command examples include variables for reference but users should 
 
    cd workflow
    ./setup_expt.py gfs forecast-only --idate $IDATE --edate $EDATE [--app $APP] [--start $START] [--interval $INTERVAL_GFS] [--resdetatmos $RESDETATMOS] [--resdetocean $RESDETOCEAN]
-     [--pslot $PSLOT] [--configdir $CONFIGDIR] [--comroot $COMROOT] [--expdir $EXPDIR]
+     [--pslot $PSLOT] [--configdir $CONFIGDIR] [--comroot $COMROOT] [--expdir $EXPDIR] [--account $ACCOUNT]
 
 where:
 
@@ -61,6 +61,7 @@ where:
    * ``$INTERVAL_GFS`` is the forecast interval in hours [default: 6]
    * ``$COMROOT`` is the path to your experiment output directory. Your ``ROTDIR`` (rotating com directory) will be created using ``COMROOT`` and ``PSLOT``. [default: $HOME (but do not use default due to limited space in home directories normally, provide a path to a larger scratch space)]
    * ``$EXPDIR`` is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you. [default: $HOME]
+   * ``$ACCOUNT`` is the HPC (i.e. slurm or PBS) account to use for the experiment. [default: $HPC_ACCOUNT; if $HPC_ACCOUNT is not set, then the default in the host file (workflow/hosts/<machine>.yaml) will be used]
 
 Examples:
 
