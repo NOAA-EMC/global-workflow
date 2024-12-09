@@ -454,7 +454,7 @@ elif [ $step = "gempak" ]; then
     export npe_node_gempak_gfs=28
     export nth_gempak=1
     export memory_gempak="4GB"
-    export memory_gempak_gfs="100GB"
+    export memory_gempak_gfs="150GB"
 
 else
 
