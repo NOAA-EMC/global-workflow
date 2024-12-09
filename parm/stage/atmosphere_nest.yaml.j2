@@ -11,8 +11,11 @@ atmosphere_nest:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ATMOS_RESTART_PREV_MEM = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
-        {% for ftype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
+        {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}/{{ m_prefix }}.{{ ftype }}.nest0{{ ntile-5 }}.tile{{ ntile }}.nc"]
+        {% if DO_CA %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.ca_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}/{{ m_prefix }}.ca_data.nest0{{ ntile-5 }}.tile{{ ntile }}.nc"]
+        {% endif %}
         {% endfor %}
         {% endfor %} # mem loop
     {% else %} # cold start

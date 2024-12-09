@@ -30,8 +30,11 @@ gdas_restartb:
         {% set r_HH = r_dt | strftime("%H") %}
         {% set r_prefix = r_YMD + "." + r_HH + "0000" %}
         {% for itile in range(1, 7) %}
-        {% for datatype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
+        {% for datatype in ["fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
         - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.{{datatype}}.tile{{ itile }}.nc"
+        {% if DO_CA %}
+        - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.ca_data.tile{{ itile }}.nc"
+        {% endif %}
         {% endfor %}
         {% endfor %}
         - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.coupler.res"
