@@ -36,7 +36,8 @@ function(GenerateJobWorkflows CASE)
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 
-    message(STATUS "PSLOT list: ${PSLOT_LIST}\n\n")
+    string(REGEX MATCHALL "${CASE}_[^;]+" PSLOT_LIST "${PSLOT_LIST}")
+    message(STATUS "Filtered PSLOT list: ${PSLOT_LIST}\n\n")
     
     message(STATUS "Executing: ${HOMEGFS}/ci/scripts/utils/get_job_names.py --xmlfile ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml")
     execute_process(
