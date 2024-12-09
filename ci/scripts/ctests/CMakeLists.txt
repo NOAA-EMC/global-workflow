@@ -41,10 +41,10 @@ file(READ ${CMAKE_BINARY_DIR}/job_names.txt JOB_NAMES)
 message(STATUS "Job names:\n${JOB_NAMES}")
 
 foreach(JOB IN LISTS JOB_NAMES)
-execute_process(
-    COMMAND bash -c "JOB="${JOB#"CASE"}""
-    COMMAND bash ${HOMEGFS}/workflow/generate_workflows.sh -V -H ${HOMEGFS} -y ${CASE}.yaml -t ${JOB} ${RUNTESTS}
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-)
+    string(REGEX REPLACE "^CASE" "" JOB_MODIFIED ${JOB})
+    execute_process(
+        COMMAND bash ${HOMEGFS}/workflow/generate_workflows.sh -V -H ${HOMEGFS} -y ${CASE}.yaml -t ${JOB_MODIFIED} ${RUNTESTS}
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
 endforeach()
 
