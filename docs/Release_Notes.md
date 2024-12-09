@@ -91,7 +91,7 @@ CHANGES TO FILE SIZES
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.19
+* Memory increases to some jobs to resolve Cgroup memory warnings
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
