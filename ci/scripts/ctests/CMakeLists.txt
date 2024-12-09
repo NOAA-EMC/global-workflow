@@ -4,12 +4,14 @@ project(FunctionalTests)
 
 enable_testing()
 
+
+
 # Add a CTest to run the generate_workflows.sh script with additional arguments
-set(YAMLS "C48_ATM.yaml" CACHE STRING "YAML files separated by spaces")
+set(CASE "C48_ATM")
 set(RUNTESTS "${CMAKE_BINARY_DIR}/RUNTESTS" )
 set(HOMEGFS ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
 
-# Get the Git hash
+
 execute_process(
     COMMAND git rev-parse --short HEAD
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -18,7 +20,7 @@ execute_process(
 )
 
 execute_process(
-	COMMAND bash ${HOMEGFS}/workflow/generate_workflows.sh -H ${HOMEGFS} -y ${YAMLS} -t ${GIT_HASH} ${RUNTESTS}
+    COMMAND bash ${HOMEGFS}/workflow/generate_workflows.sh -V -H ${HOMEGFS} -y ${CASE}.yaml -t ${GIT_HASH} ${RUNTESTS}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
@@ -36,4 +38,13 @@ execute_process(
 )
 
 file(READ ${CMAKE_BINARY_DIR}/job_names.txt JOB_NAMES)
-message(STATUS "Job names: ${JOB_NAMES}")
+message(STATUS "Job names:\n${JOB_NAMES}")
+
+foreach(JOB IN LISTS JOB_NAMES)
+execute_process(
+    COMMAND bash -c "JOB="${JOB#"CASE"}""
+    COMMAND bash ${HOMEGFS}/workflow/generate_workflows.sh -V -H ${HOMEGFS} -y ${CASE}.yaml -t ${JOB} ${RUNTESTS}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+endforeach()
+
