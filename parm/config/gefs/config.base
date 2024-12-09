@@ -282,6 +282,7 @@ export DO_JEDIATMENS="NO"
 export DO_JEDIOCNVAR="NO"
 export DO_JEDISNOWDA="NO"
 export DO_MERGENSST="NO"
+export DO_STARTMEM_FROM_JEDIICE="NO"
 
 # Hybrid related
 export NMEM_ENS=@NMEM_ENS@

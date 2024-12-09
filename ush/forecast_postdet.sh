@@ -471,14 +471,10 @@ MOM6_postdet() {
       || ( echo "FATAL ERROR: Unable to copy MOM6 increment, ABORT!"; exit 1 )
     fi
 
-    # GEFS perturbations
-    if [[ "${RUN}" == "gefs" ]]; then 
-    #     to ensure it does not interfere with the GFS
-      if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-        ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
-        || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
-      fi
-    fi # if [[ "${RUN}" == "gefs" ]]; then 
+    if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
+      ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
+      || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
+    fi
   fi  # if [[ "${RERUN}" == "NO" ]]; then
 
   # Link output files
@@ -599,7 +595,13 @@ CICE_postdet() {
     restart_date="${model_start_date_current_cycle}"
     cice_restart_file="${COMIN_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
     if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
-      cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+      if (( MEMBER == 0 )); then
+        # Start the deterministic from the JEDI/SOCA analysis if the Marine DA in ON
+        cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+      elif (( MEMBER > 0 ))  && [[ "${DO_STARTMEM_FROM_JEDIICE:-NO}" == "YES" ]]; then
+        # Ignore the JEDI/SOCA ensemble analysis for the ensemble members if DO_START_FROM_JEDIICE is OFF
+        cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+      fi
     fi
   fi
 
