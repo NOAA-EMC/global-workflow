@@ -868,7 +868,7 @@ case ${step} in
         (( ICETHREADS = nthreads_cice6 ))
         (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
       else
-        (( ICETHREADS = UFS_THREADS))
+        (( ICETHREADS = UFS_THREADS ))
         (( ICEPETS = ntasks_cice6 ))
       fi
       echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
