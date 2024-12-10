@@ -1,0 +1,21 @@
+defaults:
+  !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
+
+base:
+  DOIAU: "YES"
+  DO_JEDIATMVAR: "NO"
+  DO_JEDIATMENS: "NO"
+  DO_JEDIOCNVAR: "YES"
+  DO_JEDISNOWDA: "NO"
+  DO_MERGENSST: "NO"
+  DOHYBVAR_OCN: "YES"
+  DO_FIT2OBS: "YES"
+  DO_VERFOZN: "YES"
+  DO_VERFRAD: "YES"
+  DO_VRFY_OCEANDA: "NO"
+  FHMAX_GFS: 240
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
+
+marineanl:
+  SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
+  SOCA_NINNER: 20  # revert to ~100 after the memory leak is fixed
