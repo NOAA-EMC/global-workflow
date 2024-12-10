@@ -775,13 +775,21 @@ case ${step} in
       export npy_nest=${npy_nest:-961}
     fi
 
-    # PETS for the atmosphere dycore
-    (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
+    # FV3
+    if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+      (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
+    else
+      (( FV3PETS = ntasks_fv3 ))
+    fi
     echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"
 
-    # PETS for quilting
+    # Write grid component
     if [[ "${QUILTING:-}" == ".true." ]]; then
-      (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
+      else
+        (( QUILTPETS = ntasks_quilt ))
+      fi
       (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD ))
       export WRTTASK_PER_GROUP
     else
@@ -798,6 +806,7 @@ case ${step} in
     # Total PETS for the coupled model (starting w/ the atmosphere)
     NTASKS_TOT=${ATMPETS}
 
+    # Mediator
     # The mediator PETS can overlap with other components, usually it lands on the atmosphere tasks.
     # However, it is suggested limiting mediator PETS to 300, as it may cause the slow performance.
     # See https://docs.google.com/document/d/1bKpi-52t5jIfv2tuNHmQkYUe3hkKsiG_DG_s6Mnukog/edit
@@ -808,6 +817,7 @@ case ${step} in
     export MEDPETS MEDTHREADS
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
+    # GOCART
     CHMPETS=0; CHMTHREADS=0
     if [[ "${DO_AERO_FCST}" == "YES" ]]; then
       # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
@@ -818,28 +828,43 @@ case ${step} in
     fi
     export CHMPETS CHMTHREADS
 
+    # Waves
     WAVPETS=0; WAVTHREADS=0
     if [[ "${DO_WAVE}" == "YES" ]]; then
-      (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
       (( WAVTHREADS = nthreads_ww3 ))
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
+      else
+        (( WAVPETS = ntasks_ww3 ))
+      fi
       echo "WW3 using (threads, PETS) = (${WAVTHREADS}, ${WAVPETS})"
       (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
     fi
     export WAVPETS WAVTHREADS
 
+    # Ocean
     OCNPETS=0; OCNTHREADS=0
     if [[ "${DO_OCN}" == "YES" ]]; then
-      (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
       (( OCNTHREADS = nthreads_mom6 ))
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
+      else
+        (( OCNPETS = ntasks_mom6 ))
+      fi
       echo "MOM6 using (threads, PETS) = (${OCNTHREADS}, ${OCNPETS})"
       (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
     fi
     export OCNPETS OCNTHREADS
 
+    # Ice
     ICEPETS=0; ICETHREADS=0
     if [[ "${DO_ICE}" == "YES" ]]; then
-      (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
       (( ICETHREADS = nthreads_cice6 ))
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
+      else
+        (( ICEPETS = ntasks_cice6 ))
+      fi
       echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
       (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
     fi
