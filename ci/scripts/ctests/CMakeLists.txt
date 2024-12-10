@@ -25,8 +25,7 @@ execute_process(
 function(GenerateExperiments CASE)
 
     execute_process(
-        COMMAND ${CREATE_EXPERIMENT_CMD} -yaml ${CASE_PATH}/${CASE}.yaml
-        ENVIRONMENT "pslot=${CASE}_${GIT_HASH}" "RUNTESTS=${RUNTESTS}"
+        COMMAND bash -c "pslot=${CASE}_${GIT_HASH}; RUNTESTS=${RUNTESTS}; ${CREATE_EXPERIMENT_CMD} -yaml ${CASE_PATH}/${CASE}.yaml"
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
     
@@ -55,8 +54,7 @@ function(GenerateExperiments CASE)
         string(REGEX REPLACE "^${CASE}_" "" JOB_MODIFIED ${JOB})
         message(STATUS "Executing: ${CREATE_EXPERIMENT_CMD} -yaml ${CASE_PATH}/${CASE}.yaml") 
         execute_process(
-            COMMAND ${CREATE_EXPERIMENT_CMD} -yaml ${CASE_PATH}/${CASE}.yaml
-            ENVIRONMENT "pslot=${CASE}_${JOB_MODIFIED}_${GIT_HASH}" "RUNTESTS=${RUNTESTS}"
+            COMMAND bash -c "pslot=${CASE}_${JOB_MODIFIED}_${GIT_HASH}; RUNTESTS=${RUNTESTS}; ${CREATE_EXPERIMENT_CMD} -yaml ${CASE_PATH}/${CASE}.yaml"
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
     endforeach()
