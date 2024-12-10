@@ -777,28 +777,31 @@ case ${step} in
 
     # FV3
     if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+      (( FV3THREADS = nthreads_fv3 ))
       (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
     else
+      (( FV3THREADS = UFS_THREADS ))
       (( FV3PETS = ntasks_fv3 ))
     fi
-    echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"
+    echo "FV3 using (nthreads, PETS) = (${FV3THREADS}, ${FV3PETS})"
 
     # Write grid component
+    QUILTPETS=0; QUILTTHREADS=0
     if [[ "${QUILTING:-}" == ".true." ]]; then
       if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( QUILTTHREADS = nthreads_fv3 ))
         (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
       else
+        (( QUILTTHREADS = UFS_THREADS ))
         (( QUILTPETS = ntasks_quilt ))
       fi
       (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD ))
       export WRTTASK_PER_GROUP
-    else
-      QUILTPETS=0
     fi
-    echo "QUILT using (nthreads, PETS) = (${nthreads_fv3}, ${QUILTPETS})"
+    echo "QUILT using (nthreads, PETS) = (${QUILTTHREADS}, ${QUILTPETS})"
 
     # Total PETS for the atmosphere component
-    ATMTHREADS=${nthreads_fv3}
+    ATMTHREADS=${FV3THREADS}
     (( ATMPETS = FV3PETS + QUILTPETS ))
     export ATMPETS ATMTHREADS
     echo "FV3ATM using (nthreads, PETS) = (${ATMTHREADS}, ${ATMPETS})"
@@ -831,10 +834,11 @@ case ${step} in
     # Waves
     WAVPETS=0; WAVTHREADS=0
     if [[ "${DO_WAVE}" == "YES" ]]; then
-      (( WAVTHREADS = nthreads_ww3 ))
       if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( WAVTHREADS = nthreads_ww3 ))
         (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
       else
+        (( WAVTHREADS = UFS_THREADS ))
         (( WAVPETS = ntasks_ww3 ))
       fi
       echo "WW3 using (threads, PETS) = (${WAVTHREADS}, ${WAVPETS})"
@@ -845,10 +849,11 @@ case ${step} in
     # Ocean
     OCNPETS=0; OCNTHREADS=0
     if [[ "${DO_OCN}" == "YES" ]]; then
-      (( OCNTHREADS = nthreads_mom6 ))
       if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( OCNTHREADS = nthreads_mom6 ))
         (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
       else
+        (( OCNTHREADS = UFS_THREADS ))
         (( OCNPETS = ntasks_mom6 ))
       fi
       echo "MOM6 using (threads, PETS) = (${OCNTHREADS}, ${OCNPETS})"
@@ -859,10 +864,11 @@ case ${step} in
     # Ice
     ICEPETS=0; ICETHREADS=0
     if [[ "${DO_ICE}" == "YES" ]]; then
-      (( ICETHREADS = nthreads_cice6 ))
       if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( ICETHREADS = nthreads_cice6 ))
         (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
       else
+        (( ICETHREADS = UFS_THREADS))
         (( ICEPETS = ntasks_cice6 ))
       fi
       echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
@@ -874,7 +880,7 @@ case ${step} in
 
     declare -x "ntasks"="${NTASKS_TOT}"
     declare -x "threads_per_task"="${UFS_THREADS}"
-    declare -x "tasks_per_node"="${max_tasks_per_node}"
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
