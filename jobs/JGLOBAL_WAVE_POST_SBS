@@ -45,7 +45,7 @@ for grdID in ${wavepostGRD} ${waveinterpGRD}; do
         echo "FATAL ERROR: No grid specific wave config values exist for ${grdID}. Aborting."
         exit 1;;
     esac
-    GRID=${GRDRES} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    GRID=${GRDNAME}.${GRDRES} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
         "COMOUT_WAVE_GRID_${GRDNAME}.${GRDRES}:COM_WAVE_GRID_RES_TMPL"
     COMOUT=COMOUT_WAVE_GRID_${GRDNAME}.${GRDRES}
     if [[ ! -d "${COMOUT}" ]]; then
