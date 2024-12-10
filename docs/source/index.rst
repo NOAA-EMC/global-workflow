@@ -18,6 +18,7 @@ Code managers
 
 * Kate Friedman - @KateFriedman-NOAA / kate.friedman@noaa.gov
 * Walter Kolczynski - @WalterKolczynski-NOAA / walter.kolczynski@noaa.gov
+* David Huber - @DavidHuber-NOAA / david.huber@noaa.gov
 
 =============
 Announcements

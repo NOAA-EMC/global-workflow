@@ -1,4 +1,4 @@
-name: Orion
+name: WCOSS2
 
 on:
   pull_request_target:
@@ -26,8 +26,8 @@ jobs:
           echo "labels=$LABELS" >> $GITHUB_OUTPUT
 
   passed:
-    if: contains( needs.getlabels.outputs.labels, 'CI-Orion-Passed') && github.event.pull_request.merged
-    runs-on: ubuntu-22.04
+    if: contains( needs.getlabels.outputs.labels, 'CI-Wcoss2-Passed') && github.event.pull_request.merged
+    runs-on: ubuntu-latest
     needs:
      - getlabels
 
@@ -38,13 +38,13 @@ jobs:
         forceUpdate: true
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: e35aa2904a54deae6bbb1fdc2d960c71
-        filename: orion.json
-        label: orion
+        filename: wcoss2.json
+        label: wcoss2
         message: passing
         color: green
 
   failed:
-    if: contains( needs.getlabels.outputs.labels, 'CI-Orion-Failed') && github.event.pull_request.merged
+    if: contains( needs.getlabels.outputs.labels, 'CI-Wcoss2-Failed') && github.event.pull_request.merged
     runs-on: ubuntu-latest
     needs:
      - getlabels
@@ -56,14 +56,14 @@ jobs:
         forceUpdate: true
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: e35aa2904a54deae6bbb1fdc2d960c71
-        filename: orion.json
-        label: orion
+        filename: wcoss2.json
+        label: wcoss2
         message: failing
         color: red
 
 
   pending:
-    if: "!contains( needs.getlabels.outputs.labels, 'CI-Orion-Passed') && !contains( needs.getlabels.outputs.labels, 'CI-Orion-Failed')"
+    if: "!contains( needs.getlabels.outputs.labels, 'CI-Wcoss2-Passed') && !contains( needs.getlabels.outputs.labels, 'CI-Wcoss2-Failed')"
     runs-on: ubuntu-latest
     needs:
      - getlabels
@@ -75,7 +75,7 @@ jobs:
         forceUpdate: true
         auth: ${{ secrets.CLI_DYNAMIC_BADGES }}
         gistID: e35aa2904a54deae6bbb1fdc2d960c71
-        filename: orion.json
-        label: orion
+        filename: wcoss2.json
+        label: wcoss2
         message: pending
         color: orange

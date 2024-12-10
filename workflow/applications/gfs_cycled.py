@@ -37,6 +37,7 @@ class GFSCycledAppConfig(AppConfig):
             base = conf.parse_config('config.base', RUN=run)
 
             run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
+            run_options[run]['do_hybvar_ocn'] = base.get('DOHYBVAR_OCN', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
             if run_options[run]['do_hybvar']:
                 run_options[run]['lobsdiag_forenkf'] = base.get('lobsdiag_forenkf', False)
