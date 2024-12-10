@@ -144,9 +144,14 @@ cd "${HOMEgfs}/parm/ufs" || exit 1
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
 
 cd "${HOMEgfs}/parm/post" || exit 1
-for file in params_grib2_tbl_new nam_micro_lookup.dat
+for file in params_grib2_tbl_new
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${file}" .
+done
+cd "${HOMEgfs}/parm/post" || exit 1
+for file in nam_micro_lookup.dat
+do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/${file}" .
 done
 for dir in gfs gefs sfs
 do
