@@ -40,7 +40,7 @@ for grdID in ${wavepostGRD} ${waveinterpGRD}; do
         exit 1;;
     esac
     YMD=${PDY} HH=${cyc} GRID="${GRDNAME}.${GRDRES}" declare_from_tmpl -rx \
-        "COMIN_WAVE_GRID_${GRDNAME}.${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+        "COMIN_WAVE_GRID_${grdID}:COM_WAVE_GRID_RES_TMPL"
 done
 
 

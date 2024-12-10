@@ -46,8 +46,8 @@ for grdID in ${wavepostGRD} ${waveinterpGRD}; do
         exit 1;;
     esac
     GRID=${GRDNAME}.${GRDRES} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-        "COMOUT_WAVE_GRID_${GRDNAME}.${GRDRES}:COM_WAVE_GRID_RES_TMPL"
-    COMOUT=COMOUT_WAVE_GRID_${GRDNAME}.${GRDRES}
+        "COMOUT_WAVE_GRID_${grdID}:COM_WAVE_GRID_RES_TMPL"
+    COMOUT=COMOUT_WAVE_GRID_${grdID}
     if [[ ! -d "${COMOUT}" ]]; then
     mkdir -m 775 -p "${COMOUT}"
     fi

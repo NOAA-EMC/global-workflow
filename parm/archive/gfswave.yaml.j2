@@ -4,6 +4,7 @@ gfswave:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
     required:
     {% set RESOLUTION = [] %}
+    {% set GridID = [] %}
     {% for grdID in wavepostGRD + waveinterpGRD %}
         {% if grdID == 'glo_10m' %}
             {% set GRDNAME = 'global.0p16' %}
@@ -48,7 +49,7 @@ gfswave:
         {% else %}
             {{ "FATAL ERROR: No grid specific wave config values exist for " ~ grdID ~ ". Aborting." }}
         {% endif %}
-        {% do RESOLUTION.append(GRDNAME) %}
+        {% do RESOLUTION.append(GRDNAME) %}  
     {% endfor %}
 
         # Wave GRIB2 regional forecast products
