@@ -5,6 +5,7 @@ base:
   DO_JEDIOCNVAR: "NO"
   DO_JEDISNOWDA: "NO"
   DO_MERGENSST: "NO"
+  DO_STARTMEM_FROM_JEDIICE: "NO"
   DO_GOES: "NO"
   DO_BUFRSND: "NO"
   DO_GEMPAK: "NO"
@@ -21,6 +22,7 @@ base:
   GSI_SOILANAL: "NO"
   EUPD_CYC: "gdas"
   FHMAX_ENKF_GFS: 12
+  DOHYBVAR_OCN: "NO"
   DO_TEST_MODE: "NO"
 
 atmanl:
@@ -39,7 +41,7 @@ atmensanl:
   LAYOUT_Y_ATMENSANL: 8
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
-  
+
 aeroanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
