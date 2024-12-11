@@ -50,7 +50,7 @@ for grid in "0p25" "0p50" "1p00"; do
        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
-for grdID in ${wavepostGRD} ${waveinterpGRD}; do
+for grdID in ${waveGRD}; do
     case ${grdID} in
         glo_10m) GRDNAME='global' ; GRDRES=0p16;;
         glo_15mxt) GRDNAME='global' ; GRDRES=0p25;;       

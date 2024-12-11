@@ -13,7 +13,7 @@ export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-for grdID in ${wavepostGRD} ${waveinterpGRD}; do
+for grdID in ${waveGRD}; do
     case ${grdID} in
         aoc_9km) GRDNAME='arctic' ; GRDRES=9km;;
         at_10m) GRDNAME='atlocn' ; GRDRES=0p16 ;;
