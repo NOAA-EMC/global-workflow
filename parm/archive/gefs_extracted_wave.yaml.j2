@@ -15,7 +15,7 @@ gefs_wave:
 
 {% set RESOLUTION = [] %}
 
-{% for grdID in wavepostGRD + waveinterpGRD %}
+{% for grdID in waveGRD %}
     {% if grdID == 'glo_10m' %}
         {% set GRDNAME = 'global.0p16' %}
     {% elif grdID == 'glo_15mxt' %}
