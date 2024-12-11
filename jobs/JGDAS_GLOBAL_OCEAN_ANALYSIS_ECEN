@@ -1,6 +1,6 @@
 #!/bin/bash
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalecen" -c "base ocnanal ocnanalecen"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalecen" -c "base marineanl ocnanalecen"
 
 ##############################################
 # Set variables used in the script
@@ -12,8 +12,13 @@ export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 
 YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-   COM_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-   COM_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+   COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+   COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
+   COMIN_ICE_RESTART:COM_ICE_RESTART_TMPL \
+   COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL
 
 ##############################################
 # Begin JOB SPECIFIC work
