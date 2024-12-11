@@ -10,7 +10,7 @@ for grid in '0p25' '0p50' '1p00'; do
   if [[ ! -d "${!prod_dir}" ]]; then mkdir -p "${!prod_dir}"; fi
 done
 
-for grdID in ${wavepostGRD} ${waveinterpGRD}; do
+for grdID in ${wavepostGRD}; do
     case ${grdID} in
         glo_10m) GRDNAME='global' ; GRDRES=0p16;;
         glo_15mxt) GRDNAME='global' ; GRDRES=0p25;;       
