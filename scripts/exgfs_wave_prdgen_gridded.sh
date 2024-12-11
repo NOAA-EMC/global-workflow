@@ -89,7 +89,7 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
    fhr=$(printf "%03d" $fhcnt)
    for grdOut in $grids;do
      case $grdOut in
-       ao_9km)  grdID='arctic.9km' ;;
+       aoc_9km)  grdID='arctic.9km' ;;
        at_10m)  grdID='atlocn.0p16' ;;
        ep_10m)  grdID='epacif.0p16' ;;
        wc_10m)  grdID='wcoast.0p16' ;;
