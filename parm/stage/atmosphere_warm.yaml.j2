@@ -15,9 +15,12 @@ atmosphere_warm:
         {% for ftype in ["coupler.res", "fv_core.res.nc"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
         {% endfor %}
-        {% for ftype in ["ca_data", "fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
+        {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
         {% for ntile in range(1, ntiles + 1) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        {% if DO_CA %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.ca_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        {% endif %}
         {% endfor %} # ntile
         {% endfor %} # ftype
         {% for ntile in range(1, ntiles + 1) %}

@@ -656,6 +656,7 @@ if [[ "${DO_SPPT}" = "YES" || "${DO_SHUM}" = "YES" || "${DO_SKEB}" = "YES" || "$
 
     cat >> input.nml << EOF
 &nam_stochy
+  stochini=${stochini:-".false."}
 EOF
 
   if [[ ${DO_SKEB} = "YES" ]]; then

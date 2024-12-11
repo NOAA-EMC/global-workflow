@@ -44,6 +44,180 @@ The following system software requirements are the minimum for any new or existi
 |              |             |   WCOSS2                              |
 +--------------+-------------+---------------------------------------+
 
+===========================
+Feature availability by HPC
+===========================
+
+The Global Workflow provides capabilities for deterministic and ensemble forecasts along with data assimilation on multiple platforms.  However, not all features are currently supported on all platforms.  The following table lists the features by platform and states their level of support.
+
+.. list-table:: Capabilities matrix by HPC
+   :header-rows: 1
+   :align: center
+
+   * - HPC
+     - Tier
+     - Coupled
+       GFS
+     - Coupled
+       GEFS
+     - GSI
+       DA
+     - GDASApp
+       DA
+     - Coupled
+       DA
+     - TC Tracker
+     - AWIPS
+     - MOS
+     - Fit2Obs
+     - METplus
+       Verification
+     - HPSS
+       Archiving
+   * - WCOSS2  
+     - 1
+     - X     
+     - X     
+     - X   
+     - X     
+     - 
+     - X    
+     - X  
+     - X 
+     - X   
+     - X        
+     - X
+   * - Hera    
+     - 1   
+     - X     
+     - X     
+     - X   
+     - X   
+     - X     
+     - X    
+     - X  
+     - 
+     - X   
+     - X        
+     - X
+   * - Hercules
+     - 1   
+     - X     
+     - X     
+     - X   
+     - X     
+     - X     
+     - 
+     - 
+     - 
+     - X   
+     - X        
+     -
+   * - Orion   
+     - 2   
+     - X     
+     - X     
+     - X   
+     - X     
+     - 
+     - X    
+     - 
+     - 
+     - X   
+     - X        
+     -
+   * - Gaea C5 
+     - 3   
+     - X     
+     - X     
+     - X   
+     - X     
+     - 
+     - 
+     - 
+     - 
+     - 
+     - 
+     - X
+   * - Gaea C6 
+     - 3   
+     - X     
+     - X     
+     - X   
+     - X     
+     - 
+     - 
+     - 
+     - 
+     - 
+     - 
+     - X
+   * - AWS (PW)
+     - 3   
+     - X     
+     - X     
+     - X   
+     - 
+     - 
+     - 
+     - 
+     - 
+     - 
+     - 
+     -
+   * - GCP (PW)
+     - 3   
+     - X     
+     - X     
+     - 
+     - 
+     - 
+     - 
+     - 
+     - 
+     - 
+     - 
+     -
+   * - Azure   
+     - 3   
+     - X     
+     - X     
+     - 
+     - 
+     - 
+     - 
+     - 
+     - 
+     - 
+     - 
+     -
+   * - Jet     
+     - 3   
+     - X     
+     - 
+     - X   
+     - 
+     - 
+     - X    
+     - 
+     - 
+     - X   
+     - X      
+     - X
+   * - S4      
+     - 3   
+     - 
+     - 
+     - X   
+     - 
+     - 
+     - X    
+     - 
+     - 
+     - X   
+     - X      
+     -
+
 ================================
 Experiment troubleshooting help
 ================================

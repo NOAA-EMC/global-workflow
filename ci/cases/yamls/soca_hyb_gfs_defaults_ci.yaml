@@ -3,7 +3,6 @@ defaults:
 base:
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
   DO_JEDIOCNVAR: "YES"
-
+  DOHYBVAR_OCN: "YES"
 marineanl:
   SOCA_NINNER: 1
-  DO_TEST_MODE: "YES"
