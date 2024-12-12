@@ -1,8 +1,20 @@
-anlstat:
+aero:
   rundir: '{{ DATA }}'
   exe_src: '{{ JEDIEXE }}'
   mpi_cmd: '{{ APRUN_ANLSTAT }}'
+  stat_file_path: '{{ COM_CHEM_ANALYSIS }}'
+  stat_file_name: 'aerostat'
   # jedi_args: None
   jcb_base_yaml: '{{ PARMgfs }}/gdas/stat/aero/jcb-base.yaml.j2'
+  jcb_algo_yaml: '{{ JCB_ALGO_YAML }}'
+  jcb_algo: 'anlstat'
+snow:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ JEDIEXE }}'
+  mpi_cmd: '{{ APRUN_ANLSTAT }}'
+  stat_file_path: '{{ COM_SNOW_ANALYSIS }}'
+  stat_file_name: 'snowstat.tgz'
+  # jedi_args: None
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/stat/snow/jcb-base.yaml.j2'
   jcb_algo_yaml: '{{ JCB_ALGO_YAML }}'
   jcb_algo: 'anlstat'
