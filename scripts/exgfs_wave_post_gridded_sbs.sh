@@ -379,15 +379,15 @@ source "${USHgfs}/preamble.sh"
   rm -f out_grd.* # Remove large binary grid output files
 
   cd $DATA
-
-
+ 
   if [ "$fhr" = "$fhrg" ]
   then
 # Check if grib2 file created
     ENSTAG=""
     if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
     gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-    if [ ! -s ${COMOUT_WAVE_GRID}/${gribchk} ]; then
+    if [[ ! -s "${COMOUT_WAVE_GRID}/${wavepostGRD}/${gribchk}" \
+        && ! -s "${COMOUT_WAVE_GRID}/${waveinterpGRD}/${gribchk}" ]]; then
       set +x
       echo ' '
       echo '********************************************'
