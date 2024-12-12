@@ -83,7 +83,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}_${grdID}/${outfile}.idx" ]]; then
   set_trace
 
   if [[ -z "${PDY}" ]] || [[ -z ${cyc} ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
-	 [[ -z "${COMOUT_WAVE_GRID}_${grdID}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${gribflags}" ]] || \
+	 [[ -z "${COMOUT_WAVE_GRID}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${gribflags}" ]] || \
 	 [[ -z "${GRIDNR}" ]] || [[ -z "${MODNR}" ]] || \
      [[ -z "${SENDDBN}" ]]; then
     set +x
