@@ -218,7 +218,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${GRDNAME}/${outfile}.idx" ]]; then
 
   # 1.e Save in /com
 
-  if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}" ]]; then
+  if [[ ! -s "${COMOUT_WAVE_GRID}/${GRDNAME}/${outfile}" ]]; then
     set +x
     echo ' '
     echo '********************************************* '
