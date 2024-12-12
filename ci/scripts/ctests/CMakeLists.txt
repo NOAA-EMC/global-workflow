@@ -62,6 +62,13 @@ function(GenerateExperiments CASE)
 
 endfunction()
 
+function(AddRocotoBootTest CASE_NAME JOB_NAME)
+    add_test(NAME jjob_test_${CASE_NAME}_${JOB_NAME}
+             COMMAND bash -c "rocotoboot -w ${RUNTESTS}/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d ${RUNTESTS}/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -c ${JOB_NAME}")
+endfunction()
+
 foreach(CASE IN LISTS CASE_LIST)
     GenerateExperiments(${CASE})
+    # Example usage of AddRocotoBootTest function
+    # AddRocotoBootTest(${CASE} "example_job_name")
 endforeach()
