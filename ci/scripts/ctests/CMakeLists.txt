@@ -12,7 +12,7 @@ set(ENV{RUNTESTS} "${CMAKE_BINARY_DIR}/RUNTESTS")
 set(RUNTESTS "${CMAKE_BINARY_DIR}/RUNTESTS")
 set(HOMEgfs ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
 set(CASE_PATH ${HOMEgfs}/ci/cases/pr)
-file(REMOVE_RECURSE ${RUNTESTS})
+#file(REMOVE_RECURSE ${RUNTESTS})
 
 set(CREATE_EXPERIMENT_CMD "${HOMEgfs}/workflow/create_experiment.py")
 
@@ -65,7 +65,7 @@ endfunction()
 
 function(AddRocotoBootTest CASE_NAME JOB_NAME)
     add_test(NAME jjob_test_${CASE_NAME}_${JOB_NAME}
-             COMMAND bash -c "rocotoboot -w ${RUNTESTS}/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d ${RUNTESTS}/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -c ${JOB_NAME}")
+             COMMAND bash -c "rocotoboot -w ${RUNTESTS}/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d ${RUNTESTS}/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -t ${JOB_NAME}")
 endfunction()
 
 
