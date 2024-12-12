@@ -386,8 +386,7 @@ source "${USHgfs}/preamble.sh"
     ENSTAG=""
     if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
     gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-    if [[ ! -s "${COMOUT_WAVE_GRID}/${wavepostGRD}/${gribchk}" \
-        && ! -s "${COMOUT_WAVE_GRID}/${waveinterpGRD}/${gribchk}" ]]; then
+    if [[ ! -s "${COMOUT_WAVE_GRID}/${wavepostGRD:-${waveinterpGRD}}/${gribchk}"]]; then
       set +x
       echo ' '
       echo '********************************************'
