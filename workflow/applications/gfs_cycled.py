@@ -316,7 +316,7 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['eobs', 'eupd']
                     task_names[run].append('echgres') if 'gdas' in run else 0
                     task_names[run] += ['ediag'] if options['lobsdiag_forenkf'] else ['eomg']
-                    task_names[run].append('esnowrecen') if options['do_jedisnowda'] and 'gdas' in run else 0
+                    task_names[run].append('esnowanl') if options['do_jedisnowda'] and 'gdas' in run else 0
 
                 task_names[run] += ['stage_ic', 'ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
 
