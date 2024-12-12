@@ -4,12 +4,12 @@ experiment:
 
 arguments:
   pslot: {{ 'pslot' | getenv }}
-  app: S2S
+  app: S2SW
   resdetatmos: 48
   resdetocean: 5.0
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20241120
+  icsdir: /work2/noaa/marine/jmeixner/hercules/TestNewGridNewThreads/IC_C48mx500 
   idate: 2021032418
   edate: 2021032500
   nens: 0
