@@ -8,24 +8,12 @@ echo "BEGIN: config.fcst"
 export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
 export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
-# Turn off waves if not used for this RUN
-case ${WAVE_RUN} in
-  both | "${RUN/enkf}" ) ;; # Don't change
-  *) DO_WAVE="NO" ;; # Turn waves off
-esac
-
-# Turn off aerosols if not used for this RUN
-case ${AERO_FCST_RUN} in
-  both | "${RUN/enkf}" ) ;; # Don't change
-  *) DO_AERO="NO" ;; # Turn waves off
-esac
-
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE}"
 [[ "${DO_OCN}" == "YES" ]] && string="${string} --mom6 ${OCNRES}"
 [[ "${DO_ICE}" == "YES" ]] && string="${string} --cice6 ${ICERES}"
 [[ "${DO_WAVE}" == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
-[[ "${DO_AERO}" == "YES" ]] && string="${string} --gocart"
+[[ "${DO_AERO_FCST}" == "YES" ]] && string="${string} --gocart"
 # We are counting on $string being multiple arguments
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
@@ -142,7 +130,7 @@ tbp=""
 if [[ "${progsigma}" == ".true." ]]; then tbp="_progsigma" ; fi
 
 # Radiation options
-if [[ "${DO_AERO}" == "YES" ]]; then
+if [[ "${DO_AERO_FCST}" == "YES" ]]; then
     export IAER=2011  # spectral band mapping method for aerosol optical properties
 else
     export IAER=1011    
@@ -237,11 +225,12 @@ case ${imp_physics} in
 esac
 
 # Stochastic physics
-export DO_SPPT=${DO_SPPT:-"NO"}
-export DO_SKEB=${DO_SKEB:-"NO"}
-export DO_SHUM=${DO_SHUM:-"NO"}
-export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
-export DO_CA=${DO_CA:-"YES"}
+export DO_SPPT="NO"
+export DO_SKEB="NO"
+export DO_SHUM="NO"
+export DO_LAND_PERT="NO"
+export DO_OCN_SPPT="NO"
+export DO_OCN_PERT_EPBL="NO"
 
 #coupling settings
 export cplmode="ufs.frac"

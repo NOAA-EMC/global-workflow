@@ -6,7 +6,7 @@
 echo "BEGIN: config.efcs"
 
 # Turn off components in ensemble
-# export DO_AERO="NO"
+# export DO_AERO_FCST="NO"
 # export DO_OCN="NO"
 # export DO_ICE="NO"
 # export DO_WAVE="NO"
@@ -19,7 +19,7 @@ string="--fv3 ${CASE}"
 [[ "${DO_OCN}" == "YES" ]] && string="${string} --mom6 ${OCNRES}"
 [[ "${DO_ICE}" == "YES" ]] && string="${string} --cice6 ${ICERES}"
 [[ "${DO_WAVE}" == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
-[[ "${DO_AERO}" == "YES" ]] && string="${string} --gocart"
+[[ "${DO_AERO_FCST}" == "YES" ]] && string="${string} --gocart"
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
 
@@ -44,16 +44,18 @@ export SPPT_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
 export SPPT_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
 export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
-export DO_CA="YES"
 # OCN options
-export DO_OCN_SPPT="YES"
-export OCNSPPT="0.8,0.4,0.2,0.08,0.04"
-export OCNSPPT_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
-export OCNSPPT_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
-export DO_OCN_PERT_EPBL="YES"
-export EPBL="0.8,0.4,0.2,0.08,0.04"
-export EPBL_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
-export EPBL_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
+if (( OCNRES <= 100 )); then
+    # Ocean stochastic options not supported at 5p00
+    export DO_OCN_SPPT="YES"
+    export OCNSPPT="0.8,0.4,0.2,0.08,0.04"
+    export OCNSPPT_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
+    export OCNSPPT_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
+    export DO_OCN_PERT_EPBL="YES"
+    export EPBL="0.8,0.4,0.2,0.08,0.04"
+    export EPBL_TAU="2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7"
+    export EPBL_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
+fi
 
 if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
     export ODA_INCUPD="True"

@@ -65,6 +65,7 @@ export REALTIME="YES"
 # Experiment mode (cycled or forecast-only)
 export MODE="@MODE@" # cycled/forecast-only
 export SFS_POST="@SFS_POST@" # TODO, place holder until RUN=SFS is developed
+export DO_TEST_MODE="@DO_TEST_MODE@" # option to change configuration for automated testing
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -134,11 +135,8 @@ export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
-export DO_AERO="NO"
 export DO_EXTRACTVARS="@DO_EXTRACTVARS@" # Option to process and extract a subset of products to save on disk
-export AERO_FCST_RUN="" # When to run aerosol forecast: gdas, gfs, or both
-export AERO_ANL_RUN="" # When to run aerosol analysis: gdas, gfs, or both
-export WAVE_RUN="" # When to include wave suite: gdas, gfs, or both
+export DO_AERO_FCST="NO"
 export DOBNDPNT_WAVE="NO" # The GEFS buoys file does not currently have any boundary points
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
@@ -183,14 +181,11 @@ case "${APP}" in
   ATM)
     ;;
   ATMA)
-    export DO_AERO="YES"
-    export AERO_ANL_RUN="both"
-    export AERO_FCST_RUN="gdas"
+    export DO_AERO_FCST="YES"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
-    export WAVE_RUN="both"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -203,14 +198,11 @@ case "${APP}" in
     export DO_ICE="YES"
 
     if [[ "${APP}" =~ A$ ]]; then
-        export DO_AERO="YES"
-        export AERO_ANL_RUN="both"
-        export AERO_FCST_RUN="gdas"
+        export DO_AERO_FCST="YES"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
-        export WAVE_RUN="both"
     fi
     ;;
   *)
@@ -225,6 +217,7 @@ export FHMAX=9
 export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
 export FHOUT_OCN=3
 export FHOUT_ICE=3
+export FHOUT_AERO=3
 
 # GFS cycle info
 export INTERVAL_GFS=@INTERVAL_GFS@ # Frequency of GFS forecast
@@ -255,6 +248,10 @@ export FHOUT_WAV=3
 export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
 export FHMAX_WAV=${FHMAX_GFS}
+export FHMAX_WAV_GFS=${FHMAX_GFS}
+export FHMAX_HF_GFS=$(( FHMAX_HF_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_HF_GFS ))
+export FHMAX_WAV_GFS=$(( FHMAX_WAV_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_WAV_GFS ))
+export FHMAX_HF_WAV=$(( FHMAX_HF_WAV > FHMAX_WAV_GFS ? FHMAX_WAV_GFS : FHMAX_HF_WAV ))
 export ILPOST=1           # gempak output frequency up to F120
 
 export FHMIN_ENKF=${FHMIN_GFS}
@@ -285,14 +282,22 @@ export DO_JEDIATMENS="NO"
 export DO_JEDIOCNVAR="NO"
 export DO_JEDISNOWDA="NO"
 export DO_MERGENSST="NO"
+export DO_STARTMEM_FROM_JEDIICE="NO"
 
 # Hybrid related
 export NMEM_ENS=@NMEM_ENS@
 
 # set default member number memdir for control
-# this will be overwritten for the perturbed members
+# this will be overwridden for the perturbed members
 export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
+
+# cellular automata
+if (( ENSMEM == 0 )); then
+    export DO_CA="YES"
+else
+    export DO_CA="YES"
+fi
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 
@@ -329,9 +334,13 @@ if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
    echo "Both HPSS and local archiving selected.  Please choose one or the other."
    exit 3
 fi
-export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
-export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
+export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
+export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
+export ARCH_EXPDIR='YES'     # Archive the EXPDIR configs, XML, and database
+export ARCH_EXPDIR_FREQ=0    # How often to archive the EXPDIR in hours or 0 for first and last cycle only
+export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and 'git status' for each; requires ARCH_EXPDIR
+export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
 
 export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
 
