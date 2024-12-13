@@ -9,10 +9,9 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 #set(CASE_LIST "C48_ATM" "C48_S2SW")
 set(CASE_LIST "C48_ATM")
 set(ENV{RUNTESTS} "${CMAKE_BINARY_DIR}/RUNTESTS")
-set(RUNTESTS "${CMAKE_BINARY_DIR}/RUNTESTS")
-set(HOMEgfs ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
+set(HOMEgfs ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 set(CASE_PATH ${HOMEgfs}/ci/cases/pr)
-#file(REMOVE_RECURSE ${RUNTESTS})
+file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/RUNTESTS)
 
 set(CREATE_EXPERIMENT_CMD "${HOMEgfs}/workflow/create_experiment.py")
 
@@ -27,14 +26,12 @@ execute_process(
 function(GenerateExperiments CASE)
 
     execute_process(
-        COMMAND bash -c "export pslot=${CASE}_${GIT_HASH}; ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml"
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND bash -c "export pslot=${CASE}_${GIT_HASH}; ${CREATE_EXPERIMENT_CMD} --overwrite --yaml ${CASE_PATH}/${CASE}.yaml"
     )
     
-    message(STATUS "Executing: ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list ${RUNTESTS}")
+    message(STATUS "Executing: ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list RUNTESTS")
     execute_process(
-        COMMAND ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list ${RUNTESTS}
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot_list RUNTESTS
         OUTPUT_VARIABLE PSLOT_LIST
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
@@ -42,10 +39,9 @@ function(GenerateExperiments CASE)
     string(REGEX MATCHALL "${CASE}_[^;]+" PSLOT_LIST "${PSLOT_LIST}")
     message(STATUS "Filtered PSLOT list: ${PSLOT_LIST}\n\n")
     
-    message(STATUS "Executing: ${HOMEgfs}/ci/scripts/utils/get_job_names.py --xml ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml")
+    message(STATUS "Executing: ${HOMEgfs}/ci/ctests/scripts/get_job_names.py --xml RUNTESTS/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml")
     execute_process(
-        COMMAND ${HOMEgfs}/ci/scripts/utils/get_job_names.py --xml ${RUNTESTS}/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND ${HOMEgfs}/ci/ctests/scripts/get_job_names.py --xml RUNTESTS/EXPDIR/${PSLOT_LIST}/${PSLOT_LIST}.xml
         OUTPUT_FILE ${CMAKE_BINARY_DIR}/${CASE}_jobs.txt
     )
     
@@ -57,7 +53,6 @@ function(GenerateExperiments CASE)
         message(STATUS "Executing: ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml") 
         execute_process(
             COMMAND bash -c "export pslot=${CASE}_${JOB_MODIFIED}_${GIT_HASH}; ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml"
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
     endforeach()
 
@@ -65,11 +60,11 @@ endfunction()
 
 function(AddRocotoBootTest CASE_NAME JOB_NAME)
     add_test(NAME jjob_test_${CASE_NAME}_${JOB_NAME}
-             COMMAND bash -c "rocotoboot -w ${RUNTESTS}/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d ${RUNTESTS}/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -t ${JOB_NAME}")
+             COMMAND bash -c "rocotoboot -w RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -t ${JOB_NAME}")
 endfunction()
 
 
 foreach(CASE IN LISTS CASE_LIST)
-    #GenerateExperiments(${CASE})
+    GenerateExperiments(${CASE})
     AddRocotoBootTest(${CASE} "gfs_fcst" )
 endforeach()
