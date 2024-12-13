@@ -214,6 +214,10 @@ class MarineAnalysis(Task):
         envconfig_jcb['cyc'] = os.getenv('cyc')
         envconfig_jcb['SOCA_NINNER'] = self.task_config.SOCA_NINNER
         envconfig_jcb['obs_list'] = ['adt_rads_all']
+        envconfig_jcb['HOMEgfs'] = self.task_config.HOMEgfs
+        envconfig_jcb['DO_TEST_MODE'] = self.task_config.DO_TEST_MODE
+        envconfig_jcb['RUN'] = self.task_config.RUN
+        envconfig_jcb['current_cycle'] = self.task_config.current_cycle
         envconfig_jcb['MOM6_LEVS'] = mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3))
 
         # Write obs_list_short
@@ -222,7 +226,7 @@ class MarineAnalysis(Task):
 
         # Render the JCB configuration files
         jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-base.yaml')
-        jcb_algo_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-3dfgat.yaml.j2')
+        jcb_algo_yaml = self.task_config.JCB_ALGO_YAML_VAR
 
         jcb_base_config = parse_j2yaml(path=jcb_base_yaml, data=envconfig_jcb)
         jcb_algo_config = parse_j2yaml(path=jcb_algo_yaml, data=envconfig_jcb)
