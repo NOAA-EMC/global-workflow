@@ -290,8 +290,8 @@ case "${fv3_res}" in
         export DELTIM=150
         export layout_x_gdas=8
         export layout_y_gdas=16
-        export layout_x_gfs=32
-        export layout_y_gfs=32
+        export layout_x_gfs=8
+        export layout_y_gfs=16
         export nthreads_fv3_gdas=4
         export nthreads_fv3_gfs=4
         export nthreads_ufs_gdas=4
