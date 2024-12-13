@@ -47,7 +47,7 @@ gdas_restarta:
 
         # Snow configuration yaml
         {% if DO_JEDISNOWDA %}
-        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowanl.yaml"
+        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowanlvar.yaml"
         {% endif %}
 
         # Input BUFR files
