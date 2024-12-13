@@ -387,7 +387,7 @@ source "${USHgfs}/preamble.sh"
     res=${wavepostGRD:-${waveinterpGRD}}
     if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
     gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-    if [[ ! -s "${COMOUT_WAVE_GRID}/${res}/${gribchk}" ]]; then
+    if [[ ! -s "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}/${gribchk}" ]]; then
       set +x
       echo ' '
       echo '********************************************'
