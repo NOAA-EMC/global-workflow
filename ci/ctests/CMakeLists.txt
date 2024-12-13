@@ -6,8 +6,7 @@ enable_testing()
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-#set(CASE_LIST "C48_ATM" "C48_S2SW")
-set(CASE_LIST "C48_ATM")
+set(CASE_LIST "C48_ATM" "C48_S2SW")
 set(ENV{RUNTESTS} "${CMAKE_BINARY_DIR}/RUNTESTS")
 set(HOMEgfs ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 set(CASE_PATH ${HOMEgfs}/ci/cases/pr)
@@ -21,6 +20,10 @@ execute_process(
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     OUTPUT_VARIABLE GIT_HASH
     OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+execute_process(
+    COMMAND  ln -s ${HOMEgfs} global-workflow
 )
 
 function(GenerateExperiments CASE)
@@ -63,8 +66,14 @@ function(AddRocotoBootTest CASE_NAME JOB_NAME)
              COMMAND bash -c "rocotoboot -w RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -t ${JOB_NAME}")
 endfunction()
 
+add_test( NAME BuildAll
+          COMMAND bash -c "cd ${HOMEgfs}/sorc; ./build_all.sh"
+)
 
 foreach(CASE IN LISTS CASE_LIST)
     GenerateExperiments(${CASE})
-    AddRocotoBootTest(${CASE} "gfs_fcst" )
+    file(STRINGS ${CMAKE_BINARY_DIR}/${CASE}_jobs.txt JOB_NAMES)
+    foreach(JOB IN LISTS JOB_NAMES)
+        AddRocotoBootTest(${CASE} ${JOB})
+    endforeach()
 endforeach()
