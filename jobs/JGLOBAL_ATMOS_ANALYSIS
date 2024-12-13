@@ -31,18 +31,20 @@ export APREFIX="${rCDUMP}.t${cyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+	COMIN_OBS:COM_OBS_TMPL \
+	COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
-    COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+    COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
+    COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
 MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COM_ATMOS_HISTORY_ENS_PREV:COM_ATMOS_HISTORY_TMPL
+    COMIN_ATMOS_HISTORY_ENS_PREV:COM_ATMOS_HISTORY_TMPL
 
-mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
+mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
-export ATMGES="${COM_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
+export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
@@ -55,7 +57,7 @@ status=$?
 
 
 if [ ${DOHYBVAR} = "YES" ]; then
-    export ATMGES_ENSMEAN="${COM_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc"
+    export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc"
     if [ ! -f ${ATMGES_ENSMEAN} ]; then
         echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
         exit 2
@@ -64,17 +66,17 @@ fi
 
 
 # Link observational data
-export PREPQC="${COM_OBS}/${OPREFIX}prepbufr"
+export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
 if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
-export TCVITL="${COM_OBS}/${OPREFIX}syndata.tcvitals.tm00"
+export TCVITL="${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00"
 if [[ ${DONST} = "YES" ]]; then
    if [[ ${MAKE_NSSTBUFR} == "YES" ]]; then
-      export NSSTBF="${COM_OBS}/${OPREFIX}nsstbufr"
+      export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
    fi
 fi
-export PREPQCPF="${COM_OBS}/${OPREFIX}prepbufr.acft_profiles"
+export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
 # Copy fix file for obsproc  # TODO: Why is this necessary?
 if [[ ${RUN} = "gfs" ]]; then
@@ -95,9 +97,9 @@ status=$?
 # Send Alerts
 ##############################################
 if [ ${SENDDBN} = YES -a ${RUN} = gdas ] ; then
-    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias ${job} ${COM_ATMOS_ANALYSIS}/${APREFIX}abias
-    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias_pc ${job} ${COM_ATMOS_ANALYSIS}/${APREFIX}abias_pc
-    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias_air ${job} ${COM_ATMOS_ANALYSIS}/${APREFIX}abias_air
+    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias ${job} ${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias
+    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias_pc ${job} ${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc
+    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias_air ${job} ${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air
 fi
 
 

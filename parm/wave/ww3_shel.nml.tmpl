@@ -1,0 +1,28 @@
+&domain_nml
+  domain%start = '@[time_beg]'
+  domain%stop  = '@[time_end]'
+
+&input_nml
+  input%forcing%winds      = 'C'
+  input%forcing%currents   = '@[CURRLINE]'
+  input%forcing%ice_conc   = '@[ICELINE]'
+  input%forcing%ice_param1 = '@[WINDLINE]'
+/
+
+&output_type_nml
+  type%field%list = '@[OUTPARS_WAV]'
+  type%point%file = 'buoy.loc'
+/
+
+&output_date_nml
+  date%field%outffile  = '@[GOFILETYPE]'
+  date%field%stride    = '@[DTFLD_WAV]'
+  date%point%outffile  = '@[POFILETYPE]'
+  date%point%stride    = '@[DTPNT_WAV]'
+  date%restart%start = '@[time_rst_ini]'
+  date%restart%stride = '@[DT_1_RST_WAV]'
+  date%restart%stop = '@[time_rst1_end]'  
+  date%restart2%start = '@[time_rst2_ini]'
+  date%restart2%stride = '@[DT_2_RST_WAV]'
+  date%restart2%stop = '@[time_rst2_end]'
+/

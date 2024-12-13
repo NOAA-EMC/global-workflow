@@ -87,11 +87,11 @@ WW3_namelists(){
       exit 11 
     fi
   else 
-    # ww3_multi template
-    if [ -f ${PARMgfs}/wave/ww3_shel.inp.tmpl ]; then
-      cp ${PARMgfs}/wave/ww3_shel.inp.tmpl ww3_shel.inp.tmpl
+    # ww3_shel template
+    if [ -f ${PARMgfs}/wave/ww3_shel.nml.tmpl ]; then
+      cp ${PARMgfs}/wave/ww3_shel.nml.tmpl ww3_shel.nml.tmpl
     fi
-    if [ ! -f ww3_shel.inp.tmpl ]; then
+    if [ ! -f ww3_shel.nml.tmpl ]; then
       echo "ABNORMAL EXIT: NO TEMPLATE FOR WW3 SHEL INPUT FILE" 
       exit 12
     fi
@@ -264,62 +264,38 @@ if [ $waveMULTIGRID = ".true." ]; then
 
 else 
   #ww3_shel 
-
+#changing to nml
 # Initialize inp file parameters
-  ICELINE='F F'
-  CURRLINE='F F'
-  WINDLINE='F F'
+  ICELINE='F'
+  CURRLINE='F'
+  WINDLINE='F'
 
   case ${WW3ATMINP} in
     'YES' )
-      WINDLINE="T F";;
+      WINDLINE="T";;
     'CPL' )
-      WINDLINE="C F";;
+      WINDLINE="C";;
   esac
 
   case ${WW3ICEINP} in
     'YES' )
-      ICELINE="T F";;
+      ICELINE="T";;
     'CPL' )
-      ICELINE="C F";;
+      ICELINE="C";;
   esac
 
   case ${WW3CURINP} in
     'YES' )
-      CURRLINE="T F";;
+      CURRLINE="T";;
     'CPL' )
-      CURRLINE="C F";;
+      CURRLINE="C";;
   esac
 
-  sed -e "s/IOSRV/${IOSRV}/g" \
-      -e "s/OUTPARS/${OUTPARS_WAV}/g" \
-      -e "s/ICELINE/$ICELINE/g" \
-      -e "s/CURRLINE/$CURRLINE/g" \
-      -e "s/WINDLINE/$WINDLINE/g" \
-      -e "s/RUN_BEG/$time_beg/g" \
-      -e "s/RUN_END/$time_end/g" \
-      -e "s/OUT_BEG/$time_beg_out/g" \
-      -e "s/OUT_END/$time_end/g" \
-      -e "s/DTFLD/ $DTFLD_WAV/g" \
-      -e "s/GOFILETYPE/ $GOFILETYPE/g" \
-      -e "s/POFILETYPE/ $POFILETYPE/g" \
-      -e "s/DTPNT/ $DTPNT_WAV/g" \
-      -e "s/DTPNT/ $DTPNT_WAV/g" \
-      -e "/BUOY_FILE/r buoy.loc" \
-      -e "s/BUOY_FILE/DUMMY/g" \
-      -e "s/RST_BEG/$time_rst_ini/g" \
-      -e "s/RSTTYPE/$RSTTYPE_WAV/g" \
-      -e "s/RST_2_BEG/$time_rst2_ini/g" \
-      -e "s/DTRST/$DT_1_RST_WAV/g" \
-      -e "s/DT_2_RST/$DT_2_RST_WAV/g" \
-      -e "s/RST_END/$time_rst1_end/g" \
-      -e "s/RST_2_END/$time_rst2_end/g" \
-                                     ww3_shel.inp.tmpl | \
-  sed -n "/DUMMY/!p"               > ww3_shel.inp
+      atparse < "ww3_shel.nml.tmpl" > ww3_shel.nml
+  
+      rm -f ww3_shel.nml.tmpl 
 
-  rm -f ww3_shel.inp.tmpl buoy.loc
-
-  cat ww3_shel.inp
+  cat ww3_shel.nml
 
 fi   
 
