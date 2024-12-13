@@ -27,6 +27,7 @@ base:
 
 atmanl:
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"
+  JCB_ALGO_YAML_FV3INC: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar-fv3inc.yaml.j2"
   STATICB_TYPE: "gsibec"
   LAYOUT_X_ATMANL: 8
   LAYOUT_Y_ATMANL: 8
@@ -37,6 +38,7 @@ atmensanl:
   JCB_ALGO_YAML_LETKF: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf.yaml.j2"
   JCB_ALGO_YAML_OBS: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_observer.yaml.j2"
   JCB_ALGO_YAML_SOL: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_solver.yaml.j2"
+  JCB_ALGO_YAML_FV3INC: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf-fv3inc.yaml.j2"
   LAYOUT_X_ATMENSANL: 8
   LAYOUT_Y_ATMENSANL: 8
   IO_LAYOUT_X: 1
@@ -54,6 +56,7 @@ marineanl:
   SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
   SOCA_OBS_LIST: "${PARMgfs}/gdas/soca/obs/obs_list.yaml"  # TODO: This is also repeated in oceanprepobs
   SOCA_NINNER: 100
+  JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/soca/marine-jcb-3dfgat.yaml.j2"
 
 prepoceanobs:
   SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"

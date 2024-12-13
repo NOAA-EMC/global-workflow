@@ -17,7 +17,7 @@ atmensanlfv3inc:
   exe_src: '{{ EXECgfs }}/fv3jedi_fv3inc.x'
   mpi_cmd: '{{ APRUN_ATMENSANLFV3INC }}'
   jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
-  jcb_algo: fv3jedi_fv3inc_lgetkf
+  jcb_algo_yaml: '{{ JCB_ALGO_YAML_FV3INC }}'
 atmensanlletkf:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/gdas.x'
