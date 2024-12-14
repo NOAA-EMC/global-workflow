@@ -384,7 +384,6 @@ source "${USHgfs}/preamble.sh"
   then
 # Check if grib2 file created
     ENSTAG=""
-    res=${wavepostGRD:-${waveinterpGRD}}
     if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
     gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
     if [[ ! -s "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}/${gribchk}" ]]; then
