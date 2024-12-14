@@ -388,6 +388,7 @@ source "${USHgfs}/preamble.sh"
     gribchk_idx="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2.idx"
     if [[ ! -d "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}" ]]; then
       mkdir -m 775 -p "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
+    fi
 # move grib2 files to domain.dimension
     if [[ -s "${COMOUT_WAVE_GRID}/${gribchk}" && -s "${COMOUT_WAVE_GRID}/${gribchk_idx}" ]]; then
       mv -f "${COMOUT_WAVE_GRID}/${gribchk}" "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
