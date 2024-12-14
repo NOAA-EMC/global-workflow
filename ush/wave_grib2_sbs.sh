@@ -38,9 +38,10 @@ gribDIR="${grdID}_grib"
 rm -rfd "${gribDIR}"
 mkdir "${gribDIR}"
 err=$?
+compath="${COMOUT_WAVE_GRID}_${grdID}"
 
 if [[ ${err} != 0 ]]; then
-  set +x
+  set -x
   echo ' '
   echo '******************************************************************************* '
   echo '*** FATAL ERROR : ERROR IN ww3_grib2 (COULD NOT CREATE TEMP DIRECTORY) *** '
@@ -75,19 +76,18 @@ outfile="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2"
 # Only create file if not present in COM
 if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
 
-  set +x
+  set -x
   echo ' '
   echo '+--------------------------------+'
   echo '!         Make GRIB files        |'
   echo '+--------------------------------+'
   echo "   Model ID         : $WAV_MOD_TAG"
   set_trace
-  comout="${COMOUT_WAVE_GRID}/${grdnam}.${grdres}"
   if [[ -z "${PDY}" ]] || [[ -z ${cyc} ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
-	 [[ -z "${comout}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${gribflags}" ]] || \
+	 [[ -z "${compath}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${gribflags}" ]] || \
 	 [[ -z "${GRIDNR}" ]] || [[ -z "${MODNR}" ]] || \
      [[ -z "${SENDDBN}" ]]; then
-    set +x
+    set -x
     echo ' '
     echo '***************************************************'
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
@@ -101,7 +101,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
 
   tstart="${ymdh:0:8} ${ymdh:8:2}0000"
 
-  set +x
+  set -x
   echo "   Starting time    : ${tstart}"
   echo "   Time step        : Single SBS"
   echo "   Number of times  : Single SBS"
@@ -119,7 +119,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
   # 1.a Generate input file for ww3_grib2
   #     Template copied in mother script ...
 
-  set +x
+  set -x
   echo "   Generate input file for ww3_grib2"
   set_trace
 
@@ -137,7 +137,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
 
   # 1.b Run GRIB packing program
 
-  set +x
+  set -x
   echo "   Run ww3_grib2"
   echo "   Executing ${EXECgfs}/ww3_grib"
   set_trace
@@ -147,7 +147,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
   export err=$?;err_chk
 
   if [ ! -s gribfile ]; then
-    set +x
+    set -x
     echo ' '
     echo '************************************************ '
     echo '*** FATAL ERROR : ERROR IN ww3_grib encoding *** '
@@ -158,17 +158,17 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
   fi
 
   if (( fhr > 0 )); then 
-    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}"
-    echo "${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}"
+    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${COMOUT_WAVE_GRID}_${grdnam}.${grdres}/${outfile}"
+    echo "${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${compath}/${outfile}"
     err=$?
   else
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
-      -set table_1.4 1 -set table_1.2 1 -grib "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}"
+      -set table_1.4 1 -set table_1.2 1 -grib "${compath}/${outfile}"
     err=$?
   fi
 
   if [[ ${err} != 0 ]]; then
-    set +x
+    set -x
     echo ' '
     echo '********************************************* '
     echo '*** FATAL ERROR : ERROR IN ww3_grib2 *** '
@@ -179,7 +179,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
   fi
 
   # Create index
-  ${WGRIB2} -s "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}" > "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}.idx"
+  ${WGRIB2} -s "${compath}/${outfile}" > "${compath}/${outfile}.idx"
 
   # Create grib2 subgrid is this is the source grid
   if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]]; then
@@ -188,17 +188,17 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
       subgrbnam=$(echo ${!subgrb} | cut -d " " -f 21)
       subgrbres=$(echo ${!subgrb} | cut -d " " -f 22)
       subfnam="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
-      ${COPYGB2} -g "${subgrbref}" -i0 -x "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}" \
-       "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${subfnam}"
-      ${WGRIB2} -s "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${subfnam}" > \
-      "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${subfnam}.idx"
+      ${COPYGB2} -g "${subgrbref}" -i0 -x "${compath}/${outfile}" \
+       "${compath}/${subfnam}"
+      ${WGRIB2} -s "${compath}/${subfnam}" > \
+      "${compath}/${subfnam}.idx"
    done
   fi
 
   # 1.e Save in /com
 
-  if [[ ! -s "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}" ]]; then
-    set +x
+  if [[ ! -s "${compath}/${outfile}" ]]; then
+    set -x
     echo ' '
     echo '********************************************* '
     echo '*** FATAL ERROR : ERROR IN ww3_grib2 *** '
@@ -209,8 +209,8 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
     set_trace
     exit 4
   fi
-  if [[ ! -s "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}.idx" ]]; then
-    set +x
+  if [[ ! -s "${compath}/${outfile}.idx" ]]; then
+    set -x
     echo ' '
     echo '*************************************************** '
     echo '*** FATAL ERROR : ERROR IN ww3_grib2 INDEX FILE *** '
@@ -223,13 +223,13 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
   fi
 
   if [[ "${SENDDBN}" = 'YES' ]] && [[ ${outfile} != *global.0p50* ]]; then
-    set +x
-    echo "   Alerting GRIB file as ${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}"
+    set -x
+    echo "   Alerting GRIB file as ${compath}/${outfile}"
     echo "   Alerting GRIB index file as ${COMOUT_WAVE_GRID}/${outfile}.idx"
     set_trace
-    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2" "${job}" "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2" "${job}" "${compath}/${outfile}"
     "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2_WIDX" \
-     "${job}" "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}.idx"
+     "${job}" "${compath}/${outfile}.idx"
   else
     echo "${outfile} is global.0p50 or SENDDBN is NO, no alert sent"
   fi
@@ -240,7 +240,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
 
   rm -f gribfile
 
-  set +x
+  set -x
   echo "   Removing work directory after success."
   set_trace
 
@@ -248,9 +248,9 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
   mv -f "${gribDIR}" "done.${gribDIR}"
 
 else
-  set +x
+  set -x
   echo ' '
-  echo " File ${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile} found, skipping generation process"
+  echo " File ${compath}/${outfile} found, skipping generation process"
   echo ' '
   set_trace
 fi
