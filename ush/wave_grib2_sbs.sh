@@ -250,7 +250,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
 else
   set -x
   echo ' '
-  echo " File ${compath}/${outfile} found, skipping generation process"
+  echo " File "${compath}/${outfile}" found, skipping generation process"
   echo ' '
   set_trace
 fi
