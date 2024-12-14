@@ -62,8 +62,11 @@ function(GenerateExperiments CASE)
 endfunction()
 
 function(AddRocotoBootTest CASE_NAME JOB_NAME)
+    add_test(NAME jjob_test_${CASE_NAME}_${JOB_NAME}_StageData
+             COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/stage_data.sh ${CASE_NAME} ${JOB_NAME} ${GIT_HASH}")
     add_test(NAME jjob_test_${CASE_NAME}_${JOB_NAME}
              COMMAND bash -c "rocotoboot -w RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -t ${JOB_NAME}")
+    set_tests_properties(jjob_test_${CASE_NAME}_${JOB_NAME} PROPERTIES DEPENDS jjob_test_${CASE_NAME}_${JOB_NAME}_StageData)         
 endfunction()
 
 add_test( NAME BuildAll
