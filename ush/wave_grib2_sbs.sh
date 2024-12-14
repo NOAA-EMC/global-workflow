@@ -159,11 +159,10 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
 
   if (( fhr > 0 )); then 
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${COMOUT_WAVE_GRID}_${grdnam}.${grdres}/${outfile}"
-    echo "${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${compath}/${outfile}"
+    echo "${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib ${compath}/${outfile}"
     err=$?
   else
-    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
-      -set table_1.4 1 -set table_1.2 1 -grib "${compath}/${outfile}"
+    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -set table_1.4 1 -set table_1.2 1 -grib "${compath}/${outfile}"
     err=$?
   fi
 
