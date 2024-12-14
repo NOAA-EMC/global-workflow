@@ -82,9 +82,9 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${grdnam}.${grdres}/${outfile}.idx" ]]; then
   echo '+--------------------------------+'
   echo "   Model ID         : $WAV_MOD_TAG"
   set_trace
-
+  comout="${COMOUT_WAVE_GRID}/${grdnam}.${grdres}"
   if [[ -z "${PDY}" ]] || [[ -z ${cyc} ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
-	 [[ -z "${COMOUT_WAVE_GRID}/${grdID}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${gribflags}" ]] || \
+	 [[ -z "comout" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${gribflags}" ]] || \
 	 [[ -z "${GRIDNR}" ]] || [[ -z "${MODNR}" ]] || \
      [[ -z "${SENDDBN}" ]]; then
     set +x
