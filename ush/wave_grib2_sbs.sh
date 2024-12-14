@@ -46,7 +46,7 @@ if [[ ${err} != 0 ]]; then
   echo '*** FATAL ERROR : ERROR IN ww3_grib2 (COULD NOT CREATE TEMP DIRECTORY) *** '
   echo '******************************************************************************* '
   echo ' '
-  set_trace
+
   exit 1
 fi
 
@@ -82,7 +82,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
   echo '!         Make GRIB files        |'
   echo '+--------------------------------+'
   echo "   Model ID         : $WAV_MOD_TAG"
-  set_trace
+
   if [[ -z "${PDY}" ]] || [[ -z ${cyc} ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
 	 [[ -z "${compath}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${gribflags}" ]] || \
 	 [[ -z "${GRIDNR}" ]] || [[ -z "${MODNR}" ]] || \
@@ -93,7 +93,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    set_trace
+  
     exit 1
   fi
 
@@ -107,7 +107,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
   echo "   Number of times  : Single SBS"
   echo "   GRIB field flags : ${gribflags}"
   echo ' '
-  set_trace
+
 
   # 0.e Links to working directory
 
@@ -121,7 +121,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
 
   set -x
   echo "   Generate input file for ww3_grib2"
-  set_trace
+
 
   sed -e "s/TIME/${tstart}/g" \
       -e "s/DT/${dtgrib}/g" \
@@ -140,7 +140,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
   set -x
   echo "   Run ww3_grib2"
   echo "   Executing ${EXECgfs}/ww3_grib"
-  set_trace
+
 
   export pgm=ww3_grib;. prep_step
   "${EXECgfs}/ww3_grib" > "grib2_${grdnam}_${FH3}.out" 2>&1
@@ -153,7 +153,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
     echo '*** FATAL ERROR : ERROR IN ww3_grib encoding *** '
     echo '************************************************ '
     echo ' '
-    set_trace
+  
     exit 3
   fi
 
@@ -173,7 +173,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
     echo '*** FATAL ERROR : ERROR IN ww3_grib2 *** '
     echo '********************************************* '
     echo ' '
-    set_trace
+  
     exit 3
   fi
 
@@ -205,7 +205,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
     echo ' '
     echo " Error in moving grib file ${outfile} to com"
     echo ' '
-    set_trace
+  
     exit 4
   fi
   if [[ ! -s "${compath}/${outfile}.idx" ]]; then
@@ -217,7 +217,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
     echo ' '
     echo " Error in moving grib file ${outfile}.idx to com"
     echo ' '
-    set_trace
+  
     exit 4
   fi
 
@@ -225,7 +225,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
     set -x
     echo "   Alerting GRIB file as ${compath}/${outfile}"
     echo "   Alerting GRIB index file as ${COMOUT_WAVE_GRID}/${outfile}.idx"
-    set_trace
+  
     "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2" "${job}" "${compath}/${outfile}"
     "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2_WIDX" \
      "${job}" "${compath}/${outfile}.idx"
@@ -241,7 +241,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
 
   set -x
   echo "   Removing work directory after success."
-  set_trace
+
 
   cd ../
   mv -f "${gribDIR}" "done.${gribDIR}"
@@ -251,7 +251,7 @@ else
   echo ' '
   echo " File "${compath}/${outfile}" found, skipping generation process"
   echo ' '
-  set_trace
+
 fi
 
 
