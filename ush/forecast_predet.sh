@@ -608,7 +608,7 @@ WW3_predet(){
     || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"; exit 1 )
     #copy point weights file for unstructured grid if it exists 
     local wavpntwghtfile=${FIXgfs}/wave/pnt_wght.${waveGRD}.nc
-    if [[ ! -f "${wavpntwghtfile}" ]]; then 
+    if [[ -f "${wavpntwghtfile}" ]]; then 
       ${NCP} "${wavpntwghtfile}" "${DATA}/pnt_wght.ww3.nc" \
       || ( echo "FATAL ERROR: Failed to copy '${wavpntwghtfile}'"; exit 1 )
     fi
