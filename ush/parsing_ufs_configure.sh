@@ -76,10 +76,9 @@ if [[ "${cplwav}" = ".true." ]]; then
   local wav_omp_num_threads="${WAVTHREADS}"
   local MULTIGRID="${waveMULTIGRID}"
   local WW3_user_sets_restname="false"
-
   local WW3_user_histname="false"
   local WW3_historync="false"
-  local WW3_restartnc="false" 
+  local WW3_restartnc="true" 
   local WW3_restart_from_binary="true"
   local WW3_PIO_FORMAT="pnetcdf"
   local WW3_PIO_IOTASKS=-99

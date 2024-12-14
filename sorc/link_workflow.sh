@@ -193,6 +193,7 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"\
                           "ufs.configure.s2swa_esmf.IN" \
                           "ufs.configure.leapfrog_atm_wav.IN" \
                           "ufs.configure.leapfrog_atm_wav_esmf.IN" \
+			  "ww3_shel.nml.IN" \ 
                           "post_itag_gfs")
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"

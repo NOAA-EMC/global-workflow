@@ -75,228 +75,55 @@ WW3_namelists(){
 
 
 # --------------------------------------------------------------------------- #
-# Create ww3_multi/shel.inp
-
-  if [ $waveMULTIGRID = ".true." ]; then
-    # ww3_multi template
-    if [ -f ${PARMgfs}/wave/ww3_multi.inp.tmpl ]; then
-      cp ${PARMgfs}/wave/ww3_multi.inp.tmpl ww3_multi.inp.tmpl
-    fi
-    if [ ! -f ww3_multi.inp.tmpl ]; then
-      echo "ABNORMAL EXIT: NO TEMPLATE FOR WW3 MULTI INPUT FILE" 
-      exit 11 
-    fi
-  else 
-    # ww3_shel template
-    if [ -f ${PARMgfs}/wave/ww3_shel.nml.tmpl ]; then
-      cp ${PARMgfs}/wave/ww3_shel.nml.tmpl ww3_shel.nml.tmpl
-    fi
-    if [ ! -f ww3_shel.nml.tmpl ]; then
-      echo "ABNORMAL EXIT: NO TEMPLATE FOR WW3 SHEL INPUT FILE" 
-      exit 12
-    fi
-  fi
-
 # Buoy location file
 
   if [ -f ${PARMgfs}/wave/wave_${NET}.buoys ]
   then
-    cp ${PARMgfs}/wave/wave_${NET}.buoys buoy.loc
+    cp ${PARMgfs}/wave/wave_${NET}.buoys ${DATA}/ww3_points.list
   fi
 
-  if [ -f buoy.loc ]
+  if [ -f ${DATA}/ww3_points.list ]
   then
     set +x
-    echo "   buoy.loc copied (${PARMgfs}/wave/wave_${NET}.buoys)."
+    echo "   ww3_points.list copied (${PARMgfs}/wave/wave_${NET}.buoys)."
     set_trace
   else
-    echo " FATAL ERROR : buoy.loc (${PARMgfs}/wave/wave_${NET}.buoys) NOT FOUND"
+    echo " FATAL ERROR : ww3_points.list (${PARMgfs}/wave/wave_${NET}.buoys) NOT FOUND"
     exit 12 
   fi
 
-
-
-if [ $waveMULTIGRID = ".true." ]; then
-#multi 
-
-# Initialize inp file parameters
-  NFGRIDS=0
-  NMGRIDS=0
-  CPLILINE='$'
-  ICELINE='$'
-  ICEFLAG='no'
-  CURRLINE='$'
-  CURRFLAG='no'
-  WINDLINE='$'
-  WINDFLAG='no'
-  UNIPOINTS='$'
-
-# Check for required inputs and coupling options
-  if [ $waveuoutpGRD ]
-  then
-    UNIPOINTS="'$waveuoutpGRD'"
-  fi
-
-# Check if waveesmfGRD is set
-  if [ ${waveesmfGRD} ]
-  then
-    NFGRIDS=$(expr $NFGRIDS + 1)
-  fi
-
-  case ${WW3ATMINP} in
-    'YES' )
-      NFGRIDS=$(expr $NFGRIDS + 1)
-      WINDLINE="  '$WAVEWND_FID'  F F T F F F F F F"
-      WINDFLAG="$WAVEWND_FID"
-    ;;
-    'CPL' )
-      WNDIFLAG='T'
-      if [ ${waveesmfGRD} ]
-      then
-        WINDFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F F T F F F F F F"
-      else
-        WINDFLAG="CPL:native"
-      fi
-    ;;
-  esac
+  #set coupling to ice/current
+  WW3_ICE='F'
+  WW3_IC1='F'
+  WW3_IC5='F'
+  WW3_CUR='F'
 
   case ${WW3ICEINP} in
     'YES' )
-      NFGRIDS=$(expr $NFGRIDS + 1)
-      ICEIFLAG='T'
-      ICELINE="  '$WAVEICE_FID'  F F F T F F F F F"
-      ICEFLAG="$WAVEICE_FID"
-    ;;
+      WW3_ICE="T";;
     'CPL' )
-      ICEIFLAG='T'
-      if [ ${waveesmfGRD} ]
-      then
-        ICEFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F F F"
-      else
-        ICEFLAG="CPL:native"
-      fi
-    ;;
+      WW3_ICE="C";;
   esac
 
   case ${WW3CURINP} in
     'YES' )
-      if [ "$WAVECUR_FID" != "$WAVEICE_FID" ]; then
-        NFGRIDS=$(expr $NFGRIDS + 1)
-        CURRLINE="  '$WAVECUR_FID'  F T F F F F F F F"
-        CURRFLAG="$WAVECUR_FID"
-      else # cur fields share the same grid as ice grid
-        ICELINE="  '$WAVEICE_FID'  F T F ${ICEIFLAG} F F F F F"
-        CURRFLAG="$WAVEICE_FID"
-      fi
-    ;;
+      WW3_CUR="T";;
     'CPL' )
-      CURIFLAG='T'
-      if [ ${waveesmfGRD} ]
-      then
-        CURRFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F F F"
-      else
-        CURRFLAG="CPL:native"
-      fi
-    ;;
+      WW3_CUR="C";;
   esac
 
-  unset agrid
-  agrid=
-  gline=
-  GRDN=0
-#  grdGRP=1 # Single group for now
-  for grid in ${waveGRD}
-  do
-    GRDN=$(expr ${GRDN} + 1)
-    agrid=( ${agrid[*]} ${grid} )
-    NMGRIDS=$(expr $NMGRIDS + 1)
-    gridN=$(echo $waveGRDN | awk -v i=$GRDN '{print $i}')
-    gridG=$(echo $waveGRDG | awk -v i=$GRDN '{print $i}')
-    gline="${gline}'${grid}'  'no' 'CURRFLAG' 'WINDFLAG' 'ICEFLAG'  'no' 'no' 'no' 'no' 'no'  ${gridN} ${gridG}  0.00 1.00  F\n"
-  done
-  gline="${gline}\$"
-  echo $gline
-
-  sed -e "s/NFGRIDS/$NFGRIDS/g" \
-      -e "s/NMGRIDS/${NMGRIDS}/g" \
-      -e "s/FUNIPNT/${FUNIPNT}/g" \
-      -e "s/IOSRV/${IOSRV}/g" \
-      -e "s/FPNTPROC/${FPNTPROC}/g" \
-      -e "s/FGRDPROC/${FGRDPROC}/g" \
-      -e "s/OUTPARS/${OUTPARS_WAV}/g" \
-      -e "s/CPLILINE/${CPLILINE}/g" \
-      -e "s/UNIPOINTS/${UNIPOINTS}/g" \
-      -e "s/GRIDLINE/${gline}/g" \
-      -e "s/ICELINE/$ICELINE/g" \
-      -e "s/CURRLINE/$CURRLINE/g" \
-      -e "s/WINDLINE/$WINDLINE/g" \
-      -e "s/ICEFLAG/$ICEFLAG/g" \
-      -e "s/CURRFLAG/$CURRFLAG/g" \
-      -e "s/WINDFLAG/$WINDFLAG/g" \
-      -e "s/RUN_BEG/$time_beg/g" \
-      -e "s/RUN_END/$time_end/g" \
-      -e "s/OUT_BEG/$time_beg_out/g" \
-      -e "s/OUT_END/$time_end/g" \
-      -e "s/DTFLD/ $DTFLD_WAV/g" \
-      -e "s/FLAGMASKCOMP/ $FLAGMASKCOMP/g" \
-      -e "s/FLAGMASKOUT/ $FLAGMASKOUT/g" \
-      -e "s/GOFILETYPE/ $GOFILETYPE/g" \
-      -e "s/POFILETYPE/ $POFILETYPE/g" \
-      -e "s/DTPNT/ $DTPNT_WAV/g" \
-      -e "/BUOY_FILE/r buoy.loc" \
-      -e "s/BUOY_FILE/DUMMY/g" \
-      -e "s/RST_BEG/$time_rst_ini/g" \
-      -e "s/RSTTYPE/$RSTTYPE_WAV/g" \
-      -e "s/RST_2_BEG/$time_rst2_ini/g" \
-      -e "s/DTRST/$DT_1_RST_WAV/g" \
-      -e "s/DT_2_RST/$DT_2_RST_WAV/g" \
-      -e "s/RST_END/$time_rst1_end/g" \
-      -e "s/RST_2_END/$time_rst2_end/g" \
-                                     ww3_multi.inp.tmpl | \
-  sed -n "/DUMMY/!p"               > ww3_multi.inp
-
-  rm -f ww3_multi.inp.tmpl buoy.loc
-
-  cat ww3_multi.inp
-
-else 
-  #ww3_shel 
-#changing to nml
-# Initialize inp file parameters
-  ICELINE='F'
-  CURRLINE='F'
-  WINDLINE='F'
-
-  case ${WW3ATMINP} in
-    'YES' )
-      WINDLINE="T";;
-    'CPL' )
-      WINDLINE="C";;
-  esac
-
-  case ${WW3ICEINP} in
-    'YES' )
-      ICELINE="T";;
-    'CPL' )
-      ICELINE="C";;
-  esac
-
-  case ${WW3CURINP} in
-    'YES' )
-      CURRLINE="T";;
-    'CPL' )
-      CURRLINE="C";;
-  esac
-
-      atparse < "ww3_shel.nml.tmpl" > ww3_shel.nml
-  
-      rm -f ww3_shel.nml.tmpl 
-
-  cat ww3_shel.nml
-
-fi   
+  local WW3_OUTPARS=$OUTPARS_WAV 
+  local WW3_DTFLD=$DTFLD_WAV
+  local WW3_DTPNT=$DTPNT_WAV
+  # Ensure the template exists
+  local template=${WW3_INPUT_TEMPLATE:-"${PARMgfs}/ufs/ww3_shel.nml.IN"}
+  if [[ ! -f "${template}" ]]; then
+    echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
+    exit 1
+  fi
+  rm -f "${DATA}/ww3_shel.nml"
+  atparse < "${template}" >> "${DATA}/ww3_shel.nml"
+  echo "Rendered ww3_shel.nml:"
+  cat "${DATA}/ww3_shel.nml"
 
 }
