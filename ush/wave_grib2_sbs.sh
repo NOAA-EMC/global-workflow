@@ -38,7 +38,6 @@ gribDIR="${grdID}_grib"
 rm -rfd "${gribDIR}"
 mkdir "${gribDIR}"
 err=$?
-compath="${COMOUT_WAVE_GRID}_${grdID}"
 
 if [[ ${err} != 0 ]]; then
   set -x
@@ -67,7 +66,8 @@ ngrib=1 # only one time slice
 dtgrib=3600 # only one time slice
 # SBS one time slice per file
 FH3=$(printf %03i "${fhr}")
-
+compath="${COMOUT_WAVE_GRID}/${grdnam}.${grdres}"
+echo "compath=${compath}"
 # Verify if grib2 file exists from interrupted run
 ENSTAG=""
 if [[ -n ${waveMEMB} ]]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
