@@ -380,14 +380,14 @@ source "${USHgfs}/preamble.sh"
 
   cd $DATA
  
-  if [ "$fhr" = "$fhrg" ]
-  then
+  if [ "$fhr" = "$fhrg" ]; then
 # Check if grib2 file created
     ENSTAG=""
     if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
     gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-    if [[ ! -s "${COMOUT_WAVE_GRID}/${gribchk}" ]]; then
-      mv -f "$gribchk" "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
+    if [[ -s "${COMOUT_WAVE_GRID}/${gribchk}" ]]; then
+      mv -f "${COMOUT_WAVE_GRID}/${gribchk}" "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
+    else
       set +x
       echo ' '
       echo '********************************************'
@@ -404,6 +404,6 @@ source "${USHgfs}/preamble.sh"
 # --------------------------------------------------------------------------- #
 # 7.  Ending output
 
-echo "${exit_code}"
+echo "$exit_code"
 
 # End of MWW3 prostprocessor script ---------------------------------------- #
