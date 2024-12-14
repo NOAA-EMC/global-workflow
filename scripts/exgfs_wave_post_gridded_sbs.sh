@@ -404,6 +404,6 @@ source "${USHgfs}/preamble.sh"
 # --------------------------------------------------------------------------- #
 # 7.  Ending output
 
-echo "$exit_code"
+echo "${exit_code}"
 
 # End of MWW3 prostprocessor script ---------------------------------------- #
