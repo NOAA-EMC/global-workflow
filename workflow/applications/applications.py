@@ -40,6 +40,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                                       f'Valid application modes are:\n'
                                       f'{", ".join(self.VALID_MODES)}\n')
 
+<<<<<<< HEAD
         self.net = base['NET']
         self.model_app = base.get('APP', 'ATM')
         self.do_atm = base.get('DO_ATM', True)
@@ -64,6 +65,32 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         self.do_goes = base.get('DO_GOES', False)
         self.do_mos = base.get('DO_MOS', False)
         self.do_extractvars = base.get('DO_EXTRACTVARS', False)
+=======
+        self.net = _base['NET']
+        self.model_app = _base.get('APP', 'ATM')
+        self.do_atm = _base.get('DO_ATM', True)
+        self.do_wave = _base.get('DO_WAVE', False)
+        self.do_wave_bnd = _base.get('DOBNDPNT_WAVE', False)
+        self.do_ocean = _base.get('DO_OCN', False)
+        self.do_ice = _base.get('DO_ICE', False)
+        self.do_aero = _base.get('DO_AERO', False)
+        self.do_prep_obs_aero = _base.get('DO_PREP_OBS_AERO', False)
+        self.do_bufrsnd = _base.get('DO_BUFRSND', False)
+        self.do_gempak = _base.get('DO_GEMPAK', False)
+        self.do_awips = _base.get('DO_AWIPS', False)
+        self.do_verfozn = _base.get('DO_VERFOZN', True)
+        self.do_verfrad = _base.get('DO_VERFRAD', True)
+        self.do_vminmon = _base.get('DO_VMINMON', True)
+        self.do_anlstat = _base.get('DO_ANLSTAT', False)
+        self.do_tracker = _base.get('DO_TRACKER', True)
+        self.do_genesis = _base.get('DO_GENESIS', True)
+        self.do_genesis_fsu = _base.get('DO_GENESIS_FSU', False)
+        self.do_metp = _base.get('DO_METP', False)
+        self.do_upp = not _base.get('WRITE_DOPOST', True)
+        self.do_goes = _base.get('DO_GOES', False)
+        self.do_mos = _base.get('DO_MOS', False)
+        self.do_extractvars = _base.get('DO_EXTRACTVARS', False)
+>>>>>>> fbe784df (Stubs for anlstat job)
 
         self.do_hpssarch = base.get('HPSSARCH', False)
 
