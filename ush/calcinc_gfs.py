@@ -70,7 +70,7 @@ if __name__ == '__main__':
     DoIAU = gsi_utils.isTrue(os.getenv('DOIAU', 'NO'))
     l4DEnsVar = gsi_utils.isTrue(os.getenv('l4densvar', 'NO'))
     Write4Danl = gsi_utils.isTrue(os.getenv('lwrite4danl', 'NO'))
-    ComOut = os.getenv('COM_ATMOS_ANALYSIS', './')
+    ComOut = os.getenv('COMOUT_ATMOS_ANALYSIS', './')
     APrefix = os.getenv('APREFIX', '')
     NThreads = os.getenv('NTHREADS_CALCINC', 1)
     IMP_Physics = os.getenv('imp_physics', 11)
