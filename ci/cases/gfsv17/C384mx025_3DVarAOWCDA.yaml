@@ -9,10 +9,11 @@ arguments:
   resdetocean: 0.25
   nens: 0
   interval: 6
-  start: cold
+  start: warm
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  idate: 2021063000
+  idate: 2021063018
   edate: 2021070306
-  icsdir: /scratch1/NCEPDEV/climate/Jessica.Meixner/cycling/IC_2021063000_V2
-  yaml: {{ HOMEgfs }}/ci/cases/gfsv17/ocnanal.yaml
+  #icsdir: /scratch1/NCEPDEV/climate/Jessica.Meixner/cycling/IC_2021063000_V2
+  icsdir: /work/noaa/da/gvernier/ensda/ictest/1440x1080x75/
+  yaml: {{ HOMEgfs }}/ci/cases/gfsv17/marine3dvar.yaml

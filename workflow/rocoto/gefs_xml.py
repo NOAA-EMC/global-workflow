@@ -16,7 +16,7 @@ class GEFSRocotoXML(RocotoXML):
     def get_cycledefs(self):
         sdate = self._base['SDATE_GFS']
         edate = self._base['EDATE']
-        interval = self._app_config.interval_gfs
+        interval = self._base['interval_gfs']
         sdate_str = sdate.strftime("%Y%m%d%H%M")
         edate_str = edate.strftime("%Y%m%d%H%M")
         interval_str = timedelta_to_HMS(interval)

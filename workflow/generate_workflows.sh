@@ -145,15 +145,18 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
         t) _tag="_${OPTARG}" ;;
         v) _verbose=true ;;
         V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
+        A) _set_account=true && _hpc_account="${OPTARG}" ;;
         d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v" && PS4='${LINENO}: ' ;;
         h) _usage && exit 0 ;;
         :)
           echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
           _usage
+          exit 1
           ;;
         *)
           echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
           _usage
+          exit 1
           ;;
       esac
    done

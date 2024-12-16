@@ -7,7 +7,6 @@ Entry point for setting up an experiment in the global-workflow
 import os
 import glob
 import shutil
-import warnings
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, ArgumentTypeError
 
 from hosts import Host
@@ -29,7 +28,7 @@ def makedirs_if_missing(dirname):
         os.makedirs(dirname)
 
 
-def fill_EXPDIR(inputs):
+def fill_expdir(inputs):
     """
     Method to copy config files from workflow to experiment directory
     INPUTS:
@@ -50,18 +49,31 @@ def fill_EXPDIR(inputs):
 def update_configs(host, inputs):
 
     def _update_defaults(dict_in: dict) -> dict:
+        # Given an input dict_in of the form
+        # {defaults: {config_name: {var1: value1, ...}, }, config_name: {var1: value1, ...}}
+        # Replace values in ['defaults']['config_name']['var1'] with ['config_name']['var1']
+        # and return the ['defaults'] subdictionary as its own new dictionary.
         defaults = dict_in.pop('defaults', AttrDict())
+        if 'defaults' in defaults:
+            _update_defaults(defaults)
         defaults.update(dict_in)
         return defaults
 
-    # Read in the YAML file to fill out templates and override host defaults
+    # Convert the inputs to an AttrDict
     data = AttrDict(host.info, **inputs.__dict__)
+
+    # Read in the YAML file to fill out templates
     data.HOMEgfs = _top
     yaml_path = inputs.yaml
     if not os.path.exists(yaml_path):
-        raise IOError(f'YAML file does not exist, check path:' + yaml_path)
-    yaml_dict = _update_defaults(AttrDict(parse_j2yaml(yaml_path, data)))
+        raise FileNotFoundError(f'YAML file does not exist, check path: {yaml_path}')
+    yaml_dict = parse_j2yaml(yaml_path, data)
 
+    # yaml_dict is in the form {defaults: {key1: val1, ...}, base: {key1: val1, ...}, ...}
+    # _update_defaults replaces any keys/values in defaults with matching keys in base
+    yaml_dict = _update_defaults(yaml_dict)
+
+    # Override the YAML defaults with the host-specific capabilities
     # First update config.base
     edit_baseconfig(host, inputs, yaml_dict)
 
@@ -73,7 +85,7 @@ def update_configs(host, inputs):
     stage_dict = dict(stage_dict, **host_dict)
     stage_input = f'{inputs.configdir}/config.stage_ic'
     stage_output = f'{inputs.expdir}/{inputs.pslot}/config.stage_ic'
-    edit_config(stage_input, stage_output, stage_dict)
+    edit_config(stage_input, stage_output, host_dict, stage_dict)
 
     # Loop over other configs and update them with defaults
     for cfg in yaml_dict.keys():
@@ -81,7 +93,7 @@ def update_configs(host, inputs):
             continue
         cfg_file = f'{inputs.expdir}/{inputs.pslot}/config.{cfg}'
         cfg_dict = get_template_dict(yaml_dict[cfg])
-        edit_config(cfg_file, cfg_file, cfg_dict)
+        edit_config(cfg_file, cfg_file, host_dict, cfg_dict)
 
     return
 
@@ -92,20 +104,19 @@ def edit_baseconfig(host, inputs, yaml_dict):
     to `EXPDIR/pslot/config.base`
     """
 
-    tmpl_dict = {
+    # Create base_dict which holds templated variables to be written to config.base
+    base_dict = {
         "@HOMEgfs@": _top,
         "@MACHINE@": host.machine.upper()}
-
-    # Replace host related items
-    extend_dict = get_template_dict(host.info)
-    tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     if inputs.start in ["warm"]:
         is_warm_start = ".true."
     elif inputs.start in ["cold"]:
         is_warm_start = ".false."
+    else:
+        raise ValueError(f"Invalid start type: {inputs.start}")
 
-    extend_dict = dict()
+    # Construct a dictionary from user inputs
     extend_dict = {
         "@PSLOT@": inputs.pslot,
         "@SDATE@": datetime_to_YMDH(inputs.idate),
@@ -121,35 +132,37 @@ def edit_baseconfig(host, inputs, yaml_dict):
         "@APP@": inputs.app,
         "@NMEM_ENS@": getattr(inputs, 'nens', 0)
     }
-    tmpl_dict = dict(tmpl_dict, **extend_dict)
 
-    extend_dict = dict()
     if getattr(inputs, 'nens', 0) > 0:
-        extend_dict = {
-            "@CASEENS@": f'C{inputs.resensatmos}',
-        }
-        tmpl_dict = dict(tmpl_dict, **extend_dict)
+        extend_dict['@CASEENS@'] = f'C{inputs.resensatmos}'
 
-    extend_dict = dict()
     if inputs.mode in ['cycled']:
-        extend_dict = {
-            "@DOHYBVAR@": "YES" if inputs.nens > 0 else "NO",
-        }
-        tmpl_dict = dict(tmpl_dict, **extend_dict)
+        extend_dict["@DOHYBVAR@"] = "YES" if inputs.nens > 0 else "NO"
 
-    try:
-        tmpl_dict = dict(tmpl_dict, **get_template_dict(yaml_dict['base']))
-    except KeyError:
-        pass
+    # Further extend/redefine base_dict with extend_dict
+    base_dict = dict(base_dict, **extend_dict)
+
+    # Add/override 'base'-specific declarations in base_dict
+    if 'base' in yaml_dict:
+        base_dict = dict(base_dict, **get_template_dict(yaml_dict['base']))
 
     base_input = f'{inputs.configdir}/config.base'
     base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
-    edit_config(base_input, base_output, tmpl_dict)
+    edit_config(base_input, base_output, host.info, base_dict)
 
     return
 
 
-def edit_config(input_config, output_config, config_dict):
+def edit_config(input_config, output_config, host_info, config_dict):
+    """
+    Given a templated input_config filename, parse it based on config_dict and
+    host_info and write it out to the output_config filename.
+    """
+
+    # Override defaults with machine-specific capabilties
+    # e.g. some machines are not able to run metp jobs
+    host_dict = get_template_dict(host_info)
+    config_dict = dict(config_dict, **host_dict)
 
     # Read input config
     with open(input_config, 'rt') as fi:
@@ -173,9 +186,17 @@ def edit_config(input_config, output_config, config_dict):
 
 
 def get_template_dict(input_dict):
+    # Reads a templated input dictionary and updates the output
+
     output_dict = dict()
+
     for key, value in input_dict.items():
-        output_dict[f'@{key}@'] = value
+        # In some cases, the same config may be templated twice
+        # Prevent adding additional "@"s
+        if "@" in key:
+            output_dict[f'{key}'] = value
+        else:
+            output_dict[f'@{key}@'] = value
 
     return output_dict
 
@@ -214,6 +235,7 @@ def input_args(*argv):
         parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                             required=True, type=lambda dd: to_datetime(dd))
         parser.add_argument('--edate', help='end date experiment', required=False, type=lambda dd: to_datetime(dd))
+        parser.add_argument('--account', help='HPC account to use; default is host-dependent', required=False, default=os.getenv('HPC_ACCOUNT'))
         parser.add_argument('--interval', help='frequency of forecast (in hours); must be a multiple of 6', type=_validate_interval, required=False, default=6)
         parser.add_argument('--icsdir', help='full path to user initial condition directory', type=str, required=False, default='')
         parser.add_argument('--overwrite', help='overwrite previously created experiment (if it exists)',
@@ -350,6 +372,7 @@ def query_and_clean(dirname, force_clean=False):
 
 def validate_user_request(host, inputs):
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
+    supp_waves = host.info.get('SUPPORT_WAVES', 'YES')
     machine = host.machine
     for attr in ['resdetatmos', 'resensatmos']:
         try:
@@ -358,6 +381,9 @@ def validate_user_request(host, inputs):
             continue
         if expt_res not in supp_res:
             raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
+
+    if "W" in inputs.app and supp_waves == "NO":
+        raise NotImplementedError(f"Waves are not supported on {machine}")
 
 
 def get_ocean_resolution(resdetatmos):
@@ -382,6 +408,10 @@ def main(*argv):
 
     validate_user_request(host, user_inputs)
 
+    # Update the default host account if the user supplied one
+    if user_inputs.account is not None:
+        host.info.ACCOUNT = user_inputs.account
+
     # Determine ocean resolution if not provided
     if user_inputs.resdetocean <= 0:
         user_inputs.resdetocean = get_ocean_resolution(user_inputs.resdetatmos)
@@ -397,7 +427,7 @@ def main(*argv):
 
     if create_expdir:
         makedirs_if_missing(expdir)
-        fill_EXPDIR(user_inputs)
+        fill_expdir(user_inputs)
         update_configs(host, user_inputs)
 
     print(f"*" * 100)
