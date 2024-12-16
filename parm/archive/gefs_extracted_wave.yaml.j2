@@ -60,7 +60,6 @@ gefs_wave:
         {{ "FATAL ERROR: No grid specific wave config values exist for " ~ grdID ~ ". Aborting." }}
     {% endif %}
     {% do RESOLUTION.append(GRDNAME) %}
-    {% do GridID.append(grdID) %} 
 {% endfor %}
 
 #select mem%03d and ensstat files required

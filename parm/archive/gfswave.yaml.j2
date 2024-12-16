@@ -4,7 +4,6 @@ gfswave:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
     required:
     {% set RESOLUTION = [] %}
-    {% set GridID = [] %}
     {% for grdID in waveGRD %}
         {% if grdID == 'glo_10m' %}
             {% set GRDNAME = 'global.0p16' %}
