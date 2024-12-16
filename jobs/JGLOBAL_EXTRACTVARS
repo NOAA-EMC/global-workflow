@@ -10,40 +10,6 @@ for grid in '0p25' '0p50' '1p00'; do
   if [[ ! -d "${!prod_dir}" ]]; then mkdir -p "${!prod_dir}"; fi
 done
 
-for grdID in ${waveGRD}; do
-    case ${grdID} in
-        glo_10m) GRDNAME='global' ; GRDRES=0p16;;
-        glo_15mxt) GRDNAME='global' ; GRDRES=0p25;;       
-        glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ;;
-        glo_30m) GRDNAME='global' ; GRDRES=0p50 ;;
-        glo_025) GRDNAME='global' ; GRDRES=0p25 ;;
-        glo_100) GRDNAME='global' ; GRDRES=1p00;;
-        glo_200) GRDNAME='global' ; GRDRES=2p00;;
-        glo_500) GRDNAME='global' ; GRDRES=5p00;;
-        at_10m) GRDNAME='atlocn' ; GRDRES=0p16 ;;
-        ep_10m) GRDNAME='epacif' ; GRDRES=0p16;;
-        wc_10m) GRDNAME='wcoast' ; GRDRES=0p16 ;;
-        ak_10m) GRDNAME='alaska' ; GRDRES=0p16;;
-        aoc_9km) GRDNAME='arctic' ; GRDRES=9km;;
-        ant_9km) GRDNAME='antarc' ; GRDRES=9km ;;
-        gnh_10m) GRDNAME='global' ; GRDRES=0p16;;
-        gsh_15m) GRDNAME='gsouth' ; GRDRES=0p25;;
-        ao_20m) GRDNAME='arctic' ; GRDRES=0p33;;
-        so_20m) GRDNAME='antarc' ; GRDRES=0p33;;
-        reg025) GRDNAME='global' ; GRDRES=0p25;;
-        gwes_30m) GRDNAME='global' ; GRDRES=0p50;;
-        *)
-        echo "FATAL ERROR: No grid specific wave config values exist for ${grdID}. Aborting."
-        exit 1;;
-    esac
-    prod_dir="COMIN_WAVE_GRID_${grdID}"
-    YMD=${PDY} HH=${cyc} GRID="${GRDNAME}.${GRDRES}" declare_from_tmpl -rx \
-    "${prod_dir}:COM_WAVE_GRID_RES_TMPL"
-    if [[ ! -d "${!prod_dir}" ]]; then mkdir -p "${!prod_dir}"; fi
-done
-
-
-
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
     "COMIN_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL" \
     "COMIN_OCEAN_GRIB:COM_OCEAN_GRIB_TMPL" \
