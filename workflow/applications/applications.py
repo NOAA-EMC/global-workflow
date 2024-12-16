@@ -207,3 +207,4 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             return all(x > y for x, y in zip(test_list, test_list[1:]))
         else:
             return all(x < y for x, y in zip(test_list, test_list[1:]))
+        
