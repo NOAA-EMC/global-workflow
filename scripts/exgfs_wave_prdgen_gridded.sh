@@ -9,7 +9,7 @@
 # - Supplemental error output is witten to the wave.log file.                 #
 #                                                                             #
 # COM inputs:                                                                 #
-#  - ${COMIN_WAVE_GRID}/${RUNwave}.${cycle}.${grdID}.f${fhr}.grib2            #
+#  - ${COMIN_WAVE_GRID}/${grdID}/${RUNwave}.${cycle}.${grdID}.f${fhr}.grib2            #
 #                                                                             #
 # COM outputs:                                                                #
 #  - ${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}             #
