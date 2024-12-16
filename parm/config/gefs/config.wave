@@ -23,6 +23,17 @@ export waveMULTIGRID='.false.'        # .true./.false. for multi or shel
 export MESH_WAV="mesh.${waveGRD}.nc"  # Mesh grid for wave model for CMEPS
 export waveesmfGRD=' '                # input grid for multigrid
 
+export WW3_user_histname="false"
+export WW3_historync="false"
+export WW3_restartnc="true"
+export WW3_restart_from_binary="true"
+export WW3_PIO_FORMAT="pnetcdf"
+export WW3_PIO_IOTASKS=-99
+export WW3_PIO_STRIDE=4
+export WW3_PIO_REARR="box"
+export WW3_PIO_ROOT=-99
+
+
 #Grid dependent variables for various grids
 case "${waveGRD}" in
   "gnh_10m;aoc_9km;gsh_15m")
