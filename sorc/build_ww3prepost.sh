@@ -78,6 +78,7 @@ sed -e "s/DIST/SHRD/g"\
     -e "s/OMPH / /g"\
     -e "s/MPIT / /g"\
     -e "s/MPI / /g"\
+    -e "s/PIO / /g"\
     -e "s/B4B / /g"\
     -e "s/PDLIB / /g"\
     -e "s/SCOTCH / /g"\

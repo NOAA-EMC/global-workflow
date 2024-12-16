@@ -2,7 +2,7 @@
 
 export GFS_CI_ROOT=/work2/noaa/stmp/GFS_CI_ROOT/HERCULES
 export ICSDIR_ROOT=/work/noaa/global/glopara/data/ICSDIR
-export HPC_ACCOUNT=nems
+export HPC_ACCOUNT=fv3-cpu
 export max_concurrent_cases=5
 export max_concurrent_pr=4
 
