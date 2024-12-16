@@ -1213,7 +1213,7 @@ case ${step} in
     ;;
 
   "esfc")
-    walltime="00:15:00"
+    walltime="00:25:00"
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
