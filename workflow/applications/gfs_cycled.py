@@ -98,10 +98,10 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_vminmon']:
             configs += ['vminmon']
 
-        if self.do_anlstat:
+        if options['do_anlstat']:
             configs += ['anlstat']
 
-        if self.do_tracker:
+        if options['do_tracker']:
             configs += ['tracker']
 
         if options['do_genesis']:
@@ -163,174 +163,8 @@ class GFSCycledAppConfig(AppConfig):
               This is the place where that order is set.
         """
 
-        gdas_gfs_common_tasks_before_fcst = ['prep']
-        gdas_gfs_common_cleanup_tasks = ['arch', 'cleanup']
-
-        if self.do_jediatmvar:
-            gdas_gfs_common_tasks_before_fcst += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
-        else:
-            gdas_gfs_common_tasks_before_fcst += ['anal']
-
-        if self.do_jediocnvar:
-            gdas_gfs_common_tasks_before_fcst += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
-            if self.do_hybvar:
-                gdas_gfs_common_tasks_before_fcst += ['marineanlletkf', 'ocnanalecen']
-            gdas_gfs_common_tasks_before_fcst += ['marineanlchkpt', 'marineanlfinal']
-            if self.do_vrfy_oceanda:
-                gdas_gfs_common_tasks_before_fcst += ['ocnanalvrfy']
-
-        gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
-
-        if self.do_jedisnowda:
-            gdas_gfs_common_tasks_before_fcst += ['snowanl']
-
-        wave_prep_tasks = ['waveinit', 'waveprep']
-        wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
-        wave_post_tasks = ['wavepostsbs', 'wavepostpnt']
-
-        hybrid_tasks = []
-        hybrid_after_eupd_tasks = []
-        if self.do_hybvar:
-            if self.do_jediatmens:
-                hybrid_tasks += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'echgres']
-                hybrid_tasks += ['atmensanlobs', 'atmensanlsol'] if self.lobsdiag_forenkf else ['atmensanlletkf']
-            else:
-                hybrid_tasks += ['eobs', 'eupd', 'echgres']
-                hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
-            if self.do_jedisnowda:
-                hybrid_tasks += ['esnowrecen']
-            hybrid_after_eupd_tasks += ['stage_ic', 'ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
-
-        # Collect all "gdas" cycle tasks
-        gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
-
-        if not self.do_jediatmvar:
-            gdas_tasks += ['analdiag']
-
-        if self.do_wave and 'gdas' in self.wave_runs:
-            gdas_tasks += wave_prep_tasks
-
-        if self.do_aero and 'gdas' in self.aero_anl_runs:
-            gdas_tasks += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-            if self.do_prep_obs_aero:
-                gdas_tasks += ['prepobsaero']
-
-        gdas_tasks += ['stage_ic', 'atmanlupp', 'atmanlprod', 'fcst']
-
-        if self.do_upp:
-            gdas_tasks += ['atmupp']
-        gdas_tasks += ['atmos_prod']
-
-        if self.do_wave and 'gdas' in self.wave_runs:
-            if self.do_wave_bnd:
-                gdas_tasks += wave_bndpnt_tasks
-            gdas_tasks += wave_post_tasks
-
-        if self.do_fit2obs:
-            gdas_tasks += ['fit2obs']
-
-        if self.do_verfozn:
-            gdas_tasks += ['verfozn']
-
-        if self.do_verfrad:
-            gdas_tasks += ['verfrad']
-
-        if self.do_vminmon:
-            gdas_tasks += ['vminmon']
-
-        if self.do_anlstat:
-            gdas_tasks += ['anlstat']
-
-        if self.do_gempak:
-            gdas_tasks += ['gempak', 'gempakmetancdc']
-
-        gdas_tasks += gdas_gfs_common_cleanup_tasks
-
-        # Collect "gfs" cycle tasks
-        gfs_tasks = gdas_gfs_common_tasks_before_fcst.copy()
-
-        if self.do_wave and 'gfs' in self.wave_runs:
-            gfs_tasks += wave_prep_tasks
-
-        if self.do_aero and 'gfs' in self.aero_anl_runs:
-            gfs_tasks += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-            if self.do_prep_obs_aero:
-                gfs_tasks += ['prepobsaero']
-
-        gfs_tasks += ['atmanlupp', 'atmanlprod', 'fcst']
-
-        if self.do_ocean:
-            gfs_tasks += ['ocean_prod']
-
-        if self.do_ice:
-            gfs_tasks += ['ice_prod']
-
-        if self.do_upp:
-            gfs_tasks += ['atmupp']
-        gfs_tasks += ['atmos_prod']
-
-        if self.do_goes:
-            gfs_tasks += ['goesupp']
-
-        if self.do_vminmon:
-            gfs_tasks += ['vminmon']
-
-        if self.do_anlstat:
-            gfs_tasks += ['anlstat']
-
-        if self.do_tracker:
-            gfs_tasks += ['tracker']
-
-        if self.do_genesis:
-            gfs_tasks += ['genesis']
-
-        if self.do_genesis_fsu:
-            gfs_tasks += ['genesis_fsu']
-
-        if self.do_metp:
-            gfs_tasks += ['metp']
-
-        if self.do_wave and 'gfs' in self.wave_runs:
-            if self.do_wave_bnd:
-                gfs_tasks += wave_bndpnt_tasks
-            gfs_tasks += wave_post_tasks
-            if self.do_gempak:
-                gfs_tasks += ['wavegempak']
-            if self.do_awips:
-                gfs_tasks += ['waveawipsbulls', 'waveawipsgridded']
-
-        if self.do_bufrsnd:
-            gfs_tasks += ['postsnd']
-
-        if self.do_gempak:
-            gfs_tasks += ['gempak']
-            gfs_tasks += ['gempakmeta']
-            gfs_tasks += ['gempakncdcupapgif']
-            if self.do_goes:
-                gfs_tasks += ['npoess_pgrb2_0p5deg']
-                gfs_tasks += ['gempakpgrb2spec']
-
-        if self.do_awips:
-            gfs_tasks += ['awips_20km_1p0deg', 'fbwind']
-
-        if self.do_mos:
-            gfs_tasks += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
-                          'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
-                          'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
-                          'mos_wx_prdgen', 'mos_wx_ext_prdgen']
-
-        gfs_tasks += gdas_gfs_common_cleanup_tasks
-
-        tasks = dict()
-        tasks['gdas'] = gdas_tasks
-
-        if self.do_hybvar and 'gdas' in self.eupd_runs:
-            enkfgdas_tasks = hybrid_tasks + hybrid_after_eupd_tasks
-            tasks['enkfgdas'] = enkfgdas_tasks
-
-        # Add RUN=gfs tasks if running early cycle
-        if self.interval_gfs > to_timedelta("0H"):
-            tasks['gfs'] = gfs_tasks
+        # Start with a dictionary of empty task lists for each valid run
+        task_names = {run: [] for run in self.runs}
 
         for run in self.runs:
             options = self.run_options[run]

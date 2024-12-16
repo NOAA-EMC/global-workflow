@@ -41,60 +41,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                                       f'{", ".join(self.VALID_MODES)}\n')
 
         self.net = base['NET']
-        self.model_app = base.get('APP', 'ATM')
-        self.do_atm = base.get('DO_ATM', True)
-        self.do_wave = base.get('DO_WAVE', False)
-        self.do_wave_bnd = base.get('DOBNDPNT_WAVE', False)
-        self.do_ocean = base.get('DO_OCN', False)
-        self.do_ice = base.get('DO_ICE', False)
-        self.do_aero = base.get('DO_AERO', False)
-        self.do_prep_obs_aero = base.get('DO_PREP_OBS_AERO', False)
-        self.do_bufrsnd = base.get('DO_BUFRSND', False)
-        self.do_gempak = base.get('DO_GEMPAK', False)
-        self.do_awips = base.get('DO_AWIPS', False)
-        self.do_verfozn = base.get('DO_VERFOZN', True)
-        self.do_verfrad = base.get('DO_VERFRAD', True)
-        self.do_vminmon = base.get('DO_VMINMON', True)
-        self.do_anlstat = base.get('DO_ANLSTAT', True)
-        self.do_tracker = base.get('DO_TRACKER', True)
-        self.do_genesis = base.get('DO_GENESIS', True)
-        self.do_genesis_fsu = base.get('DO_GENESIS_FSU', False)
-        self.do_metp = base.get('DO_METP', False)
-        self.do_upp = not base.get('WRITE_DOPOST', True)
-        self.do_goes = base.get('DO_GOES', False)
-        self.do_mos = base.get('DO_MOS', False)
-        self.do_extractvars = base.get('DO_EXTRACTVARS', False)
-
-        self.do_hpssarch = base.get('HPSSARCH', False)
-
-        self.nens = base.get('NMEM_ENS', 0)
-        self.fcst_segments = base.get('FCST_SEGMENTS', None)
-        self.interval_gfs = to_timedelta(f"{base.get('INTERVAL_GFS')}H")
-
-        if not AppConfig.is_monotonic(self.fcst_segments):
-            raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
-
-        self.wave_runs = None
-        if self.do_wave:
-            wave_run = base.get('WAVE_RUN', 'BOTH').lower()
-            if wave_run in ['both']:
-                self.wave_runs = ['gfs', 'gdas']
-            elif wave_run in ['gfs', 'gdas']:
-                self.wave_runs = [wave_run]
-
-        self.aero_anl_runs = None
-        self.aero_fcst_runs = None
-        if self.do_aero:
-            aero_anl_run = base.get('AERO_ANL_RUN', 'BOTH').lower()
-            if aero_anl_run in ['both']:
-                self.aero_anl_runs = ['gfs', 'gdas']
-            elif aero_anl_run in ['gfs', 'gdas']:
-                self.aero_anl_runs = [aero_anl_run]
-            aero_fcst_run = base.get('AERO_FCST_RUN', None).lower()
-            if aero_fcst_run in ['both']:
-                self.aero_fcst_runs = ['gfs', 'gdas']
-            elif aero_fcst_run in ['gfs', 'gdas']:
-                self.aero_fcst_runs = [aero_fcst_run]
+        print(f"Generating the XML for a {self.mode}_{self.net} case")
 
     def _init_finalize(self, conf: Configuration):
         '''
@@ -135,6 +82,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_verfozn'] = run_base.get('DO_VERFOZN', True)
             run_options[run]['do_verfrad'] = run_base.get('DO_VERFRAD', True)
             run_options[run]['do_vminmon'] = run_base.get('DO_VMINMON', True)
+            run_options[run]['do_anlstat'] = run_base.get('DO_ANLSTAT', True)
             run_options[run]['do_tracker'] = run_base.get('DO_TRACKER', True)
             run_options[run]['do_genesis'] = run_base.get('DO_GENESIS', True)
             run_options[run]['do_genesis_fsu'] = run_base.get('DO_GENESIS_FSU', False)
