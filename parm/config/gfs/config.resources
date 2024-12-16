@@ -346,7 +346,7 @@ case ${step} in
 
     walltime="00:15:00"
     ntasks=$(( layout_x * layout_y * 6 ))
-    threads_per_task=1
+    threads_per_task=2
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
@@ -375,7 +375,7 @@ case ${step} in
 
     walltime="00:30:00"
     ntasks=$(( layout_x * layout_y * 6 ))
-    threads_per_task=1
+    threads_per_task=2
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
