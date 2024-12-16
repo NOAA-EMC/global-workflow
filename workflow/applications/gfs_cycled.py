@@ -277,9 +277,12 @@ class GFSCycledAppConfig(AppConfig):
         
         if self.do_anlstat:
             gfs_tasks += ['anlstat']
+<<<<<<< HEAD
 
         if self.do_anlstat:
             gfs_tasks += ['anlstat']
+=======
+>>>>>>> fbe784df (Stubs for anlstat job)
 
         if self.do_tracker:
             gfs_tasks += ['tracker']
