@@ -351,39 +351,39 @@ WW3_postdet() {
   echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
 
   if [[ "${WW3_restart_from_binary}" == "true" ]]; then
-	  ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
-	  if [[ -s "${ww3_restart_file}" ]]; then
-		  ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
-			  || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
-    			  first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-	  else
-		  if [[ "${RERUN}" == "YES" ]]; then
-      # In the case of a RERUN, the WW3 restart file is required
- 	     	echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
-    		exit 1
-	else
-		echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
-		first_ww3_restart_out=${model_start_date_current_cycle}
-		  fi
-	  fi
+    ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
+    if [[ -s "${ww3_restart_file}" ]]; then
+      ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
+          || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+      first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+    else
+      if [[ "${RERUN}" == "YES" ]]; then
+        # In the case of a RERUN, the WW3 restart file is required
+        echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+        exit 1
+      else
+	echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
+	first_ww3_restart_out=${model_start_date_current_cycle}
+      fi
+    fi
   else
-	  seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
-	  ww3_restart_file="${restart_dir}/ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
-          if [[ -s "${ww3_restart_file}" ]]; then
-		  ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
-			  || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
-		          first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-	  else
-		  if [[ "${RERUN}" == "YES" ]]; then
-			        # In the case of a RERUN, the WW3 restart file is required
-		echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
-		                exit 1
-			echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
-			first_ww3_restart_out=${model_start_date_current_cycle}
-		  fi
-	  fi
+    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+    ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
+    ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
+    if [[ -s "${ww3_restart_file}" ]]; then
+      ${NCP} "${ww3_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
+          || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+      first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+    else
+      if [[ "${RERUN}" == "YES" ]]; then
+	# In the case of a RERUN, the WW3 restart file is required
+	echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+        exit 1
+	echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
+	first_ww3_restart_out=${model_start_date_current_cycle}
+      fi
+    fi
   fi
-
 
   # Link restart files
   for (( vdate = first_ww3_restart_out; vdate <= forecast_end_cycle;
@@ -450,12 +450,35 @@ WW3_nml() {
 
 WW3_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for WW3"
-  # TODO: Need to add logic to copy restarts from DATArestart/WW3_RESTART to COMOUT_WAVE_RESTART
-  if [[ "${WW3_restartnc}" == "true" ]]; then
-	  ${NCP} ${DATArestart}/WW3_RESTART/ufs.cpld.ww3.r* "${COMOUT_WAVE_RESTART}/" 
-  else
-	  ${NCP} ${DATArestart}/WW3_RESTART/*restart.ww3 "${COMOUT_WAVE_RESTART}/"
+
+  # Copy wave namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
+  ${NCP} "${DATA}/ww3_shel.nml" "${COMOUT_CONF}/ufs.ww3_shel.nml"
+
+  # Copy WW3 restarts at the end of the forecast segment to COM for RUN=gfs|gefs
+  if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
+    local seconds source_file target_file
+    if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
+      echo "Copying WW3 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
+      seconds=$(to_seconds "${forecast_end_cycle:8:2}0000")  # convert HHMMSS to seconds
+      source_file="ufs.cpld.ww3.r.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
+      target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.restart.ww3.nc"
+      ${NCP} "${DATArestart}/WW3_RESTART/${source_file}" \
+             "${COMOUT_WAVE_RESTART}/${target_file}"
+    fi
   fi
+
+  # Copy restarts for next cycle for RUN=gdas|enkfgdas|enkfgfs
+  if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
+    local restart_date
+    restart_date="${model_start_date_next_cycle}"
+    echo "Copying CICE restarts for 'RUN=${RUN}' at ${restart_date}"
+    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+    source_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
+    target_file="${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
+    ${NCP} "${DATArestart}/WW3_RESTART/${source_file}" \
+           "${COMOUT_WAVE_RESTART}/${target_file}"
+  fi
+
 }
 
 
