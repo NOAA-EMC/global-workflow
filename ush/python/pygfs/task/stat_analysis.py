@@ -11,9 +11,9 @@ from typing import Optional, Dict, Any
 
 from wxflow import (AttrDict,
                     FileHandler,
-                    add_to_datetime, to_timedelta,
+                    add_to_datetime, to_fv3time, to_timedelta, to_YMDH,
                     Task,
-                    parse_j2yaml,
+                    parse_j2yaml, save_as_yaml,
                     logit)
 from pygfs.jedi import Jedi
 
@@ -64,6 +64,10 @@ class StatAnalysis(Task):
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
+        # Create dictionary of Jedi objects
+        expected_keys = ['anlstat']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+
     @logit(logger)
     def initialize(self) -> None:
         """
@@ -79,49 +83,41 @@ class StatAnalysis(Task):
         ----------
         None
         """
-        # Create dictionary of Jedi objects
-        expected_keys = self.task_config.STAT_OBS
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
-
         logger.info(f"Copying files to {self.task_config.DATA}/stats")
 
-        for OB in self.task_config.STAT_OBS:
-            # Parse JEDI analysis stat jinja file
-            obs_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
+        # Copy stat files to DATA path
+        aerostat = os.path.join(self.task_config.COM_CHEM_ANALYSIS, f"{self.task_config['APREFIX']}aerostat")
+        dest = os.path.join(self.task_config.DATA, "aerostats")
+        statlist = [[aerostat, dest]]
+        FileHandler({'copy': statlist}).sync()
 
-            # Copy stat files to DATA path
-            instat_files = os.path.join(obs_dict[OB]['stat_file_path'], f"{self.task_config['APREFIX']}{obs_dict[OB]['stat_file_name']}")
-            dest = os.path.join(self.task_config.DATA, obs_dict[OB]['stat_file_name'])
-            statlist = [[instat_files, dest]]
-            FileHandler({'copy': statlist}).sync()
+        # Open tar file
+        logger.info(f"Open tarred stat file in {dest}")
+        with tarfile.open(dest, "r") as tar:
+            # Extract all files to the current directory
+            tar.extractall()
 
-            # Open tar file
-            logger.info(f"Open tarred stat file in {dest}")
-            with tarfile.open(dest, "r") as tar:
-                # Extract all files to the current directory
-                tar.extractall()
+        # Gunzip .nc files
+        logger.info("Gunzip files from tar file")
+        gz_files = glob.glob(os.path.join(self.task_config.DATA, "*gz"))
 
-            # Gunzip .nc files
-            logger.info("Gunzip files from tar file")
-            gz_files = glob.glob(os.path.join(self.task_config.DATA, "*gz"))
+        for diagfile in gz_files:
+            with gzip.open(diagfile, 'rb') as f_in:
+                with open(diagfile[:-3], 'wb') as f_out:
+                    f_out.write(f_in.read())
 
-            for diagfile in gz_files:
-                with gzip.open(diagfile, 'rb') as f_in:
-                    with open(diagfile[:-3], 'wb') as f_out:
-                        f_out.write(f_in.read())
+        # Get list of .nc4 files
+        obs_space_paths = glob.glob(os.path.join(self.task_config.DATA, "*.nc4"))
 
-            # Get list of .nc4 files
-            obs_space_paths = glob.glob(os.path.join(self.task_config.DATA, "*.nc4"))
+        self.task_config.OBSPACES_LIST = ['_'.join(os.path.basename(path).split('_')[1:3]) for path in obs_space_paths]
 
-            self.task_config.OBSPACES_LIST = ['_'.join(os.path.basename(path).split('_')[1:3]) for path in obs_space_paths]
-
-            # initialize JEDI application
-            logger.info(f"Initializing JEDI variational DA application")
-            self.jedi_dict[OB].initialize(self.task_config)
+        # initialize JEDI application
+        logger.info(f"Initializing JEDI variational DA application")
+        self.jedi_dict['anlstat'].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
-        """Execute JEDI application of stat analysis
+        """Execute JEDI application of atm analysis
 
         Parameters
         ----------
@@ -136,17 +132,18 @@ class StatAnalysis(Task):
         self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
-    def finalize(self, jedi_dict_key: str) -> None:
-        """Finalize a statistic analysis
+    def finalize(self) -> None:
+        """Finalize a global atm analysis
 
-        This method will finalize a statistic analysis using JEDI.
+        This method will finalize a global atm analysis using JEDI.
         This includes:
-        - copying stat files to specified outdir
+        - tar output diag files and place in ROTDIR
+        - copy the generated YAML file from initialize to the ROTDIR
+        - copy the updated bias correction files to ROTDIR
 
         Parameters
         ----------
-        jedi_dict_key
-            key specifying particular Jedi object in self.jedi_dict
+        None
 
         Returns
         ----------
@@ -156,9 +153,11 @@ class StatAnalysis(Task):
         # get list of output diag files
         diags = glob.glob(os.path.join(self.task_config.DATA, '*output_aod.nc'))
 
+        logger.debug(f"diag files: {diags}")
+
         for diagfile in diags:
             outfile = os.path.basename(diagfile)
-            dest = os.path.join(f'{self.task_config.STAT_OUTDIR}/{jedi_dict_key}/', f'{outfile}')
+            dest = os.path.join(self.task_config.STAT_OUTDIR, f'{outfile}')
             logger.debug(f"copying {diagfile} to {dest}")
             diag_copy = {
                 'copy': [[diagfile, dest]]
