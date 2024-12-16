@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-                                                                   
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -72,27 +72,28 @@ source "${USHgfs}/preamble.sh"
   fi
 
 # --------------------------------------------------------------------------- #
-# 2.  Create mod_def file 
+# 2.  Create mod_def file
 
   set +x
   echo ' '
   echo '   Creating mod_def file ...'
-  echo "   Executing ${EXECgfs}/ww3_grid"
+  echo "   Executing ${EXECgfs}/${NET,,}_ww3_grid.x"
   echo ' '
   set_trace
- 
-  rm -f ww3_grid.inp 
+
+  rm -f ww3_grid.inp
   ${NLN} ../ww3_grid.inp.$grdID ww3_grid.inp
 
   if [ -f ../${grdID}.msh ]
   then
-     rm -f ${grdID}.msh 
+     rm -f ${grdID}.msh
      ${NLN} ../${grdID}.msh ${grdID}.msh
   fi
 
 
- 
-  "${EXECgfs}/ww3_grid" 1> "grid_${grdID}.out" 2>&1
+  export pgm="${NET,,}_ww3_grid.x"
+
+  "${EXECgfs}/${pgm}" 1> "grid_${grdID}.out" 2>&1
   err=$?
 
   if [ "$err" != '0' ]
@@ -100,13 +101,13 @@ source "${USHgfs}/preamble.sh"
     set +x
     echo ' '
     echo '******************************************** '
-    echo '*** FATAL ERROR : ERROR IN ww3_grid *** '
+    echo "*** FATAL ERROR : ERROR IN ${pgm} *** "
     echo '******************************************** '
     echo ' '
     set_trace
     exit 3
   fi
- 
+
   if [[ -f mod_def.ww3 ]]
   then
     cp mod_def.ww3 "${COMOUT_WAVE_PREP}/${RUN}wave.mod_def.${grdID}"
