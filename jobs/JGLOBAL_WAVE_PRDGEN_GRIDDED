@@ -13,26 +13,6 @@ export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-for grdID in ${waveGRD}; do
-    case ${grdID} in
-        aoc_9km) GRDNAME='arctic' ; GRDRES=9km;;
-        at_10m) GRDNAME='atlocn' ; GRDRES=0p16 ;;
-        ep_10m) GRDNAME='epacif' ; GRDRES=0p16;;
-        wc_10m) GRDNAME='wcoast' ; GRDRES=0p16 ;;
-#        glo_30m) GRDNAME='global' ; GRDRES=0p25 ;;
-        glo_30m) GRDNAME='global' ; GRDRES=0p50 ;;
-        ak_10m) GRDNAME='alaska' ; GRDRES=0p16;;
-        *)
-        echo "FATAL ERROR: No grid specific wave config values exist for ${grdID}. Aborting."
-        exit 1;;
-    esac
-    YMD=${PDY} HH=${cyc} GRID="${GRDNAME}.${GRDRES}" declare_from_tmpl -rx \
-        "COMIN_WAVE_GRID_${grdID}:COM_WAVE_GRID_RES_TMPL"
-done
-
-
-
-
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \
     COMOUT_WAVE_WMO:COM_WAVE_WMO_TMPL
@@ -57,4 +37,3 @@ fi
 
 
 exit 0
-
