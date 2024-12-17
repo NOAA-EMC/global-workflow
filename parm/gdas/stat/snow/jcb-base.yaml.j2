@@ -1,0 +1,22 @@
+# Search path for model and obs for JCB
+# -------------------------------------
+algorithm_path: "{{PARMgfs}}/gdas/jcb-algorithms"
+app_path_algorithm: "{{PARMgfs}}/gdas/jcb-gdas/algorithm/obstats/snow"
+
+# Assimilation window
+# -------------------
+window_begin: "{{ STAT_WINDOW_BEGIN | to_isotime }}"
+window_YMDH: "{{ STAT_WINDOW_BEGIN | to_YMDH }}"
+window_length: "{{ STAT_WINDOW_LENGTH }}"
+bound_to_include: begin
+
+stat_current_cycle_iso: "{{ current_cycle | to_isotime }}"
+stat_current_cycle_YMDH: "{{ current_cycle | to_YMDH }}"
+
+# Inputted list of ob spaces
+# --------------------------
+obspaces: {{ OBSPACES_LIST }}
+
+# Obspace variable things
+# -----------------------
+snow_obsdatain_path: "{{ DATA }}"
