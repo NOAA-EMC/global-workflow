@@ -46,6 +46,7 @@ gfswave:
         {% elif grdID == 'gwes_30m' %}
             {% set GRDNAME = 'global.0p50' %}
         {% else %}
+            {% set GRDNAME = 'unknown' %}
             {{ "FATAL ERROR: No grid specific wave config values exist for " ~ grdID ~ ". Aborting." }}
         {% endif %}
         {% do RESOLUTION.append(GRDNAME) %}  
