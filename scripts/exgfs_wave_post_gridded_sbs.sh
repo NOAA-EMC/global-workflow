@@ -392,7 +392,7 @@ source "${USHgfs}/preamble.sh"
 # move grib2 files to domain.dimension
     if [[ -s "${COMOUT_WAVE_GRID}/${gribchk}" && -s "${COMOUT_WAVE_GRID}/${gribchk_idx}" ]]; then
       mv -f "${COMOUT_WAVE_GRID}/${gribchk}" "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
-      mv -f "${COMOUT_WAVE_GRID}/${gribchk_idx}" "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}.idx"
+      mv -f "${COMOUT_WAVE_GRID}/${gribchk_idx}" "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
     else
       set +x
       echo ' '
