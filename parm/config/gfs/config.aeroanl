@@ -7,10 +7,10 @@ echo "BEGIN: config.aeroanl"
 
 # define analysis resolution based on deterministic res
 case ${CASE} in
-  "C1152" | "C768" | "C384" | "C192")
-    CASE_ANL="C192"
+  "C1152" | "C768" | "C384")
+    CASE_ANL="C384"
     ;;
-  "C96" | "C48")
+  "C192" | "C96" | "C48")
     CASE_ANL=${CASE}
     ;;
   *)
@@ -18,13 +18,15 @@ case ${CASE} in
     exit 4
 esac
 export CASE_ANL
-export OBS_LIST="${PARMgfs}/gdas/aero/obs/lists/gdas_aero.yaml.j2"
+export JCB_ALGO_YAML_VAR=${PARMgfs}/gdas/aero/jcb-prototype_3dvar.yaml.j2
 export STATICB_TYPE='diffusion'
-export BERROR_YAML="${PARMgfs}/gdas/aero/berror/staticb_${STATICB_TYPE}.yaml.j2"
+export BERROR_YAML="aero_background_error_static_${STATICB_TYPE}"
 export BERROR_DATA_DIR="${FIXgfs}/gdas/aero/clim_b"
 
 export CRTM_FIX_YAML="${PARMgfs}/gdas/aero_crtm_coeff.yaml.j2"
 export JEDI_FIX_YAML="${PARMgfs}/gdas/aero_jedi_fix.yaml.j2"
+
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/aeroanl_jedi_config.yaml.j2"
 
 export AERO_STAGE_VARIATIONAL_TMPL="${PARMgfs}/gdas/aero_stage_variational.yaml.j2"
 export AERO_FINALIZE_VARIATIONAL_TMPL="${PARMgfs}/gdas/aero_finalize_variational.yaml.j2"
@@ -33,15 +35,11 @@ export io_layout_x=@IO_LAYOUT_X@
 export io_layout_y=@IO_LAYOUT_Y@
 
 export JEDIEXE="${EXECgfs}/gdas.x"
-export BMATEXE="${EXECgfs}/gdasapp_chem_diagb.x"
-export DIFFUSIONEXE="${EXECgfs}/gdas_fv3jedi_error_covariance_toolbox.x"
 
 if [[ "${DOIAU}" == "YES" ]]; then
   export aero_bkg_times="3,6,9"
-  export JEDIYAML="${PARMgfs}/gdas/aero/variational/3dvar_fgat_gfs_aero.yaml.j2"
 else
   export aero_bkg_times="6," # Trailing comma is necessary so this is treated as a list
-  export JEDIYAML="${PARMgfs}/gdas/aero/variational/3dvar_gfs_aero.yaml.j2"
 fi
 
 echo "END: config.aeroanl"

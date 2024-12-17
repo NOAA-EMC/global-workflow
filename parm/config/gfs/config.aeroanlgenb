@@ -8,9 +8,8 @@ echo "BEGIN: config.aeroanlgenb"
 # Get task specific resources
 source "${EXPDIR}/config.resources" aeroanlgenb
 
-export BMATYAML="${PARMgfs}/gdas/aero/berror/aero_diagb.yaml.j2"
-export DIFFUSIONYAML="${PARMgfs}/gdas/aero/berror/aero_diffusionparm.yaml.j2"
-export INTERPYAML="${PARMgfs}/gdas/aero/berror/aero_interp.yaml.j2"
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/aero_bmat_jedi_config.yaml.j2"
+export JCB_BASE_YAML="${PARMgfs}/gdas/aero/jcb-base.yaml.j2"
 export AERO_BMATRIX_STAGE_TMPL="${PARMgfs}/gdas/aero_stage_bmatrix_bkg.yaml.j2"
 export AERO_BMATRIX_FINALIZE_TMPL="${PARMgfs}/gdas/aero_finalize_bmatrix_bkg.yaml.j2"
 export aero_diffusion_iter=10

@@ -12,6 +12,7 @@ mkdir:
 - "{{ DATA }}/stddev"
 - "{{ DATA }}/clm_stddev"
 - "{{ DATA }}/diffusion"
+- "{{ DATA }}/rescale"
 copy:
 ######################################
 # copy deterministic background files
@@ -30,9 +31,15 @@ copy:
 - ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ background_time | to_fv3time }}.{{ ftype }}.tile{{ tile }}.nc", "{{ DATA }}/bkg/{{ background_time | to_fv3time }}.{{ ftype }}.tile{{ tile }}.nc"]
   {% endfor %}
 {% endfor %}
+######################################
 # copy climatological stddev files
 ######################################
 {% for tile in range(1, ntiles+1) %}
 - ["{{ BERROR_DATA_DIR }}/stddev.fv_tracer.res.tile{{ tile }}.nc", "{{ DATA }}/clm_stddev/stddev.fv_tracer.res.tile{{ tile }}.nc"]
 {% endfor %}
-
+######################################
+# copy stddev rescaling factor files
+######################################
+{% for tile in range(1, ntiles+1) %}
+- ["{{ BERROR_DATA_DIR }}/rescale.fv_tracer.res.tile{{ tile }}.nc", "{{ DATA }}/rescale/rescale.fv_tracer.res.tile{{ tile }}.nc"]
+{% endfor %}
