@@ -1,5 +1,5 @@
-export version=v16.3.19
-export gfs_ver=v16.3.19
+export version=v16.3.20
+export gfs_ver=v16.3.20
 export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
 export nam_ver=v4.2
@@ -47,5 +47,7 @@ export g2_ver=3.4.5
 export zlib_ver=1.2.11
 export sp_ver=2.3.3
 export ip_ver=3.3.3
+
+export cmdaccel_ver=1.1
 
 export NET=gfs

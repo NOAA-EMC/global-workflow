@@ -11,6 +11,8 @@ load(pathJoin("esmf", os.getenv("esmf_ver")))
 load(pathJoin("cfp", os.getenv("cfp_ver")))
 setenv("USE_CFP","YES")
 
+load(pathJoin("cmdaccel", os.getenv("cmdaccel_ver")))
+
 load(pathJoin("python", os.getenv("python_ver")))
 load(pathJoin("prod_envir", os.getenv("prod_envir_ver")))
 load(pathJoin("gempak", os.getenv("gempak_ver")))

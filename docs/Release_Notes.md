@@ -1,10 +1,10 @@
-GFS V16.3.19 RELEASE NOTES
+GFS V16.3.20 RELEASE NOTES
 
 -------
 PRELUDE
 -------
 
-PlanetiQ RO data has added noise and is placed into monitor mode until its impact on the cycled analysis forecast system can be assessed.
+Annual CO2 fix file update for 2025. Additionally, the GSI is updated to turn on assimilation of PlanetiQ GPS Radio Occultation (GPS-RO) data.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.19
-cd gfs.v16.3.19
-git clone -b EMC-v16.3.19 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.20
+cd gfs.v16.3.20
+git clone -b EMC-v16.3.20 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -26,7 +26,7 @@ The checkout script extracts the following GFS components:
 | --------- | ----------- | ----------------- |
 | MODEL     | GFS.v16.3.1   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
-| GSI       | gfsda.v16.3.19 | Andrew.Collard@noaa.gov |
+| GSI       | gfsda.v16.3.20 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.0 | George.Gayno@noaa.gov |
 | POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
 | WAFS      | gfs_wafs.v6.3.3 | Yali.Mao@noaa.gov |
@@ -50,47 +50,48 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.19` and `gfs_ver=v16.3.19`
+* `versions/run.ver` - change `version=v16.3.20` and `gfs_ver=v16.3.20`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.19
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.19
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.19
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.19
 
 FIX CHANGES
 -----------
 
+* New 2025 CO2 fix files are added.
 * Updated `global_convinfo.txt` file in GSI package
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.19
 
 CHANGES TO FILE SIZES
 ---------------------
 
-* No changes of existing file sizes from GFS v16.3.18
+* No changes of existing file sizes from GFS v16.3.19
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.18
+* Memory increases to some jobs to resolve Cgroup memory warnings
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -103,24 +104,24 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.19
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.19
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.19
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.18
+* No changes from GFS v16.3.19
 
 PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
-Russ.Treadon@noaa.gov
+Andrew.Collard@noaa.gov

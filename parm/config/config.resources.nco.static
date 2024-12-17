@@ -61,7 +61,7 @@ elif [ $step = "wavepostsbs" ]; then
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$npe_wavepostsbs
     export memory_wavepostsbs="10GB"
-    export memory_wavepostsbs_gfs="10GB"
+    export memory_wavepostsbs_gfs="100GB"
     export NTASKS=$npe_wavepostsbs
 
 elif [ $step = "wavepostbndpnt" ]; then
@@ -95,7 +95,7 @@ elif [ $step = "wavegempak" ]; then
     export nth_wavegempak=1
     export npe_node_wavegempak=$npe_wavegempak
     export NTASKS=$npe_wavegempak
-    export memory_wavegempak="1GB"
+    export memory_wavegempak="100GB"
 
 elif [ $step = "waveawipsbulls" ]; then
 
@@ -112,7 +112,7 @@ elif [ $step = "waveawipsgridded" ]; then
     export nth_waveawipsgridded=1
     export npe_node_waveawipsgridded=$(echo "$npe_node_max / $nth_waveawipsgridded" | bc)
     export NTASKS=$npe_waveawipsgridded
-    export memory_waveawipsgridded_gfs="1GB"
+    export memory_waveawipsgridded_gfs="20GB"
 
 elif [ $step = "anal" ]; then
 
@@ -225,7 +225,7 @@ elif [ $step = "wafsgrib20p25" ]; then
 
 elif [ $step = "wafsblending0p25" ]; then
 
-    export wtime_wafsblending0p25="00:30:00"
+    export wtime_wafsblending0p25="00:40:00"
     export npe_wafsblending0p25=1
     export npe_node_wafsblending0p25=$npe_wafsblending0p25
     export nth_wafsblending0p25=1
@@ -286,7 +286,7 @@ elif [ $step = "ediag" ]; then
 
 elif [ $step = "eupd" ]; then
 
-    export wtime_eupd="00:35:00"
+    export wtime_eupd="00:40:00"
     export npe_eupd=315
     export nth_eupd=14
     export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
@@ -308,7 +308,7 @@ elif [ $step = "esfc" ]; then
     export nth_esfc=1
     export nth_cycle=$nth_esfc
     export npe_node_cycle=$(echo "$npe_node_max / $nth_cycle" | bc)
-    export memory_esfc="60GB"
+    export memory_esfc="500GB"
 
 elif [ $step = "efcs" ]; then
 
@@ -339,7 +339,7 @@ elif [ $step = "awips" ]; then
     export npe_awips=1
     export npe_node_awips=1
     export nth_awips=1
-    export memory_awips="3GB"
+    export memory_awips="100GB"
 
 elif [ $step = "gempak" ]; then
 
@@ -350,7 +350,7 @@ elif [ $step = "gempak" ]; then
     export npe_node_gempak_gfs=28
     export nth_gempak=1
     export memory_gempak="4GB"
-    export memory_gempak_gfs="2GB"
+    export memory_gempak_gfs="150GB"
 
 else
 
