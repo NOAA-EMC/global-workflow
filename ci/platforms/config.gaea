@@ -3,6 +3,6 @@
 export GFS_CI_ROOT=/gpfs/f5/epic/proj-shared/global/GFS_CI_ROOT
 export ICSDIR_ROOT=/gpfs/f5/epic/proj-shared/global/glopara/data/ICSDIR
 export STMP="/gpfs/f5/epic/scratch/${USER}"
-export SLURM_ACCOUNT=ufs-ard
+export HPC_ACCOUNT=ufs-ard
 export max_concurrent_cases=5
 export max_concurrent_pr=4
