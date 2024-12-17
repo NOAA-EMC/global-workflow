@@ -19,4 +19,4 @@ arguments:
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
 
 skip_ci_on_hosts:
-  - wcoss2
+  - None
