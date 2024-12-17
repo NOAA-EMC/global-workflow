@@ -83,6 +83,7 @@ gefs_wave:
         - "{{ file_path | relpath(ROTDIR)}}"
         {% set file_path = COMIN_WAVE_STATION ~ "/" ~ RUN ~ "wave.t" ~ cycle_HH ~ "z.bull_tar" %}
         - "{{ file_path | relpath(ROTDIR)}}"
+    {% endif %}
 
     {% for res in RESOLUTION %}
         {% set COMIN_WAVE_GRID = COM_WAVE_GRID_TMPL | replace_tmpl(tmpl_dict) %}
