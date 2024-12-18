@@ -47,7 +47,7 @@ fi
 # Extract variables for wave
 if [[ "${DO_WAVE}" == "YES" ]]; then
   export component_name="wav"
-  ${EXTRCTVARW} "${DATA}/wav" "${waveGRD}"
+  ${EXTRCTVARW} "${DATA}/wav"
 fi
 
 exit 0
