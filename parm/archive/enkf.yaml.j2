@@ -77,7 +77,6 @@ enkf:
         - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/snowinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
         {% endfor %}
         {% endif %}
-        {% endif %}
 
         # Ensemble mean analyses/increments
         # 6-hr analysis/increment
