@@ -10,3 +10,10 @@ datasets:
     {% include "gefs_extracted_ice.yaml.j2" %}
     {% include "gefs_extracted_wave.yaml.j2" %}
 {% endfilter %}
+
+# Archive the EXPDIR if requested
+{% if archive_expdir %}
+{% filter indent(width=4) %}
+{% include "expdir.yaml.j2" %}
+{% endfilter %}
+{% endif %}

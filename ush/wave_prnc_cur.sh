@@ -74,22 +74,22 @@ rm -f cur.nc
 ${NLN} "cur_glo_uv_${PDY}_${fext}${fh3}_5min.nc" "cur.nc"
 ${NLN} "${DATA}/mod_def.${WAVECUR_FID}" ./mod_def.ww3
 
-export pgm=ww3_prnc;. prep_step
-${EXECgfs}/ww3_prnc 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1
+export pgm="${NET,,}_ww3_prnc.x"
+source prep_step
 
+"${EXECgfs}/${pgm}" 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1
 export err=$?; err_chk
-
 if [ "$err" != '0' ]
 then
   cat prnc_${WAVECUR_FID}_${ymdh_rtofs}.out
   set $setoff
   echo ' '
   echo '******************************************** '
-  echo '*** WARNING: NON-FATAL ERROR IN ww3_prnc *** '
+  echo "*** WARNING: NON-FATAL ERROR IN ${pgm} *** "
   echo '******************************************** '
   echo ' '
   set $seton
-  echo "WARNING: NON-FATAL ERROR IN ww3_prnc."
+  echo "WARNING: NON-FATAL ERROR IN ${pgm}."
   exit 4
 fi
 

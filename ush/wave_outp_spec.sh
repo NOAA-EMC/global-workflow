@@ -161,21 +161,21 @@ source "${USHgfs}/preamble.sh"
 
 # 2.b Run the postprocessor
 
+  export pgm="${NET,,}_ww3_outp.x"
+  source prep_step
+
   set +x
-  echo "   Executing ${EXECgfs}/ww3_outp"
+  echo "   Executing ${EXECgfs}/${pgm}"
   set_trace
 
-  export pgm=ww3_outp;. prep_step
-  ${EXECgfs}/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
+  "${EXECgfs}/${pgm}" 1> outp_${specdir}_${buoy}.out 2>&1
   export err=$?;err_chk
-
-
   if [ "$err" != '0' ]
   then
     set +x
     echo ' '
     echo '******************************************** '
-    echo '*** FATAL ERROR : ERROR IN ww3_outp *** '
+    echo '*** FATAL ERROR : ERROR IN ${pgm} *** '
     echo '******************************************** '
     echo ' '
     set_trace
@@ -219,7 +219,7 @@ source "${USHgfs}/preamble.sh"
     set +x
     echo ' '
     echo '***************************************************************** '
-    echo '*** FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy NOT FOUND *** '
+    echo "*** FATAL ERROR : OUTPUT DATA FILE FOR BOUY ${bouy} NOT FOUND *** "
     echo '***************************************************************** '
     echo ' '
     set_trace

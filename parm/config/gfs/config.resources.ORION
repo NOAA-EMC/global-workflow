@@ -30,10 +30,13 @@ case ${step} in
     export walltime="00:45:00"
   ;;
   "atmensanlobs")
-    # Run on 8 nodes for memory requirement
-    export tasks_per_node=8
+    # Run on 12 nodes for memory requirement
+    export tasks_per_node=12
     export walltime="00:45:00"
   ;;
+  "atmensanlsol")
+    export tasks_per_node=12
+  ;;  
   *)
   ;;
 esac
