@@ -69,9 +69,9 @@ class SnowEnsAnalysis(Task):
                 'OPREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'snow_obsdatain_path': os.path.join(self.task_config.DATA,'obs'),
-	            'snow_obsdataout_path': os.path.join(self.task_config.DATA,'diags'),
-	            'snow_bkg_path': os.path.join('.','bkg','ensmean'),
+                'snow_obsdatain_path': os.path.join(self.task_config.DATA, 'obs'),
+                'snow_obsdataout_path': os.path.join(self.task_config.DATA, 'diags'),
+                'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean'),
             }
         )
 
@@ -220,15 +220,16 @@ class SnowEnsAnalysis(Task):
         # execute CALCFIMSEXE to calculate IMS snowdepth
         exe = Executable(self.task_config.APRUN_CALCFIMS)
         exe.add_default_arg(exe_dest)
-        logger.info(f"Executing {exe}")
+
         try:
+            logger.debug(f"Executing {exe}")
             exe()
         except OSError:
             logger.exception(f"Failed to execute {exe}")
-	        raise
+            raise
         except Exception err:
-	        logger.exception(f"An error occured during execution of {exe}")
-	        raise WorkflowException(f"An error occured during execution of {exe}") from err
+            logger.exception(f"An error occured during execution of {exe}")
+            raise WorkflowException(f"An error occured during execution of {exe}") from err
 
         # Ensure the snow depth IMS file is produced by the above executable
         input_file = f"IMSscf.{to_YMD(localconf.current_cycle)}.{localconf.CASE}_oro_data.nc"
@@ -246,15 +247,16 @@ class SnowEnsAnalysis(Task):
         exe = Executable(self.task_config.IMS2IODACONV)
         exe.add_default_arg(["-i", f"{os.path.join(localconf.DATA, input_file)}"])
         exe.add_default_arg(["-o", f"{os.path.join(localconf.DATA, output_file)}"])
+
         try:
             logger.debug(f"Executing {exe}")
             exe()
         except OSError:
             logger.exception(f"Failed to execute {exe}")
-	        raise
+            raise
         except Exception err:
-	        logger.exception(f"An error occured during execution of {exe}")
-	        raise WorkflowException(f"An error occured during execution of {exe}") from err
+            logger.exception(f"An error occured during execution of {exe}")
+            raise WorkflowException(f"An error occured during execution of {exe}") from err
 
         # Ensure the IODA snow depth IMS file is produced by the IODA converter
         # If so, copy to DATA/obs/
@@ -430,6 +432,7 @@ class SnowEnsAnalysis(Task):
                 exe.add_default_arg(os.path.join(self.task_config.DATA, os.path.basename(exe_src)))
                 logger.info(f"Executing {exe}")
                 try:
+                    logger.debug(f"Executing {exe}")
                     exe()
                 except OSError:
                     logger.exception(f"Failed to execute {exe}")
