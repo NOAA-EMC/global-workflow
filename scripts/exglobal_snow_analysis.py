@@ -18,20 +18,20 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the snow analysis task
-    SnowAnl = SnowAnalysis(config)
+    snow_anl = SnowAnalysis(config)
 
     # Initialize JEDI 2DVar snow analysis
-    SnowAnl.initialize()
+    snow_anl.initialize()
 
     # Process IMS snow cover (if applicable)
-    if SnowAnl.task_config.cyc == 0:
-        SnowAnl.prepare_IMS()
+    if snow_anl.task_config.cyc == 0:
+        snow_anl.prepare_IMS()
 
     # Execute JEDI snow analysis
-    SnowAnl.execute('snowanlvar')
+    snow_anl.execute('snowanlvar')
 
     # Add increments
-    SnowAnl.add_increments()
+    snow_anl.add_increments()
 
     # Finalize JEDI snow analysis
-    SnowAnl.finalize()
+    snow_anl.finalize()

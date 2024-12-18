@@ -13,7 +13,7 @@ from netCDF4 import Dataset
 from wxflow import (AttrDict,
                     FileHandler,
                     to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime,
-                    rm_p,
+                    rm_p, cp,
                     parse_j2yaml, save_as_yaml,
                     Jinja,
                     Task,
@@ -57,9 +57,6 @@ class SnowEnsAnalysis(Task):
         # fix ocnres
         self.task_config.OCNRES = f"{self.task_config.OCNRES :03d}"
 
-        # we do not have enkf obs
-        oprefix = self.task_config.RUN.replace("enkf", "")
-
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
@@ -69,12 +66,12 @@ class SnowEnsAnalysis(Task):
                 'npz': self.task_config.LEVS - 1,
                 'SNOW_WINDOW_BEGIN': _window_begin,
                 'SNOW_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
-                'OPREFIX': f"{oprefix}.t{self.task_config.cyc:02d}z.",
+                'OPREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'snow_obsdatain_path': f"{self.task_config.DATA}/obs/",
-                'snow_obsdataout_path': f"{self.task_config.DATA}/diags/",
-                'snow_bkg_path': './bkg/ensmean',
+                'snow_obsdatain_path': os.path.join(self.task_config.DATA,'obs'),
+	            'snow_obsdataout_path': os.path.join(self.task_config.DATA,'diags'),
+	            'snow_bkg_path': os.path.join('.','bkg','ensmean'),
             }
         )
 
@@ -194,7 +191,7 @@ class SnowEnsAnalysis(Task):
         for key in keys:
             localconf[key] = self.task_config[key]
 
-        localconf['ims_fcst_path'] = './bkg/ensmean/'
+        localconf['ims_fcst_path'] = self.task_config['snow_bkg_path']
         # Read and render the IMS_OBS_LIST yaml
         logger.info(f"Reading {self.task_config.IMS_OBS_LIST}")
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, localconf)
@@ -218,18 +215,20 @@ class SnowEnsAnalysis(Task):
         exe_dest = os.path.join(localconf.DATA, os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
-        os.symlink(exe_src, exe_dest)
+        cp(exe_src, exe_dest)
 
         # execute CALCFIMSEXE to calculate IMS snowdepth
         exe = Executable(self.task_config.APRUN_CALCFIMS)
-        exe.add_default_arg(os.path.join(localconf.DATA, os.path.basename(exe_src)))
+        exe.add_default_arg(exe_dest)
         logger.info(f"Executing {exe}")
         try:
             exe()
         except OSError:
-            raise OSError(f"Failed to execute {exe}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exe}")
+            logger.exception(f"Failed to execute {exe}")
+	        raise
+        except Exception err:
+	        logger.exception(f"An error occured during execution of {exe}")
+	        raise WorkflowException(f"An error occured during execution of {exe}") from err
 
         # Ensure the snow depth IMS file is produced by the above executable
         input_file = f"IMSscf.{to_YMD(localconf.current_cycle)}.{localconf.CASE}_oro_data.nc"
@@ -251,9 +250,11 @@ class SnowEnsAnalysis(Task):
             logger.debug(f"Executing {exe}")
             exe()
         except OSError:
-            raise OSError(f"Failed to execute {exe}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exe}")
+            logger.exception(f"Failed to execute {exe}")
+	        raise
+        except Exception err:
+	        logger.exception(f"An error occured during execution of {exe}")
+	        raise WorkflowException(f"An error occured during execution of {exe}") from err
 
         # Ensure the IODA snow depth IMS file is produced by the IODA converter
         # If so, copy to DATA/obs/
@@ -294,17 +295,17 @@ class SnowEnsAnalysis(Task):
         Parameters
         ----------
         self : Analysis
-            Instance of the SnowAnalysis object
+            Instance of the SnowEnsAnalysis object
         """
 
         # ---- tar up diags
         # path of output tar statfile
-        snowstat = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, f"{self.task_config.APREFIX}snowstat")
+        snowstat = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, f"{self.task_config.APREFIX}snowstat.tgz")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
 
-        logger.info(f"Compressing {len(diags)} diag files to {snowstat}.gz")
+        logger.info(f"Compressing {len(diags)} diag files to {snowstat}")
 
         # gzip the files first
         logger.debug(f"Gzipping {len(diags)} diag files")
@@ -314,7 +315,7 @@ class SnowEnsAnalysis(Task):
 
         # open tar file for writing
         logger.debug(f"Creating tar file {snowstat} with {len(diags)} gzipped diag files")
-        with tarfile.open(snowstat, "w") as archive:
+        with tarfile.open(snowstat, "w|gz") as archive:
             for diagfile in diags:
                 diaggzip = f"{diagfile}.gz"
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
@@ -326,7 +327,7 @@ class SnowEnsAnalysis(Task):
         for src in yamls:
             yaml_base = os.path.splitext(os.path.basename(src))[0]
             dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
-            dest = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, dest_yaml_name)
+            dest = os.path.join(self.task_config.COMOUT_CONF, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
                 'copy': [[src, dest]]
@@ -368,7 +369,7 @@ class SnowEnsAnalysis(Task):
         Parameters
         ----------
         self : Analysis
-            Instance of the SnowAnalysis object
+            Instance of the SnowEnsAnalysis object
         """
 
         if self.task_config.DOIAU:
@@ -422,7 +423,7 @@ class SnowEnsAnalysis(Task):
                 exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
                 if os.path.exists(exe_dest):
                     rm_p(exe_dest)
-                os.symlink(exe_src, exe_dest)
+                cp(exe_src, exe_dest)
 
                 # execute APPLY_INCR_EXE to create analysis files
                 exe = Executable(self.task_config.APRUN_APPLY_INCR)
@@ -431,6 +432,8 @@ class SnowEnsAnalysis(Task):
                 try:
                     exe()
                 except OSError:
-                    raise OSError(f"Failed to execute {exe}")
-                except Exception:
-                    raise WorkflowException(f"An error occured during execution of {exe}")
+                    logger.exception(f"Failed to execute {exe}")
+                    raise
+                except Exception err:
+                    logger.exception(f"An error occured during execution of {exe}")
+                    raise WorkflowException(f"An error occured during execution of {exe}") from err

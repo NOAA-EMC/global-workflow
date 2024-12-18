@@ -10,7 +10,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowanl" -c "base esnowanl"
 # shellcheck disable=SC2153
 GDUMP="gdas"
 export GDUMP
-CDUMP=${RUN:4}
+CDUMP=${RUN/enkf}
+export CDUMP
 
 ##############################################
 # Begin JOB SPECIFIC work

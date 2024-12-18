@@ -19,25 +19,25 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the snow ensemble analysis task
-    SnowEnsAnl = SnowEnsAnalysis(config)
+    snow_ens_anl = SnowEnsAnalysis(config)
 
     # Initialize JEDI 2DVar snow analysis
-    SnowEnsAnl.initialize()
+    snow_ens_anl.initialize()
 
     # Calculate ensemble mean
-    SnowEnsAnl.execute('esnowanlensmean')
+    snow_ens_anl.execute('esnowanlensmean')
 
     # stage ensemble mean backgrounds
 
     # Process IMS snow cover (if applicable)
-    if SnowEnsAnl.task_config.cyc == 0:
-        SnowEnsAnl.prepare_IMS()
+    if snow_ens_anl.task_config.cyc == 0:
+        snow_ens_anl.prepare_IMS()
 
     # Execute JEDI snow analysis
-    SnowEnsAnl.execute('snowanlvar')
+    snow_ens_anl.execute('snowanlvar')
 
     # Add increments
-    SnowEnsAnl.add_increments()
+    snow_ens_anl.add_increments()
 
     # Finalize JEDI snow analysis
-    SnowEnsAnl.finalize()
+    snow_ens_anl.finalize()
