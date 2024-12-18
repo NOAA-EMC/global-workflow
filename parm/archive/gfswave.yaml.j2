@@ -3,57 +3,35 @@ gfswave:
     name: "GFSWAVE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
     required:
-    {% set RESOLUTION = [] %}
-    {% for grdID in waveGRD %}
-        {% if grdID == 'glo_10m' %}
-            {% set GRDNAME = 'global.0p16' %}
-        {% elif grdID == 'glo_15mxt' %}
-            {% set GRDNAME = 'global.0p25' %}
-        {% elif grdID == 'glo_30mxt' %}
-            {% set GRDNAME = 'global.0p50' %}
-        {% elif grdID == 'glo_30m' %}
-            {% set GRDNAME = 'global.0p50' %}
-        {% elif grdID == 'glo_025' %}
-            {% set GRDNAME = 'global.0p25' %}
-        {% elif grdID == 'glo_100' %}
-            {% set GRDNAME = 'global.1p00' %}
-        {% elif grdID == 'glo_200' %}
-            {% set GRDNAME = 'global.2p00' %}
-        {% elif grdID == 'glo_500' %}
-            {% set GRDNAME = 'global.5p00' %}
-        {% elif grdID == 'at_10m' %}
-            {% set GRDNAME = 'atlocn.0p16' %}
-        {% elif grdID == 'ep_10m' %}
-            {% set GRDNAME = 'epacif.0p16' %}
-        {% elif grdID == 'wc_10m' %}
-            {% set GRDNAME = 'wcoast.0p16' %}
-        {% elif grdID == 'ak_10m' %}
-            {% set GRDNAME = 'alaska.0p16' %}
-        {% elif grdID == 'aoc_9km' %}
-            {% set GRDNAME = 'arctic.9km' %}
-        {% elif grdID == 'ant_9km' %}
-            {% set GRDNAME = 'antarc.9km' %}
-        {% elif grdID == 'gnh_10m' %}
-            {% set GRDNAME = 'global.0p16' %}
-        {% elif grdID == 'gsh_15m' %}
-            {% set GRDNAME = 'gsouth.0p25' %}
-        {% elif grdID == 'ao_20m' %}
-            {% set GRDNAME = 'arctic.0p33' %}
-        {% elif grdID == 'so_20m' %}
-            {% set GRDNAME = 'antarc.0p33' %}
-        {% elif grdID == 'reg025' %}
-            {% set GRDNAME = 'global.0p25' %}
-        {% elif grdID == 'gwes_30m' %}
-            {% set GRDNAME = 'global.0p50' %}
-        {% else %}
-            {% set GRDNAME = 'unknown' %}
-            {{ "FATAL ERROR: No grid specific wave config values exist for " ~ grdID ~ ". Aborting." }}
-        {% endif %}
-        {% do RESOLUTION.append(GRDNAME) %}  
-    {% endfor %}
+    {% set grid_mapping = {
+        'glo_10m': 'global.0p16',
+        'glo_15mxt': 'global.0p25',
+        'glo_30mxt': 'global.0p50',
+        'glo_30m': 'global.0p50',
+        'glo_025': 'global.0p25',
+        'glo_100': 'global.1p00',
+        'glo_200': 'global.2p00',
+        'glo_500': 'global.5p00',
+        'at_10m': 'atlocn.0p16',
+        'ep_10m': 'epacif.0p16',
+        'wc_10m': 'wcoast.0p16',
+        'ak_10m': 'alaska.0p16',
+        'aoc_9km': 'arctic.9km',
+        'ant_9km': 'antarc.9km',
+        'gnh_10m': 'global.0p16',
+        'gsh_15m': 'gsouth.0p25',
+        'ao_20m': 'arctic.0p33',
+        'so_20m': 'antarc.0p33',
+        'reg025': 'global.0p25',
+        'gwes_30m': 'global.0p50'
+    } %}
+
+    {% set res = grid_mapping.get(waveGRD, 'unknown') %}
+    {% if res == 'unknown' %}
+        {{ "FATAL ERROR: No grid specific wave config values exist. Aborting." }}
+    {% endif %}
 
         # Wave GRIB2 regional forecast products
-        {% for res in RESOLUTION %}
         {% set file_path = COMIN_WAVE_GRID ~ "/" ~ res %}
 
         {% for fh in range(0, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
@@ -67,8 +45,6 @@ gfswave:
         {% for fh in range(FHMAX_HF_WAV + FHOUT_WAV, FHMAX_WAV_GFS + FHOUT_WAV, FHOUT_WAV) %}
         - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
         - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
-        {% endfor %}
-
         {% endfor %}
 
         # Wave bulletins
