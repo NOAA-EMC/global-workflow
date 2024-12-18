@@ -41,7 +41,7 @@ setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 prepend_path("MODULEPATH", pathJoin("/gpfs/f6/bil-fire8/world-shared/global/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
---prepend_path("MODULEPATH", pathJoin("/gpfs/f6/bil-fire8/world-shared/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
---load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
+prepend_path("MODULEPATH", pathJoin("/gpfs/f6/bil-fire8/world-shared/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
+load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 whatis("Description: GFS run setup environment")
