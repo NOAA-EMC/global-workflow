@@ -64,7 +64,6 @@ gefs_wave:
         - "{{ file_path | relpath(ROTDIR)}}"
     {% endif %}
 
-
     {% set COMIN_WAVE_GRID = COM_WAVE_GRID_TMPL | replace_tmpl(tmpl_dict) %}
         # Select grib2 files to copy to the atardir
     {% if path_exists(COMIN_WAVE_GRID) %}
