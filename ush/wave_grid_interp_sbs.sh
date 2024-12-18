@@ -133,17 +133,18 @@ source "${USHgfs}/preamble.sh"
 
 # 1.b Run interpolation code
 
+  export pgm="${NET,,}_ww3_gint.x"
+  source prep_step
+
   set +x
-  echo "   Run ww3_gint
-  echo "   Executing ${EXECgfs}/ww3_gint
+  echo "   Executing ${pgm}"
   set_trace
 
-  export pgm=ww3_gint;. prep_step
-  ${EXECgfs}/ww3_gint 1> gint.${grdID}.out 2>&1
+  "${EXECgfs}/${pgm}" 1> gint.${grdID}.out 2>&1
   export err=$?;err_chk
 
 # Write interpolation file to main TEMP dir area if not there yet
-  if [ "wht_OK" = 'no' ]
+  if [ "wht_OK" = 'no' ]  # FIXME: This is never going to evaluate to true, wht_OK is a string and needs to be ${wht_OK}.  With ${wht_OK}, the next line is trying to copy into ${FIXgfs} space.  This leads to a Permission denied error. The logic here needs to be evaluated and recoded.  #TODO
   then
     cp -f ./WHTGRIDINT.bin ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID}
     cp -f ./WHTGRIDINT.bin ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}
@@ -155,7 +156,7 @@ source "${USHgfs}/preamble.sh"
     set +x
     echo ' '
     echo '*************************************************** '
-    echo '*** FATAL ERROR : ERROR IN ww3_gint interpolation * '
+    echo "*** FATAL ERROR : ERROR IN ${pgm} interpolation * "
     echo '*************************************************** '
     echo ' '
     set_trace

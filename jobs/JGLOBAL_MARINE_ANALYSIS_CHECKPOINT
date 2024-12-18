@@ -2,6 +2,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATAens="${DATAjob}/ensdata"
 export DATA="${DATAjob}/marinevariational"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlchkpt" -c "base marineanl marineanlchkpt"
 

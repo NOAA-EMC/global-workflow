@@ -56,6 +56,7 @@ _wave_opt=""
 _hydro_opt=""
 _build_job_max=20
 _quick_kill="NO"
+_ufs_exec="-e gfs_model.x"
 # Reset option counter in case this script is sourced
 OPTIND=1
 while getopts ":a:dfghj:kuvwy" option; do
@@ -69,8 +70,8 @@ while getopts ":a:dfghj:kuvwy" option; do
     k) _quick_kill="YES" ;;
     u) _build_ufsda="YES" ;;
     v) _verbose_opt="-v";;
-    w) _wave_opt="-w";;
-    y) _hydro_opt="-y";;
+    w) _wave_opt="-w"; _ufs_exec="-e gefs_model.x";;
+    y) _hydro_opt="-y"; _ufs_exec="-e sfs_model.x";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       _usage
@@ -133,7 +134,7 @@ declare -A build_opts
 big_jobs=0
 build_jobs["ufs"]=8
 big_jobs=$((big_jobs+1))
-build_opts["ufs"]="${_wave_opt} ${_hydro_opt} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
+build_opts["ufs"]="${_wave_opt} ${_hydro_opt} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug} ${_ufs_exec}"
 
 build_jobs["upp"]=1
 build_opts["upp"]="${_build_debug}"
