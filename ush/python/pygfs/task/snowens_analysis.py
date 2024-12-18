@@ -227,7 +227,7 @@ class SnowEnsAnalysis(Task):
         except OSError:
             logger.exception(f"Failed to execute {exe}")
             raise
-        except Exception err:
+        except Exception as err:
             logger.exception(f"An error occured during execution of {exe}")
             raise WorkflowException(f"An error occured during execution of {exe}") from err
 
@@ -254,7 +254,7 @@ class SnowEnsAnalysis(Task):
         except OSError:
             logger.exception(f"Failed to execute {exe}")
             raise
-        except Exception err:
+        except Exception as err:
             logger.exception(f"An error occured during execution of {exe}")
             raise WorkflowException(f"An error occured during execution of {exe}") from err
 
@@ -429,7 +429,7 @@ class SnowEnsAnalysis(Task):
 
                 # execute APPLY_INCR_EXE to create analysis files
                 exe = Executable(self.task_config.APRUN_APPLY_INCR)
-                exe.add_default_arg(os.path.join(self.task_config.DATA, os.path.basename(exe_src)))
+                exe.add_default_arg(exe_dest)
                 logger.info(f"Executing {exe}")
                 try:
                     logger.debug(f"Executing {exe}")
@@ -437,6 +437,6 @@ class SnowEnsAnalysis(Task):
                 except OSError:
                     logger.exception(f"Failed to execute {exe}")
                     raise
-                except Exception err:
+                except Exception as err:
                     logger.exception(f"An error occured during execution of {exe}")
                     raise WorkflowException(f"An error occured during execution of {exe}") from err

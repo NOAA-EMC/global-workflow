@@ -205,7 +205,7 @@ class SnowAnalysis(Task):
         except OSError:
             logger.exception(f"Failed to execute {exe}")
             raise
-        except Exception err:
+        except Exception as err:
             logger.exception(f"An error occured during execution of {exe}")
             raise WorkflowException(f"An error occured during execution of {exe}") from err
 
@@ -231,7 +231,7 @@ class SnowAnalysis(Task):
         except OSError:
             logger.exception(f"Failed to execute {exe}")
             raise
-        except Exception err:
+        except Exception as err:
             logger.exception(f"An error occured during execution of {exe}")
             raise WorkflowException(f"An error occured during execution of {exe}") from err
 
@@ -414,6 +414,6 @@ class SnowAnalysis(Task):
             except OSError:
                 logger.exception(f"Failed to execute {exe}")
                 raise
-            except Exception err:
+            except Exception as err:
                 logger.exception(f"An error occured during execution of {exe}")
                 raise WorkflowException(f"An error occured during execution of {exe}") from err
