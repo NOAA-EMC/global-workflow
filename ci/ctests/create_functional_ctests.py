@@ -28,7 +28,7 @@ def parse_args():
     """
     parser = ArgumentParser(description=description)
 
-    parser.add_argument('--yaml', help='path to file for creating functional tests per case', required=True, type=Path)
+    parser.add_argument('--yaml', help='paths to YAML files for creating functional tests per case', required=True, type=Path, nargs='+')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -47,25 +47,35 @@ if __name__ == '__main__':
     # Used for getting platform specific information
     host = Host()
     cfg = Configuration(f'{data.HOMEgfs}/ci/platforms')
-    platform_config = cfg.parse_config(f'config.{host.machine.lower()}')
+
+    # Create cmake directory and move job list file
+    test_dir = os.path.join(_here, 'TESTS')
+    mkdir_p(test_dir)
 
     # Get the case name from the yaml file basename
     # and get the configuration for the case
-    case_name = os.path.basename(args.yaml).split('.')[0]
-    platform_config['testcase'] = case_name
-    data.update(platform_config)
-    case_cfg = parse_j2yaml(path=args.yaml, data=data)
-    case_cfg.update(platform_config)
+    case_names = ""
+    for yaml in args.yaml:
+        platform_config = cfg.parse_config(f'config.{host.machine.lower()}')
+        case_name = os.path.basename(yaml).split('.')[0]
+        platform_config['testcase'] = case_name
+        data.update(platform_config)
+        case_cfg = parse_j2yaml(path=yaml, data=data)
+        case_cfg.update(platform_config)
 
-    # Get top-level entries and create a job list file for the case
-    top_level_entries = [key for key in case_cfg.keys() if isinstance(case_cfg[key], dict)]
-    
-    # Create cmake directory and move job list file
-    test_dir = os.path.join(_here, 'TESTS')
-    job_list_file = f"TESTS/{case_name}_jobs.txt"
-    with open(job_list_file, 'w') as f:
-        for entry in top_level_entries:
-            f.write(f"{case_name}_{entry}\n")
+        # Get top-level entries and create a job list file for the case
+        top_level_entries = [key for key in case_cfg.keys() if isinstance(case_cfg[key], dict)]
+        job_list_file = f"TESTS/{case_name}_jobs.txt"
+        with open(job_list_file, 'w') as f:
+            for entry in top_level_entries:
+                f.write(f"{case_name}_{entry}\n")
 
-    cmake.add_default_arg([f'-S {_here}', f'-B {test_dir}',  f'-DCASE_LIST={case_name}'])
+        case_names += f"{case_name} "
+
+        platform_config.clear()
+        data.clear()
+        case_cfg.clear()
+
+    # Run cmake to create the functional tests
+    cmake.add_default_arg([f"-S {_here}", f"-B {test_dir}", f"-DCASE_LIST='{case_names[:-1]}'"])
     cmake()

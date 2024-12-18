@@ -53,7 +53,11 @@ add_test( NAME BuildAll
           COMMAND bash -c "cd ${HOMEgfs}/sorc; ./build_all.sh"
 )
 
-foreach(CASE IN LISTS CASE_LIST)
+# Split CASE_LIST into individual cases
+string(REPLACE " " ";" CASE_LIST_SPLIT ${CASE_LIST})
+
+# Loop over each case in CASE_LIST_SPLIT
+foreach(CASE IN LISTS CASE_LIST_SPLIT)
     GenerateExperiments(${CASE})
     file(STRINGS ${CMAKE_BINARY_DIR}/${CASE}_jobs.txt JOB_NAMES)
     foreach(JOB IN LISTS JOB_NAMES)
