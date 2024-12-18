@@ -1,0 +1,9 @@
+fcst_gfs:
+  staged_datapath: {{ STAGED_FUNCTIONAL_TEST_DIR }}/{{ testcase }}/fcst_gfs
+  input_files: use_jinja_template_fcst
+  output_files: use_jinja_template_fcst
+
+gfs_atmos_pro:
+  staged_datapath: {{ STAGED_FUNCTIONAL_TEST_DIR }}/{{ testcase }}/gfs_atmos_prod
+  input_files: use_jinja_template_gfs_atmos_pro
+  output_files: use_jinja_template_gfs_atmos_pro
