@@ -275,7 +275,9 @@ source "${USHgfs}/preamble.sh"
       for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
       do
         gribFL=\'$(echo ${OUTPARS_WAV})\'
-        eval "$(source "${USHgfs}/wave_domain_grid.sh" $grdID)"
+        source "${USHgfs}/wave_domain_grid.sh" $grdID
+        
+        echo "GRDNAME=${$GRDNAME}"
         echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
       done
     fi

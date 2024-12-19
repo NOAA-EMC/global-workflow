@@ -11,7 +11,7 @@
 
 source "${USHgfs}/preamble.sh"
 
-process_grdID() {
+function process_grdID() {
     grdID=$1
     case ${grdID} in
         glo_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
@@ -41,5 +41,3 @@ process_grdID() {
     export grdNAME="${GRDNAME}.${GRDRES}"
     echo "grdNAME=${grdNAME}"
 }
-
-process_grdID $1
