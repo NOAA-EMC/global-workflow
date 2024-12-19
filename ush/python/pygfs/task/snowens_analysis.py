@@ -215,7 +215,7 @@ class SnowEnsAnalysis(Task):
         exe_dest = os.path.join(localconf.DATA, os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
-        cp(exe_src, exe_dest)
+        os.symlink(exe_src, exe_dest)
 
         # execute CALCFIMSEXE to calculate IMS snowdepth
         exe = Executable(self.task_config.APRUN_CALCFIMS)
@@ -425,7 +425,7 @@ class SnowEnsAnalysis(Task):
                 exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
                 if os.path.exists(exe_dest):
                     rm_p(exe_dest)
-                cp(exe_src, exe_dest)
+                os.symlink(exe_src, exe_dest)
 
                 # execute APPLY_INCR_EXE to create analysis files
                 exe = Executable(self.task_config.APRUN_APPLY_INCR)
