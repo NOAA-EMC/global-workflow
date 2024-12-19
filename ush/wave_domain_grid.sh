@@ -12,7 +12,7 @@
 source "${USHgfs}/preamble.sh"
 
 process_grdID() {
-    local grdID=$1
+    grdID=$1
     case ${grdID} in
         glo_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
         glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;       
@@ -39,4 +39,5 @@ process_grdID() {
         exit 1 ;;
     esac
     export grdNAME="${GRDNAME}.${GRDRES}"
+    echo "grdNAME=${grdNAME}"
 }
