@@ -41,3 +41,5 @@ process_grdID() {
     export grdNAME="${GRDNAME}.${GRDRES}"
     echo "grdNAME=${grdNAME}"
 }
+
+process_grdID $1
