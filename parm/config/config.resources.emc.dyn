@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
+    echo "sfcprep prep anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
@@ -36,7 +36,16 @@ elif [[ "$machine" = "ORION" ]]; then
    export npe_node_max=40
 fi
 
-if [ $step = "prep" -o $step = "prepbufr" ]; then
+if [ $step = "sfcprep" ]; then
+
+    export wtime_sfcprep="00:08:00"
+    export npe_sfcprep=1
+    export nth_sfcprep=1
+    export npe_node_sfcprep=1
+    export NTASKS=$npe_sfcprep
+    export memory_sfcprep="10GB"
+
+elif [ $step = "prep" -o $step = "prepbufr" ]; then
 
     eval "export wtime_$step='00:45:00'"
     eval "export npe_$step=4"

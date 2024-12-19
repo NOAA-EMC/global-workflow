@@ -63,6 +63,7 @@ def main():
     steps = steps + wav_steps_gempak if _base.get('DO_GEMPAK', 'NO') == 'YES' else steps
     steps = steps + wav_steps_awips if _base.get('DO_AWIPS', 'NO') == 'YES' else steps
     steps = steps + ['wdqms'] if _base.get('DO_WDQMS', 'NO') == 'YES' else steps
+    steps = steps + ['sfcprep'] if _base.get('DO_SFCPREP', 'NO') == 'YES' else steps
 
     dict_configs = wfu.source_configs(configs, steps)
 
@@ -244,10 +245,13 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_wdqms = base.get('DO_WDQMS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
+    do_sfcprep = base.get('DO_SFCPREP', 'NO').upper()
     reservation = base.get('RESERVATION', 'NONE').upper()
 
-    #tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
-    tasks = ['prep', 'anal', 'analcalc']
+    if do_sfcprep in ['Y', 'YES']:
+        tasks = ['sfcprep', 'prep', 'anal', 'analcalc']
+    else:
+        tasks = ['prep', 'anal', 'analcalc']
 
     if cdump in ['gdas']:
         tasks += ['analdiag']
@@ -412,14 +416,29 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     do_wdqms = base.get('DO_WDQMS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
+    do_sfcprep = base.get('DO_SFCPREP', 'NO').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
     gridsuffix = base.get('SUFFIX', '')
 
     dict_tasks = OrderedDict()
 
+    # sfcprep (emcsfc_sfc_prep)
+    if do_sfcprep in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{"gdas"}post', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'&DMPDIR;/{cdump}{dumpsuffix}.@Y@m@d/@H/atmos/{cdump}.t@Hz.snow.usaf.grib2'
+        dep_dict = {'type': 'data', 'data': data}
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        task = wfu.create_wf_task('sfcprep', cdump=cdump, envar=envars, dependency=dependencies)
+        dict_tasks[f'{cdump}sfcprep'] = task
+
     # prep
     deps = []
-    dep_dict = {'type': 'metatask', 'name': f'{"gdas"}post', 'offset': '-06:00:00'}
+    if do_sfcprep in ['Y', 'YES']:
+        dep_dict = {'type': 'task', 'name': f'{cdump}sfcprep'}
+    else:
+        dep_dict = {'type': 'metatask', 'name': f'{"gdas"}post', 'offset': '-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
     data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{gridsuffix}'
     dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}

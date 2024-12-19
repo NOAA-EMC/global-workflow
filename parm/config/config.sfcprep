@@ -1,0 +1,20 @@
+#!/bin/ksh -x
+
+########## config.sfcprep ##########
+# Prep step specific
+
+echo "BEGIN: config.sfcprep"
+
+# Get task specific resources
+. $EXPDIR/config.resources sfcprep
+
+if [[ $RUN_ENVIR == "emc" ]]; then
+
+  export SENDCOM="YES"
+  export COMOUT=${COMOUTatmos}
+  export COMINobsproc=${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos
+  export COMIN_m6hrs=${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos
+
+fi
+
+echo "END: config.sfcprep"
