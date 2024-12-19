@@ -261,20 +261,7 @@ source "${USHgfs}/preamble.sh"
         if [ "$DOGRB_WAV" = 'YES' ]
         then
           gribFL=\'$(echo ${OUTPARS_WAV})\'
-          case $grdID in
-            glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-            reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_100) GRDNAME='global' ; GRDRES=1p00 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
-            at_10m) GRDNAME='atlocn' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            ep_10m) GRDNAME='epacif' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            wc_10m) GRDNAME='wcoast' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            ak_10m) GRDNAME='alaska' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-          esac
+          eval "$(source "${USHgfs}/wave_domain_grid.sh" $grdID)"
           echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
         fi
         echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
@@ -288,23 +275,7 @@ source "${USHgfs}/preamble.sh"
       for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
       do
         gribFL=\'$(echo ${OUTPARS_WAV})\'
-        case $grdID in
-            aoc_9km) GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=11   ;;
-            ant_9km) GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=11   ;;
-            glo_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            gnh_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            gsh_15m) GRDNAME='gsouth' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-            glo_15m) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-            ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
-            so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
-            glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-            reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-            glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_100) GRDNAME='global' ; GRDRES=1p00 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
-            gwes_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=10 ;;
-        esac
+        eval "$(source "${USHgfs}/wave_domain_grid.sh" $grdID)"
         echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
       done
     fi
