@@ -6,6 +6,7 @@ enable_testing()
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+# Set environment variables and paths
 set(ENV{RUNTESTS} "${CMAKE_BINARY_DIR}/RUNTESTS")
 get_filename_component(HOMEgfs ${CMAKE_SOURCE_DIR}/../.. ABSOLUTE)
 set(CASE_PATH ${HOMEgfs}/ci/cases/pr)
@@ -13,6 +14,7 @@ file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/RUNTESTS)
 
 set(CREATE_EXPERIMENT_CMD "${HOMEgfs}/workflow/create_experiment.py --overwrite")
 
+# Get the current git commit hash
 message(STATUS "Executing: git rev-parse --short HEAD")
 execute_process(
     COMMAND git rev-parse --short HEAD
@@ -21,6 +23,7 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+# Function to generate experiments for a given case
 function(GenerateExperiments CASE)
     # Read the job list file for this case
     set(JOB_LIST_FILE "${CMAKE_BINARY_DIR}/${CASE}_jobs.txt")
@@ -41,6 +44,7 @@ function(GenerateExperiments CASE)
     endif()
 endfunction()
 
+# Function to add Rocoto boot test for a given case and job
 function(AddRocotoBootTest CASE_NAME JOB_NAME)
     add_test(NAME jjob_test_${CASE_NAME}_${JOB_NAME}_StageData
              COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/stage_data.sh ${CASE_NAME} ${JOB_NAME} ${GIT_HASH}")
@@ -49,6 +53,7 @@ function(AddRocotoBootTest CASE_NAME JOB_NAME)
     set_tests_properties(jjob_test_${CASE_NAME}_${JOB_NAME} PROPERTIES DEPENDS jjob_test_${CASE_NAME}_${JOB_NAME}_StageData)         
 endfunction()
 
+# Add a test to build all components
 add_test( NAME BuildAll
           COMMAND bash -c "cd ${HOMEgfs}/sorc; ./build_all.sh"
 )
