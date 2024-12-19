@@ -4,38 +4,6 @@
 # shellcheck disable=SC2034
 MOM6_namelists(){
 
-# MOM6 namelists generation
-
-# ================================================================
-# input.nml
-# ---------
-cat >> input.nml <<EOF
-
-&MOM_input_nml
-  output_directory = 'MOM6_OUTPUT/',
-  input_filename = '${MOM6_RESTART_SETTING}'
-  restart_input_dir = 'INPUT/',
-  restart_output_dir = 'MOM6_RESTART/',
-  parameter_filename = 'INPUT/MOM_input',
-                       'INPUT/MOM_override'
-/
-EOF
-#temporarily commented out until a long term solution can be found
-#&nam_stochy
-#  new_lscale=.true.
-#EOF
-
-#cat >> input.nml <<EOF
-#/
-#
-#&nam_sfcperts
-#/
-#
-#EOF
-
-echo "Rendered input.nml:"
-cat input.nml
-
 # ================================================================
 # MOM_input
 # ---------
