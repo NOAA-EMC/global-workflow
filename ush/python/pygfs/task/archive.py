@@ -487,7 +487,7 @@ class Archive(Task):
         if current_cycle in [first_full, edate]:
             # Always save the first and last
             return True
-        elif (current_cycle - first_full).total_seconds() % freq == 0:
+        elif freq != 0 and (current_cycle - first_full).total_seconds() % freq == 0:
             # Otherwise, the frequency is in hours
             return True
         else:
