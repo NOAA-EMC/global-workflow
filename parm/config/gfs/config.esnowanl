@@ -19,6 +19,7 @@ export IMS_OBS_LIST="${PARMgfs}/gdas/snow/prep/prep_ims.yaml.j2"
 export CALCFIMSEXE="${EXECgfs}/calcfIMS.exe"
 export FIMS_NML_TMPL="${PARMgfs}/gdas/snow/prep/fims.nml.j2"
 export IMS2IODACONV="${USHgfs}/imsfv3_scf2ioda.py"
+
 export JEDI_FIX_YAML="${PARMgfs}/gdas/snow_jedi_fix.yaml.j2"
 export BERROR_STAGING_YAML="${PARMgfs}/gdas/staging/snow_berror.yaml.j2"
 export SNOW_ENS_STAGE_TMPL="${PARMgfs}/gdas/snow_stage_ens_update.yaml.j2"
