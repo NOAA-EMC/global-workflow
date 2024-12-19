@@ -71,7 +71,7 @@ class SnowEnsAnalysis(Task):
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'snow_obsdatain_path': os.path.join(self.task_config.DATA, 'obs'),
                 'snow_obsdataout_path': os.path.join(self.task_config.DATA, 'diags'),
-                'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean'),
+                'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
             }
         )
 
