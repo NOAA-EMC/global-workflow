@@ -3,4 +3,4 @@ defaults:
 base:
   DO_JEDISNOWDA: "YES"
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
-  DO_TEST_MODE: "YES"
+  DO_TEST_MODE: "NO"
