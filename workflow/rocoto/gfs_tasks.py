@@ -1212,7 +1212,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        fhrs = self._get_forecast_hours('gfs', self._configs['wavepostsbs'], 'wave')
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
 
         fhr_metatask_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
         metatask_dict = {'task_name': f'{self.run}_wavepostsbs',
