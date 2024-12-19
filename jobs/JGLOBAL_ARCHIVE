@@ -68,8 +68,8 @@ status=$?
 if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
-
-
+#select the correct domain.grid for gridded data
+source "${USHgfs}/wave_domain_grid.sh" ${waveGRD}
 ##########################################
 # Remove the Temporary working directory
 ##########################################
