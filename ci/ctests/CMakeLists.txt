@@ -22,11 +22,11 @@ execute_process(
 function(AddFunctionalTest CASE JOB)
     add_test(NAME test_${JOB}
         COMMAND bash -c "export RUNTESTS=${CMAKE_BINARY_DIR}/RUNTESTS; export pslot=${CASE}_${JOB}_${GIT_HASH}; ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml")
-    set_tests_properties(test_${JOB} PROPERTIES LABELS "${CASE};${JOB}")
+    set_tests_properties(create_experiment_${JOB} PROPERTIES LABELS "${CASE};${JOB}")
     
     add_test(NAME stage_${JOB}
         COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/stage_data.sh ${CASE_NAME} ${JOB_NAME} ${GIT_HASH}")
-    set_tests_properties(stage_${JOB} PROPERTIES DEPENDS test_${JOB} LABELS "${CASE};${JOB}")
+    set_tests_properties(stage_${JOB} PROPERTIES DEPENDS create_experiment_${JOB} LABELS "${CASE};${JOB}")
     
     add_test(NAME run_${JOB}
         #COMMAND bash -c "rocotoboot -w RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -t ${JOB_NAME}")
