@@ -377,9 +377,7 @@ WW3_postdet() {
   local wavprfx="${RUN}wave${WAV_MEMBER:-}"
   if [[ "${waveMULTIGRID}" == ".true." ]]; then
     ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.mww3.${PDY}${cyc}" "log.mww3"
-    for ww3_grid in ${waveGRD}; do
-      ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.${ww3_grid}.${PDY}${cyc}" "log.${ww3_grid}"
-    done
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.${waveGRD}"
   else
     ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
   fi
@@ -391,9 +389,7 @@ WW3_postdet() {
   while (( fhr <= FHMAX_WAV )); do
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
     if [[ "${waveMULTIGRID}" == ".true." ]]; then
-      for ww3_grid in ${waveGRD} ; do
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_grd.${ww3_grid}.${vdate}" "${DATA}/${vdate}.out_grd.${ww3_grid}"
-      done
+      ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${vdate}" "${DATA}/${vdate}.out_grd.${waveGRD}"
     else
       ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${vdate}" "${DATA}/${vdate}.out_grd.ww3"
     fi
