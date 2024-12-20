@@ -20,7 +20,7 @@ execute_process(
 
 # Function to add Rocoto boot test for a given case and job
 function(AddFunctionalTest CASE JOB)
-    add_test(NAME test_${JOB}
+    add_test(NAME create_expirment_${JOB}
         COMMAND bash -c "export RUNTESTS=${CMAKE_BINARY_DIR}/RUNTESTS; export pslot=${CASE}_${JOB}_${GIT_HASH}; ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml")
     set_tests_properties(create_experiment_${JOB} PROPERTIES LABELS "${CASE};${JOB}")
     
