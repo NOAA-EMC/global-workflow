@@ -71,6 +71,7 @@ fi
 #select the correct domain.grid for gridded data
 source "${USHgfs}/wave_domain_grid.sh" 
 process_grdID ${waveGRD}
+echo "${grdNAME}"
 ##########################################
 # Remove the Temporary working directory
 ##########################################
