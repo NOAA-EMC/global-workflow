@@ -37,4 +37,6 @@ process_grdID() {
         exit 1 ;;
     esac
     export grdNAME="${GRDNAME}.${GRDRES}"
+    echo "GRIDNR=${GRIDNR}"
+    echo "MODNR=${MODNR}"
 }
