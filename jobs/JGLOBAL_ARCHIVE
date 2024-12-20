@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "arch" -c "base arch"
 #select the correct domain.grid for gridded data
 source "${USHgfs}/wave_domain_grid.sh" 
 process_grdID ${waveGRD}
-echo "${grdNAME}"
 ###############################################################
 
 ##############################################
