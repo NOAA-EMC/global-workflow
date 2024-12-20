@@ -31,12 +31,6 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == '__main__':
-    # Locate cmake executable
-    try:
-        cmake = which("cmake")
-    except CommandNotFoundError:
-        logger.exception("cmake not found in PATH")
-        raise CommandNotFoundError("cmake not found in PATH")
 
     # Parse command line arguments
     args = parse_args()
@@ -46,10 +40,6 @@ if __name__ == '__main__':
     # Initialize host and configuration
     host = Host()
     cfg = Configuration(f'{data.HOMEgfs}/ci/platforms')
-
-    # Create directory for tests
-    test_dir = os.path.join(_here, 'TESTS')
-    mkdir_p(test_dir)
 
     # Initialize dictionaries to hold case names and their job names
     case_names = []
@@ -69,16 +59,6 @@ if __name__ == '__main__':
         case_jobs[case_name.upper()] = ' '.join(job_names)
         case_names.append(case_name)
 
-        # Create job list file for the case
-        job_list_file = f"{test_dir}/{case_name}_jobs.txt"
-        with open(job_list_file, 'w') as f:
-            for job in job_names:
-                f.write(f"{job}\n")
-
-        platform_config.clear()
-        data.clear()
-        case_cfg.clear()
-
     # Prepare cmake command-line arguments
     cmake_args = [
         f"-DCASE_LIST='{ ' '.join(case_names) }'"
@@ -89,5 +69,3 @@ if __name__ == '__main__':
     for each_arg in cmake_args:
         print(each_arg, end=' ')
     print()
-    #cmake.add_default_arg(cmake_args)
-    #cmake()
