@@ -30,7 +30,7 @@ case "${waveGRD}" in
     export waveGRDN='1 2 3'
     export waveGRDG='10 20 30'
     export USE_WAV_RMP='YES'
-    export waveMULTIGRID='.true.'
+    export waveMULTIGRID='.false.'
     export IOSRV='3'
     export MESH_WAV=' '
     export waveesmfGRD='glox_10m'
