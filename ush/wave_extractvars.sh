@@ -21,7 +21,7 @@ process_grdID "${waveGRD}"
 for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); do
   fnh=$(printf "%3.3d" "${nh}")
 
-  infile="${COMIN_WAVE_GRID}/${GRDNAME}.${GRDRES}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2"
+  infile="${COMIN_WAVE_GRID}/${grdNAME}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2"
   outfile="${subdata}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2"
   rm -f "${outfile}" # Remove outfile if it already exists before extraction
 
