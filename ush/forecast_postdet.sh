@@ -357,6 +357,9 @@ WW3_postdet() {
     ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
           || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
     first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      first_ww3_restart_out=$(date --utc -d "${first_ww3_restart_out:0:8} ${first_ww3_restart_out:8:2} + ${half_window} hours" +%Y%m%d%H)
+    fi 
   else
     #now check to see if a NetCDF restart exists: 
     seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
@@ -369,6 +372,9 @@ WW3_postdet() {
       ${NCP} "${ww3_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
              || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
       first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+      if [[ "${DOIAU:-NO}" == "YES" ]]; then
+        first_ww3_restart_out=$(date --utc -d "${first_ww3_restart_out:0:8} ${first_ww3_restart_out:8:2} + ${half_window} hours" +%Y%m%d%H)
+      fi
     else    
       if [[ "${RERUN}" == "YES" ]]; then
         # In the case of a RERUN, the WW3 restart file is required
