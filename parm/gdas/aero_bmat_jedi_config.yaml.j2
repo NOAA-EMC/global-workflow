@@ -1,0 +1,19 @@
+aero_interpbkg:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas.x'
+  jedi_args: ['fv3jedi', 'convertstate']
+  mpi_cmd: '{{ APRUN_AEROANLGENB }}'
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/aero/jcb-base.yaml.j2'
+  jcb_algo: aero_convert_background
+aero_diagb:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdasapp_chem_diagb.x'
+  mpi_cmd: '{{ APRUN_AEROANLGENB }}'
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/aero/jcb-base.yaml.j2'
+  jcb_algo: aero_gen_bmatrix_diagb
+aero_diffusion:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas_fv3jedi_error_covariance_toolbox.x'
+  mpi_cmd: '{{ APRUN_AEROANLGENB }}'
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/aero/jcb-base.yaml.j2'
+  jcb_algo: aero_gen_bmatrix_diffusion
