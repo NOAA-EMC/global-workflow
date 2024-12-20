@@ -140,28 +140,24 @@ common_predet(){
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
   # Convert restart interval into an explicit list for FV3
   if (( cmeps_restart_interval == 0 )); then
-    restart_interval=${FHMAX}
-    CMEPS_RESTART_FH=("${restart_interval}")
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      CMEPS_RESTART_FH=$(( ${FHMAX} + 6 ))
+    else 
+      CMEPS_RESTART_FH=("${FHMAX}")
+    fi
   else
     # shellcheck disable=SC2312
     if [[ "${DOIAU:-NO}" == "YES" ]]; then
-      restart_interval_start=$(( ${cmeps_restart_interval}+${half_window} ))
+      local restart_interval_start=$(( ${cmeps_restart_interval} + 6 ))
+      local restart_interval_end=$(( ${FHMAX} + 6 ))
     else
-      if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-        restart_interval_start=$(( ${cmeps_restart_interval}-${half_window} ))      
-      else
-        restart_interval_start=${cmeps_restart_interval} 
-      fi
+      local restart_interval_start=${cmeps_restart_interval} 
+      local restart_interval_end=${FHMAX}
     fi
-    mapfile -t CMEPS_RESTART_FH < <(seq "${restart_interval_start}" "${cmeps_restart_interval}" "${FHMAX}")
-    # If the last forecast hour is not in the array, add it
-    local nrestarts=${#CMEPS_RESTART_FH[@]}
-    if (( CMEPS_RESTART_FH[nrestarts-1] != FHMAX )); then
-      CMEPS_RESTART_FH+=("${FHMAX}")
-    fi
+    CMEPS_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${cmeps_restart_interval}" "${restart_interval_end}")"
   fi
   #TO DO: For GEFS, once cycling waves "self-cycles" and therefore needs to have a restart at 6 hour 
-
+ 
 }
 
 # shellcheck disable=SC2034
