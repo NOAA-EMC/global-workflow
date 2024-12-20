@@ -13,7 +13,8 @@ source "${USHgfs}/preamble.sh"
 
 subdata=${1}
 
-eval "$(source "${USHgfs}/wave_domain_grid.sh" $waveGRD)"
+source "${USHgfs}/wave_domain_grid.sh" 
+process_grdID $waveGRD
 
 [[ -d "${subdata}" ]] || mkdir -p "${subdata}"
 
