@@ -268,7 +268,7 @@ case ${fv3_res} in
   "C384" | "C768" | "C1152" | "C3072")
     zstandard_level=0
     ideflate=1
-    quantize_nsd=5
+    quantize_nsd=14
     OUTPUT_FILETYPE_ATM="netcdf_parallel"
     if [[ "${fv3_res}" == "C384" ]]; then
       OUTPUT_FILETYPE_SFC="netcdf"  # For C384, the write grid component is better off with serial netcdf
