@@ -9,8 +9,6 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/preamble.sh"
-
 process_grdID() {
     grdID=$1
     case ${grdID} in
