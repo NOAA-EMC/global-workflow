@@ -1,17 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(FunctionalTests)
-
 enable_testing()
-
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Set environment variables and paths
-set(ENV{RUNTESTS} "${CMAKE_BINARY_DIR}/RUNTESTS")
 get_filename_component(HOMEgfs ${CMAKE_SOURCE_DIR}/../.. ABSOLUTE)
 set(CASE_PATH ${HOMEgfs}/ci/cases/pr)
-file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/RUNTESTS)
-
 set(CREATE_EXPERIMENT_CMD "${HOMEgfs}/workflow/create_experiment.py --overwrite")
 
 # Get the current git commit hash
@@ -23,37 +18,19 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-# Function to generate experiments for a given case
-function(GenerateExperiments CASE)
-    # Get JOB_NAMES for this CASE from input variable
-    string(TOUPPER ${CASE} CASE_UPPER)
-    set(JOB_NAMES_VAR "JOB_NAMES_${CASE_UPPER}")
-    if(DEFINED ${JOB_NAMES_VAR})
-        string(REPLACE " " ";" JOB_NAMES ${${JOB_NAMES_VAR}})
-    else()
-        message(WARNING "No JOB_NAMES provided for ${CASE}")
-        return()
-    endif()
-    message(STATUS "Processing jobs for ${CASE}: ${JOB_NAMES}")
-    foreach(JOB IN LISTS JOB_NAMES)
-        string(REGEX REPLACE "^${CASE}_" "" JOB_MODIFIED ${JOB})
-        message(STATUS "Executing: ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml") 
-        execute_process(
-            COMMAND bash -c "export pslot=${CASE}_${JOB_MODIFIED}_${GIT_HASH}; ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml"
-        )
-    endforeach()
-endfunction()
-
 # Function to add Rocoto boot test for a given case and job
-function(AddRocotoBootTest CASE_NAME JOB_NAME)
-    add_test(NAME stage_${CASE_NAME}_${JOB_NAME}
-             COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/stage_data.sh ${CASE_NAME} ${JOB_NAME} ${GIT_HASH}")
-    add_test(NAME run_${CASE_NAME}_${JOB_NAME}
-             COMMAND bash -c "rocotoboot -w RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -t ${JOB_NAME}")
-    add_test(NAME validate_${CASE_NAME}_${JOB_NAME}
-             COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/validate.sh ${CASE_NAME} ${JOB_NAME} ${GIT_HASH}")
-    set_tests_properties(run_${CASE_NAME}_${JOB_NAME} PROPERTIES DEPENDS stage_${CASE_NAME}_${JOB_NAME})         
-    set_tests_properties(stage_${CASE_NAME}_${JOB_NAME} PROPERTIES DEPENDS validate_${CASE_NAME}_${JOB_NAME})         
+function(AddFunctionalTest JOB)
+    add_test(NAME test_${JOB}
+        COMMAND bash -c "export RUNTESTS=${CMAKE_BINARY_DIR}/RUNTESTS; export pslot=${CASE}_${JOB}_${GIT_HASH}; ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml")
+    add_test(NAME stage_${JOB}
+        COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/stage_data.sh ${CASE_NAME} ${JOB_NAME} ${GIT_HASH}")
+    add_test(NAME run_${JOB}
+        COMMAND bash -c "rocotoboot -w RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -t ${JOB_NAME}")
+    add_test(NAME validate_${JOB}
+        COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/validate.sh ${CASE_NAME} ${JOB_NAME} ${GIT_HASH}")
+    set_tests_properties(stage_${JOB} PROPERTIES DEPENDS test_${JOB})
+    set_tests_properties(run_${JOB} PROPERTIES DEPENDS stage_${JOB})         
+    set_tests_properties(validate_${JOB} PROPERTIES DEPENDS run_${JOB})
 endfunction()
 
 # Split CASE_LIST into individual cases
@@ -61,7 +38,6 @@ string(REPLACE " " ";" CASE_LIST_SPLIT ${CASE_LIST})
 
 # Loop over each case in CASE_LIST_SPLIT
 foreach(CASE IN LISTS CASE_LIST_SPLIT)
-    GenerateExperiments(${CASE})
     # Get JOB_NAMES for this CASE from input variable
     string(TOUPPER ${CASE} CASE_UPPER)
     set(JOB_NAMES_VAR "JOB_NAMES_${CASE_UPPER}")
@@ -72,6 +48,6 @@ foreach(CASE IN LISTS CASE_LIST_SPLIT)
         continue()
     endif()
     foreach(JOB IN LISTS JOB_NAMES)
-        AddRocotoBootTest(${CASE} ${JOB})
+        AddFunctionalTest(${JOB})
     endforeach()
 endforeach()
