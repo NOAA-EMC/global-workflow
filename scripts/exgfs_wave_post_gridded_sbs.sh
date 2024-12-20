@@ -248,7 +248,6 @@ source "${USHgfs}/preamble.sh"
         exit "${err}"
       fi
     ${NLN} "${gfile}" "./out_grd.${wavGRD}"
-  done
 
     if [ "$DOGRI_WAV" = 'YES' ]
     then
