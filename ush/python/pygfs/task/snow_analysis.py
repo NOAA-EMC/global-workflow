@@ -2,39 +2,59 @@
 
 import os
 from logging import getLogger
-from typing import Dict, List
+from typing import Dict, List, Optional, Any
 from pprint import pformat
+import glob
+import gzip
+import tarfile
 import numpy as np
 from netCDF4 import Dataset
 
 from wxflow import (AttrDict,
                     FileHandler,
                     to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime,
-                    rm_p,
+                    rm_p, cp,
                     parse_j2yaml, save_as_yaml,
                     Jinja,
+                    Task,
                     logit,
                     Executable,
                     WorkflowException)
-from pygfs.task.analysis import Analysis
+from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class SnowAnalysis(Analysis):
+class SnowAnalysis(Task):
     """
-    Class for global snow analysis tasks
+    Class for JEDI-based global snow analysis tasks
     """
-
-    NMEM_SNOWENS = 2
 
     @logit(logger, name="SnowAnalysis")
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, Any]):
+        """Constructor global snow analysis task
+
+        This method will construct a global snow analysis task.
+        This includes:
+        - extending the task_config attribute AttrDict to include parameters required for this task
+        - instantiate the Jedi attribute object
+
+        Parameters
+        ----------
+        config: Dict
+            dictionary object containing task configuration
+
+        Returns
+        ----------
+        None
+        """
         super().__init__(config)
 
         _res = int(self.task_config['CASE'][1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
-        _letkfoi_yaml = os.path.join(self.task_config.DATA, f"{self.task_config.RUN}.t{self.task_config['cyc']:02d}z.letkfoi.yaml")
+
+        # fix ocnres
+        self.task_config.OCNRES = f"{self.task_config.OCNRES:03d}"
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -47,12 +67,81 @@ class SnowAnalysis(Analysis):
                 'SNOW_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'jedi_yaml': _letkfoi_yaml
+                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'snow_obsdatain_path': os.path.join(self.task_config.DATA, 'obs'),
+                'snow_obsdataout_path': os.path.join(self.task_config.DATA, 'diags'),
+                'snow_bkg_path': os.path.join('.', 'bkg/'),
             }
         )
 
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
+
+        # Create JEDI object dictionary
+        expected_keys = ['snowanlvar']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+
+    @logit(logger)
+    def initialize(self) -> None:
+        """Initialize a global snow analysis
+
+        This method will initialize a global snow analysis.
+        This includes:
+        - initialize JEDI application
+        - staging model backgrounds
+        - staging observation files
+        - staging FV3-JEDI fix files
+        - staging B error files
+        - creating output directories
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+        # initialize JEDI variational application
+        logger.info(f"Initializing JEDI variational DA application")
+        self.jedi_dict['snowanlvar'].initialize(self.task_config)
+
+        # stage backgrounds
+        logger.info(f"Staging background files from {self.task_config.VAR_BKG_STAGING_YAML}")
+        bkg_staging_dict = parse_j2yaml(self.task_config.VAR_BKG_STAGING_YAML, self.task_config)
+        FileHandler(bkg_staging_dict).sync()
+        logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}")
+
+        # stage observations
+        logger.info(f"Staging list of observation files generated from JEDI config")
+        obs_dict = self.jedi_dict['snowanlvar'].render_jcb(self.task_config, 'snow_obs_staging')
+        FileHandler(obs_dict).sync()
+        logger.debug(f"Observation files:\n{pformat(obs_dict)}")
+
+        # stage GTS bufr2ioda mapping YAML files
+        logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.GTS_SNOW_STAGE_YAML}")
+        gts_mapping_list = parse_j2yaml(self.task_config.GTS_SNOW_STAGE_YAML, self.task_config)
+        FileHandler(gts_mapping_list).sync()
+
+        # stage FV3-JEDI fix files
+        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        FileHandler(jedi_fix_dict).sync()
+        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
+
+        # staging B error files
+        logger.info("Stage files for static background error")
+        berror_staging_dict = parse_j2yaml(self.task_config.BERROR_STAGING_YAML, self.task_config)
+        FileHandler(berror_staging_dict).sync()
+        logger.debug(f"Background error files:\n{pformat(berror_staging_dict)}")
+
+        # need output dir for diags and anl
+        logger.debug("Create empty output [anl, diags] directories to receive output from executable")
+        newdirs = [
+            os.path.join(self.task_config.DATA, 'anl'),
+            os.path.join(self.task_config.DATA, 'diags'),
+        ]
+        FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
     def prepare_IMS(self) -> None:
@@ -75,21 +164,19 @@ class SnowAnalysis(Analysis):
 
         # create a temporary dict of all keys needed in this method
         localconf = AttrDict()
-        keys = ['DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
+        keys = ['DATA', 'current_cycle', 'COMIN_OBS', 'COMIN_ATMOS_RESTART_PREV',
                 'OPREFIX', 'CASE', 'OCNRES', 'ntiles', 'FIXgfs']
         for key in keys:
             localconf[key] = self.task_config[key]
 
-        # stage backgrounds
-        logger.info("Staging backgrounds")
-        FileHandler(self.get_bkg_dict(localconf)).sync()
+        localconf['ims_fcst_path'] = self.task_config['snow_bkg_path']
 
         # Read and render the IMS_OBS_LIST yaml
         logger.info(f"Reading {self.task_config.IMS_OBS_LIST}")
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, localconf)
         logger.debug(f"{self.task_config.IMS_OBS_LIST}:\n{pformat(prep_ims_config)}")
 
-        # copy the IMS obs files from COM_OBS to DATA/obs
+        # copy the IMS obs files from COMIN_OBS to DATA/obs
         logger.info("Copying IMS obs for CALCFIMSEXE")
         FileHandler(prep_ims_config.calcfims).sync()
 
@@ -116,9 +203,11 @@ class SnowAnalysis(Analysis):
         try:
             exe()
         except OSError:
-            raise OSError(f"Failed to execute {exe}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exe}")
+            logger.exception(f"Failed to execute {exe}")
+            raise
+        except Exception as err:
+            logger.exception(f"An error occured during execution of {exe}")
+            raise WorkflowException(f"An error occured during execution of {exe}") from err
 
         # Ensure the snow depth IMS file is produced by the above executable
         input_file = f"IMSscf.{to_YMD(localconf.current_cycle)}.{localconf.CASE}_oro_data.nc"
@@ -140,121 +229,38 @@ class SnowAnalysis(Analysis):
             logger.debug(f"Executing {exe}")
             exe()
         except OSError:
-            raise OSError(f"Failed to execute {exe}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exe}")
+            logger.exception(f"Failed to execute {exe}")
+            raise
+        except Exception as err:
+            logger.exception(f"An error occured during execution of {exe}")
+            raise WorkflowException(f"An error occured during execution of {exe}") from err
 
         # Ensure the IODA snow depth IMS file is produced by the IODA converter
-        # If so, copy to COM_OBS/
+        # If so, copy to DATA/obs/
         if not os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
             logger.exception(f"{self.task_config.IMS2IODACONV} failed to produce {output_file}")
             raise FileNotFoundError(f"{os.path.join(localconf.DATA, output_file)}")
         else:
-            logger.info(f"Copy {output_file} to {self.task_config.COM_OBS}")
+            logger.info(f"Copy {output_file} to {os.path.join(localconf.DATA, 'obs')}")
             FileHandler(prep_ims_config.ims2ioda).sync()
 
     @logit(logger)
-    def initialize(self) -> None:
-        """Initialize method for snow analysis
-        This method:
-        - creates artifacts in the DATA directory by copying fix files
-        - creates the JEDI LETKF yaml from the template
-        - stages backgrounds, observations and ensemble members
+    def execute(self, jedi_dict_key: str) -> None:
+        """Run JEDI executable
+
+        This method will run JEDI executables for the global snow analysis
 
         Parameters
         ----------
-        self : Analysis
-            Instance of the SnowAnalysis object
-        """
+        jedi_dict_key
+            key specifying particular Jedi object in self.jedi_dict
 
-        super().initialize()
-
-        # create a temporary dict of all keys needed in this method
-        localconf = AttrDict()
-        keys = ['PARMgfs', 'DATA', 'current_cycle', 'COM_OBS', 'COM_ATMOS_RESTART_PREV',
-                'OPREFIX', 'CASE', 'OCNRES', 'ntiles']
-        for key in keys:
-            localconf[key] = self.task_config[key]
-
-        # Make member directories in DATA for background
-        dirlist = []
-        for imem in range(1, SnowAnalysis.NMEM_SNOWENS + 1):
-            dirlist.append(os.path.join(localconf.DATA, 'bkg', f'mem{imem:03d}'))
-        FileHandler({'mkdir': dirlist}).sync()
-
-        # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_list).sync()
-
-        # stage backgrounds
-        logger.info("Staging ensemble backgrounds")
-        FileHandler(self.get_ens_bkg_dict(localconf)).sync()
-
-        # stage GTS bufr2ioda mapping YAML files
-        logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.GTS_SNOW_STAGE_YAML}")
-        gts_mapping_list = parse_j2yaml(self.task_config.GTS_SNOW_STAGE_YAML, localconf)
-        FileHandler(gts_mapping_list).sync()
-
-        # Write out letkfoi YAML file
-        save_as_yaml(self.task_config.jedi_config, self.task_config.jedi_yaml)
-        logger.info(f"Wrote letkfoi YAML to: {self.task_config.jedi_yaml}")
-
-        # need output dir for diags and anl
-        logger.info("Create empty output [anl, diags] directories to receive output from executable")
-        newdirs = [
-            os.path.join(localconf.DATA, "anl"),
-            os.path.join(localconf.DATA, "diags"),
-        ]
-        FileHandler({'mkdir': newdirs}).sync()
-
-    @logit(logger)
-    def execute(self) -> None:
-        """Run a series of tasks to create Snow analysis
-        This method:
-        - creates an 2 member ensemble
-        - runs the JEDI LETKF executable to produce increments
-        - creates analysis from increments
-
-        Parameters
+        Returns
         ----------
-        self : Analysis
-           Instance of the SnowAnalysis object
+        None
         """
 
-        # create a temporary dict of all keys needed in this method
-        localconf = AttrDict()
-        keys = ['HOMEgfs', 'DATA', 'current_cycle',
-                'COM_ATMOS_RESTART_PREV', 'COM_SNOW_ANALYSIS', 'APREFIX',
-                'SNOWDEPTHVAR', 'BESTDDEV', 'CASE', 'OCNRES', 'ntiles',
-                'APRUN_SNOWANL', 'JEDIEXE', 'jedi_yaml', 'DOIAU', 'SNOW_WINDOW_BEGIN',
-                'APPLY_INCR_NML_TMPL', 'APPLY_INCR_EXE', 'APRUN_APPLY_INCR']
-        for key in keys:
-            localconf[key] = self.task_config[key]
-
-        logger.info("Creating ensemble")
-        self.create_ensemble(localconf.SNOWDEPTHVAR,
-                             localconf.BESTDDEV,
-                             AttrDict({key: localconf[key] for key in ['DATA', 'ntiles', 'current_cycle']}))
-
-        logger.info("Running JEDI LETKF")
-        exec_cmd = Executable(localconf.APRUN_SNOWANL)
-        exec_name = os.path.join(localconf.DATA, 'gdas.x')
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg('fv3jedi')
-        exec_cmd.add_default_arg('localensembleda')
-        exec_cmd.add_default_arg(localconf.jedi_yaml)
-
-        try:
-            logger.debug(f"Executing {exec_cmd}")
-            exec_cmd()
-        except OSError:
-            raise OSError(f"Failed to execute {exec_cmd}")
-        except Exception:
-            raise WorkflowException(f"An error occured during execution of {exec_cmd}")
-
-        logger.info("Creating analysis from backgrounds and increments")
-        self.add_increments(localconf)
+        self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
     def finalize(self) -> None:
@@ -271,18 +277,41 @@ class SnowAnalysis(Analysis):
             Instance of the SnowAnalysis object
         """
 
-        logger.info("Create diagnostic tarball of diag*.nc4 files")
-        statfile = os.path.join(self.task_config.COM_SNOW_ANALYSIS, f"{self.task_config.APREFIX}snowstat.tgz")
-        self.tgz_diags(statfile, self.task_config.DATA)
+        # ---- tar up diags
+        # path of output tar statfile
+        snowstat = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, f"{self.task_config.APREFIX}snowstat.tgz")
 
-        logger.info("Copy full YAML to COM")
-        src = os.path.join(self.task_config['DATA'], f"{self.task_config.APREFIX}letkfoi.yaml")
-        dest = os.path.join(self.task_config.COM_CONF, f"{self.task_config.APREFIX}letkfoi.yaml")
-        yaml_copy = {
-            'mkdir': [self.task_config.COM_CONF],
-            'copy': [[src, dest]]
-        }
-        FileHandler(yaml_copy).sync()
+        # get list of diag files to put in tarball
+        diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
+
+        logger.info(f"Compressing {len(diags)} diag files to {snowstat}")
+
+        # gzip the files first
+        logger.debug(f"Gzipping {len(diags)} diag files")
+        for diagfile in diags:
+            with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
+                f_out.writelines(f_in)
+
+        # open tar file for writing
+        logger.debug(f"Creating tar file {snowstat} with {len(diags)} gzipped diag files")
+        with tarfile.open(snowstat, "w|gz") as archive:
+            for diagfile in diags:
+                diaggzip = f"{diagfile}.gz"
+                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
+
+        # get list of yamls to copy to ROTDIR
+        yamls = glob.glob(os.path.join(self.task_config.DATA, '*snow*yaml'))
+
+        # copy full YAML from executable to ROTDIR
+        for src in yamls:
+            yaml_base = os.path.splitext(os.path.basename(src))[0]
+            dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
+            dest = os.path.join(self.task_config.COMOUT_CONF, dest_yaml_name)
+            logger.debug(f"Copying {src} to {dest}")
+            yaml_copy = {
+                'copy': [[src, dest]]
+            }
+            FileHandler(yaml_copy).sync()
 
         logger.info("Copy analysis to COM")
         bkgtimes = []
@@ -296,7 +325,7 @@ class SnowAnalysis(Analysis):
             for itile in range(1, self.task_config.ntiles + 1):
                 filename = template.format(tilenum=itile)
                 src = os.path.join(self.task_config.DATA, 'anl', filename)
-                dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename)
+                dest = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, filename)
                 anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
@@ -306,214 +335,47 @@ class SnowAnalysis(Analysis):
         for itile in range(1, self.task_config.ntiles + 1):
             filename = template.format(tilenum=itile)
             src = os.path.join(self.task_config.DATA, 'anl', filename)
-            dest = os.path.join(self.task_config.COM_SNOW_ANALYSIS, filename)
+            dest = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, filename)
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
 
-    @staticmethod
     @logit(logger)
-    def get_bkg_dict(config: Dict) -> Dict[str, List[str]]:
-        """Compile a dictionary of model background files to copy
-
-        This method constructs a dictionary of FV3 RESTART files (coupler, sfc_data)
-        that are needed for global snow DA and returns said dictionary for use by the FileHandler class.
-
-        Parameters
-        ----------
-        config: Dict
-            Dictionary of key-value pairs needed in this method
-            Should contain the following keys:
-            COM_ATMOS_RESTART_PREV
-            DATA
-            current_cycle
-            ntiles
-
-        Returns
-        ----------
-        bkg_dict: Dict
-            a dictionary containing the list of model background files to copy for FileHandler
-        """
-        # NOTE for now this is FV3 RESTART files and just assumed to be fh006
-
-        # get FV3 sfc_data RESTART files, this will be a lot simpler when using history files
-        rst_dir = os.path.join(config.COM_ATMOS_RESTART_PREV)  # for now, option later?
-        run_dir = os.path.join(config.DATA, 'bkg')
-
-        # Start accumulating list of background files to copy
-        bkglist = []
-
-        # snow DA needs coupler
-        basename = f'{to_fv3time(config.current_cycle)}.coupler.res'
-        bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-        # snow DA only needs sfc_data
-        for ftype in ['sfc_data']:
-            template = f'{to_fv3time(config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
-            for itile in range(1, config.ntiles + 1):
-                basename = template.format(tilenum=itile)
-                bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-        bkg_dict = {
-            'mkdir': [run_dir],
-            'copy': bkglist
-        }
-        return bkg_dict
-
-    @staticmethod
-    @logit(logger)
-    def get_ens_bkg_dict(config: Dict) -> Dict:
-        """Compile a dictionary of model background files to copy for the ensemble
-        Note that a "Fake" 2-member ensemble backgroud is being created by copying FV3 RESTART files (coupler, sfc_data)
-        from the deterministic background to DATA/bkg/mem001, 002.
-
-         Parameters
-         ----------
-         config: Dict
-             Dictionary of key-value pairs needed in this method
-             Should contain the following keys:
-             COM_ATMOS_RESTART_PREV
-             DATA
-             current_cycle
-             ntiles
-
-         Returns
-         ----------
-         bkg_dict: Dict
-             a dictionary containing the list of model background files to copy for FileHandler
-         """
-
-        dirlist = []
-        bkglist = []
-
-        # get FV3 sfc_data RESTART files; Note an ensemble is being created
-        rst_dir = os.path.join(config.COM_ATMOS_RESTART_PREV)
-
-        for imem in range(1, SnowAnalysis.NMEM_SNOWENS + 1):
-            memchar = f"mem{imem:03d}"
-
-            run_dir = os.path.join(config.DATA, 'bkg', memchar, 'RESTART')
-            dirlist.append(run_dir)
-
-            # Snow DA needs coupler
-            basename = f'{to_fv3time(config.current_cycle)}.coupler.res'
-            bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-            # Snow DA only needs sfc_data
-            for ftype in ['sfc_data']:
-                template = f'{to_fv3time(config.current_cycle)}.{ftype}.tile{{tilenum}}.nc'
-                for itile in range(1, config.ntiles + 1):
-                    basename = template.format(tilenum=itile)
-                    bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
-
-        bkg_dict = {
-            'mkdir': dirlist,
-            'copy': bkglist
-        }
-
-        return bkg_dict
-
-    @staticmethod
-    @logit(logger)
-    def create_ensemble(vname: str, bestddev: float, config: Dict) -> None:
-        """Create a 2-member ensemble for Snow Depth analysis by perturbing snow depth with a prescribed variance.
-        Additionally, remove glacier locations
-
-        Parameters
-        ----------
-        vname : str
-            snow depth variable to perturb: "snodl"
-        bestddev : float
-            Background Error Standard Deviation to perturb around to create ensemble
-        config: Dict
-            Dictionary of key-value pairs needed in this method.  It must contain the following keys:
-            DATA
-            current_cycle
-            ntiles
-        """
-
-        # 2 ens members
-        offset = bestddev / np.sqrt(SnowAnalysis.NMEM_SNOWENS)
-
-        logger.info(f"Creating ensemble for LETKFOI by offsetting with {offset}")
-
-        workdir = os.path.join(config.DATA, 'bkg')
-
-        sign = [1, -1]
-        ens_dirs = ['mem001', 'mem002']
-
-        for (memchar, value) in zip(ens_dirs, sign):
-            logger.debug(f"creating ensemble member {memchar} with sign {value}")
-            for tt in range(1, config.ntiles + 1):
-                logger.debug(f"perturbing tile {tt}")
-                # open file
-                out_netcdf = os.path.join(workdir, memchar, 'RESTART', f"{to_fv3time(config.current_cycle)}.sfc_data.tile{tt}.nc")
-                logger.debug(f"creating member {out_netcdf}")
-                with Dataset(out_netcdf, "r+") as ncOut:
-                    slmsk_array = ncOut.variables['slmsk'][:]
-                    vtype_array = ncOut.variables['vtype'][:]
-                    slmsk_array[vtype_array == 15] = 0  # remove glacier locations
-                    var_array = ncOut.variables[vname][:]
-                    var_array[slmsk_array == 1] = var_array[slmsk_array == 1] + value * offset
-                    ncOut.variables[vname][0, :, :] = var_array[:]
-
-    @staticmethod
-    @logit(logger)
-    def add_increments(config: Dict) -> None:
+    def add_increments(self) -> None:
         """Executes the program "apply_incr.exe" to create analysis "sfc_data" files by adding increments to backgrounds
 
         Parameters
         ----------
-         config: Dict
-             Dictionary of key-value pairs needed in this method
-             Should contain the following keys:
-             HOMEgfs
-             COM_ATMOS_RESTART_PREV
-             DATA
-             current_cycle
-             CASE
-             OCNRES
-             ntiles
-             APPLY_INCR_NML_TMPL
-             APPLY_INCR_EXE
-             APRUN_APPLY_INCR
-             DOIAU
-             SNOW_WINDOW_BEGIN
-
-        Raises
-        ------
-        OSError
-            Failure due to OS issues
-        WorkflowException
-            All other exceptions
+        self : Analysis
+            Instance of the SnowAnalysis object
         """
 
         # need backgrounds to create analysis from increments after LETKF
         logger.info("Copy backgrounds into anl/ directory for creating analysis from increments")
         bkgtimes = []
-        if config.DOIAU:
+        if self.task_config.DOIAU:
             # want analysis at beginning and middle of window
-            bkgtimes.append(config.SNOW_WINDOW_BEGIN)
-        bkgtimes.append(config.current_cycle)
+            bkgtimes.append(self.task_config.SNOW_WINDOW_BEGIN)
+        bkgtimes.append(self.task_config.current_cycle)
         anllist = []
         for bkgtime in bkgtimes:
             template = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
-            for itile in range(1, config.ntiles + 1):
+            for itile in range(1, self.task_config.ntiles + 1):
                 filename = template.format(tilenum=itile)
-                src = os.path.join(config.COM_ATMOS_RESTART_PREV, filename)
-                dest = os.path.join(config.DATA, "anl", filename)
+                src = os.path.join(self.task_config.COMIN_ATMOS_RESTART_PREV, filename)
+                dest = os.path.join(self.task_config.DATA, "anl", filename)
                 anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 
-        if config.DOIAU:
+        if self.task_config.DOIAU:
             logger.info("Copying increments to beginning of window")
-            template_in = f'snowinc.{to_fv3time(config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
-            template_out = f'snowinc.{to_fv3time(config.SNOW_WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
+            template_in = f'snowinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+            template_out = f'snowinc.{to_fv3time(self.task_config.SNOW_WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
             inclist = []
-            for itile in range(1, config.ntiles + 1):
+            for itile in range(1, self.task_config.ntiles + 1):
                 filename_in = template_in.format(tilenum=itile)
                 filename_out = template_out.format(tilenum=itile)
-                src = os.path.join(config.DATA, 'anl', filename_in)
-                dest = os.path.join(config.DATA, 'anl', filename_out)
+                src = os.path.join(self.task_config.DATA, 'anl', filename_in)
+                dest = os.path.join(self.task_config.DATA, 'anl', filename_out)
                 inclist.append([src, dest])
             FileHandler({'copy': inclist}).sync()
 
@@ -521,35 +383,37 @@ class SnowAnalysis(Analysis):
         for bkgtime in bkgtimes:
             logger.info("Processing analysis valid: {bkgtime}")
             logger.info("Create namelist for APPLY_INCR_EXE")
-            nml_template = config.APPLY_INCR_NML_TMPL
+            nml_template = self.task_config.APPLY_INCR_NML_TMPL
             nml_config = {
                 'current_cycle': bkgtime,
-                'CASE': config.CASE,
-                'DATA': config.DATA,
-                'HOMEgfs': config.HOMEgfs,
-                'OCNRES': config.OCNRES,
+                'CASE': self.task_config.CASE,
+                'DATA': self.task_config.DATA,
+                'HOMEgfs': self.task_config.HOMEgfs,
+                'OCNRES': self.task_config.OCNRES,
             }
             nml_data = Jinja(nml_template, nml_config).render
             logger.debug(f"apply_incr_nml:\n{nml_data}")
 
-            nml_file = os.path.join(config.DATA, "apply_incr_nml")
+            nml_file = os.path.join(self.task_config.DATA, "apply_incr_nml")
             with open(nml_file, "w") as fho:
                 fho.write(nml_data)
 
             logger.info("Link APPLY_INCR_EXE into DATA/")
-            exe_src = config.APPLY_INCR_EXE
-            exe_dest = os.path.join(config.DATA, os.path.basename(exe_src))
+            exe_src = self.task_config.APPLY_INCR_EXE
+            exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
             if os.path.exists(exe_dest):
                 rm_p(exe_dest)
             os.symlink(exe_src, exe_dest)
 
             # execute APPLY_INCR_EXE to create analysis files
-            exe = Executable(config.APRUN_APPLY_INCR)
-            exe.add_default_arg(os.path.join(config.DATA, os.path.basename(exe_src)))
+            exe = Executable(self.task_config.APRUN_APPLY_INCR)
+            exe.add_default_arg(os.path.join(self.task_config.DATA, os.path.basename(exe_src)))
             logger.info(f"Executing {exe}")
             try:
                 exe()
             except OSError:
-                raise OSError(f"Failed to execute {exe}")
-            except Exception:
-                raise WorkflowException(f"An error occured during execution of {exe}")
+                logger.exception(f"Failed to execute {exe}")
+                raise
+            except Exception as err:
+                logger.exception(f"An error occured during execution of {exe}")
+                raise WorkflowException(f"An error occured during execution of {exe}") from err
