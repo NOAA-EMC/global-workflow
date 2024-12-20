@@ -51,8 +51,10 @@ if __name__ == '__main__':
     test_dir = os.path.join(_here, 'TESTS')
     mkdir_p(test_dir)
 
-    # Process each YAML file
-    case_names = ""
+    # Initialize dictionaries to hold case names and their job names
+    case_names = []
+    case_jobs = {}
+
     for yaml in args.yaml:
         platform_config = cfg.parse_config(f'config.{host.machine.lower()}')
         case_name = os.path.basename(yaml).split('.')[0]
@@ -61,19 +63,31 @@ if __name__ == '__main__':
         case_cfg = parse_j2yaml(path=yaml, data=data)
         case_cfg.update(platform_config)
 
-        # Create job list file for the case
+        # Collect job names from the YAML file
         top_level_entries = [key for key in case_cfg.keys() if isinstance(case_cfg[key], dict)]
-        job_list_file = f"TESTS/{case_name}_jobs.txt"
-        with open(job_list_file, 'w') as f:
-            for entry in top_level_entries:
-                f.write(f"{case_name}_{entry}\n")
+        job_names = [f"{case_name}_{entry}" for entry in top_level_entries]
+        case_jobs[case_name.upper()] = ' '.join(job_names)
+        case_names.append(case_name)
 
-        case_names += f"{case_name} "
+        # Create job list file for the case
+        job_list_file = f"{test_dir}/{case_name}_jobs.txt"
+        with open(job_list_file, 'w') as f:
+            for job in job_names:
+                f.write(f"{job}\n")
 
         platform_config.clear()
         data.clear()
         case_cfg.clear()
 
-    # Run cmake to create the functional tests
-    cmake.add_default_arg([f"-S {_here}", f"-B {test_dir}", f"-DCASE_LIST='{case_names[:-1]}'"])
-    cmake()
+    # Prepare cmake command-line arguments
+    cmake_args = [
+        f"-DCASE_LIST='{ ' '.join(case_names) }'"
+    ]
+    for case_upper, jobs in case_jobs.items():
+        cmake_args.append(f"-DJOB_NAMES_{case_upper}='{jobs}'")
+
+    for each_arg in cmake_args:
+        print(each_arg, end=' ')
+    print()
+    #cmake.add_default_arg(cmake_args)
+    #cmake()

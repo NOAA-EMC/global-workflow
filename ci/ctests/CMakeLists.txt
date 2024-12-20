@@ -25,38 +25,36 @@ execute_process(
 
 # Function to generate experiments for a given case
 function(GenerateExperiments CASE)
-    # Read the job list file for this case
-    set(JOB_LIST_FILE "${CMAKE_BINARY_DIR}/${CASE}_jobs.txt")
-    
-    if(EXISTS ${JOB_LIST_FILE})
-        file(STRINGS ${JOB_LIST_FILE} JOB_NAMES)
-        message(STATUS "Processing jobs from ${JOB_LIST_FILE}:\n${JOB_NAMES}")
-        
-        foreach(JOB IN LISTS JOB_NAMES)
-            string(REGEX REPLACE "^${CASE}_" "" JOB_MODIFIED ${JOB})
-            message(STATUS "Executing: ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml") 
-            execute_process(
-                COMMAND bash -c "export pslot=${CASE}_${JOB_MODIFIED}_${GIT_HASH}; ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml"
-            )
-        endforeach()
+    # Get JOB_NAMES for this CASE from input variable
+    string(TOUPPER ${CASE} CASE_UPPER)
+    set(JOB_NAMES_VAR "JOB_NAMES_${CASE_UPPER}")
+    if(DEFINED ${JOB_NAMES_VAR})
+        string(REPLACE " " ";" JOB_NAMES ${${JOB_NAMES_VAR}})
     else()
-        message(WARNING "Job list file ${JOB_LIST_FILE} does not exist.")
+        message(WARNING "No JOB_NAMES provided for ${CASE}")
+        return()
     endif()
+    message(STATUS "Processing jobs for ${CASE}: ${JOB_NAMES}")
+    foreach(JOB IN LISTS JOB_NAMES)
+        string(REGEX REPLACE "^${CASE}_" "" JOB_MODIFIED ${JOB})
+        message(STATUS "Executing: ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml") 
+        execute_process(
+            COMMAND bash -c "export pslot=${CASE}_${JOB_MODIFIED}_${GIT_HASH}; ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml"
+        )
+    endforeach()
 endfunction()
 
 # Function to add Rocoto boot test for a given case and job
 function(AddRocotoBootTest CASE_NAME JOB_NAME)
-    add_test(NAME jjob_test_${CASE_NAME}_${JOB_NAME}_StageData
+    add_test(NAME stage_${CASE_NAME}_${JOB_NAME}
              COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/stage_data.sh ${CASE_NAME} ${JOB_NAME} ${GIT_HASH}")
-    add_test(NAME jjob_test_${CASE_NAME}_${JOB_NAME}
+    add_test(NAME run_${CASE_NAME}_${JOB_NAME}
              COMMAND bash -c "rocotoboot -w RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -t ${JOB_NAME}")
-    set_tests_properties(jjob_test_${CASE_NAME}_${JOB_NAME} PROPERTIES DEPENDS jjob_test_${CASE_NAME}_${JOB_NAME}_StageData)         
+    add_test(NAME validate_${CASE_NAME}_${JOB_NAME}
+             COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/validate.sh ${CASE_NAME} ${JOB_NAME} ${GIT_HASH}")
+    set_tests_properties(run_${CASE_NAME}_${JOB_NAME} PROPERTIES DEPENDS stage_${CASE_NAME}_${JOB_NAME})         
+    set_tests_properties(stage_${CASE_NAME}_${JOB_NAME} PROPERTIES DEPENDS validate_${CASE_NAME}_${JOB_NAME})         
 endfunction()
-
-# Add a test to build all components
-add_test( NAME BuildAll
-          COMMAND bash -c "cd ${HOMEgfs}/sorc; ./build_all.sh"
-)
 
 # Split CASE_LIST into individual cases
 string(REPLACE " " ";" CASE_LIST_SPLIT ${CASE_LIST})
@@ -64,7 +62,15 @@ string(REPLACE " " ";" CASE_LIST_SPLIT ${CASE_LIST})
 # Loop over each case in CASE_LIST_SPLIT
 foreach(CASE IN LISTS CASE_LIST_SPLIT)
     GenerateExperiments(${CASE})
-    file(STRINGS ${CMAKE_BINARY_DIR}/${CASE}_jobs.txt JOB_NAMES)
+    # Get JOB_NAMES for this CASE from input variable
+    string(TOUPPER ${CASE} CASE_UPPER)
+    set(JOB_NAMES_VAR "JOB_NAMES_${CASE_UPPER}")
+    if(DEFINED ${JOB_NAMES_VAR})
+        string(REPLACE " " ";" JOB_NAMES ${${JOB_NAMES_VAR}})
+    else()
+        message(WARNING "No JOB_NAMES provided for ${CASE}")
+        continue()
+    endif()
     foreach(JOB IN LISTS JOB_NAMES)
         AddRocotoBootTest(${CASE} ${JOB})
     endforeach()
