@@ -141,15 +141,15 @@ common_predet(){
   # Convert restart interval into an explicit list for FV3
   if (( cmeps_restart_interval == 0 )); then
     if [[ "${DOIAU:-NO}" == "YES" ]]; then
-      CMEPS_RESTART_FH=$(( ${FHMAX} + 6 ))
+      CMEPS_RESTART_FH=$(( ${FHMAX} + ${half_window} ))
     else 
       CMEPS_RESTART_FH=("${FHMAX}")
     fi
   else
     # shellcheck disable=SC2312
     if [[ "${DOIAU:-NO}" == "YES" ]]; then
-      local restart_interval_start=$(( ${cmeps_restart_interval} + 6 ))
-      local restart_interval_end=$(( ${FHMAX} + 6 ))
+      local restart_interval_start=$(( ${cmeps_restart_interval} + ${half_window} ))
+      local restart_interval_end=$(( ${FHMAX} + ${half_window} ))
     else
       local restart_interval_start=${cmeps_restart_interval} 
       local restart_interval_end=${FHMAX}
