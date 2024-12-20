@@ -2294,7 +2294,7 @@ class GFSTasks(Tasks):
                 if self.options['do_vminmon']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_anlstat:
+                if self.options['do_anlstat']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                     deps.append(rocoto.add_dependency(dep_dict))
             elif self.run in ['gdas']:
@@ -2312,10 +2312,10 @@ class GFSTasks(Tasks):
                 if self.options['do_vminmon']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.do_anlstat:
+                if self.options['do_anlstat']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                     deps.append(rocoto.add_dependency(dep_dict))
-        if self.run in ['gfs'] and self.app_config.do_tracker:
+        if self.run in ['gfs'] and self.options['do_tracker']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_tracker'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.run in ['gfs'] and self.options['do_genesis']:
