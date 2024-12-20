@@ -3,14 +3,13 @@
 import os, sys
 import shutil
 _here = os.path.dirname(__file__)
-_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
+_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../../..'))
 sys.path.insert(0, _top)
 
 from argparse import ArgumentParser
 from pathlib import Path
 from wxflow import Configuration, AttrDict, parse_j2yaml, Logger, logit, which, CommandNotFoundError, ProcessError
 from workflow.hosts import Host
-from wxflow.fsutils import mkdir_p, chdir, cp
 
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
