@@ -208,9 +208,9 @@ if [ $waveMULTIGRID = ".true." ]; then
   gline=
   GRDN=0
 #  grdGRP=1 # Single group for now
-  GRDN=$(expr ${GRDN} + 1)
+  GRDN=$(expr "${GRDN}" + 1)
   agrid=( ${agrid[*]} ${waveGRD} )
-  NMGRIDS=$(expr $NMGRIDS + 1)
+  NMGRIDS=$(expr "$NMGRIDS" + 1)
   gridN=$(echo $waveGRDN | awk -v i=$GRDN '{print $i}')
   gridG=$(echo $waveGRDG | awk -v i=$GRDN '{print $i}')
   gline="${gline}'${waveGRD}'  'no' 'CURRFLAG' 'WINDFLAG' 'ICEFLAG'  'no' 'no' 'no' 'no' 'no'  ${gridN} ${gridG}  0.00 1.00  F\n"
