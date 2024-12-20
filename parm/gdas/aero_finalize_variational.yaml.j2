@@ -12,7 +12,7 @@ mkdir:
 - "{{ COMOUT_ATMOS_RESTART }}"
 copy:
 ## copy variational YAML to ROTDIR
-- ["{{ DATA }}/{{ APREFIX }}aerovar.yaml", "{{ COMOUT_CHEM_ANALYSIS }}/{{ APREFIX }}aerovar.yaml"]
+- ["{{ DATA }}/aeroanlvar.yaml", "{{ COMOUT_CHEM_ANALYSIS }}/{{ APREFIX }}aerovar.yaml"]
 ## copy increments
 {% for tile in range(1,ntiles+1) %}
 - ["{{ DATA }}/anl/aeroinc.{{ current_cycle | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc", "{{ COMOUT_CHEM_ANALYSIS }}/aeroinc.{{ current_cycle | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc"]

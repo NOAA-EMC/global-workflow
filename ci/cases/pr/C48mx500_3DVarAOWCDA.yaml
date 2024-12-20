@@ -9,9 +9,9 @@ arguments:
   resdetocean: 5.0
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20240610
-  idate: 2021032412
-  edate: 2021032418
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20241120
+  idate: 2021032418
+  edate: 2021032500
   nens: 0
   interval: 0
   start: warm
@@ -21,4 +21,3 @@ skip_ci_on_hosts:
   - wcoss2
   - gaea
   - orion
-  - hercules

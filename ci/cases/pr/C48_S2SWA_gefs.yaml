@@ -18,4 +18,4 @@ arguments:
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gefs_defaults_ci.yaml
 
 skip_ci_on_hosts:
-  - wcoss2
+  - None

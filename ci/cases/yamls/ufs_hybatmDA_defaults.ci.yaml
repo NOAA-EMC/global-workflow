@@ -5,10 +5,17 @@ base:
   DO_JEDIATMVAR: "YES"
   DO_JEDIATMENS: "YES"
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
+  DO_TEST_MODE: "NO"
 atmanl:
+  JCB_ALGO_YAML_VAR: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_3dvar_ufs_hybatmDA.yaml.j2"
+  JCB_ALGO_YAML_FV3INC: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_3dvar-fv3inc_ufs_hybatmDA.yaml.j2"
   LAYOUT_X_ATMANL: 4
   LAYOUT_Y_ATMANL: 4
 atmensanl:
+  JCB_ALGO_YAML_LETKF: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_lgetkf_ufs_hybatmDA.yaml.j2"
+  JCB_ALGO_YAML_OBS: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_lgetkf_observer_ufs_hybatmDA.yaml.j2"
+  JCB_ALGO_YAML_SOL: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_lgetkf_solver_ufs_hybatmDA.yaml.j2"
+  JCB_ALGO_YAML_FV3INC: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_lgetkf-fv3inc_ufs_hybatmDA.yaml.j2"
   LAYOUT_X_ATMENSANL: 4
   LAYOUT_Y_ATMENSANL: 4
 esfc:

@@ -10,7 +10,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "earc" -c "base earc"
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_TOP
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COMIN_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL \
-  COMIN_ATMOS_HISTORY_ENSSTAT:COM_ATMOS_HISTORY_TMPL
+  COMIN_ATMOS_HISTORY_ENSSTAT:COM_ATMOS_HISTORY_TMPL \
+  COMIN_SNOW_ANALYSIS_ENSSTAT:COM_SNOW_ANALYSIS_TMPL
 
 ###############################################################
 # Run archive script
