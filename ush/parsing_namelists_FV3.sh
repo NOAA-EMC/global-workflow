@@ -540,10 +540,10 @@ local LNDP_LSCALE=${LNDP_SCALE:-"500000"}
 local ISEED_LNDP=${ISEED_LNDP:-${ISEED}}
 local LNDP_VAR_LIST=${lndp_var_list:-"'XXX'"}
 local LNDP_PRT_LIST=${lndp_prt_list:-"-999"}
-  
-local MOM6_OUTPUT_DIR=" "
-local MOM6_RESTART_SETTING=" "
-local MOM6_RESTART_DIR=" "
+
+local MOM6_OUTPUT_DIR=MOM6_OUTPUT/
+local MOM6_RESTART_SETTING=r
+local MOM6_RESTART_DIR=MOM6_RESTART/
 
 local global_template='/scratch1/NCEPDEV/stmp2/Daniel.Sarmiento/gw_branch/global_control.nml.IN'
 atparse < "${global_template}" >> "input.nml"
