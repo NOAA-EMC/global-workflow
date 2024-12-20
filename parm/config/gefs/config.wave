@@ -19,7 +19,6 @@ export RUNRSTwave="gdas"
 export waveGRDN='1'                   # grid number for ww3_multi
 export waveGRDG='10'                  # grid group for ww3_multi
 export USE_WAV_RMP='NO'               # YES/NO rmp grid remapping pre-processed coefficients
-export waveMULTIGRID='.false.'        # .true./.false. for multi or shel
 export MESH_WAV="mesh.${waveGRD}.nc"  # Mesh grid for wave model for CMEPS
 export waveesmfGRD=' '                # input grid for multigrid
 
@@ -30,7 +29,6 @@ case "${waveGRD}" in
     export waveGRDN='1 2 3'
     export waveGRDG='10 20 30'
     export USE_WAV_RMP='YES'
-    export waveMULTIGRID='.false.'
     export IOSRV='3'
     export MESH_WAV=' '
     export waveesmfGRD='glox_10m'
