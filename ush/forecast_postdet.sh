@@ -452,18 +452,14 @@ WW3_out() {
     local seconds source_file target_file
     if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
       echo "Copying WW3 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
-      #seconds=$(to_seconds "${forecast_end_cycle:8:2}0000")  # convert HHMMSS to seconds
-      #source_file="ufs.cpld.ww3.r.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
       target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.restart.ww3.nc"
       ${NCP} "${DATArestart}/WW3_RESTART/${target_file}" \
              "${COMOUT_WAVE_RESTART}/${target_file}"
     fi
   fi
 
-  # Copy restarts for next cycle for RUN=gdas|enkfgdas|enkfgfs
-  # TO DO: Will need to add if gefs here for self-cycled GEFS 
-  # not added now since unclear if gefs has appropriate restart times for this yet 
-  if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
+  # Copy restarts for next cycle for RUN=gdas|gefs
+  if [[ "${RUN}" == "gdas" || "${RUN}" == "gefs" ]]; then
     local restart_date
     restart_date="${model_start_date_next_cycle}"
     echo "Copying WW3 restarts for 'RUN=${RUN}' at ${restart_date}"

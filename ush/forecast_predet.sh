@@ -134,6 +134,34 @@ common_predet(){
   # Several model components share DATA/INPUT for input data
   if [[ ! -d "${DATA}/INPUT" ]]; then mkdir -p "${DATA}/INPUT"; fi
 
+  # For CMEPS, CICE, MOM6 and WW3 determine restart writes
+  # Note FV3 has its own restart intervals  
+  cmeps_restart_interval=${restart_interval:-${FHMAX}}
+  # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
+  # Convert restart interval into an explicit list for FV3
+  if (( cmeps_restart_interval == 0 )); then
+    restart_interval=${FHMAX}
+    CMEPS_RESTART_FH=("${restart_interval}")
+  else
+    # shellcheck disable=SC2312
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      restart_interval_start=$(( ${cmeps_restart_interval}+${half_window} ))
+    else
+      if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+        restart_interval_start=$(( ${cmeps_restart_interval}-${half_window} ))      
+      else
+        restart_interval_start=${cmeps_restart_interval} 
+      fi
+    fi
+    mapfile -t CMEPS_RESTART_FH < <(seq "${restart_interval_start}" "${cmeps_restart_interval}" "${FHMAX}")
+    # If the last forecast hour is not in the array, add it
+    local nrestarts=${#CMEPS_RESTART_FH[@]}
+    if (( CMEPS_RESTART_FH[nrestarts-1] != FHMAX )); then
+      CMEPS_RESTART_FH+=("${FHMAX}")
+    fi
+  fi
+  #TO DO: For GEFS, once cycling waves "self-cycles" and therefore needs to have a restart at 6 hour 
+
 }
 
 # shellcheck disable=SC2034
