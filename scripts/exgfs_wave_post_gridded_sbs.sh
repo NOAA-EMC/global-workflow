@@ -262,7 +262,7 @@ source "${USHgfs}/preamble.sh"
         then
           gribFL=\'$(echo ${OUTPARS_WAV})\'
           source "${USHgfs}/wave_domain_grid.sh"
-          process_grdID "$grdID"
+          process_grdID "${grdID}"
           echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
         fi
         echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
@@ -277,7 +277,7 @@ source "${USHgfs}/preamble.sh"
       do
         gribFL=\'$(echo ${OUTPARS_WAV})\'
         source "${USHgfs}/wave_domain_grid.sh"
-        process_grdID "$grdID"
+        process_grdID "${grdID}"
         echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
       done
     fi
