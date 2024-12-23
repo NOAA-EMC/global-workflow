@@ -91,7 +91,9 @@ source "${USHgfs}/preamble.sh"
 
   ${NLN} "${DATA}/output_${ymdh}0000/out_grd.${waveGRD}" "out_grd.${waveGRD}"
 
-  ${NLN} "${DATA}/mod_def.${waveGRD}" "mod_def.${waveGRD}"
+  for ID in ${waveGRD} ${grdID}; do
+    ${NLN} "${DATA}/mod_def.${ID}" "mod_def.${ID}"
+  done
   
 
 # --------------------------------------------------------------------------- #
