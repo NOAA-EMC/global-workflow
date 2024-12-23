@@ -70,6 +70,14 @@ enkf:
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
         {% endfor %}
 
+        {% if DO_JEDISNOWDA %}
+        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
+        {% for itile in range(1,7) %}
+        # Snow analysis is 3dvar
+        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/snowinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
+        {% endfor %}
+        {% endif %}
+
         # Ensemble mean analyses/increments
         # 6-hr analysis/increment
         {% if do_calc_increment %}
