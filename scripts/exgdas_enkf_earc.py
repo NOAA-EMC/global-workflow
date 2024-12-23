@@ -26,7 +26,7 @@ def main():
             'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF', 'ENKF_SPREAD',
             'restart_interval_enkfgdas', 'restart_interval_enkfgfs',
             'DOHYBVAR', 'DOIAU_ENKF', 'IAU_OFFSET', 'DOIAU', 'DO_CA',
-            'DO_CALC_INCREMENT', 'assim_freq', 'ARCH_CYC',
+            'DO_CALC_INCREMENT', 'assim_freq', 'ARCH_CYC', 'DO_JEDISNOWDA',
             'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ',
             'IAUFHRS_ENKF', 'NET']
 
