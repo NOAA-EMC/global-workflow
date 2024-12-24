@@ -26,7 +26,7 @@ function(AddFunctionalTest CASE JOB)
     set_tests_properties(${TEST_NAME}_create_experiment PROPERTIES LABELS "${CASE};${JOB}")
     
     add_test(NAME ${TEST_NAME}_stage
-        COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/stage_data.sh ${CASE} $${JOB}")
+        COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/stage_data.py --build_dir ${CMAKE_BINARY_DIR} --case ${CASE} --job $${JOB}")
     set_tests_properties(${TEST_NAME}_stage PROPERTIES DEPENDS ${TEST_NAME}_create_experiment LABELS "${CASE};${JOB}")
     
     add_test(NAME ${TEST_NAME}_execute
