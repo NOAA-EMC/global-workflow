@@ -5,8 +5,11 @@ Load environment to run GFS on noaacloud
 local spack_mod_path=(os.getenv("spack_mod_path") or "None")
 prepend_path("MODULEPATH", spack_mod_path)
 
+load("gnu")
 load(pathJoin("stack-intel", (os.getenv("stack_intel_ver") or "None")))
 load(pathJoin("stack-intel-oneapi-mpi", (os.getenv("stack_impi_ver") or "None")))
+unload("gnu")
+
 load(pathJoin("python", (os.getenv("python_ver") or "None")))
 
 load(pathJoin("jasper", (os.getenv("jasper_ver") or "None")))
