@@ -1,7 +1,7 @@
 gfs_fcst:
   input_files:
     copy:
-      - [{{ STAGED_FUNCTIONAL_TEST_DIR }}/gdas.{{ PDY }}/{{ HH }}/atmos/input/gfs_ctrl.nc,
+      - [{{ STAGED_FUNCTIONAL_TEST_DIR }}/gdas.{{ PDY }}/{{ HH }}/atmos/input/gfs_ctrl.nc, 
          {{RUNTESTS}}/{{test_name}}//gdas.{{PDY}}/{{HH}}/atmos/input/gfs_ctrl.nc]
       - [{{ STAGED_FUNCTIONAL_TEST_DIR }}/gdas.{{ PDY }}/{{ HH }}/atmos/input/gfs_data.tile1.nc
          {{RUNTESTS}}/{{test_name}}//gdas.{{PDY}}/{{HH}}/atmos/input/gfs_data.tile1.nc]
