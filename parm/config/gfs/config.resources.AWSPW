@@ -9,3 +9,27 @@ unset memory
 for mem_var in $(env | grep '^memory_' | cut -d= -f1); do
   unset "${mem_var}"
 done
+
+step=$1
+
+case ${step} in
+  "fcst" | "efcs")
+    export PARTITION_BATCH="compute"
+    max_tasks_per_node=48
+    ;;
+
+  "arch")
+    export PARTITION_BATCH="process"
+    max_tasks_per_node=24
+    ;;
+
+
+  *)
+    export PARTITION_BATCH="process"
+    max_tasks_per_node=24
+    ;;
+
+esac
+
+export max_tasks_per_node
+
