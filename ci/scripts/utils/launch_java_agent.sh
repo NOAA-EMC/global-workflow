@@ -105,6 +105,7 @@ ${JAVA} -version
 GH=$(command -v gh || echo "${HOME}/bin/gh")
 [[ -f "${GH}" ]] || echo "ERROR: GitHub CLI (gh) not found. (exiting with error)"; exit 1
 ${GH} --version
+export GH
 
 check_mark=$("${GH}" auth status -t 2>&1 | grep "Token:" | awk '{print $1}') || true
 if [[ "${check_mark}" != "✓" ]]; then
