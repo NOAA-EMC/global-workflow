@@ -102,8 +102,8 @@ JAVA="${JAVA_HOME}/bin/java"
 echo "JAVA VERSION: "
 ${JAVA} -version
 
-export GH=$(which gh || echo "${HOME}/bin/gh")
-[[ -f "${GH}" ]] || echo "gh is not installed in ${HOME}/bin"
+GH=$(command -v gh || echo "~/bin/gh")
+[[ -f "${GH}" ]] || echo "ERROR: GitHub CLI (gh) not found. (exiting with error)"; exit 1
 ${GH} --version
 
 check_mark=$("${GH}" auth status -t 2>&1 | grep "Token:" | awk '{print $1}') || true
