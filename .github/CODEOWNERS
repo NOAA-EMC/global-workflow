@@ -211,3 +211,4 @@ ush/python/pygfs/utils/marine_da_utils.py @guillaumevernieres @AndrewEichmann-NO
 
 # Specific workflow scripts
 workflow/generate_workflows.sh @DavidHuber-NOAA
+workflow/build_compute.py @DavidHuber-NOAA @aerorahul
