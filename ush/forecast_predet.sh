@@ -146,7 +146,6 @@ common_predet(){
       CMEPS_RESTART_FH=("${FHMAX}")
     fi
   else
-    # shellcheck disable=SC2312
     if [[ "${DOIAU:-NO}" == "YES" ]]; then
       local restart_interval_start=$(( ${cmeps_restart_interval} + ${half_window} ))
       local restart_interval_end=$(( ${FHMAX} + ${half_window} ))
