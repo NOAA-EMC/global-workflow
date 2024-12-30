@@ -672,7 +672,7 @@ esac
 export ufs_configure_template=${ufs_configure_template:-${default_template:-"/dev/null"}}
 unset model_list default_template
 
-#export wave restart variable: 
+# export wave restart variable: 
 export WW3_RSTFLDS=${WW3_RSTFLDS:-" "}
 
 if [[ ! -r "${ufs_configure_template}" ]]; then
