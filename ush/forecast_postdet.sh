@@ -367,7 +367,7 @@ WW3_postdet() {
 
     ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
     if [[ -s "${ww3_restart_file}" ]]; then  
-      #NetCDF restart exists: 
+      # NetCDF restart exists: 
       export WW3_restart_from_binary=false
       ${NCP} "${ww3_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
              || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
