@@ -474,7 +474,7 @@ WW3_out() {
            "${COMOUT_WAVE_RESTART}/${target_file}"
   fi
 
-  #Copy restarts for downstream usage in HAFS 
+  # Copy restarts for downstream usage in HAFS 
   if [[ "${RUN}" =~ "gdas" ]]; then
     local restart_date
     restart_date="${next_cycle}"
