@@ -469,8 +469,6 @@ WW3_out() {
     local restart_date
     restart_date="${model_start_date_next_cycle}"
     echo "Copying WW3 restarts for 'RUN=${RUN}' at ${restart_date}"
-    #seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
-    #source_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
     target_file="${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
     ${NCP} "${DATArestart}/WW3_RESTART/${target_file}" \
            "${COMOUT_WAVE_RESTART}/${target_file}"
