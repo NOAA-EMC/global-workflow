@@ -361,7 +361,7 @@ WW3_postdet() {
       first_ww3_restart_out=$(date --utc -d "${first_ww3_restart_out:0:8} ${first_ww3_restart_out:8:2} + ${half_window} hours" +%Y%m%d%H)
     fi 
   else
-    #now check to see if a NetCDF restart exists: 
+    # now check to see if a NetCDF restart exists: 
     seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
     ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
 
