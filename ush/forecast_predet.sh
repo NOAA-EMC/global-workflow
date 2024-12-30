@@ -155,7 +155,7 @@ common_predet(){
     fi
     CMEPS_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${cmeps_restart_interval}" "${restart_interval_end}")"
   fi
-  #TO DO: For GEFS, once cycling waves "self-cycles" and therefore needs to have a restart at 6 hour 
+  # TODO: For GEFS, once cycling waves "self-cycles" and therefore needs to have a restart at 6 hour
  
 }
 
