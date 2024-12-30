@@ -18,35 +18,39 @@ Clone the `global-workflow` and `cd` into the `sorc` directory:
    git clone --recursive https://github.com/NOAA-EMC/global-workflow
    cd global-workflow/sorc
 
-For forecast-only (coupled or uncoupled) build of the components:
+.. _build_examples:
+
+The build_all.sh script can be used to build all required components of the global workflow.  The accepted arguments is a list of systems to be built.  This includes builds for GFS and GEFS forecast-only experiments, GSI and GDASApp-based DA for cycled GFS experiments.  See `feature availability <hpc.html#feature-availability-by-hpc>`__ to see which system(s) are available on each supported system.
 
 ::
 
-   ./build_all.sh
+   ./build_all.sh [gfs] [gefs] [gs] [gdas] [all]
 
-For cycled (w/ data assimilation) use the `-g` option during build:
-
-::
-
-   ./build_all.sh -g
-
-For coupled cycling (include new UFSDA) use the `-gu` options during build:
-
-[Currently only available on Hera, Orion, and Hercules]
+For example, to run GFS experiments with GSI DA, execute:
 
 ::
 
-   ./build_all.sh -gu
+   ./build_all.sh gfs gsi
 
+This builds the GFS, UFS-utils, GFS-utils, WW3 with PDLIB (structured wave grids), UPP, GSI, GSI-monitor, and GSI-utils executables.
 
-For building without PDLIB (unstructured grid) for the wave model, use the `-w` options during build:
+For coupled cycling (include new UFSDA) execute:
 
 ::
 
-   ./build_all.sh -w
+   ./build_all.sh gfs gdas
 
+This builds all of the same executables, except it builds the GDASApp instead of the GSI.
 
-Build workflow components and link workflow artifacts such as executables, etc.
+To run GEFS (forecast-only) execute:
+
+::
+
+   ./build_all.sh gefs
+
+This builds the GEFS, UFS-utils, GFS-utils, WW3 *without* PDLIB (unstructure wave grids), and UPP executables.
+
+Once the building is complete, link workflow artifacts such as executables, configuration files, and scripts via
 
 ::
 
@@ -107,40 +111,19 @@ Under the ``/sorc`` folder is a script to build all components called ``build_al
 
 ::
 
-   ./build_all.sh [-a UFS_app][-g][-h][-u][-v]
+   ./build_all.sh [-a UFS_app][-k][-h][-v] [list of system(s) to build]
   -a UFS_app:
     Build a specific UFS app instead of the default
-  -g:
-    Build GSI
+  -k:
+    Kill all builds immediately if one fails
   -h:
     Print this help message and exit
-  -j:
-    Specify maximum number of build jobs (n)
-  -u:
-    Build UFS-DA
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
 
-For forecast-only (coupled or uncoupled) build of the components:
+  Lastly, pass to build_all.sh a list of systems to build.  This includes `gfs`, `gefs`, `sfs` (not fully supported), `gsi`, `gdas`, and `all`.
 
-::
-
-   ./build_all.sh
-
-For cycled (w/ data assimilation) use the `-g` option during build:
-
-::
-
-   ./build_all.sh -g
-
-For coupled cycling (include new UFSDA) use the `-gu` options during build:
-
-[Currently only available on Hera, Orion, and Hercules]
-
-::
-
-   ./build_all.sh -gu
-
+For examples of how to use this script, see :ref:`build examples <build_examples>`.
 
 ^^^^^^^^^^^^^^^
 Link components
@@ -156,4 +139,3 @@ After running the checkout and build scripts run the link script:
 
 Where:
    ``-o``: Run in operations (NCO) mode. This creates copies instead of using symlinks and is generally only used by NCO during installation into production.
-
