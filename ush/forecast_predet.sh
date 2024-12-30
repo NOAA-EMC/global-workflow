@@ -147,7 +147,7 @@ common_predet(){
     fi
   else
     if [[ "${DOIAU:-NO}" == "YES" ]]; then
-      local restart_interval_start=$(( ${cmeps_restart_interval} + ${half_window} ))
+      local restart_interval_start=$(( cmeps_restart_interval + half_window ))
       local restart_interval_end=$(( ${FHMAX} + ${half_window} ))
     else
       local restart_interval_start=${cmeps_restart_interval} 
