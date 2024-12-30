@@ -141,7 +141,7 @@ common_predet(){
   # Convert restart interval into an explicit list for FV3
   if (( cmeps_restart_interval == 0 )); then
     if [[ "${DOIAU:-NO}" == "YES" ]]; then
-      CMEPS_RESTART_FH=$(( ${FHMAX} + ${half_window} ))
+      CMEPS_RESTART_FH=$(( FHMAX + half_window ))
     else 
       CMEPS_RESTART_FH=("${FHMAX}")
     fi
