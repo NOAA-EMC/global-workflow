@@ -32,8 +32,6 @@ workdir="${5}"
 
 cd "${workdir}" || exit 2
 
-source "${USHgfs}/preamble.sh"
-
 if [[ "${F00FLAG}" == "YES" ]]; then
    f00flag=".true."
 else
