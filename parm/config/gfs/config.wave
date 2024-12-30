@@ -86,7 +86,7 @@ case "${waveGRD}" in
     export waveuoutpGRD=${waveGRD}
     ;;
   "uglo_15km")
-    #unstructured 15km grid
+    # unstructured 15km grid
     export waveinterpGRD='glo_15mxt at_10m ep_10m wc_10m glo_30m'
     export wavepostGRD=''
     export waveuoutpGRD=${waveGRD}
