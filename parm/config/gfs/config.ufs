@@ -634,7 +634,7 @@ fi
 
 # Set the name of the UFS (previously nems) configure template to use
 # Default ufs.configure templates for supported model configurations
-#WW3 restart field variable is different for slow vs fast loop.  Add  WW3_RSTFLDS="ice" for slow loop variables based on couplin scheme. 
+# WW3 restart field variable is different for slow vs fast loop.  Add  WW3_RSTFLDS="ice" for slow loop variables based on coupling scheme.
 if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
   tmpl_suffix="_esmf"
 fi
