@@ -138,7 +138,7 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_jedisnowda']:
             configs += ['snowanl']
             if options['do_hybvar']:
-                configs += ['esnowrecen']
+                configs += ['esnowanl']
 
         if options['do_mos']:
             configs += ['mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
@@ -316,8 +316,10 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['eobs', 'eupd']
                     task_names[run].append('echgres') if 'gdas' in run else 0
                     task_names[run] += ['ediag'] if options['lobsdiag_forenkf'] else ['eomg']
-                    task_names[run].append('esnowrecen') if options['do_jedisnowda'] and 'gdas' in run else 0
+                    task_names[run].append('esnowanl') if options['do_jedisnowda'] and 'gdas' in run else 0
+                    task_names[run].append('efcs') if 'gdas' in run else 0
+                    task_names[run].append('epos') if 'gdas' in run else 0
 
-                task_names[run] += ['stage_ic', 'ecen', 'esfc', 'efcs', 'epos', 'earc', 'cleanup']
+                task_names[run] += ['stage_ic', 'ecen', 'esfc', 'earc', 'cleanup']
 
         return task_names

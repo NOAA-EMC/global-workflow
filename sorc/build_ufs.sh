@@ -12,7 +12,7 @@ EXEC_NAME="gfs_model.x"
 
 while getopts ":da:fj:e:vwy" option; do
   case "${option}" in
-    d) BUILD_TYPE="Debug";;
+    d) BUILD_TYPE="DEBUG";;
     a) APP="${OPTARG}";;
     f) FASTER="ON";;
     j) BUILD_JOBS="${OPTARG}";;

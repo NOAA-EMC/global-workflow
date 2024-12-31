@@ -15,7 +15,7 @@ if (( $# != 1 )); then
     echo "prep prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal"
-    echo "snowanl esnowrecen"
+    echo "snowanl esnowanl"
     echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
@@ -107,16 +107,16 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    npe_node_max=36
-    max_tasks_per_node=36
+    npe_node_max=48
+    max_tasks_per_node=48
     # TODO Supply a max mem/node value for AWS
     # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "AZUREPW")
     export PARTITION_BATCH="compute"
-    npe_node_max=24
-    max_tasks_per_node=24
+    npe_node_max=36
+    max_tasks_per_node=36
     # TODO Supply a max mem/node value for AZURE
     # shellcheck disable=SC2034
     mem_node_max=""
@@ -346,11 +346,11 @@ case ${step} in
 
     walltime="00:15:00"
     ntasks=$(( layout_x * layout_y * 6 ))
-    threads_per_task=1
+    threads_per_task=2
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "esnowrecen")
+  "esnowanl")
     # below lines are for creating JEDI YAML
     case ${CASE} in
       "C768")
@@ -373,9 +373,9 @@ case ${step} in
     export layout_x
     export layout_y
 
-    walltime="00:15:00"
+    walltime="00:30:00"
     ntasks=$(( layout_x * layout_y * 6 ))
-    threads_per_task=1
+    threads_per_task=2
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
@@ -1213,7 +1213,7 @@ case ${step} in
     ;;
 
   "esfc")
-    walltime="00:15:00"
+    walltime="00:25:00"
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
