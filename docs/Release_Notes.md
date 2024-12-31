@@ -97,7 +97,8 @@ Now ingest:
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.21
+* Increase ncpus from 50 to 60 for gfs_wave_postpnt job.
+  NCO provided change to avoid ncpu burst warnings.
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
