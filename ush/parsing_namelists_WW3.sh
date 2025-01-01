@@ -75,9 +75,8 @@ WW3_namelists(){
 
 
 # --------------------------------------------------------------------------- #
-# Create ww3_multi/shel.inp
+# Create ww3_shel.inp
 
-  # ww3_multi template
   if [ -f "${PARMgfs}/wave/ww3_shel.inp.tmpl" ]; then
     cp "${PARMgfs}/wave/ww3_shel.inp.tmpl" "ww3_shel.inp.tmpl"
   fi
@@ -85,7 +84,6 @@ WW3_namelists(){
     echo "ABNORMAL EXIT: NO TEMPLATE FOR WW3 SHEL INPUT FILE" 
     exit 12
   fi
-
 
 # Buoy location file
 

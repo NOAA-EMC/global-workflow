@@ -24,18 +24,6 @@ export waveesmfGRD=' '                # input grid for multigrid
 
 #Grid dependent variables for various grids
 case "${waveGRD}" in
-  "gnh_10m;aoc_9km;gsh_15m")
-    #GFSv16 settings:
-    export waveGRDN='1 2 3'
-    export waveGRDG='10 20 30'
-    export USE_WAV_RMP='YES'
-    export IOSRV='3'
-    export MESH_WAV=' '
-    export waveesmfGRD='glox_10m'
-    export waveuoutpGRD='points'
-    export waveinterpGRD='glo_15mxt at_10m ep_10m wc_10m glo_30m'
-    export wavepostGRD='gnh_10m aoc_9km gsh_15m'
-    ;;
   "gwes_30m")
     #Grid used for P8
     export waveinterpGRD=''
