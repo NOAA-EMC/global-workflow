@@ -52,11 +52,11 @@ if __name__ == '__main__':
     base_cfg = cfg.parse_config('config.base')
 
     pr_case_cfg = parse_j2yaml(path=pr_case_yaml_path, data=data)
-    print (f'idate: {pr_case_cfg.idate}')
-
-    print (base_cfg['PDY'])
-
+    data["PDY"]=str(pr_case_cfg.arguments.idate)[0:8]
+    data["HH"]=str(pr_case_cfg.arguments.idate)[8:10]
+    data["case"]=args.case
+    data["RUNTESTS"]=Path.joinpath(args.build_dir,"RUNTESTS")
+    data["JOB"]=args.job
     base_cfg.update(data)
-
     case_cfg = parse_j2yaml(path=case_yaml_path, data=data)
-    print (case_cfg)
+    print (case_cfg.gfs_fcst.input_files.copy)
