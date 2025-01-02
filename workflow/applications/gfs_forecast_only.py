@@ -61,7 +61,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 configs += ['gempak']
 
             if options['do_awips']:
-                configs += ['awips']
+                configs += ['awips', 'fbwind']
 
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
