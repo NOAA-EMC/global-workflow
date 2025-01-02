@@ -30,8 +30,9 @@ function(AddFunctionalTest CASE JOB)
     set_tests_properties(${TEST_NAME}_stage PROPERTIES DEPENDS ${TEST_NAME}_create_experiment LABELS "${CASE};${JOB}")
     
     add_test(NAME ${TEST_NAME}_execute
-        #COMMAND bash -c "rocotoboot -w RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.xml -d RUNTESTS/EXPDIR/${CASE_NAME}_${GIT_HASH}/workflow.db -t ${JOB_NAME}")
-        COMMAND bash -c "echo 'submitting running of job ${JOB_NAME}'")
+        #TODO Need to get the idate for rocotoboot get the right cycle for the test
+        #TODO Need to add a loop to check for when job has been completed
+        COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/execute.sh ${CASE} ${JOB}")
     set_tests_properties(${TEST_NAME}_execute PROPERTIES DEPENDS ${TEST_NAME}_stage LABELS "${CASE};${JOB}")
     
     add_test(NAME ${TEST_NAME}_validate
