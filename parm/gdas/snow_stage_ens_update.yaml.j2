@@ -10,44 +10,14 @@
 # create working directories
 ######################################
 mkdir:
-- "{{ DATA }}/bkg/det"
-- "{{ DATA }}/bkg/det_ensres"
-- "{{ DATA }}/inc/det"
-- "{{ DATA }}/inc/det_ensres"
-- "{{ DATA }}//inc/ensmean"
+- "{{ DATA }}/obs"
+- "{{ DATA }}/bkg/ensmean"
+- "{{ DATA }}/anl/ensmean"
 {% for mem in range(1, NMEM_ENS + 1) %}
 - "{{ DATA }}/bkg/mem{{ '%03d' % mem }}"
 - "{{ DATA }}/anl/mem{{ '%03d' % mem }}"
 {% endfor %}
 copy:
-######################################
-# copy deterministic background files
-######################################
-# define variables
-# Declare a dict of search and replace terms to run on each template
-{% set tmpl_dict = {'${ROTDIR}':ROTDIR,
-                    '${RUN}':GDUMP,
-                    '${YMD}':previous_cycle | to_YMD,
-                    '${HH}':previous_cycle | strftime("%H"),
-                    '${MEMDIR}':""} %}
-
-{% for tile in range(1, ntiles+1) %}
-- ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/det/{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
-{% endfor %}
-######################################
-# copy deterministic increment files
-######################################
-# define variables
-# Declare a dict of search and replace terms to run on each template
-{% set tmpl_dict = {'${ROTDIR}':ROTDIR,
-                    '${RUN}':GDUMP,
-                    '${YMD}':current_cycle | to_YMD,
-                    '${HH}':current_cycle | strftime("%H"),
-                    '${MEMDIR}':""} %}
-
-{% for tile in range(1, ntiles+1) %}
-- ["{{ COM_SNOW_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) }}/snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/inc/det/snowinc.{{ bkg_time }}.sfc_data.tile{{ tile }}.nc"]
-{% endfor %}
 ######################################
 # copy ensemble background files
 ######################################
@@ -60,6 +30,8 @@ copy:
                         '${HH}':previous_cycle | strftime("%H"),
                         '${MEMDIR}':"mem" + '%03d' % mem} %}
 
+    # copy coupler file
+- ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ current_cycle | to_fv3time }}.coupler.res", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.coupler.res"]
     # we need to copy them to two places, one serves as the basis for the analysis
     {% for tile in range(1, ntiles+1) %}
 - ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc"]

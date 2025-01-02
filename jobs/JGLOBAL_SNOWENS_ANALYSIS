@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowrecen" -c "base esnowrecen"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowanl" -c "base esnowanl"
 
 ##############################################
 # Set variables used in the script
@@ -10,19 +10,18 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowrecen" -c "base esnowrecen"
 # shellcheck disable=SC2153
 GDUMP="gdas"
 export GDUMP
+CDUMP=${RUN/enkf}
+export CDUMP
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
+RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_OBS:COM_OBS_TMPL
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
     COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
     COMOUT_CONF:COM_CONF_TMPL
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl \
-    COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
-
-mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
 for imem in $(seq 1 "${NMEM_ENS}"); do
     memchar="mem$(printf %03i "${imem}")"
@@ -31,10 +30,15 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
     mkdir -p "${COMOUT_SNOW_ANALYSIS}"
 done
 
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -x\
+    COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
+
+mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
+
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exgdas_enkf_snow_recenter.py}
+EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snowens_analysis.py}
 ${EXSCRIPT}
 status=$?
 (( status != 0 )) && exit "${status}"
