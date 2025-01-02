@@ -103,7 +103,7 @@ echo "JAVA VERSION: "
 ${JAVA} -version
 
 GH=$(command -v gh || echo "${HOME}/bin/gh")
-[[ -f "${GH}" ]] || echo "ERROR: GitHub CLI (gh) not found. (exiting with error)"; exit 1
+[[ -f "${GH}" ]] || ( echo "ERROR: GitHub CLI (gh) not found. (exiting with error)"; exit 1 )
 ${GH} --version
 export GH
 
