@@ -1,25 +1,12 @@
-gfs_fcst:
-  input_files:
-    copy:
-      - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_ctrl.nc", 
-         "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}//gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_ctrl.nc"]
-
-      - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile1.nc",
-         "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}//gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile1.nc"]
-
-      - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile2.nc",
-         "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}//gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile2.nc"]
-
-      - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile3.nc",
-         "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}/gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile3.nc"]
-
-      - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile4.nc",
-         "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}//gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile4.nc"]
-
-      - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile5.nc",
-         "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}///gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile5.nc"]
-
-      - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile6.nc",
-         "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}/gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile6.nc"]
-
-  output_files: use_jinja_template_fcst
+gfs_fcst_000:
+    input_files:
+        mkdir:
+            - "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}//gfs.{{PDY}}/{{HH}}/model/atmos/input"
+        copy:
+            - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_ctrl.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}//gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_ctrl.nc"]
+            - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile1.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}//gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile1.nc"]
+            - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile2.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}//gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile2.nc"]
+            - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile3.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}/gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile3.nc"]
+            - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile4.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}//gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile4.nc"]
+            - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile5.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}///gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile5.nc"]
+            - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile6.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}/gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile6.nc"]

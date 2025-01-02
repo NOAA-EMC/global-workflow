@@ -8,8 +8,8 @@ sys.path.insert(0, _top)
 
 from argparse import ArgumentParser
 from pathlib import Path
-from wxflow import Configuration, AttrDict, parse_j2yaml, Logger, logit, which, CommandNotFoundError, ProcessError
-from workflow.hosts import Host, FileHandler
+from wxflow import Configuration, AttrDict, parse_j2yaml, Logger, logit, which, CommandNotFoundError, ProcessError, FileHandler
+from workflow.hosts import Host
 
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
@@ -54,6 +54,4 @@ if __name__ == '__main__':
     data["RUNTESTS"]=Path.joinpath(args.build_dir,"RUNTESTS")
     data["JOB"]=args.job
     case_cfg = parse_j2yaml(path=case_yaml_path, data=data)
-
-    for file in case_cfg['copy']:
-        FileHandler(file).sync()
+    FileHandler(case_cfg[args.job]['input_files']).sync()
