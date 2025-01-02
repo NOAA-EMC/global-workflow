@@ -9,7 +9,7 @@ sys.path.insert(0, _top)
 from argparse import ArgumentParser
 from pathlib import Path
 from wxflow import Configuration, AttrDict, parse_j2yaml, Logger, logit, which, CommandNotFoundError, ProcessError
-from workflow.hosts import Host
+from workflow.hosts import Host, FileHandler
 
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
@@ -56,4 +56,4 @@ if __name__ == '__main__':
     case_cfg = parse_j2yaml(path=case_yaml_path, data=data)
 
     for file in case_cfg['copy']:
-        file.sync()
+        FileHandler(file).sync()
