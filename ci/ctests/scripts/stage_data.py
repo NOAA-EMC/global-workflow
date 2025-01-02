@@ -47,16 +47,13 @@ if __name__ == '__main__':
     platform_config = cfg.parse_config(f'config.{host.machine.lower()}')
     data.update(platform_config)
 
-    print(f'{args.build_dir}/RUNTESTS/EXPDIR/{args.case}_{args.job}')
-    cfg = Configuration(f'{args.build_dir}/RUNTESTS/EXPDIR/{args.case}_{args.job}')
-    base_cfg = cfg.parse_config('config.base')
-
     pr_case_cfg = parse_j2yaml(path=pr_case_yaml_path, data=data)
     data["PDY"]=str(pr_case_cfg.arguments.idate)[0:8]
     data["HH"]=str(pr_case_cfg.arguments.idate)[8:10]
     data["case"]=args.case
     data["RUNTESTS"]=Path.joinpath(args.build_dir,"RUNTESTS")
     data["JOB"]=args.job
-    base_cfg.update(data)
     case_cfg = parse_j2yaml(path=case_yaml_path, data=data)
-    print (case_cfg.gfs_fcst.input_files.copy)
+
+    for file in case_cfg['copy']:
+        file.sync()
