@@ -19,11 +19,6 @@ function _usage() {
     -b Run build_all.sh with default flags
        (build the UFS, UPP, UFS_Utils, and GFS-utils only
 
-    -B "build flags"
-       Run build_all.sh with the build specified flags.  Refer to
-       build_all.sh -h for a list of valid flags.
-       NOTE: the list of build flags MUST be in quotes.
-
     -u Update submodules before building and/or generating experiments.
 
     -y "list of YAMLs to run"
@@ -37,13 +32,12 @@ function _usage() {
 
     -G Run all valid GFS cases in the specified YAML directory.
        If -b is specified, then "-g -u" (build the GSI and GDASApp)
-       will be passed to build_all.sh unless -B is also specified.
+       will be passed to build_all.sh.
        Note that these builds are disabled on some systems, which
        will result in a warning from build_all.sh.
 
     -E Run all valid GEFS cases in the specified YAML directory.
-       If -b is specified, then "-w" will be passed to build_all.sh
-          unless -B is also specified.
+       If -b is specified, then "-w" will be passed to build_all.sh.
 
     -S (Not yet supported!)
        Run all valid SFS cases in the specified YAML directory.
@@ -91,7 +85,6 @@ HOMEgfs=""
 _specified_home=false
 _build=false
 _build_flags=""
-_explicit_build_flags=false
 _update_submods=false
 declare -a _yaml_list=("C48_ATM")
 _specified_yaml_list=false
@@ -126,7 +119,6 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
            fi
            ;;
         b) _build=true ;;
-        B) _build_flags="${OPTARG}" && _explicit_build_flags=true ;;
         u) _update_submods=true ;;
         y) # Start over with an empty _yaml_list
            declare -a _yaml_list=()
@@ -231,18 +223,6 @@ else
    done
 fi
 
-# Test if multiple "run_all" options were set
-_count_run_alls=0
-[[ "${_run_all_gfs}" == "true" ]] && ((_count_run_alls+=1))
-[[ "${_run_all_gefs}" == "true" ]] && ((_count_run_alls+=1))
-[[ "${_run_all_sfs}" == "true" ]] && ((_count_run_alls+=1))
-
-if (( _count_run_alls > 1 )) ; then
-   echo "Only one run all option (-G -E -S) may be specified"
-   echo "Rerun with just one option and/or with -h for usage examples"
-   exit 5
-fi
-
 # If -S is specified, exit (for now).
 # TODO when SFS tests come online, enable this option.
 if [[ "${_run_all_sfs}" == "true" ]]; then
@@ -277,7 +257,7 @@ function select_all_yamls()
 
    # Bash cannot return an array from a function and any edits are descoped at
    # the end of the function, so use a nameref instead.
-   local -n _nameref_yaml_list='_yaml_list'
+   local -n _nameref_yaml_list="${2}"
 
    if [[ "${_specified_yaml_list}" == false ]]; then
       # Start over with an empty _yaml_list
@@ -328,21 +308,20 @@ EOM
 # Check if running all GEFS cases
 if [[ "${_run_all_gefs}" == "true" ]]; then
    # Append -w to build_all.sh flags if -E was specified
-   if [[ "${_explicit_build_flags}" == "false" && "${_build}" == "true" ]]; then
-       _build_flags="-w"
-   fi
+   _build_flags="${_build_flags} gefs "
 
-   select_all_yamls "gefs"
+   declare -a _gefs_yaml_list
+   select_all_yamls "gefs" "_gefs_yaml_list"
+   _yaml_list=("${_yaml_list[@]}" "${_gefs_yaml_list[@]}")
 fi
 
-# Check if running all SFS cases
+# Check if running all GFS cases
 if [[ "${_run_all_gfs}" == "true" ]]; then
-   # Append -g -u to build_all.sh flags if -G was specified
-   if [[ "${_explicit_build_flags}" == "false" && "${_build}" == "true" ]]; then
-      _build_flags="-g -u"
-   fi
+   _build_flags="${_build_flags} gfs "
 
-   select_all_yamls "gfs"
+   declare -a _gfs_yaml_list
+   select_all_yamls "gfs" "_gfs_yaml_list"
+   _yaml_list=("${_yaml_list[@]}" "${_gfs_yaml_list[@]}")
 fi
 
 # Loading modules sometimes raises unassigned errors, so disable checks
@@ -397,7 +376,7 @@ if [[ "${_build}" == "true" ]]; then
    printf "Building via build_all.sh %s\n\n" "${_build_flags}"
    # Let the output of build_all.sh go to stdout regardless of verbose options
    #shellcheck disable=SC2086,SC2248
-   ${HOMEgfs}/sorc/build_all.sh ${_build_flags} ${_verbose_flag}
+   ${HOMEgfs}/sorc/build_all.sh ${_verbose_flag} ${_build_flags}
 fi
 
 # Link the workflow silently unless there's an error

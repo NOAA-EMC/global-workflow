@@ -120,9 +120,7 @@ pipeline {
                             def error_logs_message = ""
                             dir("${HOMEgfs}/sorc") {
                                 try {
-                                    sh(script: './build_all.sh -kgu')  // build the global-workflow executables for GFS variant (UFS-wx-model, WW3 pre/post executables)
-                                    sh(script: './build_ww3prepost.sh -w > ./logs/build_ww3prepost_gefs.log 2>&1')  // build the WW3 pre/post processing executables for GEFS variant
-                                    sh(script: './build_ufs.sh -w -e gefs_model.x > ./logs/build_ufs_gefs.log 2>&1')  // build the UFS-wx-model executable for GEFS variant
+                                    sh(script: './build_compute.sh all')  // build the global-workflow executables
                                 } catch (Exception error_build) {
                                     echo "Failed to build global-workflow: ${error_build.getMessage()}"
                                     if ( fileExists("logs/error.logs") ) {
