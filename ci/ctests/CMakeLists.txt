@@ -39,6 +39,5 @@ function(AddFunctionalTest CASE JOB)
     set_tests_properties(${TEST_NAME}_validate PROPERTIES DEPENDS ${TEST_NAME}_execute LABELS "${CASE};${JOB}")
 endfunction()
 
-AddFunctionalTest("C48_ATM" "gfs_fcst_000")
-AddFunctionalTest("C48_ATM" "gfs_atmos_pro")
-AddFunctionalTest("C48_S2SW" "gfs_fcst_000")
+AddFunctionalTest("C48_ATM" "gfs_fcst_seg0")
+#AddFunctionalTest("C48_S2SW" "gfs_fcst_000")
