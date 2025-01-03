@@ -38,5 +38,5 @@ enkf_restartb_grp:
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.coupler.res"
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.fv_core.res.nc"
         {% endfor %}
-        {% endfor %}
         {% endif %}
+        {% endfor %}
