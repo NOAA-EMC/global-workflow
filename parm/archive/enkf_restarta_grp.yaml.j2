@@ -49,4 +49,5 @@ enkf_restarta_grp:
         {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}cnvstat"
         {% endif %}
+
         {% endfor %}  # first_group_mem to last_group_mem
