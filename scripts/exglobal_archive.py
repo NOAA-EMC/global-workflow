@@ -38,15 +38,17 @@ def main():
     archive_dict = AttrDict()
     for key in keys:
         archive_dict[key] = archive.task_config.get(key)
+        if key in ['OCNRES', 'ICERES']:
+            archive_dict[key] = f"{archive_dict.get(key):03d}"
         if archive_dict[key] is None:
-            print(f"Warning: key ({key}) not found in task_config!")
+            logger.warning(f"WARNING: key ({key}) not found in task_config!")
 
     # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
         if key.startswith("COM_") or key.startswith("COMIN_") or key.startswith("COMOUT_"):
             archive_dict[key] = archive.task_config.get(key)
             if archive_dict[key] is None:
-                print(f"Warning: key ({key}) not found in task_config!")
+                logger.warning(f"WARNING: key ({key}) not found in task_config!")
 
     with chdir(config.ROTDIR):
 
