@@ -16,7 +16,7 @@ export RUNwave="${RUN}wave"
 export RUNRSTwave="gdas"
 
 #grid dependent variable defaults
-export MESH_WAV="mesh.${waveGRD}.nc"  # Mesh grid for wave model for CMEPS
+export MESH_WAV="mesh.${waveGRD}.nc"  #Mesh grid for wave model for CMEPS
 
 #Grid dependent variables for various grids
 case "${waveGRD}" in
