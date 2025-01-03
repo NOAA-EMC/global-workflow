@@ -37,9 +37,9 @@ def main():
 
     archive_dict = AttrDict()
     for key in keys:
+        if key in ['OCNRES', 'ICERES']:  # update this key to be 3 digits
+            archive.task_config[key] = f"{archive.task_config.get(key):03d}"
         archive_dict[key] = archive.task_config.get(key)
-        if key in ['OCNRES', 'ICERES']:
-            archive_dict[key] = f"{archive_dict.get(key):03d}"
         if archive_dict[key] is None:
             logger.warning(f"WARNING: key ({key}) not found in task_config!")
 
