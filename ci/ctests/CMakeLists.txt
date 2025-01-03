@@ -60,13 +60,13 @@ message(STATUS "gw: global-workflow tests will be run at: '${RUNTESTS}'")
 message(STATUS "gw: global-workflow tests will use the allocation: '${HPC_ACCOUNT}'")
 message(STATUS "gw: global-workflow tests will use ICSDIR_ROOT: '${ICSDIR_ROOT}'")
 
-set(CASE_PATH ${HOMEgfs}/ci/cases/pr)
+set(CASE_PATH ${GW_BASELINE_DIR}/ci/cases/pr)
 set(CREATE_EXPERIMENT_CMD "${GW_BASELINE_DIR}/workflow/create_experiment.py --overwrite")
 
 function(AddFunctionalTest CASE JOB)
     set(TEST_NAME ${CASE}_${JOB})
     add_test(NAME ${TEST_NAME}_create_experiment
-        COMMAND bash -c "export pslot=${TEST_NAME}; ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml")
+	    COMMAND bash -c "export RUNTESTS=${RUNTESTS}; export pslot=${TEST_NAME}; ${CREATE_EXPERIMENT_CMD} --yaml ${CASE_PATH}/${CASE}.yaml")
     set_tests_properties(${TEST_NAME}_create_experiment PROPERTIES LABELS "${CASE};${JOB}")
     
     add_test(NAME ${TEST_NAME}_stage
