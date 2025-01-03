@@ -15,8 +15,7 @@ export RUNwave="${RUN}wave"
 # In GFS/GDAS, restart files are generated/read from gdas runs
 export RUNRSTwave="gdas"
 
-#grid dependent variable defaults
-export USE_WAV_RMP='NO'               # YES/NO rmp grid remapping pre-processed coefficients
+#grid dependent variable defaults          # YES/NO rmp grid remapping pre-processed coefficients
 export MESH_WAV="mesh.${waveGRD}.nc"  # Mesh grid for wave model for CMEPS
 
 #Grid dependent variables for various grids
