@@ -17,6 +17,14 @@ def main():
     # Instantiate the Archive object
     archive = Archive(config)
 
+    # update these keys to be 3 digits if they are part of archive.task_config.keys
+    if {'OCNRES', 'ICERES'} <= archive.task_config.keys():
+        for key in ['OCNRES', 'ICERES']:
+            try:
+                archive.task_config[key] = f"{archive.task_config[key]:03d}"
+            except KeyError as ee:
+                logger.info(f"key ({key}) not found in archive.task_config!")
+
     # Pull out all the configuration keys needed to run the rest of archive steps
     keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
             'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_PREP_OBS_AERO',
@@ -37,18 +45,15 @@ def main():
 
     archive_dict = AttrDict()
     for key in keys:
-        if key in ['OCNRES', 'ICERES']:  # update this key to be 3 digits
-            archive.task_config[key] = f"{archive.task_config.get(key):03d}"
-        archive_dict[key] = archive.task_config.get(key)
-        if archive_dict[key] is None:
-            logger.warning(f"WARNING: key ({key}) not found in task_config!")
+        try:
+            archive_dict[key] = archive.task_config[key]
+        except KeyError as ee:
+            logger.warning(f"WARNING: key ({key}) not found in archive.task_config!")
 
     # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
-        if key.startswith("COM_") or key.startswith("COMIN_") or key.startswith("COMOUT_"):
+        if key.startswith(("COM_", "COMIN_", "COMOUT_")):
             archive_dict[key] = archive.task_config.get(key)
-            if archive_dict[key] is None:
-                logger.warning(f"WARNING: key ({key}) not found in task_config!")
 
     with chdir(config.ROTDIR):
 
