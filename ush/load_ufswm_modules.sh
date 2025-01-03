@@ -18,9 +18,6 @@ module load prod_util
 if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
   module load cray-pals
   module load cfp
-  module load libjpeg
-  module load craype-network-ucx
-  module load cray-mpich-ucx
 else
   export UTILROOT=${prod_util_ROOT}
 fi
