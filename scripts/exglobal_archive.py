@@ -18,12 +18,11 @@ def main():
     archive = Archive(config)
 
     # update these keys to be 3 digits if they are part of archive.task_config.keys
-    if {'OCNRES', 'ICERES'} <= archive.task_config.keys():
-        for key in ['OCNRES', 'ICERES']:
-            try:
-                archive.task_config[key] = f"{archive.task_config[key]:03d}"
-            except KeyError as ee:
-                logger.info(f"key ({key}) not found in archive.task_config!")
+    for key in ['OCNRES', 'ICERES']:
+        try:
+            archive.task_config[key] = f"{archive.task_config[key]:03d}"
+        except KeyError as ee:
+            logger.info(f"key ({key}) not found in archive.task_config!")
 
     # Pull out all the configuration keys needed to run the rest of archive steps
     keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
