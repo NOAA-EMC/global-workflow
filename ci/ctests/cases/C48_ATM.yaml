@@ -10,3 +10,5 @@ gfs_fcst_seg0:
             - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile4.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}//gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile4.nc"]
             - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile5.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}///gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile5.nc"]
             - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/gfs_data.tile6.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}/gfs.{{PDY}}/{{HH}}/model/atmos/input/gfs_data.tile6.nc"]
+            - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/sfc_data.tile1.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}/gfs.{{PDY}}/{{HH}}/model/atmos/input/sfc_data.tile1.nc"]
+            - ["{{ STAGED_FUNCTIONAL_TEST_DIR }}/{{case}}/{{JOB}}/gfs.{{ PDY }}/{{ HH }}/model/atmos/input/sfc_data.tile2.nc", "{{RUNTESTS}}/COMROOT/{{case}}_{{JOB}}/gfs.{{PDY}}/{{HH}}/model/atmos/input/sfc_data.tile2.nc"]

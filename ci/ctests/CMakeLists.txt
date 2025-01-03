@@ -30,9 +30,9 @@ function(AddFunctionalTest CASE JOB)
     set_tests_properties(${TEST_NAME}_stage PROPERTIES DEPENDS ${TEST_NAME}_create_experiment LABELS "${CASE};${JOB}")
     
     add_test(NAME ${TEST_NAME}_execute
-        #TODO Need to get the idate for rocotoboot get the right cycle for the test
+        #TODO Need to get the idate for rocotoboot get the right cycle for the test (hard coded for now)
         #TODO Need to add a loop to check for when job has been completed
-        COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/execute.sh ${CASE} ${JOB}")
+        COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/execute.sh ${CASE} ${JOB} 2021032312")
     set_tests_properties(${TEST_NAME}_execute PROPERTIES DEPENDS ${TEST_NAME}_stage LABELS "${CASE};${JOB}")
     
     add_test(NAME ${TEST_NAME}_validate
