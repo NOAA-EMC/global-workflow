@@ -104,13 +104,21 @@ c  Check TABs and replaced it with ' '  (added by Qingfu Liu)
            END IF
          END DO
 
-         IF(INL1(26).EQ.' '.or.INL1(27).EQ.' ') THEN
+         IF(INL1(25).EQ.' '.or.INL1(26).EQ.' '.or.INL1(27).EQ.' ') THEN
 
 c ... THIS RECORD STILL CONTAINS THE OLD 2-DIGIT FORM OF THE YEAR -
 c ... THIS PROGRAM WILL NOW CONVERT THE RECORD TO A 4-DIGIT YEAR USING
 c      THE "WINDOWING" TECHNIQUE SINCE SUBSEQUENT LOGIC EXPECTS THIS
 
-          IF(INL(18:19).EQ.'20') THEN
+          IF(INL(17:18).EQ.'20') THEN
+            DUMY2K(1:16) = INL(1:16)
+            DUMY2K(17:19) = '   '
+            DUMY2K(20:80) = INL(17:77)
+            INL= DUMY2K
+            PRINT *, ' '
+            PRINT *, '==> This is an new-format record with a 4-digit '
+            PRINT *, ' '
+          ELSE IF(INL(18:19).EQ.'20') THEN
             DUMY2K(1:17) = INL(1:17)
             DUMY2K(18:19) = '  '
             DUMY2K(20:80) = INL(18:78)

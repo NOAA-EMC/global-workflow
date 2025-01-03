@@ -4,7 +4,7 @@ GFS V16.3.21 RELEASE NOTES
 PRELUDE
 -------
 
-The WAFS is separated from the GFS and is now its own package in production as WAFS.v7.0.1.
+The WAFS is separated from the GFS and is now its own package in production as WAFS.v7.0.1. A code update for syndat_getjtbul is also included.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -59,6 +59,9 @@ The `sorc/checkout.sh` and `Externals.cfg` checkout script no longer clone WAFS.
 The `sorc/build_all.sh` script no longer builds the WAFS code.
 The `sorc/build_gfs_wafs.sh` build script is deleted.
 The `sorc/link_fv3gfs.sh` script no longer links/copies WAFS files/execs.
+
+Also included in this package is a fix to the syndat_getjtbul code to resolve a
+parsing problem with 3-character storm names.
 
 JOBS CHANGES
 ------------
@@ -190,3 +193,4 @@ PREPARED BY
 Kate.Friedman@noaa.gov
 Yali.Mao@noaa.gov
 Rahul.Mahajan@noaa.gov
+Qingfu.Liu@noaa.gov
