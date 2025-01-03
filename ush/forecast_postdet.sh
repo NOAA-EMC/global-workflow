@@ -475,7 +475,7 @@ WW3_out() {
   fi
 
   # Copy restarts for downstream usage in HAFS 
-  if [[ "${RUN}" =~ "gdas" ]]; then
+  if [[ "${RUN}" == "gdas" ]]; then
     local restart_date
     restart_date="${next_cycle}"
     echo "Copying WW3 restarts for 'RUN=${RUN}' at ${restart_date}"
