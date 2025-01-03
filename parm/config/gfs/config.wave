@@ -18,7 +18,6 @@ export RUNRSTwave="gdas"
 #grid dependent variable defaults
 export USE_WAV_RMP='NO'               # YES/NO rmp grid remapping pre-processed coefficients
 export MESH_WAV="mesh.${waveGRD}.nc"  # Mesh grid for wave model for CMEPS
-export waveesmfGRD=' '                # input grid for multigrid
 
 #Grid dependent variables for various grids
 case "${waveGRD}" in
