@@ -54,17 +54,14 @@ elseif(NOT DEFINED ICSDIR_ROOT)
   set(ICSDIR_ROOT ${ICSDIR_ROOT} CACHE FILEPATH "Path to ICS directory")
 endif()
 
-# Set environment variables and paths
-set(CASE_PATH ${HOMEgfs}/ci/cases/pr)
-set(CREATE_EXPERIMENT_CMD "${HOMEgfs}/workflow/create_experiment.py --overwrite")
-
 message(STATUS "MACHINE_ID: '${MACHINE_ID}'")
 message(STATUS "gw: global-workflow baselines will be used from: '${GW_BASELINE_DIR}'")
 message(STATUS "gw: global-workflow tests will be run at: '${RUNTESTS}'")
 message(STATUS "gw: global-workflow tests will use the allocation: '${HPC_ACCOUNT}'")
 message(STATUS "gw: global-workflow tests will use ICSDIR_ROOT: '${ICSDIR_ROOT}'")
 
-return()
+set(CASE_PATH ${HOMEgfs}/ci/cases/pr)
+set(CREATE_EXPERIMENT_CMD "${GW_BASELINE_DIR}/workflow/create_experiment.py --overwrite")
 
 function(AddFunctionalTest CASE JOB)
     set(TEST_NAME ${CASE}_${JOB})
