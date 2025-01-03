@@ -16,8 +16,6 @@ export RUNwave="${RUN}wave"
 export RUNRSTwave="gdas"
 
 #grid dependent variable defaults
-export waveGRDN='1'                   # grid number for ww3_multi
-export waveGRDG='10'                  # grid group for ww3_multi
 export USE_WAV_RMP='NO'               # YES/NO rmp grid remapping pre-processed coefficients
 export MESH_WAV="mesh.${waveGRD}.nc"  # Mesh grid for wave model for CMEPS
 export waveesmfGRD=' '                # input grid for multigrid
@@ -143,7 +141,7 @@ export WW3CURIENS='F'
 export GOFILETYPE=1     # GOFILETYPE=1 one gridded file per output step
 export POFILETYPE=1     # POFILETYPE=1 one point file per output step
 
-# Parameters for ww3_multi/shel.inp
+# Parameters for ww3_shel.inp
 # Unified output T or F
 export FUNIPNT='T'
 # Output server type (see ww3_shel/multi.inp in WW3 repo)
