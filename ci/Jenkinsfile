@@ -138,8 +138,14 @@ pipeline {
                                             }
                                         }
                                         try {
-                                            sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}")
-                                            gist_url=sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}", returnStdout: true).trim()
+                                            sh(script: """
+                                              source ${HOMEgfs}/workflow/gw_setup.sh
+                                              ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}
+                                            """)
+                                            gist_url=sh(script: """
+                                              source ${HOMEgfs}/workflow/gw_setup.sh
+                                              ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}
+                                            """, returnStdout: true).trim()
                                             sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Build **FAILED** on **${Machine}** in Build# ${env.BUILD_NUMBER} with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
                                         } catch (Exception error_comment) {
                                             echo "Failed to comment on PR: ${error_comment.getMessage()}"
@@ -158,7 +164,10 @@ pipeline {
                                 }
                             }
                             // Get a list of CI cases to run
-                            CI_CASES = sh(script: "${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}", returnStdout: true).trim().split()
+                            CI_CASES = sh(script: """
+                              source ${HOMEgfs}/workflow/gw_setup.sh
+                              ${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}
+                            """, returnStdout: true).trim().split()
                             echo "Cases to run: ${CI_CASES}"
                         }
                     }
@@ -179,7 +188,10 @@ pipeline {
                                 script {
                                         env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
                                         try {
-                                              error_output = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml", returnStdout: true).trim()
+                                              error_output = sh(script: """
+                                                source ${HOMEgfs}/workflow/gw_setup.sh
+                                                ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml
+                                              """, returnStdout: true).trim()
                                         } catch (Exception error_create) {
                                             sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experiment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
                                             error("Case ${caseName} failed to create experiment directory")
@@ -194,10 +206,19 @@ pipeline {
                                                 def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
                                                 sh(script: " rm -f ${error_file}")
                                                 try {
-                                                    sh(script: "${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} 'global-workflow'")
-                                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cleanup_experiment ${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}")
+                                                    sh(script: """
+                                                      source ${HOMEgfs}/workflow/gw_setup.sh
+                                                      ${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} 'global-workflow'
+                                                    """)
+                                                    sh(script: """
+                                                      source ${HOMEgfs}/workflow/gw_setup.sh
+                                                      ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cleanup_experiment ${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}
+                                                    """)
                                                 } catch (Exception error_experment) {
-                                                    sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}")
+                                                    sh(script: """
+                                                      source ${HOMEgfs}/workflow/gw_setup.sh
+                                                      ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}
+                                                    """)
                                                     ws(CUSTOM_WORKSPACE) {
                                                         def error_logs = ""
                                                         def error_logs_message = ""
@@ -217,9 +238,15 @@ pipeline {
                                                                 }
                                                             }
                                                             try {
-                                                                gist_url = sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}", returnStdout: true).trim()
+                                                                gist_url = sh(script: """
+                                                                  source ${HOMEgfs}/workflow/gw_setup.sh
+                                                                  ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}
+                                                                """, returnStdout: true).trim()
                                                                 sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${caseName} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
-                                                                sh(script: "${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}")
+                                                                sh(script: """
+                                                                  source ${HOMEgfs}/workflow/gw_setup.sh
+                                                                  ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}
+                                                                """)
                                                             } catch (Exception error_comment) {
                                                                 echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                                             }
