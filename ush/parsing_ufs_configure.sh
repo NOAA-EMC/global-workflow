@@ -87,6 +87,13 @@ if [[ "${cplchm}" = ".true." ]]; then
 
 fi
 
+#Set ESMF_THREADING variable for ufs configure 
+if [[ "${USE_ESMF_THREADING}" = "YES" ]]; then 
+  local ESMF_THREADING="true" 
+else
+  local ESMF_THREADING="false" 
+fi
+
 # Ensure the template exists
 if [[ ! -r "${ufs_configure_template}" ]]; then
   echo "FATAL ERROR: template '${ufs_configure_template}' does not exist, ABORT!"
