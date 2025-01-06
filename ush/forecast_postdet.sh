@@ -353,7 +353,7 @@ WW3_postdet() {
   #First check to see if netcdf restart exists:
   local ww3_binary_restart_file ww3_netcdf_restart_file
   ww3_binary_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3" 
-  ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc" 
+  ww3_netcdf_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc" 
   if [[ -s "${ww3_netcdf_restart_file}" ]]; then 
     export WW3_restart_from_binary=false 
     seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
