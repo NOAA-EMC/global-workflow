@@ -88,7 +88,7 @@ function(AddFunctionalTest)
     
   add_test(NAME ${TEST_NAME}_stage
       COMMAND ./stage.sh ${TEST_NAME} ${ARG_CASE} ${ARG_JOB}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
   set_tests_properties(${TEST_NAME}_stage PROPERTIES DEPENDS ${TEST_NAME}_setup LABELS "${ARG_CASE};${ARG_JOB}")
   
   add_test(NAME ${TEST_NAME}_execute
