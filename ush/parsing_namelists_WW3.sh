@@ -6,41 +6,6 @@ WW3_namelists(){
 
   FHMAX_WAV="${FHMAX_WAV:-384}"
 
-  # Date and time stuff
-
-  # Beginning time for outpupt may differ from SDATE if DOIAU=YES
-  export date="${PDY}"
-  export YMDH="${PDY}${cyc}"
-  # Roll back $IAU_FHROT hours of DOIAU=YES
-  if [ "$DOIAU" = "YES" ]
-  then
-    WAVHINDH=$(( WAVHINDH + IAU_FHROT ))
-  fi
-  # Set time stamps for model start and output
-  # For special case when IAU is on but this is an initial half cycle 
-  if [ ${IAU_OFFSET:-0} = 0 ]; then
-    ymdh_beg="${YMDH}"
-  else
-    ymdh_beg=$($NDATE -$WAVHINDH $YMDH)
-  fi
-  time_beg="$(echo $ymdh_beg | cut -c1-8) $(echo $ymdh_beg | cut -c9-10)0000"
-  ymdh_end=$($NDATE $FHMAX_WAV $YMDH)
-  time_end="$(echo $ymdh_end | cut -c1-8) $(echo $ymdh_end | cut -c9-10)0000"
-  ymdh_beg_out="${YMDH}"
-  time_beg_out="$(echo $ymdh_beg_out | cut -c1-8) $(echo $ymdh_beg_out | cut -c9-10)0000"
-
-  set +x
-  echo ' '
-  echo 'Times in wave model format :'
-  echo '----------------------------'
-  echo "   date / cycle  : $date $cycle"
-  echo "   starting time : $time_beg"
-  echo "   ending time   : $time_end"
-  echo ' '
-  set_trace
-
-
-
 # --------------------------------------------------------------------------- #
 # Buoy location file
 
