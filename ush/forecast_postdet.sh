@@ -386,8 +386,8 @@ WW3_postdet() {
          vdate = $(date --utc -d "${vdate:0:8} ${vdate:8:2} + ${restart_interval} hours" +%Y%m%d%H) )); do
     seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
     ww3_restart_ufs_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"
-    ww3_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"
-    ${NLN} "${DATArestart}/WW3_RESTART/${ww3_restart_file}" "${ww3_restart_ufs_file}"
+    ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"
+    ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${ww3_restart_ufs_file}"
   done
 
   # Link output files
