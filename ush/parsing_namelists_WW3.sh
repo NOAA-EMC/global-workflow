@@ -46,7 +46,7 @@ WW3_namelists(){
 
   if [ -f ${PARMgfs}/wave/wave_${NET}.buoys ]
   then
-    cp ${PARMgfs}/wave/wave_${NET}.buoys ${DATA}/ww3_points.list
+    ${NCP} "${PARMgfs}/wave/wave_${NET}.buoys" "${DATA}/ww3_points.list"
   fi
 
   if [ -f ${DATA}/ww3_points.list ]
@@ -79,9 +79,9 @@ WW3_namelists(){
       WW3_CUR="C";;
   esac
 
-  local WW3_OUTPARS=$OUTPARS_WAV 
-  local WW3_DTFLD=$DTFLD_WAV
-  local WW3_DTPNT=$DTPNT_WAV
+  local WW3_OUTPARS="${OUTPARS_WAV}"
+  local WW3_DTFLD="${DTFLD_WAV}"
+  local WW3_DTPNT="${DTPNT_WAV}"
   # Ensure the template exists
   local template=${WW3_INPUT_TEMPLATE:-"${PARMgfs}/ufs/ww3_shel.nml.IN"}
   if [[ ! -f "${template}" ]]; then
