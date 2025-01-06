@@ -116,7 +116,7 @@ c      THE "WINDOWING" TECHNIQUE SINCE SUBSEQUENT LOGIC EXPECTS THIS
             DUMY2K(20:80) = INL(17:77)
             INL= DUMY2K
             PRINT *, ' '
-            PRINT *, '==> This is an new-format record with a 4-digit '
+            PRINT *, '==> This is a record with a 4-digit year'
             PRINT *, ' '
           ELSE IF(INL(18:19).EQ.'20') THEN
             DUMY2K(1:17) = INL(1:17)
@@ -124,7 +124,7 @@ c      THE "WINDOWING" TECHNIQUE SINCE SUBSEQUENT LOGIC EXPECTS THIS
             DUMY2K(20:80) = INL(18:78)
             INL= DUMY2K
             PRINT *, ' '
-            PRINT *, '==> This is an new-format record with a 4-digit '
+            PRINT *, '==> This is a record with a 4-digit year'
             PRINT *, ' '
           ELSE IF(INL(19:20).EQ.'20') THEN
             DUMY2K(1:18) = INL(1:18)
@@ -132,7 +132,7 @@ c      THE "WINDOWING" TECHNIQUE SINCE SUBSEQUENT LOGIC EXPECTS THIS
             DUMY2K(20:80) = INL(19:79)
             INL= DUMY2K
             PRINT *, ' '
-            PRINT *, '==> This is an new-format record with a 4-digit '
+            PRINT *, '==> This is a record with a 4-digit year'
             PRINT *, ' '
           ELSE
             PRINT *, ' '
