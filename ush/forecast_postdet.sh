@@ -368,7 +368,7 @@ WW3_postdet() {
   else
     if [[ "${RERUN}" == "YES" ]]; then
       # In the case of a RERUN, the WW3 restart file is required
-      echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+      echo "FATAL ERROR: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for RERUN='${RERUN}', ABORT!"
       exit 1
     else
       echo "WARNING: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
