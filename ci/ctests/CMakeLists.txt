@@ -82,7 +82,7 @@ function(AddFunctionalTest)
   add_test(NAME ${TEST_NAME}_setup
     COMMAND ./setup.sh ${TEST_NAME} ${CASE_YAML}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(${TEST_NAME}_setup PROPERTIES LABELS "${CASE};${JOB}")
+  set_tests_properties(${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE};${ARG_JOB}")
     
   add_test(NAME ${TEST_NAME}_stage
       COMMAND bash -c "${GW_BASELINE_DIR}/ci/ctests/scripts/stage_data.py --build_dir ${CMAKE_BINARY_DIR} --case ${ARG_CASE} --job ${ARG_JOB}")
@@ -101,6 +101,6 @@ endfunction()
 
 AddFunctionalTest(
   CASE "C48_ATM"
-  JOB "gfs_fcst_seg0"
+  JOB   "gfs_fcst_seg0"
 )
 #AddFunctionalTest("C48_S2SW" "gfs_fcst_000")
