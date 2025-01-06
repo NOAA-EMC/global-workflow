@@ -458,9 +458,9 @@ WW3_out() {
     local restart_file
     if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
       echo "Copying WW3 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
-      target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.restart.ww3.nc"
-      ${NCP} "${DATArestart}/WW3_RESTART/${target_file}" \
-             "${COMOUT_WAVE_RESTART}/${target_file}"
+      restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.restart.ww3.nc"
+      ${NCP} "${DATArestart}/WW3_RESTART/${restart_file}" \
+             "${COMOUT_WAVE_RESTART}/${restart_file}"
     fi
   fi
 
