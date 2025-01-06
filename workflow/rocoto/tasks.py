@@ -3,7 +3,7 @@
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
-from wxflow import Template, TemplateConstants, to_timedelta
+from wxflow import Template, TemplateConstants, to_timedelta, timedelta_to_HMS
 from typing import List
 
 __all__ = ['Tasks']
@@ -175,6 +175,203 @@ class Tasks:
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
         return fhrs
+
+    @staticmethod
+    def get_job_groups(fhrs: List[int], ngroups: int, breakpoints: List[int] = None) -> List[dict]:
+        '''
+        Split forecast hours into a number of groups, obeying a list of pre-set breakpoints.
+
+        Takes a list of forecast hours and splits it into a number of groups while obeying
+        a list of pre-set breakpoints and recording which segment each belongs to.
+
+        Parameters
+        ----------
+        fhrs: List[int]
+                List of forecast hours to break into groups
+        ngroups: int
+                 Number of groups to split the forecast hours into
+        breakpoints: List[int]
+                     List of preset forecast hour break points to use (default: [])
+
+        Returns
+        -------
+        List[dict]: List of dicts, where each dict contains two keys:
+                    'fhrs': the forecast hours for that group
+                    'seg': the forecast segment (from the original breakpoint list)
+                           the group belong to
+        '''
+        if breakpoints is None:
+            breakpoints = []
+
+        num_segs = len(breakpoints) + 1
+        if num_segs > ngroups:
+            raise ValueError(f"Number of segments ({num_segs}) is greater than the number of groups ({ngroups}")
+
+        if ngroups > len(fhrs):
+            ngroups = len(fhrs)
+
+        # First, split at segment boundaries
+        fhrs_segs = [grp.tolist() for grp in np.array_split(fhrs, [fhrs.index(bpnt) + 1 for bpnt in breakpoints])]
+        seg_lens = [len(seg) for seg in fhrs_segs]
+
+        # Initialize each segment to be split into one job group
+        ngroups_segs = [1 for _ in range(0, len(fhrs_segs))]
+
+        # For remaining job groups, iteratively assign to the segment with the most
+        # hours per group
+        for _ in range(0, ngroups - len(fhrs_segs)):
+            current_lens = [size / weight for size, weight in zip(seg_lens, ngroups_segs)]
+            index_max = max(range(len(current_lens)), key=current_lens.__getitem__)
+            ngroups_segs[index_max] += 1
+
+        # Now that we know how many groups each forecast segment should be split into,
+        # Split them and flatten to a single list.
+        groups = []
+        for seg_num, (fhrs_seg, ngroups_seg) in enumerate(zip(fhrs_segs, ngroups_segs)):
+            [groups.append({'fhrs': grp.tolist(), 'seg': seg_num}) for grp in np.array_split(fhrs_seg, ngroups_seg)]
+
+        return groups
+
+    @staticmethod
+    def test_job_groups():
+        test_array = list(range(0, 24))
+
+        # Test simple splitting with no breakpoints
+        test_groups = [{'fhrs': [0, 1, 2, 3, 4, 5], 'seg': 0},
+                       {'fhrs': [6, 7, 8, 9, 10, 11], 'seg': 0},
+                       {'fhrs': [12, 13, 14, 15, 16, 17], 'seg': 0},
+                       {'fhrs': [18, 19, 20, 21, 22, 23], 'seg': 0}]
+        assert Tasks.get_job_groups(fhrs=test_array, ngroups=4) == test_groups
+
+        # Test with a break point that aligns with normal split point
+        test_groups = [{'fhrs': [0, 1, 2, 3, 4, 5], 'seg': 0},
+                       {'fhrs': [6, 7, 8, 9, 10, 11], 'seg': 0},
+                       {'fhrs': [12, 13, 14, 15, 16, 17], 'seg': 1},
+                       {'fhrs': [18, 19, 20, 21, 22, 23], 'seg': 1}]
+        assert Tasks.get_job_groups(fhrs=test_array, ngroups=4, breakpoints=[11]) == test_groups
+
+        # Test with a break point not at a normal splilt point
+        test_groups = [{'fhrs': [0, 1, 2, 3, 4, 5, 6, 7], 'seg': 0},
+                       {'fhrs': [8, 9, 10, 11, 12, 13, 14], 'seg': 0},
+                       {'fhrs': [15, 16, 17, 18, 19], 'seg': 1},
+                       {'fhrs': [20, 21, 22, 23], 'seg': 1}]
+        assert Tasks.get_job_groups(fhrs=test_array, ngroups=4, breakpoints=[14]) == test_groups
+
+        # Test highly skewed break point
+        test_groups = [{'fhrs': [0, 1, 2, 3, 4, 5, 6, 7], 'seg': 0},
+                       {'fhrs': [8, 9, 10, 11, 12, 13, 14, 15], 'seg': 0},
+                       {'fhrs': [16, 17, 18, 19, 20, 21, 22], 'seg': 0},
+                       {'fhrs': [23], 'seg': 1}]
+        assert Tasks.get_job_groups(fhrs=test_array, ngroups=4, breakpoints=[22]) == test_groups
+
+        # Test with two break points that align
+        test_groups = [{'fhrs': [0, 1, 2, 3, 4, 5], 'seg': 0},
+                       {'fhrs': [6, 7, 8, 9, 10, 11], 'seg': 0},
+                       {'fhrs': [12, 13, 14, 15, 16, 17], 'seg': 1},
+                       {'fhrs': [18, 19, 20, 21, 22, 23], 'seg': 2}]
+        assert Tasks.get_job_groups(fhrs=test_array, ngroups=4, breakpoints=[11, 17]) == test_groups
+
+        # Test with two skewed break points
+        test_groups = [{'fhrs': [0, 1], 'seg': 0},
+                       {'fhrs': [2, 3, 4, 5, 6, 7], 'seg': 1},
+                       {'fhrs': [8, 9, 10, 11, 12], 'seg': 1},
+                       {'fhrs': [13, 14, 15, 16, 17], 'seg': 1},
+                       {'fhrs': [18, 19, 20, 21, 22], 'seg': 1},
+                       {'fhrs': [23], 'seg': 2}]
+        assert Tasks.get_job_groups(fhrs=test_array, ngroups=6, breakpoints=[1, 22]) == test_groups
+
+        # Test slightly irregular break points
+        test_groups = [{'fhrs': [0, 1, 2, 3], 'seg': 0},
+                       {'fhrs': [4, 5, 6], 'seg': 0},
+                       {'fhrs': [7, 8, 9, 10], 'seg': 1},
+                       {'fhrs': [11, 12, 13, 14], 'seg': 1},
+                       {'fhrs': [15, 16, 17, 18], 'seg': 1},
+                       {'fhrs': [19, 20, 21, 22, 23], 'seg': 2}]
+        assert Tasks.get_job_groups(fhrs=test_array, ngroups=6, breakpoints=[6, 18]) == test_groups
+
+        # Test more groups than fhrs available
+        test_array = list(range(0, 6))
+        test_groups = [{'fhrs': [0], 'seg': 0},
+                       {'fhrs': [1], 'seg': 0},
+                       {'fhrs': [2], 'seg': 0},
+                       {'fhrs': [3], 'seg': 0},
+                       {'fhrs': [4], 'seg': 0},
+                       {'fhrs': [5], 'seg': 0}]
+        assert Tasks.get_job_groups(fhrs=test_array, ngroups=15) == test_groups
+
+    def get_grouped_fhr_dict(self, fhrs: List[int], ngroups: int) -> dict:
+        '''
+        Prepare a metatask dictionary for forecast hour groups.
+
+        Takes a list of forecast hours and splits it into a number of groups while not
+        crossing forecast segment boundaries. Then use that to prepare a dict with key
+        variable lists for use in a rocoto metatask.
+
+        Parameters
+        ----------
+        fhrs: List[int]
+              List of forecast hours to break into groups
+        ngroups: int
+                 Number of groups to split the forecast hours into
+
+        Returns
+        -------
+        dict: Several variable lists for use in rocoto metatasks:
+              fhr_list: list of comma-separated lists of fhr groups
+              fhr_label: list of labels corrsponding to the fhr range
+              fhr3_last: list of the last fhr in each group, formatted to three digits
+              fhr3_next: list of the fhr that would follow each group, formatted to
+                         three digits
+              seg_dep: list of segments each group belongs to
+        '''
+        fhr_breakpoints = self.options['fcst_segments'][1:-1]
+        group_dicts = Tasks.get_job_groups(fhrs=fhrs, ngroups=ngroups, breakpoints=fhr_breakpoints)
+
+        fhrs_group = [dct['fhrs'] for dct in group_dicts]
+        fhrs_first = [grp[0] for grp in fhrs_group]
+        fhrs_last = [grp[-1] for grp in fhrs_group]
+        fhrs_next = fhrs_first[1:] + [fhrs_last[-1] + (fhrs[-1] - fhrs[-2])]
+        grp_str = [f'f{grp[0]:03d}-f{grp[-1]:03d}' if len(grp) > 1 else f'f{grp[0]:03d}' for grp in fhrs_group]
+        seg_deps = [f'seg{dct["seg"]}' for dct in group_dicts]
+
+        fhr_var_dict = {'fhr_list': ' '.join(([','.join(str(fhr) for fhr in grp) for grp in fhrs_group])),
+                        'fhr_label': ' '.join(grp_str),
+                        'seg_dep': ' '.join(seg_deps),
+                        'fhr3_last': ' '.join([f'{fhr:03d}' for fhr in fhrs_last]),
+                        'fhr3_next': ' '.join([f'{fhr:03d}' for fhr in fhrs_next])
+                        }
+
+        return fhr_var_dict
+
+    @staticmethod
+    def multiply_HMS(hms_timedelta: str, multiplier: int | float) -> str:
+        '''
+        Multiplies an HMS timedelta string
+
+        Parameters
+        ----------
+        hms_timedelta: str
+                       String represnting a time delta in HH:MM:SS format
+        multiplier: int | float
+                    Value to multiply the time delta by
+
+        Returns
+        -------
+        str: String represnting a time delta in HH:MM:SS format
+
+        '''
+        input_timedelta = to_timedelta(hms_timedelta)
+        output_timedelta = input_timedelta * multiplier
+        return timedelta_to_HMS(output_timedelta)
+
+    @staticmethod
+    def test_multiply_HMS():
+        assert Tasks.multiply_HMS('00:10:00', 2) == '00:20:00'
+        assert Tasks.multiply_HMS('00:30:00', 10) == '05:00:00'
+        assert Tasks.multiply_HMS('01:15:00', 4) == '05:00:00'
+        assert Tasks.multiply_HMS('00:05:00', 1.5) == '00:07:30'
+        assert Tasks.multiply_HMS('00:40:00', 2.5) == '01:40:00'
+        assert Tasks.multiply_HMS('00:10:00', 1) == '00:10:00'
 
     def get_resource(self, task_name):
         """

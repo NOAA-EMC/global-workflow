@@ -15,11 +15,17 @@ if (( status != 0 )); then exit "${status}"; fi
 export job="oceanice_products"
 export jobid="${job}.$$"
 
-export FORECAST_HOUR=$(( 10#${FHR3} ))
+# shellcheck disable=SC2153
+IFS=', ' read -r -a fhr_list <<< "${FHR_LIST}"
 
-###############################################################
-# Execute the JJOB
-###############################################################
-"${HOMEgfs}/jobs/JGLOBAL_OCEANICE_PRODUCTS"
+export FORECAST_HOUR
+for FORECAST_HOUR in "${fhr_list[@]}"; do
+	###############################################################
+	# Execute the JJOB
+	###############################################################
+	"${HOMEgfs}/jobs/JGLOBAL_OCEANICE_PRODUCTS"
+	status=$?
+	[[ ${status} -ne 0 ]] && exit "${status}"
+done
 
-exit $?
+exit 0
