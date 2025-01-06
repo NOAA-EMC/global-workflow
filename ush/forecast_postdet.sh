@@ -358,8 +358,8 @@ WW3_postdet() {
     export WW3_restart_from_binary=false 
     seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
     local ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
-    ${NCP} "${ww3_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
-             || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+    ${NCP} "${ww3_netcdf_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
+             || ( echo "FATAL ERROR: Unable to copy netcdf WW3 IC, ABORT!"; exit 1 )
   elif [[ -s "${ww3_binary_restart_file}" ]]; then 
     # found binary ww3 restart file 
     export WW3_restart_from_binary=true
