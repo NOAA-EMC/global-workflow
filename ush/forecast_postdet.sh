@@ -350,42 +350,36 @@ WW3_postdet() {
 
   echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
 
-  ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
-  if [[ -s "${ww3_restart_file}" ]]; then
-    #first check if a binary restart exists, if it does set 
-    export WW3_restart_from_binary=true
-    ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
-          || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
-    first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-    if [[ "${DOIAU:-NO}" == "YES" ]]; then
-      first_ww3_restart_out=$(date --utc -d "${first_ww3_restart_out:0:8} ${first_ww3_restart_out:8:2} + ${half_window} hours" +%Y%m%d%H)
-    fi 
-  else
-    # now check to see if a NetCDF restart exists: 
+  #First check to see if netcdf restart exists:
+  ww3_binary_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3" 
+  ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc" 
+  if [[ -s "${ww3_restart_file}" ]]; then 
+    export WW3_restart_from_binary=false 
     seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
     ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
-
-    ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
-    if [[ -s "${ww3_restart_file}" ]]; then  
-      # NetCDF restart exists: 
-      export WW3_restart_from_binary=false
-      ${NCP} "${ww3_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
+    ${NCP} "${ww3_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
              || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
-      first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-      if [[ "${DOIAU:-NO}" == "YES" ]]; then
-        first_ww3_restart_out=$(date --utc -d "${first_ww3_restart_out:0:8} ${first_ww3_restart_out:8:2} + ${half_window} hours" +%Y%m%d%H)
-      fi
-    else    
-      if [[ "${RERUN}" == "YES" ]]; then
-        # In the case of a RERUN, the WW3 restart file is required
-        echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
-        exit 1
-      else
-        # TODO: See if this will work still with new options... might not
-        echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
-        first_ww3_restart_out=${model_start_date_current_cycle}
-      fi
+  elif [[ -s "${ww3_binary_restart_file}" ]]; then 
+    # found binary ww3 restart file 
+    export WW3_restart_from_binary=true
+    ${NCP} "${ww3_binary_restart_file}" "${DATA}/restart.ww3" \
+          || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+  else
+    if [[ "${RERUN}" == "YES" ]]; then
+      # In the case of a RERUN, the WW3 restart file is required
+      echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+      exit 1
+    else
+      # TODO: See if this will work still with new options... might not
+      echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
+      export WW3_restart_from_binary=true
+      #first_ww3_restart_out=${model_start_date_current_cycle}
     fi
+  fi
+
+  first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+  if [[ "${DOIAU:-NO}" == "YES" ]]; then
+    first_ww3_restart_out=$(date --utc -d "${first_ww3_restart_out:0:8} ${first_ww3_restart_out:8:2} + ${half_window} hours" +%Y%m%d%H)
   fi
 
   # Link restart files
