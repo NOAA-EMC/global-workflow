@@ -466,7 +466,7 @@ WW3_out() {
 
   # Copy restarts for next cycle for RUN=gdas|gefs
   if [[ "${RUN}" == "gdas" || "${RUN}" == "gefs" ]]; then
-    local restart_date
+    local restart_date restart_file
     restart_date="${model_start_date_next_cycle}"
     echo "Copying WW3 restarts for 'RUN=${RUN}' at ${restart_date}"
     target_file="${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
