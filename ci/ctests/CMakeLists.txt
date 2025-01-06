@@ -63,6 +63,8 @@ message(STATUS "gw: global-workflow tests will use ICSDIR_ROOT: '${ICSDIR_ROOT}'
 # Prepare test scripts
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/setup.sh.in
                ${CMAKE_CURRENT_BINARY_DIR}/scripts/setup.sh @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/stage.sh.in
+               ${CMAKE_CURRENT_BINARY_DIR}/scripts/stage.sh @ONLY)
 
 function(AddFunctionalTest)
 
