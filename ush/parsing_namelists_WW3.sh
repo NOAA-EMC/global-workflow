@@ -9,12 +9,12 @@ WW3_namelists(){
 # --------------------------------------------------------------------------- #
 # Buoy location file
 
-  if [ -f ${PARMgfs}/wave/wave_${NET}.buoys ]
+  if [ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]
   then
     ${NCP} "${PARMgfs}/wave/wave_${NET}.buoys" "${DATA}/ww3_points.list"
   fi
 
-  if [ -f ${DATA}/ww3_points.list ]
+  if [ -f "${DATA}/ww3_points.list" ]
   then
     set +x
     echo "ww3_points.list copied (${PARMgfs}/wave/wave_${NET}.buoys)."
@@ -25,8 +25,8 @@ WW3_namelists(){
   fi
 
   #set coupling to ice/current
-  WW3_ICE='F'
-  WW3_CUR='F'
+  WW3_ICE="F"
+  WW3_CUR="F"
 
   case ${WW3ICEINP} in
     'YES' )
@@ -43,8 +43,8 @@ WW3_namelists(){
   esac
 
   # Variables used in atparse of shel template 
-  export WW3_IC1='F'
-  export WW3_IC5='F'
+  export WW3_IC1="F"
+  export WW3_IC5="F"
   export WW3_ICE
   export WW3_CUR
   export WW3_OUTPARS="${OUTPARS_WAV}"
