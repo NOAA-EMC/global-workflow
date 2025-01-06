@@ -97,12 +97,6 @@ case "${waveGRD}" in
     export wavepostGRD=''
     export waveuoutpGRD=${waveGRD}
     ;;
-  "uglo_m1g16")
-    #unstructured m1v16 grid
-    export waveinterpGRD='glo_15mxt'
-    export wavepostGRD=''
-    export waveuoutpGRD=${waveGRD}
-    ;;
    *)
     echo "FATAL ERROR: No grid specific wave config values exist for ${waveGRD}. Aborting."
     exit 1
