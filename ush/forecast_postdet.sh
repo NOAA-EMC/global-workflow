@@ -370,10 +370,8 @@ WW3_postdet() {
       echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
       exit 1
     else
-      # TODO: See if this will work still with new options... might not
       echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
       export WW3_restart_from_binary=true
-      #first_ww3_restart_out=${model_start_date_current_cycle}
     fi
   fi
 
