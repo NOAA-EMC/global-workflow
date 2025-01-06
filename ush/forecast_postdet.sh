@@ -364,7 +364,7 @@ WW3_postdet() {
     # found binary ww3 restart file 
     export WW3_restart_from_binary=true
     ${NCP} "${ww3_binary_restart_file}" "${DATA}/restart.ww3" \
-          || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
+          || ( echo "FATAL ERROR: Unable to copy binary WW3 IC, ABORT!"; exit 1 )
   else
     if [[ "${RERUN}" == "YES" ]]; then
       # In the case of a RERUN, the WW3 restart file is required
