@@ -728,6 +728,7 @@ MOM6_predet(){
 
 }
 
+# shellcheck disable=SC2034
 CMEPS_predet(){
   echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
 

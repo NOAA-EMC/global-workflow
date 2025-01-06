@@ -950,7 +950,6 @@ class GFSTasks(Tasks):
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
-
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
 
         if self.run in ['gfs']:
