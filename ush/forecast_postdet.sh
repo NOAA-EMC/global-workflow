@@ -469,9 +469,9 @@ WW3_out() {
     local restart_date restart_file
     restart_date="${model_start_date_next_cycle}"
     echo "Copying WW3 restarts for 'RUN=${RUN}' at ${restart_date}"
-    target_file="${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
-    ${NCP} "${DATArestart}/WW3_RESTART/${target_file}" \
-           "${COMOUT_WAVE_RESTART}/${target_file}"
+    restart_file="${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
+    ${NCP} "${DATArestart}/WW3_RESTART/${restart_file}" \
+           "${COMOUT_WAVE_RESTART}/${restart_file}"
   fi
 
   # Copy restarts for downstream usage in HAFS 
