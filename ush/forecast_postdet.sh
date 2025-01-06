@@ -455,7 +455,7 @@ WW3_out() {
 
   # Copy WW3 restarts at the end of the forecast segment to COM for RUN=gfs|gefs
   if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
-    local seconds source_file target_file
+    local restart_file
     if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
       echo "Copying WW3 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
       target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.restart.ww3.nc"
