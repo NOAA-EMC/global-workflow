@@ -14,8 +14,10 @@ load(pathJoin("cfp", (os.getenv("cfp_ver") or "None")))
 setenv("USE_CFP","YES")
 
 load(pathJoin("gempak", (os.getenv("gempak_ver") or "None")))
-load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
+load(pathJoin("jasper", (os.getenv("jasper_ver") or "None")))
+load(pathJoin("libpng", (os.getenv("libpng_ver") or "None")))
 load(pathJoin("cdo", (os.getenv("cdo_ver") or "None")))
+load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
 
 load(pathJoin("hdf5", (os.getenv("hdf5_ver") or "None")))
 load(pathJoin("netcdf-c", (os.getenv("netcdf_c_ver") or "None")))
@@ -28,6 +30,7 @@ load(pathJoin("bufr_dump", (os.getenv("bufr_dump_ver") or "None")))
 load(pathJoin("g2tmpl", (os.getenv("g2tmpl_ver") or "None")))
 load(pathJoin("gsi-ncdiag", (os.getenv("gsi_ncdiag_ver") or "None")))
 load(pathJoin("crtm", (os.getenv("crtm_ver") or "None")))
+load(pathJoin("bufr", (os.getenv("bufr_ver") or "None")))
 load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))
 load(pathJoin("py-f90nml", (os.getenv("py_f90nml_ver") or "None")))
 load(pathJoin("py-netcdf4", (os.getenv("py_netcdf4_ver") or "None")))
@@ -37,11 +40,12 @@ load(pathJoin("py-pandas", (os.getenv("py_pandas_ver") or "None")))
 load(pathJoin("py-python-dateutil", (os.getenv("py_python_dateutil_ver") or "None")))
 load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 
---prepend_path("MODULEPATH", "/apps/ops/para/libs/modulefiles/compiler/intel/19.1.3.304")
---setenv("HPC_OPT", "/apps/ops/para/libs")
---load(pathJoin("util_shared", (os.getenv("util_shared_ver") or "None")))
---load(pathJoin("met", (os.getenv("met_ver") or "None")))
---load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
+setenv("WGRIB2","wgrib2")
+
+-- Stop gap fix for wgrib with spack-stack 1.6.0
+-- TODO Remove this when spack-stack issue #1097 is resolved
+setenv("WGRIB","wgrib")
+setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
 prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/noscrub/david.huber/glopara_ss/git/prepobs/gfsv17_v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
@@ -49,7 +53,15 @@ load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
-append_path("MODULEPATH", pathJoin("/apps/ops/prod/nco/models/modulefiles"))
-load(pathJoin("mos_shared", (os.getenv("mos_shared_ver") or "None")))
+-- MET/METplus won't work with this version of spack-stack (python)
+--prepend_path("MODULEPATH", "/apps/ops/para/libs/modulefiles/compiler/intel/19.1.3.304")
+--setenv("HPC_OPT", "/apps/ops/para/libs")
+--load(pathJoin("util_shared", (os.getenv("util_shared_ver") or "None")))
+--load(pathJoin("met", (os.getenv("met_ver") or "None")))
+--load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
+
+-- MOS won't work with this version of the GW
+--append_path("MODULEPATH", pathJoin("/apps/ops/prod/nco/models/modulefiles"))
+--load(pathJoin("mos_shared", (os.getenv("mos_shared_ver") or "None")))
 
 whatis("Description: GFS run environment")
