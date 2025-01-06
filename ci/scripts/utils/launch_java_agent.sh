@@ -65,14 +65,14 @@ controller_url="https://jenkins.epic.oarcloud.noaa.gov"
 controller_user=${controller_user:-"terry.mcguinness"}
 controller_user_auth_token="jenkins_token"
 
-HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../.." >/dev/null 2>&1 && pwd )"
+HOMEGFS_="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../.." >/dev/null 2>&1 && pwd )"
 host=$(hostname)
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
 
-source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEGFS_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion | hercules | wcoss2 | gaea)
     echo "Launch Jenkins Java Controler on ${MACHINE_ID}";;
@@ -84,10 +84,10 @@ esac
 LOG=lanuched_agent-$(date +%Y%m%d%M).log
 rm -f "${LOG}"
 
-source "${HOMEgfs}/ush/module-setup.sh"
-module use "${HOMEgfs}/modulefiles"
+source "${HOMEGFS_}/ush/module-setup.sh"
+module use "${HOMEGFS_}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
-source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
+source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
 
 JAVA_HOME="${JENKINS_AGENT_LANUCH_DIR}/JAVA/jdk-17.0.10"
 if [[ ! -d "${JAVA_HOME}" ]]; then
@@ -102,9 +102,10 @@ JAVA="${JAVA_HOME}/bin/java"
 echo "JAVA VERSION: "
 ${JAVA} -version
 
-export GH="${HOME}/bin/gh"
-[[ -f "${GH}" ]] || echo "gh is not installed in ${HOME}/bin"
+GH=$(command -v gh || echo "${HOME}/bin/gh")
+[[ -f "${GH}" ]] || ( echo "ERROR: GitHub CLI (gh) not found. (exiting with error)"; exit 1 )
 ${GH} --version
+export GH
 
 check_mark=$("${GH}" auth status -t 2>&1 | grep "Token:" | awk '{print $1}') || true
 if [[ "${check_mark}" != "✓" ]]; then
