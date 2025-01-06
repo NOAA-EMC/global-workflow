@@ -87,7 +87,8 @@ function(AddFunctionalTest)
   set_tests_properties(${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE};${ARG_JOB}")
     
   add_test(NAME ${TEST_NAME}_stage
-      COMMAND bash -c "${GW_BASELINE_DIR}/ci/ctests/scripts/stage_data.py --build_dir ${CMAKE_BINARY_DIR} --case ${ARG_CASE} --job ${ARG_JOB}")
+      COMMAND ./stage.sh ${TEST_NAME} ${ARG_CASE} ${ARG_JOB}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts
   set_tests_properties(${TEST_NAME}_stage PROPERTIES DEPENDS ${TEST_NAME}_setup LABELS "${ARG_CASE};${ARG_JOB}")
   
   add_test(NAME ${TEST_NAME}_execute

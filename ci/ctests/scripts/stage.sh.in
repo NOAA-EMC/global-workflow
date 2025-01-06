@@ -16,9 +16,10 @@ set -x
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src/wxflow"
 export PYTHONPATH
 
+#TODO - need to use this instead of CACE_JOB by updating the python script
 INPUTS_YAML="${HOMEgfs}/tests/inputs/${TEST_NAME}.yaml"
 
-"${HOMEgfs}/tests/scripts/stage.py" "${INPUTS_YAML}"
+"${HOMEgfs}/tests/scripts/stage.py" --build_dir "${MAKE_CURRENT_BINARY_DIR}" --case "${ARG_CASE}" --job "${ARG_JOB}" 
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     set +x
