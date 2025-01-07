@@ -27,5 +27,5 @@ MAKE_ACFTBUFR: 'NO'
 DO_TRACKER: 'NO'
 DO_GENESIS: 'NO'
 DO_METP: 'NO'
-SUPPORT_WAVES: 'NO'
-SUPPORTED_RESOLUTIONS: ['C48', 'C96'] # TODO: Test and support all cubed-sphere resolutions.
+SUPPORTED_RESOLUTIONS: ['C48', 'C96', 'C192', 'C384', 'C768'] # TODO: Test and support all cubed-sphere resolutions.
+AERO_INPUTS_DIR: /contrib/global-workflow-shared-data/data/gocart_emissions

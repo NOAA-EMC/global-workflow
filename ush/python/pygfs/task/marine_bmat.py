@@ -63,9 +63,9 @@ class MarineBMat(Task):
                 'MARINE_WINDOW_END': _window_end,
                 'MARINE_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
                 'ENSPERT_RELPATH': _enspert_relpath,
-                'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES)),
+                'CALC_SCALE_EXEC': _calc_scale_exec,
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
+                'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES))
             }
         )
 
@@ -130,12 +130,12 @@ class MarineBMat(Task):
         self.jedi_dict['soca_parameters_diffusion_vt'].initialize(self.task_config)
         self.jedi_dict['soca_setcorscales'].initialize(self.task_config)
         self.jedi_dict['soca_parameters_diffusion_hz'].initialize(self.task_config)
-        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
+        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
             self.jedi_dict['soca_ensb'].initialize(self.task_config)
             self.jedi_dict['soca_ensweights'].initialize(self.task_config)
 
         # stage ensemble members for the hybrid background error
-        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
+        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
             logger.debug(f"Stage ensemble members for the hybrid background error")
             mdau.stage_ens_mem(self.task_config)
 
@@ -182,7 +182,7 @@ class MarineBMat(Task):
         self.jedi_dict['soca_parameters_diffusion_vt'].execute()
 
         # hybrid EnVAR case
-        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
+        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
             self.jedi_dict['soca_ensb'].execute()
             self.jedi_dict['soca_ensweights'].execute()
 
@@ -221,11 +221,6 @@ class MarineBMat(Task):
                                 f"{self.task_config.APREFIX}{diff_type}_ocean.nc")
             diffusion_coeff_list.append([src, dest])
 
-        src = os.path.join(self.task_config.DATAstaticb, f"hz_ice.nc")
-        dest = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
-                            f"{self.task_config.APREFIX}hz_ice.nc")
-        diffusion_coeff_list.append([src, dest])
-
         FileHandler({'copy': diffusion_coeff_list}).sync()
 
         # Copy diag B files to ROTDIR
@@ -252,7 +247,7 @@ class MarineBMat(Task):
         FileHandler({'copy': diagb_list}).sync()
 
         # Copy the ensemble perturbation diagnostics to the ROTDIR
-        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
+        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
             window_middle_iso = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
             weight_list = []
             src = os.path.join(self.task_config.DATA, f"ocn.ens_weights.incr.{window_middle_iso}.nc")

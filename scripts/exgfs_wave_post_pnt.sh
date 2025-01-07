@@ -271,18 +271,18 @@ source "${USHgfs}/preamble.sh"
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
     ${NLN} ./out_pnt.${waveuoutpGRD} ./out_pnt.ww3
     ${NLN} ./mod_def.${waveuoutpGRD} ./mod_def.ww3
-    export pgm=ww3_outp;. prep_step
-    ${EXECgfs}/ww3_outp > buoy_lst.loc 2>&1
+
+    export pgm="${NET,,}_ww3_outp.x"
+    source prep_step
+
+    "${EXECgfs}/${pgm}" > buoy_lst.loc 2>&1
     export err=$?;err_chk
-
-
     if [ "$err" != '0' ] && [ ! -f buoy_log.ww3 ]
     then
-      pgm=wave_post
       set +x
       echo ' '
       echo '******************************************** '
-      echo '*** FATAL ERROR : ERROR IN ww3_outp *** '
+      echo "*** FATAL ERROR : ERROR IN ${pgm} *** "
       echo '******************************************** '
       echo ' '
       cat buoy_tmp.loc

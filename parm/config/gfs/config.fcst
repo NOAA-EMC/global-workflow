@@ -62,7 +62,7 @@ export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_O
 
 export FORECASTSH="${SCRgfs}/exglobal_forecast.sh"
 #export FORECASTSH="${SCRgfs}/exglobal_forecast.py"  # Temp. while this is worked on
-export FCSTEXEC="ufs_model.x"
+export FCSTEXEC="gfs_model.x"
 
 #######################################################################
 # Model configuration
@@ -116,7 +116,7 @@ if (( gwd_opt == 2 )); then
     export do_gsl_drag_ls_bl=".true."
     export do_gsl_drag_ss=".false."
     export do_gsl_drag_tofd=".true."
-    export do_gwd_opt_psl=".true."    
+    export do_gwd_opt_psl=".true."
     export do_ugwp_v1_orog_only=".false."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level
@@ -148,7 +148,7 @@ if [[ "${progsigma}" == ".true." ]]; then tbp="_progsigma" ; fi
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
     export IAER=2011  # spectral band mapping method for aerosol optical properties
 else
-    export IAER=1011    
+    export IAER=1011
 fi
 export iovr_lw=3    ; #de-correlation length cloud overlap method (Barker, 2008)
 export iovr_sw=3    ; #de-correlation length cloud overlap method (Barker, 2008)
@@ -245,14 +245,12 @@ case ${imp_physics} in
 esac
 
 # Stochastic physics
-export DO_SPPT=${DO_SPPT:-"NO"}
-export DO_SKEB=${DO_SKEB:-"NO"}
-export DO_SHUM=${DO_SHUM:-"NO"}
-export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
-export DO_CA=${DO_CA:-"YES"}
-if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-  export DO_CA="NO"  # CA does not work with nesting.
-fi
+export DO_SPPT="NO"
+export DO_SKEB="NO"
+export DO_SHUM="NO"
+export DO_LAND_PERT="NO"
+export DO_OCN_SPPT="NO"
+export DO_OCN_PERT_EPBL="NO"
 
 #coupling settings
 export cplmode="ufs.frac"

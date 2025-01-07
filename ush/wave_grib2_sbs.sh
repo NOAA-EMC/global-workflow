@@ -136,27 +136,28 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
 
   # 1.b Run GRIB packing program
 
+
+  export pgm="${NET,,}_ww3_grib.x"
+  . prep_step
+
   set +x
-  echo "   Run ww3_grib2"
-  echo "   Executing ${EXECgfs}/ww3_grib"
+  echo "   Executing ${EXECgfs}/${pgm}"
   set_trace
 
-  export pgm=ww3_grib;. prep_step
-  "${EXECgfs}/ww3_grib" > "grib2_${grdnam}_${FH3}.out" 2>&1
+  "${EXECgfs}/${pgm}" > "grib2_${grdnam}_${FH3}.out" 2>&1
   export err=$?;err_chk
-
   if [ ! -s gribfile ]; then
     set +x
     echo ' '
     echo '************************************************ '
-    echo '*** FATAL ERROR : ERROR IN ww3_grib encoding *** '
+    echo "*** FATAL ERROR : ERROR IN ${pgm} encoding *** "
     echo '************************************************ '
     echo ' '
     set_trace
     exit 3
   fi
 
-  if (( fhr > 0 )); then 
+  if (( fhr > 0 )); then
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${COMOUT_WAVE_GRID}/${outfile}"
     err=$?
   else
@@ -169,7 +170,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
     set +x
     echo ' '
     echo '********************************************* '
-    echo '*** FATAL ERROR : ERROR IN ww3_grib2 *** '
+    echo "*** FATAL ERROR : ERROR IN ${pgm} *** "  # FIXME: This is not an error in $pgm, but in WGRIB2
     echo '********************************************* '
     echo ' '
     set_trace
@@ -197,7 +198,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
     set +x
     echo ' '
     echo '********************************************* '
-    echo '*** FATAL ERROR : ERROR IN ww3_grib2 *** '
+    echo "*** FATAL ERROR : ERROR IN ${pgm} *** "
     echo '********************************************* '
     echo ' '
     echo " Error in moving grib file ${outfile} to com"
@@ -209,7 +210,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID}/${outfile}.idx" ]]; then
     set +x
     echo ' '
     echo '*************************************************** '
-    echo '*** FATAL ERROR : ERROR IN ww3_grib2 INDEX FILE *** '
+    echo "*** FATAL ERROR : ERROR IN ${pgm} INDEX FILE *** "
     echo '*************************************************** '
     echo ' '
     echo " Error in moving grib file ${outfile}.idx to com"

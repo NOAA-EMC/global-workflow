@@ -586,23 +586,23 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
         return task
 
-    def esnowrecen(self):
+    def esnowanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_snowanl'}
-        deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_prep"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('esnowrecen')
-        task_name = f'{self.run}_esnowrecen'
+        resources = self.get_resource('esnowanl')
+        task_name = f'{self.run}_esnowanl'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/esnowrecen.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/esnowanl.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -672,7 +672,10 @@ class GFSTasks(Tasks):
         data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        if self.options['do_hybvar_ocn']:
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('marinebmat')
         task_name = f'{self.run}_marinebmat'
@@ -770,7 +773,7 @@ class GFSTasks(Tasks):
     def marineanlchkpt(self):
 
         deps = []
-        if self.options['do_hybvar']:
+        if self.options['do_hybvar_ocn']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_ocnanalecen'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
@@ -2728,7 +2731,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jedisnowda']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_esnowrecen'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_esnowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2756,6 +2759,9 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_hybvar_ocn']:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_ocnanalecen'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
@@ -2890,9 +2896,14 @@ class GFSTasks(Tasks):
     def earc(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
+        if 'enkfgdas' in self.run:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         earcenvars = self.envars.copy()
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
