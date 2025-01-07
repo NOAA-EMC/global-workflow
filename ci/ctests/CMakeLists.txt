@@ -98,12 +98,11 @@ function(AddFunctionalTest)
   set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${CASE_ARG};${JOB_ARG}")
   
   add_test(NAME test_${TEST_NAME}_validate
-      COMMAND bash -c "${GW_BASELINE_DIR}/ci/ctests/scripts/validate.sh ${CASE_ARG} ${JOB}")
-  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${CASE_ARG};${JOB}")
+      COMMAND bash -c "${GW_BASELINE_DIR}/ci/ctests/scripts/validate.sh ${CASE_ARG} ${JOB_ARG}")
+  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${CASE_ARG};${JOB_ARG}")
 endfunction()
 
 AddFunctionalTest(
   CASE "C48_ATM"
-  JOB   "gfs_fcst_seg0"
+  JOB  "gfs_fcst_seg0"
 )
-#AddFunctionalTest("C48_S2SW" "gfs_fcst_000")
