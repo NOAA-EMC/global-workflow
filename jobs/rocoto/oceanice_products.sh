@@ -13,13 +13,14 @@ status=$?
 if (( status != 0 )); then exit "${status}"; fi
 
 export job="oceanice_products"
-export jobid="${job}.$$"
 
 # shellcheck disable=SC2153
 IFS=', ' read -r -a fhr_list <<< "${FHR_LIST}"
 
-export FORECAST_HOUR
+export FORECAST_HOUR jobid
 for FORECAST_HOUR in "${fhr_list[@]}"; do
+	fhr3=$(printf '%03d' "${FORECAST_HOUR}")
+	jobid="${job}_${COMPONENT}_f${fhr3}.$$"
 	###############################################################
 	# Execute the JJOB
 	###############################################################
