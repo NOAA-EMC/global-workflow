@@ -18,4 +18,4 @@ job_card=$(yes | ${rocotoboot_dryrun} -d ${TEST_NAME}.db -w ${TEST_NAME}.xml -v 
 cat jobcard | sed '/^{{\|^}}/d' | sed '1d'  > "${TEST_NAME}.sub"
 
 #TODO Generalize for batch system (hard coded to slurm)
-sbatch < "${CASE}_${JOB}.sub"
+sbatch < "${TEST_NAME}.sub"
