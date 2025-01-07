@@ -566,32 +566,9 @@ class GEFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        if self.options['do_extractvars']:
-            dep_dict = {'type': 'task', 'name': 'arch'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps)
-        else:
-            dep_dict = {'type': 'metatask', 'name': 'gefs_atmos_prod'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': 'gefs_atmos_ensstat'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            if self.options['do_ice']:
-                dep_dict = {'type': 'metatask', 'name': 'gefs_ice_prod'}
-                deps.append(rocoto.add_dependency(dep_dict))
-            if self.options['do_ocean']:
-                dep_dict = {'type': 'metatask', 'name': 'gefs_ocean_prod'}
-                deps.append(rocoto.add_dependency(dep_dict))
-            if self.options['do_wave']:
-                dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_grid'}
-                deps.append(rocoto.add_dependency(dep_dict))
-                dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_pnt'}
-                deps.append(rocoto.add_dependency(dep_dict))
-                if self.options['do_wave_bnd']:
-                    dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_bndpnt'}
-                    deps.append(rocoto.add_dependency(dep_dict))
-                    dep_dict = {'type': 'metatask', 'name': 'gefs_wave_post_bndpnt_bull'}
-                    deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+        dep_dict = {'type': 'task', 'name': 'arch'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('cleanup')
         task_name = 'gefs_cleanup'
