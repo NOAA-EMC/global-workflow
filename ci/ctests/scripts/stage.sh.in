@@ -3,6 +3,8 @@
 set -ux
 
 TEST_NAME=${1:?"Name of the test is required"}
+CASE=${2:?"Case name for JJOB test"}
+JOB=${3:?"Job name for JJOB test"}
 
 # CMake to fill these variables
 HOMEgfs="@GW_BASELINE_DIR@"
