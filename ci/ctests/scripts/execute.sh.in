@@ -17,5 +17,23 @@ rm -f jobcard
 job_card=$(yes | ${rocotoboot_dryrun} -d ${TEST_NAME}.db -w ${TEST_NAME}.xml -v 10 -c ${idate}00 -t ${JOB} 2> jobcard)
 cat jobcard | sed '/^{{\|^}}/d' | sed '1d'  > "${TEST_NAME}.sub"
 
-#TODO Generalize for batch system (hard coded to slurm)
-sbatch < "${TEST_NAME}.sub"
+#TODO - Generalize for batch system (hard coded to slurm)
+
+output=$(sbatch "${TEST_NAME}.sub")
+job_id=$(echo $output | awk '{print $4}')
+echo "Job ${job_id} submitted for test ${TEST_NAME} with job name ${JOB}"
+
+# Check the status of the Slurm job
+while true; do
+    job_status=$(squeue --job $job_id --noheader --format "%T")
+    if [[ "$job_status" == "COMPLETED" ]]; then
+        echo "Job ${job_id} completed successfully."
+        exit 0
+    elif [[ "$job_status" == "FAILED" || "$job_status" == "CANCELLED" || "$job_status" == "TIMEOUT" ]]; then
+        echo "Job ${job_id} failed with status: $job_status."
+        exit -1
+    else
+        echo "Job ${job_id} is still running with status: $job_status."
+        sleep 60  # Check every 60 seconds
+    fi
+done
