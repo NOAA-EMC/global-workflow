@@ -95,11 +95,11 @@ function(AddFunctionalTest)
       #TODO Need to get the idate for rocotoboot get the right cycle for the test (hard coded for now)
       #TODO Need to add a loop to check for when job has been completed
       COMMAND bash -c "${GW_BASELINE_DIR}/ci/ctests/scripts/execute.sh ${CASE_ARG} ${JOB_ARG} 2021032312")
-  set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${CASE_ARG};${JOB_ARG}")
+  set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${ARG_CASE};${ARG_JOB}")
   
   add_test(NAME test_${TEST_NAME}_validate
       COMMAND bash -c "${GW_BASELINE_DIR}/ci/ctests/scripts/validate.sh ${CASE_ARG} ${JOB_ARG}")
-  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${CASE_ARG};${JOB_ARG}")
+  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${ARG_CASE};${ARG_JOB}")
 endfunction()
 
 AddFunctionalTest(
