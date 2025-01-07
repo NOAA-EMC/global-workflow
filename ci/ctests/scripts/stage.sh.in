@@ -18,7 +18,7 @@ export PYTHONPATH
 
 INPUTS_YAML="${HOMEgfs}/ci/ctests/cases/${TEST_NAME}.yaml"
 
-"${HOMEgfs}/ci/ctests/scripts/stage.py" --build_dir "${MAKE_CURRENT_BINARY_DIR}" --yaml "${INPUTS_YAML}" 
+"${HOMEgfs}/ci/ctests/scripts/stage.py" --build_dir "@CMAKE_CURRENT_BINARY_DIR@" --yaml "${INPUTS_YAML}" 
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     set +x
