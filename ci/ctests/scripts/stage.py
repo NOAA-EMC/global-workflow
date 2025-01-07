@@ -32,17 +32,12 @@ def parse_args():
 
 if __name__ == '__main__':
 
-    # TODO get idate
-    idate = "2021032312"
-
     # Parse command line arguments
     args = parse_args()
     data = AttrDict(HOMEgfs=_top)
     data.update(os.environ)
 
-    #pr_case_yaml_path = Path(f'{data.HOMEgfs}/ci/cases/pr/{args.case}.yaml')
-
-    # Initialize host and platform configuration
+    # Initialize host and platform configuration for getting PATH to staged data per machine
     host = Host()
     cfg = Configuration(f'{data.HOMEgfs}/ci/platforms')
     platform_config = cfg.parse_config(f'config.{host.machine.lower()}')
@@ -51,8 +46,13 @@ if __name__ == '__main__':
     #pr_case_cfg = parse_j2yaml(path=pr_case_yaml_path, data=data)
     #data["PDY"]=str(pr_case_cfg.arguments.idate)[0:8]
     #data["HH"]=str(pr_case_cfg.arguments.idate)[8:10]
+    
+    # TODO get idate in lue of above
+    idate = "2021032312"
+
     data["PDY"]=str(idate)[0:8]
     data["HH"]=str(idate)[8:10]
     data["RUNTESTS"]=Path.joinpath(args.build_dir,"RUNTESTS")
+    data["TEST_NAME"]=args.yaml.stem
     case_cfg = parse_j2yaml(path=args.yaml, data=data)
-    FileHandler(case_cfg.input_files.sync())
+    FileHandler(case_cfg.input_files).sync()
