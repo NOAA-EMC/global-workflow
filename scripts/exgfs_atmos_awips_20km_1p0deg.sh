@@ -174,11 +174,6 @@ for GRID in conus ak prico pac 003; do
       export FORT51="grib2.awpgfs${fcsthrs}.${GRID}"
 
       cp "${PARMgfs}/wmo/grib2_awpgfs${fcsthrs}.${GRID}" "parm_list"
-      if [[ ${DO_WAVE} != "YES" ]]; then
-         # Remove wave field it not running wave model
-         grep -vw "5WAVH" "parm_list" > "parm_list_temp"
-         mv "parm_list_temp" "parm_list"
-      fi
 
       ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile
       export err=$?; err_chk
@@ -208,11 +203,6 @@ for GRID in conus ak prico pac 003; do
       export FORT51="grib2.awpgfs_20km_${GRID}_f${fcsthrs}"
 
       cp "${PARMgfs}/wmo/grib2_awpgfs_20km_${GRID}f${fcsthrs}" "parm_list"
-      if [[ ${DO_WAVE} != "YES" ]]; then
-         # Remove wave field it not running wave model
-         grep -vw "5WAVH" "parm_list" > "parm_list_temp"
-         mv "parm_list_temp" "parm_list"
-      fi
 
       ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile
       export err=$?; err_chk || exit "${err}"
