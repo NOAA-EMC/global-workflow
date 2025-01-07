@@ -3,8 +3,6 @@
 set -ux
 
 TEST_NAME=${1:?"Name of the test is required"}
-CASE=${2:?"Case name for JJOB test"}
-JOB=${3:?"Job name for JJOB test"}
 
 # CMake to fill these variables
 HOMEgfs="@GW_BASELINE_DIR@"
@@ -19,9 +17,9 @@ PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src/wxflow"
 export PYTHONPATH
 
 #TODO - need to use this instead of CACE_JOB by updating the python script
-INPUTS_YAML="${HOMEgfs}/tests/inputs/${TEST_NAME}.yaml"
+INPUTS_YAML="${HOMEgfs}/ci/ctest/cases/${TEST_NAME}.yaml"
 
-"${HOMEgfs}/ci/ctests/scripts/stage.py" --build_dir "${MAKE_CURRENT_BINARY_DIR}" --case "${ARG_CASE}" --job "${ARG_JOB}" 
+"${HOMEgfs}/ci/ctests/scripts/stage.py" --build_dir "${MAKE_CURRENT_BINARY_DIR}" --yaml "${INPUTS_YAML}" 
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     set +x

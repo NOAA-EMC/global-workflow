@@ -77,29 +77,29 @@ function(AddFunctionalTest)
                        "${novals}" "${singlevals}" "${multivals}"
                         ${ARGN})
 
-  set(TEST_NAME test_${ARG_CASE}_${ARG_JOB})
+  set(TEST_NAME ${ARG_CASE}_${ARG_JOB})
   set(CASE_PATH ${GW_BASELINE_DIR}/ci/cases/pr)
   set(CASE_YAML ${CASE_PATH}/${ARG_CASE}.yaml)
 
-  add_test(NAME ${TEST_NAME}_setup
+  add_test(NAME test_${TEST_NAME}_setup
     COMMAND ./setup.sh ${TEST_NAME} ${CASE_YAML}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE};${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE};${ARG_JOB}")
     
-  add_test(NAME ${TEST_NAME}_stage
-      COMMAND ./stage.sh ${TEST_NAME} ${ARG_CASE} ${ARG_JOB}
+  add_test(NAME test_${TEST_NAME}_stage
+      COMMAND ./stage.sh ${TEST_NAME})
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(${TEST_NAME}_stage PROPERTIES DEPENDS ${TEST_NAME}_setup LABELS "${ARG_CASE};${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_stage PROPERTIES DEPENDS test_${TEST_NAME}_setup LABELS "${ARG_CASE};${ARG_JOB}")
   
-  add_test(NAME ${TEST_NAME}_execute
+  add_test(NAME test_${TEST_NAME}_execute
       #TODO Need to get the idate for rocotoboot get the right cycle for the test (hard coded for now)
       #TODO Need to add a loop to check for when job has been completed
       COMMAND bash -c "${GW_BASELINE_DIR}/ci/ctests/scripts/execute.sh ${CASE_ARG} ${JOB_ARG} 2021032312")
-  set_tests_properties(${TEST_NAME}_execute PROPERTIES DEPENDS ${TEST_NAME}_stage LABELS "${CASE_ARG};${JOB_ARG}")
+  set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${CASE_ARG};${JOB_ARG}")
   
-  add_test(NAME ${TEST_NAME}_validate
+  add_test(NAME test_${TEST_NAME}_validate
       COMMAND bash -c "${GW_BASELINE_DIR}/ci/ctests/scripts/validate.sh ${CASE_ARG} ${JOB}")
-  set_tests_properties(${TEST_NAME}_validate PROPERTIES DEPENDS ${TEST_NAME}_execute LABELS "${CASE_ARG};${JOB}")
+  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${CASE_ARG};${JOB}")
 endfunction()
 
 AddFunctionalTest(
