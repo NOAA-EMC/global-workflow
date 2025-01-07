@@ -16,8 +16,7 @@ set -x
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src/wxflow"
 export PYTHONPATH
 
-#TODO - need to use this instead of CACE_JOB by updating the python script
-INPUTS_YAML="${HOMEgfs}/ci/ctest/cases/${TEST_NAME}.yaml"
+INPUTS_YAML="${HOMEgfs}/ci/ctests/cases/${TEST_NAME}.yaml"
 
 "${HOMEgfs}/ci/ctests/scripts/stage.py" --build_dir "${MAKE_CURRENT_BINARY_DIR}" --yaml "${INPUTS_YAML}" 
 rc=$?
