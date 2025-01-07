@@ -241,15 +241,13 @@ source "${USHgfs}/preamble.sh"
 
   if [ $fhr = $fhrg ]
   then
-    for wavGRD in ${waveGRD}; do
-      gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
-        if [[ ! -s "${gfile}" ]]; then
-          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
-          err=3; export err; "${errchk}"
-          exit "${err}"
-        fi
-      ${NLN} "${gfile}" "./out_grd.${wavGRD}"
-    done
+    gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${waveGRD}.${YMD}.${HMS}"
+      if [[ ! -s "${gfile}" ]]; then
+        echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
+        err=3; export err; "${errchk}"
+        exit "${err}"
+      fi
+    ${NLN} "${gfile}" "./out_grd.${waveGRD}"
 
     if [ "$DOGRI_WAV" = 'YES' ]
     then

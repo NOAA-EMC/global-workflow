@@ -591,22 +591,9 @@ WW3_predet(){
   # Files from wave prep and wave init jobs
   # Copy mod_def files for wave grids
   local ww3_grid
-  if [[ "${waveMULTIGRID}" == ".true." ]]; then
-    local array=("${WAVECUR_FID}" "${WAVEICE_FID}" "${WAVEWND_FID}" "${waveuoutpGRD}" "${waveGRD}" "${waveesmfGRD}")
-    echo "Wave Grids: ${array[*]}"
-    local grdALL
-    # shellcheck disable=SC2312
-    grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
-
-    for ww3_grid in ${grdALL}; do
-      ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${ww3_grid}" "${DATA}/mod_def.${ww3_grid}" \
-      || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${ww3_grid}' from '${COMIN_WAVE_PREP}'"; exit 1 )
-    done
-  else
-    #if shel, only 1 waveGRD which is linked to mod_def.ww3
-    ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
-    || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"; exit 1 )
-  fi
+  #if shel, only 1 waveGRD which is linked to mod_def.ww3
+  ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
+  || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"; exit 1 )
 
   if [[ "${WW3ICEINP}" == "YES" ]]; then
     local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
@@ -638,20 +625,6 @@ WW3_predet(){
   fi
 
   WAV_MOD_TAG="${RUN}wave${waveMEMB}"
-  if [[ "${USE_WAV_RMP:-YES}" == "YES" ]]; then
-    local file file_array file_count
-    # shellcheck disable=SC2312
-    mapfile -t file_array < <(find "${FIXgfs}/wave" -name "rmp_src_to_dst_conserv_*" | sort)
-    file_count=${#file_array[@]}
-    if (( file_count > 0 )); then
-      for file in "${file_array[@]}" ; do
-        ${NCP} "${file}" "${DATA}/"
-      done
-    else
-      echo 'FATAL ERROR : No rmp precomputed nc files found for wave model, ABORT!'
-      exit 4
-    fi
-  fi
 }
 
 # shellcheck disable=SC2034
