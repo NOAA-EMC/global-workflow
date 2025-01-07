@@ -311,10 +311,16 @@ class GEFSTasks(Tasks):
 
     def wavepostsbs(self):
 
+        wave_grid = self._configs['base']['waveGRD']
+        history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'], {'MEMDIR': 'mem#member#'})
+        history_file = f'/{self.run}wave.out_grd.{wave_grid}.@Y@m@d.@H@M@S'
+
         deps = []
-        dep_dict = {'type': 'task', 'name': f'gefs_fcst_mem#member#_#seg_dep#'}
+        dep_dict = {'type': 'data', 'data':[history_path, history_file], 'offset': [None, '#fhr3_next#:00:00']}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mem#member#_#seg_dep#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
         fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'], 'wave')
         is_replay = self._configs['wavepostsbs']['REPLAY_ICS']
