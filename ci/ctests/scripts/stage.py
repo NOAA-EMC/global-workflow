@@ -26,20 +26,22 @@ def parse_args():
     """
     parser = ArgumentParser(description=description)
 
-    parser.add_argument('--case', help='Case name', required=True, type=str)
-    parser.add_argument('--job', help='Job name', required=True, type=str)
     parser.add_argument('--build_dir', help='CMake build directory', required=False, type=Path, default=None)
+    parser.add_argument('-y', '--yaml', help='full path to yaml file describing the job test configuration', type=Path, required=True)
     return parser.parse_args()
 
 if __name__ == '__main__':
+
+    # TODO get idate
+    idate = "2021032312"
 
     # Parse command line arguments
     args = parse_args()
     data = AttrDict(HOMEgfs=_top)
     data.update(os.environ)
 
-    case_yaml_path = Path(f'{data.HOMEgfs}/ci/ctests/cases/{args.case}_{args.job}.yaml')
-    pr_case_yaml_path = Path(f'{data.HOMEgfs}/ci/cases/pr/{args.case}.yaml')
+    case_yaml_path = Path(f'{data.HOMEgfs}/ci/ctests/cases/{args.yaml}')
+    #pr_case_yaml_path = Path(f'{data.HOMEgfs}/ci/cases/pr/{args.case}.yaml')
 
     # Initialize host and platform configuration
     host = Host()
@@ -47,11 +49,11 @@ if __name__ == '__main__':
     platform_config = cfg.parse_config(f'config.{host.machine.lower()}')
     data.update(platform_config)
 
-    pr_case_cfg = parse_j2yaml(path=pr_case_yaml_path, data=data)
-    data["PDY"]=str(pr_case_cfg.arguments.idate)[0:8]
-    data["HH"]=str(pr_case_cfg.arguments.idate)[8:10]
-    data["case"]=args.case
+    #pr_case_cfg = parse_j2yaml(path=pr_case_yaml_path, data=data)
+    #data["PDY"]=str(pr_case_cfg.arguments.idate)[0:8]
+    #data["HH"]=str(pr_case_cfg.arguments.idate)[8:10]
+    data["PDY"]=str(idate)[0:8]
+    data["HH"]=str(idate)[8:10]
     data["RUNTESTS"]=Path.joinpath(args.build_dir,"RUNTESTS")
-    data["JOB"]=args.job
     case_cfg = parse_j2yaml(path=case_yaml_path, data=data)
     FileHandler(case_cfg.input_files.sync())
