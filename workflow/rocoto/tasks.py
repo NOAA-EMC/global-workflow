@@ -250,7 +250,7 @@ class Tasks:
                        {'fhrs': [18, 19, 20, 21, 22, 23], 'seg': 1}]
         assert Tasks.get_job_groups(fhrs=test_array, ngroups=4, breakpoints=[11]) == test_groups
 
-        # Test with a break point not at a normal splilt point
+        # Test with a break point not at a normal split point
         test_groups = [{'fhrs': [0, 1, 2, 3, 4, 5, 6, 7], 'seg': 0},
                        {'fhrs': [8, 9, 10, 11, 12, 13, 14], 'seg': 0},
                        {'fhrs': [15, 16, 17, 18, 19], 'seg': 1},
@@ -318,7 +318,7 @@ class Tasks:
         -------
         dict: Several variable lists for use in rocoto metatasks:
               fhr_list: list of comma-separated lists of fhr groups
-              fhr_label: list of labels corrsponding to the fhr range
+              fhr_label: list of labels corresponding to the fhr range
               fhr3_last: list of the last fhr in each group, formatted to three digits
               fhr3_next: list of the fhr that would follow each group, formatted to
                          three digits
@@ -351,13 +351,13 @@ class Tasks:
         Parameters
         ----------
         hms_timedelta: str
-                       String represnting a time delta in HH:MM:SS format
+                       String representing a time delta in HH:MM:SS format
         multiplier: int | float
                     Value to multiply the time delta by
 
         Returns
         -------
-        str: String represnting a time delta in HH:MM:SS format
+        str: String representing a time delta in HH:MM:SS format
 
         '''
         input_timedelta = to_timedelta(hms_timedelta)
