@@ -40,7 +40,6 @@ if __name__ == '__main__':
     data = AttrDict(HOMEgfs=_top)
     data.update(os.environ)
 
-    case_yaml_path = Path(f'{data.HOMEgfs}/ci/ctests/cases/{args.yaml}')
     #pr_case_yaml_path = Path(f'{data.HOMEgfs}/ci/cases/pr/{args.case}.yaml')
 
     # Initialize host and platform configuration
@@ -55,5 +54,5 @@ if __name__ == '__main__':
     data["PDY"]=str(idate)[0:8]
     data["HH"]=str(idate)[8:10]
     data["RUNTESTS"]=Path.joinpath(args.build_dir,"RUNTESTS")
-    case_cfg = parse_j2yaml(path=case_yaml_path, data=data)
+    case_cfg = parse_j2yaml(path=args.yaml, data=data)
     FileHandler(case_cfg.input_files.sync())
