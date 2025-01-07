@@ -75,6 +75,15 @@ if [[ "${cplwav}" = ".true." ]]; then
   local wav_petlist_bounds="$(( ATMPETS+OCNPETS+ICEPETS )) $(( ATMPETS+OCNPETS+ICEPETS+WAVPETS-1 ))"
   local wav_omp_num_threads="${WAVTHREADS}"
 
+  local WW3_user_histname="false"
+  local WW3_historync="false"
+  local WW3_restartnc="true"
+  local WW3_PIO_FORMAT="pnetcdf"
+  local WW3_PIO_IOTASKS=-99
+  local WW3_PIO_STRIDE=4
+  local WW3_PIO_REARR="box"
+  local WW3_PIO_ROOT=-99
+
 fi
 
 if [[ "${cplchm}" = ".true." ]]; then
