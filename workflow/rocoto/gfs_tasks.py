@@ -931,6 +931,11 @@ class GFSTasks(Tasks):
         dep = rocoto.add_dependency(dep_dict)
         dependencies = rocoto.create_dependency(dep=dep)
 
+        if self.options['do_wave']:
+            wave_job = 'waveprep' if self.options['app'] in ['ATMW'] else 'waveinit'
+            dep_dict = {'type': 'task', 'name': f'{self.run}_{wave_job}'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+
         if self.options['do_jediocnvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
