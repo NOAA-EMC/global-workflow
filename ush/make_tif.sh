@@ -2,7 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-cd "${DATA}"
+cd "${DATA}" || exit 2
 
 outname=out.tif
 

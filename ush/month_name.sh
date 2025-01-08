@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 
 ####################################################################
 #
@@ -81,32 +81,33 @@
     12) Mon=Dec
         Month=December  ;;
 
+    *)
+        echo "FATAL ERROR input month number (${month_num}) is invalid"
+        exit 2
+
   esac
 
 
-  if [ ${month_spec} = Mon ]; then
+  if [[ "${month_spec}" == "Mon" ]]; then
 
-    echo ${Mon}
-    echo ${Mon} > month_name.txt
+    echo "${Mon}"
+    echo "${Mon}" > month_name.txt
 
-  elif [ ${month_spec} = Month ]; then
+  elif [[ "${month_spec}" == "Month" ]; then
 
-    echo ${Month}
-    echo ${Month} > month_name.txt
+    echo "${Month}"
+    echo "${Month}" > month_name.txt
 
-  elif [ ${month_spec} = MON ]; then
+  elif [[ "${month_spec}" == "MON" ]; then
 
-    MON=`echo ${Mon} | tr [a-z] [A-Z]`
-    echo ${MON}
-    echo ${MON} > month_name.txt
+    MON="${Mon^^}"
+    echo "${MON}"
+    echo "${MON}" > month_name.txt
 
-  elif [ ${month_spec} = MONTH ]; then
+  elif [[ "${month_spec}" == "MONTH" ]]; then
 
-    MONTH=`echo ${Month} | tr [a-z] [A-Z]`
-    echo ${MONTH}
-    echo ${MONTH} > month_name.txt
+    MONTH="${Month^^}"
+    echo "${MONTH}"
+    echo "${MONTH}" > month_name.txt
 
   fi
-
-
-
