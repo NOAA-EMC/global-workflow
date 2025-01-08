@@ -609,7 +609,7 @@ if [[ "${skip_ww3}" == "false" ]]; then
       ntasks_ww3=1000
       nthreads_ww3=1
       ;;
-   "uglo_100km")
+    "uglo_100km")
       ntasks_ww3=40
       nthreads_ww3=1
       ;;
