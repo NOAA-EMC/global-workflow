@@ -98,8 +98,10 @@ FV3_postdet() {
   # Determine increment files when doing cold start
   if [[ "${warm_start}" == ".false." ]]; then
 
-    if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-      IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
+    if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
+      if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+        IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
+      fi
       if (( MEMBER == 0 )); then
         inc_files=()
       else
@@ -109,7 +111,7 @@ FV3_postdet() {
       fi
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        increment_file="${COMIN_ATMOS_INPUT}/${RUN}.t${cyc}z.${inc_file}"
+        increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${inc_file}"
         if [[ -f "${increment_file}" ]]; then
           ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
         else
@@ -173,8 +175,10 @@ EOF
         inc_files=("atminc.nc")
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
-        if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-          IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
+        if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
+          if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+             IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
+          fi
           # Control member has no perturbation
           if (( MEMBER == 0 )); then
             inc_files=()
