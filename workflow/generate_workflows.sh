@@ -43,7 +43,6 @@ function _usage() {
        Run all valid SFS cases in the specified YAML directory.
 
     NOTES:
-         - Only one of -G -E or -S may be specified
          - Valid cases are determined by the experiment:system key as
            well as the skip_ci_on_hosts list in each YAML.
 
@@ -86,7 +85,7 @@ _specified_home=false
 _build=false
 _build_flags=""
 _update_submods=false
-declare -a _yaml_list=("C48_ATM")
+declare -a _yaml_list=("")
 _specified_yaml_list=false
 _yaml_dir=""  # Will be set based off of HOMEgfs if not specified explicitly
 _specified_yaml_dir=false
