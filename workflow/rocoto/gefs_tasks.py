@@ -323,6 +323,8 @@ class GEFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
         fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'], 'wave')
+
+        # When using replay, output does not start until hour 3
         is_replay = self._configs['wavepostsbs']['REPLAY_ICS']
         if is_replay:
             fhrs = [fhr for fhr in fhrs if fhr not in [0, 1, 2]]
