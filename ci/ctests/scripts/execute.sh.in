@@ -14,8 +14,8 @@ cd "${CASEDIR}"
 rm -f ./*.db
 rm -f ./jobcard                                                                             
 
-job_card=$(yes | ${rocotoboot_dryrun} -d ${TEST_NAME}.db -w ${TEST_NAME}.xml -v 10 -c ${idate}00 -t ${JOB} 2> jobcard) || true
-cat jobcard | sed '/^{{\|^}}/d' | sed '1d'  > "${TEST_NAME}.sub"
+job_card=$(yes | "${rocotoboot_dryrun}" -d "${TEST_NAME}.db" -w "${TEST_NAME}.xml" -v 10 -c "${idate}00" -t "${JOB}" 2> jobcard) || true
+cat jobcard | sed '/^{{\|^}}/d' | sed '1d'  > "${TEST_NAME}.sub" || true
 
 #TODO - Generalize for batch system (hard coded to slurm)
 
@@ -54,7 +54,7 @@ while true; do
         echo "Job ${job_id} is still running with status: ${job_status}."
         sleep 60  # Check every 60 seconds
         timeout=$((timeout+1))
-        if [[ $timeout -gt $TIMEOUT ]]; then
+        if [[ "${timeout}" -gt "${TIMEOUT}" ]]; then
             echo "Job ${job_id} has been running for more than ${TIMEOUT} minutes. Exiting."
             exit -1
         fi
