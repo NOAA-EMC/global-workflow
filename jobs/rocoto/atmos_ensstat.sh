@@ -29,4 +29,4 @@ for FORECAST_HOUR in "${fhr_list[@]}"; do
 	[[ ${status} -ne 0 ]] && exit "${status}"
 done
 
-exit $?
+exit 0
