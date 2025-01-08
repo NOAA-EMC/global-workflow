@@ -93,12 +93,12 @@
     echo "${Mon}"
     echo "${Mon}" > month_name.txt
 
-  elif [[ "${month_spec}" == "Month" ]; then
+  elif [[ "${month_spec}" == "Month" ]]; then
 
     echo "${Month}"
     echo "${Month}" > month_name.txt
 
-  elif [[ "${month_spec}" == "MON" ]; then
+  elif [[ "${month_spec}" == "MON" ]]; then
 
     MON="${Mon^^}"
     echo "${MON}"
