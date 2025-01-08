@@ -4,11 +4,18 @@ project(FunctionalTests)
 enable_testing()
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+function(set_from_env_or_default VAR_NAME ENV_VAR DEFAULT_VALUE)
+  if (DEFINED ENV{${ENV_VAR}} AND NOT DEFINED ${VAR_NAME})
+    set(${VAR_NAME} $ENV{${ENV_VAR}} CACHE STRING "Set from environment variable ${ENV_VAR}")
+  elseif(NOT DEFINED ${VAR_NAME})
+    set(${VAR_NAME} ${DEFAULT_VALUE} CACHE STRING "Default value for ${VAR_NAME}")
+  endif()
+endfunction()
 
 if (DEFINED ENV{GW_BASELINE_DIR} AND NOT DEFINED GW_BASELINE_DIR)
   set(GW_BASELINE_DIR $ENV{GW_BASELINE_DIR} CACHE FILEPATH "Path to global-workflow baselines")
 else()
-    get_filename_component(GW_BASELINE_DIR ${CMAKE_SOURCE_DIR}/../.. ABSOLUTE)
+  get_filename_component(GW_BASELINE_DIR ${CMAKE_SOURCE_DIR}/../.. ABSOLUTE)
 endif()
 
 # If GW_BASELINE_DIR is not defined, tests will not be run, return
@@ -17,9 +24,10 @@ if(NOT DEFINED GW_BASELINE_DIR)
   return()
 endif()
 
-if (DEFINED ENV{MACHINE_ID} AND NOT DEFINED MACHINE_ID)
-    set(MACHINE_ID $ENV{MACHINE_ID} CACHE STRING "Machine ID")
-elseif(NOT DEFINED MACHINE_ID)    
+set_from_env_or_default(RUNTESTS RUNTESTS "${CMAKE_BINARY_DIR}/RUNTESTS")
+
+set_from_env_or_default(MACHINE_ID MACHINE_ID "NOT_DEFINED")
+if(${MACHINE_ID} STREQUAL "NOT_DEFINED")
   execute_process(
     COMMAND bash -c "source ${GW_BASELINE_DIR}/ush/detect_machine.sh && echo \$MACHINE_ID"
     OUTPUT_VARIABLE MACHINE_ID
@@ -27,15 +35,8 @@ elseif(NOT DEFINED MACHINE_ID)
   )
 endif()
 
-if (DEFINED ENV{RUNTESTS} AND NOT DEFINED RUNTESTS)
-  set(RUNTESTS $ENV{RUNTESTS} CACHE FILEPATH "Path to run global-workflow tests")
-elseif( NOT DEFINED RUNTESTS)
-   set(RUNTESTS ${CMAKE_BINARY_DIR}/RUNTESTS CACHE FILEPATH "Path to run global-workflow tests")
-endif()
-
-if (DEFINED ENV{HPC_ACCOUNT} AND NOT DEFINED HPC_ACCOUNT)
-  set(HPC_ACCOUNT $ENV{HPC_ACCOUNT} CACHE  STRING "Allocation to use for running global-workflow tests")
-elseif(NOT DEFINED HPC_ACCOUNT)
+set_from_env_or_default(HPC_ACCOUNT HPC_ACCOUNT "NOT_DEFINED")
+if(${HPC_ACCOUNT} STREQUAL "NOT_DEFINED")
   execute_process(
     COMMAND bash -c "source ${GW_BASELINE_DIR}/ci/platforms/config.${MACHINE_ID} && echo \$HPC_ACCOUNT"
     OUTPUT_VARIABLE HPC_ACCOUNT
@@ -43,9 +44,8 @@ elseif(NOT DEFINED HPC_ACCOUNT)
   )
 endif()
 
-if (DEFINED ENV{ICSDIR_ROOT} AND NOT DEFINED ICSDIR_ROOT)
-  set(ICSDIR_ROOT $ENV{ICSDIR_ROOT} CACHE FILEPATH "Path to ICS directory")
-elseif(NOT DEFINED ICSDIR_ROOT)
+set_from_env_or_default(ICSDIR_ROOT ICSDIR_ROOT "NOT_DEFINED")
+if(${ICSDIR_ROOT} STREQUAL "NOT_DEFINED")
   execute_process(
     COMMAND bash -c "source ${GW_BASELINE_DIR}/ci/platforms/config.${MACHINE_ID} && echo \$ICSDIR_ROOT"
     OUTPUT_VARIABLE ICSDIR_ROOT
