@@ -1197,7 +1197,7 @@ class GFSTasks(Tasks):
         history_file = f'/{self.run}wave.out_grd.{wave_grid}.@Y@m@d.@H@M@S'
 
         deps = []
-        dep_dict = {'type': 'data', 'data':[history_path, history_file], 'offset': [None, '#fhr3_next#:00:00']}
+        dep_dict = {'type': 'data', 'data': [history_path, history_file], 'offset': [None, '#fhr3_next#:00:00']}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_#seg_dep#'}
         deps.append(rocoto.add_dependency(dep_dict))
