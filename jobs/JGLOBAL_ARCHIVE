@@ -48,12 +48,14 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMIN_ATMOS_RADMON:COM_ATMOS_RADMON_TMPL \
 	COMIN_ATMOS_MINMON:COM_ATMOS_MINMON_TMPL \
 	COMIN_CONF:COM_CONF_TMPL \
-	COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL
+	COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL \
 
 for grid in "0p25" "0p50" "1p00"; do
     YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
+YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+    "COMIN_WAVE_GRID_RES:COM_WAVE_GRID_RES_TMPL"
 ###############################################################
 # Run archive script
 ###############################################################

@@ -4,7 +4,7 @@ gfswave:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
     required:
         # Wave GRIB2 regional forecast products
-        {% set file_path = COMIN_WAVE_GRID ~ "/" ~ grdNAME %}
+        {% set file_path = COMIN_WAVE_GRID_RES %}
 
         {% for fh in range(0, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
         # NOTE This is as explicit as possible without major logic to parse wavepostGRD.
