@@ -22,6 +22,7 @@ enkf_restartb_grp:
         {% endfor %}
 
         # Now get the restart files.
+        {% if RUN == 'enkfgdas' %}
         {% for r_time in range(restart_interval, fhmax + 1, restart_interval) %}
         {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
         {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}
@@ -37,4 +38,5 @@ enkf_restartb_grp:
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.coupler.res"
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.fv_core.res.nc"
         {% endfor %}
+        {% endif %}
         {% endfor %}

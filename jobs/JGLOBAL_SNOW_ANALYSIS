@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-export DATA=${DATA:-${DATAROOT}/${RUN}snowanl_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "snowanl" -c "base snowanl"
 
 ##############################################
@@ -18,12 +17,15 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS COM_SNOW_ANALYSIS COM_CONF
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_OBS:COM_OBS_TMPL \
+    COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
+    COMOUT_CONF:COM_CONF_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+    COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-mkdir -m 775 -p "${COM_SNOW_ANALYSIS}" "${COM_CONF}"
+mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
 ###############################################################
 # Run relevant script

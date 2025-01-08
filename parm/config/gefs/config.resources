@@ -41,15 +41,15 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    max_tasks_per_node=36
+    max_tasks_per_node=48
     ;;
   "AZUREPW")
     export PARTITION_BATCH="compute"
-    max_tasks_per_node=24
+    max_tasks_per_node=36
     ;;
   "GOOGLEPW")
     export PARTITION_BATCH="compute"
-    max_tasks_per_node=32
+    max_tasks_per_node=30
     ;;
   *)
     echo "FATAL ERROR: Unknown machine encountered by ${BASH_SOURCE[0]}"
@@ -219,7 +219,7 @@ case ${step} in
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "walltime"="03:00:00"
+        declare -x "walltime"="04:00:00"
         ;;
       "C384" | "C768" | "C1152")
         declare -x "walltime"="06:00:00"
