@@ -566,7 +566,7 @@ class GEFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': 'arch'}
+        dep_dict = {'type': 'task', 'name': 'gefs_arch'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         resources = self.get_resource('cleanup')
