@@ -219,7 +219,7 @@ case ${step} in
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "walltime"="03:00:00"
+        declare -x "walltime"="04:00:00"
         ;;
       "C384" | "C768" | "C1152")
         declare -x "walltime"="06:00:00"
