@@ -270,18 +270,32 @@ class GEFSTasks(Tasks):
 
         deps = []
         for member in range(0, self.nmem + 1):
-            task = f'gefs_atmos_prod_mem{member:03d}_f#fhr#'
+            task = f'gefs_atmos_prod_mem{member:03d}_#fhr_label#'
             dep_dict = {'type': 'task', 'name': task}
             deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        fhrs = self._get_forecast_hours('gefs', self._configs['atmos_ensstat'])
+
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        is_replay = self._configs['atmos_ensstat']['REPLAY_ICS']
+        if is_replay and 0 in fhrs:
+            fhrs.remove(0)
+
+        max_tasks = self._configs['atmos_ensstat']['MAX_TASKS']
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Adjust walltime based on the largest group
+        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
+        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
 
         postenvars = self.envars.copy()
         postenvar_dict = {'FHR3': '#fhr#'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        task_name = f'gefs_atmos_ensstat_f#fhr#'
+        task_name = f'gefs_atmos_ensstat_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -291,15 +305,6 @@ class GEFSTasks(Tasks):
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'}
-
-        fhrs = self._get_forecast_hours('gefs', self._configs['atmos_ensstat'])
-
-        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
-        is_replay = self._configs['atmos_ensstat']['REPLAY_ICS']
-        if is_replay and 0 in fhrs:
-            fhrs.remove(0)
-
-        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'gefs_atmos_ensstat',
                              'task_dict': task_dict,
