@@ -11,23 +11,23 @@ idate=$3
 rocotoboot_dryrun=/work2/noaa/global/mterry/rocoto_dryrun/bin/rocotoboot
 CASEDIR="@CMAKE_CURRENT_BINARY_DIR@/RUNTESTS/EXPDIR/${TEST_NAME}"
 cd "${CASEDIR}"
-rm -f *.db
-rm -f jobcard                                                                             
+rm -f ./*.db
+rm -f ./jobcard                                                                             
 
-job_card=$(yes | ${rocotoboot_dryrun} -d ${TEST_NAME}.db -w ${TEST_NAME}.xml -v 10 -c ${idate}00 -t ${JOB} 2> jobcard)
+job_card=$(yes | ${rocotoboot_dryrun} -d ${TEST_NAME}.db -w ${TEST_NAME}.xml -v 10 -c ${idate}00 -t ${JOB} 2> jobcard) || true
 cat jobcard | sed '/^{{\|^}}/d' | sed '1d'  > "${TEST_NAME}.sub"
 
 #TODO - Generalize for batch system (hard coded to slurm)
 
 output=$(sbatch "${TEST_NAME}.sub")
-job_id=$(echo $output | awk '{print $4}')
+job_id=$(echo "${output}" | awk '{print $4}')
 echo "Job ${job_id} submitted for test ${TEST_NAME} with job name ${JOB}"
-stdout_file=$(scontrol show job $job_id | grep StdOut | awk -F= '{print $2}')
+stdout_file=$(scontrol show job "${job_id}" | grep StdOut | awk -F= '{print $2}') || true
 
 # Check the status of the Slurm job
 check_stdout_file() {
     last_line=$(tail -n 1 "$stdout_file")
-    if [[ "$last_line" == "End"* && "$last_line" == *"error code 0"* ]]; then
+    if [[ "${last_line}" == "End"* && "${last_line}" == *"error code 0"* ]]; then
         echo "Job ${job_id} completed successfully with END and error code 0."
         exit 0
     else
@@ -41,21 +41,21 @@ timeout=0
 TIMEOUT=60
 while true; do
     job_status=$(squeue --job $job_id --noheader --format "%T")
-    if [[ "$job_status" == "COMPLETED" ]]; then
+    if [[ "${job_status}" == "COMPLETED" ]]; then
         echo "Job ${job_id} completed successfully."
         check_stdout_file
-    elif [[ "$job_status" == "FAILED" || "$job_status" == "CANCELLED" || "$job_status" == "TIMEOUT" ]]; then
-        echo "Job ${job_id} failed with status: $job_status."
+    elif [[ "${job_status}" == "FAILED" || "${job_status}" == "CANCELLED" || "${job_status}" == "TIMEOUT" ]]; then
+        echo "Job ${job_id} failed with status: ${job_status}."
         exit -1
-    elif [[ -z "$job_status" ]]; then
+    elif [[ -z "${job_status}" ]]; then
         echo "Job ${job_id} is no longer in the queue. Checking stdout file."
         check_stdout_file
     else
-        echo "Job ${job_id} is still running with status: $job_status."
+        echo "Job ${job_id} is still running with status: ${job_status}."
         sleep 60  # Check every 60 seconds
         timeout=$((timeout+1))
         if [[ $timeout -gt $TIMEOUT ]]; then
-            echo "Job ${job_id} has been running for more than $TIMEOUT minutes. Exiting."
+            echo "Job ${job_id} has been running for more than ${TIMEOUT} minutes. Exiting."
             exit -1
         fi
     fi
