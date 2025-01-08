@@ -241,15 +241,13 @@ source "${USHgfs}/preamble.sh"
 
   if [ $fhr = $fhrg ]
   then
-    for wavGRD in ${waveGRD}; do
-      gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
-        if [[ ! -s "${gfile}" ]]; then
-          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
-          err=3; export err; "${errchk}"
-          exit "${err}"
-        fi
-      ${NLN} "${gfile}" "./out_grd.${wavGRD}"
-    done
+    gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${waveGRD}.${YMD}.${HMS}"
+      if [[ ! -s "${gfile}" ]]; then
+        echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
+        err=3; export err; "${errchk}"
+        exit "${err}"
+      fi
+    ${NLN} "${gfile}" "./out_grd.${waveGRD}"
 
     if [ "$DOGRI_WAV" = 'YES' ]
     then
@@ -262,7 +260,7 @@ source "${USHgfs}/preamble.sh"
         then
           gribFL=\'$(echo ${OUTPARS_WAV})\'
           source "${USHgfs}/wave_domain_grid.sh"
-          process_grdID $grdID
+          process_grdID "${grdID}"
           echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
         fi
         echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
@@ -277,7 +275,7 @@ source "${USHgfs}/preamble.sh"
       do
         gribFL=\'$(echo ${OUTPARS_WAV})\'
         source "${USHgfs}/wave_domain_grid.sh"
-        process_grdID $grdID
+        process_grdID "${grdID}"
         echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
       done
     fi

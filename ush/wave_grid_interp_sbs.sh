@@ -89,13 +89,12 @@ source "${USHgfs}/preamble.sh"
   fi
   ${NLN} "${DATA}/${grdID}_interp.inp.tmpl" "${grdID}_interp.inp.tmpl"
 
-  for ID in ${waveGRD}; do
-    ${NLN} "${DATA}/output_${ymdh}0000/out_grd.${ID}" "out_grd.${ID}"
-  done
+  ${NLN} "${DATA}/output_${ymdh}0000/out_grd.${waveGRD}" "out_grd.${waveGRD}"
 
   for ID in ${waveGRD} ${grdID}; do
     ${NLN} "${DATA}/mod_def.${ID}" "mod_def.${ID}"
   done
+  
 
 # --------------------------------------------------------------------------- #
 # 1.  Generate GRID file with all data
