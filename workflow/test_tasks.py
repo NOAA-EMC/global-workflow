@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from rocoto.tasks import Tasks
 
 class TestTasks:
