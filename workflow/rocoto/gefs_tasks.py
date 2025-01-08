@@ -291,7 +291,7 @@ class GEFSTasks(Tasks):
         resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
 
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHR3': '#fhr#'}
+        postenvar_dict = {'FHR_LIST': '#fhr_list#'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
