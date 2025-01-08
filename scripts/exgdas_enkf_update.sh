@@ -412,7 +412,7 @@ $APRUN_ENKF ${DATA}/$(basename $ENKFEXEC) 1>stdout 2>stderr
 export err=$?; err_chk
 
 # Cat runtime output files.
-cat stdout stderr > "${COMIN_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
+cat stdout stderr > "${COMOUT_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
 
 ################################################################################
 #  Postprocessing
