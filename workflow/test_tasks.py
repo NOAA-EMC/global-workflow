@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 from rocoto.tasks import Tasks
-import unittest
 
-class TestTasks(unittest.TestCase):
+class TestTasks:
 
 	'''
 	Tasks class tests
@@ -84,6 +83,3 @@ class TestTasks(unittest.TestCase):
 	    assert Tasks.multiply_HMS('00:05:00', 1.5) == '00:07:30'
 	    assert Tasks.multiply_HMS('00:40:00', 2.5) == '01:40:00'
 	    assert Tasks.multiply_HMS('00:10:00', 1) == '00:10:00'
-
-if __name__ == '__main__':
-	unittest.main()
