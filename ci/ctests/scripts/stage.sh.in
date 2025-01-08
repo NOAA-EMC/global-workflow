@@ -13,7 +13,7 @@ source "${HOMEgfs}/workflow/gw_setup.sh"
 rc=$?
 [[ "${rc}" -ne 0 ]] && exit "${status}"
 set -x
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src/wxflow"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH
 
 INPUTS_YAML="${HOMEgfs}/ci/ctests/cases/${TEST_NAME}.yaml"
