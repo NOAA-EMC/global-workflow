@@ -32,7 +32,7 @@ check_stdout_file() {
         exit 0
     else
         echo "Job ${job_id} did not complete successfully. Last line: ${last_line}"
-        exit -1
+        exit 1
     fi
 }
 
@@ -40,7 +40,7 @@ check_stdout_file() {
 timeout=0
 TIMEOUT=60
 while true; do
-    job_status=$(squeue --job $job_id --noheader --format "%T")
+    job_status=$(squeue --job "${job_id}" --noheader --format "%T")
     if [[ "${job_status}" == "COMPLETED" ]]; then
         echo "Job ${job_id} completed successfully."
         check_stdout_file
