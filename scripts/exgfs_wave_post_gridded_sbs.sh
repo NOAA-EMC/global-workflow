@@ -348,6 +348,8 @@ source "${USHgfs}/preamble.sh"
  
 # Check if grib2 file created
     ENSTAG=""
+    source "${USHgfs}/wave_domain_grid.sh"
+    process_grdID "${grdID}"
     com_dir="COM_WAVE_GRID_${GRDNAME}_${GRDRES}"
     if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
     gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
