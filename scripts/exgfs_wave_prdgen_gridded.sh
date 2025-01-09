@@ -9,7 +9,7 @@
 # - Supplemental error output is witten to the wave.log file.                 #
 #                                                                             #
 # COM inputs:                                                                 #
-#  - ${COMIN_WAVE_GRID}/${grdID}/${RUNwave}.${cycle}.${grdID}.f${fhr}.grib2            #
+#  - ${COMIN_WAVE_GRID}/${grdNAME}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2            #
 #                                                                             #
 # COM outputs:                                                                #
 #  - ${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}             #
@@ -88,28 +88,26 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
  while [ $fhcnt -le $FHMAX_WAV ]; do
    fhr=$(printf "%03d" $fhcnt)
    for grdOut in $grids;do
-     case $grdOut in
-       aoc_9km)  grdID='arctic.9km' ;;
-       at_10m)  grdID='atlocn.0p16' ;;
-       ep_10m)  grdID='epacif.0p16' ;;
-       wc_10m)  grdID='wcoast.0p16' ;;
-#       glo_30m) grdID='global.0p25' ;;
-       glo_30m) grdID='global.0p50' ;;
-       ak_10m)  grdID='alaska.0p16' ;;
-       *)       grdID= ;;
-     esac
-     #
+     source "${USHgfs}/wave_domain_grid.sh"
+     process_grdID "${grdout}"
+     com_dir="${COMIN_WAVE_GRID}/${grdNAME}"
+     if [[ ! -d "${!com_dir}" ]]; then
+         mkdir -p -m "${!com_dir}"
+         echo "Directory ${!com_dir} created."
+     else
+         echo "Directory ${!com_dir} already exists."
+     fi
 
-     GRIBIN="${COMIN_WAVE_GRID}/${grdID}/${RUNwave}.${cycle}.${grdID}.f${fhr}.grib2"
+     GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2"
      GRIBIN_chk="${GRIBIN}.idx"
      sleep_interval=5
      max_tries=1000
      if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
        echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
-       echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
+       echo "$RUNwave $grdNAME ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
        err=1;export err;${errchk} || exit ${err}
      fi
-     GRIBOUT=$RUNwave.$cycle.$grdID.f${fhr}.clipped.grib2
+     GRIBOUT=$RUNwave.$cycle.$grdNAME.f${fhr}.clipped.grib2
 
      iparam=1
      while [ ${iparam} -le ${nparam} ]; do
@@ -136,19 +134,19 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
        iparam=$(expr ${iparam} + 1)
      done #end wave param loop
 #======================================================================
-     GRIBIN=$RUNwave.$cycle.$grdID.f${fhr}.clipped.grib2
+     GRIBIN=$RUNwave.$cycle.$grdNAME.f${fhr}.clipped.grib2
      GRIBIN_chk=$GRIBIN.idx
 
-     ${NLN} $GRIBIN gribfile.$grdID.f${fhr}
+     ${NLN} $GRIBIN gribfile.$grdNAME.f${fhr}
 
      #
 # 1.d Input template files
      parmfile=${PARMgfs}/wave/grib2_${RUNwave}.$grdOut.f${fhr}
      if [ -f $parmfile ]; then
-       ${NLN} $parmfile awipsgrb.$grdID.f${fhr}
+       ${NLN} $parmfile awipsgrb.$grdNAME.f${fhr}
      else
-       echo '*** ERROR : NO template  grib2_${RUNwave}.$grdID.f${fhr} *** '
-       echo "$RUNwave $grdID $fhr prdgen $date $cycle : GRIB template file missing." >> $wavelog
+       echo '*** ERROR : NO template  grib2_${RUNwave}.$grdNAME.f${fhr} *** '
+       echo "$RUNwave $grdNAME $fhr prdgen $date $cycle : GRIB template file missing." >> $wavelog
        err=3;export err;${errchk} || exit ${err}
      fi
      #
@@ -161,17 +159,17 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
 # 2.a.1 Set up for tocgrib2
      echo "   Do set up for tocgrib2."
      set_trace
-     #AWIPSGRB=awipsgrib.$grdID.f${fhr}
+     #AWIPSGRB=awipsgrib.$grdNAME.f${fhr}
      AWIPSGRB=awipsgrib
 # 2.a.2 Make GRIB index
      echo "   Make GRIB index for tocgrib2."
      set_trace
-     $GRB2INDEX gribfile.$grdID.f${fhr} gribindex.$grdID.f${fhr}
+     $GRB2INDEX gribfile.$grdNAME.f${fhr} gribindex.$grdNAME.f${fhr}
      OK=$?
 
      if [ "$OK" != '0' ]
      then
-       msg="ABNORMAL EXIT: ERROR IN grb2index MWW3 for grid $grdID"
+       msg="ABNORMAL EXIT: ERROR IN grb2index MWW3 for grid $grdNAME"
        #set +x
        echo ' '
        echo '******************************************** '
@@ -180,7 +178,7 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
        echo ' '
        echo $msg
        #set_trace
-       echo "$RUNwave $grdID prdgen $date $cycle : error in grbindex." >> $wavelog
+       echo "$RUNwave $grdNAME prdgen $date $cycle : error in grbindex." >> $wavelog
        err=4;export err;err_chk
      fi
 
@@ -192,11 +190,11 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
      export pgmout=tocgrib2.out
      . prep_step
 
-     export FORT11="gribfile.$grdID.f${fhr}"
-     export FORT31="gribindex.$grdID.f${fhr}"
-     export FORT51="$AWIPSGRB.$grdID.f${fhr}"
+     export FORT11="gribfile.$grdNAME.f${fhr}"
+     export FORT31="gribindex.$grdNAME.f${fhr}"
+     export FORT51="$AWIPSGRB.$grdNAME.f${fhr}"
 
-     $TOCGRIB2 < awipsgrb.$grdID.f${fhr} > tocgrib2.out 2>&1
+     $TOCGRIB2 < awipsgrb.$grdNAME.f${fhr} > tocgrib2.out 2>&1
      OK=$?
      if [ "$OK" != '0' ]; then
        cat tocgrib2.out
@@ -219,19 +217,19 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
      echo "   Get awips GRIB bulletins out ..."
      #set_trace
      #set +x
-     echo "      Saving $AWIPSGRB.$grdOut.f${fhr} as grib2.$cycle.awipsww3_${grdID}.f${fhr}"
+     echo "      Saving $AWIPSGRB.$grdOut.f${fhr} as grib2.$cycle.awipsww3_${grdNAME}.f${fhr}"
      echo "          in ${COMOUT_WAVE_WMO}"
      #set_trace
-     cp "${AWIPSGRB}.${grdID}.f${fhr}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
+     cp "${AWIPSGRB}.${grdNAME}.f${fhr}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
      #set +x
 
 
      if [ "$SENDDBN" = 'YES' ]
      then
-       echo "      Sending $AWIPSGRB.$grdID.f${fhr} to DBRUN."
+       echo "      Sending $AWIPSGRB.$grdNAME.f${fhr} to DBRUN."
        "${DBNROOT}/bin/dbn_alert" GRIB_LOW "${RUN}" "${job}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
      fi
-     rm -f $AWIPSGRB.$grdID.f${fhr} tocgrib2.out
+     rm -f $AWIPSGRB.$grdNAME.f${fhr} tocgrib2.out
    done # For grids
 
    if [ $fhcnt -ge $FHMAX_HF_WAV ]; then
