@@ -13,17 +13,13 @@ source "${USHgfs}/preamble.sh"
 
 subdata=${1}
 
-source "${USHgfs}/wave_domain_grid.sh" 
-process_grdID "${waveGRD}"
-com_dir="COM_WAVE_GRID_${GRDNAME}_${GRDRES}"
-
 [[ -d "${subdata}" ]] || mkdir -p "${subdata}"
 
 for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); do
   fnh=$(printf "%3.3d" "${nh}")
 
-  infile="${!com_dir}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2"
-  outfile="${subdata}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2"
+  infile=${COMIN_WAVE_GRID}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
+  outfile=${subdata}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
   rm -f "${outfile}" # Remove outfile if it already exists before extraction
 
   if [[ -f "${infile}" ]]; then # Check if input file exists before extraction
