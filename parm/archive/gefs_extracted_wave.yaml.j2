@@ -36,13 +36,12 @@ gefs_wave:
         - "{{ file_path | relpath(ROTDIR)}}"
     {% endif %}
 
-    {% do tmpl_dict.update({'${grdNAME}': grdNAME}) %}
-    {% set COMIN_WAVE_GRID_RES = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}
+    {% set COMIN_WAVE_GRID = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}
         # Select grib2 files to copy to the atardir
-    {% if path_exists(COMIN_WAVE_GRID_RES) %}
+    {% if path_exists(COMIN_WAVE_GRID ~ "/" ~ grdNAME) %}
         {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_WAV, FHOUT_WAV) %}
             {% set file_name = head ~ grdNAME ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
-            {% set file_path = COMIN_WAVE_GRID_RES ~ "/" ~ file_name %}
+            {% set file_path = COMIN_WAVE_GRID ~ "/" ~ grdNAME ~ "/" ~ file_name %}
         - "{{ file_path | relpath(ROTDIR)}}"
         {% endfor %}
     {% endif %}
