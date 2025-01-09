@@ -348,9 +348,10 @@ source "${USHgfs}/preamble.sh"
  
 # Check if grib2 file created
     ENSTAG=""
+    com_dir="COM_WAVE_GRID_${GRDNAME}_${GRDRES}"
     if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-    gribchk="${RUN}wave.${cycle}${ENSTAG}.${grdNAME}.f${FH3}.grib2"
-    if [ ! -s ${COMOUT_WAVE_GRID_RES}/${gribchk} ]; then
+    gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
+    if [ ! -s ${!com_dir}/${gribchk} ]; then
       set +x
       echo ' '
       echo '********************************************'
