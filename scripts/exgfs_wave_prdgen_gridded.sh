@@ -100,7 +100,7 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
      esac
      #
 
-     GRIBIN="${COM_WAVE_GRID}/${grdID}/${RUNwave}.${cycle}.${grdID}.f${fhr}.grib2"
+     GRIBIN="${COMIN_WAVE_GRID}/${grdID}/${RUNwave}.${cycle}.${grdID}.f${fhr}.grib2"
      GRIBIN_chk="${GRIBIN}.idx"
      sleep_interval=5
      max_tries=1000
