@@ -2,6 +2,7 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = RUN + "wave.t" + cycle_HH + "z." %}
+{% set GRDNAME = "global.5p00" %}   
 
 gefs_wave:
     name: "GEFS_WAVE"
@@ -38,10 +39,10 @@ gefs_wave:
 
     {% set COMIN_WAVE_GRID = COM_WAVE_GRID_TMPL | replace_tmpl(tmpl_dict) %}
         # Select grib2 files to copy to the atardir
-    {% if path_exists(COMIN_WAVE_GRID ~ "/" ~ grdNAME) %}
+    {% if path_exists(COMIN_WAVE_GRID ~ "/" ~ GRDNAME) %}
         {% for fhr in range(ofst_hr, FHMAX_GFS + FHOUT_WAV, FHOUT_WAV) %}
-            {% set file_name = head ~ grdNAME ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
-            {% set file_path = COMIN_WAVE_GRID ~ "/" ~ grdNAME ~ "/" ~ file_name %}
+            {% set file_name = head ~ GRDNAME ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2" %}
+            {% set file_path = COMIN_WAVE_GRID ~ "/" ~ GRDNAME ~ "/" ~ file_name %}
         - "{{ file_path | relpath(ROTDIR)}}"
         {% endfor %}
     {% endif %}

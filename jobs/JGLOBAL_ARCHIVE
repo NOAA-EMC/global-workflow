@@ -2,11 +2,6 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "arch" -c "base arch"
-
-##############################################
-# get the domain and grid resiolution
-source "${USHgfs}/wave_domain_grid.sh"
-process_grdID "{$waveGRD}"
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -52,9 +47,6 @@ for grid in "0p25" "0p50" "1p00"; do
     YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
-
-YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-    "COMIN_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
 
 ###############################################################
 # Run archive script
