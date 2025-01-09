@@ -71,8 +71,10 @@ ENSTAG=""
 if [[ -n ${waveMEMB} ]]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
 outfile="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2"
 
+#create the COM directory var
+com_dir="COM_WAVE_GRID_${grdnam}_${grdres}"
 # Only create file if not present in COM
-if [[ ! -s "${COMOUT_WAVE_GRID_RES}/${outfile}.idx" ]]; then
+if [[ ! -s "${!com_dir}/${outfile}.idx" ]]; then
 
   set +x
   echo ' '
@@ -83,7 +85,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID_RES}/${outfile}.idx" ]]; then
   set_trace
 
   if [[ -z "${PDY}" ]] || [[ -z ${cyc} ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
-	 [[ -z "${COMOUT_WAVE_GRID_RES}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${gribflags}" ]] || \
+	 [[ -z "${!com_dir}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${gribflags}" ]] || \
 	 [[ -z "${GRIDNR}" ]] || [[ -z "${MODNR}" ]] || \
      [[ -z "${SENDDBN}" ]]; then
     set +x
@@ -158,11 +160,11 @@ if [[ ! -s "${COMOUT_WAVE_GRID_RES}/${outfile}.idx" ]]; then
   fi
 
   if (( fhr > 0 )); then
-    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${COMOUT_WAVE_GRID_RES}/${outfile}"
+    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${!com_dir}/${outfile}"
     err=$?
   else
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
-      -set table_1.4 1 -set table_1.2 1 -grib "${COMOUT_WAVE_GRID_RES}/${outfile}"
+      -set table_1.4 1 -set table_1.2 1 -grib "${!com_dir}/${outfile}"
     err=$?
   fi
 
@@ -178,7 +180,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID_RES}/${outfile}.idx" ]]; then
   fi
 
   # Create index
-  ${WGRIB2} -s "${COMOUT_WAVE_GRID_RES}/${outfile}" > "${COMOUT_WAVE_GRID_RES}/${outfile}.idx"
+  ${WGRIB2} -s "${!com_dir}/${outfile}" > "${!com_dir}/${outfile}.idx"
 
   # Create grib2 subgrid is this is the source grid
   if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]]; then
@@ -187,14 +189,14 @@ if [[ ! -s "${COMOUT_WAVE_GRID_RES}/${outfile}.idx" ]]; then
       subgrbnam=$(echo ${!subgrb} | cut -d " " -f 21)
       subgrbres=$(echo ${!subgrb} | cut -d " " -f 22)
       subfnam="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
-      ${COPYGB2} -g "${subgrbref}" -i0 -x "${COMOUT_WAVE_GRID_RES}/${outfile}" "${COMOUT_WAVE_GRID_RES}/${subfnam}"
-      ${WGRIB2} -s "${COMOUT_WAVE_GRID_RES}/${subfnam}" > "${COMOUT_WAVE_GRID_RES}/${subfnam}.idx"
+      ${COPYGB2} -g "${subgrbref}" -i0 -x "${!com_dir}/${outfile}" "${!com_dir}/${subfnam}"
+      ${WGRIB2} -s "${!com_dir}/${subfnam}" > "${!com_dir}/${subfnam}.idx"
    done
   fi
 
   # 1.e Save in /com
 
-  if [[ ! -s "${COMOUT_WAVE_GRID_RES}/${outfile}" ]]; then
+  if [[ ! -s "${!com_dir}/${outfile}" ]]; then
     set +x
     echo ' '
     echo '********************************************* '
@@ -206,7 +208,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID_RES}/${outfile}.idx" ]]; then
     set_trace
     exit 4
   fi
-  if [[ ! -s "${COMOUT_WAVE_GRID_RES}/${outfile}.idx" ]]; then
+  if [[ ! -s "${!com_dir}/${outfile}.idx" ]]; then
     set +x
     echo ' '
     echo '*************************************************** '
@@ -221,11 +223,11 @@ if [[ ! -s "${COMOUT_WAVE_GRID_RES}/${outfile}.idx" ]]; then
 
   if [[ "${SENDDBN}" = 'YES' ]] && [[ ${outfile} != *global.0p50* ]]; then
     set +x
-    echo "   Alerting GRIB file as ${COMOUT_WAVE_GRID_RES}/${outfile}"
-    echo "   Alerting GRIB index file as ${COMOUT_WAVE_GRID_RES}/${outfile}.idx"
+    echo "   Alerting GRIB file as ${!com_dir}/${outfile}"
+    echo "   Alerting GRIB index file as ${!com_dir}/${outfile}.idx"
     set_trace
-    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2" "${job}" "${COMOUT_WAVE_GRID_RES}/${outfile}"
-    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2_WIDX" "${job}" "${COMOUT_WAVE_GRID_RES}/${outfile}.idx"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2" "${job}" "${!com_dir}/${outfile}"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2_WIDX" "${job}" "${!com_dir}/${outfile}.idx"
   else
     echo "${outfile} is global.0p50 or SENDDBN is NO, no alert sent"
   fi
@@ -246,7 +248,7 @@ if [[ ! -s "${COMOUT_WAVE_GRID_RES}/${outfile}.idx" ]]; then
 else
   set +x
   echo ' '
-  echo " File ${COMOUT_WAVE_GRID_RES}/${outfile} found, skipping generation process"
+  echo " File ${!com_dir}/${outfile} found, skipping generation process"
   echo ' '
   set_trace
 fi
