@@ -205,9 +205,9 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
        echo '*** FATAL ERROR : ERROR IN tocgrib2 *** '
        echo '*************************************** '
        echo ' '
-       echo $msg
+       echo "$msg"
        #set_trace
-       echo "$RUNwave prdgen $date $cycle : error in tocgrib2." >> $wavelog
+       echo "$RUNwave prdgen $date $cycle : error in tocgrib2." >> "$wavelog"
        err=5;export err;err_chk
      else
        echo '*** tocgrib2 ran succesfully *** '
@@ -229,10 +229,10 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
        echo "      Sending $AWIPSGRB.$grdNAME.f${fhr} to DBRUN."
        "${DBNROOT}/bin/dbn_alert" GRIB_LOW "${RUN}" "${job}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
      fi
-     rm -f $AWIPSGRB.$grdNAME.f${fhr} tocgrib2.out
+     rm -f "$AWIPSGRB.$grdNAME.f${fhr}" "tocgrib2.out"
    done # For grids
 
-   if [ $fhcnt -ge $FHMAX_HF_WAV ]; then
+   if [ "$fhcnt" -ge "$FHMAX_HF_WAV" ]; then
      inc=$FHOUT_WAV
    else
      inc=$FHOUT_HF_WAV
