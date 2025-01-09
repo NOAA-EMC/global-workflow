@@ -372,7 +372,6 @@ def query_and_clean(dirname, force_clean=False):
 
 def validate_user_request(host, inputs):
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
-    supp_waves = host.info.get('SUPPORT_WAVES', 'YES')
     machine = host.machine
     for attr in ['resdetatmos', 'resensatmos']:
         try:
@@ -381,9 +380,6 @@ def validate_user_request(host, inputs):
             continue
         if expt_res not in supp_res:
             raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
-
-    if "W" in inputs.app and supp_waves == "NO":
-        raise NotImplementedError(f"Waves are not supported on {machine}")
 
 
 def get_ocean_resolution(resdetatmos):

@@ -3,6 +3,7 @@ enkf:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}.tar"
     required:
         # Logs
+        {% if RUN == 'enkfgdas' %}
         {% for mem in range(1, nmem_ens + 1) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_mem{{ '%03d' % mem }}.log"
         {% endfor %}
@@ -10,6 +11,7 @@ enkf:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % (fhr - fhmin) }}.log"
         {% endfor %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_echgres.log"
+        {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc.log"
         {% for grp in range(IAUFHRS | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_ecen{{ '%03d' % grp }}.log"
@@ -37,6 +39,7 @@ enkf:
         {% endfor %}
 
         # Ensemble mean and spread
+        {% if RUN == 'enkfgdas' %}
         {% for fhr in range(3, fhmax + 1, 3) %}
         - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensmean.nc"
         - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.ensmean.nc"
@@ -44,6 +47,7 @@ enkf:
         - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensspread.nc"
         {% endif %}
         {% endfor %}
+        {% endif %}
 
         # Ensemble mean state
         {% if not DO_JEDIATMENS %}
@@ -69,6 +73,14 @@ enkf:
         {% for file in da_files %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
         {% endfor %}
+
+        {% if DO_JEDISNOWDA %}
+        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
+        {% for itile in range(1,7) %}
+        # Snow analysis is 3dvar
+        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/snowinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
+        {% endfor %}
+        {% endif %}
 
         # Ensemble mean analyses/increments
         # 6-hr analysis/increment

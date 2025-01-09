@@ -1,12 +1,8 @@
 mkdir:
-- "{{ DATA }}/orog/det"
 - "{{ DATA }}/orog/ens"
 copy:
-- ["{{ FIXorog }}/{{ CASE }}/{{ CASE }}_mosaic.nc", "{{ DATA }}/orog/det/{{ CASE }}_mosaic.nc"]
 - ["{{ FIXorog }}/{{ CASE_ENS }}/{{ CASE_ENS }}_mosaic.nc", "{{ DATA }}/orog/ens/{{ CASE_ENS }}_mosaic.nc"]
 {% for tile in range(1, ntiles+1) %}
-- ["{{ FIXorog }}/{{ CASE }}/{{ CASE }}_grid.tile{{ tile }}.nc", "{{ DATA }}/orog/det/{{ CASE }}_grid.tile{{ tile }}.nc"]
 - ["{{ FIXorog }}/{{ CASE_ENS }}/{{ CASE_ENS }}_grid.tile{{ tile }}.nc", "{{ DATA }}/orog/ens/{{ CASE_ENS }}_grid.tile{{ tile }}.nc"]
-- ["{{ FIXorog }}/{{ CASE }}/{{ CASE }}.mx{{ OCNRES }}_oro_data.tile{{ tile }}.nc", "{{ DATA }}/orog/det/{{ CASE }}.mx{{ OCNRES }}_oro_data.tile{{ tile }}.nc" ]
 - ["{{ FIXorog }}/{{ CASE_ENS }}/{{ CASE_ENS }}.mx{{ OCNRES }}_oro_data.tile{{ tile }}.nc", "{{ DATA }}/orog/ens/{{ CASE_ENS }}.mx{{ OCNRES }}_oro_data.tile{{ tile }}.nc" ]
 {% endfor %}
