@@ -218,7 +218,6 @@ source "${USHgfs}/preamble.sh"
   echo '   Making command file for sbs grib2 and GRID Interpolation '
   set_trace
   fhr=$(( 10#${FHR3} ))
-  fhrg=$fhr
   ymdh=$($NDATE $fhr ${PDY}${cyc})
   YMD=$(echo $ymdh | cut -c1-8)
   HMS="$(echo $ymdh | cut -c9-10)0000"
@@ -238,36 +237,32 @@ source "${USHgfs}/preamble.sh"
   export GRDIDATA=${DATA}/output_$YMDHMS
 
 # Gridded data (main part, need to be run side-by-side with forecast
-
-  if [ $fhr = $fhrg ]
-  then
-    gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${waveGRD}.${YMD}.${HMS}"
-      if [[ ! -s "${gfile}" ]]; then
-        echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
-        err=3; export err; "${errchk}"
-        exit "${err}"
-      fi
-    ${NLN} "${gfile}" "./out_grd.${waveGRD}"
-
-    if [ "$DOGRI_WAV" = 'YES' ]
-    then
-      nigrd=1
-      for grdID in $waveinterpGRD
-      do
-        ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
-        echo "${USHgfs}/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
-        if [ "$DOGRB_WAV" = 'YES' ]
-        then
-          gribFL=\'$(echo ${OUTPARS_WAV})\'
-          source "${USHgfs}/wave_domain_grid.sh"
-          process_grdID "${grdID}"
-          echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
-        fi
-        echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
-        chmod 744 ${fcmdigrd}.${nigrd}
-        nigrd=$((nigrd+1))
-      done
+  gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${waveGRD}.${YMD}.${HMS}"
+    if [[ ! -s "${gfile}" ]]; then
+      echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
+      err=3; export err; "${errchk}"
+      exit "${err}"
     fi
+  ${NLN} "${gfile}" "./out_grd.${waveGRD}"
+
+  if [ "$DOGRI_WAV" = 'YES' ]
+  then
+    nigrd=1
+    for grdID in $waveinterpGRD
+    do
+      ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
+      echo "${USHgfs}/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+      if [ "$DOGRB_WAV" = 'YES' ]
+      then
+        gribFL=\'$(echo ${OUTPARS_WAV})\'
+        source "${USHgfs}/wave_domain_grid.sh"
+        process_grdID "${grdID}"
+        echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+      fi
+      echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
+      chmod 744 ${fcmdigrd}.${nigrd}
+      nigrd=$((nigrd+1))
+    done
 
     if [ "$DOGRB_WAV" = 'YES' ]
     then
