@@ -346,31 +346,29 @@ source "${USHgfs}/preamble.sh"
 
   cd $DATA
  
-  if [ "$fhr" = "$fhrg" ]; then
 # Check if grib2 file created
-    ENSTAG=""
-    if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-    gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-    gribchk_idx="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2.idx"
-    if [[ ! -d "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}" ]]; then
-      mkdir -m 775 -p "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
-    fi
+  ENSTAG=""
+  if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
+  gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
+  gribchk_idx="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2.idx"
+  if [[ ! -d "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}" ]]; then
+    mkdir -m 775 -p "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
+  fi
 # move grib2 files to domain.dimension
-    if [[ -s "${COMOUT_WAVE_GRID}/${gribchk}" && -s "${COMOUT_WAVE_GRID}/${gribchk_idx}" ]]; then
-      mv -f "${COMOUT_WAVE_GRID}/${gribchk}" "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
-      mv -f "${COMOUT_WAVE_GRID}/${gribchk_idx}" "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
-    else
-      set +x
-      echo ' '
-      echo '********************************************'
-      echo "*** FATAL ERROR: $gribchk not generated "
-      echo '********************************************'
-      echo '     See Details Below '
-      echo ' '
-      set_trace
-      err=5; export err;${errchk}
-      exit "$err"
-    fi
+  if [[ -s "${COMOUT_WAVE_GRID}/${gribchk}" && -s "${COMOUT_WAVE_GRID}/${gribchk_idx}" ]]; then
+    mv -f "${COMOUT_WAVE_GRID}/${gribchk}" "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
+    mv -f "${COMOUT_WAVE_GRID}/${gribchk_idx}" "${COMOUT_WAVE_GRID}/${GRDNAME}.${GRDRES}"
+  else
+    set +x
+    echo ' '
+    echo '********************************************'
+    echo "*** FATAL ERROR: $gribchk not generated "
+    echo '********************************************'
+    echo '     See Details Below '
+    echo ' '
+    set_trace
+    err=5; export err;${errchk}
+    exit "$err"
   fi
 
 # --------------------------------------------------------------------------- #
