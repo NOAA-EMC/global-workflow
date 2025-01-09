@@ -350,7 +350,7 @@ source "${USHgfs}/preamble.sh"
     ENSTAG=""
     source "${USHgfs}/wave_domain_grid.sh"
     process_grdID "${grdID}"
-    com_dir="COM_WAVE_GRID_${GRDNAME}_${GRDRES}"
+    com_dir="COMOUT_WAVE_GRID_${GRDNAME}_${GRDRES}"
     if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
     gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
     if [ ! -s ${!com_dir}/${gribchk} ]; then
