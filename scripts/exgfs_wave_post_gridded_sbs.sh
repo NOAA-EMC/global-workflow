@@ -263,18 +263,17 @@ source "${USHgfs}/preamble.sh"
       chmod 744 ${fcmdigrd}.${nigrd}
       nigrd=$((nigrd+1))
     done
+  fi
 
-    if [ "$DOGRB_WAV" = 'YES' ]
-    then
-      for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
-      do
-        gribFL=\'$(echo ${OUTPARS_WAV})\'
-        source "${USHgfs}/wave_domain_grid.sh"
-        process_grdID "${grdID}"
-        echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
-      done
-    fi
-
+  if [ "$DOGRB_WAV" = 'YES' ]
+  then
+    for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
+    do
+      gribFL=\'$(echo ${OUTPARS_WAV})\'
+      source "${USHgfs}/wave_domain_grid.sh"
+      process_grdID "${grdID}"
+      echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+    done
   fi
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
