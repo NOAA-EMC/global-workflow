@@ -4,7 +4,7 @@ import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
 from wxflow import Template, TemplateConstants, to_timedelta, timedelta_to_HMS
-from typing import List
+from typing import List, Union
 
 __all__ = ['Tasks']
 
@@ -277,7 +277,7 @@ class Tasks:
         return fhr_var_dict
 
     @staticmethod
-    def multiply_HMS(hms_timedelta: str, multiplier: int | float) -> str:
+    def multiply_HMS(hms_timedelta: str, multiplier: Union[int, float]) -> str:
         '''
         Multiplies an HMS timedelta string
 
