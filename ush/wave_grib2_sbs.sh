@@ -73,6 +73,7 @@ outfile="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2"
 
 #create the COM directory var
 com_dir="COMOUT_WAVE_GRID_${grdnam}_${grdres}"
+mkdir -p -m 775 "${!com_dir}"
 # Only create file if not present in COM
 if [[ ! -s "${!com_dir}/${outfile}.idx" ]]; then
 
