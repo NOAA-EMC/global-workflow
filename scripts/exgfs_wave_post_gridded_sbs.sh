@@ -347,28 +347,21 @@ source "${USHgfs}/preamble.sh"
   cd $DATA
  
 # Check if grib2 file created
-  ENSTAG=""
-  if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-  gribchk="${RUN}wave.${cycle}${ENSTAG}.${grdNAME}.f${FH3}.grib2"
-  gribchk_idx="${RUN}wave.${cycle}${ENSTAG}.${grdNAME}.f${FH3}.grib2.idx"
-  if [[ ! -d "${COMOUT_WAVE_GRID}/${grdNAME}" ]]; then
-    mkdir -m 775 -p "${COMOUT_WAVE_GRID}/${grdNAME}"
-  fi
-# move grib2 files to domain.dimension
-  if [[ -s "${COMOUT_WAVE_GRID}/${gribchk}" && -s "${COMOUT_WAVE_GRID}/${gribchk_idx}" ]]; then
-    mv -f "${COMOUT_WAVE_GRID}/${gribchk}" "${COMOUT_WAVE_GRID}/${grdNAME}"
-    mv -f "${COMOUT_WAVE_GRID}/${gribchk_idx}" "${COMOUT_WAVE_GRID}/${grdNAME}"
-  else
-    set +x
-    echo ' '
-    echo '********************************************'
-    echo "*** FATAL ERROR: $gribchk not generated "
-    echo '********************************************'
-    echo '     See Details Below '
-    echo ' '
-    set_trace
-    err=5; export err;${errchk}
-    exit "$err"
+    ENSTAG=""
+    if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
+    gribchk="${RUN}wave.${cycle}${ENSTAG}.${grdNAME}.f${FH3}.grib2"
+    if [ ! -s ${COMOUT_WAVE_GRID_RES}/${gribchk} ]; then
+      set +x
+      echo ' '
+      echo '********************************************'
+      echo "*** FATAL ERROR: $gribchk not generated "
+      echo '********************************************'
+      echo '     See Details Below '
+      echo ' '
+      set_trace
+      err=5; export err;${errchk}
+      exit "$err"
+    fi
   fi
 
 # --------------------------------------------------------------------------- #
