@@ -18,9 +18,13 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 for out_dir in "${COMOUT_WAVE_PREP}" "${COMOUT_WAVE_GRID}"; do
     if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
 done
-YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-    "COMOUT_WAVE_GRID_RES:COM_WAVE_GRID_RES_TMPL"
 
+for grdID in ${wavepostGRD} ${waveinterpGRD}; do
+    source "${USHgfs}/wave_domain_grid.sh" 
+    process_grdID "${grdID}"
+    YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+        "COMOUT_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+done
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
 # Set wave model ID tag to include member number
