@@ -49,12 +49,9 @@ for grid in "0p25" "0p50" "1p00"; do
        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
-for grdID in ${wavepostGRD} ${waveinterpGRD}; do
-    source "${USHgfs}/wave_domain_grid.sh" 
-    process_grdID "${grdID}"
-    YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-        "COMIN_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
-done
+YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+    "COMIN_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+
 ###############################################################
 # Run archive script
 ###############################################################
