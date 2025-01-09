@@ -19,12 +19,18 @@ for out_dir in "${COMOUT_WAVE_PREP}" "${COMOUT_WAVE_GRID}"; do
     if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
 done
 
-for grdID in ${wavepostGRD} ${waveinterpGRD}; do
-    source "${USHgfs}/wave_domain_grid.sh" 
-    process_grdID "${grdID}"
-    YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-        "COMOUT_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
-done
+if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
+    for grdID in ${wavepostGRD} ${waveinterpGRD}; do
+        source "${USHgfs}/wave_domain_grid.sh" 
+        process_grdID "${grdID}"
+        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+            "COMOUT_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+        out_dir=${COMOUT_WAVE_GRID}_${GRDNAME}_${GRDRES}
+        if [[ ! -d "${!out_dir}" ]]; then mkdir -p "${!out_dir}"; fi
+    done
+else
+    echo "Both wavepostGRD and waveinterpGRD are empty. No grids to process."
+fi
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
 # Set wave model ID tag to include member number
