@@ -362,7 +362,6 @@ source "${USHgfs}/preamble.sh"
       err=5; export err;${errchk}
       exit "$err"
     fi
-  fi
 
 # --------------------------------------------------------------------------- #
 # 7.  Ending output
