@@ -5,6 +5,7 @@ from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
 from wxflow import Template, TemplateConstants, to_timedelta, timedelta_to_HMS
 from typing import List, Union
+from bisect import bisect_right
 
 __all__ = ['Tasks']
 
@@ -211,7 +212,7 @@ class Tasks:
             ngroups = len(fhrs)
 
         # First, split at segment boundaries
-        fhrs_segs = [grp.tolist() for grp in np.array_split(fhrs, [fhrs.index(bpnt) + 1 for bpnt in breakpoints])]
+        fhrs_segs = [grp.tolist() for grp in np.array_split(fhrs, [bisect_right(fhrs, bpnt) for bpnt in breakpoints])]
         seg_lens = [len(seg) for seg in fhrs_segs]
 
         # Initialize each segment to be split into one job group
