@@ -72,7 +72,7 @@ if [[ -n ${waveMEMB} ]]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
 outfile="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2"
 
 #create the COM directory var
-com_dir="COM_WAVE_GRID_${grdnam}_${grdres}"
+com_dir="COMOUT_WAVE_GRID_${grdnam}_${grdres}"
 # Only create file if not present in COM
 if [[ ! -s "${!com_dir}/${outfile}.idx" ]]; then
 
