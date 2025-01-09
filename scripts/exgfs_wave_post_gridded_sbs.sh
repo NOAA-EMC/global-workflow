@@ -273,7 +273,7 @@ source "${USHgfs}/preamble.sh"
       source "${USHgfs}/wave_domain_grid.sh"
       process_grdID "${grdID}"
       echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
-      cp "grib_$grdID.out" "/scratch1/NCEPDEV/global/Anton.Fernando/RUNTESTS/grib_$grdID.out"
+      cp ${fcmdnow} "/scratch1/NCEPDEV/global/Anton.Fernando/RUNTESTS/grib_$grdID.out"
     done
   fi
 
