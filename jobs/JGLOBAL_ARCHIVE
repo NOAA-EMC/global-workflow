@@ -2,6 +2,8 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "arch" -c "base arch"
+
+
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -66,6 +68,8 @@ status=$?
 if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
+
+
 ##########################################
 # Remove the Temporary working directory
 ##########################################
