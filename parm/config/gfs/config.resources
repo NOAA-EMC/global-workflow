@@ -502,6 +502,7 @@ case ${step} in
   "marineanlinit")
     walltime="00:10:00"
     ntasks=1
+    threads_per_task=1
     tasks_per_node=${max_tasks_per_node}
     memory="24GB"
     ;;
@@ -509,6 +510,7 @@ case ${step} in
   "prepoceanobs")
     walltime="00:10:00"
     ntasks=1
+    threads_per_task=1
     tasks_per_node=${max_tasks_per_node}
     memory="48GB"
     ;;
@@ -518,8 +520,9 @@ case ${step} in
     ntasks=16
     case ${OCNRES} in
       "025")
-        ntasks=480;;
+        ntasks=480
         memory="256GB"
+	;;
       "050")  ntasks=16;;
       "100")  ntasks=16;;
       "500")  ntasks=16;;
@@ -529,6 +532,7 @@ case ${step} in
     esac
 
     walltime="00:30:00"
+    threads_per_task=1
     export is_exclusive=True
     tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
@@ -558,6 +562,7 @@ case ${step} in
     esac
 
     walltime="00:30:00"
+    threads_per_task=1
     export is_exclusive=True
     tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
@@ -588,6 +593,7 @@ case ${step} in
 
     walltime="00:10:00"
     export is_exclusive=True
+    threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
@@ -617,6 +623,7 @@ case ${step} in
 
     walltime="00:30:00"
     export is_exclusive=True
+    threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
@@ -624,6 +631,7 @@ case ${step} in
   "marineanlchkpt")
     walltime="00:10:00"
     ntasks=1
+    threads_per_task=1
     tasks_per_node=${max_tasks_per_node}
     case ${OCNRES} in
       "025")
@@ -647,6 +655,7 @@ case ${step} in
   "marineanlfinal")
     walltime="00:30:00"
     ntasks=${max_tasks_per_node}
+    threads_per_task=1
     tasks_per_node=${max_tasks_per_node}
     ;;
 
