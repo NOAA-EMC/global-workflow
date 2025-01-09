@@ -212,7 +212,7 @@ class Tasks:
             ngroups = len(fhrs)
 
         # First, split at segment boundaries
-        fhrs_segs = [grp.tolist() for grp in np.array_split(fhrs, [bisect_right(fhrs, bpnt) for bpnt in breakpoints])]
+        fhrs_segs = [grp.tolist() for grp in np.array_split(fhrs, [bisect_right(fhrs, bpnt) for bpnt in breakpoints if bpnt < max(fhrs)])]
         seg_lens = [len(seg) for seg in fhrs_segs]
 
         # Initialize each segment to be split into one job group
