@@ -90,15 +90,16 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
    for grdOut in $grids;do
      source "${USHgfs}/wave_domain_grid.sh"
      process_grdID "${grdout}"
-     com_dir="${COMIN_WAVE_GRID}/${grdNAME}"
-     if [[ ! -d "${!com_dir}" ]]; then
-         mkdir -p -m "${!com_dir}"
-         echo "Directory ${!com_dir} created."
+     com_varname="${COMIN_WAVE_GRID}/${grdNAME}"
+     com_dir="${!com_varname}"
+     if [[ ! -d "${com_dir}" ]]; then
+         mkdir -p -m "${com_dir}"
+         echo "Directory ${com_dir} created."
      else
-         echo "Directory ${!com_dir} already exists."
+         echo "Directory ${com_dir} already exists."
      fi
 
-     GRIBIN="${!com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2"
+     GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2"
      GRIBIN_chk="${GRIBIN}.idx"
      sleep_interval=5
      max_tries=1000
