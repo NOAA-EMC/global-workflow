@@ -136,7 +136,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 tasks += ['postsnd']
 
             if options['do_gempak']:
-                tasks += ['gempak', 'gempakmeta', 'gempakncdcupapgif', 'gempakpgrb2spec']
+                tasks += ['gempak', 'gempakmeta']
 
             if options['do_awips']:
                 tasks += ['awips_20km_1p0deg', 'fbwind']
