@@ -2349,13 +2349,14 @@ class GFSTasks(Tasks):
             elif self.run in ['gfs']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmeta'}
                 deps.append(rocoto.add_dependency(dep_dict))
-                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
-                deps.append(rocoto.add_dependency(dep_dict))
-                if self.options['do_goes']:
-                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
+                if self.app_config.mode in ['cycled']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
                     deps.append(rocoto.add_dependency(dep_dict))
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
-                    deps.append(rocoto.add_dependency(dep_dict))
+                    if self.options['do_goes']:
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+                        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
+                        deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_metp'] and self.run in ['gfs']:
             deps2 = []
