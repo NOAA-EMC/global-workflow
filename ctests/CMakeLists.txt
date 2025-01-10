@@ -51,7 +51,7 @@ function(AddJJOBTest)
 
   set(prefix     ARG)
   set(novals     NOTRAPFPE NOVALGRIND)
-  set(singlevals CASE JOB)
+  set(singlevals CASE JOB TEST_DATE)
   set(multivals  TEST_DEPENDS)
 
   cmake_parse_arguments(${prefix}
@@ -63,7 +63,7 @@ function(AddJJOBTest)
   set(CASE_YAML ${CASE_PATH}/${ARG_CASE}.yaml)
 
   add_test(NAME test_${TEST_NAME}_setup
-    COMMAND ./setup.sh ${TEST_NAME} ${CASE_YAML}
+    COMMAND ./setup.sh ${TEST_NAME} ${CASE_YAML} ${ARG_TEST_DATE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
   set_tests_properties(test_${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE};${ARG_JOB}")
     
@@ -85,4 +85,5 @@ endfunction()
 AddJJOBTest(
   CASE "C48_ATM"
   JOB  "gfs_fcst_seg0"
+  TEST_DATE "2021032312"
 )
