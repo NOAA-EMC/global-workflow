@@ -243,6 +243,7 @@ case ${step} in
     ;;
 
   "atmos_ensstat")
+    # Walltime is per forecast hour; will be multipled by group size
     export walltime="00:15:00"
     export ntasks=6
     export threads_per_task=1
