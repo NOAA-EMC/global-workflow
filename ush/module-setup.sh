@@ -51,6 +51,8 @@ elif [[ ${MACHINE_ID} = s4* ]] ; then
 
 elif [[ ${MACHINE_ID} = wcoss2 ]]; then
     # We are on WCOSS2
+    # Ignore default modules of the same version lower in the search path (req'd by spack-stack)
+    export LMOD_TMOD_FIND_FIRST=yes
     module reset
 
 elif [[ ${MACHINE_ID} = cheyenne* ]] ; then
