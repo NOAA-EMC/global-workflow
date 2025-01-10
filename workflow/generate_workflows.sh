@@ -230,7 +230,7 @@ if [[ "${_run_all_gfs}" == "true" || \
    # Raise an error if the user specified a yaml list and any of -G -E -S
    if [[ "${_specified_yaml_list}" == "true" ]]; then
       echo "Ambiguous case selection."
-      echo "Please select which tests to run explicitly with -y (test list) or"
+      echo "Please select which tests to run explicitly with -y \"list of tests\" or"
       echo "by specifying -G (all GFS), -E (all GEFS), and/or -S (all SFS), but not both."
       exit 3
    fi
