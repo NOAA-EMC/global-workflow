@@ -1526,17 +1526,26 @@ class GFSTasks(Tasks):
     def gempak(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_prod_f#fhr#'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_prod_#fhr_label#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        fhrs = self._get_forecast_hours(self.run, self._configs['gempak'])
+        max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        resources = self.get_resource('wavepostsbs')
+        # Adjust walltime based on the largest group
+        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
+        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
+
         gempak_vars = self.envars.copy()
-        gempak_dict = {'FHR3': '#fhr#'}
+        gempak_dict = {'FHR_LIST': '#fhr_list#'}
         for key, value in gempak_dict.items():
             gempak_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('gempak')
-        task_name = f'{self.run}_gempak_f#fhr#'
+        task_name = f'{self.run}_gempak_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1547,9 +1556,6 @@ class GFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
-
-        fhrs = self._get_forecast_hours(self.run, self._configs['gempak'])
-        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'{self.run}_gempak',
                              'task_dict': task_dict,

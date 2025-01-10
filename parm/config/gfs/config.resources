@@ -1276,6 +1276,7 @@ case ${step} in
     ;;
 
   "gempak")
+    # Walltime is per forecast hour; will be multipled by group size
     walltime="00:30:00"
     ntasks_gdas=2
     ntasks_gfs=28
