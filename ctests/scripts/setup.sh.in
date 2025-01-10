@@ -6,7 +6,7 @@ TEST_NAME=${1:?"Name of the test is required"}
 YAML_FILE=${2:?"Name of the CI yaml file for the test"}
 
 # CMake to fill these variables
-HOMEgfs="@GW_BASELINE_DIR@"
+HOMEgfs="@PROJECT_SOURCE_DIR@"
 RUNTESTS="@RUNTESTS@"
 ICSDIR_ROOT="@ICSDIR_ROOT@"
 HPC_ACCOUNT="@HPC_ACCOUNT@"

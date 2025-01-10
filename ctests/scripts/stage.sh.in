@@ -5,7 +5,7 @@ set -ux
 TEST_NAME=${1:?"Name of the test is required"}
 
 # CMake to fill these variables
-HOMEgfs="@GW_BASELINE_DIR@"
+HOMEgfs="@PROJECT_SOURCE_DIR@"
 
 # Load the runtime environment for this script (needs wxflow and its dependencies)
 set +x
