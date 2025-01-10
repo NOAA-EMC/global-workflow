@@ -1531,10 +1531,10 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         fhrs = self._get_forecast_hours(self.run, self._configs['gempak'])
-        max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        max_tasks = self._configs['gempak']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
-        resources = self.get_resource('wavepostsbs')
+        resources = self.get_resource('gempak')
         # Adjust walltime based on the largest group
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
         resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
