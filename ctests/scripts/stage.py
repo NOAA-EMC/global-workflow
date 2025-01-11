@@ -32,7 +32,6 @@ if __name__ == '__main__':
 
     # Parse command line arguments
     args = parse_args()
-    data = AttrDict(TEST_DATE=os.environ.get("TEST_DATE"))
-    data.update(os.environ)
+    data = {'TEST_DATE': os.environ.get('TEST_DATE')}
     case_cfg = parse_j2yaml(path=args.yaml, data=data)
     FileHandler(case_cfg.input_files).sync()
