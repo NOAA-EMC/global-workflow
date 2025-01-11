@@ -25,7 +25,7 @@ if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
         process_grdID "${grdID}"
         YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
             "COMOUT_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
-        out_dir_varname="${COMOUT_WAVE_GRID}_${GRDNAME}_${GRDRES}"
+        out_dir_varname="COMOUT_WAVE_GRID_${GRDNAME}_${GRDRES}"
         out_dir=${!out_dir_varname}
         if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
     done
