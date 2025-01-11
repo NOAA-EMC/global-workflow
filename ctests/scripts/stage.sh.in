@@ -3,6 +3,7 @@
 set -ux
 
 TEST_NAME=${1:?"Name of the test is required"}
+TEST_DATE=${2:?"idate of the test is required"}
 
 # CMake to fill these variables
 STAGED_FUNCTIONAL_TEST_DIR="@STAGED_FUNCTIONAL_TEST_DIR@"
