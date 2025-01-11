@@ -8,7 +8,7 @@ sys.path.insert(0, _top)
 
 from argparse import ArgumentParser
 from pathlib import Path
-from wxflow import parse_yaml, FileHandler
+from wxflow import parse_j2yaml,  FileHandler, AttrDict, Logger
 
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
@@ -32,5 +32,7 @@ if __name__ == '__main__':
 
     # Parse command line arguments
     args = parse_args()
-    case_cfg = parse_yaml(path=args.yaml)
+    data = AttrDict(TEST_DATE=os.environ.get("TEST_DATE"))
+    data.update(os.environ)
+    case_cfg = parse_j2yaml(path=args.yaml, data=data)
     FileHandler(case_cfg.input_files).sync()
