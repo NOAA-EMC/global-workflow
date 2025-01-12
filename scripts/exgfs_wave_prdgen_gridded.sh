@@ -45,10 +45,6 @@ source "${USHgfs}/preamble.sh"
  export wavelog=${DATA}/${RUNwave}_prdggridded.log
  
  echo "Starting MWW3 GRIDDED PRODUCTS SCRIPT"
-# Output grids
- # grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
-grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
-# export grids=${wavepostGRD}
  maxtries=${maxtries:-720}
 # 0.b Date and time stuff
  export date=$PDY
@@ -87,18 +83,11 @@ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
  fhcnt=$fstart
  while [ $fhcnt -le $FHMAX_WAV ]; do
    fhr=$(printf "%03d" $fhcnt)
-   for grdOut in $grids;do
+   for grdOut in $GEMPACK_GRIDS;do
      source "${USHgfs}/wave_domain_grid.sh"
      process_grdID "${grdout}"
-     com_varname="${COMIN_WAVE_GRID}/${grdNAME}"
+     com_varname="${COMIN_WAVE_GRID}_${GRDNAME}_${GRDRES}"
      com_dir="${!com_varname}"
-     if [[ ! -d "${com_dir}" ]]; then
-         mkdir -p -m "${com_dir}"
-         echo "Directory ${com_dir} created."
-     else
-         echo "Directory ${com_dir} already exists."
-     fi
-
      GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2"
      GRIBIN_chk="${GRIBIN}.idx"
      sleep_interval=5

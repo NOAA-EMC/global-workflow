@@ -19,6 +19,16 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi
 
+if [[ -n "${GEMPACK_GRIDS}"]]; then
+    for grdID in ${GEMPACK_GRIDS}; do
+        source "${USHgfs}/wave_domain_grid.sh" 
+        process_grdID "${grdID}"
+        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+            "COMIN_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+    done
+else
+    echo "GEMPACK_GRIDS are empty. No grids to process."
+fi
 
 ###################################
 # Execute the Script
