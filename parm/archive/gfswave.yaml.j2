@@ -1,12 +1,20 @@
 gfswave:
     {% set head = "gfswave.t" + cycle_HH + "z." %}
-    {% set grdNAME = "global.2p00" %}   
+ 
     name: "GFSWAVE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
     required:
         # Wave GRIB2 regional forecast products
-        {% set file_path = COMIN_WAVE_GRID ~ "/" ~ grdNAME %}
-
+        {% set gCOM_list = gCOM.split(' ') %}
+        {% for grd in gCOM_list %}
+        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                              '${RUN}':RUN,
+                              '${YMD}':cycle_YMD,
+                              '${HH}':cycle_HH,
+                              '${MEMDIR}':'',
+                              '${GRDRESNAME}':grd}) %}
+        {% set file_path = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}        
+  
         {% for fh in range(0, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
         # NOTE This is as explicit as possible without major logic to parse wavepostGRD.
         #      Matches files of the form "gfswave.tCCz.<region>.<res>.fHHH.grib2".
@@ -31,3 +39,4 @@ gfswave:
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpcbull_tar"
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibp_tar"
         {% endif %}
+        {% endfor %}
