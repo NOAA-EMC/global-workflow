@@ -10,7 +10,7 @@
 #                                                                             #
 # COM inputs:                                                                 #
 #  - ${com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2            #
-#  - com_dir = ${COMIN_WAVE_GRID}/${grdNAME}                                                                          #
+#  - com_dir is created from COM_WAVE_GRID_RES_TMPL                                                                         #
 # COM outputs:                                                                #
 #  - ${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}             #
 #                                                                             #
