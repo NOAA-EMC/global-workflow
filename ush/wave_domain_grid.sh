@@ -36,7 +36,7 @@ process_grdID() {
     echo "FATAL ERROR: No grid specific wave config values exist for ${grdID}. Aborting."
     exit 1 ;;
   esac
-  export grdNAME="${GRDNAME}.${GRDRES}"
+  grdNAME="${GRDNAME}.${GRDRES}"
   echo "GRIDNR=${GRIDNR}"
   echo "MODNR=${MODNR}"
 }
