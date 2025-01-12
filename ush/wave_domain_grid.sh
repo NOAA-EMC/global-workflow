@@ -39,4 +39,5 @@ process_grdID() {
   grdNAME="${GRDNAME}.${GRDRES}"
   echo "GRIDNR=${GRIDNR}"
   echo "MODNR=${MODNR}"
+  echo "grdNAME=${grdNAME}"
 }
