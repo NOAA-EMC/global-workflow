@@ -95,7 +95,7 @@ function(AddJJOBTest)
  
   # TODO - This is a stub for the validation step
   add_test(NAME test_${TEST_NAME}_validate
-      COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/validate.sh")
+      COMMAND bash -c "${HOMEgfs}/ctests/scripts/validate.sh")
   set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${ARG_CASE};${ARG_JOB}")
 endfunction()
 
