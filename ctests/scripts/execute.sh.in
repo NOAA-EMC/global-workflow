@@ -28,7 +28,7 @@ lack_of_job_count=0
 LACK_OF_JOB_LIMIT=5
 
 while true; do
-    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1)
+    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1) || true
     if [[ -n "${job_status}" ]]; then
         echo "Job ${job_id} found in sacct."
         break
