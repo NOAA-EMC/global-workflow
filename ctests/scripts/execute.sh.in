@@ -39,7 +39,7 @@ while true; do
         echo "Job ${job_id} not found after ${lack_of_job_count} attempts. Exiting."
         exit 1
     fi
-    sleep 60
+    sleep 30
 done
 
 # Second loop: monitor job status until completion or failure

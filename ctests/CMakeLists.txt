@@ -91,7 +91,7 @@ function(AddJJOBTest)
   set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${ARG_CASE};${ARG_JOB}")
   
   add_test(NAME test_${TEST_NAME}_validate
-      COMMAND bash -c "${GW_BASELINE_DIR}/ci/ctests/scripts/validate.sh ${TEST_NAME}")
+      COMMAND bash -c "${HOMEgfs}/ci/ctests/scripts/validate.sh ${TEST_NAME}")
   set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${ARG_CASE};${ARG_JOB}")
 endfunction()
 
