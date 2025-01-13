@@ -36,9 +36,9 @@ gefs_wave:
         - "{{ file_path | relpath(ROTDIR)}}"
     {% endif %}
 
-        # Select grib2 files to copy to the atardir
-    {% set gCOM_list = gCOM.split(' ') %}
-    {% for grd in gCOM_list %}
+    # Select grib2 files to copy to the atardir
+    {% set OUT_GRIDS_list = OUT_GRIDS.split(' ') %}
+    {% for grd in OUT_GRIDS_list %}
     {% set tmpl_dict = tmpl_dict.update({'${GRDRESNAME}': grd}) %}
     {% set file_path = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}  
     {% if path_exists(file_path) %}

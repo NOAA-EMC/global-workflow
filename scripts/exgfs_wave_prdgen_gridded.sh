@@ -9,15 +9,15 @@
 # - Supplemental error output is witten to the wave.log file.                 #
 #                                                                             #
 # COM inputs:                                                                 #
-#  - ${com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2            #
-#  - com_dir is created from COM_WAVE_GRID_RES_TMPL                                                                         #
+#  - ${com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2                  #
+#  - com_dir is created from COM_WAVE_GRID_RES_TMPL                           #                                             #
 # COM outputs:                                                                #
 #  - ${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}             #
 #                                                                             #
 # Origination  : 05/02/2007                                                   #
 # Last update  : 10/08/2020                                                   # 
 #                                                                             #
-# Oct, 2020  Roberto.Padilla@noaa.gov, Henrique.HAlves@noaa.gov                # 
+# Oct, 2020  Roberto.Padilla@noaa.gov, Henrique.HAlves@noaa.gov               # 
 #         - Merging wave scripts to GFSv16 global workflow                    #
 #                                                                             #
 ###############################################################################
@@ -83,7 +83,7 @@ source "${USHgfs}/preamble.sh"
  fhcnt=$fstart
  while [ $fhcnt -le $FHMAX_WAV ]; do
    fhr=$(printf "%03d" $fhcnt)
-   for grdOut in $GEMPACK_GRIDS;do
+   for grdOut in $GEMPAK_GRIDS;do
      source "${USHgfs}/wave_domain_grid.sh"
      process_grdID "${grdout}"
      com_varname="${COMIN_WAVE_GRID}_${GRDNAME}_${GRDRES}"

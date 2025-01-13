@@ -52,18 +52,23 @@ done
 
 ###############################################################
 # Create an array of output wave grids to process
-if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
-    for grdID in ${wavepostGRD} ${waveinterpGRD}; do
-        source "${USHgfs}/wave_domain_grid.sh" 
-        process_grdID "${grdID}"
-        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-            "COMIN_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
-		gCOM+="${GRDNAME}.${GRDRES}"
-    done
-else
-    echo "Both wavepostGRD and waveinterpGRD are empty. No grids to process."
+if [[ "${DO_WAVE}" == "YES" ]]; then
+    # Create a variable for output wave grids to process
+    if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
+        for grdID in ${wavepostGRD} ${waveinterpGRD}; do
+            source "${USHgfs}/wave_domain_grid.sh" 
+            process_grdID "${grdID}"
+            YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+                "COMIN_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+            OUT_GRIDS+=("${GRDNAME}.${GRDRES}")
+        done
+        export OUT_GRIDS="${OUT_GRIDS[*]}"
+    else
+        echo "Both wavepostGRD and waveinterpGRD are empty. No grids to process."
+        export OUT_GRIDS=""
+    fi
 fi
-export gCOM="${gCOM[*]}"
+export OUT_GRIDS="${OUT_GRIDS[*]}"
 ###############################################################
 # Run archive script
 ###############################################################
