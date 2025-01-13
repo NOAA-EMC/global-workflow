@@ -52,7 +52,7 @@ done
 
 ###############################################################
 # Create an array of output wave grids to process
-export OUT_GRIDS=""
+export WAVE_OUT_GRIDS=""
 if [[ "${DO_WAVE}" == "YES" ]]; then
     # Create a variable for output wave grids to process
     if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
@@ -63,10 +63,10 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
                 "COMIN_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
             grids_arr+=("${GRDNAME}.${GRDRES}")
         done
-        export OUT_GRIDS="${grids_arr[*]}"
+        export WAVE_OUT_GRIDS="${grids_arr[*]}"
     else
         echo "Both wavepostGRD and waveinterpGRD are empty. No grids to process."
-        export OUT_GRIDS=""
+        export WAVE_OUT_GRIDS=""
     fi
 fi
 ###############################################################
