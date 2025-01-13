@@ -28,6 +28,7 @@ def parse_args():
     parser.add_argument('-d', '--test_date', help='test date in YYYYMMDDHH format', type=str, required=False)
     return parser.parse_args()
 
+
 if __name__ == '__main__':
 
     # Parse command line arguments
