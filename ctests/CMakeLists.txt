@@ -12,7 +12,7 @@
 function(set_from_env_or_default VAR_NAME ENV_VAR DEFAULT_VALUE)
   if (DEFINED ENV{${ENV_VAR}} AND NOT DEFINED ${VAR_NAME})
     set(${VAR_NAME} $ENV{${ENV_VAR}} CACHE STRING "Set from environment variable ${ENV_VAR}")
-  elseif(NOT DEFINED ${VAR_NAME})
+  elseif(NOT DEFINED ${VAR_NAME} AND NOT ${DEFAULT_VALUE} STREQUAL "")
     set(${VAR_NAME} ${DEFAULT_VALUE} CACHE STRING "Default value for ${VAR_NAME}")
   endif()
 endfunction()
@@ -26,7 +26,7 @@ endif()
 set_from_env_or_default(RUNTESTS RUNTESTS "${CMAKE_CURRENT_BINARY_DIR}/RUNTESTS")
 
 # Set HPC_ACCOUNT
-set_from_env_or_default(HPC_ACCOUNT HPC_ACCOUNT "")
+set_from_env_or_default(HPC_ACCOUNT HPC_ACCOUNT " ")
 if (NOT DEFINED HPC_ACCOUNT)
   message(FATAL_ERROR "HPC_ACCOUNT must be set")
   return()
@@ -50,6 +50,7 @@ message(STATUS "gw: global-workflow baselines will be used from: '${HOMEgfs}'")
 message(STATUS "gw: global-workflow tests will be run at: '${RUNTESTS}'")
 message(STATUS "gw: global-workflow tests will use the allocation: '${HPC_ACCOUNT}'")
 message(STATUS "gw: global-workflow tests will use ICSDIR_ROOT: '${ICSDIR_ROOT}'")
+message(STATUS "gw: global-workflow tests will use staged data from:  '${STAGED_TESTS_DIR}'")
 
 # Prepare test scripts
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/setup.sh.in
