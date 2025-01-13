@@ -52,7 +52,6 @@ done
 
 ###############################################################
 # Create an array of output wave grids to process
-export WAVE_OUT_GRIDS=""
 if [[ "${DO_WAVE}" == "YES" ]]; then
     # Create a variable for output wave grids to process
     if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
