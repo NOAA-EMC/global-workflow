@@ -2,6 +2,8 @@
 
 import os, sys
 import shutil
+import datetime
+
 _here = os.path.dirname(__file__)
 _top = os.path.abspath(os.path.join(os.path.abspath(_here), '../../..'))
 sys.path.insert(0, _top)
@@ -26,12 +28,13 @@ def parse_args():
     parser = ArgumentParser(description=description)
 
     parser.add_argument('-y', '--yaml', help='full path to yaml file describing the job test configuration', type=Path, required=True)
+    parser.add_argument('-d', '--test_date', help='full path to yaml file describing the job test configuration', type=datetime, required=False)
     return parser.parse_args()
 
 if __name__ == '__main__':
 
     # Parse command line arguments
     args = parse_args()
-    data = {'TEST_DATE': os.environ.get('TEST_DATE')}
+    data = {'TEST_DATE': args.test_date}
     case_cfg = parse_j2yaml(path=args.yaml, data=data)
     FileHandler(case_cfg.input_files).sync()

@@ -1,35 +1,48 @@
+# ------------------------------------------------------------------------- #
+# CTests for Global Workflow
+# ------------------------------------------------------------------------- #
+# These ctests correspond to JJOBs (individual Rocoto jobs) that can be
+# run independently, each requiring its own YAML definition of inputs
+# and configurations. By integrating with Rocoto, these jobs can be
+# validated, staged, and executed as self-contained tests using
+# their own data and test parameters.
+# ------------------------------------------------------------------------- #
+
+# Function to set a variable from an environment variable or default value
+function(set_from_env_or_default VAR_NAME ENV_VAR DEFAULT_VALUE)
+  if (DEFINED ENV{${ENV_VAR}} AND NOT DEFINED ${VAR_NAME})
+    set(${VAR_NAME} $ENV{${ENV_VAR}} CACHE STRING "Set from environment variable ${ENV_VAR}")
+  elseif(NOT DEFINED ${VAR_NAME})
+    set(${VAR_NAME} ${DEFAULT_VALUE} CACHE STRING "Default value for ${VAR_NAME}")
+  endif()
+endfunction()
+
+# Set HOMEgfs
 if (NOT DEFINED HOMEgfs)
   set(HOMEgfs ${PROJECT_SOURCE_DIR})
 endif()
 
-if (DEFINED ENV{RUNTESTS} AND NOT DEFINED RUNTESTS)
-  set(RUNTESTS $ENV{RUNTESTS} CACHE FILEPATH "Path to global-workflow RUNTESTS directory")
-else()
-  set(RUNTESTS ${CMAKE_CURRENT_BINARY_DIR}/RUNTESTS)
-endif()
+# Set RUNTESTS
+set_from_env_or_default(RUNTESTS RUNTESTS "${CMAKE_CURRENT_BINARY_DIR}/RUNTESTS")
 
-if (DEFINED ENV{HPC_ACCOUNT} AND NOT DEFINED HPC_ACCOUNT)
-  set(HPC_ACCOUNT $ENV{HPC_ACCOUNT} CACHE STRING "Local location of glowbal-workflow initialconditions")
-endif()
-
+# Set HPC_ACCOUNT
+set_from_env_or_default(HPC_ACCOUNT HPC_ACCOUNT "")
 if (NOT DEFINED HPC_ACCOUNT)
   message(FATAL_ERROR "HPC_ACCOUNT must be set")
   return()
 endif()
 
-if (DEFINED ENV{ISCDIR_ROOT} AND NOT DEFINED ICSDIR_ROOT)
-  set(ICSDIR_ROOT $ENV{HPC_ACCOUNT} CACHE STRING "Local path to global-workflow initialconditions")
-endif()
-if(NOT DEFINED ICSDIR_ROOT)
+# Set ICSDIR_ROOT
+set_from_env_or_default(ICSDIR_ROOT ICSDIR_ROOT "")
+if (NOT DEFINED ICSDIR_ROOT)
   message(FATAL_ERROR "ICSDIR_ROOT must be set")
   return()
 endif()
 
-if (DEFINED ENV{STAGED_FUNCTIONAL_TEST_DIR} AND NOT DEFINED STAGED_FUNCTIONAL_TEST_DIR)
-	set(STAGED_FUNCTIONAL_TEST_DIR $ENV{STAGED_FUNCTIONAL_TEST_DIR} CACHE STRING "Local path to global-workflow staged data for functional test")
-endif()
-if(NOT DEFINED STAGED_FUNCTIONAL_TEST_DIR)
-  message(FATAL_ERROR "STATED_FUNCTIONAL_TEST_DIR must be set")
+# Set STAGED_TESTS_DIR
+set_from_env_or_default(STAGED_TESTS_DIR STAGED_TESTS_DIR "")
+if (NOT DEFINED STAGED_TESTS_DIR)
+  message(FATAL_ERROR "STAGED_TESTS_DIR must be set")
   return()
 endif()
 
