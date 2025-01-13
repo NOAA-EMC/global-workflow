@@ -5,8 +5,8 @@ gfswave:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
     required:
         # Wave GRIB2 regional forecast products
-        {% set OUT_GRIDS_list = OUT_GRIDS.split(' ') %}
-        {% for grd in OUT_GRIDS_list %}
+        {% set WAVE_OUT_GRIDS_list = WAVE_OUT_GRIDS.split(' ') %}
+        {% for grd in WAVE_OUT_GRIDS_list %}
         {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
                               '${RUN}':RUN,
                               '${YMD}':cycle_YMD,
