@@ -52,10 +52,10 @@ done
 
 ###############################################################
 # Create an array of output wave grids to process
+export OUT_GRIDS=""
 if [[ "${DO_WAVE}" == "YES" ]]; then
     # Create a variable for output wave grids to process
     if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
-        WAVE_OUT_GRIDS=""
         for grdID in ${wavepostGRD} ${waveinterpGRD}; do
             source "${USHgfs}/wave_domain_grid.sh" 
             process_grdID "${grdID}"
@@ -63,10 +63,10 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
                 "COMIN_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
             grids_arr+=("${GRDNAME}.${GRDRES}")
         done
-        export WAVE_OUT_GRIDS="${grids_arr[*]}"
+        export OUT_GRIDS="${grids_arr[*]}"
     else
         echo "Both wavepostGRD and waveinterpGRD are empty. No grids to process."
-        export WAVE_OUT_GRIDS=""
+        export OUT_GRIDS=""
     fi
 fi
 ###############################################################
