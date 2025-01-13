@@ -1755,16 +1755,16 @@ class GFSTasks(Tasks):
 
     def anlstat(self):
         deps = []
-        if self.app_config.do_jediatmvar:
+        if self.options['do_jediatmvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jediocnvar:
+        if self.options['do_jediocnvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_ocnanalpost'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jedisnowda:
+        if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_aero:
+        if self.options['do_aero_anl']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
 
