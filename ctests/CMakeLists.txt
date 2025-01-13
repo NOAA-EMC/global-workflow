@@ -46,7 +46,6 @@ if (NOT DEFINED STAGED_TESTS_DIR)
   return()
 endif()
 
-message(STATUS "MACHINE_ID: '${MACHINE_ID}'")
 message(STATUS "gw: global-workflow baselines will be used from: '${HOMEgfs}'")
 message(STATUS "gw: global-workflow tests will be run at: '${RUNTESTS}'")
 message(STATUS "gw: global-workflow tests will use the allocation: '${HPC_ACCOUNT}'")
