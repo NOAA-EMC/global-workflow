@@ -9,12 +9,14 @@ from wxflow import parse_j2yaml, FileHandler, Logger
 
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
+
 def parse_args():
     """
     Parse command line arguments.
 
     Returns
     -------
+
     argparse.Namespace
         The parsed command line arguments.
     """
