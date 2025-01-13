@@ -23,23 +23,40 @@ output=$(sbatch "${TEST_NAME}.sub")
 job_id=$(echo "${output}" | awk '{print $4}')
 echo "Job ${job_id} submitted for test ${TEST_NAME} with job name ${JOB}"
 
-# Check the status of the Slurm job
+# First loop: wait until job appears
+lack_of_job_count=0
+LACK_OF_JOB_LIMIT=5
+
+while true; do
+    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1)
+    if [[ -n "${job_status}" ]]; then
+        echo "Job ${job_id} found in sacct."
+        break
+    fi
+    echo "Job ${job_id} not in sacct yet, attempt ${lack_of_job_count}/${LACK_OF_JOB_LIMIT}."
+    lack_of_job_count=$((lack_of_job_count + 1))
+    if [[ "${lack_of_job_count}" -ge "${LACK_OF_JOB_LIMIT}" ]]; then
+        echo "Job ${job_id} not found after ${lack_of_job_count} attempts. Exiting."
+        exit 1
+    fi
+    sleep 60
+done
+
+# Second loop: monitor job status until completion or failure
 timeout=0
 TIMEOUT=60
 while true; do
     job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1)
     if [[ "${job_status}" == "COMPLETED" ]]; then
         echo "Job ${job_id} completed successfully."
+        break
     elif [[ "${job_status}" =~ ^(FAILED|CANCELLED|TIMEOUT)$ ]]; then
         echo "Job ${job_id} failed with status: ${job_status}."
-        exit 1
-    elif [[ -z "${job_status}" ]]; then
-        echo "Job ${job_id} is no longer in sacct."
         exit 1
     else
         echo "Job ${job_id} is still running with status: ${job_status}."
         sleep 60
-        timeout=$((timeout+1))
+        timeout=$((timeout + 1))
         if [[ "${timeout}" -gt "${TIMEOUT}" ]]; then
             echo "Job ${job_id} has been running for more than ${TIMEOUT} minutes. Exiting."
             exit 1
