@@ -79,7 +79,7 @@ source "${USHgfs}/preamble.sh"
   chmod 744 cmdfile
 
 # Eliminate duplicate grids
-  array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavepostGRD $waveinterpGRD)
+  array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $wavepostGRD $waveinterpGRD)
   grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
   for grdID in ${grdALL}; do

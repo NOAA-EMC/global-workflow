@@ -57,7 +57,7 @@ if (( OCNRES <= 100 )); then
     export EPBL_LSCALE="500.E3,1000.E3,2000.E3,2000.E3,2000.E3"
 fi
 
-if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+if [[ "${USE_OCN_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
     export ODA_INCUPD="True"
     export ODA_TEMPINC_VAR='t_pert'
     export ODA_SALTINC_VAR='s_pert'
