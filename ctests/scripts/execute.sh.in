@@ -46,7 +46,8 @@ done
 timeout=0
 TIMEOUT=60
 while true; do
-    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1)
+    # Trim trailing spaces from job_status
+    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1 | xargs)
     if [[ "${job_status}" == "COMPLETED" ]]; then
         echo "Job ${job_id} completed successfully."
         break
