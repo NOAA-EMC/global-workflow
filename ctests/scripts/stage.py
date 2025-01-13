@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 
-import os, sys
-import shutil
+import os
 import datetime
-
-_here = os.path.dirname(__file__)
-_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../../..'))
-sys.path.insert(0, _top)
 
 from argparse import ArgumentParser
 from pathlib import Path
@@ -36,7 +31,7 @@ if __name__ == '__main__':
     # Parse command line arguments
     args = parse_args()
 
-    data = {'TEST_DATE': args.test_date}
+    data = {}
     if args.test_date:
         data['TEST_DATE'] = datetime.datetime.strptime(args.test_date, '%Y%m%d%H')
     case_cfg = parse_j2yaml(path=args.yaml, data=data)
