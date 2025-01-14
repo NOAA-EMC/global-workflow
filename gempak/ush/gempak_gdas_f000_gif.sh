@@ -274,24 +274,24 @@ EOF
 
 # Copy the GIF images into my area
 
-cp "${hgttmp850dev}"    "${COM_ATMOS_GEMPAK_GIF}/."
-cp "${hgttmp700dev}"    "${COM_ATMOS_GEMPAK_GIF}/."
-cp "${hgttmp500dev}"    "${COM_ATMOS_GEMPAK_GIF}/."
-cp "${hgtiso300dev}"    "${COM_ATMOS_GEMPAK_GIF}/."
-cp "${hgtiso250dev}"    "${COM_ATMOS_GEMPAK_GIF}/."
-cp "${hgtiso200dev}"    "${COM_ATMOS_GEMPAK_GIF}/."
-cp "${mslpthksfcdev}"   "${COM_ATMOS_GEMPAK_GIF}/."
+cp "${hgttmp850dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cp "${hgttmp700dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cp "${hgttmp500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cp "${hgtiso300dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cp "${hgtiso250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cp "${hgtiso200dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cp "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}/."
 
 # Send the GIF images onto the NCDC area on the public ftp server
 
 if [[ ${SENDDBN} == YES ]]; then
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgttmp850dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgttmp700dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgttmp500dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgtiso300dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgtiso250dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgtiso200dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp850dev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp700dev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp500dev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso300dev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso250dev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso200dev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
 fi
 
 
@@ -443,18 +443,18 @@ EOF
 
 
 # Copy the GIF images into my area
-cp "${mslpthksfcdev}"   "${COM_ATMOS_GEMPAK_GIF}/."
-cp "${hgttmp500dev}"    "${COM_ATMOS_GEMPAK_GIF}/."
-cp "${hgtiso300dev}"    "${COM_ATMOS_GEMPAK_GIF}/."
-cp "${hgtiso250dev}"    "${COM_ATMOS_GEMPAK_GIF}/."
+cp "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cp "${hgttmp500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cp "${hgtiso300dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cp "${hgtiso250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
 
 # Copy the GIF images onto the NCDC area on the public ftp server
 
 if [[ ${SENDDBN} == YES ]]; then
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgttmp500dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgtiso300dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgtiso250dev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp500dev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso300dev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso250dev}"
 fi
 
 exit
