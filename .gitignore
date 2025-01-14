@@ -162,10 +162,6 @@ ush/global_cycle_driver.sh
 ush/jediinc2fv3.py
 ush/ufsda
 ush/soca
-ush/make_NTC_file.pl
-ush/make_ntc_bull.pl
-ush/make_tif.sh
-ush/month_name.sh
 ush/imsfv3_scf2ioda.py
 ush/atparse.bash
 ush/run_bufr2ioda.py

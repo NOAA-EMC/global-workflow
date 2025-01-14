@@ -17,6 +17,7 @@ load(pathJoin("libjpeg", (os.getenv("libjpeg_ver") or "None")))
 load(pathJoin("udunits", (os.getenv("udunits_ver") or "None")))
 load(pathJoin("gsl", (os.getenv("gsl_ver") or "None")))
 load(pathJoin("cdo", (os.getenv("cdo_ver") or "None")))
+load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
 
 load(pathJoin("hdf5", (os.getenv("hdf5_ver") or "None")))
 load(pathJoin("netcdf", (os.getenv("netcdf_ver") or "None")))
