@@ -46,3 +46,14 @@ You can use the `-L` option with CTest to run tests for a specific case. For exa
 cd /path/to/build
 ctest -L C48_ATM
 ```
+
+To add a new test use the **AddJJOBTest()** function at the end of the `$HOMEgfs/ctest/CMakeLists.txt` file as follow.
+Then auther a new YAML file with the required staged input files as is done with this example for `$HOMEgfs/ctests/cases/C48_ATM_gfs_fcts_seg0.yaml`
+
+```cmake
+AddJJOBTest(
+  CASE "C48_ATM"
+  JOB  "gfs_fcst_seg0"
+  TEST_DATE "2021032312"
+)
+```
