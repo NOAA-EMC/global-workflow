@@ -9,15 +9,15 @@
 # - Supplemental error output is witten to the wave.log file.                 #
 #                                                                             #
 # COM inputs:                                                                 #
-#  - ${com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2                  #
-#  - com_dir is created from COM_WAVE_GRID_RES_TMPL                           #                                             #
+#  - ${COMIN_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2          #
+#                                                                             #
 # COM outputs:                                                                #
 #  - ${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}             #
 #                                                                             #
 # Origination  : 05/02/2007                                                   #
 # Last update  : 10/08/2020                                                   # 
 #                                                                             #
-# Oct, 2020  Roberto.Padilla@noaa.gov, Henrique.HAlves@noaa.gov               # 
+# Oct, 2020  Roberto.Padilla@noaa.gov, Henrique.HAlves@noaa.gov                # 
 #         - Merging wave scripts to GFSv16 global workflow                    #
 #                                                                             #
 ###############################################################################
@@ -45,7 +45,6 @@ source "${USHgfs}/preamble.sh"
  export wavelog=${DATA}/${RUNwave}_prdggridded.log
  
  echo "Starting MWW3 GRIDDED PRODUCTS SCRIPT"
- 
 # Input grid
 grid_in="${waveinterpGRD:-glo_15mxt}"
 # Output grids
@@ -92,22 +91,6 @@ grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
  source "${USHgfs}/wave_domain_grid.sh"
  process_grdID "${grid_in}"
  grdIDin=${grdNAME}
- 
- fhcnt=$fstart
- while [ $fhcnt -le $FHMAX_WAV ]; do
-   fhr=$(printf "%03d" $fhcnt)
-   for grdOut in ${grids};do
-     source "${USHgfs}/wave_domain_grid.sh"
-     process_grdID "${grdout}"
-     grdID=${grdNAME}
-     com_varname="${COMIN_WAVE_GRID}_${GRDNAME}_${GRDRES}"
-     com_dir="${!com_varname}"
-     GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2"
- # Get input grid
- # TODO flesh this out with additional input grids if needed
- source "${USHgfs}/wave_domain_grid.sh"
- process_grdID "${grid_in}"
- grdIDin=${grdNAME}
 
  fhcnt=${fstart}
  while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
@@ -115,9 +98,11 @@ grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
    for grdOut in ${grids}; do
      source "${USHgfs}/wave_domain_grid.sh"
      process_grdID "${grdout}"
-     grdID=${grdNAME}
+     grdIDin=${grdNAME}
+     com_varname="${COMIN_WAVE_GRID}_${GRDNAME}_${GRDRES}"
+     com_dir="${!com_varname}"
 
-     GRIBIN="${COMIN_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
+     GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
      GRIBIN_chk="${GRIBIN}.idx"
      sleep_interval=5
      max_tries=1000
@@ -240,7 +225,7 @@ grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
      echo "      Saving ${AWIPSGRB}.${grdOut}.f${fhr} as grib2.${cycle}.awipsww3_${grdID}.f${fhr}"
      echo "          in ${COMOUT_WAVE_WMO}"
      #set_trace
-     cp "${AWIPSGRB}.${grdNAME}.f${fhr}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
+     cp "${AWIPSGRB}.${grdID}.f${fhr}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
      #set +x
 
 
