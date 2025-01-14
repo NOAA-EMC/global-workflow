@@ -1,2 +1,9 @@
 #!/usr/bin/env bash
-echo "This is a stub for the validate script."
+set -ux
+
+TEST_NAME=${1:?"Name of the test is required"}
+YAML_FILE=${2:?"Name of the CI yaml file for validating the test"}
+
+echo "validating '${TEST_NAME}' with yaml file '${YAML_FILE}'"
+
+exit 0
