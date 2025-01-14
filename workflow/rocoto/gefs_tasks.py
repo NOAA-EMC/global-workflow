@@ -592,7 +592,7 @@ class GEFSTasks(Tasks):
         if self.options['do_extractvars']:
             dep_dict = {'type': 'task', 'name': 'gefs_arch'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.options['globusarch']:
+            if self.options['do_globusarch']:
                 dep_dict = {'type': 'task', 'name': 'gefs_globus'}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')

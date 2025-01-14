@@ -99,7 +99,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_aero_anl'] = run_base.get('DO_AERO_ANL', False)
             run_options[run]['do_aero_fcst'] = run_base.get('DO_AERO_FCST', False)
 
-            run_options[run]['do_hpssarch'] = run_base.get('HPSSARCH', False)
+            run_options[run]['do_globusarch'] = run_base.get('GLOBUSARCH', False)
             run_options[run]['fcst_segments'] = run_base.get('FCST_SEGMENTS', None)
 
             if not AppConfig.is_monotonic(run_options[run]['fcst_segments']):
