@@ -27,6 +27,7 @@ export jasper_ver=2.0.25
 export zlib_ver=1.2.11
 export libpng_ver=1.6.37
 export cdo_ver=1.9.8
+export imagemagick_ver=7.0.8-7
 
 export hdf5_ver=1.10.6
 export netcdf_ver=4.7.4
