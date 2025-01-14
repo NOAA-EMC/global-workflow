@@ -48,7 +48,7 @@ source "${USHgfs}/preamble.sh"
 # Input grid
 grid_in="${waveinterpGRD:-glo_15mxt}"
 # Output grids
-grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
+grids=${GEMPAK_GRIDS}
 # export grids=${wavepostGRD}
  maxtries=${maxtries:-720}
 # 0.b Date and time stuff
