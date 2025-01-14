@@ -49,4 +49,7 @@ load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git_rocky9/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
+-- Set the path for the globus package handler, Sven
+setenv("sven_dir", "/home/gfekete/sven")
+
 whatis("Description: GFS run environment")
