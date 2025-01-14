@@ -14,6 +14,10 @@ export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gefs.yaml.j2"
 
 source "${HOMEgfs}/versions/ic.ver"
 
+if [[ ${EXP_WARM_START} = ".false." ]] ; then
+  export DOIAU="NO"        # Turn off for staging
+fi
+
 # Set ICSDIR (if not defined)
 if [[ -z "${ICSDIR}" ]] ; then
 
@@ -31,9 +35,5 @@ if [[ -z "${ICSDIR}" ]] ; then
   export ICSDIR="${BASE_IC}/${dir_name}/${ic_ver}"
 
 fi
-
-#use of perturbations files for ensembles
-export USE_OCN_ENS_PERTURB_FILES=@USE_OCN_ENS_PERTURB_FILES@
-export USE_ATM_ENS_PERTURB_FILES=@USE_ATM_ENS_PERTURB_FILES@
 
 echo "END: config.stage_ic"
