@@ -154,7 +154,7 @@ class GFSTasks(Tasks):
         offset = timedelta_to_HMS(-interval)
 
         # Files from previous cycle
-        files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
+        files = ['@Y@m@d.@H0000.fv_core.res.nc'] + \
                 [f'@Y@m@d.@H0000.fv_core.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)] + \
                 [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
 
@@ -512,7 +512,7 @@ class GFSTasks(Tasks):
 
         deps = []
         dep_dict = {
-            'type': 'task', 'name': f'gdas_aeroanlgenb',
+            'type': 'task', 'name': 'gdas_aeroanlgenb',
             'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}",
         }
         deps.append(rocoto.add_dependency(dep_dict))
@@ -641,7 +641,7 @@ class GFSTasks(Tasks):
     def marineanlletkf(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'enkfgdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_prepoceanobs'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2332,15 +2332,80 @@ class GFSTasks(Tasks):
 
         return task
 
+    # Globus transfer for HPSS archiving
+    def globus(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('globus')
+        task_name = f'{self.run}_globus'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    # Ensemble globus transfer for HPSS archiving
+    def ens_group_globus(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_eamn'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        # Integer division is floor division, but we need ceiling division
+        n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
+        groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
+
+        resources = self.get_resource('ens_group_globus')
+        var_dict = {'grp': groups}
+
+        task_name = f'{self.run}_ens_globus'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        metatask_dict = {'task_name': f'{self.run}_eglobus',
+                         'var_dict': var_dict,
+                         'task_dict': task_dict
+                         }
+
+        task = rocoto.create_task(metatask_dict)
+
+        return task
+
     # Cleanup
     def cleanup(self):
         deps = []
         if 'enkf' in self.run:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_eamn'}
             deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['globusarch']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_ens_globus'}
+                deps.append(rocoto.add_dependency(dep_dict))
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
             deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['globusarch']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_globus'}
+                deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_gempak']:
             if self.run in ['gdas']:

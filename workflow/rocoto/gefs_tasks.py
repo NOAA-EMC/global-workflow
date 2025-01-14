@@ -11,7 +11,7 @@ class GEFSTasks(Tasks):
     def stage_ic(self):
 
         resources = self.get_resource('stage_ic')
-        task_name = f'gefs_stage_ic'
+        task_name = 'gefs_stage_ic'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
@@ -28,7 +28,7 @@ class GEFSTasks(Tasks):
     def waveinit(self):
 
         resources = self.get_resource('waveinit')
-        task_name = f'gefs_wave_init'
+        task_name = 'gefs_wave_init'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
@@ -61,15 +61,15 @@ class GEFSTasks(Tasks):
 
     def fcst(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'gefs_stage_ic'}
+        dep_dict = {'type': 'task', 'name': 'gefs_stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
-            dep_dict = {'type': 'task', 'name': f'gefs_wave_init'}
+            dep_dict = {'type': 'task', 'name': 'gefs_wave_init'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_aero_fcst']:
-            dep_dict = {'type': 'task', 'name': f'gefs_prep_emissions'}
+            dep_dict = {'type': 'task', 'name': 'gefs_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
@@ -82,7 +82,7 @@ class GEFSTasks(Tasks):
             fcst_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('fcst')
-        task_name = f'gefs_fcst_mem000_seg#seg#'
+        task_name = 'gefs_fcst_mem000_seg#seg#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -95,7 +95,7 @@ class GEFSTasks(Tasks):
                      }
 
         seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
-        metatask_dict = {'task_name': f'gefs_fcst_mem000',
+        metatask_dict = {'task_name': 'gefs_fcst_mem000',
                          'is_serial': True,
                          'var_dict': seg_var_dict,
                          'task_dict': task_dict
@@ -107,15 +107,15 @@ class GEFSTasks(Tasks):
 
     def efcs(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'gefs_stage_ic'}
+        dep_dict = {'type': 'task', 'name': 'gefs_stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
-            dep_dict = {'type': 'task', 'name': f'gefs_wave_init'}
+            dep_dict = {'type': 'task', 'name': 'gefs_wave_init'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_aero_fcst']:
-            dep_dict = {'type': 'task', 'name': f'gefs_prep_emissions'}
+            dep_dict = {'type': 'task', 'name': 'gefs_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
@@ -279,7 +279,7 @@ class GEFSTasks(Tasks):
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        task_name = f'gefs_atmos_ensstat_f#fhr#'
+        task_name = 'gefs_atmos_ensstat_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -299,7 +299,7 @@ class GEFSTasks(Tasks):
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
-        fhr_metatask_dict = {'task_name': f'gefs_atmos_ensstat',
+        fhr_metatask_dict = {'task_name': 'gefs_atmos_ensstat',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 
@@ -309,7 +309,7 @@ class GEFSTasks(Tasks):
 
     def wavepostsbs(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'gefs_fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': 'gefs_fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -323,7 +323,7 @@ class GEFSTasks(Tasks):
 
         resources = self.get_resource('wavepostsbs')
 
-        task_name = f'gefs_wave_post_grid_mem#member#_f#fhr#'
+        task_name = 'gefs_wave_post_grid_mem#member#_f#fhr#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -342,12 +342,12 @@ class GEFSTasks(Tasks):
 
         fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
-        fhr_metatask_dict = {'task_name': f'gefs_wave_post_grid_#member#',
+        fhr_metatask_dict = {'task_name': 'gefs_wave_post_grid_#member#',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 
         member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': f'gefs_wave_post_grid',
+        member_metatask_dict = {'task_name': 'gefs_wave_post_grid',
                                 'task_dict': fhr_metatask_dict,
                                 'var_dict': member_var_dict}
 
@@ -357,7 +357,7 @@ class GEFSTasks(Tasks):
 
     def wavepostbndpnt(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'gefs_fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': 'gefs_fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -369,7 +369,7 @@ class GEFSTasks(Tasks):
             wave_post_bndpnt_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('wavepostbndpnt')
-        task_name = f'gefs_wave_post_bndpnt_mem#member#'
+        task_name = 'gefs_wave_post_bndpnt_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -402,7 +402,7 @@ class GEFSTasks(Tasks):
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
 
-        dep_dict = {'type': 'metatask', 'name': f'gefs_fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': 'gefs_fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
@@ -414,7 +414,7 @@ class GEFSTasks(Tasks):
             wave_post_bndpnt_bull_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('wavepostbndpntbll')
-        task_name = f'gefs_wave_post_bndpnt_bull_mem#member#'
+        task_name = 'gefs_wave_post_bndpnt_bull_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -438,10 +438,10 @@ class GEFSTasks(Tasks):
 
     def wavepostpnt(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'gefs_fcst_mem#member#'}
+        dep_dict = {'type': 'metatask', 'name': 'gefs_fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave_bnd']:
-            dep_dict = {'type': 'task', 'name': f'gefs_wave_post_bndpnt_bull_mem#member#'}
+            dep_dict = {'type': 'task', 'name': 'gefs_wave_post_bndpnt_bull_mem#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -453,7 +453,7 @@ class GEFSTasks(Tasks):
             wave_post_pnt_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('wavepostpnt')
-        task_name = f'gefs_wave_post_pnt_mem#member#'
+        task_name = 'gefs_wave_post_pnt_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -498,7 +498,7 @@ class GEFSTasks(Tasks):
             extractvars_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('extractvars')
-        task_name = f'gefs_extractvars_mem#member#'
+        task_name = 'gefs_extractvars_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -564,12 +564,38 @@ class GEFSTasks(Tasks):
 
         return task
 
+    def globus(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': 'gefs_arch'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('globus')
+        task_name = 'globus'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': 'gefs',
+                     'dependency': dependencies,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def cleanup(self):
         deps = []
         if self.options['do_extractvars']:
-            dep_dict = {'type': 'task', 'name': 'arch'}
+            dep_dict = {'type': 'task', 'name': 'gefs_arch'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps)
+            if self.options['globusarch']:
+                dep_dict = {'type': 'task', 'name': 'gefs_globus'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         else:
             dep_dict = {'type': 'metatask', 'name': 'gefs_atmos_prod'}
             deps.append(rocoto.add_dependency(dep_dict))

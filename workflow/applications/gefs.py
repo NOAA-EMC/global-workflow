@@ -47,6 +47,9 @@ class GEFSAppConfig(AppConfig):
         if options['do_extractvars']:
             configs += ['extractvars']
 
+        if options['globusarch']:
+            configs += ['globus']
+
         return configs
 
     @staticmethod

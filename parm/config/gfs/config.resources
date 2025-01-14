@@ -1051,7 +1051,7 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "arch" | "earc" | "getic")
+  "arch" | "earc" | "getic" | "globus")
     walltime="06:00:00"
     ntasks=1
     tasks_per_node=1

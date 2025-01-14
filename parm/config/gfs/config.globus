@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.globux ##########
+# Globus specific variables
+
+echo "BEGIN: config.globus"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" globus
+
+# Set the globus staging directory populated by the arch jobs
+export STAGE_DIR="${DATAROOT}/archive_rotdir/${PSLOT}"
+
+echo "END: config.globus"
