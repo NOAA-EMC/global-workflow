@@ -102,7 +102,6 @@ grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
      com_varname="${COMIN_WAVE_GRID}_${GRDNAME}_${GRDRES}"
      com_dir="${!com_varname}"
      GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2"
-=======
  # Get input grid
  # TODO flesh this out with additional input grids if needed
  source "${USHgfs}/wave_domain_grid.sh"
