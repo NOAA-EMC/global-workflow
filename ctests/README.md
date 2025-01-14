@@ -23,7 +23,7 @@ export ICSDIR_ROOT="/path/to/icsdir_root"
 export STAGED_TESTS_DIR="/path/to/staged_tests_dir"
 
 # Run CMake to configure the ctest framework
-cmake -S /path/to/source -B /path/to/build -DRUNTESTS=/path/to/runtests
+cmake -S /path/to/HOMEgfs -B /path/to/build -DRUNTESTS=/path/to/runtests
 
 ```
 
