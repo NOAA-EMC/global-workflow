@@ -42,7 +42,6 @@ def main():
             'OFFSET_START_HOUR', 'ARCH_EXPDIR', 'EXPDIR', 'ARCH_EXPDIR_FREQ', 'ARCH_HASHES',
             'ARCH_DIFFS', 'SDATE', 'EDATE', 'HOMEgfs', 'DO_GEMPAK', 'WAVE_OUT_GRIDS']
 
-
     archive_dict = AttrDict()
     for key in keys:
         try:
@@ -69,7 +68,6 @@ def main():
 
         # Clean up any temporary files
         archive.clean()
-
 
 if __name__ == '__main__':
     main()
