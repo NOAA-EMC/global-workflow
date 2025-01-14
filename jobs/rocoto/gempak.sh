@@ -10,10 +10,10 @@ export job="gempak"
 # shellcheck disable=SC2153
 IFS=', ' read -r -a fhr_list <<< "${FHR_LIST}"
 
-export FORECAST_HOUR jobid
-for FORECAST_HOUR in "${fhr_list[@]}"; do
-	fhr3=$(printf '%03d' "${FORECAST_HOUR}")
-	jobid="${job}_f${fhr3}.$$"
+export FHR3 jobid
+for fhr in "${fhr_list[@]}"; do
+	FHR3=$(printf '%03d' "${fhr}")
+	jobid="${job}_f${FHR3}.$$"
 	###############################################################
 	# Execute the JJOB
 	###############################################################
