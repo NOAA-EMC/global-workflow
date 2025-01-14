@@ -227,8 +227,13 @@ export SDATE_GFS=@SDATE_GFS@
 export REPLAY_ICS=@REPLAY_ICS@
 if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
     export OFFSET_START_HOUR=$(( assim_freq / 2 ))
+    echo "WARNING: Replay ICs require perturbation files, ignoring any previous settings"
+    export USE_OCN_ENS_PERTURB_FILES="YES"
+    export USE_ATM_ENS_PERTURB_FILES="YES"
 else
     export OFFSET_START_HOUR=0
+    export USE_OCN_ENS_PERTURB_FILES=@USE_OCN_ENS_PERTURB_FILES@
+    export USE_ATM_ENS_PERTURB_FILES=@USE_ATM_ENS_PERTURB_FILES@
 fi
 
 # GFS output and frequency

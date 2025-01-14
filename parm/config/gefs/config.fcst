@@ -192,6 +192,7 @@ case ${imp_physics} in
 
         export hord_mt_nh_nonmono=5
         export hord_xx_nh_nonmono=5
+        export hord_dp_nh_nonmono=-5
         export vtdm4_nh_nonmono=0.02
         export nord=2
         if [[ "${TYPE}" == "nh"* ]]; then
@@ -199,7 +200,6 @@ case ${imp_physics} in
         else
             export dddmp=0.
 	    fi
-        export dddmp=0.1
         export d4_bg=0.12
         ;;
     11) # GFDL
@@ -216,6 +216,7 @@ case ${imp_physics} in
 
         export hord_mt_nh_nonmono=5
         export hord_xx_nh_nonmono=5
+        export hord_dp_nh_nonmono=-5
         export vtdm4_nh_nonmono=0.02
         export nord=2
         export d4_bg=0.12

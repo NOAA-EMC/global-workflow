@@ -315,7 +315,7 @@ case "${fv3_res}" in
         export rf_cutoff=100.0
         export fv_sg_adj=450
         export WRITE_GROUP_GDAS=4
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GDAS=10  # TODO: refine these numbers when a case is available
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GDAS=20  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=20  # TODO: refine these numbers when a case is available
         ;;

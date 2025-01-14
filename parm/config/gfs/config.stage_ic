@@ -14,6 +14,10 @@ export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gfs.yaml.j2"
 
 source "${HOMEgfs}/versions/ic.ver"
 
+if [[ ${EXP_WARM_START} = ".false." ]] ; then
+  export DOIAU="NO"        # Turn off for staging
+fi
+
 # Set ICSDIR (if not defined)
 if [[ -z "${ICSDIR}" ]] ; then
 
