@@ -23,7 +23,7 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
 export COMIN="gdas.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMINT_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 vergrid="F-GDAS | ${PDY:2}/0600"
 fcsthr="0600f006"
@@ -155,16 +155,16 @@ if (( err != 0 )) || [[ ! -s ukmetver_12.meta ]]; then
     exit "${err}"
 fi
 
-mv ukmetver_12.meta "${COM_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
+mv ukmetver_12.meta "${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
 export err=$?
 if (( err != 0 )) ; then
-    echo "FATAL ERROR: Failed to move meta file to ${COM_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
+    echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
     exit "${err}"
 fi
 
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL UKMETVER_HPCMETAFILE "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
+        "${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
 fi
 
 exit

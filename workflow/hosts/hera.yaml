@@ -24,6 +24,7 @@ LOCALARCH: 'NO'
 ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
+DO_AWIPS: 'NO'
 SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
 COMINecmwf: /scratch1/NCEPDEV/global/glopara/data/external_gempak/ecmwf
 COMINnam: /scratch1/NCEPDEV/global/glopara/data/external_gempak/nam

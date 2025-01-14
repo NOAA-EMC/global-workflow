@@ -8,6 +8,12 @@ echo "BEGIN: config.waveawipsgridded"
 # Get task specific resources
 . $EXPDIR/config.resources waveawipsgridded
 
-export DBNROOT=/dev/null
+# AWIPS output frequency
+export FHMAX_HF_WAV_WMO=72
+export FHMAX_WAV_WMO=180
+export FHOUT_HF_WAV_WMO=3
+export FHOUT_WAV_WMO=6
+export FHMAX_HF_WAV_WMO=$(( FHMAX_HF_WAV_WMO > FHMAX_WAV ? FHMAX_WAV : FHMAX_HF_WAV_WMO ))
+export FHMAX_WAV_WMO=$(( FHMAX_WAV_WMO > FHMAX_WAV ? FHMAX_WAV : FHMAX_WAV_WMO ))
 
 echo "END: config.waveawipsgridded"

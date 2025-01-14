@@ -150,18 +150,18 @@ source "${USHgfs}/preamble.sh"
  echo '   Looping over buoys ... \n'
 
  for bull in $bulls; do
-   fname="${RUNwave}.$bull.cbull"
+   fname="${RUNwave}.${bull}.cbull"
    oname="awipsbull.$bull.$cycle.${RUNwave}"
    headr=$(grep "b${bull}=" awipsbull.data | sed 's/=/ /g' |  awk '{ print $3}')  
    echo "      Processing $bull ($headr $oname) ..." 
  
-   if [ -z "$headr" ] || [ ! -s $fname ]; then
+   if [[ -z "${headr}" ]] || [[ ! -s "${fname}" ]]; then
      set_trace
-     msg="ABNORMAL EXIT: MISSING BULLETING INFO"
+     msg="ABNORMAL EXIT: MISSING BULLETIN INFO"
      set +x
      echo ' '
      echo '******************************************** '
-     echo '*** FATAL ERROR : MISSING BULLETING INFO *** '
+     echo '*** FATAL ERROR : MISSING BULLETIN INFO *** '
      echo '******************************************** '
      echo ' '
      echo $msg
@@ -177,7 +177,7 @@ source "${USHgfs}/preamble.sh"
               -p "${COMOUT_WAVE_WMO}" -s "NO" -o "${oname}" > formbul.out 2>&1
    OK=$?
 
-   if [ "$OK" != '0' ] || [ ! -f $oname ]; then
+   if [[ ${OK} -ne 0 ]] || [[ ! -f "${oname}" ]]; then
      set_trace
      cat formbul.out
      msg="ABNORMAL EXIT: ERROR IN formbul"
@@ -194,7 +194,7 @@ source "${USHgfs}/preamble.sh"
      exit $err
    fi
    
-   cat $oname >> awipsbull.$cycle.${RUNwave}
+   cat "${oname}" >> "awipsbull.$cycle.${RUNwave}"
 
  done
 
