@@ -96,7 +96,7 @@ grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
  fhcnt=$fstart
  while [ $fhcnt -le $FHMAX_WAV ]; do
    fhr=$(printf "%03d" $fhcnt)
-   for grdOut in $GEMPAK_GRIDS;do
+   for grdOut in ${grids};do
      source "${USHgfs}/wave_domain_grid.sh"
      process_grdID "${grdout}"
      com_varname="${COMIN_WAVE_GRID}_${GRDNAME}_${GRDRES}"
