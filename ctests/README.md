@@ -55,4 +55,4 @@ AddJJOBTest(
   TEST_DATE "2021032312"
 )
 ```
-Then create a new YAML file with the required staged input files as is done with this example for `$HOMEgfs/ctests/cases/C48_ATM_gfs_fcts_seg0.yaml`
+Then create a new YAML file with the required staged input files as is done with this example found in `$HOMEgfs/ctests/cases/C48_ATM_gfs_fcts_seg0.yaml`
