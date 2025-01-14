@@ -59,9 +59,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/stage.sh.in
                ${CMAKE_CURRENT_BINARY_DIR}/scripts/stage.sh @ONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/execute.sh.in
                ${CMAKE_CURRENT_BINARY_DIR}/scripts/execute.sh @ONLY)
-# TODO - Validation step add its CMake Teplate for its bash wrapper script
-# configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/validate.sh.in
-#                ${CMAKE_CURRENT_BINARY_DIR}/scripts/validate.sh @ONLY)
+ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/validate.sh.in
+                ${CMAKE_CURRENT_BINARY_DIR}/scripts/validate.sh @ONLY)
 
 function(AddJJOBTest)
 
@@ -95,7 +94,7 @@ function(AddJJOBTest)
  
   # TODO - This is a stub for the validation step
   add_test(NAME test_${TEST_NAME}_validate
-      COMMAND bash -c "${HOMEgfs}/ctests/scripts/validate.sh")
+      COMMAND bash -c "${HOMEgfs}/ctests/scripts/validate.sh ${TEST_NAME} ${CASE_YAML}")
   set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${ARG_CASE};${ARG_JOB}")
 endfunction()
 
