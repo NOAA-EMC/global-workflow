@@ -119,7 +119,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['postsnd']
 
         if options['do_awips']:
-            configs += ['awips']
+            configs += ['awips', 'fbwind']
 
         if options['do_wave']:
             configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
@@ -281,12 +281,9 @@ class GFSCycledAppConfig(AppConfig):
                         task_names[run] += ['postsnd']
 
                     if options['do_gempak']:
-                        task_names[run] += ['gempak']
-                        task_names[run] += ['gempakmeta']
-                        task_names[run] += ['gempakncdcupapgif']
+                        task_names[run] += ['gempak', 'gempakmeta', 'gempakncdcupapgif']
                         if options['do_goes']:
-                            task_names[run] += ['npoess_pgrb2_0p5deg']
-                            task_names[run] += ['gempakpgrb2spec']
+                            task_names[run] += ['npoess_pgrb2_0p5deg', 'gempakpgrb2spec']
 
                     if options['do_awips']:
                         task_names[run] += ['awips_20km_1p0deg', 'fbwind']
