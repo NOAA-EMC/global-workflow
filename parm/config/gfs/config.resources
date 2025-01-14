@@ -1293,6 +1293,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     memory="4GB"
+    tasks_per_node=1
     ;;
 
   "mos_stn_prep")
