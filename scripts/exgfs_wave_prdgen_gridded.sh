@@ -89,15 +89,9 @@ grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
 # 1.a Grib file (AWIPS and FAX charts)
  # Get input grid
  # TODO flesh this out with additional input grids if needed
- case ${grid_in} in
-    glo_200)
-       grdIDin='global.2p00' ;;
-    glo_15mxt)
-       grdIDin='global.0p25' ;;
-    *)
-       echo "FATAL ERROR Unrecognized input grid ${grid_in}"
-       exit 2;;
- esac
+ source "${USHgfs}/wave_domain_grid.sh"
+ process_grdID "${grid_in}"
+ grdIDin=${grdNAME}
  
  fhcnt=$fstart
  while [ $fhcnt -le $FHMAX_WAV ]; do
@@ -113,16 +107,15 @@ grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
  # TODO flesh this out with additional input grids if needed
  source "${USHgfs}/wave_domain_grid.sh"
  process_grdID "${grid_in}"
- grdIDin=grdNAME
+ grdIDin=${grdNAME}
 
  fhcnt=${fstart}
  while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
    fhr=$(printf "%03d" "${fhcnt}")
    for grdOut in ${grids}; do
-     case ${grdOut} in
      source "${USHgfs}/wave_domain_grid.sh"
      process_grdID "${grdout}"
-     grdID=grdNAME
+     grdID=${grdNAME}
 
      GRIBIN="${COMIN_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
      GRIBIN_chk="${GRIBIN}.idx"
