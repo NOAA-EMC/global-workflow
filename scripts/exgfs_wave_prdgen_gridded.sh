@@ -99,6 +99,7 @@ grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
    for grdOut in ${grids};do
      source "${USHgfs}/wave_domain_grid.sh"
      process_grdID "${grdout}"
+     grdID=${grdNAME}
      com_varname="${COMIN_WAVE_GRID}_${GRDNAME}_${GRDRES}"
      com_dir="${!com_varname}"
      GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdNAME}.f${fhr}.grib2"
