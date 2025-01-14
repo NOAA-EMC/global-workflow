@@ -47,9 +47,7 @@ cd /path/to/build
 ctest -L C48_ATM
 ```
 
-To add a new test use the **AddJJOBTest()** function at the end of the `$HOMEgfs/ctest/CMakeLists.txt` file as follow.
-Then auther a new YAML file with the required staged input files as is done with this example for `$HOMEgfs/ctests/cases/C48_ATM_gfs_fcts_seg0.yaml`
-
+To add a new test use the **AddJJOBTest()** function at the end of the `$HOMEgfs/ctest/CMakeLists.txt` file as follows:
 ```cmake
 AddJJOBTest(
   CASE "C48_ATM"
@@ -57,3 +55,4 @@ AddJJOBTest(
   TEST_DATE "2021032312"
 )
 ```
+Then auther a new YAML file with the required staged input files as is done with this example for `$HOMEgfs/ctests/cases/C48_ATM_gfs_fcts_seg0.yaml`
