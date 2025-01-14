@@ -21,7 +21,7 @@ def main():
     for key in ['OCNRES', 'ICERES']:
         try:
             archive.task_config[key] = f"{archive.task_config[key]:03d}"
-        except KeyError as ee:
+        except KeyError:
             logger.info(f"key ({key}) not found in archive.task_config!")
 
     # Pull out all the configuration keys needed to run the rest of archive steps
@@ -46,7 +46,7 @@ def main():
     for key in keys:
         try:
             archive_dict[key] = archive.task_config[key]
-        except KeyError as ee:
+        except KeyError:
             logger.warning(f"WARNING: key ({key}) not found in archive.task_config!")
 
     # Also import all COMIN* and COMOUT* directory and template variables
