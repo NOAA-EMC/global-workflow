@@ -476,11 +476,19 @@ export FHMAX_FITS=132
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
-export LOCALARCH="@LOCALARCH@"        # save data to local archive
-if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
-   echo "FATAL ERROR: Both HPSS and local archiving selected.  Please choose one or the other."
+export LOCALARCH="@LOCALARCH@"      # save data to local archive
+export GLOBUSARCH="@GLOBUSARCH@"    # send data to HPSS via globus xfers to Niagara
+count_arch_opts=0
+for arch_opt in "${HPSSARCH}" "${LOCALARCH}" "${GLOBUSARCH}"; do
+    if [[ "${arch_opt}" == "YES" ]]; then
+        (( count_arch_opts += 1 ));
+    fi
+done
+if [[ ${count_arch_opts} -gt 1 ]]; then
+   echo "FATAL ERROR: More than one archiving option selected.  Please choose no more than one."
    exit 4
 fi
+
 export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability

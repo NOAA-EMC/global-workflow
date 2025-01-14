@@ -12,4 +12,10 @@ export ARCH_GAUSSIAN="YES"
 export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS}
 export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS}
 
+# If we are running globus archiving, create tarballs in a temporary location
+if [[ "${GLOBUSARCH}" == "YES" ]]; then
+    export ATARDIR="${DATAROOT}/archive_rotdir/${pslot}/${RUN}"
+    export LOCALARCH="YES"
+fi
+
 echo "END: config.arch"
