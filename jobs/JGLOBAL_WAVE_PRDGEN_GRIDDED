@@ -24,7 +24,7 @@ if [[ -n "${GEMPAK_GRIDS}" ]]; then
         source "${USHgfs}/wave_domain_grid.sh" 
         process_grdID "${grdID}"
         YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-            "COMIN_WAVE_GRID_${GRDNAME}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+            "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
     done
 else
     echo "GEMPAK_GRIDS are empty. No grids to process."

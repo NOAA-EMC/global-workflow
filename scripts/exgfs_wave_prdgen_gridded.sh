@@ -99,7 +99,7 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
      source "${USHgfs}/wave_domain_grid.sh"
      process_grdID "${grdout}"
      grdIDin=${grdNAME}
-     com_varname="${COMIN_WAVE_GRID}_${GRDNAME}_${GRDRES}"
+     com_varname="${COMIN_WAVE_GRID}_${GRDREGION}_${GRDRES}"
      com_dir="${!com_varname}"
 
      GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"

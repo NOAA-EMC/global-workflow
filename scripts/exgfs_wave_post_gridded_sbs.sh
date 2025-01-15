@@ -257,7 +257,7 @@ source "${USHgfs}/preamble.sh"
         gribFL=\'$(echo ${OUTPARS_WAV})\'
         source "${USHgfs}/wave_domain_grid.sh"
         process_grdID "${grdID}"
-        echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+        echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDREGION $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
       fi
       echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
       chmod 744 ${fcmdigrd}.${nigrd}
@@ -272,7 +272,7 @@ source "${USHgfs}/preamble.sh"
       gribFL=\'$(echo ${OUTPARS_WAV})\'
       source "${USHgfs}/wave_domain_grid.sh"
       process_grdID "${grdID}"
-      echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+      echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDREGION $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
     done
   fi
 
@@ -347,10 +347,10 @@ source "${USHgfs}/preamble.sh"
  
 # Check if grib2 file created
     ENSTAG=""
-    com_varname="COMOUT_WAVE_GRID_${GRDNAME}_${GRDRES}"
+    com_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
     com_dir=${!com_varname}
     if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-    gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
+    gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDREGION}.${GRDRES}.f${FH3}.grib2"
     if [ ! -s ${com_dir}/${gribchk} ]; then
       set +x
       echo ' '
