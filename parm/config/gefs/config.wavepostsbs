@@ -8,6 +8,9 @@ echo "BEGIN: config.wavepostsbs"
 # Get task specific resources
 source "${EXPDIR}/config.resources" wavepostsbs
 
+# Maximum number of rocoto tasks per member
+export MAX_TASKS=25
+
 # Subgrid info for grib2 encoding
 export WAV_SUBGRBSRC=""
 export WAV_SUBGRB=""
