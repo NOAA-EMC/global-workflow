@@ -4,8 +4,6 @@ set -ux
 TEST_NAME=${1:?"Name of the test is required"}
 TEST_DATE=${2:?"idate of the test is required"}
 	
-echo "validating '${TEST_NAME}' with yaml file '${YAML_FILE}'"
-
 # CMake to fill these variables
 STAGED_TESTS_DIR="@STAGED_TESTS_DIR@"
 RUNTESTS="@RUNTESTS@"
@@ -21,10 +19,11 @@ PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH
 
 INPUTS_YAML="${HOMEgfs}/ctests/cases/${TEST_NAME}.yaml"
+echo "validating '${TEST_NAME}' with yaml file '${INPUTS_YAML}'"
 
 TEST_NAME="${TEST_NAME}" \
 RUNTESTS="${RUNTESTS}" \
 STAGED_TESTS_DIR="${STAGED_TESTS_DIR}" \
-validate.py --yaml ${YAML_FILE}  --test_date "${TEST_DATE}"
+"${HOMEgfs}/ctests/scripts/validate.py --yaml ${YAML_FILE}  --test_date "${TEST_DATE}"
 	
 exit 0
