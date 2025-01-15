@@ -43,6 +43,9 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
   COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
   COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
 
+MEMDIR='ensstat' RUN=${rCDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL
+
 RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
   COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 

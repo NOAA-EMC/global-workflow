@@ -97,7 +97,6 @@ FV3_postdet() {
   #============================================================================
   # Determine increment files when doing cold start
   if [[ "${warm_start}" == ".false." ]]; then
-
     if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
       if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
         IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
@@ -109,6 +108,7 @@ FV3_postdet() {
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
       fi
+      increment_file_on_native_grid=".false."
       local increment_file
       for inc_file in "${inc_files[@]}"; do
         increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${inc_file}"
@@ -126,7 +126,7 @@ FV3_postdet() {
 
     #--------------------------------------------------------------------------
     if [[ "${RERUN}" == "YES" ]]; then
-
+      echo "foobar1"
       local restart_fhr
       restart_fhr=$(nhour "${RERUN_DATE}" "${current_cycle}")
       IAU_FHROT=$((IAU_OFFSET + restart_fhr))
@@ -138,7 +138,7 @@ FV3_postdet() {
 
     #--------------------------------------------------------------------------
     else  # "${RERUN}" == "NO"
-
+      echo "foobar2"
       # Need a coupler.res that is consistent with the model start time
       if [[ "${DOIAU:-NO}" == "YES" ]]; then
         local model_start_time="${previous_cycle}"
@@ -156,6 +156,7 @@ EOF
       # Create a array of increment files
       local inc_files inc_file iaufhrs iaufhr
       if [[ "${DOIAU}" == "YES" ]]; then
+          echo "foobar3"
         # create an array of inc_files for each IAU hour
         IFS=',' read -ra iaufhrs <<< "${IAUFHRS}"
         inc_files=()
@@ -172,9 +173,21 @@ EOF
           delimiter=","
         done
       else  # "${DOIAU}" == "NO"
-        inc_files=("atminc.nc")
+        echo "foobar2"
         read_increment=".true."
-        res_latlon_dynamics="atminc.nc"
+        if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
+          inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
+          if [[ "${RUN}" == "enkfgdas" || "${RUN}" == "enkfgfs" ]] && [[ "${RECENTER_ENKF:-"YES"}" == "YES" ]]; then            
+            res_latlon_dynamics="ratminc"              
+          else
+            res_latlon_dynamics="atminc"
+          fi
+          increment_file_on_native_grid=".true."
+        else
+          inc_files=("atminc.nc")
+          res_latlon_dynamics="atminc.nc"
+          increment_file_on_native_grid=".false."
+        fi    
         if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
           if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
              IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
@@ -185,17 +198,39 @@ EOF
             read_increment=".false."
             res_latlon_dynamics='""'
           fi
+	  increment_file_on_native_grid=".false."
         fi
       fi
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
-        if [[ -f "${increment_file}" ]]; then
-          ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
+        if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
+          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${inc_file}"
+          if [[ -f "${increment_file}" ]]; then
+            ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
+          else
+            echo "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
+            exit 1
+          fi
+          if [[ "${RUN}" == "enkfgdas" || "${RUN}" == "enkfgfs" ]] && [[ "${RECENTER_ENKF:-"YES"}" == "YES" ]]; then
+            correction_increment_file="${COMIN_ATMOS_ANALYSIS_ENSSTAT}/${RUN}.t${cyc}z.cubed_sphere_grid_c${inc_file}"
+            if [[ -f "${correction_increment_file}" ]]; then
+              ${NCP} "${correction_increment_file}" "${DATA}/INPUT/c${inc_file}"
+            else
+              echo "FATAL ERROR: missing correction increment file '${correction_increment_file}', ABORT!"
+              exit 1
+            fi
+            # Add together increment with correction increment to get recentered increment
+            ncbo --op_typ=add -v u_inc,v_inc,T_inc,delp_inc,delz_inc,sphum_inc,liq_wat_inc,o3mr_inc,icmr_inc ${DATA}/INPUT/${inc_file} ${DATA}/INPUT/c${inc_file} ${DATA}/INPUT/r${inc_file}            
+          fi
         else
-          echo "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
-          exit 1
+          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          if [[ -f "${increment_file}" ]]; then
+            ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
+          else
+            echo "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
+            exit 1
+          fi            
         fi
       done
 

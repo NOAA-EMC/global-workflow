@@ -63,7 +63,7 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_jediatmvar']:
             configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
         else:
-            configs += ['anal', 'analdiag']
+            configs += ['anal', 'analdiag', 'analcalc']
 
         if options['do_jediocnvar']:
             configs += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
@@ -76,15 +76,16 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
 
         if options['do_hybvar']:
             if options['do_jediatmens']:
                 configs += ['atmensanlinit', 'atmensanlobs', 'atmensanlsol',
-                            'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
+                            'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
+                            'ecen_fv3jedi']
             else:
-                configs += ['eobs', 'eomg', 'ediag', 'eupd']
-            configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+                configs += ['eobs', 'eomg', 'ediag', 'eupd', 'echgres', 'ecen']
+            configs += ['esfc', 'efcs', 'epos', 'earc']
 
         if options['do_fit2obs']:
             configs += ['fit2obs']
@@ -172,7 +173,7 @@ class GFSCycledAppConfig(AppConfig):
                 if options['do_jediatmvar']:
                     task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
                 else:
-                    task_names[run] += ['anal']
+                    task_names[run] += ['anal', 'analcalc']
 
                 if options['do_jediocnvar']:
                     task_names[run] += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
@@ -182,7 +183,7 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_vrfy_oceanda']:
                         task_names[run] += ['ocnanalvrfy']
 
-                task_names[run] += ['sfcanl', 'analcalc']
+                task_names[run] += ['sfcanl']
 
                 if options['do_jedisnowda']:
                     task_names[run] += ['snowanl']
@@ -304,22 +305,22 @@ class GFSCycledAppConfig(AppConfig):
             elif 'enkf' in run:
 
                 if options['do_jediatmens']:
-                    task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal']
-                    # Only run echgres for the gdas cycle
-                    task_names[run] += ['echgres'] if 'gdas' in run else 0
+                    task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'ecen_fv3jedi']
                     if options['lobsdiag_forenkf']:
                         task_names[run] += ['atmensanlobs', 'atmensanlsol']
                     else:
                         task_names[run] += ['atmensanlletkf']
+                    task_names[run].append('efcs') if 'gdas' in run else 0
+                    task_names[run].append('epos') if 'gdas' in run else 0
 
                 else:
-                    task_names[run] += ['eobs', 'eupd']
+                    task_names[run] += ['eobs', 'eupd', 'ecen']
                     task_names[run].append('echgres') if 'gdas' in run else 0
                     task_names[run] += ['ediag'] if options['lobsdiag_forenkf'] else ['eomg']
                     task_names[run].append('esnowanl') if options['do_jedisnowda'] and 'gdas' in run else 0
 
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
-                task_names[run] += ['stage_ic', 'ecen', 'esfc', 'earc', 'cleanup']
+                task_names[run] += ['stage_ic', 'esfc', 'earc', 'cleanup']
 
         return task_names

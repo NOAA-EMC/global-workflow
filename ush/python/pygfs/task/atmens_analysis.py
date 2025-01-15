@@ -250,27 +250,30 @@ class AtmEnsAnalysis(Task):
             'HH': self.task_config.current_cycle.strftime('%H')
         }
 
+        # copy ensemble mean analysis to comrot
+        logger.info("Copy ensemble mean analysis")
+        fh_dict = {'copy': [[f"{self.task_config.DATA}/anl/atmanl.ensmean.nc",
+                             f"{self.task_config.COM_ATMOS_ANALYSIS_ENS}/{self.task_config.APREFIX}cubed_sphere_grid_atmanl.ensmean.nc"]]}
+        FileHandler(fh_dict).sync()
+        
         # copy FV3 atm increment to comrot directory
         logger.info("Copy UFS model readable atm increment file")
-        cdate = to_fv3time(self.task_config.current_cycle)
-        cdate_inc = cdate.replace('.', '_')
 
         # loop over ensemble members
+        inc_copy = {'copy': []}
         for imem in range(1, self.task_config.NMEM_ENS + 1):
             memchar = f"mem{imem:03d}"
 
             # create output path for member analysis increment
             tmpl_inc_dict['MEMDIR'] = memchar
             incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
-            src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.nc4")
-            dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc")
-
-            # copy increment
-            logger.debug(f"Copying {src} to {dest}")
-            inc_copy = {
-                'copy': [[src, dest]]
-            }
-            FileHandler(inc_copy).sync()
+            for itile in range(6):
+                src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.tile{itile+1}.nc")
+                dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.cubed_sphere_grid_atminc.tile{itile+1}.nc")
+                inc_copy['copy'].append([src, dest])
+                
+        logger.debug(f"Copying increments")
+        FileHandler(inc_copy).sync()
 
     def clean(self):
         super().clean()
