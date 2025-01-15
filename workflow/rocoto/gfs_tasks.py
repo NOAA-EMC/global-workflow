@@ -1029,7 +1029,7 @@ class GFSTasks(Tasks):
 
     def atmanlprod(self):
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHR3': '-001'}
+        postenvar_dict = {'FHR_LIST': '-1'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -1126,21 +1126,36 @@ class GFSTasks(Tasks):
 
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr#'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.6hr_avg.f#fhr_next#.nc'},
+                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.6hr_avg.f#fhr3_next#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.6hr_avg.f#fhr#.nc'}}
+                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.6hr_avg.f#fhr3_last#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
         history_path_tmpl = component_dict['history_path_tmpl']
         history_file_tmpl = component_dict['history_file_tmpl']
 
+        max_tasks = self._configs[config]['MAX_TASKS']
+        resources = self.get_resource(component_dict['config'])
+
+        fhrs = self._get_forecast_hours(self.run, self._configs[config], component)
+
+        # ocean/ice components do not have fhr 0 as they are averaged output
+        if component in ['ocean', 'ice'] and 0 in fhrs:
+            fhrs.remove(0)
+
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Adjust walltime based on the largest group
+        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
+        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
+
         postenvars = self.envars.copy()
-        postenvar_dict = {'FHR3': '#fhr#', 'COMPONENT': component}
+        postenvar_dict = {'FHR_LIST': '#fhr_list#', 'COMPONENT': component}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -1154,9 +1169,8 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
-        resources = self.get_resource(component_dict['config'])
 
-        task_name = f'{self.run}_{component}_prod_f#fhr#'
+        task_name = f'{self.run}_{component}_prod_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1168,17 +1182,6 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        fhrs = self._get_forecast_hours(self.run, self._configs[config], component)
-
-        # ocean/ice components do not have fhr 0 as they are averaged output
-        if component in ['ocean', 'ice'] and 0 in fhrs:
-            fhrs.remove(0)
-
-        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
-
-        if component in ['ocean']:
-            fhrs_next = fhrs[1:] + [fhrs[-1] + (fhrs[-1] - fhrs[-2])]
-            fhr_var_dict['fhr_next'] = ' '.join([f"{fhr:03d}" for fhr in fhrs_next])
         metatask_dict = {'task_name': f'{self.run}_{component}_prod',
                          'task_dict': task_dict,
                          'var_dict': fhr_var_dict}
@@ -1189,18 +1192,32 @@ class GFSTasks(Tasks):
 
     def wavepostsbs(self):
 
+        wave_grid = self._configs['base']['waveGRD']
+        history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
+        history_file = f'/{self.run}wave.out_grd.{wave_grid}.@Y@m@d.@H@M@S'
+
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        dep_dict = {'type': 'data', 'data': [history_path, history_file], 'offset': [None, '#fhr3_next#:00:00']}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_#seg_dep#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
+
+        fhrs = self._get_forecast_hours('gfs', self._configs['wavepostsbs'], 'wave')
+        max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
         wave_post_envars = self.envars.copy()
-        postenvar_dict = {'FHR3': '#fhr#'}
+        postenvar_dict = {'FHR_LIST': '#fhr_list#'}
         for key, value in postenvar_dict.items():
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('wavepostsbs')
-        task_name = f'{self.run}_wavepostsbs_f#fhr#'
+        # Adjust walltime based on the largest group
+        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
+        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
+
+        task_name = f'{self.run}_wavepostsbs_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1212,12 +1229,9 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        fhrs = self._get_forecast_hours('gfs', self._configs['wavepostsbs'], 'wave')
-
-        fhr_metatask_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
         metatask_dict = {'task_name': f'{self.run}_wavepostsbs',
                          'task_dict': task_dict,
-                         'var_dict': fhr_metatask_dict}
+                         'var_dict': fhr_var_dict}
 
         task = rocoto.create_task(metatask_dict)
 
@@ -1512,17 +1526,26 @@ class GFSTasks(Tasks):
     def gempak(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_prod_f#fhr#'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_prod_#fhr_label#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        fhrs = self._get_forecast_hours(self.run, self._configs['gempak'])
+        max_tasks = self._configs['gempak']['MAX_TASKS']
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        resources = self.get_resource('gempak')
+        # Adjust walltime based on the largest group
+        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
+        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
+
         gempak_vars = self.envars.copy()
-        gempak_dict = {'FHR3': '#fhr#'}
+        gempak_dict = {'FHR_LIST': '#fhr_list#'}
         for key, value in gempak_dict.items():
             gempak_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('gempak')
-        task_name = f'{self.run}_gempak_f#fhr#'
+        task_name = f'{self.run}_gempak_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -1533,9 +1556,6 @@ class GFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
-
-        fhrs = self._get_forecast_hours(self.run, self._configs['gempak'])
-        fhr_var_dict = {'fhr': ' '.join([f"{fhr:03d}" for fhr in fhrs])}
 
         fhr_metatask_dict = {'task_name': f'{self.run}_gempak',
                              'task_dict': task_dict,

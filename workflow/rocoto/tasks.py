@@ -3,8 +3,9 @@
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
-from wxflow import Template, TemplateConstants, to_timedelta
-from typing import List
+from wxflow import Template, TemplateConstants, to_timedelta, timedelta_to_HMS
+from typing import List, Union
+from bisect import bisect_right
 
 __all__ = ['Tasks']
 
@@ -175,6 +176,127 @@ class Tasks:
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
         return fhrs
+
+    @staticmethod
+    def get_job_groups(fhrs: List[int], ngroups: int, breakpoints: List[int] = None) -> List[dict]:
+        '''
+        Split forecast hours into a number of groups, obeying a list of pre-set breakpoints.
+
+        Takes a list of forecast hours and splits it into a number of groups while obeying
+        a list of pre-set breakpoints and recording which segment each belongs to.
+
+        Parameters
+        ----------
+        fhrs: List[int]
+                List of forecast hours to break into groups
+        ngroups: int
+                 Number of groups to split the forecast hours into
+        breakpoints: List[int]
+                     List of preset forecast hour break points to use (default: [])
+
+        Returns
+        -------
+        List[dict]: List of dicts, where each dict contains two keys:
+                    'fhrs': the forecast hours for that group
+                    'seg': the forecast segment (from the original breakpoint list)
+                           the group belong to
+        '''
+        if breakpoints is None:
+            breakpoints = []
+
+        num_segs = len(breakpoints) + 1
+        if num_segs > ngroups:
+            raise ValueError(f"Number of segments ({num_segs}) is greater than the number of groups ({ngroups}")
+
+        if ngroups > len(fhrs):
+            ngroups = len(fhrs)
+
+        # First, split at segment boundaries
+        fhrs_segs = [grp.tolist() for grp in np.array_split(fhrs, [bisect_right(fhrs, bpnt) for bpnt in breakpoints if bpnt < max(fhrs)])]
+        seg_lens = [len(seg) for seg in fhrs_segs]
+
+        # Initialize each segment to be split into one job group
+        ngroups_segs = [1 for _ in range(0, len(fhrs_segs))]
+
+        # For remaining job groups, iteratively assign to the segment with the most
+        # hours per group
+        for _ in range(0, ngroups - len(fhrs_segs)):
+            current_lens = [size / weight for size, weight in zip(seg_lens, ngroups_segs)]
+            index_max = max(range(len(current_lens)), key=current_lens.__getitem__)
+            ngroups_segs[index_max] += 1
+
+        # Now that we know how many groups each forecast segment should be split into,
+        # Split them and flatten to a single list.
+        groups = []
+        for seg_num, (fhrs_seg, ngroups_seg) in enumerate(zip(fhrs_segs, ngroups_segs)):
+            [groups.append({'fhrs': grp.tolist(), 'seg': seg_num}) for grp in np.array_split(fhrs_seg, ngroups_seg)]
+
+        return groups
+
+    def get_grouped_fhr_dict(self, fhrs: List[int], ngroups: int) -> dict:
+        '''
+        Prepare a metatask dictionary for forecast hour groups.
+
+        Takes a list of forecast hours and splits it into a number of groups while not
+        crossing forecast segment boundaries. Then use that to prepare a dict with key
+        variable lists for use in a rocoto metatask.
+
+        Parameters
+        ----------
+        fhrs: List[int]
+              List of forecast hours to break into groups
+        ngroups: int
+                 Number of groups to split the forecast hours into
+
+        Returns
+        -------
+        dict: Several variable lists for use in rocoto metatasks:
+              fhr_list: list of comma-separated lists of fhr groups
+              fhr_label: list of labels corresponding to the fhr range
+              fhr3_last: list of the last fhr in each group, formatted to three digits
+              fhr3_next: list of the fhr that would follow each group, formatted to
+                         three digits
+              seg_dep: list of segments each group belongs to
+        '''
+        fhr_breakpoints = self.options['fcst_segments'][1:-1]
+        group_dicts = Tasks.get_job_groups(fhrs=fhrs, ngroups=ngroups, breakpoints=fhr_breakpoints)
+
+        fhrs_group = [dct['fhrs'] for dct in group_dicts]
+        fhrs_first = [grp[0] for grp in fhrs_group]
+        fhrs_last = [grp[-1] for grp in fhrs_group]
+        fhrs_next = fhrs_first[1:] + [fhrs_last[-1] + (fhrs[-1] - fhrs[-2])]
+        grp_str = [f'f{grp[0]:03d}-f{grp[-1]:03d}' if len(grp) > 1 else f'f{grp[0]:03d}' for grp in fhrs_group]
+        seg_deps = [f'seg{dct["seg"]}' for dct in group_dicts]
+
+        fhr_var_dict = {'fhr_list': ' '.join(([','.join(str(fhr) for fhr in grp) for grp in fhrs_group])),
+                        'fhr_label': ' '.join(grp_str),
+                        'seg_dep': ' '.join(seg_deps),
+                        'fhr3_last': ' '.join([f'{fhr:03d}' for fhr in fhrs_last]),
+                        'fhr3_next': ' '.join([f'{fhr:03d}' for fhr in fhrs_next])
+                        }
+
+        return fhr_var_dict
+
+    @staticmethod
+    def multiply_HMS(hms_timedelta: str, multiplier: Union[int, float]) -> str:
+        '''
+        Multiplies an HMS timedelta string
+
+        Parameters
+        ----------
+        hms_timedelta: str
+                       String representing a time delta in HH:MM:SS format
+        multiplier: int | float
+                    Value to multiply the time delta by
+
+        Returns
+        -------
+        str: String representing a time delta in HH:MM:SS format
+
+        '''
+        input_timedelta = to_timedelta(hms_timedelta)
+        output_timedelta = input_timedelta * multiplier
+        return timedelta_to_HMS(output_timedelta)
 
     def get_resource(self, task_name):
         """
