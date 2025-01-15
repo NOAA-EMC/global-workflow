@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Compare two folders and produce a comprehensive report of which files
 are unique to each folder and which are common. Creates a YAML file
