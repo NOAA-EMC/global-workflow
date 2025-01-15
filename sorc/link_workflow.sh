@@ -364,6 +364,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     "gdas_soca_gridgen.x"
     "gdas_soca_error_covariance_toolbox.x"
     "gdas_fv3jedi_error_covariance_toolbox.x"
+    "soca_convertstate.x"
     "gdas_soca_setcorscales.x"
     "gdas_soca_diagb.x"
     "fv3jedi_plot_field.x"

@@ -45,7 +45,7 @@ def link_executable(task_config: AttrDict, exe_name: str) -> None:
 
 
 @logit(logger)
-def prep_input_nml(task_config: AttrDict) -> None:
+def prep_input_nml(task_config: AttrDict, output_nml = "mom_input.nml") -> None:
     """Prepare the mom_input.nml file
     """
     # stage input.nml.j2
@@ -58,7 +58,7 @@ def prep_input_nml(task_config: AttrDict) -> None:
     input_nml_config = {'domain_stack_size': task_config.DOMAIN_STACK_SIZE,
                         'date_init': date_init}
     jinja_input_nml = jinja.Jinja(mom_input_nml_tmpl, input_nml_config)
-    jinja_input_nml.save('mom_input.nml')
+    jinja_input_nml.save(output_nml)
 
 
 @logit(logger)
