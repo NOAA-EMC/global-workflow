@@ -98,4 +98,4 @@ if __name__ == "__main__":
     if args.copy_files:
         input_yaml = args.yaml
         output_files = load_output_files(input_yaml)
-        copy_common_files(output_files, Path(folder1_arg).resolve(), args.copy_files)
+        copy_common_files(output_files, Path.cwd(), args.copy_files)
