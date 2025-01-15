@@ -160,7 +160,7 @@ local FILTERED_TERRAIN=${filtered_terrain}
 local NPZP=${LEVS} #levp
 local GFS_DWINDS=${gfs_dwinds}
 
-local FHZERO=${FHZER}
+local FHZERO=${FHZERO:-6}
 local H2O_PHYS=${h2o_phys:-".true."}
 local LDIAG3D=${ldiag3d:-".false."}
 local QDIAG3D=${qdiag3d:-".false."}
