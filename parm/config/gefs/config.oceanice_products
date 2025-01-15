@@ -9,7 +9,7 @@ source "${EXPDIR}/config.resources" oceanice_products
 
 export OCEANICEPRODUCTS_CONFIG="${PARMgfs}/post/oceanice_products_gefs.yaml"
 
-# No. of forecast hours to process in a single job
-export NFHRS_PER_GROUP=3
+# Maximum number of rocoto tasks per member
+export MAX_TASKS=25
 
 echo "END: config.oceanice_products"
