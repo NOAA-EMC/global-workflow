@@ -1,0 +1,16 @@
+copy:
+{% for fh in IAUFHRS %}
+- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_atmf{{ '%03d' % fh }}.nc", "{{ DATA }}/atmf{{ '%03d' % fh }}.nc" ]
+- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_sfcf{{ '%03d' % fh }}.nc", "{{ DATA }}/sfcf{{ '%03d' % fh }}.nc" ]
+{% if fh == 6 %}
+- ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/enkf{{ APREFIX }}cubed_sphere_grid_atmanl.ensmean.nc", "{{ DATA }}/atma{{ '%03d' % fh }}.ensmean.nc"]
+{% for itile in range(6) %}
+- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc", "{{ DATA }}/atmi{{ '%03d' % fh }}.tile{{ itile+1 }}.nc"]
+{% endfor %} 
+{% else %}
+- ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/enkf{{ APREFIX }}cubed_sphere_grid_atma{{ '%03d' % fh }}.ensmean.nc", "{{ DATA }}/atma{{ '%03d' % fh }}.ensmean.nc"
+{% for itile in range(6) %}
+- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atmi{{ '%03d' % fh }}.tile{{ itile+1 }}.nc"
+{% endfor %}
+{% endif %}
+{% endfor %}
