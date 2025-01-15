@@ -55,14 +55,14 @@ def compair_folders(folder1, folder2, output_yaml):
     comparison_result = {
         "folder1": str(folder1),
         "folder2": str(folder2),
-        "unique_to_folder1": [str(folder1 / rel) for rel in unique_to_folder1],
-        "unique_to_folder2": [str(folder2 / rel) for rel in unique_to_folder2],
+        "unique_to_folder1": [str(rel) for rel in unique_to_folder1],
+        "unique_to_folder2": [str(rel) for rel in unique_to_folder2],
         "common_files": {
             "count": len(in_both),
             "files": [ 
                 {
-                    "in_folder1": str(folder1 / rel),
-                    "in_folder2": str(folder2 / rel)
+                    "in_folder1": str(rel),
+                    "in_folder2": str(rel)
                 } 
                 for rel in in_both
             ]
