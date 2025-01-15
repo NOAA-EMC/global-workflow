@@ -61,7 +61,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 configs += ['gempak']
 
             if options['do_awips']:
-                configs += ['awips']
+                configs += ['awips', 'fbwind']
 
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
@@ -136,7 +136,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 tasks += ['postsnd']
 
             if options['do_gempak']:
-                tasks += ['gempak', 'gempakmeta', 'gempakncdcupapgif', 'gempakpgrb2spec']
+                tasks += ['gempak', 'gempakmeta']
 
             if options['do_awips']:
                 tasks += ['awips_20km_1p0deg', 'fbwind']

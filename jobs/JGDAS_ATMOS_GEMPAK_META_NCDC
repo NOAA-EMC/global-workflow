@@ -34,17 +34,17 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ##############################################
 # Define COM directories
 ##############################################
-GRID=1p00 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COM_ATMOS_GEMPAK_1p00:COM_ATMOS_GEMPAK_TMPL"
+GRID=1p00 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMIN_ATMOS_GEMPAK_1p00:COM_ATMOS_GEMPAK_TMPL"
 
-GRID="meta" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COM_ATMOS_GEMPAK_META:COM_ATMOS_GEMPAK_TMPL"
-if [[ ! -d "${COM_ATMOS_GEMPAK_META}" ]]; then
-  mkdir -m 775 -p "${COM_ATMOS_GEMPAK_META}"
+GRID="meta" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_META:COM_ATMOS_GEMPAK_TMPL"
+if [[ ! -d "${COMOUT_ATMOS_GEMPAK_META}" ]]; then
+  mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_META}"
 fi
 
 if (( cyc%12 == 0 )); then
-  GRID="gif" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COM_ATMOS_GEMPAK_GIF:COM_ATMOS_GEMPAK_TMPL"
-  if [[ ! -d "${COM_ATMOS_GEMPAK_GIF}" ]]; then
-    mkdir -m 775 -p "${COM_ATMOS_GEMPAK_GIF}"
+  GRID="gif" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_GIF:COM_ATMOS_GEMPAK_TMPL"
+  if [[ ! -d "${COMOUT_ATMOS_GEMPAK_GIF}" ]]; then
+    mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_GIF}"
   fi
 fi
 
