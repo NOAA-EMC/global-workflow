@@ -191,8 +191,9 @@ case ${step} in
     ;;
 
   "wavepostsbs")
-    walltime_gdas="00:20:00"
-    walltime_gfs="03:00:00"
+    # Walltime is per forecast hour; will be multipled by group size
+    walltime_gdas="00:15:00"
+    walltime_gfs="00:15:00"
     ntasks=8
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -911,6 +912,7 @@ case ${step} in
     ;;
 
   "oceanice_products")
+    # Walltime is per forecast hour; will be multipled by group size
     walltime="00:15:00"
     ntasks=1
     tasks_per_node=1
@@ -949,6 +951,7 @@ case ${step} in
     ;;
 
   "atmos_products")
+    # Walltime is per forecast hour; will be multipled by group size
     walltime="00:15:00"
     ntasks=24
     threads_per_task=1
@@ -1278,6 +1281,7 @@ case ${step} in
     ;;
 
   "gempak")
+    # Walltime is per forecast hour; will be multipled by group size
     walltime="00:30:00"
     ntasks_gdas=2
     ntasks_gfs=28
