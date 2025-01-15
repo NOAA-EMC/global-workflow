@@ -394,6 +394,15 @@ WW3_postdet() {
     ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${ww3_restart_ufs_file}"
   done
 
+  #link GEFS restart for next cycle IC 
+  if [[ "${RUN}" == "gefs" ]]; then
+    vdate=${model_start_date_next_cycle}
+    seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
+    ww3_restart_ufs_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"
+    ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"
+    ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${ww3_restart_ufs_file}"
+  fi	  
+      
   # Link output files
   local wavprfx="${RUN}wave${WAV_MEMBER:-}"
   ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
