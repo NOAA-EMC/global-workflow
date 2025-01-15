@@ -24,7 +24,7 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--cmp_folders", nargs=2, required=False, help="Paths to compare")
     parser.add_argument("--yaml", required=False, help="Path to output YAML file")
-    parser.add_argument("--copy_files", help="Path to copy the common files to")
+    parser.add_argument("--copy_files", nargs=2, help="Paths to copy the common files from and to")
     return parser.parse_args()
 
 def gather_files(folder):
@@ -100,4 +100,5 @@ if __name__ == "__main__":
     if args.copy_files:
         input_yaml = args.yaml
         output_files = load_output_files(input_yaml)
-        copy_common_files(output_files, Path.cwd(), args.copy_files)
+        from_folder_arg, to_folder_arg = args.copy_files
+        copy_common_files(output_files, Path(from_folder_arg), to_folder_arg)
