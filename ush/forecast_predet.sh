@@ -575,6 +575,7 @@ FV3_predet(){
       ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
     fi
 
+    # For gefs run, provide ensemble header information
     if [[ "${RUN}" == "gefs" ]]; then
       if [[ "${ENSMEM}" == "000" ]]; then
         export e1=1
