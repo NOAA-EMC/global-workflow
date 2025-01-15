@@ -35,6 +35,10 @@ module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
 case "${MACHINE_ID}" in
   ("hera" | "orion" | "hercules" | "wcoss2")
+    #TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
+    if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+      export LMOD_TMOD_FIND_FIRST=yes
+    fi
     module load "${MODS}/${MACHINE_ID}"
     ncdump=$( command -v ncdump )
     NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
