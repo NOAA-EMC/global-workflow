@@ -69,6 +69,7 @@ class SnowEnsAnalysis(Task):
                 'OPREFIX': f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'snow_script_path': f"{self.task_config.USHgfs}",
                 'snow_obsdatain_path': os.path.join(self.task_config.DATA, 'obs'),
                 'snow_obsdataout_path': os.path.join(self.task_config.DATA, 'diags'),
                 'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
