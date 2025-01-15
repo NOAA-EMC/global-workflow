@@ -1,6 +1,6 @@
 input_files:
     mkdir:
-        - "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}//input_files/gfs.{{TEST_DATE | to_YMD}}/{{TEST_DATE | strftime('%H')}}/model/atmos/input"
+        - "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{TEST_DATE | to_YMD}}/{{TEST_DATE | strftime('%H')}}/model/atmos/input"
     copy:
         - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ TEST_DATE | to_YMD }}/{{ TEST_DATE | strftime('%H') }}/model/atmos/input/gfs_ctrl.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{TEST_DATE | to_YMD}}/{{TEST_DATE | strftime('%H')}}/model/atmos/input/gfs_ctrl.nc"]
         - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ TEST_DATE | to_YMD }}/{{ TEST_DATE | strftime('%H') }}/model/atmos/input/gfs_data.tile1.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{TEST_DATE | to_YMD}}/{{TEST_DATE | strftime('%H')}}/model/atmos/input/gfs_data.tile1.nc"]
