@@ -8,8 +8,8 @@ echo "BEGIN: config.atmos_products"
 # Get task specific resources
 . "${EXPDIR}/config.resources" atmos_products
 
-# No. of forecast hours to process in a single job
-export NFHRS_PER_GROUP=3
+## Maximum number of rocoto tasks per member
+export MAX_TASKS=25
 
 # Scripts used by this job
 export INTERP_ATMOS_MASTERSH="${USHgfs}/interp_atmos_master.sh"
