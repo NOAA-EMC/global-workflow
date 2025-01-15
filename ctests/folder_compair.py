@@ -9,12 +9,21 @@ Usage:
 import sys
 import os
 from pathlib import Path
+from argparse import ArgumentParser
+import shutil
 
 try:
     import yaml
 except ImportError:
     print("Please install pyyaml: pip install pyyaml")
     sys.exit(1)
+
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument("--cmp_folders", nargs=2, required=False, help="Paths to compare")
+    parser.add_argument("--yaml", required=False, help="Path to output YAML file")
+    parser.add_argument("--copy_files", help="Path to copy the common files to")
+    return parser.parse_args()
 
 def gather_files(folder):
     """Return a set of file paths (relative to 'folder') for all files within it."""
@@ -28,7 +37,8 @@ def gather_files(folder):
             all_files.add(rel_path)
     return all_files
 
-def main(folder1, folder2, output_yaml):
+def compair_folders(folder1, folder2, output_yaml):
+
     folder1 = Path(folder1).resolve()
     folder2 = Path(folder2).resolve()
 
@@ -65,13 +75,27 @@ def main(folder1, folder2, output_yaml):
 
     print(f"Comparison complete. Results written to {output_yaml}")
 
+def copy_common_files(common_files, folder1, dest_folder):
+    dest_folder = Path(dest_folder)
+    dest_folder.mkdir(parents=True, exist_ok=True)
+    for rel_path in common_files:
+        source_file = folder1 / rel_path
+        target_file = dest_folder / rel_path
+        target_file.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_file, target_file)
+
+def load_output_files(yaml_path):
+    with open(yaml_path, "r") as f:
+        data = yaml.safe_load(f)
+    return data.get("output_files", [])
+
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("Usage: python compare_folders.py <folder1> <folder2> <output_yaml_path>")
-        sys.exit(1)
-
-    folder1_arg = sys.argv[1]
-    folder2_arg = sys.argv[2]
-    output_yaml_arg = sys.argv[3]
-
-    main(folder1_arg, folder2_arg, output_yaml_arg)
+    args = parse_args()
+    if args.cmp_folders:
+        folder1_arg, folder2_arg = args.cmp_folders
+        output_yaml = args.yaml
+        compair_folders(folder1_arg, folder2_arg, output_yaml)
+    if args.copy_files:
+        input_yaml = args.yaml
+        output_files = load_output_files(input_yaml)
+        copy_common_files(output_files, Path(folder1_arg).resolve(), args.copy_files)
