@@ -28,21 +28,21 @@ set_from_env_or_default(RUNTESTS RUNTESTS "${CMAKE_CURRENT_BINARY_DIR}/RUNTESTS"
 # Set HPC_ACCOUNT
 set_from_env_or_default(HPC_ACCOUNT HPC_ACCOUNT " ")
 if (NOT DEFINED HPC_ACCOUNT)
-  message(FATAL_ERROR "HPC_ACCOUNT must be set")
+  message(WARNING "HPC_ACCOUNT must be set. CTests will not be created.")
   return()
 endif()
 
 # Set ICSDIR_ROOT
 set_from_env_or_default(ICSDIR_ROOT ICSDIR_ROOT "")
 if (NOT DEFINED ICSDIR_ROOT)
-  message(FATAL_ERROR "ICSDIR_ROOT must be set")
+  message(WARNING "ICSDIR_ROOT must be set. CTests will not be created.")
   return()
 endif()
 
 # Set STAGED_TESTS_DIR
 set_from_env_or_default(STAGED_TESTS_DIR STAGED_TESTS_DIR "")
 if (NOT DEFINED STAGED_TESTS_DIR)
-  message(FATAL_ERROR "STAGED_TESTS_DIR must be set")
+  message(WARNING "STAGED_TESTS_DIR must be set. CTests will not be created.")
   return()
 endif()
 
