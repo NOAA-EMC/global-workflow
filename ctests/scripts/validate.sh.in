@@ -24,6 +24,6 @@ echo "validating '${TEST_NAME}' with yaml file '${INPUTS_YAML}'"
 TEST_NAME="${TEST_NAME}" \
 RUNTESTS="${RUNTESTS}" \
 STAGED_TESTS_DIR="${STAGED_TESTS_DIR}" \
-"${HOMEgfs}/ctests/scripts/validate.py --yaml ${YAML_FILE}  --test_date "${TEST_DATE}"
+"${HOMEgfs}/ctests/scripts/validate.py" --yaml "${YAML_FILE}"  --test_date "${TEST_DATE}"
 	
 exit 0
