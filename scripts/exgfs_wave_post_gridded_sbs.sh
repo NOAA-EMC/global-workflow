@@ -239,11 +239,11 @@ source "${USHgfs}/wave_domain_grid.sh"
 
 # Gridded data (main part, need to be run side-by-side with forecast
   gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${waveGRD}.${YMD}.${HMS}"
-    if [[ ! -s "${gfile}" ]]; then
-      echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
-      err=3; export err; "${errchk}"
-      exit "${err}"
-    fi
+  if [[ ! -s "${gfile}" ]]; then
+    echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
+    err=3; export err; "${errchk}"
+    exit "${err}"
+  fi
   ${NLN} "${gfile}" "./out_grd.${waveGRD}"
 
   if [ "$DOGRI_WAV" = 'YES' ]
