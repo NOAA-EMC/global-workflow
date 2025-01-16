@@ -59,6 +59,8 @@ if [[ "${cplflx}" = ".true." ]]; then
   local ocean_albedo_limit=0.06
   local pio_rearranger=${pio_rearranger:-"box"}
   local MED_history_n=1000000 
+
+  local histaux_enabled=".false."
 fi
 
 if [[ "${cplice}" = ".true." ]]; then
