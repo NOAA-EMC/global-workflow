@@ -2,6 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "arch" -c "base arch wave"
+source "${USHgfs}/wave_domain_grid.sh" 
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -54,7 +55,6 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     # Create a variable for output wave grids to process
     if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
         for grdID in ${wavepostGRD} ${waveinterpGRD}; do
-            source "${USHgfs}/wave_domain_grid.sh" 
             process_grdID "${grdID}"
             YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
                 "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"

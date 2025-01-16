@@ -25,6 +25,7 @@
 # 0.  Preparations
 
 source "${USHgfs}/preamble.sh"
+source "${USHgfs}/wave_domain_grid.sh"
 
 # 0.a Basic modes of operation
 
@@ -88,7 +89,6 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
 # 1.a Grib file (AWIPS and FAX charts)
  # Get input grid
  # TODO flesh this out with additional input grids if needed
- source "${USHgfs}/wave_domain_grid.sh"
  process_grdID "${grid_in}"
  grdIDin=${grdNAME}
 
@@ -96,7 +96,6 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
  while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
    fhr=$(printf "%03d" "${fhcnt}")
    for grdOut in ${grids}; do
-     source "${USHgfs}/wave_domain_grid.sh"
      process_grdID "${grdout}"
      grdIDin=${grdNAME}
      com_varname="${COMIN_WAVE_GRID}_${GRDREGION}_${GRDRES}"
