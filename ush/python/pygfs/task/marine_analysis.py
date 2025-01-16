@@ -179,8 +179,11 @@ class MarineAnalysis(Task):
         soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
-        # prepare the MOM6 input.nml
+        # prepare the deterministic MOM6 input.nml
         mdau.prep_input_nml(self.task_config)
+
+        # prepare the input.nml for the analysis geometry
+        mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml")
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
@@ -364,7 +367,7 @@ class MarineAnalysis(Task):
         post_file_list = []
 
         # Make a copy the IAU increment
-        post_file_list.append([os.path.join(anl_dir, 'inc.nc'),
+        post_file_list.append([os.path.join(anl_dir, 'ocn.inc.nc'),
                                os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.ocninc.nc')])
 
         domains = ['ocn', 'ice']
