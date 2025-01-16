@@ -14,6 +14,7 @@ soca_chgres:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/soca_convertstate.x'
   mpi_cmd: '{{ APRUN_MARINEBMAT }}'
+  jedi_args: ['soca', 'convertstate']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'
   jcb_algo: soca_chgres
 soca_parameters_diffusion_vt:
