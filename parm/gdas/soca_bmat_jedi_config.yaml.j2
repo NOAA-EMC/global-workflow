@@ -12,7 +12,7 @@ soca_diagb:
   jcb_algo: soca_diagb
 soca_chgres:
   rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/soca_convertstate.x'
+  exe_src: '{{ EXECgfs }}/gdas.x'
   mpi_cmd: '{{ APRUN_MARINEBMAT }}'
   jedi_args: ['soca', 'convertstate']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'
