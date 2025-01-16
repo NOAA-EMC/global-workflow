@@ -23,8 +23,8 @@ def file_checksum(path):
 def validate_cmpfiles(config):
     cmpfiles = config.get("output_files", {}).get("cmpfiles", [])
     for pair in cmpfiles:
-        print(f"Comparing files: {pair} ...",end="")
         file_a, file_b = pair
+        print(f"checking file: {file_b} ... ",end="")
         if file_checksum(file_a) != file_checksum(file_b):
             raise ValueError(f"Checksum mismatch: {file_a} vs {file_b}")
         print("OK")
@@ -40,4 +40,4 @@ if __name__ == "__main__":
     files = parse_j2yaml(path=args.yaml, data=data)
     validate_cmpfiles(files)
 
-    print(f"All files exist for test: {args.test_name}")
+    print(f"All files exist and pass checksum for test: {args.yaml}")
