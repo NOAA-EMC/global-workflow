@@ -3,8 +3,10 @@ gfs_downstream:
     name: "GFS_DOWNSTREAM"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_downstream.tar"
     required:
+        {% if DO_GEMPAK %}
         - "{{ COMIN_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.sfc"
         - "{{ COMIN_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.snd"
+        {% endif %}
         {% for i in range(1, NUM_SND_COLLECTIVES) %}
         - "{{ COMIN_ATMOS_BUFR | relpath(ROTDIR) }}/gfs_collective{{ i }}.fil"
         {% endfor %}
