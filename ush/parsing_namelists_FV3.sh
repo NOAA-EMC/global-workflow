@@ -427,7 +427,7 @@ local LNDP_TYPE=${lndp_type:-2}
 local N_VAR_LNDP=${n_var_lndp:-0}
 
 local LCNORM=${lcnorm:-".false."}
-local PERT_MP=${PERT_MP:-".false"}
+local PERT_MP=${PERT_MP:-".false."}
 local PERT_RADTEND=${PERT_RADTEND:-".false."}
 local PERT_CLDS=${PERT_CLDS:-".true."}
   
