@@ -23,9 +23,11 @@ def file_checksum(path):
 def validate_cmpfiles(config):
     cmpfiles = config.get("output_files", {}).get("cmpfiles", [])
     for pair in cmpfiles:
+        print(f"Comparing files: {pair} ...",end="")
         file_a, file_b = pair
         if file_checksum(file_a) != file_checksum(file_b):
             raise ValueError(f"Checksum mismatch: {file_a} vs {file_b}")
+        print("OK")
 
 if __name__ == "__main__":
     args = parse_args()
