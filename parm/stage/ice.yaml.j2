@@ -1,5 +1,12 @@
+{% set START_ICE_FROM_ANA = False %}
+{% if DO_JEDIOCNVAR == True and RUN == 'gdas' %}
+    {% set START_ICE_FROM_ANA = True %}
+{% endif %}
+{% if DO_STARTMEM_FROM_JEDIICE == False and RUN == 'enkfgdas' %}
+    {% set START_ICE_FROM_ANA = False %}
+{% endif %}
 ice:
-    {% if DO_JEDIOCNVAR == True %}
+    {% if START_ICE_FROM_ANA == True %}
     mkdir:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}

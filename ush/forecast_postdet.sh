@@ -47,7 +47,19 @@ FV3_postdet() {
       || ( echo "FATAL ERROR: Unable to copy FV3 IC, ABORT!"; exit 1 )
     done
 
-    if [[ "${RERUN}" != "YES" ]]; then
+    if [[ "${RERUN}" == "YES" ]]; then
+      if [[ "${DO_SPPT:-}" == "YES" || "${DO_SKEB:-}" == "YES" || \
+            "${DO_SHUM:-}" == "YES" || "${DO_LAND_PERT:-}" == "YES" ]]; then
+        stochini=".true."
+        file_list=$(stoch_restarts)
+        echo "Copying stochastic restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
+        for stoch_file in $(stoch_restarts); do
+          restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${stoch_file}"
+          ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${stoch_file}" \
+          || ( echo "FATAL ERROR: Unable to copy stochastic restart, ABORT!"; exit 1 )
+        done
+      fi
+    else
       # Replace sfc_data with sfcanl_data restart files from current cycle (if found)
       local nn
       for (( nn = 1; nn <= ntiles; nn++ )); do
@@ -78,7 +90,7 @@ FV3_postdet() {
                  "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
         done
       fi # if [[ ${use_anl_aero} == "YES" ]]; then
-    fi  # if [[ "${RERUN}" != "YES" ]]; then
+    fi  # if [[ "${RERUN}" == "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
 
@@ -86,8 +98,10 @@ FV3_postdet() {
   # Determine increment files when doing cold start
   if [[ "${warm_start}" == ".false." ]]; then
 
-    if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-      IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
+    if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
+      if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+        IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
+      fi
       if (( MEMBER == 0 )); then
         inc_files=()
       else
@@ -97,7 +111,7 @@ FV3_postdet() {
       fi
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        increment_file="${COMIN_ATMOS_INPUT}/${RUN}.t${cyc}z.${inc_file}"
+        increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${inc_file}"
         if [[ -f "${increment_file}" ]]; then
           ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
         else
@@ -161,8 +175,10 @@ EOF
         inc_files=("atminc.nc")
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
-        if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-          IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
+        if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
+          if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
+             IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
+          fi
           # Control member has no perturbation
           if (( MEMBER == 0 )); then
             inc_files=()
@@ -328,39 +344,33 @@ WW3_postdet() {
 
   local ww3_grid first_ww3_restart_out ww3_restart_file
   # Copy initial condition files:
-  if [[ "${warm_start}" == ".true." ]]; then
-    local restart_date restart_dir
-    if [[ "${RERUN}" == "YES" ]]; then
-      restart_date="${RERUN_DATE}"
-      restart_dir="${DATArestart}/WW3_RESTART"
-    else
-      restart_date="${model_start_date_current_cycle}"
-      restart_dir="${COMIN_WAVE_RESTART_PREV}"
-    fi
-    echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
-    ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
-    if [[ -f "${ww3_restart_file}" ]]; then
-      ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
-      || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
-    else
-      if [[ "${RERUN}" == "YES" ]]; then
-        # In the case of a RERUN, the WW3 restart file is required
-        echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
-        exit 1
-      else
-        echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
-      fi
-    fi
+  local restart_date restart_dir
+  if [[ "${RERUN}" == "YES" ]]; then
+    restart_date="${RERUN_DATE}"
+    restart_dir="${DATArestart}/WW3_RESTART"
+  else
+    restart_date="${model_start_date_current_cycle}"
+    restart_dir="${COMIN_WAVE_RESTART_PREV}"
+  fi
 
+  echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
+  ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
+  if [[ -s "${ww3_restart_file}" ]]; then
+    ${NCP} "${ww3_restart_file}" "${DATA}/restart.ww3" \
+      || ( echo "FATAL ERROR: Unable to copy WW3 IC, ABORT!"; exit 1 )
     first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-  else  # cold start
-    echo "WW3 will start from rest!"
-    first_ww3_restart_out="${model_start_date_current_cycle}"
-  fi  # [[ "${warm_start}" == ".true." ]]
+  else
+    if [[ "${RERUN}" == "YES" ]]; then
+      # In the case of a RERUN, the WW3 restart file is required
+      echo "FATAL ERROR: WW3 restart file '${ww3_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+      exit 1
+    else
+      echo "WARNING: WW3 restart file '${ww3_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
+      first_ww3_restart_out=${model_start_date_current_cycle}
+    fi
+  fi
 
   # Link restart files
-  local ww3_restart_file
-  # Use restart_date if it was determined above, otherwise use initialization date
   for (( vdate = first_ww3_restart_out; vdate <= forecast_end_cycle;
          vdate = $(date --utc -d "${vdate:0:8} ${vdate:8:2} + ${restart_interval} hours" +%Y%m%d%H) )); do
     ww3_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3"
@@ -369,14 +379,7 @@ WW3_postdet() {
 
   # Link output files
   local wavprfx="${RUN}wave${WAV_MEMBER:-}"
-  if [[ "${waveMULTIGRID}" == ".true." ]]; then
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.mww3.${PDY}${cyc}" "log.mww3"
-    for ww3_grid in ${waveGRD}; do
-      ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.${ww3_grid}.${PDY}${cyc}" "log.${ww3_grid}"
-    done
-  else
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
-  fi
+  ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
 
   # Loop for gridded output (uses FHINC)
   local fhr vdate FHINC ww3_grid
@@ -384,13 +387,8 @@ WW3_postdet() {
   fhinc=${FHOUT_WAV}
   while (( fhr <= FHMAX_WAV )); do
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    if [[ "${waveMULTIGRID}" == ".true." ]]; then
-      for ww3_grid in ${waveGRD} ; do
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_grd.${ww3_grid}.${vdate}" "${DATA}/${vdate}.out_grd.${ww3_grid}"
-      done
-    else
-      ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${vdate}" "${DATA}/${vdate}.out_grd.ww3"
-    fi
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${vdate}" "${DATA}/${vdate}.out_grd.ww3"
+
     if (( FHMAX_HF_WAV > 0 && FHOUT_HF_WAV > 0 && fhr < FHMAX_HF_WAV )); then
       fhinc=${FHOUT_HF_WAV}
     fi
@@ -402,11 +400,8 @@ WW3_postdet() {
   fhinc=${FHINCP_WAV}
   while (( fhr <= FHMAX_WAV )); do
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    if [[ "${waveMULTIGRID}" == ".true." ]]; then
-      ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate}" "${DATA}/${vdate}.out_pnt.${waveuoutpGRD}"
-    else
-      ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate}" "${DATA}/${vdate}.out_pnt.ww3"
-    fi
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate}" "${DATA}/${vdate}.out_pnt.ww3"
+
     fhr=$((fhr + fhinc))
   done
 }
@@ -465,14 +460,10 @@ MOM6_postdet() {
       || ( echo "FATAL ERROR: Unable to copy MOM6 increment, ABORT!"; exit 1 )
     fi
 
-    # GEFS perturbations
-    if [[ "${RUN}" == "gefs" ]]; then 
-    #     to ensure it does not interfere with the GFS
-      if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-        ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
-        || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
-      fi
-    fi # if [[ "${RUN}" == "gefs" ]]; then 
+    if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
+      ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
+      || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
+    fi
   fi  # if [[ "${RERUN}" == "NO" ]]; then
 
   # Link output files
@@ -593,7 +584,13 @@ CICE_postdet() {
     restart_date="${model_start_date_current_cycle}"
     cice_restart_file="${COMIN_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
     if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
-      cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+      if (( MEMBER == 0 )); then
+        # Start the deterministic from the JEDI/SOCA analysis if the Marine DA in ON
+        cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+      elif (( MEMBER > 0 ))  && [[ "${DO_STARTMEM_FROM_JEDIICE:-NO}" == "YES" ]]; then
+        # Ignore the JEDI/SOCA ensemble analysis for the ensemble members if DO_START_FROM_JEDIICE is OFF
+        cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+      fi
     fi
   fi
 
@@ -689,30 +686,15 @@ GOCART_rc() {
     [[ ${status} -ne 0 ]] && exit "${status}"
   fi
 
-  # copying GOCART configuration files
-  if [[  -n "${AERO_CONFIG_DIR}" ]]; then
-    ${NCP} "${AERO_CONFIG_DIR}"/*.rc "${DATA}"
-    status=$?
-    [[ ${status} -ne 0 ]] && exit "${status}"
-    # attempt to generate ExtData configuration file if not provided
-    if [[ ! -f "${DATA}/AERO_ExtData.rc" ]]; then
-      { \
-        echo "PrimaryExports%%" ; \
-        cat "${AERO_CONFIG_DIR}/ExtData.other" ; \
-        cat "${AERO_CONFIG_DIR}/ExtData.${AERO_EMIS_FIRE:-none}" ; \
-        echo "%%" ; \
-      } > "${DATA}/AERO_ExtData.rc"
-      status=$?
-      if (( status != 0 )); then exit "${status}"; fi
-    fi
-  fi
+  source "${USHgfs}/parsing_namelists_GOCART.sh"
+  GOCART_namelists
 }
 
 GOCART_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking output data for GOCART"
 
   local vdate
-  for fhr in ${GOCART_OUTPUT_FH}; do
+  for fhr in $(GOCART_output_fh); do
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
 
     # Temporarily delete existing files due to noclobber in GOCART
@@ -726,6 +708,18 @@ GOCART_postdet() {
   done
 }
 
+GOCART_output_fh() {
+  # This has to be called during postdet after FHROT has been set
+  local aero_min
+  local gocart_output_fh
+  # GOCART produces no AOD files at the initial forecast time, so start the time
+  #   after the forecast start (accounting for FHROT)
+  aero_min=$(( ${IAU_FHROT:-0} > FHMIN ? IAU_FHROT + FHOUT_AERO : FHMIN + FHOUT_AERO ))
+  gocart_output_fh=$(seq -s ' ' "$(( aero_min ))" "${FHOUT_AERO}" "${GOCART_MAX}")
+
+  echo "${gocart_output_fh}"
+}
+
 GOCART_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for GOCART"
 
@@ -733,8 +727,8 @@ GOCART_out() {
   # TODO: this should be linked but there are issues where gocart crashing if it is linked
   local fhr
   local vdate
-  for fhr in ${GOCART_OUTPUT_FH}; do
-    if (( fhr == 0 )); then continue; fi
+
+  for fhr in $(GOCART_output_fh); do
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
     ${NCP} "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
       "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"

@@ -1,0 +1,94 @@
+systems:
+  common:
+    - "ufs_utils"
+    - "gfs_utils"
+    - "upp"
+  gfs:
+    - "gfs_model"
+    - "gfs_ww3prepost"
+  gsi:
+    - "gsi_enkf"
+    - "gsi_utils"
+    - "gsi_monitor"
+  gdas:
+    - "gdas"
+    - "gsi_utils"
+    - "gsi_monitor"
+  gefs:
+    - "gefs_model"
+    - "gefs_ww3_prepost"
+  sfs:
+    - "sfs_model"
+    - "gefs_ww3_prepost"
+build:
+  gfs_model:
+    command: "./build_ufs.sh -e gfs_model.x -j 12"
+    log: "build_ufs_gfs.log"
+    cores: 12
+    walltime: "00:30:00"
+
+  gfs_ww3prepost:
+    command: "./build_ww3prepost.sh -j 4"
+    log: "build_ww3prepost_gfs.log"
+    cores: 4
+    walltime: "00:10:00"
+
+  gefs_model:
+    command: "./build_ufs.sh -w -e gefs_model.x -j 12"
+    log: "build_ufs_gefs.log"
+    cores: 12
+    walltime: "00:30:00"
+
+  gefs_ww3_prepost:
+    command: "./build_ww3prepost.sh -w -j 4"
+    log: "build_ww3prepost_gefs.log"
+    cores: 4
+    walltime: "00:10:00"
+
+  sfs_model:
+    command: "./build_ufs.sh -y -e sfs_model.x -j 12"
+    log: "build_ufs_sfs.log"
+    cores: 12
+    walltime: "00:30:00"
+
+  upp:
+    command: "./build_upp.sh -j 8"
+    log: "build_upp.log"
+    cores: 8
+    walltime: "00:10:00"
+
+  gsi_enkf:
+    command: "./build_gsi_enkf.sh -j 8"
+    log: "build_gsi_enkf.log"
+    cores: 8
+    walltime: "00:15:00"
+
+  gsi_monitor:
+    command: "./build_gsi_monitor.sh -j 4"
+    log: "build_gsi_monitor.log"
+    cores: 4
+    walltime: "00:10:00"
+
+  gsi_utils:
+    command: "./build_gsi_utils.sh -j 6"
+    log: "build_gsi_utils.log"
+    cores: 6
+    walltime: "00:10:00"
+
+  ufs_utils:
+    command: "./build_ufs_utils.sh -j 8"
+    log: "build_ufs_utils.log"
+    cores: 8
+    walltime: "00:10:00"
+
+  gfs_utils:
+    command: "./build_gfs_utils.sh -j 6"
+    log: "build_gfs_utils.log"
+    cores: 6
+    walltime: "00:10:00"
+
+  gdas:
+    command: "./build_gdas.sh -j 12"
+    log: "build_gdas.log"
+    cores: 12
+    walltime: "01:00:00"

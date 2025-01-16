@@ -8,24 +8,12 @@ echo "BEGIN: config.fcst"
 export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
 export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
-# Turn off waves if not used for this RUN
-case ${WAVE_RUN} in
-  both | "${RUN/enkf}" ) ;; # Don't change
-  *) DO_WAVE="NO" ;; # Turn waves off
-esac
-
-# Turn off aerosols if not used for this RUN
-case ${AERO_FCST_RUN} in
-  both | "${RUN/enkf}" ) ;; # Don't change
-  *) DO_AERO="NO" ;; # Turn aerosols off
-esac
-
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE}"
 [[ "${DO_OCN}" == "YES" ]] && string="${string} --mom6 ${OCNRES}"
 [[ "${DO_ICE}" == "YES" ]] && string="${string} --cice6 ${ICERES}"
 [[ "${DO_WAVE}" == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
-[[ "${DO_AERO}" == "YES" ]] && string="${string} --gocart"
+[[ "${DO_AERO_FCST}" == "YES" ]] && string="${string} --gocart"
 # We are counting on $string being multiple arguments
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
@@ -74,7 +62,7 @@ export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_O
 
 export FORECASTSH="${SCRgfs}/exglobal_forecast.sh"
 #export FORECASTSH="${SCRgfs}/exglobal_forecast.py"  # Temp. while this is worked on
-export FCSTEXEC="ufs_model.x"
+export FCSTEXEC="gfs_model.x"
 
 #######################################################################
 # Model configuration
@@ -128,7 +116,7 @@ if (( gwd_opt == 2 )); then
     export do_gsl_drag_ls_bl=".true."
     export do_gsl_drag_ss=".false."
     export do_gsl_drag_tofd=".true."
-    export do_gwd_opt_psl=".true."    
+    export do_gwd_opt_psl=".true."
     export do_ugwp_v1_orog_only=".false."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level
@@ -157,10 +145,10 @@ tbp=""
 if [[ "${progsigma}" == ".true." ]]; then tbp="_progsigma" ; fi
 
 # Radiation options
-if [[ "${DO_AERO}" == "YES" ]]; then
+if [[ "${DO_AERO_FCST}" == "YES" ]]; then
     export IAER=2011  # spectral band mapping method for aerosol optical properties
 else
-    export IAER=1011    
+    export IAER=1011
 fi
 export iovr_lw=3    ; #de-correlation length cloud overlap method (Barker, 2008)
 export iovr_sw=3    ; #de-correlation length cloud overlap method (Barker, 2008)
@@ -215,6 +203,7 @@ case ${imp_physics} in
 
         export hord_mt_nh_nonmono=5
         export hord_xx_nh_nonmono=5
+        export hord_dp_nh_nonmono=-5
         export vtdm4_nh_nonmono=0.02
         export nord=2
         export dddmp=0.1
@@ -248,6 +237,7 @@ case ${imp_physics} in
 
         export hord_mt_nh_nonmono=5
         export hord_xx_nh_nonmono=5
+        export hord_dp_nh_nonmono=-5
         export vtdm4_nh_nonmono=0.02
         export nord=2
         export d4_bg=0.12
@@ -257,14 +247,12 @@ case ${imp_physics} in
 esac
 
 # Stochastic physics
-export DO_SPPT=${DO_SPPT:-"NO"}
-export DO_SKEB=${DO_SKEB:-"NO"}
-export DO_SHUM=${DO_SHUM:-"NO"}
-export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
-export DO_CA=${DO_CA:-"YES"}
-if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-  export DO_CA="NO"  # CA does not work with nesting.
-fi
+export DO_SPPT="NO"
+export DO_SKEB="NO"
+export DO_SHUM="NO"
+export DO_LAND_PERT="NO"
+export DO_OCN_SPPT="NO"
+export DO_OCN_PERT_EPBL="NO"
 
 #coupling settings
 export cplmode="ufs.frac"

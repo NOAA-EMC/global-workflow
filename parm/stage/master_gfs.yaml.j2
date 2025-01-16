@@ -94,11 +94,6 @@
                                     '${YMD}':previous_cycle_YMD,
                                     '${HH}':previous_cycle_HH,
                                     '${MEMDIR}': mem_char }) %}
-    {% set previous_cycle_and_run_dict = ({ '${ROTDIR}':ROTDIR,
-                                            '${RUN}':RUN,
-                                            '${YMD}':previous_cycle_YMD,
-                                            '${HH}':previous_cycle_HH,
-                                            '${MEMDIR}': mem_char }) %}
 
     {% set COMOUT_ATMOS_INPUT_MEM = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_cycle_dict) %}
     {% set COMOUT_ATMOS_RESTART_PREV_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
@@ -108,7 +103,7 @@
     {% set COMOUT_OCEAN_RESTART_PREV_MEM = COM_OCEAN_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
     {% set COMOUT_OCEAN_ANALYSIS_MEM = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
     {% set COMOUT_MED_RESTART_PREV_MEM = COM_MED_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
-    {% set COMOUT_WAVE_RESTART_PREV_MEM = COM_WAVE_RESTART_TMPL | replace_tmpl(previous_cycle_and_run_dict) %}
+    {% set COMOUT_WAVE_RESTART_PREV_MEM = COM_WAVE_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
 
     # Append the member COM directories
     {% do COMOUT_ATMOS_INPUT_MEM_list.append(COMOUT_ATMOS_INPUT_MEM)%}

@@ -19,7 +19,7 @@ if [[ ${MODEL} == GDAS ]]; then
     max_tries=180
     export fhr3
     for fhr3 in ${fcsthrs}; do
-        gempak_file="${COM_ATMOS_GEMPAK_1p00}/${RUN}_1p00_${PDY}${cyc}f${fhr3}"
+        gempak_file="${COMIN_ATMOS_GEMPAK_1p00}/${RUN}_1p00_${PDY}${cyc}f${fhr3}"
         if ! wait_for_file "${gempak_file}" "${sleep_interval}" "${max_tries}" ; then
             echo "FATAL ERROR: ${gempak_file} not found after ${max_tries} iterations"
             exit 10

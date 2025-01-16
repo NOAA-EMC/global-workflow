@@ -25,6 +25,7 @@ author = 'Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan, and numerous
 # The full version, including alpha/beta/rc tags
 release = '0.1'
 
+numfig = True
 
 # -- General configuration ---------------------------------------------------
 
@@ -42,7 +43,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-    'sphinxcontrib.bibtex'
+    'sphinxcontrib.bibtex',
 ]
 
 bibtex_bibfiles = ['references.bib']
@@ -120,3 +121,4 @@ def setup(app):
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'Global-Workflow'
+

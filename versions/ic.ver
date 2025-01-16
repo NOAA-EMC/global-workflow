@@ -1,0 +1,22 @@
+#!/bin/bash
+# Initial condition subfolder versions
+
+#shellcheck disable=SC2034
+declare -A ic_versions
+
+ic_versions['C48']=20241120
+ic_versions['C48mx500']=20241120
+ic_versions['C48C48mx500']=20241120
+
+ic_versions['C96']=20241120
+ic_versions['C96C48']=20241120
+ic_versions['C96mx100']=20240610
+
+ic_versions['C384C192']=20240610
+ic_versions['C384mx025']=20241120
+
+ic_versions['C768']=20241120
+ic_versions['C768mx025']=20241120
+
+ic_versions['C1152']=20241120
+ic_versions['C1152mx025']=20241120
