@@ -18,7 +18,7 @@ set -x
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH
 
-INPUTS_YAML="${HOMEgfs}/ctests/cases/${TEST_NAME}.yaml"
+YAML_FILE="${HOMEgfs}/ctests/cases/${TEST_NAME}.yaml"
 echo "validating '${TEST_NAME}' with yaml file '${INPUTS_YAML}'"
 
 TEST_NAME="${TEST_NAME}" \
