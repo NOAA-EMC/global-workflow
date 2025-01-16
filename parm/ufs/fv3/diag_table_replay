@@ -232,6 +232,9 @@ ocean_model, "Heat_PmE",  "Heat_PmE",      "@[MOM6_OUTPUT_DIR]/ocn_lead1%4yr%2mo
 "gfs_phys",    "u10m",          "ugrd10m",       "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "v10m",          "vgrd10m",       "fv3_history2d",  "all",  .false.,  "none",  2
 
+"gfs_phys",    "wind10mmax",    "wind10m_max",   "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_phys",    "u10mmax",       "u10m_max",      "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_phys",    "v10mmax",       "v10m_max",      "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "pahi",          "pahi",          "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "pah_ave",       "pah_ave",       "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "ecan_acc",      "ecan_acc",      "fv3_history2d",  "all",  .false.,  "none",  2
