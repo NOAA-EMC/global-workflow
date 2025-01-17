@@ -2,6 +2,8 @@
 
 export GFS_CI_ROOT=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT
 export ICSDIR_ROOT=/scratch1/NCEPDEV/global/glopara/data/ICSDIR
+
+export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
 export HPC_ACCOUNT=nems
 export max_concurrent_cases=5
 export max_concurrent_pr=4
