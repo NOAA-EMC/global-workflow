@@ -1,0 +1,12 @@
+#!/bin/bash
+# Jinja-templated variables
+log_directory={{niagara_log_directory}}
+globus_xfer_id={{globus_xfer_id}}
+
+cwd=$(pwd)
+file="${cwd}/${1}"
+log_file="${log_directory}/hpss_status_${globus_xfer_id}.log"
+
+hpss_stat=$(tail -1 ${log_file})
+
+echo "${hpss_stat}"

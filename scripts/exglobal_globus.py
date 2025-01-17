@@ -2,7 +2,7 @@
 
 import os
 
-from pygfs.task.globus import Globus
+from pygfs.task.globus_hpss import GlobusHpss
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit
 
 # initialize root logger
@@ -15,9 +15,10 @@ def main():
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the globus object
-    globus = Globus(config)
+    globus = GlobusHpss(config)
 
-    keys = ['STAGE_DIR', 'current_cycle', 'RUN', 'PDY', 'NMEM_ENS', 'HOMEgfs', 'sven_dir']
+    keys = ['STAGE_DIR', 'current_cycle', 'RUN', 'PDY', 'NMEM_ENS', 'HOMEgfs', 'sven_dir',
+            'DATASETS_YAML']
 
     globus_dict = AttrDict()
     for key in keys:
