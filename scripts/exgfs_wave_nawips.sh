@@ -75,7 +75,7 @@ while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
                grdIDout= ;;
     esac
     process_grdID "${grid}"
-    com_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
+    com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
     com_dir=${!com_varname}
     GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
     GRIBIN_chk=${GRIBIN}.idx
