@@ -13,7 +13,7 @@ source "${USHgfs}/preamble.sh"
 source "${USHgfs}/wave_domain_grid.sh"
 
 process_grdID "${waveGRD}"
-com_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
+com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
 com_dir=${!com_varname}
 
 subdata=${1}
