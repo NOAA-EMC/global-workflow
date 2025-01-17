@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -ux
+
+TEST_NAME=${1:?"Name of the test is required"}
+YAML_FILE=${2:?"Name of the CI yaml file for the test"}
+
+# CMake to fill these variables
+HOMEgfs="@PROJECT_SOURCE_DIR@"
+RUNTESTS="@RUNTESTS@"
+ICSDIR_ROOT="@ICSDIR_ROOT@"
+HPC_ACCOUNT="@HPC_ACCOUNT@"
+
+set +x
+source "${HOMEgfs}/workflow/gw_setup.sh"
+set -x
+
+pslot="${TEST_NAME}" \
+RUNTESTS="${RUNTESTS}" \
+ICSDIR_ROOT="${ICSDIR_ROOT}" \
+HPC_ACCOUNT="${HPC_ACCOUNT}" \
+"${HOMEgfs}/workflow/create_experiment.py" --yaml "${YAML_FILE}" --overwrite
+rc=$?
+if [[ "${rc}" -ne 0 ]]; then
+    set +x
+    echo "Failed to create test experiment for '${TEST_NAME}' with yaml file '${YAML_FILE}'"
+    set -x
+    exit "${rc}"
+fi
+
+exit 0

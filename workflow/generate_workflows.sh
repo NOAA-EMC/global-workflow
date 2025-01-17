@@ -5,7 +5,7 @@ function _usage() {
    cat << EOF
    This script automates the experiment setup process for the global workflow.
    Options are also available to update submodules, build the workflow (with
-   specific build flags), specicy which YAMLs and YAML directory to run, and
+   specific build flags), specify which YAMLs and YAML directory to run, and
    whether to automatically update your crontab.
 
    Usage: generate_workflows.sh [OPTIONS] /path/to/RUNTESTS

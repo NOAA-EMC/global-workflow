@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+set -xe
+
+TEST_NAME=${1:?"Name of the test is required"}
+JOB=${2:?"Job name is required"}
+# TODO - adding idate by hand for now, need to get this from the test somehow 
+idate=$3
+
+#TODO - add rocotoboot_dryrun to repo some how
+rocotoboot_dryrun=/work2/noaa/global/mterry/rocoto_dryrun/bin/rocotoboot
+CASEDIR="@CMAKE_CURRENT_BINARY_DIR@/RUNTESTS/EXPDIR/${TEST_NAME}"
+cd "${CASEDIR}"
+rm -f ./*.db
+rm -f ./jobcard                                                                             
+
+yes | "${rocotoboot_dryrun}" -d "${TEST_NAME}.db" -w "${TEST_NAME}.xml" -v 10 -c "${idate}00" -t "${JOB}" 2> jobcard || true
+sed '/^{{\|^}}/d' < jobcard | sed '1d'  > "${TEST_NAME}.sub" || true
+
+#TODO - Generalize for batch system (hard coded to slurm)
+
+output=$(sbatch "${TEST_NAME}.sub")
+job_id=$(echo "${output}" | awk '{print $4}')
+echo "Job ${job_id} submitted for test ${TEST_NAME} with job name ${JOB}"
+
+# First loop: wait until job appears
+lack_of_job_count=0
+LACK_OF_JOB_LIMIT=5
+
+while true; do
+    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1) || true
+    if [[ -n "${job_status}" ]]; then
+        echo "Job ${job_id} found in sacct."
+        break
+    fi
+    echo "Job ${job_id} not in sacct yet, attempt ${lack_of_job_count}/${LACK_OF_JOB_LIMIT}."
+    lack_of_job_count=$((lack_of_job_count + 1))
+    if [[ "${lack_of_job_count}" -ge "${LACK_OF_JOB_LIMIT}" ]]; then
+        echo "Job ${job_id} not found after ${lack_of_job_count} attempts. Exiting."
+        exit 1
+    fi
+    sleep 30
+done
+
+# Second loop: monitor job status until completion or failure
+timeout=0
+TIMEOUT=60
+while true; do
+    # Trim trailing spaces from job_status
+    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1 | xargs) || true
+    if [[ "${job_status}" == "COMPLETED" ]]; then
+        echo "Job ${job_id} completed successfully."
+        break
+    elif [[ "${job_status}" =~ ^(FAILED|CANCELLED|TIMEOUT)$ ]]; then
+        echo "Job ${job_id} failed with status: ${job_status}."
+        exit 1
+    else
+        echo "Job ${job_id} is still running with status: ${job_status}."
+        sleep 60
+        timeout=$((timeout + 1))
+        if [[ "${timeout}" -gt "${TIMEOUT}" ]]; then
+            echo "Job ${job_id} has been running for more than ${TIMEOUT} minutes. Exiting."
+            exit 1
+        fi
+    fi
+done
