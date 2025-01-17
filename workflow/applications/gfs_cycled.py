@@ -122,7 +122,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['awips', 'fbwind']
 
         if options['do_wave']:
-            configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
+            configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
             if options['do_wave_bnd']:
                 configs += ['wavepostbndpnt', 'wavepostbndpntbll']
             if options['do_gempak']:
@@ -187,7 +187,7 @@ class GFSCycledAppConfig(AppConfig):
                 if options['do_jedisnowda']:
                     task_names[run] += ['snowanl']
 
-                wave_prep_tasks = ['waveinit', 'waveprep']
+                wave_prep_tasks = ['waveinit']
                 wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
                 wave_post_tasks = ['wavepostsbs', 'wavepostpnt']
 
