@@ -15,7 +15,7 @@ if (( $# <= 1 )); then
     echo "--fv3 C48|C96|C192|C384|C768|C1152|C3072"
     echo "--mom6 500|100|025"
     echo "--cice6 500|100|025"
-    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_100|glo_200|glo_500|mx025|uglo_100km|uglo_m1g16"
+    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_100|glo_200|glo_500|mx025|uglo_100km"
     echo "--gocart"
 
     exit 1
@@ -605,12 +605,12 @@ if [[ "${skip_ww3}" == "false" ]]; then
     "mx025")
       ntasks_ww3=80
       ;;
-    "uglo_100km")
-      ntasks_ww3=40
+    "uglo_15km")
+      ntasks_ww3=1000
       nthreads_ww3=1
       ;;
-    "uglo_m1g16")
-      ntasks_ww3=1000
+    "uglo_100km")
+      ntasks_ww3=40
       nthreads_ww3=1
       ;;
     *)
@@ -630,9 +630,7 @@ fi
 
 # Set the name of the UFS (previously nems) configure template to use
 # Default ufs.configure templates for supported model configurations
-if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
-  tmpl_suffix="_esmf"
-fi
+# WW3 restart field variable is different for slow vs fast loop.  Add  WW3_RSTFLDS="ice" for slow loop variables based on coupling scheme.
 case "${model_list}" in
   atm)
     default_template="${PARMgfs}/ufs/ufs.configure.atm${tmpl_suffix:-}.IN"
@@ -651,9 +649,11 @@ case "${model_list}" in
     ;;
   atm.ocean.ice.wave)
     default_template="${PARMgfs}/ufs/ufs.configure.s2sw${tmpl_suffix:-}.IN"
+    WW3_RSTFLDS="ice"
     ;;
   atm.ocean.ice.wave.aero)
     default_template="${PARMgfs}/ufs/ufs.configure.s2swa${tmpl_suffix:-}.IN"
+    WW3_RSTFLDS="ice"
     ;;
   *)
     echo "FATAL ERROR: Unsupported UFSWM configuration for ${model_list}"
@@ -664,6 +664,9 @@ esac
 # Allow user to override the default template
 export ufs_configure_template=${ufs_configure_template:-${default_template:-"/dev/null"}}
 unset model_list default_template
+
+# export wave restart variable: 
+export WW3_RSTFLDS=${WW3_RSTFLDS:-" "}
 
 if [[ ! -r "${ufs_configure_template}" ]]; then
   echo "FATAL ERROR: ${ufs_configure_template} either doesn't exist or is not readable."
