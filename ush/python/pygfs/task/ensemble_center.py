@@ -92,8 +92,8 @@ class EnsembleCenter(Task):
         logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
         jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_dict).sync()
-        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")        
-        
+        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
+
         # Stage background and increment files
         logger.info(f"Staging background and increment files from {self.task_config.JEDI_BKG_INC_YAML}")
         fh_dict = parse_j2yaml(self.task_config.JEDI_BKG_INC_YAML, self.task_config)
@@ -136,19 +136,18 @@ class EnsembleCenter(Task):
 
         # Initialize FileHandler to copy files to comrot
         cdate = to_fv3time(self.task_config.current_cycle).replace('.', '_')
-        anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS_ENSSTAT}/enkf{self.task_config.APREFIX}"        
+        anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS_ENSSTAT}/enkf{self.task_config.APREFIX}"
         fh_dict = {'copy': []}
         cdate = to_fv3time(self.task_config.current_cycle).replace('.', '_')
         for fh in self.task_config.IAUFHRS:
             if fh == 6:
                 for itile in range(6):
                     fh_dict['copy'].append([f"{self.task_config.DATA}/catmi{format(fh, '03')}.tile{itile+1}.nc",
-                                            f"{anl_prefix}cubed_sphere_grid_catminc.tile{itile+1}.nc"])                
+                                            f"{anl_prefix}cubed_sphere_grid_catminc.tile{itile+1}.nc"])
             else:
                 for itile in range(6):
                     fh_dict['copy'].append([f"{self.task_config.DATA}/catmi{format(fh, '03')}.tile{itile+1}.nc",
                                             f"{anl_prefix}/catmi{format(fh, '03')}.tile{itile+1}.nc"])
 
         # Move files
-        FileHandler(fh_dict).sync()            
-        
+        FileHandler(fh_dict).sync()
