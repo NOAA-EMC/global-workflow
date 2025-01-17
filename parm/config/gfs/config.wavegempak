@@ -8,5 +8,7 @@ echo "BEGIN: config.wavegempak"
 # Get task specific resources
 . $EXPDIR/config.resources wavegempak
 
+#export GEMPAK_GRIDS=${GEMPAK_GRIDS:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
+export GEMPAK_GRIDS=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}
 
 echo "END: config.wavegempak"

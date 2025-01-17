@@ -14,8 +14,8 @@
 source "${USHgfs}/preamble.sh"
 source "${USHgfs}/wave_domain_grid.sh"
 
-#export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
-export grids=${grids:-${waveinterpGRD:-'glo_30m'}}  #Native grids
+#export grids=${GEMPAK_GRIDS:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
+export grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  #Native grids
 export RUNwave=${RUNwave:-${RUN}wave}
 export fstart=${fstart:-0}
 export FHMAX_WAV=${FHMAX_WAV:-180}  #180 Total of hours to process
