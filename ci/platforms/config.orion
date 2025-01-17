@@ -2,6 +2,7 @@
 
 export GFS_CI_ROOT=/work2/noaa/stmp/GFS_CI_ROOT/ORION
 export ICSDIR_ROOT=/work/noaa/global/glopara/data/ICSDIR
+export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
 export HPC_ACCOUNT=nems
 export max_concurrent_cases=5
 export max_concurrent_pr=4

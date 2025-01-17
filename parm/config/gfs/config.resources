@@ -198,8 +198,8 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
-    memory_gdas="10GB"
-    memory_gfs="10GB"
+    memory_gdas="20GB"
+    memory_gfs="20GB"
     ;;
 
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
