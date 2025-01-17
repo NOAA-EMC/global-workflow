@@ -11,4 +11,20 @@ echo "BEGIN: config.globus"
 # Set the globus staging directory populated by the arch jobs
 export STAGE_DIR="${DATAROOT}/archive_rotdir/${PSLOT}"
 
+# Set variables used by the Sven and Doorman services
+# Niagara's globus UUID
+export SERVER_GLOBUS_UUID=1bfd8a79-52b2-4589-88b2-0648e0c0b35d
+# Client address
+export CLIENT_GLOBUS_UUID=@CLIENT_UUID@
+
+# General delivery location on Niagara (staging area for data)
+# This is tricky because user IDs don't match between Hercules and Niagara.
+# This will be a user input at setup_expt runtime.
+niagara_uid=@niagara_uid@
+# data_untrusted is a misnomer.  This just means the data is kept for 5 days instead of 60.
+export GENERAL_DELIVERY_ROOT="/collab1/data_untrusted/${niagara_uid}/GENERAL_DELIVERY"
+
+# Sven's dropbox
+export SVEN_DROPBOX_ROOT="${DATAROOT}/archive_rotdir/${RUN}/SVEN_DROPBOX"
+
 echo "END: config.globus"

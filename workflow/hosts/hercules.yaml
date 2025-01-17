@@ -32,3 +32,4 @@ COMINecmwf: /work/noaa/global/glopara/data/external_gempak/ecmwf
 COMINnam: /work/noaa/global/glopara/data/external_gempak/nam
 COMINukmet: /work/noaa/global/glopara/data/external_gempak/ukmet
 AERO_INPUTS_DIR: /work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions
+CLIENT_GLOBUS_UUID: '869912fe-f6de-46c0-af10-b22efd84a022'

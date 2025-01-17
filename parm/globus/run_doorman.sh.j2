@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+# This script runs on Niagara to interact with the Doorman service
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+subdir="{{RUN}}/{{cycle_YMDH}}"
+
+# Make the working directory
+doorman_dir="${HOME}/.doorman/${subdir}"
+mkdir -p "${doorman_dir}"
+cd "${doorman_dir}"
+rm -f dm.conf
+rm -f places.inc
+rm -f FLIST
+
+# Tell the doorman where Sven's dropbox is on the sending client (e.g. Hercules)
+echo 'export dropbox="{{sven_dropbox}}"' > dm.conf
+
+# Tell the doorman where the general delivery space is on Niagara (unique for each RUN/cycle)
+# This is where tarballs will be received and confirmations are written and sent.
+echo 'export GENDEL={{GENERAL_DELIVERY_ROOT}}/{{RUN}}/{{cycle_YMDH}}' > places.inc
+# Tell the doorman what the sender's UUID is
+echo 'export CLIENT_ENDPOINT={{CLIENT_GLOBUS_UUID}}' >> places.inc
+# Tell the doorman where the sending client's dropbox is (why twice??)
+echo 'export CLIENT_DROPBOX={{sven_dropbox}}' >> places.inc
+
+# Point to the doorman executable scripts
+export PATH="${PATH}:{{doorman_root}}/bin"
+
+# Create the general delivery space if it wasn't already
+initialize.sh
+
+# Transfer the data from the sender and execute the 'todo' script
+receive.sh --go
+
+# If receive didn't produce an FLIST file, then something went wrong
+if [[ ! -f FLIST ]]; then
+    echo "receive.sh failed!"
+    return 2
+fi
+
+# Parse the FLIST file created by receive.sh to get the transfer IDs
+IDs=""
+while IFS= read -r line; do
+    package_name=$(grep -o "package_location_.*\.tgz")
+    tmp="${package_name#package_location_}"
+    ID="${tmp%.tgz}"
+    IDs="${IDs} ${ID}"
+done < FLIST
+
+# Sleep for a minute to allow time for all globus artifacts to resolve
+sleep 1m
+
+# Validate and generate the acknowledgement for each transfer ID
+for ID in ${IDs}; do
+    ack.sh "${ID}"
+done
+
+# Send the acknowledgement back to the sender
+send.sh
+
+stat=$?
+
+if [[ ${stat} -ne 0 ]]; then
+    echo "Failed to send status back to client!"
+    exit 3
+fi
+
+exit 0

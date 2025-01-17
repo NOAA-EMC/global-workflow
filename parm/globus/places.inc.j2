@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# This file will be pushed to Niagara and is used to initialize the Doorman server
+
+# This is the staging area on Niagara.
+# This is where tarballs will be received and confirmations are written and sent.
+export GENDEL={{general_delivery_dir}}
+
+# The globus UUID for the sending platform (e.g. Hercules)
+export CLIENT_ENDPOINT={{HERC_GLC}}
+# The location of the dropbox on the sending platform
+export CLIENT_DROPBOX={{sven_dropbox}}
