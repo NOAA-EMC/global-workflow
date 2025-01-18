@@ -2,7 +2,6 @@ from applications.applications import AppConfig
 from typing import Dict, Any
 from wxflow import Configuration
 
-
 class GEFSAppConfig(AppConfig):
     '''
     Class to define GEFS configurations
@@ -49,7 +48,7 @@ class GEFSAppConfig(AppConfig):
 
         if options['do_extractvars']:
             configs += ['extractvars']
-        
+
         if options['do_archtar']:
             configs += ['arch_tars']
 
