@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-########## config.vrfy ##########
+########## config.arch_vrfy ##########
 # Archive specific
 
 echo "BEGIN: config.arch_vrfy"
