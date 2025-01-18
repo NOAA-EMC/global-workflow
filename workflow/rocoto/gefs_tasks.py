@@ -612,7 +612,7 @@ class GEFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
-        resources = self.get_resource('arch')
+        resources = self.get_resource('arch_tars')
         task_name = 'gefs_arch_tars'
         task_dict = {'task_name': task_name,
                      'resources': resources,
