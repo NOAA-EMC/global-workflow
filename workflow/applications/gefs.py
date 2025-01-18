@@ -2,6 +2,7 @@ from applications.applications import AppConfig
 from typing import Dict, Any
 from wxflow import Configuration
 
+
 class GEFSAppConfig(AppConfig):
     '''
     Class to define GEFS configurations
