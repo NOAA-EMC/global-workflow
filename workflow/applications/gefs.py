@@ -102,6 +102,6 @@ class GEFSAppConfig(AppConfig):
         if options['do_archtar']:
             tasks += ['arch_tars']
 
-        tasks += ['arch_vrfy', 'cleanup'] 
+        tasks += ['arch_vrfy', 'cleanup']
 
         return {f"{self.run}": tasks}
