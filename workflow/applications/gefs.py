@@ -94,7 +94,7 @@ class GEFSAppConfig(AppConfig):
             tasks += ['extractvars']
         
         if options['do_archtar']:
-            tasks += ['arch_tar'] 
+            tasks += ['arch_tars'] 
 
         tasks += ['arch_vrfy', 'cleanup']
 
