@@ -54,7 +54,7 @@ done
 # Run archive script
 ###############################################################
 
-${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive.py}
+${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
