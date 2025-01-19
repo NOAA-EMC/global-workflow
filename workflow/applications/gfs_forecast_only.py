@@ -29,7 +29,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
         """
 
         options = self.run_options[run]
-        configs = ['stage_ic', 'fcst', 'arch', 'cleanup']
+        configs = ['stage_ic', 'fcst', 'arch_vrfy', 'cleanup']
 
         if options['do_atm']:
 
@@ -162,6 +162,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
                       'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
                       'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
-        tasks += ['arch', 'cleanup']  # arch and cleanup **must** be the last tasks
+        if options['do_archtar']:
+            tasks += ['arch_tars']
+
+        tasks += ['arch_vrfy', 'cleanup']  # arch_tar, arch_vrfy, and cleanup **must** be the last tasks
 
         return {f"{self.run}": tasks}

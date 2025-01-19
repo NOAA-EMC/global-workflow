@@ -76,7 +76,7 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
         if options['do_hybvar']:
             if options['do_jediatmens']:
@@ -145,6 +145,9 @@ class GFSCycledAppConfig(AppConfig):
                         'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
                         'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
                         'mos_wx_prdgen', 'mos_wx_ext_prdgen']
+
+        if options['do_archtar']:
+            configs += ['arch_tars']
 
         return configs
 
@@ -294,8 +297,11 @@ class GFSCycledAppConfig(AppConfig):
                                             'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen',
                                             'mos_ext_grd_prdgen', 'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
+                    if options['do_archtar']:
+                        task_names[run] += ['arch_tars']
+
                 # Last two items
-                task_names[run] += ['arch', 'cleanup']
+                task_names[run] += ['arch_vrfy', 'cleanup']
 
             # Ensemble tasks
             elif 'enkf' in run:
