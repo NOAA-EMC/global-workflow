@@ -81,6 +81,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
                         'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
                         'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
+        if options['do_archtar']:
+            configs += ['arc_tars']
+
         return configs
 
     @staticmethod
