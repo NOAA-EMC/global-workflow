@@ -90,7 +90,7 @@ class Archive(Task):
         # Collect datasets that need to be archived
         self.tar_cmd = ""
 
-        return arcdir_set, []
+        return arcdir_set
 
     @logit(logger)
     def configure_tars(self, arch_dict: Dict[str, Any]) -> (List[Dict[str, Any]]):
