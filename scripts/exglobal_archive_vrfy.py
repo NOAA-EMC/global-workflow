@@ -57,7 +57,7 @@ def main():
     with chdir(config.ROTDIR):
 
         # Determine which archives to create
-        arcdir_set = archive.configure_arcdir(archive_dict)
+        arcdir_set = archive.configure_vrfy(archive_dict)
 
         # Populate the product archive (ARCDIR)
         archive.execute_store_products(arcdir_set)

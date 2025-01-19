@@ -57,7 +57,7 @@ def main():
     with chdir(config.ROTDIR):
 
         # Determine which archives to create
-        atardir_sets = archive.configure_atardir(archive_dict)
+        atardir_sets = archive.configure_tars(archive_dict)
 
         # Create the backup tarballs and store in ATARDIR
         for atardir_set in atardir_sets:

@@ -48,7 +48,7 @@ class Archive(Task):
         self.archive_expdir = False
 
     @logit(logger)
-    def configure_arcdir(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any]):
+    def configure_vrfy(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any]):
         """Determine which files will need to be created to archive tp arcdir.
 
         Parameters
@@ -87,14 +87,14 @@ class Archive(Task):
         arcdir_set = Archive._construct_arcdir_set(arcdir_j2yaml,
                                                    arch_dict)
 
-        # Collect datasets that need to be archived  
+        # Collect datasets that need to be archived
         self.tar_cmd = ""
         arcdir_set = (arcdir_set, [])
 
         return arcdir_set
-    
+
     @logit(logger)
-    def configure_atardir(self, arch_dict: Dict[str, Any]) -> (List[Dict[str, Any]]):
+    def configure_tars(self, arch_dict: Dict[str, Any]) -> (List[Dict[str, Any]]):
         """Determine which tarballs will need to be created.
 
         Parameters
