@@ -82,7 +82,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
                         'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
         if options['do_archtar']:
-            configs += ['arc_tars']
+            configs += ['arch_tars']
 
         return configs
 
