@@ -57,14 +57,10 @@ def main():
     with chdir(config.ROTDIR):
 
         # Determine which archives to create
-        arcdir_set, atardir_sets = archive.configure(archive_dict)
+        arcdir_set = archive.configure_arcdir(archive_dict)
 
         # Populate the product archive (ARCDIR)
         archive.execute_store_products(arcdir_set)
-
-        # Create the backup tarballs and store in ATARDIR
-        for atardir_set in atardir_sets:
-            archive.execute_backup_dataset(atardir_set)
 
         # Clean up any temporary files
         archive.clean()
