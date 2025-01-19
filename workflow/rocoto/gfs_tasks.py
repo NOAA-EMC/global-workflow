@@ -1867,13 +1867,16 @@ class GFSTasks(Tasks):
 
     def metp(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
+        if self.options['do_arch_tars']:
+            dep_dict = {'type': 'task', 'name': 'gefs_arch_tars'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': 'gefs_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self._base["interval_gfs"] < to_timedelta("24H"):
             n_lookback = self._base["interval_gfs"] // to_timedelta("6H")
             for lookback in range(1, n_lookback + 1):
                 deps2 = []
-                dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch', 'condition': 'not'}
+                dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch_vrfy', 'condition': 'not'}
                 deps2.append(rocoto.add_dependency(dep_dict))
                 for lookback2 in range(1, lookback):
                     offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback2}H'))
@@ -1881,7 +1884,7 @@ class GFSTasks(Tasks):
                     deps2.append(rocoto.add_dependency(dep_dict))
 
                 offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback}H'))
-                dep_dict = {'type': 'task', 'name': f'{self.run}_arch', 'offset': offset}
+                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy', 'offset': offset}
                 deps2.append(rocoto.add_dependency(dep_dict))
                 deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
 
