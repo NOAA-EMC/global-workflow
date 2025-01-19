@@ -89,7 +89,7 @@ class Archive(Task):
 
         # Collect datasets that need to be archived
         self.tar_cmd = ""
-        arcdir_set = (arcdir_set, [])
+        arcdir_set = arcdir_set, []
 
         return arcdir_set
 
