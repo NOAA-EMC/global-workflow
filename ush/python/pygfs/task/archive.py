@@ -159,7 +159,7 @@ class Archive(Task):
                 if arch_dict.ARCH_HASHES or arch_dict.ARCH_DIFFS:
                     self._pop_git_info(arch_dict)
 
-        master_yaml = "master_atardir_" + arch_dict.RUN + ".yaml.j2"
+        master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
 
         parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml),
                                    arch_dict,
