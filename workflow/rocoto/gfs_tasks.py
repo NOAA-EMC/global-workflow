@@ -1867,10 +1867,10 @@ class GFSTasks(Tasks):
 
     def metp(self):
         deps = []
-        if self.options['do_arch_tars']:
-            dep_dict = {'type': 'task', 'name': 'gefs_arch_tars'}
+        if self.options['do_archtar']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
             deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': 'gefs_arch_vrfy'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self._base["interval_gfs"] < to_timedelta("24H"):
             n_lookback = self._base["interval_gfs"] // to_timedelta("6H")
@@ -2445,8 +2445,9 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
-            deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_archtar']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+                deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_gempak']:
             if self.run in ['gdas']:
