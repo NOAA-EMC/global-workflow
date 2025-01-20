@@ -3088,4 +3088,3 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(metatask_dict)
 
         return task
-    
