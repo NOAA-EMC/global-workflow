@@ -13,12 +13,12 @@ status=$?
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
 export PYTHONPATH
 
-export job="earc"
+export job="earc_vrfy"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_ENKF_ARCHIVE"
+"${HOMEgfs}/jobs/JGDAS_ENKF_ARCHIVE_VRFY"
 status=$?
 
 exit "${status}"
