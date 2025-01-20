@@ -3017,14 +3017,14 @@ class GFSTasks(Tasks):
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
         # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
+        n_groups = -(self.nmem // -self._configs['earc_vrfy']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
         resources = self.get_resource('earc_tars')
 
         var_dict = {'grp': groups}
 
-        task_name = f'{self.run}_earc#grp#'
+        task_name = f'{self.run}_earc_vrfy_#grp#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -3061,14 +3061,14 @@ class GFSTasks(Tasks):
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
         # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
+        n_groups = -(self.nmem // -self._configs['earc_tars']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
         resources = self.get_resource('earc_tars')
 
         var_dict = {'grp': groups}
 
-        task_name = f'{self.run}_earc#grp#'
+        task_name = f'{self.run}_earc_tars_#grp#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,

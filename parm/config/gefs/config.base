@@ -352,7 +352,7 @@ export ARCH_EXPDIR_FREQ=0    # How often to archive the EXPDIR in hours or 0 for
 export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and 'git status' for each; requires ARCH_EXPDIR
 export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
 
-export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
+export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch_*.sh and earc_*.sh.
 
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
