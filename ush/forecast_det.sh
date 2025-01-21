@@ -86,6 +86,7 @@ UFS_det(){
       MOM6_INIT_FROM_Z=True
       MOM6_WARMSTART_FILE="none"
       MOM6_INIT_UV="zero"
+      ODA_INCUPD="False"
     fi
 
     # Check for CICE6 restart availability

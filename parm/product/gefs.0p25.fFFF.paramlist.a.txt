@@ -38,3 +38,6 @@
 :MSLET:mean sea level:
 :VIS:surface:
 :HGT:cloud ceiling:
+:MAXUW:10 m above ground:
+:MAXVW:10 m above ground:
+:WIND:10 m above ground:

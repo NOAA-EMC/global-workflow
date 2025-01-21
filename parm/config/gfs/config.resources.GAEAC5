@@ -12,7 +12,7 @@ case ${step} in
     # The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     case ${CASE} in
-      "C768" | "C384")
+      "C1152" | "C768" | "C384")
         export tasks_per_node=50
         ;;
       *)

@@ -14,22 +14,20 @@ base:
   FHOUT_HF_GFS: 1
   FCST_BREAKPOINTS: "48"
   REPLAY_ICS: "NO"
-  USE_OCN_PERTURB_FILES: "false"
   FHOUT_GFS: 6
   FHOUT_OCN_GFS: 6
   FHOUT_ICE_GFS: 6
   HPSSARCH: "NO"
   LOCALARCH: "NO"
   SFS_POST: "NO"
+  USE_OCN_ENS_PERTURB_FILES: "NO"
+  USE_ATM_ENS_PERTURB_FILES: "NO"
   DO_TEST_MODE: "NO"
 fcst:
   reforecast: "NO"
   FHZER: 6
   TYPE: "nh"
   MONO: "non-mono"
-stage_ic:
-  USE_OCN_ENS_PERTURB_FILES: "NO"
-  USE_ATM_ENS_PERTURB_FILES: "NO"
 ocn:
   MOM6_INTERP_ICS: "NO"
 # config.aero has just a system-specific path to add.

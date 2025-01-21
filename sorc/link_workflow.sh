@@ -168,9 +168,6 @@ cd "${HOMEgfs}/ush" || exit 8
 for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
 done
-for file in make_ntc_bull.pl make_NTC_file.pl make_tif.sh month_name.sh; do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/ush/${file}" .
-done
 
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
@@ -179,19 +176,13 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
   "MOM6_data_table.IN"
   "ice_in.IN"
   "ufs.configure.atm.IN"
-  "ufs.configure.atm_esmf.IN"
   "ufs.configure.atmaero.IN"
-  "ufs.configure.atmaero_esmf.IN"
   "ufs.configure.s2s.IN"
-  "ufs.configure.s2s_esmf.IN"
   "ufs.configure.s2sa.IN"
-  "ufs.configure.s2sa_esmf.IN"
   "ufs.configure.s2sw.IN"
-  "ufs.configure.s2sw_esmf.IN"
   "ufs.configure.s2swa.IN"
-  "ufs.configure.s2swa_esmf.IN"
   "ufs.configure.leapfrog_atm_wav.IN"
-  "ufs.configure.leapfrog_atm_wav_esmf.IN"
+  "ww3_shel.nml.IN"
   "post_itag_gfs")
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"

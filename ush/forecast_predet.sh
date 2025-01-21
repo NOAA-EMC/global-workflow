@@ -351,11 +351,15 @@ FV3_predet(){
     if [[ "${TYPE}" == "nh" ]]; then  # monotonic and non-hydrostatic
       hord_mt=${hord_mt_nh_mono:-"10"}
       hord_xx=${hord_xx_nh_mono:-"10"}
-      hord_dp=-${hord_xx_nh_nonmono:-"-10"}
+      hord_dp=${hord_xx_nh_mono:-"10"}
     else  # monotonic and hydrostatic
       hord_mt=${hord_mt_hydro_mono:-"10"}
       hord_xx=${hord_xx_hydro_mono:-"10"}
-      hord_dp=-${hord_xx_nh_nonmono:-"-10"}
+      hord_dp=${hord_xx_hydro_mono:-"10"}
+      kord_tm=${kord_tm_hydro_mono:-"-12"}
+      kord_mt=${kord_mt_hydro_mono:-"12"}
+      kord_wz=${kord_wz_hydro_mono:-"12"}
+      kord_tr=${kord_tr_hydro_mono:-"12"}
     fi
   else  # non-monotonic options
     d_con=${d_con_nonmono:-"1."}
@@ -363,15 +367,11 @@ FV3_predet(){
     if [[ "${TYPE}" == "nh" ]]; then  # non-monotonic and non-hydrostatic
       hord_mt=${hord_mt_nh_nonmono:-"5"}
       hord_xx=${hord_xx_nh_nonmono:-"5"}
-      hord_dp=${hord_xx_hydro_mono:-"-5"}
+      hord_dp=${hord_dp_nh_nonmono:-"-5"}
     else # non-monotonic and hydrostatic
       hord_mt=${hord_mt_hydro_nonmono:-"10"}
       hord_xx=${hord_xx_hydro_nonmono:-"10"}
-      hord_dp=${hord_xx_hydro_mono:-"10"}
-      kord_tm=${kord_tm_hydro_mono:-"-12"}
-      kord_mt=${kord_mt_hydro_mono:-"12"}
-      kord_wz=${kord_wz_hydro_mono:-"12"}
-      kord_tr=${kord_tr_hydro_mono:-"12"}
+      hord_dp=${hord_xx_hydro_nonmono:-"10"}
     fi
   fi
 
@@ -574,6 +574,18 @@ FV3_predet(){
       ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
       ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
     fi
+
+    # For gefs run, provide ensemble header information
+    if [[ "${RUN}" == "gefs" ]]; then
+      if [[ "${ENSMEM}" == "000" ]]; then
+        export e1=1
+      else
+        export e1=3
+      fi
+      export e2="${ENSMEM:1:2}"
+      export e3="${NMEM_ENS}"
+    fi
+
   fi
 }
 
@@ -591,22 +603,9 @@ WW3_predet(){
   # Files from wave prep and wave init jobs
   # Copy mod_def files for wave grids
   local ww3_grid
-  if [[ "${waveMULTIGRID}" == ".true." ]]; then
-    local array=("${WAVECUR_FID}" "${WAVEICE_FID}" "${WAVEWND_FID}" "${waveuoutpGRD}" "${waveGRD}" "${waveesmfGRD}")
-    echo "Wave Grids: ${array[*]}"
-    local grdALL
-    # shellcheck disable=SC2312
-    grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
-
-    for ww3_grid in ${grdALL}; do
-      ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${ww3_grid}" "${DATA}/mod_def.${ww3_grid}" \
-      || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${ww3_grid}' from '${COMIN_WAVE_PREP}'"; exit 1 )
-    done
-  else
-    #if shel, only 1 waveGRD which is linked to mod_def.ww3
-    ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
-    || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"; exit 1 )
-  fi
+  #if shel, only 1 waveGRD which is linked to mod_def.ww3
+  ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
+  || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"; exit 1 )
 
   if [[ "${WW3ICEINP}" == "YES" ]]; then
     local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
@@ -638,20 +637,6 @@ WW3_predet(){
   fi
 
   WAV_MOD_TAG="${RUN}wave${waveMEMB}"
-  if [[ "${USE_WAV_RMP:-YES}" == "YES" ]]; then
-    local file file_array file_count
-    # shellcheck disable=SC2312
-    mapfile -t file_array < <(find "${FIXgfs}/wave" -name "rmp_src_to_dst_conserv_*" | sort)
-    file_count=${#file_array[@]}
-    if (( file_count > 0 )); then
-      for file in "${file_array[@]}" ; do
-        ${NCP} "${file}" "${DATA}/"
-      done
-    else
-      echo 'FATAL ERROR : No rmp precomputed nc files found for wave model, ABORT!'
-      exit 4
-    fi
-  fi
 }
 
 # shellcheck disable=SC2034
@@ -722,6 +707,7 @@ MOM6_predet(){
 
 }
 
+# shellcheck disable=SC2178 
 CMEPS_predet(){
   echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
 
@@ -730,6 +716,29 @@ CMEPS_predet(){
   if [[ ! -d "${DATArestart}/CMEPS_RESTART" ]]; then mkdir -p "${DATArestart}/CMEPS_RESTART"; fi
   ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
 
+  # For CMEPS, CICE, MOM6 and WW3 determine restart writes
+  # Note FV3 has its own restart intervals  
+  cmeps_restart_interval=${restart_interval:-${FHMAX}}
+  # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
+  # Convert restart interval into an explicit list for FV3
+  if (( cmeps_restart_interval == 0 )); then
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      CMEPS_RESTART_FH=$(( FHMAX + half_window ))
+    else
+      CMEPS_RESTART_FH=("${FHMAX}")
+    fi
+  else
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      local restart_interval_start=$(( cmeps_restart_interval + half_window ))
+      local restart_interval_end=$(( FHMAX + half_window ))
+    else
+      local restart_interval_start=${cmeps_restart_interval}
+      local restart_interval_end=${FHMAX}
+    fi
+    CMEPS_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${cmeps_restart_interval}" "${restart_interval_end}")"
+  fi
+  export CMEPS_RESTART_FH
+  # TODO: For GEFS, once cycling waves "self-cycles" and therefore needs to have a restart at 6 hour
 }
 
 # shellcheck disable=SC2034

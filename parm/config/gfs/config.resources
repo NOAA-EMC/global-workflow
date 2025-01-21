@@ -196,14 +196,15 @@ case ${step} in
     ;;
 
   "wavepostsbs")
-    walltime_gdas="00:20:00"
-    walltime_gfs="03:00:00"
+    # Walltime is per forecast hour; will be multipled by group size
+    walltime_gdas="00:15:00"
+    walltime_gfs="00:15:00"
     ntasks=8
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
-    memory_gdas="10GB"
-    memory_gfs="10GB"
+    memory_gdas="20GB"
+    memory_gfs="20GB"
     ;;
 
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
@@ -329,7 +330,7 @@ case ${step} in
   "snowanl")
     # below lines are for creating JEDI YAML
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         layout_x=6
         layout_y=6
         ;;
@@ -358,7 +359,7 @@ case ${step} in
   "esnowanl")
     # below lines are for creating JEDI YAML
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         layout_x=6
         layout_y=6
         ;;
@@ -395,7 +396,7 @@ case ${step} in
   "aeroanlinit")
     # below lines are for creating JEDI YAML
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         layout_x=8
         layout_y=8
         ;;
@@ -428,7 +429,7 @@ case ${step} in
 
   "aeroanlvar")
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         layout_x=8
         layout_y=8
         ;;
@@ -462,7 +463,7 @@ case ${step} in
 
   "aeroanlgenb")
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         layout_x=8
         layout_y=8
         ;;
@@ -673,7 +674,7 @@ case ${step} in
     walltime_gdas="01:20:00"
     walltime_gfs="01:00:00"
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         ntasks_gdas=780
         ntasks_gfs=825
         threads_per_task=5
@@ -709,7 +710,7 @@ case ${step} in
     export threads_per_task_echgres_gfs=12
     export is_exclusive=True
     memory="48GB"
-    if [[ "${CASE}" == "C384" || "${CASE}" == "C768" ]]; then
+    if [[ "${CASE}" == "C384" || "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
        memory="${mem_node_max}"
     fi
     ;;
@@ -902,7 +903,7 @@ case ${step} in
         ;;
       "C768" | "C1152")
         # Not valid resolutions for ensembles
-        declare -x "walltime_gdas"="00:40:00"
+        declare -x "walltime_gdas"="00:50:00"
         declare -x "walltime_gfs"="06:00:00"
         ;;
       *)
@@ -916,6 +917,7 @@ case ${step} in
     ;;
 
   "oceanice_products")
+    # Walltime is per forecast hour; will be multipled by group size
     walltime="00:15:00"
     ntasks=1
     tasks_per_node=1
@@ -928,8 +930,12 @@ case ${step} in
       "C48" | "C96")
         ntasks=${CASE:1}
       ;;
-      "C192" | "C384" | "C768" )
+      "C192" | "C384" | "C768")
         ntasks=120
+        memory="${mem_node_max}"
+      ;;
+      "C1152")
+        ntasks=200
         memory="${mem_node_max}"
       ;;
       *)
@@ -938,6 +944,7 @@ case ${step} in
       ;;
     esac
     tasks_per_node=${ntasks}
+    [[ ${CASE} == "C1152" ]] && tasks_per_node=40
 
     threads_per_task=1
 
@@ -949,6 +956,7 @@ case ${step} in
     ;;
 
   "atmos_products")
+    # Walltime is per forecast hour; will be multipled by group size
     walltime="00:15:00"
     ntasks=24
     threads_per_task=1
@@ -1010,7 +1018,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=1
     memory="20G"
-    [[ ${CASE} == "C768" ]] && memory="80GB"
+    [[ ${CASE} == "C768" || ${CASE} == "C1152" ]] && memory="80GB"
     ;;
 
   "metp")
@@ -1150,7 +1158,7 @@ case ${step} in
     fi
 
     case ${CASE} in
-      "C768")                 ntasks=200;;
+      "C1152" | "C768")       ntasks=200;;
       "C384")                 ntasks=100;;
       "C192" | "C96" | "C48") ntasks=40;;
       *)
@@ -1183,7 +1191,7 @@ case ${step} in
   "eupd")
     walltime="00:30:00"
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         ntasks=480
         threads_per_task=6
         ;;
@@ -1228,7 +1236,7 @@ case ${step} in
 
   "epos")
     walltime="00:15:00"
-    [[ ${CASE} == "C768" ]] && walltime="00:25:00"
+    [[ ${CASE} == "C768" || ${CASE} == "C1152" ]] && walltime="00:25:00"
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -1278,6 +1286,7 @@ case ${step} in
     ;;
 
   "gempak")
+    # Walltime is per forecast hour; will be multipled by group size
     walltime="00:30:00"
     ntasks_gdas=2
     ntasks_gfs=28
@@ -1293,6 +1302,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     memory="4GB"
+    tasks_per_node=1
     ;;
 
   "mos_stn_prep")
