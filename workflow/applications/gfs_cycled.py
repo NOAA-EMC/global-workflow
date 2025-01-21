@@ -84,7 +84,13 @@ class GFSCycledAppConfig(AppConfig):
                             'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
+
+            if options['do_arctar']:
+                configs += ['earc_tars']
+
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy', 'earc_tars']
+
+
 
         if options['do_fit2obs']:
             configs += ['fit2obs']
@@ -323,6 +329,9 @@ class GFSCycledAppConfig(AppConfig):
 
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
-                task_names[run] += ['stage_ic', 'ecen', 'esfc', 'earc_vrfy', 'earc_tars', 'cleanup']
+
+                if options['do_arctars']:
+                    task_names[run] += ['earc_tars']
+                task_names[run] += ['stage_ic', 'ecen', 'esfc', 'earc_vrfy', 'cleanup']
 
         return task_names
