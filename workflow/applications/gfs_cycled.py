@@ -90,8 +90,6 @@ class GFSCycledAppConfig(AppConfig):
 
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy', 'earc_tars']
 
-
-
         if options['do_fit2obs']:
             configs += ['fit2obs']
 
