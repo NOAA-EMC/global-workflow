@@ -92,8 +92,6 @@
     exit 2
   fi
 
-  cd ${STA_DIR}/${filext}
-
 # --------------------------------------------------------------------------- #
 # 2.  Generate tar file (spectral files are compressed)
 
@@ -109,7 +107,7 @@
   while [ "$count" -lt "$countMAX" ] && [ "$tardone" = 'no' ]
   do
     
-    nf=`ls | awk '/'$ID.*.$filext'/ {a++} END {print a}'`
+    nf=`ls -1 $ID.*.$filext | awk 'END{print NR}'`
     nbm2=$(( $nb - 2 ))
     if [ $nf -ge $nbm2 ]
     then 
@@ -202,7 +200,6 @@
     exit 4
   fi
 
-  # if [ "$SENDDBN" = 'YES' -a  $type != "ibp" ]
   if [ "$SENDDBN" = 'YES' ]
   then
     set +x
