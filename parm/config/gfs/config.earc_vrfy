@@ -6,7 +6,7 @@
 echo "BEGIN: config.earc_vrfy"
 
 # Get task specific resources"
-. $EXPDIR/config.resources "earc_vrfy"
+. $EXPDIR/config.resources "${earc_vrfy}"
 
 # Set the number of ensemble members to archive per earc_vrfy job
 case "${CASE_ENS}" in
