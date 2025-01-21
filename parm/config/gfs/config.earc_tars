@@ -6,7 +6,7 @@
 echo "BEGIN: config.earc_tars"
 
 # Get task specific resources
-. $EXPDIR/config.resources "${earc_tars}"
+. "${EXPDIR}/config.resources" "${earc_tars}"
 
 # Set the number of ensemble members to archive per earc_tars job
 case "${CASE_ENS}" in
