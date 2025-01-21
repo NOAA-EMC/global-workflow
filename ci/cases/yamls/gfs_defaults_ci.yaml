@@ -3,3 +3,4 @@ defaults:
 base:
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
   DO_TEST_MODE: "NO"
+  DO_METP: "NO"
