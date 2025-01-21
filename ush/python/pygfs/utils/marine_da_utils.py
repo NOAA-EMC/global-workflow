@@ -46,9 +46,9 @@ def link_executable(task_config: AttrDict, exe_name: str) -> None:
 
 @logit(logger)
 def prep_input_nml(task_config: AttrDict,
-                   output_nml: str="mom_input.nml",
-                   simple_geom: bool=False,
-                   mom_input: str="MOM_input") -> None:
+                   output_nml: str = "mom_input.nml",
+                   simple_geom: bool = False,
+                   mom_input: str = "MOM_input") -> None:
     """Prepare the mom_input.nml file
     """
     # stage input.nml.j2
