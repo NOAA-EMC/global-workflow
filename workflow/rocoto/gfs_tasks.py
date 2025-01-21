@@ -2444,10 +2444,9 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
-        else:
-            if self.options['do_archtar']:
-                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
-                deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_archtar']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+            deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_gempak']:
             if self.run in ['gdas']:
