@@ -85,7 +85,7 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
 
-            if options['do_arctar']:
+            if options['do_archtar']:
                 configs += ['earc_tars']
 
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy', 'earc_tars']
@@ -328,7 +328,7 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
 
-                if options['do_arctars']:
+                if options['do_archtar']:
                     task_names[run] += ['earc_tars']
                 task_names[run] += ['stage_ic', 'ecen', 'esfc', 'earc_vrfy', 'cleanup']
 
