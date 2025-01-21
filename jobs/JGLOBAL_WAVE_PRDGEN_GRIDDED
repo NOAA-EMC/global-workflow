@@ -2,6 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsgridded" -c "base wave waveawipsgridded"
+source "${USHgfs}/wave_domain_grid.sh"
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -19,6 +20,15 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi
 
+if [[ -n "${GEMPAK_GRIDS}" ]]; then
+    for grdID in ${GEMPAK_GRIDS}; do 
+        process_grdID "${grdID}"
+        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+            "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+    done
+else
+    echo "GEMPAK_GRIDS are empty. No grids to process."
+fi
 
 ###################################
 # Execute the Script
@@ -35,6 +45,4 @@ if [ "${KEEPDATA}" != "YES" ]; then
   rm -rf ${DATA}
 fi
 
-
 exit 0
-

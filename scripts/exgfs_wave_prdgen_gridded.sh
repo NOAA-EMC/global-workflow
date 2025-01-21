@@ -25,6 +25,7 @@
 # 0.  Preparations
 
 source "${USHgfs}/preamble.sh"
+source "${USHgfs}/wave_domain_grid.sh"
 
 # 0.a Basic modes of operation
 
@@ -48,7 +49,7 @@ source "${USHgfs}/preamble.sh"
 # Input grid
 grid_in="${waveinterpGRD:-glo_15mxt}"
 # Output grids
-grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
+grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
 # export grids=${wavepostGRD}
  maxtries=${maxtries:-720}
 # 0.b Date and time stuff
@@ -88,33 +89,19 @@ grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
 # 1.a Grib file (AWIPS and FAX charts)
  # Get input grid
  # TODO flesh this out with additional input grids if needed
- case ${grid_in} in
-    glo_200)
-       grdIDin='global.2p00' ;;
-    glo_15mxt)
-       grdIDin='global.0p25' ;;
-    *)
-       echo "FATAL ERROR Unrecognized input grid ${grid_in}"
-       exit 2;;
- esac
+ process_grdID "${grid_in}"
+ grdIDin=${grdNAME}
 
  fhcnt=${fstart}
  while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
    fhr=$(printf "%03d" "${fhcnt}")
    for grdOut in ${grids}; do
-     case ${grdOut} in
-       ao_9km)  grdID='arctic.9km' ;;
-       at_10m)  grdID='atlocn.0p16' ;;
-       ep_10m)  grdID='epacif.0p16' ;;
-       wc_10m)  grdID='wcoast.0p16' ;;
-#       glo_30m) grdID='global.0p25' ;;
-       glo_30m) grdID='global.0p50' ;;
-       ak_10m)  grdID='alaska.0p16' ;;
-       *)       grdID= ;;
-     esac
-     #
+     process_grdID "${grdout}"
+     grdIDin=${grdNAME}
+     com_varname="${COMIN_WAVE_GRID}_${GRDREGION}_${GRDRES}"
+     com_dir="${!com_varname}"
 
-     GRIBIN="${COMIN_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
+     GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
      GRIBIN_chk="${GRIBIN}.idx"
      sleep_interval=5
      max_tries=1000
