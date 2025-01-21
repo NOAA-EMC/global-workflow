@@ -3012,22 +3012,12 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        earcenvars = self.envars.copy()
-        earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+        resources = self.get_resource('earc_vrfy')
 
-        # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['earc_vrfy']['NMEM_EARCGRP'])
-        groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
-
-        resources = self.get_resource('earc_tars')
-
-        var_dict = {'grp': groups}
-
-        task_name = f'{self.run}_earc_vrfy_#grp#'
+        task_name = f'{self.run}_earc_vrfy'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': earcenvars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/earc_vrfy.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -3035,12 +3025,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}_eamn',
-                         'var_dict': var_dict,
-                         'task_dict': task_dict
-                         }
-
-        task = rocoto.create_task(metatask_dict)
+        task = rocoto.create_task(task_dict)
 
         return task
 
@@ -3079,7 +3064,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}_eamn',
+        metatask_dict = {'task_name': f'{self.run}_earc_tars',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
