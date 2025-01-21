@@ -2436,7 +2436,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    # Cleanup
+# cleanup
     def cleanup(self):
         deps = []
         if 'enkf' in self.run:
