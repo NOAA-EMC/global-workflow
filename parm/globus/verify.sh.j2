@@ -5,6 +5,6 @@ globus_xfer_id="{{globus_xfer_id}}"
 
 log_file="${log_directory}/hpss_status_${globus_xfer_id}.log"
 
-hpss_stat=$(tail -1 ${log_file})
+hpss_stat=$(tail -1 "${log_file}")
 
 echo "${hpss_stat}"
