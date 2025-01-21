@@ -364,12 +364,12 @@ local LGFDLMPRAD=${lgfdlmprad:-".false."}
 local EFFR_IN=${effr_in:-".false."}
 local LDIAG_UGWP=${ldiag_ugwp:-".false."}
 local DO_RRTMGP=${do_RRTMGP:-".false."}
-local ACTIVE_GASES=${active_gases:-'h2o_co2_o3_n2o_ch4_o2'}
+local ACTIVE_GASES=${active_gases:-"'h2o_co2_o3_n2o_ch4_o2'"}
 local NGASES=${ngases:-"6"}
-local LW_FILE_GAS=${lw_file_gas:-'rrtmgp-data-lw-g128-210809.nc'}
-local LW_FILE_CLOUDS=${lw_file_clouds:-'rrtmgp-cloud-optics-coeffs-lw.nc'}
-local SW_FILE_GAS=${sw_file_gas:-'rrtmgp-data-sw-g112-210809.nc'}
-local SW_FILE_CLOUDS=${sw_file_clouds:-'rrtmgp-cloud-optics-coeffs-sw.nc'}
+local LW_FILE_GAS=${lw_file_gas:-"'rrtmgp-data-lw-g128-210809.nc'"}
+local LW_FILE_CLOUDS=${lw_file_clouds:-"'rrtmgp-cloud-optics-coeffs-lw.nc'"}
+local SW_FILE_GAS=${sw_file_gas:-"'rrtmgp-data-sw-g112-210809.nc'"}
+local SW_FILE_CLOUDS=${sw_file_clouds:-"'rrtmgp-cloud-optics-coeffs-sw.nc'"}
 local RRTMGP_NGPTSSW=${rrtmgp_nGptsSW:-"112"}
 local RRTMGP_NGPTSLW=${rrtmgp_nGptsLW:-"128"}
 local RRTMGP_NBANDSLW=${rrtmgp_nBandsLW:-"16"}
@@ -398,10 +398,6 @@ else
   local FSCAV_AERO='"*:0.3","so2:0.0","msa:0.0","dms:0.0","nh3:0.4","nh4:0.6","bc1:0.6","bc2:0.6","oc1:0.4","oc2:0.4","dust1:0.6","dust2:0.6","dust3:0.6","dust4:0.6","dust5:0.6","seas1:0.5","seas2:0.5","seas3:0.5","seas4:0.5","seas5:0.5"'
 fi
 
-local pert_mp=.false.
-local pert_radtend=.false.
-local pert_clds=.false.
-
 local IAUFHRS=${IAUFHRS}
 local IAU_DELTHRS=${IAU_DELTHRS}
 local IAU_INC_FILES=${IAU_INC_FILES:-"''"}
@@ -429,7 +425,11 @@ local N_VAR_LNDP=${n_var_lndp:-0}
 local LCNORM=${lcnorm:-".false."}
 local PERT_MP=${PERT_MP:-".false."}
 local PERT_RADTEND=${PERT_RADTEND:-".false."}
-local PERT_CLDS=${PERT_CLDS:-".true."}
+local PERT_CLDS=${PERT_CLDS:-".false."}
+
+if [[ ${DO_SPPT} = "YES" ]]; then
+  local PERT_CLDS=".true."
+fi
   
 #GWP options  
 if [[ ${knob_ugwp_version} -eq 0 ]]; then
@@ -468,7 +468,7 @@ local KNOB_UGWP_LZSTAR=${knob_ugwp_lzstar:-2.0e3}
 local KNOB_UGWP_TAUMIN=${knob_ugwp_taumin:-0.25e-3}
 local KNOB_UGWP_TAUAMP=${knob_ugwp_tauamp:-3.0e-3}
 local KNOB_UGWP_LHMET=${knob_ugwp_lhmet:-200.0e3}
-local KNOB_UGWP_OROSOLV=${knob_ugwp_orosolv:-'pss-1986'}
+local KNOB_UGWP_OROSOLV=${knob_ugwp_orosolv:-\'pss-1986\'}
  
 # gfdl_cloud_microphysics options
 local REIFLAG=${reiflag:-"2"}
@@ -476,32 +476,48 @@ local REIFLAG=${reiflag:-"2"}
 # interpolator_nml options
 
 # nam sfc options
-local FNACNA=${FNACNA:-}
-local FNSNOA=${FNSNOA:-}
-local FNVMNC=${FNVMNC:-}
-local FNVMXC=${FNVMXC:-}
-local FNSLPC=${FNSLPC:-}
-local FNABSC=${FNABSC:-}
+local FNGLAC="'${FNGLAC}'"
+local FNMXIC="'${FNMXIC}'"
+local FNTSFC="'${FNTSFC}'"
+local FNSNOC="'${FNSNOC}'"
+local FNZORC="'${FNZORC}'"
+local FNALBC="'${FNALBC}'"
+local FNALBC2="'${FNALBC2}'"
+local FNAISC="'${FNAISC}'"
+local FNTG3C="'${FNTG3C}'"
+local FNVEGC="'${FNVEGC}'"
+local FNVETC="'${FNVETC}'"
+local FNSOTC="'${FNSOTC}'"
+local FNSOCC="'${FNSOCC}'"
+local FNSMCC="'${FNSMCC}'"
+local FNMSKH="'${FNMSKH}'"
+local FNTSFA="'${FNTSFA}'"
+local FNACNA="'${FNACNA:-}'"
+local FNSNOA="'${FNSNOA:-}'"
+local FNVMNC="'${FNVMNC:-}'"
+local FNVMXC="'${FNVMXC:-}'"
+local FNSLPC="'${FNSLPC:-}'"
+local FNABSC="'${FNABSC:-}'"
 local LDEBUG=${LDEBUG:-".false."}
-local FSMCL2=${FSMCL2:-99999}
-local FSMCL3=${FSMCL3:-99999}
-local FSMCL4=${FSMCL4:-99999}
+local FSMCL2=${FSMCL2:+\'${FSMCL2}\'}${FSMCL2:-99999}
+local FSMCL3=${FSMCL3:+\'${FSMCL3}\'}${FSMCL3:-99999}
+local FSMCL4=${FSMCL4:+\'${FSMCL4}\'}${FSMCL4:-99999}
 local LANDICE=${landice:-".true."}
-local FTSFS=${FTSFS:-90}
-local FAISL=${FAISL:-99999}
-local FAISS=${FAISS:-99999}
-local FSNOL=${FSNOL:-99999}
-local FSNOS=${FSNOS:-99999}
+local FTSFS=${FTSFS:+\'${FTSFS}\'}${FTSFS:-90}
+local FAISL=${FAISL:+\'${FAISL}\'}${FAISL:-99999}
+local FAISS=${FAISS:+\'${FAISS}\'}${FAISS:-99999}
+local FSNOL=${FSNOL:+\'${FSNOL}\'}${FSNOL:-99999}
+local FSNOS=${FSNOS:+\'${FSNOS}\'}${FSNOS:-99999}
 local FSICL=${FSICL:-99999}
 local FSICS=${FSICS:-99999}
-local FTSFL=${FTSFL:-99999}
-local FVETL=${FVETL:-99999}
-local FSOTL=${FSOTL:-99999}
-local FVMNL=${FvmnL:-99999}
-local FVMXL=${FvmxL:-99999}
-local FSLPL=${FSLPL:-99999}
-local FABSL=${FABSL:-99999}
-local FNTSFA=${FNTSFA:-''}
+local FTSFL=${FTSFL:+\'${FTSFL}\'}${FTSFL:-99999}
+local FVETL=${FVETL:+\'${FVETL}\'}${FVETL:-99999}
+local FSOTL=${FSOTL:+\'${FSOTL}\'}${FSOTL:-99999}
+local FVMNL=${FvmnL:+\'${FvmnL}\'}${FvmnL:-99999}
+local FVMXL=${FvmxL:+\'${FvmxL}\'}${FvmxL:-99999}
+local FSLPL=${FSLPL:+\'${FSLPL}\'}${FSLPL:-99999}
+local FABSL=${FABSL:+\'${FABSL}\'}${FABSL:-99999}
+local FNTSFA="'${FNTSFA:-}'"
 
 #fv_grid_nml options
 
