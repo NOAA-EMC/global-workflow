@@ -183,7 +183,8 @@ class MarineAnalysis(Task):
         mdau.prep_input_nml(self.task_config)
 
         # prepare the input.nml for the analysis geometry
-        mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml")
+        mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml",
+                            simple_geom=True, mom_input="./anl_geom/MOM_input")
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
