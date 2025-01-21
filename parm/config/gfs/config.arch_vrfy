@@ -6,7 +6,7 @@
 echo "BEGIN: config.arch_vrfy"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" "${arch_vrfy}"
+. "${EXPDIR}/config.resources" "arch_vrfy"
 
 export ARCH_GAUSSIAN="YES"
 export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS}
