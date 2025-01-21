@@ -107,7 +107,7 @@
   while [ "$count" -lt "$countMAX" ] && [ "$tardone" = 'no' ]
   do
     
-    nf=`ls -1 $ID.*.$filext | awk 'END{print NR}'`
+    nf=$(ls | awk '/'$ID.*.$filext'/ {a++} END {print a}')
     nbm2=$(( $nb - 2 ))
     if [ $nf -ge $nbm2 ]
     then 
