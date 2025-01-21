@@ -82,7 +82,7 @@ export DO_MOS="NO"                       # GFS Model Output Statistics - Only su
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
-#  if want MOS written to HPSS.   Should update arch.sh to
+#  if want MOS written to HPSS.   Should update arch_vrfy.sh and arch_tars to
 #  use RUNMOS flag
 export REALTIME="YES"
 
