@@ -102,12 +102,11 @@ export ROTDIR="@COMROOT@/${PSLOT}"
 
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
-export FETCHDIR="@FETCHDIR@"  # HPSS or local directory where IC tarball(s) can be found.
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
-export NET="gefs"  # NET is defined in the job-card (ecf)
-export RUN="gefs"  # RUN is defined in the job-card (ecf)
+export NET="sfs"  # NET is defined in the job-card (ecf)
+export RUN="sfs"  # RUN is defined in the job-card (ecf)
 
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
