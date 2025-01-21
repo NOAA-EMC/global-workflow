@@ -545,6 +545,6 @@ local MOM6_OUTPUT_DIR=MOM6_OUTPUT/
 local MOM6_RESTART_SETTING=r
 local MOM6_RESTART_DIR=MOM6_RESTART/
 
-local global_template='/scratch1/NCEPDEV/stmp2/Daniel.Sarmiento/gw_branch/global_control.nml.IN'
+local global_template="${HOMEgfs}/parm/ufs/fv3/global_control.nml.IN"
 atparse < "${global_template}" >> "input.nml"
 }
