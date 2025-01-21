@@ -1,8 +1,8 @@
 #!/bin/bash
 # Jinja-templated variables
-hpss_target_dir={{target_dir}}
-globus_xfer_id={{globus_xfer_id}}
-log_directory={{niagara_log_directory}}
+hpss_target_dir="{{target_dir}}"
+globus_xfer_id="{{globus_xfer_id}}"
+log_directory="{{niagara_log_directory}}"
 
 cwd=$(pwd)
 file="${1}"
@@ -14,15 +14,14 @@ touch "${log_file}"
 send_to_hpss()
 {
     # Change the group of the file to rstprod
-    chgrp "rstprod" "${file_full}" > "${log_file}" 2>&1
-    if [[ $? != 0 ]]; then
+    if ! chgrp "rstprod" "${file_full}" > "${log_file}" 2>&1; then
         rm -f "${file_full}"
         echo "Failed to run chmod on ${file_full}.  Deleting and exiting." >> "${log_file}"
         return 1
     fi
 
     # Check that the MD5 checksum matches what was sent
-    chk=$(md5sum ${file_full})
+    chk=$(md5sum "${file_full}")
     if [[ "${chk}" != "${globus_xfer_id}  ${file_full}" ]]; then
         echo "MD5 checksum of ${file} does not match.  Exiting." >> "${log_file}"
         return 2
@@ -38,6 +37,7 @@ send_to_hpss()
     chmod 640 "${hpss_target}"
 EOF
     hsi in "${command_file}" >> "${log_file}" 2>&1
+    # shellcheck disable=SC2181
     if [[ $? != 0 ]]; then
         echo "Failed to send ${file} to HPSS and/or protect it.  Deleting and exiting." >> "${log_file}"
         hsi rm "${hpss_target}"
@@ -48,8 +48,7 @@ EOF
 
     # Create an index file if the file is a tarball
     if [[ ${file} == *.tar ]]; then
-        htar -Xvf "${hpss_target}" >> "${log_file}" 2>&1
-        if [[ $? != 0 ]]; then
+        if ! htar -Xvf "${hpss_target}" >> "${log_file}" 2>&1; then
             echo "Failed to create an index file for ${hpss_target}.  Exiting." >> "${log_file}"
             return 4
         fi

@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+# shellcheck disable=all
+# Shellcheck won't be able to parse this file
 
 # This script runs on Niagara to interact with the Doorman service
-{% set cycle_YMDH = current_cycle | to_YMDH %}
+cycle_YMDH="{{cycle_YMDH}}"
 subdir="{{RUN}}/{{cycle_YMDH}}"
 
 # Make the working directory
