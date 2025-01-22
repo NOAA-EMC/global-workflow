@@ -327,8 +327,9 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
 
+                task_names[run] += ['stage_ic', 'ecen', 'esfc']
                 if options['do_archtar']:
                     task_names[run] += ['earc_tars']
-                task_names[run] += ['stage_ic', 'ecen', 'esfc', 'earc_vrfy', 'cleanup']
+                task_names[run] += ['earc_vrfy', 'cleanup']
 
         return task_names
