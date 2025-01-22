@@ -136,18 +136,24 @@ class EnsembleCenter(Task):
 
         # Initialize FileHandler to copy files to comrot
         cdate = to_fv3time(self.task_config.current_cycle).replace('.', '_')
-        anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS_ENSSTAT}/enkf{self.task_config.APREFIX}"
+        inc_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS_ENSSTAT}/enkf{self.task_config.APREFIX}"
         fh_dict = {'copy': []}
         cdate = to_fv3time(self.task_config.current_cycle).replace('.', '_')
         for fh in self.task_config.IAUFHRS:
             if fh == 6:
                 for itile in range(6):
                     fh_dict['copy'].append([f"{self.task_config.DATA}/catmi{format(fh, '03')}.tile{itile+1}.nc",
-                                            f"{anl_prefix}cubed_sphere_grid_catminc.tile{itile+1}.nc"])
+                                            f"{inc_prefix}cubed_sphere_grid_catminc.tile{itile+1}.nc"])
             else:
                 for itile in range(6):
                     fh_dict['copy'].append([f"{self.task_config.DATA}/catmi{format(fh, '03')}.tile{itile+1}.nc",
-                                            f"{anl_prefix}/catmi{format(fh, '03')}.tile{itile+1}.nc"])
+                                            f"{inc_prefix}/catmi{format(fh, '03')}.tile{itile+1}.nc"])
+
+        # Test
+        fh_dict.append([f"atmanl.2024-02-24T00:00:00Z.gaussian.modelLevels.nc",
+                       f"{self.task_config.COM_ATMOS_ANALYSIS}"])
+        fh_dict.append([f"sfcanl.2024-02-24T00:00:00Z.gaussian.modelLevels.nc",
+                        f"{self.task_config.COM_ATMOS_ANALYSIS}"])
 
         # Move files
         FileHandler(fh_dict).sync()
