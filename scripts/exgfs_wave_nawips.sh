@@ -12,9 +12,10 @@
 #####################################################################
 
 source "${USHgfs}/preamble.sh"
+source "${USHgfs}/wave_domain_grid.sh"
 
-#export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
-export grids=${grids:-${waveinterpGRD:-'glo_30m'}}  #Native grids
+#export grids=${GEMPAK_GRIDS:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
+export grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  #Native grids
 export RUNwave=${RUNwave:-${RUN}wave}
 export fstart=${fstart:-0}
 export FHMAX_WAV=${FHMAX_WAV:-180}  #180 Total of hours to process
@@ -73,7 +74,10 @@ while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
       *)       grdIDin= 
                grdIDout= ;;
     esac
-    GRIBIN="${COMIN_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
+    process_grdID "${grid}"
+    com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
+    com_dir=${!com_varname}
+    GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
     GRIBIN_chk=${GRIBIN}.idx
     if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${maxtries}"; then
       echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( maxtries - 1))) secs"

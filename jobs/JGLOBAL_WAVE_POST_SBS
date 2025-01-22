@@ -2,6 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostsbs" -c "base wave wavepostsbs"
+source "${USHgfs}/wave_domain_grid.sh" 
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -19,7 +20,18 @@ for out_dir in "${COMOUT_WAVE_PREP}" "${COMOUT_WAVE_GRID}"; do
     if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
 done
 
-
+if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
+    for grdID in ${wavepostGRD} ${waveinterpGRD}; do
+        process_grdID "${grdID}"
+        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+            "COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+        out_dir_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
+        out_dir=${!out_dir_varname}
+        if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
+    done
+else
+    echo "Both wavepostGRD and waveinterpGRD are empty. No grids to process."
+fi
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
 # Set wave model ID tag to include member number
