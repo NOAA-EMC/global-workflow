@@ -213,10 +213,6 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
     fix_ver="gdas_${gdas_sub}_ver"
     ${LINK_OR_COPY} "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
   done
-  # HACK, only for testing,don't merge.
-  rm soca
-  ln -s /work2/noaa/da/gvernier/prs/soca .
-  # END HACK
 fi
 
 #------------------------------
