@@ -78,6 +78,9 @@ class GFSCycledAppConfig(AppConfig):
 
         configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
+        if options['do_archtar']:
+            configs += ['arch_tars']       
+
         if options['do_hybvar']:
             if options['do_jediatmens']:
                 configs += ['atmensanlinit', 'atmensanlobs', 'atmensanlsol',
@@ -85,10 +88,10 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
 
+            configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy']
+
             if options['do_archtar']:
                 configs += ['earc_tars']
-
-            configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy', 'earc_tars']
 
         if options['do_fit2obs']:
             configs += ['fit2obs']

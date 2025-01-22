@@ -3013,12 +3013,16 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
+        earcenvars = self.envars.copy()
+        earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+
         resources = self.get_resource('earc_vrfy')
 
         task_name = f'{self.run}_earc_vrfy'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
+                     'envars': earcenvars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/earc_vrfy.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
