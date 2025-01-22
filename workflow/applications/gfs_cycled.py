@@ -79,7 +79,7 @@ class GFSCycledAppConfig(AppConfig):
         configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
         if options['do_archtar']:
-            configs += ['arch_tars']       
+            configs += ['arch_tars']
 
         if options['do_hybvar']:
             if options['do_jediatmens']:
