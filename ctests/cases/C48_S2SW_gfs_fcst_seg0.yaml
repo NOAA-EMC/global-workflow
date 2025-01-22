@@ -5,6 +5,7 @@ input_files:
         - "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{TEST_DATE | to_YMD}}/{{TEST_DATE | strftime('%H')}}/model/atmos/input"
         - "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{TEST_DATE | to_YMD}}/{{TEST_DATE | strftime('%H')}}/model/wave/prep"
         - "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{TEST_DATE | to_YMD}}/{{TEST_DATE | add_to_datetime(H_timedelta) | strftime('%H')}}/model/ocean/restart"
+        - "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{TEST_DATE | to_YMD}}/{{TEST_DATE | add_to_datetime(H_timedelta) | strftime('%H')}}/model/ice/restart"
     copy:
         - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ TEST_DATE | to_YMD }}/{{ TEST_DATE | strftime('%H') }}/model/atmos/input/gfs_ctrl.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{TEST_DATE | to_YMD}}/{{TEST_DATE | strftime('%H')}}/model/atmos/input/gfs_ctrl.nc"]
         - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ TEST_DATE | to_YMD }}/{{ TEST_DATE | strftime('%H') }}/model/atmos/input/gfs_data.tile1.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{TEST_DATE | to_YMD}}/{{TEST_DATE | strftime('%H')}}/model/atmos/input/gfs_data.tile1.nc"]
@@ -23,6 +24,8 @@ input_files:
         - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ TEST_DATE | to_YMD }}/{{ TEST_DATE | strftime('%H') }}/model/wave/prep/gfswave.mod_def.uglo_100km", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{TEST_DATE | to_YMD}}/{{TEST_DATE | strftime('%H')}}/model/wave/prep/gfswave.mod_def.uglo_100km"]
         - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gdas.{{ TEST_DATE | add_to_datetime(H_timedelta) | to_YMD }}/{{ TEST_DATE | add_to_datetime(H_timedelta) | strftime('%H') }}/model/ocean/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.MOM.res.nc",
            "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ TEST_DATE | add_to_datetime(H_timedelta) | to_YMD }}/{{ TEST_DATE | add_to_datetime(H_timedelta) | strftime('%H') }}/model/ocean/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.MOM.res.nc" ]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gdas.{{ TEST_DATE | add_to_datetime(H_timedelta) | to_YMD }}/{{ TEST_DATE | add_to_datetime(H_timedelta) | strftime('%H') }}/model/ice/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.cice_model.res.nc",
+           "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ TEST_DATE | add_to_datetime(H_timedelta) | to_YMD }}/{{ TEST_DATE | add_to_datetime(H_timedelta) | strftime('%H') }}/model/ocean/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.cice_model.res.nc" ]
 
 output_files:
     cmpfiles:
