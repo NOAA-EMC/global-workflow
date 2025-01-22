@@ -2440,15 +2440,18 @@ class GFSTasks(Tasks):
     def cleanup(self):
         deps = []
         if 'enkf' in self.run:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_archtar']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
+                deps.append(rocoto.add_dependency(dep_dict))
+
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
-
-        if self.options['do_archtar']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
-            deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_archtar']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+                deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_gempak']:
             if self.run in ['gdas']:
