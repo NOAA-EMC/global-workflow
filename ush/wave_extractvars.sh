@@ -10,6 +10,11 @@
 #######################
 
 source "${USHgfs}/preamble.sh"
+source "${USHgfs}/wave_domain_grid.sh"
+
+process_grdID "${waveGRD}"
+com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
+com_dir=${!com_varname}
 
 subdata=${1}
 
@@ -18,7 +23,7 @@ subdata=${1}
 for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); do
   fnh=$(printf "%3.3d" "${nh}")
 
-  infile=${COMIN_WAVE_GRID}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
+  infile=${com_dir}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
   outfile=${subdata}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
   rm -f "${outfile}" # Remove outfile if it already exists before extraction
 

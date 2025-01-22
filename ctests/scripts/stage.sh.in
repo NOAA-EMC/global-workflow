@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -ux
+
+TEST_NAME=${1:?"Name of the test is required"}
+TEST_DATE=${2:?"idate of the test is required"}
+
+# CMake to fill these variables
+STAGED_TESTS_DIR="@STAGED_TESTS_DIR@"
+RUNTESTS="@RUNTESTS@"
+HOMEgfs="@PROJECT_SOURCE_DIR@"
+
+# Load the runtime environment for this script (needs wxflow and its dependencies)
+set +x
+source "${HOMEgfs}/workflow/gw_setup.sh"
+rc=$?
+[[ "${rc}" -ne 0 ]] && exit "${status}"
+set -x
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
+export PYTHONPATH
+
+INPUTS_YAML="${HOMEgfs}/ctests/cases/${TEST_NAME}.yaml"
+
+TEST_NAME="${TEST_NAME}" \
+RUNTESTS="${RUNTESTS}" \
+STAGED_TESTS_DIR="${STAGED_TESTS_DIR}" \
+"${HOMEgfs}/ctests/scripts/stage.py" --yaml "${INPUTS_YAML}" --test_date "${TEST_DATE}"
+rc=$?
+if [[ "${rc}" -ne 0 ]]; then
+    set +x
+    echo "Failed to stage inputs for '${TEST_NAME}' with '${INPUTS_YAML}'"
+    set -x
+    exit "${rc}"
+fi
+
+exit 0

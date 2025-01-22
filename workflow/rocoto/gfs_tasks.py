@@ -931,6 +931,11 @@ class GFSTasks(Tasks):
         dep = rocoto.add_dependency(dep_dict)
         dependencies = rocoto.create_dependency(dep=dep)
 
+        if self.options['do_wave']:
+            wave_job = 'waveprep' if self.options['app'] in ['ATMW'] else 'waveinit'
+            dep_dict = {'type': 'task', 'name': f'{self.run}_{wave_job}'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+
         if self.options['do_jediocnvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
@@ -949,11 +954,6 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
-
-        if self.options['do_wave']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_waveprep'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
 
@@ -2919,12 +2919,14 @@ class GFSTasks(Tasks):
         deps = []
         if 'enkfgdas' in self.run:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
-        else:
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        else:  # early cycle enkf run (enkfgfs)
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
 
         earcenvars = self.envars.copy()
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
