@@ -27,4 +27,7 @@ export GENERAL_DELIVERY_ROOT="/collab1/data_untrusted/${niagara_uid}/GENERAL_DEL
 # Sven's dropbox
 export SVEN_DROPBOX_ROOT="${DATAROOT}/archive_rotdir/${RUN}/SVEN_DROPBOX"
 
+# Location of the doorman package on Niagara
+export DOORMAN_ROOT="/home/Georgy.Fekete/sven"
+
 echo "END: config.globus"

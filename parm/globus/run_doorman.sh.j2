@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-# shellcheck disable=all
-# Shellcheck won't be able to parse this file
 
 # This script runs on Niagara to interact with the Doorman service
-cycle_YMDH="{{cycle_YMDH}}"
-subdir="{{RUN}}/{{cycle_YMDH}}"
+subdir="{{PSLOT}}/{{RUN}}/{{jobid}}"
 
 # Make the working directory
 doorman_dir="${HOME}/.doorman/${subdir}"
@@ -15,18 +12,18 @@ rm -f places.inc
 rm -f FLIST
 
 # Tell the doorman where Sven's dropbox is on the sending client (e.g. Hercules)
-echo 'export dropbox="{{sven_dropbox}}"' > dm.conf
+echo 'export dropbox="{{sven_dropbox}}' > dm.conf
 
 # Tell the doorman where the general delivery space is on Niagara (unique for each RUN/cycle)
 # This is where tarballs will be received and confirmations are written and sent.
-echo 'export GENDEL={{GENERAL_DELIVERY_ROOT}}/{{RUN}}/{{cycle_YMDH}}' > places.inc
+echo 'export GENDEL="{{doorman_gendel}}"' > places.inc
 # Tell the doorman what the sender's UUID is
-echo 'export CLIENT_ENDPOINT={{CLIENT_GLOBUS_UUID}}' >> places.inc
+echo 'export CLIENT_ENDPOINT="{{CLIENT_GLOBUS_UUID}}"' >> places.inc
 # Tell the doorman where the sending client's dropbox is (why twice??)
-echo 'export CLIENT_DROPBOX={{sven_dropbox}}' >> places.inc
+echo 'export CLIENT_DROPBOX="{{sven_dropbox}}"' >> places.inc
 
 # Point to the doorman executable scripts
-export PATH="${PATH}:{{doorman_root}}/bin"
+export PATH="${PATH}:{{DOORMAN_ROOT}}/bin"
 
 # Create the general delivery space if it wasn't already
 initialize.sh
@@ -65,6 +62,12 @@ stat=$?
 if [[ ${stat} -ne 0 ]]; then
     echo "Failed to send status back to client!"
     exit 3
+fi
+
+# Remove the working directory
+if [[ "{{KEEPDATA}}" == "NO" ]]; then
+    cd "${HOME}"
+    rm -rf "${doorman_dir}"
 fi
 
 exit 0

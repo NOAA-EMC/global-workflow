@@ -5,10 +5,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "globus" -c "base earc ens_group_globu
 
 
 ###############################################################
-# Run archive script
+# Run globus transfer script
 ###############################################################
 
-"${SCRgfs}/exgdas_enkf_globus.sh"
+"${SCRgfs}/exgdas_enkf_globus.py"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 

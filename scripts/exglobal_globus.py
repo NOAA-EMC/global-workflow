@@ -18,7 +18,7 @@ def main():
     globus = GlobusHpss(config)
 
     keys = ['STAGE_DIR', 'current_cycle', 'RUN', 'PDY', 'NMEM_ENS', 'HOMEgfs', 'sven_dir',
-            'DATASETS_YAML']
+            'DATASETS_YAML', 'PARMgfs', 'COMIN_CONF']
 
     globus_dict = AttrDict()
     for key in keys:

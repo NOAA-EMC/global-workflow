@@ -4,8 +4,7 @@ import os
 from logging import getLogger
 from typing import Any, Dict, List
 
-from wxflow import (AttrDict, Task,
-                    logit, parse_yaml)
+from wxflow import (AttrDict, Task, to_YMD, strftime, logit, parse_yaml)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -29,7 +28,18 @@ class GlobusHpss(Task):
         """
         super().__init__(config)
 
-        self.task_config = AttrDict(**self.task_config)
+        # Declare these here so the jinja-templated scripts can be shellchecked
+        cycle_YMD = to_YMD(self.task_config.current_cycle),
+        cycle_HH = strftime(self.task_config.current_cycle, '%H')
+
+        local_dict = AttrDict({
+            'sven_dropbox': (f"{self.task_config.SVEN_DROPBOX_ROOT}/"
+                             f"{self.task_config.PSLOT}/{self.task_config.RUN}.{cycle_YMD}/{cycle_HH}"),
+            'doorman_gendel': (f"{self.task_config.GENERAL_DELIVERY_ROOT}/"
+                               f"{self.task_config.PSLOT}/{self.task_config.RUN}.{cycle_YMD}/{cycle_HH}")
+        })
+
+        self.task_config = AttrDict(**self.task_config, **local_dict)
 
     @logit(logger)
     def configure(self, globus_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
@@ -48,6 +58,7 @@ class GlobusHpss(Task):
         """
 
         globus_parm = os.path.join(globus_dict.PARMgfs, "globus")
+        print(globus_parm)
 
         com_conf = globus_dict.COMIN_CONF
 
@@ -68,49 +79,25 @@ class GlobusHpss(Task):
         return globus_instructions
 
     @logit(logger)
-    def execute_transfer_data(self, atardir_set: Dict[str, Any]) -> None:
-        """Create a backup tarball from a yaml dict.
+    def execute_transfer_data(self, tarball_set: Dict[str, Any]) -> None:
+        """Interface function with Sven to send tarballs to HPSS via Niagara.
 
         Parameters
         ----------
-        atardir_set: Dict[str, Any]
-            Dict defining set of files to backup and the target tarball.
+        tarball_set: Dict[str, Any]
+            Set of tarballs and properties to applicable to their transfer.
 
         Return
         ------
         None
         """
 
-        if atardir_set.has_rstprod:
-
-            try:
-                self.cvf(atardir_set.target, atardir_set.fileset)
-            # Regardless of exception type, attempt to remove the target
-            except Exception:
-                self.rm_cmd(atardir_set.target)
-                raise RuntimeError(f"FATAL ERROR: Failed to create restricted archive {atardir_set.target}, deleting!")
-
-            self._protect_rstprod(atardir_set)
-
-        else:
-            self.cvf(atardir_set.target, atardir_set.fileset)
-
-    @logit(logger)
-    def _protect_rstprod(self, atardir_set: Dict[str, Any]) -> None:
-        """
-        Changes the group of the target tarball to rstprod and the permissions to
-        640.  If this fails for any reason, attempt to delete the file before exiting.
-
-        """
-
-        pass
+    pass
 
     @logit(logger)
     def clean(self):
         """
         Remove the temporary directories/files created by the GlobusHpss task.
-        Presently, this is only the ROTDIR/expdir directory if EXPDIR archiving
-        was performed.
         """
 
         return
