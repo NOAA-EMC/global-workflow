@@ -704,13 +704,20 @@ CICE_postdet() {
     seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
     vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
-    if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
-      source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
-      dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-    elif [[ "${RUN}" =~ "gdas" ]]; then
-      source_file="iceh_inst.${vdatestr}.nc"
-      dest_file="${RUN}.ice.t${cyc}z.inst.f${fhr3}.nc"
-    fi
+    case "${RUN}" in
+      *gdas)
+        source_file="iceh_inst.${vdatestr}.nc"
+        dest_file="${RUN}.ice.t${cyc}z.inst.f${fhr3}.nc"
+        ;;
+      *gfs|gefs|sfs)
+        source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
+        dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+        ;;
+      *)
+        echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet"
+        exit 10
+    esac
+        
     ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
 
     last_fhr=${fhr}
