@@ -49,7 +49,7 @@ class Archive(Task):
 
     @logit(logger)
     def configure_vrfy(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any]):
-        """Determine which files will need to be created to archive tp arcdir.
+        """Determine which files will need to be created to archive to arcdir.
 
         Parameters
         ----------
