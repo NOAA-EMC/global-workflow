@@ -252,10 +252,10 @@ class AtmEnsAnalysis(Task):
 
         # copy ensemble mean analysis to comrot
         logger.info("Copy ensemble mean analysis")
-        fh_dict = {'copy': [[f"{self.task_config.DATA}/anl/atmanl.ensmean.nc",
+        fh_dict = {'copy': [[f"{self.task_config.DATA}/anl/cubed_sphere_grid_atmanl.ensmean.nc",
                              f"{self.task_config.COM_ATMOS_ANALYSIS_ENS}/{self.task_config.APREFIX}cubed_sphere_grid_atmanl.ensmean.nc"]]}
         FileHandler(fh_dict).sync()
-        
+
         # copy FV3 atm increment to comrot directory
         logger.info("Copy UFS model readable atm increment file")
 
@@ -268,10 +268,10 @@ class AtmEnsAnalysis(Task):
             tmpl_inc_dict['MEMDIR'] = memchar
             incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
             for itile in range(6):
-                src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.tile{itile+1}.nc")
+                src = os.path.join(self.task_config.DATA, 'anl', memchar, f"cubed_sphere_grid_atminc.tile{itile+1}.nc")
                 dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.cubed_sphere_grid_atminc.tile{itile+1}.nc")
                 inc_copy['copy'].append([src, dest])
-                
+
         logger.debug(f"Copying increments")
         FileHandler(inc_copy).sync()
 

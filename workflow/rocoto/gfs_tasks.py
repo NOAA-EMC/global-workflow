@@ -2738,11 +2738,12 @@ class GFSTasks(Tasks):
     def ecen_fv3jedi(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_atmanlfinal"}
+        dep_dict = {'type': 'task', 'name': f"{self.run}_atmanlfinal"}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
-        deps.append(rocoto.add_dependency(dep_dict))        
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)        
+        if self.run == 'gdas':
+            dep_dict = {'type': 'task', 'name': f'enkf{self.run}_atmensanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ecen_fv3jedi')
         task_name = f'{self.run}_ecen_fv3jedi'
@@ -2760,16 +2761,16 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
 
         return task
-    
+
     def esfc(self):
 
         deps = []
         if self.options['do_jediatmens']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
-            deps.append(rocoto.add_dependency(dep_dict))            
+            deps.append(rocoto.add_dependency(dep_dict))
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
-            deps.append(rocoto.add_dependency(dep_dict))            
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jedisnowda']:
@@ -2798,11 +2799,11 @@ class GFSTasks(Tasks):
 
         deps = []
         if self.options['do_jediatmens']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_ecen_fv3jedi'}
-            deps.append(rocoto.add_dependency(dep_dict))                        
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_ecen_fv3jedi'}
+            deps.append(rocoto.add_dependency(dep_dict))
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
-            deps.append(rocoto.add_dependency(dep_dict))                        
+            deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:

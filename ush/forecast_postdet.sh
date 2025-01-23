@@ -126,7 +126,6 @@ FV3_postdet() {
 
     #--------------------------------------------------------------------------
     if [[ "${RERUN}" == "YES" ]]; then
-      echo "foobar1"
       local restart_fhr
       restart_fhr=$(nhour "${RERUN_DATE}" "${current_cycle}")
       IAU_FHROT=$((IAU_OFFSET + restart_fhr))
@@ -138,7 +137,6 @@ FV3_postdet() {
 
     #--------------------------------------------------------------------------
     else  # "${RERUN}" == "NO"
-      echo "foobar2"
       # Need a coupler.res that is consistent with the model start time
       if [[ "${DOIAU:-NO}" == "YES" ]]; then
         local model_start_time="${previous_cycle}"
@@ -156,7 +154,6 @@ EOF
       # Create a array of increment files
       local inc_files inc_file iaufhrs iaufhr
       if [[ "${DOIAU}" == "YES" ]]; then
-          echo "foobar3"
         # create an array of inc_files for each IAU hour
         IFS=',' read -ra iaufhrs <<< "${IAUFHRS}"
         inc_files=()
@@ -173,12 +170,11 @@ EOF
           delimiter=","
         done
       else  # "${DOIAU}" == "NO"
-        echo "foobar2"
         read_increment=".true."
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
           inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
-          if [[ "${RUN}" == "enkfgdas" || "${RUN}" == "enkfgfs" ]] && [[ "${RECENTER_ENKF:-"YES"}" == "YES" ]]; then            
-            res_latlon_dynamics="ratminc"              
+          if [[ "${RUN}" == "enkfgdas" || "${RUN}" == "enkfgfs" ]] && [[ "${RECENTER_ENKF:-"YES"}" == "YES" ]]; then
+            res_latlon_dynamics="ratminc"
           else
             res_latlon_dynamics="atminc"
           fi
@@ -187,7 +183,7 @@ EOF
           inc_files=("atminc.nc")
           res_latlon_dynamics="atminc.nc"
           increment_file_on_native_grid=".false."
-        fi    
+        fi
         if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
           if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
              IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
@@ -198,7 +194,7 @@ EOF
             read_increment=".false."
             res_latlon_dynamics='""'
           fi
-	  increment_file_on_native_grid=".false."
+          increment_file_on_native_grid=".false."
         fi
       fi
 
@@ -221,7 +217,7 @@ EOF
               exit 1
             fi
             # Add together increment with correction increment to get recentered increment
-            ncbo --op_typ=add -v u_inc,v_inc,T_inc,delp_inc,delz_inc,sphum_inc,liq_wat_inc,o3mr_inc,icmr_inc ${DATA}/INPUT/${inc_file} ${DATA}/INPUT/c${inc_file} ${DATA}/INPUT/r${inc_file}            
+            ncbo --op_typ=add -v u_inc,v_inc,T_inc,delp_inc,delz_inc,sphum_inc,liq_wat_inc,o3mr_inc,icmr_inc ${DATA}/INPUT/${inc_file} ${DATA}/INPUT/c${inc_file} ${DATA}/INPUT/r${inc_file}
           fi
         else
           increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
@@ -230,7 +226,7 @@ EOF
           else
             echo "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
             exit 1
-          fi            
+          fi
         fi
       done
 
@@ -391,27 +387,27 @@ WW3_postdet() {
 
   #First check to see if netcdf restart exists:
   local ww3_binary_restart_file ww3_netcdf_restart_file
-  ww3_binary_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3" 
-  ww3_netcdf_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc" 
-  if [[ -s "${ww3_netcdf_restart_file}" ]]; then 
-    export WW3_restart_from_binary=false 
+  ww3_binary_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
+  ww3_netcdf_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
+  if [[ -s "${ww3_netcdf_restart_file}" ]]; then
+    export WW3_restart_from_binary=false
     seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
     local ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
     ${NCP} "${ww3_netcdf_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
              || ( echo "FATAL ERROR: Unable to copy netcdf WW3 IC, ABORT!"; exit 1 )
-  elif [[ -s "${ww3_binary_restart_file}" ]]; then 
-    # found binary ww3 restart file 
+  elif [[ -s "${ww3_binary_restart_file}" ]]; then
+    # found binary ww3 restart file
     export WW3_restart_from_binary=true
     if [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
-      #if this is a cmeps continue then the wave restart name is different 
+      #if this is a cmeps continue then the wave restart name is different
       seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
       local ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}"
       ${NCP} "${ww3_binary_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
           || ( echo "FATAL ERROR: Unable to copy binary WW3 IC, ABORT!"; exit 1 )
-    else 
+    else
       ${NCP} "${ww3_binary_restart_file}" "${DATA}/restart.ww3" \
           || ( echo "FATAL ERROR: Unable to copy binary WW3 IC, ABORT!"; exit 1 )
-    fi 
+    fi
   else
     if [[ "${RERUN}" == "YES" ]]; then
       # In the case of a RERUN, the WW3 restart file is required
@@ -437,15 +433,15 @@ WW3_postdet() {
     ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${ww3_restart_ufs_file}"
   done
 
-  # TO DO: link GEFS restart for next cycle IC 
+  # TO DO: link GEFS restart for next cycle IC
   #if [[ "${RUN}" == "gefs" ]]; then
   #  vdate=${model_start_date_next_cycle}
   #  seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
   #  ww3_restart_ufs_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"
   #  ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"
   #  ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${ww3_restart_ufs_file}"
-  #fi	  
-      
+  #fi
+
   # Link output files
   local wavprfx="${RUN}wave${WAV_MEMBER:-}"
   ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
@@ -499,7 +495,7 @@ WW3_out() {
   fi
 
   # Copy restarts for next cycle for RUN=gdas|gefs
-  #TO DO: GEFS needs to be added here 
+  #TO DO: GEFS needs to be added here
   if [[ "${RUN}" == "gdas" ]]; then
     local restart_date restart_file
     restart_date="${model_start_date_next_cycle}"
@@ -509,7 +505,7 @@ WW3_out() {
            "${COMOUT_WAVE_RESTART}/${restart_file}"
   fi
 
-  # Copy restarts for downstream usage in HAFS 
+  # Copy restarts for downstream usage in HAFS
   if [[ "${RUN}" == "gdas" ]]; then
     local restart_date restart_file
     restart_date="${next_cycle}"
