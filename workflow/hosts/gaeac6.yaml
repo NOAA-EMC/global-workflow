@@ -1,0 +1,27 @@
+BASE_GIT: '/gpfs/f6/bil-fire8/world-shared/global/glopara/git'
+DMPDIR: '/gpfs/f6/bil-fire8/world-shared/global/glopara/dump'
+BASE_DATA: '/gpfs/f6/bil-fire8/world-shared/global/glopara'
+BASE_IC: '/gpfs/f6/bil-fire8/world-shared/global/glopara/data/ICSDIR'
+PACKAGEROOT: '/gpfs/f6/bil-fire8/world-shared/global/glopara/nwpara'
+COMINsyn: '/gpfs/f6/bil-fire8/world-shared/global/glopara/com/syndat'
+HOMEDIR: '/gpfs/f6/bil-fire8/scratch/${USER}'
+STMP: '/gpfs/f6/bil-fire8/scratch/${USER}'
+PTMP: '/gpfs/f6/bil-fire8/scratch/${USER}'
+NOSCRUB: $HOMEDIR
+ACCOUNT: bil-fire8
+SCHEDULER: slurm
+QUEUE: normal
+QUEUE_SERVICE: normal
+PARTITION_BATCH: batch
+PARTITION_SERVICE: batch
+RESERVATION: ''
+CLUSTERS: 'c6'
+CHGRP_RSTPROD: 'NO'
+CHGRP_CMD: 'chgrp rstprod'
+HPSSARCH: 'NO'
+HPSS_PROJECT: emc-global
+LOCALARCH: 'NO'
+ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+MAKE_NSSTBUFR: 'NO'
+MAKE_ACFTBUFR: 'NO'
+SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
