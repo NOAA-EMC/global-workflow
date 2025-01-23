@@ -81,6 +81,9 @@ class GFSForecastOnlyAppConfig(AppConfig):
                         'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
                         'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
+        if options['do_globusarch']:
+            configs += ['globus']
+
         return configs
 
     @staticmethod
@@ -162,6 +165,12 @@ class GFSForecastOnlyAppConfig(AppConfig):
                       'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
                       'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
-        tasks += ['arch', 'cleanup']  # arch and cleanup **must** be the last tasks
+        tasks += ['arch']
+
+        if options['do_globusarch']:
+            tasks += ['globus']
+
+        # cleanup **must** be the last task
+        tasks += ['cleanup']
 
         return {f"{self.run}": tasks}
