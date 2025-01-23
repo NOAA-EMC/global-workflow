@@ -297,8 +297,12 @@ class GFSCycledAppConfig(AppConfig):
                                             'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen',
                                             'mos_ext_grd_prdgen', 'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
-                # Last two items
-                task_names[run] += ['arch', 'cleanup']
+                task_names[run] += ['arch']
+                if options['do_globusarch']:
+                    task_names[run] += ['globus']
+
+                # Cleanup is always last
+                task_names[run] += ['cleanup']
 
             # Ensemble tasks
             elif 'enkf' in run:

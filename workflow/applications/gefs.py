@@ -96,6 +96,10 @@ class GEFSAppConfig(AppConfig):
         if options['do_extractvars']:
             tasks += ['extractvars']
 
-        tasks += ['arch', 'cleanup']
+        tasks += ['arch']
+        if options['do_globusarch']:
+            tasks += ['globus']
+
+        tasks += ['cleanup']
 
         return {f"{self.run}": tasks}
