@@ -1,0 +1,22 @@
+###############################################################################
+#
+#  RAP with sfcdiff debug test: atmosphere only at C96L127 in debug mode
+#
+###############################################################################
+
+export TEST_DESCR="Compare RAP with sfcdiff debug results with previous trunk version"
+
+export CNTL_DIR=rap_sfcdiff_debug
+
+export LIST_FILES="sfcf000.nc \
+                   sfcf001.nc \
+                   atmf000.nc \
+                   atmf001.nc"
+
+export_rap
+export OUTPUT_FH='0 1'
+export FHMAX=1
+export WRITE_DOPOST=.false.
+
+export CCPP_SUITE=FV3_RAP_sfcdiff
+export DO_MYNNSFCLAY=.false.

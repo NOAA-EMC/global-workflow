@@ -1,0 +1,26 @@
+###############################################################################
+#
+#  RAP debug test: atmosphere only at C96L127 in debug mode plus extended diagnostics
+#
+###############################################################################
+
+export TEST_DESCR="Compare RAP diag debug results with previous trunk version"
+
+export CNTL_DIR=rap_diag_debug
+
+export LIST_FILES="sfcf000.nc \
+                   sfcf001.nc \
+                   atmf000.nc \
+                   atmf001.nc"
+
+export_rap
+export OUTPUT_FH='0 1'
+export FHMAX=1
+export WRITE_DOPOST=.false.
+
+export FHZERO=1
+export LDIAG3D=.true.
+export QDIAG3D=.true.
+export MAX_OUTPUT_FIELDS=500
+export DIAG_TABLE_ADDITIONAL=diag_additional_rap_dtend
+export PRINT_DIFF_PGR=.true.

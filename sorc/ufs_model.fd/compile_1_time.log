@@ -1,0 +1,1 @@
+Compile 1 elapsed time 886 seconds. -DAPP=S2SWA -D32BIT=ON -DCCPP_SUITES=FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1,FV3_global_nest_v1 -DPDLIB=ON -DMPI=ON -DCMAKE_BUILD_TYPE=Release
