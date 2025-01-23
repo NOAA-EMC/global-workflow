@@ -47,10 +47,15 @@ case ${machine} in
               # shellcheck disable=SC2034
               mem_node_max="96GB"
     ;;
-  "GAEA")
+  "GAEAC5")
               max_tasks_per_node=128
               # shellcheck disable=SC2034
               mem_node_max="251GB"
+    ;;
+  "GAEAC6")
+              max_tasks_per_node=192
+              # shellcheck disable=SC2034
+              mem_node_max="384GB"
     ;;
   "ORION")
               max_tasks_per_node=40
