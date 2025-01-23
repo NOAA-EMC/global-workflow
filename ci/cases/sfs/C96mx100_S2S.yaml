@@ -11,9 +11,9 @@ arguments:
   resensatmos: 96
   resdetocean: 1
   start: 'cold'
-  nens: 2
+  nens: 10
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/sfs_defaults.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/sfs_full.yaml
 
