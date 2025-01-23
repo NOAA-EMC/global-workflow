@@ -610,13 +610,13 @@ class GEFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': 'gefs_arch'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
         if self.options['do_globusarch']:
             dep_dict = {'type': 'task', 'name': 'gefs_globus'}
             deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+        else:
+            dep_dict = {'type': 'task', 'name': 'gefs_arch'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('cleanup')
         task_name = 'gefs_cleanup'
