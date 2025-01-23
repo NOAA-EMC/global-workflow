@@ -4,7 +4,7 @@ experiment:
 
 arguments:
   pslot: {{ 'pslot' | getenv }}
-  app: S2S
+  app: S2SW
   resdetatmos: 48
   resdetocean: 5.0
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
