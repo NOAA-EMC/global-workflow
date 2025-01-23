@@ -2,6 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "extractvars" -c "base extractvars"
+source "${USHgfs}/wave_domain_grid.sh"
 
 # Set COM Paths
 for grid in '0p25' '0p50' '1p00'; do
@@ -18,6 +19,10 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
     "COMIN_ICE_GRIB:COM_ICE_GRIB_TMPL" \
     "COMIN_ICE_NETCDF:COM_ICE_NETCDF_TMPL" \
     "COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL"
+
+process_grdID "${waveGRD}"
+YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+    "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
 
 if [[ "${DO_ATM}" == "YES" ]]; then
   if [[ ! -d "${ARC_RFCST_PROD_ATMOS_F2D}" ]]; then mkdir -p "${ARC_RFCST_PROD_ATMOS_F2D}"; fi
