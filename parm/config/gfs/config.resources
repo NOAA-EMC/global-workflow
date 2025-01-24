@@ -1059,7 +1059,7 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "arch_tars" | "earc_vrfy" | "earc_tars" | "getic")
+  "arch_tars" | "earc_tars" | "getic")
     walltime="06:00:00"
     ntasks=1
     tasks_per_node=1
@@ -1067,7 +1067,7 @@ case ${step} in
     memory="4096M"
     ;;
 
-  "arch_vrfy")
+  "arch_vrfy" | "earc_vrfy")
     walltime="00:15:00"
     ntasks=1
     tasks_per_node=1
