@@ -5,7 +5,7 @@ import argparse
 from pathlib import Path
 import datetime
 import hashlib
-from wxflow import parse_j2yaml, Logger
+from wxflow import parse_j2yaml, Logger, logit
 
 logger = Logger(level="DEBUG", colored_log=True)
 
@@ -41,7 +41,7 @@ def main():
         data['TEST_DATE'] = datetime.datetime.strptime(args.test_date, '%Y%m%d%H')
 
     files = parse_j2yaml(path=args.yaml, data=data)
-    if not files.output_files:
+    if not 'output_files' in files:
         print(f"No output files found for test: {args.yaml}")
         print("Nothing to validate (TODO - Stubbed).")
         sys.exit(0)
