@@ -1,0 +1,803 @@
+\chapter{EnKF Diagnostics and Tuning}\label{enkf_diag}
+\setlength{\parskip}{12pt}
+This chapter will discuss how to assess whether an EnKF was successful based on the contents of the standard output (stdout). Properly checking the EnKF output will also provide useful information to diagnose potential errors in the system. The chapter begins with an introduction to the content and structure of the EnKF stdout, followed by detailed discussion of tuning options in the namelist.
+This chapter follows the online exercise for a case at 00z on February 13th, 2014 (case 2014021300). This case uses WRF-ARW NetCDF ensemble files as the background and analyzes several observations typical for operations, including most conventional observation data and select radiance data (AMSU-A , HIRS4). The case was run on a Linux cluster supercomputer, using 32 cores. Users can follow this test to reproduce the following results by visiting:
+
+\url{http://www.dtcenter.org/EnKF/users/tutorial/index.php}
+
+%----------------------------------------------
+\section{Understanding the Standard Output from EnKF (stdout)}
+%----------------------------------------------
+
+Upon completion of an EnKF run, it is always useful to do a quick check of the standard output (stdout), to assess the performance of the EnKF. The stdout file has information about whether the EnKF analysis has successfully completed, if the ensemble spread inflation looks good, and if the background and analysis fields are reasonable. Understanding the contents of this file can also be very helpful for users to find clues in the event of a crash.
+
+The EnKF stdout has following information:
+\begin{description}
+\item[ ] a. namelist configuration
+\item[ ] b. background ensemble members of observations and analysis variables
+\item[ ] c. statistics of the ensemble prior
+\item[ ] d. domain and observation partition
+\item[ ] e. statistics of the ensemble analysis
+\item[ ] f. spread inflation of the analysis ensemble
+\end{description}
+
+The following section contains a detailed description of the content of stdout, explained using the WRF-ARW case: 2014021300. The analysis domain consists of 129 x 70 x 50 grid points. To keep the output concise and make it more readable, redundant content are omitted.
+
+The following indicates the start of the EnKF analysis. It shows how many processors are used to run the analysis and the beginning time of this run:
+\begin{scriptsize}
+\begin{verbatim}
+Execute poe command line: poe  ./enkf.x
+ running on           32  processors ...
+
+
+* . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * .
+     PROGRAM ENKF_ANL HAS BEGUN. COMPILED 2011319.55     ORG: NP25
+     STARTING DATE-TIME  JUL 14,2016  00:01:03.956  196  THU   2457584
+\end{verbatim}
+\end{scriptsize}
+
+The following lines show how many satellite observation types are set to be read in and if the radiance bias correction is updated before the analysis process:
+\begin{scriptsize}
+\begin{verbatim}
+ number of satellite radiance files used          59
+ number of satellite ozone files used           7
+\end{verbatim}
+\end{scriptsize}
+
+The following lines show the namelist used in the analysis:
+\begin{scriptsize}
+\begin{verbatim}
+ namelist parameters:
+ --------------------
+ &NAM_ENKF
+ DATEIN  =  2014021300,
+ DATAPATH        = ./                                                                                                    ,
+ IASSIM_ORDER    =           0,
+ COVINFLATEMAX   =   100.0000    ,
+ COVINFLATEMIN   =   1.000000    ,
+ DETERMINISTIC   = T, SORTINC = T,
+ CORRLENGTHNH    =   500.0000    ,
+ CORRLENGTHTR    =   500.0000    ,
+ CORRLENGTHSH    =   500.0000    ,
+... ...
+ SAVE_INFLATION  = F,
+ LETKF_FLAG      = F,
+ MASSBAL_ADJUST  = F,
+ USE_EDGES       = F,
+ EMISS_BC        = T,
+ ISEED_PERTURBED_OBS     =           0
+ /
+ --------------------
+\end{verbatim}
+\end{scriptsize}
+
+The following lines show ensemble size, background information, the number of 3D analysis variables, and total number of 2D fields of the 3D variables, plus surface pressure (Ps).
+\begin{scriptsize}
+\begin{verbatim}
+          20  members
+ number of background forecast times to be updated =            1
+ first-guess forecast hours for analysis = 06
+           5 3d vars to update
+ total of         251  2d grids will be updated (including ps)
+\end{verbatim}
+\end{scriptsize}
+
+The actual analysis variables and the background type are printed, as well as the maximum and minimum of the surface pressure as a sanity check:
+\begin{scriptsize}
+\begin{verbatim}
+ Updating U, V, T, QVAPOR, PH, and MU for WRF-ARW...
+ Surface pressure (spressmn) min/max range:   678.673339843750
+   1032.22473144531
+\end{verbatim}
+\end{scriptsize}
+
+Next, the contents of convinfo are displayed:
+\begin{tiny}
+\begin{verbatim}
+READ_CONVINFO: tcp     112    0  1   3.000      0   0   0   75.00     5.000     1.000     75.00     0.000        0  0.000    0.000      0  0.000    0.000     2
+READ_CONVINFO: ps      120    0  1   3.000      0   0   0   4.000     3.000     1.000     4.000    0.3000E-03    0  0.000    0.000      0  0.000    0.000     2
+ line ignored in convinfo due to use flag  ps              132           0
+          -1
+......
+
+ line ignored in convinfo due to use flag  gps              44           0
+          -1
+\end{verbatim}
+\end{tiny}
+
+The next 272 lines show the content of ozinfo:
+\begin{scriptsize}
+\begin{verbatim}
+OZINFO_READ:  jpch_oz=    272
+  1 sbuv6_n14      lev =    1 use = -1 pob =     0.240 gross =   1.000 error =   1.000 b_oz =  10.000 pg_oz =   0.000
+  2 sbuv6_n14      lev =    2 use = -1 pob =     0.490 gross =   1.000 error =   1.000 b_oz =  10.000 pg_oz =   0.000
+  3 sbuv6_n14      lev =    3 use = -1 pob =     0.980 gross =   1.000 error =   1.000 b_oz =  10.000 pg_oz =   0.000
+... ...
+271 mls30_aura     lev =   54 use = -1 pob =   999.999 gross =   9.999 error =   9.999 b_oz =  10.000 pg_oz =   0.000
+272 mls30_aura     lev =   55 use = -1 pob =   999.999 gross =   9.999 error =   9.999 b_oz =  10.000 pg_oz =   0.000
+\end{verbatim}
+\end{scriptsize}
+
+The next 2680 lines show the content of satinfo and starts reading in the radiance bias correction coefficients:
+\begin{scriptsize}
+\begin{verbatim}
+RADINFO_READ:  jpch_rad=   2723
+   1 amsua_n15      chan= 1 var= 3.000 varch_cld= 20.000 use= 1 ermax=   4.500 b_rad= 10.00 pg_rad=  0.00 icld_det=-2
+   2 amsua_n15      chan= 2 var= 2.200 varch_cld= 18.000 use= 1 ermax=   4.500 b_rad= 10.00 pg_rad=  0.00 icld_det=-2
+   3 amsua_n15      chan= 3 var= 2.000 varch_cld= 12.000 use= 1 ermax=   4.500 b_rad= 10.00 pg_rad=  0.00 icld_det=-2
+   4 amsua_n15      chan= 4 var= 0.600 varch_cld=  3.000 use= 1 ermax=   2.500 b_rad= 10.00 pg_rad=  0.00 icld_det=-2
+... ...
+
+2722 ahi_himawari8  chan=15 var= 2.200 varch_cld=  0.000 use= -1 ermax=   2.000 b_rad= 10.00 pg_rad=  0.00 icld_det=-2
+2723 ahi_himawari8  chan=16 var= 2.200 varch_cld=  0.000 use= -1 ermax=   2.000 b_rad= 10.00 pg_rad=  0.00 icld_det=-2
+\end{verbatim}
+\end{scriptsize}
+
+The majority of next near 3000 lines show the content of radiance bias correction coefficients:
+\begin{tiny}
+\begin{verbatim}
+ RADINFO_READ:  guess air mass bias correction coefficients below
+   1            amsua_n15   -1.96518   0.00000  39.06817  -0.92319   0.40846   0.00000   0.00000   0.00173   3.68970   2.36747   8.86294  -1.84829
+   2            amsua_n15   -7.41540   0.00000  80.13801  -0.81847  -1.01321   0.00000   0.00000   0.01427   2.63880   8.31509  22.04145  -1.56477
+  ... ...
+2679       avhrr3_metop-b    0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000
+2680       avhrr3_metop-b    0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000   0.00000
+\end{verbatim}
+\end{tiny}
+
+Among the lines describing the radiance bias correction coefficients, the EnKF also starts to inventory the observation number and types for both conventional and radiance data. Observations of various types are read in (from the \verb|diag**| files) and the number of the observations and time spent reading in the observations are shown:
+
+Start to check the radiance and ozone observations:
+\begin{scriptsize}
+\begin{verbatim}
+    1             sbuv2_n16  nread=         0  nkeep=         0  num_obs_tot=         0
+    1             amsua_n15  nkeep=         0  num_obs_tot=         0
+    2             sbuv2_n17  nread=         0  nkeep=         0  num_obs_tot=         0
+    3             sbuv2_n18  nread=         0  nkeep=         0  num_obs_tot=         0
+    4             sbuv2_n19  nread=         0  nkeep=         0  num_obs_tot=         0
+    5              omi_aura  nread=         0  nkeep=         0  num_obs_tot=         0
+    6          gome_metop-a  nread=         0  nkeep=         0  num_obs_tot=         0
+    7          gome_metop-b  nread=         0  nkeep=         0  num_obs_tot=         0
+           0  ozone obs
+    2             amsua_n18  nkeep=      6284  num_obs_tot=      6284
+    3             amsua_n19  nkeep=         0  num_obs_tot=      6284
+    6            amsua_aqua  nkeep=         0  num_obs_tot=      6284
+    7         amsua_metop-a  nkeep=         0  num_obs_tot=      6284
+    8             airs_aqua  nkeep=         0  num_obs_tot=      6284
+   11         hirs4_metop-a  nkeep=       154  num_obs_tot=      6438
+   12               mhs_n18  nkeep=         0  num_obs_tot=      6438
+   13               mhs_n19  nkeep=         0  num_obs_tot=      6438
+   14           mhs_metop-a  nkeep=         0  num_obs_tot=      6438
+   15          goes_img_g11  nkeep=         0  num_obs_tot=      6438
+   25             ssmis_f17  nkeep=         0  num_obs_tot=      6438
+   45            sndrd1_g15  nkeep=         0  num_obs_tot=      6438
+   46            sndrd2_g15  nkeep=         0  num_obs_tot=      6438
+   47            sndrd3_g15  nkeep=         0  num_obs_tot=      6438
+   48            sndrd4_g15  nkeep=         0  num_obs_tot=      6438
+   49          iasi_metop-a  nkeep=         0  num_obs_tot=      6438
+   52            seviri_m10  nkeep=         0  num_obs_tot=      6438
+   53         amsua_metop-b  nkeep=         0  num_obs_tot=      6438
+\end{verbatim}
+\end{scriptsize}
+
+Start to check the conventional observations:
+\begin{scriptsize}
+\begin{verbatim}
+ columns below obtype,nread, nkeep
+    t       8043       7904
+    q       2625       2621
+   ps      14133      14133
+   uv      21982      21982
+  sst          0          0
+  gps          0          0
+   pw          0          0
+   dw          0          0
+  srw          0          0
+   rw          0          0
+  tcp          0          0
+\end{verbatim}
+\end{scriptsize}
+
+A summary of the total number of conventional ($1^{st}$ number 46640), ozone ($2^{nd}$ number 0), and 
+radiance observations ($3^{rd}$ number 6438) in diag files is given:
+\begin{scriptsize}
+\begin{verbatim}
+ nobs_conv, nobs_oz, nobs_sat =        46640           0        6438
+\end{verbatim}
+\end{scriptsize}
+
+Also, the following normalization factors for the radiance bias predictors could be inside the bias correction coefficient lines:
+\begin{scriptsize}
+\begin{verbatim}
+ npred  =           12
+           1 biasprednorm =    1.000000
+           2 biasprednorm =    1.000000
+... ...
+          11 biasprednorm =    1.000000
+          12 biasprednorm =    1.000000
+\end{verbatim}
+\end{scriptsize}
+
+Then, the time spent reading in the observations and the total number of observations kept and rejected are shown:
+\begin{scriptsize}
+\begin{verbatim}
+ max time in mpireadobs  =   0.6105460
+ total number of obs        53078
+       53078 obs kept
+           0 total obs rejected
+ time in read_obs =   1.25072427513078      on proc           0
+\end{verbatim}
+\end{scriptsize}
+
+In the stdout, regional averaged (northern hemisphere - NH, southern hemisphere - SH, and tropics - TR) statistics of the ensemble `priors` fit to all observations are provided, partly for checking if the inflation is appropriate. The details of this part are discussed in next Section \ref{ch4_tuningandinflat}.
+\begin{scriptsize}
+\begin{verbatim}
+ innovation statistics for prior:
+ conventional obs
+ region, obtype, nobs, bias, innov stdev, sqrt(S+R), sqrt(S), sqrt(R):
+NH    all ps  14083 -0.591E-02  0.860E+00  0.814E+00  0.601E+00  0.550E+00
+TR    all ps     50 -0.629E-01  0.422E+00  0.661E+00  0.367E+00  0.550E+00
+NH     all t   7766 -0.228E+00  0.163E+01  0.128E+01  0.480E+00  0.119E+01
+TR     all t    138 -0.130E+00  0.118E+01  0.119E+01  0.234E+00  0.117E+01
+NH    all uv  21680  0.136E-01  0.295E+01  0.276E+01  0.140E+01  0.237E+01
+TR    all uv    302 -0.379E+00  0.251E+01  0.268E+01  0.124E+01  0.238E+01
+NH     all q   2553 -0.323E-01  0.146E+00  0.157E+00  0.868E-01  0.131E+00
+TR     all q     68 -0.721E-01  0.202E+00  0.164E+00  0.582E-01  0.154E+00
+ satellite brightness temp
+ instrument, channel #, nobs, bias, innov stdev, sqrt(S+R), sqrt(S), sqrt(R):
+           amsua_n18   1   241 -0.199E+00  0.194E+01  0.306E+01  0.176E+01  0.250E+01
+           amsua_n18   2   248 -0.194E+00  0.145E+01  0.234E+01  0.806E+00  0.220E+01
+           amsua_n18   3   248 -0.620E+00  0.119E+01  0.206E+01  0.497E+00  0.200E+01
+           amsua_n18   4   248 -0.189E+00  0.398E+00  0.568E+00  0.140E+00  0.550E+00
+           amsua_n18   5   248  0.188E-01  0.337E+00  0.315E+00  0.966E-01  0.300E+00
+           amsua_n18   6  1203 -0.396E-01  0.198E+00  0.238E+00  0.610E-01  0.230E+00
+           amsua_n18   7  1225 -0.215E+00  0.324E+00  0.235E+00  0.480E-01  0.230E+00
+           amsua_n18   8  1155 -0.235E+00  0.369E+00  0.259E+00  0.675E-01  0.250E+00
+           amsua_n18  10  1211  0.408E+00  0.491E+00  0.353E+00  0.429E-01  0.350E+00
+           amsua_n18  11    12  0.720E+00  0.723E+00  0.404E+00  0.567E-01  0.400E+00
+           amsua_n18  15   245 -0.311E+00  0.198E+01  0.380E+01  0.148E+01  0.350E+01
+       hirs4_metop-a   3     1  0.115E+01  0.115E+01  0.534E+00  0.631E-01  0.530E+00
+       hirs4_metop-a   4    42  0.260E+00  0.521E+00  0.403E+00  0.488E-01  0.400E+00
+       hirs4_metop-a   5     7 -0.534E+00  0.558E+00  0.367E+00  0.696E-01  0.360E+00
+       hirs4_metop-a   6     7 -0.748E+00  0.782E+00  0.473E+00  0.109E+00  0.460E+00
+       hirs4_metop-a   7     9 -0.557E+00  0.815E+00  0.580E+00  0.108E+00  0.570E+00
+       hirs4_metop-a   8     9  0.374E+00  0.675E+00  0.100E+01  0.208E-01  0.100E+01
+       hirs4_metop-a  10     9  0.199E+00  0.581E+00  0.612E+00  0.120E+00  0.600E+00
+       hirs4_metop-a  11     9 -0.380E-01  0.718E+00  0.143E+01  0.770E+00  0.120E+01
+       hirs4_metop-a  12    34 -0.988E+00  0.179E+01  0.213E+01  0.141E+01  0.160E+01
+       hirs4_metop-a  13     9  0.694E-01  0.330E+00  0.382E+00  0.116E+00  0.364E+00
+       hirs4_metop-a  14     9 -0.369E-01  0.257E+00  0.294E+00  0.137E+00  0.260E+00
+       hirs4_metop-a  15     9  0.352E-01  0.289E+00  0.281E+00  0.107E+00  0.260E+00
+ time in estimate_work_enkf1 =   5.723375361412764E-002  secs
+\end{verbatim}
+\end{scriptsize}
+
+
+Next, the analysis variable fields and the observations are distributed to the different processors. The following lines show the maximum and minimum number of observations and grid on subdomain and the time used to setup those decompositions:
+\begin{scriptsize}
+\begin{verbatim}
+ time in estimate_work_enkf1 =   5.723375361412764E-002  secs
+ min/max numobs          32        7663
+ min/max estimated work       637809      638478
+ npts =         9030
+ min/max number of points per proc =          243         317
+ time to do model space decomp =   1.529277069494128E-003
+ nobstot =        53078
+ min/max number of obs per proc =         1658        1659
+ time to do ob space decomp =   3.935033455491066E-004
+ sending out observation prior ensemble perts from root ...
+ nobstot*nanals               1061560
+ npts*ndim               2266530
+ ... took   1.730861375108361E-002  secs
+ time in load_balance =  7.929413160309196E-002 on proc           0
+\end{verbatim}
+\end{scriptsize}
+
+Then, the ensemble background members of the analysis variables are read in and the maximum and minimum values of the fields at each vertical level are displayed. The maximum and minimum values are useful for a quick confirmation that the background fields have been read successfully. The size of the real array of ensemble perturbations updated on each processor and the time spent to read in and distribute the background ensemble are also shown:
+\begin{scriptsize}
+\begin{verbatim}
+ anal_chunk size =      1591340
+ READGRIDDATA_ARW: U           1  -20.55222       20.72632
+  ...
+ READGRIDDATA_ARW: U          50  -12.60845       52.03727
+ READGRIDDATA_ARW: V          51  -11.67894       21.03603
+ ...
+ READGRIDDATA_ARW: V
+ ...
+ READGRIDDATA_ARW: V         100  -17.20951       21.87867
+ READGRIDDATA_ARW: T         101  -62.00526       13.33912
+ ...
+ READGRIDDATA_ARW: T         150   469.5381       509.8757
+ READGRIDDATA_ARW: QVAPOR         151  8.4173851E-05  1.7215064E-02
+ ...
+ READGRIDDATA_ARW: QVAPOR         200  1.5460877E-06  1.0506745E-05
+ READGRIDDATA_ARW: PH         201  -14.64355       4.688477
+ ...
+ READGRIDDATA_ARW: PH         250   7195.078       14206.67
+ READGRIDDATA_ARW: MU         251  -1326.610       3290.569
+ time in readgridata on root  0.326851664343849      secs
+ time to scatter state on root  0.163762195268646      secs
+ time in read_ensemble =  0.494254242163152      on proc           0
+\end{verbatim}
+\end{scriptsize}
+
+In EnSRF, observations can be skipped/not assimilated due to the adaptive observation thinning. The following lines show how many observations are skipped or not assimilated by this thinning. In this case, paoverpb\_thresh = 0.99, which lead to 423 of the observations being skipped.
+\begin{scriptsize}
+\begin{verbatim}
+ assimilate obs in order they were read in
+ 1 timing on proc     0  =    0.51    0.24    0.01    0.10    0.00    0.15    0
+       22152  out of       53078 obs skipped,       30926  used
+       22736  out of       30926  same lat/long
+ time to broadcast obfit_post =   5.432746838778257E-004  secs, niter =
+           1
+\end{verbatim}
+\end{scriptsize}
+
+Next, the update to the analysis variables is performed and the time for the updating is shown:
+\begin{scriptsize}
+\begin{verbatim}
+time in enkf_update =   4.79503449611366      on proc           0
+\end{verbatim}
+\end{scriptsize}
+
+The regional averaged statistics of the inflation values are shown for surface pressure:
+\begin{scriptsize}
+\begin{verbatim}
+ global ps prior std. dev min/max =    21.52301       172.3270
+ NH mean ps prior standard deviation =    57.82042
+ NH mean ps posterior standard deviation (before inflation)=    29.20955
+ NH mean ps posterior standard deviation (after inflation) =    54.58403
+ NH mean ps inflation =    2.421974
+ TR mean ps prior standard deviation =    31.09247
+ TR mean ps posterior standard deviation (before inflation)=    28.31872
+ TR mean ps posterior standard deviation (after inflation) =    30.79383
+ TR mean ps inflation =    1.106122
+ time in inflate_ens =  1.366839744150639E-002 on proc           0
+\end{verbatim}
+\end{scriptsize}
+
+After the EnKF analysis, innovation statistics of the ensemble analyses are shown, similar to the ensemble priors\textquotesingle  fit to all observations:
+\begin{scriptsize}
+\begin{verbatim}
+ innovation statistics for posterior:
+ conventional obs
+ region, obtype, nobs, bias, innov stdev, sqrt(S+R), sqrt(S), sqrt(R):
+NH    all ps  14083  0.503E-03  0.757E+00  0.569E+00  0.146E+00  0.550E+00
+TR    all ps     50 -0.562E-01  0.398E+00  0.585E+00  0.198E+00  0.550E+00
+NH     all t   7766 -0.780E-01  0.145E+01  0.122E+01  0.263E+00  0.119E+01
+TR     all t    138 -0.107E+00  0.115E+01  0.118E+01  0.199E+00  0.117E+01
+NH    all uv  21680  0.406E-01  0.267E+01  0.246E+01  0.655E+00  0.237E+01
+TR    all uv    302 -0.259E+00  0.236E+01  0.246E+01  0.636E+00  0.238E+01
+NH     all q   2553 -0.174E-01  0.114E+00  0.138E+00  0.444E-01  0.131E+00
+TR     all q     68 -0.279E-01  0.168E+00  0.159E+00  0.413E-01  0.154E+00
+  satellite brightness temp
+ instrument, channel #, nobs, bias, innov stdev, sqrt(S+R), sqrt(S), sqrt(R):
+           amsua_n18   1   241  0.614E+02  0.915E+02  0.263E+01  0.823E+00  0.250E+01
+           amsua_n18   2   248 -0.132E+03  0.171E+03  0.223E+01  0.376E+00  0.220E+01
+           amsua_n18   3   248 -0.303E+02  0.398E+02  0.201E+01  0.244E+00  0.200E+01
+           amsua_n18   4   248 -0.231E+00  0.580E+01  0.555E+00  0.776E-01  0.550E+00
+           amsua_n18   5   248 -0.788E+00  0.199E+01  0.305E+00  0.575E-01  0.300E+00
+           amsua_n18   6  1203 -0.138E+01  0.158E+01  0.234E+00  0.423E-01  0.230E+00
+           amsua_n18   7  1225 -0.273E+01  0.287E+01  0.232E+00  0.322E-01  0.230E+00
+           amsua_n18   8  1155 -0.131E+01  0.186E+01  0.254E+00  0.437E-01  0.250E+00
+           amsua_n18  10  1211 -0.179E+01  0.196E+01  0.352E+00  0.374E-01  0.350E+00
+           amsua_n18  11    12 -0.130E+01  0.133E+01  0.404E+00  0.537E-01  0.400E+00
+           amsua_n18  15   245 -0.163E+03  0.198E+03  0.357E+01  0.693E+00  0.350E+01
+       hirs4_metop-a   3     1  0.118E+01  0.118E+01  0.533E+00  0.558E-01  0.530E+00
+       hirs4_metop-a   4    42  0.286E+00  0.542E+00  0.403E+00  0.455E-01  0.400E+00
+       hirs4_metop-a   5     7 -0.451E+00  0.487E+00  0.364E+00  0.562E-01  0.360E+00
+       hirs4_metop-a   6     7 -0.724E+00  0.755E+00  0.468E+00  0.852E-01  0.460E+00
+       hirs4_metop-a   7     9 -0.572E+00  0.817E+00  0.577E+00  0.871E-01  0.570E+00
+       hirs4_metop-a   8     9  0.122E+01  0.136E+01  0.100E+01  0.205E-01  0.100E+01
+       hirs4_metop-a  10     9  0.855E+00  0.100E+01  0.609E+00  0.104E+00  0.600E+00
+       hirs4_metop-a  11     9 -0.236E-01  0.543E+00  0.130E+01  0.507E+00  0.120E+01
+       hirs4_metop-a  12    34 -0.738E+00  0.153E+01  0.178E+01  0.790E+00  0.160E+01
+       hirs4_metop-a  13     9  0.121E+01  0.128E+01  0.375E+00  0.905E-01  0.364E+00
+       hirs4_metop-a  14     9  0.776E-01  0.256E+00  0.281E+00  0.106E+00  0.260E+00
+       hirs4_metop-a  15     9  0.281E+00  0.384E+00  0.273E+00  0.838E-01  0.260E+00
+\end{verbatim}
+\end{scriptsize}
+
+Finally, the minimum and maximum of the analysis increments are shown as below. The analysis increments should be within a reasonable range. The computational time of these steps are also shown:
+\begin{scriptsize}
+\begin{verbatim}
+ time to gather state on root  0.101591360988095      secs
+ time level            1
+ --------------
+ ens. mean anal. increment min/max ps  -123.0895       264.4738
+ ens. mean anal. increment min/max var           1  -7.882635       7.015289
+ ens. mean anal. increment min/max var           2  -7.460623       6.953684
+ ens. mean anal. increment min/max var           3  -4.598419       1.846811
+ ens. mean anal. increment min/max var           4 -0.2952938      0.4161232
+ ens. mean anal. increment min/max var           5  0.0000000E+00  0.0000000E+00
+ time to gather ens mean increment on root  2.756185410544276E-002 secs
+ time in writegriddata on root  0.255841280566528      secs
+ time in write_ensemble =  0.385106393136084      on proc           0
+\end{verbatim}
+\end{scriptsize}
+
+The next line indicates the time of the analysis finish:
+\begin{scriptsize}
+\begin{verbatim}
+     ENDING DATE-TIME    JUL 14,2016  00:01:11.329  196  THU   2457584
+     PROGRAM ENKF_ANL HAS ENDED.
+* . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * .
+\end{verbatim}
+\end{scriptsize}
+
+The next lines show the computer resources used in the analysis and a sign that EnKF has finished, "all done":
+\begin{scriptsize}
+\begin{verbatim}
+* . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * . * .
+*****************RESOURCE STATISTICS*******************************
+The total amount of wall time                        = 7.431095
+The total amount of time in user mode                = 6.480014
+The total amount of time in sys mode                 = 0.713891
+The maximum resident set size (KB)                   = 122848
+Number of page faults without I/O activity           = 46688
+Number of page faults with I/O activity              = 0
+Number of times filesystem performed INPUT           = 0
+Number of times filesystem performed OUTPUT          = 0
+Number of Voluntary Context Switches                 = 24121
+Number of InVoluntary Context Switches               = 138
+*****************END OF RESOURCE STATISTICS*************************
+
+ all done!
+\end{verbatim}
+\end{scriptsize}
+
+%----------------------------------------------
+\section{Tuning of Inflation and Localization} \label{ch4_tuningandinflat}
+%----------------------------------------------
+
+Proper inflation and localization values need to be determined by experimenting with different inflation values. The goal is to make the total ensemble spreads of priors match the innovations as much as possible. In the tuning process, the vertical and horizontal structure of the match should be carefully examined. The 3D distribution of the inflation values can be plotted offline from the output file \verb| "covinflate.dat" |.
+
+The tuning processes can vary for different resolutions and physics of the models as well as the observation types assimilated. The performance of the tuning may be better examined after multiple assimilation cycles allowing their effects to be accumulated and converged in cycling assimilation. Please also note that proper settings of observation error estimations are also critical for the inflation tuning.
+
+Next, the test case is taken as an example to check if the inflation is appropriate. In the following lines of the standard output (\verb|stdout|), the number (column \verb|nobs|), mean (column \verb|bias|), and standard deviation (column \verb|innov stdev|) of the ensemble background fits to Ps, wind, temperature, and water vapor observations in the NH and TR are shown:
+\begin{scriptsize}
+\begin{verbatim}
+ innovation statistics for prior:
+ conventional obs
+ region, obtype, nobs, bias, innov stdev, sqrt(S+R), sqrt(S), sqrt(R):
+NH    all ps  14083 -0.591E-02  0.860E+00  0.814E+00  0.601E+00  0.550E+00
+TR    all ps     50 -0.629E-01  0.422E+00  0.661E+00  0.367E+00  0.550E+00
+NH     all t   7766 -0.228E+00  0.163E+01  0.128E+01  0.480E+00  0.119E+01
+TR     all t    138 -0.130E+00  0.118E+01  0.119E+01  0.234E+00  0.117E+01
+NH    all uv  21680  0.136E-01  0.295E+01  0.276E+01  0.140E+01  0.237E+01
+TR    all uv    302 -0.379E+00  0.251E+01  0.268E+01  0.124E+01  0.238E+01
+NH     all q   2553 -0.323E-01  0.146E+00  0.157E+00  0.868E-01  0.131E+00
+TR     all q     68 -0.721E-01  0.202E+00  0.164E+00  0.582E-01  0.154E+00
+\end{verbatim}
+\end{scriptsize}
+
+It would be desirable that the total ensemble spreads of prior/background match the innovation standard deviations as close as possible (Equation 15). In practice, one should check if there is any substantial ensemble spread deficiency. In the above sample standard output lines, the ensemble prior spreads are shown in the column $\sqrt(S)$, and the total spreads in the column $\sqrt(S+R)$. Here, $\sqrt(R)$ is the observation error.
+
+The above sample statistics shows that in NH, the total spread of temperature observation priors (0.128E+01  ) is close to the innovation standard deviation (0.163E+01) of the priors fit to the observations.
+
+%----------------------------------------------
+\section{Tuning EnKF through Key Namelist Options}
+%----------------------------------------------
+
+The namelist parameters controlling the EnSRF analysis are set in the namelist sections: /\verb|enkf_nml/|, \verb|/satobs_enkf/|, and \verb|/nam_wrf/| (all in the file \verb|enkf.nml|). To obtain a successful analysis, it is very important to setup/tune properly the namelist variables, particularly those related to inflation and localization, for each specific application configuration of various models and observation types.
+
+%----------------------------------------------
+ \subsection{Set Up the Analyses Time and Data Location}
+%----------------------------------------------
+
+ The analysis time and working location are setup by the following parameters:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+
+\textit{datein}: & analysis time (YYYYMMDDHH) \\
+
+\textit{datapath}: & path to data directory (include trailing slash). In most cases,   \\
+                 & this should  point to the current directory because the run scripts \\
+                 & have setup the run environment in the working directory including \\ 
+                 &  copying the EnKF executable and data into the working directory.  \\
+               
+\end{tabular}
+\end{table}
+
+ 
+%----------------------------------------------
+\subsection{Set Up Analysis Algorithm}
+%----------------------------------------------
+In the current implementation, a few variations/flavors of the EnKF are available, including the ensemble square root Kalman filter (EnSRF, \textit{Whitaker et al.}, 2010, etc), the perturbed observations EnKF, and the local transformed Kalman filter (LETKF). These options are set in the namelists below:
+
+
+\begin{minipage}[t]{0.2\textwidth}
+\textit{deterministic}\\
+\\
+\textit{sortinc}\\
+\\
+\textit{letkf\_flag}\\
+\textit{boxsize}\\
+\textit{iassim\_order}\\
+\end{minipage}
+\begin{minipage}[t]{0.8\textwidth}
+= true, use EnSRF without perturbed observations;\\
+= false, use perturbed observations version of EnKF.  \\
+if deterministic = false, re-order observations to 
+ minimize regression errors as described in Anderson (2003).  \\
+ if true, use the LETKF scheme. \\
+ observation box size for LETKF (deg)\\
+  = 0, assimilation of observations in the order they are read in; \\
+  = 1 in random order; \\
+ = 2 in order of predicted posterior variance reduction. \\
+\end{minipage}
+
+\begin{minipage}[t]{0.2\textwidth}
+\textit{paoverpb\_thresh}\\
+\end{minipage}
+\begin{minipage}[t]{0.8\textwidth}
+ the threshold of the ratio of observation space posterior
+ variance divided by prior variance (<= 1.0), that is, the 
+expected reduction of prior variance by the observations. \\
+  \\
+ Smaller values mean only those observations with
+ stronger impact will be assimilated. \\
+   \\
+    If =1, no thinning of observations is done.
+   Typical values: 0.99 or 0.98. \\
+\end{minipage}
+
+
+%----------------------------------------------
+\subsection{Set Up the Analyses Variables}
+%----------------------------------------------
+
+The analyses variables for both global and regional models are hardcoded in the EnSRF. There are several options using the following parameters:
+\begin{footnotesize}
+\begin{verbatim}
+       nvars: number of 3d model variables to update.
+\end{verbatim}
+\end{footnotesize}
+For hydrostatic global models, there are typically 5, including U, V, T, QVAPOR, Ozone. For non-hydrostatic regional models, like WRF, different combinations of the 3D and 2D analyses variables are set as below:
+\begin{footnotesize}
+\begin{verbatim}
+For ARW            (arw =true)
+      nvars           =3: U, V, T, and MU
+                      =4: U, V, T, QVAPOR, and MU
+                      =5: U, V, T, QVAPOR, PH, and MU 
+                      =6: U, V, W, T, QVAPOR, PH, and MU
+
+For NMM           (nmm =true)
+       nvars         =3: U, V, T, and PD
+                     =4: U, V, T, QVAPOR, and PD
+                     =5: U, V, T, QVAPOR, CWM, and PD
+\end{verbatim}
+\end{footnotesize}
+
+The analyses variable list can be adjusted or additional variables, such as moisture related variables, can be added to the list by modifying the subroutines \verb| "gridinfo.F90" | and \verb| "gridio.F90" | accordingly.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+\textit{pseudo\_rh}:  & use or not 'pseudo-rh' analysis variable, as in GSI. \\
+\textit{cliptracers}:   &  if true, tracers are clipped to zero when read in, and just  \\
+                     & before they are written out. \\                
+\end{tabular}
+\end{table}
+
+
+%----------------------------------------------
+\subsection{Set Up the Ensemble Backgrounds}
+%----------------------------------------------
+
+The following parameters define which background fields will be used in the analyses and their dimensions:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+
+\textit{regional}   &  = true, perform regional EnSRF analyses using either ARW \\
+                &  or NMM inputs as the background.  \\
+                 &  =false, perform a global analysis. If either the parameter \\
+                  & nmm or wrf is set to true, it will be set to true.  \\
+
+\textit{nmm}   &  if true, background comes from WRF NMM. When using \\
+          & other background fields, set it to false. \\
+
+\textit{wrf}   &  if true, background comes from WRF ARW. When using  \\
+        &  other background fields, set it to false. \\
+
+\textit{nlons}  &  number of grid points in longitude of the model background  \\ 
+
+\textit{nlats}   & number of grid points in latitude of the model background \\
+
+\textit{nlevs}  & number of vertical levels of the model background \\
+
+\textit{nanls}  &  number of ensemble members \\
+          
+\end{tabular}
+\end{table}
+
+%----------------------------------------------
+\subsection{Set Up Localization Distances}
+%----------------------------------------------
+
+In the current EnKF implementation, distances for localization can be set separately in the northern hemisphere, tropics and southern hemisphere, and in the horizontal, vertical and time dimensions, and for different observation types using namelist parameters. The length scales should be given in km for the horizontal, hours for time, and scale heights (units of -$\log(P/P_{ref})$) in the vertical.
+
+There are two options to setup the localization distances in horizontal and vertical. These are decided by the namelist variable 
+\verb| "readin_localization" |:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+
+\textit{readin\_localization}: &  =.true., customized horizontal and vertical localization\\
+                                &  values varying with model levels are read in from the \\
+                                & external text file \verb|"hybens_locinfo"|. \\
+                               
+                                & = .false., the horizontal and vertical localization \\
+                                 & distances are set by the following parameters \\
+                                 
+\textit{corrlengthnh}:  & length for horizontal localization in km in the northern \\
+                        & hemisphere (25N-90N, NH)  \\
+                        
+\textit{corrlengthtr}:  & length for horizontal localization in km in the tropics \\
+                      & (25S-25N, TR)  \\
+                     
+\textit{corrlengthsh}:  & length for horizontal localization in km in the southern \\
+                       & hemisphere (25S-90S, SH) \\
+
+\textit{lnsigcutoffnh}:  & scale height for vertical localization in -$\log(P/P_ref)$ in NH. \\
+
+\textit{lnsigcutofftr}: & scale height for vertical localization in -$\log(P/ P_ref)$ in TR.  \\
+
+\textit{lnsigcutoffsh}: & scale height for vertical localization in -$\log(P/P_ref)$ in SH.  \\
+          
+\end{tabular}
+\end{table}
+
+
+The text file \verb| "hybens_locinfo" | contains vertical profile of horizontal and vertical localization length scales (in e-folding scale). These scales are converted to the full distance width (*1/0.388 in km) of Gaspari-Cohn function, where it goes to zero. The horizontal and vertical scales can be adjusted for each observation types easily in the subroutine 
+\verb| "read_locinfo.f90" |.
+
+For satellite radiance and surface pressure observations, the vertical localization distances are set separately using the following parameters:
+\begin{verbatim}
+           lnsigcutoffsatnh, lnsigcutoffsattr, lnsigcutoffsatsh; and 
+           lnsigcutoffpsnh, lnsigcutoffpstr, lnsigcutoffpssh
+\end{verbatim}
+There is also one option to setup the time localization window, which is the time away from the analyses time. This is decided by the following namelist variables:\\
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+
+\textit{obtimelnh}: & time in hours away from the analyses time to move 2800 \\
+                  & km at 30 ms-1 in the northern hemisphere  \\
+                  
+\textit{obtimeltr}: & same as obtimelnh but for the tropics \\
+                  
+\textit{obtimelsh}: & same as obtimelnh but for the southern hemisphere  \\
+           
+\end{tabular}
+\end{table}
+
+
+The empirical determination/tuning of proper localization distances is important for successful analyses with ensemble data assimilation. In general, large horizontal scale observations, like GPS radio occultation and radiosonde observations, require larger horizontal localization distances to fully take advantage of the observations. On the other hand, high horizontal resolution observations, like radar observations, may need shorter horizontal localization distances. The same is true for the localization distance in vertical.
+
+
+%----------------------------------------------
+\subsection{Set Up Adaptive Posterior Inflation Parameters}
+%----------------------------------------------
+
+The inflation can be set up by the following parameters:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+
+\textit{anapertwtnh}:   & inflation parameter in NH. \\
+
+\textit{anapertwttr}:   & inflation parameter in TR. \\
+
+\textit{anapertwtsh}: & inflation parameter in SH. \\
+
+The parameters &  = 0 means no inflation. \\
+                           & = 1 means inflation all the way back to prior spread. \\
+
+\end{tabular}
+\end{table}
+These are the key tuning parameters for the performance 
+ of EnSRF. Typical values: ~0.95.
+
+
+The inflation factor fields can be smoothed out using the following parameter:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+
+\textit{smoothparm}: & parameter for smoothing inflation factor, \\
+&  = -1 for no smoothing.  \\
+&  > 0, the estimated inflation factor is smoothed using a \\
+&  Gaussian spectral filter with an e-folding scale of the parameter \\
+
+\textit{latbound}: & where the transition latitude starts (=25N or 25S) \\
+
+\textit{delat}: & latitude width of transition zone where the inflation \\
+& parameter is smoothed. \\
+           
+\end{tabular}
+\end{table}
+
+The minimum and maximum inflation values allowed can be controlled by the following parameters:
+\begin{verbatim}
+       covinflatemin: minimum inflation factor 
+       covinflatemax: maximum inflation factor
+\end{verbatim}
+
+
+%----------------------------------------------
+\subsection{Satellite Observations Related Parameters}
+%----------------------------------------------
+
+The following parameters are used to setup the adaptive satellite bias correction:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+
+\textit{lupd\_satbias}: & = .true., update the satellite bias correction coefficients \\
+&   using the adaptive bias correction scheme (when \\
+& the iterations of numiter > 1). \\
+&  \\
+& = .false., the bias correction coefficients are not updated. \\
+
+\textit{numiter}: & number of iterations for state/bias correction \\
+&   coefficients update. (only relevant when satellite  \\
+& radiances assimilated, i.e. nobs\_sat>0) \\
+
+\textit{biasvar}: & background error variance for radiance bias coefficients \\ 
+  &  (used in radbias.f90). The default is GSI value. \\
+ 
+\textit{saterrfact}: & factor to multiply satellite radiance errors. \\
+
+\textit{sattypes\_rad}: & list of satellite observation types to be assimilated. \\
+ 
+\textit{sattypes\_oz}: & list of ozone observation types to be assimilated. \\ 
+          
+\end{tabular}
+\end{table}
+%----------------------------------------------
+\subsection{Observation QC Parameters}
+%----------------------------------------------
+
+In addition to the observation quality flags decided in the GSI observer, the EnSRF itself also conducts a gross check on the observations.
+
+The outlier test computes the difference between the observation value and the prior ensemble mean. It then computes a standard deviation by taking the square root of the sum of the observation error variance and the prior ensemble variance for the observation. If the difference between the ensemble mean and the observation value is more than the specified number of standard deviations, then the observation is tossed. The threshold of the check is set as following:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+
+\textit{sprd\_tol}: & tolerance for gross check of observations. \\
+  &  \\
+&  Reject a observation if the prior mean is more than this many $\sqrt{(S+R)}$ from \\
+ & the observation, where S is ensemble prior variance and R is observation error\\
+ & variance. Typical value: ~3.0  \\   
+\end{tabular}
+\end{table}
+
+The following parameters are used to control if the GSI quality control procedure is performed in EnSRF:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+
+\textit{varqc}: & = .false., no variational quality control performed (default).  \\
+
+\textit{huber}:  & = .true., use huber norm instead of "flat-tail" (default: .false.). \\
+
+\textit{zhuberleft}: & departure parameter of huber norm. \\
+
+\textit{zhuberright}: & departure parameter of huber norm. \\
+           
+\end{tabular}
+\end{table}
+
+
+
+
+
+
+  
+ 

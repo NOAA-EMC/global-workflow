@@ -1,0 +1,36 @@
+Building GSI on Discover
+------------------------
+
+(0) cd /path/to/ProdGSI
+(1) set build environment
+    > module use -a modulefiles
+    > module load modulefile.ProdGSI.discover
+(2) mkdir bld && cd bld
+(3) cmake ..
+(4) make -jN
+
+
+Running GSI regression tests
+----------------------------
+
+(1) For running regression tests, the local of the control version of
+    gsi_global.x needs to be defined. This can be achieved in one two (2)
+    ways:
+
+    (a) If the location of the control exe is known at build time, gsi can be
+    	built using
+    	> cmake -DCONTROL_EXE=/path/to/control/gsi_global.x ..
+
+    (b) If gsi was built without specifying the location of the control exe,
+    	i.e. via "cmake ..", location of control exe can be specified in
+	bld/regression_var.out by replacing the string CONTROL_EXE-NOTFOUND by
+    	the full path to the gsi executable.
+
+(2) The file bld/CTestTestfile.cmake needs to be modified to exclude the test
+    global_nemsio_T62 as it is not supported on Discover, yet.
+
+(3) The regression tests can then be run, in parallel, via
+    > ctest -j4
+
+    This will run all the tests. Individual tests can be run using the -R flag
+    > ctest -R <regression-test-name>

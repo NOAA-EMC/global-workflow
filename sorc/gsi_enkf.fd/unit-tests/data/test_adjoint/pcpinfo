@@ -1,0 +1,4 @@
+!satid          use bias  oberr  gross  b_pcp pg_pcp
+!                        (mm/h)  error variational qc
+ pcp_ssmi        -1    0  0.500  3.000 10.000  0.000   !fnoc obs, 1 deg superob
+ pcp_tmi         -1    0  0.500  3.000 10.000  0.000   !tmi obs, 1 deg superob

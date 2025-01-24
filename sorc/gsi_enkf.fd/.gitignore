@@ -1,0 +1,34 @@
+build*/
+install*/
+.*.swp
+*.[aox]
+*.mod
+.DS_Store
+exec/
+lib/
+lib64/
+
+nohup.out
+log*
+build.log*
+install.log*
+
+# Ensure no one adds binary files to this repo. Not even by accident.
+# over-riding this file can be done in the subdirectory
+*.bin
+*.nc*
+*.tar*
+*.tgz
+*.gz
+*.png
+*.jp*g
+*.tiff
+
+# Python related
+_pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+

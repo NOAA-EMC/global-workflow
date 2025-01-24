@@ -1,0 +1,46 @@
+\documentclass[12pt,letterpaper,oneside]{scrbook}
+
+\usepackage{import}
+
+\usepackage{dtcdoc}
+
+\makeindex
+
+
+\begin{document}
+
+\frontmatter
+\import{./}{title.tex}
+
+\clearpage
+\thispagestyle{empty}
+\import{./}{ack.tex}
+\import{./}{forward.tex}
+ 
+\tableofcontents
+
+\mainmatter
+% Chapter 1: Overview
+\import{./}{enkf_ch1.tex}
+% Chapter 2: Building
+\import{./}{enkf_ch2.tex}
+% Chapter 3: Running 
+\import{./}{enkf_ch3.tex}
+% Chapter 4: Diagnostics and Tuning
+\import{./}{enkf_ch4.tex}
+% Chapter 5: Applications
+\import{./}{enkf_ch5.tex}
+% Chapter 6: Theory and code structure
+\import{./}{enkf_ch6.tex}
+% Appendix A: Namelist
+\appendix
+\import{./}{enkf_appendix_A.tex}
+
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\backmatter
+
+\bibliographystyle{abbrv}
+\bibliography{references}
+
+\end{document}

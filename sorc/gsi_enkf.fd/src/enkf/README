@@ -1,0 +1,28 @@
+To compile:
+
+1) create symlink to Makefile.conf for your platform (zeus, jet or wcoss). For
+   example, on theia
+
+   ln -fs Makefile.conf.theia Makefile.conf
+
+2) make sure the relevant modules are loaded on theia, i.e.
+
+   module load intel
+   module load netcdf
+
+3) To compile global_enkf (for GFS model) run 'make -f Makefile_gfs'
+   To compile wrf_enkf (for WRF ARW/NMM or HWRF) run 'make -f Makefile_wrf'
+   To compile wrf_nmmb (for NAM/NMMB) run 'make -f Makefile_nmmb'
+
+Some import namelist variables:
+
+use_gfs_nemsio (logical):  Use nemsio instead of spectral files for GFS (default .false.)
+regional (logical): replaces old variable 'wrf_regional'.  Use regional model instead of GFS or NMMB. Default .false.
+nmmb (logical): Use nmmb model (either global or regional). Default .false. 
+arw (logical): Use wrf-arw model if regional=.true.  Default .false.
+nmm (logibal):  Use nmm core (HWRF) if regional=.true.  Default .true.
+
+Analysis variables are determined by reading the 'anavinfo' file (same as that
+used by GSI). The EnKF uses the 'control_vector_enkf:' table.
+
+See the comments in params.f90 for other namelist variable definitions.

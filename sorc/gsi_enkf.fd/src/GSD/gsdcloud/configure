@@ -1,0 +1,93 @@
+#!/bin/sh
+#
+#  Creates configuration Makefile. Before attempting to make anything
+#  in this directory, enter
+#
+#   ./configure
+#
+#  !REVISION HISTORY
+#
+#  09oct97   da Silva   Initial code.
+#  19oct97   da Silva   Simplified.
+#  22oct97   Jing Guo	Converted to libpsas.a environment
+#			- special configuration for CRAY
+#			- fool-prove configuration
+#			- additional information
+#  23dec99   da Silva   Modified error messages.
+#
+#.....................................................................
+
+set -x
+
+c=`basename $0 .sh`
+
+type=${1:-"unknown"}
+echo $type
+
+
+# If type=clean, remove soft links and exit
+# -----------------------------------------
+if [ "$type" = "clean" ]; then
+   if [ -r makefile ]; then
+      echo "$c:  remove makefile" 1>&2
+      rm makefile
+   fi
+   if [ -r Makefile.conf ]; then
+      echo "$c:  remove Makefile.conf" 1>&2
+      rm Makefile.conf
+   fi
+   exit
+fi
+
+
+# Set makeconf based on user input
+# ---------------------------------------
+makeconf="Makefile.conf.$type"
+
+
+# Node specific configuration
+# ---------------------------------------
+if [ ! -r ${makeconf} ]; then
+  echo "$c: cannot find ${makeconf} in `pwd`" 1>&2
+  makeconf="Makefile.conf.`uname -n | awk '{print $1}'`"
+fi  
+
+# Machine specific
+# ----------------
+if [ ! -r ${makeconf} ]; then
+  echo "$c: cannot find ${makeconf} in `pwd`" 1>&2
+  machine="`uname -m | awk '{print $1}'`"
+  machine=`echo $machine | tr "[a-z]" "[A-Z]"`
+  compiler=$F90
+  makeconf="Makefile.conf.`uname -s | awk '{print $1}'`"
+  makeconf="${makeconf}.${machine}.${compiler}"
+fi
+
+# Site specific configuration
+# ---------------------------
+if [ ! -r ${makeconf} ]; then
+  echo "$c: cannot find ${makeconf} in `pwd`" 1>&2
+  makeconf="Makefile.conf.`uname -s | awk '{print $1}'`"
+fi
+
+# if the OS is UNICOS, it does not follow the convention
+# ------------------------------------------------------
+if [ ! -r ${makeconf} ]; then
+  echo "$c: cannot find ${makeconf} in `pwd`" 1>&2
+  mech="`uname -m | awk '{print $1}'`"
+  if [ "${mech}" = CRAY ]; then
+    makeconf="Makefile.conf.UNICOS"
+  fi
+fi
+
+# Create soft link for Makefile.conf
+# ------------------------------------------------------
+if [ -r Makefile.conf ]; then
+   echo "$c:  remove Makefile.conf" 1>&2
+   rm Makefile.conf
+fi
+ln -s ${makeconf} Makefile.conf
+
+echo "$c: using ${makeconf} in `pwd`" 1>&2
+
+#.

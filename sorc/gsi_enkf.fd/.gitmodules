@@ -1,0 +1,4 @@
+[submodule "fix"]
+  path = fix
+  url = https://github.com/NOAA-EMC/GSI-fix
+  branch = develop

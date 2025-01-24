@@ -1,0 +1,593 @@
+\chapter{Software Installation}\label{gsi_install}
+\setlength{\parskip}{12pt}
+
+%-------------------------------------------------------------------------------
+\section{Introduction}
+%-------------------------------------------------------------------------------
+
+The DTC GSI is a community distribution of NOAA\textquotesingle s operational GSI. 
+The community GSI expands the portability of the operational code by adding a flexible build 
+system and providing example run scripts that allow GSI to be compiled and run on many common 
+platforms. The current version of GSI is 3.6. It builds and runs on most standard
+Linux platforms using Intel, PGI, and Gnu compilers. Legacy build rules are provided for 
+two platforms, the IBM AIX computers using the xlf compiler, and Intel based Macintosh 
+computers using the PGI compiler. In both cases, the default build system must be significantly modified to 
+build on these platforms. See the community web page user support FAQ to get started.
+
+This chapter describes how to build and install the DTC community GSI software on your local 
+Linux computing resources. These instructions apply only to the DTC community GSI. While 
+the community GSI source code is identical to the NCEP\textquotesingle s GSI 
+trunk code used for release, the community build system is different, allowing it to be more 
+general to support a wide variety of computing platforms.
+
+The GSI build process consists of four general steps:
+\begin{itemize}
+\item Obtaining the source code for GSI and WRF.
+\item Building the WRF model (see the WRF user\textquotesingle s guide).
+\item Setting the appropriate environment variables for the GSI build.
+\item Configuring and compiling the GSI source code.
+\end{itemize}
+
+This chapter is organized as follows: Section \ref{ch2_obtainingcode} describes how to obtain 
+the source code. Section \ref{ch2_directorystructure} covers the directory structure and 
+supplemental NCEP libraries included with the distribution. Section \ref{ch2_compiling} starts 
+with an outline of the build example and then goes into a more detailed discussion of setting 
+up the build environment and the configure and compile steps. 
+Section \ref{ch2_buildexample} illustrates the build process for three of the compilers (Intel, 
+PGI and Gnu) on the NCAR Yellowstone supercomputer. 
+Section \ref{ch2_externallibs} covers system requirements and settings (tools, libraries, and environment 
+variable settings), and currently supported platforms in detail. 
+Section \ref{ch2_gettinghelp} discusses what to do if you have problems with the build and where to get help.
+
+For beginners, sections \ref{ch2_obtainingcode} and \ref{ch2_compiling} provide the necessary 
+steps to obtain the code and build GSI on most systems. The remainder of the chapters provide 
+background material for completeness. A final chapter \ref{ch2_cmake}, discusses the new experimental CMake build system being developed by the DTC and EMC as a common shared build method.
+ Advanced topics, such as customizing the build, porting to new platforms, and debugging can be 
+found in the GSI Advanced User\textquotesingle s Guide.
+
+%-------------------------------------------------------------------------------
+\section{Obtaining and Setting Up the Source Code}  \label{ch2_obtainingcode}
+%-------------------------------------------------------------------------------
+
+The community GSI resources, including source code, build system, utilities, practice data, and 
+documentation, are available from the DTC community GSI users website, located at
+
+\url{http://www.dtcenter.org/com-GSI/users/index.php}
+
+The source code is available by first selecting the \underline{Download} tab on the vertical 
+menu located on the left column of the page, and then selecting the 
+\underline{GSI/EnKF System} 
+submenu. New users must first register before downloading the source code. Returning users 
+only need to enter their registration email address to log in. After accessing the download page, 
+select the link to the \verb|comGSIv3.6_EnKFv1.2.tar| tarball to download the most recent version 
+of the source code (October 2017). Selecting the newest release of the community GSI is critical for 
+having the most recent capabilities, versions of supplemental libraries, and bug fixes. Full support 
+is only offered for the two most recent code releases.
+
+To analyze satellite radiance observations, GSI requires the use of CRTM coefficients. It is important to
+use \textbf{only} the version of CRTM coefficients provided on the GSI website. Due to their large size, 
+these are available as a separate tarfile. They can be downloaded by selecting the link to the 
+tarball for the \verb|CRTM 2.2.3 Big Endian coefficients| from the web page. For all compilers, 
+use the big endian byte order coefficients found in the first CRTM link.
+
+The download page also contains links to the fixed files necessary for 
+running global GSI:
+
+\begin{itemize}
+\item Global configuration (fix files to run Global GSI)
+\end{itemize}
+
+The community GSI version 3.6 comes in a tar file named \verb|comGSIv3.6_EnKFv1.2.tar|. The tar 
+file may be unpacked by using the UNIX commands:
+
+\begin{small}
+\begin{verbatim}
+gunzip comGSIv3.6_EnKFv1.2.tar.gz
+tar -xvf comGSIv3.6_EnKFv1.2.tar
+\end{verbatim}
+\end{small}
+
+This creates the top level GSI directory \verb|comGSIv3.6_EnKFv1.2/|.
+After downloading the source code, and prior to building, the user should check the known issues 
+link on the download page of the DTC website to determine if any bug fixes or platform specific customizations are needed.
+
+%-------------------------------------------------------------------------------
+\section{Directory Structure, Source Code and Supplemental Libraries}  \label{ch2_directorystructure}
+%-------------------------------------------------------------------------------
+
+The GSI system includes the GSI source code, the build system, supplemental libraries, fixed files, and run scripts. Starting with the current version of GSI V3.6, the directory structure has be changed slightly. 
+The following table lists the system components found inside the root GSI directory.
+
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{| l | l |}
+\hline
+Directory Name & Content\\
+\hline
+\hline
+src/ & GSI source code and makefiles \\
+\hline
+lib/ & Source code and build location for supplemental libraries \\
+\hline
+core-libs/ & Build directory for supplemental libraries for CMake build \\
+\hline
+libsrc/ & Source code for supplemental libraries for the CMake build \\
+\hline
+fix/     & Fixed input files required by a GSI analysis, such as  \\
+         & background error covariances, observation error tables;  \\
+         & Excluding the CRTM coefficients \\
+\hline
+include/ & Include files created by the build system \\
+\hline
+dtc/     & Directory for the DTC build system, executable \verb|gsi.exe| location, and sample run scripts \\
+\hline
+arch/    & Build system support such as machine architecture specifics  \\
+         & (see Advanced GSI User\textquotesingle s Guide) \\
+\hline
+util/    & Tools for GSI diagnostics \\
+\hline
+\end{tabular}
+\label{ch2_tble1}
+\end{table} 
+
+For convenience, supplemental NCEP libraries for building GSI are 
+included in the \verb|src/libs/| directory. These libraries will be built when compiling GSI.
+These supplemental libraries are listed in the table below.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{| l | l |}
+\hline
+\hline
+Directory Name &  Content \\
+\hline
+bacio/  &  NCEP BACIO library  \\
+\hline
+bufr/   &  NCEP BUFR library  \\
+\hline
+crtm\_2.2.3/ &  JCSDA community radiative transfer model  \\
+\hline
+gsdcloud/   &  GSD Cloud analysis library  \\
+\hline
+misc/     &  Misc support libraries  \\
+\hline
+nemsio/  &  NEMS I/O library  \\
+\hline
+sfcio/  &  NCEP GFS surface file i/o module  \\
+\hline
+sigio/ &  NCEP GFS atmospheric file i/o module \\
+\hline
+sp/ &  NCEP spectral - grid transforms \\
+\hline
+w3emc\_v2.0.5/   &  NCEP/EMC W3 library (date/time manipulation, GRIB) \\
+\hline
+w3nco\_v2.0.6/  & NCEP/NCO W3 library (date/time manipulation, GRIB)  \\
+\hline
+
+\end{tabular}
+\label{ch2_tble2}
+\end{table} 
+
+The one set of non-standard \textit{library} files not included with the source code are those associated with the WRF IO API. These are obtained by linking to a build of the WRF code. Please note that the release version of WRF/EnKF has only been tested using the previous two release versions of WRF. Older versions of WRF may provide unpredictable results.
+
+Following a registration process similar to that for downloading GSI, the WRF code and full WRF documentation can be obtained from the WRF Users\textquotesingle \ Page,
+
+\url{http://www.mmm.ucar.edu/wrf/users/}
+
+%-------------------------------------------------------------------------------
+\section{Compiling GSI} \label{ch2_compiling}
+%-------------------------------------------------------------------------------
+
+This section starts with a quick outline of how to build GSI (\ref{ch2_compiling_overview}), followed by a more detailed discussion of the build process (\ref{ch2_compiling_env} \& \ref{ch2_compiling_configandcompile}). Typically GSI will build \textit{straight out of the box} on any system that successfully builds the WRF model. Should the user experience any difficulties with the default build, check the build environment against the requirements described at the end of section \ref{ch2_externallibs}.
+
+To proceed with the GSI build, it is assumed that the WRF model has already been built on the current system. GSI uses the WRF I/O API libraries to read the background file. These I/O libraries are created as part of the WRF build, and are linked into GSI during the GSI build process. In order to successfully link the WRF I/O libraries with the GSI source, it is crucial that both WRF and GSI are built using the same Fortran compilers. This means that if WRF is built with the Intel Fortran compiler, then GSI must also be built with the Intel Fortran compiler. It is also recommended that both codes be built with the same annual version number of the compiler (e.g., 14, 15, etc.). 
+
+%-------------------------------------------------------------------------------
+\subsection{Build Overview} \label{ch2_compiling_overview}
+%-------------------------------------------------------------------------------
+
+This section provides a quick outline of the steps necessary to build the GSI code. The following steps describe that build process.
+
+\begin{enumerate}
+\item \textbf{Set the environment for the compiler}: If not already done, set the necessary paths for using your selected compiler, such as loading the appropriate modules or modifying your path variable.
+\item \textbf{Set the environment variables}: The first path on this list will always need to be set. The remaining two will depend on your choice of compiler and how your default environment is configured.
+\begin{description}
+\item[]a. \verb|WRF_DIR| the path to the compiled WRF directory (to always be set) 
+\item[]b. \verb|NETCDF| the path to the \verb|NETCDF| libraries
+\item[]c. \verb|LAPACK_PATH| the path to the \verb|LAPACK| math libraries
+\end{description}
+\item \textbf{Change into the dtc/ directory}
+\item \textbf{Run the configure script}
+\item \textbf{Run the compile script}
+\end{enumerate}
+
+%-------------------------------------------------------------------------------
+\subsection{Environment Variables} \label{ch2_compiling_env}
+%-------------------------------------------------------------------------------
+
+Before configuring the GSI code to be built, be sure to check the following enviroment variables:
+
+\begin{description}
+\item[WRF\_DIR] defines the path to the root of the WRF build directory. Setting this is mandatory. This variable tells the GSI build system where to find the WRF I/O libraries. The process for setting the environment variables varies according to the login shell used. To set the path variable WRF\_DIR for csh/tcsh, type:
+\begin{verbatim}
+setenv WRF_DIR /path_to_WRF_root_directory/  for csh or tcsh
+export WRF_DIR=/path_to_WRF_root_directory/  for ksh or bash
+\end{verbatim}
+\item[NETCDF] The second environment variable specifies the local path to NetCDF library. The path location for the NETCDF environment variable may be checked by using the command 
+\begin{verbatim}
+            echo $NETCDF
+\end{verbatim}
+If the command returns with the response that the variable is undefined, such as
+\begin{verbatim}
+            NETCDF: Undefined variable.
+\end{verbatim}
+it is then necessary to manually set this variable. If your system uses modules or a similar mechanism to set the environment, do this first. If a valid path is returned by the echo command, no further action is required.\\
+
+\item[LAPACK\_PATH] defines the path to the LAPACK library. Typically, this variable will only need to be set on systems without a vendor provided version of LAPACK.
+IBM systems typically come installed with the LAPACK equivalent ESSL library that links automatically. Likewise, the PGI compiler often comes with a vendor provided version of LAPACK that links automatically with the compiler. Experience has shown that the following situations make up the majority of cases where the LAPACK variable needs to be set:
+\begin{itemize}
+\item Linux environments using Intel Fortran compiler.
+\item Building with Gfortran.
+\item On systems where the path variables are not properly set.
+\item On stripped down versions of the IBM AIX OS that lack the ESSL libraries
+\end{itemize}
+Of these four, the first case is the most common. The Intel compiler usually comes with a vendor provided mathematics library known as the \textit{Mathematics Kernel Libraries} or MKL for short. While most installations of the Intel compiler typically come with the MKL libraries installed, the ifort compiler does not automatically load the library. It is therefore necessary to set the LAPACK\_PATH variable to the location of the MKL libraries when using the Intel compiler. You may need to ask your system administrator for the correct path to these libraries.
+\end{description}
+
+On super-computing systems with multiple compiler options, these variables may be set as part of the module settings for each compiler. On the NCAR supercomputer Yellowstone, the Intel build environment can be specified through setting the appropriate modules. When this is done, the MKL library path is available through a local environment variable, MKLROOT. The LAPACK environment may be set for csh/tcsh with the Unix commands
+\begin{small}
+\begin{verbatim}
+            setenv LAPACK_PATH $MKLROOT
+\end{verbatim}
+\end{small}
+and for bash/ksh by
+\begin{small}
+\begin{verbatim}
+            export LAPACK_PATH=$MKLROOT
+\end{verbatim}
+\end{small}
+
+Once the environment variables have been set, the next step in the build process is to run the configure and compile scripts.
+
+%-------------------------------------------------------------------------------
+\subsection{Configure and Compile} \label{ch2_compiling_configandcompile}
+%-------------------------------------------------------------------------------
+
+Once the environment variables have been set, building the GSI source code requires two additional steps:
+\begin{enumerate}
+\item Run the configure script and select a compiler option.
+\item Run the compile script.
+\end{enumerate}
+Change into the \verb|comGSIv3.6_EnKFv1.2/dtc| directory and issue the configure command: 
+\begin{verbatim}
+           ./configure
+\end{verbatim}
+The \verb|./configure| command uses user input to create a platform specific configuration file called 
+\verb|configure.gsi|. The script starts by echoing the NETCDF and WRF\_DIR paths set in the previous 
+section. It then examines the current system and queries the user to select from multiple build options.
+
+For 64-bit Linux, the options will be the following:
+\begin{scriptsize}
+\begin{verbatim}
+Will use NETCDF in dir: /glade/apps/opt/netcdf/4.3.0/intel/default
+Will use WRF in dir: /glade/p/work/stark/WRF/intel/trunk_20150420_3-7_RELEASE
+------------------------------------------------------------------------
+Please select from among the following supported platforms.
+
+   1.  Linux x86_64, PGI compilers (pgf90 & pgcc)  (dmpar,optimize)
+   2.  Linux x86_64, PGI compilers (pgf90 & gcc)  (dmpar,optimize)
+   3.  Linux x86_64, PGI compilers (pgf90 & gcc) Supercomp (w/o -f90=SFC)  (dmpar,optimize)
+   4.  Linux x86_64, PGI compilers (pgf90 & pgcc) Supercomp (w/o -f90=SFC)  (dmpar,optimize)
+   5.  Linux x86_64, GNU compilers (gfortran & gcc)  (dmpar,optimize)
+   6.  Linux x86_64, Intel/gnu compiler (ifort & gcc)	 (dmpar,optimize)
+   7.  Linux x86_64, Intel compiler (ifort & icc)  (dmpar,optimize)
+   8.  Linux x86_64, Intel compiler (ifort & icc), IBM POE (EXPERIMENTAL)   (dmpar,optimize)
+   9.  Linux x86_64, Intel compiler (ifort & icc), SGI MPT (EXPERIMENTAL)  (dmpar,optimize)
+
+Enter selection [1-9] :
+\end{verbatim}
+\end{scriptsize}
+
+Looking at the list, there are two things to note. First, the GNU C-compiler (gcc) may be 
+paired with any of the other Fortran compilers. This allows the build to use the GNU C-compiler 
+in place of the Intel (icc) or PGI (pgcc) C-compiler.
+
+There are also separate build targets for vendor supplied versions 
+of MPI such as IBM POE and SGI MPT. This was added due to some computing hardware vendors 
+creating non-standard mpif90 wrappers for their vendor supplied version of MPI. If uncertain about 
+which to choose, start by selecting the default option corresponding to the fortran compiler you wish 
+to use (either 1, 5, or 7). If that option fails with an error referencing a bad argument for mpif90,
+only then try the options listed for use with \verb|Supercomp|, \verb|IBM POE|, or \verb|SGI MPT|.
+
+On selecting an option, the script reports a successful configuration with the banner:
+\begin{scriptsize}
+\begin{verbatim}
+        ------------------------------------------------------------------------ 
+        Configuration successful. To build the GSI, type: compile 
+        ------------------------------------------------------------------------
+\end{verbatim}
+\end{scriptsize}
+Failure to get this banner means that the configuration step failed to complete. The most typical reason for a failure is an error in one of the environment variables paths.
+
+After selecting a build option, run the compile script:
+\begin{small}
+\begin{verbatim}
+      ./compile >& compile.log
+\end{verbatim}
+\end{small}
+Capturing the build information to a log file by redirecting the output is necessary to diagnose build issues. 
+
+To remove all built files in every directory, as well as the configure.gsi, type:
+\begin{small}
+\begin{verbatim}
+     ./clean -a
+\end{verbatim}
+\end{small}
+A complete clean is necessary if the compilation failed or if the configuration file is changed.
+
+Following a successful compile, the GSI executable \verb|gsi.exe| can be found in the \verb|run/| directory.
+If the executable is not found, check the compilation log file. If the build failed, search for the first instance of the word "Error" (with a capital "E") to locate the section of the log file with the failure.
+
+%-------------------------------------------------------------------------------
+\section{Example of Build} \label{ch2_buildexample}
+%-------------------------------------------------------------------------------
+
+To illustrate the build process, the following section describes the steps necessary to build GSI on the NCAR Yellowstone supercomputer using the Intel compiler, the PGI compiler, and the Gnu compiler. Other platforms will be similar.
+
+%-------------------------------------------------------------------------------
+\subsection{Intel Build}
+%-------------------------------------------------------------------------------
+
+Steps to build GSI on Yellowstone using the Intel compiler:
+\begin{enumerate}
+\item Select the Intel compiler environment by using the module commands:
+\begin{verbatim}
+          module load intel
+          module load impi mkl ncarcompilers ncarbinlibs netcdf
+\end{verbatim}
+These module commands have specified the compiler, MPI, the version of the LAPACK library (MKL), and the NetCDF library.
+\item For this case, two of the paths must be set. The path to the WRF directory must always be specified, and the Intel Mathematics Kernal Library (MKL) will be used in place of the LAPACK library. Note that on Yellowstone, the variable MKLROOT is set to the path to the MKL libraries by loading the MKL module. To set the paths in a C-shell environment, use:
+\begin{verbatim}
+          setenv WRF_DIR /PATH TO WRF DIRECTORY/
+          setenv LAPACK_PATH $MKLROOT
+\end{verbatim}
+\item To run the configure script, type \verb|./configure| inside the top of the GSI directory. If the first three steps were completed successfully, a table of compiler options should appear. Select the desired compiler combination option, which in this case is either 6 or 7. The alternative options (eight and nine) are needed for certain platforms that have a vendor supplied custom version of MPI. Try the default build options for MPI first, and only if it fails should the second option be used.
+\item To compile the code, type the following: \verb|./compile >& compile.log|. If the build completes successfully, an executable named \verb|gsi.exe| will be created in the \verb|./run| directory.
+\end{enumerate}
+
+%-------------------------------------------------------------------------------
+\subsection{PGI Build}
+%-------------------------------------------------------------------------------
+
+Steps to build GSI on Yellowstone using the PGI compiler:
+\begin{enumerate}
+\item The PGI compiler environment is selected using the module commands:
+\begin{verbatim}
+module load pgi
+module load impi ncarcompilers ncarbinlibs netcdf
+\end{verbatim}
+These module commands have specified the compiler, MPI, and the NetCDF library.
+\item For this case only the path to the WRF directory must be set. The PGI compiler comes with its own version of LAPACK that it finds automatically. It is not necessary to set the LAPACK path. In a C-shell environment, use:
+\begin{verbatim}
+          setenv WRF_DIR /PATH TO WRF DIRECTORY/
+\end{verbatim}
+\item Similar to the Intel example, pick compiler options listed in the table. In this case, the desired compiler combination option is either 3 or 4.
+\item To compile the code, type the following: \verb|./compile >& compile.log|. If the build completes successfully, an executable named \verb|gsi.exe| will be created in the \verb|./run| directory.
+\end{enumerate}
+
+%-------------------------------------------------------------------------------
+\subsection{GNU Build}
+%-------------------------------------------------------------------------------
+
+Steps to build GSI on Yellowstone using the GNU compiler:
+\begin{enumerate}
+\item The GNU compiler environment is selected using the module commands:
+\begin{verbatim}
+module load gnu/5.3.0
+module load ncarcompilers ncarbinlibs netcdf lapack/3.2.1 
+\end{verbatim}
+These module commands have specified the compiler, MPI, and the NetCDF library.
+\item For this case, two of the paths must be set. The path to the WRF directory must always be specified, and we will use the LAPACK library installed by the module.  In a C-shell environment use:
+\begin{verbatim}
+          setenv WRF_DIR /PATH TO WRF DIRECTORY/
+          setenv LAPACK_PATH $LIB_NCAR
+\end{verbatim}
+\item Similar to the Intel example, pick compiler options listed in the table. In this case, the desired compiler combination option is 5. 
+\item To compile the code, type the following: \verb|./compile >& compile.log|. If the build completes successfully, an executable named \verb|gsi.exe| will be created in the \verb|./run| directory.
+\end{enumerate}
+
+%-------------------------------------------------------------------------------
+\section{System Requirements and External Libraries}  \label{ch2_externallibs}
+%-------------------------------------------------------------------------------
+
+The source code for GSI is written in FORTRAN, FORTRAN 90, and C. In addition, the parallel executables require some flavor of MPI and OpenMP for the distributed memory parallelism. Lastly the I/O relies on the NetCDF I/O libraries. Beyond standard shell scripts, the build system relies on the Perl scripting language and makefiles.
+
+The basic requirements for building and running the GSI system are the following:
+\begin{itemize}
+\item FORTRAN 2003+ compiler 
+\item C compiler
+\item MPI v1.2+
+\item OpenMP
+\item Perl
+\item NetCDF V4.2+
+\item LAPACK and BLAS mathematics libraries, or equivalent 
+\item WRF V3.6+
+\end{itemize}
+
+Because all but the last of these tools and libraries are typically the purview of system administrators to install and maintain, they are lumped together here as part of the basic system requirements.
+
+%-------------------------------------------------------------------------------
+\subsection{Compilers Tested for Release}
+%-------------------------------------------------------------------------------
+
+Version 3.6 of the DTC community GSI system has been successfully tested on a variety of Linux platforms with many versions of the Intel and PGI fortran compilers.
+
+Legacy build rules are also available for IBM AIX and Mac Darwin platforms. Because the DTC does not have the ability to test on these platforms, they are no longer supported. Also, the Linux GNU gfortran option is available in this version.
+
+The following Linux compiler combinations have been fully tested:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{| l | l | l |}
+\hline
+  & Fortran compiler version   &   C compiler version    \\
+\hline
+\hline
+Intel only  &  ifort    17.0.1, 16.0.3, 15.0.3, 14.0.2       & icc \\
+\hline
+PGI only  &   pgf90   17.5, 16.5, 15.7    &  pgcc  \\
+\hline
+GNU only &  gfortran  5.4.0  with netcdf 4.4.0  & gcc 5.4.0 \\
+\hline
+\end{tabular}
+\label{ch2_tble3}
+\end{table} 
+
+Unforeseen build issues may occur when using older compiler and library versions. As always, the best results will be achieved by using the most recent compiler versions.
+
+%-------------------------------------------------------------------------------
+\section{Getting Help and Reporting Problems}  \label{ch2_gettinghelp}
+%-------------------------------------------------------------------------------
+
+Should a user experience any difficulty building GSI on his/her system, please first confirm that 
+all the required software is properly installed (section \ref{ch2_compiling}). Next check that the 
+external libraries exist and specified paths in the configure file are correct. Lastly, 
+check the resource file \textit{configure.gsi} for errors in any of the paths or settings. Should 
+all these check out, feel free to contact the community GSI Help Desk for assistance at 
+\begin{center}
+{gsi-help@ucar.edu}
+\end{center}
+
+At a minimum, when reporting code building problems to the helpdesk, please include a copy of the build log and the \textit{configure.gsi} file with your e-mail.
+
+%-------------------------------------------------------------------------------
+\section{CMake Build System}  \label{ch2_cmake}
+%-------------------------------------------------------------------------------
+
+A new unified build system based on CMake has been added to the GSI code.
+CMake is a very powerful cross-platform open-source build system. In comGSI, the CMake build system exists in parallel 
+to the previous DTC build system, and either one can be used independently to build the code. 
+The CMake build system is still experimental, but is available as an alternative to the traditional DTC build system. 
+
+\subsection{CMake build process with the DTC script}
+The CMake build infrastructure consists of a top level directory with the name \verb|cmake/| and configuration files in each directory named ( \verb|CMakeLists.txt|). The syntax for CMake relies on a two step command line process, similar to "configure" and "compile." Command line arguments are used to specify paths and compilers. To simplify the process, the DTC provides a helper script that simplifies the choice of arguments that need to be used.  
+
+The helper script is called \verb|dtcbuild| and is located in the directory \verb|dtc|. This script attempts to walk the user through the process of building GSI. By default CMake prefers to build the source code "out-of-place," meaning that it does not populate the GSI directory with the build. The script first creates a directory called \verb|build| inside the source code directory to house the build process. If there is already a directory called build, the script halts with a warning to either rename it or delete it. 
+
+The script then checks that the path variable for the WRF build, either \verb|WRFPATH| or \verb|WRF_DIR|, has been set. 
+It then prompts the user to choose a compiler for the build. 
+\begin{verbatim}
+Please select from among the following supported platforms.
+
+    1.  Linux x86_64, PGI compilers (pgf90 & pgcc)
+    2.  Linux x86_64, PGI compilers (pgf90 & gcc)
+    3.  Linux x86_64, GNU compilers (gfortran & gcc)
+    4.  Linux x86_64, Intel/gnu compiler (ifort & gcc)
+    5.  Linux x86_64, Intel compiler (ifort & icc)
+    6.  Linux x86_64, Intel compiler w/intel mpi (mpiifort & icc)
+    7.  Linux x86_64, Intel compiler (mpif90 -f90=ifort & icc)
+
+Enter selection [1-7] :
+\end{verbatim}
+Once a compiler has been chosen, it generates local makefiles by invoking the cmake command with the proper arguments. One of those arguments selects that a local build of the NCEP libraries needed by GSI will be conducted prior to the source code being built. The final step of the script is to invoke a parallel build of the code. 
+
+This points to two advantages in using CMake to build the code. CMake automatically generates code dependencies each time a build is invoked, allowing the use of a parallel make, greatly reducing the time it take to complete the build. Typically the time to complete the CMake build is a quarter of the time needed for the serial DTC "configure" and "compile" to complete. 
+
+Once the build is complete, the two executables a \verb|gsi.x| and \verb|enkf_gfs.x| are placed in the directory \verb|build/bin|. Note that the name of the executables and their location differs from the traditional DTC build.
+
+Summary of CMake build steps:
+\begin{enumerate}
+\item Set up the build environment in the same way as with the DTC build 
+\begin{itemize}
+	\item Set up compilers/load modules
+	\item Set the environment path for NetCDF and LaPack/MKL
+	\item Set the environment path for WRF by setting either of the variables \verb|WRFPATH| or \verb|WRF_DIR| to point to a compiled copy of the WRF code.
+\end{itemize}
+\item Copy the helper script into the top level directory (\verb|cp ./dtc/dtcbuild .|)
+\item Run the helper script (\verb|./dtcbuild|)
+\item Select the compiler combination for your build. For instance, number six for Intel on Theia.
+\item When the build is complets, the executables \verb|gsi.x| and \verb|enkf_gfs.x| will be located in the directory \verb|build/bin|
+\end{enumerate}
+
+
+\subsection{Build notes and additional requirements}
+Requirements:
+\begin{itemize}
+\item The CMake build requires use of version 2.8+ of cmake
+\item GSI will not build with the Intel compiler V15.0 due to an incompatibility with the CRTM library.  
+\end{itemize}
+
+Build notes:
+\begin{itemize}
+\item Building on the UCAR Yellowstone supercomputer requires additional flags due to how the C compiler has been installed there. The platform specific script \verb|dtcbuild_yellowstone| accounts for this need. 
+\item The build is not conducted within the \verb|src/| directory, as is the case with the traditional DTC build, but instead is located in \verb|build/src/CMakeFiles|.
+\item On the NCEP Theia supercomputer, GSI builds best with option six, due to the way MPI is set up on that machine.
+\end{itemize}
+
+\subsection{How the helper script works}
+This sections will go through the DTC helper script, each section at a time to illustrate how the CMake build works. 
+ 
+One of the first things the script does is create the build directory; However, prior to this, it checks if a directory by that name already exists. If it does, the script halts with a warning. 
+\begin{small}
+\begin{verbatim}
+ # create build directory
+if test -d ./build ; then
+    echo "directory build already exists, delete or rename the directory and dry again"
+    exit
+else
+    mkdir ./build
+fi
+\end{verbatim}
+\end{small}
+
+Next, the environment variables indicating the top of the source tree and the location of the NCEP library source code are set.  
+\begin{small}
+\begin{verbatim}
+# set CORE_DIR to top of source tree.
+CORE_DIR=`pwd`
+echo "$CORE_DIR"
+export CORE_DIR
+export CORELIB=$CORE_DIR/libsrc
+echo "$CORELIB"
+\end{verbatim}
+\end{small}
+
+Next the path to the WRF build is set. For the traditional DTC build, the variable \verb|WRF_DIR| is used. The current CMake build uses a different variable \verb|WRFPATH| to do the same thing. So as a work around, the script accepts the path information from either variable. 
+\begin{small}
+\begin{verbatim}
+# set path to WRF and test that it exists
+if  test -z "$WRFPATH"  ; then
+    if test -z $WRF_DIR; then
+      echo '** WARNING: No path to WRF_DIR and environment variable WRF_DIR not set.'
+      exit
+    else
+      export WRFPATH=$WRF_DIR
+    fi
+fi
+\end{verbatim}
+\end{small}
+
+The next section queries the user to select a compiler combination for the build. Many of the CMake build variables, such as compiler information, can be either set as environment variables or included in the command line argument. Here we set them as environment variables, and cmake is invoked. The following shows the variable settings for the combination of the PGI FORTRAN compiler and the Gnu C compiler. 
+\begin{small}
+\begin{verbatim}
+      if [ "$resp" = "2" ] ; then
+         echo '    2.  Linux x86_64, PGI compilers (pgf90 & gcc)  '
+         export CC=gcc
+         export CXX=g++
+         export FC=pgf90
+         cd build
+         cmake -DBUILD_CORELIBS=ON $CORE_DIR
+         make -j 8
+      fi 
+\end{verbatim}
+\end{small}
+These are standard guesses as to what the C, C++, and MPI call for the FORTRAN compiler are called on your system. They may be wrong. In that case the environment variables \verb|CC|, \verb|CXX|, and \verb|FC| may need to be modified. 
+
+The final part of the script is the invocation of cmake. 
+\begin{small}
+\begin{verbatim}
+         cmake -DBUILD_CORELIBS=ON $CORE_DIR
+         make -j 8
+\end{verbatim}
+\end{small}
+There are two arguments used here. The first is \verb|-DBUILD_CORELIBS=ON|. This argument directs CMake to look in the \verb| core-libs/| directory for rules to build the NCEP libraries needed for GSI. The environment variable \verb| CORELIB|, defined at the top of the script, indicates where to look for the library source code. In this case, it is in \verb|$CORE_DIR/libsrc/|. Any changes to the source code would be placed in \verb|$CORE_DIR/libsrc/|, and any changes to the CMake build rules would go in \verb|core-libs/|. The second argument \verb|$CORE_DIR| indicates the location of the build directory. The final statement \verb|make -j 8| invokes a parallel call to \textit{make} using eight processors, which speeds up the build considerably. For more details on the CMake build for GSI, see the readme file \textit{README.cmake} in the top directory. 

@@ -1,0 +1,369 @@
+\chapter{EnKF Basic Concepts and Code Structure}\label{enkf_structure}
+\setlength{\parskip}{12pt}
+
+This chapter briefly describes basic concepts and the main code structure used in the current implementation of the NOAA EnKF in the form of EnSRF. Please note there are also other EnKF algorithms provided in this EnKF system. We are working on documenting the other algorithms and will complete the User's Guide in the future. 
+%----------------------------------------------
+\section{Basic Concepts (in the Form of EnSRF)}
+%----------------------------------------------
+\subsection{Analysis Variables}
+%----------------------------------------------
+
+In theory, EnKF can use any of the model prognostic variables as analysis variables as long as there exist meaningful/clear correlations between the variables and observations. Typically, for hydrostatic global models, horizontal wind components, temperature, water vapor, surface pressure, and ozone are used as analysis variables. For non-hydrostatic meso-scale models, like WRF, the vertical component of wind, rain/cloud related water content variables, and surface variables could be used as additional analysis variables.
+
+%----------------------------------------------
+\subsection{Update of Analysis Variables}
+%----------------------------------------------
+
+The minimum error-variance estimate of the analyzed variables $\pmb{X}^a$ is given by the traditional Kalman filter update equation,
+\begin{eqnarray}
+\pmb{X}^a = \pmb{X}^b + \pmb{K} ( \pmb{y}^o - \pmb{H} \pmb{X}^b )   \label{ch6_eqn_xxkyhx}  \\
+\pmb{K} = \pmb{P}^b \pmb{H}^{T} ( \pmb{H} \pmb{P}^b \pmb{H}^{T} + \pmb{R} )^{-1}  \label{ch6_eqn_kphhphr}
+\end{eqnarray}
+Where
+\begin{description}
+\item[$\pmb{X}^b$] an m-dimensional background model forecast (i.e., prior)
+\item[$\pmb{X}^a$] an m-dimensional analyses at model grids (i.e., posterior)
+\item[$\pmb{y}^o$] a p-dimensional set of observations
+\item[$\pmb{H}$] the operators that convert the model state to the observation space
+\item[$\pmb{P}^b$] the $m×m$-dimensional background-error covariance matrix
+\item[$\pmb{R}$] the $p×p$-dimensional observation-error covariance matrix
+\item[$\pmb{K}$] the Kalman gain
+\end{description}
+
+Here, the Kalman gain is a function of the multivariate covariances of the model state variables and observations and the operator matrix that relates the model state to the observations. This update process is basically similar to a simple optimal interpolation (OI) scheme, where the Kalman gain is set to static. 
+
+The update equations (\ref{ch6_eqn_xxkyhx}) and (\ref{ch6_eqn_kphhphr}) can be solved using ensemble technique. The Kalman gain can be estimated and propagated using a set of ensemble forecasts. Expressing the model state vector of the analysis variables as an ensemble mean (denoted by an overbar) and a deviation from the mean (denoted by a prime), the update equations for EnSRF (\cite{Whitaker2002}) are written as:
+\begin{eqnarray}
+\overline{\pmb{X}}^a = \overline{\pmb{X}}^b + \pmb{K} (\pmb{y}^o - \pmb{H\overline{X}^b} )  \label{ch6_eqn_xxkhxb} \\
+\pmb{X}^{\prime a} = \pmb{X}^{\prime b} - \tilde{\pmb{K}} \pmb{H} \pmb{X}^{\prime b}    \label{ch6_eqn_xxkhxb2} \\
+\tilde{\pmb{K}} = \alpha \pmb{K}  \label{ch6_eqn_kak } \\
+\alpha = \left[ 1+\sqrt{R/( \pmb{HP}^b \pmb{H}^T  +R)} \right]^{-1} \label{ch6_eqn_a11rhphr}
+\end{eqnarray}
+Where 
+$\pmb{K}$ is the Kalman gain defined by (\ref{ch6_eqn_kphhphr}) and estimated using the ensemble method described in the following section.
+$\pmb{\tilde{K}}$ is the gain used to update ensemble deviations from the ensemble mean. 
+Here, the observational error covariance is assumed uncorrelated, that is, $\pmb{R}$ is diagonal. Then observations can be assimilated serially, one at a time, so that the analysis after assimilation of the Nth observation becomes the background estimate for assimilating the (N+1)th observation.
+For an individual observation, $R$ and $\pmb{H} \pmb{P}^{b} \pmb{H}^{T} $ are scalars, $\pmb{K}$ and $\pmb{\tilde{K}}$ are vectors of the same dimension as the model state vector (before applying localization). Both $\pmb{K}$ and $\pmb{\tilde{K}}$ are calculated from the prior ensemble of the observation being assimilated and each of the analyses variables on the model grids individually.
+
+Please note EnSRF is a revised EnKF that eliminates the necessity to perturb the observations. Therefore, the equation (\ref{ch6_eqn_xxkhxb2}) does not contain the equivalent observation term to the one in the equation (\ref{ch6_eqn_xxkhxb}). However, this EnKF system itself provides an option to perturb the observations as well. In the future, we will add the description of the EnKF algorithm using perturbed observations into this user's guide.
+
+In the EnKF framework, there is no need to compute and store the full matrix  $\pmb{P}^{b}$. Instead, $\pmb{P}^{b} \pmb{H}^{T} $ and  $\pmb{H} \pmb{P}^{b} \pmb{H}^{T} $ are estimated statistically from an ensemble of model forecasts/background. Specifically, these two quantities are obtained as:
+\begin{eqnarray}
+\pmb{P}^b \pmb{H}^T = \overline{  \pmb{X}^{\prime b} ( \pmb{HX}^{\prime b} )^T } = \sum_{i=1}^n \pmb{X}^{\prime b}_{i} ( \pmb{HX}_{i}^{\prime b})^T /(n-1)  \label{ch6_eqn_phxhxxhx} \\
+\pmb{H} \pmb{P}^b \pmb{H}^T = \overline{ \pmb{HX}^{\prime b} ( \pmb{HX}^{\prime b} )^{T} } = \sum_{i=1}^n \pmb{HX}^{\prime b} ( \pmb{HX}^{\prime b} )^T / (n-1)
+\end{eqnarray}
+where \textit{n} is the ensemble size of model forecasts; \textit{i} is the index of each individual ensemble member.
+The expected analyses error covariance at the model grids after assimilation is given by
+\begin{equation}
+\pmb{P}^a = (\pmb{I} - \pmb{KH}) \pmb{P}^b(\pmb{I} - \pmb{KH})^T
+\end{equation}
+
+%----------------------------------------------
+   \subsection{Updates of Observation Priors}
+%----------------------------------------------
+
+In a serial assimilation of observations, the model first-guess or backgrounds at model grids are updated by one single observation at a time. For the assimilation of next observation, the first-guess of the next observation (observation priors) needs to be re-computed using the updated model background and a forward observation operator. This process is straightforward while running on a single processor computer, but is not efficient in a parallel computing environment, particularly when the first-guess of the observations are all pre-calculated.
+
+Alternatively, the first-guess of the next observation can also be updated by the observation being assimilated, similar to the update to the model variables, so that re-computing the first-guess using the observational operators is not needed (see \cite{Anderson2007}). After the update of the first guess of model variables, the Nth observation being assimilated is also used to update the first-guess of the (N+1)th and next observations within the localization distance. This process can be expressed in the following update equations, similar to the equations (\ref{ch6_eqn_xxkhxb})-(\ref{ch6_eqn_a11rhphr}):
+\begin{eqnarray}
+\overline{\pmb{Z}}^a = \overline{\pmb{Z}}^b + \pmb{K}_{z} (y^o - \pmb{H\overline{X}^b} )  \label{ch6_eqn_zzkhx} \\
+\pmb{Z}^{\prime a} = \pmb{Z}^{\prime b} - \alpha \pmb{K}_{z} \pmb{H} \pmb{X}^{\prime b}  \label{ch6_eqn_zzkhx2} \\
+\pmb{K}_{z}  = \pmb{Z}^{\prime b} (\pmb{H} \pmb{X}^{\prime b})^{T} (\pmb{HP}^{b} \pmb{H}^T + \pmb{R} )^{-1} \label{ch6_eqn_kzhxhphr}
+\end{eqnarray}
+Where
+\begin{description}
+\item[$y^o$] is the observation being assimilated.
+\item[$\pmb{Z}^b$] is the first-guess of the next unassimilated observation
+\item[$\pmb{Z}^a$] is the updated first-guess of the next unassimilated observation
+\item[$\pmb{K}_{z}$] is the Kalman gain between the first-guess of the observation being assimilated and
+next unassimilated observation
+\end{description}
+
+%----------------------------------------------
+   \subsection{Assimilation Order and Adaptive Thinning of Observations}
+%----------------------------------------------
+In realistic assimilation systems, observations may have a non-linear relationship with the analysis variables. In addition,sampling errors are common due to the limited ensemble sizes. As a result, the achieved analysis can depend on the order of the observations assimilated. There are three options for choosing the orders of the observations for assimilation:
+\begin{enumerate}
+\item Assimilate observations in the order they are read in (default). This seems a reasonable choice for assimilating ``BEST'' observation types first (like radiosonde winds)
+\item Shuffle the observations randomly before assimilating
+\item Assimilate in order of increasing predicted observation analysis variance relative to the prior
+\end{enumerate}
+
+For the third option, the predicted observational analysis variance against the first-guess in the observational space is defined as (for details, see \cite{Whitaker2008} and \cite{Whitaker2012}):
+\begin{equation}
+\pmb{HP}^{a}\pmb{H}^{T} / \pmb{HP}^{b}\pmb{H}^{T} = \pmb{R}/(\pmb{HP}^{b}\pmb{H}^{T} + \pmb{R})
+\end{equation}
+Note that the predicted variance is based on the observation priors\textquotesingle variance as if the observation is assimilated alone, and does not include the effect of the assimilation of other observations.
+
+The observations can be further thinned adaptively. It is done via the updated estimation of the predicted analysis variance of next observation. If the predicted analysis variance for one observation is very close to the prior of this observation, the impact of this observation is expected to be very small and, therefore, it can be skipped. The threshold is set by the namelist parameter ${paoverpb\_thresh}$.
+
+
+%----------------------------------------------
+   \subsection{Ensemble Spread Inflation}
+%----------------------------------------------
+EnSRF uses a multiplicative inflation to inflate analyses/posterior ensemble spread back to the one of first-guess. The amount of inflation is given at each analysis grid point by:
+\begin{eqnarray}
+\sigma^b = \sqrt{\sum_{i=1}^{n} (\pmb{X^\prime}_i^b)^2/(n-1) } \nonumber  \\
+\sigma^a = \sqrt{\sum_{i=1}^{n} (\pmb{X^\prime}_i^a)^2/(n-1) } \nonumber   \\
+r = \left( \beta \frac{\sigma^b-\sigma^a}{\sigma^a} +1 \right)  \\
+r\mathbf{X^\prime}_i^a \rightarrow \mathbf{X^\prime}_i^a \text{(inflated)} \nonumber
+\end{eqnarray}
+where $\sigma^b$ is the prior/first-guess ensemble standard deviation;
+$\sigma^a$ is posterior/analyses ensemble standard deviation (before inflation);
+$r$ is the inflation factor applied to each ensemble member deviation from the ensemble mean;
+$\beta$ is a tunable namelist parameter ($analpertwt$) defined in module params: If $\beta=1$, ensemble is inflated so posterior standard deviation becomes the same as prior; If $\beta=0$, there is no inflation.
+
+For a given value of $\beta$, the inflation factor is proportional to the amount of ensemble spread reduction by assimilation of observations, normalized by the analyses ensemble spread. As a result, the inflation is in general larger where observations are denser or have larger impact. The actual inflation factor can be quite different for each variable and cross vertical and horizontal grids. If the smoothing namelist parameter $(smoothparm) > 0$, the estimated inflation factor is smoothed using a Gaussian spectral filter with an e-folding scale of $smoothparm$. The minimum and maximum values allowed can be controlled by namelist parameters. In additions, extra inflation can be obtained by adding random noise from a climatology distribution of the model errors (\cite{Whitaker2012}). The amount of the random noises to be added can be controlled through namelist parameters as well. 
+
+The total amount of inflation from these two inflation schemes should meet the following relationship (\cite{Houtekamer2005}), as close as possible:
+\begin{equation}
+\left< (\pmb{y}^o - \pmb{H}\overline{\pmb{X}}^b )(\pmb{y}^o - \pmb{H}\overline{\pmb{X}}^b) \right> = (\pmb{HP}^{b}\pmb{H}^{T} + \pmb{R})
+\end{equation}
+Satisfaction of this equation ensures that the total ensemble spreads (ensemble spreads plus observational error covariance, right side of the equation) is a reasonable estimation of the RMS errors of observation priors against observations (left side of the equation). This relationship justifies that the ensemble system works reasonably well. Moreover, the ensemble spreads should be tuned appropriately relative to observation errors (assuming these errors are correctly set). Substantially smaller ensemble spreads could lead to underweight of observations. As a result, EnKF may ignore the observations for assimilation and/or lead to an over-divergent ensemble.
+
+%----------------------------------------------
+   \subsection{Covariance Localization}
+%----------------------------------------------
+
+To reduce the impact of spurious ensemble covariance on the update of both analyses variables at model grids and the first-guess of observations (observation priors), localization is applied to the covariance (Kalman gains) in the equations (\ref{ch6_eqn_phxhxxhx}) and (\ref{ch6_eqn_kzhxhphr}) in both horizontal and vertical. The function of \cite{Gaspari1999} is used in horizontal localization. It uses a 5th order compact polynomial and the impact of observations is gradually reduced to zero at the specified cutoff distance. The scale height $-\log{(P/P_{ref})}$ is used in vertical localization.
+
+The localization distance is an important tunable parameter for a successful analysis of EnSRF. Tuning the localization distance depends on several factors, including the ensemble size used, model grid resolutions, weather scenario, etc. In general, a larger ensemble size allow a longer localization distance. But assimilation with a smaller ensemble size may benefit from a reduced localization distance to reduce the impact of spurious covariance. In addition, assimilation of higher-resolution observations  (e.g., radar data) may require a much shorter localization distance.
+
+%----------------------------------------------
+\subsection{Adaptive Radiance Bias Correction with EnSRF}
+%----------------------------------------------
+An adaptive radiance bias correction procedure is used for the satellite radiance data assimilation in EnSRF. The first-guess of the radiance observations are updated by the radiance observations using the assimilation procedure outlined in the section (\ref{chap5_sec_mvopu}). The updated innovations (O-B) are then used to update the coefficients of the radiance bias correction scheme. The first-guess of the radiance observations are updated again using the updated bias correction coefficients. This process may be repeated/iterated multiple times until the updated first-guess of the radiance observations and bias correction coefficients converge.
+
+
+
+%----------------------------------------------
+\section{EnSRF Code Structure and Key Functions}
+%----------------------------------------------
+\subsection{Main Code Tree}
+%----------------------------------------------
+The code structure for main code \textit{enkf\_main.f90}:
+\begin{footnotesize}
+\begin{center}
+\begin{tabular}{| m{2cm} | p{4cm} | p{8cm} |}
+\hline
+Step&Code&Explanation\\
+\hline
+initialize &call mpi\_initialize & initialize MPI\\   \cline{2-3}
+&call init\_rad &Initial radinfo variables \\  \cline{2-3}
+&call read\_namelist &read namelist (enkf.nml)\\  \cline{2-3}
+&call mpi\_initialize\_io&initialize MPI communicator for IO tasks\\ \cline{2-3}
+&call init\_rad\_vars &Initialize derived radinfo variables\\
+\hline
+
+prepare data & call getgridinfo & read horizontal grid information and pressure fields from forecast ensemble mean file\\ \cline{2-3}
+&call readobs & Read observations, observation priors for each ensemble member (from diag** files generated by GSI forward operators).
+ initial screening. \\ \cline{2-3}
+&call print\_innovstats & print innovation statistics for prior \\ \cline{2-3}
+& \textit{if (readin\_localization)} \newline
+call read\_locinfo  & read in vertical profile of horizontal and vertical localization length scales, set values for each obs \\ \cline{2-3}
+&call load\_balance &do load balancing (partitioning of grid points, observations among processors)\\ \cline{2-3}
+&call read\_ensemble &read in prior ensemble members, distribute pieces to each task\\
+\hline
+analysis&
+ \textit{if(letkf\_flag) then} \newline
+    \textbf{ call letkf\_update} \newline
+ \textit{else} \newline
+    \textbf{call enkf\_update}
+& Update state variables, observation priors, and radiance bias correction coefficients with EnSRF or the EnKF with perturbed observations\\
+\hline
+write results &  call inflate\_ens & Inflate posterior ensemble using the multiplicative inflation scheme\\ \cline{2-3}
+&call print\_innovstats&print innovation statistics for posterior\\ \cline{2-3}
+&call radinfo\_write&write out bias coeffs on root\\ \cline{2-3}
+&call write\_ensemble&  write out analysis ensemble \\ \cline{2-3}
+\hline
+clean up &call obsmod\_cleanup & \\
+&call gridinfo\_cleanup&\\
+&call statevec\_cleanup&\\
+&call loadbal\_cleanup&\\
+&call mpi\_cleanup&\\
+\hline
+\end{tabular}
+\end{center}
+\end{footnotesize}
+
+Please note additive inflation may be added to the posterior ensemble offline.
+
+%Hui commented the following subsection until further confirmation 
+%----------------------------------------------
+%\subsection{Update of radiance observation priors and bias correction coefficients}
+%----------------------------------------------
+
+%In the analysis update process of EnSRF, the radiance observation priors and the bias correction coefficients are updated first. This may involve multiple iterations, before other observation types are assimilated. The code for this function is ens\_update of enkf.F90:
+%\begin{enumerate}
+%\item Determine the order of radiance observations for assimilation according to the namelist choice
+%\item Read in the radiance prior/first-guess ensemble
+%\item Apply the radiance bias correction to the observation priors and
+%gross errors of VARQC type check
+%\item Start assimilation loop over the radiance observations, one
+%observation at a time 
+%\item For each of radiance observations being assimilated, find out
+%other radiance observations within the specified localization
+%distances
+%\item Updates of the first-guess of these close radiance observations
+%\item Go to back to Step d) for assimilation of next radiance
+%observation
+%\item  Finish the observation prior update for all of the radiance
+%observations. The bias coefficients are revised using the revised
+%first-guess of all radiance observations
+%\item  Go back to Step c) and repeat the process using the revised bias
+%correction coefficients and the updated radiance observation priors for multiple times until these become stable and converged
+%\end{enumerate}
+
+%----------------------------------------------
+\subsection{Driver of Serial Ensemble Square Root Filter} \label{chap5_sec_mvopu}
+%----------------------------------------------
+If using the EnKF algorithm (if $letkf\_flag=.false.$), the priors of model analyses variables, 
+observation priors, and bias correction coefficients are updated by subroutine $enkf\_update$ in $enkf.f90$. The code structure of $enkf\_update$ is:
+
+\begin{footnotesize}
+\begin{center}
+\begin{tabular}{| p{3cm} | p{11cm} |}
+\hline
+Step&Code\\
+\hline
+1:  \newline Determine the order of all observations for assimilation according to the namelist choice&
+\begin{lstlisting}[language=Fortran]
+if (iassim_order == 1) then
+! create random index array so obs are assimilated 
+!       in random order.
+else if (iassim_order .eq. 2) then
+! assimilate obs in order of increasing HPaHT/HPbHT 
+else
+! assimilate obs in order they were read in
+end if
+ \end{lstlisting}
+\\ 
+\hline
+2 begin outer loop&    \textit{do niter=1,numiter}\\
+\hline
+2.1 \newline reset ob error to account for gross errors
+&
+\begin{lstlisting}[language=Fortran]
+  if (niter > 1 .and. varqc) then
+    if (huber) then ! "huber norm" QC
+    else ! "flat-tail" QC.
+    endif
+  else
+      oberrvaruse(nob) = oberrvar(nob)
+  end if
+ \end{lstlisting} \\
+ \hline
+2.2:  \newline assimilation loop over all observations, one observation at a time&
+\begin{lstlisting}[language=Fortran]
+  obsloop: do nobx=1,nobstot
+
+....
+
+  end do obsloop ! loop over obs to assimilate 
+ \end{lstlisting} \\
+ \hline
+ 2.3 &
+ \begin{lstlisting}
+ ! make sure posterior perturbations still have 
+ !         zero mean
+ ! distribute the O-A stats to all processors
+ ! satellite bias correction update
+\end{lstlisting}
+\\
+\hline
+2: end outer loop&
+\textit{enddo ! niter loop}\\
+\hline
+\end{tabular}
+\end{center}
+\end{footnotesize}
+
+
+
+The details of the step 2.2 is listed below:
+
+\begin{footnotesize}
+\begin{center}
+\begin{tabular}{| p{3.5cm} | p{12.5cm} |}
+\hline
+Step&Code in Step 2.2\\
+\hline
+
+1: \newline
+which observation to assimilate next&
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+if (iassim_order == 2) then
+else
+   nob = indxassim(nobx)
+endif
+\end{lstlisting}
+\\
+\hline
+2. calculate :\\
+\begin{eqnarray*}
+\pmb{HP}^{b} \pmb{H}^T \\
+(\pmb{HP}^{b} \pmb{H}^T + \pmb{R} )^{-1}\\
+\pmb{R}/(\pmb{HP}^{b} \pmb{H}^T + \pmb{R} )
+\end{eqnarray*}
+&
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+  hpfht = sum(anal_obchunk(:,nob1)**2)*r_nanalsm1
+  hpfhtoberrinv=one/(hpfht+oberrvaruse(nob))
+  paoverpb = oberrvar(nob)/(hpfht + oberrvar(nob))
+\end{lstlisting}
+\\
+\hline
+3. \newline 
+calculate Equation \ref{ch6_eqn_a11rhphr} &
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+if (deterministic) then
+  ! EnSRF.
+   obganl = -anal_obtmp/(one+sqrt(oberrvaruse(nob)*hpfhtoberrinv))
+else
+   ! perturbed obs EnKF.
+end if
+\end{lstlisting}
+\\
+\hline
+4.Calculate Kalman gain (\textit{kfgain}) (K, Equation (\ref{ch6_eqn_kak })) and add the analyses increments of the observation being assimilated to the ensemble mean (\textit{ ensmean\_chunk} and perturbations of analyses variables at model grids (\textit{anal\_chunk}) (Equations (\ref{ch6_eqn_xxkhxb}) and (\ref{ch6_eqn_xxkhxb2})) &
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+if (nf2 > 0) then
+  do ii=1,nf2 ! loop over nearby horiz grid points
+  do nb=1,nbackgrounds ! loop over background time levels
+  do nn=nn1,nn2
+    nnn=index_pres(nn)
+    if (taperv(nnn) > zero) then
+    ! gain includes covariance localization update all time levels
+     kfgain=taperv(nnn)*sum(anal_chunk(:,i,nn,nb)*anal_obtmp)
+    ! update mean.
+     ensmean_chunk(i,nn,nb) = ensmean_chunk(i,nn,nb) + kfgain*obinc_tmp
+    ! update perturbations.
+     anal_chunk(:,i,nn,nb) = anal_chunk(:,i,nn,nb) + kfgain*obganl(:)
+     end if
+  end do
+  end do ! end loop over background time levels.
+  end do ! end loop over nearby horiz grid points
+end if ! if .not. lastiter or no close grid points
+\end{lstlisting}
+\\
+\hline
+
+5. Calculate the Kalman gain \textit{kfgain} (Kz: Equation (\ref{ch6_eqn_kzhxhphr})) and add the analyses increments of the observation being assimilated to the nearby observation priors \textit{ensmean\_obchunk, and anal\_obchunk} (Equations (\ref{ch6_eqn_zzkhx}) and (\ref{ch6_eqn_zzkhx2})).&
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+if (nf > 0) then
+   do nob1=1,nf
+    ! gain includes covariance localization.
+    kfgain = taper_disob(nob1)* &
+             taper(lnsig*lnsiglinv)*taper(obt*obtimelinv)* &
+              sum(anal_obchunk(:,nob2)*anal_obtmp)*hpfhtcon
+     ! update mean.
+     ensmean_obchunk(nob2) = ensmean_obchunk(nob2) + kfgain*obinc_tmp
+     ! update perturbations.
+     anal_obchunk(:,nob2) = anal_obchunk(:,nob2) + kfgain*obganl
+   end do
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\end{center}
+\end{footnotesize}

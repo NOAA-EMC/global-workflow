@@ -1,0 +1,60 @@
+module Test_read_wrf_nmm_mod
+   use read_wrf_nmm_files_mod
+   use pfunit_mod
+   implicit none
+
+   public :: Test_read_wrf_nmm      
+
+@TestCase
+   type, extends(TestCase) :: Test_read_wrf_nmm
+      type (read_wrf_nmm_files_class) :: reader
+   contains
+      procedure :: setUp     ! overides generic
+      procedure :: tearDown  ! overrides generic
+   end type Test_read_wrf_nmm      
+
+contains
+
+   ! No need to annotate setUp() when _extending_ TestCase
+   subroutine setUp(this)
+      use mpimod, only: npe,mpi_comm_world,ierror,mype
+      use obsmod, only: iadate,time_offset
+      use gridmod, only: create_grid_vars
+      use constants, only: init_constants,init_constants_derived
+
+
+      class (Test_read_wrf_nmm), intent(inout) :: this
+
+      call init_constants_derived
+      call init_constants(.true.)
+      call mpi_comm_size(mpi_comm_world,npe,ierror)
+      call mpi_comm_rank(mpi_comm_world,mype,ierror)
+      call create_grid_vars
+
+      this%reader = read_wrf_nmm_files_class()
+
+   end subroutine setUp
+
+   ! No need to annotate tearDown() _extending_ TestCase
+   subroutine tearDown(this)
+      use gridmod, only: destroy_grid_vars
+      class (Test_read_wrf_nmm), intent(inout) :: this
+      call destroy_grid_vars
+   end subroutine tearDown
+
+@Test
+   subroutine testReadWrfNmm(this)
+      use guess_grids, only: nfldsig,nfldsfc,ntguessig,ntguessfc,&
+         ifilesig,ifilesfc,hrdifsig,hrdifsfc,create_gesfinfo
+
+      class (Test_read_wrf_nmm), intent(inout) :: this
+
+      call this%reader%read_wrf_nmm_files(0,test=.true.)
+
+      @assertEqual(1, ntguessfc)
+      @assertEqual(3, ifilesfc(1))
+      @assertEqual(2.0, hrdifsfc(1))
+
+   end subroutine testReadWrfNmm
+
+end module Test_read_wrf_nmm_mod

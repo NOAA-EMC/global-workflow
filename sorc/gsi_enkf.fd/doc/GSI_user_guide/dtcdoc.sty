@@ -1,0 +1,155 @@
+\ProvidesPackage{dtcdoc}
+
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{color}
+\usepackage[automark,nouppercase]{scrpage2}
+%\usepackage{bera}
+\usepackage{baskervald}
+%\usepackage{helvet}
+%\usepackage{avant}
+%\usepackage{lmodern}
+\usepackage{comment}
+\usepackage{vwcol}
+\usepackage{multicol}
+\usepackage{makeidx}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{enumerate}
+\usepackage{caption}
+\usepackage{array}
+\usepackage{float}
+\usepackage{chngcntr}
+\usepackage[a4paper,margin=1.0in,footskip=0.25in]{geometry}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{epigraph}
+\usepackage{fix-cm}
+\usepackage[explicit]{titlesec}
+\usepackage[some]{background}
+\usepackage{dirtree}
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+% Colours
+\definecolor{white}{rgb}{1.0,1.0,1.0}
+\definecolor{lightgray}{rgb}{0.8,0.8,0.8}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{darkgray}{rgb}{0.2,0.2,0.2}
+\definecolor{black}{rgb}{0.0,0.0,0.0}
+\definecolor{blue}{rgb}{0.2,0.0,1.0}
+\definecolor{tpblue}{cmyk}{1,.60,0,.40}
+
+\hypersetup{
+        pdfauthor={},
+        pdftitle={Users Guide},
+        pdfsubject={},
+        pdfkeywords={},
+        bookmarksnumbered=true,
+        % Either of these.. I prefer the 2nd as this means
+        % the colour of the text in the document overrides
+        % whatever has been defined as urlcolor.
+        %colorlinks=true,
+        %urlcolor=black,
+        colorlinks=false,
+        pdfborder={0 0 0}
+}
+
+\KOMAoptions{parskip=full}
+%\KOMAoptions{pagestyle=plain}
+
+% Define a font for the title
+\DeclareFixedFont{\bigsf}{T1}{phv}{b}{n}{1.25cm}
+% Define a background stripe for the title page
+%\backgroundsetup{
+%	scale=1,
+%	angle=0,
+%	opacity=1,
+%	contents={\begin{tikzpicture}[remember picture,overlay]
+%	 \path [fill=tpblue] (-0.5\paperwidth,5) rectangle
+%	 (0.5\paperwidth,10);
+%	 \end{tikzpicture}}
+%}
+
+%\titleformat{hcommand}[hshape]{hformat}{hlabel}{hsep}{hbefore}[hafter]
+%
+% Create chapter marks
+\titleformat{\chapter}[display]
+	{\large\bfseries}
+	{\hfill
+	  \tikz[remember picture] \node[] (nr) {
+	    \fontsize{120}{70}\selectfont\color{lightgray}\textbf{\thechapter}
+	  };
+	  \begin{tikzpicture}[overlay,remember picture]
+	    \coordinate (leftborder) at ($(nr)-(100,0)$);
+	    \coordinate (left) at ($(nr.west)-(1.5,0)$);
+	    \draw[line width=0.3em] ($(nr.north east)+(0,1)$) --
+				    ($(nr.north west)+(0,1)$) --
+				    (left) -- (leftborder);
+	  \end{tikzpicture}
+	}
+	{-2ex}
+	{\filleft\fontsize{30}{70}\selectfont\textsc{{#1}}}
+	[\vspace{0ex}]
+
+\titleformat{\section}[hang]
+	{\Large\sffamily}
+	{\thesection}
+	{0.5em}
+	{#1}
+	{\phantomsection}
+
+\titleformat{\subsection}[hang]
+	{\Large\sffamily}
+	{\thesubsection}
+	{0.5em}
+	{#1}
+	{\phantomsection}
+
+\titleformat{\subsubsection}[hang]
+	{\Large\sffamily}
+	{\alph{subsubsection}}
+	{0.5em}
+	{#1}
+	{\phantomsection}
+
+\counterwithin{figure}{chapter}
+\renewcommand{\figureformat}{\figurename~\thefigure}
+\renewcommand{\tableformat}{\tablename~\thetable}
+%\renewcommand{\subsubsection}{\thesubsubsection.\alph{subsubsection}}
+
+%\pagestyle{plain}
+
+% Commands for writing code
+\newcommand{\exec}[1]{% What to type and execute
+{\small\fontfamily{qcr}\fontshape{n}\fontseries{bx}\selectfont{#1}}}
+
+\newcommand{\execout}[1]{% Output on a terminal
+{\small\fontfamily{qcr}\fontshape{n}\fontseries{l}\selectfont{#1}}}
+
+\newcommand{\execsub}[1]{% Variable that needs subsituting
+{\small\fontfamily{qcr}\fontshape{sl}\fontseries{m}\selectfont{#1}}}
+
+\newcommand{\vf}[1]{% Variable in a file
+{\fontfamily{cmss}\fontshape{sl}\fontseries{m}\selectfont{#1}}}
+
+% Create macro's for table font/style
+\newcolumntype{+}{>{\global\let\currentrowstyle\relax}}
+\newcolumntype{^}{>{\currentrowstyle}}
+\newcommand{\rowstyle}[1]{\gdef\currentrowstyle{#1}%
+  #1\ignorespaces
+}
+
+% Squeeze all the space out of lists
+\setlist{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
+
+
+% Shorthand degree symbol
+\newcommand{\dgr}{$^{\circ}$}
+% Change the default font to be Sans Serif 
+%\renewcommand{\familydefault}{\sfdefault}
+\sloppy

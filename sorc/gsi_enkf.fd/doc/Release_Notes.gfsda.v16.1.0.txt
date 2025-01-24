@@ -1,0 +1,121 @@
+GFSDA.v16.1.0 RELEASE NOTES
+
+
+PRELUDE
+
+* The tag gfsda.v16.1.0 was created in the NOAA-EMC/GSI repository to 
+  support the GFSv16.1 implementation and is included as a part of the 
+  NOAA-EMC/global-workflow tag EMC-v16.1.0.  See release notes
+  docs/Release_Notes.gfs.v16.1.0.txt in the NOAA-EMC/global-workflow 
+  tag for more details on the motivation, workflow changes, and 
+  implementation instructions.
+
+
+FIX CHANGES
+
+* fix/
+  * global_convinfo.txt: Change GeoOptics (SAID=265) from -1 to 1 
+    for active assimilation
+
+
+SCRIPTS CHANGES
+
+* scripts/
+  * exgdas_atmos_chgres_forenkf.sh: Addresses GFSv16 bugzilla #1198
+  * exgdas_enkf_ecen.sh:  Addresses GFSv16 bugzilla #1198
+  * exgdas_enkf_fcst.sh:  Addresses GFSv16 bugzilla #1198
+  * exgdas_enkf_post.sh:  Addresses GFSv16 bugzilla #1198
+  * exgdas_enkf_select_obs.sh:  Addresses GFSv16 bugzilla #1198
+  * exgdas_enkf_sfc.sh:  Addresses GFSv16 bugzilla #1198
+  * exgdas_enkf_update.sh:  Addresses GFSv16 bugzilla #1198
+  * exglobal_atmos_analysis.sh:  Addresses GFSv16 bugzilla #1198, 
+    adds default values for commercial RO parameters
+  * exglobal_atmos_analysis_calc.sh:  Addresses GFSv16 bugzilla #1198
+  * exglobal_diag.sh:  Addresses GFSv16 bugzilla #1198
+
+
+SRC CHANGES
+
+* src/
+  * enkf/
+     * gridio_gfs.f90: Changes delz calculation to negative definite
+
+  * fv3gfs_ncio/
+    *  module_fv3gfs_ncio.f90: Addresses GFSv16 bugzilla #1196
+
+  * gsi/
+    * cplr_gfs_ensmod.f90: Addresses GFSv16 bugzilla #1196
+    * genstats_gps.f90: GPSRO bugfix 
+    * gesinfo.F90: Addresses GFSv16 bugzilla #1196
+    * gsimod.F90: Add commercial RO parameters
+    * guess_grids.F90: Add commercial RO parameters
+    * ncepnems_io.f90:  Changes delz calculation to negative definite
+    * netcdfgfs_io.f90: Addresses GFSv16 bugzilla #1196 and delz sign bugfix
+    * read_files.f90: Addresses GFSv16 bugzilla #1196
+    * read_fl_hdob.f90: Addresses GFSv16 bugzilla #1205
+    * setupbend.f90: New QC and error inflation for commercial RO
+    * setuprad.f90:  Bugfix for radiance diags 
+    * stop1.f90: Addresses GFSv16 bugzilla #1196
+    * write_incr.f90: Delz bugfix
+
+
+USH CHANGES
+
+* ush/
+  * build_all_cmake.sh: Addresses DA aspects of GFSv16 bugzillas 
+    #216, #1218, and #1222
+  * prune_4nco_global.sh: New script to address DA aspects of GFSv16 
+    bugzillas #216 and #1222
+
+
+UTIL CHANGES
+
+* util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/scripts/exgdas_atmos_verfrad.sh: 
+  chgrp Megha-Tropiques SAPHIR radiance diagnostic file to rsptrod since 
+  this is a restricted data type, partially address DA aspects of GFSv16 
+  bugzilla #1221.
+
+
+IMPLEMENTATION INSTRUCTIONS
+
+* The GFS DA v16.1 tag must be installed in conjunction with the entire 
+  GFS v16.1 package.  See release notes docs/Release_Notes.gfs.v16.1.0.txt 
+  in the NOAA-EMC/global-workflow tag EMC-v16.1.0 tag for instructions.
+
+
+PRE-IMPLEMENTATION TESTING REQUIREMENTS
+
+* Which production jobs should be tested as part of this implementation?
+  * The GFS DA package needs to be tested with the entire GFS suite.
+
+* Does this change require a 30-day evaluation?
+  * No.
+
+
+DISSEMINATION INFORMATION
+
+* Where should this output be sent?
+  * No change from GFS v16.0
+
+* Who are the users?
+  * No change from GFS v16.0
+
+* Which output files should be transferred from PROD WCOSS to DEV WCOSS?
+  * No change from GFS v16.0
+
+* Directory changes
+  * No change from GFS v16.0
+
+* File changes
+  * No change from GFS v16.0
+
+
+HPSS ARCHIVE
+
+* No change from GFS v16.0
+
+
+JOB DEPENDENCIES & FLOW DIAGRAM
+
+* No change from GFSv16.0
+

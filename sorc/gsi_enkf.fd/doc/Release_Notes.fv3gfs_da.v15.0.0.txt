@@ -1,0 +1,303 @@
+FV3GFS DA RELEASE NOTES (v15.0.0)
+
+GIT TAG 
+   * The FV3GFS DA is in NOAA VLAB gerrit:ProdGSI.  The FV3GFS DA tag is intended to be installed
+     as part of the entire FV3GFS package.   Please see FV3GFS release notes for name and location 
+     of FV3GFS tag in NOAA VLAB gerrit.   The FV3GFS tag contains a checkout script which checks out
+     the appropriate FV3GFS DA tag.
+
+
+
+
+DOC CHANGES 
+   * Combine Release_Notes.gdas_da.v14.1.0.txt, Release_Notes.gfs_da.v14.1.0.txt, and 
+     Release_Notes.global_shared_da.v14.1.0.txt into this document.  Update for FV3GFS DA component of 
+     FV3GFS package.
+
+
+
+
+CODE CHANGES
+   * Data assimilation changes (global_gsi.x and global_enkf.x)
+      * Infrared Atmospheric Sounding Interferometer (IASI) moisture channels
+      * Advanced Technology Microwave Sounder (ATMS) all-sky radiances 
+      * A fix for an issue with the Near Sea Surface Temperature (NSST) in the Florida Strait
+      * An upgrade to the use of Cross-track Infrared Sounder (CrIS) radiances
+      * Addition of NOAA-20 CrIS and ATMS data 
+      * Addition of Megha-Tropiques SAPHIR data
+      * Addition of Advanced Scatterometer (ASCAT) data from MetOp-B
+      * The analysis and the ensemble will increase in horizontal resolution from 35 km to 25 km.
+      * The analysis nemsio file contains layer pressure (dpres) and layer height (delz), whose analysis increments 
+        are computed hydrostatically from the temperature and surface pressure increments.
+      * The analysis nemsio file contains cloud liquid water (clwmr) and cloud ice (icmr), partitioned from the 
+        total cloud condensate analysis.
+      * The analysis nemsio file contains vertical velocity (dzdt), rain (rwmr), snow (snmr), and graupel (grle), 
+        which are copies of the background fields.
+   * New FV3GFS DA code
+      * calc_increment_ens.fd - compute analysis increment used to warm start FV3GFS model
+
+
+
+JOB CHANGES
+   * Update jobs to run within FV3GFS workflow
+   * JGDAS_ANALYSIS_HIGH and JGFS_ANALYSIS have been merged into a single job, JGLOBAL_ANALYSIS.   
+     Job JGLOBAL_ANALYSIS runs in both the GFS and GDAS cycle.
+   * The following jobs have been renamed
+      * JGDAS_ENKF_SELECT_OBS       --> JGLOBAL_ENKF_SELECT_OBS
+      * JGDAS_ENKF_INNOVATE_OBS     --> JGLOBAL_ENKF_INNOVATE_OBS
+      * JGDAS_ENKF_UPDATE           --> JGLOBAL_ENKF_UPDATE
+      * JGDAS_ENKF_INFLATE_RECENTER --> JGDAS_ENKF_RECENTER
+   * Neither the merging of GFS and GDAS analysis jobs into one nor the renaming of the GDAS EnKF jobs 
+     changes workflow dependencies.
+
+
+
+SCRIPT CHANGES
+   * Update scripts to run within FV3GFS workflow.
+   * The string "fv3gfs" has been added to the name of FV3GFS DA scripts to distinguish them from their non-FV3GFS 
+     counterparts.   For example, exglobal_analysis.sh.ecf is renamed exglobal_analysis_fv3gfs.sh.ecf in the 
+     FV3GFS package.  Below is a mapping between current operational GFS DA scripts and their FV3GFS DA 
+     counterparts
+      * exglobal_analysis.sh.ecf              --> exglobal_analysis_fv3gfs.sh.ecf
+      * exglobal_enkf_innovate_obs.sh.ecf     --> exglobal_innovate_obs_fv3gfs.sh.ecf
+      * exglobal_enkf_update.sh.ecf           --> exglobal_enkf_update_fv3gfs.sh.ecf
+      * exglobal_enkf_inflate_recenter.sh.ecf --> exglobal_enkf_recenter_fv3gfs.sh.ecf
+      * exglobal_enkf_fcst_nems.sh.ecf        --> exglobal_enkf_fcst_fv3gfs.sh.ecf
+      * exglobal_enkf_post.sh.ecf             --> eexglobal_enkf_post_fv3gfs.sh.ecf
+   * Add new script:  exglobal_enkf_innovate_obs_fv3gfs.sh.ecf.   This script is executed from 
+     JGLOBAL_ENKF_INNOVATE_OBS.   It is a wrapper script that invokes exglobal_innovate_obs_fv3gfs.sh.ecf 
+     for each ensemble member in the group processed by the given realization of JGLOBAL_ENKF_INNOVATE_OBS 
+
+
+
+PARM CHANGES
+   * Update to run within FV3GFS workflow.   Parm or configuration files for FV3GFS components now reside in 
+     parm/config.   Below are the parm (config) files used by each FV3GFS DA job
+      * JGLOBAL_ANALYSIS - config.base, config.anal
+      * JGLOBAL_ENKF_SELECT_OBS - config.base, config.anal, config.eobs
+      * JGLOBAL_ENKF_INNOVATE_OBS - config.base, config.anal, config.eobs
+      * JGLOBAL_ENKF_UPDATE - config.base, config.anal, config.eupd
+      * JGDAS_ENKF_RECENTER - config.base, config.ecen
+      * JGDAS_ENKF_FCST - config.base, config.fcst, config.efcs
+      * JGDAS_ENKF_POST - config.base, config.epos
+   Parameters common to all jobs are in config.base.   Analysis jobs share config.anal.   This avoids 
+   duplication of identical parameters across multiple parameter files.
+
+
+FIX CHANGES
+   * Updates to run FV3GFS DA
+      * New files / directory
+         * cloudy_radiance_info.txt - new file for all-sky radiance assimilation
+         * Big_Endian/global_berror.l64y770.f77 - add for use in JGLOBAL_ANALYSIS
+         * Add directory fv3_historical to contain historical global_convinfo and global_satinfo files
+      * Modify existing files
+         * global_anavinfo.l64.txt - add EnKF control vector section
+         * global_convinfo.txt - assimilate uv 290, monitor gps 825
+         * global_ozinfo.txt - add NPP OMPSNP in monitor mode
+         * global_satinfo.txt 
+            * add columns for icloud and iaerosol
+            * increase AMSUA channel 15 observation error
+            * assimilate IASI channels 2889, 2958, 2993, 3002, 3049, 3015, 3110, 5381, 5399, 5480, 
+            * monitor Aqua AMSUA channel 6
+            * add Meteosat-11 SEVIRI
+            * update observation errors for NPP and N20 ATMS
+            * remove NPP CrIS
+            * update N20 CrIS-FSR usage flags and observation errors
+            * assimilate Meghat Saphir
+         * global_scaninfo.txt - update atms_n20, cris_npp, cris-fsr_npp, and cris-fsr_n20
+         * prepobs_errtable.global - adjust observation errors for prepbufr report types 134, 135, 
+           180, 181, 182, 183, 187, 234, 235, 280, 281, 282, 283, 284 285, 287
+
+
+
+RESOURCE INFORMATION
+   * Frequency of run
+      * 6 hourly cycle (00, 06, 12, 18Z) - no change from current operations
+
+
+   * All versions of libraries, compiler, and modules used by FV3GFS DA are specified in 
+     modulefiles/modulefile.ProdGSI.wcoss_d
+
+
+   * Data retention for files in $COMROOThps and $GESROOThps are the same as those specified for 
+     the overall FV3GFS package
+
+
+   * Disk space.  Please see disk usage estimates for entire FV3GFS package
+
+
+   * Computational resources and run times
+      * JGLOBAL_ANALYSIS (GFS)
+         * 240 nodes, 480 tasks, ptile=2, 14 threads/task
+         * Runtime:  26.8 minutes
+
+      * JGLOBAL_ANALYSIS (GDAS)
+         * 240 nodes, 480 tasks, ptile=2, 14 threads/task
+         * Runtime:  30.7 minutes
+
+      * JGLOBAL_ENKF_SELECT_OBS
+         * 10 nodes, 140 tasks, ptile=14, 2 threads/task
+         * Runtime:  3.4 minutes
+
+      * JGLOBAL_ENKF_INNOVATE_OBS
+         * 10 nodes, 140 tasks, ptile=14, 2 threads/task
+            * Concurrently run 10 realizations of JGLOBAL_ENKF_INNOVATE_OBS.  Each job processes 
+              8 EnKF members.    Total node usage for 10 jobs x 10 nodes each = 100 nodes.
+         * Runtime:  15.0 minutes
+
+      * JGLOBAL_ENKF_UPDATE
+         * 90 nodes, 360 tasks, ptile=4, 7 threads/task
+         * Runtime:  6.5 minutes
+
+      * JGDAS_ENKF_RECENTER
+         * 20 nodes, 80 tasks, ptile=4, 7 threads/task
+         * Runtime:  4.4 minutes
+
+      * JGDAS_ENKF_FCST
+         * 14 nodes, 168 tasks, ptile=12, 2 threads/task
+            * Concurrently run 20 realizations of JGDAS_ENKF_FCST.  Each job processes 4 EnKF 
+              members.  Total node usage for 20 jobs x 14 nodes each = 280 nodes
+            * 20 EnKF forecast groups for FV3GFS is an increase from the 10 EnKF forecast groups 
+              currently run in operations.
+         * Runtime:  19.8 minutes
+
+      * JGDAS_ENKF_POST
+         * 20 nodes, 80 nodes, ptile=4, 7 threads/task
+            * Concurrently run 7 realizations of JGDAS_ENKF_POST.  7 forecasts processed, one 
+              per job.   Total node usage for 7 jobs x 20 nodes each = 140 nodes.
+            * 7 EnKF post groups is an increase from the single EnKF post job currently run in operations
+         * Runtime:  4.9 minutes
+
+
+
+PRE-IMPLEMENTATION TESTING REQUIREMENTS
+   * Which production jobs should be tested as part of this implementation?
+      * The FV3GFS DA package needs to tested with the entire FV3GFS suite.
+
+
+   * Does this change require a 30-day evaluation?
+      * Yes, the entire FV3GFS package requires a 30-day evaluation
+
+
+   * Suggested evaluators
+      * Same as those for entire FV3GFS package
+
+
+
+DISSEMINATION INFORMATION
+   * Where should this output be sent?
+      * same as current operations
+
+
+   * Who are the users?
+      * same as current operations
+
+
+   * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
+      * Please refer to release notes for FV3GFS package
+
+
+   * Directory changes
+      * Add cycle to gfs and gdas paths.  FV3GFS paths are $COMROOTp3/gfs/prod/gfs.$PDY/$cyc 
+        and  $COMROOTp3/gfs/prod/gdas.$PDY/$cyc.
+      * Add "gdas" to top level EnKF directory --> $COMROOTp3/gfs/prod/enkf.gdas.$PDY.
+      * Place EnKF member files in memXXX directories inside $COMROOTp3/gfs/prod/enkf.gdas.$PDY/$cyc
+
+
+   * File changes.  Only FV3GFS DA file changes are listed below.
+
+      * $COMROOTp3/gfs/prod/gfs.$PDY/$cyc
+         * Add
+            * gfs.t${cyc}z.atminc.nc - NetCDF file containing analysis increments.  The FV3GFS model 
+              uses this file to warmstart the forecast model.
+         * Remove
+            * Relocation is no longer run.  Therefore, remove gdas.t${cyc}z.atm[gm2, gm1, gp1, gp2].nemsio
+
+      * $COMROOTp3/gfs/prod/gdas.$PDY/$cyc
+         * Add 
+            * gdas.t${cyc}z.atmanl.ensres.nemsio - used by JGDAS_ENKF_RECENTER
+            * gdas.t${cyc}z.atminc.nc - NetCDF file containing analysis increments.  The FV3GFS model uses 
+              this file to warmstart the forecast model.
+         * Remove
+            * Relocation is no longer run.  Therefore, remove gdas.t${cyc}z.atm[gm2, gm1, gp1, gp2].nemsio
+            * gdas.t${cyc}z.nstfXXX.nemsio.   NSST fields are included in FV3GFS gdas.t${cyc}z.sfcfXXX.nemsio
+            * gdas.t${cyc}z.sfcgcy and gdas.t${cyc}z.sfctsk.  Files no longer needed given FV3GFS processing 
+              of surface files and NSST
+
+      * $COMROOTp3/gfs/prod/enkf.$PDY/$cyc
+         * Move member EnKF files into memXXX directories 
+         * Rename
+            * gdas.t${cyc}z.fcsstat.grp* --> efcs.grp*
+            * gdas.t${cyc}z.omgstat.grp* --> eomg.grp*
+         * Add
+            * Ensemble bias correction files:  gdas.t${cyc}z.[abias.air, abias, abias_int, abias_pc].ensmean
+            * gdas.t${cyc}z.atminc.nc - NetCDF file containing analysis increments.  The FV3GFS model uses 
+              this file to warmstart the forecast model.
+            * gdas.t${cyc}z.logfXXX.nemsio - FV3GFS model forecast hour log file
+         * Remove
+            * remove memXXX" from EnKF member filenames since member files are now in memXXX directories
+            * gdas.t${cyc}z.flxf*.nemsio - fields in this file added to FV3GFS gdas.t${cyc}z.sfcf*nemsio
+            * gdas.t${cyc}z.nstf*.nemsio - fields in this file file added to FV3GFS gdas.t${cyc}z.sfcf*nemsio
+            * gdas.t${cyc}z.gcyanl.nemsio, gdas.t${cyc}z.nstanl.nemsio, gdas.t${cyc}z.sfcanl.nemsio - 
+             NSST processing handled differently in FV3GFS
+
+
+
+
+
+
+
+
+HPSS ARCHIVE
+   * Retention length?
+      * Please refer to release notes for FV3GFS package
+
+
+   * List which output files should be archived
+      * Please refer to release notes for FV3GFS package
+          
+
+
+IMPLEMENTATION INSTRUCTIONS
+   * Please note that the DA components must be installed in conjunction with the entire FV3GFS package.  
+     Thus, the implementation instructions below extract the entire FV3GFS package.   The FV3GFS package is 
+     tagged in NOAA VLAB gerrit:fv3gfs as tag q2fy19_nco.   Implementation instructions for this tag follow
+     below:
+
+      1) cd  $NWROOTp3
+
+      2) mkdir $NWROOTp3/gfs.v15.0.0
+
+      3) cd $NWROOTp3/gfs.v15.0.0
+
+      4) git clone --recursive gerrit:fv3gfs .
+         * Notes:
+            * The "." after fv3gfs is important.  It tells git to clone fv3gfs into the local working directory, 
+              $NWROOTp3/gfs.v15.0.0.
+            * The SPA(s) handling the FV3GFS implementation may encounter "permission denied" messages when 
+             attempting to clone Vlab gerrit repositories.  Code managers need to add the SPA(s) as project 
+             developers.  For the fv3gfs project please contact Fanglin.Yang@noaa.gov or Mark.Potts@noaa.gov.  
+             For the FV3GFS DA project please contact Michael.Lueken@noaa.gov or Mark.Potts@noaa.gov. 
+
+      5) git checkout q2fy19nco
+
+      6) cd sorc
+
+      7) ./checkout.sh
+         * This script extracts the following FV3GFS components from gerrit:  FV3GFS model, FV3GFS DA, 
+           FV3GFS UPP, FV3GFS WAFS
+
+      8) ./build_all.sh
+         * Script build_all.sh compiles all FV3GFS components.   Runtime output from the build for each 
+           package is written to log files in directory logs.  Specifically, FV3GFS DA build information 
+           is written to logs/build_gsi.log.  Script build_gsi.sh invokes gsi.fd/ush/build_all_cmke.sh.
+           This script uses cmake to build FV3GFS DA components.   Script build_all_cmake.sh accepts two 
+           command line options:  build type and directory path to package.  Two build types are 
+           supported - PRODUCTION (default) and DEBUG.
+
+      9) ./link_fv3gfs.sh nco dell
+
+
+
+JOB DEPENDENCIES & FLOW DIAGRAM
+   * No change in FV3GFS DA job dependencies with respect to current operations

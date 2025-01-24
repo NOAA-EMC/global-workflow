@@ -1,0 +1,20 @@
+#%Module######################################################################
+proc ModulesHelp { } {
+    puts stderr "Set environment variables for NOAA-EMC/GSI"
+    puts stderr "This module initializes the environment "
+    puts stderr "for building and testing NOAA-EMC/GSI on NCCS Discover\n"
+}
+module-whatis "Initialize NOAA-EMC/GSI build/test environment"
+
+module load comp/intel-18.0.3.222
+module load lib/mkl-18.0.3.222
+module load mpi/sgi-mpt-2.17
+module load other/comp/gcc-9.1
+module load other/cmake-3.8.2
+
+setenv BASEDIR /discover/nobackup/projects/gmao/share/gmao_ops/Baselibs/v5.1.3_build1/x86_64-unknown-linux-gnu/ifort_18.0.3.222-mpt_2.17
+
+# Compiler flags specific to this platform
+setenv CFLAGS "-xHOST"
+setenv FFLAGS "-xHOST"
+

@@ -1,0 +1,174 @@
+module Test_adjoint_mod
+   use adjtest
+   use pfunit_mod
+   implicit none
+
+   public :: Test_adjoint
+
+@TestCase
+   type, extends(TestCase) :: Test_adjoint
+   contains
+      procedure :: setUp     ! overides generic
+      procedure :: tearDown  ! overrides generic
+   end type Test_adjoint
+
+contains
+
+   ! No need to annotate setUp() when _extending_ TestCase
+   subroutine setUp(this)
+
+      class (Test_adjoint), intent(inout) :: this
+
+
+   end subroutine setUp
+
+   ! No need to annotate tearDown() _extending_ TestCase
+   subroutine tearDown(this)
+      class (Test_adjoint), intent(inout) :: this
+   end subroutine tearDown
+
+@Test
+   subroutine testAdjoint(this)
+      use gsimod, only: gsimain_initialize,gsimain_run,gsimain_finalize
+      use gsi_4dvar, only: l4dvar, lsqrtb, lbicg, lanczosave, lnested_loops, ladtest_obs
+      use timermod, only: timer_pri
+      use kinds, only: i_kind,r_kind
+      use mpeu_util, only: die
+      use obsmod, only: iadate,lobserver
+      use mpimod, only: mpi_comm_world,ierror
+      use gridmod, only: twodvar_regional,regional,&
+       create_grid_vars, destroy_grid_vars
+      use pcpinfo, only: pcpinfo_read,create_pcp_random
+      use observermod, only: observer_init,observer_run,&
+         observer_set,observer_finalize,ndata
+      use guess_grids, only: nfldsig
+      use berror, only: create_berror_vars_reg,create_berror_vars,&
+         set_predictors_var,destroy_berror_vars_reg,destroy_berror_vars,& 
+         bkgv_flowdep,pcinfo,fut2ps,cwcoveqqcov
+      use jfunc, only: miter,jiter,jiterstart,jiterend,iguess,&
+          write_guess_solution,R_option,&
+          tendsflag,xhatsave,yhatsave,create_jfunc,destroy_jfunc
+      use balmod, only: create_balance_vars_reg,create_balance_vars, &
+          destroy_balance_vars_reg,destroy_balance_vars,prebal,prebal_reg
+      use anberror, only: anisotropic, &
+          create_anberror_vars_reg,destroy_anberror_vars_reg,&
+          create_anberror_vars,destroy_anberror_vars
+      use anisofilter_glb, only: anprewgt
+      use jcmod, only: ljcdfi
+      use control_vectors, only: dot_product
+      use obs_sensitivity, only: lobsensfc, iobsconv, lsensrecompute, &
+          init_fc_sens, save_fc_sens, lobsensincr, lobsensjb
+      use gridmod, only: jcap, jcap_b, nlat,nlon,nsig,nlayers
+      use pcpinfo, only: pcpinfo_read,create_pcp_random,&
+         destroy_pcp_random
+      use aircraftinfo, only: aircraftinfo_read,aircraft_t_bc_pof,aircraft_t_bc,&
+       aircraft_t_bc_ext
+      use aeroinfo, only: aeroinfo_read
+      use radinfo, only: radinfo_read
+      use aeroinfo, only: aeroinfo_read
+      use convinfo, only: convinfo_read
+      use ozinfo, only: ozinfo_read
+      use coinfo, only: coinfo_read
+      class (Test_adjoint), intent(inout) :: this
+      logical init_pass
+      logical laltmin
+      integer(i_kind) :: mype
+      character(len=12) :: clfile
+      real(r_kind) :: zgg,zxy
+
+
+      call gsimain_initialize
+      
+      call mpi_comm_rank(mpi_comm_world,mype,ierror)
+!     call gsimain_run(.true.,.false.)
+! Allocate grid arrays.
+      call create_grid_vars
+
+! Get date, grid, and other information from model guess files
+      call gesinfo(mype)
+!     call radinfo_read
+!     call ozinfo_read
+!     call coinfo_read
+      call pcpinfo_read
+!     call aeroinfo_read
+!     if (aircraft_t_bc_pof .or. aircraft_t_bc .or. aircraft_t_bc_ext) &
+!          call aircraftinfo_read
+!     call convinfo_read
+      call create_pcp_random(iadate,mype)
+      call observer_init()
+!     call observer_run(init_pass=.true.,last_pass=.false.)
+! Check for alternative minimizations
+      laltmin = lsqrtb.or.lbicg
+
+! Check GSI options against available number of guess time levels
+      nfldsig = 1
+      bkgv_flowdep = .true.
+!     if (nfldsig == 1) then
+!        if (bkgv_flowdep) then
+!           bkgv_flowdep = .false.
+!           if (mype==0) &
+!              write(6,*)'GLBSOI: ***WARNING*** reset bkgv_flowdep=',bkgv_flowdep,&
+!          ', because only ',nfldsig,' guess time level available'
+!        endif
+!     endif
+
+! Set cost function
+      call create_jfunc
+! Read observations and scatter
+      call observer_set
+      call create_balance_vars
+!     if(anisotropic) then
+!       call create_anberror_vars(mype)
+!     else
+        call create_berror_vars
+!     end if
+     
+      call prebal(fut2ps,cwcoveqqcov)
+
+!    Load background error arrays used by recursive filters
+!     if(anisotropic) then
+!       call anprewgt(mype)
+!     else
+        call prewgt(mype)
+!     end if
+! Set error (variance) for predictors (only use guess)
+      call set_predictors_var
+
+! Set errors and create variables for dynamical constraint
+!     if (ljcdfi) call init_jcdfi
+
+! Read output from previous min.
+!     if (l4dvar.and.jiterstart>1) then
+!        clfile='xhatsave.ZZZ'
+!        write(clfile(10:12),'(I3.3)') jiterstart-1
+!        call view_cv_ad(xhatsave,iadate,clfile,.not.lnested_loops)
+!        zgg=dot_product(xhatsave,xhatsave)
+!        if (mype==0) write(6,*)'Norm   xhatsave=',sqrt(zgg)
+!        if (.not.lsqrtb) then
+!           clfile='yhatsave.ZZZ'
+!           write(clfile(10:12),'(I3.3)') jiterstart-1
+!           call view_cv_ad(yhatsave,iadate,clfile,.not.lnested_loops)
+!           zgg=dot_product(yhatsave,yhatsave)
+!           zxy=dot_product(xhatsave,yhatsave)
+!           if (mype==0) then
+!               write(6,*)'Norm   yhatsave=',sqrt(zgg)
+!               write(6,*)'Norm x,yhatsave=',zxy
+!           endif
+!        endif
+!     endif
+
+!    Set up right hand side of analysis equation
+!     call setuprhsall(ndata,mype,.true.,.true.)
+!     call init_fc_sens
+!     Set up additional preconditioning information
+!     call pcinfo
+
+      call adtest
+
+      @assertEqual(1, 1)
+!     @assertEqual(3, ifilesfc(1))
+!     @assertEqual(2.0, hrdifsfc(1))
+
+   end subroutine testAdjoint
+
+end module Test_adjoint_mod

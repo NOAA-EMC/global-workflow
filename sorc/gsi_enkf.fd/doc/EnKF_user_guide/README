@@ -1,0 +1,24 @@
+This directory contains the latex source for creating the enkf user's guide. This document requires
+an instillation of latex that supports the CTAN extensions. 
+
+1. Required flavor of LaTex.
+Options for the three main platforms.
+
+Windows:
+The most popular choice here is the MiKTEX (http://www.miktex.org) distribution, which lets you easily 
+manage TEX packages. Many people advise beginners to get the proTEXt bundling of MiKTEX, which lets you 
+install by using a .pdf file with links so you can read about your options and then click on the right 
+one. And it includes other components that help you work with your TEX system.
+
+Unix-type systems, including GNU/Linux:
+The best choice here is TEX Live (http://tug.org/texlive/), which contains many packages and programs. 
+It is freely available over the Internet or on disc; see the web page for details. Note that most Unix 
+systems have TEX as an installation option so you might already have it or be able to easily get it using 
+your system administration package management tool: RPM, or DEB, or whatever.
+
+Mac­in­tosh:
+Get the MacTEX (http://tug.org/mactex/) distribution, which is TEX Live with some Mac specific goodies.
+
+2. Building the user's guide document. 
+Run LaTex on the file main.tex. It imports organizes each of the individual chapter files. This creates 
+the document main.pdf.

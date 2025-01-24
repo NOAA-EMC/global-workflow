@@ -1,0 +1,1578 @@
+\chapter{Running GSI}\label{gsi_run}
+\setlength{\parskip}{12pt}
+
+This chapter discusses the issues of running GSI. It starts with introductions to the input data required to run GSI, then proceeds with a detailed explanation of an example GSI run script and introductions to files produced by a successful GSI run. It concludes with some frequently used options from the GSI namelist.
+
+%-------------------------------------------------------------------------------
+\section{Input Data Required to Run GSI}
+\label{sec3.1}
+%-------------------------------------------------------------------------------
+
+In most cases, three types of input data (background, observations, and fixed files) must be available before running GSI. In some special idealized cases, such as a pseudo single observation test, GSI can be run without any observations. If running GSI with the 3D EnVar hybrid option, global or regional ensemble forecasts are also needed.
+
+%-------------------------------------------------------------------------------
+\subsection{Background or First Guess Field}
+%-------------------------------------------------------------------------------
+
+As with other data analysis systems, the background or first guess fields may come from a model forecast conducted separately or from a previous data assimilation cycle. The following is a list of the types of background files that can be used by this release version of GSI:
+
+\begin{small}
+\begin{description}
+\item[ ] a) WRF-NMM input fields in binary format
+\item[ ] b) WRF-NMM input fields in NetCDF format
+\item[ ] c) WRF-ARW input fields in binary format
+\item[ ] d) WRF-ARW input fields in NetCDF format
+\item[ ] e) GFS input fields in binary format or through NEMS I/O
+\item[ ] f) NEMS-NMMB input fields
+\item[ ] g) RTMA input files (2-dimensional binary format)
+\item[ ] h) WRF-Chem GOCART input fields with NetCDF format
+\item[ ] i) CMAQ binary file 
+\end{description}
+\end{small}
+
+The Weather Research and Forecasting (WRF) community modeling system includes two dynamical cores: the Advanced Research WRF (ARW) and the Nonhydrostatic Mesoscale Model (NMM). The GFS (Global Forecast System), NEMS (National Environmental Modeling System)-NMMB (Nonhydrostatic Mesoscale Model B-Grid), and RTMA (Real-Time Mesoscale Analysis) are operational systems at the National Center for Environmental Prediction (NCEP). The DTC mainly supports GSI for regional WRF applications. Therefore, most of the multiple platform tests were conducted using WRF netcdf background files (d). The DTC also supports the GSI in global and chemical applications with limited resources. The following backgrounds have been tested for this release:
+
+\begin{small}
+\begin{enumerate}
+\item ARW NetCDF (d) were tested with multiple cases
+\item GFS (e) was tested with multiple NCEP cases
+\item WRF-Chem NetCDF (h) was tested with a single case
+\item NEMS-NMMB(f) was tested with a single case
+\end{enumerate}
+\end{small}
+
+
+%-------------------------------------------------------------------------------
+\subsection{Observations}
+%-------------------------------------------------------------------------------
+
+GSI can analyze many types of observational data, including conventional data, satellite radiance observations, GPS Radio Occultations, and radar data, among others. The default observation file names are given in the released GSI namelist, with corresponding observations included in each file. Sample BUFR files available for download from the NCEP website listed in table \ref{t31}. 
+
+The observations are complex and many observations need format converting and quality control before being used by GSI. GSI ingests observations saved in BUFR format (with NCEP specified features). The NCEP processed PrepBUFR and BUFR files can be used directly. If users need to introduce their own data into GSI, please check the following website for the User\textquotesingle s Guide and examples of BUFR/PreBUFR processing: 
+
+\begin{center}
+\url{http://www.dtcenter.org/com-GSI/BUFR/index.php}
+\end{center}
+
+DTC supports BUFR/PrepBUFR data processing and quality control as part of the GSI community tasks.
+
+GSI can analyze all of the data types in table \ref{t31}, but each GSI run (for both operation and case study purposes) only uses a subset of the data. Some data may be outdated and not available, some are in monitoring mode, and some may have quality issues during certain periods. Users are encouraged to check data quality prior to running an analysis. The following NCEP links provide resources that include data quality history:
+
+\begin{center}
+\begin{scriptsize}
+\url{http://www.emc.ncep.noaa.gov/mmb/data_processing/Satellite_Historical_Documentation.htm}
+\\
+\url{http://www.emc.ncep.noaa.gov/mmb/data_processing/Non-satellite_Historical_Documentation.htm}
+\end{scriptsize}
+\end{center}
+
+Because the current regional models do not have ozone as a prognostic variable, ozone data are not assimilated on the regional scale.
+
+GSI can be run without any observations to see how the moisture constraint modifies the first guess (background) field. GSI can also be run in a pseudo single observation mode, which does not require any BUFR observation files. In this mode, users should specify observation information in the namelist section SINGLEOB\_TEST (see Section \ref{sec4.2} for details). As more data files are used, additional information will be added through the GSI analysis.
+
+\begin{table}[htbp]
+\centering
+\begin{footnotesize}
+\caption{GSI observation file names, content, and examples}
+\begin{tabular}{|l|p{7cm}|c|}
+\hline
+\hline
+GSI Name  & Content & Example file names \\
+\hline
+\hline
+prepbufr & Conventional observations, including ps, t, q, pw, uv, spd, dw, sst & gdas1.t12z.prepbufr.nr \\
+\hline
+satwndbufr & satellite winds observations &	gdas1.t12z.satwnd.tm00.bufr\_d \\
+\hline
+amsuabufr &	AMSU-A 1b radiance (brightness temperatures) from satellites
+ NOAA-15, 16, 17,18, 19 and METOP-A/B &	gdas1.t12z.1bamua.tm00.bufr\_d \\
+\hline
+amsubbufr &	AMSU-B 1b radiance (brightness temperatures) from satellites NOAA-15, 16,17 &	gdas1.t12z.1bamub.tm00.bufr\_d \\
+\hline
+radarbufr &	Radar radial velocity Level 2.5 data &	ndas.t12z.radwnd.tm12.bufr\_d \\
+\hline
+gpsrobufr &	GPS radio occultation and bending angle observation & gdas1.t12z.gpsro.tm00.bufr\_d \\
+\hline
+ssmirrbufr & Precipitation rate observations from SSM/I & gdas1.t12z.spssmi.tm00.bufr\_d \\
+\hline
+tmirrbufr &	Precipitation rate observations from TMI & 	gdas1.t12z.sptrmm.tm00.bufr\_d \\
+\hline
+sbuvbufr &	SBUV/2 ozone observations from satellite NOAA-16, 17, 18, 19 &	gdas1.t12z.osbuv8.tm00.bufr\_d \\
+\hline
+hirs2bufr &	HIRS2 1b radiance from satellite NOAA-14 &	gdas1.t12z.1bhrs2.tm00.bufr\_d \\
+\hline
+hirs3bufr &	HIRS3 1b radiance observations from satellite NOAA-16, 17 &	gdas1.t12z.1bhrs3.tm00.bufr\_d \\
+\hline
+hirs4bufr &	HIRS4 1b radiance observation from satellite NOAA-18, 19 and METOP-A/B &	gdas1.t12z.1bhrs4.tm00.bufr\_d \\
+\hline
+msubufr	& MSU observation from satellite NOAA 14  &	gdas1.t12z.1bmsu.tm00.bufr\_d \\
+\hline
+airsbufr &	AMSU-A and AIRS radiances from satellite AQUA &	gdas1.t12z.airsev.tm00.bufr\_d \\
+\hline
+mhsbufr	& Microwave Humidity Sounder observation from NOAA-18, 19 and METOP-A/B &	gdas1.t12z.1bmhs.tm00.bufr\_d \\
+\hline
+ssmitbufr &	SSMI observation from satellite f13, f14, f15 &	gdas1.t12z.ssmit.tm00.bufr\_d \\
+\hline
+amsrebufr &	AMSR-E radiance from satellite AQUA	& gdas1.t12z.amsre.tm00.bufr\_d \\
+\hline
+ssmisbufr &	SSMIS radiances from satellite f16	& gdas1.t12z.ssmis.tm00.bufr\_d \\
+\hline
+gsnd1bufr &	GOES sounder radiance (sndrd1, sndrd2, sndrd3 sndrd4) from GOES-11, 12, 13, 14, 15. &	gdas1.t12z.goesfv.tm00.bufr\_d \\
+\hline
+l2rwbufr &	NEXRAD Level 2 radial velocity & ndas.t12z.nexrad.tm12.bufr\_d \\
+\hline
+gsndrbufr &	GOES sounder radiance from GOES-11, 12 &	gdas1.t12z.goesnd.tm00.bufr\_d \\
+\hline
+gimgrbufr &	GOES imager radiance from GOE-11, 12 & \\
+\hline	
+omibufr	& Ozone Monitoring Instrument (OMI) observation NASA Aura &	gdas1.t12z.omi.tm00.bufr\_d \\
+\hline
+iasibufr &	Infrared Atmospheric Sounding Interfero-meter sounder observations from METOP-A/B	& gdas1.t12z.mtiasi.tm00.bufr\_d \\
+\hline
+gomebufr &	The Global Ozone Monitoring Experiment (GOME) ozone observation from METOP-A/B & gdas1.t12z.gome.tm00.bufr\_d \\
+\hline
+mlsbufr	 & Aura MLS stratospheric ozone data from Aura &	gdas1.t12z.mlsbufr.tm00.bufr\_d \\
+\hline
+tcvitl & Synthetic Tropic Cyclone-MSLP observation &	gdas1.t12z.syndata.tcvitals.tm00 \\
+\hline
+seviribufr & SEVIRI radiance from MET-08,09,10 & gdas1.t12z. sevcsr.tm00.bufr\_d \\
+\hline
+atmsbufr & ATMS radiance from Suomi NPP & gdas1.t12z.atms.tm00.bufr\_d \\
+\hline
+crisbufr & CRIS radiance from Suomi NPP	& gdas1.t12z.cris.tm00.bufr\_d \\
+\hline
+modisbufr &	MODIS aerosol total column AOD observations from AQUA and TERRA & \\	
+\hline
+\end{tabular}
+\label{t31}
+\end{footnotesize}
+\end{table}
+
+%-------------------------------------------------------------------------------
+\subsection{Fixed Files (Statistics and Control Files)}
+%-------------------------------------------------------------------------------
+
+A GSI analysis also needs to read specific information from statistic files, configuration files, bias correction files, and CRTM coefficient files. We refer to these files as fixed files and they are located in a directory called  \verb|fix/| in the release package, except for CRTM coefficients. 
+
+Table \ref{t32}  lists fixed files required for a GSI run, the content of the files, and corresponding example files from the regional and global applications:
+
+Because most of those fixed files have hardwired names inside the GSI, a GSI run script needs to copy or link those files (right column in table \ref{t32})  from the \verb|./fix| directory to the GSI run directory with the file name required in GSI (left column in table \ref{t32}). For example, if GSI runs with an ARW background, the following line should be in the run script:
+
+\begin{small}
+\begin{verbatim}
+cp ${path of the fix directory}/anavinfo_arw_netcdf anavinfo
+\end{verbatim}
+\end{small}
+
+Note that in this release, there is a strict rule that the numbers of vertical levels in the file \verb|anavinfo| must match the background file (for example, \verb|wrfinput_d01|) for the 3-dimensional variables. Otherwise GSI will fail. To identify the correct numbers of vertical levels, users can dump out (use \verb|ncdump -h|) the dimensions from the NetCDF background file and find the number for \verb|bottom_top| and \verb|bottom_top_stag|. For example, if the dimensions for the background file is:
+
+\begin{small}
+\begin{verbatim}
+    bottom_top = 50 ;
+    bottom_top_stag = 51 ;
+\end{verbatim}
+\end{small}
+
+Then the corresponding \verb|anavinfo| file should have 51 levels for \verb|prse| (3-dimemsional pressure field) and 50 levels for other three-dimensional variables such as u, v, tv, q, oz, cw, etc. For details, users can dump out the global attributes of the background file and find the number of vertical levels for each variable. The following shows part of the \verb|anavinfo| file for the above background:
+
+\newpage
+
+\begin{small}
+\begin{verbatim}
+state_derivatives::
+!var  level  src
+ ps   1      met_guess
+ u    50     met_guess
+ v    50     met_guess
+ tv   50     met_guess
+ q    50     met_guess
+ oz   50     met_guess
+ cw   50     met_guess
+ prse 51     met_guess
+::
+\end{verbatim}
+\end{small}
+
+
+\begin{table}[h!]
+\centering
+\begin{footnotesize}
+\caption{GSI fixed files, content, and examples}
+\begin{tabular}{|p{2.5cm}|p{5cm}|p{7cm}|}
+\hline
+\hline
+GSI Name  & Content & Example file names \\
+\hline
+\hline
+anavinfo & Information file to set control and analysis variables &	
+anavinfo\_arw\_netcdf  \newline
+anavinfo\_ndas\_netcdf    
+global\_anavinfo.l64.txt  \\
+\hline
+berror\_stats &	background error covariance &	nam\_nmmstat\_na.gcv
+nam\_glb\_berror.f77.gcv
+global\_berror.l64y386.f77 \\
+\hline
+errtable & Observation error table & nam\_errtable.r3dv \newline
+prepobs\_errtable.global \\
+\hline
+\multicolumn{3}{|c|}{\textit{Observation data control file (more detailed explanation in Section} \ref{sec4.3})} \\
+\hline
+convinfo & Conventional observation information file & global\_convinfo.txt
+nam\_regional\_convinfo.txt \\
+\hline
+satinfo & satellite channel information file & 	global\_satinfo.txt \\
+\hline
+pcpinfo	& precipitation rate observation information file & global\_pcpinfo.txt \\
+\hline
+ozinfo & ozone observation information file	& global\_ozinfo.txt \\
+\hline
+\multicolumn{3}{|c|}{\textit{Bias correction and Rejection list}} \\
+\hline 
+satbias\_angle & satellite scan angle dependent bias correction file	& global\_satangbias.txt \\
+\hline
+\multirow{3}{2cm}{satbias\_in} & satellite mass bias correction coefficient file & sample.satbias \\ \cline{2-3} 
+& combined satellite angle dependent and mass bias correction coefficient file &	gdas1.t00z.abias.new \\
+\hline
+t\_rejectlist, w\_rejectlist,.. & Rejetion list for T, wind, et al. in RTMA	& new\_rtma\_t\_rejectlist
+new\_rtma\_w\_rejectlist \\
+\hline
+\end{tabular}
+\label{t32}
+\end{footnotesize}
+\end{table} 
+
+Each operational system, such as GFS, NAM, RAP, and RTMA, has their own set of fixed files. For your specific GSI runs, you need to get the correct set of fixed files. Fixed files for regional applications are included in this GSI/EnKF release and put under the \textit{fix/} directory. Fixed files for global applications are not included in this release in order to save space. Please download \verb|comGSIv3.6_EnKFv1.2_fix_global.tar.gz| if you need to run global cases. Note that little endian background error covariance files are no longer supported.  
+
+Each release version of the GSI calls a certain version of the CRTM library and needs corresponding CRTM coefficients to do radiance data assimilation. This version of GSI uses CRTM 2.2.3. The coefficient files are listed in table \ref{t34}.
+
+
+\begin{table}[htbp]
+\centering
+\begin{small}
+\caption{List of radiance coefficients used by CRTM}
+\begin{tabular}{|p{5.5cm}|p{3.5cm}|p{5.5cm}|}
+\hline
+\hline
+File name used in GSI & Content & Example files \\
+\hline
+\hline
+Nalli.IRwater.EmisCoeff.bin
+NPOESS.IRice.EmisCoeff.bin
+NPOESS.IRsnow.EmisCoeff.bin
+NPOESS.IRland.EmisCoeff.bin
+NPOESS.VISice.EmisCoeff.bin
+NPOESS.VISland.EmisCoeff.bin
+NPOESS.VISsnow.EmisCoeff.bin
+NPOESS.VISwater.EmisCoeff.bin
+FASTEM6.MWwater.EmisCoeff.bin &	
+IR surface emissivity coefficients & 
+Nalli.IRwater.EmisCoeff.bin
+NPOESS.IRice.EmisCoeff.bin
+NPOESS.IRsnow.EmisCoeff.bin
+NPOESS.IRland.EmisCoeff.bin
+NPOESS.VISice.EmisCoeff.bin
+NPOESS.VISland.EmisCoeff.bin
+NPOESS.VISsnow.EmisCoeff.bin
+NPOESS.VISwater.EmisCoeff.bin
+FASTEM6.MWwater.EmisCoeff.bin \\
+\hline
+AerosolCoeff.bin & Aerosol coefficients & AerosolCoeff.bin \\
+\hline
+CloudCoeff.bin & Cloud scattering and emission coefficients & CloudCoeff.bin \\
+\hline
+\$\{satsen\}.SpcCoeff.bin & Sensor spectral response characteristics & \$\{satsen\}.SpcCoeff.bin \\
+\hline
+\$\{satsen\}.TauCoeff.bin & Transmittance coefficients & \$\{satsen\}.TauCoeff.bin \\
+\hline
+\end{tabular}
+\label{t34} 
+\end{small}
+\end{table}
+
+%-------------------------------------------------------------------------------
+\section{GSI Run Script}
+%-------------------------------------------------------------------------------
+
+In this release version, three sample run scripts are available for different GSI applications: 
+
+\begin{itemize}
+\item \verb|dtc/run/run_gsi_regional.ksh|  for regional GSI
+\item \verb|dtc/run/run_gsi_global.ksh|  for global GSI (GFS)
+\item \verb|dtc/run/run_gsi_chem.ksh| for chemical analysis
+\end{itemize}
+
+These scripts will be called to generate GSI namelists:
+\begin{itemize}
+\item \verb|dtc/run/comgsi_namelist.sh| for regional GSI
+\item \verb|dtc/run/comgsi_namelist_gfs.sh| for global GSI (GFS)
+\item \verb|dtc/run/comgsi_namelist_chem.sh| for GSI chemical analysis
+\end{itemize}
+
+We will introduce the regional run scripts (\verb|run_gsi_regional.ksh|) in detail in the following sections and introduce the global run script when we discuss the GSI global application in the Advanced GSI User\textquotesingle s Guide. 
+
+Note there is also a run script for regional EnKF (\verb|run_enkf_wrf.ksh|), a run script for global EnKF (\verb|run_enkf_global.ksh|) and the EnKF namelist script (\verb|enkf_wrf_namelist.sh|) in the same directory, which will be introduced in the EnKF User\textquotesingle s Guide.
+
+%-------------------------------------------------------------------------------
+\subsection{Steps in the GSI Run Script} 
+%-------------------------------------------------------------------------------
+
+The GSI run script creates a run time environment necessary to run the GSI executable. A typical GSI run script includes the following steps:
+
+\begin{enumerate}
+\item Request computer resources to run GSI.
+\item Set environmental variables for the machine architecture.
+\item Set experimental variables (such as experiment name, analysis time, background, and observation).
+\item Set the script that generates the GSI namelist.
+\item Check the definitions of required variables. 
+\item Generate a run directory for GSI (sometimes called a working or temporary directory).
+\item Copy the GSI executable to the run directory.
+\item Copy the background file to the run directory and create an index file listing the location and name of ensemble members if running with a hybrid set up.
+\item Link observations to the run directory.
+\item Link fixed files (statistic, control, and coefficient files) to the run directory. 
+\item Generate namelist for GSI.
+\item Run the GSI executable.
+\item Post-process: save analysis results, generate diagnostic files, and clean the run directory.
+\item Run GSI as observation operator for EnKF, only for \verb|if_observer=Yes|.
+\end{enumerate}
+
+Typically, users only need to modify specific parts of the run script (steps 1, 2, and 3) to fit their specific computer environment and point to the correct input/output files and directories. Users may also need to modify step 4 if changes are made to the namelist and it is under a different name or at a different location. The next section (\ref{sec3.2.2}) covers each of these modifications for steps 1 to 3. Section \ref{sec3.2.3} will dissect a sample regional GSI run script and introduce each piece of this sample GSI run script. Users should start with the run script provided in the same release package with the GSI executable and modify it for their own run environment and case configuration.
+
+
+%-------------------------------------------------------------------------------
+\subsection{Customization of the GSI Run Script}
+\label{sec3.2.2}
+%-------------------------------------------------------------------------------
+
+\text {3.2.2.1 Setting Up the Machine Environment} 
+
+This section focuses on step 1 of the run script: modifying the machine specific entries. Specifically, this consists of setting Unix/Linux environment variables and selecting the correct parallel run time environment (batch system with options). 
+
+GSI can be run with the same parallel environments as other MPI programs, for example:
+
+\begin{itemize}
+\item IBM supercomputer using LSF (Load Sharing Facility)
+\item IBM supercomputer using LoadLevel
+\item Linux clusters using PBS (Portable Batch System)
+\item Linux clusters using LSF
+\item Linux workstation (no batch system)
+\item Intel Mac Darwin workstation with PGI complier (no batch system)
+\end{itemize}
+
+Two queuing systems are listed below as examples:
+
+\begin{table}[htbp]\centering
+\begin{tabular}{|p{2.6cm}|p{4.5cm}|p{4.5cm}|p{2.5cm}|}
+\hline
+\hline
+Machine \& queue system & Linux Cluster with LSF & Linux Cluster with PBS & Workstation \\
+\hline
+\hline
+example
+&
+\begin{footnotesize}
+\begin{verbatim}
+#BSUB -P ???????? 
+#BSUB -W 00:10 
+#BSUB -n 4 
+#BSUB -R "span[ptile=16]
+#BSUB -J gsi 
+#BSUB -o gsi.%J.out 
+#BSUB -e gsi.%J.err 
+#BSUB -q small
+\end{verbatim}
+\end{footnotesize}
+&
+\begin{footnotesize}
+\begin{verbatim}
+#PBS -l procs=4
+#PBS -n
+#PBS -o gsi.out
+#PBS -e gsi.err
+#PBS -N GSI
+#PBS -l walltime=00:20
+#PBS -A ??????
+\end{verbatim}
+\end{footnotesize}
+&
+No batch system, 
+skip this step
+\\
+\hline
+\end{tabular}
+\label{t35}
+\end{table} 
+
+In both of the examples above, environment variables are set specifying system resource management, such as the number of processors, the name/type of queue, maximum wall clock time allocated for the job, options for standard out and standard error, etc. Some platforms need additional definitions to specify Unix environment variables that further define the run environment. 
+
+These variable settings can significantly impact the GSI run efficiency and accuracy of the GSI results. Please check with your system administrator for optimal settings for your computer system. Note that while the GSI can be run with any number of processors, it will not scale well with the increase of processor numbers after a certain threshold based on the case configuration and GSI application types.
+
+\text{3.2.2.2 Setting up the Running Environment}
+
+There are only two options to define in this block. 
+
+\begin{footnotesize}
+\begin{verbatim}
+# GSIPROC = processor number used for GSI analysis
+#------------------------------------------------
+  GSIPROC=4
+  ARCH='LINUX_LSF'
+# Supported configurations:
+            # IBM_LSF,
+            # LINUX, LINUX_LSF, LINUX_PBS,
+            # DARWIN_PGI
+\end{verbatim}
+\end{footnotesize}
+
+The option \verb|ARCH| selects the machine architecture. It is a function of platform type and batch queuing system. The option \verb|GSIPROC| sets the number of cores used in the run. This option also decides if the job is run as a multiple core job or as a single core run. Several choices of the option \verb|ARCH| are listed in the sample run script. Please check with your system administrator about running parallel MPI jobs on your system.
+
+\begin{table}[htbp]
+\centering
+\begin{footnotesize}
+\begin{tabular}{|p{3cm}|p{4cm}|p{3cm}|p{4cm}|}
+\hline
+\hline
+Option ARCH & Platform & Compiler & batch queuing system \\
+\hline
+\hline
+IBM\_LSF & IBM AIX & xlf, xlc & LSF \\
+\hline
+LINUX & Linux workstation & Intel/PGI/GNU & mpirun if \verb|GSIPROC| > 1 \\
+\hline
+LINUX\_LSF & Linux cluster & Intel/PGI/GNU & LSF \\
+\hline
+LINUX\_PBS & Linux cluster & Intel/PGI/GNU & PBS \\
+\hline
+DARWIN\_PGI & MAC DARWIN & PGI	& mpirun if \verb|GSIPROC| > 1 \\
+\hline
+\end{tabular}
+\label{t36}
+\end{footnotesize}
+\end{table} 
+
+\text{3.2.2.3 Setting Up an Analysis Case}
+
+This section discusses setting up variables specific to a given case, such as analysis time, working directory, background and observation files, location of fixed files and CRTM coefficients, the GSI executable file, and the script generating GSI namelist. 
+
+\begin{footnotesize}
+\begin{verbatim}
+#####################################################
+# case set up (users should change this part)
+#####################################################
+#
+# ANAL_TIME= analysis time  (YYYYMMDDHH)
+# WORK_ROOT= working directory, where GSI runs
+# PREPBURF = path of PreBUFR conventional obs
+# BK_FILE  = path and name of background file
+# OBS_ROOT = path of observations files
+# FIX_ROOT = path of fix files
+# GSI_EXE  = path and name of the gsi executable
+  ANAL_TIME=2017051312
+  HH=`echo $ANAL_TIME | cut -c9-10`
+  WORK_ROOT=testarw
+  OBS_ROOT=data/${ANAL_TIME}/obs
+  PREPBUFR=${OBS_ROOT}/nam.t${HH}z.prepbufr.tm00.nr
+  BK_ROOT=data/${ANAL_TIME}/arw
+  BK_FILE=${BK_ROOT}/wrfinput_d01.${ANAL_TIME}
+  CRTM_ROOT=fix/CRTM_2.2.3
+  GSI_ROOT=comGSI
+  FIX_ROOT=${GSI_ROOT}/fix
+  GSI_EXE=${GSI_ROOT}/dtc/run/gsi.exe
+  GSI_NAMELIST=${GSI_ROOT}/dtc/run/comgsi_namelist.sh
+\end{verbatim}
+\end{footnotesize}
+
+When picking the observation BUFR files, please be aware of the following: 
+
+\begin{itemize}
+\item GSI run will stop if the time in the background file does not match the cycle time in the observation BUFR file used for the GSI run (there is a namelist option to turn this verification step off).
+\item Even if their contents are identical, PrepBUFR/BUFR files will differ if they were created on platforms with different endian byte order specification (Linux vs. IBM). Appendix A.1 discusses the conversion tool SSRC used to byte-swap observation files. Since release version 3.2, GSI compiled with PGI and Intel can automatically handle byte order issues in PrepBUFR and BUFR files. Users can directly link BUFR files of any order if working with Intel and PGI platform.
+\end{itemize}
+
+The next part of this block focuses on additional options that specify important aspects of the GSI configuration. 
+
+\begin{footnotesize}
+\begin{verbatim}
+# bk_core= which WRF core is used as background (NMM or ARW or NMMB)
+# bkcv_option= which background error covariance and parameter will be used
+#              (GLOBAL or NAM)
+# if_clean = clean  : delete temperal files in working directory (default)
+#            no     : leave running directory as is (this is for debug only)
+# if_observer = Yes  : only used as observation operater for enkf
+# if_hybrid   = Yes  : Run GSI as 3D/4D EnVar
+# if_4DEnVar  = Yes  : Run GSI as 4D EnVar
+  if_hybrid=No    # Yes, or, No -- case sensitive !
+  if_4DEnVar=No   # Yes, or, No -- case sensitive (if_hybrid must be Yes)!
+  if_observer=No   # Yes, or, No -- case sensitive !
+
+  bk_core=ARW
+  bkcv_option=NAM
+  if_clean=clean
+#
+# setup for GSI 3D/4D EnVar hybrid
+  if [ ${if_hybrid} = Yes ] ; then
+    ENS_ROOT=data/dacase/2017051312
+    ENSEMBLE_FILE_mem=${ENS_ROOT}/gfsens/sfg_2017051306_fhr06s
+
+    if [ ${if_4DEnVar} = Yes ] ; then
+      BK_FILE_P1=${BK_ROOT}/wrfout_d01_2017-05-13_19:00:00
+      BK_FILE_M1=${BK_ROOT}/wrfout_d01_2017-05-13_17:00:00
+
+      ENSEMBLE_FILE_mem_p1=${ENS_ROOT}/sfg_2017051312_fhr09s
+      ENSEMBLE_FILE_mem_m1=${ENS_ROOT}/sfg_2017051312_fhr03s
+    fi
+  fi
+
+# no_member     number of ensemble members
+# BK_FILE_mem   path and base for ensemble members
+  no_member=20
+  BK_FILE_mem=${BK_ROOT}/wrfarw.mem
+\end{verbatim}
+\end{footnotesize}
+
+Option if\_hybrid controls whether to run a hybrid ensemble/variational data analysis. If if\_hybrid=Yes, option if\_4DEnVar=Yes indicates a hybrid 4D-EnVar analysis will be run, while if\_4DEnVar=No indicates a hybrid 3DEnVAR analysis will be run. Option if\_observer determines whether GSI is run as an observation operator for EnKF.
+
+Option bk\_core indicates the specific dynamic core used to create the background files and specifies the core in the namelist. Option bk\_core can be ARW or NMMB. Option bkcv\_option specifies the background error covariance to be used in the case. Two regional background error covariance matrices are provided with the release, one from NCEP global data assimilation (GDAS), and one from the NAM data assimilation system (NDAS). Please check Section \ref{sec4.8} for more details about GSI background error covariance. Option if\_clean tells the script if it needs to delete temporary intermediate files in the working directory after a GSI run is completed. 
+
+In most cases, users should only make minor changes after the following:
+
+\begin{footnotesize}
+\begin{verbatim}
+#####################################################
+# Users should NOT change script after this point
+#####################################################
+#
+BYTE_ORDER=Big_Endian
+# BYTE_ORDER=Little_Endian
+\end{verbatim}
+\end{footnotesize}
+
+
+%-------------------------------------------------------------------------------
+\subsection{Description of the Sample Regional Run Script to Run GSI}
+\label{sec3.2.3}
+%-------------------------------------------------------------------------------
+
+Listed below is an annotated regional run script with explanations on each function block.
+
+For further details on the first three blocks of the script that users need to change, see sections 3.2.2.1, 3.2.2.2, and 3.2.2.3: 
+
+\begin{footnotesize}
+\begin{verbatim}
+#!/bin/ksh
+#####################################################
+# machine set up (users should change this part)
+#####################################################
+
+set -x
+#
+# GSIPROC = processor number used for GSI analysis
+#------------------------------------------------
+  GSIPROC=4
+  ARCH='LINUX_LSF'
+
+# Supported configurations:
+            # IBM_LSF,
+            # LINUX, LINUX_LSF, LINUX_PBS,
+            # DARWIN_PGI
+#
+#####################################################
+# case set up (users should change this part)
+#####################################################
+#
+# ANAL_TIME= analysis time  (YYYYMMDDHH)
+# WORK_ROOT= working directory, where GSI runs
+# PREPBURF = path of PreBUFR conventional obs
+# BK_FILE  = path and name of background file
+# OBS_ROOT = path of observations files
+# FIX_ROOT = path of fix files
+# GSI_EXE  = path and name of the gsi executable
+  ANAL_TIME=2017051312
+  HH=`echo $ANAL_TIME | cut -c9-10`
+  WORK_ROOT=testarw
+  OBS_ROOT=data/${ANAL_TIME}/obs
+  PREPBUFR=${OBS_ROOT}/nam.t${HH}z.prepbufr.tm00.nr
+  BK_ROOT=data/${ANAL_TIME}/arw
+  BK_FILE=${BK_ROOT}/wrfinput_d01.${ANAL_TIME}
+  CRTM_ROOT=fix/CRTM_2.2.3
+  GSI_ROOT=comGSI
+  FIX_ROOT=${GSI_ROOT}/fix
+  GSI_EXE=${GSI_ROOT}/dtc/run/gsi.exe
+  GSI_NAMELIST=${GSI_ROOT}/dtc/run/comgsi_namelist.sh
+
+#------------------------------------------------
+# bk_core= which WRF core is used as background (NMM or ARW or NMMB)
+# bkcv_option= which background error covariance and parameter will be used
+#              (GLOBAL or NAM)
+# if_clean = clean  : delete temperal files in working directory (default)
+#            no     : leave running directory as is (this is for debug only)
+# if_observer = Yes  : only used as observation operater for enkf
+# if_hybrid   = Yes  : Run GSI as 3D/4D EnVar
+# if_4DEnVar  = Yes  : Run GSI as 4D EnVar
+  if_hybrid=No    # Yes, or, No -- case sensitive !
+  if_4DEnVar=No   # Yes, or, No -- case sensitive (if_hybrid must be Yes)!
+  if_observer=No   # Yes, or, No -- case sensitive !
+
+  bk_core=ARW
+  bkcv_option=NAM
+  if_clean=clean
+#
+# setup for GSI 3D/4D EnVar hybrid
+  if [ ${if_hybrid} = Yes ] ; then
+    ENS_ROOT=data/dacase/2017051312
+    ENSEMBLE_FILE_mem=${ENS_ROOT}/gfsens/sfg_2017051306_fhr06s
+
+    if [ ${if_4DEnVar} = Yes ] ; then
+      BK_FILE_P1=${BK_ROOT}/wrfout_d01_2017-05-13_19:00:00
+      BK_FILE_M1=${BK_ROOT}/wrfout_d01_2017-05-13_17:00:00
+
+      ENSEMBLE_FILE_mem_p1=${ENS_ROOT}/sfg_2017051312_fhr09s
+      ENSEMBLE_FILE_mem_m1=${ENS_ROOT}/sfg_2017051312_fhr03s
+    fi
+  fi
+
+# no_member     number of ensemble members
+# BK_FILE_mem   path and base for ensemble members
+  no_member=20
+  BK_FILE_mem=${BK_ROOT}/wrfarw.mem
+\end{verbatim}
+\end{footnotesize}
+
+At this point, users should be able to run the GSI for simple cases without changing the scripts. However, some advanced users may need to change some of the following blocks for special applications, such as use of radiance data, cycled runs, specifying certain namelist variables, or running GSI on a platform not tested by the DTC. 
+
+\begin{footnotesize}
+\begin{verbatim}
+#####################################################
+# Users should NOT change script after this point
+#####################################################
+\end{verbatim}
+\end{footnotesize}
+
+The next block sets the run command for GSI on multiple platforms. The ARCH variable is set at the beginning of the script. Option BYTE\_ORDER has been set as Big\_Endian because GSI compiled with Intel and PGI can read a Big\_Endian background error file, BUFR files, and CRTM coefficient files. 
+
+\begin{footnotesize}
+\begin{verbatim}
+BYTE_ORDER=Big_Endian
+# BYTE_ORDER=Little_Endian
+
+case $ARCH in
+   'IBM_LSF')
+      ###### IBM LSF (Load Sharing Facility)
+      RUN_COMMAND="mpirun.lsf " ;;
+
+   'LINUX')
+      if [ $GSIPROC = 1 ]; then
+         #### Linux workstation - single processor
+         RUN_COMMAND=""
+      else
+         ###### Linux workstation -  mpi run
+        RUN_COMMAND="mpirun -np ${GSIPROC} -machinefile ~/mach "
+      fi ;;
+
+   'LINUX_LSF')
+      ###### LINUX LSF (Load Sharing Facility)
+      RUN_COMMAND="mpirun.lsf " ;;
+
+   'LINUX_PBS')
+      #### Linux cluster PBS (Portable Batch System)
+      RUN_COMMAND="mpirun -np ${GSIPROC} " ;;
+
+   'DARWIN_PGI')
+      ### Mac - mpi run
+      if [ $GSIPROC = 1 ]; then
+         #### Mac workstation - single processor
+         RUN_COMMAND=""
+      else
+         ###### Mac workstation -  mpi run
+         RUN_COMMAND="mpirun -np ${GSIPROC} -machinefile ~/mach "
+      fi ;;
+
+   * )
+     print "error: $ARCH is not a supported platform configuration."
+     exit 1 ;;
+esac
+\end{verbatim}
+\end{footnotesize}
+
+The next block checks if all the variables needed for a GSI run are properly defined. These variables should have been defined in the first three parts of this script. 
+
+\begin{scriptsize}
+\begin{verbatim}
+##################################################################################
+# Check GSI needed environment variables are defined and exist
+#
+
+# Make sure ANAL_TIME is defined and in the correct format
+if [ ! "${ANAL_TIME}" ]; then
+  echo "ERROR: \$ANAL_TIME is not defined!"
+  exit 1
+fi
+
+# Make sure WORK_ROOT is defined and exists
+if [ ! "${WORK_ROOT}" ]; then
+  echo "ERROR: \$WORK_ROOT is not defined!"
+  exit 1
+fi
+
+# Make sure the background file exists
+if [ ! -r "${BK_FILE}" ]; then
+  echo "ERROR: ${BK_FILE} does not exist!"
+  exit 1
+fi
+
+# Make sure OBS_ROOT is defined and exists
+if [ ! "${OBS_ROOT}" ]; then
+  echo "ERROR: \$OBS_ROOT is not defined!"
+  exit 1
+fi
+if [ ! -d "${OBS_ROOT}" ]; then
+  echo "ERROR: OBS_ROOT directory '${OBS_ROOT}' does not exist!"
+  exit 1
+fi
+
+# Set the path to the GSI static files
+if [ ! "${FIX_ROOT}" ]; then
+  echo "ERROR: \$FIX_ROOT is not defined!"
+  exit 1
+fi
+if [ ! -d "${FIX_ROOT}" ]; then
+  echo "ERROR: fix directory '${FIX_ROOT}' does not exist!"
+  exit 1
+fi
+
+# Set the path to the CRTM coefficients
+if [ ! "${CRTM_ROOT}" ]; then
+  echo "ERROR: \$CRTM_ROOT is not defined!"
+  exit 1
+fi
+if [ ! -d "${CRTM_ROOT}" ]; then
+  echo "ERROR: fix directory '${CRTM_ROOT}' does not exist!"
+  exit 1
+fi
+
+
+# Make sure the GSI executable exists
+if [ ! -x "${GSI_EXE}" ]; then
+  echo "ERROR: ${GSI_EXE} does not exist!"
+  exit 1
+fi
+
+# Check to make sure the number of processors for running GSI was specified
+if [ -z "${GSIPROC}" ]; then
+  echo "ERROR: The variable $GSIPROC must be set to contain the number of processors to run GSI"
+  exit 1
+fi
+
+\end{verbatim}
+\end{scriptsize}
+
+The next block creates a working directory (workdir) in which GSI will run. The directory should have enough disk space to hold all the files needed for this run. This directory is cleaned before each run, therefore, save all the files needed from the previous run before rerunning GSI.
+
+\begin{scriptsize}
+\begin{verbatim} 
+##################################################################################
+# Create the work directory and cd into it
+
+workdir=${WORK_ROOT}
+echo " Create working directory:" ${workdir}
+
+if [ -d "${workdir}" ]; then
+  rm -rf ${workdir}
+fi
+mkdir -p ${workdir}
+cd ${workdir}
+
+#
+##################################################################################
+
+echo " Copy GSI executable, background file, and link observation bufr to working directory"
+
+# Save a copy of the GSI executable in the workdir
+cp ${GSI_EXE} gsi.exe
+
+# Bring over background field (it's modified by GSI so we can't link to it)
+cp ${BK_FILE} ./wrf_inout
+if [ ${if_4DEnVar} = Yes ] ; then
+  cp ${BK_FILE_P1} ./wrf_inou3
+  cp ${BK_FILE_M1} ./wrf_inou1
+fi
+\end{verbatim}
+\end{scriptsize}
+
+Note: You can link observation files to the working directory because GSI will not overwrite these files. The observations that can be analyzed in GSI are listed in the column "dfile" of the GSI namelist section OBS\_INPUT, as specified in \verb|run/comgsi_namelist.sh|. Most of the conventional observations are in one single file named prepbufr, while different radiance data are in separate files based on satellite instruments, such as AMSU-A or HIRS. All these observation files must be linked as GSI recognized file names in "dfile." Please check table \ref{t31} for a detailed explanation of links and the meanings of each file name listed below.
+
+\begin{footnotesize}
+\begin{verbatim}
+# Link to the prepbufr data
+ln -s ${PREPBUFR} ./prepbufr
+
+# ln -s ${OBS_ROOT}/gdas1.t${HH}z.sptrmm.tm00.bufr_d tmirrbufr
+# Link to the radiance data
+srcobsfile[1]=${OBS_ROOT}/gdas1.t${HH}z.satwnd.tm00.bufr_d
+gsiobsfile[1]=satwnd
+srcobsfile[2]=${OBS_ROOT}/gdas1.t${HH}z.1bamua.tm00.bufr_d
+gsiobsfile[2]=amsuabufr
+srcobsfile[3]=${OBS_ROOT}/gdas1.t${HH}z.1bhrs4.tm00.bufr_d
+gsiobsfile[3]=hirs4bufr
+srcobsfile[4]=${OBS_ROOT}/gdas1.t${HH}z.1bmhs.tm00.bufr_d
+gsiobsfile[4]=mhsbufr
+srcobsfile[5]=${OBS_ROOT}/gdas1.t${HH}z.1bamub.tm00.bufr_d
+gsiobsfile[5]=amsubbufr
+srcobsfile[6]=${OBS_ROOT}/gdas1.t${HH}z.ssmisu.tm00.bufr_d
+gsiobsfile[6]=ssmirrbufr
+# srcobsfile[7]=${OBS_ROOT}/gdas1.t${HH}z.airsev.tm00.bufr_d
+gsiobsfile[7]=airsbufr
+srcobsfile[8]=${OBS_ROOT}/gdas1.t${HH}z.sevcsr.tm00.bufr_d
+gsiobsfile[8]=seviribufr
+srcobsfile[9]=${OBS_ROOT}/gdas1.t${HH}z.iasidb.tm00.bufr_d
+gsiobsfile[9]=iasibufr
+srcobsfile[10]=${OBS_ROOT}/gdas1.t${HH}z.gpsro.tm00.bufr_d
+gsiobsfile[10]=gpsrobufr
+srcobsfile[11]=${OBS_ROOT}/gdas1.t${HH}z.amsr2.tm00.bufr_d
+gsiobsfile[11]=amsrebufr
+srcobsfile[12]=${OBS_ROOT}/gdas1.t${HH}z.atms.tm00.bufr_d
+gsiobsfile[12]=atmsbufr
+srcobsfile[13]=${OBS_ROOT}/gdas1.t${HH}z.geoimr.tm00.bufr_d
+gsiobsfile[13]=gimgrbufr
+srcobsfile[14]=${OBS_ROOT}/gdas1.t${HH}z.gome.tm00.bufr_d
+gsiobsfile[14]=gomebufr
+srcobsfile[15]=${OBS_ROOT}/gdas1.t${HH}z.omi.tm00.bufr_d
+gsiobsfile[15]=omibufr
+srcobsfile[16]=${OBS_ROOT}/gdas1.t${HH}z.osbuv8.tm00.bufr_d
+gsiobsfile[16]=sbuvbufr
+srcobsfile[17]=${OBS_ROOT}/gdas1.t${HH}z.eshrs3.tm00.bufr_d
+gsiobsfile[17]=hirs3bufrears
+srcobsfile[18]=${OBS_ROOT}/gdas1.t${HH}z.esamua.tm00.bufr_d
+gsiobsfile[18]=amsuabufrears
+srcobsfile[19]=${OBS_ROOT}/gdas1.t${HH}z.esmhs.tm00.bufr_d
+gsiobsfile[19]=mhsbufrears
+srcobsfile[20]=${OBS_ROOT}/rap.t${HH}z.nexrad.tm00.bufr_d
+gsiobsfile[20]=l2rwbufr
+srcobsfile[21]=${OBS_ROOT}/rap.t${HH}z.lgycld.tm00.bufr_d
+gsiobsfile[21]=larcglb
+ii=1
+while [[ $ii -le 21 ]]; do
+   if [ -r "${srcobsfile[$ii]}" ]; then
+      ln -s ${srcobsfile[$ii]}  ${gsiobsfile[$ii]}
+      echo "link source obs file ${srcobsfile[$ii]}"
+   fi
+   (( ii = $ii + 1 ))
+done
+\end{verbatim}
+\end{footnotesize}
+
+The following block copies constant fixed files from the fix/ directory and links CRTM coefficients. Please check Section 3.1 for the meanings of each fixed file. 
+
+\begin{footnotesize}
+\begin{verbatim}
+##################################################################################
+
+echo " Copy fixed files and link CRTM coefficient files to working directory"
+
+# Set fixed files
+#   berror   = forecast model background error statistics
+#   specoef  = CRTM spectral coefficients
+#   trncoef  = CRTM transmittance coefficients
+#   emiscoef = CRTM coefficients for IR sea surface emissivity model
+#   aerocoef = CRTM coefficients for aerosol effects
+#   cldcoef  = CRTM coefficients for cloud effects
+#   satinfo  = text file with information about assimilation of brightness temperatures
+#   satangl  = angle dependent bias correction file (fixed in time)
+#   pcpinfo  = text file with information about assimilation of prepcipitation rates
+#   ozinfo   = text file with information about assimilation of ozone data
+#   errtable = text file with obs error for conventional data (regional only)
+#   convinfo = text file with information about assimilation of conventional data
+#   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
+#   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
+\end{verbatim}
+\end{footnotesize}
+
+Note: For background error covariances, observation errors, and analysis variable information, we provide two sets of fixed files. One set is based on GFS statistics and another is based on NAM statistics. For this release there is an additional setting in the ANAVINFO file for "bk\_core" for both GFS and NAM statistics.
+
+\begin{footnotesize}
+\begin{verbatim}
+if [ ${bkcv_option} = GLOBAL ] ; then
+  echo ' Use global background error covariance'
+  BERROR=${FIX_ROOT}/${BYTE_ORDER}/nam_glb_berror.f77.gcv
+  OBERROR=${FIX_ROOT}/prepobs_errtable.global
+  if [ ${bk_core} = NMM ] ; then
+     ANAVINFO=${FIX_ROOT}/anavinfo_ndas_netcdf_glbe
+  fi
+  if [ ${bk_core} = ARW ] ; then
+    ANAVINFO=${FIX_ROOT}/anavinfo_arw_netcdf_glbe
+  fi
+  if [ ${bk_core} = NMMB ] ; then
+    ANAVINFO=${FIX_ROOT}/anavinfo_nems_nmmb_glb
+  fi
+else
+  echo ' Use NAM background error covariance'
+  BERROR=${FIX_ROOT}/${BYTE_ORDER}/nam_nmmstat_na.gcv
+  OBERROR=${FIX_ROOT}/nam_errtable.r3dv
+  if [ ${bk_core} = NMM ] ; then
+     ANAVINFO=${FIX_ROOT}/anavinfo_ndas_netcdf
+  fi
+  if [ ${bk_core} = ARW ] ; then
+     ANAVINFO=${FIX_ROOT}/anavinfo_arw_netcdf
+  fi
+  if [ ${bk_core} = NMMB ] ; then
+     ANAVINFO=${FIX_ROOT}/anavinfo_nems_nmmb
+  fi
+fi
+
+SATINFO=${FIX_ROOT}/global_satinfo.txt
+CONVINFO=${FIX_ROOT}/global_convinfo.txt
+OZINFO=${FIX_ROOT}/global_ozinfo.txt
+PCPINFO=${FIX_ROOT}/global_pcpinfo.txt
+
+#  copy Fixed fields to working directory
+ cp $ANAVINFO anavinfo
+ cp $BERROR   berror_stats
+ cp $SATINFO  satinfo
+ cp $CONVINFO convinfo
+ cp $OZINFO   ozinfo
+ cp $PCPINFO  pcpinfo
+ cp $OBERROR  errtable
+#
+#    # CRTM Spectral and Transmittance coefficients
+CRTM_ROOT_ORDER=${CRTM_ROOT}/${BYTE_ORDER}
+emiscoef_IRwater=${CRTM_ROOT_ORDER}/Nalli.IRwater.EmisCoeff.bin
+emiscoef_IRice=${CRTM_ROOT_ORDER}/NPOESS.IRice.EmisCoeff.bin
+emiscoef_IRland=${CRTM_ROOT_ORDER}/NPOESS.IRland.EmisCoeff.bin
+emiscoef_IRsnow=${CRTM_ROOT_ORDER}/NPOESS.IRsnow.EmisCoeff.bin
+emiscoef_VISice=${CRTM_ROOT_ORDER}/NPOESS.VISice.EmisCoeff.bin
+emiscoef_VISland=${CRTM_ROOT_ORDER}/NPOESS.VISland.EmisCoeff.bin
+emiscoef_VISsnow=${CRTM_ROOT_ORDER}/NPOESS.VISsnow.EmisCoeff.bin
+emiscoef_VISwater=${CRTM_ROOT_ORDER}/NPOESS.VISwater.EmisCoeff.bin
+emiscoef_MWwater=${CRTM_ROOT_ORDER}/FASTEM6.MWwater.EmisCoeff.bin
+aercoef=${CRTM_ROOT_ORDER}/AerosolCoeff.bin
+cldcoef=${CRTM_ROOT_ORDER}/CloudCoeff.bin
+
+ln -s $emiscoef_IRwater ./Nalli.IRwater.EmisCoeff.bin
+ln -s $emiscoef_IRice ./NPOESS.IRice.EmisCoeff.bin
+ln -s $emiscoef_IRsnow ./NPOESS.IRsnow.EmisCoeff.bin
+ln -s $emiscoef_IRland ./NPOESS.IRland.EmisCoeff.bin
+ln -s $emiscoef_VISice ./NPOESS.VISice.EmisCoeff.bin
+ln -s $emiscoef_VISland ./NPOESS.VISland.EmisCoeff.bin
+ln -s $emiscoef_VISsnow ./NPOESS.VISsnow.EmisCoeff.bin
+ln -s $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin
+ln -s $emiscoef_MWwater ./FASTEM6.MWwater.EmisCoeff.bin
+ln -s $aercoef  ./AerosolCoeff.bin
+ln -s $cldcoef  ./CloudCoeff.bin
+# Copy CRTM coefficient files based on entries in satinfo file
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   ln -s ${CRTM_ROOT_ORDER}/${file}.SpcCoeff.bin ./
+   ln -s ${CRTM_ROOT_ORDER}/${file}.TauCoeff.bin ./
+done
+
+# Only need this file for single obs test
+ bufrtable=${FIX_ROOT}/prepobs_prep.bufrtable
+ cp $bufrtable ./prepobs_prep.bufrtable
+
+# for satellite bias correction
+cp ${OBS_ROOT}/gdas1.t12z.abias ./satbias_in
+cp ${OBS_ROOT}/gdas1.t12z.abias_pc ./satbias_pc_in
+\end{verbatim}
+\end{footnotesize}
+
+Please note that in the above sample script, two files related to radiance bias correction are copied to the work directory: 
+
+\begin{small}
+\begin{verbatim}
+cp ${OBS_ROOT}/gdas1.t12z.abias ./satbias_in
+cp ${OBS_ROOT}/gdas1.t12z.abias_pc ./satbias_pc_in
+\end{verbatim}
+\end{small}
+
+There are two options on how to perform the radiance bias correction. The first method is to do the angle dependent bias correction offline and do the mass bias correction inside the GSI analysis, therefore requiring two input files: \verb|satbias_angle|, corresponding to the angle dependent bias correction file and \verb|satbias_in|, being the input file for mass bias correction. The second method is to combine the angle dependent and mass bias correction together and do it within the GSI analysis, requiring one combined input file: \verb|satbias_in|. Note that the input bias correction coefficients file, \verb|satbias_in|, is different for the two options, therefore it is important to use the appropriate input file for each method. The sample input files for the first method are provided with this release: \verb|global_satangbias.txt| and \verb|sample.satbias|. To use the second option - combined angle dependent and mass bias correction, a sample file, \verb|gdas1.t00z.abias_pc.20150617|, is also provided. As a starting point, users may also download a GDAS satbias coefficient file from the NOMADS ftp site as the input file (starting in spring 2015, the GDAS \verb|satbias| files have adopted the following format):
+
+\url{ftp://nomads.ncdc.noaa.gov/GDAS/YYYYMM/YYYYMMDD/gdas1.tHHz.abias} 
+
+In order to use the combined angle dependent and mass bias correction, users also need to set \verb|adp_anglebc=.true.| in the \verb|&SETUP| section of the GSI namelist (\verb|comgsi_namelist.sh|).  For more details about the namelist, please see Appendix C in this document. 
+
+Set up some constants used in the GSI namelist. Please note that \verb|bkcv_option| is set for background error tuning. They should be set based on specific applications. Here we provide three sample sets of the constants for different background error covariance options, one set is used in the NAM operations, one for the GFS operations and one for the NMMB operations. In this release, the capability of NMMB application is included and therefore the namelist settings for NMMB are provided in addition to NMM and ARW applications.
+
+\begin{footnotesize}
+\begin{verbatim}
+##################################################################################
+# Set some parameters for use by the GSI executable and to build the namelist
+echo " Build the namelist "
+
+# default is NAM
+#   as_op='1.0,1.0,0.5 ,0.7,0.7,0.5,1.0,1.0,'
+vs_op='1.0,'
+hzscl_op='0.373,0.746,1.50,'
+if [ ${bkcv_option} = GLOBAL ] ; then
+#   as_op='0.6,0.6,0.75,0.75,0.75,0.75,1.0,1.0'
+   vs_op='0.7,'
+   hzscl_op='1.7,0.8,0.5,'
+fi
+if [ ${bk_core} = NMMB ] ; then
+   vs_op='0.6,'
+fi
+
+# default is NMM
+   bk_core_arw='.false.'
+   bk_core_nmm='.true.'
+   bk_core_nmmb='.false.'
+   bk_if_netcdf='.true.'
+if [ ${bk_core} = ARW ] ; then
+   bk_core_arw='.true.'
+   bk_core_nmm='.false.'
+   bk_core_nmmb='.false.'
+   bk_if_netcdf='.true.'
+fi
+if [ ${bk_core} = NMMB ] ; then
+   bk_core_arw='.false.'
+   bk_core_nmm='.false.'
+   bk_core_nmmb='.true.'
+   bk_if_netcdf='.false.'
+fi
+
+\end{verbatim}
+\end{footnotesize}
+
+The following section specifies the number of outer loops and whether to save GSI read observations based on the setting of ''if\_observer''.
+
+\begin{footnotesize}
+\begin{verbatim}
+if [ ${if_observer} = Yes ] ; then
+  nummiter=0
+  if_read_obs_save='.true.'
+  if_read_obs_skip='.false.'
+else
+  nummiter=2
+  if_read_obs_save='.false.'
+  if_read_obs_skip='.false.'
+fi
+\end{verbatim}
+\end{footnotesize}
+
+The following section of the script is used to generate the GSI namelist called gsiparm.anl in the working directory. A detailed explanation of each variable can be found in Section 3.4 and Appendix C. 
+
+\begin{footnotesize}
+\begin{verbatim}
+# Build the GSI namelist on-the-fly
+. $GSI_NAMELIST
+cat << EOF > gsiparm.anl
+
+ $comgsi_namelist
+
+EOF
+\end{verbatim}
+\end{footnotesize}
+
+Note: \verb|EOF| indicates the end of GSI namelist.
+
+The following block modifies the anavinfo file so that its vertical levels are consistent with the wrf\_inout file for WRF ARW or NMM.  Users no longer need to manually modify the anavinfo file.
+ 
+\begin{footnotesize}
+\begin{verbatim}
+# modify the anavinfo vertical levels based on wrf_inout for WRF ARW and NMM
+if [ ${bk_core} = ARW ] || [ ${bk_core} = NMM ] ; then
+bklevels=`ncdump -h wrf_inout | grep "bottom_top =" | awk '{print $3}' `
+bklevels_stag=`ncdump -h wrf_inout | grep "bottom_top_stag =" | awk '{print $3}' `
+anavlevels=`cat anavinfo | grep ' sf ' | tail -1 | awk '{print $2}' `  # levels of sf, vp, u, v, t, etc
+anavlevels_stag=`cat anavinfo | grep ' prse ' | tail -1 | awk '{print $2}' `  # levels of prse
+sed -i 's/ '$anavlevels'/ '$bklevels'/g' anavinfo
+sed -i 's/ '$anavlevels_stag'/ '$bklevels_stag'/g' anavinfo
+fi
+\end{verbatim}
+\end{footnotesize}
+
+The following block runs GSI and checks if GSI has successfully completed. 
+
+\begin{footnotesize}
+\begin{verbatim}
+###################################################
+#  run  GSI
+###################################################
+echo ' Run GSI with' ${bk_core} 'background'
+
+case $ARCH in
+   'IBM_LSF')
+      ${RUN_COMMAND} ./gsi.exe < gsiparm.anl > stdout 2>&1  ;;
+
+   * )
+      ${RUN_COMMAND} ./gsi.exe > stdout 2>&1  ;;
+esac
+
+##################################################################
+#  run time error check
+##################################################################
+error=$?
+
+if [ ${error} -ne 0 ]; then
+  echo "ERROR: ${GSI} crashed  Exit status=${error}"
+  exit ${error}
+fi
+\end{verbatim}
+\end{footnotesize}
+
+The following block saves the analysis results with an understandable name and adds the analysis time to some output file names. Among them, "stdout" contains runtime output of GSI and \verb|wrf_inout| is the resulting analysis file.
+
+\begin{footnotesize}
+\begin{verbatim}
+##################################################################
+#
+#   GSI updating satbias_in
+#
+# GSI updating satbias_in (only for cycling assimilation)
+
+# Copy the output to more understandable names
+ln -s stdout      stdout.anl.${ANAL_TIME}
+ln -s wrf_inout   wrfanl.${ANAL_TIME}
+ln -s fort.201    fit_p1.${ANAL_TIME}
+ln -s fort.202    fit_w1.${ANAL_TIME}
+ln -s fort.203    fit_t1.${ANAL_TIME}
+ln -s fort.204    fit_q1.${ANAL_TIME}
+ln -s fort.207    fit_rad1.${ANAL_TIME}
+\end{verbatim}
+\end{footnotesize}
+
+The following block collects the diagnostic files. The diagnostic files are merged and categorized based on outer loop and data type. Setting "write\_diag" to true in the namelist directs GSI to write out diagnostic information for each observation. This information is very useful to check analysis details. Please check Appendix A.2 for the tool to read and analyze these diagnostic files.
+
+\begin{footnotesize}
+\begin{verbatim}
+# Loop over first and last outer loops to generate innovation
+# diagnostic files for indicated observation types (groups)
+#
+# NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
+#        loop 03 will contain innovations with respect to
+#        the analysis.  Creation of o-a innovation files
+#        is triggered by write_diag(3)=.true.  The setting
+#        write_diag(1)=.true. turns on creation of o-g
+#        innovation files.
+#
+
+loops="01 03"
+for loop in $loops; do
+
+case $loop in
+  01) string=ges;;
+  03) string=anl;;
+   *) string=$loop;;
+esac
+
+#  Collect diagnostic files for obs types (groups) below
+#   listall="conv amsua_metop-a mhs_metop-a hirs4_metop-a hirs2_n14 msu_n14 \
+#          sndr_g08 sndr_g10 sndr_g12 sndr_g08_prep sndr_g10_prep sndr_g12_prep \
+#          sndrd1_g08 sndrd2_g08 sndrd3_g08 sndrd4_g08 sndrd1_g10 sndrd2_g10 \
+#          sndrd3_g10 sndrd4_g10 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 \
+#          hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 \
+#          amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua \
+#          goes_img_g08 goes_img_g10 goes_img_g11 goes_img_g12 \
+#          pcp_ssmi_dmsp pcp_tmi_trmm sbuv2_n16 sbuv2_n17 sbuv2_n18 \
+#          omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 amsua_n18 mhs_n18 \
+#          amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 \
+#          ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 mhs_metop_b \
+#          hirs4_metop_b hirs4_n19 amusa_n19 mhs_n19"
+listall=`ls pe* | cut -f2 -d"." | awk '{print substr($0, 0, length($0)-3)}' | sort | uniq`
+
+   for type in $listall; do
+      count=`ls pe*${type}_${loop}* | wc -l`
+      if [[ $count -gt 0 ]]; then
+         cat pe*${type}_${loop}* > diag_${type}_${string}.${ANAL_TIME}
+      fi
+   done
+done
+\end{verbatim}
+\end{footnotesize}
+
+The following scripts clean the temporary intermediate files:
+
+\begin{footnotesize}
+\begin{verbatim}
+#  Clean working directory to save only important files
+ls -l * > list_run_directory
+if [[ ${if_clean} = clean  &&  ${if_observer} != Yes ]]; then
+  echo ' Clean working directory after GSI run'
+  rm -f *Coeff.bin     # all CRTM coefficient files
+  rm -f pe0*           # diag files on each processor
+  rm -f obs_input.*    # observation middle files
+  rm -f siganl sigf03  # background middle files
+  rm -f fsize_*        # delete temperal file for bufr size
+fi
+\end{verbatim}
+\end{footnotesize}
+
+The following block of the script runs only for \verb|if_observer=Yes|, which runs GSI as an observation operator for EnKF and without doing minimization. The script first renames the previous diagnostics files and GSI analysis file by appending \verb| .ensmean| to the filenames to avoid these files being overwritten by the new GSI run.
+
+\begin{footnotesize}
+\begin{verbatim}
+#################################################
+# start to calculate diag files for each member
+#################################################
+#
+if [ ${if_observer} = Yes ] ; then
+  string=ges
+  for type in $listall; do
+    count=0
+    if [[ -f diag_${type}_${string}.${ANAL_TIME} ]]; then
+       mv diag_${type}_${string}.${ANAL_TIME} diag_${type}_${string}.ensmean
+    fi
+  done
+  mv wrf_inout wrf_inout_ensmean
+\end{verbatim}
+\end{footnotesize}
+
+Next, the script generates the namelist for each ensemble member.
+
+\begin{footnotesize}
+\begin{verbatim}
+# Build the GSI namelist on-the-fly for each member
+  nummiter=0
+  if_read_obs_save='.false.'
+  if_read_obs_skip='.true.'
+. $GSI_NAMELIST
+cat << EOF > gsiparm.anl
+
+ $comgsi_namelist
+
+EOF
+\end{verbatim}
+\end{footnotesize}
+
+The rest of the script loops through the ensemble members to get the background ready, run GSI, and check the run status: 
+
+\begin{footnotesize}
+\begin{verbatim}
+# Loop through each member
+  loop="01"
+  ensmem=1
+  while [[ $ensmem -le $no_member ]];do
+
+     rm pe0*
+
+     print "\$ensmem is $ensmem"
+     ensmemid=`printf %3.3i $ensmem`
+
+# get new background for each member
+     if [[ -f wrf_inout ]]; then
+       rm wrf_inout
+     fi
+
+     BK_FILE=${BK_FILE_mem}${ensmemid}
+     echo $BK_FILE
+     ln -s $BK_FILE wrf_inout
+
+#  run  GSI
+     echo ' Run GSI with' ${bk_core} 'for member ', ${ensmemid}
+
+     case $ARCH in
+        'IBM_LSF')
+           ${RUN_COMMAND} ./gsi.exe < gsiparm.anl > stdout_mem${ensmemid} 2>&1  ;;
+
+        * )
+           ${RUN_COMMAND} ./gsi.exe > stdout_mem${ensmemid} 2>&1 ;;
+     esac
+
+#  run time error check and save run time file status
+     error=$?
+
+     if [ ${error} -ne 0 ]; then
+       echo "ERROR: ${GSI} crashed for member ${ensmemid} Exit status=${error}"
+       exit ${error}
+     fi
+
+     ls -l * > list_run_directory_mem${ensmemid}
+\end{verbatim}
+\end{footnotesize}
+
+The following lines generate the diagnostics files for each member.
+
+\begin{small}
+\begin{verbatim}
+# generate diag files
+
+     for type in $listall; do
+           count=`ls pe*${type}_${loop}* | wc -l`
+        if [[ $count -gt 0 ]]; then
+           cat pe*${type}_${loop}* > diag_${type}_${string}.mem${ensmemid}
+        fi
+     done
+\end{verbatim}
+\end{small}
+
+The following section is to move on to the next ensemble member and run GSI.
+
+\begin{small}
+\begin{verbatim}
+# next member
+     (( ensmem += 1 ))
+
+  done
+
+fi
+\end{verbatim}
+\end{small}
+
+If this point is reached, the GSI successfully finishes and exits with status "0":
+
+\begin{small}
+\begin{verbatim}
+exit 0
+\end{verbatim}
+\end{small}
+
+%-------------------------------------------------------------------------------
+\section{GSI Analysis Result Files in Run Directory}\label{sec3.3}
+%-------------------------------------------------------------------------------
+
+Once the GSI run script is set up, it is ready to be submitted like any other batch job. When completed, GSI will create a number of files in the run directory. Below is an example of the files generated in the run directory from one of the GSI test case runs. This case was run to perform a regional GSI analysis with a WRF-ARW NetCDF background using conventional (prepbufr), radiance (AMSU-A, HIRS4, and MHS), and GPSRO data. The analysis time is 1200Z on 13 May 2017. Four processors were used. To make the run directory more readable, we turned on the clean option in the run script, which deleted all temporary intermediate files. 
+
+\begin{scriptsize}
+\begin{verbatim}
+amsuabufr                      fort.206     hirs3bufrears
+amsuabufrears                  fort.207     hirs4bufr
+anavinfo                       fort.208     l2rwbufr
+atmsbufr                       fort.209     larcglb
+berror_stats                   fort.210     list_run_directory
+convinfo                       fort.211     mhsbufr
+diag_amsua_n15_anl.2017051312  fort.212     mhsbufrears
+diag_amsua_n15_ges.2017051312  fort.213     omibufr
+diag_amsua_n18_anl.2017051312  fort.214     ozinfo
+diag_amsua_n18_ges.2017051312  fort.215     pcpbias_out
+diag_amsua_n19_anl.2017051312  fort.217     pcpinfo
+diag_amsua_n19_ges.2017051312  fort.218     prepbufr
+diag_conv_anl.2017051312       fort.219     prepobs_prep.bufrtable
+diag_conv_ges.2017051312       fort.220     radar_supobs_from_level2
+diag_hirs4_n19_anl.2017051312  fort.221     satbias_angle
+diag_hirs4_n19_ges.2017051312  fort.223     satbias_ang.out
+diag_mhs_n18_anl.2017051312    fort.224     satbias_in
+diag_mhs_n18_ges.2017051312    fort.225     satbias_out
+diag_mhs_n19_anl.2017051312    fort.226     satbias_out.int
+diag_mhs_n19_ges.2017051312    fort.227     satbias_pc_in
+errtable                       fort.228     satbias_pc.out
+fit_p1.2017051312              fort.229     satinfo
+fit_q1.2017051312              fort.230     satwnd
+fit_rad1.2017051312            fort.232     sbuvbufr
+fit_t1.2017051312              fort.233     seviribufr
+fit_w1.2017051312              fort.234     ssmirrbufr
+fort.201                       gimgrbufr    stdout
+fort.202                       gomebufr     stdout.anl.2017051312
+fort.203                       gpsrobufr    wrfanl.2017051312
+fort.204                       gsi.exe      wrf_inout
+fort.205                       gsiparm.anl
+\end{verbatim}
+\end{scriptsize}
+
+It is important to know which files hold the GSI analysis results, standard output, and diagnostic information. We will introduce these files and their contents in detail in the following chapter. The following is a brief list of what these files contain:
+\begin{itemize}
+  \item \textit{stdout} or \textit{stdout.anl.(time)}: standard text output file.  \textit{stdout.anl.(time)} is a link to \textit{stdout} with the analysis time appended. This is the most commonly used file to check the GSI analysis processes and contains basic and important information about the analyses. We will explain the contents of the \textit{stdout} file in Section 4.1 and users are encouraged to read this file in detail to become familiar with the order of GSI analysis processing.
+  \item \textit{wrf\_inout} or \textit{wrfanl.(time)}: analysis results if GSI completes successfully. It exists only if using WRF for the background. The \textit{wrfanl.(time)} file is a link to \textit{wrf\_inout} with the analysis time appended. The format is the same as the background file.
+\item \textit{diag\_conv\_anl.(time)}: binary diagnostic files for conventional and GPS RO observations at the final analysis step (analysis departure for each observation). 
+\item \textit{diag\_conv\_ges.(time)}: binary diagnostic files for conventional and GPS RO observations before the initial analysis step (background departure for each observation)
+\item \textit{diag\_(instrument\_satellite)\_anl}: diagnostic files for satellite radiance observations at the final analysis step. 
+\item \textit{diag\_(instrument\_satellite)\_ges}: diagnostic files for satellite radiance observations before the initial analysis step.
+\item \textit{gsiparm.anl}:   GSI namelist, generated by the run script.
+\item \textit{fit\_(variable).(time)}: links to fort.2?? with meaningful names (variable name plus analysis time). They are statistic results of observation departures from background and analysis results according to observation variables. Please see Section 4.5 for more details. 
+\item \textit{fort.220}: output from the inner loop minimization (in \textit{pcgsoi.f90}). Please see Section 4.6 for details.
+\item \textit{anavinfo}: info file to set up control, state, and background variables. Please see the Advanced GSI User\textquotesingle s Guide for details.
+\item \textit{*info} (\textit{convinfo},\textit{satinfo}, \dots): info files that control data usage. Please see Section \ref{sec4.3} for details.
+\item \textit{berror\_stats} and \textit{errtable}: background error file (binary) and observation error file (text).
+\item \textit{*bufr}: observation BUFR files linked to the run directoryi. Please see Section 3.1 for details.
+\item \textit{satbias\_in}: the input coefficients of bias correction for satellite radiance observations.
+\item \textit{satbias\_out}: the output coefficients of bias correction for satellite radiance observations after the GSI run.
+\item \textit{satbias\_pc}: the input coefficients of bias correction for passive satellite radiance observations.
+\item \textit{list\_run\_directory} : the complete list of files in the run directory before cleaning takes place. This is generated by the GSI run script.
+\end{itemize}
+
+The \verb|diag| files, such as \verb|diag_(instrument_satellite)_anl.(time)| and \verb|diag_conv_anl.(time)|, contain important information about the data used in the GSI, including observation departure from analysis results for each observation (O-A). Similarly, \verb|diag_conv_ges| and \verb|diag_(instrumen_satellite)_ges.(time)| include the observation innovation for each observation (O-B). These files can be very helpful in understanding the detailed impact of data on the analysis. A tool is provided to process these files, which is introduced in Appendix A.2.
+
+There are many intermediate files in this directory while GSI is running or if the run crashes.  The complete list of files in the directory (prior to cleaning) is saved in file \verb|list_run_directory|. Some knowledge about the content of these files is very helpful for debugging if the GSI run crashes. Please check table \ref{t37} for the meaning of these files. (Note: you may not see all the files in the list because different observational data are used. Also, the fixed files prepared for a GSI run, such as CRTM coefficient files, are not included.) 
+
+\begin{table}[htbp]
+\centering
+\caption{List of GSI intermediate files}
+\begin{tabular}{|p{5cm}|p{10cm}|}
+\hline
+\hline
+File name &	Content \\
+\hline
+sigf03 & This is a temporary file, holding binary format background files (typically sigf03, sigf06 and sigf09 if FGAT used). When you see this file, at the minimum, a background file was successfully read in.\\
+\hline
+siganl & Analysis results in binary format. When this file exists, the analysis has finished.\\
+\hline
+pe????.(conv or instrument\_satellite)\_(outer loop) &	Diagnostic files for conventional and satellite radiance observations at each outer loop and each sub-domain (????=subdomain id)i.\\
+\hline
+obs\_input.???? & Observation scratch files (each file contains observations for one observation type within the whole analysis domain and time window. ????=observation type id in namelist).\\
+\hline
+pcpbias\_out &	Output precipitation bias correction file.\\
+\hline
+\end{tabular}
+\label{t37}
+\end{table} 
+
+
+
+%-------------------------------------------------------------------------------
+\section{Introduction to Frequently Used GSI Namelist Options}
+%-------------------------------------------------------------------------------
+
+The complete namelist options and their explanations are listed in Appendix A of the Advanced GSI User\textquotesingle s Guide. For most GSI analysis applications, only a few namelist variables need to be changed. Here we introduce frequently used variables for regional analyses: 
+
+%-------------------------------------------------------------------------------
+\subsection{Set Up the Number of Outer and Inner Loops}
+%-------------------------------------------------------------------------------
+
+To change the number of outer loops and the number of inner iterations in each outer loop, the following three variables in the namelist need to be modified: 
+
+\begin{itemize}
+\item \verb|miter|: number of outer analysis loops.
+\item \verb|niter(1)|: maximum iteration number of inner loop iterations for the 1\textsuperscript{st} outer loop. The inner loop will stop when it reaches this maximum number, when it reaches the convergence threshold, or when it fails to converge.
+\item \verb|niter(2)|: maximum iteration number of inner loop iterations for the 2\textsuperscript{nd} outer loop.
+\item If \verb|miter| is larger than two, repeat \verb|niter| with larger index.
+\end{itemize}
+
+%-------------------------------------------------------------------------------
+\subsection{Set Up the Analysis Variable for Moisture}
+%-------------------------------------------------------------------------------
+
+There are two moisture analysis variable options. It is based on the following namelist variable:
+
+\verb|qoption = 1 or 2|: 
+\begin{itemize}
+\item If \verb|qoption=1|, the moisture analysis variable is pseudo-relative humidity.  The saturation specific humidity, qsatg, is computed from the guess and held constant during the inner loop.  Thus, the relative humidity control variable can only change via changes in specific humidity, q.
+\item If \verb|qoption=2|, the moisture analysis variable is normalized relative humidity. This formulation allows relative humidity to change in the inner loop via changes to surface pressure, temperature, or specific humidity.
+\end{itemize}
+
+%-------------------------------------------------------------------------------
+\subsection{Set Up the Background File}
+%-------------------------------------------------------------------------------
+
+The following four variables define which background field will be used in the GSI analyses:
+
+\begin{itemize}
+\item \verb|regional|: if true, perform a regional GSI run using either ARW or NMM inputs as the background. If false, perform a global GSI analysis. If either \verb|wrf_nmm_regional| or \verb|wrf_mass_regional| are true, it will be set to true.
+\item \verb|wrf_nmm_regional|: if true, the background comes from WRF-NMM. When using other background fields, set it to false. 
+\item \verb|wrf_mass_regional|: if true, the background comes from WRF-ARW. When using other background fields, set it to false. 
+\item \verb|nems_nmmb_regional|: if true, the background comes from NMMB. When using other background fields, set it to false.
+\item \verb|netcdf|: if true, WRF files are in NetCDF format, otherwise WRF files are in binary format. This option only works for a regional GSI analysis.
+\end{itemize}
+
+%-------------------------------------------------------------------------------
+\subsection{Set Up the Output of Diagnostic Files}
+%-------------------------------------------------------------------------------
+
+The following variables tell the GSI to write out diagnostic results in certain loops:
+
+\begin{itemize}
+\item \verb|write_diag(1)|: if true, write out diagnostic data in the beginning of the analysis, so that we can have information on observation $-$ background (O-B) differences.
+\item \verb|write_diag(2)|: if true, write out diagnostic data at the end of the 1\textsuperscript{st} outer loop (before the 2\textsuperscript{nd} outer loop starts).
+\item \verb|write_diag(3)|: if true, write out diagnostic data at the end of the 2\textsuperscript{nd} outer loop (after the analysis finishes if the outer loop number is two), so that we can have information on observation $-$ analysis (O-A) differences. 
+\end{itemize}
+
+Please check appendix A.2 for the tools to read the diagnostic files.
+
+%-------------------------------------------------------------------------------
+\subsection{Set Up the GSI Recognized Observation Files}
+%-------------------------------------------------------------------------------
+
+The following sets up the GSI recognized observation files for GSI observation ingest:
+
+\begin{scriptsize}
+\begin{verbatim}
+OBS_INPUT::
+!  dfile          dtype       dplat     dsis                 dval    dthin dsfcalc
+   prepbufr       ps          null      ps                   1.0     0     0
+   prepbufr       t           null      t                    1.0     0     0
+   prepbufr       q           null      q                    1.0     0     0
+   prepbufr       pw          null      pw                   1.0     0     0
+   satwndbufr     uv          null      uv                   1.0     0     0
+   prepbufr       uv          null      uv                   1.0     0     0
+   prepbufr       spd         null      spd                  1.0     0     0
+   prepbufr       dw          null      dw                   1.0     0     0
+   radarbufr      rw          null      rw                   1.0     0     0
+   prepbufr       sst         null      sst                  1.0     0     0
+   gpsrobufr      gps_ref     null      gps                  1.0     0     0
+   ssmirrbufr     pcp_ssmi    dmsp      pcp_ssmi             1.0    -1     0
+\end{verbatim}
+\end{scriptsize}
+
+\begin{itemize}
+\item \verb|dfile|: GSI recognized observation file name. The observation file contains observations used for a GSI analysis. This file can include several observation variables from different observation types. The file name listed by this parameter will be read in by GSI. This name can be changed as long as the name in the link from the BUFR/PrepBUFR file in the run scripts also changes correspondingly.
+\item \verb|dtype|: analysis variable name that GSI can read in. Please note this name should be consistent with that used in the GSI code. 
+\item \verb|dplat|: sets up the observation platform for a certain observation, which will be read in from the file \verb|dfile|.
+\item \verb|dsis|: sets up the data name (including both data type and platform name) used inside GSI.
+\end{itemize}
+
+Please see Section 4.3 for examples and explanations of these variables.
+
+%-------------------------------------------------------------------------------
+\subsection{Set Up Observation Time Window}
+%-------------------------------------------------------------------------------
+
+In the namelist section \verb|OBS_INPUT|, use \verb|time_window_max| to set the maximum half time window (hours) for all data types. In the \verb|convinfo| file, you can use the column "twindow" to set the half time window for a certain data type (hours). For conventional observations, only observations within the smaller window of these two will be kept for further processing. For others, observations within \verb|time_window_max| will be kept for further processing.
+
+%-------------------------------------------------------------------------------
+\subsection{Set Up Data Thinning}
+%-------------------------------------------------------------------------------
+
+1) Radiance data thinning 
+
+Radiance data thinning is controlled through two GSI namelist variables in the section \verb| &OBS_INPUT|. Below is an example: 
+
+\begin{scriptsize}
+\begin{verbatim}
+&OBS_INPUT
+   dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=30,time_window_max=1.5,ext_sonde=.true.,
+ /
+OBS_INPUT::
+!  dfile          dtype       dplat     dsis                 dval    dthin dsfcalc
+   prepbufr       ps          null      ps                   1.0     0     0
+ 
+   gpsrobufr      gps_ref     null      gps                  1.0     0     0
+   ssmirrbufr     pcp_ssmi    dmsp      pcp_ssmi             1.0    -1     0
+   tmirrbufr      pcp_tmi     trmm      pcp_tmi              1.0    -1     0
+ 
+   hirs3bufr      hirs3       n17       hirs3_n17            6.0     1     0
+   hirs4bufr      hirs4       metop-a   hirs4_metop-a        6.0     2     0
+\end{verbatim}
+\end{scriptsize}
+
+The two namelist variables that control the radiance data thinning are real array "dmesh" in the 1\textsuperscript{st} line and the "dthin" values in the 6\textsuperscript{th} column. The "dmesh" array sets mesh sizes for radiance thinning grids in kilometers, while "dthin" defines if the data type it represents needs to be thinned and which thinning grid (mesh size) to use. If the value of \verb|dthin| is:
+
+\begin{itemize}
+\item an integer less than or equal to zero, no thinning is needed
+\item an integer larger than zero, this kind of radiance data will be thinned using the mesh size defined as dmesh (dthin). 
+\end{itemize}
+
+The following section provides several thinning examples defined by the above sample \verb| &OBS_INPUT| section:
+\begin{itemize}
+\item Data type \verb|ps| from prepbufr: no thinning because \verb|dthin=0|
+\item Data type \verb|gps_ref| from gpsrobufr: no thinning because \verb|dthin=0|
+\item Data type \verb|pcp_ssmi| from dmsp: no thinning because \verb|dthin(01)=-1|
+\item Data type \verb|hirs3| from NOAA-17: thinning in a 120 km grid because \verb|dthin=1| and \verb|dmesh(1)=120|
+\item Data type \verb|hirs4| from metop-a: thinning in a 60 km grid because \verb|dthin=2| and \verb|dmesh(2)=60|
+\end{itemize}
+
+2) Conventional data thinning
+
+The conventional data can also be thinned. However, the setup of thinning is not in the namelist. To give users a complete picture of data thinning, conventional data thinning is briefly introduced here. There are three columns, \verb|ithin|, \verb|rmesh|, \verb|pmesh|, in the \verb|convinfo| file (more details on this file are in Section 4.3) to configure conventional data thinning:
+
+\begin{itemize}
+\item \verb|ithin|: 0 = no thinning; 
+             1 = thinning with grid mesh decided by \verb|rmesh| and \verb|pmesh|
+\item \verb|rmesh|: horizontal thinning grid size in km
+\item \verb|pmesh|: vertical thinning grid size in mb; if 0, then use background vertical grid.
+\end{itemize}
+
+%-------------------------------------------------------------------------------
+\subsection{Set Up Background Error Factor}
+%-------------------------------------------------------------------------------
+
+In the namelist section BKGERR, vs is used to set up the scale factor for vertical correlation length and \verb|hzscl| is defined to set up scale factors for horizontal smoothing. The scale factors for the variance of each analysis variables are set in the \verb|anavinfo| file. The typical values used in operations for regional and global background error covariance are given and picked based on the choice of background error covariance in the run scripts and sample \verb|anavinfo| files
+
+%-------------------------------------------------------------------------------
+\subsection{Single Observation Test}
+%-------------------------------------------------------------------------------
+
+To do a single observation test, the following namelist option has to be set to true:
+
+\begin{small}
+\begin{verbatim}
+oneobtest=.true.
+\end{verbatim}
+\end{small}
+
+Then go to the namelist section \verb|SINGLEOB_TEST| to set up the single observation location and variable to be tested, please see Section 4.2 for an example and details on the single observation test.

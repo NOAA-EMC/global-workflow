@@ -1,0 +1,378 @@
+GFSDA.v16.0.0 RELEASE NOTES
+
+GIT TAG 
+   * GFS DA v16.0.0 is in github repository NOAA-EMC/GSI.  GFS DA v16 is intended to be installed
+     as part of the entire GFS v16 package.  Please see GFS v16 release notes for the name and 
+     location of the GFS tag in github.  The GFS tag contains a script which checks out the
+     appropriate GFS DA v16 tag.
+
+
+
+
+DOC CHANGES 
+   * Rename Release_Notes.fv3gfs_da.v15.0.0.txt as Release_Notes.gfsda.v16.0.0 and update contents to
+     relect GFS DA v16 development.
+
+
+
+
+CODE CHANGES
+   * Data assimilation changes
+      * Use a Local Ensemble Kalman Filter (LETKF) with model space localization and 
+        linearized observation operator to replace the Ensemble Square Root Filter (EnSRF).
+      * Apply a new 4-Dimensional Incremental Analysis Update (4D-IAU) technique.
+      * Turn on Stochastic Kinetic Energy Backscatter (SKEB) scheme in GDAS ensemble forecasts.
+      * Update variational Quality Control (QC).
+      * Apply Hilbert curve to aircraft data.
+      * Update aircraft bias correction with safeguards.
+      * Assimilate additional COSMIC-2 GNSS-RO data (COSMIC-2 E1 and E2) 
+      * Apply correlated observation error for CrIS over sea surfaces and IASI over sea and land.
+      * Assimilate AMSU-A channel 14 and ATMS channel 15 without bias correction. 
+      * Assimilate CSR data from ABI_G16, AHI_Himawari8, and SEVIRI_M08.
+      * Assimilate AVHRR from NOAA-19 and Metop-B for near sea-surface temperature (NSST).
+      * Assimilate high-density flight-level wind, temperature, and moisture observations in tropical storm environment 
+      * Upgrade to Community Radiative Transfer Model (CRTM) v2.3.0.
+   * New GFS DA v16 codes
+      * calc_analysis.fd - compute analysis by combining guess and increment
+      * calc_increment_ens_ncio.fd - compute ensemble increment using netcdf io
+      * interp_inc.fd - horizontally interpolate analysis increment to specified output grid
+      * ncdiag_cat.fd - concatenate netcdf diagnostic files created by GSI
+
+
+
+
+JOB CHANGES
+   * Update jobs to run within GFS workflow
+   * Rename the following jobs
+      * JGDAS_ENKF_RECENTER - rename as JGDAS_ENKF_ECEN
+      * JGDAS_VERFOZN - rename as JGDAS_ATMOS_VERFOZN
+      * JGDAS_VERFRAD - rename as JGDAS_ATMOS_VERFRAD
+      * JGDAS_VMINMON - rename as JGDAS_ATMOS_VMINMON
+      * JGFS_VMINMON - rename as JGFS_ATMOS_VMINMON
+      * JGLOBAL_ANALYSIS - rename as JGLOBAL_ATMOS_ANALYSIS
+      * JGLOBAL_ENKF_SELECT_OBS - rename as JGDAS_ENKF_SELECT_OBS
+      * JGLOBAL_ENKF_UPDATE - rename as JGDAS_ENKF_UPDATE
+   * Remove the following job
+      * JGDAS_ENKF_INNOVATE_OBS - this job is no longer used
+   * Add the following new jobs
+      * JGDAS_ATMOS_ANALYSIS_DIAG - create GSI diagnostic files for deterministic analysis
+      * JGDAS_ATMOS_CHGRES_FORENKF - chgres deterministic forecast to EnKF resolution
+      * JGDAS_ENKF_DIAG - create GSI diagnosic files for EnKF members
+      * JGDAS_ENKF_SFC - create surface analysis files for EnKF members
+      * JGLOBAL_ATMOS_ANALYSIS_CALC - create gaussian grid atmospheric and surface analysis files
+
+
+
+
+SCRIPT CHANGES
+   * Update scripts to run within GFS workflow.
+   * Remove ".ecf" suffix from script names
+   * Rename the following scripts
+      * exgdas_vrfminmon.sh.ecf - rename as exgdas_atmos_vminmon.sh
+      * exgdas_vrfyozn.sh.ecf - rename as exgdas_atmos_verfozn.sh
+      * exgdas_vrfyrad.sh.ecf - rename as exgdas_atmos_verfrad.sh
+      * exgfs_vrfminmon.sh.ecf - rename as exgfs_atmos_vminmon.sh
+      * exglobal_analysis_fv3gfs.sh.ecf - rename as exglobal_atmos_analysis.sh
+      * exglobal_enkf_fcst_fv3gfs.sh.ecf - rename as exgdas_enkf_fcst.sh
+      * exglobal_enkf_post_fv3gfs.sh.ecf - rename as exgdas_enkf_post.sh
+      * exglobal_enkf_recenter_fv3gfs.sh.ecf - rename as exgdas_enkf_ecen.sh
+      * exglobal_enkf_update_fv3gfs.sh.ecf  - rename as exgdas_enkf_update.sh
+   * Remove the following job
+      * exglobal_enkf_innovate_obs_fv3gfs.sh.ecf - this script is no longer used
+   * Add the following new scripts
+      * exgdas_atmos_chgres_forenkf.sh - chgres deterministic forecast to EnKF resolution
+      * exgdas_enkf_sfc.sh - create surface analysis files for EnKF members
+      * exglobal_atmos_analysis_calc.sh - create gaussian grid atmospheric and surface analysis files
+      * exglobal_diag.sh - create GSI diagnostic files
+
+
+
+
+PARM CHANGES
+   * Update to run within GFS workflow.  Parm or configuration files for GFS components reside in 
+     parm/config.  Below are the parm (config) files used by each GFS DA v16 job.  Note:  the 
+     config file prefix "config." is omitted below for the sake of readability.
+      * JGDAS_ATMOS_ANALYSIS_DIAG - base, anal, analdiag
+      * JGDAS_ATMOS_CHGRES_FORENKF - base, anal, echgres
+      * JGDAS_ENKF_DIAG - base, anal, eobs, analdiag, ediag
+      * JGDAS_ENKF_ECEN - base, ecen
+      * JGDAS_ENKF_FCST - base, fcst, efcs
+      * JGDAS_ENKF_POST - base, epos
+      * JGDAS_ENKF_SELECT_OBS - base, anal, eobs
+      * JGDAS_ENKF_SFC - base, esfc
+      * JGDAS_ENKF_UPDATE - base, anal, eupd
+      * JGLOBAL_ATMOS_ANALYSIS - base, anal
+      * JGLOBAL_ATMOS_ANALYSIS_CALC - base, anal, analcalc
+   Parameters common to all jobs are in config.base.  Analysis jobs share config.anal.
+   This avoids duplication of identical parameters across multiple parameter files.
+
+
+
+
+FIX CHANGES
+   * Updates to run GFS DA v16
+      * New files and directory
+         * Big_Endian
+            * global_berror.l127y*.f77 - L127 static background error files for various resolutions
+            * global_berror.l64y194.f77, global_berror.l64y98.f77 - L64 static background error files
+                 for additional resolutions
+         * global_anavinfo.l127.txt - change vertical resolution to 127, add correlated error section
+         * global_hybens_info.l127.txt - GSI localization parameters for L127
+         * global_hybens_smoothinfo.l127.txt - smoothing parameters for L127
+         * global_lightinfo.txt - lightning data info file
+         * Rcov_* - correlated observation error for CrIS and IASI
+         * vlocal_eig_l*.dat - LETKF model space localization parameters for L127
+         * vqctp001.dat - variational quality control parameters
+         * Big_Endian/global_berror.l127y770.f77 - L127 static background error file for C768
+         * gfsv16_historical/ - contain historical fix files
+      * Modify existing files
+         * global_convinfo.txt - updates for new variational quality control; adjust gross checks
+                                 limits for ps and sst; adjust gps error limits; assimilate 
+                                 additional gps data; assimilate t 136, q 136, and uv 236; 
+                                 remove sst 200, 201 and 202; assmilate sst 198; add uv 255 
+                                 (monitor); assimilate uv 260_225
+         * global_ozinfo.txt - add ompslp_npp (monitor mode)
+         * global_satinfo.txt - assimilate the following:  amsua channel 14 and atms channel 15 
+                                (without bias correction), avhrr3_n19 channels 3-5, seviri_m08 
+                                channels 5-6, ahi_himawari8 channels 8-10, abi_g16 channel 8
+         * prepobs_errtable.global - update observation errors for ps types 120, 180, 181, 187;
+                                     type 136 t, q, and ps; uv 236, 245, 246, 247, 260, 290
+
+
+
+
+RESOURCE INFORMATION
+   * Frequency of run
+      * 6 hourly cycle (00, 06, 12, 18Z) - no change from current operations
+
+
+   * All versions of libraries, compiler, and modules used by GFS DA v16 are specified in 
+     modulefiles/modulefile.ProdGSI.wcoss_d
+
+
+   * Data retention for files in $COMROOTp3 are the same as those specified for 
+     the overall GFS v16 package
+
+
+   * Disk space.  Please see disk usage estimates for entire GFS v16 package
+
+
+   * Computational resources and run times
+      * JGLOBAL_ATMOS_ANALYSIS (GFS)
+         * 250 nodes, 1000 tasks, ptile=4, 7 threads/task
+         * Runtime:  28.1 - 29.4 minutes
+
+      * JGLOBAL_ATMOS_ANALYSIS_CALC (GFS)
+         * 5 nodes, 140 tasks, ptile=28, 1 thread/task
+         * Runtime:  2.4 - 2.7 minutes
+
+      * JGLOBAL_ATMOS_ANALYSIS (GDAS)
+         * 250 nodes, 1000 tasks, ptile=4, 7 threads/task
+         * Runtime:  38.2 - 39.3 minutes
+
+      * JGLOBAL_ATMOS_ANALYSIS_CALC (GDAS)
+         * 5 nodes, 140 tasks, ptile=28, 1 thread/task
+         * Runtime:  3.5 - 4.5 minutes
+
+      * JGDAS_ATMOS_ANALYSIS_DIAG (GDAS)
+         * 4 nodes, 112 tasks, ptile=28, 1 thread/task
+         * Runtime:  3.0 - 3.3 minutes
+
+      * JGDAS_ENKF_SELECT_OBS
+         * 120 nodes, 480 tasks, ptile=4, 7 threads/task
+         * Runtime:  4.1 - 4.8 minutes
+
+      * JGDAS_ENKF_DIAG
+         * 2 nodes, 56 tasks, ptile=28, 1 thread/task
+         * Runtime:  2.9 - 3.2 minutes
+
+      * JGDAS_ENKF_UPDATE
+         * 240 nodes, 960 tasks, ptile=4, 7 threads/task
+         * Runtime:  25.6 - 26.7 minutes
+
+      * JGDAS_ENKF_ECEN (3x)
+         * 60 nodes, 240 tasks, ptile=4, 7 threads/task
+            * Concurrently run 3 realizations of JGDAS_ENKF_RECENTER.  Each job
+              processes an IAU analysis time.  Each job uses 20 nodes, 80 tasks,
+              ptile=4, 7 threads/task.
+         * Runtime:  4.1 - 4.8 minutes
+
+     * JGDAS_ENKF_SFC
+         * 3 nodes, 84 tasks, ptile=28, 1 thread/task
+         * Runtime:  2.2 - 2.6 minutes
+
+      * JGDAS_ENKF_FCST (40x)
+         * 600 nodes, 16800 tasks, ptile=28, 1 thread/task
+            * Concurrently run 40 realizations of JGDAS_ENKF_FCST.  Each job
+              sequentially processes 2 EnKF members.  Each job uses 15 nodes, 
+              420 tasks, ptile=28, 1 thread/task.
+         * Runtime:  28.5 - 31.6 minutes
+
+      * JGDAS_ENKF_POST (7x)
+         * 140 nodes, 560 tasks, ptile=4, 7 threads/task
+            * Concurrently run 7 realizations of JGDAS_ENKF_POST.  Each job
+              prcoesses one forecast hour.  Each job uses 20 nodes, 80 tasks,
+              ptile=4, 7 threads/task.
+         * Runtime:  10.6 - 11.3 minutes
+
+
+
+
+PRE-IMPLEMENTATION TESTING REQUIREMENTS
+   * Which production jobs should be tested as part of this implementation?
+      * The GFS DA package needs to tested with the entire GFS v16 suite.
+
+
+   * Does this change require a 30-day evaluation?
+      * Yes, the entire GFS v16 package requires a 30-day evaluation
+
+
+   * Suggested evaluators
+      * Same as those for entire GFS v16 package
+
+
+
+DISSEMINATION INFORMATION
+   * Where should this output be sent?
+      * same as current operations
+
+
+   * Who are the users?
+      * same as current operations
+
+
+   * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
+      * Please refer to release notes for GFS v16 package
+
+
+   * Directory changes
+      * Add atmos and wave to gfs, gdas, and enkfgdas paths.  GFS v16 paths are 
+         - $COMROOTp3/gfs/prod/gfs.$PDY/$cyc/{atmos, wave} 
+         - $COMROOTp3/gfs/prod/gdas.$PDY/$cyc/{atmos, wave}
+         - $COMROOTp3/gfs/prod/enkfgdas.$PDY/$cyc/atmos    EnKF does not run with waves
+      * Write GSI subdomain specific diagnostic files to new directory, gsidiags, in 
+        gdas.$PDY/$cyc/atmos and enkfgdas.$PDY/$cyc/atmos
+
+
+   * File changes.  Only GFS DA v16.0.0 file changes are listed below.
+
+      * $COMROOTp3/gfs/prod/gfs.$PDY/$cyc/atmos
+         * Rename
+            * replace ".nemsio" suffix with ".nc" for atm* and sfc* files
+         * Add
+            * gfs.t${cyc}z.atmi003.nc and gfs.t${cyc}z.atmi009.nc - analysis increment files
+                 valid at the start and end of the IAU analysis window
+            * gfs.t${cyc}z.loganl.txt - text file indicating creation of GFS atmanl and sfcanl files
+            * gfs.t${cyc}z.loginc.txt - text file indicating creation of GFS IAU increment files
+
+
+      * $COMROOTp3/gfs/prod/gdas.$PDY/$cyc/atmos
+         * Rename
+            * replace ".nemsio" suffix with ".nc" for atm* and sfc* files
+         * Add 
+            * gdas.t${cyc}z.atma003.ensres.nc, gdas.t${cyc}z.atma009.ensres.nc - analyses valid
+                 at the start and end of the IAU analysis window interpolated to EnKF resolution
+            * gdas.t${cyc}z.atmf003.ensres.nc, gdas.t${cyc}z.atmf006.ensres.nc,
+                 gdas.t${cyc}z.atmf009.ensres.nc - 3, 6, and 9 hour forecasts interpolated to
+                 EnKF resolution
+            * gdas.t${cyc}z.atmi003.nc, gdas.t${cyc}z.atmi009.nc - IAU analysis increment files
+                 at the start and end of the IAU analysis window
+            * gdas.t${cyc}z.loganl.txt - text file indicating creation of GDAS atmanl and sfcanl files
+            * gdas.t${cyc}z.loginc.txt - text file indicating creation of GDAS IAU increment files 
+            * gsidiags - directory containing sub-domain GDAS GSI diagnostic files
+
+      * $COMROOTp3/gfs/prod/enkfgdas.$PDY/$cyc/atmos
+         * Rename
+            * replace ".nemsio" suffix with ".nc" for atm* and sfc* files
+            * replace ".nc4" suffix with ".nc" for ensmean and ensspread files
+         * Add
+            * efcs.grpXX for XX=21 to 40 - efcs txt files for EnKF forecast groups 21 to 40
+            * gdas.t${cyc}z.atmi003.ensmean.nc - ensemble mean analysis increment valid at start of IAU window
+            * gdas.t${cyc}z.atminc.ensmean.nc - ensemble mean analysis increment valid at center of IAU window
+            * gdas.t${cyc}z.atmi009.ensmean.nc - ensemble mean analysis increment valid at end of IAU window
+            * gdas.t${cyc}z.loginc.txt - text file indicating creation of EnKF IAU increment files
+            * gsidiags - directory containing sub-domain EnKF GSI diagnostic files
+            * memXXX/gdas.t${cyc}z.ratmi003.nc - recentered analysis increment valid at start of IAU window
+                 for EnKF member memXXX 
+            * memXXX/gdas.t${cyc}z.ratminc.nc - recentered analysis increment valid at center of IAU window
+                 for EnKF member memXXX
+            * memXXX/gdas.t${cyc}z.ratmi009.nc - recentered analysis increment valid at end of IAU window
+                 for EnKF member memXXX
+         * Remove
+            * remove eomg.grpXX - job creating these files is not run in GFS v16
+            * gdas.t00z.atmanl.ensmean.nemsio
+            * memXXX/gdas.t${cyc}z.abias, abias_air, abias_pc, atmanl, cnvstat, gsistat, oznstat, ratmanl,
+                 radstat - these files are not created in GFS v16
+
+
+
+
+HPSS ARCHIVE
+   * Retention length?
+      * Please refer to release notes for GFS v16 package
+
+
+   * List which output files should be archived
+      * Please refer to release notes for GFS v16 package
+          
+
+
+
+IMPLEMENTATION INSTRUCTIONS
+   * Please note that the GFS DA v16 components must be installed in conjunction with the entire GFS v16 package.  
+     Thus, the implementation instructions below extract the entire GFS v16 package.   The GFS package is 
+     tagged in github as tag gfs.v16.0.0.   Implementation instructions for this tag follow:
+
+      1) cd  $NWROOTp3
+
+      2) mkdir $NWROOTp3/gfs.v16.0.0
+
+      3) cd $NWROOTp3/gfs.v16.0.0
+
+      4) git clone https://github.com/NOAA-EMC/global-workflow.git .
+         * Notes:
+            * The "." after global-workflow.git is important.  It tells git to clone the repository
+              fv3gfs into the local working directory, $NWROOTp3/gfs.v16.0.0.
+            * The SPA(s) handling the GFS v16 implementation may encounter "permission denied" messages when 
+             attempting to clone github repositories.  Code managers need to grant access the SPA(s).  Please
+             contact Kate.Friedman@noaa.gov for assistance.
+
+      5) git checkout gfs.v16.0.0
+
+      6) cd sorc
+
+      7) ./checkout.sh
+         * This script extracts the GFS v16 components from github
+
+      8) ./build_all.sh
+         * Script build_all.sh compiles GFS v16 components.   Runtime output from the build for each 
+           package is written to log files in directory logs.  Specifically, GFS DA v16 build information 
+           is written to logs/build_gsi.log.  Script build_gsi.sh invokes gsi.fd/ush/build_all_cmke.sh.
+           This script uses cmake to build GFS DA v16 executables.   Script build_all_cmake.sh accepts two 
+           command line options:  build type and directory path to package.  Two build types are 
+           supported - PRODUCTION (default) and DEBUG.
+
+      9) ./link_fv3gfs.sh nco dell
+
+
+
+JOB DEPENDENCIES & FLOW DIAGRAM
+   * GFS DA v16 adds several DA jobs to the GFS.  Below are dependencies for 
+     new jobs
+      * JGDAS_ATMOS_ANALYSIS_DIAG - trigger upon completion of JGLOBAL_ATMOS_ANALYSIS
+      * JGDAS_ATMOS_CHGRES_FORENKF - trigger upon completion of GDAS JGLOBAL_FORECAST and all JGDAS_ENKF_FCST
+      * JGDAS_ENKF_DIAG - trigger upon completion of JGDAS_ENKF_SELECT_OBS
+      * JGDAS_ENKF_SFC - trigger upon completion of JGDAS_ENKF_UPDATE
+      * JGLOBAL_ATMOS_ANALYSIS_CALC - trigger upon completion of JGLOBAL_ATMOS_ANALYSIS
+   * Dependencenies also change due to the renaming of existing jobs.  These 
+     dependencies are given below
+      * JGDAS_ENKF_ECEN - trigger upon completion of JGDAS_ENKF_UPDATE and JGLOBAL_ATMOS_ANALYSIS
+      * JGDAS_ATMOS_VERFOZN - trigger upon completion of JGDAS_ATMOS_ANALYSIS_DIAG
+      * JGDAS_ATMOS_VERFRAD - trigger upon completion of JGDAS_ATMOS_ANALYSIS_DIAG
+      * JGDAS_ATMOS_VMINMON - trigger upon completion of JGLOBAL_ATMOS_ANALYSIS
+      * JGFS_ATMOS_VMINMON - trigger upon completion of JGLOBAL_ATMOS_ANALYSIS
+      * JGLOBAL_ATMOS_ANALYSIS - trigger upcon completion of JGLOBAL_PREP
+      * JGDAS_ENKF_SELECT_OBS - trigger upon completion of JGLOBAL_PREP
+      * JGDAS_ENKF_UPDATE - tigger upon completion of JGDAS_ENKF_DIAG
+
+

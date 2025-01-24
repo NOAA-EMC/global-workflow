@@ -1,0 +1,141 @@
+\chapter{Overview}\label{overview}
+
+%----------------------------------------------
+\section{EnKF History and Background}
+%----------------------------------------------
+
+The ensemble Kalman filter (EnKF) is a Monte-Carlo algorithm for data assimilation that uses an ensemble of short-term forecasts to estimate the background-error covariance in the Kalman filter. Each ensemble member is cycled through the data assimilation system and updated by EnKF. The EnKF code was developed by the National Oceanic and Atmospheric Administration (NOAA) Earth System Research Lab (ESRL) in collaboration with the research community. It contains two separate algorithms for calculating an analysis increment, a serial Ensemble Square Root Filter (EnSRF) algorithm described by \cite{Whitaker2002} and a Local Ensemble Kalman Filter (LETKF) algorithm described by \cite{Hunt2007}. The parallelization scheme used by the EnSRF algorithm is based on that used in the Data Assimilation Research Testbed (DART) toolkit developed at the National Center for Atmospheric Research (NCAR) and described by \cite{Anderson2007}. The LETKF code was contributed by Yoichiro Ota of the Japanese Meteorological Agency (JMA) while he was a visitor at the National Centers for Environmental Prediction (NCEP).
+
+The EnKF code became an operational data assimilation system at NCEP in May 2012, providing ensemble update to the Global Forecast System (GFS) hybrid Ensemble-Variational (EnVar) data assimilation system.  It can work with both global forecast models (e.g., GFS) and regional forecast models (e.g., the Hurricane Weather Research and Forecasting (WRF) (HWRF) model, the North American Mesoscale (NAM) system, the Advanced Research WRF (ARW) system).
+
+%----------------------------------------------
+\section{EnKF Becomes Community Code}
+%----------------------------------------------
+
+The Developmental Testbed Center (DTC), in collaboration with major development groups, began transforming the EnKF operational system into a community system in 2014, following the same protocol as the GSI community effort (\cite{Shao2016}, \url{http://www.dtcenter.org/com-GSI/users/}). Consequently, the EnKF code and its user support are managed by the DTC, along with the GSI community system. 
+
+The DTC complements the development groups in providing EnKF documentation, porting EnKF to multiple platforms, and testing EnKF in an independent and objective environment, while still maintaining functionally equivalent to operational centers. Working with code developers, the DTC is maintaining a community GSI/EnKF repository, which is equivalent to the operational developmental repository, and facilitates community users to develop  EnKF. Based on the repository, the DTC releases EnKF code annually with GSI. The first community version of the EnKF system was released on July 31, 2015. This user\textquotesingle s guide describes the second release of EnKF (v1.1) in July 2016. The DTC provides user support through the EnKF Helpdesk (enkf-help@ucar.edu), tutorials, and workshops. More information about the EnKF community services can be found at the DTC EnKF webpage (\url{http://www.dtcenter.org/EnKF/users/}).
+
+%----------------------------------------------
+\subsection{EnKF Code Management and Review Committee}
+%----------------------------------------------
+
+The EnKF code development and maintenance are administrated by the Data Assimilation Review Committee (DARC). DARC was originally formed as the GSI Review Committee in 2010. The committee was reformed in 2014 to include members representing the EnKF development and applications. Such a combination enhanced collaboration of development groups in both variational and ensemble data assimilation communities. 
+Currently, DARC contains members from NCEP's Environmental Modeling Center (EMC), the National Aeronautics and Space Administration (NASA) Goddard Global Modeling and Assimilation Office (GMAO), NOAA/ESRL, the National Center for Atmospheric Research (NCAR) Mesoscale \& Microscale Meteorology Laboratory (MMM), the National Environmental Satellite, Data, and Information Service (NESDIS), the Unite States Air Force (USAF), the University of Maryland, and the DTC (chair).
+
+DARC primarily steers distributed GSI/EnKF development and community code management and support. The responsibilities of the committee are divided into two major aspects: coordination and code review. The purpose and guiding principles of the review committee are as follows:
+
+\begin{description}
+\item[Coordination and Advisory]- 
+\begin{itemize}
+\item Propose and shepherd new development
+\item Coordinate on-going and new development
+\item Establish and manage a code review and transition process
+\item Community support recommendation
+\end{itemize}
+\item[Code Review]- 
+\begin{itemize}
+\item Establish and manage a unified coding standard followed by all GSI/EnKF developers
+\item Review proposed modifications to the code trunk
+\item Make decisions on whether code change proposals are accepted or denied for
+inclusion in the repository and manage the repository
+\item Oversee the timely testing and inclusion of code into the repository
+\end{itemize}
+\end{description}
+
+%----------------------------------------------
+\subsection{Community Code Contributions}
+%----------------------------------------------
+
+EnKF is a community data assimilation system, open to contributions from scientists and software engineers from both the operational and research communities. DARC oversees the code transition from prospective contributors. This committee reviews proposals for code commits to the GSI/EnKF repository and monitors that coding standards and tests are being fulfilled. Once the committee reaches approval, the contributed code will be committed to the GSI/EnKF code repository and available for operational implementation and public release. 
+
+To facilitate this process, the DTC is providing code transition assistance to the general research community. Prospective contributors of code to the EnKF system should contact the DTC EnKF helpdesk (enkf-help@ucar.edu) for the preparation and integration of their code.  It is the contributor's responsibility to ensure that a proposed code change is correct,  meets the EnKF coding standards, and its expected impact is documented. The DTC will help the contributors run the regression tests and merge the code with the top of the repository trunk. Prospective contributors can also apply to the DTC visitor program for their EnKF research and code transition. The visitor program is open to applications year-round. Please check the visitor program webpage (\url{www.dtcenter.org/visitors/})  for the latest announcement of opportunity and application procedures.  
+
+%----------------------------------------------
+\section{About This EnKF Release}
+%----------------------------------------------
+
+This user\textquotesingle s guide was composed for the EnKF community release version(v) 1.2. This version of EnKF is compatible with the GSI community release v3.6. Please note the major focuses of the DTC are currently on testing and evaluation of EnKF for regional numerical weather prediction (NWP) applications though the instructions and cases for EnKF global applications are available with this release. 
+
+
+Running this EnKF system requires running GSI a prior for its observation operators. Therefore, the GSI 
+User\textquotesingle s Guide is referred throughout this documentation. This GSI user's guide can be obtained at the GSI user's webpage ( \url{http://www.dtcenter.org/com-GSI/users/docs/index.php}).
+
+\subsection{What Is New in This Release Version}
+
+Major updates to this version of EnKF are code optimization, including bug fixes and code cleanup. Added features include a new namelist to speed up the reading of GSI diagnostic files  and added ensemble spread calculation utility for GFS sigma files . The observation types assimilated by EnKF were also updated as part of the GSI v3.6 updates.
+
+\subsection{Observations Used by This Version }
+EnKF is using the GSI system as the observation operator to generate observation innovations. Therefore, the observation types assimilated by EnKF are the same as GSI. This version of EnKF has been tested to work with the community GSI release v3.6. It can assimilate, but is not limited to, the following types of observations:
+
+\textbf{Conventional observations (including satellite retrievals):}
+\begin{itemize}
+\item Radiosondes
+\item Pilot ballon (PIBAL) winds
+\item Synthetic tropical cyclone winds
+\item Wind profilers: USA, Jan Meteorological Agency (JMA)
+\item Conventional aircraft reports
+\item Aircraft to Satellite Data Relay (ASDAR) aircraft reports
+\item Meteorological Data Collection and Reporting System (MDCRS) aircraft reports
+\item Dropsondes
+\item Moderate Resolution Imaging Spectroradiometer (MODIS) IR and water vapor winds
+\item Geostationary Meteorological Satellite (GMS), JMA, and Meteosat cloud drift IR and visible winds 
+\item European Organization for the Exploitation of Meteorological Satellites (EUMETSAT) and GOES water vapor cloud top winds
+\item GEOS hourly IR and cloud top wind
+\item Surface land observations
+\item Surface ship and buoy observation
+\item Special Sensor Microwave Imager (SSMI) wind speeds
+\item Quick Scatterometer (QuikSCAT), the Advanced Scatterometer (ASCAT) and Oceansat-2 Scatterometer (OSCAT) wind speed and direction
+\item RapidScat observations
+\item SSM/I and Tropical Rainfall Measuring Mission (TRMM) Microwave Imager (TMI) precipitation estimates
+\item Velocity-Azimuth Display (VAD) Next Generation Weather Radar ((NEXRAD) winds
+\item Global Positioning System (GPS) precipitable water estimates
+\item Sea surface temperature (SST)
+\item Doppler wind Lidar
+\item Aviation routine weather report (METAR) cloud coverage
+\item Flight level and Stepped Frequency Microwave Radiometer (SFMR) High Density
+Observation (HDOB) from reconnaissance aircraft
+\item Tall tower wind
+\end{itemize}
+
+
+\textbf{Satellite radiance/brightness temperature observations (instrument/satellite ID):}
+\begin{itemize}
+\item SBUV: \textit {NOAA-17, NOAA-18, NOAA-19}
+\item High Resolution Infrared Radiation Sounder (HIRS): \textit {Meteorological Operational-A (MetOp-A), MetOp-B, NOAA-17, NOAA-19}
+\item GOES imager: \textit {GOES-11, GOES-12}
+\item Atmospheric IR Sounder (AIRS): \textit {aqua}
+\item AMSU-A: \textit {MetOp-A, MetOp-B, NOAA-15, NOAA-18, NOAA-19, aqua} 
+\item AMSU-B: \textit {MetOp-B, NOAA-17}
+\item Microwave Humidity Sounder (MHS): \textit {MetOp-A, MetOp-B, NOAA-18, NOAA-19}
+\item SSMI: \textit {DMSP F14, F15, F19}
+\item SSMI/S: \textit {DMSP F16}
+\item Advanced Microwave Scanning Radiometer for Earth Observing System (AMSR-E): \textit {aqua}
+\item GOES Sounder (SNDR): \textit {GOES-11, GOES-12, GOES-13}
+\item Infrared Atmospheric Sounding Interferometer (IASI): \textit {MetOp-A, MetOp-B}
+\item Global Ozone Monitoring Experiment (GOME): \textit {MetOp-A, MetOp-B}
+\item Ozone Monitoring Instrument (OMI): \textit {aura}
+\item Spinning Enhanced Visible and Infrared Imager (SEVIRI): \textit {Meteosat-8, Meteosat-9, Meteosat-10}
+\item Advanced Technology Microwave Sounder (ATMS): \textit {Suomi NPP}
+\item Cross-track Infrared Sounder (CrIS): \textit {Suomi NPP}
+\item GCOM-W1 AMSR2 
+\item GPM GMI
+\item Megha-Tropiques SAPHIR 
+\item Himawari AHI
+\end{itemize}
+
+\textbf{Others:}
+\begin{itemize}
+\item GPS Radio occultation (RO) refractivity and bending angle profiles
+\item Solar Backscatter Ultraviolet (SBUV) ozone profiles, Microwave Limb Sounder (MLS) (including NRT) ozone, and Ozone Monitoring Instrument (OMI) total ozone
+\item Doppler  radar radial velocities
+\item Radar reflectivity Mosaic
+\item Tail Doppler Radar (TDR) radial velocity and super-observation
+\item Tropical Cyclone Vitals Database (TCVital)
+\item Particulate matter (PM) of 10-um diameter, 2.5-um diameter or less
+\item MODIS AOD (when using GSI-chem package)
+\end{itemize}\setlength{\parskip}{12pt}
+
+
+Please note some of these above mentioned data are not yet fully tested and/or implemented for operations. Therefore, the current GSI code might not have the optimal setup for these data. 
+

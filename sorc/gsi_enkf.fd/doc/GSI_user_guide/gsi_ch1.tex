@@ -1,0 +1,184 @@
+\chapter{Overview}\label{overview}
+
+%-------------------------------------------------------------------------------
+\section{GSI History and Background}
+%-------------------------------------------------------------------------------
+
+The Gridpoint Statistical Interpolation (GSI) system is a unified data assimilation (DA) system for both global and regional applications. It was initially developed by the National Centers for Environmental Prediction (NCEP) Environmental Modeling Center (EMC) as a next generation analysis system based on the then operational Spectral Statistical Interpolation (SSI) analysis system (\cite{Wu2002}; \cite{Purser2003a}; \cite{Purser2003b}). Instead of being constructed in spectral space like the SSI, the GSI is constructed in physical space and is designed to be a flexible, state-of-art system that is efficient on available parallel computing platforms. Starting with a three-dimensional variational (3DVar) data assimilation technique, the current GSI can be run as a data assimilation system of 2DVar (for surface data analysis), 3DVar, 3D ensemble-variational (3D EnVar), 4D EnVar, 3D/4D hybrid EnVar, or 4DVar (if coupled with an adjoint model from a GSI supported forecast system).
+
+After initial development, the GSI analysis system became operational as the core of the North American Data Assimilation System (NDAS) for the North American Mesoscale (NAM) system in June 2006 and the Global Data Assimilation System (GDAS) for the Global Forecast System (GFS) in May 2007 at National Oceanic and Atmospheric Administration (NOAA). Since then, the GSI system has been adopted in various operational systems, including the National Aeronautics and Space Administration (NASA) Goddard Earth Observing System Model (GEOS), the United States Air Force (USAF) mesoscale data assimilation system, the NOAA Real-Time Mesoscale Analysis (RTMA) system, the Hurricane Weather Research and Forecasting (WRF) model (HWRF), and the Rapid Refresh (RAP) and High Resolution Rapid Refresh (HRRR) systems. The number of groups and institutes involved in operational GSI development has also increased throughout these years.
+
+%-------------------------------------------------------------------------------
+\section{GSI Becomes Community Code}
+%-------------------------------------------------------------------------------
+
+In 2007, the Developmental Testbed Center (DTC) began collaborating with major GSI development groups to transform the operational GSI system into a community system and support distributed development (\cite{Shao2016}). The DTC complements the development groups in providing GSI documentation, porting GSI to multiple platforms, and testing GSI in an independent and objective environment, while maintaining equivalent functionality to what used in thoperational centers. Since 2009, due to the NOAA security constraints, the DTC has been maintaining a community GSI code repository, which mirrors the EMC operational GSI code repository and facilitates community users to develop GSI. Based on this community repository, the DTC releases GSI code annually with updated documentation. Currently, the DTC and EMC are working closely to build a unified GSI code repository for both operational and community developers and users. This unified repository will facilitate direct communication among developers and help accelerate transitions between research and operations. Transition to this unified code repository is ongoing and will be completed by end of 2017. 
+
+The first community version of the GSI system was released in 2009. This user\textquotesingle s guide describes the release of GSI (v3.6) in September 2017. The DTC provides user support through the GSI Helpdesk (gsi-help@ucar.edu), tutorials and workshops. More information about the GSI community services can be found at the DTC GSI webpage (\url{http://www.dtcenter.org/com-GSI/users/index.php}).
+
+%-------------------------------------------------------------------------------
+\subsection{GSI Code Management and Review Committee}
+%--------------------------------------------------------------------of-----------
+The GSI code development and maintenance are managed by the Data Assimilation Review Committee (DARC). It was originally formed as the GSI Review Committee in 2010, with the  goal of incorporating all major GSI development teams in the United States within a unified community framework. In 2014, EMC and DTC decided to merge their GSI code repository with the code repository of the NOAA ensemble Kalman filter (EnKF) data assimilation system. This merge enabled coordinated development of both systems and joint community support. Following the repository merging, the GSI Review Committee was transitioned to DARC, incorporating new members representing EnKF development and applications. Currently, DARC contains members from NCEP/EMC, NASA\textquotesingle s Goddard Global Modeling and Assimilation Office (GMAO), NOAA's Earth System Research Laboratory (ESRL), the Joint Center for Satellite Data Assimilation (JCSDA), the National Center for Atmospheric Research (NCAR) Mesoscale \& Microscale Meteorology Laboratory (MMM), the National Environmental Satellite, Data, and Information Service (NESDIS), USAF, the University of Maryland, and the DTC (chair). The DTC also releases the EnKF system annually (along with GSI). Please refer to the community EnKF user\textquotesingle s webpage (\url{http://www.dtcenter.org/EnKF/users/index.php}) for more information.
+
+DARC primarily steers distributed GSI/EnKF development, community code management, and support. The responsibilities of the committee are divided into two major aspects: coordination and code review. The purpose and guiding principles of the review committee are as follows:
+\begin{itemize}
+\item{Coordination and advisory}
+\begin{itemize}
+\item Propose and shepherd new development
+\item Coordinate on-going and new development
+\item Establish and manage a code review and transition process
+\item Community support recommendation
+\end{itemize}
+\item{Code review}
+\begin{itemize}
+\item Establish and manage a unified coding standard followed by all GSI/EnKF developers
+\item Review proposed modifications to the code trunk
+\item Make decisions on whether code change proposals are accepted or denied for
+inclusion in the repository
+\item Manage the repository
+\item Oversee the timely testing and inclusion of code into the repository
+\end{itemize}
+
+\end{itemize}
+
+%-------------------------------------------------------------------------------
+\subsection{Community Code Contributions}
+%-------------------------------------------------------------------------------
+
+GSI is a community data assimilation system, open to contributions from scientists and software engineers from both the operational and research communities. DARC oversees the code transition from prospective contributors. This committee reviews proposals for code commits to the GSI repository and ensures that coding standards and tests are being fulfilled. Once the committee approves, the contributed code will be committed to the GSI code repository and available for operational implementation and public release. 
+
+To facilitate this process, the DTC is providing code transition assistance to the general research community. Prospective code contributors should contact the DTC GSI helpdesk (gsi-help@ucar.edu) for the preparation and integration of their code.  It is the responsibility of the contributor to ensure that a proposed code change is correct, meets GSI coding standards, and its expected impact is documented. The DTC will help the contributor run regression tests and merge the code with the top of the repository trunk. Prospective contributors can also apply to the DTC visitor program for their GSI research and code transition. The visitor program is open to applications year-round. Please check the visitor program webpage (\url{www.dtcenter.org/visitors/}) for the latest announcement of opportunity and application procedures.  
+
+%-------------------------------------------------------------------------------
+\section{About This GSI Release}
+%-------------------------------------------------------------------------------
+
+As a critical part of the GSI user support, this document is provided to assist users in applying GSI to data assimilation and analysis studies. It was composed by the DTC and reviewed by the DARC members. Please note that the major focuses of the DTC are currently on testing and evaluation of GSI for regional numerical weather prediction (NWP) though the instructions. GSI global and chemical applicaitons are briefly discussed in the document. The document is based on GSI v3.6 release. Active users can contact the DTC (gsi-help@ucar.edu) for developmental versions of GSI and access to the GSI code repository.
+
+%-------------------------------------------------------------------------------
+\subsection{What Is New in This Release Version}
+%-------------------------------------------------------------------------------
+
+The following lists some of the new functions and changes included in the v3.6 release of the GSI versus v3.5:
+
+\textbf{Observational aspects}:
+\begin{itemize}
+  \item Added assimilation of full spectral resolution CrIS radiance observations
+  \item Added near surface temperature (NSST) analysis
+  \item Added options to use correlated radiance observation errors
+\end{itemize}
+
+\textbf{Code optimization and refactoring}:
+\begin{itemize}
+  \item Refactored the observer modules using polymorphic code
+  \item Generalized all radiance assimilation across different sensors/instruments for cloud and aerosol usages in GSI 
+  \item Removed the First-Order Time extrapolation to the Observation (FOTO)
+  \item Updated to netCDF v4.0 functionality
+  \item Removed unused modules/variables 
+\end{itemize}
+
+\textbf{Application specific updates}:
+\begin{itemize}
+ \item{Non-variational cloud analysis}
+ \begin{itemize}
+	\item Added number concentration for cloud water, cloud ice, and rain to match the cloud analysis with the Thompson Microphysical scheme
+	\item Added functions using visibility/fog observation to improve cloud fields in the lowest two levels
+	\item Added capability to read BUFR format NASA LaRC cloud products 
+ \end{itemize}
+ \item{RTMA}
+ \begin{itemize}
+	\item Added variational QC algorithm using a super-logistic distribution function
+	\item Added cloud ceiling height and scalar wind as analysis variables 
+ \end{itemize}
+\end{itemize}
+
+\textbf{Other updates}:
+\begin{itemize}
+  \item Added the Advanced Research WRF (ARW) hybrid vertical coordinate background to GSI
+  \item Added a vertical dependence of the hybrid background error weighting, and horizontal/vertical localization scales in GSI
+  \item Added a NCEP nemsio interface for GFS deterministic and ensemble forecasts
+  \item Utility updates such as using GFS ensemble forecast perturbations to initialize WRF ensemble forecasts.
+  \item Bug fixes
+\end{itemize}
+
+Besides the above-mentioned changes, the release code also includes a new cmake-based build utility. This utility is currently being tested for its portability and has been included in v3.6. In the near future, the DTC and EMC will use the same cmake build utility for all operational and research code. Transition to this new build utility will be completed by early 2018.
+
+Please note that due to the version update, some diagnostic and static information files might have been modified as well. 
+
+%-------------------------------------------------------------------------------
+\subsection{Observations Used by This Version}
+%-------------------------------------------------------------------------------
+
+GSI is used by various applications on multiple scales. The types of observations GSI can assimilate vary from conventional to aerosol observations. Users should use observations with caution to fit their specific applications. The GSI v3.6 can assimilate, but is not limited to, the following types of observations:
+
+\textbf{Conventional observations (including satellite retrievals):}
+\begin{itemize}
+\item Radiosondes
+\item Pilot ballon (PIBAL) winds
+\item Synthetic tropical cyclone winds
+\item Wind profilers: USA, Jan Meteorological Agency (JMA)
+\item Conventional aircraft reports
+\item Aircraft to Satellite Data Relay (ASDAR) aircraft reports
+\item Meteorological Data Collection and Reporting System (MDCRS) aircraft reports
+\item Dropsondes
+\item Moderate Resolution Imaging Spectroradiometer (MODIS) IR and water vapor winds
+\item Geostationary Meteorological Satellite (GMS), JMA, and Meteosat cloud drift IR and visible winds 
+\item European Organization for the Exploitation of Meteorological Satellites (EUMETSAT) and GOES water vapor cloud top winds
+\item GEOS hourly IR and cloud top wind
+\item Surface land observations
+\item Surface ship and buoy observations
+\item Special Sensor Microwave Imager (SSMI) wind speeds
+\item Quick Scatterometer (QuikSCAT), the Advanced Scatterometer (ASCAT) and Oceansat-2 Scatterometer (OSCAT) wind speed and direction
+\item RapidScat observations
+\item SSM/I and Tropical Rainfall Measuring Mission (TRMM) Microwave Imager (TMI) precipitation estimates
+\item Velocity-Azimuth Display (VAD) Next Generation Weather Radar ((NEXRAD) winds
+\item Global Positioning System (GPS) precipitable water estimates
+\item Sea surface temperatures (SSTs)
+\item Doppler wind Lidar
+\item Aviation routine weather report (METAR) cloud coverage
+\item Flight level and Stepped Frequency Microwave Radiometer (SFMR) High Density
+Observation (HDOB) from reconnaissance aircraft
+\item Tall tower wind
+\end{itemize}
+
+
+\textbf{Satellite radiance/brightness temperature observations (instrument/satellite ID):}
+\begin{itemize}
+\item SBUV: \textit {NOAA-17, NOAA-18, NOAA-19}
+\item High Resolution Infrared Radiation Sounder (HIRS): \textit {Meteorological Operational-A (MetOp-A), MetOp-B, NOAA-17, NOAA-19}
+\item GOES imager: \textit {GOES-11, GOES-12}
+\item Atmospheric IR Sounder (AIRS): \textit {aqua}
+\item AMSU-A: \textit {MetOp-A, MetOp-B, NOAA-15, NOAA-18, NOAA-19, aqua} 
+\item AMSU-B: \textit {MetOp-B, NOAA-17}
+\item Microwave Humidity Sounder (MHS): \textit {MetOp-A, MetOp-B, NOAA-18, NOAA-19}
+\item SSMI: \textit {DMSP F14, F15, F19}
+\item SSMI/S: \textit {DMSP F16}
+\item Advanced Microwave Scanning Radiometer for Earth Observing System (AMSR-E): \textit {aqua}
+\item GOES Sounder (SNDR): \textit {GOES-11, GOES-12, GOES-13}
+\item Infrared Atmospheric Sounding Interferometer (IASI): \textit {MetOp-A, MetOp-B}
+\item Global Ozone Monitoring Experiment (GOME): \textit {MetOp-A, MetOp-B}
+\item Ozone Monitoring Instrument (OMI): \textit {aura}
+\item Spinning Enhanced Visible and Infrared Imager (SEVIRI): \textit {Meteosat-8, Meteosat-9, Meteosat-10}
+\item Advanced Technology Microwave Sounder (ATMS): \textit {Suomi NPP}
+\item Cross-track Infrared Sounder (CrIS): \textit {Suomi NPP}
+\item GCOM-W1 AMSR2 
+\item GPM GMI
+\item Megha-Tropiques SAPHIR 
+\item Himawari AHI
+\end{itemize}
+
+\textbf{Others:}
+\begin{itemize}
+\item GPS Radio occultation (RO) refractivity and bending angle profiles
+\item Solar Backscatter Ultraviolet (SBUV) ozone profiles, Microwave Limb Sounder (MLS) (including NRT) ozone, and Ozone Monitoring Instrument (OMI) total ozone
+\item Doppler radar radial velocities
+\item Radar reflectivity Mosaic
+\item Tail Doppler Radar (TDR) radial velocity and super-observation
+\item Tropical Cyclone Vitals Database (TCVital)
+\item Particulate matter (PM) of 10-um diameter, 2.5-um diameter or less
+\item MODIS AOD (when using GSI-chem package)
+\item Significant wave height observations from JASON-2, JASON-3, SARAL/ALTIKA and CRYOSAT-2
+\end{itemize}
+
+Please note that some of these above mentioned data are not yet fully tested and/or implemented for operations. Therefore, the current GSI code might not have an optimal setup for these data. 

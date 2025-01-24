@@ -1,0 +1,171 @@
+#!/bin/sh --login
+set -x
+echo "starting sub_${machine}"  # wcoss2 or acorn
+usage="\
+Usage:  $0 [options] executable [args]
+      where the options are:
+      -a account        account (default: none)
+      -b binding        run smt binding or not (default:NO)
+      -d dirin          initial directory (default: cwd)
+      -e envars         copy comma-separated environment variables
+      -g group          group name
+      -i                append standard input to command file
+      -j jobname        specify jobname (default: executable basename)
+      -m machine        machine on which to run (default: current)
+      -n                write command file to stdout rather than submitting it
+      -o output         specify output file (default: jobname.out)
+      -p procs[/nodes[/ppreq]
+                        number of MPI tasks and optional nodes or Bblocking and
+                        ppreq option (N or S) (defaults: serial, Bunlimited, S)
+      -q queue[/qpreq]  queue name and optional requirement, e.g. dev/P
+                        (defaults: 1 if serial or dev if parallel and none)
+                        (queue 3 or 4 is dev or prod with twice tasks over ip)
+                        (options: P=parallel, B=bigmem, b=batch)
+      -r rmem[/rcpu]    resources memory and cpus/task (default: '1024 mb', 1)
+      -t timew          wall time limit in [[hh:]mm:]ss format (default: 900)
+      -u userid         userid to run under (default: self)
+      -v                verbose mode
+      -w when           when to run, in yyyymmddhh[mm], +hh[mm], thh[mm], or
+                        Thh[mm] (full, incremental, today or tomorrow) format
+                        (default: now)
+Function:  This command submits a job to the batch queue."
+subcmd="$*"
+stdin=NO
+nosub=NO
+account=""
+binding="NO"
+dirin=""
+envars=""
+group=""
+jobname=""
+machine=""
+output=""
+procs=0
+nodes=""
+ppreq=""
+queue=""
+qpreq=""
+rmem="1024"
+rcpu="1"
+timew="900"
+userid=""
+verbose=NO
+when=""
+while getopts a:b:d:e:g:ij:m:no:p:q:r:t:u:vw: opt;do
+  case $opt in
+    a) account="$OPTARG";;
+    b) binding="$OPTARG";;
+    d) dirin="$OPTARG";;
+    e) envars="$OPTARG";;
+    g) group="$OPTARG";;
+    i) stdin=YES;;
+    j) jobname=$OPTARG;;
+    m) machine="$OPTARG";;
+    n) nosub=YES;;
+    o) output=$OPTARG;;
+    p) procs=$(echo $OPTARG/|cut -d/ -f1);nodes=$(echo $OPTARG/|cut -d/ -f2);ppreq=$(echo $OPTARG/|cut -d/ -f3);;
+    q) queue=$(echo $OPTARG/|cut -d/ -f1);qpreq=$(echo $OPTARG/|cut -d/ -f2);;
+    r) rmem=$(echo $OPTARG/|cut -d/ -f1);rcpu=$(echo $OPTARG/|cut -d/ -f2);;
+    t) timew=$OPTARG;;
+    u) userid=$OPTARG;;
+    v) verbose=YES;;
+    w) when=$OPTARG;;
+    \?) echo $0: invalid option >&2;echo "$usage" >&2;exit 1;;
+  esac
+done
+shift $(($OPTIND-1))
+if [[ $# -eq 0 ]];then
+  echo $0: missing executable name >&2;echo "$usage" >&2;exit 1
+fi
+exec=$1
+if [[ ! -s $exec ]]&&which $exec >/dev/null 2>&1;then
+  exec=$(which $exec)
+fi
+shift
+args="$*"
+bn=$(basename $exec)
+export jobname=${jobname:-$bn}
+output=${output:-$jobname.out}
+myuser=$LOGNAME
+myhost=$(hostname)
+
+DATA=/lfs/h2/emc/stmp/$LOGNAME/tmp
+mkdir -p $DATA
+
+queue=${queue:-dev}
+timew=${timew:-01:20:00}
+task_node=${task_node:-$procs}
+size=$((nodes*task_node))
+envars=$envars
+threads=${rcpu:-1}
+ncpus=$((procs*threads))
+
+export TZ=GMT
+cfile=$DATA/sub$$
+> $cfile
+echo "#!/bin/bash"                         >> $cfile
+echo ""                                    >> $cfile
+echo "#PBS -o $output"                     >> $cfile
+echo "#PBS -N $jobname"                    >> $cfile
+echo "#PBS -q $queue"                      >> $cfile
+echo "#PBS -l walltime=$timew"             >> $cfile
+echo "#PBS -l select=$nodes:mpiprocs=$procs:ompthreads=$threads:ncpus=$ncpus"     >> $cfile
+echo "#PBS -l place=vscatter:exclhost"     >> $cfile
+echo "#PBS -j oe"                          >> $cfile
+echo "#PBS -A "$accnt                      >> $cfile
+
+echo "" >> $cfile
+echo "export OMP_NUM_THREADS=$threads"      >> $cfile
+echo "export ntasks=$(( $nodes * $procs ))" >> $cfile
+echo "export ppn=$procs"                    >> $cfile
+echo "export threads=$threads"              >> $cfile
+echo "" >> $cfile
+echo ". "$(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' $regdir/regression_var.out)  >>$cfile
+echo "" >> $cfile
+
+echo "module reset"                         >> $cfile
+echo "module use $modulefiles"              >> $cfile
+echo "module load gsi_${machine}.intel"     >> $cfile
+echo "module load envvar/1.0"               >> $cfile
+echo "module load cray-pals/1.2.2"          >> $cfile
+echo "module -t list 2>&1 | while read line;do module show $line 2>&1 | sed -n -e '2p';done | sort" >> $cfile
+echo "module avail" >> $cfile
+
+echo "" >> $cfile
+
+cat $exec >> $cfile
+
+if [[ $nosub = YES ]];then
+  cat $cfile
+  exit
+elif [[ $verbose = YES ]];then
+  set -x
+  cat $cfile
+fi
+
+if [[ $stdin = YES ]];then
+  cat
+fi >>$cfile
+if [[ $nosub = YES ]];then
+  cat $cfile
+  exit
+elif [[ $verbose = YES ]];then
+  set -x
+  cat $cfile
+fi
+qsub=${qsub:-qsub}
+
+ofile=$DATA/subout$$
+>$ofile
+chmod 777 $ofile
+$qsub -V $cfile >$ofile
+rc=$?
+cat $ofile
+if [[ -w $SUBLOG ]];then
+  jobn=$(grep -i submitted $ofile|head -n1|cut -d\" -f2)
+  date -u +"%Y%m%d%H%M%S : $subcmd : $jobn" >>$SUBLOG
+fi
+##rm $cfile $ofile
+##[[ $MKDATA = YES ]] && rmdir $DATA
+echo "ending sub_${machine}"
+exit $rc

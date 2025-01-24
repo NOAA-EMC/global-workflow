@@ -1,0 +1,33 @@
+kinds.o : kinds.f90
+constants.o : constants.f90 kinds.o
+
+ARPS_cldLib.o : ARPS_cldLib.f90 kinds.o constants.o
+BackgroundCld.o : BackgroundCld.f90 kinds.o constants.o
+BckgrndCC.o : BckgrndCC.f90 kinds.o constants.o
+CheckCld.o : CheckCld.f90 kinds.o constants.o
+radar_ref2tten.o : radar_ref2tten.f90 kinds.o constants.o
+PrecipMxr_radar.o : PrecipMxr_radar.f90 kinds.o constants.o
+PrecipType.o : PrecipType.f90 kinds.o constants.o
+TempAdjust.o : TempAdjust.f90 kinds.o constants.o
+adaslib.o : adaslib.f90 kinds.o constants.o
+build_missing_REFcone.o : build_missing_REFcone.f90 kinds.o constants.o
+cloudCover_NESDIS.o : cloudCover_NESDIS.f90 kinds.o constants.o
+cloudCover_Surface.o : cloudCover_Surface.f90 kinds.o constants.o
+cloudCover_radar.o : cloudCover_radar.f90 kinds.o constants.o
+cloudLWC.o : cloudLWC.f90 kinds.o constants.o
+cloudLayers.o : cloudLayers.f90 kinds.o constants.o
+cloudType.o : cloudType.f90 kinds.o constants.o
+convert_lghtn2ref.o : convert_lghtn2ref.f90 kinds.o constants.o
+cloud_saturation.o : cloud_saturation.f90 kinds.o
+get_sfm_1d_gnl.o : get_sfm_1d_gnl.f90 kinds.o constants.o
+vinterp_radar_ref.o : vinterp_radar_ref.f90 kinds.o constants.o
+map_ctp.o : map_ctp.f90 kinds.o constants.o
+mthermo.o : mthermo.f90 kinds.o constants.o
+pcp_mxr_ARPSlib.o : pcp_mxr_ARPSlib.f90 kinds.o constants.o
+## q_adjust.o : q_adjust.f90 kinds.o constants.o
+read_Lightning_cld.o : read_Lightning_cld.f90 kinds.o constants.o
+read_NESDIS.o : read_NESDIS.f90 kinds.o constants.o
+read_radar_ref.o : read_radar_ref.f90 kinds.o constants.o
+read_Surface.o :read_Surface.f90 kinds.o constants.o
+read_nasalarc_cld.o : read_nasalarc_cld.f90 kinds.o constants.o
+smooth.o : smooth.f90 kinds.o constants.o

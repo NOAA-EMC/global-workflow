@@ -1,0 +1,1059 @@
+\chapter{GSI Namelist: Name, Default Value, Explanation}\label{gsi_namelist}
+The following are lists and explanations of the GSI namelist variables. You can also find them in the source code \textbf{gsimod.F90}. 
+
+\begin{table}[h]
+\footnotesize
+ \center
+  \begin{tabular}{| c | c | p{9cm} |}
+  \hline
+  Variable name & Default value & Description \\
+  \hline
+  \textbf{SETUP} &   & \textbf{General control namelist} \\
+  \hline
+  gencode & 80 & source generation code \\
+  \hline
+  factqmin & 1 & weighting factor for negative moisture constraint \\
+  \hline
+  factqmax & 1 & weighting factor for supersaturated moisture constraint \\
+  \hline
+  clip\_supersaturation	& .false. & flag to remove supersaturation during each outer loop \\
+  \hline 
+  factv & 1 & weighting factor for negative visibility constraint \\
+  \hline
+  factl & &  \\
+  \hline
+  factp & &  \\
+  \hline
+  factg & &  \\
+  \hline
+  factw10m & &  \\
+  \hline
+  facthowv & & \\
+  \hline
+  deltim & 1200 & model timestep \\
+  \hline
+  dtphys & 3600 & physics timestep \\
+  \hline
+  biascor & -1 & background error bias correction coefficient \\
+  \hline
+  bcoption & 1 & 0=ibc (no bias correction to bkg); \\
+               & & 1= sbc(original implementation) \\
+  \hline
+  diurnalbc	& 0 & 1= diurnal bias; 0= persistent bias \\
+  \hline
+    \end{tabular}
+\end{table}
+
+  \begin{table}[h]
+\footnotesize
+ \center
+  \begin{tabular}{| c | c | p{9cm} |}
+  \hline
+  Variable name & Default value & Description \\
+  \hline
+  \hline
+  \textbf{SETUP} &   & \textbf{General control namelist} \\
+\hline
+    niter(0:50) & 0,... & Maximum number of inner loop iterations for each outer loop \\
+  \hline
+  niter\_no\_qc(0:50) & 1000000 & Inner loop iteration at which to turn on variational quality control \\
+  \hline
+  miter & 1 & number of outer loops \\
+  \hline
+  qoption & 1 & option for moisture analysis variable; 1:q/qsatg 2:normalized RH \\
+  \hline
+  cwoption & & \\
+  \hline
+  pseudo\_q2 & .false. & breed between q1/q2 options, that is, (q1/sig(q)) \\
+  \hline
+  nhr\_assimilation	& 6	& assimilation time interval (currently 6 hours for global, 3 hours for regional ) \\
+  \hline
+  min\_offset & 3 & time of analysis in assimilation window \\
+  \hline 
+  iout\_iter & 220 & output file number for iteration information \\
+  \hline
+  npredp & 6 & number of predictors for precipitation bias correction \\
+  \hline
+  retrieval & .false. & logical to turn off or on the SST physical retrieval \\
+  \hline
+  nst\_gsi & 0 & indicator to control the Tr Analysis mode: \\
+             & & 0 = no nst info ingsi at all; \\
+             & & 1 = input nst info, but used for monitoring only \\
+             & & 2 = input nst info, and used in CRTM simulation, but no Tr analysis \\
+             & & 3 = input nst info, and used in CRTM simulation and Tr analysis is on \\
+  \hline
+  nst\_tzr & 0 & indicator to control the Tzr\_QC mode: \\
+             & & 0 = no Tz retrieval; \\
+             & & 1 = Do Tz retrieval and applied to QC \\
+  \hline
+  nstinfo & 0 & number of nst variables \\
+  \hline
+  fac\_dtl & 0 & index to apply diurnal thermocline layer  or not: 0 = no; 1 = yes \\
+  \hline
+  fac\_tsl & 0 & index to apply thermal skin layer or not: 0 = no; 1 = yes. \\
+  \hline
+  nst\_tzr & & \\
+  \hline
+  tzr\_bufrsave	& .false. & logical to turn off or on the bufr Tz retrieval file true=on \\
+  \hline
+  diag\_rad & .true. & logical to turn off or on the diagnostic radiance file (true=on) \\
+  \hline
+  diag\_pcp & .true. & logical to turn off or on the diagnostic precipitation file (true=on) \\
+  \hline
+  diag\_conv & .true. & logical to turn off or on the diagnostic conventional file (true=on) \\
+  \hline
+  diag\_ozone &	.true. & logical to turn off or on the diagnostic ozone file (true=on) \\
+  \hline
+  diag\_aero & .false. & logical to turn off or on the diagnostic aerosol file (true=on) \\
+  \hline
+  diag\_co & .false. & logical to turn off or on the diagnostic carbon monoxide file (true=on) \\
+  \hline
+  iguess & 1 & flag for guess solution (currently not working) \\
+           & & -1    do not use guess file \\
+           & &  0    write only guess file \\
+           & &  1    read and write guess file \\
+           & &  2    read only guess file \\
+  \hline
+  write\_diag & .false., ... & logical to write out diagnostic files for outer iteration \\
+  \hline
+  reduce\_diag & .false. & namelist logical to produce reduced radiance diagnostic files \\
+  \hline
+  \end{tabular}
+\end{table}
+  
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+ \textbf{SETUP} &   & \textbf{General control namelist} \\
+ \hline
+   oneobtest & .false. & one observation  test flag true=on \\
+  \hline
+  sfcmodel & .false. & if true, then use boundary layer forward model for surface temperature data. \\
+  \hline
+  dtbduv\_on & .true. & logical for switching on (.true.) sensitivity of uv winds to microwave brightness temperatures.
+  if true, use d(microwave brightness temperature)/d(uv wind) in inner loop \\
+  \hline
+  ifact10 & 0 & flag for recomputing 10m wind factor \\
+            & & = 1 compute using GFS surface physics \\
+            & & = 2 compute using MM5 surface physics \\
+            & & = 0 or any other value - DO NOT recompute - use value from guess file \\
+  \hline
+  l\_foto & .false. & option for First-Order Time extrapolation to observation \\
+\hline
+  offtime\_data & .false. & if true, then allow use of obs files with ref time different from analysis time. default value = .false., in which case analysis fails if observation file reference time is different from analysis time. \\
+  \hline
+  npred\_conv\_max & 0 & maximum number of conventional  observation bias correction coefficients \\
+  \hline
+  id\_bias\_ps & 0 & prepbufr id to have conv\_bias added for testing \\
+  \hline
+  id\_bias\_t & 0 & prepbufr id to have conv\_bias added for testing \\
+  \hline
+  id\_bias\_spd	& 120 & prepbufr id to have conv\_bias added for testing \\
+  \hline
+  conv\_bias\_ps & 0 & magnitude of ps bias(mb) \\
+  \hline
+  conv\_bias\_t & 0	& magnitude of t  bias(deg K) \\
+  \hline
+  conv\_bias\_spd & 0 & magnitude of spd bias(m/sec) \\
+  \hline
+  id\_bias\_pm2\_5 & & \\
+  \hline
+  conv\_bias\_pm2\_5 & & \\
+  \hline
+  id\_bias\_pm10 & & \\
+  \hline
+  conv\_bias\_pm10 & & \\
+  \hline
+  stndev\_conv\_ps & 1.0 &  \\	
+  \hline
+  stndev\_conv\_t & 1.0	& \\
+  \hline
+  stndev\_conv\_spd & 1.0 & \\	
+  \hline
+  use\_pbl & .false.	& Logical flag to include PBL effects in tendency model. \\
+  \hline
+  use\_compress & .false. & option to turn on the use of compressibility factors in geopotential heights \\
+  \hline
+  nsig\_ext & 13 & number of layers above the model top which are necessary to compute the bending angle for gpsro \\
+  \hline
+  gpstop & 30.0 & maximum height for gpsro data assimilation. Reject anything above this height. (km) \\
+  \hline
+  perturb\_obs & .false. &  logical flag to perturb observation (true=on) \\
+  \hline
+  perturb\_fact & 1 & magnitude factor for observation perturbation \\
+  \hline
+  oberror\_tune & .false. & logical to tune (=true) oberror \\
+  \hline
+  preserve\_restart\_date & .false. & if true, then do not update regional restart file date. \\
+  \hline
+  crtm\_coeffs\_path & ./ & path of directory w/ CRTM coeffs files \\
+  \hline
+  berror\_stats	& berror\_stats & filename if other than "berror\_stats" \\
+  \hline
+  newpc4pred & .false. & option for additional preconditioning for pred coeff \\
+  \hline
+  adp\_anglebc & .false. & option to perform variational angle bias correction \\
+  \hline
+  angord & 0 & order of polynomial for variational angle bias correction \\
+  \hline
+  \end{tabular}
+\end{table}
+  
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+ \textbf{SETUP} &   & \textbf{General control namelist}\\
+ \hline
+   passive\_bc & .false. & option to turn on bias correction for passive (monitored) channels \\
+  \hline
+  use\_edges & .true. & option to exclude radiance data on scan edges \\
+  \hline
+  biaspredvar & 0.1 & set background error variance for radiance bias coeffs \\
+  \hline
+  lobsdiagsave & .false. & write out additional observation diagnostics \\
+  \hline
+   l4dvar & .false. & turn 4D-Var on/off (default=off=3D-Var) \\
+  \hline
+  lbicg & .false. & use B-precond w/ bi-conjugate gradient for minimization \\
+  \hline
+  lsqrtb & .false. & Use sqrt(B) preconditioning \\
+  \hline
+  lcongrad & .false. & Use conjugate gradient/Lanczos minimizer \\
+  \hline
+  lbfgsmin & .false. & Use L-BFGS minimizer \\
+  \hline
+  ltlint & .false. & Use TL inner loop (ie TL intall) \\
+  \hline
+  nhr\_obsbin & -1 & length of observation bins \\
+  \hline
+  nhr\_subwin & -1 & length of weak constraint 4d-Var sub-window intervals \\
+  \hline
+  nwrvecs & -1 & Number of precond vectors (Lanczos) or pairs of vectors (QN) being saved \\
+  \hline
+  iorthomax & 0 & max number of vectors used for orthogonalization of various CG options \\
+  \hline
+   ladtest & .false. & Run adjoint test \\
+  \hline
+  ladtest\_obs & .false. & if true, doing the adjoint check for the observation operators \\
+  \hline
+  lgrtest & .false. & Run gradient test \\
+  \hline
+  lobskeep & .false. & keep obs from first outer loop for subsequent OL \\
+  \hline
+  lsensrecompute & .false. & does adjoint by recomputing forward solution \\
+  \hline
+  jsiga	& -1 & calculate approximate analysis errors from lanczos for jiter=jsiga \\
+  \hline
+  ltcost & .false. & calculate true cost when using Lanczos (this is very expensive) \\
+  \hline
+  lobsensfc	& .false. & compute forecast sensitivity to observations \\
+  \hline
+  lobsensjb & .false. & compute Jb sensitivity to observations \\
+  \hline
+  lobsensincr & .false. & compute increment sensitivity to observations \\
+  \hline
+  lobsensadj & .false. & use adjoint of approx. Hessian to compute obs sensitivity \\
+  \hline
+  lobsensmin & .false. & use minimisation to compute obs sensitivity \\
+  \hline
+  iobsconv & 0 & compute convergence test in observation space \\
+        & & =1 at final point, =2 at every iteration \\
+  \hline
+  idmodel & .false. & uses identity model when running 4D-Var (test purposes) \\
+  \hline
+  iwrtinc & .false.	& when .t., writes out increments instead of analysis \\
+  \hline
+  jiterstart & 1 & first outloop iteration number \\
+  \hline
+  jiterend & 1 & last outloop iteration number \\
+  \hline
+  lobserver & .false. & when .t., calculate departure vectors only \\
+  \hline
+  lanczosave & .false. & save lanczos vectors for forecast sensitivity computation \\
+  \hline
+  llancdone & .false. & use to tell adjoint that Lanczos vecs have been pre-computed \\
+  \hline
+  lferrscale & .false. & Something related to forecast error \\
+  \hline
+  print\_diag\_pcg & .false. & logical turn on of printing of GMAO diagnostics in pcgsoi.f90 \\
+  \hline
+  tsensible & .false. & option to use sensible temperature as the analysis variable. Works only for twodvar\_regional=.true. \\
+  \hline
+  lgschmidt & .false. & option for re-biorthogonalization of the {gradx} and {grady} set from pcgsoi when twodvar\_regional=.true. \\
+  \hline
+  \end{tabular}
+\end{table}
+
+  
+  \begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+\textbf{SETUP} &   & \textbf{General control namelist} \\
+ \hline
+   lread\_obs\_save & .false.& option to write out collective obs selection info \\
+  \hline
+  lread\_obs\_skip & .false.& option to read in collective obs selection info \\
+  \hline
+  use\_gfs\_ozone & .false. & option to read in gfs ozone and interpolate to regional model domain \\
+  \hline
+  check\_gfs\_ozone\_date & .false. & option to date check gfs ozone before interpolating to regional model domain \\
+  \hline
+  regional\_ozone & .false. & option to turn on ozone in regional analysis \\
+  \hline
+  lwrite\_predterms & .false. & option to write out actual predictor terms instead of predicted bias to the radiance diagnostic files \\
+  \hline
+  lwrite\_peakwt & .false. & option to writ out the approximate pressure of the peak of the weighting function for satellite data to the radiance diagnostic files \\
+  \hline
+  use\_gfs\_nemsio & .false. & option to use nemsio to read global model NEMS/GFS first guess \\
+  \hline
+  liauon & .false. & treat 4dvar CV as tendency perturbation (default=false) \\
+  \hline
+  use\_prepb\_satwnd & .false. & allow using satwnd's from prepbufr (historical) file \\
+  \hline
+  l4densvar & .false. & logical to turn on ensemble 4dvar \\
+  \hline
+  ens4d\_nstarthr & 3 & start hour for ensemble perturbations (generally should match min\_offset) \\
+  \hline
+  use\_gfs\_stratosphere &  & When true, a guess gfs valid at the same time as the nems-nmmb guess is used to replace the upper levels with gfs values. The purpose of this is to allow direct use of gdas derived sat radiance bias correction coefs. \\
+  \hline
+  pblend0 & 152 & The nems-nmmb vertical coordinate is smoothly merged with gfs above this level. Below this level, is original nems-nmmb. \\
+  \hline
+  pblend1 & 79.0 & The nems-nmmb vertical coordinate is smoothly merged with gfs below this level. Above this level,is gfs. \\
+  \hline
+  step\_start & 1.e-4 & initial stepsize in minimization \\
+  \hline
+  diag\_precon & .false. & if true do preconditioning \\
+  \hline
+  lrun\_subdirs & .false. & logical to toggle use of subdirectires at runtime for pe specific files \\
+  \hline
+  emiss\_bc & .false. & option to turn on emissivity bias predictor \\
+  \hline
+  upd\_pred & 1 & bias update indicator for radiance bias correction; 1.0=bias correction coefficients evolve \\
+  \hline
+  use\_reflectivity	& .false. & option of using reflectivity \\
+  \hline 
+  lnested\_loops & .false. & allow for nested resolution outer/inner loops \\
+  \hline
+  lwrite4danl & .false. & logical to write out 4d analysis states if 4dvar or 4denvar mode \\
+  \hline
+  lsingleradob & .false. & logical for single radiance observation assimilation. Uses existing bufr file and rejects all radiances that don't fall within a tight threshold around oblat/oblon (SINGLEOB\_TEST) \\
+  \hline
+  ssmis\_method & 1 & choose method for SSMIS noise reduction 0=no smoothing 1=default \\
+  \hline
+  ssmis\_precond & 0.01 & weighting factor for SSMIS preconditioning (if not using newpc4pred) \\
+  \hline
+  R\_option & .false. & Option to use variable correlation length for lcbas based on data density - follows Hayden and Purser (1995) (twodvar\_regional only) \\
+  \hline
+  thin4d & & \\
+  \hline
+  \end{tabular}
+\end{table}
+
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+\textbf{GRIDOPTS} &   & \textbf{Grid setup variables, including regional specific variables} \\
+ \hline 
+ jcap & 62 & spectral resolution of the analysis \\
+ \hline
+ jcap\_b & 62 & spectral resolution of background (model guess field) \\
+ \hline
+ nsig & 42 & number of sigma levels \\
+ \hline
+ nlat & 96 & number of latitudes \\
+ \hline
+ nlon & 384 & number of longitudes \\
+ \hline
+ hybrid & logical & hybrid data file flag true=hybrid \\
+ \hline
+ nlat\_regional & 0 & Number of y grid point in whole regional domain \\
+ \hline
+ nlon\_regional & 0	& Number of x grid point in whole regional domain \\
+ \hline
+ diagnostic\_reg & .false. & logical for regional debugging \\
+ \hline
+ update\_regsfc & .false. & logical to write out updated surface fields to the regional analysis file (default = false) \\
+ \hline
+ netcdf & .false. & if true, then wrf files are in netcdf format, otherwise wrf files are in binary format. \\
+ \hline
+ regional & .false. & logical for regional GSI run \\
+ \hline
+ wrf\_nmm\_regional & .false. & logical for input from WRF NMM \\
+ \hline
+ nems\_nmmb\_regional & .false. & logical for input from NEMS NMMB \\
+ \hline
+ wrf\_mass\_regional & .false. & logical for input from WRF MASS-CORE (ARW) \\
+ \hline
+ twodvar\_regional & .false. & logical for regional 2d-var analysis \\
+ \hline
+ filled\_grid & .false. & logical to fill in points on WRF-NMM E-grid \\
+ \hline
+ half\_grid	& .false.& logical to use every other row of WRF-NMM E-Grid \\
+ \hline
+ nvege\_type & 24 & number of types of vegetation; old=24, IGBP=20 \\
+ \hline
+ nlayers(100) & 1 & number of sub-layers to break indicated model layer into prior to calling radiative transfer model \\
+ \hline
+ cmaq\_regional & .false. & Background input is from CMAQ model \\
+ \hline
+ nmmb\_reference\_grid & H & ='H', then analysis grid covers H grid domain \\
+                       & &   = 'V', then analysis grid covers V grid domain \\
+ \hline
+ grid\_ratio\_nmmb & sqrt(2) & ratio of analysis grid to nmmb model grid in nmmb model grid units. \\
+ \hline
+ grid\_ratio\_wrfmass & 1.0 & ratio of analysis grid to wrf mass grid in wrf grid units \\
+ \hline
+ jcap\_gfs & & spectral truncation used to transform high wavenumber spectral coefficients to a coarser resolution grid,when use\_gfs\_ozone = .true. or use\_gfs\_stratosphere = .true. \\
+ \hline
+ jcap\_cut & & \\
+ \hline
+ use\_sp\_eqspac & .false. & if .true., then ensemble grid is equal spaced, staggered 1/2 grid unit off poles.  if .false., then gaussian grid assumed for ensemble (global only) \\
+ \hline
+ \end{tabular}
+\end{table}
+
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+\textbf{BKGERR} &   & \textbf{Background error related variables} \\
+ \hline 
+ vs & 1/1.5 & scale factor for vertical correlation lengths for background error \\
+ \hline
+ nhscrf & 3	& number of horizontal scales for recursive filter \\
+ \hline
+ hzscl(3) & 1, 1, 1 & scale factor for horizontal smoothing, n=1,number of scales (3 for now) \\
+         & & specifies factor by which to reduce horizontal scales (i.e. 2 would then apply 1/2 of the horizontal scale) \\
+ \hline
+ hswgt(3) & 1/3, 1/3, 1/3 & empirical weights to apply to each horizontal scale \\
+ \hline
+ norh & 2 & order of interpolation in smoothing \\
+ \hline
+ ndeg & 4 & degree of smoothing in recursive filters \\
+ \hline
+ noq & 3 & 1/4 of accuracy in compact finite differencing \\
+ \hline
+ bw & 0	& factor in background error calculation \\
+ \hline
+ norsp & 0 & order of interpolation for smooth polar cascade routine default is norsp=0, in which case norh is used with original polar cascade interpolation (global only). \\
+ \hline
+ fstat & .false. & logical to separate f from balance projection \\
+ \hline
+ pert\_berr	& .false. & logical to turn on random inflation/deflation of background error tuning parameters \\
+ \hline
+ pert\_berr\_fct & 0 & factor for increasing/decreasing berror parameters, this is multiplied by random number \\
+ \hline
+ bkgv\_flowdep & .false. & flag to turn on flow dependence to background error variances \\
+ \hline
+ bkgv\_rewgtfct & 0 & factor used to perform flow dependent reweighting of error variances \\
+ \hline
+ bkgv\_write & .false. & flag to turn on=.true. /off=.false. generation of binary file with reweighted variances \\
+ \hline
+ fpsproj & .true. & controls full nsig projection to surface pressure \\
+ \hline
+ fut2ps	& & controls the projection from unbalance T to surface pressure \\
+ \hline
+ adjustozvar & & adjusts ozone variances in the stratosphere based on guess field \\
+ \hline
+ cwcoveqqcov & & sets cw Bcov to be the same as B-cov(q) (presently glb default) \\
+ \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+\textbf{ANBKGERR} &   & \textbf{Anisotropic background error related variables} \\
+ \hline 
+ anisotropic & .false. & if true, then use anisotropic background error covariance \\
+ \hline
+ ancovmdl & 0 & covariance model settings - 0: pt-based, 1: ensemble based \\
+ \hline
+ triad4	& .true. & for 2d variables, if true, use blended triad algorithm \\
+ \hline
+ ifilt\_ord & 4	& filter order for anisotropic filters \\
+ \hline
+ npass & 1 & 2×npass = number of factors in background error \\
+ \hline
+ normal & 200 & number of random vectors to use for filter normalization ( if < 0 then slightly slower, but results independent of number of processors) \\
+ \hline
+ binom & .true.	& if true, weight correlation lengths of factors using binomial distribution, with shortest scales on outside, longest scales on inside.  This can help to produce smoother correlations in the presence of strong anisotropy \\
+ \hline
+ ngauss	& 3	& number of Gaussians to add together in each factor \\
+ \hline
+ rgauss	& 0	& multipliers on reference aspect tensor for each Gaussian factor \\
+ \hline
+ anhswgt & 1.0 & empirical weights to apply to each gaussian \\
+ \hline
+ an\_vs	& 1	& scale factor for background error vertical scales (temporary carry over from isotropic inhomogeneous option) \\
+ \hline
+ grid\_ratio & 2.0 & ratio of coarse to fine grid in fine grid units \\
+ \hline
+ grid\_ratio\_p	& 0	& ratio of coarse to fine grid in fine grid units for polar patches \\
+ \hline
+ nord\_f2a & 4 & order of interpolation for transfer operators between filter grid and analysis grid \\
+ \hline
+ an\_flen\_u & 1 & coupling parameter for connecting horizontal wind to background error \\
+ \hline
+ an\_flen\_t & 1 & coupling parameter for connecting grad(potential temperature) to background error \\
+ \hline
+ an\_flen\_z & 1 & coupling parameter for connecting grad(terrain) to background error \\
+ \hline
+ rtma\_subdomain\_option & .false. & if true, then call alternative code which calls recursive filter directly from subdomain mode, bypassing transition to/from horizontal slabs.  This is mainly to improve efficiency for 2d rtma analysis.  at the moment, this only works for twodvar\_regional=.true.  rtma\_subdomain\_option will be forced to false when twodvar\_regional=.false. \\
+ \hline
+ lreadnorm & .false. & if true, then read normalization from fixed files \\
+ \hline
+ nsmooth & 0 & number of 1-2-1 smoothing passes before and after background error application \\
+ \hline
+ nsmooth\_shapiro & 0 & number of 2nd moment preserving (shapiro) smoothing passes before and after background error application. \\
+ &&NOTE:  default for nsmooth and nsmooth\_shapiro is 0.\\
+ &&if both are > 0, then nsmooth will be forced to zero. \\
+ \hline
+ afact0	& 0.0 & anistropy effect parameter, the range must be in 0.0-1.0. \\
+ \hline
+ covmap & .false. & if true, covariance map would be drawn \\
+ \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+ \textbf{JCOPTS} &   & \textbf{Constraint term in cost function (Jc)} \\
+ \hline 
+ ljcdfi & .false. & if .false., uses original formulation based on wind, temp, and ps tends \\
+        & & when .t. uses digital filter initialization of increments (4dvar) \\
+ \hline
+ alphajc & 10.0 & parameter for digital filter \\
+ \hline
+ switch\_on\_derivatives & .false., … & if true, then compute horizontal derivatives of all state variables (to be used eventually for time derivatives, dynamic constraints and observation forward models that need horizontal derivatives) \\
+ \hline
+ tendsflag & .false. & if true, compute time tendencies \\
+ \hline
+ ljcpdry & .false. & when .t. uses dry pressure constraint on increment \\
+ \hline
+ bamp\_jcpdry & 0.0 & parameter for pdry\_jc \\
+ \hline
+ eps\_eer & -1.0 & Errico-Ehrendofer parameter for q-term in energy norm \\
+ \hline
+ ljc4tlevs & .false. & when true and in 4D mode, apply any weak constraints over all time levels instead of just at a single time \\
+ \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+ \textbf{STRONGOPTS} &     & \textbf{Strong dynamic constraint} \\
+ \hline
+ reg\_tlnmc\_type & 1 & =1 for 1st version of regional strong constraint \\
+                    &   &   =2 for 2nd version of regional strong constraint \\
+ \hline
+ tlnmc\_option & 0 & integer flag for strong constraint (various capabilities for hybrid): \\
+               &  &  =0: no TLNMC \\
+               &  &  =1: TLNMC for 3DVAR mode \\
+               &  &  =2: TLNMC on total increment for single time level only (for 3D EnVar) or if 4D EnVar mode, TLNMC applied to increment in center of window \\
+               &  &  =3: TLNMC on total increment over all time levels (if in 4D EnVar mode) \\
+               &  &  =4: TLNMC on static contribution to increment ONLY for any EnVar mode \\
+  \hline
+  nstrong & 0 & if > 0, then number of iterations of implicit normal mode initialization to apply for each inner loop iteration \\
+  \hline
+  period\_max & 1000000.0 & cutoff period for gravity waves included in implicit normal mode initialization (units = hours) \\
+  \hline
+  period\_width & 1.0 & defines width of transition zone from included to excluded gravity waves \\
+  \hline
+  nvmodes\_keep & 0 & number of vertical modes to use in implicit normal mode initialization \\
+  \hline
+  baldiag\_full & .false. & flag to toggle balance diagnostics for the full fields \\
+  \hline
+  baldiag\_inc & .false. & flag to toggle balance diagnostics for the analysis increment \\
+  \hline
+ \end{tabular}
+\end{table}
+
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+ \textbf{OBSQC} &     & \textbf{Observation quality control variables} \\
+          & &  Parameters used for gross error checks are set in file convinfo (ermin, ermax, ratio)
+          Parameters below used for nonlinear (variational) quality control \\
+  \hline
+  dfact & 0 & factor for duplicate observation at same location for conventional data \\
+  \hline
+  dfact1 & 3.0 & time factor for duplicate observation at same location for conventional data \\
+  \hline
+  erradar\_inflate & 1 & radar error inflation factor \\
+  \hline
+  tdrerr\_inflate & .false. & logical for tdr obs error inflation \\
+  \hline
+  tdrgross\_fact & 1 & factor applied to tdr gross error \\
+  \hline
+  oberrflg & .false. & logical for reading in new observation error table (if set to true) \\
+  \hline
+  vadfile & 'none' & character(10) variable holding name of VAD wind bufr file \\
+  \hline
+  noiqc & .false. & logical flag to bypass OI QC (if set to true) \\
+  \hline
+  c\_varqc & 1 & constant number to control variance qc turning on speed \\
+  \hline
+  blacklst & .false. & logical for reading in raob blacklist (if set to true) \\
+  \hline
+  use\_poq7 & .false. & Logical to toggle accept (.true.) or reject (.false.) SBUV/2 ozone observations flagged with profile ozone quality mark \\
+  \hline
+  hilbert\_curve & .false. & option for hilbert-curve based cross-validation. works only with twodvar\_regional=.true. \\
+  \hline
+  tcp\_refps & 1000.0 & reference pressure for tcps oberr calculation (mb) \\
+  \hline
+  tcp\_width & 50.0 & parameter for tcps oberr inflation (width, mb) \\
+  \hline
+  tcp\_ermin & 0.75 & parameter for tcps oberr inflation (minimum oberr, mb) \\
+  \hline
+  tcp\_ermax & 5.0 & parameter for tcps oberr inflation (maximum oberr, mb) \\
+  \hline
+  qc\_noirjaco3 & .false. & controls whether to use O3 Jac from IR instruments \\
+  \hline
+  qc\_noirjaco3\_pole & .false.	& controls wheter to use O3 Jac from IR instruments near poles \\
+  \hline
+  qc\_satwnds & .true. & allow bypass sat-winds qc normally removing lots of mid-tropo obs \\
+  \hline
+  njqc & & \\
+  \hline
+  vqc & & \\
+  \hline
+  aircraft\_t\_bc\_pof & .false. & logical for aircraft temperature bias correction, pof is used for predictor \\
+  \hline
+  aircraft\_t\_bc & .false. & logical for aircraft temperature bias correction \\
+  \hline
+  aircraft\_t\_bc\_ext & .false. & logical for reading aircraft temperature bias correction from external file \\
+  \hline
+  buddycheck\_t & .false. & When true, run buddy check algorithm on temperature observations \\
+  \hline
+  buddydiag\_save & .false. & When true, output files containing buddy check QC info for all obs run through the buddy check \\
+  \hline
+  biaspredt & 1 & berror var for temperature bias correction coefficients \\
+  \hline
+  upd\_aircraft & .true. & indicator if update bias at 06Z \& 18Z \\
+  \hline
+  cleanup\_tail & .false. & logical to remove tail number no longer used \\
+  \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+ \textbf{OBS\_INPUT} & &  \textbf{Controls input data} \\
+ \hline
+ dfile & \verb|'  '| & input observation file name \\
+ \hline
+ dtype & \verb|'  '| & observation type \\
+ \hline
+ dplat & \verb|'  '| & satellite (platform) id (for satellite data) \\
+ \hline
+ dsis & \verb|'  '| & sensor/instrument/satellite flag from satinfo files \\
+ \hline
+ dthin & \verb|'  '| & satellite group \\
+ \hline
+ dval & \verb|'  '| & relative value of each profile within group relative weight for observation = dval/sum(dval) within grid box \\
+ \hline
+ dmesh(max(dthin)) &  & thinning mesh for each group \\
+                   & &  mesh size (km) for radiance thinning grid (used in satthin) \\
+ \hline
+ dsfcalc & \verb|'  '| & specifies method to determine surface fields within a FOV. when equal to one, integrate model fields over FOV. when not one, bilinearly interpolate model fields to FOV center.\\
+ \hline
+ time\_window\_max & 3 & upper limit on time window for all input data \\
+ \hline
+ ext\_sonde & .false. & logical for extended forward model on sonde data \\
+ \hline
+ l\_foreaft\_thin & .false. & separate TDR fore/aft scan for thinning \\
+ \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+ \textbf{SINGLEOB\_TEST} & &  \textbf{Single observation test case setup} \\
+ \hline
+ maginnov & 1 & magnitude of innovation for one observation \\
+ \hline
+ magoberr & 1 & magnitude of observational error \\
+ \hline
+ oneob\_type & \verb|' '| & observation type (t, u, v, etc.) \\
+ \hline
+ oblat & 0 & observation latitude \\
+ \hline
+ oblon & 0 & observation longitude \\
+ \hline
+ obpres & 1000.0 & observation pressure (hPa) \\
+ \hline
+ obdattim & 2000010100 & observation date (YYYYMMDDHH) \\
+ \hline
+ obhourset & 0 & observation delta time from analysis time \\
+ \hline
+ pctswitch & .false. & if .true. innovation \& oberr are relative (\%) of background value (level ozone only) \\
+ \hline
+ obchan & 0 & if > 0, selects the channel number.  If <= zero, it will use all channels that pass qc in setuprad. \\
+ \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+\textbf{SUPEROB\_RADAR} & &  \textbf{Level 2 bufr file to radar wind superobs} \\
+ \hline
+ del\_azimuth & 5.0 & azimuth range for superob box  (default 5 degrees) \\
+ \hline
+ del\_elev & 0.25 & elevation angle range for superob box  (default .05 degrees) \\
+ \hline
+ del\_range & 5000.0 & radial range for superob box  (default 5 km) \\
+ \hline
+ del\_time & 0.5 & 1/2 time range for superob box  (default .5 hours) \\
+ \hline
+ elev\_angle\_max & 5.0 & max elevation angle (default of 5 deg) minnum	50	minimum number of samples needed to make a superob \\
+ \hline
+ range\_max & 100000.0 & max radial range in meters to use in constructing superobs  (default 100km) \\
+ \hline
+ l2superob\_only & .false. & if true, then process level 2 data creating superobs, then quit. (added for easier retrospective testing, since level 2 bufr files are very large and hard to work with) \\
+ \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+\textbf{LAG\_DATA|} & &  \textbf{Lagrangian data assimilation related variables} \\
+ \hline
+ lag\_accur	& 1.0e-6 & Accuracy used to decide whether or not a balloon is on the grid \\
+ \hline
+ infile\_lag & inistate\_lag.dat & File containing the initial position of the balloon \\
+ \hline
+ lag\_stepduration & 900.0 & Duration of one time step for the propagation model \\
+ \hline
+ lag\_nmax\_bal & 1000 & Maximum number of balloons at starting time \\
+ \hline
+ lag\_vorcore\_stderr\_a & 2.0e3 & Observation error for vorcore balloon \\
+ \hline
+ lag\_vorcore\_stderr\_b & 0.0 & error = b + a*timestep(in hours)\\
+ \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+\textbf{HYBRID\_ENSEMBLE} & &  \textbf{Parameters for use with hybrid ensemble option} \\
+ \hline
+ l\_hyb\_ens & .false. & if true, then turn on hybrid ensemble option \\
+ \hline
+ uv\_hyb\_ens & .false. & if true, then ensemble perturbation wind variables are u,v, otherwise, ensemble perturbation wind variables are stream, pot. Functions.\\
+ \hline
+ q\_hyb\_ens & .false. & if true, then use specific humidity ensemble perturbations, otherwise, use relative humidity\\
+ \hline
+ aniso\_a\_en & .false. & if true, then use anisotropic localization of hybrid ensemble control variable a\_en.\\
+ \hline
+ generate\_ens & .true. & if true, then generate internal ensemble based on existing background error \\
+ \hline
+ n\_ens & 0 & number of ensemble members. \\
+ \hline
+ nlon\_ens & 0 & number of longitudes on ensemble grid (may be different from analysis grid nlon) \\
+ \hline
+ nlat\_ens & 0 & number of latitudes on ensemble grid (may be different from analysis grid nlat) \\
+ \hline
+ jcap\_ens & 0 & for global spectral model, spectral truncation \\
+ \hline
+ pseudo\_hybens & .false. & if true, turn on pseudo ensemble hybrid for HWRF \\
+ \hline
+ merge\_two\_grid\_ensperts & .false. & if true, merge ensemble perturbations from two forecast domains to analysis domain (one way to deal with hybrid DA for HWRF moving nest) \\
+ \hline
+ regional\_ensemble\_option & 0 & integer, used to select type of ensemble to read in for regional application.  Currently takes values from 1 to 4 \\
+        &&=1: use GEFS internally interpolated to ensemble grid. \\
+        &&=2: ensembles are WRF NMM format \\
+        &&=3: ensembles are ARW netcdf format. \\
+        &&=4: ensembles are NEMS NMMB format. \\
+ \hline
+ full\_ensemble & .false. & if true, first ensemble perturbation on first guess istead of on ens mean \\
+ \hline
+ betaflg & .false. & if true, use vertical weighting on beta1\_inv and beta2\_inv, for regional \\
+ \hline
+ coef\_bw & 0.9 & fraction of weight given to the vertical boundaries when betaflg is true \\
+ \hline
+ pwgtflg & .false. & if true, use vertical integration function on ensemble contribution of Psfc \\
+ \hline
+ jcap\_ens\_test & 0 & for global spectral model, test spectral truncation (to test dual resolution) \\
+ \hline
+ beta1\_inv & 1 & 1/beta1, the default weight given to static background error covariance if (.not. readin\_beta) \\  
+      &&0 <= beta1\_inv <= 1,  tuned for optimal performance \\
+      &&=1, then ensemble information turned off \\
+      &&=0, then static background turned off the weights are applied per vertical level such that : \\
+      && betas\_inv(:) = beta1\_inv     , vertically varying weights given to static \boldmath{B} ; \\
+      &&betae\_inv(:) = 1 - beta1\_inv , vertically varying weights given ensemble derived covariance. \\
+      && If (readin\_beta) then betas\_inv and betae\_inv are read from a file and beta1\_inv is not used.\\
+ \hline
+  \end{tabular}
+\end{table}
+
+ 
+ \begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{9cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+ \textbf{HYBRID\_ENSEMBLE} & &  \textbf{Parameters for use with hybrid ensemble option} \\
+ \hline
+ s\_ens\_h & 2828 & homogeneous isotropic horizontal ensemble localization scale (km) \\
+ \hline
+ s\_ens\_v & 30 & vertical localization scale (grid units for now) s\_ens\_h, s\_ens\_v, and beta1\_inv are tunable parameters. \\
+ \hline
+ use\_gfs\_ens & .true.	& controls use of global ensemble: .t. use GFS (default); .f. uses user-defined ens \\
+ \hline
+ readin\_localization & .false. & flag to read (.true.)external localization information file \\
+ \hline
+ readin\_beta & .false. & flag to read (.true.) the vertically varying beta parameters betas\_inv and betae\_inv from a file. \\
+ \hline
+ eqspace\_ensgrid & .false.	& if .true., then ensemble grid is equal spaced, staggered 1/2 grid unit off ploes. \\
+              && if .false., then gaussian grid assumed for ensemble (global only) \\
+ \hline
+ use\_localization\_grid & .false. & if true, then use extra lower res gaussian grid for horizontal localization  (global runs only--allows possiblity for non-gaussian ensemble grid) \\
+ \hline
+ grid\_ratio\_ens & 1 & for regional runs, ratio of ensemble grid resolution to analysis grid resolution \\
+     && default value = 1  (dual resolution off) \\
+ \hline
+ oz\_univ\_static & .false. & if true, decouple ozone from other variables and defaults to static B (ozone only) \\
+ \hline
+ write\_ens\_sprd & .false. & writing global ensemble spread in byte addressable format for plotting with grads \\
+ \hline
+ enspreproc & .false. & flag to read(.true.) pre-processed ensemble data already \\
+ \hline
+ i\_en\_perts\_io & 0 & flag to read in ensemble perturbations in ensemble grid. \\
+      & & This is to speed up RAP/HRRR hybrid runs because the same ensemble perturbations are used in 6 cycles \\
+      & &  =0:  No ensemble perturbations IO (default) \\
+      & &  =2:  skip get\_gefs\_for\_regional and read in ensemble perturbations from saved files. \\
+   \hline
+ l\_ens\_in\_diff\_time & .false. & if use ensembles that are available at different time from analysis time. \\
+      & & =false: only ensembles available at analysis time can be used for hybrid. (default) \\
+      & & =true: ensembles available time can be different
+ from analysis time in hybrid analysis \\
+ \hline
+ ensemble\_path & & \\
+ \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{7cm} |}
+ \hline
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+ \textbf{rapidrefresh\_cldsurf} & &  \textbf{Options for cloud analysis and surface enhancement for RR application} \\
+ \hline
+ dfi\_radar\_latent\_heat\_time\_period	& 30.0 & DFI forward integration window in minutes \\
+ \hline
+ metar\_impact\_radius & 10.0 & metar cloud observation impact radius in grid number\\
+ \hline
+ metar\_impact\_radius\_lowCloud & 4.0 & impact radius for METAR cloud observation that indicate low cloud base \\
+ \hline
+ l\_gsd\_terrain\_match\_surfTobs & .false. & if .true., GSD terrain match for surface temperature observation \\
+ \hline
+ l\_sfcobserror\_ramp\_t & .false.	& namelist logical for adjusting surface temperature observation error \\
+ \hline
+ l\_sfcobserror\_ramp\_q & .false.	& namelist logical for adjusting surface moisture observation error \\
+ \hline
+ l\_PBL\_pseudo\_SurfobsT & .false. & if .true. produce pseudo-obs in PBL layer based on surface obs T \\
+ \hline
+ l\_PBL\_pseudo\_SurfobsQ & .false. & if .true. produce pseudo-obs in PBL layer based on surface obs Q \\
+ \hline
+ l\_PBL\_pseudo\_SurfobsUV	& .false. & if .true. produce pseudo-obs in PBL layer based on surface obs UV \\
+ \hline
+ pblH\_ration & 0.75	& percent of the PBL height within which to add pseudo-obs \\
+ \hline
+ pps\_press\_incr	& 30hPa	& pressure increase for each additional pseudo-obs on top of previous level \\
+ \hline
+ l\_gsd\_limit\_ocean\_q & .false. & if .true. do GSD limitation of Q over ocean \\
+ \hline
+ l\_pw\_hgt\_adjust & .false. & if .true. do GSD PW adjustment for model vs. obs station height \\
+ \hline
+ l\_limit\_pw\_innov & .false.	& if .true. do GSD limitation of PW obs \\
+ \hline
+ max\_innov\_pct & 0.1 & sets limit of PW ob to a percent of the background value (0-1) \\
+ \hline
+ l\_cleanSnow\_WarmTs & .false. & if .true. do GSD limitation of using retrieved snow over warn area (Ts > r\_cleanSnow\_WarmTs\_threshold) \\
+ \hline
+ l\_conserve\_thetaV & .false. & if .true. conserve thetaV during moisture adjustment in cloud analysis \\
+ \hline
+ r\_cleanSnow\_WarmTs\_threshold & 8.0	& threshold for using retrieved snow over warn area \\
+ \hline
+ i\_conserve\_thetaV\_iternum & 3 & iteration number for conserving thetaV during moisture adjustment \\
+ \hline
+ l\_gsd\_soilTQ\_nudge	& .false. &  if .true. do GSD GOES cloud building \\
+ \hline
+ l\_cld\_bld & .false. & if .true. do  GSD soil T and Q nudging based on the lowest t analysis increment \\
+ \hline
+ cld\_bld\_hgt & 1200m & sets limit below which GOES cloud building occurs \\
+ \hline
+ build\_cloud\_frac\_p & 0.95 & sets the threshold for building clouds from satellite \\
+ \hline
+ clear\_cloud\_frac\_p & 0.1 & sets the threshold for clearing clouds from satellite \\
+ \hline
+ nesdis\_npts\_rad & 1	& NESDIS cloud product impact radiu (grid points) \\
+ \hline
+ iclean\_hydro\_withRef & 1 & if =1, then clean hydrometeors if the grid point has no echo and maxref=0 \\
+ \hline
+ iclean\_hydro\_withRef\_allcol & 0 & if =1, then clean whole column hydrometeors if the observed max ref =0 and satellite cloud shows clean \\
+ \hline
+ \hline
+  \end{tabular}
+\end{table}
+
+ \begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{7cm} |}
+ \hline
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+\textbf{rapidrefresh\_cldsurf} & &  \textbf{Options for cloud analysis and surface enhancement for RR application} \\
+ \hline
+  l\_use\_2mq4b & 0 & background used for calculate surface moisture observation innovation \\
+     && =0  Use Q from the 1st model level. (default) \\
+     && =1  use 2m Q as part of background \\
+   \hline
+ i\_use\_2mt4b & 0 & background used for calculate surface temperature observation innovation \\
+     && =0  Use T from the 1st model level. (default) \\
+     && =1  use 2m T as part of background \\
+ i\_gsdcldanal\_type & 0 & options for how GSD cloud analysis should be conducted \\
+        & &  =0. no cloud analysis (default) \\
+        & &  =1.  cloud analysis after var analysis \\
+        & &  =5.  skip cloud analysis and NETCDF file update \\
+ \hline
+ i\_gsdsfc\_uselist & 0 & options for how to use surface observation use or rejection list \\
+      & & =0 . EMC method (default) \\
+      & & =1 . GSD method \\
+ \hline
+ i\_lightpcp & 0	& options for how to deal with light precipitation \\
+     & & =0 . don't add light precipitation (default) \\
+     & & =1 . add light precipitation in warm section \\
+ \hline
+ i\_sfct\_gross & 0 & if use extended threshold for surface T gross check \\
+     & & =0 use threshold from convinfo (default) \\
+     & & =1 for cold surface, threshold for gross check is enlarged to bring more large negative innovation into analysis. \\
+ \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h]
+ \footnotesize
+ \center
+ \begin{tabular}{| c | c | p{7cm} |}
+ \hline
+ Variable name & Default value & Description \\
+ \hline
+\textbf{CHEM} & &  \textbf{Chemistry data assimilation} \\
+ \hline
+ berror\_chem & .false. & if berror file is supplied for chemistry \\
+ \hline
+ oneobtest\_chem & .false. & single observation test for chemistry \\
+ \hline
+ maginnov\_chem & 30.0 & if oneobtest\_chem=T magnitude of innovation for chemistry \\
+ \hline
+ magoberr\_chem & 2.0 & if oneobtest\_chem=T magnitude of observation error for chemistry \\
+ \hline
+ oneob\_type\_chem & pm2\_5 & if oneobtest\_chem=T type of chemical observation \\
+ \hline
+ oblat\_chem & 45.0 & if oneobtest\_chem=T latitude of the observation \\
+ \hline
+ oblon\_chem	& 270.0	& if oneobtest\_chem=T longitude of the observation \\
+ \hline
+ obpres\_chem & 1000.0 & if oneobtest\_chem=T  pressure of the observation \\
+ \hline
+ diag\_incr & .false. & if user wishes to output to a binary file increment \\
+ \hline
+ elev\_tolerance & 500.0 & for surface chemical observation sometimes elevation (elev\_obs) of the measurement is available (sometimes not). \\
+ \hline
+ tunable\_error & 0.5 & tuning parameter to specify representativeness error for in-situ observations \\
+ \hline
+ in\_fname & cmaq\_input.bin	& name of background file for cmaq \\
+ \hline
+ out\_fname & cmaq\_output.bin & name analysis file for cmaq \\
+ \hline
+ incr\_fname & chem\_increment.bin & if diag\_incr=T name of the binary dump for pm2\_5 \\
+ \hline
+ laeroana\_gocart & .false. & when true, do chem analysis with wrfchem and modis \\
+ \hline
+ l\_aoderr\_table & & \\
+ \hline
+ aod\_qa\_limit & & \\
+ \hline
+ luse\_deepblue & & \\
+ \hline
+ aero\_ratios & & \\ 
+ \hline
+ wrf\_pm2\_5 & & \\
+ \hline
+ \end{tabular}
+\end{table}

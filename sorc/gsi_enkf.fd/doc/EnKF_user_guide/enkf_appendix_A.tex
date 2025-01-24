@@ -1,0 +1,175 @@
+\chapter{Content of Namelist}\label{nameless}
+
+The following are lists and explanations of the EnKF namelist variables. Users can also check file \textit{params.f90} for the details. \\
+
+Section \textbf{nam\_enkf}
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{3cm}p{7cm}p{2.5cm}p{1.5cm}}
+\hline
+Variable Name&Description&Data Type&Default\\
+\hline
+datein&Analysis date in YYYYMMDDHH&integer&0\\
+datapath&path to data directory (include trailing slash)&Character (len=500) &""\\
+iassim\_order&= 0 for the order they are read in,\newline
+=1 for random order\newline
+= 2 for order of predicted posterior variance reduction (based on prior) &integer&0\\
+covinflatemax&maximum inflation&real(r\_single)&1.e30\\
+covinflatemin&minimum inflation&real(r\_single)&1.0\\
+deterministic&if true, use EnSRF w/o perturbed obs.\newline
+                     if false, use perturbed obs EnKF. & logical & true\\
+sortinc&if false, re-order obs to minimize regression 
+                     errors as described in Anderson (2003). &logical &true\\
+corrlengthnh&length for horizontal localization (in km) in north hemisphere&real(r\_single)&2800\\
+corrlengthtr&length for horizontal localization (in km) in tropic&real(r\_single)&2800\\
+corrlengthsh&length for horizontal localization (in km) in south hemisphere&real(r\_single)&2800\\
+\hline
+\end{tabular}
+\end{table} 
+
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{3cm}p{7cm}p{2.5cm}p{1.5cm}}
+\hline
+Variable Name&Description&Data Type&Default\\
+\hline
+varqc&Turn on varqc & logical & false \\
+huber&use huber norm instead of "flat-tail" &logical & fales\\
+nlons&number of lons &integer&0\\
+nlats&Number of lats & integer & 0\\
+ smoothparm&smoothing parameter for inflation (-1 for no smoothing) & real(r\_single) & -1\\
+readin\_localization&If true, read in localization length scales from an external file & logical & false\\
+zhuberleft&Parameter for "huber norm" QC  & real(r\_single) & 1.e30\\
+  zhuberright&Parameter for "huber norm" QC & real(r\_single) &1.e30\\
+   obtimelnh&observation time localization in hours over north hemisphere & real(r\_single) &25.925\\
+obtimeltr&observation time localization in hours over tropic & real(r\_single) & 25.925\\
+    obtimelsh& observation time localization in hours over south hemisphere & real(r\_single) &25.925\\
+    
+    reducedgrid & Do smooth in a reduced grid with a variable number 
+on longitudes per latitude. The number of longitudes is chosen so that the zonal grid
+spacing is approximately the same as at the equator & logical & false \\
+lnsigcutoffnh & length for vertical localization in ln(p) over north hemisphere for conventional observation&real(r\_single)& 2.0\\
+lnsigcutofftr &length for vertical localization in ln(p) over tropic conventional observation&real(r\_single)&2.0\\
+lnsigcutoffsh &length for vertical localization in ln(p) over south hemisphere for conventional observation&real(r\_single) &2.0\\
+lnsigcutoffsatnh &length for vertical localization in ln(p) over north hemisphere for satellite radiance observation&real(r\_single)& -999.0\\
+ lnsigcutoffsattr &length for vertical localization in ln(p) over tropic satellite radiance observation&real(r\_single)& -999.0\\
+ lnsigcutoffsatsh  &length for vertical localization in ln(p)over south hemisphere for satellite radiance observation&real(r\_single) &-999.0\\
+ lnsigcutoffpsnh&length for vertical localization in ln(p) over north hemisphere for surface pressure observation&real(r\_single) &-999.0\\
+  lnsigcutoffpstr &length for vertical localization in ln(p) over tropic surface pressure observation&real(r\_single)& -999.0\\
+  lnsigcutoffpssh &length for vertical localization in ln(p) over south hemisphere for surface pressure observation&real(r\_single) &-999.0\\
+\hline
+\end{tabular}
+\end{table} 
+
+
+
+ 
+         
+ 
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{3cm}p{7cm}p{2.5cm}p{1.5cm}}
+\hline
+Variable Name&Description&Data Type&Default\\
+\hline
+  analpertwtnh&adaptive posterior inflation parameter over north hemisphere:\newline
+               1 means inflate all the way back to prior spread&real(r\_single)& 0.0\\    
+ analpertwtsh & adaptive posterior inflation parameter over tropic:\newline
+1 means inflate all the way back to prior spread&real(r\_single) &0.0\\
+  analpertwttr&adaptive posterior inflation parameter over south hemisphere:\newline
+1 means inflate all the way back to prior spread&real(r\_single) &0.0\\
+sprd\_tol&tolerance for background check:
+observations are not used if they are more than sqrt(S+R) from mean, 
+  where S is ensemble variance and R is observation error variance. &real(r\_single) &9.9e31\\
+nlevs &total number of levels&integer &0\\
+  nanals&number of ensemble members&integer & 0\\
+   nvars&number of 3d variables to update. For hydrostatic models, typically 5 (u,v,T,q,ozone).&integer &5\\
+saterrfact &factor to multiply sat radiance errors&real(r\_single) &1.0\\
+   univaroz &If true, ozone observations only affect ozone &logical &true\\
+   regional &If true, analysis is for regional&logical &false\\
+   use\_gfs\_nemsio&If true, GFS background is in NEMS format&logical& false\\
+   paoverpb\_thresh &if observation space posterior variance divided by prior variance less than this value, 
+observation is skipped during serial processing. \newline
+1.0 = don't skip any obs  &(r\_single) &1.0\\
+latbound &definition of tropics and mid-latitudes (for inflation). &real(r\_single) &25.0\\
+delat &width of transition zone &real(r\_single)& 10.0\\
+pseudo\_rh &use 'pseudo-rh' analysis variable, as in GSI &logical & false\\
+numiter&number of times to iterate state/bias correction update. (only relevant when satellite radiances assimilated, i.e. nobs\_sat>0)&integer &1.0\\
+\hline
+\end{tabular}
+\end{table} 
+
+
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{3cm}p{7cm}p{2.5cm}p{1.5cm}}
+\hline
+Variable Name&Description&Data Type&Default\\
+\hline
+biasvar&background error variance for rad bias coeffs (used in radbias.f90). Default is (old) GSI value.\newline
+if negative, bias coeff error variace is set to - biasvar/N, where N is number of obs per instrument/channel.\newline
+if newpc4pred is .true., biasvar is not used - the estimated analysis error variance from the previous cycle is 
+used instead (same as in the GSI). &real(r\_single) &0.1\\
+lupd\_satbiasc&if performing satellite bias correction update&logical &true\\
+ cliptracers&if true, tracers are clipped to zero when read in, and just before they are written out.&logical& true\\
+simple\_partition &partition obs for enkf using Graham's rule&logical &true\\
+ adp\_anglebc&turn off or on the variational radiance angle bias correction&logical& false\\
+angord &order of polynomial for angle bias correction&Integer& 0\\
+ newpc4pred&controls preconditioning due to sat-bias correction term&logical&\\
+nmmb&If true, ensemble forecast is NMMB&logical &false\\
+iau&&logical &false\\
+nhr\_anal&background forecast time for analysis&integer &6\\
+  letkf\_flag&If true, do LETKF&logical& false\\
+   boxsize &Observation box size for LETKF (deg)&real(r\_single) &90.0\\
+   massbal\_adjust&mass balance adjustment for GFS&logical &false\\
+    use\_edges&logical to use data on scan edges (.true.=to use)&logical &true\\
+     emiss\_bc&If true, turn on emissivity bias correction&logical& false\\
+\hline
+\end{tabular}
+\end{table} 
+
+\pagebreak[0]
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{3cm}p{7cm}p{2.5cm}p{1.5cm}}
+&Section \textbf{nam\_wrf} &&\\
+\hline
+Variable Name&Description&Data Type&Default\\
+\hline
+arw &regional dynamical core ARW&logical &false\\ 
+nmm&regional dynamical core NMM&logical& true\\
+doubly\_periodic&&logical&true\\
+\hline
+\end{tabular}
+\end{table} 
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{3cm}p{6cm}p{3cm}p{1.5cm}}
+& Section \textbf{satobs\_enkf}&&\\
+\hline
+Variable Name&Description&Data Type&Default\\
+\hline
+sattypes\_rad&strings describing the satellite data type (which form part of the diag* filename).& 
+character(len=20) array (nsatmax\_rad) & '"" \\
+dsis&strings corresponding to sattypes\_rad which correspond to the names in the NCEP global\_satinfo file.&
+character(len=20) array (nsatmax\_rad)&""\\
+\hline
+\end{tabular}
+\end{table} 
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{3cm}p{6cm}p{3cm}p{1.5cm}}
+&Section \textbf{ozobs\_enkf}&&\\
+\hline
+Variable Name&Description&Data Type&Default\\
+\hline
+sattypes\_oz&strings describing the ozone satellite data type (which form part of the diag* filename)&
+character(len=20) array (nsatmax\_oz)&""\\
+\hline
+\end{tabular}
+\end{table} 

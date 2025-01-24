@@ -1,0 +1,4 @@
+To compile EnKF:
+
+* first compile GSI.
+* cd enkf, then compile EnKF.

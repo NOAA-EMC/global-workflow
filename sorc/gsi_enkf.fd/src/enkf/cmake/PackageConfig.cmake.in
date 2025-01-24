@@ -1,0 +1,45 @@
+@PACKAGE_INIT@
+
+#@PROJECT_NAME@-config.cmake
+#
+# Imported interface targets provided:
+#  * @PROJECT_NAME@::enkf - EnKF library target
+
+# Include targets file.  This will create IMPORTED target @PROJECT_NAME@
+include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-config-version.cmake")
+include(CMakeFindDependencyMacro)
+
+# Get the ENKF_MODE attribute
+set(ENKF_MODE @ENKF_MODE@)
+
+find_dependency(MPI)
+find_dependency(NetCDF COMPONENTS Fortran)
+
+# ON|OFF implies @PROJECT_NAME@ was compiled with/without -DENABLE_MKL=ON|OFF
+if(@ENABLE_MKL@)
+  find_dependency(MKL REQUIRED)
+  set(LAPACK_LIBRARIES ${MKL_LIBRARIES})
+endif()
+if(NOT @ENABLE_MKL@)
+  find_dependency(LAPACK REQUIRED)
+endif()
+
+# ON|OFF implies @PROJECT_NAME@ was compiled with/without OpenMP
+if(@OPENMP@)
+  find_dependency(OpenMP COMPONENTS Fortran)
+endif()
+
+# This gives more trouble since GSIApp is a nested project of projects
+# and targets are built in the GSIApp project
+#find_dependency(gsi REQUIRED)
+
+# Get the build type from library target
+get_target_property(@PROJECT_NAME@_BUILD_TYPES @PROJECT_NAME@::@PROJECT_NAME@ IMPORTED_CONFIGURATIONS)
+
+check_required_components("@PROJECT_NAME@")
+
+get_target_property(location @PROJECT_NAME@::@PROJECT_NAME@ LOCATION)
+message(STATUS "Found @PROJECT_NAME@: ${location} (found version \"${PACKAGE_VERSION}\")")
+message(STATUS "FindEnKF defines targets:")
+message(STATUS "  - ENKF_MODE [${ENKF_MODE}]")

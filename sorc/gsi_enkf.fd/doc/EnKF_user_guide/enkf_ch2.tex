@@ -1,0 +1,152 @@
+\chapter{Software Installation}\label{enkf_install}
+\setlength{\parskip}{12pt}
+
+%----------------------------------------------
+\section{Introduction}
+%----------------------------------------------
+
+The DTC community EnKF is a community distribution of NOAA\textquotesingle s operational ensemble Kalman filter. The community EnKF expands the portability of the operational code by adding a flexible build system and providing example run scripts that allow the system to run on many common platforms. The current version of the community EnKF builds and runs on most standard Linux platforms using the Intel, PGI, and GNU compilers.
+
+This chapter describes how to build and install the DTC community EnKF on your computing resources. These instructions apply only to the DTC community EnKF. The source code for the community EnKF release is identical to the particular revision of NCEP\textquotesingle s trunk code frozen for community release. The only difference from the NCEP trunk code, is the addition of the more general community build system in order to support a wider variety of computing platforms.
+
+The EnKF build process consists of the four general steps necessary to build GSI. 
+\begin{itemize}
+\item Obtain the source code: combined GSI/EnKF, and WRF.
+\item Build the WRF model (see the WRF users guide).
+\item Set the EnKF code defaults (see the EnKF users guide)
+\item Build the GSI and EnKF model (see the GSI users guide).
+\end{itemize}
+
+Section \ref{ch2_obtain_code} describes how to obtain the source code. Section \ref{ch2_compiling} presents an outline of the build process. Sections \ref{ch2_system_requirements} and \ref{ch2_compilers_tested} cover the system requirements (tools, libraries, and environment variable settings) and currently supported platforms in detail. Section \ref{ch2_getting_help} discusses what to do if you have problems with the build and where to get help.
+
+%----------------------------------------------
+\section{Obtaining the Source Code} \label{ch2_obtain_code}
+%----------------------------------------------
+
+The community EnKF code and the GSI code are released as a combined source code package. The current 
+EnKF release is v1.2 and is paired with the community GSI release version 3.6.
+The community EnKF release is available from the DTC community EnKF users website;
+
+\url{http://www.dtcenter.org/EnKF/users/index.php}
+
+The community GSI/EnKF release includes the source code for both the EnKF v1.2 and the GSI v3.6 models, as 
+well as an integrated build system, utilities, and documentation necessary to build and run the EnKF.  
+
+To download the source code from the either the GSI or the EnKF website, select the \underline{Download} tab 
+along with the \underline{GSI/EnKF} System subtab on the vertical menu located on the left side of 
+the main page. New users must first register before downloading the source code. Returning users only need 
+to enter their registration email address to log in. After accessing the download page, select the link to the 
+\verb|comGSIv3.6_EnKFv1.2| tarball. Please only use the source code provided with the 
+\verb|comGSIv3.6_EnKFv1.2| tarball. Do not mix and match this tarball with other versions of the community 
+GSI code or supplemental libraries, as this will lead to unpredictable results.
+
+The community EnKF version 1.2 comes in a tar file named \verb|comGSIv3.6_EnKFv1.2.tar|. The tar file may 
+be unpacked by using the standard UNIX commands:
+\begin{verbatim}
+     gunzip comGSIv3.6_EnKFv1.2.tar.gz 
+     tar -xvf comGSIv3.6-EnKFv1.2.tar
+\end{verbatim}
+This creates the top level GSI directory \verb|comGSIv3.6_EnKFv1.2/|.
+After downloading the source code, and prior to building, the user should check the known issues link on the 
+download page of DTC website to determine if any bug fixes or platform specific customizations are needed.
+
+%----------------------------------------------
+\section{Compiling EnKF} \label{ch2_compiling}
+%----------------------------------------------
+
+The EnKF code is built automatically when GSI is built (details in the GSI User\textquotesingle s Guide Chapter 2). It makes use of the \verb|configure.gsi| file produced 
+for the GSI build. Therefore to build EnKF, simply build GSI.  The default EnKF build settings produce a regional 
+version of EnKF, called wrf\_enkf. This version of EnKF assumes that a WRF style I/O is being used. 
+
+This section provides a quick outline of the steps necessary to build the EnKF code from the release distribution.
+Typically, EnKF will build \textit{straight out of the box} on any system that successfully builds GSI. Should the user experience any difficulties with the default build, check the build environment against the requirements described at the end of section \ref{ch2_system_requirements}.
+\begin{enumerate}
+\item Set the environment for the compiler: If not already done so, set the necessary paths for using your selected compiler, such as loading the appropriate modules or modifying the path.
+\item If not already done, build and install a recent version of the WRF model. The WRF build is currently needed for the WRF I/O libraries and should use the same compiler as used for the EnKF and GSI builds.
+\item Build GSI (see chapter 2 of the GSI users guide for more details)
+\begin{description}
+\item[ ]a. Set the environment variables (see chapter 2 of the GSI users guide)
+\item[ ]b. Run the configure script located at in the \verb|dtc/| directory.
+\item[ ]c. Select the EnKF configuration (the default is regional, see section \ref{ch2_versions_enkf})
+\item[ ]d. Run the compile script
+\item[ ]e. Confirm that GSI has successfully built.
+\item[ ]f. Change into the directory \verb|src/main/enkf|
+\item[ ]g. Confirm that the EnKF executable resides in the directory  (default executable is \verb|wrf_enkf|).
+\end{description}
+\end{enumerate}
+
+Other I/O configurations for EnKF are available, and must be selected at build time. The current choices are regional, global or NMMB. The choice of I/O configuration is specified in the file \verb|src/main/enkf/Makefile.conf|. Section \ref{ch2_versions_enkf} provides a full explanation on specifying the I/O configuration.
+
+%----------------------------------------------
+\subsection{Versions of EnKF} \label{ch2_versions_enkf}
+%----------------------------------------------
+
+The EnKF code has three build time configurations for the I/O; regional, global, and NMMB. The EnKF analysis is identical in each case, only the capability to digest model input differs. The regional version can only digest WRF formatted I/O files. The global version can only digest spectral input from the NCEP global model. Lastly, the NMMB version can only digest NMMB files.
+
+Before initiating the compile command, the user must select which EnKF configuration is to be built by manually editing the file src/main/enkf/Makefile.conf. Examining lines 45 to 50 of Makefile.conf shows three pairs of build flags.
+\begin{verbatim}
+45  # FFLAGS_F90 = -DGFS 
+46  # EXE_FILE = global_enkf i
+47  FFLAGS_F90 = -DWRF
+48  EXE_FILE = wrf_enkf
+49  # FFLAGS_F90 = -DNMMB 
+50  # EXE_FILE = nmmb_enkf
+\end{verbatim}
+
+By default the build system is set to build the regional configuration. This sets the Fortran preprocessor flag to \textit{-DWRF}, and the executable name to \textit{wrf\_enkf}. Other EnKF configurations are selected by commenting out lines by adding \# symbols and activating lines by removing \# symbols. Once the desired configuration is selected by editing the file \textit{Makefile.conf}, the executable may be built by running the the top level GSI configure/compile commands.
+
+%----------------------------------------------
+\section{System Requirements and External Libraries} \label{ch2_system_requirements}
+%----------------------------------------------
+
+The EnKF source code is written in FORTRAN 90 and requires some flavor of MPI and OpenMP for the distributed memory parallelism. Lastly the I/O relies on the NetCDF I/O libraries. The build system relies on standard make.
+
+The basic requirements for building are:
+\begin{itemize}
+\item FORTRAN 2003+ compiler
+\item MPI v1.2+
+\item OpenMP
+\item NetCDF V3.6.3 or V4.2+
+\item LAPACK and BLAS mathematics libraries, or equivalent 
+\item WRF V3.6+
+\end{itemize}
+
+Because all but the last of these tools and libraries are typically the purview of system administrators to install and maintain, they are lumped together here as part of the basic system requirements.
+
+%----------------------------------------------
+\section{Compilers Tested for Release}  \label{ch2_compilers_tested}
+%----------------------------------------------
+
+Version 1.1 of the DTC community EnKF system has been successfully tested on a variety of Linux platforms with many versions of the Intel, PGI, Gnu Fortran compilers.
+
+The following Linux compiler combinations have been fully tested:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{| l | l | l |}
+\hline
+  & Fortran compiler version   &   C compiler version    \\
+\hline
+\hline
+Intel only  &  ifort    17.0.1, 16.0.3, 15.0.3, 14.0.2       & icc \\
+\hline
+PGI only  &   pgf90   17.5, 16.5, 15.7    &  pgcc  \\
+\hline
+GNU only &  gfortran  5.4.0  with netcdf 4.4.0  & gcc 5.4.0 \\
+\hline
+\end{tabular}
+\label{ch2_tble1}
+\end{table} 
+
+Unforeseen build issues may occur when using older compiler and library versions. As always, the best results come from using the most recent version of compilers.
+
+%----------------------------------------------
+\section{Getting Help and Reporting Problems} \label{ch2_getting_help}
+%----------------------------------------------
+
+Should the user experience any difficulty building EnKF on their system, please first confirm that both the WRF model and the GSI have successfully built. Should the EnKF build fail, but the other two succeed, feel free to contact the community EnKF support at 
+\begin{center}
+\textit{enkf-help@ucar.edu}
+\end{center}
+ for assistance.
+
+At a minimum, when reporting issues building the code, please include a copy of the EnKF build log.

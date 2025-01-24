@@ -1,0 +1,73 @@
+\documentclass[12pt,letterpaper,oneside]{scrbook}
+
+\usepackage{import}
+%\usepackage{graphicx}
+%\usepackage{amssymb}
+%\usepackage{epstopdf}
+%\DeclareGraphicsRule{.tiff}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tiff`.png}
+
+\usepackage{dtcdoc}
+
+% Local Commands
+\newcommand{\quotes}[1]{``#1''}
+
+\usepackage{longtable}
+
+\usepackage{morefloats}
+
+\usepackage{multirow}
+
+\usepackage{hanging}
+
+\makeindex
+
+\setcounter{tocdepth}{5}
+
+\setcounter{secnumdepth}{5} 
+
+\begin{document}
+
+\frontmatter
+%\pagecolor{blue} #change title page background color to blue
+\import{./}{title.tex}
+%\newpage
+%\pagecolor{white} #change the background color to white for rest of pages
+\clearpage
+\thispagestyle{empty}
+\import{./}{ack.tex}
+\import{./}{forward.tex}
+
+\tableofcontents
+
+
+\mainmatter
+% Chapter 1: Overview
+\import{./}{gsi_ch1.tex}
+% Chapter 2: Building
+\import{./}{gsi_ch2.tex}
+% Chapter 3: Running
+\import{./}{gsi_ch3.tex}
+% Chapter 4: Diagnostics and Tuning
+\import{./}{gsi_ch4.tex}
+% Chapter 5:  regional Applications
+\import{./}{gsi_ch5.tex}
+% Chapter 5: other Applications
+\import{./}{gsi_ch6.tex}
+% Appendices
+\appendix
+% Appendix A:
+\import{./}{gsi_appendixA.tex}
+% Appendix B:
+\import{./}{gsi_appendixB.tex}
+% Appendix C
+\import{./}{gsi_appendixC.tex}
+
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\backmatter
+
+\bibliographystyle{abbrv}
+\bibliography{references}
+
+\end{document}
+

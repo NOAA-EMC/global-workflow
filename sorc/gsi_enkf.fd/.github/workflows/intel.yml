@@ -1,0 +1,124 @@
+name: Intel Linux Build
+on: [push, pull_request, workflow_dispatch]
+
+# Use custom shell with -l so .bash_profile is sourced which loads intel/oneapi/setvars.sh
+# without having to do it in manually every step
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
+# Set I_MPI_CC/F90 so Intel MPI wrapper uses icc/ifort instead of gcc/gfortran
+env:
+  cache_key: intel
+  CC: icc
+  FC: ifort
+  CXX: icpc
+  I_MPI_CC: icc
+  I_MPI_F90: ifort
+
+# The jobs are split into:
+# 1. a dependency build step (setup), and
+# 2. a GSI build step (gsi)
+# The setup is run once and the environment is cached,
+# so each subsequent build of GSI can reuse the cached dependencies to save time (and compute).
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Free up disk space
+      - name: free-disk-spack
+        run: |
+          df -h
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          DOCKER_IMGS=$(docker image ls -aq)
+          if [[ ! -z "${DOCKER_IMGS}" ]]; then docker rmi ${DOCKER_IMGS}; fi
+          df -h
+
+      # Checkout the GSI to get the ci/spack.yaml file
+      - name: checkout
+        if: steps.cache-env.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+            path: gsi
+
+      # Cache spack, compiler and dependencies
+      - name: cache-env
+        id: cache-env
+        uses: actions/cache@v3
+        with:
+          path: |
+            spack
+            ~/.spack
+            /opt/intel
+          key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('gsi/ci/spack.yaml') }}-1
+
+      - name: install-intel-compilers
+        if: steps.cache-env.outputs.cache-hit != 'true'
+        run: |
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+          echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt-get update
+          sudo apt-get install intel-oneapi-dev-utilities intel-oneapi-mpi-devel intel-oneapi-openmp intel-oneapi-compiler-fortran-2023.2.1 intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic-2023.2.1
+          sudo apt-get clean
+          echo "source /opt/intel/oneapi/setvars.sh" >> ~/.bash_profile
+
+      # Install dependencies using Spack
+      - name: install-dependencies-with-spack
+        if: steps.cache-env.outputs.cache-hit != 'true'
+        run: |
+          sudo mv /usr/local/ /usr_local_mv
+          sudo apt-get install cmake
+          rm -rf spack
+          git clone -c feature.manyFiles=true https://github.com/JCSDA/spack.git
+          source spack/share/spack/setup-env.sh
+          spack env create gsi-env gsi/ci/spack_intel.yaml
+          spack env activate gsi-env
+          spack compiler find
+          spack external find
+          spack concretize
+          spack install --fail-fast --dirty
+          spack clean -a
+
+  gsi:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: install-intel
+        run: |
+          echo "source /opt/intel/oneapi/setvars.sh" >> ~/.bash_profile
+
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+            path: gsi
+
+      - name: cache-env
+        id: cache-env
+        uses: actions/cache@v3
+        with:
+          path: |
+            spack
+            ~/.spack
+            /opt/intel
+          key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('gsi/ci/spack.yaml') }}
+
+      - name: build
+        run: |
+          sudo mv /usr/local/ /usr_local_mv
+          sudo apt-get install cmake libblas-dev liblapack-dev
+          source spack/share/spack/setup-env.sh
+          spack env activate gsi-env
+          cd gsi
+          mkdir -p build && cd build
+          cmake -DCMAKE_INSTALL_PREFIX=../install -DGSI_MODE=Regional -DENKF_MODE=GFS -DBUILD_REG_TESTING=OFF ..
+          make -j2 VERBOSE=1
+          make install
+        env:
+          CC: mpiicc
+          FC: mpiifort

@@ -1,0 +1,318 @@
+module Test_adjoint_mod
+   use adjtest
+   use pfunit_mod
+   implicit none
+
+   public :: Test_adjoint
+
+@TestCase
+   type, extends(TestCase) :: Test_adjoint
+   contains
+      procedure :: setUp     ! overides generic
+      procedure :: tearDown  ! overrides generic
+   end type Test_adjoint
+
+contains
+
+   ! No need to annotate setUp() when _extending_ TestCase
+   subroutine setUp(this)
+      use mpimod, only: npe,mpi_comm_world,ierror,mype
+      use constants, only: init_constants,init_constants_derived
+      use gsi_4dvar, only: nsubwin, nobs_bins, l4dvar, lsqrtb, ladtest_obs
+      use jfunc, only: nsclen,npclen,ntclen,nrclen,nval_lenz
+      use hybrid_ensemble_parameters, only: n_ens, nval_lenz_en
+      use gridmod, only: create_grid_vars
+      use gsi_4dcouplermod, only: gsi_4dcoupler_parallel_init
+      use gsi_4dvar, only: setup_4dvar,init_4dvar,nhr_assimilation,min_offset, &
+                       l4dvar,nhr_obsbin,nhr_subwin,nwrvecs,iorthomax,&
+                       lbicg,lsqrtb,lcongrad,lbfgsmin,ltlint,ladtest,ladtest_obs, lgrtest,&
+                       idmodel,clean_4dvar,iwrtinc,lanczosave,jsiga,ltcost,liauon, &
+		       l4densvar,ens_nstarthr,lnested_loops,lwrite4danl,thin4d
+      use kinds, only: r_single,r_kind,i_kind,r_quad,i_long
+      use constants, only: zero, one, two, three, zero_quad, tiny_r_kind
+      use convinfo, only: init_convinfo
+      use jfunc, only: init_jfunc, create_jfunc
+      use jfunc, only: nclen,npclen,nsclen,ntclen,nval_lenz
+      use gridmod, only: lat2,lon2,nsig
+      use gridmod, only: lat1,lon1,latlon11,latlon1n
+      use gsi_4dvar, only: nsubwin, lsqrtb
+      use hybrid_ensemble_parameters, only: n_ens,nval_lenz_en
+
+      class (Test_adjoint), intent(inout) :: this
+
+
+   end subroutine setUp
+
+   ! No need to annotate tearDown() _extending_ TestCase
+   subroutine tearDown(this)
+      use gridmod, only: destroy_grid_vars
+      class (Test_adjoint), intent(inout) :: this
+      call destroy_grid_vars
+   end subroutine tearDown
+
+@Test
+   subroutine testAdjoint(this)
+      use guess_grids, only: nfldsig,nfldsfc,ntguessig,ntguessfc,&
+         ifilesig,ifilesfc,hrdifsig,hrdifsfc,create_gesfinfo
+      use gsi_4dvar, only: nsubwin, nobs_bins, l4dvar, lsqrtb, ladtest_obs
+      use jfunc, only: nsclen,npclen,ntclen,nrclen,nval_lenz
+      use hybrid_ensemble_parameters, only: n_ens, nval_lenz_en
+      use gsi_bundlemod, only : gsi_bundle
+      use gsi_bundlemod, only : self_add,assignment(=)
+      use gsi_bundlemod, only : gsi_bundleprint
+      use mpimod, only: npe,mpi_comm_world,ierror,mype
+      use constants, only: init_constants,init_constants_derived
+      use gsi_4dvar, only: nsubwin, nobs_bins, l4dvar, lsqrtb, ladtest_obs
+      use jfunc, only: nsclen,npclen,ntclen,nrclen,nval_lenz
+      use hybrid_ensemble_parameters, only: n_ens, nval_lenz_en
+      use gridmod, only: create_grid_vars
+      use gsi_4dcouplermod, only: gsi_4dcoupler_parallel_init
+      use gsi_4dvar, only: setup_4dvar,init_4dvar,nhr_assimilation,min_offset, &
+                       l4dvar,nhr_obsbin,nhr_subwin,nwrvecs,iorthomax,&
+                       lbicg,lsqrtb,lcongrad,lbfgsmin,ltlint,ladtest,ladtest_obs, lgrtest,&
+                       idmodel,clean_4dvar,iwrtinc,lanczosave,jsiga,ltcost,liauon, &
+		       l4densvar,ens_nstarthr,lnested_loops,lwrite4danl,thin4d
+      use kinds, only: r_single,r_kind,i_kind,r_quad,i_long
+      use constants, only: zero, one, two, three, zero_quad, tiny_r_kind
+      use convinfo, only: init_convinfo
+      use jfunc, only: init_jfunc, create_jfunc
+      use berror, only: init_berror
+      use gridmod, only: lat2,lon2,nsig
+      use gridmod, only: lat1,lon1,latlon11,latlon1n
+      use gsi_4dvar, only: nsubwin, lsqrtb
+      use jfunc, only: nclen,npclen,nsclen,ntclen,nval_lenz
+      use hybrid_ensemble_parameters, only: n_ens,nval_lenz_en
+  use kinds, only: i_kind,r_kind
+  use obsmod, only: dmesh,dval,dthin,dtype,dfile,dplat,dsfcalc,ndat,&
+     init_obsmod_dflts,create_obsmod_vars,write_diag,reduce_diag,oberrflg,&
+     time_window,perturb_obs,perturb_fact,sfcmodel,destroy_obsmod_vars,dsis,&
+     dtbduv_on,time_window_max,offtime_data,init_directories,oberror_tune,ext_sonde, &
+     blacklst,init_obsmod_vars,lobsdiagsave,lobskeep,lobserver,hilbert_curve,&
+     lread_obs_save,lread_obs_skip,create_passive_obsmod_vars,lwrite_predterms, &
+     lwrite_peakwt,use_limit,lrun_subdirs,l_foreaft_thin,&
+     obsmod_init_instr_table,obsmod_final_instr_table,destroyobs_passive
+  use aircraftinfo, only: init_aircraft,aircraft_t_bc_pof,aircraft_t_bc, &
+                          aircraft_t_bc_ext,biaspredt,upd_aircraft,cleanup_tail
+  use obs_sensitivity, only: lobsensfc,lobsensincr,lobsensjb,lsensrecompute, &
+                             lobsensadj,lobsensmin,iobsconv,llancdone,init_obsens
+  use gsi_4dvar, only: setup_4dvar,init_4dvar,nhr_assimilation,min_offset, &
+                       l4dvar,nhr_obsbin,nhr_subwin,nwrvecs,iorthomax,&
+                       lbicg,lsqrtb,lcongrad,lbfgsmin,ltlint,ladtest,ladtest_obs, lgrtest,&
+                       idmodel,clean_4dvar,iwrtinc,lanczosave,jsiga,ltcost,liauon, &
+		       l4densvar,ens_nstarthr,lnested_loops,lwrite4danl,thin4d
+  use obs_ferrscale, only: lferrscale
+  use mpimod, only: npe,mpi_comm_world,ierror,mype
+  use radinfo, only: retrieval,diag_rad,init_rad,init_rad_vars,adp_anglebc,angord,upd_pred,&
+                       biaspredvar,use_edges,passive_bc,newpc4pred,final_rad_vars,emiss_bc,&
+                       ssmis_method,ssmis_precond
+  use radinfo, only: nst_gsi,nstinfo,zsea1,zsea2,fac_dtl,fac_tsl,nst_tzr,tzr_bufrsave
+  use radinfo, only: crtm_coeffs_path
+  use ozinfo, only: diag_ozone,init_oz
+  use aeroinfo, only: diag_aero, init_aero, init_aero_vars, final_aero_vars
+  use coinfo, only: diag_co,init_co
+  use convinfo, only: init_convinfo,npred_conv_max, &
+                      id_bias_ps,id_bias_t,id_bias_spd, &
+                      conv_bias_ps,conv_bias_t,conv_bias_spd, &
+                      stndev_conv_ps,stndev_conv_t,stndev_conv_spd,diag_conv,&
+                      id_bias_pm2_5,conv_bias_pm2_5,&
+                      id_bias_pm10,conv_bias_pm10,&
+                      use_prepb_satwnd
+
+  use oneobmod, only: oblon,oblat,obpres,obhourset,obdattim,oneob_type,&
+     oneobtest,magoberr,maginnov,init_oneobmod,pctswitch,lsingleradob,obchan
+  use balmod, only: fstat
+  use turblmod, only: use_pbl,init_turbl
+  use qcmod, only: dfact,dfact1,create_qcvars,destroy_qcvars,&
+      erradar_inflate,tdrerr_inflate,tdrgross_fact,use_poq7,qc_satwnds,&
+      init_qcvars,vadfile,noiqc,c_varqc,qc_noirjaco3,qc_noirjaco3_pole,&
+      buddycheck_t,buddydiag_save,njqc,vqc
+  use pcpinfo, only: npredp,diag_pcp,dtphys,deltim,init_pcp
+  use jfunc, only: iout_iter,iguess,miter,factqmin,factqmax, &
+     factv,factl,factp,factg,factw10m,facthowv,factcldch,niter,niter_no_qc,biascor,&
+     init_jfunc,qoption,cwoption,switch_on_derivatives,tendsflag,l_foto,jiterstart,jiterend,R_option,&
+     bcoption,diurnalbc,print_diag_pcg,tsensible,lgschmidt,diag_precon,step_start,pseudo_q2,&
+     clip_supersaturation
+  use state_vectors, only: init_anasv,final_anasv
+  use control_vectors, only: init_anacv,final_anacv,nrf,nvars,nrf_3d,cvars3d,cvars2d,nrf_var
+  use berror, only: norh,ndeg,vs,bw,init_berror,hzscl,hswgt,pert_berr,pert_berr_fct,&
+     bkgv_flowdep,bkgv_rewgtfct,bkgv_write,fpsproj,nhscrf,adjustozvar,fut2ps,cwcoveqqcov
+  use anberror, only: anisotropic,ancovmdl,init_anberror,npass,ifilt_ord,triad4, &
+     binom,normal,ngauss,rgauss,anhswgt,an_vs,&
+     grid_ratio,grid_ratio_p,an_flen_u,an_flen_t,an_flen_z, &
+     rtma_subdomain_option,rtma_bkerr_sub2slab,nsmooth,nsmooth_shapiro,&
+     pf2aP1,pf2aP2,pf2aP3,afact0,covmap,lreadnorm
+  use compact_diffs, only: noq,init_compact_diffs
+  use jcmod, only: init_jcvars,ljcdfi,alphajc,ljcpdry,bamp_jcpdry,eps_eer,ljc4tlevs
+  use tendsmod, only: ctph0,stph0,tlm0
+  use mod_vtrans, only: nvmodes_keep,init_vtrans
+  use mod_strong, only: l_tlnmc,reg_tlnmc_type,nstrong,tlnmc_option,&
+       period_max,period_width,init_strongvars,baldiag_full,baldiag_inc
+  use gridmod, only: nlat,nlon,nsig,wrf_nmm_regional,nems_nmmb_regional,cmaq_regional,&
+     nmmb_reference_grid,grid_ratio_nmmb,grid_ratio_wrfmass,&
+     filled_grid,half_grid,wrf_mass_regional,nsig1o,nnnn1o,update_regsfc,&
+     diagnostic_reg,gencode,nlon_regional,nlat_regional,nvege_type,&
+     twodvar_regional,regional,init_grid,init_reg_glob_ll,init_grid_vars,netcdf,&
+     nlayers,use_gfs_ozone,check_gfs_ozone_date,regional_ozone,jcap,jcap_b,vlevs,&
+     use_gfs_nemsio,use_sp_eqspace,final_grid_vars,&
+     jcap_gfs,nlat_gfs,nlon_gfs,jcap_cut
+  use guess_grids, only: ifact10,sfcmod_gfs,sfcmod_mm5,use_compress,nsig_ext,gpstop
+  use gsi_io, only: init_io,lendian_in
+  use gsi_regional_mod, only: update_pint,preserve_restart_date
+  use constants, only: zero,one,init_constants,gps_constants,init_constants_derived,three
+  use fgrid2agrid_mod, only: nord_f2a,init_fgrid2agrid,final_fgrid2agrid,set_fgrid2agrid
+  use smooth_polcarf, only: norsp,init_smooth_polcas
+  use read_l2bufr_mod, only: minnum,del_azimuth,del_elev,del_range,del_time,&
+     range_max,elev_angle_max,initialize_superob_radar,l2superob_only
+  use m_berror_stats,only : berror_stats ! filename if other than "berror_stats"
+  use lag_fields,only : infile_lag,lag_nmax_bal,&
+                        &lag_vorcore_stderr_a,lag_vorcore_stderr_b,lag_modini
+  use lag_interp,only : lag_accur
+  use lag_traj,only   : lag_stepduration
+  use hybrid_ensemble_parameters,only : l_hyb_ens,uv_hyb_ens,aniso_a_en,generate_ens,&
+                         n_ens,nlon_ens,nlat_ens,jcap_ens,jcap_ens_test,oz_univ_static,&
+                         regional_ensemble_option,merge_two_grid_ensperts, &
+                         full_ensemble,pseudo_hybens,betaflg,pwgtflg,coef_bw,&
+                         beta1_inv,s_ens_h,s_ens_v,init_hybrid_ensemble_parameters,&
+                         readin_localization,write_ens_sprd,eqspace_ensgrid,grid_ratio_ens,enspreproc,&
+                         readin_beta,use_localization_grid,use_gfs_ens,q_hyb_ens,i_en_perts_io, &
+                         l_ens_in_diff_time,ensemble_path
+  use rapidrefresh_cldsurf_mod, only: init_rapidrefresh_cldsurf, &
+                            dfi_radar_latent_heat_time_period,metar_impact_radius,&
+                            metar_impact_radius_lowcloud,l_gsd_terrain_match_surftobs, &
+                            l_sfcobserror_ramp_t, l_sfcobserror_ramp_q, &
+                            l_pbl_pseudo_surfobst,l_pbl_pseudo_surfobsq,l_pbl_pseudo_surfobsuv, &
+                            pblh_ration,pps_press_incr,l_gsd_limit_ocean_q, &
+                            l_pw_hgt_adjust, l_limit_pw_innov, max_innov_pct, &
+                            l_cleansnow_warmts,l_conserve_thetaV,r_cleansnow_warmts_threshold, &
+                            i_conserve_thetav_iternum,l_gsd_soiltq_nudge,l_cld_bld, cld_bld_hgt, &
+                            build_cloud_frac_p, clear_cloud_frac_p,       &
+                            l_cloud_analysis,nesdis_npts_rad, & 
+                            iclean_hydro_withRef,iclean_hydro_withRef_allcol, &
+                            i_use_2mq4b,i_use_2mt4b,i_gsdcldanal_type,i_gsdsfc_uselist, &
+                            i_lightpcp,i_sfct_gross,l_use_hydroretrieval_all
+  use gsi_metguess_mod, only: gsi_metguess_init,gsi_metguess_final
+  use gsi_chemguess_mod, only: gsi_chemguess_init,gsi_chemguess_final
+  use tcv_mod, only: init_tcps_errvals,tcp_refps,tcp_width,tcp_ermin,tcp_ermax
+  use chemmod, only : init_chem,berror_chem,oneobtest_chem,&
+       maginnov_chem,magoberr_chem,&
+       oneob_type_chem,oblat_chem,&
+       oblon_chem,obpres_chem,diag_incr,elev_tolerance,tunable_error,&
+       in_fname,out_fname,incr_fname, &
+       laeroana_gocart, l_aoderr_table, aod_qa_limit, luse_deepblue
+  use chemmod, only : wrf_pm2_5,aero_ratios
+  use gfs_stratosphere, only: init_gfs_stratosphere,use_gfs_stratosphere,pblend0,pblend1
+  use gfs_stratosphere, only: broadcast_gfs_stratosphere_vars
+  use general_commvars_mod, only: init_general_commvars,destroy_general_commvars
+  use regional_io_mod
+ 
+
+
+      type(gsi_bundle) :: sval(nobs_bins), rval(nobs_bins)
+      type(gsi_bundle) :: mval(nsubwin)
+
+  type(regional_io_class) :: io
+      class (Test_adjoint), intent(inout) :: this
+
+      nhr_assimilation = 6
+      nhr_obsbin = 6
+      nsig =           64
+      lat2 =          96 
+      lon2 =          192
+      latlon11 =     lat2*lon2
+      latlon1n =     lat2*lon2*nsig 
+      nsclen=        59208
+      npclen=           12
+      ntclen=            0
+      nclen=    115380580
+      nsubwin=            1
+      nval_lenz=    115321360
+      lsqrtb= .true. 
+      n_ens=           80
+      jcap = 62
+      npe = 1
+      
+      l4dvar = .true.
+      call gsi_4dcoupler_parallel_init
+      call mpi_comm_size(mpi_comm_world,npe,ierror)
+      call mpi_comm_rank(mpi_comm_world,mype,ierror)
+      call init_4dvar
+
+      call io%init_regional_io
+  call gsi_metguess_init
+  call gsi_chemguess_init
+  call init_anasv
+  call init_anacv
+
+  call init_constants_derived
+  call init_constants(.false.)
+  call gps_constants(use_compress)
+  write(6,*) 'jcap is ',jcap
+  write(6,*) 'npe is ',npe
+  write(6,*) 'cvars3d is ',cvars3d
+  write(6,*) 'cvars2d is ',cvars2d
+  write(6,*) 'nrf_var is ',nrf_var
+  call init_reg_glob_ll(mype,lendian_in)
+  call init_grid_vars(jcap,npe,cvars3d,cvars2d,nrf_var,mype)
+  call init_general_commvars
+
+
+  call init_oneobmod
+  call init_qcvars
+  call init_obsmod_dflts
+  call init_pcp
+  call init_rad
+  call init_oz
+  call init_aero
+  call init_co
+  call init_convinfo
+  call init_jfunc
+  call init_berror
+  call init_anberror  ! RTodling: alloc vectors should move to create
+  call init_grid
+  call init_turbl
+  call init_compact_diffs
+  call init_smooth_polcas  
+  call init_jcvars
+  call init_strongvars
+  call initialize_superob_radar
+  call init_io(mype,npe-1)
+  call init_vtrans
+  call init_obsens
+  call init_hybrid_ensemble_parameters
+  call init_rapidrefresh_cldsurf
+  call init_chem
+  call init_tcps_errvals
+  call init_aircraft
+  call init_gfs_stratosphere
+  call set_fgrid2agrid
+
+!     call create_grid_vars
+
+!     call setup_4dvar(mype)
+
+      nhr_assimilation = 6
+      nhr_obsbin = 6
+      nsig =           64
+      lat2 =          96 
+      lon2 =          192
+      latlon11 =     lat2*lon2
+      latlon1n =     lat2*lon2*nsig 
+!     nsclen=        59208
+!     npclen=           12
+!     ntclen=            0
+!     nclen=    115380580
+!     nsubwin=            1
+!     nval_lenz=    115321360
+!     lsqrtb= .true. 
+!     n_ens=           80
+      call create_jfunc
+
+      call adtest
+
+      @assertEqual(1, 1)
+!     @assertEqual(3, ifilesfc(1))
+!     @assertEqual(2.0, hrdifsfc(1))
+
+   end subroutine testAdjoint
+
+end module Test_adjoint_mod
