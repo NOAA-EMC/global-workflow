@@ -142,14 +142,6 @@ source "${USHgfs}/preamble.sh"
   "${EXECgfs}/${pgm}" 1> gint.${grdID}.out 2>&1
   export err=$?;err_chk
 
-# Write interpolation file to main TEMP dir area if not there yet
-  if [ "wht_OK" = 'no' ]  # FIXME: This is never going to evaluate to true, wht_OK is a string and needs to be ${wht_OK}.  With ${wht_OK}, the next line is trying to copy into ${FIXgfs} space.  This leads to a Permission denied error. The logic here needs to be evaluated and recoded.  #TODO
-  then
-    cp -f ./WHTGRIDINT.bin ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID}
-    cp -f ./WHTGRIDINT.bin ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}
-  fi
-
-
   if [ "$err" != '0' ]
   then
     set +x
@@ -167,25 +159,6 @@ source "${USHgfs}/preamble.sh"
   rm -f grid_interp.inp
   rm -f mod_def.*
   mv out_grd.$grdID ${DATA}/output_${ymdh}0000/out_grd.$grdID
-
-# 1.c Save in /com
-
-  set +x
-  echo "   Saving GRID file as ${COMOUT_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
-  set_trace
-  cp "${DATA}/output_${ymdh}0000/out_grd.${grdID}" "${COMOUT_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
-
-#    if [ "$SENDDBN" = 'YES' ]
-#    then
-#      set +x
-#      echo "   Alerting GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${PDY}${cyc}
-#      set_trace
-
-#
-# PUT DBNET ALERT HERE ....
-#
-
-#    fi
 
 # --------------------------------------------------------------------------- #
 # 2.  Clean up the directory
