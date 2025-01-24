@@ -124,3 +124,13 @@ input_files:
 
         - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gdas.{{ PDY_offset }}/{{  CYC_offset  }}/model/ice/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.cice_model.res.nc",
            "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ PDY_offset }}/{{  CYC_offset  }}/model/ice/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.cice_model.res.nc" ]
+
+# TODO - To enable the validation step include specific files to compare against the results from running the test.
+# Note: The below three files is only an example. The cmpfiles tag means it will use checksum to compare the files in the two locations.
+# Other extentions can be added and/or folded into the FileUtils class in wxflow FileUtilities.py
+#
+#output_files:
+#    cmpfiles:
+#        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/output_files/gfs.{{ PDY }}/{{ CYC }}/conf/ufs.diag_table", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ CYC }}/conf/ufs.diag_table"]
+#        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/output_files/gfs.{{ PDY }}/{{ CYC }}/conf/ufs.input.nml", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ CYC }}/conf/ufs.input.nml"]
+#        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/output_files/gfs.{{ PDY }}/{{ CYC }}/conf/ufs.model_configure", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ CYC }}/conf/ufs.model_configure"]
