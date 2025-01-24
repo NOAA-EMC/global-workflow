@@ -33,8 +33,8 @@ input_files:
         - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ CYC }}/model/wave/prep/gfswave.mod_def.glo_200", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ CYC }}/model/wave/prep/gfswave.mod_def.glo_200"]
         - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ CYC }}/model/wave/prep/gfswave.mod_def.uglo_100km", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ CYC }}/model/wave/prep/gfswave.mod_def.uglo_100km"]
 
-        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gdas.{{ TEST_DATE_offset }}/{{ CYC_offset }}/model/ocean/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.MOM.res.nc",
-           "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ TEST_DATE_offset }}/{{ CYC_offset }}/model/ocean/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.MOM.res.nc" ]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gdas.{{ PDY_offset }}/{{ CYC_offset }}/model/ocean/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.MOM.res.nc",
+           "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ PDY_offset }}/{{ CYC_offset }}/model/ocean/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.MOM.res.nc" ]
 
-        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gdas.{{ TEST_DATE_offset }}/{{ CYC_offset }}/model/ice/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.cice_model.res.nc",
-           "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ TEST_DATE_offset }}/{{ CYC_offset }}/model/ice/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.cice_model.res.nc" ]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gdas.{{ PDY_offset }}/{{ CYC_offset }}/model/ice/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.cice_model.res.nc",
+           "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ PDY_offset }}/{{ CYC_offset }}/model/ice/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.cice_model.res.nc" ]
