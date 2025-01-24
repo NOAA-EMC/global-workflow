@@ -22,7 +22,7 @@ class UPP(Task):
     """Unified Post Processor Task
     """
 
-    VALID_UPP_RUN = ['analysis', 'forecast', 'goes', 'wafs']
+    VALID_UPP_RUN = ['analysis', 'forecast', 'goes']
 
     @logit(logger, name="UPP")
     def __init__(self, config: Dict[str, Any]) -> None:
@@ -33,7 +33,6 @@ class UPP(Task):
         analysis: process analysis output
         forecast: process UFS-weather-model forecast output
         goes: process UFS-weather-model forecast output for simulated satellite imagery
-        wafs: process UFS-weather-model forecast output for WAFS products
 
         Parameters
         ----------
