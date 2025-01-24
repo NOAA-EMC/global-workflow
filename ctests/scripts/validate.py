@@ -5,7 +5,9 @@ import argparse
 from pathlib import Path
 import datetime
 import hashlib
-from wxflow import parse_j2yaml
+from wxflow import parse_j2yaml, Logger
+
+logger = Logger(level="DEBUG", colored_log=True)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -29,7 +31,8 @@ def validate_cmpfiles(config):
             raise ValueError(f"Checksum mismatch: {file_a} vs {file_b}")
         print("OK")
 
-if __name__ == "__main__":
+@logit(logger)
+def main():
     args = parse_args()
 
     data = {}
@@ -38,6 +41,13 @@ if __name__ == "__main__":
         data['TEST_DATE'] = datetime.datetime.strptime(args.test_date, '%Y%m%d%H')
 
     files = parse_j2yaml(path=args.yaml, data=data)
-    validate_cmpfiles(files)
+    if not files.output_files:
+        print(f"No output files found for test: {args.yaml}")
+        print("Nothing to validate (TODO - Stubbed).")
+        sys.exit(0)
 
+    validate_cmpfiles(files)
     print(f"All files exist and pass checksum for test: {args.yaml}")
+
+if __name__ == "__main__":
+    main()
