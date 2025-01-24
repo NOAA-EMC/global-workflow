@@ -2,9 +2,9 @@
 set -eu
 
 # This script runs on Niagara to interact with the Doorman service
-subdir="{{PSLOT}}/{{RUN}}/{{jobid}}"
 
 # Make the working directory
+subdir="{{PSLOT}}/{{RUN}}/{{jobid}}"
 doorman_dir="${HOME}/.doorman/${subdir}"
 mkdir -p "${doorman_dir}"
 cd "${doorman_dir}"
