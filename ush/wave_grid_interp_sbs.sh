@@ -66,8 +66,7 @@ source "${USHgfs}/preamble.sh"
   set_trace
 
   if [[ -z "${PDY}" ]] || [[ -z "${cyc}" ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
-	 [[ -z "${COMOUT_WAVE_PREP}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDDBN}" ]] || \
-	 [ -z "${waveGRD}" ]
+	 [[ -z "${waveGRD}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDDBN}" ]] 
   then
     set +x
     echo ' '
@@ -75,7 +74,7 @@ source "${USHgfs}/preamble.sh"
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    echo "${PDY}${cyc} ${cycle} ${EXECgfs} ${COMOUT_WAVE_PREP} ${WAV_MOD_TAG} ${SENDDBN} ${waveGRD}"
+    echo "${PDY}${cyc} ${cycle} ${EXECgfs} ${WAV_MOD_TAG} ${SENDDBN} ${waveGRD}"
     set_trace
     exit 1
   fi
