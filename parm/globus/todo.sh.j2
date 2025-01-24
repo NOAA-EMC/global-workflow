@@ -10,14 +10,17 @@ file_full="${cwd}/${1}"
 mkdir -p "${log_directory}"
 log_file="${log_directory}/hpss_status_${globus_xfer_id}.log"
 touch "${log_file}"
+has_rstprod="{{has_rstprod}}"
 
 send_to_hpss()
 {
-    # Change the group of the file to rstprod
-    if ! chgrp "rstprod" "${file_full}" > "${log_file}" 2>&1; then
-        rm -f "${file_full}"
-        echo "Failed to run chmod on ${file_full}.  Deleting and exiting." >> "${log_file}"
-        return 1
+    if [[ "${has_rstprod}" == "true" ]]; then
+        # Change the group of the file to rstprod
+        if ! chgrp "rstprod" "${file_full}" > "${log_file}" 2>&1; then
+            rm -f "${file_full}"
+            echo "Failed to run chmod on ${file_full}.  Deleting and exiting." >> "${log_file}"
+            return 1
+        fi
     fi
 
     # Check that the MD5 checksum matches what was sent
@@ -30,17 +33,20 @@ send_to_hpss()
     # Write a command file to place the file on hpss and protect it
     local hpss_target="${hpss_target_dir}/${file}"
     local command_file="command_file_${globus_xfer_id}"
-    cat >"${command_file}" << EOF
-    mkdir -p "${hpss_dir}"
-    put "${file_full}" : "${hpss_target}"
-    chgrp rstprod "${hpss_target}"
-    chmod 640 "${hpss_target}"
-EOF
+    echo "mkdir -p ${hpss_dir}" >> "${command_file}"
+    echo "put ${file_full} :  ${hpss_target}" >> "${command_file}"
+    if [[ "${has_rstprod}" == "true" ]]; then
+        echo "chgrp rstprod ${hpss_target}" >> "${command_file}"
+        echo "chmod 640 ${hpss_target}" >> "${command_file}"
+    fi
     hsi in "${command_file}" >> "${log_file}" 2>&1
     # shellcheck disable=SC2181
     if [[ $? != 0 ]]; then
-        echo "Failed to send ${file} to HPSS and/or protect it.  Deleting and exiting." >> "${log_file}"
-        hsi rm "${hpss_target}"
+        echo "Failed to send ${file} to HPSS and/or protect it." >> "${log_file}"
+        if [[ "${has_rstprod}" == "true" ]]; then
+            echo "Deleting from hpss" >> "${log_file}"
+            hsi rm "${hpss_target}"
+        fi
         return 3
     fi
 
