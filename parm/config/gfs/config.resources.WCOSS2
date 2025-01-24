@@ -5,6 +5,7 @@
 case ${step} in
   "prep")
     export is_exclusive=True
+    export tasks_per_node=5
     export memory="480GB"
     ;;
 
