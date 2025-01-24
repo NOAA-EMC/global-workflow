@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -eu
 
 # This script runs on Niagara to interact with the Doorman service
 subdir="{{PSLOT}}/{{RUN}}/{{jobid}}"
@@ -40,7 +41,7 @@ fi
 # Parse the FLIST file created by receive.sh to get the transfer IDs
 IDs=""
 while IFS= read -r line; do
-    package_name=$(grep -o "package_location_.*\.tgz")
+    package_name=$(echo "${line}" | grep -o "package_location_.*\.tgz")
     tmp="${package_name#package_location_}"
     ID="${tmp%.tgz}"
     IDs="${IDs} ${ID}"
@@ -55,6 +56,7 @@ for ID in ${IDs}; do
 done
 
 # Send the acknowledgement back to the sender
+set +e
 send.sh
 
 stat=$?
@@ -63,10 +65,12 @@ if [[ ${stat} -ne 0 ]]; then
     echo "Failed to send status back to client!"
     exit 3
 fi
+set -e
 
 # Remove the working directory
+#shellcheck ignore=SC2050
 if [[ "{{KEEPDATA}}" == "NO" ]]; then
-    cd "${HOME}"
+    cd "${HOME}" || echo "Failed to navigate to ${HOME}!" && exit 4
     rm -rf "${doorman_dir}"
 fi
 
