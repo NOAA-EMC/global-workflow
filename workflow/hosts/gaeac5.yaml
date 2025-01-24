@@ -1,5 +1,5 @@
 BASE_GIT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/git'
-DMPDIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/dump'
+#DMPDIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/dump'
 BASE_DATA: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data'
 BASE_IC: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/ICSDIR'
 PACKAGEROOT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/nwpara'
@@ -8,12 +8,16 @@ HOMEDIR: '/gpfs/f5/ufs-ard/scratch/${USER}'
 STMP: '/gpfs/f5/ufs-ard/scratch/${USER}'
 PTMP: '/gpfs/f5/ufs-ard/scratch/${USER}'
 NOSCRUB: $HOMEDIR
-ACCOUNT: ufs-ard
+ACCOUNT: nggps_psd
+HOMEDIR: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
+STMP: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
+PTMP: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
+NOSCRUB: $HOMEDIR
 SCHEDULER: slurm
 QUEUE: normal
-QUEUE_SERVICE: normal
+QUEUE_SERVICE: hpss
 PARTITION_BATCH: batch
-PARTITION_SERVICE: batch
+PARTITION_SERVICE: dtn_f5_f6
 RESERVATION: ''
 CLUSTERS: 'c5'
 CHGRP_RSTPROD: 'NO'
