@@ -68,7 +68,7 @@ fi
 set -e
 
 # Remove the working directory
-#shellcheck ignore=SC2050
+#shellcheck disable=SC2050
 if [[ "{{KEEPDATA}}" == "NO" ]]; then
     cd "${HOME}" || echo "Failed to navigate to ${HOME}!" && exit 4
     rm -rf "${doorman_dir}"
