@@ -4,7 +4,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 ## Offline UPP driver script
-## UPP_RUN: analysis, forecast, goes, wafs.  See upp.yaml for valid options
+## UPP_RUN: analysis, forecast, goes.  See upp.yaml for valid options
 ## FHRLST : forecast hourlist to be post-process (e.g. f000, f000_f001_f002, ...)
 ###############################################################
 
