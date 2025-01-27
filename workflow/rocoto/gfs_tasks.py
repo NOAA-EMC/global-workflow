@@ -1064,7 +1064,7 @@ class GFSTasks(Tasks):
 
     def _upptask(self, upp_run="forecast", task_id="atmupp"):
 
-        VALID_UPP_RUN = ["forecast", "goes", "wafs"]
+        VALID_UPP_RUN = ["forecast", "goes"]
         if upp_run not in VALID_UPP_RUN:
             raise KeyError(f"{upp_run} is invalid; UPP_RUN options are: {('|').join(VALID_UPP_RUN)}")
 
