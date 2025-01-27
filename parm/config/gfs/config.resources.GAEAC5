@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+# GaeaC5-specific job resources
+
+export FI_VERBS_PREFER_XRC=0
+
+unset memory
+# shellcheck disable=SC2312
+for mem_var in $(env | grep '^memory_' | cut -d= -f1); do
+  unset "${mem_var}"
+done
