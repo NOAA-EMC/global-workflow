@@ -1,9 +1,8 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "arch" -c "base arch"
-
-
+source "${HOMEgfs}/ush/jjob_header.sh" -e "arch" -c "base arch wave"
+source "${USHgfs}/wave_domain_grid.sh" 
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -51,6 +50,23 @@ for grid in "0p25" "0p50" "1p00"; do
 done
 
 ###############################################################
+# Create an array of output wave grids to process
+if [[ "${DO_WAVE}" == "YES" ]]; then
+    # Create a variable for output wave grids to process
+    if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
+        for grdID in ${wavepostGRD} ${waveinterpGRD}; do
+            process_grdID "${grdID}"
+            YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+                "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+            grids_arr+=("${GRDREGION}.${GRDRES}")
+        done
+        export WAVE_OUT_GRIDS="${grids_arr[*]}"
+    else
+        echo "Both wavepostGRD and waveinterpGRD are empty. No grids to process."
+        export WAVE_OUT_GRIDS=""
+    fi
+fi
+###############################################################
 # Run archive script
 ###############################################################
 
@@ -68,7 +84,6 @@ status=$?
 if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
-
 
 ##########################################
 # Remove the Temporary working directory

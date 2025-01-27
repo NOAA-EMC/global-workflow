@@ -117,7 +117,7 @@ for fhr in "${hour_list[@]}"; do
     echo "File ${filename} is required but not found."
     err_exit "FATAL ERROR: logf${fhr} not found."
   else
-    echo "${runscript} \"${fhr}\" \"${fhr_p}\" \"${FINT}\" \"${F00FLAG}\" \"${DATA}/${fhr}\"" >> "${DATA}/poescript_bufr"
+    echo "${runscript} ${fhr} ${fhr_p} ${FINT} ${F00FLAG} ${DATA}/${fhr}" >> "${DATA}/poescript_bufr"
   fi
 done
 

@@ -5,6 +5,9 @@
 
 echo "BEGIN: config.atmos_ensstat"
 
+# Maximum number of rocoto tasks
+export MAX_TASKS=25
+
 # Get task specific resources
 . "${EXPDIR}/config.resources" atmos_ensstat
 

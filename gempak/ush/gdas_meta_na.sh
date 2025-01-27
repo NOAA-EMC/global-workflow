@@ -13,7 +13,7 @@ device="nc | gdas.meta"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L "${COMIN}" ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 if [[ "${envir}" == "para" ]] ; then
@@ -99,14 +99,14 @@ if (( err != 0 )) || [[ ! -s gdas.meta ]] &> /dev/null; then
     exit "${err}"
 fi
 
-mv gdas.meta "${COM_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
+mv gdas.meta "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
 export err=$?
 if (( err != 0 )) ; then
-    echo "FATAL ERROR: Failed to move meta file to ${COM_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
+    echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
     exit "${err}"
 fi
 
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
+        "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
 fi

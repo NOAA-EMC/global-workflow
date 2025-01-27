@@ -12,9 +12,10 @@
 #####################################################################
 
 source "${USHgfs}/preamble.sh"
+source "${USHgfs}/wave_domain_grid.sh"
 
-#export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
-export grids=${grids:-'glo_30m'}  #Native grids
+#export grids=${GEMPAK_GRIDS:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
+export grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  #Native grids
 export RUNwave=${RUNwave:-${RUN}wave}
 export fstart=${fstart:-0}
 export FHMAX_WAV=${FHMAX_WAV:-180}  #180 Total of hours to process
@@ -68,13 +69,18 @@ while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
       gso_15m) grdIDin='gsouth.0p25' 
                #grdIDout='gfswaves25k' ;;
                grdIDout='gfswavesh' ;;
-      *)       gridIDin= 
+      glo_200) grdIDin='global.2p00'
+               grdIDout='gfswaves200k' ;;
+      *)       grdIDin= 
                grdIDout= ;;
     esac
-    GRIBIN="${COM_WAVE_GRID}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
+    process_grdID "${grid}"
+    com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
+    com_dir=${!com_varname}
+    GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
     GRIBIN_chk=${GRIBIN}.idx
     if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${maxtries}"; then
-      echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
+      echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( maxtries - 1))) secs"
       echo "${RUNwave} ${grdID} ${fhr} prdgen ${date} ${cycle} : GRIB file missing." >> "${wavelog}"
       err=1;export err;"${errchk}" || exit "${err}"
     fi
@@ -140,11 +146,11 @@ while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
       gpend
     fi
 
-    cpfs "${GEMGRD}" "${COM_WAVE_GEMPAK}/${GEMGRD}"
+    cpfs "${GEMGRD}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
     if [ ${SENDDBN} = "YES" ] ; then
-        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" "${COM_WAVE_GEMPAK}/${GEMGRD}"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
     else
-        echo "##### DBN_ALERT is: MODEL ${DBN_ALERT_TYPE} ${job} ${COM_WAVE_GEMPAK}/${GEMGRD}#####"
+        echo "##### DBN_ALERT is: MODEL ${DBN_ALERT_TYPE} ${job} ${COMOUT_WAVE_GEMPAK}/${GEMGRD}#####"
     fi
     rm grib_${grid}
   done
