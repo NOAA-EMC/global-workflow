@@ -63,7 +63,7 @@ def main():
     files = parse_j2yaml(path=args.yaml, data=data)
     if 'output_files' not in files:
         logger.info(f"No output files found for test: {args.yaml}")
-        print("Nothing to validate (TODO - Stubbed).")
+        logger.info("Nothing to validate (TODO - Stubbed).")
         sys.exit(0)
 
     validate_cmpfiles(files)
