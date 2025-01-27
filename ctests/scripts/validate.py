@@ -20,9 +20,8 @@ Parameters
 import sys
 import argparse
 from pathlib import Path
-import datetime
 import hashlib
-from wxflow import parse_j2yaml, Logger, logit
+from wxflow import parse_j2yaml, Logger, logit, to_datetime
 
 logger = Logger(level="DEBUG", colored_log=True)
 
