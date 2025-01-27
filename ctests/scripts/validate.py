@@ -58,7 +58,7 @@ def main():
     data = {}
     if args.test_date:
         # Parse test date from string to datetime object
-        data['TEST_DATE'] = datetime.datetime.strptime(args.test_date, '%Y%m%d%H')
+        data['TEST_DATE'] = to_datetime(args.test_date)
 
     files = parse_j2yaml(path=args.yaml, data=data)
     if 'output_files' not in files:
