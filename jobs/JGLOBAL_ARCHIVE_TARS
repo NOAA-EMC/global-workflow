@@ -2,6 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_tars" -c "base arch_tars"
+source "${USHgfs}/wave_domain_grid.sh"
 
 ##############################################
 # Set variables used in the script
