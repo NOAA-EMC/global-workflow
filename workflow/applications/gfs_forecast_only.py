@@ -28,8 +28,13 @@ class GFSForecastOnlyAppConfig(AppConfig):
         Returns the config_files that are involved in the forecast-only app
         """
 
+        configs = []
         options = self.run_options[run]
-        configs = ['stage_ic', 'fcst', 'arch_vrfy', 'cleanup']
+
+        if options['do_fetch_hpss'] or options['do_fetch_local']:
+            configs += ['fetch']
+
+        configs += ['stage_ic', 'fcst', 'arch_vrfy', 'cleanup']
 
         if options['do_atm']:
 
@@ -101,15 +106,22 @@ class GFSForecastOnlyAppConfig(AppConfig):
         This is the place where that order is set.
         """
 
-        tasks = ['stage_ic']
         options = self.run_options[self.run]
+
+        tasks = []
+
+        if options['do_fetch_hpss'] or options['do_fetch_local']:
+            tasks += ['fetch']
+
+        tasks += ['stage_ic']
 
         if options['do_aero_fcst'] and not options['exp_warm_start']:
             tasks += ['aerosol_init']
 
         if options['do_wave']:
             tasks += ['waveinit']
-            # tasks += ['waveprep']  # TODO - verify if waveprep is executed in forecast-only mode when APP=ATMW|S2SW
+            # tasks += ['waveprep']  # TODO - verify if waveprep is executed in ...
+            # ... forecast-only mode when APP=ATMW|S2SW
 
         tasks += ['fcst']
 
