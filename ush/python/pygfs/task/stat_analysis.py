@@ -60,7 +60,6 @@ class StatAnalysis(Task):
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z."
             }
         )
-
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
@@ -80,18 +79,27 @@ class StatAnalysis(Task):
         None
         """
         # Create dictionary of Jedi objects
-        expected_keys = self.task_config.STAT_OBS
+        # Expected keys are what must be included from the JEDI config file. We can
+        # then loop through ob space list from scripts/exglobal_analysis_stats.py
+        expected_keys = ['aero', 'snow']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
         logger.info(f"Copying files to {self.task_config.DATA}/stats")
 
+        # Loop through ob space list
         for OB in self.task_config.STAT_OBS:
+            logger.info(f"Working on current observation: {OB}")
+
             # Parse JEDI analysis stat jinja file
             obs_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
 
             # Copy stat files to DATA path
             instat_files = os.path.join(obs_dict[OB]['stat_file_path'], f"{self.task_config['APREFIX']}{obs_dict[OB]['stat_file_name']}")
-            dest = os.path.join(self.task_config.DATA, obs_dict[OB]['stat_file_name'])
+            ob_dir_str = f"{self.task_config.DATA}" + f"/{OB}"
+            os.mkdir(ob_dir_str)
+
+            dest = os.path.join(ob_dir_str, obs_dict[OB]['stat_file_name'])
+            logger.info(f"Copying {instat_files} to {dest} ...")
             statlist = [[instat_files, dest]]
             FileHandler({'copy': statlist}).sync()
 
@@ -99,24 +107,35 @@ class StatAnalysis(Task):
             logger.info(f"Open tarred stat file in {dest}")
             with tarfile.open(dest, "r") as tar:
                 # Extract all files to the current directory
-                tar.extractall()
+                tar.extractall(path=f'{ob_dir_str}')
 
             # Gunzip .nc files
             logger.info("Gunzip files from tar file")
-            gz_files = glob.glob(os.path.join(self.task_config.DATA, "*gz"))
+            gz_files = glob.glob(os.path.join(ob_dir_str, "*.gz"))
+            logger.info(f"Gunzip files: {gz_files}")
 
             for diagfile in gz_files:
+                output_file = os.path.join(ob_dir_str, os.path.basename(diagfile)[:-3])
                 with gzip.open(diagfile, 'rb') as f_in:
-                    with open(diagfile[:-3], 'wb') as f_out:
+                    with open(output_file, 'wb') as f_out:
                         f_out.write(f_in.read())
 
             # Get list of .nc4 files
-            obs_space_paths = glob.glob(os.path.join(self.task_config.DATA, "*.nc4"))
+            # obs_space_paths = glob.glob(os.path.join(ob_dir_str, "*.{nc,nc4}")) # THIS SHOULD WORK BUT ISNT, glob patterns introduced in Python 3.9
+            nc_paths = glob.glob(os.path.join(ob_dir_str, "*.nc"))
+            nc4_paths = glob.glob(os.path.join(ob_dir_str, "*.nc4"))
+            obs_space_paths = nc_paths + nc4_paths
 
+            # Temporary. Create condition check here for available jcb algorithms?
+            if OB == 'snow':
+                obs_space_paths = glob.glob(os.path.join(ob_dir_str, "diag_ims_snow_*.nc"))
+
+            # This grabs the obspace string from the .nc4 files, however not all are perfect. Need solution.
             self.task_config.OBSPACES_LIST = ['_'.join(os.path.basename(path).split('_')[1:3]) for path in obs_space_paths]
 
             # initialize JEDI application
             logger.info(f"Initializing JEDI variational DA application")
+            logger.info(f"{self.jedi_dict[OB]}")
             self.jedi_dict[OB].initialize(self.task_config)
 
     @logit(logger)
@@ -132,7 +151,7 @@ class StatAnalysis(Task):
         ----------
         None
         """
-
+        logger.info(f"In execute. {self.jedi_dict[jedi_dict_key]}")
         self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
@@ -154,7 +173,7 @@ class StatAnalysis(Task):
         """
 
         # get list of output diag files
-        diags = glob.glob(os.path.join(self.task_config.DATA, '*output_aod.nc'))
+        diags = glob.glob(os.path.join(self.task_config.DATA, '*output_*.nc'))
 
         for diagfile in diags:
             outfile = os.path.basename(diagfile)
