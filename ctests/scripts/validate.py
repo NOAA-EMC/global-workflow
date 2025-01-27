@@ -62,7 +62,7 @@ def main():
 
     files = parse_j2yaml(path=args.yaml, data=data)
     if 'output_files' not in files:
-        print(f"No output files found for test: {args.yaml}")
+        logger.info(f"No output files found for test: {args.yaml}")
         print("Nothing to validate (TODO - Stubbed).")
         sys.exit(0)
 
