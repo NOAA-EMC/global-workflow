@@ -67,7 +67,7 @@ def main():
         sys.exit(0)
 
     validate_cmpfiles(files)
-    print(f"All files exist and pass checksum for test: {args.yaml}")
+    logger.info(f"All files exist and pass checksum for test: {args.yaml}")
 
 
 if __name__ == "__main__":
