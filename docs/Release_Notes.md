@@ -51,7 +51,7 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* No changes from GFS v16.3.21
+* * `versions/run.ver` - change `version=v16.3.22`, `gfs_ver=v16.3.22`, and `obsproc_ver=v1.3`
 
 SORC CHANGES
 ------------
