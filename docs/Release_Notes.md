@@ -56,7 +56,9 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* `ww3_outp` program and associated scripts are improved to process the per-time-step point outputs more efficiently.
+* New UFS_UTILS tag - `emcsfc_snow2mdl` program and associated scripts are updated to process global AFWA snow data
+* New GSI tag - `src/gsi/read_prepbufr.f90` code update for new saildrone subtype
+* New MODEL tag - WW3 program `ww3_outp` and associated scripts are improved to process the per-time-step point outputs more efficiently.
 
 JOBS CHANGES
 ------------
