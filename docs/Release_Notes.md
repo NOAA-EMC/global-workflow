@@ -4,9 +4,7 @@ GFS V16.3.22 RELEASE NOTES
 PRELUDE
 -------
 
-The upstream OBSPROC package is updated to v1.3. Along with this are the following companion updates:
-* workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
-* updated GSI code and convinfo file for saildrone observations
+The WW3 point output program (ww3_outp) is improved to process per-time-step point output to reduce the resources for the wave_post_pnt jobs.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -26,7 +24,7 @@ The checkout script extracts the following GFS components:
 
 | Component | Tag         | POC               |
 | --------- | ----------- | ----------------- |
-| MODEL     | GFS.v16.3.1   | Jun.Wang@noaa.gov |
+| MODEL     | GFS.v16.3.22   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
 | GSI       | gfsda.v16.3.22 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.20 | George.Gayno@noaa.gov |
@@ -51,85 +49,81 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.22`, `gfs_ver=v16.3.22`, and `obsproc_ver=v1.3`
+* No changes from GFS v16.3.22
 
 SORC CHANGES
 ------------
 
-* New UFS_UTILS tag - `emcsfc_snow2mdl` program and associated scripts are updated to process global AFWA snow data
-* New GSI tag - `src/gsi/read_prepbufr.f90` code update for new saildrone subtype
+* `ww3_outp` program and associated scripts are improved to process the per-time-step point outputs more efficiently.
 
 JOBS CHANGES
 ------------
 
-* `jobs/JGLOBAL_ATMOS_EMCSFC_SFC_PREP` - new AFWA filename
+* No changes from GFS v16.3.22
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.21
+* `config.resources.emc.dyn` and `config.resources.nco.static` are changed to reduce the resources accordingly.
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.21
+* `scripts/exgfs_wave_post_pnt.sh` is changed to create be compatible with the new `ww3_outp`.
 
 FIX CHANGES
 -----------
 
-* GSI `global_convinfo.txt` fix update for saildrone
+* No changes from GFS v16.3.22
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-No longer ingest:
-* `${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb` (`AFWA_NH_FILE`)
-* `${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb` (`AFWA_SH_FILE`)
+No longer uses the parallel command file `cmdfile` for the `scripts/exgfs_wave_post_pnt.sh`.
 
-Now ingest:
-* `${RUN}.${cycle}.snow.usaf.grib2` (`AFWA_GLOBAL_FILE`)
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* Increase ncpus from 50 to 60 for gfs_wave_postpnt job.
-  NCO provided change to avoid ncpu burst warnings.
+Reduce the ncpu and wtime as follow:
+* for jobs/JGLOBAL_WAVE_POST_BNDPNT; ncpu from 240 to 1; wtime from 1hr to 30min
+* for jobs/JGLOBAL_WAVE_POST_BNDPNTBLL; ncpu from 448 to 2; wtime from 1hr to 10min
+* for jobs/JGLOBAL_WAVE_POST_PNT; ncpu from 200 to 3; wtime from 1.5hr to 35min
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * emcsfc_sfc_prep and analysis
+  * wave_post_pnt
 * Does this change require a 30-day evaluation?
   * No
 
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 PREPARED BY
 -----------
-Kate.Friedman@noaa.gov
-George.Gayno@noaa.gov
-Andrew.Collard@noaa.gov
+Ali Salimi Tarazouj
+Jessica Meixner
