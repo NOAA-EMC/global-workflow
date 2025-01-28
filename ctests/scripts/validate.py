@@ -45,10 +45,10 @@ def validate_cmpfiles(config):
     cmpfiles = config.get("output_files", {}).get("cmpfiles", [])
     for pair in cmpfiles:
         file_a, file_b = pair
-        logger.info(f"checking file: {file_b} ... ", end="")
         if file_checksum(file_a) != file_checksum(file_b):
+            logger.error(f"Checksum mismatch: {file_a} vs {file_b}")
             raise ValueError(f"Checksum mismatch: {file_a} vs {file_b}")
-        print("OK")
+        logger.info(f"checksums match: {file_a} vs {file_b}")
 
 
 @logit(logger)
