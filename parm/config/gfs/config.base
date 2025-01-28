@@ -133,6 +133,7 @@ if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; the
 fi
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
+export FETCHDIR="@FETCHDIR@"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
@@ -220,7 +221,7 @@ case "${CASE}" in
         export waveGRD='uglo_100km'
         ;;
     "C768" | "C1152")
-        export waveGRD='uglo_m1g16'
+        export waveGRD='uglo_15km'
         ;;
     *)
         echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
@@ -474,6 +475,10 @@ export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verif
 #--online archive of netcdf files for fit2obs verification
 export FHMAX_FITS=132
 [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
+
+# User may choose to reset these at experiment setup time 
+export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto COM
+export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive

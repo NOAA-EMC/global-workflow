@@ -3,8 +3,7 @@ DMPDIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/dump'
 BASE_DATA: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data'
 BASE_IC: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/ICSDIR'
 PACKAGEROOT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/nwpara'
-COMROOT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/com'
-COMINsyn: '${COMROOT}/gfs/prod/syndat'
+COMINsyn: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/com/gfs/prod/syndat'
 HOMEDIR: '/gpfs/f5/ufs-ard/scratch/${USER}'
 STMP: '/gpfs/f5/ufs-ard/scratch/${USER}'
 PTMP: '/gpfs/f5/ufs-ard/scratch/${USER}'
@@ -25,5 +24,5 @@ LOCALARCH: 'NO'
 ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
-SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
-AERO_INPUTS_DIR: /gpfs/f5/epic/proj-shared/global/glopara/data/gocart_emissions
+SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
+AERO_INPUTS_DIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/gocart_emissions'

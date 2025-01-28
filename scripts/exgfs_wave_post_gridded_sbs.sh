@@ -33,6 +33,7 @@
 # 0.  Preparations
 
 source "${USHgfs}/preamble.sh"
+source "${USHgfs}/wave_domain_grid.sh"
 
 # 0.a Basic modes of operation
 
@@ -218,7 +219,6 @@ source "${USHgfs}/preamble.sh"
   echo '   Making command file for sbs grib2 and GRID Interpolation '
   set_trace
   fhr=$(( 10#${FHR3} ))
-  fhrg=$fhr
   ymdh=$($NDATE $fhr ${PDY}${cyc})
   YMD=$(echo $ymdh | cut -c1-8)
   HMS="$(echo $ymdh | cut -c9-10)0000"
@@ -238,75 +238,41 @@ source "${USHgfs}/preamble.sh"
   export GRDIDATA=${DATA}/output_$YMDHMS
 
 # Gridded data (main part, need to be run side-by-side with forecast
+  gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${waveGRD}.${YMD}.${HMS}"
+  if [[ ! -s "${gfile}" ]]; then
+    echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
+    err=3; export err; "${errchk}"
+    exit "${err}"
+  fi
+  ${NLN} "${gfile}" "./out_grd.${waveGRD}"
 
-  if [ $fhr = $fhrg ]
+  if [ "$DOGRI_WAV" = 'YES' ]
   then
-    gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${waveGRD}.${YMD}.${HMS}"
-      if [[ ! -s "${gfile}" ]]; then
-        echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
-        err=3; export err; "${errchk}"
-        exit "${err}"
-      fi
-    ${NLN} "${gfile}" "./out_grd.${waveGRD}"
-
-    if [ "$DOGRI_WAV" = 'YES' ]
-    then
-      nigrd=1
-      for grdID in $waveinterpGRD
-      do
-        ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
-        echo "${USHgfs}/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
-        if [ "$DOGRB_WAV" = 'YES' ]
-        then
-          gribFL=\'$(echo ${OUTPARS_WAV})\'
-          case $grdID in
-            glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-            reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_100) GRDNAME='global' ; GRDRES=1p00 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
-            at_10m) GRDNAME='atlocn' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            ep_10m) GRDNAME='epacif' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            wc_10m) GRDNAME='wcoast' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            ak_10m) GRDNAME='alaska' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-          esac
-          echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
-        fi
-        echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
-        chmod 744 ${fcmdigrd}.${nigrd}
-        nigrd=$((nigrd+1))
-      done
-    fi
-
-    if [ "$DOGRB_WAV" = 'YES' ]
-    then
-      for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
-      do
+    nigrd=1
+    for grdID in $waveinterpGRD
+    do
+      ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
+      echo "${USHgfs}/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+      if [ "$DOGRB_WAV" = 'YES' ]
+      then
         gribFL=\'$(echo ${OUTPARS_WAV})\'
-        case $grdID in
-            aoc_9km) GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=11   ;;
-            ant_9km) GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=11   ;;
-            glo_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            gnh_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            gsh_15m) GRDNAME='gsouth' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-            glo_15m) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-            ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
-            so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
-            glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-            reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-            glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_100) GRDNAME='global' ; GRDRES=1p00 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
-            glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
-            gwes_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=10 ;;
-        esac
-        echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
-      done
-    fi
+        process_grdID "${grdID}"
+        echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDREGION $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+      fi
+      echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
+      chmod 744 ${fcmdigrd}.${nigrd}
+      nigrd=$((nigrd+1))
+    done
+  fi
 
+  if [ "$DOGRB_WAV" = 'YES' ]
+  then
+    for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
+    do
+      gribFL=\'$(echo ${OUTPARS_WAV})\'
+      process_grdID "${grdID}"
+      echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDREGION $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+    done
   fi
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
@@ -377,15 +343,14 @@ source "${USHgfs}/preamble.sh"
   rm -f out_grd.* # Remove large binary grid output files
 
   cd $DATA
-
-
-  if [ "$fhr" = "$fhrg" ]
-  then
+ 
 # Check if grib2 file created
     ENSTAG=""
+    com_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
+    com_dir=${!com_varname}
     if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-    gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-    if [ ! -s ${COMOUT_WAVE_GRID}/${gribchk} ]; then
+    gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDREGION}.${GRDRES}.f${FH3}.grib2"
+    if [ ! -s ${com_dir}/${gribchk} ]; then
       set +x
       echo ' '
       echo '********************************************'
@@ -397,7 +362,6 @@ source "${USHgfs}/preamble.sh"
       err=5; export err;${errchk}
       exit "$err"
     fi
-  fi
 
 # --------------------------------------------------------------------------- #
 # 7.  Ending output

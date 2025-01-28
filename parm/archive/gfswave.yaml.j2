@@ -1,20 +1,31 @@
 gfswave:
     {% set head = "gfswave.t" + cycle_HH + "z." %}
+ 
     name: "GFSWAVE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
     required:
         # Wave GRIB2 regional forecast products
+        {% set WAVE_OUT_GRIDS_list = WAVE_OUT_GRIDS.split(' ') %}
+        {% for grd in WAVE_OUT_GRIDS_list %}
+        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                              '${RUN}':RUN,
+                              '${YMD}':cycle_YMD,
+                              '${HH}':cycle_HH,
+                              '${MEMDIR}':'',
+                              '${GRDRESNAME}':grd}) %}
+        {% set file_path = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}        
+  
         {% for fh in range(0, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
         # NOTE This is as explicit as possible without major logic to parse wavepostGRD.
         #      Matches files of the form "gfswave.tCCz.<region>.<res>.fHHH.grib2".
-        - "{{ COMIN_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
-        - "{{ COMIN_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
+        - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
+        - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
         {% endfor %}
 
         # Global wave GRIB2 forecast products
         {% for fh in range(FHMAX_HF_WAV + FHOUT_WAV, FHMAX_WAV_GFS + FHOUT_WAV, FHOUT_WAV) %}
-        - "{{ COMIN_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
-        - "{{ COMIN_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
+        - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
+        - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
         {% endfor %}
 
         # Wave bulletins
@@ -28,3 +39,4 @@ gfswave:
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpcbull_tar"
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibp_tar"
         {% endif %}
+        {% endfor %}
