@@ -49,7 +49,7 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.21
 
 SORC CHANGES
 ------------
@@ -59,7 +59,7 @@ SORC CHANGES
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.21
 
 PARM/CONFIG CHANGES
 -------------------
@@ -74,12 +74,12 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.21
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.21
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
@@ -106,24 +106,27 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.21
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.21
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.21
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.21
 
 PREPARED BY
 -----------
-Ali Salimi Tarazouj
-Jessica Meixner
+Kate.Friedman@noaa.gov
+George.Gayno@noaa.gov
+Andrew.Collard@noaa.gov
+Ali.Salmi@noaa.gov
+Jessica.Meixner@noaa.gov
