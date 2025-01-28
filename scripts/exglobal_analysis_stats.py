@@ -5,7 +5,7 @@
 # and runs the initialize, execute, and finalize
 # methods which create and stage the runtime directory
 # and create the YAML configuration
-# for a global stat analysis
+# to produce summary statistics from the analysis
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
