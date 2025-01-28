@@ -1,7 +1,9 @@
 #!/bin/bash
 # Jinja-templated variables
 log_directory="{{niagara_log_directory}}"
-globus_xfer_id="{{globus_xfer_id}}"
+# In lieu of an actual globus xfer ID, use the filename
+# TODO when the Doorman is capable of providing the xfer ID, use that instead
+globus_xfer_id="{{target_filename}}"
 
 log_file="${log_directory}/hpss_status_${globus_xfer_id}.log"
 

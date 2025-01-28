@@ -1,19 +1,15 @@
 #!/usr/bin/env bash
-set -eu
+set -eux
 
 # This script runs on Niagara to interact with the Doorman service
 
 # Make the working directory
-subdir="{{PSLOT}}/{{RUN}}/{{jobid}}"
-doorman_dir="${HOME}/.doorman/${subdir}"
+doorman_dir='{{homedir}}/doorman_wd'
 mkdir -p "${doorman_dir}"
 cd "${doorman_dir}"
 rm -f dm.conf
 rm -f places.inc
 rm -f FLIST
-
-# Tell the doorman where Sven's dropbox is on the sending client (e.g. Hercules)
-echo 'export dropbox="{{sven_dropbox}}' > dm.conf
 
 # Tell the doorman where the general delivery space is on Niagara (unique for each RUN/cycle)
 # This is where tarballs will be received and confirmations are written and sent.
