@@ -28,7 +28,7 @@ class GEFSAppConfig(AppConfig):
         Returns the config_files that are involved in gefs
         """
         options = self.run_options[run]
-        configs = ['stage_ic', 'fcst', 'atmos_products', 'arch_vrfy', 'cleanup']
+        configs = ['stage_ic', 'fcst', 'atmos_products']
 
         if options['nens'] > 0:
             configs += ['efcs', 'atmos_ensstat']
@@ -47,11 +47,10 @@ class GEFSAppConfig(AppConfig):
         if options['do_extractvars']:
             configs += ['extractvars']
 
-        if options['do_extractvars']:
-            configs += ['extractvars']
-
         if options['do_archtar']:
             configs += ['arch_tars']
+
+        configs += ['arch_vrfy', 'cleanup']
 
         return configs
 
