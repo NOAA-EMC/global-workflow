@@ -17,8 +17,10 @@ def main():
     # Instantiate the globus object
     globus = GlobusHpss(config)
 
-    keys = ['STAGE_DIR', 'current_cycle', 'RUN', 'PDY', 'NMEM_ENS', 'HOMEgfs', 'sven_dir',
-            'DATASETS_YAML', 'PARMgfs', 'COMIN_CONF']
+    keys = ['STAGE_DIR', 'current_cycle', 'RUN', 'PDY', 'HOMEgfs', 'sven_dropbox',
+            'doorman_gendel', 'DATASETS_YAML', 'PARMgfs', 'COMIN_CONF', 'KEEPDATA',
+            'jobID', 'hpss_target_dir', 'server_home', 'SERVER_NAME', 'DOORMAN_ROOT',
+            'CLIENT_GLOBUS_UUID']
 
     globus_dict = AttrDict()
     for key in keys:
@@ -28,10 +30,10 @@ def main():
             logger.warning(f"WARNING: key ({key}) not found in globus.task_config!")
 
     # Determine which tarballs to send
-    transfer_set = globus.configure(globus_dict)
+    transfer_sets = globus.configure(globus_dict)
 
     # Send the tarballs to HPSS via Niagara
-    globus.execute_transfer_data(transfer_set)
+    globus.execute_transfer_data(transfer_sets)
 
     # Clean up any temporary files
     globus.clean()
