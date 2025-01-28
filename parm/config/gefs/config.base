@@ -103,6 +103,7 @@ export ROTDIR="@COMROOT@/${PSLOT}"
 
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
+export FETCHDIR="@FETCHDIR@"  # HPSS or local directory where IC tarball(s) can be found.
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}

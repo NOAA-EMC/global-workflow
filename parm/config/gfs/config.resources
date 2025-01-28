@@ -11,7 +11,7 @@ if (( $# != 1 )); then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "stage_ic aerosol_init"
+    echo "stage_ic aerosol_init fetch"
     echo "prep prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal"
@@ -1059,7 +1059,7 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "arch" | "earc" | "getic")
+  "arch" | "earc" | "getic" | "fetch")
     walltime="06:00:00"
     ntasks=1
     tasks_per_node=1
