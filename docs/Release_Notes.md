@@ -112,6 +112,8 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 * Which production jobs should be tested as part of this implementation?
   * emcsfc_sfc_prep and analysis
   * wave_post_pnt
+  * wave_post_bndpnt
+  * wave_post_bndpntbll
 * Does this change require a 30-day evaluation?
   * No
 
