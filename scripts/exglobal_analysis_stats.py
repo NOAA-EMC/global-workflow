@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # exglobal_stat_analysis.py
-# This script creates an StatAnalysis class
+# This script creates a StatAnalysis class
 # and runs the initialize, execute, and finalize
 # methods which create and stage the runtime directory
 # and create the YAML configuration
