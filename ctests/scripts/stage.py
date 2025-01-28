@@ -65,5 +65,6 @@ def main():
     # Synchronize input files as per the parsed configuration
     FileHandler(case_cfg.input_files).sync()
 
+
 if __name__ == '__main__':
     main()
