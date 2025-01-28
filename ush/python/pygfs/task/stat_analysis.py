@@ -42,17 +42,11 @@ class StatAnalysis(Task):
         """
         super().__init__(config)
 
-        _res = int(self.task_config.CASE[1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'npx_ges': _res + 1,
-                'npy_ges': _res + 1,
-                'npz_ges': self.task_config.LEVS - 1,
-                'npz': self.task_config.LEVS - 1,
-                'npz_anl': self.task_config.LEVS - 1,
                 'STAT_WINDOW_BEGIN': _window_begin,
                 'STAT_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
@@ -87,18 +81,18 @@ class StatAnalysis(Task):
         logger.info(f"Copying files to {self.task_config.DATA}/stats")
 
         # Loop through ob space list
-        for OB in self.task_config.STAT_OBS:
-            logger.info(f"Working on current observation: {OB}")
+        for ANL in self.task_config.STAT_ANALYSES:
+            logger.info(f"Working on current observation: {ANL}")
 
             # Parse JEDI analysis stat jinja file
             obs_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
 
             # Copy stat files to DATA path
-            instat_files = os.path.join(obs_dict[OB]['stat_file_path'], f"{self.task_config['APREFIX']}{obs_dict[OB]['stat_file_name']}")
-            ob_dir_str = f"{self.task_config.DATA}" + f"/{OB}"
+            instat_files = os.path.join(obs_dict[ANL]['stat_file_path'], f"{self.task_config['APREFIX']}{obs_dict[ANL]['stat_file_name']}")
+            ob_dir_str = f"{self.task_config.DATA}" + f"/{ANL}"
             os.mkdir(ob_dir_str)
 
-            dest = os.path.join(ob_dir_str, obs_dict[OB]['stat_file_name'])
+            dest = os.path.join(ob_dir_str, obs_dict[ANL]['stat_file_name'])
             logger.info(f"Copying {instat_files} to {dest} ...")
             statlist = [[instat_files, dest]]
             FileHandler({'copy': statlist}).sync()
@@ -127,7 +121,7 @@ class StatAnalysis(Task):
             obs_space_paths = nc_paths + nc4_paths
 
             # Temporary. Create condition check here for available jcb algorithms?
-            if OB == 'snow':
+            if ANL == 'snow':
                 obs_space_paths = glob.glob(os.path.join(ob_dir_str, "diag_ims_snow_*.nc"))
 
             # This grabs the obspace string from the .nc4 files, however not all are perfect. Need solution.
@@ -135,8 +129,8 @@ class StatAnalysis(Task):
 
             # initialize JEDI application
             logger.info(f"Initializing JEDI variational DA application")
-            logger.info(f"{self.jedi_dict[OB]}")
-            self.jedi_dict[OB].initialize(self.task_config)
+            logger.info(f"{self.jedi_dict[ANL]}")
+            self.jedi_dict[ANL].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
