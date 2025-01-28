@@ -76,7 +76,7 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.21
+* GSI `global_convinfo.txt` fix update for saildrone```
 
 MODULE CHANGES
 --------------
