@@ -2,10 +2,11 @@
 
 import datetime
 from logging import getLogger
+import netCDF4 as nc
 from pprint import pformat
 import os
 from pygfs.jedi import Jedi
-from wxflow import (AttrDict, FileHandler, Task,
+from wxflow import (AttrDict, FileHandler, Task, Executable,
                     add_to_datetime, to_fv3time, to_timedelta,
                     parse_j2yaml, save_as_yaml,
                     logit)
@@ -84,15 +85,17 @@ class EnsembleCenter(Task):
         None
         """
 
-        # Initialize JEDI ensemble increment recentering application
-        logger.info(f"Initializing JEDI recentering application")
-        self.jedi_dict['ecen'].initialize(self.task_config)
+        # Initialize ensemble recentering if running GDAS
+        if self.task_config.RUN == 'gdas':
+            # Initialize JEDI ensemble increment recentering application
+            logger.info(f"Initializing JEDI recentering application")
+            self.jedi_dict['ecen'].initialize(self.task_config)
 
-        # Stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_dict).sync()
-        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
+            # Stage fix files
+            logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
+            jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+            FileHandler(jedi_fix_dict).sync()
+            logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # Stage background and increment files
         logger.info(f"Staging background and increment files from {self.task_config.JEDI_BKG_INC_YAML}")
@@ -115,7 +118,22 @@ class EnsembleCenter(Task):
         None
         """
 
-        self.jedi_dict['ecen'].execute()
+        # Compute correction increment for ensemble recentering
+        if self.task_config.RUN == 'gdas':
+            self.jedi_dict['ecen'].execute()
+
+        # Compute analyses
+        for fh in self.task_config.IAUFHRS:
+           add_increment(f"atmi{format(fh, '03')}.nc",
+                         f"atma{format(fh, '03')}.nc")
+
+           if self.task_config.DO_AERO_ANL:
+               add_increment(f"aeroi{format(fh, '03')}.nc",
+                             f"atma{format(fh, '03')}.nc")
+
+           if self.task_config.DO_JEDISNOWDA:
+               add_increment(f"asnowi{format(fh, '03')}.nc",
+                             f"sfca{format(fh, '03')}.nc")
 
     @logit(logger)
     def finalize(self) -> None:
@@ -134,12 +152,15 @@ class EnsembleCenter(Task):
         None
         """
 
-        # Initialize FileHandler to copy files to comrot
         fh_dict = {'copy': []}
+        anal_time = os.system('echo $(date)')
+        with open('loganl.txt', 'w') as file:
+            file.write(f"{self.task_config.rCDUMP} {self.task_config.PDY}{self.task_config.cyc} atmanl and sfcanl done at {anal_time}")
+        fh_dict['copy'].append(['loganl.txt', f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}loganl.txt"])
+
+        # Copy files to comrot
         if self.task_config.RUN == 'gdas':
-            cdate = to_fv3time(self.task_config.current_cycle).replace('.', '_')
             inc_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS_ENSSTAT}/enkf{self.task_config.APREFIX}"
-            cdate = to_fv3time(self.task_config.current_cycle).replace('.', '_')
             for fh in self.task_config.IAUFHRS:
                 if fh == 6:
                     for itile in range(6):
@@ -149,12 +170,34 @@ class EnsembleCenter(Task):
                         for itile in range(6):
                             fh_dict['copy'].append([f"{self.task_config.DATA}/cubed_sphere_grid_catmi{format(fh, '03')}.tile{itile+1}.nc",
                                                     f"{inc_prefix}cubed_sphere_grid_catmi{format(fh, '03')}.tile{itile+1}.nc"])
+        # Copy analyses to comrot
+        for fh in self.task_config.IAUFHRS:
+            if fh == 6:
+                fh_dict['copy'].append([f"{self.task_config.DATA}/atma{format(fh, '03')}.nc",
+                                        f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}atmanl.nc"])
+                fh_dict['copy'].append([f"{self.task_config.DATA}/sfca{format(fh, '03')}.nc",
+                                        f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}sfcanl.nc"])
+            else:
+                fh_dict['copy'].append([f"{self.task_config.DATA}/atma{format(fh, '03')}.nc",
+                                        f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}atma{format(fh, '03')}.nc"])
+                fh_dict['copy'].append([f"{self.task_config.DATA}/sfca{format(fh, '03')}.nc",
+                                        f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}sfca{format(fh, '03')}.nc"])
 
-        # Test
-#        fh_dict.append([f"atmanl.2024-02-24T00:00:00Z.gaussian.modelLevels.nc",
-#                       f"{self.task_config.COM_ATMOS_ANALYSIS}"])
-#        fh_dict.append([f"sfcanl.2024-02-24T00:00:00Z.gaussian.modelLevels.nc",
-#                        f"{self.task_config.COM_ATMOS_ANALYSIS}"])
-
-        # Move files
+        # Call FileHandler
         FileHandler(fh_dict).sync()
+
+@logit(logger)
+def add_increment(fn_incr: str, fn_bkg: str) -> None:
+    try:
+        with nc.Dataset(fn_incr, 'r') as nc_incr:
+            with nc.Dataset(fn_bkg, 'r+') as nc_bkg:
+                for var in nc_incr.variables:
+                    if len(nc_incr[var].dimensions) == 3 or len(nc_incr[var].dimensions) == 4:
+                        var_incr = nc_incr[var][:]
+                        var_bkg = nc_bkg[var][:]
+
+                        nc_bkg[var][:] = var_bkg + var_incr
+
+    except Exception as e:
+        logger.error(f"Error occurred with message {e}")
+        raise

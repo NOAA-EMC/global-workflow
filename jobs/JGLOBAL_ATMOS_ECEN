@@ -13,6 +13,8 @@ gcyc=${GDATE:8:2}
 GDUMP="gdas"
 GDUMP_ENS="enkfgdas"
 
+export rCDUMP="${RUN/enkf}"
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################

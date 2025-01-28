@@ -39,6 +39,8 @@ FV3_postdet() {
     # Get list of FV3 restart files
     local file_list
     file_list=$(FV3_restarts)
+    echo foobar
+    echo $file_list
     echo "Copying FV3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
     local fv3_file restart_file
     for fv3_file in ${file_list}; do
@@ -97,6 +99,7 @@ FV3_postdet() {
   #============================================================================
   # Determine increment files when doing cold start
   if [[ "${warm_start}" == ".false." ]]; then
+
     if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
       if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
         IAU_FHROT=${half_window}  # Replay ICs start at the end of the assimilation window
@@ -126,6 +129,7 @@ FV3_postdet() {
 
     #--------------------------------------------------------------------------
     if [[ "${RERUN}" == "YES" ]]; then
+
       local restart_fhr
       restart_fhr=$(nhour "${RERUN_DATE}" "${current_cycle}")
       IAU_FHROT=$((IAU_OFFSET + restart_fhr))
@@ -137,6 +141,7 @@ FV3_postdet() {
 
     #--------------------------------------------------------------------------
     else  # "${RERUN}" == "NO"
+
       # Need a coupler.res that is consistent with the model start time
       if [[ "${DOIAU:-NO}" == "YES" ]]; then
         local model_start_time="${previous_cycle}"
