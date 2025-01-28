@@ -6,7 +6,7 @@ PRELUDE
 The upstream OBSPROC package is updated to v1.3. Along with this are the following companion updates:
 * workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
 * updated GSI code and convinfo file for saildrone observations
-* ww3_outp is improved for th wave point output
+* ww3_outp is improved for the wave point output
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
