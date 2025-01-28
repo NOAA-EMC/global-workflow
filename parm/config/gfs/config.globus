@@ -15,16 +15,18 @@ export STAGE_DIR="${DATAROOT}/archive_rotdir/${PSLOT}"
 # Niagara's globus UUID
 export SERVER_GLOBUS_UUID=1bfd8a79-52b2-4589-88b2-0648e0c0b35d
 # Client address
-export CLIENT_GLOBUS_UUID=@CLIENT_UUID@
+export CLIENT_GLOBUS_UUID=@CLIENT_GLOBUS_UUID@
 
 # General delivery location on Niagara (staging area for data)
-export GENERAL_DELIVERY_ROOT='/collab1/data_untrusted/${LOGNAME}/GENERAL_DELIVERY'
-# Side note: data_untrusted is a misnomer.  This just means the data is kept for 5 days instead of 60.
+export SERVER_HOME='/collab1/data/{{LOGNAME}}'
 
 # Sven's dropbox
 export SVEN_DROPBOX_ROOT="${DATAROOT}/archive_rotdir/${RUN}/SVEN_DROPBOX"
 
 # Location of the doorman package on Niagara
 export DOORMAN_ROOT="/home/Georgy.Fekete/sven"
+
+# Server name (should match ~/.ssh/config)
+export SERVER_NAME="niagara"
 
 echo "END: config.globus"
