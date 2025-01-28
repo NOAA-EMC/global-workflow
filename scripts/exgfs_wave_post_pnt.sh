@@ -240,7 +240,7 @@
     HMS="$(echo $CDATE | cut -c9-10)0000"
     if [ -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ]
     then
-      ln -s $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
+      ln -s $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ./${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
     else
       echo '*************************************************** '
       echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.${waveuoutpGRD}.${YMD}.${HMS} "
@@ -351,7 +351,7 @@
     pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
     if [ -f  ${pfile} ]
     then
-      ln -fs ${pfile}
+      ln -fs ${pfile} ./${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
     else
       echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS} "
       echo ' '
