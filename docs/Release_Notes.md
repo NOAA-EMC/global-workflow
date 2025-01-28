@@ -3,8 +3,10 @@ GFS V16.3.22 RELEASE NOTES
 -------
 PRELUDE
 -------
-
-The WW3 point output program (ww3_outp) is improved to process per-time-step point output to reduce the resources for the wave_post_pnt jobs.
+The upstream OBSPROC package is updated to v1.3. Along with this are the following companion updates:
+* workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
+* updated GSI code and convinfo file for saildrone observations
+* ww3_outp is improved for th wave point output
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -128,5 +130,5 @@ PREPARED BY
 Kate.Friedman@noaa.gov
 George.Gayno@noaa.gov
 Andrew.Collard@noaa.gov
-Ali.Salmi@noaa.gov
 Jessica.Meixner@noaa.gov
+Ali.Salimi@noaa.gov
