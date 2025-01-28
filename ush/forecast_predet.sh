@@ -579,11 +579,19 @@ FV3_predet(){
           export e1=3
         fi
         export e2="${ENSMEM:1:2}"
-        export e3="${NMEM_ENS}"        
+        export e3="${NMEM_ENS}"
         ;;
       sfs)
         ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
         ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
+        # Provide ensemble header information for SFS
+        if [[ "${ENSMEM}" == "000" ]]; then
+          export e1=1
+        else
+          export e1=3
+        fi
+        export e2="${ENSMEM:1:2}"
+        export e3="${NMEM_ENS}"
         ;;
       *)
         echo "FATAL ERROR: Unknown RUN ${RUN}, unable to determine appropriate post files"
