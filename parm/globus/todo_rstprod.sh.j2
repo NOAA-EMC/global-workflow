@@ -17,11 +17,18 @@ touch "${log_file}"
 
 send_to_hpss()
 {
+    # Change the group of the file to rstprod
+    if ! chgrp "rstprod" "${file_full}" > "${log_file}" 2>&1; then
+        rm -f "${file_full}"
+        echo "Failed to run chmod on ${file_full}.  Deleting and exiting." >> "${log_file}"
+        return 1
+    fi
+
     # Check that the MD5 checksum matches what was sent
     chk=$(md5sum "${file_full}")
     if [[ "${chk}" != "${globus_xfer_id}  ${file_full}" ]]; then
         echo "MD5 checksum of ${file} does not match.  Exiting." >> "${log_file}"
-        return 1
+        return 2
     fi
 
     # Write a command file to place the file on hpss and protect it
@@ -29,12 +36,16 @@ send_to_hpss()
     local command_file="command_file_${globus_xfer_id}"
     echo "mkdir -p ${hpss_dir}" >> "${command_file}"
     echo "put ${file_full} :  ${hpss_target}" >> "${command_file}"
+    echo "chgrp rstprod ${hpss_target}" >> "${command_file}"
+    echo "chmod 640 ${hpss_target}" >> "${command_file}"
 
     hsi in "${command_file}" >> "${log_file}" 2>&1
     # shellcheck disable=SC2181
     if [[ $? != 0 ]]; then
-        echo "Failed to send ${file} to HPSS." >> "${log_file}"
-        return 2
+        echo "Failed to send ${file} to HPSS and/or protect it." >> "${log_file}"
+        echo "Deleting from hpss.  Please verify it was deleted!!" >> "${log_file}"
+        hsi rm "${hpss_target}"
+        return 3
     fi
 
     rm -f "${command_file}"
@@ -43,7 +54,7 @@ send_to_hpss()
     if [[ ${file} == *.tar ]]; then
         if ! htar -Xvf "${hpss_target}" >> "${log_file}" 2>&1; then
             echo "Failed to create an index file for ${hpss_target}.  Exiting." >> "${log_file}"
-            return 3
+            return 4
         fi
     fi
 
