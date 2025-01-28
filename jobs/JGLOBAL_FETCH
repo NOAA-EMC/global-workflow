@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fetch" -c "base fetch"
+
+# Execute fetching
+"${SCRgfs}/exglobal_fetch.py" 
+err=$?
+
+###############################################################
+# Check for errors and exit if any of the above failed
+if [[ "${err}" -ne 0 ]]; then
+  echo "FATAL ERROR: Unable to fetch ICs to ${ROTDIR}; ABORT!"
+  exit "${err}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+
+exit 0

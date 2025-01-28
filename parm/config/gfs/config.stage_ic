@@ -7,7 +7,12 @@ echo "BEGIN: config.stage_ic"
 # Get task specific resources
 source "${EXPDIR}/config.resources" stage_ic
 
-export ICSDIR="@ICSDIR@" # User provided ICSDIR; blank if not provided
+if [[ "${DO_FETCH_HPSS^^}" =~ "Y" || "${DO_FETCH_LOCAL^^}" =~ "Y" ]]; then
+    export ICSDIR="${DATAROOT}"  # fetch untars data into DATAROOT
+else
+    export ICSDIR="@ICSDIR@" # User provided ICSDIR; blank if not provided
+fi
+
 export BASE_IC="@BASE_IC@" # Platform home for staged ICs
 
 export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gfs.yaml.j2"
