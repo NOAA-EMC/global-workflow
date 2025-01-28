@@ -63,7 +63,7 @@ SORC CHANGES
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.21
+* `jobs/JGLOBAL_ATMOS_EMCSFC_SFC_PREP` - new AFWA filename
 
 PARM/CONFIG CHANGES
 -------------------
