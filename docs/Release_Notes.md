@@ -86,6 +86,13 @@ MODULE CHANGES
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
+No longer ingest:
+* `${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb` (`AFWA_NH_FILE`)	
+* `${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb` (`AFWA_SH_FILE`)
+
+Now ingest:	
+* `${RUN}.${cycle}.snow.usaf.grib2` (`AFWA_GLOBAL_FILE`)
+
 No longer uses the parallel command file `cmdfile` for the `scripts/exgfs_wave_post_pnt.sh`.
 
 
