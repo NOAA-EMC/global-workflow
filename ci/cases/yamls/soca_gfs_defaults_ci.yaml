@@ -3,6 +3,7 @@ defaults:
 base:
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
   DO_JEDIOCNVAR: "YES"
+  DO_METP: "NO"
 
 marineanl:
   SOCA_NINNER: 1
