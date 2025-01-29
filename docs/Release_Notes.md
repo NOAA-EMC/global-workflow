@@ -51,7 +51,7 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* * `versions/run.ver` - change `version=v16.3.22`, `gfs_ver=v16.3.22`, and `obsproc_ver=v1.3`
+* `versions/run.ver` - change `version=v16.3.22`, `gfs_ver=v16.3.22`, and `obsproc_ver=v1.3`
 
 SORC CHANGES
 ------------
@@ -68,17 +68,20 @@ JOBS CHANGES
 PARM/CONFIG CHANGES
 -------------------
 
-* `config.resources.emc.dyn` and `config.resources.nco.static` are changed to reduce the resources accordingly.
+In `config.resources.emc.dyn` and `config.resources.nco.static` following resources are changed:
+* for wavepostbndpnt: npe from 240 to 1; wtime from 1hr to 30min
+* for wavepostbndpntbll: npe from 448 to 2; wtime from 1hr to 10min
+* for wavepostpnt: npe from 200 to 3; wtime from 1.5hr to 35min
 
 SCRIPT CHANGES
 --------------
 
-* `scripts/exgfs_wave_post_pnt.sh` is changed to create be compatible with the new `ww3_outp`.
+* `scripts/exgfs_wave_post_pnt.sh` is changed to be compatible with the  new `ww3_outp`.
 
 FIX CHANGES
 -----------
 
-* GSI `global_convinfo.txt` fix update for saildrone```
+* GSI `global_convinfo.txt` fix update for saildrone
 
 MODULE CHANGES
 --------------
@@ -89,14 +92,11 @@ CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
 No longer ingest:
-* `${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb` (`AFWA_NH_FILE`)	
+* `${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb` (`AFWA_NH_FILE`)
 * `${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb` (`AFWA_SH_FILE`)
 
-Now ingest:	
+Now ingest:
 * `${RUN}.${cycle}.snow.usaf.grib2` (`AFWA_GLOBAL_FILE`)
-
-No longer uses the parallel command file `cmdfile` for the `scripts/exgfs_wave_post_pnt.sh`.
-
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
