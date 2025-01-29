@@ -61,7 +61,9 @@ class GFSCycledAppConfig(AppConfig):
         configs = ['prep']
 
         if options['do_jediatmvar']:
-            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'ecen_fv3jedi']
+            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
+            if run == 'gdas':
+                configs += ['ecen_fv3jedi']
         else:
             configs += ['anal', 'analdiag', 'analcalc']
 
@@ -170,7 +172,9 @@ class GFSCycledAppConfig(AppConfig):
             if run in ['gdas', 'gfs']:
                 task_names[run] += ['prep']
                 if options['do_jediatmvar']:
-                    task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'ecen_fv3jedi']
+                    task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
+                    if run == 'gdas':
+                        task_names[run] += ['ecen_fv3jedi']
                 else:
                     task_names[run] += ['anal', 'analcalc']
 

@@ -1,0 +1,10 @@
+copy:
+{% for fh in IAUFHRS %}
+- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}atmf{{ '%03d' % fh }}.nc", "{{ DATA }}/atma{{ '%03d' % fh }}.nc" ]
+- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}sfcf{{ '%03d' % fh }}.nc", "{{ DATA }}/sfca{{ '%03d' % fh }}.nc" ]
+{% if fh == 6 %}
+- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}atminc.nc", "{{ DATA }}/atmi006.nc"]
+{% else %}
+- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}atmi{{ '%03d' % fh }}.nc", "{{ DATA }}/atmi{{ '%03d' % fh }}.nc"]
+{% endif %}
+{% endfor %}
