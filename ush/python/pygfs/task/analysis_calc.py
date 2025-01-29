@@ -104,16 +104,20 @@ class AnalysisCalc(Task):
 
         # Compute analyses
         for fh in self.task_config.IAUFHRS:
-           add_increment(f"atmi{format(fh, '03')}.nc",
-                         f"atma{format(fh, '03')}.nc")
+           hr = format(fh, '03')
+           add_increment(self.task_config.current_cycle,
+                         f"atmi{hr}.nc",
+                         f"atma{hr}.nc")
 
            if self.task_config.DO_AERO_ANL:
-               add_increment(f"aeroi{format(fh, '03')}.nc",
-                             f"atma{format(fh, '03')}.nc")
+               add_increment(self.task_config.current_cycle,
+                             f"aeroi{hr}.nc",
+                             f"atma{hr}.nc")
 
            if self.task_config.DO_JEDISNOWDA:
-               add_increment(f"asnowi{format(fh, '03')}.nc",
-                             f"sfca{format(fh, '03')}.nc")
+               add_increment(self.task_config.current_cycle,
+                             f"snowi{hr}.nc",
+                             f"sfca{hr}.nc")
 
     @logit(logger)
     def finalize(self) -> None:
@@ -134,26 +138,35 @@ class AnalysisCalc(Task):
 
         # Copy analyses to comrot
         fh_dict = {'copy': []}
+        anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
         for fh in self.task_config.IAUFHRS:
+            hr = format(fh, '03')
             if fh == 6:
-                fh_dict['copy'].append([f"{self.task_config.DATA}/atma{format(fh, '03')}.nc",
-                                        f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}atmanl.nc"])
-                fh_dict['copy'].append([f"{self.task_config.DATA}/sfca{format(fh, '03')}.nc",
-                                        f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}sfcanl.nc"])
+                fh_dict['copy'].append([f"{self.task_config.DATA}/atma{hr}.nc",
+                                        f"{anl_prefix}atmanl.nc"])
+                fh_dict['copy'].append([f"{self.task_config.DATA}/sfca{hr}.nc",
+                                        f"{anl_prefix}sfcanl.nc"])
             else:
-                fh_dict['copy'].append([f"{self.task_config.DATA}/atma{format(fh, '03')}.nc",
-                                        f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}atma{format(fh, '03')}.nc"])
-                fh_dict['copy'].append([f"{self.task_config.DATA}/sfca{format(fh, '03')}.nc",
-                                        f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}sfca{format(fh, '03')}.nc"])
+                fh_dict['copy'].append([f"{self.task_config.DATA}/atma{hr}.nc",
+                                        f"{anl_prefix}atma{hr}.nc"])
+                fh_dict['copy'].append([f"{self.task_config.DATA}/sfca{hr}.nc",
+                                        f"{anl_prefix}sfca{hr}.nc"])
 
         # Call FileHandler
         FileHandler(fh_dict).sync()
 
 @logit(logger)
-def add_increment(fn_incr: str, fn_bkg: str) -> None:
+def add_increment(current_cycle, fn_incr: str, fn_bkg: str) -> None:
     try:
         with nc.Dataset(fn_incr, 'r') as nc_incr:
             with nc.Dataset(fn_bkg, 'r+') as nc_bkg:
+                # Change the units of the time coordinate since the units from the UFS history
+                # file will break UPP
+                time_var = nc_bkg.variables['time']
+                time_var.units = current_cycle.strftime('hours since %Y-%m-%dT%H:%M:%S')
+                time_var[:] = 0.
+
+                # Add increment variables to corresponding background variables
                 for var in nc_incr.variables:
                     if len(nc_incr[var].dimensions) == 3 or len(nc_incr[var].dimensions) == 4:
                         var_incr = nc_incr[var][:]

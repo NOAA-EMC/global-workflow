@@ -138,16 +138,18 @@ class EnsembleCenter(Task):
 
         # Copy files to comrot
         fh_dict = {'copy': []}
-        inc_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS_ENSSTAT}/enkf{self.task_config.APREFIX}"
+        data_prefix = f"{self.task_config.DATA}/cubed_sphere_grid_"
+        comrot_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS_ENSSTAT}/enkf{self.task_config.APREFIX}cubed_sphere_grid_"
         for fh in self.task_config.IAUFHRS:
+            hr = format(fh, '03')
             if fh == 6:
                 for itile in range(6):
-                    fh_dict['copy'].append([f"{self.task_config.DATA}/cubed_sphere_grid_catmi{format(fh, '03')}.tile{itile+1}.nc",
-                                            f"{inc_prefix}cubed_sphere_grid_catminc.tile{itile+1}.nc"])
+                    fh_dict['copy'].append([f"{data_prefix}catmi{hr}.tile{itile+1}.nc",
+                                            f"{comrot_prefix}catminc.tile{itile+1}.nc"])
                 else:
                     for itile in range(6):
-                        fh_dict['copy'].append([f"{self.task_config.DATA}/cubed_sphere_grid_catmi{format(fh, '03')}.tile{itile+1}.nc",
-                                                f"{inc_prefix}cubed_sphere_grid_catmi{format(fh, '03')}.tile{itile+1}.nc"])
+                        fh_dict['copy'].append([f"{data_prefix}catmi{hr}.tile{itile+1}.nc",
+                                                f"{comrot_prefix}catmi{hr}.tile{itile+1}.nc"])
 
         # Call FileHandler
         FileHandler(fh_dict).sync()
