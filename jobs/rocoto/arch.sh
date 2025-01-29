@@ -219,7 +219,7 @@ if [ $CDUMP = "gfs" ]; then
     fi
 
     #for downstream products
-    if [ $DO_BUFRSND = "YES" -o $WAFSF = "YES" ]; then
+    if [ $DO_BUFRSND = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gfs_downstream.tar `cat $ARCH_LIST/gfs_downstream.txt`
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then

@@ -27,7 +27,6 @@ com/gfs/_ENVIR_/gfs._PDY_/
 + /gfs.t??z.flxgrbf*
 + /gfs.t??z.flxgrbif*
 + /gfs.t??z.goessimpgrb2.1p00.f*
-+ /wafsgfs??.t??z.grib*
 #+ /gfs.t??z.flxf*.nemsio
 - *
 B 444000
@@ -37,7 +36,6 @@ com/gfs/_ENVIR_/gfs._PDYm1_/
 + /gfs.t??z.flxgrbf*
 + /gfs.t??z.flxgrbif*
 + /gfs.t??z.goessimpgrb2.1p00.f*
-+ /wafsgfs??.t??z.grib*
 #+ /gfs.t??z.flxf*.nemsio
 - *
 B 444000
