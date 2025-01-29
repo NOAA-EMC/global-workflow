@@ -100,12 +100,24 @@ class StatAnalysis(Task):
             # Open tar file
             logger.info(f"Open tarred stat file in {dest}")
             with tarfile.open(dest, "r") as tar:
+                # Check if tar file is empty
+                if not tar.getnames():
+                    logger.warning(f"WARNING. The tar file {dest} is empty. No files to extract.")
+                    logger.warning("Moving to next analysis ...")
+                    continue  # Skip current analysis and move to next
                 # Extract all files to the current directory
                 tar.extractall(path=f'{ob_dir_str}')
 
             # Gunzip .nc files
             logger.info("Gunzip files from tar file")
             gz_files = glob.glob(os.path.join(ob_dir_str, "*.gz"))
+
+            # Check if gunzip files exist
+            if not gz_files:
+                logger.warning("WARNING. No .gz files to extract.")
+                logger.warning("Moving to next analysis ...")
+                continue  # Skip current analysis and move to next
+
             logger.info(f"Gunzip files: {gz_files}")
 
             for diagfile in gz_files:
@@ -150,9 +162,9 @@ class StatAnalysis(Task):
 
     @logit(logger)
     def finalize(self, jedi_dict_key: str) -> None:
-        """Finalize a statistic analysis
+        """Finalize the statistic analysis job.
 
-        This method will finalize a statistic analysis using JEDI.
+        This method will finalize the statistic analysis job using JEDI.
         This includes:
         - copying stat files to specified outdir
 

@@ -14,10 +14,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "anlstat" -c "base anlstat"
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS COMOUT_CONF \
-                                                                             COMIN_ATMOS_ANALYSIS \
-                                                                             COMIN_MARINE_ANALYSIS \
-                                                                             COMIN_CHEM_ANALYSIS \
-                                                                             COMIN_SNOW_ANALYSIS
+                                           COMIN_ATMOS_ANALYSIS \
+                                           COMIN_MARINE_ANALYSIS \
+                                           COMIN_CHEM_ANALYSIS \
+                                           COMIN_SNOW_ANALYSIS
 
 ###############################################################
 # Run relevant script
