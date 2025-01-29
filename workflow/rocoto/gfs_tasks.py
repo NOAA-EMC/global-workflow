@@ -1233,7 +1233,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
-        fhrs = self._get_forecast_hours('gfs', self._configs['wavepostsbs'], 'wave')
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
         max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 

@@ -1,6 +1,6 @@
 gfswave:
     {% set head = "gfswave.t" + cycle_HH + "z." %}
- 
+
     name: "GFSWAVE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
     required:
@@ -13,8 +13,8 @@ gfswave:
                               '${HH}':cycle_HH,
                               '${MEMDIR}':'',
                               '${GRDRESNAME}':grd}) %}
-        {% set file_path = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}        
-  
+        {% set file_path = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}
+
         {% for fh in range(0, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
         # NOTE This is as explicit as possible without major logic to parse wavepostGRD.
         #      Matches files of the form "gfswave.tCCz.<region>.<res>.fHHH.grib2".
