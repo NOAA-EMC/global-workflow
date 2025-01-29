@@ -2336,14 +2336,6 @@ class GFSTasks(Tasks):
             if self.run in ['gfs']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_metp'] and self.run in ['gfs']:
-            deps2 = []
-            # taskvalid only handles regular tasks, so just check the first metp job exists
-            dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_metpg2g1', 'condition': 'not'}
-            deps2.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_metp'}
-            deps2.append(rocoto.add_dependency(dep_dict))
-            deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
