@@ -619,7 +619,7 @@ class GFSTasks(Tasks):
     def esnowanl(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_prep"}
         deps.append(rocoto.add_dependency(dep_dict))
