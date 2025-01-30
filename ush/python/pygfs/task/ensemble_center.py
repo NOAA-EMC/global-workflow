@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 
-import datetime
 from logging import getLogger
-import netCDF4 as nc
 from pprint import pformat
-import os
 from pygfs.jedi import Jedi
 from wxflow import (AttrDict, FileHandler, Task, Executable,
-                    add_to_datetime, to_fv3time, to_timedelta,
-                    parse_j2yaml, save_as_yaml,
+                    add_to_datetime, to_timedelta,
+                    parse_j2yaml,
                     logit)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -20,7 +17,7 @@ class EnsembleCenter(Task):
     """
     @logit(logger, name="EnsembleCenter")
     def __init__(self, config):
-        """Constructor diagnostic atmospheric ensemble increment recentering
+        """Constructor for atmospheric ensemble increment recentering task
 
         This method will construct an ensemble increment recentering task
         This includes:
@@ -52,8 +49,8 @@ class EnsembleCenter(Task):
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
                 'npz_anl': self.task_config.LEVS - 1,
-                'ATM_WINDOW_BEGIN': _window_begin,
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
+                'ATM_WINDOW_BEGIN': _window_begin,
                 'APREFIX': f"gdas.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
             }
@@ -73,7 +70,7 @@ class EnsembleCenter(Task):
         This method will initialize the ensemble increment recentering task.
         This includes:
         - initializing the JEDI recentering application
-        - creating working directories for each forecast hour
+        - staging JEDI fix files
         - staging backgrounds and increments
 
         Parameters
@@ -125,7 +122,7 @@ class EnsembleCenter(Task):
 
         This method will finalize the ensemble increment recentering task.
         This includes:
-        - Move increment files to the comrot directory
+        - Move correction increment files to the comrot directory
 
         Parameters
         ----------

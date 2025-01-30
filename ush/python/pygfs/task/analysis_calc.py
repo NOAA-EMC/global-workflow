@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 
-import datetime
 from logging import getLogger
 import netCDF4 as nc
 from pprint import pformat
-import os
-from pygfs.jedi import Jedi
-from wxflow import (AttrDict, FileHandler, Task, Executable,
-                    add_to_datetime, to_fv3time, to_timedelta,
-                    parse_j2yaml, save_as_yaml,
+from wxflow import (AttrDict, FileHandler, Task,
+                    parse_j2yaml,
+                    to_timedelta, add_to_datetime,
                     logit)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -16,16 +13,15 @@ logger = getLogger(__name__.split('.')[-1])
 
 class AnalysisCalc(Task):
     """
-    Class for JEDI-based ensemble increment recentering
+    Class for analysis calculation
     """
     @logit(logger, name="AnalysisCalc")
     def __init__(self, config):
-        """Constructor diagnostic atmospheric ensemble increment recentering
+        """Constructor for analysis calculation task
 
-        This method will construct an ensemble increment recentering task
+        This method will construct an analysis calculation
         This includes:
         - extending the task_config attribute AttrDict to include parameters required for this task
-        - instantiate the Jedi attribute object
 
         Parameters
         ----------
@@ -38,22 +34,9 @@ class AnalysisCalc(Task):
         """
         super().__init__(config)
 
-        _res = int(self.task_config.CASE[1:])
-        _res_anl = int(self.task_config.CASE_ANL[1:])
-        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
-
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'npx_ges': _res + 1,
-                'npy_ges': _res + 1,
-                'npz_ges': self.task_config.LEVS - 1,
-                'npz': self.task_config.LEVS - 1,
-                'npx_anl': _res_anl + 1,
-                'npy_anl': _res_anl + 1,
-                'npz_anl': self.task_config.LEVS - 1,
-                'ATM_WINDOW_BEGIN': _window_begin,
-                'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
             }
@@ -64,12 +47,10 @@ class AnalysisCalc(Task):
 
     @logit(logger)
     def initialize(self) -> None:
-        """Initialize the ensemble increment recentering task
+        """Initialize the analysis calculation task
 
-        This method will initialize the ensemble increment recentering task.
+        This method will initialize the analysis calculation task.
         This includes:
-        - initializing the JEDI recentering application
-        - creating working directories for each forecast hour
         - staging backgrounds and increments
 
         Parameters
@@ -85,13 +66,13 @@ class AnalysisCalc(Task):
         logger.info(f"Staging background and increment files from {self.task_config.JEDI_BKG_INC_YAML}")
         fh_dict = parse_j2yaml(self.task_config.JEDI_BKG_INC_YAML, self.task_config)
         FileHandler(fh_dict).sync()
-        logger.debug(f"JEDI background and increment files:\n{pformat(fh_dict)}")
+        logger.debug(f"Background and increment files:\n{pformat(fh_dict)}")
 
     @logit(logger)
     def execute(self) -> None:
-        """Run JEDI executable
+        """Compute analyses
 
-        This method will run the JEDI executable for the ensemble increment recentering
+        This method will add increments to backgrounds to generate the analyses
 
         Parameters
         ----------
@@ -102,30 +83,35 @@ class AnalysisCalc(Task):
         None
         """
 
-        # Compute analyses
+        # Loop through forecast hours
         for fh in self.task_config.IAUFHRS:
            hr = format(fh, '03')
-           add_increment(self.task_config.current_cycle,
+           valid_time = add_to_datetime(self.task_config.current_cycle, to_timedelta(hr))
+
+           # Atmosphere
+           add_increment(valid_time,
                          f"atmi{hr}.nc",
                          f"atma{hr}.nc")
 
+           # Aerosols
            if self.task_config.DO_AERO_ANL:
-               add_increment(self.task_config.current_cycle,
+               add_increment(valid_time,
                              f"aeroi{hr}.nc",
                              f"atma{hr}.nc")
 
+           # Snow
            if self.task_config.DO_JEDISNOWDA:
-               add_increment(self.task_config.current_cycle,
+               add_increment(valid_time,
                              f"snowi{hr}.nc",
                              f"sfca{hr}.nc")
 
     @logit(logger)
     def finalize(self) -> None:
-        """Finalize the ensemble increment recentering task
+        """Finalize the analysis calculation task
 
-        This method will finalize the ensemble increment recentering task.
+        This method will finalize the analysis calculation task.
         This includes:
-        - Move increment files to the comrot directory
+        - Move analysis files to the comrot directory
 
         Parameters
         ----------
@@ -156,14 +142,34 @@ class AnalysisCalc(Task):
         FileHandler(fh_dict).sync()
 
 @logit(logger)
-def add_increment(current_cycle, fn_incr: str, fn_bkg: str) -> None:
+def add_increment(valid_time, fn_incr: str, fn_bkg: str) -> None:
+    """Add increment to backgrounds
+
+    This function will open background and increment files and add
+    increment variables to the corresponding variables in the background
+    file. Thus, the background file becomes and analysis file.
+
+    Parameters
+    ----------
+    valid_time: datetime
+        datetime object time in which analysis is valid
+    fn_incr: str
+        path of increment file
+    fn_bkg: str
+        path of background file
+
+    Returns
+    ----------
+    None
+    """
+
     try:
         with nc.Dataset(fn_incr, 'r') as nc_incr:
             with nc.Dataset(fn_bkg, 'r+') as nc_bkg:
                 # Change the units of the time coordinate since the units from the UFS history
                 # file will break UPP
                 time_var = nc_bkg.variables['time']
-                time_var.units = current_cycle.strftime('hours since %Y-%m-%dT%H:%M:%S')
+                time_var.units = valid_time.strftime('hours since %Y-%m-%dT%H:%M:%S')
                 time_var[:] = 0.
 
                 # Add increment variables to corresponding background variables

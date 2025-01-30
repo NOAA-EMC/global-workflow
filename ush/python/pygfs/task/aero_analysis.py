@@ -188,6 +188,16 @@ class AerosolAnalysis(Task):
         # copy files back to COM
         logger.info(f"Copying files to COM based on {self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL}")
         aero_var_final_list = parse_j2yaml(self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL, self.task_config)
+
+        # copy Gaussian increment to COM
+        src = os.path.join(self.task_config.DATA,
+                           "anl",
+                           f"aeroinc_gauss.{self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%S')}Z.gaussian.modelLevels.nc"),
+        dest = os.path.join(f"{self.task_config.COM_ATMOS_ANALYSIS}",
+                            f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.aeroinc.nc")
+        aero_var_final_list['copy'].append([src, dest])
+
+        # Call FileHandler
         FileHandler(aero_var_final_list).sync()
 
         # open tar file for writing

@@ -339,6 +339,14 @@ class SnowAnalysis(Task):
             inclist.append([src, dest])
         FileHandler({'copy': inclist}).sync()
 
+        # Copy Gaussian increment to COMROT
+        src = os.path.join(self.task_config.DATA,
+                           "anl",
+                           f"snowinc_gauss.{self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%S')}Z.gaussian.modelLevels.nc")
+        dest = os.path.join(f"{self.task_config.COM_ATMOS_ANALYSIS}",
+                            f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.snowinc.nc")
+        FileHandler({'copy': [src,dest]}).sync()
+
     @logit(logger)
     def add_increments(self) -> None:
         """Executes the program "apply_incr.exe" to create analysis "sfc_data" files by adding increments to backgrounds

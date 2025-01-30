@@ -6,12 +6,10 @@ import gzip
 import tarfile
 from logging import getLogger
 from pprint import pformat
-from typing import Any, Dict, List, Optional
-from wxflow import (AttrDict,
-                    FileHandler,
-                    add_to_datetime, to_fv3time, to_timedelta, to_YMDH,
-                    Task,
-                    parse_j2yaml, save_as_yaml,
+from typing import Any, Dict
+from wxflow import (AttrDict, FileHandler, Task,
+                    add_to_datetime, to_timedelta,
+                    parse_j2yaml,
                     logit)
 from pygfs.jedi import Jedi
 
@@ -271,14 +269,19 @@ class AtmAnalysis(Task):
         logger.info("Copy UFS model readable atm increment file")
         inc_copy = {'copy': []}
         for itile in range(6):
-            src = os.path.join(self.task_config.DATA, 'anl', f"cubed_sphere_grid_atminc.tile{itile+1}.nc")
+            src = os.path.join(self.task_config.DATA,
+                               "anl",
+                               f"cubed_sphere_grid_atminc.tile{itile+1}.nc")
             dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS,
                                 f'{self.task_config.RUN}.t{self.task_config.cyc:02d}z.cubed_sphere_grid_atminc.tile{itile+1}.nc')
             inc_copy['copy'].append([src, dest])
 
         # Copy Gaussian increment to comrot directory
-        src = f"atminc.{self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%S')}Z.gaussian.modelLevels.nc"
-        dest = os.path.join(f"{self.task_config.COM_ATMOS_ANALYSIS}",f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc")
+        src = os.path.join(self.task_config.DATA,
+                           "anl",
+                           f"atminc.{self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%S')}Z.gaussian.modelLevels.nc")
+        dest = os.path.join(f"{self.task_config.COM_ATMOS_ANALYSIS}",
+                            f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc")
         inc_copy['copy'].append([src, dest])
 
         # copy increments
