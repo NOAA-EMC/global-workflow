@@ -27,6 +27,15 @@ logger = Logger(level="DEBUG", colored_log=True)
 
 
 def parse_args():
+    """
+    parse_args
+    Parses command line arguments.
+
+    Returns
+    -------
+    argparse.Namespace
+        Parsed command line arguments.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--yaml", required=True)
     parser.add_argument("--test_date", required=True)
@@ -34,6 +43,20 @@ def parse_args():
 
 
 def file_checksum(path):
+    """
+    file_checksum
+    Computes the MD5 checksum of a file.
+
+    Parameters
+    ----------
+    path : str
+        Path to the file.
+
+    Returns
+    -------
+    str
+        MD5 checksum of the file.
+    """
     hasher = hashlib.md5()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
@@ -42,6 +65,20 @@ def file_checksum(path):
 
 
 def validate_cmpfiles(config):
+    """
+    validate_cmpfiles
+    Validates that the checksums of paired files match.
+
+    Parameters
+    ----------
+    config : dict
+        Configuration dictionary containing file pairs to compare.
+
+    Raises
+    ------
+    ValueError
+        If the checksums of any paired files do not match.
+    """
     cmpfiles = config.get("output_files", {}).get("cmpfiles", [])
     for pair in cmpfiles:
         file_a, file_b = pair
@@ -53,6 +90,15 @@ def validate_cmpfiles(config):
 
 @logit(logger)
 def main():
+    """
+    main
+    Main function that parses arguments, reads configuration, and validates file checksums.
+
+    Raises
+    ------
+    SystemExit
+        If no output files are found in the configuration.
+    """
     args = parse_args()
 
     data = {}
