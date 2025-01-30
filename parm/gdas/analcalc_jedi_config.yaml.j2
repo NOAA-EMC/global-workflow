@@ -1,0 +1,7 @@
+convertstate:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas.x'
+  mpi_cmd: '{{ APRUN_ANALCALC_FV3JEDI }}'
+  jedi_args: ['fv3jedi', 'convertstate']
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
+  jcb_algo: atm_analcalc

@@ -3,8 +3,12 @@ copy:
 - ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}atmf{{ '%03d' % fh }}.nc", "{{ DATA }}/atma{{ '%03d' % fh }}.nc" ]
 - ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}sfcf{{ '%03d' % fh }}.nc", "{{ DATA }}/sfca{{ '%03d' % fh }}.nc" ]
 {% if fh == 6 %}
-- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}atminc.nc", "{{ DATA }}/atmi006.nc"]
+{% for itile in range(6) %}
+- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc", "{{ DATA }}/cubed_sphere_grid_atmi{{ '%03d' % fh }}.tile{{ itile+1 }}.nc"]
+{% endfor %}
 {% else %}
-- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}atmi{{ '%03d' % fh }}.nc", "{{ DATA }}/atmi{{ '%03d' % fh }}.nc"]
+{% for itile in range(6) %}
+- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atmi{{ '%03d' % fh }}.tile{{ itile+1 }}.nc", "{{ DATA }}cubed_sphere_grid_atmi{{ '%03d' % fh }}.tile{{ itile+1 }}.nc"]
+{% endfor %}
 {% endif %}
 {% endfor %}

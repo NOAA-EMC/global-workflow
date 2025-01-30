@@ -3,9 +3,10 @@
 from logging import getLogger
 import netCDF4 as nc
 from pprint import pformat
+from pygfs.jedi import Jedi
 from wxflow import (AttrDict, FileHandler, Task,
                     parse_j2yaml,
-                    to_timedelta, add_to_datetime,
+                    to_timedelta, add_to_datetime, to_fv3time,
                     logit)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -34,16 +35,33 @@ class AnalysisCalc(Task):
         """
         super().__init__(config)
 
+        _res = int(self.task_config.CASE[1:])
+        _res_anl = int(self.task_config.CASE_ANL[1:])
+        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
+
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'npx_ges': _res + 1,
+                'npy_ges': _res + 1,
+                'npz_ges': self.task_config.LEVS - 1,
+                'npz': self.task_config.LEVS - 1,
+                'npx_anl': _res_anl + 1,
+                'npy_anl': _res_anl + 1,
+                'npz_anl': self.task_config.LEVS - 1,
+                'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
+                'ATM_WINDOW_BEGIN': _window_begin,
+                'APREFIX': f"gdas.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
             }
         )
 
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
+
+        # Create dictionary of Jedi objects
+        expected_keys = ['convertstate']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -61,6 +79,16 @@ class AnalysisCalc(Task):
         ----------
         None
         """
+
+        # Initialize JEDI ensemble increment recentering application
+        logger.info(f"Initializing JEDI convertstate application")
+        self.jedi_dict['convertstate'].initialize(self.task_config)
+
+        # Stage fix files
+        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        FileHandler(jedi_fix_dict).sync()
+        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # Stage background and increment files
         logger.info(f"Staging background and increment files from {self.task_config.JEDI_BKG_INC_YAML}")
@@ -83,26 +111,30 @@ class AnalysisCalc(Task):
         None
         """
 
+        # Convert cubed sphere increments to Gaussian grid
+        self.jedi_dict['convertstate'].execute()
+
         # Loop through forecast hours
         for fh in self.task_config.IAUFHRS:
            hr = format(fh, '03')
            valid_time = add_to_datetime(self.task_config.current_cycle, to_timedelta(hr))
+           auxgrid_time_str = to_fv3time(valid_time).replace('.', '_') + 'z'
 
            # Atmosphere
            add_increment(valid_time,
-                         f"atmi{hr}.nc",
+                         f"atmi{hr}.{auxgrid_time_str}.nc4",
                          f"atma{hr}.nc")
 
            # Aerosols
            if self.task_config.DO_AERO_ANL:
                add_increment(valid_time,
-                             f"aeroi{hr}.nc",
+                             f"aeroi{hr}.{auxgrid_time_str}.nc4",
                              f"atma{hr}.nc")
 
            # Snow
            if self.task_config.DO_JEDISNOWDA:
                add_increment(valid_time,
-                             f"snowi{hr}.nc",
+                             f"snowi{hr}.{auxgrid_time_str}.nc4",
                              f"sfca{hr}.nc")
 
     @logit(logger)
