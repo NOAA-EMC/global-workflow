@@ -91,8 +91,9 @@ class SFSAppConfig(AppConfig):
             tasks += ['wavepostpnt']
 
         if options['do_extractvars']:
-            tasks += ['extractvars', 'arch']
+            tasks += ['extractvars']
 
+        # TODO: Add archive
         tasks += ['cleanup']
 
         return {f"{self.run}": tasks}

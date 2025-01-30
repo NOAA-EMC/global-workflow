@@ -206,7 +206,7 @@ class SFSTasks(Tasks):
         max_tasks = self._configs[config]['MAX_TASKS']
         resources = self.get_resource(config)
 
-        fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
+        fhrs = self._get_forecast_hours('sfs', self._configs[config], component)
 
         # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
         is_replay = self._configs[config]['REPLAY_ICS']
@@ -276,7 +276,7 @@ class SFSTasks(Tasks):
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        fhrs = self._get_forecast_hours('gefs', self._configs['atmos_ensstat'])
+        fhrs = self._get_forecast_hours('sfs', self._configs['atmos_ensstat'])
 
         # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
         is_replay = self._configs['atmos_ensstat']['REPLAY_ICS']
@@ -327,7 +327,7 @@ class SFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
-        fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'], 'wave')
+        fhrs = self._get_forecast_hours('sfs', self._configs['wavepostsbs'], 'wave')
 
         # When using replay, output does not start until hour 3
         is_replay = self._configs['wavepostsbs']['REPLAY_ICS']
