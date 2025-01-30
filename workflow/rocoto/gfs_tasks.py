@@ -2797,6 +2797,12 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f"{self.run}_atmanlfinal"}
         deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_aero_anl']:
+            dep_dict = {'type': 'task', 'name': f"{self.run}_aeroanlfinal"}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jedisnowda']:
+            dep_dict = {'type': 'task', 'name': f"{self.run}_snowanl"}
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('analcalc_fv3jedi')
