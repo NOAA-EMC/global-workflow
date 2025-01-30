@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
+# Redirect all output to a local file -- it cannot be sent back directly with tty/pty
+script_relpath="$(dirname "${BASH_SOURCE[0]}")"
+log_file="${script_relpath}/run_doorman.log"
+
+run_doorman(){
 set -eux
 
 # This script runs on Niagara to interact with the Doorman service
 
 # Make the working directory
-doorman_dir='{{homedir}}/doorman_wd'
+doorman_dir='{{server_home}}/doorman_wd'
 mkdir -p "${doorman_dir}"
 cd "${doorman_dir}"
 rm -f dm.conf
@@ -69,5 +74,8 @@ if [[ "{{KEEPDATA}}" == "NO" ]]; then
     cd "${HOME}" || echo "Failed to navigate to ${HOME}!" && exit 4
     rm -rf "${doorman_dir}"
 fi
+}
+
+run_doorman >& "${log_file}"
 
 exit 0
