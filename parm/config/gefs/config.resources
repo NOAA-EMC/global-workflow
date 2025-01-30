@@ -332,7 +332,7 @@ case ${step} in
     ;;
 
   "arch_vrfy")
-    export walltime="00:10:00"
+    export walltime="00:15:00"
     export ntasks=1
     export tasks_per_node=1
     export threads_per_task=1
