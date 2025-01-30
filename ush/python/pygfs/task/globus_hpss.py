@@ -2,6 +2,7 @@
 
 import os
 from logging import getLogger
+from pathlib import Path
 from typing import Any, Dict, List
 
 from wxflow import AttrDict, Task, to_YMD, to_YMDH, strftime, logit, parse_yaml, Jinja, which, ProcessError
@@ -56,7 +57,7 @@ class GlobusHpss(Task):
         server_name = self.task_config.SERVER_NAME
 
         try:
-            ssh_output = self.ssh("-G", "{server_name}", output=str)
+            ssh_output = self.ssh("-G", f"{server_name}", output=str)
         except ProcessError as pe:
             raise ProcessError("FATAL ERROR No host information on niagara!\n"
                                f"Please add an entry for {server_name} into ~/.ssh/config!") from pe
@@ -72,9 +73,10 @@ class GlobusHpss(Task):
                                  "{{LOGNAME}}", server_username
                                 )
 
+        logger.debug(f"Server username detected as {server_username}")
+
         local_dict = AttrDict({
-            'sven_dropbox': (f"{self.task_config.SVEN_DROPBOX_ROOT}/"
-                             f"{self.task_config.PSLOT}/{self.task_config.RUN}.{cycle_YMD}/{cycle_HH}"),
+            'sven_dropbox': (f"{self.task_config.SVEN_DROPBOX_ROOT}"),
             'doorman_gendel': (f"{server_home}/GENERAL_DELIVERY/"
                                f"{self.task_config.PSLOT}/{self.task_config.RUN}.{cycle_YMD}/{cycle_HH}"),
             'hpss_target_dir': f"{self.task_config.ATARDIR}/{cycle_YMDH}",
@@ -94,7 +96,7 @@ class GlobusHpss(Task):
         and the Doorman executes the scripts on each of the files.  The six files involved are
 
         dm.conf - One line indicating the location of the the scripts on the client.
-        location - The locations of files on the client to send to the server.
+        location - The location of the file on the client to send to the server.
         todo - A bash script that executes on each file once they are transferred to the server.
                For our purposes, this is mainly pushing to HPSS and writing a log file with
                either "SUCCESS" or "FAILURE" as the last line.
@@ -144,33 +146,36 @@ class GlobusHpss(Task):
 
         # Start parsing scripts and storing in the output dictionary
         transfer_sets = {
-                         "standard": {"locations": backup_set},
+                         "standard": {"locations": standard_backup_set},
                          "rstprod": {"locations": rstprod_backup_set}
                          }
 
         # Parse the doorman setup script
         doorman_jinja = os.path.join(globus_parm, "run_doorman.sh.j2")
-        doorman_script = Jinja(doorman_jinja, data=globus_dict, allow_missing=False).render()
+        doorman_script = Jinja(doorman_jinja, data=globus_dict, allow_missing=False).render
 
         # Write a script with the location of the dropbox on the client
-        dm_conf = f'export dropbox="{globus_dict.sven_dropbox}'
+        dm_conf = f'export dropbox="{globus_dict.sven_dropbox}"'
+
+        # Make the dropbox and clean it out
+        Path(globus_dict.sven_dropbox).mkdir(exist_ok=True)
 
         # Parse the return script
         return_jinja = os.path.join(globus_parm, "return.sh.j2")
-        return_script = Jinja(return_jinja, data=globus_dict, allow_missing=False).render()
+        return_script = Jinja(return_jinja, data=globus_dict, allow_missing=False).render
 
         # Create a todo script for rstprod and non-rstprod tarballs
         todo_jinja = os.path.join(globus_parm, "todo.sh.j2")
-        todo_script = Jinja(todo_jinja, data=globus_dict, allow_missing=False).render()
+        todo_script = Jinja(todo_jinja, data=globus_dict, allow_missing=False).render
         transfer_sets["standard"]["todo"] = todo_script
 
         rstprod_todo_jinja = os.path.join(globus_parm, "rstprod_todo.sh.j2")
-        rstprod_todo_script = Jinja(rstprod_todo_jinja, data=globus_dict, allow_missing=False).render()
+        rstprod_todo_script = Jinja(rstprod_todo_jinja, data=globus_dict, allow_missing=False).render
         transfer_sets["rstprod"]["todo"] = rstprod_todo_script
 
         # Create a common verify script for all tarballs
         vrfy_jinja = os.path.join(globus_parm, "verify.sh.j2")
-        vrfy_script = Jinja(vrfy_jinja, data=globus_dict, allow_missing=False).render()
+        vrfy_script = Jinja(vrfy_jinja, data=globus_dict, allow_missing=False).render
 
         # Add common scripts to both standard and rstprod
         for transfer_set in transfer_sets:
@@ -178,9 +183,9 @@ class GlobusHpss(Task):
             transfer_sets[transfer_set]["dm.conf"] = dm_conf
             transfer_sets[transfer_set]["return"] = return_script
             transfer_sets[transfer_set]["verify"] = vrfy_script
-            transfer_sets[transfer_set]["server_name"] = globus_dict.server_name
+            transfer_sets[transfer_set]["server_name"] = globus_dict.SERVER_NAME
             transfer_sets[transfer_set]["homedir"] = (
-                f"{globus_dict.server_home}/doorman/{globus_dict.jobID}/"
+                f"{globus_dict.server_home}/doorman/{globus_dict.jobid}/"
                 f"{transfer_set}"
             )
 
@@ -202,8 +207,6 @@ class GlobusHpss(Task):
 
         with open("dm.conf", "w") as conf_f:
             conf_f.write(transfer_set["dm.conf"])
-        with open("location", "w") as location_f:
-            location_f.write('\n'.join(location for location in transfer_set["locations"]))
         with open("todo", "w") as todo_f:
             todo_f.write(transfer_set["todo"])
         with open("verify", "w") as verify_f:
@@ -217,27 +220,35 @@ class GlobusHpss(Task):
         os.chmod("run_doorman.sh", 0o740)
 
         server_homedir = transfer_set["homedir"]
+        server_name = transfer_set["server_name"]
 
-        # Tell Sven we have a package to send
-        try:
-            output = self.forsven()
-        except ProcessError as pe:
-            raise ProcessError("FATAL ERROR Sven failed to package the request"
-                               f"with the output\n{output}") from pe
+        # Tell Sven we have files to send, one at a time
+        for location in transfer_set["locations"]:
+            print(location)
+            with open("location", "w") as location_f:
+                location_f.write(location+"\n")
+            try:
+                logger.info(f"Preparing package for {location}")
+                self.forsven(output=str.split)
+            except ProcessError as pe:
+                raise ProcessError("FATAL ERROR Sven failed to package the request"
+                                   f"for {location}") from pe
 
         # Transfer the doorman script to Niagara.
         # Note, this assumes we have unattended transfer capability.
         try:
             # Start by making the directory it will run in
-            self.ssh("-t", "mkdir", "-p", f"{server_homedir}/doorman_rundir", output=str.split, error=str.split)
+            logger.debug(f"Making the run directory {server_homedir}/doorman_rundir on {server_name}")
+            self.ssh("-tt", server_name, f"mkdir -p {server_homedir}/doorman_rundir", output=str.split, error=str.split)
         except ProcessError as pe:
             raise ProcessError("FATAL ERROR Failed to create temporary working directoryon Niagara") from pe
 
         try:
             # Now transfer and rename the script
             server_run_script = f"{server_homedir}/doorman_rundir/run_doorman.sh"
+            logger.debug(f"Transfer run_doorman.sh to {server_name}:{server_run_script}")
             self.scp(
-                "run_doorman.sh", f"{transfer_set['server_name']}:{server_run_script}",
+                "run_doorman.sh", f"{server_name}:{server_run_script}",
                 output=str.split, error=str.split
             )
         except ProcessError as pe:
@@ -245,12 +256,32 @@ class GlobusHpss(Task):
 
         # Now actually run the doorman script
         try:
+            logger.debug(f"Run {server_run_script} remotely")
             self.ssh(
-                     "-t", "{server_run_script}",
+                     "-tt", server_name, f"{server_run_script}",
                      output=str.split, error=str.split
             )
         except ProcessError as pe:
-            raise ProcessError("FATAL ERROR Failed to run the Doorman service on Niagara") from pe
+            # Try and retrieve the log file
+            try:
+                self.scp(f"{server_name}:{server_homedir}/run_doorman.log", ".")
+            except ProcessError:
+                logger.warning("WARNING unable to transfer the doorman log back after failure")
+            else:
+                logger.info("The doorman failed to run.  Printing output of the log:")
+                with open('run_doorman.log', 'r') as doorman_log:
+                    print(doorman_log.read())
+
+            raise ProcessError(f"FATAL ERROR Failed to run the Doorman service on {server_name}") from pe
+
+        # Retrieve and print the Doorman log file from the server
+        try:
+            self.scp(f"{server_name}:{server_homedir}/run_doorman.log", '.')
+            with open('run_doorman.log', 'r') as doorman_log:
+                print(doorman_log.read())
+
+        except ProcessError as pe:
+            raise ProcessError("FATAL ERROR Failed to retrieve the doorman log file from {server_name}") from pe
 
         # Lastly, check the response from the doorman in Sven's dropbox
         # TODO
