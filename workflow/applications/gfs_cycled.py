@@ -62,8 +62,6 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_jediatmvar']:
             configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
-            if run == 'gdas':
-                configs += ['ecen_fv3jedi']
         else:
             configs += ['anal', 'analdiag', 'analcalc']
 
@@ -83,7 +81,8 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_hybvar']:
             if options['do_jediatmens']:
                 configs += ['atmensanlinit', 'atmensanlobs', 'atmensanlsol',
-                            'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
+                            'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
+                            'ecen_fv3jedi']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd', 'echgres', 'ecen']
             configs += ['esfc', 'efcs', 'epos', 'earc']
@@ -173,8 +172,6 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run] += ['prep']
                 if options['do_jediatmvar']:
                     task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
-                    if run == 'gdas':
-                        task_names[run] += ['ecen_fv3jedi']
                 else:
                     task_names[run] += ['anal', 'analcalc']
 
@@ -305,7 +302,7 @@ class GFSCycledAppConfig(AppConfig):
             elif 'enkf' in run:
 
                 if options['do_jediatmens']:
-                    task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal']
+                    task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'ecen_fv3jedi']
                     if options['lobsdiag_forenkf']:
                         task_names[run] += ['atmensanlobs', 'atmensanlsol']
                     else:

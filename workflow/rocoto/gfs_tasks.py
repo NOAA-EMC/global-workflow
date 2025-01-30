@@ -2859,7 +2859,7 @@ class GFSTasks(Tasks):
 
         deps = []
         if self.options['do_jediatmens']:
-            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_ecen_fv3jedi'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_ecen_fv3jedi'}
             deps.append(rocoto.add_dependency(dep_dict))
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}

@@ -133,18 +133,21 @@ class AnalysisCalc(Task):
            auxgrid_time_str = to_fv3time(valid_time).replace('.', '_') + 'z'
 
            # Atmosphere
+           logger.info(f"Adding atmospheric increment to background for forecast hour {hr}")
            add_increment(valid_time,
                          f"atmi{hr}.{auxgrid_time_str}.nc4",
                          f"atma{hr}.nc")
 
            # Aerosols
            if self.task_config.DO_AERO_ANL:
+               logger.info(f"Adding aerosol increment to background for forecast hour {hr}")
                add_increment(valid_time,
                              f"aeroi{hr}.{auxgrid_time_str}.nc4",
                              f"atma{hr}.nc")
 
            # Snow
            if self.task_config.DO_JEDISNOWDA:
+               logger.info(f"Adding snow increment to background for forecast hour {hr}")
                add_increment(valid_time,
                              f"snowi{hr}.{auxgrid_time_str}.nc4",
                              f"sfca{hr}.nc")
