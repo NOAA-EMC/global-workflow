@@ -1,7 +1,7 @@
 #!/bin/bash
 # Jinja-templated variables
 hpss_target_dir="{{hpss_target_dir}}"
-log_directory="{{niagara_log_directory}}"
+log_directory="{{server_home}}/doorman/{{jobid}}/logs/"
 
 cwd=$(pwd)
 file="${1}"

@@ -1,12 +1,15 @@
 #!/bin/bash
 # Jinja-templated variables
-log_directory="{{niagara_log_directory}}"
-# In lieu of an actual globus xfer ID, use the filename
+# For now, there is no easy way to determine which log file belongs to which
+# tarball.  So, the verify script simply checks all log files for "SUCCESS".
 # TODO when the Doorman is capable of providing the xfer ID, use that instead
-globus_xfer_id="{{target_filename}}"
+# globus_xfer_id=""
+log_directory="{{server_home}}/doorman/{{jobid}}/logs/"
 
-log_file="${log_directory}/hpss_status_${globus_xfer_id}.log"
-
-hpss_stat=$(tail -1 "${log_file}")
+hpss_stat=""
+for log in ${log_directory}/*.log; do
+    hpss_stat_tmp=$(tail -1 "${log}")
+    hpss_stat="${log}: ${hpss_stat}\n${hpss_stat_tmp}"
+done
 
 echo "${hpss_stat}"
