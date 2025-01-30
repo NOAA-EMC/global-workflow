@@ -3,7 +3,7 @@
 {% set TEST_DATE_offset = TEST_DATE | add_to_datetime(H_timedelta) %}
 
 {% set cyc = TEST_DATE | strftime('%H') %}
-{% set cyc_offset = TEST_DATE_offset  | strftime('%H') %}
+{% set cyc_offset = TEST_DATE_offset | strftime('%H') %}
 
 {% set PDY = TEST_DATE | to_YMD %}
 {% set PDY_offset = TEST_DATE_offset |  to_YMD %}
