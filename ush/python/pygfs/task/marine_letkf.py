@@ -2,10 +2,11 @@
 
 import copy
 import f90nml
-import pygfs.utils.marine_da_utils as mdau
+from jcb import render
 from logging import getLogger
 import os
 from pygfs.task.analysis import Analysis
+import pygfs.utils.marine_da_utils as mdau
 from typing import Dict
 from wxflow import (add_to_datetime,
                     AttrDict,
@@ -141,36 +142,34 @@ class MarineLETKF(Analysis):
             else:
                 logger.warning(f"{obs_file} is not available in {self.task_config.COMIN_OBS}")
 
+        print("obs_to_use: ", obs_to_use)
+        observers = {'observers': obs_to_use}
+        print("observers: ", observers)
+
         # stage the desired obs files
         FileHandler({'copy': obs_files_to_copy}).sync()
 
-        # make the letkf.yaml
-        # letkf_yaml = parse_j2yaml(self.task_config.MARINE_LETKF_YAML_TMPL, stageconf)
-        # letkf_yaml.observations.observers = obs_to_use
-        # letkf_yaml.save(self.task_config.letkf_yaml_file)
-
 ####################################################################################################
         # Write obs_list_short
-#        save_as_yaml(parse_obs_list_file(self.task_config.MARINE_OBS_LIST_YAML), 'obs_list_short.yaml')
         save_as_yaml(os.path.join(self.task_config.PARMsoca, 'letkf','letkf_obs_list.yaml.j2'), 'obs_list_short.yaml')
         os.environ['OBS_LIST_SHORT'] = 'obs_list_short.yaml'
 
-        print("self.task_config: ", self.task_config)
+ #       print("self.task_config: ", self.task_config)
         envconfig_jcb = copy.deepcopy(self.task_config)
 #        envconfig_jcb['cyc'] = int(self.task_config.current_cycle.strftime('%H'))        
         envconfig_jcb['cyc'] = int(os.getenv('cyc'))
         envconfig_jcb['PDY'] = self.task_config.current_cycle.strftime('%Y%m%d')
-        print("PDY: ", envconfig_jcb['PDY'])       
-        print("type of cyc: ", type(envconfig_jcb['cyc']))
-        #print("envconfig_jcb: ", envconfig_jcb)
+        envconfig_jcb['window_length'] = f"PT{self.task_config['assim_freq']}H"
+
         # Render the JCB configuration files
         jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-base.yaml')
         jcb_algo_yaml = os.path.join(self.task_config.PARMsoca, 'letkf/marine-jcb-lektf.yaml.j2')
 
-        jcb_base_config = YAMLFile(path=jcb_base_yaml)
+        jcb_base_config = parse_j2yaml(path=jcb_base_yaml, data=envconfig_jcb)
         jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
         jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
-        jcb_algo_config = YAMLFile(path=jcb_algo_yaml)
+#        jcb_algo_config = YAMLFile(path=jcb_algo_yaml)
+        jcb_algo_config = parse_j2yaml(path=jcb_algo_yaml, data=envconfig_jcb)
         jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
         jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
 
@@ -180,16 +179,17 @@ class MarineLETKF(Analysis):
         # convert datetime to string
         jcb_config['window_begin'] = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y-%m-%dT%H:%M:%SZ')
         jcb_config['window_middle'] = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
-
-        # Current hack so that this is not done directly in the JCB base yaml
-#        jcb_config['marine_pseudo_model_states'] = parse_yaml('bkg_list.yaml')
-
+        jcb_config['window_length'] = f"PT{self.task_config['assim_freq']}H"
+ 
         # Render the full JEDI configuration file using JCB
         jedi_config = render(jcb_config)
+        jedi_config['observations'] = observers
 
         # Save the JEDI configuration file
         letkf_yaml_jcb = 'letkf.yaml'
-        mdau.clean_empty_obsspaces(jedi_config, target=letkf_yaml_jcb, app='var')
+        # TODO (AFE) - is this needed? will require addition of letkf case
+#        mdau.clean_empty_obsspaces(jedi_config, target=letkf_yaml_jcb, app='var')
+        save_as_yaml(jedi_config, letkf_yaml_jcb)
 
         ######################################
 
