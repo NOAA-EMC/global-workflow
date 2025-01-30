@@ -60,7 +60,11 @@ class AnalysisCalc(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create dictionary of Jedi objects
-        expected_keys = ['convertstate']
+        expected_keys = ['atm_convertstate']
+        if self.task_config.DO_AERO_ANL:
+            expected_keys.append('aero_convertstate')
+        if self.task_config.DO_JEDISNOWDA:
+            expected_keys.append('snow_convertstate')
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
@@ -81,8 +85,12 @@ class AnalysisCalc(Task):
         """
 
         # Initialize JEDI ensemble increment recentering application
-        logger.info(f"Initializing JEDI convertstate application")
-        self.jedi_dict['convertstate'].initialize(self.task_config)
+        logger.info(f"Initializing JEDI convertstate applications")
+        self.jedi_dict['atm_convertstate'].initialize(self.task_config)
+        if self.task_config.DO_AERO_ANL:
+            self.jedi_dict['aero_convertstate'].initialize(self.task_config)
+        if self.task_config.DO_JEDISNOWDA:
+            self.jedi_dict['snow_convertstate'].initialize(self.task_config)
 
         # Stage fix files
         logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
@@ -112,7 +120,11 @@ class AnalysisCalc(Task):
         """
 
         # Convert cubed sphere increments to Gaussian grid
-        self.jedi_dict['convertstate'].execute()
+        self.jedi_dict['atm_convertstate'].execute()
+        if self.task_config.DO_AERO_ANL:
+            self.jedi_dict['aero_convertstate'].execute()
+        if self.task_config.DO_JEDISNOWDA:
+            self.jedi_dict['snow_convertstate'].execute()
 
         # Loop through forecast hours
         for fh in self.task_config.IAUFHRS:
@@ -196,21 +208,20 @@ def add_increment(valid_time, fn_incr: str, fn_bkg: str) -> None:
     """
 
     try:
-        with nc.Dataset(fn_incr, 'r') as nc_incr:
-            with nc.Dataset(fn_bkg, 'r+') as nc_bkg:
-                # Change the units of the time coordinate since the units from the UFS history
-                # file will break UPP
-                time_var = nc_bkg.variables['time']
-                time_var.units = valid_time.strftime('hours since %Y-%m-%dT%H:%M:%S')
-                time_var[:] = 0.
+        with nc.Dataset(fn_incr, 'r') as nc_incr, nc.Dataset(fn_bkg, 'r+') as nc_bkg:
+            # Change the units of the time coordinate since the units from the UFS history
+            # file will break UPP
+            time_var = nc_bkg.variables['time']
+            time_var.units = valid_time.strftime('hours since %Y-%m-%dT%H:%M:%S')
+            time_var[:] = 0.
 
-                # Add increment variables to corresponding background variables
-                for var in nc_incr.variables:
-                    if len(nc_incr[var].dimensions) == 3 or len(nc_incr[var].dimensions) == 4:
-                        var_incr = nc_incr[var][:]
-                        var_bkg = nc_bkg[var][:]
+            # Add increment variables to corresponding background variables
+            for var in nc_incr.variables:
+                if len(nc_incr[var].dimensions) == 3 or len(nc_incr[var].dimensions) == 4:
+                    var_incr = nc_incr[var][:]
+                    var_bkg = nc_bkg[var][:]
 
-                        nc_bkg[var][:] = var_bkg + var_incr
+                    nc_bkg[var][:] = var_bkg + var_incr
 
     except Exception as e:
         logger.error(f"Error occurred with message {e}")

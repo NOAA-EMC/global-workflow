@@ -1,7 +1,25 @@
-convertstate:
+atm_convertstate:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/gdas.x'
   mpi_cmd: '{{ APRUN_ANALCALC_FV3JEDI }}'
   jedi_args: ['fv3jedi', 'convertstate']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
-  jcb_algo: atm_analcalc
+  jcb_algo: atm_analcalc_convertstate
+{% if DO_AERO_ANL %}
+aero_convertstate:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas.x'
+  mpi_cmd: '{{ APRUN_ANALCALC_FV3JEDI }}'
+  jedi_args: ['fv3jedi', 'convertstate']
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/aero/jcb-base.yaml.j2'
+  jcb_algo: aero_analcalc_convertstate
+{% endif %}
+{% if DO_JEDISNOWDA %}
+snow_convertstate:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas.x'
+  mpi_cmd: '{{ APRUN_ANALCALC_FV3JEDI }}'
+  jedi_args: ['fv3jedi', 'convertstate']
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/snow/jcb-base.yaml.j2'
+  jcb_algo: snow_analcalc_convertstate
+{% endif %}

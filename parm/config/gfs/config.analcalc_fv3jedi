@@ -20,6 +20,6 @@ else
 fi
 
 export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
-export JEDI_BKG_INC_YAML="${PARMgfs}/gdas/staging/atm_analcalc.yaml.j2"
+export JEDI_BKG_INC_YAML="${PARMgfs}/gdas/staging/analcalc.yaml.j2"
 
 echo "END: config.analcalc_fv3jedi"
