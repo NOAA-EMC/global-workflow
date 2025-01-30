@@ -369,7 +369,8 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     "gdasapp_land_ensrecenter.x"
     "bufr2ioda.x"
     "calcfIMS.exe"
-    "apply_incr.exe")
+    "apply_incr.exe"
+    "regridStates.x")
   for gdasexe in "${JEDI_EXE[@]}"; do
     [[ -s "${gdasexe}" ]] && rm -f "${gdasexe}"
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/${gdasexe}" .

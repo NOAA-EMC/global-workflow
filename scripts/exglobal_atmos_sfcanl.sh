@@ -116,11 +116,12 @@ fi
 
 # Collect the dates in the window to update surface restarts
 gcycle_dates=("${PDY}${cyc}")  # Always update surface restarts at middle of window
-soilinc_fhrs=("06") # increment file at middle of window has FHR=6
+soilinc_fhrs=($assim_freq) # increment file at middle of window
+LFHR=$assim_freq
 if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
   half_window=$(( assim_freq / 2 ))
-  half_fhrs=$(printf %02d $half_window)
-  soilinc_fhrs+=("$half_fhrs")
+  soilinc_fhrs+=($half_window)
+  LFHR=-1
   BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
   gcycle_dates+=("${BDATE}")
 fi
@@ -133,6 +134,7 @@ if [ $GSI_SOILANAL = "YES" ]; then
     export CASE_IN=${CASE_ENS}
     export CASE_OUT=$CASE
     export OCNRES_OUT=$OCNRES
+    export LFHR
  
     $REGRIDSH
 
@@ -142,14 +144,13 @@ fi
 for hr in "${!gcycle_dates[@]}"; do
 
   gcycle_date=${gcycle_dates[hr]}
-  FHR=${FHR[hr]}
-  echo "CSD check hours $FHR"
+  FHR=${soilinc_fhrs[hr]}
 
-  echo "Updating surface restarts for ${gcycle_date} ..."
+  echo "CSD Updating surface restarts for ${gcycle_date} ..."
+  echo "CSD increment FHR ${FHR}"
 
   datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
 
-  # THIS BLOCK SPECIFIC TO NON-IAU CASE
   if [[ ${GSI_SOILANAL} = "YES" ]]; then
         for (( nn=1; nn <= ntiles; nn++ )); do
         cp "${COMIN_ATMOS_ANALYSIS}/sfci00${FHR}.tile${nn}.nc" \

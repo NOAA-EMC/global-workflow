@@ -20,7 +20,7 @@ export pgm=$PGM
 
 NMEM_REGRID=${NMEM_REGRID:-1}
 CASE_IN=${CASE_IN:-$CASE_ENS}
-
+LFHR=${LFHR:-6}
 
 # get resolutions
 CRES_IN=$(echo $CASE_IN | cut -c2-)
@@ -72,7 +72,21 @@ for n in $(seq 1 $ntiles); do
     ln -sf ${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc  vegetation_type.tile${n}.nc
 done
 
-#nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
+if [ $LFHR .GE. 0 ]; then 
+        soilinc_fhrs=($LFHR)
+else # construct restart times for deterministic member
+    soilinc_fhrs=($assim_freq) # increment file at middle of window 
+    if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
+      half_window=$(( assim_freq / 2 ))
+      soilinc_fhrs+=($half_window)
+    fi
+fi 
+
+echo "CSDregrid DOIAU $DOIAU" 
+    for FHR in "${soilinc_fhrs[@]}"; do
+      echo "CSDregrid FHR $FHR"
+    done
+
 for imem in $(seq 1 $NMEM_REGRID); do
     if [[ $NMEM_REGRID > 1 ]]; then
         cmem=$(printf %03i $imem)
@@ -84,14 +98,15 @@ for imem in $(seq 1 $NMEM_REGRID); do
         COM_SOIL_ANALYSIS_MEM=$COM_ATMOS_ANALYSIS_MEM
     fi
  
-    for FHR in $soilinc_fhrs; do
-      ln -fs ${COM_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHR}.nc \
+    for FHR in "${soilinc_fhrs[@]}"; do
+      echo "CSDregrid FHR calling $FHR"
+      ln -fs ${COM_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc \
                 ${DATA}/enkfgdas.sfci.nc
 
       $APRUN_REGR $REGRID_EXEC $REDOUT$PGMOUT $REDERR$PGMERR
 
       for n in $(seq 1 $ntiles); do
-          mv ${DATA}/sfci.tile${n}.nc  ${COM_ATMOS_ANALYSIS_MEM}/sfci0${FHR}.tile${n}.nc 
+          mv ${DATA}/sfci.tile${n}.nc  ${COM_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc 
       done
     done
 done

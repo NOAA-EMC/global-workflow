@@ -23,8 +23,8 @@ fi
 
 # set up soil analysis
 if [[ ${GSI_SOILANAL} = "YES" ]]; then
-    export DO_LNDINC=".true."
-    export LND_SOI_FILE="lnd_incr"
+     export DO_SOI_INC=".true."
+     export GCYCLE_INTERP_LNDINC=".false."
 fi
 
 echo "END: config.esfc"

@@ -123,8 +123,12 @@ if [ $GSI_SOILANAL = "YES" ]; then
     export CASE_IN=${CASE_ENS}
     export CASE_OUT=${CASE_ENS}
     export OCNRES_OUT=${OCNRES}
-    export soilinc_fhrs="06"
     export NMEM_REGRID=${NMEM_ENS}
+    if [ $DOIAU = "YES" ]; then
+        export LFHR=3 # match BDATE
+    else
+        export LFHR=6 # PDYcyc
+    fi
 
     $REGRIDSH
 
@@ -179,7 +183,7 @@ if [ $DOIAU = "YES" ]; then
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ ${GSI_SOILANAL} = "YES" ]]; then
-                FHR=6
+                FHR=$LFHR
                  ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" \
                    "${DATA}/soil_xainc.${cmem}" 
             fi
@@ -210,7 +214,7 @@ if [ $DOIAU = "YES" ]; then
 
 
             if [[ ${GSI_SOILANAL} = "YES" ]]; then
-                FHR=6
+                FHR=$LFHR
                 ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                    "${DATA}/sfcincr_gsi.${cmem}"
             fi
@@ -220,6 +224,7 @@ if [ $DOIAU = "YES" ]; then
 
 fi
 
+# to do- add SOILANAL below
 if [ $DOSFCANL_ENKF = "YES" ]; then
     for n in $(seq 1 $ntiles); do
 
