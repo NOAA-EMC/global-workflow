@@ -3,10 +3,10 @@ GFS V16.3.22 RELEASE NOTES
 -------
 PRELUDE
 -------
-
 The upstream OBSPROC package is updated to v1.3. Along with this are the following companion updates:
 * workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
 * updated GSI code and convinfo file for saildrone observations
+* ww3_outp is improved for the wave point output
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -26,7 +26,7 @@ The checkout script extracts the following GFS components:
 
 | Component | Tag         | POC               |
 | --------- | ----------- | ----------------- |
-| MODEL     | GFS.v16.3.1   | Jun.Wang@noaa.gov |
+| MODEL     | GFS.v16.3.22   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
 | GSI       | gfsda.v16.3.22 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.20 | George.Gayno@noaa.gov |
@@ -58,6 +58,7 @@ SORC CHANGES
 
 * New UFS_UTILS tag - `emcsfc_snow2mdl` program and associated scripts are updated to process global AFWA snow data
 * New GSI tag - `src/gsi/read_prepbufr.f90` code update for new saildrone subtype
+* New MODEL tag - WW3 program `ww3_outp` and associated scripts are improved to process the per-time-step point outputs more efficiently.
 
 JOBS CHANGES
 ------------
@@ -67,12 +68,15 @@ JOBS CHANGES
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.21
+In `config.resources.emc.dyn` and `config.resources.nco.static` following resources are changed:
+* for wavepostbndpnt: npe from 240 to 1; wtime from 1hr to 30min
+* for wavepostbndpntbll: npe from 448 to 2; wtime from 1hr to 10min
+* for wavepostpnt: npe from 200 to 3; wtime from 1.5hr to 35min
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.21
+* `scripts/exgfs_wave_post_pnt.sh` is changed to be compatible with the  new `ww3_outp`.
 
 FIX CHANGES
 -----------
@@ -97,14 +101,19 @@ Now ingest:
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* Increase ncpus from 50 to 60 for gfs_wave_postpnt job.
-  NCO provided change to avoid ncpu burst warnings.
+Reduce the ncpu and wtime as follow:
+* for jobs/JGLOBAL_WAVE_POST_BNDPNT; ncpu from 240 to 1; wtime from 1hr to 30min
+* for jobs/JGLOBAL_WAVE_POST_BNDPNTBLL; ncpu from 448 to 2; wtime from 1hr to 10min
+* for jobs/JGLOBAL_WAVE_POST_PNT; ncpu from 200 to 3; wtime from 1.5hr to 35min
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
   * emcsfc_sfc_prep and analysis
+  * wave_post_pnt
+  * wave_post_bndpnt
+  * wave_post_bndpntbll
 * Does this change require a 30-day evaluation?
   * No
 
@@ -133,3 +142,5 @@ PREPARED BY
 Kate.Friedman@noaa.gov
 George.Gayno@noaa.gov
 Andrew.Collard@noaa.gov
+Jessica.Meixner@noaa.gov
+Ali.Salimi@noaa.gov
