@@ -23,6 +23,7 @@ class AnalysisCalc(Task):
         This method will construct an analysis calculation
         This includes:
         - extending the task_config attribute AttrDict to include parameters required for this task
+        - instantiate the Jedi attribute object
 
         Parameters
         ----------
@@ -73,6 +74,8 @@ class AnalysisCalc(Task):
 
         This method will initialize the analysis calculation task.
         This includes:
+        - initializing the JEDI convertstate application
+        - staging JEDI fix files
         - staging backgrounds and increments
 
         Parameters
@@ -108,7 +111,11 @@ class AnalysisCalc(Task):
     def execute(self) -> None:
         """Compute analyses
 
-        This method will add increments to backgrounds to generate the analyses
+        This method will execute the analysis calculation task. This includes:
+        - Running the convertstate applications to convert the cubed sphere increments
+          to the Gaussian grid
+        - Adding the Gaussian increments to the Gaussian UFS history files to obtain
+          analysis files
 
         Parameters
         ----------

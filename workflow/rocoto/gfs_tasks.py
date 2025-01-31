@@ -2768,11 +2768,10 @@ class GFSTasks(Tasks):
     def ecen_fv3jedi(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f"{self.run}_atmanlfinal"}
+        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf','')}_atmanlfinal"}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.run == 'gdas':
-            dep_dict = {'type': 'task', 'name': f'enkf{self.run}_atmensanlfinal'}
-            deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ecen_fv3jedi')

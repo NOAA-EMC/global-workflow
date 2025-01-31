@@ -39,8 +39,6 @@ FV3_postdet() {
     # Get list of FV3 restart files
     local file_list
     file_list=$(FV3_restarts)
-    echo foobar
-    echo $file_list
     echo "Copying FV3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
     local fv3_file restart_file
     for fv3_file in ${file_list}; do
