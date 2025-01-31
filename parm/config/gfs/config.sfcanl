@@ -16,6 +16,7 @@ if [[ ${GSI_SOILANAL} = "YES" ]]; then
     export DO_LNDINC=".true."
     export DO_SOI_INC=".true."
     export GCYCLE_INTERP_LNDINC=".false."
+    export LSOIL_INCR=2
 fi
 
 echo "END: config.sfcanl"

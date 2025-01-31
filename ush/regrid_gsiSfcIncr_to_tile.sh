@@ -33,13 +33,22 @@ ntiles=6
 APREFIX="${RUN/enkf}.t${cyc}z."
 APREFIX_ENS="enkfgdas.t${cyc}z."
 
+LSOIL_INCR=${LSOIL_INCR:-2}
+
+n_vars=$(( LSOIL_INCR*2 ))
+
+soil_incr_vars=""
+for vi in $( seq 1 ${LSOIL_INCR} ); do
+    soil_incr_vars=${soil_incr_vars}'"soilt'${vi}'_inc"',
+done
+for vi in $( seq 1 ${LSOIL_INCR} ); do
+    soil_incr_vars=${soil_incr_vars}'"slc'${vi}'_inc"',
+done
+
 cat << EOF > regrid.nml
  &config
-  n_vars=4,
-  variable_list(1)="soilt1_inc     ",
-  variable_list(2)="soilt2_inc     ",
-  variable_list(3)="slc1_inc     ",
-  variable_list(4)="slc2_inc     ",
+  n_vars=${n_vars},
+  variable_list=$soil_incr_vars
   missing_value=0.,
  /
  &input
