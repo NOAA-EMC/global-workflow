@@ -126,7 +126,7 @@ if [ $GSI_SOILANAL = "YES" ]; then
     export NMEM_REGRID=${NMEM_ENS}
     if [ $DOIAU = "YES" ]; then
         export LFHR=3 # match BDATE
-    else
+    else # DOSFCANL_ENKF
         export LFHR=6 # PDYcyc
     fi
 
@@ -212,19 +212,12 @@ if [ $DOIAU = "YES" ]; then
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
             cpfs "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
 
-
-            if [[ ${GSI_SOILANAL} = "YES" ]]; then
-                FHR=$LFHR
-                ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-                   "${DATA}/sfcincr_gsi.${cmem}"
-            fi
         done # ensembles
 
     done
 
 fi
 
-# to do- add SOILANAL below
 if [ $DOSFCANL_ENKF = "YES" ]; then
     for n in $(seq 1 $ntiles); do
 
@@ -246,6 +239,9 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
                 COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+                COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+
             # determine where the input snow restart files come from
             if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
                 sfcdata_dir="${COMIN_SNOW_ANALYSIS_MEM}"
@@ -259,6 +255,11 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
+            if [[ ${GSI_SOILANAL} = "YES" ]]; then
+                FHR=$LFHR
+                 ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" \
+                   "${DATA}/soil_xainc.${cmem}" 
+            fi
         done
 
         CDATE="${PDY}${cyc}" ${CYCLESH}

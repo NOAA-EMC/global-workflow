@@ -146,9 +146,6 @@ for hr in "${!gcycle_dates[@]}"; do
   gcycle_date=${gcycle_dates[hr]}
   FHR=${soilinc_fhrs[hr]}
 
-  echo "CSD Updating surface restarts for ${gcycle_date} ..."
-  echo "CSD increment FHR ${FHR}"
-
   datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
 
   if [[ ${GSI_SOILANAL} = "YES" ]]; then

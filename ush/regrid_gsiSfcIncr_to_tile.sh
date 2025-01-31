@@ -72,7 +72,7 @@ for n in $(seq 1 $ntiles); do
     ln -sf ${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc  vegetation_type.tile${n}.nc
 done
 
-if [ $LFHR .GE. 0 ]; then 
+if (( $LFHR >= 0 )); then 
         soilinc_fhrs=($LFHR)
 else # construct restart times for deterministic member
     soilinc_fhrs=($assim_freq) # increment file at middle of window 
@@ -81,11 +81,6 @@ else # construct restart times for deterministic member
       soilinc_fhrs+=($half_window)
     fi
 fi 
-
-echo "CSDregrid DOIAU $DOIAU" 
-    for FHR in "${soilinc_fhrs[@]}"; do
-      echo "CSDregrid FHR $FHR"
-    done
 
 for imem in $(seq 1 $NMEM_REGRID); do
     if [[ $NMEM_REGRID > 1 ]]; then
@@ -99,7 +94,6 @@ for imem in $(seq 1 $NMEM_REGRID); do
     fi
  
     for FHR in "${soilinc_fhrs[@]}"; do
-      echo "CSDregrid FHR calling $FHR"
       ln -fs ${COM_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc \
                 ${DATA}/enkfgdas.sfci.nc
 
