@@ -135,29 +135,29 @@ class AnalysisCalc(Task):
 
         # Loop through forecast hours
         for fh in self.task_config.IAUFHRS:
-           hr = format(fh, '03')
-           valid_time = add_to_datetime(self.task_config.current_cycle, to_timedelta(hr))
-           auxgrid_time_str = to_fv3time(valid_time).replace('.', '_') + 'z'
+            hr = format(fh, '03')
+            valid_time = add_to_datetime(self.task_config.current_cycle, to_timedelta(hr))
+            auxgrid_time_str = to_fv3time(valid_time).replace('.', '_') + 'z'
 
-           # Atmosphere
-           logger.info(f"Adding atmospheric increment to background for forecast hour {hr}")
-           add_increment(valid_time,
-                         f"atmi{hr}.{auxgrid_time_str}.nc4",
-                         f"atma{hr}.nc")
+            # Atmosphere
+            logger.info(f"Adding atmospheric increment to background for forecast hour {hr}")
+            add_increment(valid_time,
+                          f"atmi{hr}.{auxgrid_time_str}.nc4",
+                          f"atma{hr}.nc")
 
-           # Aerosols
-           if self.task_config.DO_AERO_ANL:
-               logger.info(f"Adding aerosol increment to background for forecast hour {hr}")
-               add_increment(valid_time,
-                             f"aeroi{hr}.{auxgrid_time_str}.nc4",
-                             f"atma{hr}.nc")
+            # Aerosols
+            if self.task_config.DO_AERO_ANL:
+                logger.info(f"Adding aerosol increment to background for forecast hour {hr}")
+                add_increment(valid_time,
+                              f"aeroi{hr}.{auxgrid_time_str}.nc4",
+                              f"atma{hr}.nc")
 
-           # Snow
-           if self.task_config.DO_JEDISNOWDA:
-               logger.info(f"Adding snow increment to background for forecast hour {hr}")
-               add_increment(valid_time,
-                             f"snowi{hr}.{auxgrid_time_str}.nc4",
-                             f"sfca{hr}.nc")
+            # Snow
+            if self.task_config.DO_JEDISNOWDA:
+                logger.info(f"Adding snow increment to background for forecast hour {hr}")
+                add_increment(valid_time,
+                              f"snowi{hr}.{auxgrid_time_str}.nc4",
+                              f"sfca{hr}.nc")
 
     @logit(logger)
     def finalize(self) -> None:
@@ -194,6 +194,7 @@ class AnalysisCalc(Task):
 
         # Call FileHandler
         FileHandler(fh_dict).sync()
+
 
 @logit(logger)
 def add_increment(valid_time, fn_incr: str, fn_bkg: str) -> None:
