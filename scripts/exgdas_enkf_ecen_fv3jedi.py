@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exglobal_atmos_ecen.py
+# exgdas_enkf_ecen_fv3jedi.py
 # This script creates an EnsembleCenter object
 # and runs the initialize, execute, and finalize
 # methods which executes the ensemble recentering

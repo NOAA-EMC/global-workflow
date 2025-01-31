@@ -13,8 +13,6 @@ gcyc=${GDATE:8:2}
 GDUMP="gdas"
 GDUMP_ENS="enkfgdas"
 
-export rCDUMP="${RUN/enkf}"
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
@@ -31,7 +29,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 # Run relevant script
 ##############################################
 
-EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atmos_ecen.py}
+EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exgdas_enkf_ecen_fv3jedi.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
