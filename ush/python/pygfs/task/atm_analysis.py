@@ -276,14 +276,6 @@ class AtmAnalysis(Task):
                                 f'{self.task_config.RUN}.t{self.task_config.cyc:02d}z.cubed_sphere_grid_atminc.tile{itile+1}.nc')
             inc_copy['copy'].append([src, dest])
 
-        # Copy Gaussian increment to comrot directory
-        src = os.path.join(self.task_config.DATA,
-                           "anl",
-                           f"atminc.{self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%S')}Z.gaussian.modelLevels.nc")
-        dest = os.path.join(f"{self.task_config.COM_ATMOS_ANALYSIS}",
-                            f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc")
-        inc_copy['copy'].append([src, dest])
-
         # copy increments
         src_list, dest_list = zip(*inc_copy['copy'])
         logger.debug(f"Copying {src_list}\nto {dest_list}")
