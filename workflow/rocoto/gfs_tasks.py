@@ -16,7 +16,36 @@ class GFSTasks(Tasks):
             raise TypeError(f'{task_name} must be part of the "enkfgdas" cycle and not {run}')
 
     # Specific Tasks begin here
+    def fetch(self):
+
+        cycledef = 'gdas_half' if self.run in ['gdas', 'enkfgdas'] else self.run
+
+        resources = self.get_resource('fetch')
+        task_name = f'{self.run}_fetch'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/fetch.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def stage_ic(self):
+
+        dependencies = None
+        if self.options['do_fetch_hpss'] or self.options['do_fetch_local']:
+            deps = []
+            dep_dict = {
+                'type': 'task', 'name': f'{self.run}_fetch',
+            }
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
 
         cycledef = 'gdas_half' if self.run in ['gdas', 'enkfgdas'] else self.run
 
@@ -29,7 +58,8 @@ class GFSTasks(Tasks):
                      'command': f'{self.HOMEgfs}/jobs/rocoto/stage_ic.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
+                     'maxtries': '&MAXTRIES;',
+                     'dependency': dependencies
                      }
 
         task = rocoto.create_task(task_dict)
@@ -598,7 +628,7 @@ class GFSTasks(Tasks):
     def esnowanl(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_prep"}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1073,7 +1103,7 @@ class GFSTasks(Tasks):
 
     def _upptask(self, upp_run="forecast", task_id="atmupp"):
 
-        VALID_UPP_RUN = ["forecast", "goes", "wafs"]
+        VALID_UPP_RUN = ["forecast", "goes"]
         if upp_run not in VALID_UPP_RUN:
             raise KeyError(f"{upp_run} is invalid; UPP_RUN options are: {('|').join(VALID_UPP_RUN)}")
 
@@ -1212,7 +1242,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
-        fhrs = self._get_forecast_hours('gfs', self._configs['wavepostsbs'], 'wave')
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
         max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 

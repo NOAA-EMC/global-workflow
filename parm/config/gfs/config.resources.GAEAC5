@@ -2,30 +2,6 @@
 
 # GaeaC5-specific job resources
 
-case ${step} in
-  "prep")
-    # Run on two nodes (requires ~400GB total)
-    tasks_per_node=7
-    ;;
-
-  "eobs")
-    # The number of tasks and cores used must be the same for eobs
-    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
-    case ${CASE} in
-      "C1152" | "C768" | "C384")
-        export tasks_per_node=50
-        ;;
-      *)
-        export tasks_per_node=40
-        ;;
-    esac
-    ;;
-
-  *)
-    ;;
-
-esac
-
 export FI_VERBS_PREFER_XRC=0
 
 unset memory

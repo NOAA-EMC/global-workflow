@@ -22,13 +22,17 @@ copy:
 # copy ensemble background files
 ######################################
 {% for mem in range(1, NMEM_ENS + 1) %}
+    {% set gmem = mem+mem_offset %}
+    {% if gmem > NMEM_ENS_MAX %}
+        {% set gmem = gmem-NMEM_ENS_MAX %}
+    {% endif %}
     # define variables
     # Declare a dict of search and replace terms to run on each template
     {% set tmpl_dict = {'${ROTDIR}':ROTDIR,
-                        '${RUN}':RUN,
+                        '${RUN}':"enkfgdas",
                         '${YMD}':previous_cycle | to_YMD,
                         '${HH}':previous_cycle | strftime("%H"),
-                        '${MEMDIR}':"mem" + '%03d' % mem} %}
+                        '${MEMDIR}':"mem" + '%03d' % gmem} %}
 
     # copy coupler file
 - ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ current_cycle | to_fv3time }}.coupler.res", "{{ DATA }}/bkg/mem{{ '%03d' % mem }}/{{ current_cycle | to_fv3time }}.coupler.res"]

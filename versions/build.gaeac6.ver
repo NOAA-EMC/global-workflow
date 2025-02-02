@@ -1,5 +1,5 @@
-export stack_intel_ver=2023.1.0
-export stack_cray_mpich_ver=8.1.25
+export stack_intel_ver=2023.2.0
+export stack_cray_mpich_ver=8.1.29
 export spack_env=gsi-addon-dev
 source "${HOMEgfs:-}/versions/spack.ver"
 export spack_mod_path="/ncrc/proj/epic/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
