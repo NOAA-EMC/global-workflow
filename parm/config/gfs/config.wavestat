@@ -1,0 +1,20 @@
+#! /usr/bin/env bash
+
+########## config.wavestat ##########
+# Wave steps specific
+
+echo "BEGIN: config.wavestat"
+
+# Get task specific resources
+. $EXPDIR/config.resources wavestat
+
+# Step label
+export sigMODE=${sigMODE:-prep}
+export DO_WAVESTAT='YES'
+# Intake currents settings
+
+# Location of CDO module
+export CDO_ROOT=${CDO_ROOT:-/usrx/local/dev/packages/cdo/1.9.8}
+
+
+echo "END: config.wavestat"
