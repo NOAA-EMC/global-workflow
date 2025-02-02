@@ -6,21 +6,37 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "wavestat" -c "base wave wavestat"
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-# Set rtofs PDY
-export RPDY=${PDY}
-
 export MP_PULSE=0
-
-# CDO required for processing RTOFS currents
-export CDO=${CDO_ROOT}/bin/cdo
 
 # Set COM Paths and GETGES environment
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMIN_OBS:COM_OBS_TMPL \
-	COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-	COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
-	COMIN_RTOFS:COM_RTOFS_TMPL
-if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
+    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+    COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
+    COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
+    COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
+
+for out_dir in "${COMOUT_WAVE_PREP}" "${COMOUT_WAVE_GRID}"; do
+    if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
+done
+
+
+export MP_PULSE=0
+
+
+# Set wave model ID tag to include member number
+# if ensemble; waveMEMB var empty in deterministic
+# Set wave model ID tag to include member number
+# if ensemble; waveMEMB var empty in deterministic
+membTAG='mem'
+export membTAG
+export WAV_MOD_TAG=${RUN}wave${waveMEMB}
+
+export CFP_VERBOSE=1
+
+# CDO required for processing RTOFS currents
+export CDO=${CDO_ROOT}/bin/cdo
+export wavempexec=${wavempexec:-"mpirun -n"}
+export wave_mpmd=${wave_mpmd:-"cfp"}
 
 # Execute the Script
 ${SCRgfs}/exgfs_wave_stat.sh

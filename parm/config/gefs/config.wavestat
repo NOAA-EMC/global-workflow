@@ -9,10 +9,11 @@ echo "BEGIN: config.wavestat"
 . $EXPDIR/config.resources wavestat
 
 # Step label
-export sigMODE=${sigMODE:-init}
+export DO_WAVESTAT='YES'
+# Intake currents settings
 
-# Options for point output (switch on/off boundary point output)
-> export DO_WAVESTAT='YES'
+# Location of CDO module
+export CDO_ROOT=${CDO_ROOT:-/usrx/local/dev/packages/cdo/1.9.8}
 
 
 echo "END: config.wavestat"
