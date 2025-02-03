@@ -543,7 +543,7 @@ MOM6_postdet() {
 
   # Link output files
   case ${RUN} in
-    *gfs|gefs|sfs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
+    gfs|enkfgfs|gefs|sfs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
       # Looping over MOM6 output hours
       local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
       for fhr in ${MOM6_OUTPUT_FH}; do
@@ -579,7 +579,7 @@ MOM6_postdet() {
       done
       ;;
 
-    *gdas) # Link output files for RUN=gdas|enkfgdas
+    gdas|enkfgdas) # Link output files for RUN=gdas|enkfgdas
       # Save (instantaneous) MOM6 backgrounds
       local fhr3 vdatestr
       for fhr in ${MOM6_OUTPUT_FH}; do
@@ -705,11 +705,11 @@ CICE_postdet() {
     vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
     case "${RUN}" in
-      *gdas)
+      gdas|enkfgdas)
         source_file="iceh_inst.${vdatestr}.nc"
         dest_file="${RUN}.ice.t${cyc}z.inst.f${fhr3}.nc"
         ;;
-      *gfs|gefs|sfs)
+      gfs|enkfgfs|gefs|sfs)
         source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
         dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
         ;;
