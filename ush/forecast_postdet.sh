@@ -306,7 +306,7 @@ FV3_out() {
   restart_dates=()
 
   case ${RUN} in
-    gdas|enkf*) # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
+    gdas|enkfgdas|enkfgfs) # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
       restart_date="${model_start_date_next_cycle}"
       while (( restart_date <= forecast_end_cycle )); do
         restart_dates+=("${restart_date:0:8}.${restart_date:8:2}0000")
@@ -626,7 +626,7 @@ MOM6_out() {
   esac
 
   case ${RUN} in
-    gdas|enkf*) # Copy restarts for the next cycle for RUN=gdas|enkfgdas|enkfgfs
+    gdas|enkfgdas|enkfgfs) # Copy restarts for the next cycle for RUN=gdas|enkfgdas|enkfgfs
       local restart_date
       restart_date="${model_start_date_next_cycle}"
       echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
@@ -738,7 +738,7 @@ CICE_out() {
   ${NCP} "${DATA}/ice_in" "${COMOUT_CONF}/ufs.ice_in"
 
   case ${RUN} in
-    gdas|enkf*) # Copy restarts for next cycle for RUN=gdas|enkfgdas|enkfgfs
+    gdas|enkfgdas|enkfgfs) # Copy restarts for next cycle for RUN=gdas|enkfgdas|enkfgfs
       local restart_date
       restart_date="${model_start_date_next_cycle}"
       echo "Copying CICE restarts for 'RUN=${RUN}' at ${restart_date}"
@@ -868,7 +868,7 @@ CMEPS_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CMEPS mediator"
 
   case ${RUN} in
-    gdas|enkf*) # Copy restarts for the next cycle to COM for RUN=gdas|enkfgdas|enkfgfs
+    gdas|enkfgdas|enkfgfs) # Copy restarts for the next cycle to COM for RUN=gdas|enkfgdas|enkfgfs
       local restart_date
       restart_date="${model_start_date_next_cycle}"
       echo "Copying mediator restarts for 'RUN=${RUN}' at ${restart_date}"
