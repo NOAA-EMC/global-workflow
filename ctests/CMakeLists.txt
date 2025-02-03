@@ -94,7 +94,7 @@ function(AddJJOBTest)
  
   # TODO - This is a stub for the validation step
   add_test(NAME test_${TEST_NAME}_validate
-      COMMAND ./validate.sh ${TEST_NAME} ${CASE_YAML}
+      COMMAND ./validate.sh ${TEST_NAME} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
   set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${ARG_CASE};${ARG_JOB}")
 endfunction()
@@ -102,5 +102,17 @@ endfunction()
 AddJJOBTest(
   CASE "C48_ATM"
   JOB  "gfs_fcst_seg0"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_fcst_seg0"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_atmos_prod_f000-f003"
   TEST_DATE "2021032312"
 )

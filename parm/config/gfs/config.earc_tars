@@ -1,14 +1,14 @@
 #! /usr/bin/env bash
 
-########## config.earc ##########
+########## config.earc_tars ##########
 # Ensemble archive specific
 
-echo "BEGIN: config.earc"
+echo "BEGIN: config.earc_tars"
 
 # Get task specific resources
-. $EXPDIR/config.resources earc
+. "${EXPDIR}/config.resources" "earc_tars"
 
-# Set the number of ensemble members to archive per earc job
+# Set the number of ensemble members to archive per earc_tars job
 case "${CASE_ENS}" in
    "C48" | "C96")
       export NMEM_EARCGRP=80
@@ -32,4 +32,4 @@ esac
 export RMOLDSTD_ENKF=144
 export RMOLDEND_ENKF=24
 
-echo "END: config.earc"
+echo "END: config.earc_tars"

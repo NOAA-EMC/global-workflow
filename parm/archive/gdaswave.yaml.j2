@@ -4,5 +4,15 @@ gdaswave:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave.tar"
     required:
         # TODO explicitly name the wave grid/station files to archive
-        - "{{ COMIN_WAVE_GRID | relpath(ROTDIR) }}/{{ head }}*"
+        {% set WAVE_OUT_GRIDS_list = WAVE_OUT_GRIDS.split(' ') %}
+        {% for grd in WAVE_OUT_GRIDS_list %}
+        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                              '${RUN}':RUN,
+                              '${YMD}':cycle_YMD,
+                              '${HH}':cycle_HH,
+                              '${MEMDIR}':'',
+                              '${GRDRESNAME}':grd}) %}
+        {% set file_path = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}
+        - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*"
+        {% endfor %}
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}*"
