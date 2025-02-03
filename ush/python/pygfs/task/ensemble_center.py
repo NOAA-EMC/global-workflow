@@ -143,10 +143,10 @@ class EnsembleCenter(Task):
                 for itile in range(6):
                     fh_dict['copy'].append([f"{data_prefix}catmi{hr}.tile{itile+1}.nc",
                                             f"{comrot_prefix}catminc.tile{itile+1}.nc"])
-                else:
-                    for itile in range(6):
-                        fh_dict['copy'].append([f"{data_prefix}catmi{hr}.tile{itile+1}.nc",
-                                                f"{comrot_prefix}catmi{hr}.tile{itile+1}.nc"])
+            else:
+                for itile in range(6):
+                    fh_dict['copy'].append([f"{data_prefix}catmi{hr}.tile{itile+1}.nc",
+                                            f"{comrot_prefix}catmi{hr}.tile{itile+1}.nc"])
 
         # Call FileHandler
         FileHandler(fh_dict).sync()
