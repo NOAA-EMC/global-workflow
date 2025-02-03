@@ -1,0 +1,50 @@
+{% set H_offset = "-6H" %}
+{% set H_timedelta = H_offset | to_timedelta %}
+{% set TEST_DATE_offset = TEST_DATE | add_to_datetime(H_timedelta) %}
+
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set cyc_offset = TEST_DATE_offset | strftime('%H') %}
+
+{% set PDY = TEST_DATE | to_YMD %}
+{% set PDY_offset = TEST_DATE_offset | to_YMD %}
+
+input_files:
+    mkdir:
+        - "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input"
+        - "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep"
+        - "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ PDY }}/{{cyc_offset}}/model/ocean/restart"
+        - "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ PDY }}/{{cyc_offset}}/model/ice/restart"
+    copy:
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile1.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile1.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile2.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile2.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile3.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile3.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile4.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile4.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile5.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile5.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile6.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile6.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile1.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile1.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile2.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile2.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile3.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile3.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile4.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile4.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile5.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile5.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile5.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile5.nc"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile6.nc", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile6.nc"]
+
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfswave.mod_def.glo_200", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfswave.mod_def.glo_200"]
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfswave.mod_def.uglo_100km", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfswave.mod_def.uglo_100km"]
+
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gdas.{{ PDY_offset }}/{{ cyc_offset }}/model/ocean/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.MOM.res.nc",
+           "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ PDY_offset }}/{{ cyc_offset }}/model/ocean/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.MOM.res.nc" ]
+
+        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/input_files/gdas.{{ PDY_offset }}/{{ cyc_offset }}/model/ice/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.cice_model.res.nc",
+           "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gdas.{{ PDY_offset }}/{{ cyc_offset }}/model/ice/restart/{{ TEST_DATE | strftime('%Y%m%d.%H0000') }}.cice_model.res.nc" ]
+
+# TODO - To enable the validation step include specific files to compare against the results from running the test.
+# Note: The below three files is only an example. The cmpfiles tag means it will use checksum to compare the files in the two locations.
+# Other extensions can be added and/or folded into the FileUtils class in wxflow FileUtilities.py
+#
+#output_files:
+#    cmpfiles:
+#        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/output_files/gfs.{{ PDY }}/{{ cyc }}/conf/ufs.diag_table", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/conf/ufs.diag_table"]
+#        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/output_files/gfs.{{ PDY }}/{{ cyc }}/conf/ufs.input.nml", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/conf/ufs.input.nml"]
+#        - ["{{ 'STAGED_TESTS_DIR' | getenv }}/{{ 'TEST_NAME' | getenv }}/output_files/gfs.{{ PDY }}/{{ cyc }}/conf/ufs.model_configure", "{{ 'RUNTESTS' | getenv }}/COMROOT/{{ 'TEST_NAME' | getenv }}/gfs.{{ PDY }}/{{ cyc }}/conf/ufs.model_configure"]
