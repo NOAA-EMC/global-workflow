@@ -204,6 +204,14 @@ if [[ ! -s "${outfile}.idx" ]]; then
   fi
 
   # 1.e Save in /com
+  # Move grib files to COM directory
+  if [[ ! -s "${outfile}" ]] && [[ ! -s "${outfile}.idx" ]]; then
+    cp -f "${outfile}" "${com_dir}/${outfile}"
+    cp -f "${outfile}.idx" "${com_dir}/${outfile}.idx"
+    echo "   Copied grib files from "${GRIBDATA}" to COM"
+  else
+    echo "No grib files found in "${GRIBDATA}" to copy to COM"
+  fi
 
   if [[ ! -s "${outfile}" ]]; then
     set +x
@@ -239,15 +247,6 @@ if [[ ! -s "${outfile}.idx" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2_WIDX" "${job}" "${outfile}.idx"
   else
     echo "${outfile} is global.0p50 or SENDDBN is NO, no alert sent"
-  fi
-
-  # 2.  Move grib files to COM directory
-  if [[ ! -s "${outfile}" ]] && [[ ! -s "${outfile}.idx" ]]; then
-    cp -f "${outfile}" "${com_dir}/${outfile}"
-    cp -f "${outfile}.idx" "${com_dir}/${outfile}.idx"
-    echo "   Copied grib files from "${GRIBDATA}" to COM"
-  else
-    echo "No grib files found in "${GRIBDATA}" to copy to COM"
   fi
   # --------------------------------------------------------------------------- #
   # 3.  Clean up the directory
