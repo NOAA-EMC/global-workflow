@@ -83,7 +83,7 @@ else
     echo "Directory ${com_dir} already exists."
 fi
 # Only create file if not present in working directory
-if [[ ! -s "${outfile}.idx" ]]; then
+if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
 
   set +x
   echo ' '
