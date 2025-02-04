@@ -191,7 +191,7 @@ if [[ ! -s "${outfile}.idx" ]]; then
   # Create index
   ${WGRIB2} -s "${outfile}" > "${outfile}.idx"
 
-  # Create grib2 subgrid is this is the source grid
+  # Create grib2 subgrid if this is the source grid
   if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]]; then
     for subgrb in ${WAV_SUBGRB}; do
       subgrbref=$(echo ${!subgrb} | cut -d " " -f 1-20)
@@ -205,9 +205,17 @@ if [[ ! -s "${outfile}.idx" ]]; then
 
   # 1.e Save in /com
   # Move grib files to COM directory
-  if [[ ! -s "${outfile}" ]] && [[ ! -s "${outfile}.idx" ]]; then
+  if [[ -s "${outfile}" ]] && [[ -s "${outfile}.idx" ]]; then
     cp -f "${outfile}" "${com_dir}/${outfile}"
     cp -f "${outfile}.idx" "${com_dir}/${outfile}.idx"
+    echo "   Copied grib files from "${GRIBDATA}" to COM"
+  else
+    echo "No grib files found in "${GRIBDATA}" to copy to COM"
+  fi
+
+  if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]] && [[ -s "${subfnam}" ]] && [[ -s "${subfnam}.idx" ]]; then
+    cp -f "${subfnam}" "${com_dir}/${subfnam}"
+    cp -f "${subfnam}.idx" "${com_dir}/${subfnam}.idx"
     echo "   Copied grib files from "${GRIBDATA}" to COM"
   else
     echo "No grib files found in "${GRIBDATA}" to copy to COM"
