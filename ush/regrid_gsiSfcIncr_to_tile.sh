@@ -26,7 +26,7 @@ CASE_IN=${CASE_IN:-${CASE_ENS}}
 LFHR=${LFHR:-6}
 
 # get resolutions
-CRES_IN=$(echo ${CASE_IN} | cut -c2-)
+CRES_IN="${CASE_IN:1}"
 LONB_CASE_IN=$((4*CRES_IN))
 LATB_CASE_IN=$((2*CRES_IN))
 
