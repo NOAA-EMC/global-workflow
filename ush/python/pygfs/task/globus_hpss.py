@@ -61,10 +61,10 @@ class GlobusHpss(Task):
             ssh_output = self.ssh("-G", f"{server_name}", output=str)
         except ProcessError as pe:
             raise ProcessError(
-                               f"FATAL ERROR No host information on {server_name}!"
-                               "\n"
-                               f"Please add an entry for {server_name} into ~/.ssh/config!"
-                              ) from pe
+                f"FATAL ERROR No host information on {server_name}!"
+                "\n"
+                f"Please add an entry for {server_name} into ~/.ssh/config!"
+                ) from pe
 
         # Parse the ssh output to find the user's Niagara username
         ssh_output = ssh_output.split("\n")
@@ -74,8 +74,8 @@ class GlobusHpss(Task):
 
         # Update the home directory on the server with the username
         server_home = self.task_config.SERVER_HOME.replace(
-                                 "{{LOGNAME}}", server_username
-                                )
+            "{{LOGNAME}}", server_username
+            )
 
         logger.debug(f"Server username detected as {server_username}")
 
@@ -150,9 +150,9 @@ class GlobusHpss(Task):
 
         # Start parsing scripts and storing in the output dictionary
         transfer_sets = {
-                         "standard": {"locations": standard_backup_set},
-                         "rstprod": {"locations": rstprod_backup_set}
-                         }
+            "standard": {"locations": standard_backup_set},
+            "rstprod": {"locations": rstprod_backup_set}
+            }
 
         # Parse the doorman setup script
         doorman_jinja = os.path.join(globus_parm, "run_doorman.sh.j2")
@@ -235,7 +235,7 @@ class GlobusHpss(Task):
         for location in transfer_set["locations"]:
             print(location)
             with open("location", "w") as location_f:
-                location_f.write(location+"\n")
+                location_f.write(location + "\n")
             try:
                 logger.info(f"Preparing package for {location}")
                 sven_output = self.forsven(output=str.split)
@@ -289,8 +289,8 @@ class GlobusHpss(Task):
                             # Exit the loop immediately, but allow the log file to be downloaded.
                             if has_rstprod:
                                 logger.error(
-                                   f"FATAL ERROR HPSS archiving of restricted file {transfer_set['locations'][i]} failed!"
-                                   "\nPlease verify that the file has been deleted from HPSS!"
+                                    f"FATAL ERROR HPSS archiving of restricted file {transfer_set['locations'][i]} failed!"
+                                    "\nPlease verify that the file has been deleted from HPSS!"
                                 )
                                 transfer_failed = True
                                 break
