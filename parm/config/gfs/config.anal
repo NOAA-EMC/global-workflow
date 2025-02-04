@@ -148,6 +148,13 @@ if [[ ${RUN_ENVIR} == "emc" ]]; then
   #   fi
 fi
 
+if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
+   # these will be set based on date in scripts/exglobal_atmos_analysis.sh
+   export SATINFO="generate"
+   export CONVINFO="generate"
+   export OZINFO="generate"
+fi
+
 # Flag to turn on (.true.) or off (.false.) the infrared cloud and aerosol detection software
 # for AIRS, CrIS, and IASI.  Default is .false.
 export AIRS_CADS=".false."
