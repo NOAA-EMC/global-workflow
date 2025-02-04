@@ -82,7 +82,7 @@ export DO_MOS="NO"                       # GFS Model Output Statistics - Only su
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
-#  if want MOS written to HPSS.   Should update arch.sh to
+#  if want MOS written to HPSS.   Should update arch_vrfy.sh and arch_tars to
 #  use RUNMOS flag
 export REALTIME="YES"
 
@@ -132,6 +132,7 @@ if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; the
 fi
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
+export FETCHDIR="@FETCHDIR@"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
@@ -474,6 +475,10 @@ export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verif
 export FHMAX_FITS=132
 [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
 
+# User may choose to reset these at experiment setup time 
+export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto COM
+export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
+
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export LOCALARCH="@LOCALARCH@"      # save data to local archive
@@ -487,6 +492,10 @@ done
 if [[ ${count_arch_opts} -gt 1 ]]; then
    echo "FATAL ERROR: More than one archiving option selected.  Please choose no more than one."
    exit 4
+elif [[ ${HPSSARCH} = "YES" ]] || [[ ${LOCALARCH} = "YES" ]]; then
+   export DO_ARCHTAR="YES"
+else
+   export DO_ARCHTAR="NO"
 fi
 
 export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities

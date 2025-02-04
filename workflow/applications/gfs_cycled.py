@@ -76,7 +76,10 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
+
+        if options['do_archtar']:
+            configs += ['arch_tars']
 
         if options['do_hybvar']:
             if options['do_jediatmens']:
@@ -84,7 +87,11 @@ class GFSCycledAppConfig(AppConfig):
                             'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
-            configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+
+            configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy']
+
+            if options['do_archtar']:
+                configs += ['earc_tars']
 
         if options['do_fit2obs']:
             configs += ['fit2obs']
@@ -297,11 +304,13 @@ class GFSCycledAppConfig(AppConfig):
                                             'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen',
                                             'mos_ext_grd_prdgen', 'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
-                task_names[run] += ['arch']
-                if options['do_globusarch']:
-                    task_names[run] += ['globus']
+                # Last items
+                task_names[run] += ['arch_vrfy']
+                if options['do_archtar']:
+                    task_names[run] += ['arch_tars']
+                    if options['do_globusarch']:
+                        task_names[run] += ['globus']
 
-                # Cleanup is always last
                 task_names[run] += ['cleanup']
 
             # Ensemble tasks
@@ -320,10 +329,14 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['eobs', 'eupd']
                     task_names[run].append('echgres') if 'gdas' in run else 0
                     task_names[run] += ['ediag'] if options['lobsdiag_forenkf'] else ['eomg']
-                    task_names[run].append('esnowanl') if options['do_jedisnowda'] and 'gdas' in run else 0
 
+                task_names[run].append('esnowanl') if options['do_jedisnowda'] else 0
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
-                task_names[run] += ['stage_ic', 'ecen', 'esfc', 'earc', 'cleanup']
+
+                task_names[run] += ['stage_ic', 'ecen', 'esfc']
+                if options['do_archtar']:
+                    task_names[run] += ['earc_tars']
+                task_names[run] += ['earc_vrfy', 'cleanup']
 
         return task_names

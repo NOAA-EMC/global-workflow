@@ -11,13 +11,13 @@ __all__ = ['Tasks']
 
 
 class Tasks:
-    SERVICE_TASKS = ['arch', 'earc', 'stage_ic', 'cleanup', 'globus']
-    VALID_TASKS = ['aerosol_init', 'stage_ic', 'globus',
-                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', "cleanup",
+    SERVICE_TASKS = ['arch_vrfy', 'arch_tars', 'earc_vrfy', 'earc_tars', 'stage_ic', 'fetch', 'cleanup', 'globus']
+    VALID_TASKS = ['aerosol_init', 'stage_ic', 'fetch', 'globus', 'ens_globus',
+                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
                    'prepoceanobs',
                    'marineanlinit', 'marineanlletkf', 'marinebmat', 'marineanlvar', 'ocnanalecen', 'marineanlchkpt', 'marineanlfinal', 'ocnanalvrfy',
-                   'earc', 'ecen', 'echgres', 'ediag', 'efcs',
+                   'earc_vrfy', 'earc_tars', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
@@ -312,16 +312,16 @@ class Tasks:
 
         account = task_config['ACCOUNT']
 
-        walltime = task_config[f'walltime']
-        ntasks = task_config[f'ntasks']
-        ppn = task_config[f'tasks_per_node']
+        walltime = task_config['walltime']
+        ntasks = task_config['ntasks']
+        ppn = task_config['tasks_per_node']
 
         nodes = int(np.ceil(float(ntasks) / float(ppn)))
 
-        threads = task_config[f'threads_per_task']
+        threads = task_config['threads_per_task']
 
         # Memory is not required
-        memory = task_config.get(f'memory', None)
+        memory = task_config.get('memory', None)
 
         if scheduler in ['pbspro']:
             if task_config.get('prepost', False):

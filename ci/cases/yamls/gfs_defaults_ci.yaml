@@ -2,5 +2,7 @@ defaults:
   !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
 base:
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
-  DO_TEST_MODE: "NO"
+  DO_TEST_MODE: "YES"
+  FETCHDIR: "/NCEPDEV/emc-global/1year/David.Grumm/test_data"
   DO_METP: "NO"
+

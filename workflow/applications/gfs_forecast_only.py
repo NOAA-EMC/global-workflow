@@ -28,8 +28,13 @@ class GFSForecastOnlyAppConfig(AppConfig):
         Returns the config_files that are involved in the forecast-only app
         """
 
+        configs = []
         options = self.run_options[run]
-        configs = ['stage_ic', 'fcst', 'arch', 'cleanup']
+
+        if options['do_fetch_hpss'] or options['do_fetch_local']:
+            configs += ['fetch']
+
+        configs += ['stage_ic', 'fcst', 'arch_vrfy', 'cleanup']
 
         if options['do_atm']:
 
@@ -81,8 +86,10 @@ class GFSForecastOnlyAppConfig(AppConfig):
                         'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
                         'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
-        if options['do_globusarch']:
-            configs += ['globus']
+        if options['do_archtar']:
+            configs += ['arch_tars']
+            if options['do_globusarch']:
+                configs += ['globus']
 
         return configs
 
@@ -101,15 +108,22 @@ class GFSForecastOnlyAppConfig(AppConfig):
         This is the place where that order is set.
         """
 
-        tasks = ['stage_ic']
         options = self.run_options[self.run]
+
+        tasks = []
+
+        if options['do_fetch_hpss'] or options['do_fetch_local']:
+            tasks += ['fetch']
+
+        tasks += ['stage_ic']
 
         if options['do_aero_fcst'] and not options['exp_warm_start']:
             tasks += ['aerosol_init']
 
         if options['do_wave']:
             tasks += ['waveinit']
-            # tasks += ['waveprep']  # TODO - verify if waveprep is executed in forecast-only mode when APP=ATMW|S2SW
+            # tasks += ['waveprep']  # TODO - verify if waveprep is executed in ...
+            # ... forecast-only mode when APP=ATMW|S2SW
 
         tasks += ['fcst']
 
@@ -165,12 +179,11 @@ class GFSForecastOnlyAppConfig(AppConfig):
                       'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
                       'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
-        tasks += ['arch']
+        if options['do_archtar']:
+            tasks += ['arch_tars']
+            if options['do_globusarch']:
+                tasks += ['globus']
 
-        if options['do_globusarch']:
-            tasks += ['globus']
-
-        # cleanup **must** be the last task
-        tasks += ['cleanup']
+        tasks += ['arch_vrfy', 'cleanup']  # arch_tar, arch_vrfy, and cleanup **must** be the last tasks
 
         return {f"{self.run}": tasks}
