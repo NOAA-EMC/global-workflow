@@ -3,7 +3,9 @@
 import os
 from logging import getLogger
 from pathlib import Path
+from time import sleep
 from typing import Any, Dict, List
+import re
 
 from wxflow import AttrDict, Task, to_YMD, to_YMDH, strftime, logit, parse_yaml, Jinja, which, ProcessError
 
@@ -33,8 +35,8 @@ class GlobusHpss(Task):
         super().__init__(config)
 
         # Declare these here so the jinja-templated scripts can be shellchecked
-        cycle_YMD = to_YMD(self.task_config.current_cycle),
-        cycle_YMDH = to_YMDH(self.task_config.current_cycle),
+        cycle_YMD = to_YMD(self.task_config.current_cycle)
+        cycle_YMDH = to_YMDH(self.task_config.current_cycle)
         cycle_HH = strftime(self.task_config.current_cycle, '%H')
 
         # Instantiate all of the executables we will need to run
@@ -49,18 +51,20 @@ class GlobusHpss(Task):
         if self.ssh is None:
             raise FileNotFoundError("FATAL ERROR Could not find ssh!")
 
+        # Disable strict host key checking by default
+        # This auto-accepts changes to keys
+        self.scp.add_default_arg("-oStrictHostKeyChecking=no")
+
         # Get the user's server username from their ~/.ssh/config file
-
-        if self.ssh is None:
-            raise FileNotFoundError("FATAL ERROR Failed to locate ssh!")
-
         server_name = self.task_config.SERVER_NAME
-
         try:
             ssh_output = self.ssh("-G", f"{server_name}", output=str)
         except ProcessError as pe:
-            raise ProcessError("FATAL ERROR No host information on niagara!\n"
-                               f"Please add an entry for {server_name} into ~/.ssh/config!") from pe
+            raise ProcessError(
+                                f"FATAL ERROR No host information on {server_name}!"
+                                "\n"
+                                f"Please add an entry for {server_name} into ~/.ssh/config!"
+                              ) from pe
 
         # Parse the ssh output to find the user's Niagara username
         ssh_output = ssh_output.split("\n")
@@ -183,8 +187,9 @@ class GlobusHpss(Task):
             transfer_sets[transfer_set]["dm.conf"] = dm_conf
             transfer_sets[transfer_set]["return"] = return_script
             transfer_sets[transfer_set]["verify"] = vrfy_script
+            transfer_sets[transfer_set]["sven_dropbox"] = globus_dict.sven_dropbox
             transfer_sets[transfer_set]["server_name"] = globus_dict.SERVER_NAME
-            transfer_sets[transfer_set]["homedir"] = (
+            transfer_sets[transfer_set]["server_homedir"] = (
                 f"{globus_dict.server_home}/doorman/{globus_dict.jobid}/"
                 f"{transfer_set}"
             )
@@ -192,7 +197,7 @@ class GlobusHpss(Task):
         return transfer_sets
 
     @logit(logger)
-    def execute_transfer_data(self, transfer_set: Dict[str, Any]) -> None:
+    def execute_transfer_data(self, transfer_set: Dict[str, Any], has_rstprod: bool) -> None:
         """Interface function with Sven to send tarballs to HPSS via Niagara.
 
         Parameters
@@ -219,8 +224,12 @@ class GlobusHpss(Task):
         # Make run_doorman.sh executable
         os.chmod("run_doorman.sh", 0o740)
 
-        server_homedir = transfer_set["homedir"]
+        server_homedir = transfer_set["server_homedir"]
         server_name = transfer_set["server_name"]
+
+        # Initialize a list of status files.
+        transfer_set["statuses"] = []
+        transfer_set["completed"] = []
 
         # Tell Sven we have files to send, one at a time
         for location in transfer_set["locations"]:
@@ -229,20 +238,20 @@ class GlobusHpss(Task):
                 location_f.write(location+"\n")
             try:
                 logger.info(f"Preparing package for {location}")
-                self.forsven(output=str.split)
+                sven_output = self.forsven(output=str.split)
             except ProcessError as pe:
                 raise ProcessError("FATAL ERROR Sven failed to package the request"
                                    f"for {location}") from pe
 
+            # Parse Sven's output to get the name of the return status file
+            match = re.search("\"(status_.*)\" in your dropbox", sven_output)
+            transfer_set["status_files"].append(os.path.join(transfer_set["sven_dropbox"], match.group(1)))
+
+            # Initialize 'completed' to false for each file
+            transfer_set["completed"].append(False)
+
         # Transfer the doorman script to Niagara.
         # Note, this assumes we have unattended transfer capability.
-        try:
-            # Start by making the directory it will run in
-            logger.debug(f"Making the run directory {server_homedir}/doorman_rundir on {server_name}")
-            self.ssh("-tt", server_name, f"mkdir -p {server_homedir}/doorman_rundir", output=str.split, error=str.split)
-        except ProcessError as pe:
-            raise ProcessError("FATAL ERROR Failed to create temporary working directoryon Niagara") from pe
-
         try:
             # Now transfer and rename the script
             server_run_script = f"{server_homedir}/doorman_rundir/run_doorman.sh"
@@ -254,37 +263,66 @@ class GlobusHpss(Task):
         except ProcessError as pe:
             raise ProcessError("FATAL ERROR Failed to send doorman run script to Niagara") from pe
 
-        # Now actually run the doorman script
-        try:
-            logger.debug(f"Run {server_run_script} remotely")
-            self.ssh(
-                     "-tt", server_name, f"{server_run_script}",
-                     output=str.split, error=str.split
-            )
-        except ProcessError as pe:
-            # Try and retrieve the log file
-            try:
-                self.scp(f"{server_name}:{server_homedir}/run_doorman.log", ".")
-            except ProcessError:
-                logger.warning("WARNING unable to transfer the doorman log back after failure")
-            else:
-                logger.info("The doorman failed to run.  Printing output of the log:")
-                with open('run_doorman.log', 'r') as doorman_log:
-                    print(doorman_log.read())
+        # Now wait for the doorman script to run via cron on Niagara.
+        # Once complete, Sven's dropbox should fill up with status files.
+        wait_count = 0
+        sleep_time = 300  # s
+        timeout_time = 5.75 * 3600  # s
+        max_wait_count = int(timeout_time / sleep_time)
 
-            raise ProcessError(f"FATAL ERROR Failed to run the Doorman service on {server_name}") from pe
+        # Initialize transfer status
+        transfer_failed = False
+        while not all(transfer_set["completed"]) and wait_count < max_wait_count:
+            sleep(sleep_time)
+            for i in range(len(transfer_set["status_files"])):
+                status_file = transfer_set["status_files"][i]
+                if os.path.exists(status_file):
+                    # If this is a new status file, check if the transfer was successful
+                    if not transfer_set["completed"][i]:
+                        transfer_set["completed"][i] = True
+                        with open(status_file) as status_handle:
+                            transfer_set["successes"][i] = status_handle.readlines()[-1] == "SUCCESS"
+
+                        if transfer_set["successes"][i]:
+                            logger.info(f"Successfully archived {transfer_set['locations'][i]} to HPSS!")
+                        else:
+                            # Exit the loop immediately, but allow the log file to be downloaded.
+                            if has_rstprod:
+                                logger.error(
+                                   f"FATAL ERROR HPSS archiving of restricted file {transfer_set['locations'][i]} failed!"
+                                   "\nPlease verify that the file has been deleted from HPSS!"
+                                )
+                                transfer_failed = True
+                                break
+                            else:
+                                logger.error(f"FATAL ERROR HPSS archiving failed for {transfer_set['locations'][i]}.")
+                                transfer_failed = True
+
+            if transfer_failed:
+                break
+
+            wait_count += 1
+            wait_time = wait_count * sleep_time
+
+            complete_count = sum(transfer_set["completed"])
+
+            logger.debug(f"{complete_count} files transferred in {wait_time} seconds.")
+
+        # Sleep a couple more seconds to ensure all status files finish transferring
+        sleep(2)
 
         # Retrieve and print the Doorman log file from the server
         try:
             self.scp(f"{server_name}:{server_homedir}/run_doorman.log", '.')
             with open('run_doorman.log', 'r') as doorman_log:
-                print(doorman_log.read())
+                logger.info(doorman_log.read())
 
         except ProcessError as pe:
             raise ProcessError("FATAL ERROR Failed to retrieve the doorman log file from {server_name}") from pe
 
-        # Lastly, check the response from the doorman in Sven's dropbox
-        # TODO
+        # Check for a failed transfer and/or timeouts
+        if transfer_failed or not all(transfer_set["successes"]):
+            raise ProcessError("FATAL ERROR Some/all files failed to archive to HPSS")
 
         return
 
