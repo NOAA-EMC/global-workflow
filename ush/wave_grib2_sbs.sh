@@ -213,12 +213,16 @@ if [[ ! -s "${outfile}.idx" ]]; then
     echo "No grib files found in "${GRIBDATA}" to copy to COM"
   fi
 
-  if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]] && [[ -s "${subfnam}" ]] && [[ -s "${subfnam}.idx" ]]; then
-    cp -f "${subfnam}" "${com_dir}/${subfnam}"
-    cp -f "${subfnam}.idx" "${com_dir}/${subfnam}.idx"
-    echo "   Copied grib files from "${GRIBDATA}" to COM"
-  else
-    echo "No grib files found in "${GRIBDATA}" to copy to COM"
+  if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]]; then
+    for subgrb in ${WAV_SUBGRB}; do
+      subfnam="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
+      if [[ -s "${subfnam}" ]] && [[ -s "${subfnam}.idx" ]]; then
+        cp -f "${subfnam}" "${com_dir}/${subfnam}"
+        cp -f "${subfnam}.idx" "${com_dir}/${subfnam}.idx"
+        echo "   Copied grib files from "${GRIBDATA}" to COM"
+      else
+        echo "No grib files found in "${GRIBDATA}" to copy to COM"
+    done
   fi
 
   if [[ ! -s "${outfile}" ]]; then
