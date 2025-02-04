@@ -256,7 +256,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ ${GSI_SOILANAL} = "YES" ]]; then
-                FHR=$LFHR
+                FHR=${LFHR}
                  ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" \
                    "${DATA}/soil_xainc.${cmem}" 
             fi
