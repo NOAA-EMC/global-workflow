@@ -210,7 +210,7 @@ if [[ ! -s "${outfile}.idx" ]]; then
     cp -f "${outfile}.idx" "${com_dir}/${outfile}.idx"
     echo "Copied ${outfile} and ${outfile}.idx from "${GRIBDATA}" to COM"
   else
-    echo "${outfile} and ${outfile}.idx files not found in "${GRIBDATA}" to copy to COM"
+    echo "${outfile} and ${outfile}.idx not found in "${GRIBDATA}" to copy to COM"
   fi
 
   if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]]; then
