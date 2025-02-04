@@ -14,14 +14,16 @@ rm -f FLIST
 rm -rf "{{doorman_gendel}}"
 
 # Tell the doorman where the general delivery space is on Niagara (unique for each RUN/cycle)
-# This is where tarballs will be received and confirmations are written and sent.
-echo 'export GENDEL="{{doorman_gendel}}"' > places.inc
-# Tell the doorman what the sender's UUID is
-echo 'export CLIENT_ENDPOINT="{{CLIENT_GLOBUS_UUID}}"' >> places.inc
-# Tell the doorman where the sending client's dropbox is (why twice??)
-echo 'export CLIENT_DROPBOX="{{sven_dropbox}}"' >> places.inc
-# Tell the doorman what it's own UUID is
-echo 'export NIAG_GLC="{{SERVER_GLOBUS_UUID}}"' >> places.inc
+{
+    # This is where tarballs will be received and confirmations are written and sent.
+    echo 'export GENDEL="{{doorman_gendel}}"'
+    # Tell the doorman what the sender's UUID is
+    echo 'export CLIENT_ENDPOINT="{{CLIENT_GLOBUS_UUID}}"'
+    # Tell the doorman where the sending client's dropbox is (why twice??)
+    echo 'export CLIENT_DROPBOX="{{sven_dropbox}}"'
+    # Tell the doorman what it's own UUID is
+    echo 'export NIAG_GLC="{{SERVER_GLOBUS_UUID}}"'
+} > places.inc
 
 # Point to the doorman executable scripts
 export PATH="${PATH}:{{DOORMAN_ROOT}}/bin"
