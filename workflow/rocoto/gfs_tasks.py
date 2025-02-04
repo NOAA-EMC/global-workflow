@@ -242,10 +242,6 @@ class GFSTasks(Tasks):
         return task
 
     def sfcanl(self):
-# CSD 
-# add enkf manually (see analcalc example) 
-# how to get variable in 
-# how to do two ands
 
         deps = []
         if self.options['do_jediatmvar']:

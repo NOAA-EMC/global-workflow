@@ -145,6 +145,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
   gcycle_date=${gcycle_dates[hr]}
   FHR=${soilinc_fhrs[hr]}
+  echo "Updating surface restarts for ${gcycle_date} ..."
 
   datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
 

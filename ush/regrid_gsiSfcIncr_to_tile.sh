@@ -8,6 +8,9 @@ source "${USHgfs}/preamble.sh"
 # Clara Draper, Dec 2024
 #-------------------------------------------------------------------------------------------------
 
+# CSD: temporary on hera, until scrip files added to fix dir. 
+TMP_FIX_FILES=/scratch2/BMC/gsienkf/Clara.Draper/gw_new_fix_files/
+
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export REDOUT=${REDOUT:-'1>'}
@@ -74,7 +77,7 @@ cat << EOF > regrid.nml
 EOF
 
 # fixed input files
-ln -sf /scratch2/BMC/gsienkf/Clara.Draper/regridding/inputs/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc gaussian_scrip.nc
+ln -sf ${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc gaussian_scrip.nc
 
 # fixed output files
 for n in $(seq 1 $ntiles); do
