@@ -82,7 +82,7 @@ if [[ ! -d "${com_dir}" ]]; then
 else
     echo "Directory ${com_dir} already exists."
 fi
-# Only create file if not present in COM
+# Only create file if not present in working directory
 if [[ ! -s "${outfile}.idx" ]]; then
 
   set +x
@@ -241,7 +241,7 @@ if [[ ! -s "${outfile}.idx" ]]; then
     echo "${outfile} is global.0p50 or SENDDBN is NO, no alert sent"
   fi
 
-  # 2.1  Move grib files to COM directory
+  # 2.  Move grib files to COM directory
   if [[ ! -s "${outfile}" ]] && [[ ! -s "${outfile}.idx" ]]; then
     cp -f "${outfile}" "${com_dir}/${outfile}"
     cp -f "${outfile}.idx" "${com_dir}/${outfile}.idx"
