@@ -76,7 +76,8 @@ scripts/exgdas_atmos_gempak_gif_ncdc.sh @GwenChen-NOAA
 scripts/exgdas_atmos_nawips.sh @GwenChen-NOAA
 scripts/exgdas_atmos_verfozn.sh @EdwardSafford-NOAA
 scripts/exgdas_atmos_verfrad.sh @EdwardSafford-NOAA
-scripts/exgdas_enkf_earc.py @DavidHuber-NOAA
+scripts/exgdas_enkf_earc_vrfy.py @DavidHuber-NOAA
+scripts/exgdas_enkf_earc_tars.py @DavidHuber-NOAA
 scripts/exgdas_enkf_ecen.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
 scripts/exgdas_enkf_post.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
 scripts/exgdas_enkf_select_obs.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA

@@ -24,7 +24,7 @@ import datetime
 
 from argparse import ArgumentParser
 from pathlib import Path
-from wxflow import parse_j2yaml, FileHandler, Logger
+from wxflow import parse_j2yaml, FileHandler, Logger, logit, to_datetime
 
 # Initialize logger with environment variable for logging level
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
@@ -52,16 +52,19 @@ def parse_args():
     return parser.parse_args()
 
 
-if __name__ == '__main__':
-
-    # Parse command line arguments
+@logit(logger)
+def main():
     args = parse_args()
 
     data = {}
     if args.test_date:
         # Parse test date from string to datetime object
-        data['TEST_DATE'] = datetime.datetime.strptime(args.test_date, '%Y%m%d%H')
+        data['TEST_DATE'] = to_datetime(args.test_date)
     # Parse YAML configuration file with optional data
     case_cfg = parse_j2yaml(path=args.yaml, data=data)
     # Synchronize input files as per the parsed configuration
     FileHandler(case_cfg.input_files).sync()
+
+
+if __name__ == '__main__':
+    main()

@@ -90,6 +90,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_goes'] = run_base.get('DO_GOES', False)
             run_options[run]['do_mos'] = run_base.get('DO_MOS', False)
             run_options[run]['do_extractvars'] = run_base.get('DO_EXTRACTVARS', False)
+            run_options[run]['do_archtar'] = run_base.get('DO_ARCHTAR', False)
 
             run_options[run]['do_atm'] = run_base.get('DO_ATM', True)
             run_options[run]['do_wave'] = run_base.get('DO_WAVE', False)

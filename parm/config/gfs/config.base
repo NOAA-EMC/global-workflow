@@ -82,7 +82,7 @@ export DO_MOS="NO"                       # GFS Model Output Statistics - Only su
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
-#  if want MOS written to HPSS.   Should update arch.sh to
+#  if want MOS written to HPSS.   Should update arch_vrfy.sh and arch_tars to
 #  use RUNMOS flag
 export REALTIME="YES"
 
@@ -485,6 +485,10 @@ export LOCALARCH="@LOCALARCH@"        # save data to local archive
 if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
    echo "FATAL ERROR: Both HPSS and local archiving selected.  Please choose one or the other."
    exit 4
+elif [[ ${HPSSARCH} = "YES" ]] || [[ ${LOCALARCH} = "YES" ]]; then
+   export DO_ARCHTAR="YES"
+else
+   export DO_ARCHTAR="NO"
 fi
 export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
