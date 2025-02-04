@@ -18,22 +18,21 @@ export REDERR=${REDERR:-'2>'}
 
 REGRID_EXEC=${HOMEgfs}/sorc/gdas.cd/build/bin/regridStates.x
 
-export PGM=$REGRID_EXEC
-export pgm=$PGM
+export PGM=${REGRID_EXEC}
+export pgm=${PGM}
 
 NMEM_REGRID=${NMEM_REGRID:-1}
-CASE_IN=${CASE_IN:-$CASE_ENS}
+CASE_IN=${CASE_IN:-${CASE_ENS}}
 LFHR=${LFHR:-6}
 
 # get resolutions
-CRES_IN=$(echo $CASE_IN | cut -c2-)
+CRES_IN=$(echo ${CASE_IN} | cut -c2-)
 LONB_CASE_IN=$((4*CRES_IN))
 LATB_CASE_IN=$((2*CRES_IN))
 
-CRES_OUT=$(echo $CASE_OUT | cut -c2-)
+CRES_OUT=$(echo ${CASE_OUT} | cut -c2-)
 ntiles=6
 
-APREFIX="${RUN/enkf}.t${cyc}z."
 APREFIX_ENS="enkfgdas.t${cyc}z."
 
 LSOIL_INCR=${LSOIL_INCR:-2}
@@ -51,7 +50,7 @@ done
 cat << EOF > regrid.nml
  &config
   n_vars=${n_vars},
-  variable_list=$soil_incr_vars
+  variable_list=${soil_incr_vars}
   missing_value=0.,
  /
  &input
@@ -72,7 +71,7 @@ cat << EOF > regrid.nml
   dir="./",
   fname_mask="vegetation_type" 
   dir_mask="./"
-  dir_coord="$FIXorog",
+  dir_coord="${FIXorog}",
  /
 EOF
 
@@ -80,38 +79,38 @@ EOF
 ln -sf ${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc gaussian_scrip.nc
 
 # fixed output files
-for n in $(seq 1 $ntiles); do
+for n in $(seq 1 ${ntiles}); do
     ln -sf ${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc  vegetation_type.tile${n}.nc
 done
 
-if (( $LFHR >= 0 )); then 
-        soilinc_fhrs=($LFHR)
+if (( ${LFHR} >= 0 )); then 
+        soilinc_fhrs=(${LFHR})
 else # construct restart times for deterministic member
-    soilinc_fhrs=($assim_freq) # increment file at middle of window 
+    soilinc_fhrs=(${assim_freq}) # increment file at middle of window 
     if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
       half_window=$(( assim_freq / 2 ))
-      soilinc_fhrs+=($half_window)
+      soilinc_fhrs+=(${half_window})
     fi
 fi 
 
-for imem in $(seq 1 $NMEM_REGRID); do
-    if [[ $NMEM_REGRID > 1 ]]; then
-        cmem=$(printf %03i $imem)
-        memchar="mem$cmem"
+for imem in $(seq 1 ${NMEM_REGRID}); do
+    if [[ ${NMEM_REGRID} > 1 ]]; then
+        cmem=$(printf %03i ${imem})
+        memchar="mem${cmem}"
      
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
             COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-        COM_SOIL_ANALYSIS_MEM=$COM_ATMOS_ANALYSIS_MEM
+        COM_SOIL_ANALYSIS_MEM=${COM_ATMOS_ANALYSIS_MEM}
     fi
  
     for FHR in "${soilinc_fhrs[@]}"; do
       ln -fs ${COM_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc \
                 ${DATA}/enkfgdas.sfci.nc
 
-      $APRUN_REGR $REGRID_EXEC $REDOUT$PGMOUT $REDERR$PGMERR
+      ${APRUN_REGR} ${REGRID_EXEC} ${REDOUT}${PGMOUT} ${REDERR}${PGMERR}
 
-      for n in $(seq 1 $ntiles); do
+      for n in $(seq 1 ${ntiles}); do
           mv ${DATA}/sfci.tile${n}.nc  ${COM_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc 
       done
     done

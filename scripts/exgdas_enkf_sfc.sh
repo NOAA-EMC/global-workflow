@@ -118,7 +118,7 @@ else
 fi
 
 # regrid the surface increment files
-if [ $GSI_SOILANAL = "YES" ]; then
+if [[ ${GSI_SOILANAL} = "YES" ]]; then
  
     export CASE_IN=${CASE_ENS}
     export CASE_OUT=${CASE_ENS}
@@ -183,7 +183,7 @@ if [ $DOIAU = "YES" ]; then
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ ${GSI_SOILANAL} = "YES" ]]; then
-                FHR=$LFHR
+                FHR=${LFHR}
                  ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" \
                    "${DATA}/soil_xainc.${cmem}" 
             fi
