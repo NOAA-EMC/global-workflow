@@ -385,7 +385,7 @@ fi
 ${NLN} ${vqcdat}       vqctp001.dat
 ${NLN} ${INSITUINFO}   insituinfo
 if [ $OZINFO == "generate" ]; then
-   sh ${SCRgfs}/build_gsinfo/create_ozinfo.sh  ${PDY}${cyc} > ozinfo
+   sh ${SCRgfs}/create_ozinfo.sh  ${PDY}${cyc} > ozinfo
 else
    ${NLN} ${OZINFO}       ozinfo
 fi
