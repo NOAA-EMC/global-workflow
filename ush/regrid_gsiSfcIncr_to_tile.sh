@@ -30,7 +30,7 @@ CRES_IN="${CASE_IN:1}"
 LONB_CASE_IN=$((4*CRES_IN))
 LATB_CASE_IN=$((2*CRES_IN))
 
-CRES_OUT=$(echo ${CASE_OUT} | cut -c2-)
+CRES_OUT="${CASE_OUT:1}"
 ntiles=6
 
 APREFIX_ENS="enkfgdas.t${cyc}z."
