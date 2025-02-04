@@ -64,7 +64,7 @@ class GlobusHpss(Task):
                 f"FATAL ERROR No host information on {server_name}!"
                 "\n"
                 f"Please add an entry for {server_name} into ~/.ssh/config!"
-                ) from pe
+            ) from pe
 
         # Parse the ssh output to find the user's Niagara username
         ssh_output = ssh_output.split("\n")
@@ -75,7 +75,7 @@ class GlobusHpss(Task):
         # Update the home directory on the server with the username
         server_home = self.task_config.SERVER_HOME.replace(
             "{{LOGNAME}}", server_username
-            )
+        )
 
         logger.debug(f"Server username detected as {server_username}")
 
@@ -152,7 +152,7 @@ class GlobusHpss(Task):
         transfer_sets = {
             "standard": {"locations": standard_backup_set},
             "rstprod": {"locations": rstprod_backup_set}
-            }
+        }
 
         # Parse the doorman setup script
         doorman_jinja = os.path.join(globus_parm, "run_doorman.sh.j2")
