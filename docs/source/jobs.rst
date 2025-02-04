@@ -18,7 +18,7 @@ An experimental run is different from operations in the following ways:
 
 * Addition steps in experimental mode:
 
-  - archive (arch)
+  - archive (arch_vrfy & arch_tars)
 
   - cleanup (cleanup)
 
@@ -39,7 +39,9 @@ Jobs in the GFS Configuration
 | analdiag          | Creates netCDF diagnostic files containing observation values, innovation (O-F), error, quality control, as well as   |
 |                   | other analysis-related quantities (cnvstat, radstat, ozstat files).                                                   |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
-| arch              | Archives select files from the deterministic model and cleans up older data.                                          |
+|arch_tars          | Optional archive job that backs up the COM data structure.                                                            |
++-------------------+-----------------------------------------------------------------------------------------------------------------------+
+|arch_vrfy          | Archives select files from the deterministic model and cleans up older data.                                          |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | earcN/eamn        | Archival script for EnKF: 1) Write select EnKF output to HPSS; 2) Copy select files to online archive; 3) Clean up    |
 |                   | EnKF temporary run directories; 4) Remove "old" EnKF files from rotating directory.                                   |

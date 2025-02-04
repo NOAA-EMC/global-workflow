@@ -37,7 +37,7 @@ case ${step} in
     export memory="200GB"
     ;;
 
-  "arch" | "earc" | "getic")
+  "arch_vrfy" | "arch_tars" | "earc_vrfy" | "earc_tars" | "getic")
     declare -x "memory"="50GB"
     ;;
 
