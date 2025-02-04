@@ -24,9 +24,13 @@ export SERVER_HOME='/collab1/data/{{LOGNAME}}'
 export SVEN_DROPBOX_ROOT="${DATA}/SVEN_DROPBOX"
 
 # Location of the doorman package on Niagara
-export DOORMAN_ROOT="/home/Georgy.Fekete/sven"
+export DOORMAN_ROOT="/home/Gyorgy.Fekete/doorman"
 
 # Server name (should match ~/.ssh/config)
 export SERVER_NAME="niagara"
+
+# Server globus UUID
+niagara_UUID="1bfd8a79-52b2-4589-88b2-0648e0c0b35d"
+export SERVER_GLOBUS_UUID="${niagara_UUID}"
 
 echo "END: config.globus"
