@@ -61,9 +61,9 @@ class GlobusHpss(Task):
             ssh_output = self.ssh("-G", f"{server_name}", output=str)
         except ProcessError as pe:
             raise ProcessError(
-                                f"FATAL ERROR No host information on {server_name}!"
-                                "\n"
-                                f"Please add an entry for {server_name} into ~/.ssh/config!"
+                               f"FATAL ERROR No host information on {server_name}!"
+                               "\n"
+                               f"Please add an entry for {server_name} into ~/.ssh/config!"
                               ) from pe
 
         # Parse the ssh output to find the user's Niagara username
