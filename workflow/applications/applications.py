@@ -3,6 +3,7 @@
 from typing import Dict, List, Any
 from hosts import Host
 from wxflow import Configuration
+import importlib.util
 from abc import ABC, ABCMeta, abstractmethod
 
 __all__ = ['AppConfig']
@@ -70,6 +71,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         '''
 
         run_options = {run: {} for run in dict.fromkeys(self.runs)}
+        globus_checked = False
         for run in self.runs:
             # Read config.base with RUN specified
             run_base = conf.parse_config('config.base', RUN=run)
@@ -104,6 +106,10 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
             if not AppConfig.is_monotonic(run_options[run]['fcst_segments']):
                 raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
+
+            if run_options[run]['do_globusarch'] and not globus_checked:
+                globus_checked = self.check_globus(conf)
+                self.generate_globus_cron(conf)
 
         # Return the dictionary of run options
         return run_options
@@ -206,3 +212,15 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             return all(x > y for x, y in zip(test_list, test_list[1:]))
         else:
             return all(x < y for x, y in zip(test_list, test_list[1:]))
+
+    def check_globus(self, conf):
+        # Test that globus can be imported
+        spec = importlib.util.find_spec("globus_cli")
+        if spec is None:
+            raise ImportError("Globus-cli module not found!  Check that the module is loaded!")
+
+        from globus_cli import main as globus
+
+        globus_conf = conf.parse_config('config.globus')
+        # Check that a globus session is active
+        globus_cli = which("globus_cli")
