@@ -255,8 +255,8 @@ if [[ ! -s "${outfile}.idx" ]]; then
     echo "   Alerting GRIB file as ${outfile}"
     echo "   Alerting GRIB index file as ${outfile}.idx"
     set_trace
-    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2" "${job}" "${outfile}"
-    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2_WIDX" "${job}" "${outfile}.idx"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2" "${job}" "${com_dir}/${outfile}"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${alertName}_WAVE_GB2_WIDX" "${job}" "${com_dir}/${outfile}.idx"
   else
     echo "${outfile} is global.0p50 or SENDDBN is NO, no alert sent"
   fi
@@ -275,7 +275,7 @@ if [[ ! -s "${outfile}.idx" ]]; then
 else
   set +x
   echo ' '
-  echo " File ${outfile} found, skipping generation process"
+  echo " File ${com_dir}/${outfile} found, skipping generation process"
   echo ' '
   set_trace
 fi
