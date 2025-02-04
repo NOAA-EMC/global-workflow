@@ -15,7 +15,7 @@ class GEFSTasks(Tasks):
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/stage_ic.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -32,7 +32,7 @@ class GEFSTasks(Tasks):
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/waveinit.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -49,7 +49,7 @@ class GEFSTasks(Tasks):
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/prep_emissions.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -87,7 +87,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': fcst_vars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -144,7 +144,7 @@ class GEFSTasks(Tasks):
                          'resources': resources,
                          'dependency': dependencies,
                          'envars': efcsenvars,
-                         'cycledef': f'{self.run}',
+                         'cycledef': self.run,
                          'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
                          'job_name': f'{self.pslot}_{task_name}_@H',
                          'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -206,7 +206,7 @@ class GEFSTasks(Tasks):
         max_tasks = self._configs[config]['MAX_TASKS']
         resources = self.get_resource(config)
 
-        fhrs = self._get_forecast_hours('gefs', self._configs[config], component)
+        fhrs = self._get_forecast_hours(self.run, self._configs[config], component)
 
         # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
         is_replay = self._configs[config]['REPLAY_ICS']
@@ -245,7 +245,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': postenvars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/{config}.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -276,7 +276,7 @@ class GEFSTasks(Tasks):
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        fhrs = self._get_forecast_hours('gefs', self._configs['atmos_ensstat'])
+        fhrs = self._get_forecast_hours(self.run, self._configs['atmos_ensstat'])
 
         # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
         is_replay = self._configs['atmos_ensstat']['REPLAY_ICS']
@@ -300,7 +300,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': postenvars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/atmos_ensstat.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -327,7 +327,7 @@ class GEFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
-        fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'], 'wave')
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
 
         # When using replay, output does not start until hour 3
         is_replay = self._configs['wavepostsbs']['REPLAY_ICS']
@@ -356,7 +356,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': wave_post_envars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostsbs.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -395,7 +395,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': wave_post_bndpnt_envars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostbndpnt.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -440,7 +440,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': wave_post_bndpnt_bull_envars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostbndpntbll.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -479,7 +479,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': wave_post_pnt_envars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostpnt.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -524,7 +524,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': extractvars_envars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/extractvars.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -541,7 +541,7 @@ class GEFSTasks(Tasks):
 
         return task
 
-    def arch(self):
+    def arch_vrfy(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -568,14 +568,58 @@ class GEFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
-        resources = self.get_resource('arch')
-        task_name = f'{self.run}_arch'
+        resources = self.get_resource('arch_vrfy')
+        task_name = f'{self.run}_arch_vrfy'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_vrfy.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def arch_tars(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_ice']:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_ocean']:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_wave']:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_pnt'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_wave_bnd']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_bndpnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_bndpnt_bull'}
+                deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_extractvars']:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_extractvars'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
+        resources = self.get_resource('arch_tars')
+        task_name = f'{self.run}_arch_tars'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': self.run,
+                     'dependency': dependencies,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_tars.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -587,15 +631,18 @@ class GEFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        if self.options['do_archtar']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         resources = self.get_resource('cleanup')
         task_name = f'{self.run}_cleanup'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
-                     'cycledef': f'{self.run}',
+                     'cycledef': self.run,
                      'dependency': dependencies,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/cleanup.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',

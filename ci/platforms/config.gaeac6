@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+export GFS_CI_ROOT=/gpfs/f6/drsa-precip3/scratch/${USER}/GFS_CI_ROOT
+export ICSDIR_ROOT=/gpfs/f6/bil-fire8/world-shared/global/glopara/data/ICSDIR
+export HPC_ACCOUNT=drsa-precip3
+export max_concurrent_cases=5
+export max_concurrent_pr=4
