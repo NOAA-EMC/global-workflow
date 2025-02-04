@@ -12,7 +12,7 @@ echo "BEGIN: config.sfcanl"
 if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"
 fi
-if [[ ${GSI_SOILANAL} = "YES" ]]; then
+if [[ "${GSI_SOILANAL}" = "YES" ]]; then
     export DO_LNDINC=".true."
     export DO_SOI_INC=".true."
     export GCYCLE_INTERP_LNDINC=".false."
