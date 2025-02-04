@@ -1,20 +1,17 @@
 #!/usr/bin/env bash
+# This script runs on Niagara to interact with the Doorman service
 # Redirect all output to a local file -- it cannot be sent back directly with tty/pty
 script_relpath="$(dirname "${BASH_SOURCE[0]}")"
 log_file="${script_relpath}/run_doorman.log"
+cd "${script_relpath}"
 
 run_doorman(){
 set -eux
 
-# This script runs on Niagara to interact with the Doorman service
-
-# Make the working directory
-doorman_dir='{{server_home}}/doorman_wd'
-mkdir -p "${doorman_dir}"
-cd "${doorman_dir}"
 rm -f dm.conf
 rm -f places.inc
 rm -f FLIST
+rm -rf "{{doorman_gendel}}"
 
 # Tell the doorman where the general delivery space is on Niagara (unique for each RUN/cycle)
 # This is where tarballs will be received and confirmations are written and sent.
@@ -23,6 +20,8 @@ echo 'export GENDEL="{{doorman_gendel}}"' > places.inc
 echo 'export CLIENT_ENDPOINT="{{CLIENT_GLOBUS_UUID}}"' >> places.inc
 # Tell the doorman where the sending client's dropbox is (why twice??)
 echo 'export CLIENT_DROPBOX="{{sven_dropbox}}"' >> places.inc
+# Tell the doorman what it's own UUID is
+echo 'export NIAG_GLC="{{SERVER_GLOBUS_UUID}}"' >> places.inc
 
 # Point to the doorman executable scripts
 export PATH="${PATH}:{{DOORMAN_ROOT}}/bin"
