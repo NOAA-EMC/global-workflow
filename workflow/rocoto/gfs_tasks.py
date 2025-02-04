@@ -1897,13 +1897,13 @@ class GFSTasks(Tasks):
 
     def metp(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self._base["interval_gfs"] < to_timedelta("24H"):
             n_lookback = self._base["interval_gfs"] // to_timedelta("6H")
             for lookback in range(1, n_lookback + 1):
                 deps2 = []
-                dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch', 'condition': 'not'}
+                dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch_vrfy', 'condition': 'not'}
                 deps2.append(rocoto.add_dependency(dep_dict))
                 for lookback2 in range(1, lookback):
                     offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback2}H'))
@@ -1911,7 +1911,7 @@ class GFSTasks(Tasks):
                     deps2.append(rocoto.add_dependency(dep_dict))
 
                 offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback}H'))
-                dep_dict = {'type': 'task', 'name': f'{self.run}_arch', 'offset': offset}
+                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy', 'offset': offset}
                 deps2.append(rocoto.add_dependency(dep_dict))
                 deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
 
@@ -2301,7 +2301,59 @@ class GFSTasks(Tasks):
 
         return task
 
-    def arch(self):
+    def arch_vrfy(self):
+        deps = []
+        if self.app_config.mode in ['cycled']:
+            if self.run in ['gfs']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            elif self.run in ['gdas']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                if self.options['do_fit2obs']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_fit2obs'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+        if self.run in ['gfs'] and self.options['do_tracker']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_tracker'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.run in ['gfs'] and self.options['do_genesis']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_genesis'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.run in ['gfs'] and self.options['do_genesis_fsu']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_genesis_fsu'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        # Post job dependencies
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_ocean']:
+            if self.run in ['gfs']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
+                deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_ice']:
+            if self.run in ['gfs']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
+                deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('arch_vrfy')
+        task_name = f'{self.run}_arch_vrfy'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_vrfy.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def arch_tars(self):
         deps = []
         if self.app_config.mode in ['cycled']:
             if self.run in ['gfs']:
@@ -2363,16 +2415,28 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'{self.run}_mos_{job}'}
                 deps.append(rocoto.add_dependency(dep_dict))
 
+        if self.options['do_metp'] and self.run in ['gfs']:
+            deps2 = []
+            # taskvalid only handles regular tasks, so just check the first metp job exists
+            dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_metpg2g1', 'condition': 'not'}
+            deps2.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_metp'}
+            deps2.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
+
+        dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
+        deps.append(rocoto.add_dependency(dep_dict))
+
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        resources = self.get_resource('arch')
-        task_name = f'{self.run}_arch'
+        resources = self.get_resource('arch_tars')
+        task_name = f'{self.run}_arch_tars'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_tars.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -2382,15 +2446,22 @@ class GFSTasks(Tasks):
 
         return task
 
-    # Cleanup
+# cleanup
     def cleanup(self):
         deps = []
         if 'enkf' in self.run:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_eamn'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_earc_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_archtar']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
+                deps.append(rocoto.add_dependency(dep_dict))
+
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_arch'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_archtar']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+                deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_gempak']:
             if self.run in ['gdas']:
@@ -2944,7 +3015,40 @@ class GFSTasks(Tasks):
 
         return task
 
-    def earc(self):
+    def earc_vrfy(self):
+
+        deps = []
+        if 'enkfgdas' in self.run:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        earcenvars = self.envars.copy()
+        earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+
+        resources = self.get_resource('earc_vrfy')
+
+        task_name = f'{self.run}_earc_vrfy'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': earcenvars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/earc_vrfy.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def earc_tars(self):
 
         deps = []
         if 'enkfgdas' in self.run:
@@ -2962,26 +3066,26 @@ class GFSTasks(Tasks):
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
         # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
+        n_groups = -(self.nmem // -self._configs['earc_tars']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
-        resources = self.get_resource('earc')
+        resources = self.get_resource('earc_tars')
 
         var_dict = {'grp': groups}
 
-        task_name = f'{self.run}_earc#grp#'
+        task_name = f'{self.run}_earc_tars_#grp#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': earcenvars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/earc.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/earc_tars.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}_eamn',
+        metatask_dict = {'task_name': f'{self.run}_earc_tars',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
