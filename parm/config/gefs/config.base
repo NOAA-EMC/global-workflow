@@ -334,11 +334,16 @@ export DO_METP="NO"         # Run METPLUS jobs - set METPLUS settings in config.
 export DO_FIT2OBS="NO"      # Run fit to observations package
 
 # Archiving options
+export VRFYARCH="@VRFYARCH@"        # save verification data locally
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export LOCALARCH="@LOCALARCH@"        # save data to local archive
 if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
    echo "Both HPSS and local archiving selected.  Please choose one or the other."
    exit 3
+elif [[ ${HPSSARCH} = "YES" ]] || [[ ${LOCALARCH} = "YES" ]]; then
+   export DO_ARCHTAR="YES"
+else
+   export DO_ARCHTAR="NO"
 fi
 export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
@@ -347,8 +352,6 @@ export ARCH_EXPDIR='YES'     # Archive the EXPDIR configs, XML, and database
 export ARCH_EXPDIR_FREQ=0    # How often to archive the EXPDIR in hours or 0 for first and last cycle only
 export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and 'git status' for each; requires ARCH_EXPDIR
 export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
-
-export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
 
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
