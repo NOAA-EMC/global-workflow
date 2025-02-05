@@ -40,10 +40,10 @@ LSOIL_INCR=${LSOIL_INCR:-2}
 n_vars=$(( LSOIL_INCR*2 ))
 
 soil_incr_vars=""
-for vi in $( seq 1 ${LSOIL_INCR} ); do
+for vi in $( seq 1 "${LSOIL_INCR}" ); do
     soil_incr_vars=${soil_incr_vars}'"soilt'${vi}'_inc"',
 done
-for vi in $( seq 1 ${LSOIL_INCR} ); do
+for vi in $( seq 1 "${LSOIL_INCR}" ); do
     soil_incr_vars=${soil_incr_vars}'"slc'${vi}'_inc"',
 done
 
@@ -76,26 +76,26 @@ cat << EOF > regrid.nml
 EOF
 
 # fixed input files
-ln -sf ${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc gaussian_scrip.nc
+ln -sf "${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" "gaussian_scrip.nc"
 
 # fixed output files
-for n in $(seq 1 ${ntiles}); do
-    ln -sf ${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc  vegetation_type.tile${n}.nc
+for n in $(seq 1 "${ntiles}"); do
+    ln -sf "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc"  "vegetation_type.tile${n}.nc"
 done
 
-if (( ${LFHR} >= 0 )); then 
-        soilinc_fhrs=(${LFHR})
+if (( $LFHR >= 0 )); then 
+        soilinc_fhrs=("${LFHR}")
 else # construct restart times for deterministic member
-    soilinc_fhrs=(${assim_freq}) # increment file at middle of window 
+    soilinc_fhrs=("${assim_freq}") # increment file at middle of window 
     if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
       half_window=$(( assim_freq / 2 ))
-      soilinc_fhrs+=(${half_window})
+      soilinc_fhrs+=("${half_window}")
     fi
 fi 
 
-for imem in $(seq 1 ${NMEM_REGRID}); do
-    if [[ ${NMEM_REGRID} > 1 ]]; then
-        cmem=$(printf %03i ${imem})
+for imem in $(seq 1 "${NMEM_REGRID}"); do
+    if (( ${NMEM_REGRID} > 1 )); then
+        cmem=$(printf %03i "${imem}")
         memchar="mem${cmem}"
      
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
@@ -106,13 +106,13 @@ for imem in $(seq 1 ${NMEM_REGRID}); do
     fi
  
     for FHR in "${soilinc_fhrs[@]}"; do
-      ln -fs ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc \
-                ${DATA}/enkfgdas.sfci.nc
+      ln -fs "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+                "${DATA}/enkfgdas.sfci.nc"
 
       ${APRUN_REGRID} ${REGRID_EXEC} ${REDOUT}${PGMOUT} ${REDERR}${PGMERR}
 
-      for n in $(seq 1 ${ntiles}); do
-          mv ${DATA}/sfci.tile${n}.nc  ${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc 
+      for n in $(seq 1 "${ntiles}"); do
+          mv "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" 
       done
     done
 done
