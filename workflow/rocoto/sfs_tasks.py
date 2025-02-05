@@ -631,11 +631,12 @@ class SFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_archtar']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
-            deps.append(rocoto.add_dependency(dep_dict))
+        # TODO: Add these deps when the archive tasks are created
+        # dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
+        # deps.append(rocoto.add_dependency(dep_dict))
+        # if self.options['do_archtar']:
+        #     dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+        #     deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         resources = self.get_resource('cleanup')
         task_name = f'{self.run}_cleanup'
