@@ -18,7 +18,7 @@ export SERVER_GLOBUS_UUID=1bfd8a79-52b2-4589-88b2-0648e0c0b35d
 export CLIENT_GLOBUS_UUID=@CLIENT_GLOBUS_UUID@
 
 # General delivery location on Niagara (staging area for data)
-export SERVER_HOME='/collab1/data/{{LOGNAME}}'
+export SERVER_HOME='/collab1/data/{{SERVER_USERNAME}}'
 
 # Sven's dropbox
 export SVEN_DROPBOX_ROOT="${DATA}/SVEN_DROPBOX"
