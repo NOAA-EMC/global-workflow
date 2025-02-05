@@ -90,5 +90,5 @@ build:
   gdas:
     command: "./build_gdas.sh -j 12"
     log: "build_gdas.log"
-    cores: 12
+    cores: 24
     walltime: "01:30:00"
