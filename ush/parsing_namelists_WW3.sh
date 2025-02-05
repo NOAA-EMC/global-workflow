@@ -27,6 +27,7 @@ WW3_namelists(){
   #set coupling to ice/current
   WW3_ICE="F"
   WW3_CUR="F"
+  WW3_WLEV="F"
 
   case ${WW3ICEINP} in
     'YES' )
