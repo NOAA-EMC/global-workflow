@@ -19,6 +19,7 @@
 # 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007
 # 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
 # 2020-07-31  Jessica Meixner: Removing points, now gridded data only
+# 2024-12-17  Matt Masarik: Check for indicator file gfile_log, vs. gfile
 #
 # $Id$
 #
@@ -280,8 +281,8 @@
       for wavGRD in ${waveGRD} ; do
         let iwait=0
         gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
-        gfile_log=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}.FINISHED
-        while [ ! -s ${gfile} ]; do
+        gfile_log=${gfile}.FINISHED
+        while [ ! -f ${gfile_log} ]; do
           if [ $iwait -eq $iwaitmax ]; then
             echo '*************************************************** '
             echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
