@@ -2,7 +2,7 @@
 
 import os
 from logging import getLogger
-from pathlib import Path
+import shutil
 from time import sleep
 from typing import Any, Dict, List
 import re
@@ -54,6 +54,8 @@ class GlobusHpss(Task):
         # Disable strict host key checking by default
         # This auto-accepts changes to keys
         self.scp.add_default_arg("-oStrictHostKeyChecking=no")
+        # Force using publickey login
+        self.scp.add_default_arg("-oPreferredAuthentication=publickey")
 
         # Get the user's server username from their ~/.ssh/config file
         server_name = self.task_config.SERVER_NAME
@@ -74,7 +76,7 @@ class GlobusHpss(Task):
 
         # Update the home directory on the server with the username
         server_home = self.task_config.SERVER_HOME.replace(
-            "{{LOGNAME}}", server_username
+            "{{SERVER_USERNAME}}", server_username
         )
 
         logger.debug(f"Server username detected as {server_username}")
@@ -162,7 +164,10 @@ class GlobusHpss(Task):
         dm_conf = f'export dropbox="{globus_dict.sven_dropbox}"'
 
         # Make the dropbox and clean it out
-        Path(globus_dict.sven_dropbox).mkdir(exist_ok=True)
+        if os.path.exists(globus_dict.sven_dropbox):
+            shutil.rmtree(globus_dict.sven_dropbox)
+
+        os.mkdir(globus_dict.sven_dropbox)
 
         # Parse the return script
         return_jinja = os.path.join(globus_parm, "return.sh.j2")
@@ -187,11 +192,8 @@ class GlobusHpss(Task):
             transfer_sets[transfer_set]["dm.conf"] = dm_conf
             transfer_sets[transfer_set]["return"] = return_script
             transfer_sets[transfer_set]["verify"] = vrfy_script
-            transfer_sets[transfer_set]["sven_dropbox"] = globus_dict.sven_dropbox
-            transfer_sets[transfer_set]["server_name"] = globus_dict.SERVER_NAME
-            transfer_sets[transfer_set]["server_homedir"] = (
-                f"{globus_dict.server_home}/doorman/{globus_dict.jobid}/"
-                f"{transfer_set}"
+            transfer_sets[transfer_set]["server_job_dir"] = (
+                f"{globus_dict.server_home}/doorman/globus.{globus_dict.jobid}/{transfer_set}"
             )
 
         return transfer_sets
@@ -220,12 +222,18 @@ class GlobusHpss(Task):
             return_f.write(transfer_set["return"])
         with open("run_doorman.sh", "w") as doorman_f:
             doorman_f.write(transfer_set["run_doorman.sh"])
+        with open("init_xfer.sh", "w") as init_f:
+            init_f.write(transfer_set["init_xfer.sh"])
+
+        server_job_dir = transfer_set["server_job_dir"]
+
+        # Initialize the server
+        self._init_server(server_job_dir)
 
         # Make run_doorman.sh executable
         os.chmod("run_doorman.sh", 0o740)
 
-        server_homedir = transfer_set["server_homedir"]
-        server_name = transfer_set["server_name"]
+        server_name = self.task_config.SERVER_NAME
 
         # Initialize a list of status files.
         transfer_set["statuses"] = []
@@ -233,7 +241,6 @@ class GlobusHpss(Task):
 
         # Tell Sven we have files to send, one at a time
         for location in transfer_set["locations"]:
-            print(location)
             with open("location", "w") as location_f:
                 location_f.write(location + "\n")
             try:
@@ -245,7 +252,7 @@ class GlobusHpss(Task):
 
             # Parse Sven's output to get the name of the return status file
             match = re.search("\"(status_.*)\" in your dropbox", sven_output)
-            transfer_set["status_files"].append(os.path.join(transfer_set["sven_dropbox"], match.group(1)))
+            transfer_set["status_files"].append(os.path.join(self.task_config.sven_dropbox, match.group(1)))
 
             # Initialize 'completed' to false for each file
             transfer_set["completed"].append(False)
@@ -254,7 +261,7 @@ class GlobusHpss(Task):
         # Note, this assumes we have unattended transfer capability.
         try:
             # Now transfer and rename the script
-            server_run_script = f"{server_homedir}/doorman_rundir/run_doorman.sh"
+            server_run_script = f"{server_job_dir}/run_doorman.sh"
             logger.debug(f"Transfer run_doorman.sh to {server_name}:{server_run_script}")
             self.scp(
                 "run_doorman.sh", f"{server_name}:{server_run_script}",
@@ -313,7 +320,7 @@ class GlobusHpss(Task):
 
         # Retrieve and print the Doorman log file from the server
         try:
-            self.scp(f"{server_name}:{server_homedir}/run_doorman.log", '.')
+            self.scp(f"{server_name}:{server_job_dir}/run_doorman.log", '.')
             with open('run_doorman.log', 'r') as doorman_log:
                 logger.info(doorman_log.read())
 
@@ -325,6 +332,25 @@ class GlobusHpss(Task):
             raise ProcessError("FATAL ERROR Some/all files failed to archive to HPSS")
 
         return
+
+    @logit(logger)
+    def _init_server(job_dir: str):
+        # This method sends a request to create a working directory and transfers
+        # the initialization script.
+
+        req_file = f"req_mkdir.{self.task_config.jobid}"
+        with open(f"req_mkdir.{self.task_config.jobid}") as mkdir_f:
+            mkdir_f.write(f"{job_dir}")
+
+        self.scp(req_file, f"{self.task_config.SERVER_NAME}:{self.task_config.server_home}/{req_file}")
+
+        self.scp(
+            "init_xfer.sh",
+            f"{self.task_config.SERVER_NAME}:{self.task_config.server_home}/init_xfer_{self.task_config.PSLOT}.sh"
+        )
+
+        logger.info("Sleeping 1 minute to let the server initialize")
+        sleep(300)
 
     @logit(logger)
     def clean(self):
