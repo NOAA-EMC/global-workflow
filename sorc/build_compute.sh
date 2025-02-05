@@ -87,7 +87,7 @@ finished=false
 ${runcmd}
 echo "Running builds on compute nodes"
 while [[ "${finished}" == "false" ]]; do
-   sleep 10s
+   sleep 3m
    ${runcmd}
    state="$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")"
    if [[ "${verbose_opt}" == "true" ]]; then
@@ -102,12 +102,11 @@ while [[ "${finished}" == "false" ]]; do
       finished=false
    else
       echo "FATAL ERROR: ${BASH_SOURCE[0]} rocoto failed with state '${state}'"
-      # Determine which builds failed
-      set -x
+      rm -f logs/error.logs
+      # Determine which build(s) failed
       stat_out="$(rocotostat -w "${build_xml}" -d "${build_db}")"
       echo "${stat_out}" > rocotostat.out
       line_number=0
-      rm -f logs/error.logs
       while read -r line; do
          (( line_number += 1 ))
          # Skip the first two lines (header)
