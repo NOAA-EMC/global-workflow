@@ -104,22 +104,22 @@ while [[ "${finished}" == "false" ]]; do
       echo "FATAL ERROR: ${BASH_SOURCE[0]} rocoto failed with state '${state}'"
       # Determine which builds failed
       echo "$(rocotostat -w "${build_xml}" -d "${build_db}")" > rocotostat.out
-	  line_number=0
-	  rm -f logs/error.logs
+      line_number=0
+      rm -f logs/error.logs
       set -x
-	  while read -r line; do
+      while read -r line; do
          (( line_number += 1 ))
-	  	 # Skip the first two lines (header)
+         # Skip the first two lines (header)
          if [[ ${line_number} -lt 3 ]]; then
             continue
-		 fi
+         fi
 
          if [[ "${line}" =~ "DEAD" || "${line}" =~ "UNKNOWN" ||
                "${line}" =~ "UNAVAILABLE" || "${line}" =~ "FAIL" ]]; then
             job=$(echo "${line}" | awk '{ print $2 }')
             log_file="logs/build_${job}"
-			echo "${log_file}" >> logs/error.logs
-			echo "Rocoto reported that the build failed for ${job}"
+            echo "${log_file}" >> logs/error.logs
+            echo "Rocoto reported that the build failed for ${job}"
          fi  
       done < rocotostat.out
       exit 2
