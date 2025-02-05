@@ -28,7 +28,7 @@ cd "${DATA}" || exit 99
 
 # Dependent Scripts and Executables
 CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
-REGRIDSH=${REGRIDSH:-${USHgfs}/regrid_gsiSfcIncr_to_tile.sh}
+REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
 export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
@@ -38,10 +38,6 @@ export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
 export CYCLVARS=${CYCLVARS:-""}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
-
-# Land DA options 
-export DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
-export DO_JEDISNOWDA=${DO_JEDISNOWDA:-"NO"}
 
 # Other info used in this script
 RUN_GETGES=${RUN_GETGES:-"NO"}
@@ -129,14 +125,14 @@ fi
 # if doing GSI soil anaysis, copy increment file and re-grid it to native model resolution
 if [[ ${DO_GSISOILDA} = "YES" ]]; then
  
-    export COMIN_SOIL_ANALYSIS_MEM=${COMIN_ATMOS_ENKF_ANALYSIS_STAT}
-    export COMOUT_ATMOS_ANALYSIS_MEM=${COMIN_ATMOS_ANALYSIS} 
-    export CASE_IN=${CASE_ENS}
-    export CASE_OUT=${CASE}
-    export OCNRES_OUT=${OCNRES}
+    export COMIN_SOIL_ANALYSIS_MEM="${COMIN_ATMOS_ENKF_ANALYSIS_STAT}"
+    export COMOUT_ATMOS_ANALYSIS_MEM="${COMIN_ATMOS_ANALYSIS}"
+    export CASE_IN="${CASE_ENS}"
+    export CASE_OUT="${CASE}"
+    export OCNRES_OUT="${OCNRES}"
     export LFHR
  
-    ${REGRIDSH}
+    "${REGRIDSH}"
 
 fi
 
@@ -151,7 +147,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
   if [[ ${DO_GSISOILDA} = "YES" ]]; then
         for (( nn=1; nn <= ntiles; nn++ )); do
-        cp "${COMIN_ATMOS_ANALYSIS}/sfci00${FHR}.tile${nn}.nc" \
+        ${NCP} "${COMIN_ATMOS_ANALYSIS}/sfci00${FHR}.tile${nn}.nc" \
            "${DATA}/soil_xainc.00${nn}" 
         done
   fi

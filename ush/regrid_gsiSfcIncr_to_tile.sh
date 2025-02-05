@@ -16,8 +16,6 @@ export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export REDOUT=${REDOUT:-'1>'}
 export REDERR=${REDERR:-'2>'}
 
-REGRID_EXEC=${HOMEgfs}/sorc/gdas.cd/build/bin/regridStates.x
-
 export PGM=${REGRID_EXEC}
 export pgm=${PGM}
 
@@ -26,11 +24,9 @@ CASE_IN=${CASE_IN:-${CASE_ENS}}
 LFHR=${LFHR:-6}
 
 # get resolutions
-CRES_IN="${CASE_IN:1}"
-LONB_CASE_IN=$((4*CRES_IN))
-LATB_CASE_IN=$((2*CRES_IN))
+LONB_CASE_IN=$((4*${CASE_IN:1}))
+LATB_CASE_IN=$((2*${CASE_IN:1}))
 
-CRES_OUT="${CASE_OUT:1}"
 ntiles=6
 
 APREFIX_ENS="enkfgdas.t${cyc}z."
@@ -58,38 +54,40 @@ cat << EOF > regrid.nml
   ires=${LONB_CASE_IN},
   jres=${LATB_CASE_IN},
   fname="enkfgdas.sfci.nc",
-  dir="./",
+  dir="${DATA}",
   fname_coord="gaussian_scrip.nc",
   dir_coord="./"
 /
 
  &output
   gridtype="fv3_rst",
-  ires=${CRES_OUT},
-  jres=${CRES_OUT},
+  ires=${CASE_OUT:1},
+  jres=${CASE_OUT:1},
   fname="sfci",
-  dir="./",
+  dir="${DATA}",
   fname_mask="vegetation_type" 
-  dir_mask="./"
+  dir_mask="${DATA}"
   dir_coord="${FIXorog}",
  /
 EOF
 
 # fixed input files
-ln -sf "${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" "gaussian_scrip.nc"
+${NCP} "${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" &
+       "${DATA}/gaussian_scrip.nc"
 
 # fixed output files
 for n in $(seq 1 "${ntiles}"); do
-    ln -sf "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc"  "vegetation_type.tile${n}.nc"
+    ${NCP} "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc" &
+           "${DATA}/vegetation_type.tile${n}.nc"
 done
 
 if (( LFHR >= 0 )); then 
-        soilinc_fhrs=("${LFHR}")
+    soilinc_fhrs=("${LFHR}")
 else # construct restart times for deterministic member
     soilinc_fhrs=("${assim_freq}") # increment file at middle of window 
     if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
-      half_window=$(( assim_freq / 2 ))
-      soilinc_fhrs+=("${half_window}")
+        half_window=$(( assim_freq / 2 ))
+        soilinc_fhrs+=("${half_window}")
     fi
 fi 
 
@@ -106,14 +104,14 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     fi
  
     for FHR in "${soilinc_fhrs[@]}"; do
-      ln -fs "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-                "${DATA}/enkfgdas.sfci.nc"
+        ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+               "${DATA}/enkfgdas.sfci.nc"
 
-      "${APRUN_REGRID}" "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+        "${APRUN_REGRID}" "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
-      for n in $(seq 1 "${ntiles}"); do
-          mv "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" 
-      done
+        for n in $(seq 1 "${ntiles}"); do
+            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" 
+        done
     done
 done
 

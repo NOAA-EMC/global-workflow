@@ -17,6 +17,7 @@ if [[ "${DO_GSISOILDA}" = "YES" ]]; then
     export DO_SOI_INC=".true."
     export GCYCLE_INTERP_LNDINC=".false."
     export LSOIL_INCR=2
+    export REGRID_EXEC=${REGRID_EXEC:-"${HOMEgfs}/sorc/gdas.cd/build/bin/regridStates.x"}
 fi
 
 echo "END: config.sfcanl"
