@@ -2,9 +2,10 @@
 
 from typing import Dict, List, Any
 from hosts import Host
-from wxflow import Configuration
+from wxflow import Configuration, which
 import importlib.util
 from abc import ABC, ABCMeta, abstractmethod
+import os
 
 __all__ = ['AppConfig']
 
@@ -112,8 +113,10 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
 
             if run_options[run]['do_globusarch'] and not globus_checked:
-                globus_checked = self.check_globus(conf)
-                self.generate_globus_cron(conf)
+                status = self.check_globus(conf)
+                if not status:
+                    raise ConnectionError("The globus server is not configured properly!")
+                globus_checked = True
 
         # Return the dictionary of run options
         return run_options
@@ -218,13 +221,64 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             return all(x < y for x, y in zip(test_list, test_list[1:]))
 
     def check_globus(self, conf):
+        # This method checks that globus can be used on this platform
+        # and is configured properly.
+
         # Test that globus can be imported
         spec = importlib.util.find_spec("globus_cli")
         if spec is None:
             raise ImportError("Globus-cli module not found!  Check that the module is loaded!")
 
-        from globus_cli import main as globus
+        globus_conf = conf.parse_config(['config.base', 'config.globus'])
 
-        globus_conf = conf.parse_config('config.globus')
-        # Check that a globus session is active
-        globus_cli = which("globus_cli")
+        # Initialize globus
+        globus = which("globus")
+
+        if globus is None:
+            raise FileNotFoundError("Could not find the globus command!")
+
+        # Check that a globus connection to the server is open
+        globus_output = globus("session", "show", output=str).splitlines()[2:]
+
+        local_uid_found = False
+        rdhpcs_uid_found = False
+
+        # There should be two sessions (MSU and RDHPCS), but if someone is running
+        # this elsewhere (e.g. NOAA cloud), it may be just one (RDHPCS).
+        local_uid = os.environ['LOGNAME'].lower()
+        for line in globus_output:
+            uid = line.split("|")[0].split("@")[0].lower()
+            domain = line.split("|")[0].split("@")[1].lower()
+
+            if uid == local_uid:
+                local_uid_found = True
+            if "rdhpcs" in domain:
+                rdhpcs_uid_found = True
+
+        if not local_uid_found or not rdhpcs_uid_found:
+            print(f"ERROR a globus session is not yet established on {globus_conf.SERVER_NAME}")
+            print(f"      Please establish a globus connection!")
+
+        # Check that there is an entry in the user's ssh config file for the globus server
+        server_scp_capable = False
+        scp = which("scp")
+        sshconfig = os.path.expanduser("~") + "/.ssh/config"
+        if scp is None:
+            print(f"ERROR Unable to find the scp command!")
+
+        elif os.path.exists(sshconfig):
+            with open(sshconfig, "r") as config_f:
+                ssh_config_lines = config_f.readlines()
+
+            for line in ssh_config_lines:
+                if globus_conf.SERVER_NAME in line:
+                    server_scp_capable = True
+                    break
+        else:
+            print("ERROR Unable to find a configuration file in ~/.ssh/config")
+
+        if not server_scp_capable:
+            print(f"ERROR an alias for {globus_conf.SERVER_NAME} does not exist yet!")
+            print(f"      Please add a configuration to ~/.ssh/config!")
+
+        return server_scp_capable and rdhpcs_uid_found and local_uid_found

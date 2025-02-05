@@ -125,6 +125,8 @@ class RocotoXML(ABC):
     def write(self, xml_file: str = None, crontab_file: str = None):
         self._write_xml(xml_file=xml_file)
         self._write_crontab(crontab_file=crontab_file)
+        if self._base["GLOBUSARCH"]:
+            self._write_server_crontab()
 
     def _write_xml(self, xml_file: str = None) -> None:
 
@@ -178,3 +180,35 @@ class RocotoXML(ABC):
             fh.write('\n'.join(strings))
 
         return
+
+    def _write_server_crontab(self, cronint: int = 1):
+        # This method generates a script and a cron entry to run it.
+        # It is the user's responsibility to add the cron entry to the server's crontab.
+
+        globus_conf = self._app_config.configs[next(iter(self._app_config.configs))]['globus']
+
+        expdir = globus_conf["EXPDIR"]
+        pslot = globus_conf["PSLOT"]
+        server = globus_conf["SERVER_NAME"]
+        server_home = globus_conf["SERVER_HOME"]
+
+        try:
+            replyto = os.environ['REPLYTO']
+        except KeyError:
+            replyto = ''
+
+        crontab_file = f"{expdir}/{pslot}.{server}.crontab"
+
+        init_script = f"{server_home}/init_xfer_{pslot}.sh"
+        strings = ['',
+                   f'#################### {pslot} ####################',
+                   f'MAILTO="{replyto}"'
+                   f'*/{cronint} * * * * [[ -f {init_script} ]] && {init_script} || true'
+                   ]
+
+        with open(crontab_file, 'w') as fh:
+            fh.write('\n'.join(strings))
+
+        print("*******************************************************")
+        print(f"Please add the contents of \n{crontab_file}\nto your {server} crontab.")
+        print("*******************************************************")
