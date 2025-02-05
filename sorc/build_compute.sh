@@ -87,7 +87,7 @@ finished=false
 ${runcmd}
 echo "Running builds on compute nodes"
 while [[ "${finished}" == "false" ]]; do
-   sleep 3m
+   sleep 10s
    ${runcmd}
    state="$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")"
    if [[ "${verbose_opt}" == "true" ]]; then
@@ -100,13 +100,29 @@ while [[ "${finished}" == "false" ]]; do
       finished=true
    elif [[ "${state}" == "RUNNING" ]]; then
       finished=false
-   elif [[ "${state}" == "DEAD" ]]; then
-      echo "FATAL ERROR: ${BASH_SOURCE[0]} one or more builds failed!"
-      # TODO add capability to determine which build(s) failed
-      exit 2
    else
       echo "FATAL ERROR: ${BASH_SOURCE[0]} rocoto failed with state '${state}'"
-      exit 3
+      # Determine which builds failed
+      echo "$(rocotostat -w "${build_xml}" -d "${build_db}")" > rocotostat.out
+	  line_number=0
+	  rm -f logs/error.logs
+      set -x
+	  while read -r line; do
+         (( line_number += 1 ))
+	  	 # Skip the first two lines (header)
+         if [[ ${line_number} -lt 3 ]]; then
+            continue
+		 fi
+
+         if [[ "${line}" =~ "DEAD" || "${line}" =~ "UNKNOWN" ||
+               "${line}" =~ "UNAVAILABLE" || "${line}" =~ "FAIL" ]]; then
+            job=$(echo "${line}" | awk '{ print $2 }')
+            log_file="logs/build_${job}"
+			echo "${log_file}" >> logs/error.logs
+			echo "Rocoto reported that the build failed for ${job}"
+         fi  
+      done < rocotostat.out
+      exit 2
    fi
 done
 
