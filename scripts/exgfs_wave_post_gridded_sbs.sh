@@ -280,6 +280,7 @@
       for wavGRD in ${waveGRD} ; do
         let iwait=0
         gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
+        gfile_log=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}.FINISHED
         while [ ! -s ${gfile} ]; do
           if [ $iwait -eq $iwaitmax ]; then
             echo '*************************************************** '
