@@ -213,7 +213,7 @@ if [ $DOIAU = "YES" ]; then
 
 fi
 
-if [ $DOSFCANL_ENKF = "YES" ]; then
+if [[ $DOSFCANL_ENKF = "YES" ]]; then
     for n in $(seq 1 $ntiles); do
 
         export TILE_NUM=$n
@@ -225,8 +225,8 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
                smem=$((smem - NMEM_ENS_MAX))
             fi
             gmemchar="mem"$(printf %03i "$smem")
-            cmem=$(printf %03i $imem)
-            memchar="mem$cmem"
+            cmem=$(printf %03i ${imem})
+            memchar="mem${cmem}"
 
             RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
@@ -289,4 +289,4 @@ fi
 cd "${pwd}" || exit 1
 
 
-exit ${err}
+exit "${err}"
