@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# This script prepares the server directory and launches the doorman scripts for {{pslot}} on {{server}}
+mkdir -p "{{server_home}}/doorman" || exit 2
+date > "{{server_home}}/{{pslot}}_crontab_active.log"
+
+# Look for mkdir requests
+for mkdir_req_fl in "{{server_home}}"/req_mkdir.*; do
+   dir=$(cat "${mkdir_req_fl}")
+   mkdir -p "${dir}" || exit 2
+   rm -f "${mkdir_req_fl}"
+done
+
+# Look for executable scripts
+for dir in "{{server_home}}"/doorman/globus.*; do
+   flist=$(find "${dir}" -executable -name "run_doorman.sh")
+   for script in ${flist}; do
+      # Check if the corresponding log has already been written
+      log="${script/.sh/.log}"
+      if [[ ! -f "${log}" ]]; then
+         "${script}"
+      fi
+   done
+done

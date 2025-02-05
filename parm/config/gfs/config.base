@@ -482,7 +482,7 @@ export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export LOCALARCH="@LOCALARCH@"      # save data to local archive
-export GLOBUSARCH="@GLOBUSARCH@"    # send data to HPSS via globus xfers to Niagara
+export GLOBUSARCH="NO"              # send data to HPSS via globus xfers to Niagara (intended for MSU)
 count_arch_opts=0
 for arch_opt in "${HPSSARCH}" "${LOCALARCH}" "${GLOBUSARCH}"; do
     if [[ "${arch_opt}" == "YES" ]]; then
@@ -492,7 +492,7 @@ done
 if [[ ${count_arch_opts} -gt 1 ]]; then
    echo "FATAL ERROR: More than one archiving option selected.  Please choose no more than one."
    exit 4
-elif [[ ${HPSSARCH} = "YES" ]] || [[ ${LOCALARCH} = "YES" ]]; then
+elif [[ ${HPSSARCH} = "YES" ]] || [[ ${LOCALARCH} = "YES" ]] || [[ ${GLOBUSARCH} = "YES" ]]; then
    export DO_ARCHTAR="YES"
 else
    export DO_ARCHTAR="NO"
