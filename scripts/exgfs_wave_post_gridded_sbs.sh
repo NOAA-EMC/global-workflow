@@ -277,20 +277,23 @@
 
     if [ $fhr = $fhrg ]
     then
-      iwait=0
       for wavGRD in ${waveGRD} ; do
+        let iwait=0
         gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
-        while [ ! -s ${gfile} ]; do sleep 10; let iwait=iwait+1; done
-        if [ $iwait -eq $iwaitmax ]; then
-          echo '*************************************************** '
-          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
-          echo '*************************************************** '
-          echo ' '
-          [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing."
-          err=3; export err;${errchk}
-          exit $err
-        fi
+        while [ ! -s ${gfile} ]; do
+          if [ $iwait -eq $iwaitmax ]; then
+            echo '*************************************************** '
+            echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
+            echo '*************************************************** '
+            echo ' '
+            [[ "$LOUD" = YES ]] && set -x
+            echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing."
+            err=3; export err;${errchk}
+            exit $err
+          fi
+          sleep 10
+          iwait=$(( iwait + 1 ))
+        done
         ln -s ${gfile} ./out_grd.${wavGRD}
       done
 
