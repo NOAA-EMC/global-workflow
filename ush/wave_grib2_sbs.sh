@@ -222,6 +222,7 @@ if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
         echo "Copied ${subfnam} and ${subfnam}.idx from "${GRIBDATA}" to COM"
       else
         echo "${subfnam} and ${subfnam}.idx not found in "${GRIBDATA}" to copy to COM"
+      fi
     done
   fi
 
