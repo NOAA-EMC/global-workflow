@@ -83,7 +83,7 @@ for n in $(seq 1 "${ntiles}"); do
     ln -sf "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc"  "vegetation_type.tile${n}.nc"
 done
 
-if (( $LFHR >= 0 )); then 
+if (( LFHR >= 0 )); then 
         soilinc_fhrs=("${LFHR}")
 else # construct restart times for deterministic member
     soilinc_fhrs=("${assim_freq}") # increment file at middle of window 
@@ -94,7 +94,7 @@ else # construct restart times for deterministic member
 fi 
 
 for imem in $(seq 1 "${NMEM_REGRID}"); do
-    if (( ${NMEM_REGRID} > 1 )); then
+    if (( NMEM_REGRID > 1 )); then
         cmem=$(printf %03i "${imem}")
         memchar="mem${cmem}"
      
@@ -109,7 +109,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
       ln -fs "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                 "${DATA}/enkfgdas.sfci.nc"
 
-      ${APRUN_REGRID} ${REGRID_EXEC} ${REDOUT}${PGMOUT} ${REDERR}${PGMERR}
+      "${APRUN_REGRID}" "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
       for n in $(seq 1 "${ntiles}"); do
           mv "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" 
