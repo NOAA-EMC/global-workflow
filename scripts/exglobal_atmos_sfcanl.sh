@@ -117,26 +117,26 @@ fi
 # Collect the dates in the window to update surface restarts
 gcycle_dates=("${PDY}${cyc}")  # Always update surface restarts at middle of window
 soilinc_fhrs=("${assim_freq}") # increment file at middle of window
-LFHR=$assim_freq
+LFHR=${assim_freq}
 if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
   half_window=$(( assim_freq / 2 ))
-  soilinc_fhrs+=($half_window)
+  soilinc_fhrs+=("${half_window}")
   LFHR=-1
   BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
   gcycle_dates+=("${BDATE}")
 fi
 
 # if doing GSI soil anaysis, copy increment file and re-grid it to native model resolution
-if [ $GSI_SOILANAL = "YES" ]; then
+if [[ ${GSI_SOILANAL} = "YES" ]]; then
  
-    export COM_SOIL_ANALYSIS_MEM=${COM_ATMOS_ENKF_ANALYSIS_STAT}
-    export COM_ATMOS_ANALYSIS_MEM=${COMIN_ATMOS_ANALYSIS} 
+    export COMIN_SOIL_ANALYSIS_MEM=${COMIN_ATMOS_ENKF_ANALYSIS_STAT}
+    export COMOUT_ATMOS_ANALYSIS_MEM=${COMIN_ATMOS_ANALYSIS} 
     export CASE_IN=${CASE_ENS}
-    export CASE_OUT=$CASE
-    export OCNRES_OUT=$OCNRES
+    export CASE_OUT=${CASE}
+    export OCNRES_OUT=${OCNRES}
     export LFHR
  
-    $REGRIDSH
+    ${REGRIDSH}
 
 fi
 

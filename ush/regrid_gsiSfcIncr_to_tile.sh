@@ -99,19 +99,20 @@ for imem in $(seq 1 ${NMEM_REGRID}); do
         memchar="mem${cmem}"
      
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-            COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+            COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-        COM_SOIL_ANALYSIS_MEM=${COM_ATMOS_ANALYSIS_MEM}
+        MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+            COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
     fi
  
     for FHR in "${soilinc_fhrs[@]}"; do
-      ln -fs ${COM_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc \
+      ln -fs ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc \
                 ${DATA}/enkfgdas.sfci.nc
 
-      ${APRUN_REGR} ${REGRID_EXEC} ${REDOUT}${PGMOUT} ${REDERR}${PGMERR}
+      ${APRUN_REGRID} ${REGRID_EXEC} ${REDOUT}${PGMOUT} ${REDERR}${PGMERR}
 
       for n in $(seq 1 ${ntiles}); do
-          mv ${DATA}/sfci.tile${n}.nc  ${COM_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc 
+          mv ${DATA}/sfci.tile${n}.nc  ${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc 
       done
     done
 done

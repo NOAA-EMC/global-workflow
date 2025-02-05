@@ -238,7 +238,7 @@ for imem in $(seq 1 $NMEM_ENS); do
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
       fi
-      if [[ $GSI_SOILANAL = "YES" ]]; then
+      if [[ ${GSI_SOILANAL} = "YES" ]]; then
           ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}sfci00${FHR}.nc" \
            "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
@@ -250,11 +250,11 @@ for FHR in $nfhrs; do
 
    ${NLN} "${COM_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}atmf00${FHR}.ensmean.nc" \
       "sfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
-   if [ $cnvw_option = ".true." ]; then
+   if [[ $cnvw_option = ".true." ]]; then
       ${NLN} "${COM_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}sfcf00${FHR}.ensmean.nc" \
          "sfgsfc_${PDY}${cyc}_fhr0${FHR}_ensmean"
    fi
-   if [[ $GSI_SOILANAL = "YES" ]]; then
+   if [[ ${GSI_SOILANAL} = "YES" ]]; then
       ${NLN} "${COM_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}sfcf00${FHR}.ensmean.nc" \
          "bfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
       ${NLN} "${COM_ATMOS_ANALYSIS_STAT}/${APREFIX}sfci00${FHR}.nc" \
