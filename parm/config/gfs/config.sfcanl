@@ -13,9 +13,8 @@ if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"
 fi
 if [[ "${DO_GSISOILDA}" = "YES" ]]; then
-    export DO_LNDINC=".true."
-    export DO_SOI_INC=".true."
-    export GCYCLE_INTERP_LNDINC=".false."
+    export GCYCLE_DO_SOILINCR=".true."
+    export GCYCLE_INTERP_LANDINCR=".false."
     export LSOIL_INCR=2
     export REGRID_EXEC=${REGRID_EXEC:-"${HOMEgfs}/sorc/gdas.cd/build/bin/regridStates.x"}
 fi

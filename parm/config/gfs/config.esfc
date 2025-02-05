@@ -23,8 +23,8 @@ fi
 
 # set up soil analysis
 if [[ ${DO_GSISOILDA} = "YES" ]]; then
-     export DO_SOI_INC=".true."
-     export GCYCLE_INTERP_LNDINC=".false."
+     export GCYCLE_DO_SOILINCR=".true."
+     export GCYCLE_INTERP_LANDINCR=".false."
      export LSOIL_INCR=2
      export REGRIDSH=${REGRIDSH:-${USHgfs}/regrid_gsiSfcIncr_to_tile.sh}
 fi
