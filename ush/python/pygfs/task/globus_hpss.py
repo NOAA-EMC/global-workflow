@@ -230,8 +230,9 @@ class GlobusHpss(Task):
         # Initialize the server
         self._init_server(server_job_dir)
 
-        # Make run_doorman.sh executable
+        # Make run_doorman.sh and init_xfer.sh executable
         os.chmod("run_doorman.sh", 0o740)
+        os.chmod("init_xfer.sh", 0o740)
 
         server_name = self.task_config.SERVER_NAME
 
