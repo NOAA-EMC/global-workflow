@@ -24,7 +24,7 @@ pwd=$(pwd)
 
 # Base variables
 DONST=${DONST:-"NO"}
-GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
+DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
 DOSFCANL_ENKF=${DOSFCANL_ENKF:-"YES"}
 export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
@@ -64,8 +64,6 @@ NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
-
-REGRIDSH=${REGRIDSH:-${USHgfs}/regrid_gsiSfcIncr_to_tile.sh}
 
 APRUN_ESFC=${APRUN_ESFC:-${APRUN:-""}}
 NTHREADS_ESFC=${NTHREADS_ESFC:-${NTHREADS:-1}}
@@ -118,7 +116,7 @@ else
 fi
 
 # regrid the surface increment files
-if [[ ${GSI_SOILANAL} = "YES" ]]; then
+if [[ ${DO_GSISOILDA} = "YES" ]]; then
  
     export CASE_IN=${CASE_ENS}
     export CASE_OUT=${CASE_ENS}
@@ -182,7 +180,7 @@ if [ $DOIAU = "YES" ]; then
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
-            if [[ ${GSI_SOILANAL} = "YES" ]]; then
+            if [[ ${DO_GSISOILDA} = "YES" ]]; then
                 FHR=${LFHR}
                  ${NCP} "${COMIN_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" \
                    "${DATA}/soil_xainc.${cmem}" 
@@ -252,7 +250,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
-            if [[ ${GSI_SOILANAL} = "YES" ]]; then
+            if [[ ${DO_GSISOILDA} = "YES" ]]; then
                 FHR=${LFHR}
                  ${NCP} "${COMIN_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" \
                    "${DATA}/soil_xainc.${cmem}" 

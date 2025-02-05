@@ -4,7 +4,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 # Source FV3GFS workflow modules
-# CSD for GSI_SOILANAL, need ufsda modules (temporary, until merged)
+# CSD for DO_GSISOILDA, need ufsda modules (temporary, until merged)
 . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 #. ${HOMEgfs}/ush/load_ufsda_modules.sh
 status=$?

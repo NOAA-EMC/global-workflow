@@ -22,10 +22,11 @@ if [[ "${DO_JEDIATMENS}" == "YES" ]]; then
 fi
 
 # set up soil analysis
-if [[ ${GSI_SOILANAL} = "YES" ]]; then
+if [[ ${DO_GSISOILDA} = "YES" ]]; then
      export DO_SOI_INC=".true."
      export GCYCLE_INTERP_LNDINC=".false."
      export LSOIL_INCR=2
+     export REGRIDSH=${REGRIDSH:-${USHgfs}/regrid_gsiSfcIncr_to_tile.sh}
 fi
 
 echo "END: config.esfc"

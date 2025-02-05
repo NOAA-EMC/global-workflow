@@ -40,7 +40,7 @@ export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
 
 # Land DA options 
-export GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
+export DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
 export DO_JEDISNOWDA=${DO_JEDISNOWDA:-"NO"}
 
 # Other info used in this script
@@ -127,7 +127,7 @@ if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of 
 fi
 
 # if doing GSI soil anaysis, copy increment file and re-grid it to native model resolution
-if [[ ${GSI_SOILANAL} = "YES" ]]; then
+if [[ ${DO_GSISOILDA} = "YES" ]]; then
  
     export COMIN_SOIL_ANALYSIS_MEM=${COMIN_ATMOS_ENKF_ANALYSIS_STAT}
     export COMOUT_ATMOS_ANALYSIS_MEM=${COMIN_ATMOS_ANALYSIS} 
@@ -149,7 +149,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
   datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
 
-  if [[ ${GSI_SOILANAL} = "YES" ]]; then
+  if [[ ${DO_GSISOILDA} = "YES" ]]; then
         for (( nn=1; nn <= ntiles; nn++ )); do
         cp "${COMIN_ATMOS_ANALYSIS}/sfci00${FHR}.tile${nn}.nc" \
            "${DATA}/soil_xainc.00${nn}" 

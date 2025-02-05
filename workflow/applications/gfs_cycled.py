@@ -47,7 +47,7 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
             run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
-            run_options[run]['do_gsisoilda'] = base.get('GSI_SOILANAL', False)
+            run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
             run_options[run]['do_vrfy_oceanda'] = base.get('DO_VRFY_OCEANDA', False)
 
