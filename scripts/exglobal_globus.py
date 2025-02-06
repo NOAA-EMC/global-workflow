@@ -20,7 +20,7 @@ def main():
     keys = ['STAGE_DIR', 'current_cycle', 'RUN', 'PDY', 'HOMEgfs', 'sven_dropbox',
             'doorman_gendel', 'DATASETS_YAML', 'PARMgfs', 'COMIN_CONF', 'KEEPDATA',
             'jobid', 'hpss_target_dir', 'server_home', 'SERVER_NAME', 'DOORMAN_ROOT',
-            'CLIENT_GLOBUS_UUID', 'SERVER_GLOBUS_UUID']
+            'CLIENT_GLOBUS_UUID', 'SERVER_GLOBUS_UUID', 'PSLOT']
 
     globus_dict = AttrDict()
     for key in keys:
@@ -34,7 +34,8 @@ def main():
 
     # Send the tarballs to HPSS via Niagara.  Start with non-rstprod (standard) data
     for transfer_set in ["standard", "rstprod"]:
-        globus.execute_transfer_data(transfer_sets[transfer_set])
+        has_rstprod = transfer_set == "rstprod"
+        globus.execute_transfer_data(transfer_sets[transfer_set], has_rstprod)
 
     # Clean up any temporary files
     globus.clean()
