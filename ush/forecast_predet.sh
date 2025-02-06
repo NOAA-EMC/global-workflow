@@ -728,7 +728,7 @@ CMEPS_predet(){
       CMEPS_RESTART_FH=("${FHMAX}")
     fi
   else
-    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+    if [[ "${DOIAU:-NO}" == "YES" ]] && [[ "${warm_start}" == ".true." ]] ; then
       local restart_interval_start=$(( cmeps_restart_interval + half_window ))
       local restart_interval_end=$(( FHMAX + half_window ))
     else

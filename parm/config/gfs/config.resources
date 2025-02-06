@@ -20,8 +20,8 @@ if (( $# != 1 )); then
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
-    echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
-    echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
+    echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
+    echo "eobs ediag eomg eupd ecen esfc efcs epos earc_vrfy earc_tars"
     echo "init_chem mom6ic oceanice_products"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
@@ -1059,8 +1059,16 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "arch" | "earc" | "getic" | "fetch")
+  "arch_tars" | "earc_tars" | "getic" | "fetch")
     walltime="06:00:00"
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
+    memory="4096M"
+    ;;
+
+  "arch_vrfy" | "earc_vrfy")
+    walltime="00:15:00"
     ntasks=1
     tasks_per_node=1
     threads_per_task=1
