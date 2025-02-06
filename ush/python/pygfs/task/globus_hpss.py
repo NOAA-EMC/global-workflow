@@ -6,8 +6,9 @@ import shutil
 from time import sleep
 from typing import Any, Dict, List
 import re
+from datetime import datetime, timezone
 
-from wxflow import AttrDict, Task, to_YMD, to_YMDH, strftime, logit, parse_yaml, Jinja, which, ProcessError
+from wxflow import AttrDict, Task, to_YMD, to_YMDH, strftime, logit, parse_yaml, Jinja, which, ProcessError, to_datetime
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -55,7 +56,7 @@ class GlobusHpss(Task):
         # This auto-accepts changes to keys
         self.scp.add_default_arg("-oStrictHostKeyChecking=no")
         # Force using publickey login
-        self.scp.add_default_arg("-oPreferredAuthentication=publickey")
+        self.scp.add_default_arg("-oPreferredAuthentications=publickey")
 
         # Get the user's server username from their ~/.ssh/config file
         server_name = self.task_config.SERVER_NAME
@@ -186,12 +187,17 @@ class GlobusHpss(Task):
         vrfy_jinja = os.path.join(globus_parm, "verify.sh.j2")
         vrfy_script = Jinja(vrfy_jinja, data=globus_dict, allow_missing=False).render
 
+        # Create the server initialization script
+        init_xfer_jinja = os.path.join(globus_parm, "init_xfer.sh.j2")
+        init_xfer_script = Jinja(init_xfer_jinja, data=globus_dict, allow_missing=False).render
+
         # Add common scripts to both standard and rstprod
         for transfer_set in transfer_sets:
             transfer_sets[transfer_set]["run_doorman.sh"] = doorman_script
             transfer_sets[transfer_set]["dm.conf"] = dm_conf
             transfer_sets[transfer_set]["return"] = return_script
             transfer_sets[transfer_set]["verify"] = vrfy_script
+            transfer_sets[transfer_set]["init_xfer.sh"] = init_xfer_script
             transfer_sets[transfer_set]["server_job_dir"] = (
                 f"{globus_dict.server_home}/doorman/globus.{globus_dict.jobid}/{transfer_set}"
             )
@@ -335,23 +341,47 @@ class GlobusHpss(Task):
         return
 
     @logit(logger)
-    def _init_server(job_dir: str):
+    def _init_server(self, job_dir: str):
         # This method sends a request to create a working directory and transfers
         # the initialization script.
 
         req_file = f"req_mkdir.{self.task_config.jobid}"
-        with open(f"req_mkdir.{self.task_config.jobid}") as mkdir_f:
+        with open(f"req_mkdir.{self.task_config.jobid}", "w") as mkdir_f:
             mkdir_f.write(f"{job_dir}")
 
-        self.scp(req_file, f"{self.task_config.SERVER_NAME}:{self.task_config.server_home}/{req_file}")
+        server_name = self.task_config.SERVER_NAME
+        server_home = self.task_config.server_home
+        pslot = self.task_config.PSLOT
+
+        self.scp(req_file, f"{server_name}:{server_home}/{req_file}")
 
         self.scp(
             "init_xfer.sh",
-            f"{self.task_config.SERVER_NAME}:{self.task_config.server_home}/init_xfer_{self.task_config.PSLOT}.sh"
+            f"{server_name}:{server_home}/init_xfer_{self.task_config.PSLOT}.sh"
         )
 
         logger.info("Sleeping 1 minute to let the server initialize")
-        sleep(300)
+        sleep(60)
+
+        # Check that the server initialized successfully
+        try:
+            self.scp(f"{server_name}:{server_home}/{pslot}_crontab_active.log", "crontab.log")
+        except ProcessError as pe:
+            raise ProcessError(
+                "FATAL ERROR failed to retrieve the server log file!\n"
+                f"Check that the crontab is active on {server_name}."
+            ) from pe
+
+        # Check the date in the log
+        with open("crontab.log", "r") as crontab_f:
+            cron_date = crontab_f.read()
+
+        cron_datetime = to_datetime(cron_date)
+        cron_td = datetime.now(timezone.utc) - cron_datetime
+
+        if cron_td.total_seconds() > 600:
+            # The log file is too old (from another test case)
+            raise ProcessError("FATAL ERROR The server failed to initialize!")
 
     @logit(logger)
     def clean(self):
