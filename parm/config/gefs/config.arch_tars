@@ -6,7 +6,7 @@
 echo "BEGIN: config.arch_tars"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" arch_tars
+. "${EXPDIR}/config.resources" "arch_tars"
 
 export ARCH_GAUSSIAN="YES"
 export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS}
