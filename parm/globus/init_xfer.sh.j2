@@ -4,20 +4,24 @@ mkdir -p "{{server_home}}/doorman" || exit 2
 date -u '+%Y-%m-%dT%H:%M:%S' > "{{server_home}}/{{PSLOT}}_crontab_active.log"
 
 # Look for mkdir requests
-for mkdir_req_fl in "{{server_home}}"/req_mkdir.*; do
-   dir=$(cat "${mkdir_req_fl}")
-   mkdir -p "${dir}" || exit 2
-   rm -f "${mkdir_req_fl}"
-done
+if compgen -G "/collab1/data/David.Huber"/req_mkdir.*; then
+   for mkdir_req_fl in "{{server_home}}"/req_mkdir.*; do
+      dir=$(cat "${mkdir_req_fl}")
+      mkdir -p "${dir}" || exit 2
+      rm -f "${mkdir_req_fl}"
+   done
+fi
 
 # Look for executable scripts
-for dir in "{{server_home}}"/doorman/globus.*; do
-   flist=$(find "${dir}" -executable -name "run_doorman.sh")
-   for script in ${flist}; do
-      # Check if the corresponding log has already been written
-      log="${script/.sh/.log}"
-      if [[ ! -f "${log}" ]]; then
-         "${script}"
-      fi
+if compgen -G "{{server_home}}"/doorman/globus.*; then
+   for dir in "{{server_home}}"/doorman/globus.*; do
+      flist=$(find "${dir}" -executable -name "run_doorman.sh")
+      for script in ${flist}; do
+         # Check if the corresponding log has already been written
+         log="${script/.sh/.log}"
+         if [[ ! -f "${log}" ]]; then
+            "${script}"
+         fi
+      done
    done
-done
+fi
