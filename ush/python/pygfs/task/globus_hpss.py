@@ -231,14 +231,14 @@ class GlobusHpss(Task):
         with open("init_xfer.sh", "w") as init_f:
             init_f.write(transfer_set["init_xfer.sh"])
 
+        # Make run_doorman.sh and init_xfer.sh executable
+        os.chmod("run_doorman.sh", 0o740)
+        os.chmod("init_xfer.sh", 0o740)
+
         server_job_dir = transfer_set["server_job_dir"]
 
         # Initialize the server
         self._init_server(server_job_dir)
-
-        # Make run_doorman.sh and init_xfer.sh executable
-        os.chmod("run_doorman.sh", 0o740)
-        os.chmod("init_xfer.sh", 0o740)
 
         server_name = self.task_config.SERVER_NAME
 
@@ -377,11 +377,15 @@ class GlobusHpss(Task):
             cron_date = crontab_f.read()
 
         cron_datetime = to_datetime(cron_date)
+        # Establish the timezone
+        cron_datetime = cron_datetime.replace(tzinfo=timezone.utc)
         cron_td = datetime.now(timezone.utc) - cron_datetime
 
         if cron_td.total_seconds() > 600:
-            # The log file is too old (from another test case)
+            # The log file is too old (perhaps from another test case)
             raise ProcessError("FATAL ERROR The server failed to initialize!")
+
+        logger.info("Server initialized successfully!")
 
     @logit(logger)
     def clean(self):
