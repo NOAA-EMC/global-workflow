@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# This script prepares the server directory and launches the doorman scripts for {{pslot}} on {{server}}
+# This script prepares the server directory and launches the doorman scripts for {{PSLOT}} on {{SERVER_NAME}}
 mkdir -p "{{server_home}}/doorman" || exit 2
-date > "{{server_home}}/{{pslot}}_crontab_active.log"
+date -u '+%Y-%m-%dT%H:%M:%S' > "{{server_home}}/{{PSLOT}}_crontab_active.log"
 
 # Look for mkdir requests
 for mkdir_req_fl in "{{server_home}}"/req_mkdir.*; do
