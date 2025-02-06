@@ -2415,6 +2415,22 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'{self.run}_mos_{job}'}
                 deps.append(rocoto.add_dependency(dep_dict))
 
+        if self.options['do_gempak']:
+            if self.run in ['gdas']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmetancdc'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            elif self.run in ['gfs']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmeta'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                if self.app_config.mode in ['cycled']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                    if self.options['do_goes']:
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+                        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+
         if self.options['do_metp'] and self.run in ['gfs']:
             deps2 = []
             # taskvalid only handles regular tasks, so just check the first metp job exists
