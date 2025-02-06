@@ -58,6 +58,7 @@ DOIAU=${DOIAU_ENKF:-"NO"}
 
 # Global_cycle stuff
 CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
+REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
 export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
