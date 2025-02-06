@@ -749,13 +749,15 @@ CICE_out() {
              "${COMOUT_ICE_RESTART}/${target_file}"
       ;;
     gfs|gefs|sfs) # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
-      local seconds source_file target_file
-      echo "Copying CICE restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
-      seconds=$(to_seconds "${forecast_end_cycle:8:2}0000")  # convert HHMMSS to seconds
-      source_file="cice_model.res.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
-      target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.cice_model.res.nc"
-      ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
-             "${COMOUT_ICE_RESTART}/${target_file}"
+      if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
+        local seconds source_file target_file
+        echo "Copying CICE restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
+        seconds=$(to_seconds "${forecast_end_cycle:8:2}0000")  # convert HHMMSS to seconds
+        source_file="cice_model.res.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
+        target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.cice_model.res.nc"
+        ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
+               "${COMOUT_ICE_RESTART}/${target_file}"
+      fi
       ;;
     *)
       echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
