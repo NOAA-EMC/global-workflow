@@ -7,7 +7,7 @@ from collections import OrderedDict
 from typing import Dict
 from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
-from wxflow import to_timedelta
+from wxflow import to_timedelta, which, ProcessError
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
 
@@ -192,6 +192,25 @@ class RocotoXML(ABC):
         server = globus_conf["SERVER_NAME"]
         server_home = globus_conf["SERVER_HOME"]
 
+        # Get the server username from ~/.ssh/config
+        # TODO move this to an earlier point and actually amend config.globus with the username
+        ssh = which("ssh")
+        if ssh is None:
+            raise ProcessError("Failed to locate the ssh command!")
+
+        try:
+            ssh_output = ssh("-G", server, output=str).split("\n")
+        except ProcessError:
+            raise ProcessError(f"Failed to run ssh -G {server} to identify the server username!")
+
+        for line in ssh_output:
+            if line.startswith("user "):
+                server_username = line.split()[1]
+
+        server_home = server_home.replace(
+            "{{SERVER_USERNAME}}", server_username
+        )
+
         try:
             replyto = os.environ['REPLYTO']
         except KeyError:
@@ -202,8 +221,9 @@ class RocotoXML(ABC):
         init_script = f"{server_home}/init_xfer_{pslot}.sh"
         strings = ['',
                    f'#################### {pslot} ####################',
-                   f'MAILTO="{replyto}"'
-                   f'*/{cronint} * * * * [[ -f {init_script} ]] && {init_script} || true'
+                   f'MAILTO="{replyto}"',
+                   f'*/{cronint} * * * * [[ -f {init_script} ]] && {init_script} || true',
+                   ""
                    ]
 
         with open(crontab_file, 'w') as fh:
