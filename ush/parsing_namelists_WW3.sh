@@ -27,7 +27,6 @@ WW3_namelists(){
   #set coupling to ice/current
   WW3_ICE="F"
   WW3_CUR="F"
-  WW3_WLEV="F"
 
   case ${WW3ICEINP} in
     'YES' )
@@ -46,6 +45,7 @@ WW3_namelists(){
   # Variables used in atparse of shel template 
   export WW3_IC1="F"
   export WW3_IC5="F"
+  export WW3_WLEV="F"
   export WW3_ICE
   export WW3_CUR
   export WW3_OUTPARS="${OUTPARS_WAV}"
