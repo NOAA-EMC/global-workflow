@@ -12,7 +12,16 @@ echo "BEGIN: config.sfcanl"
 if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"
 fi
-if [[ "${DO_GSISOILDA}" = "YES" ]]; then
+
+_RUN=${RUN:-"gfs"}
+_RUN=${RUN/enkf/}
+
+if [[ "${_RUN}" == "gfs" ]]; then  
+    echo "turning off gsi soilda for gfs run"
+    DO_GSISOILDA="NO"
+fi
+
+if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     export GCYCLE_DO_SOILINCR=".true."
     export GCYCLE_INTERP_LANDINCR=".false."
     export LSOIL_INCR=2

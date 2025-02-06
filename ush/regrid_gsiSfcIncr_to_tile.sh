@@ -11,6 +11,7 @@ source "${USHgfs}/preamble.sh"
 # CSD: temporary on hera, until scrip files added to fix dir. 
 TMP_FIX_FILES=/scratch2/BMC/gsienkf/Clara.Draper/gw_new_fix_files/
 
+
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export REDOUT=${REDOUT:-'1>'}
@@ -54,7 +55,7 @@ cat << EOF > regrid.nml
   ires=${LONB_CASE_IN},
   jres=${LATB_CASE_IN},
   fname="enkfgdas.sfci.nc",
-  dir="${DATA}",
+  dir="./",
   fname_coord="gaussian_scrip.nc",
   dir_coord="./"
 /
@@ -64,21 +65,21 @@ cat << EOF > regrid.nml
   ires=${CASE_OUT:1},
   jres=${CASE_OUT:1},
   fname="sfci",
-  dir="${DATA}",
+  dir="./",
   fname_mask="vegetation_type" 
-  dir_mask="${DATA}"
+  dir_mask="./"
   dir_coord="${FIXorog}",
  /
 EOF
 
 # fixed input files
-${NCP} "${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" &
-       "${DATA}/gaussian_scrip.nc"
+${NCP} "${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
+        "${DATA}/gaussian_scrip.nc"
 
 # fixed output files
 for n in $(seq 1 "${ntiles}"); do
-    ${NCP} "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc" &
-           "${DATA}/vegetation_type.tile${n}.nc"
+    ${NCP} "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc" \
+            "${DATA}/vegetation_type.tile${n}.nc"
 done
 
 if (( LFHR >= 0 )); then 
@@ -107,7 +108,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                "${DATA}/enkfgdas.sfci.nc"
 
-        "${APRUN_REGRID}" "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+        ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
         for n in $(seq 1 "${ntiles}"); do
             cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" 
