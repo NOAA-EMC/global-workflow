@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 # This script prepares the server directory and launches the doorman scripts for {{PSLOT}} on {{SERVER_NAME}}
 mkdir -p "{{server_home}}/doorman" || exit 2
-date -u '+%Y-%m-%dT%H:%M:%S' > "{{server_home}}/{{PSLOT}}_crontab_active.log"
+run_time=$(date -u '+%Y-%m-%dT%H:%M:%S')
+echo "${run_time}" > "{{server_home}}/{{PSLOT}}_crontab_active.log"
+
+runtime_log="{{server_home}}/{{PSLOT}}_last_runtime.log"
+if [[ ! -f "${runtime_log}" ]]; then
+   echo "${run_time}" > "${runtime_log}"
+fi
 
 # Look for mkdir requests
-if compgen -G "/collab1/data/David.Huber"/req_mkdir.*; then
+if compgen -G "/collab1/data/David.Huber"/req_mkdir.* > /dev/null 2>&1 ; then
+   echo "${run_time}" > "${runtime_log}"
    for mkdir_req_fl in "{{server_home}}"/req_mkdir.*; do
       dir=$(cat "${mkdir_req_fl}")
       mkdir -p "${dir}" || exit 2
@@ -13,7 +20,8 @@ if compgen -G "/collab1/data/David.Huber"/req_mkdir.*; then
 fi
 
 # Look for executable scripts
-if compgen -G "{{server_home}}"/doorman/globus.*; then
+if compgen -G "{{server_home}}"/doorman/globus.* > /dev/null 2>&1 ; then
+   echo "${run_time}" > "${runtime_log}"
    for dir in "{{server_home}}"/doorman/globus.*; do
       flist=$(find "${dir}" -executable -name "run_doorman.sh")
       for script in ${flist}; do
@@ -24,4 +32,22 @@ if compgen -G "{{server_home}}"/doorman/globus.*; then
          fi
       done
    done
+fi
+
+# Check if it has been a while since this script had anything to do
+last_runtime=$(cat "${runtime_log}")
+last_runtime_s=$(date -d "${last_runtime}" '+%s')
+current_time_s=$(date -d "${run_time}" '+%s')
+
+diff_d=$(( (current_time_s - last_runtime_s) / 86400 ))
+
+if [[ ${diff_d} -gt 3 ]]; then
+    # If the user added their email to REPLYTO, they will get this message
+    echo "WARNING the {{SERVER_NAME}} service for {{PSLOT}} has not run in > 3 days!"
+    echo "Turning off the crontab for {{PSLOT}}!!"
+    scriptpath="$( realpath "${0}" )"
+    entry=$(crontab -l | grep -i "${scriptpath}")
+    echo "Deleting crontab entry"
+    echo "${entry}"
+    crontab -l | grep -v "${scriptpath}" | crontab -
 fi
