@@ -81,43 +81,43 @@ class MarineLETKF(Analysis):
         None
         """
 
+        # NOTE: This task requires the ensemble background to be staged, which is done in the
+        # BMAT task (which is a dependency of this task)
+
         logger.info("initialize")
 
         # make directories and stage ensemble background files
         soca_fix_stage_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_stage_list).sync()
-        stageconf = AttrDict()
-        keys = ['current_cycle',
-                'previous_cycle',
-                'COM_ICE_LETKF_TMPL',
-                'COM_OCEAN_LETKF_TMPL',
-                'COM_ICE_HISTORY_TMPL',
-                'COM_OCEAN_HISTORY_TMPL',
-                'COMIN_OCEAN_HISTORY_PREV',
-                'COMIN_ICE_HISTORY_PREV',
-                'COMOUT_ICE_LETKF',
-                'COMOUT_OCEAN_LETKF',
-                'DATA',
-                'ENSPERT_RELPATH',
-                'GDUMP_ENS',
-                'NMEM_ENS',
-                'OPREFIX',
-                'PARMgfs',
-                'ROTDIR',
-                'RUN',
-                'WINDOW_BEGIN',
-                'WINDOW_MIDDLE']
-        for key in keys:
-            stageconf[key] = self.task_config[key]
+        # stageconf = AttrDict()
+        # keys = ['current_cycle',
+        #         'previous_cycle',
+        #         'COM_ICE_LETKF_TMPL',
+        #         'COM_OCEAN_LETKF_TMPL',
+        #         'COM_ICE_HISTORY_TMPL',
+        #         'COM_OCEAN_HISTORY_TMPL',
+        #         'COMIN_OCEAN_HISTORY_PREV',
+        #         'COMIN_ICE_HISTORY_PREV',
+        #         'COMOUT_ICE_LETKF',
+        #         'COMOUT_OCEAN_LETKF',
+        #         'DATA',
+        #         'ENSPERT_RELPATH',
+        #         'GDUMP_ENS',
+        #         'NMEM_ENS',
+        #         'OPREFIX',
+        #         'PARMgfs',
+        #         'ROTDIR',
+        #         'RUN',
+        #         'WINDOW_BEGIN',
+        #         'WINDOW_MIDDLE']
+        # for key in keys:
+        #     stageconf[key] = self.task_config[key]
 
-        # stage ensemble background files
-        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, stageconf)
-        FileHandler(soca_ens_bkg_stage_list).sync()
-
-        # stage letkf-specific files
-        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, stageconf)
+        # stage letkf-specific files and directories
+#        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, stageconf)
+        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, self.task_config)
         FileHandler(letkf_stage_list).sync()
-
+        print("MARINE_OBS_LIST_YAML:", self.task_config.MARINE_OBS_LIST_YAML)
         obs_list = parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, self.task_config)
 
         # get the list of observations
@@ -142,21 +142,15 @@ class MarineLETKF(Analysis):
             else:
                 logger.warning(f"{obs_file} is not available in {self.task_config.COMIN_OBS}")
 
-        print("obs_to_use: ", obs_to_use)
+        #  set aside for LETKF configuration
         observers = {'observers': obs_to_use}
-        print("observers: ", observers)
 
         # stage the desired obs files
         FileHandler({'copy': obs_files_to_copy}).sync()
 
 ####################################################################################################
-        # Write obs_list_short
-        save_as_yaml(os.path.join(self.task_config.PARMsoca, 'letkf','letkf_obs_list.yaml.j2'), 'obs_list_short.yaml')
-        os.environ['OBS_LIST_SHORT'] = 'obs_list_short.yaml'
 
- #       print("self.task_config: ", self.task_config)
         envconfig_jcb = copy.deepcopy(self.task_config)
-#        envconfig_jcb['cyc'] = int(self.task_config.current_cycle.strftime('%H'))        
         envconfig_jcb['cyc'] = int(os.getenv('cyc'))
         envconfig_jcb['PDY'] = self.task_config.current_cycle.strftime('%Y%m%d')
         envconfig_jcb['window_length'] = f"PT{self.task_config['assim_freq']}H"
@@ -187,8 +181,6 @@ class MarineLETKF(Analysis):
 
         # Save the JEDI configuration file
         letkf_yaml_jcb = 'letkf.yaml'
-        # TODO (AFE) - is this needed? will require addition of letkf case
-#        mdau.clean_empty_obsspaces(jedi_config, target=letkf_yaml_jcb, app='var')
         save_as_yaml(jedi_config, letkf_yaml_jcb)
 
         ######################################
