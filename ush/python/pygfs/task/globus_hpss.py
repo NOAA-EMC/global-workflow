@@ -85,8 +85,6 @@ class GlobusHpss(Task):
 
         local_dict = AttrDict({
             'sven_dropbox': (f"{self.task_config.SVEN_DROPBOX_ROOT}"),
-            'doorman_gendel': (f"{server_home}/GENERAL_DELIVERY/"
-                               f"{self.task_config.PSLOT}/{self.task_config.RUN}.{cycle_YMD}/{cycle_HH}"),
             'hpss_target_dir': f"{self.task_config.ATARDIR}/{cycle_YMDH}",
             'server_home': server_home
         })
@@ -135,7 +133,7 @@ class GlobusHpss(Task):
         com_conf = globus_dict.COMIN_CONF
 
         # Collect the files and properties from the input YAML
-        backup_yaml = os.path.join(com_conf, globus_dict.DATASETS_YAML)
+        backup_yaml = os.path.join(com_conf, "backup_tarballs.yaml")
 
         # Parse the list of tarballs to archive
         if os.path.isfile(backup_yaml):
@@ -158,10 +156,6 @@ class GlobusHpss(Task):
             "rstprod": {"locations": rstprod_backup_set}
         }
 
-        # Parse the doorman setup script
-        doorman_jinja = os.path.join(globus_parm, "run_doorman.sh.j2")
-        doorman_script = Jinja(doorman_jinja, data=globus_dict, allow_missing=False).render
-
         # Write a script with the location of the dropbox on the client
         dm_conf = f'export dropbox="{globus_dict.sven_dropbox}"'
 
@@ -172,7 +166,7 @@ class GlobusHpss(Task):
         os.mkdir(globus_dict.sven_dropbox)
 
         # Parse the return script
-        return_jinja = os.path.join(globus_parm, "return.sh.j2")
+        return_jinja = os.path.join(globus_parm, "return.j2")
         return_script = Jinja(return_jinja, data=globus_dict, allow_missing=False).render
 
         # Create a todo script for rstprod and non-rstprod tarballs
@@ -192,16 +186,23 @@ class GlobusHpss(Task):
         init_xfer_jinja = os.path.join(globus_parm, "init_xfer.sh.j2")
         init_xfer_script = Jinja(init_xfer_jinja, data=globus_dict, allow_missing=False).render
 
-        # Add common scripts to both standard and rstprod
+        # Add the remaining scripts and definitions to transfer_sets
         for transfer_set in transfer_sets:
+            server_job_dir = f"{globus_dict.server_home}/doorman/{globus_dict.jobid}/{transfer_set}"
+            transfer_sets[transfer_set]["server_job_dir"] = server_job_dir
+
+            # Render the run_doorman script
+            doorman_dict = globus_dict
+            doorman_dict["run_directory"] = server_job_dir
+            doorman_jinja = os.path.join(globus_parm, "run_doorman.sh.j2")
+            doorman_script = Jinja(doorman_jinja, data=doorman_dict, allow_missing=False).render
             transfer_sets[transfer_set]["run_doorman.sh"] = doorman_script
+
+            # Common scripts
             transfer_sets[transfer_set]["dm.conf"] = dm_conf
             transfer_sets[transfer_set]["return"] = return_script
             transfer_sets[transfer_set]["verify"] = vrfy_script
             transfer_sets[transfer_set]["init_xfer.sh"] = init_xfer_script
-            transfer_sets[transfer_set]["server_job_dir"] = (
-                f"{globus_dict.server_home}/doorman/{globus_dict.jobid}/{transfer_set}"
-            )
 
         return transfer_sets
 
@@ -290,6 +291,7 @@ class GlobusHpss(Task):
         # Initialize transfer status
         transfer_failed = False
         check_log_count = 0
+        log_read = False
         logger.debug(f"Waiting for the service to complete on {server_name}")
         while not all(transfer_set["completed"]) and wait_count < max_wait_count:
             sleep(sleep_time)
@@ -329,6 +331,8 @@ class GlobusHpss(Task):
                 with open("run_doorman.log") as doorman_log:
                     doorman_lines = doorman_log.readlines()
 
+                log_read = True
+
                 if "FAILURE" in doorman_lines[-1]:
                     logger.error(f"FATAL ERROR The doorman failed to run on {server_name}")
                     transfer_failed = True
@@ -347,7 +351,7 @@ class GlobusHpss(Task):
         sleep(2)
 
         # Write out the log file if it is present
-        if doorman_lines in locals():
+        if log_read:
             logger.debug('\n'.join(doorman_lines))
 
         # Check for a failed transfer and/or timeouts
