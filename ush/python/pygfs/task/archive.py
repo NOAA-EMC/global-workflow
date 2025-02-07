@@ -617,7 +617,7 @@ class Archive(Task):
             return
 
         com_conf = self.task_config.COMOUT_CONF
-        yaml_filename = self.task_config.DATASETS_YAML
+        yaml_filename = "backup_tarballs.yaml"
         yaml_filename = os.path.join(com_conf, yaml_filename)
 
         output_yaml = {}

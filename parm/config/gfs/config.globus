@@ -22,7 +22,7 @@ export SERVER_HOME='/collab1/data/{{SERVER_USERNAME}}'
 export SVEN_DROPBOX_ROOT="${DATA}/SVEN_DROPBOX"
 
 # Location of the doorman package on Niagara
-export DOORMAN_ROOT="/home/Gyorgy.Fekete/doorman"
+export DOORMAN_ROOT="/home/David.Huber/doorman"
 
 # Server name (should match ~/.ssh/config)
 export SERVER_NAME="niagara"
