@@ -129,11 +129,16 @@
 
   nmemb=${nmembn}
   nmembm1=`expr ${nmemb} - 1`
+
+  
 #
 # 1.a Create list of combined ensemble member numbers (starting from 00 = NCEP control run)
 #
   memb=`seq -w 0 ${nmembm1}`
-#
+
+  export memid=""
+  for i in $(seq -f "%02g" 0 $nmembm1); do memid="$memid $i"; done
+  #
     valtime=`$NDATE ${fhour} ${CDATE}`
 
     mkdir -p ${valtime}
@@ -146,17 +151,17 @@
 # 1.b Loop through members
     nme=0
 #    while [ ${nme} -lt ${nmemb} ]
-    for im in $membn
+    for im in $memid
     do
-      infile=../../${para}_${im}.t${cyc}z.${grdname}.${grdres}.f${FH3}.grib2
+      infile=../../${para}_0${im}.t${cyc}z.${grdname}.${grdres}.f${FH3}.grib2
       echo "infile: ${infile}"
-      if [ "${im}" = "000" ]
+      if [ "${im}" = "00" ]
       then
 
 # 1.b.1 Generate input file for wave_stat
         echo $CDATE $FH3 $nnip $parcode  > wave_stat.inp
         echo ${nmemb}                 >> wave_stat.inp
-        echo $membn                    >> wave_stat.inp
+        echo $memid                    >> wave_stat.inp
         echo ${scale[@]} | wc -w           >> wave_stat.inp
         echo ${scale[@]}                   >> wave_stat.inp
 
