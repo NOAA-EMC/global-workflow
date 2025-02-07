@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+# GaeaC6-specific job resources
+
+unset memory
+# shellcheck disable=SC2312
+for mem_var in $(env | grep '^memory_' | cut -d= -f1); do
+  unset "${mem_var}"
+done

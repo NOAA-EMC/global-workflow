@@ -90,6 +90,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_goes'] = run_base.get('DO_GOES', False)
             run_options[run]['do_mos'] = run_base.get('DO_MOS', False)
             run_options[run]['do_extractvars'] = run_base.get('DO_EXTRACTVARS', False)
+            run_options[run]['do_archtar'] = run_base.get('DO_ARCHTAR', False)
 
             run_options[run]['do_atm'] = run_base.get('DO_ATM', True)
             run_options[run]['do_wave'] = run_base.get('DO_WAVE', False)
@@ -102,6 +103,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
             run_options[run]['do_hpssarch'] = run_base.get('HPSSARCH', False)
             run_options[run]['fcst_segments'] = run_base.get('FCST_SEGMENTS', None)
+
+            run_options[run]['do_fetch_hpss'] = run_base.get('DO_FETCH_HPSS', False)
+            run_options[run]['do_fetch_local'] = run_base.get('DO_FETCH_LOCAL', False)
 
             if not AppConfig.is_monotonic(run_options[run]['fcst_segments']):
                 raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')

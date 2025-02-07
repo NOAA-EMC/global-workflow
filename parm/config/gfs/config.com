@@ -76,7 +76,7 @@ declare -rx COM_WAVE_HISTORY_TMPL=${COM_BASE}'/model/wave/history'
 declare -rx COM_WAVE_GRID_TMPL=${COM_BASE}'/products/wave/gridded'
 declare -rx COM_WAVE_GRIB_TMPL=${COM_BASE}'/products/wave/grib2'
 declare -rx COM_WAVE_GRIB_GRID_TMPL=${COM_WAVE_GRIB_TMPL}'/${GRID}'
-
+declare -rx COM_WAVE_GRID_RES_TMPL=${COM_BASE}'/products/wave/gridded/${GRDRESNAME}'
 declare -rx COM_WAVE_STATION_TMPL=${COM_BASE}'/products/wave/station'
 declare -rx COM_WAVE_GEMPAK_TMPL=${COM_BASE}'/products/wave/gempak'
 declare -rx COM_WAVE_WMO_TMPL=${COM_BASE}'/products/wave/wmo'
