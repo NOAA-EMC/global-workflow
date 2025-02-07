@@ -8,8 +8,13 @@ log_directory="{{server_home}}/doorman/{{jobid}}/logs/"
 
 hpss_stat=""
 for log in "${log_directory}"/*.log; do
-    hpss_stat_tmp=$(tail -1 "${log}")
-    hpss_stat="${log}: ${hpss_stat}\n${hpss_stat_tmp}"
+    hpss_stat_tmp=$(tail -n1 "${log}")
+    if [[ "${hpss_stat_tmp}" == "SUCCESS" ]]; then
+        hpss_stat="SUCCESS"
+    else
+        hpss_stat="FAILURE"
+        break
+    fi
 done
 
 echo "${hpss_stat}"
