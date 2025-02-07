@@ -55,25 +55,4 @@ load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 whatis("Description: GFS run environment")
 
-git diff versions/ modulefiles/
-diff --git a/modulefiles/module_base.hera.lua b/modulefiles/module_base.hera.lua
-index 701cc466..99ee60de 100644
---- a/modulefiles/module_base.hera.lua
-+++ b/modulefiles/module_base.hera.lua
-@@ -17,6 +17,7 @@ load(pathJoin("libpng", (os.getenv("libpng_ver") or "None")))
- load(pathJoin("cdo", (os.getenv("cdo_ver") or "None")))
- load(pathJoin("R", (os.getenv("R_ver") or "None")))
- load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
-+load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
-
- load(pathJoin("hdf5", (os.getenv("hdf5_ver") or "None")))
- load(pathJoin("netcdf-c", (os.getenv("netcdf_c_ver") or "None")))
-diff --git a/versions/run.hera.ver b/versions/run.hera.ver
-index 6ebc64d9..99341ab3 100644
---- a/versions/run.hera.ver
-+++ b/versions/run.hera.ver
-@@ -5,6 +5,7 @@ export spack_env=gsi-addon-dev-rocky8
- export hpss_ver=hpss
- export ncl_ver=6.6.2
- export R_ver=3.6.1
-+export imagemagick_ver=7.1.1-11
+load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
