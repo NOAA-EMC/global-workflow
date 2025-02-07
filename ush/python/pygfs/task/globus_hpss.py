@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from logging import getLogger
+import logging
 import shutil
 from time import sleep
 from typing import Any, Dict, List
@@ -10,7 +10,8 @@ from datetime import datetime, timezone
 
 from wxflow import AttrDict, Task, to_YMD, to_YMDH, strftime, logit, parse_yaml, Jinja, which, ProcessError, to_datetime
 
-logger = getLogger(__name__.split('.')[-1])
+logger = logging.getLogger(__name__.split('.')[-1])
+logging.basicConfig(encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 
 class GlobusHpss(Task):
@@ -199,7 +200,7 @@ class GlobusHpss(Task):
             transfer_sets[transfer_set]["verify"] = vrfy_script
             transfer_sets[transfer_set]["init_xfer.sh"] = init_xfer_script
             transfer_sets[transfer_set]["server_job_dir"] = (
-                f"{globus_dict.server_home}/doorman/globus.{globus_dict.jobid}/{transfer_set}"
+                f"{globus_dict.server_home}/doorman/{globus_dict.jobid}/{transfer_set}"
             )
 
         return transfer_sets
@@ -243,7 +244,7 @@ class GlobusHpss(Task):
         server_name = self.task_config.SERVER_NAME
 
         # Initialize a list of status files.
-        transfer_set["statuses"] = []
+        transfer_set["status_files"] = []
         transfer_set["completed"] = []
 
         # Tell Sven we have files to send, one at a time
@@ -252,7 +253,8 @@ class GlobusHpss(Task):
                 location_f.write(location + "\n")
             try:
                 logger.info(f"Preparing package for {location}")
-                sven_output = self.forsven(output=str.split)
+                sven_output = self.forsven(output=str)
+                logger.debug(sven_output)
             except ProcessError as pe:
                 raise ProcessError("FATAL ERROR Sven failed to package the request"
                                    f"for {location}") from pe
@@ -274,6 +276,7 @@ class GlobusHpss(Task):
                 "run_doorman.sh", f"{server_name}:{server_run_script}",
                 output=str.split, error=str.split
             )
+            logger.debug("Successfully transferred the doorman script")
         except ProcessError as pe:
             raise ProcessError("FATAL ERROR Failed to send doorman run script to Niagara") from pe
 
@@ -286,6 +289,8 @@ class GlobusHpss(Task):
 
         # Initialize transfer status
         transfer_failed = False
+        check_log_count = 0
+        logger.debug(f"Waiting for the service to complete on {server_name}")
         while not all(transfer_set["completed"]) and wait_count < max_wait_count:
             sleep(sleep_time)
             for i in range(len(transfer_set["status_files"])):
@@ -312,6 +317,22 @@ class GlobusHpss(Task):
                                 logger.error(f"FATAL ERROR HPSS archiving failed for {transfer_set['locations'][i]}.")
                                 transfer_failed = True
 
+            # Retrieve the log file (if it exists) from the server and check if it failed
+            try:
+                self.scp(f"{server_name}:{server_job_dir}/run_doorman.log", '.')
+            except ProcessError:
+                check_log_count += 1
+                if check_log_count > 3:
+                    logger.error(f"FATAL ERROR Unable to retrieve the run_doorman.log file")
+                    transfer_failed = True
+            else:
+                with open("run_doorman.log") as doorman_log:
+                    doorman_lines = doorman_log.readlines()
+
+                if "FAILURE" in doorman_lines[-1]:
+                    logger.error(f"FATAL ERROR The doorman failed to run on {server_name}")
+                    transfer_failed = True
+
             if transfer_failed:
                 break
 
@@ -325,14 +346,9 @@ class GlobusHpss(Task):
         # Sleep a couple more seconds to ensure all status files finish transferring
         sleep(2)
 
-        # Retrieve and print the Doorman log file from the server
-        try:
-            self.scp(f"{server_name}:{server_job_dir}/run_doorman.log", '.')
-            with open('run_doorman.log', 'r') as doorman_log:
-                logger.info(doorman_log.read())
-
-        except ProcessError as pe:
-            raise ProcessError("FATAL ERROR Failed to retrieve the doorman log file from {server_name}") from pe
+        # Write out the log file if it is present
+        if doorman_lines in locals():
+            logger.debug('\n'.join(doorman_lines))
 
         # Check for a failed transfer and/or timeouts
         if transfer_failed or not all(transfer_set["successes"]):
