@@ -5,8 +5,10 @@ script_relpath="$(dirname "${BASH_SOURCE[0]}")"
 log_file="${script_relpath}/run_doorman.log"
 cd "${script_relpath}"
 
-# Initialize modules (this is a Niagara-specific path; parameterize if needed)
-. /apps/lmod/lmod/init/bash
+# Initialize the shell (hpss, modules, etc) (this is a Niagara-specific path; parameterize if needed)
+if [[ -f /etc/bashrc ]]; then
+    . /etc/bashrc
+fi
 
 run_doorman(){
 set -eux
@@ -14,12 +16,13 @@ set -eux
 rm -f dm.conf
 rm -f places.inc
 rm -f FLIST
-rm -rf "{{doorman_gendel}}"
+gendel="{{run_directory}}/GENERAL_DELIVERY"
+rm -rf "${gendel}"
 
 # Tell the doorman where the general delivery space is on Niagara (unique for each RUN/cycle)
 {
     # This is where tarballs will be received and confirmations are written and sent.
-    echo 'export GENDEL="{{doorman_gendel}}"'
+    echo "export GENDEL=${gendel}"
     # Tell the doorman what the sender's UUID is
     echo 'export CLIENT_ENDPOINT="{{CLIENT_GLOBUS_UUID}}"'
     # Tell the doorman where the sending client's dropbox is (why twice??)
@@ -34,7 +37,7 @@ export PATH="${PATH}:{{DOORMAN_ROOT}}/bin"
 set +e
 
 # Create the general delivery space if it wasn't already
-bash -e initialize.sh
+bash -ex initialize.sh
 init_stat=$?
 
 if [[ ${init_stat} -ne 0 ]]; then
@@ -43,7 +46,7 @@ if [[ ${init_stat} -ne 0 ]]; then
 fi
 
 # Transfer the data from the sender and execute the 'todo' script
-bash -e receive.sh --go
+bash -ex receive.sh --go
 receive_stat=$?
 
 # If receive didn't produce an FLIST file, then something went wrong
@@ -65,33 +68,44 @@ done < FLIST
 
 set +e
 
-# Sleep for a minute to allow time for all globus artifacts to resolve
-sleep 1m
+# Sleep allow time for all globus artifacts to resolve
+sleep 10s
+
+# Process the transfer requests (this is the long step)
+bash -ex process.sh
+proc_stat=$?
+if [[ ${proc_stat} -ne 0 ]]; then
+    echo "Failed to process the globus requests!"
+    return 3
+fi
 
 # Validate and generate the acknowledgement for each transfer ID
 for ID in ${IDs}; do
-    bash -e ack.sh "${ID}"
+    bash -ex ack.sh "${ID}"
     ack_stat=$?
     if [[ ${ack_stat} != 0 ]]; then
         echo "ack.sh failed for file ID ${ID}!"
-	return 3
+        return 4
     fi
 done
 
+# Sleep again to allow time for all globus artifacts to resolve
+sleep 10s
+
 # Send the acknowledgement back to the sender
-bash -e send.sh
+bash -ex send.sh
 
 send_stat=$?
 
 if [[ ${send_stat} -ne 0 ]]; then
     echo "Failed to send status back to client!"
-    return 4
+    return 5
 fi
 
 # Remove the working directory
 #shellcheck disable=SC2050
 if [[ "{{KEEPDATA}}" == "False" || "{{KEEPDATA}}" == "NO" ]]; then
-    cd "${HOME}" || echo "Failed to navigate to ${HOME}!" && return 5
+    cd "${HOME}" || echo "Failed to navigate to ${HOME}!" && return 6
     rm -rf "${doorman_dir}"
 fi
 
