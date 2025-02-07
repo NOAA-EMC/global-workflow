@@ -8,6 +8,8 @@ export errchk=${errchk:-err_chk}
 
 export MP_PULSE=0
 
+
+
 # Set COM Paths and GETGES environment
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
@@ -19,6 +21,11 @@ for out_dir in "${COMOUT_WAVE_PREP}" "${COMOUT_WAVE_GRID}"; do
     if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
 done
 
+for grid in ${wavepostGRD}; do
+  prod_dir="COMOUT_WAVE_GRIB_${grid}"
+  MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_WAVE_GRIB_GRID_TMPL"
+  if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
+done
 
 export MP_PULSE=0
 
