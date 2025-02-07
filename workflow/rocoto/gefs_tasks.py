@@ -426,6 +426,38 @@ class GEFSTasks(Tasks):
         task = rocoto.create_task(fhr_metatask_dict) 
 
         return task
+    
+    def wavestat_pnt(self):
+
+        deps = []
+        for member in range(0, self.nmem + 1):
+            task = f'gefs_wavestat_#fhr_label#'
+            dep_dict = {'type': 'task', 'name': task}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+
+        wavestat_pnt_envars = self.envars.copy()
+        resources = self.get_resource('waveinit')
+
+        task_name = f'gefs_wavestat_pnt'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': wavestat_pnt_envars,
+                     'cycledef': 'gefs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavestat_pnt.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+
+
 
     def wavepostbndpnt(self):
         deps = []
