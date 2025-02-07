@@ -14,8 +14,6 @@ export STAGE_DIR="${DATAROOT}/archive_rotdir/${PSLOT}"
 # Set variables used by the Sven and Doorman services
 # Niagara's globus UUID
 export SERVER_GLOBUS_UUID=1bfd8a79-52b2-4589-88b2-0648e0c0b35d
-# Client address
-export CLIENT_GLOBUS_UUID=@CLIENT_GLOBUS_UUID@
 
 # General delivery location on Niagara (staging area for data)
 export SERVER_HOME='/collab1/data/{{SERVER_USERNAME}}'

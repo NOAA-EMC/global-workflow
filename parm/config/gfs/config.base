@@ -498,6 +498,9 @@ else
    export DO_ARCHTAR="NO"
 fi
 
+# Globus UUID for this machine
+export CLIENT_GLOBUS_UUID='@CLIENT_GLOBUS_UUID@'
+
 export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
