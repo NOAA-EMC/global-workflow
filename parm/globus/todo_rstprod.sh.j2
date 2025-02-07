@@ -14,7 +14,6 @@ mkdir -p "${log_directory}"
 
 log_file="${log_directory}/hpss_status_${globus_xfer_id}.log"
 rm -f "${log_file}"
-touch "${log_file}"
 
 send_to_hpss()
 {
@@ -25,18 +24,11 @@ send_to_hpss()
         return 1
     fi
 
-    # Check that the MD5 checksum matches what was sent
-    chk=$(md5sum "${file_full}")
-    if [[ "${chk}" != "${globus_xfer_id}  ${file_full}" ]]; then
-        echo "MD5 checksum of ${file} does not match.  Exiting." >> "${log_file}"
-        return 2
-    fi
-
     # Write a command file to place the file on hpss and protect it
     local hpss_target="${hpss_target_dir}/${file}"
     local command_file="command_file_${globus_xfer_id}"
     {
-        echo "mkdir -p ${hpss_dir}"
+        echo "mkdir -p ${hpss_target_dir}"
         echo "put ${file_full} : ${hpss_target}"
         echo "chgrp rstprod ${hpss_target}"
         echo "chmod 640 ${hpss_target}"
@@ -47,7 +39,9 @@ send_to_hpss()
     if [[ $? != 0 ]]; then
         echo "Failed to send ${file} to HPSS and/or protect it." >> "${log_file}"
         echo "Deleting from hpss.  Please verify it was deleted!!" >> "${log_file}"
+        set +e
         hsi rm "${hpss_target}"
+        set -e
         return 3
     fi
 
@@ -55,10 +49,19 @@ send_to_hpss()
 
     # Create an index file if the file is a tarball
     if [[ ${file} == *.tar ]]; then
-        if ! htar -Xvf "${hpss_target}" >> "${log_file}" 2>&1; then
-            echo "Failed to create an index file for ${hpss_target}.  Exiting." >> "${log_file}"
-            return 4
+        # For now, ignore errors coming from the index command.
+        # Issue RDHPCS#2025020754000121 opened with RDHPCS.
+        save_e=$-
+        set +e
+        htar -Xvf "${hpss_target}" > /dev/null 2>&1
+        if [[ "${save_e}" =~ e ]]; then
+            set -e
         fi
+        # TODO Reinstate error checking and logging when creating index files
+        #if ! htar -Xvf "${hpss_target}" >> "${log_file}" 2>&1; then
+            #echo "Failed to create an index file for ${hpss_target}.  Exiting." >> "${log_file}"
+            #return 2
+        #fi
     fi
 
     return 0
