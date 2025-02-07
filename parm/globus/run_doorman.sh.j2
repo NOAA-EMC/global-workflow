@@ -5,6 +5,9 @@ script_relpath="$(dirname "${BASH_SOURCE[0]}")"
 log_file="${script_relpath}/run_doorman.log"
 cd "${script_relpath}"
 
+# Initialize modules (this is a Niagara-specific path; parameterize if needed)
+. /apps/lmod/lmod/init/bash
+
 run_doorman(){
 set -eux
 
@@ -28,17 +31,28 @@ rm -rf "{{doorman_gendel}}"
 # Point to the doorman executable scripts
 export PATH="${PATH}:{{DOORMAN_ROOT}}/bin"
 
+set +e
+
 # Create the general delivery space if it wasn't already
-initialize.sh
+bash -e initialize.sh
+init_stat=$?
+
+if [[ ${init_stat} -ne 0 ]]; then
+    echo "initialize.sh failed!"
+    return 1
+fi
 
 # Transfer the data from the sender and execute the 'todo' script
-receive.sh --go
+bash -e receive.sh --go
+receive_stat=$?
 
 # If receive didn't produce an FLIST file, then something went wrong
-if [[ ! -f FLIST ]]; then
+if [[ ! -f FLIST || ${receive_stat} -ne 0 ]]; then
     echo "receive.sh failed!"
     return 2
 fi
+
+set -e
 
 # Parse the FLIST file created by receive.sh to get the transfer IDs
 IDs=""
@@ -49,34 +63,50 @@ while IFS= read -r line; do
     IDs="${IDs} ${ID}"
 done < FLIST
 
+set +e
+
 # Sleep for a minute to allow time for all globus artifacts to resolve
 sleep 1m
 
 # Validate and generate the acknowledgement for each transfer ID
 for ID in ${IDs}; do
-    ack.sh "${ID}"
+    bash -e ack.sh "${ID}"
+    ack_stat=$?
+    if [[ ${ack_stat} != 0 ]]; then
+        echo "ack.sh failed for file ID ${ID}!"
+	return 3
+    fi
 done
 
 # Send the acknowledgement back to the sender
-set +e
-send.sh
+bash -e send.sh
 
-stat=$?
+send_stat=$?
 
-if [[ ${stat} -ne 0 ]]; then
+if [[ ${send_stat} -ne 0 ]]; then
     echo "Failed to send status back to client!"
-    exit 3
+    return 4
 fi
-set -e
 
 # Remove the working directory
 #shellcheck disable=SC2050
-if [[ "{{KEEPDATA}}" == "NO" ]]; then
-    cd "${HOME}" || echo "Failed to navigate to ${HOME}!" && exit 4
+if [[ "{{KEEPDATA}}" == "False" || "{{KEEPDATA}}" == "NO" ]]; then
+    cd "${HOME}" || echo "Failed to navigate to ${HOME}!" && return 5
     rm -rf "${doorman_dir}"
 fi
+
+set +eux
 }
 
 run_doorman >& "${log_file}"
+
+if [[ $? -ne 0 ]]; then
+    echo "Failed to run the doorman service!"
+    set +eux
+    echo "FAILURE" >> "${log_file}"
+    exit 9
+fi
+
+echo "SUCCESS" >> "${log_file}"
 
 exit 0
