@@ -105,8 +105,11 @@ fi
 # Remove the working directory
 #shellcheck disable=SC2050
 if [[ "{{KEEPDATA}}" == "False" || "{{KEEPDATA}}" == "NO" ]]; then
-    cd "${HOME}" || echo "Failed to navigate to ${HOME}!" && return 6
-    rm -rf "${doorman_dir}"
+    if ! cd "${HOME}"; then
+        echo "Failed to navigate to ${HOME}!"
+        return 6
+    fi
+    rm -rf "${gendel}"
 fi
 
 set +eux
