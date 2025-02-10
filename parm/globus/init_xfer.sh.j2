@@ -58,7 +58,7 @@ if [[ ${diff_d} -gt 3 ]]; then
     echo "Turning off the crontab for {{PSLOT}}!!"
     scriptpath="$( realpath "${0}" )"
     cron_out=$(crontab -l)
-    entry=$(crontab -l | grep "${scriptpath}")
+    entry=$(echo "${cron_out}" | grep "${scriptpath}")
     echo "Deleting crontab entry"
     echo "${entry}"
     cron_in=$(echo "${cron_out}" | grep -v "${scriptpath}")
