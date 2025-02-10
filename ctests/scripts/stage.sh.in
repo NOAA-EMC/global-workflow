@@ -19,12 +19,12 @@ set -x
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH
 
-INPUTS_YAML="${HOMEgfs}/ctests/cases/${TEST_NAME}.yaml"
+YAML_FILE="${HOMEgfs}/ctests/cases/${TEST_NAME}.yaml"
 
 TEST_NAME="${TEST_NAME}" \
 RUNTESTS="${RUNTESTS}" \
 STAGED_TESTS_DIR="${STAGED_TESTS_DIR}" \
-"${HOMEgfs}/ctests/scripts/stage.py" --yaml "${INPUTS_YAML}" --test_date "${TEST_DATE}"
+"${HOMEgfs}/ctests/scripts/stage.py" --yaml "${YAML_FILE}" --test_date "${TEST_DATE}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     set +x
