@@ -16,13 +16,13 @@ set -ux
 rm -f dm.conf
 rm -f places.inc
 rm -f FLIST
-gendel="{{run_directory}}/GENERAL_DELIVERY"
-rm -rf "${gendel}"
+general_delivery_root="{{run_directory}}/GENERAL_DELIVERY"
+rm -rf "${general_delivery_root}"
 
 # Tell the doorman where the general delivery space is on Niagara (unique for each RUN/cycle)
 {
     # This is where tarballs will be received and confirmations are written and sent.
-    echo "export GENDEL=${gendel}"
+    echo "export GENDEL=${general_delivery_root}"
     # Tell the doorman what the sender's UUID is
     echo 'export CLIENT_ENDPOINT="{{CLIENT_GLOBUS_UUID}}"'
     # Tell the doorman where the sending client's dropbox is (why twice??)
