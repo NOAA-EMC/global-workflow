@@ -37,7 +37,7 @@ def main():
             'FHOUT_HF_WAV', 'FHMAX_WAV', 'FHMAX_HF_WAV', 'FHMAX_WAV_GFS',
             'restart_interval_gdas', 'restart_interval_gfs', 'DO_ARCHTAR',
             'DO_AERO_ANL', 'DO_AERO_FCST', 'DO_CA', 'DOIBP_WAV', 'DO_JEDIOCNVAR', 'DOHYBVAR_OCN',
-            'NMEM_ENS', 'DO_JEDIATMVAR', 'DO_VRFY_OCEANDA', 'FHMAX_FITS', 'waveGRD',
+            'NMEM_ENS', 'DO_JEDIATMVAR', 'FHMAX_FITS', 'waveGRD',
             'IAUFHRS', 'DO_FIT2OBS', 'NET', 'FHOUT_HF_GFS', 'FHMAX_HF_GFS', 'REPLAY_ICS',
             'OFFSET_START_HOUR', 'ARCH_EXPDIR', 'EXPDIR', 'ARCH_EXPDIR_FREQ', 'ARCH_HASHES',
             'ARCH_DIFFS', 'SDATE', 'EDATE', 'HOMEgfs', 'DO_GEMPAK', 'WAVE_OUT_GRIDS']
