@@ -65,7 +65,7 @@ while IFS= read -r line; do
     tmp="${package_name#package_location_}"
     ID="${tmp%.tgz}"
     IDs="${IDs} ${ID}"
-done < <"(echo ${packages})"
+done < <(echo ${packages})
 
 set +e
 
