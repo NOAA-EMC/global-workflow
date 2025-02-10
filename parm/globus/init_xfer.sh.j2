@@ -20,9 +20,9 @@ if compgen -G "/collab1/data/David.Huber"/req_mkdir.* > /dev/null 2>&1 ; then
 fi
 
 # Look for executable scripts
-if compgen -G "{{server_home}}"/doorman/globus.* > /dev/null 2>&1 ; then
+if compgen -G "{{server_home}}"/doorman/globus_*.* > /dev/null 2>&1 ; then
    echo "${run_time}" > "${runtime_log}"
-   for dir in "{{server_home}}"/doorman/globus.*; do
+   for dir in "{{server_home}}"/doorman/globus_*.*; do
       flist=$(find "${dir}" -executable -name "run_doorman.sh")
       for script in ${flist}; do
          # Check if the corresponding log has already been written

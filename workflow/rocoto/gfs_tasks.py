@@ -2447,20 +2447,20 @@ class GFSTasks(Tasks):
         return task
 
     # Globus transfer for HPSS archiving
-    def globus(self):
+    def globus_arch(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('globus')
-        task_name = f'{self.run}_globus'
+        task_name = f'{self.run}_globus_arch'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus_arch.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -2471,7 +2471,7 @@ class GFSTasks(Tasks):
         return task
 
     # Ensemble globus transfer for HPSS archiving
-    def ens_group_globus(self):
+    def globus_earc(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2481,22 +2481,22 @@ class GFSTasks(Tasks):
         n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
-        resources = self.get_resource('ens_group_globus')
+        resources = self.get_resource('globus')
         var_dict = {'grp': groups}
 
-        task_name = f'{self.run}_ens_globus'
+        task_name = f'{self.run}_globus_earc'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus.sh',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus_earc.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}_eglobus',
+        metatask_dict = {'task_name': f'{self.run}_ens_globus_arch',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
@@ -2513,7 +2513,7 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_archtar']:
                 if self.options['do_globusarch']:
-                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_ens_globus'}
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_ens_globus_arch'}
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
 
@@ -2524,7 +2524,7 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_archtar']:
                 if self.options['do_globusarch']:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_globus'}
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
                 else:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
                 deps.append(rocoto.add_dependency(dep_dict))
@@ -3135,7 +3135,7 @@ class GFSTasks(Tasks):
         n_groups = -(self.nmem // -self._configs['earc_tars']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
-        resources = self.get_resource('earc_tars')
+        resources = self.get_resource('arch_tars')
 
         var_dict = {'grp': groups}
 

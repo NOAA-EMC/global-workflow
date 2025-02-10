@@ -13,12 +13,12 @@ status=$?
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
 export PYTHONPATH
 
-export job="globus"
+export job="globus_arch"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/jobs/JGLOBAL_GLOBUS
+"${HOMEgfs}"/jobs/JGLOBAL_GLOBUS_ARCH
 status=$?
 
 exit "${status}"

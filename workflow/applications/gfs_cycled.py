@@ -155,6 +155,9 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_globusarch']:
             configs += ['globus']
+            # TODO Enable when the globus archiving feature is available for ensembles
+            # if options['do_hybvar']:
+            #     configs += ['globus_earc']
 
         return configs
 
@@ -337,6 +340,11 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run] += ['stage_ic', 'ecen', 'esfc']
                 if options['do_archtar']:
                     task_names[run] += ['earc_tars']
+
+                    # TODO Uncomment when globus ensemble archiving is ready
+                    # if options['do_globusarch']:
+                    #     task_names[run] += ['globus_earc']
+
                 task_names[run] += ['earc_vrfy', 'cleanup']
 
         return task_names

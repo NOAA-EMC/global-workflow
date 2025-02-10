@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-########## config.globux ##########
-# Globus specific variables
+########## config.globus ##########
+# Globus-specific variables for all globus-based jobs
 
 echo "BEGIN: config.globus"
 
