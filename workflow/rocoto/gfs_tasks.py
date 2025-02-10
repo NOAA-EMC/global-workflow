@@ -2333,6 +2333,14 @@ class GFSTasks(Tasks):
             if self.run in ['gfs']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_wave']:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_wave_bnd']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
