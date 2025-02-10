@@ -30,9 +30,6 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_ocnanalecen.log"
                 {% endif %}
             {% endif %}
-            {% if DO_VRFY_OCEANDA %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_ocnanalvrfy.log"
-            {% endif %}
 
         # Analysis GRIB2 (sub-sampled) data
         - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl"
