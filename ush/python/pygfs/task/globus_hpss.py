@@ -354,7 +354,7 @@ class GlobusHpss(Task):
             logger.debug(f"{complete_count} files transferred in {wait_time} seconds.")
 
         # Sleep a couple more seconds to ensure all status files finish transferring
-        sleep(2)
+        sleep(5)
 
         # Write out the log file if it is present
         if log_read:
