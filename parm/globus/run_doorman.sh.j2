@@ -11,7 +11,7 @@ if [[ -f /etc/bashrc ]]; then
 fi
 
 run_doorman(){
-set -eux
+set -ux
 
 rm -f dm.conf
 rm -f places.inc
@@ -64,7 +64,7 @@ while IFS= read -r line; do
     tmp="${package_name#package_location_}"
     ID="${tmp%.tgz}"
     IDs="${IDs} ${ID}"
-done < FLIST
+done < <(grep "package_location" FLIST)
 
 set +e
 
@@ -102,24 +102,15 @@ if [[ ${send_stat} -ne 0 ]]; then
     return 5
 fi
 
-# Remove the working directory
-#shellcheck disable=SC2050
-if [[ "{{KEEPDATA}}" == "False" || "{{KEEPDATA}}" == "NO" ]]; then
-    if ! cd "${HOME}"; then
-        echo "Failed to navigate to ${HOME}!"
-        return 6
-    fi
-    rm -rf "${gendel}"
-fi
-
 set +eux
 }
 
-run_doorman >& "${log_file}"
+# Run the function, halting the function on errors, and capture the output
+( set -e; run_doorman ) >& "${log_file}"
+doorman_stat=$?
 
-if [[ $? -ne 0 ]]; then
+if [[ ${doorman_stat} -ne 0 ]]; then
     echo "Failed to run the doorman service!"
-    set +eux
     echo "FAILURE" >> "${log_file}"
     exit 9
 fi
