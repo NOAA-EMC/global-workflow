@@ -58,13 +58,14 @@ fi
 set -e
 
 # Parse the FLIST file created by receive.sh to get the transfer IDs
+packages=$(grep "package_location" FLIST)
 IDs=""
 while IFS= read -r line; do
     package_name=$(echo "${line}" | grep -o "package_location_.*\.tgz")
     tmp="${package_name#package_location_}"
     ID="${tmp%.tgz}"
     IDs="${IDs} ${ID}"
-done < <(grep "package_location" FLIST)
+done < <"(echo ${packages})"
 
 set +e
 

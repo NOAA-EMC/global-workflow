@@ -57,8 +57,10 @@ if [[ ${diff_d} -gt 3 ]]; then
     echo "WARNING the {{SERVER_NAME}} service for {{PSLOT}} has not run in > 3 days!"
     echo "Turning off the crontab for {{PSLOT}}!!"
     scriptpath="$( realpath "${0}" )"
-    entry=$(crontab -l | grep -i "${scriptpath}")
+    cron_out=$(crontab -l)
+    entry=$(crontab -l | grep "${scriptpath}")
     echo "Deleting crontab entry"
     echo "${entry}"
-    crontab -l | grep -v "${scriptpath}" | crontab -
+    cron_in=$(echo "${cron_out}" | grep -v "${scriptpath}")
+    echo "${cron_in}" | crontab -l
 fi
