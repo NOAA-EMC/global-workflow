@@ -246,7 +246,9 @@ class GlobusHpss(Task):
 
         # Initialize a list of status files.
         transfer_set["status_files"] = []
+        transfer_set["xfer_ids"] = []
         transfer_set["completed"] = []
+        transfer_set["successes"] = []
 
         # Tell Sven we have files to send, one at a time
         for location in transfer_set["locations"]:
@@ -262,10 +264,13 @@ class GlobusHpss(Task):
 
             # Parse Sven's output to get the name of the return status file
             match = re.search("\"(status_.*)\" in your dropbox", sven_output)
-            transfer_set["status_files"].append(os.path.join(self.task_config.sven_dropbox, match.group(1)))
+            status_file = match.group(1)
+            transfer_set["xfer_ids"].append(status_file.replace("status_", ""))
+            transfer_set["status_files"].append(os.path.join(self.task_config.sven_dropbox, status_file))
 
-            # Initialize 'completed' to false for each file
+            # Initialize 'completed' and 'success' to false for each file
             transfer_set["completed"].append(False)
+            transfer_set["successes"].append(False)
 
         # Transfer the doorman script to Niagara.
         # Note, this assumes we have unattended transfer capability.
@@ -284,7 +289,7 @@ class GlobusHpss(Task):
         # Now wait for the doorman script to run via cron on Niagara.
         # Once complete, Sven's dropbox should fill up with status files.
         wait_count = 0
-        sleep_time = 300  # s
+        sleep_time = 60  # s
         timeout_time = 5.75 * 3600  # s
         max_wait_count = int(timeout_time / sleep_time)
 
@@ -295,14 +300,15 @@ class GlobusHpss(Task):
         logger.debug(f"Waiting for the service to complete on {server_name}")
         while not all(transfer_set["completed"]) and wait_count < max_wait_count:
             sleep(sleep_time)
-            for i in range(len(transfer_set["status_files"])):
+            for i in range(len(transfer_set["locations"])):
                 status_file = transfer_set["status_files"][i]
                 if os.path.exists(status_file):
                     # If this is a new status file, check if the transfer was successful
                     if not transfer_set["completed"][i]:
                         transfer_set["completed"][i] = True
                         with open(status_file) as status_handle:
-                            transfer_set["successes"][i] = status_handle.readlines()[-1] == "SUCCESS"
+                            status_string = status_handle.readline().rstrip()
+                            transfer_set["successes"][i] = status_string == f"status.{transfer_set['xfer_ids'][i]} SUCCESS"
 
                         if transfer_set["successes"][i]:
                             logger.info(f"Successfully archived {transfer_set['locations'][i]} to HPSS!")
