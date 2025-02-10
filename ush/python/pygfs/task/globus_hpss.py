@@ -237,10 +237,10 @@ class GlobusHpss(Task):
         os.chmod("run_doorman.sh", 0o740)
         os.chmod("init_xfer.sh", 0o740)
 
-        server_job_dir = transfer_set["server_job_dir"]
+        self.server_job_dir = transfer_set["server_job_dir"]
 
         # Initialize the server
-        self._init_server(server_job_dir)
+        self._init_server()
 
         server_name = self.task_config.SERVER_NAME
 
@@ -367,13 +367,13 @@ class GlobusHpss(Task):
         return
 
     @logit(logger)
-    def _init_server(self, job_dir: str):
+    def _init_server(self):
         # This method sends a request to create a working directory and transfers
         # the initialization script.
 
         req_file = f"req_mkdir.{self.task_config.jobid}"
-        with open(f"req_mkdir.{self.task_config.jobid}", "w") as mkdir_f:
-            mkdir_f.write(f"{job_dir}")
+        with open(req_file, "w") as mkdir_f:
+            mkdir_f.write(f"{self.server_job_dir}")
 
         server_name = self.task_config.SERVER_NAME
         server_home = self.task_config.server_home
@@ -418,5 +418,23 @@ class GlobusHpss(Task):
         """
         Remove the temporary directories/files created by the GlobusHpss task.
         """
+
+        # Write a request to delete the working directory on Niagara
+        req_file = f"req_rmdir.{self.task_config.jobid}"
+        with open(req_file, "w") as rmdir_f:
+            rmdir_f.write(f"{self.server_job_dir}")
+
+        self.scp(req_file, f"{server_name}:{server_home}/{req_file}")
+
+        logger.info("Sleeping 5 minute to give the server time to delete the working directory")
+        # It probably takes much less time than this, but it may take a little while at high res
+        sleep(300)
+
+        # If it was successful, then the request should be gone
+        try:
+            self.scp(f"{server_name}:{server_home}/{req_file}", ".")
+            raise RuntimeError(f"FATAL ERROR Failed to delete the run directory on {server_name}")
+        except ProcessError:
+            pass
 
         return
