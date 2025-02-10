@@ -34,6 +34,17 @@ if compgen -G "{{server_home}}"/doorman/globus.* > /dev/null 2>&1 ; then
    done
 fi
 
+# Look for rmdir requests
+if compgen -G "/collab1/data/David.Huber"/req_rmdir.* > /dev/null 2>&1 ; then
+   echo "${run_time}" > "${runtime_log}"
+   for rmdir_req_fl in "{{server_home}}"/req_rmdir.*; do
+      dir=$(cat "${rmdir_req_fl}")
+      rm -rf "${dir}"
+      rm -f "${mkdir_req_fl}"
+   done
+fi
+
+
 # Check if it has been a while since this script had anything to do
 last_runtime=$(cat "${runtime_log}")
 last_runtime_s=$(date -d "${last_runtime}" '+%s')
