@@ -378,6 +378,7 @@ WW3_postdet() {
       echo "FATAL ERROR: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for RERUN='${RERUN}' or runtype=continue, ABORT!"
       exit 1
     else
+      export WW3_restart_from_binary=false
       echo "WARNING: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
     fi
   fi
