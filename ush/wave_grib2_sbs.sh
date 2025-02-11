@@ -217,8 +217,8 @@ if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
     for subgrb in ${WAV_SUBGRB}; do
       subfnam="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
       if [[ -s "${subfnam}" ]] && [[ -s "${subfnam}.idx" ]]; then
-        cp -f "${subfnam}" "${com_dir}/${subfnam}"
-        cp -f "${subfnam}.idx" "${com_dir}/${subfnam}.idx"
+        cpfs "${subfnam}" "${com_dir}/${subfnam}"
+        cpfs "${subfnam}.idx" "${com_dir}/${subfnam}.idx"
         echo "Copied ${subfnam} and ${subfnam}.idx from ${GRIBDATA} to COM"
       else
         echo "${subfnam} and ${subfnam}.idx not found in ${GRIBDATA} to copy to COM"
