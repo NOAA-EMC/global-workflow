@@ -469,7 +469,6 @@ export DO_CA="YES"
 # Verification options
 export DO_METP="@DO_METP@"   # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
-export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verification tasks
 
 #--online archive of netcdf files for fit2obs verification
 export FHMAX_FITS=132

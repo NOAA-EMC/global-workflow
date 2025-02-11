@@ -12,7 +12,6 @@ base:
   DO_FIT2OBS: "YES"
   DO_VERFOZN: "YES"
   DO_VERFRAD: "YES"
-  DO_VRFY_OCEANDA: "NO"
   FHMAX_GFS: 240
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
 
