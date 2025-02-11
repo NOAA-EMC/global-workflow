@@ -71,7 +71,7 @@ PARM/CONFIG CHANGES
 SCRIPT CHANGES
 --------------
 
-* WW3-related changes to `scripts/exgfs_wave_post_gridded_sbs.sh` and `scripts/exglobal_forecast.sh`
+* WW3-related changes to `scripts/exgfs_wave_post_gridded_sbs.sh` and `scripts/exglobal_forecast.sh`. Grid loop and counter updates. Log files are now checked for completion instead of the associated gridded output.
 
 FIX CHANGES
 -----------
@@ -124,3 +124,5 @@ DOCUMENTATION
 PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
+Matthew.Masarik@noaa.gov
+Jessica.Meixner@noaa.gov
