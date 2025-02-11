@@ -169,7 +169,8 @@ class GFSTasks(Tasks):
 
         deps = []
         # Files from current cycle
-        files = ['gfs_ctrl.nc'] + [f'gfs_data.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
+        ntiles = self._base['ntiles']
+        files = ['gfs_ctrl.nc'] + [f'gfs_data.tile{tile}.nc' for tile in range(1, ntiles + 1)]
         for file in files:
             data = f'{input_path}/{file}'
             dep_dict = {'type': 'data', 'data': data}
@@ -185,8 +186,8 @@ class GFSTasks(Tasks):
 
         # Files from previous cycle
         files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
-                [f'@Y@m@d.@H0000.fv_core.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)] + \
-                [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
+                [f'@Y@m@d.@H0000.fv_core.res.tile{tile}.nc' for tile in range(1, ntiles + 1)] + \
+                [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.ntiles + 1)]
 
         for file in files:
             data = [f'{restart_path}/', file]
