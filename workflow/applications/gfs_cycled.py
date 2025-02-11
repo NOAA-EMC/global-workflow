@@ -48,7 +48,6 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
             run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
-            run_options[run]['do_vrfy_oceanda'] = base.get('DO_VRFY_OCEANDA', False)
 
         return run_options
 
@@ -70,8 +69,6 @@ class GFSCycledAppConfig(AppConfig):
             if options['do_hybvar']:
                 configs += ['marineanlletkf', 'ocnanalecen']
             configs += ['marineanlchkpt', 'marineanlfinal']
-            if options['do_vrfy_oceanda']:
-                configs += ['ocnanalvrfy']
 
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
@@ -186,8 +183,6 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_hybvar']:
                         task_names[run] += ['marineanlletkf', 'ocnanalecen']
                     task_names[run] += ['marineanlchkpt', 'marineanlfinal']
-                    if options['do_vrfy_oceanda']:
-                        task_names[run] += ['ocnanalvrfy']
 
                 task_names[run] += ['sfcanl', 'analcalc']
 
