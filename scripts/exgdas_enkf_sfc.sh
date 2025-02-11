@@ -78,7 +78,7 @@ bPDY=${BDATE:0:8}
 bcyc=${BDATE:8:2}
 
 # Get dimension information based on CASE
-res=${CASE:2:}
+res=${CASE:1}
 JCAP_CASE=$((res*2-2))
 LATB_CASE=$((res*2))
 LONB_CASE=$((res*4))
@@ -87,9 +87,13 @@ LONB_CASE=$((res*4))
 export FNTSFA=${FNTSFA:-'                  '}
 export FNACNA=${FNACNA:-${COM_OBS}/${OPREFIX}seaice.5min.blend.grb}
 export FNSNOA=${FNSNOA:-${COM_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+# Check if resolution specific FNSNOA exists, if not use t1534 version
 [[ ! -f $FNSNOA ]] && export FNSNOA="${COM_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
-FNSNOG=${FNSNOG:-${COM_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-[[ ! -f $FNSNOG ]] && FNSNOG="${COM_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
+echo "INFO: Current snow file is ${FNSNOA}"
+export FNSNOG=${FNSNOG:-${COM_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+# Check if resolution specific FNSNOG exists, if not use t1534 version
+[[ ! -f $FNSNOG ]] && export FNSNOG="${COM_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
+echo "INFO: Previous snow file is ${FNSNOG}"
 
 # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
 if [ ${RUN_GETGES:-"NO"} = "YES" ]; then
