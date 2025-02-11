@@ -11,7 +11,8 @@ __all__ = ['Tasks']
 
 
 class Tasks:
-    SERVICE_TASKS = ['arch_vrfy', 'arch_tars', 'earc_vrfy', 'earc_tars', 'stage_ic', 'fetch', 'cleanup']
+    SERVICE_TASKS = ['arch_vrfy', 'earc_vrfy', 'stage_ic', 'cleanup']
+    DTN_TASKS = ['arch_tars', 'earc_tars', 'fetch']
     VALID_TASKS = ['aerosol_init', 'stage_ic', 'fetch',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
@@ -80,6 +81,32 @@ class Tasks:
                       'DATAROOT': dataroot_str}
 
         self.envars = self._set_envars(envar_dict)
+
+        self._system_settings()
+
+    def _system_settings(self) 
+
+        def _valid_key_value(input_dict, key):
+            # This helper function returns False if value held in 'key' matches '@' + key + '@'
+
+            value = input_dict.get(key, False)
+            return False if value == f'@{key}@' else value
+
+        # Check the system configuration
+        base = self._base
+        self.clusters = _valid_key_value(base, 'CLUSTERS')
+        self.clusters_service = _valid_key_value(base, 'CLUSTERS_SERVICE')
+        self.clusters_dtn = _valid_key_value(base, 'CLUSTERS_DTN')
+
+        self.reservation = _valid_key_value(base, 'RESERVATION')
+
+        self.partition = _valid_key_value(base, 'PARTITION')
+        self.partition_service = _valid_key_value(base, 'PARTITION_SERVICE')
+        self.partition_dtn = _valid_key_value(base, 'PARTITION_DTN')
+
+        self.queue = _valid_key_value(base, 'QUEUE')
+        self.queue_service = _valid_key_value(base, 'QUEUE_SERVICE')
+        self.queue_dtn = _valid_key_value(base, 'QUEUE_DTN')
 
     @staticmethod
     def _set_envars(envar_dict) -> list:
@@ -323,39 +350,71 @@ class Tasks:
         # Memory is not required
         memory = task_config.get(f'memory', None)
 
+        # Check what type of task this is
+        dtn_task = task_name in Tasks.DTN_TASKS
+        service_task = task_name in Tasks.SERVICE_TASKS
+
+        # Combine the task configuration with the system configuration
+        if service_task:
+            queue = queue_service if queue_service else queue
+            partition = partition_service if partition_service else partition
+            clusters = clusters_service if clusters_service else clusters
+            reservation = False
+        elif dtn_task:
+            # First check if there is a DTN queue, partition, or clusters
+            # If not, then try SERVICE queue, partition, clusters
+            if queue_dtn:
+                queue = queue_dtn
+            elif queue_service:
+                queue = queue_service
+
+            if partition_dtn:
+                partition = partition_dtn
+            elif partition_service:
+                partition = partition_service
+
+            if clusters_dtn:
+                clusters = clusters_dtn
+            elif clusters_service:
+                clusters = clusters_service
+
+            reservation = False
+
+        # Schuduler-specific configurations
+        native = None
         if scheduler in ['pbspro']:
+            # Do not use a partition on PBS
+            partition = None
+
+            # Check memory usage at the end
             if task_config.get('prepost', False):
                 memory += ':prepost=true'
 
-        native = None
-        if scheduler in ['pbspro']:
             # Set place=vscatter by default and debug=true if DEBUG_POSTSCRIPT="YES"
             if self._base['DEBUG_POSTSCRIPT']:
                 native = '-l debug=true,place=vscatter'
             else:
                 native = '-l place=vscatter'
+
             # Set either exclusive or shared - default on WCOSS2 is exclusive when not set
             if task_config.get('is_exclusive', False):
                 native += ':exclhost'
             else:
                 native += ':shared'
+
         elif scheduler in ['slurm']:
             if task_config.get('is_exclusive', False):
                 native = '--exclusive'
             else:
                 native = '--export=NONE'
-            if task_config['RESERVATION'] != "":
-                native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION']
-            if task_config.get('CLUSTERS', "") not in ["", '@CLUSTERS@']:
-                native += ' --clusters=' + task_config['CLUSTERS']
 
-        queue = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['QUEUE']
+            if reservation:
+                native += ' --reservation=' + reservation
 
-        partition = None
-        if scheduler in ['slurm']:
-            partition = task_config['PARTITION_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config[
-                'PARTITION_BATCH']
+            if clusters:
+                native += ' --clusters=' + clusters
 
+        # Finally, construct and return the task resource dictionary
         task_resource = {'account': account,
                          'walltime': walltime,
                          'nodes': nodes,
