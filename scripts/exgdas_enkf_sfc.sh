@@ -89,18 +89,20 @@ export FNACNA=${FNACNA:-${COMIN_OBS}/${OPREFIX}seaice.5min.blend.grb}
 export FNSNOA=${FNSNOA:-${COMIN_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
 # Check if resolution specific FNSNOA exists, if not use t1534 version
 [[ ! -f $FNSNOA ]] && export FNSNOA="${COMIN_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
-echo "INFO: Current snow file is ${FNSNOA}"
 if [[ ! -f $FNSNOA ]]; then
   echo "FATAL ERROR: Current snow file ${FNSNOA} is missing. Exiting."
   exit 1
+else
+  echo "INFO: Current snow file is ${FNSNOA}"
 fi
 export FNSNOG=${FNSNOG:-${COMIN_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
 # Check if resolution specific FNSNOG exists, if not use t1534 version
 [[ ! -f $FNSNOG ]] && export FNSNOG="${COMIN_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
-echo "INFO: Previous snow file is ${FNSNOG}"
 if [[ ! -f $FNSNOG ]]; then
   echo "FATAL ERROR: Previous snow file ${FNSNOG} is missing. Exiting."
   exit 1
+else
+  echo "INFO: Previous snow file is ${FNSNOG}"
 fi
 
 # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
