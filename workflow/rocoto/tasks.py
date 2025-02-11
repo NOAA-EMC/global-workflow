@@ -24,10 +24,10 @@ class Tasks:
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
                    'snowanl', 'esnowanl',
                    'fcst',
-                   'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
-                   'atmos_prod', 'ocean_prod', 'ice_prod',
+                   'upp', 'atmanlprod', 'atmupp', 'goesupp',
+                   'atmos_products', 'ocean_products', 'ice_products',
                    'verfozn', 'verfrad', 'vminmon',
-                   'metp',
+                   'metp', 'fit2obs',
                    'tracker', 'genesis', 'genesis_fsu',
                    'postsnd', 'awips_20km_1p0deg', 'fbwind',
                    'gempak', 'gempakmeta', 'gempakmetancdc', 'gempakncdcupapgif', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg'
@@ -65,8 +65,6 @@ class Tasks:
         self._base['interval_gdas'] = to_timedelta(f'{self._base["assim_freq"]}H')
         self._base['interval_gfs'] = to_timedelta(f'{self._base["INTERVAL_GFS"]}H')
 
-        self.n_tiles = 6  # TODO - this needs to be elsewhere
-
         # DATAROOT is set by prod_envir in ops.  Here, we use `STMP` to construct DATAROOT
         dataroot_str = f"{self._base.get('STMP')}/RUNDIRS/{self._base.get('PSLOT')}/{self.run}.<cyclestr>@Y@m@d@H</cyclestr>"
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
@@ -80,42 +78,46 @@ class Tasks:
                       'COMROOT': self._base.get('COMROOT'),
                       'DATAROOT': dataroot_str}
 
-        self.envars = self._set_envars(envar_dict)
+        self._set_envars(envar_dict)
 
-        self._system_settings()
+        self._set_system_settings()
 
-    def _system_settings(self) 
-
-        def _valid_key_value(input_dict, key):
-            # This helper function returns False if value held in 'key' matches '@' + key + '@'
-
-            value = input_dict.get(key, False)
-            return False if value == f'@{key}@' else value
-
-        # Check the system configuration
-        base = self._base
-        self.clusters = _valid_key_value(base, 'CLUSTERS')
-        self.clusters_service = _valid_key_value(base, 'CLUSTERS_SERVICE')
-        self.clusters_dtn = _valid_key_value(base, 'CLUSTERS_DTN')
-
-        self.reservation = _valid_key_value(base, 'RESERVATION')
-
-        self.partition = _valid_key_value(base, 'PARTITION')
-        self.partition_service = _valid_key_value(base, 'PARTITION_SERVICE')
-        self.partition_dtn = _valid_key_value(base, 'PARTITION_DTN')
-
-        self.queue = _valid_key_value(base, 'QUEUE')
-        self.queue_service = _valid_key_value(base, 'QUEUE_SERVICE')
-        self.queue_dtn = _valid_key_value(base, 'QUEUE_DTN')
-
-    @staticmethod
-    def _set_envars(envar_dict) -> list:
+    def _set_envars(self, envar_dict) -> None:
 
         envars = []
         for key, value in envar_dict.items():
             envars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        return envars
+        self.envars = envars
+
+    def _set_system_settings(self) -> None:
+
+        def _validate_system_key(input_dict, key):
+            # This helper function returns None if
+            # 1) the value held in 'key' matches '@' + key + '@'
+            # 2) the value is an empty string, or
+            # 3) the key does not exist in the dictionary.
+
+            value = input_dict.get(key, None)
+            value = None if value == '' else value
+            return None if value == f'@{key}@' else value
+
+        # Check the system configuration
+        base = self._base
+        self.clusters_batch = _validate_system_key(base, 'CLUSTERS')
+        self.clusters_service = _validate_system_key(base, 'CLUSTERS_SERVICE')
+        self.clusters_dtn = _validate_system_key(base, 'CLUSTERS_DTN')
+
+        # Reservations are only valid for batch nodes (at least for now)
+        self.reservation_batch = _validate_system_key(base, 'RESERVATION')
+
+        self.partition_batch = _validate_system_key(base, 'PARTITION_BATCH')
+        self.partition_service = _validate_system_key(base, 'PARTITION_SERVICE')
+        self.partition_dtn = _validate_system_key(base, 'PARTITION_DTN')
+
+        self.queue_batch = _validate_system_key(base, 'QUEUE')
+        self.queue_service = _validate_system_key(base, 'QUEUE_SERVICE')
+        self.queue_dtn = _validate_system_key(base, 'QUEUE_DTN')
 
     def _template_to_rocoto_cycstring(self, template: str, subs_dict: dict = {}) -> str:
         '''
@@ -350,41 +352,53 @@ class Tasks:
         # Memory is not required
         memory = task_config.get(f'memory', None)
 
-        # Check what type of task this is
         dtn_task = task_name in Tasks.DTN_TASKS
         service_task = task_name in Tasks.SERVICE_TASKS
 
+        if task_name not in Tasks.VALID_TASKS:
+            raise KeyError(f"ERROR {task_name} is not a valid tasks!")
+
         # Combine the task configuration with the system configuration
         if service_task:
-            queue = queue_service if queue_service else queue
-            partition = partition_service if partition_service else partition
-            clusters = clusters_service if clusters_service else clusters
-            reservation = False
+            task_queue = self.queue_service if self.queue_service else self.queue_batch
+            task_partition = self.partition_service if self.partition_service else self.partition_batch
+            task_clusters = self.clusters_service if self.clusters_service else self.clusters_batch
+            task_reservation = None  # Reservations are only for batch nodes
         elif dtn_task:
             # First check if there is a DTN queue, partition, or clusters
             # If not, then try SERVICE queue, partition, clusters
-            if queue_dtn:
-                queue = queue_dtn
-            elif queue_service:
-                queue = queue_service
+            if self.queue_dtn:
+                task_queue = self.queue_dtn
+            elif self.queue_service:
+                task_queue = self.queue_service
+            else:
+                task_queue = self.queue_batch
 
-            if partition_dtn:
-                partition = partition_dtn
-            elif partition_service:
-                partition = partition_service
+            if self.partition_dtn:
+                task_partition = self.partition_dtn
+            elif self.partition_service:
+                task_partition = self.partition_service
+            else:
+                task_partition = self.partition_batch
 
-            if clusters_dtn:
-                clusters = clusters_dtn
-            elif clusters_service:
-                clusters = clusters_service
+            if self.clusters_dtn:
+                task_clusters = self.clusters_dtn
+            elif self.clusters_service:
+                task_clusters = self.clusters_service
+            else:
+                task_clusters = self.clusters_batch
 
-            reservation = False
+            task_reservation = None
+
+        else:  # This is a batch task
+            task_partition = self.partition_batch
+            task_queue = self.queue_batch
+            task_clusters = self.clusters_batch
+            task_reservation = self.reservation_batch
 
         # Schuduler-specific configurations
         native = None
         if scheduler in ['pbspro']:
-            # Do not use a partition on PBS
-            partition = None
 
             # Check memory usage at the end
             if task_config.get('prepost', False):
@@ -408,11 +422,11 @@ class Tasks:
             else:
                 native = '--export=NONE'
 
-            if reservation:
-                native += ' --reservation=' + reservation
+            if task_reservation:
+                native += ' --reservation=' + task_reservation
 
-            if clusters:
-                native += ' --clusters=' + clusters
+            if task_clusters:
+                native += ' --clusters=' + task_clusters
 
         # Finally, construct and return the task resource dictionary
         task_resource = {'account': account,
@@ -423,8 +437,8 @@ class Tasks:
                          'threads': threads,
                          'memory': memory,
                          'native': native,
-                         'queue': queue,
-                         'partition': partition}
+                         'queue': task_queue,
+                         'partition': task_partition}
 
         return task_resource
 
