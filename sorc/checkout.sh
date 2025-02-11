@@ -23,7 +23,7 @@ echo $topdir
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    git clone --recursive --branch wave-post/production/GFS.v16 https://github.com/MatthewMasarik-NOAA/ufs-weather-model.git fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    git clone --recursive --branch GFS.v16.4.0 https://github.com/ufs-community/ufs-weather-model.git fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
