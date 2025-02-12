@@ -40,11 +40,6 @@ export WAV_MOD_TAG=${RUN}wave${waveMEMB}
 
 export CFP_VERBOSE=1
 
-# CDO required for processing RTOFS currents
-export CDO=${CDO_ROOT}/bin/cdo
-export wavempexec=${wavempexec:-"mpirun -n"}
-export wave_mpmd=${wave_mpmd:-"cfp"}
-
 # Execute the Script
 ${SCRgfs}/exgfs_wave_stat.sh
 

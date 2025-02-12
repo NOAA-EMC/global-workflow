@@ -130,7 +130,7 @@
           glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
 	  glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
         esac
-        cpfile=${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/${WAV_MOD_TAG}.${cycle}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
+        cpfile=${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/global.0p25/${WAV_MOD_TAG}.${cycle}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
         if [ -s "${cpfile}" ] ; then 
           ln -s  "$cpfile"  ./${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
         else
@@ -291,7 +291,7 @@ fi
       else
 # Line for doing per parameter, per time stamp
         echo "nip ngrib fhr: ${nip}, ${ngrib}, ${fhr}"
-        echo "${nfile} ${HOMEgfs}/ush/wave_ens_stat.sh ${nip} ${ngrib} ${fhr} 1 ${GRDNAME} ${GRDRES} > wave_ens_stats_${nip}_${fhr}.out 2>&1" >> cmdfile
+        echo " ${HOMEgfs}/ush/wave_ens_stat.sh ${nip} ${ngrib} ${fhr} 1 ${GRDNAME} ${GRDRES} " >> cmdfile
 	nfile=$(( nfile + 1 ))
 
       fi
@@ -308,18 +308,11 @@ fi
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  wavenproc=`wc -l cmdfile | awk '{print $1}'`
-  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
 
-  if [ "$wavenproc" -gt '1' ]
-  then
-    ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile
-    exit=$?
-  else
-    chmod 744 cmdfile
-    ./cmdfile
-    exit=$?
-  fi
+  "${HOMEgfs}/ush/run_mpmd.sh" cmdfile
+err=$?
+
+exit "${err}"
 
   if [ "$exit" != '0' ]
   then
@@ -336,7 +329,6 @@ fi
   fi
 
 
-exit
 # Regroup all outputs in parameter/stats files
 # Regrouping has to be sequential per parameter, per hour
 
