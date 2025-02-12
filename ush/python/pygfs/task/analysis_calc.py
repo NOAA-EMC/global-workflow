@@ -6,7 +6,7 @@ from pprint import pformat
 from pygfs.jedi import Jedi
 from wxflow import (AttrDict, FileHandler, Task,
                     parse_j2yaml,
-                    to_timedelta, add_to_datetime, to_fv3time,
+                    to_timedelta, add_to_datetime, to_fv3time, to_isotime,
                     logit)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -40,6 +40,11 @@ class AnalysisCalc(Task):
         _res_anl = int(self.task_config.CASE_ANL[1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
+        _iau_times_iso = []
+        for hour in self.task_config.IAUFHRS:
+            _iau_times_iso.append(to_isotime(_window_begin + to_timedelta(f"{str(hour)}H")
+                                             - to_timedelta(f"{self.task_config.assim_freq}H")/2))
+
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
@@ -54,6 +59,7 @@ class AnalysisCalc(Task):
                 'ATM_WINDOW_BEGIN': _window_begin,
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'iau_times_iso': _iau_times_iso
             }
         )
 

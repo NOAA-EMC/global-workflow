@@ -1,6 +1,6 @@
 ecen:
   rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/fv3jedi_ecen.x'
+  exe_src: '{{ EXECgfs }}/fv3jedi_ensemble_recenter.x'
   mpi_cmd: '{{ APRUN_ECEN_FV3JEDI }}'
   jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
-  jcb_algo: fv3jedi_ecen
+  jcb_algo: fv3jedi_ensemble_recenter

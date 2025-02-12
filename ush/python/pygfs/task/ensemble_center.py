@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from datetime import timedelta
 from logging import getLogger
 from pprint import pformat
 from pygfs.jedi import Jedi
@@ -39,6 +40,11 @@ class EnsembleCenter(Task):
         _res_anl = int(self.task_config.CASE_ANL[1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
+        _iau_times_iso = []
+        for hour in self.task_config.IAUFHRS:
+            _iau_times_iso.append(to_isotime(_window_begin + to_timedelta(f"{str(hour)}H")
+                                             - to_timedelta(f"{self.task_config.assim_freq}H")/2))
+
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
@@ -53,6 +59,7 @@ class EnsembleCenter(Task):
                 'ATM_WINDOW_BEGIN': _window_begin,
                 'APREFIX': f"gdas.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'iau_times_iso': _iau_times_iso
             }
         )
 

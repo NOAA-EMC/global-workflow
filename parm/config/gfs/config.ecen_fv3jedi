@@ -11,7 +11,7 @@ export layout_y_ecen_fv3jedi=2
 # Get task specific resources
 . "${EXPDIR}/config.resources" ecen_fv3jedi
 
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/ecen_jedi_config.yaml.j2"
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/atm_ecen_jedi_config.yaml.j2"
 
 if [[ ${DOHYBVAR} = "YES" ]]; then
     export CASE_ANL=${CASE_ENS}
