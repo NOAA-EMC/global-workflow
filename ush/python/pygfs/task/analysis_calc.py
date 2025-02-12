@@ -42,8 +42,7 @@ class AnalysisCalc(Task):
 
         _iau_times_iso = []
         for hour in self.task_config.IAUFHRS:
-            _iau_times_iso.append(to_isotime(_window_begin + to_timedelta(f"{str(hour)}H") -
-                                             to_timedelta(f"{self.task_config.assim_freq}H")/2))
+            _iau_times_iso.append(to_isotime(_window_begin + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H")/2))
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(

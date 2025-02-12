@@ -220,7 +220,7 @@ EOF
               exit 1
             fi
             # Add together increment with correction increment to get recentered increment
-            ncbo --op_typ=add -v u_inc,v_inc,T_inc,delp_inc,delz_inc,sphum_inc,liq_wat_inc,o3mr_inc,icmr_inc ${DATA}/INPUT/${inc_file} ${DATA}/INPUT/c${inc_file} ${DATA}/INPUT/r${inc_file}
+            ncbo --op_typ=add -v u_inc,v_inc,T_inc,delp_inc,delz_inc,sphum_inc,liq_wat_inc,o3mr_inc,icmr_inc "${DATA}/INPUT/${inc_file}" "${DATA}/INPUT/c${inc_file}" "${DATA}/INPUT/r${inc_file}"
           fi
         else
           increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
