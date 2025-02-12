@@ -5,7 +5,7 @@ from logging import getLogger
 from pprint import pformat
 from pygfs.jedi import Jedi
 from wxflow import (AttrDict, FileHandler, Task, Executable,
-                    add_to_datetime, to_timedelta,
+                    add_to_datetime, to_timedelta, to_isotime,
                     parse_j2yaml,
                     logit)
 
