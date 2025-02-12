@@ -3,6 +3,9 @@
 ########## config.ecen_fv3jedi ##########
 # Diagnostic amospheric analysis calculation specific
 
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+
 echo "BEGIN: config.ecen_fv3jedi"
 
 export layout_x_ecen_fv3jedi=2
