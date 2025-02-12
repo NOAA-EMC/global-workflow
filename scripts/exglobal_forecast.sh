@@ -20,7 +20,7 @@
 # 2019-03-21  Fanglin Yang   Add restart capability for running gfs fcst from a break point.
 # 2019-12-12  Henrique Alves Added wave model blocks for coupled run
 # 2020-01-31  Henrique Alves Added IAU capability for wave component
-# 2020-06-02  Fanglin Yang   restore restart capability when IAU is turned on.                     
+# 2020-06-02  Fanglin Yang   restore restart capability when IAU is turned on.
 #
 # $Id$
 #
@@ -39,7 +39,7 @@ fi
 machine=${machine:-"WCOSS_C"}
 machine=$(echo $machine | tr '[a-z]' '[A-Z]')
 
-# Cycling and forecast hour specific parameters 
+# Cycling and forecast hour specific parameters
 CDUMPwave="${CDUMP}wave"
 CASE=${CASE:-C768}
 CDATE=${CDATE:-2017032500}
@@ -150,7 +150,7 @@ fi
 cd $DATA || exit 8
 mkdir -p $DATA/INPUT
 
-if [ $cplwav = ".true." ]; then 
+if [ $cplwav = ".true." ]; then
     if [ $CDUMP = "gdas" ]; then
       RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
     else
@@ -171,7 +171,7 @@ fi
 #-------------------------------------------------------
 # determine if restart IC exists to continue from a previous forecast
 RERUN="NO"
-filecount=$(find $RSTDIR_ATM -type f | wc -l) 
+filecount=$(find $RSTDIR_ATM -type f | wc -l)
 if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 -a $FHMAX -gt $rst_invt1 -a $filecount -gt 10 ]; then
     reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
     for xfh in $reverse ; do
@@ -193,13 +193,13 @@ if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 -a $FHMAX -gt $rst_invt1 -a $filecount -
 
         if [ -s $flag1 -a $waverstok = ".true." ]; then
 	#if [ -s $flag1 ]; then
-            CDATE_RST=$SDATE          
+            CDATE_RST=$SDATE
             [[ $RERUN = "YES" ]] && break
             mv $flag1 ${flag1}.old
             if [ -s $flag2 ]; then mv $flag2 ${flag2}.old ;fi
             RERUN="YES"
             [[ $xfh = $rst_invt1 ]] && RERUN="NO"
-        fi 
+        fi
     done
 fi
 
@@ -327,23 +327,23 @@ EOF
         res_latlon_dynamics="fv_increment.nc"
       fi
     fi
-  
+
 #.............................
-  else  ##RERUN                         
+  else  ##RERUN
 
     export warm_start=".true."
     PDYT=$(echo $CDATE_RST | cut -c1-8)
     cyct=$(echo $CDATE_RST | cut -c9-10)
     for file in $(ls $RSTDIR_ATM/${PDYT}.${cyct}0000.*); do
       file2=$(echo $(basename $file))
-      file2=$(echo $file2 | cut -d. -f3-) 
+      file2=$(echo $file2 | cut -d. -f3-)
       $NLN $file $DATA/INPUT/$file2
     done
-   
+
     hour_rst=`$NHOUR $CDATE_RST $CDATE`
-    IAU_FHROT=$((IAU_OFFSET+hour_rst))         
+    IAU_FHROT=$((IAU_OFFSET+hour_rst))
     if [ $DOIAU = "YES" ]; then
-      IAUFHRS=-1         
+      IAUFHRS=-1
       IAU_DELTHRS=0
       IAU_INC_FILES="''"
     fi
@@ -352,7 +352,7 @@ EOF
   fi
 #.............................
 
-else ## cold start                            
+else ## cold start
 
   for file in $(ls $memdir/INPUT/*.nc); do
     file2=$(echo $(basename $file))
@@ -363,7 +363,7 @@ else ## cold start
   done
 
 #-------------------------------------------------------
-fi 
+fi
 #-------------------------------------------------------
 
 nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
@@ -488,6 +488,7 @@ if [ $cplwav = ".true." ]; then
     HMS="$(echo $YMDH | cut -c9-10)0000"
       for wavGRD in ${waveGRD} ; do
         eval $NLN $datwave/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS} ${YMD}.${HMS}.out_grd.${wavGRD}
+        eval $NLN $datwave/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS}.FINISHED ${YMD}.${HMS}.out_grd.${wavGRD}.FINISHED
       done
       FHINC=$FHOUT_WAV
       if [ $FHMAX_HF_WAV -gt 0 -a $FHOUT_HF_WAV -gt 0 -a $fhr -lt $FHMAX_HF_WAV ]; then
@@ -512,8 +513,8 @@ fi #cplwav=true
 
 # inline post fix files
 if [ $WRITE_DOPOST = ".true." ]; then
-    $NLN $PARM_POST/post_tag_gfs${LEVS}             $DATA/itag               
-    $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt 
+    $NLN $PARM_POST/post_tag_gfs${LEVS}             $DATA/itag
+    $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt
     $NLN $PARM_POST/postxconfig-NT-GFS-F00-TWO.txt  $DATA/postxconfig-NT_FH00.txt
     $NLN $PARM_POST/params_grib2_tbl_new            $DATA/params_grib2_tbl_new
 fi
@@ -1000,7 +1001,7 @@ deflate_level=${deflate_level:-1}
        knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
        knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
        knob_ugwp_version = ${knob_ugwp_version:-0}
-       launch_level      = ${launch_level:-54}                   
+       launch_level      = ${launch_level:-54}
 /
 
 &external_ic_nml
