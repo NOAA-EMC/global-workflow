@@ -67,11 +67,11 @@ class AnalysisCalc(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create dictionary of Jedi objects
-        expected_keys = ['atm_convertstate']
+        expected_keys = ['atm_add_increments']
         if self.task_config.DO_AERO_ANL:
-            expected_keys.append('aero_convertstate')
+            expected_keys.append('aero_add_increments')
         if self.task_config.DO_JEDISNOWDA:
-            expected_keys.append('snow_convertstate')
+            expected_keys.append('snow_add_increments')
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
@@ -80,7 +80,7 @@ class AnalysisCalc(Task):
 
         This method will initialize the analysis calculation task.
         This includes:
-        - initializing the JEDI convertstate application
+        - initializing the JEDI add_increments application
         - staging JEDI fix files
         - staging backgrounds and increments
 
@@ -93,13 +93,13 @@ class AnalysisCalc(Task):
         None
         """
 
-        # Initialize JEDI ensemble increment recentering application
-        logger.info(f"Initializing JEDI convertstate applications")
-        self.jedi_dict['atm_convertstate'].initialize(self.task_config)
+        # Initialize GDASApp JEDI add_increments application
+        logger.info(f"Initializing GDASApp JEDI add_increments applications")
+        self.jedi_dict['atm_add_increments'].initialize(self.task_config)
         if self.task_config.DO_AERO_ANL:
-            self.jedi_dict['aero_convertstate'].initialize(self.task_config)
+            self.jedi_dict['aero_add_increments'].initialize(self.task_config)
         if self.task_config.DO_JEDISNOWDA:
-            self.jedi_dict['snow_convertstate'].initialize(self.task_config)
+            self.jedi_dict['snow_add_increments'].initialize(self.task_config)
 
         # Stage fix files
         logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
@@ -118,9 +118,9 @@ class AnalysisCalc(Task):
         """Compute analyses
 
         This method will execute the analysis calculation task. This includes:
-        - Running the convertstate applications to convert the cubed sphere increments
-          to the Gaussian grid
-        - Adding the Gaussian increments to the Gaussian UFS history files to obtain
+        - Running the add_increments applications to compute the analysis variables
+          and interpolate to the Gaussian grid
+        - Inserting the resulting increments into the Gaussian UFS history files to obtain
           analysis files
 
         Parameters
@@ -133,11 +133,11 @@ class AnalysisCalc(Task):
         """
 
         # Convert cubed sphere increments to Gaussian grid
-        self.jedi_dict['atm_convertstate'].execute()
+        self.jedi_dict['atm_add_increments'].execute()
         if self.task_config.DO_AERO_ANL:
-            self.jedi_dict['aero_convertstate'].execute()
+            self.jedi_dict['aero_add_increments'].execute()
         if self.task_config.DO_JEDISNOWDA:
-            self.jedi_dict['snow_convertstate'].execute()
+            self.jedi_dict['snow_add_increments'].execute()
 
         # Loop through forecast hours
         for fh in self.task_config.IAUFHRS:
@@ -147,23 +147,23 @@ class AnalysisCalc(Task):
 
             # Atmosphere
             logger.info(f"Adding atmospheric increment to background for forecast hour {hr}")
-            add_increment(valid_time,
-                          f"atmi{hr}.{auxgrid_time_str}.nc4",
-                          f"atma{hr}.nc")
+            insert_analysis_variables(valid_time,
+                                      f"atma{hr}.{auxgrid_time_str}.nc4",
+                                      f"atmf{hr}.nc")
 
             # Aerosols
             if self.task_config.DO_AERO_ANL:
                 logger.info(f"Adding aerosol increment to background for forecast hour {hr}")
-                add_increment(valid_time,
-                              f"aeroi{hr}.{auxgrid_time_str}.nc4",
-                              f"atma{hr}.nc")
+                insert_analysis_variables(valid_time,
+                                          f"aeroa{hr}.{auxgrid_time_str}.nc4",
+                                          f"atmf{hr}.nc")
 
             # Snow
             if self.task_config.DO_JEDISNOWDA:
                 logger.info(f"Adding snow increment to background for forecast hour {hr}")
-                add_increment(valid_time,
-                              f"snowi{hr}.{auxgrid_time_str}.nc4",
-                              f"sfca{hr}.nc")
+                insert_analysis_variables(valid_time,
+                                          f"snowa{hr}.{auxgrid_time_str}.nc4",
+                                          f"sfcf{hr}.nc")
 
     @logit(logger)
     def finalize(self) -> None:
@@ -188,14 +188,14 @@ class AnalysisCalc(Task):
         for fh in self.task_config.IAUFHRS:
             hr = format(fh, '03')
             if fh == 6:
-                fh_dict['copy'].append([f"{self.task_config.DATA}/atma{hr}.nc",
+                fh_dict['copy'].append([f"{self.task_config.DATA}/atmf{hr}.nc",
                                         f"{anl_prefix}atmanl.nc"])
-                fh_dict['copy'].append([f"{self.task_config.DATA}/sfca{hr}.nc",
+                fh_dict['copy'].append([f"{self.task_config.DATA}/sfcf{hr}.nc",
                                         f"{anl_prefix}sfcanl.nc"])
             else:
-                fh_dict['copy'].append([f"{self.task_config.DATA}/atma{hr}.nc",
+                fh_dict['copy'].append([f"{self.task_config.DATA}/atmf{hr}.nc",
                                         f"{anl_prefix}atma{hr}.nc"])
-                fh_dict['copy'].append([f"{self.task_config.DATA}/sfca{hr}.nc",
+                fh_dict['copy'].append([f"{self.task_config.DATA}/sfcf{hr}.nc",
                                         f"{anl_prefix}sfca{hr}.nc"])
 
         # Call FileHandler
@@ -203,21 +203,22 @@ class AnalysisCalc(Task):
 
 
 @logit(logger)
-def add_increment(valid_time, fn_incr: str, fn_bkg: str) -> None:
-    """Add increment to backgrounds
+def insert_analysis_variables(valid_time, fn_anl: str, fn_bkg: str) -> None:
+    """Insert analysis variable into Gaussian history file
 
-    This function will open background and increment files and add
-    increment variables to the corresponding variables in the background
-    file. Thus, the background file becomes and analysis file.
+    This function will open the analysis and UFS Gaussian history files and
+    insert the anlaysis variables in the Gaussian history file.
+    Thus, the history file becomes an analysis file suitable to be read
+    by UPP.
 
     Parameters
     ----------
     valid_time: datetime
         datetime object time in which analysis is valid
-    fn_incr: str
-        path of increment file
+    fn_anl: str
+        path of analysis file
     fn_bkg: str
-        path of background file
+        path of history file
 
     Returns
     ----------
@@ -225,20 +226,20 @@ def add_increment(valid_time, fn_incr: str, fn_bkg: str) -> None:
     """
 
     try:
-        with nc.Dataset(fn_incr, 'r') as nc_incr, nc.Dataset(fn_bkg, 'r+') as nc_bkg:
+        with nc.Dataset(fn_anl, 'r') as nc_anl, nc.Dataset(fn_bkg, 'r+') as nc_bkg:
             # Change the units of the time coordinate since the units from the UFS history
             # file will break UPP
             time_var = nc_bkg.variables['time']
             time_var.units = valid_time.strftime('hours since %Y-%m-%dT%H:%M:%S')
             time_var[:] = 0.
 
-            # Add increment variables to corresponding background variables
-            for var in nc_incr.variables:
-                if len(nc_incr[var].dimensions) == 3 or len(nc_incr[var].dimensions) == 4:
-                    var_incr = nc_incr[var][:]
+            # Insert analysis variables into history file
+            for var in nc_anl.variables:
+                if len(nc_anl[var].dimensions) == 3 or len(nc_anl[var].dimensions) == 4:
+                    var_anl = nc_anl[var][:]
                     var_bkg = nc_bkg[var][:]
 
-                    nc_bkg[var][:] = var_bkg + var_incr
+                    nc_bkg[var][:] = var_anl
 
     except Exception as e:
         logger.error(f"Error occurred with message {e}")

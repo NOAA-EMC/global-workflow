@@ -1,25 +1,22 @@
-atm_convertstate:
+atm_add_increments:
   rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/gdas.x'
+  exe_src: '{{ EXECgfs }}/fv3jedi_add_increments.x'
   mpi_cmd: '{{ APRUN_ANALCALC_FV3JEDI }}'
-  jedi_args: ['fv3jedi', 'convertstate']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
-  jcb_algo: atm_analcalc_convertstate
+  jcb_algo: atm_add_increments
 {% if DO_AERO_ANL %}
-aero_convertstate:
+aero_add_increments:
   rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/gdas.x'
+  exe_src: '{{ EXECgfs }}/fv3jedi_add_increments.x'
   mpi_cmd: '{{ APRUN_ANALCALC_FV3JEDI }}'
-  jedi_args: ['fv3jedi', 'convertstate']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/aero/jcb-base.yaml.j2'
-  jcb_algo: aero_analcalc_convertstate
+  jcb_algo: aero_add_increments
 {% endif %}
 {% if DO_JEDISNOWDA %}
-snow_convertstate:
+snow_add_increments:
   rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/gdas.x'
+  exe_src: '{{ EXECgfs }}/fv3jedi_add_increments.x'
   mpi_cmd: '{{ APRUN_ANALCALC_FV3JEDI }}'
-  jedi_args: ['fv3jedi', 'convertstate']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/snow/jcb-base.yaml.j2'
-  jcb_algo: snow_analcalc_convertstate
+  jcb_algo: snow_add_increments
 {% endif %}
