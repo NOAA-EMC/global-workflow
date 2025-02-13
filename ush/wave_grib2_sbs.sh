@@ -183,9 +183,9 @@ if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
     echo '********************************************* '
     echo "*** FATAL ERROR : ERROR IN ${pgm} *** "  # FIXME: This is not an error in $pgm, but in WGRIB2
     echo '********************************************* '
-    echo ' '
-    set_trace
-    exit 3
+    echo " "
+    "set_trace"
+    "exit 3"
   fi
 
   # Create index
