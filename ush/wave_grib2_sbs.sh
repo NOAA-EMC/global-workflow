@@ -206,8 +206,8 @@ if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
   # 1.e Save in /com
   # Move grib files to COM directory
   if [[ -s "${outfile}" ]] && [[ -s "${outfile}.idx" ]]; then
-    cp -f "${outfile}" "${com_dir}/${outfile}"
-    cp -f "${outfile}.idx" "${com_dir}/${outfile}.idx"
+    cpfs "${outfile}" "${com_dir}/${outfile}"
+    cpfs "${outfile}.idx" "${com_dir}/${outfile}.idx"
     echo "Copied ${outfile} and ${outfile}.idx from ${GRIBDATA} to COM"
   else
     echo "${outfile} and ${outfile}.idx not found in ${GRIBDATA} to copy to COM"
