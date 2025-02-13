@@ -82,7 +82,7 @@ if [[ ! -d "${com_dir}" ]]; then
 else
     echo "Directory ${com_dir} already exists."
 fi
-# Only create file if not present in working directory
+# Only create file if not present in COM
 if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
 
   set +x
