@@ -184,8 +184,8 @@ if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
     echo "*** FATAL ERROR : ERROR IN ${pgm} *** "  # FIXME: This is not an error in $pgm, but in WGRIB2
     echo '********************************************* '
     echo " "
-    "set_trace"
-    "exit 3"
+    set_trace
+    exit 3
   fi
 
   # Create index
@@ -215,9 +215,9 @@ if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
 
   if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]]; then
     for subgrb in ${WAV_SUBGRB}; do
-      subgrbref=$(echo ${!subgrb} | cut -d " " -f 1-20)
-      subgrbnam=$(echo ${!subgrb} | cut -d " " -f 21)
-      subgrbres=$(echo ${!subgrb} | cut -d " " -f 22)
+      subgrbref=$(echo "${!subgrb}" | cut -d " " -f 1-20)
+      subgrbnam=$(echo "${!subgrb}" | cut -d " " -f 21)
+      subgrbres=$(echo "${!subgrb}" | cut -d " " -f 22)
       subfnam="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
       if [[ -s "${subfnam}" ]] && [[ -s "${subfnam}.idx" ]]; then
         cpfs "${subfnam}" "${com_dir}/${subfnam}"
