@@ -2488,7 +2488,7 @@ class GFSTasks(Tasks):
             if self.run in ['gfs'] and self.options['do_genesis_fsu']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_genesis_fsu'}
                 deps.append(rocoto.add_dependency(dep_dict))
-        # Post job dependencies
+            # Post job dependencies
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_wave']:
