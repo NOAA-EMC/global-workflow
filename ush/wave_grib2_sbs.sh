@@ -228,7 +228,7 @@ if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
     done
   fi
 
-  if [[ ! -s "${outfile}" ]]; then
+  if [[ ! -s "${com_dir}/${outfile}" ]]; then
     set +x
     echo ' '
     echo '********************************************* '
@@ -240,7 +240,7 @@ if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
     set_trace
     exit 4
   fi
-  if [[ ! -s "${outfile}.idx" ]]; then
+  if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
     set +x
     echo ' '
     echo '*************************************************** '
