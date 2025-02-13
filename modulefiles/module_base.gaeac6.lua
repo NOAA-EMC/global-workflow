@@ -17,6 +17,9 @@ load(pathJoin("netcdf-c", (os.getenv("netcdf_c_ver") or "None")))
 load(pathJoin("netcdf-fortran", (os.getenv("netcdf_fortran_ver") or "None")))
 load(pathJoin("perlbrew", (os.getenv("perl_ver") or "None")))
 
+append_path("MODULEPATH", hsi_mod_path)
+load(pathJoin("hsi", (os.getenv("hsi_ver") or "None")))
+
 load(pathJoin("nco", (os.getenv("nco_ver") or "None")))
 load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
 load(pathJoin("grib-util", (os.getenv("grib_util_ver") or "None")))
