@@ -242,8 +242,8 @@ source "${USHgfs}/preamble.sh"
     #export OFFSET_START_HOUR=$( printf "%02d" ${half_assim} )
     hh=$( printf "%02d" $(( cyc + OFFSET_START_HOUR )) )
     HMS="${hh}0000"
-    if [[ -f "${COMIN_WAVE_HISTORY}/${PDY}.${HMS}.out_pnt.ww3.nc" ]]; then
-      ${NLN} "${COMIN_WAVE_HISTORY}/${PDY}.${HMS}.out_pnt.ww3.nc" \
+    if [[ -f "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}.nc" ]]; then
+      ${NLN} "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}.nc" \
         "./${PDY}.${HMS}.out_pnt.ww3.nc"
     else
       echo '*************************************************** '
@@ -358,7 +358,7 @@ source "${USHgfs}/preamble.sh"
       ${NLN} "${pfile}" "./${PDY}.${HMS}.out_pnt.ww3.nc"
     else
       echo '*************************************************** '
-      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.${waveuoutpGRD}.${YMD}.${HMS} "
+      echo "  FATAL ERROR : NO RAW POINT OUTPUT FILE ${PDY}.${HMS}.out_pnt.ww3.nc "
       echo '*************************************************** '
       [[ "$LOUD" = YES ]] && set -x
       err=7; export err; ${errchk}
