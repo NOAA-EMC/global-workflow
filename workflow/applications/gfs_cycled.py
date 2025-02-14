@@ -84,6 +84,7 @@ class GFSCycledAppConfig(AppConfig):
                             'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'ediag', 'eupd']
+
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
         if options['do_fit2obs']:
