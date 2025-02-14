@@ -224,39 +224,56 @@ source "${USHgfs}/preamble.sh"
     DOBLL_WAV='NO'
   fi
 
-# 1.d Getting buoy information for points
+# 1.d Linking the output files
+
+  ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${cyc}")
+  tstart="${ymdh:0:8} ${ymdh:8:2}0000"
+  dtspec=3600.            # default time step (not used here)
+  N=$(( ($FHMAX_WAV_PNT - $FHMIN_WAV) + 1 ))
+  truntime="${PDY} ${cyc}0000"
+
+  # Loop through forecast hours to link output file
+  fhr=$FHMIN_WAV
+  while [ $fhr -le $FHMAX_WAV_PNT ]; do
+    ymdh=$($NDATE $fhr "${PDY}${cyc}")
+    YMD=${ymdh:0:8}
+    HMS="${ymdh:8:2}0000"
+    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}.nc"
+    if [[ -f "${pfile}" ]]; then
+      ${NLN} "${pfile}" "./${YMD}.${HMS}.out_pnt.ww3.nc"
+    else
+      echo '*************************************************** '
+      echo "  FATAL ERROR : NO RAW POINT OUTPUT FILE ${YMD}.${HMS}.out_pnt.ww3.nc "
+      echo '*************************************************** '
+      [[ "$LOUD" = YES ]] && set -x
+      err=7; export err; ${errchk}
+      exit $err
+    fi
+
+    FHINCP=$(( DTPNT_WAV / 3600 ))
+    fhrp=$((fhr+FHINCP))
+    fhr=$fhrp  # no gridded output, loop with out_pnt stride
+  done
+
+# 1.e Getting buoy information for points
 
   if [ "$DOSPC_WAV" = 'YES' ] || [ "$DOBLL_WAV" = 'YES' ]
   then
     ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${cyc}")
+    YMD=${ymdh:0:8}
     tstart="${ymdh:0:8} ${ymdh:8:2}0000"
+    N=$(( ($FHMAX_WAV_PNT - $FHMIN_WAV) + 1 ))
     dtspec=3600.            # default time step (not used here)
     sed -e "s/TIME/${tstart}/g" \
         -e "s/DT/${dtspec}/g" \
-        -e "s/POINT/1/g" \
+	-e "s/999/$N/g" \
+	-e "s/^.*POINT.*/\$ &/g" \
         -e "s/ITYPE/0/g" \
         -e "s/FORMAT/F/g" \
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
-
-    ${NLN} mod_def.$waveuoutpGRD mod_def.ww3
-    #export OFFSET_START_HOUR=$( printf "%02d" ${half_assim} )
-    hh=$( printf "%02d" $(( cyc + OFFSET_START_HOUR )) )
-    HMS="${hh}0000"
-    if [[ -f "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}.nc" ]]; then
-      ${NLN} "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}.nc" \
-        "./${PDY}.${HMS}.out_pnt.ww3.nc"
-    else
-      echo '*************************************************** '
-      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE ${PDY}.${HMS}.out_pnt.ww3.nc "
-      echo '*************************************************** '
-      echo ' '
-      set_trace
-      echo "${WAV_MOD_TAG} post ${waveuoutpGRD} ${PDY}${cyc} ${cycle} : field output missing."
-      err=4; export err;${errchk}
     fi
 
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
-    #${NLN} ./${PDY}.${HMS}.out_pnt.ww3.nc ./out_pnt.ww3.nc
     ${NLN} ./mod_def.${waveuoutpGRD} ./mod_def.ww3
 
     export pgm="${NET,,}_ww3_outp.x"
@@ -287,11 +304,8 @@ source "${USHgfs}/preamble.sh"
     rm -f buoy_log.dat
     mv buoy_log.tmp buoy_log.dat
 
-    grep -F -f ibp_tags buoy_lst.loc > buoy_tmp1.loc
-    awk '{ print $1 }' buoy_tmp1.loc > buoy_lst.txt
-    buoys=`awk '{ print $1 }' buoy_tmp1.loc`
-    Nb=$(wc buoy_tmp1.loc | awk '{ print $1 }')
-    rm -f buoy_tmp1.loc
+    buoys=`awk '{ print $2 }' buoy_log.dat`
+    Nb=$(wc buoy_log.dat | awk '{ print $1 }')
 
     if [ -s buoy_log.dat ]
     then
@@ -310,8 +324,6 @@ source "${USHgfs}/preamble.sh"
       DOSPC_WAV='NO'
       DOBLL_WAV='NO'
     fi
-
- fi
 
 # 1.f Data summary
 
@@ -336,39 +348,10 @@ source "${USHgfs}/preamble.sh"
   echo '   Making command file for wave post points '
   set_trace
   
-  grep -F -f ibp_tags buoy_lst.loc | awk '{ print $1 }' > buoys
+  grep -F -f ibp_tags buoy_log.dat | awk '{ print $2 }' > buoys
   grep -F -f buoys buoy_log.ww3 | awk '{ print $1 }' > points
   points=$(cat points | awk '{print $0 "\\n"}' | tr -d '\n')
   rm buoys
-
-  ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${cyc}")
-  tstart="${ymdh:0:8} ${ymdh:8:2}0000"
-  dtspec=3600.            # default time step (not used here)
-  N=$(( ($FHMAX_WAV_PNT - $FHMIN_WAV) + 1 ))
-  truntime="${PDY} ${cyc}0000"
-  
-  # Loop through forecast hours to link output file
-  fhr=$FHMIN_WAV
-  while [ $fhr -le $FHMAX_WAV_PNT ]; do
-    ymdh=$($NDATE $fhr "${PDY}${cyc}")
-    YMD=${ymdh:0:8}
-    HMS="${ymdh:8:2}0000"
-    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}.nc"
-    if [[ -f "${pfile}" ]]; then
-      ${NLN} "${pfile}" "./${PDY}.${HMS}.out_pnt.ww3.nc"
-    else
-      echo '*************************************************** '
-      echo "  FATAL ERROR : NO RAW POINT OUTPUT FILE ${PDY}.${HMS}.out_pnt.ww3.nc "
-      echo '*************************************************** '
-      [[ "$LOUD" = YES ]] && set -x
-      err=7; export err; ${errchk}
-      exit $err
-    fi
-
-    FHINCP=$(( DTPNT_WAV / 3600 ))
-    fhrp=$((fhr+FHINCP))
-    fhr=$fhrp  # no gridded output, loop with out_pnt stride
-  done
 
   # Generate the ww3_outp.inp file from the template
   if [ "$DOSPC_WAV" = 'YES' ]; then
@@ -410,27 +393,33 @@ source "${USHgfs}/preamble.sh"
 
   set_trace
 
-# 6.b Spectral data files
+# 3.b Execute the taring
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0; fi
 
   if [ ${CFP_MP:-"NO"} = "YES" ] && [ "$DOBLL_WAV" = "YES" ]; then
     if [ "$DOBNDPNT_WAV" = YES ]; then
       if [ "$DOSPC_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))
       fi
       if [ "$DOBLL_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpbull $Nb > ${WAV_MOD_TAG}_ibpbull_tar.out 2>&1 "   >> cmdtarfile
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpcbull $Nb > ${WAV_MOD_TAG}_ibpcbull_tar.out 2>&1 "   >> cmdtarfile
+        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpbull $Nb > ${WAV_MOD_TAG}_ibpbull_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))
+	echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpcbull $Nb > ${WAV_MOD_TAG}_ibpcbull_tar.out 2>&1 "   >> cmdtarfile
+	nm=$(( nm + 1 ))
       fi
     else
       if [ "$DOSPC_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))
       fi
       if [ "$DOBLL_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_bull_tar.out 2>&1 "   >> cmdtarfile
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_cbull_tar.out 2>&1 "   >> cmdtarfile
-      fi
+        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_bull_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))
+	echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_cbull_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))  
+    fi
     fi
   else
     if [ "$DOBNDPNT_WAV" = YES ]; then
