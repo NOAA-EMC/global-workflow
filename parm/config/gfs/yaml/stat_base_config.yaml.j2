@@ -1,0 +1,14 @@
+aero:
+  ob spaces:
+  - name: viirs_npp
+    input file: "diag_viirs_npp_{{ current_cycle | to_YMDH }}.nc4"
+    output file: "viirs_npp_{{ current_cycle | to_YMDH }}_output_aod.nc"
+  - name: viirs_n20
+    input file: "diag_viirs_n20_{{ current_cycle | to_YMDH }}.nc4"
+    output file: "viirs_n20_{{ current_cycle | to_YMDH }}_output_aod.nc"
+
+snow:
+  ob spaces:
+  - name: ims_snow
+    input file: "diag_ims_snow_{{ current_cycle | to_YMDH }}.nc"
+    output file: "ims_snow_{{ current_cycle | to_YMDH }}_output_snow.nc"

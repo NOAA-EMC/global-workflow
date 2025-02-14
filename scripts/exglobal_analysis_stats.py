@@ -26,12 +26,12 @@ if __name__ == '__main__':
     # Create list based on DA components
     StatAnl.task_config['STAT_ANALYSES'] = []
     if StatAnl.task_config.DO_AERO:
-        StatAnl.task_config['STAT_OBS'].append('aero')
+        StatAnl.task_config['STAT_ANALYSES'].append('aero')
     if StatAnl.task_config.DO_JEDISNOWDA:
-        StatAnl.task_config['STAT_OBS'].append('snow')
+        StatAnl.task_config['STAT_ANALYSES'].append('snow')
 
     # Initialize JEDI variational analysis
     StatAnl.initialize()
-    for anl in StatAnl.task_config.STAT_OBS:
+    for anl in StatAnl.task_config.STAT_ANALYSES:
         StatAnl.execute(anl)
         StatAnl.finalize(anl)
