@@ -148,21 +148,21 @@ class AnalysisCalc(Task):
             logger.info(f"Adding atmospheric increment to background for forecast hour {hr}")
             insert_analysis_variables(valid_time,
                                       f"atma{hr}.{auxgrid_time_str}.nc4",
-                                      f"atmf{hr}.nc")
+                                      f"{self.task_config.GPREFIX}atmf{hr}.nc")
 
             # Aerosols
             if self.task_config.DO_AERO_ANL:
                 logger.info(f"Adding aerosol increment to background for forecast hour {hr}")
                 insert_analysis_variables(valid_time,
                                           f"aeroa{hr}.{auxgrid_time_str}.nc4",
-                                          f"atmf{hr}.nc")
+                                          f"{self.task_config.GPREFIX}atmf{hr}.nc")
 
             # Snow
             if self.task_config.DO_JEDISNOWDA:
                 logger.info(f"Adding snow increment to background for forecast hour {hr}")
                 insert_analysis_variables(valid_time,
                                           f"snowa{hr}.{auxgrid_time_str}.nc4",
-                                          f"sfcf{hr}.nc")
+                                          f"{self.task_config.GPREFIX}sfcf{hr}.nc")
 
     @logit(logger)
     def finalize(self) -> None:
@@ -183,19 +183,20 @@ class AnalysisCalc(Task):
 
         # Copy analyses to comrot
         fh_dict = {'copy': []}
-        anl_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
+        src_prefix = f"{self.task_config.DATA}/{self.task_config.GPREFIX}"
+        dest_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
         for fh in self.task_config.IAUFHRS:
             hr = format(fh, '03')
             if fh == 6:
-                fh_dict['copy'].append([f"{self.task_config.DATA}/atmf{hr}.nc",
-                                        f"{anl_prefix}atmanl.nc"])
-                fh_dict['copy'].append([f"{self.task_config.DATA}/sfcf{hr}.nc",
-                                        f"{anl_prefix}sfcanl.nc"])
+                fh_dict['copy'].append([f"{src_prefix}atmf{hr}.nc",
+                                        f"{dest_prefix}atmanl.nc"])
+                fh_dict['copy'].append([f"{src_prefix}sfcf{hr}.nc",
+                                        f"{dest_prefix}sfcanl.nc"])
             else:
-                fh_dict['copy'].append([f"{self.task_config.DATA}/atmf{hr}.nc",
-                                        f"{anl_prefix}atma{hr}.nc"])
-                fh_dict['copy'].append([f"{self.task_config.DATA}/sfcf{hr}.nc",
-                                        f"{anl_prefix}sfca{hr}.nc"])
+                fh_dict['copy'].append([f"{src_prefix}atmf{hr}.nc",
+                                        f"{dest_prefix}atma{hr}.nc"])
+                fh_dict['copy'].append([f"{src_prefix}sfcf{hr}.nc",
+                                        f"{dest_prefix}sfca{hr}.nc"])
 
         # Call FileHandler
         FileHandler(fh_dict).sync()

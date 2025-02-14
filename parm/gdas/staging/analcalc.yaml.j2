@@ -6,12 +6,12 @@ copy:
 - ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_sfcf{{ '%03d' % fh }}.nc", "{{ DATA }}"]
 {% if fh == 6 %}
 {% for itile in range(6) %}
-- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc", "{{ DATA }}"]
+- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc", "{{ DATA }}/{{ APREFIX }}cubed_sphere_grid_atmi006.tile{{ itile+1 }}.nc"]
 {% if DO_AERO_ANL %}
-- ["{{ COM_AERO_ANALYSIS }}/{{ APREFIX }}aeroinc.{{ current_cycle | to_fv3time }}.fv_tracer.res.tile{{ itile+1 }}.nc", "{{ DATA }}"]
+- ["{{ COM_AERO_ANALYSIS }}/{{ APREFIX }}aeroinc.{{ current_cycle | to_fv3time }}.fv_tracer.res.tile{{ itile+1 }}.nc", "{{ DATA }}/{{ APREFIX }}aeroi006.{{ current_cycle | to_fv3time }}.fv_tracer.res.tile{{ itile+1 }}.nc"]
 {% endif %}
 {% if DO_JEDISNOWDA %}
-- ["{{ COM_SNOW_ANALYSIS }}/{{ APREFIX }}snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ itile+1 }}.nc", "{{ DATA }}"]
+- ["{{ COM_SNOW_ANALYSIS }}/{{ APREFIX }}snowinc.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ itile+1 }}.nc", "{{ DATA }}/{{ APREFIX }}snowi006.{{ current_cycle | to_fv3time }}.sfc_data.tile{{ itile+1 }}.nc"]
 {% endif %}
 {% endfor %}
 {% else %}

@@ -141,7 +141,7 @@ class EnsembleCenter(Task):
 
         # Copy files to comrot
         fh_dict = {'copy': []}
-        data_prefix = f"{self.task_config.DATA}/cubed_sphere_grid_"
+        data_prefix = f"{self.task_config.DATA}/enkf{self.task_config.APREFIX}cubed_sphere_grid_"
         comrot_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS_ENSSTAT}/enkf{self.task_config.APREFIX}cubed_sphere_grid_"
         for fh in self.task_config.IAUFHRS:
             hr = format(fh, '03')

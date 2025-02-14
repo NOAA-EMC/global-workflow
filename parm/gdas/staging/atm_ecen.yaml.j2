@@ -3,9 +3,9 @@ copy:
 - ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_atmf{{ '%03d' % fh }}.nc", "{{ DATA }}"]
 - ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_sfcf{{ '%03d' % fh }}.nc", "{{ DATA }}"]
 {% if fh == 6 %}
-- ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/enkf{{ APREFIX }}cubed_sphere_grid_atmanl.ensmean.nc", "{{ DATA }}"]
+- ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/enkf{{ APREFIX }}cubed_sphere_grid_atmanl.ensmean.nc", "{{ DATA }}/enkf{{ APREFIX }}cubed_sphere_grid_atma006.ensmean.nc"]
 {% for itile in range(6) %}
-- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc", "{{ DATA }}"]
+- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc", "{{ DATA }}/{{ APREFIX }}cubed_sphere_grid_atmi006.tile{{ itile+1 }}.nc"]
 {% endfor %}
 {% else %}
 - ["{{ COM_ATMOS_ANALYSIS_ENSSTAT }}/enkf{{ APREFIX }}cubed_sphere_grid_atma{{ '%03d' % fh }}.ensmean.nc", "{{ DATA }}"]
