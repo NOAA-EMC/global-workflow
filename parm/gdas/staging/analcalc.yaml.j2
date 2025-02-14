@@ -1,12 +1,12 @@
 copy:
 {% for fh in IAUFHRS %}
-- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}atmf{{ '%03d' % fh }}.nc", "{{ DATA }}/atmf{{ '%03d' % fh }}.nc" ]
-- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}sfcf{{ '%03d' % fh }}.nc", "{{ DATA }}/sfcf{{ '%03d' % fh }}.nc" ]
-- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_atmf{{ '%03d' % fh }}.nc", "{{ DATA }}/cubed_sphere_grid_atmf{{ '%03d' % fh }}.nc" ]
-- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_sfcf{{ '%03d' % fh }}.nc", "{{ DATA }}/cubed_sphere_grid_sfcf{{ '%03d' % fh }}.nc" ]
+- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}atmf{{ '%03d' % fh }}.nc", "{{ DATA }}"]
+- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}sfcf{{ '%03d' % fh }}.nc", "{{ DATA }}"]
+- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_atmf{{ '%03d' % fh }}.nc", "{{ DATA }}"]
+- ["{{ COM_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_sfcf{{ '%03d' % fh }}.nc", "{{ DATA }}"]
 {% if fh == 6 %}
 {% for itile in range(6) %}
-- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc", "{{ DATA }}/cubed_sphere_grid_atmi{{ '%03d' % fh }}.tile{{ itile+1 }}.nc"]
+- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc", "{{ DATA }}"]
 {% if DO_AERO_ANL %}
 - ["{{ COM_AERO_ANALYSIS }}/{{ APREFIX }}aeroinc.{{ current_cycle | to_fv3time }}.fv_tracer.res.tile{{ itile+1 }}.nc", "{{ DATA }}"]
 {% endif %}
@@ -16,7 +16,7 @@ copy:
 {% endfor %}
 {% else %}
 {% for itile in range(6) %}
-- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atmi{{ '%03d' % fh }}.tile{{ itile+1 }}.nc", "{{ DATA }}cubed_sphere_grid_atmi{{ '%03d' % fh }}.tile{{ itile+1 }}.nc"]
+- ["{{ COM_ATMOS_ANALYSIS }}/{{ APREFIX }}cubed_sphere_grid_atmi{{ '%03d' % fh }}.tile{{ itile+1 }}.nc", "{{ DATA }}"]
 {% endfor %}
 {% endif %}
 {% endfor %}

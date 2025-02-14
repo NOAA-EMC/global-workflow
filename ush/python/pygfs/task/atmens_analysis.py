@@ -228,7 +228,7 @@ class AtmEnsAnalysis(Task):
         for src in yamls:
             logger.info(f"Copying {src} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
             yaml_base = os.path.splitext(os.path.basename(src))[0]
-            dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
+            dest_yaml_name = f"{self.task_config.APREFIX}{yaml_base}.yaml"
             dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
@@ -264,7 +264,7 @@ class AtmEnsAnalysis(Task):
             incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
             for itile in range(6):
                 src = os.path.join(self.task_config.DATA, 'anl', memchar, f"cubed_sphere_grid_atminc.tile{itile+1}.nc")
-                dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.cubed_sphere_grid_atminc.tile{itile+1}.nc")
+                dest = os.path.join(incdir, f"{self.task_config.APREFIX}cubed_sphere_grid_atminc.tile{itile+1}.nc")
                 inc_copy['copy'].append([src, dest])
 
         logger.debug(f"Copying increments")

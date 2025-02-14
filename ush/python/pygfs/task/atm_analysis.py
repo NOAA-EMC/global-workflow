@@ -228,7 +228,7 @@ class AtmAnalysis(Task):
         # copy full YAML from executable to ROTDIR
         for src in yamls:
             yaml_base = os.path.splitext(os.path.basename(src))[0]
-            dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
+            dest_yaml_name = f"{self.task_config.APREFIX}{yaml_base}.yaml"
             dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
@@ -237,7 +237,7 @@ class AtmAnalysis(Task):
             FileHandler(yaml_copy).sync()
 
         # path of output radiance bias correction tarfile
-        bfile = f"{self.task_config.APREFIX}rad_varbc_params.tar"
+        bfile = f"{self.task_config.self.task_config.APREFIX}rad_varbc_params.tar"
         radtar = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, bfile)
 
         # rename and copy tlapse radiance bias correction files from obs to bc
@@ -245,7 +245,7 @@ class AtmAnalysis(Task):
         copylist = []
         for tlapfile in tlapobs:
             obsfile = os.path.basename(tlapfile).split('.', 2)
-            newfile = f"{self.task_config.APREFIX}{obsfile[2]}"
+            newfile = f"{self.task_config.self.task_config.APREFIX}{obsfile[2]}"
             copylist.append([tlapfile, os.path.join(self.task_config.DATA, 'bc', newfile)])
         tlapse_dict = {
             'copy': copylist
@@ -269,11 +269,9 @@ class AtmAnalysis(Task):
         logger.info("Copy UFS model readable atm increment file")
         inc_copy = {'copy': []}
         for itile in range(6):
-            src = os.path.join(self.task_config.DATA,
-                               "anl",
-                               f"cubed_sphere_grid_atminc.tile{itile+1}.nc")
-            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS,
-                                f'{self.task_config.RUN}.t{self.task_config.cyc:02d}z.cubed_sphere_grid_atminc.tile{itile+1}.nc')
+            src = os.path.join(self.task_config.DATA, "anl",
+                               f"{self.task_config.APREFIX}cubed_sphere_grid_atminc.tile{itile+1}.nc")
+            dest = self.task_config.COM_ATMOS_ANALYSIS
             inc_copy['copy'].append([src, dest])
 
         # copy increments
