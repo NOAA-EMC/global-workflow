@@ -178,7 +178,7 @@ class SnowAnalysis(Task):
 
         asc_file = os.path.join(localconf.COMIN_OBS, f"{localconf.OPREFIX}imssnow96.asc")
         if not os.path.isfile(asc_file):
-            logger.warn(f"WARNING: Obs files are missing. Will not execute CALCFIMSEXE")
+            logger.warning(f"WARNING: Obs files are missing. Will not execute CALCFIMSEXE")
             return
 
         # copy the IMS obs files from COMIN_OBS to DATA/obs
