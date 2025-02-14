@@ -29,7 +29,6 @@ jobs/JGDAS_ATMOS_VERFRAD @EdwardSafford-NOAA
 jobs/JGDAS_ENKF_* @RussTreadon-NOAA @CoryMartin-NOAA @CatherineThomas-NOAA
 jobs/JGDAS_FIT2OBS @jack-woollen 
 jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_ECEN @guillaumevernieres
-jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_VRFY @guillaumevernieres
 jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG @GwenChen-NOAA
 jobs/JGFS_ATMOS_CYCLONE_GENESIS @JiayiPeng-NOAA 
 jobs/JGFS_ATMOS_CYCLONE_TRACKER @JiayiPeng-NOAA 
@@ -76,7 +75,8 @@ scripts/exgdas_atmos_gempak_gif_ncdc.sh @GwenChen-NOAA
 scripts/exgdas_atmos_nawips.sh @GwenChen-NOAA
 scripts/exgdas_atmos_verfozn.sh @EdwardSafford-NOAA
 scripts/exgdas_atmos_verfrad.sh @EdwardSafford-NOAA
-scripts/exgdas_enkf_earc.py @DavidHuber-NOAA
+scripts/exgdas_enkf_earc_vrfy.py @DavidHuber-NOAA
+scripts/exgdas_enkf_earc_tars.py @DavidHuber-NOAA
 scripts/exgdas_enkf_ecen.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
 scripts/exgdas_enkf_post.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
 scripts/exgdas_enkf_select_obs.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA

@@ -353,7 +353,15 @@ rm -f stdout
 [[ "${_debug}" == "true" ]] && set -x
 set -u
 machine=${MACHINE_ID}
-. "${HOMEgfs}/ci/platforms/config.${machine}"
+platform_config="${HOMEgfs}/ci/platforms/config.${machine}"
+if [[ -f "${platform_config}" ]]; then
+    . "${HOMEgfs}/ci/platforms/config.${machine}"
+else
+   if [[ "${_set_account}" == "false" ]] ; then
+      echo "ERROR Unknown HPC account!  Please use the -A option to specify."
+      exit 11
+   fi
+fi
 
 # If _yaml_dir is not set, set it to $HOMEgfs/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
@@ -446,8 +454,12 @@ EOM
 done
 
 # Update the account if specified
-[[ "${_set_account}" == true ]] && export HPC_ACCOUNT=${_hpc_account} && \
-   [[ "${_verbose}" == true ]] && printf "Setting HPC account to %s\n\n" "${HPC_ACCOUNT}"
+if [[ "${_set_account}" == true ]] ; then
+   export HPC_ACCOUNT=${_hpc_account}
+   if [[ "${_verbose}" == true ]]; then
+      printf "Setting HPC account to %s\n\n" "${HPC_ACCOUNT}"
+   fi
+fi
 
 # Create the experiments
 rm -f "tests.cron" "${_verbose_flag}"
@@ -470,7 +482,7 @@ for _case in "${_yaml_list[@]}"; do
          fi
          echo "${_message}"
          rm -f stdout stderr
-         exit 11
+         exit 12
       fi
       rm -f stdout stderr
    fi

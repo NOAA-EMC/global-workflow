@@ -48,7 +48,6 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
             run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
-            run_options[run]['do_vrfy_oceanda'] = base.get('DO_VRFY_OCEANDA', False)
 
         return run_options
 
@@ -70,13 +69,14 @@ class GFSCycledAppConfig(AppConfig):
             if options['do_hybvar']:
                 configs += ['marineanlletkf', 'ocnanalecen']
             configs += ['marineanlchkpt', 'marineanlfinal']
-            if options['do_vrfy_oceanda']:
-                configs += ['ocnanalvrfy']
 
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
+
+        if options['do_archtar']:
+            configs += ['arch_tars']
 
         if options['do_hybvar']:
             if options['do_jediatmens']:
@@ -84,7 +84,11 @@ class GFSCycledAppConfig(AppConfig):
                             'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
-            configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+
+            configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy']
+
+            if options['do_archtar']:
+                configs += ['earc_tars']
 
         if options['do_fit2obs']:
             configs += ['fit2obs']
@@ -179,8 +183,6 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_hybvar']:
                         task_names[run] += ['marineanlletkf', 'ocnanalecen']
                     task_names[run] += ['marineanlchkpt', 'marineanlfinal']
-                    if options['do_vrfy_oceanda']:
-                        task_names[run] += ['ocnanalvrfy']
 
                 task_names[run] += ['sfcanl', 'analcalc']
 
@@ -294,8 +296,11 @@ class GFSCycledAppConfig(AppConfig):
                                             'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen',
                                             'mos_ext_grd_prdgen', 'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
-                # Last two items
-                task_names[run] += ['arch', 'cleanup']
+                # Last items
+                task_names[run] += ['arch_vrfy']
+                if options['do_archtar']:
+                    task_names[run] += ['arch_tars']
+                task_names[run] += ['cleanup']
 
             # Ensemble tasks
             elif 'enkf' in run:
@@ -313,10 +318,14 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['eobs', 'eupd']
                     task_names[run].append('echgres') if 'gdas' in run else 0
                     task_names[run] += ['ediag'] if options['lobsdiag_forenkf'] else ['eomg']
-                    task_names[run].append('esnowanl') if options['do_jedisnowda'] and 'gdas' in run else 0
 
+                task_names[run].append('esnowanl') if options['do_jedisnowda'] else 0
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
-                task_names[run] += ['stage_ic', 'ecen', 'esfc', 'earc', 'cleanup']
+
+                task_names[run] += ['stage_ic', 'ecen', 'esfc']
+                if options['do_archtar']:
+                    task_names[run] += ['earc_tars']
+                task_names[run] += ['earc_vrfy', 'cleanup']
 
         return task_names

@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "earc" -c "base earc"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_vrfy" -c "base earc_vrfy"
 
 
 ##############################################
@@ -17,7 +17,7 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 # Run archive script
 ###############################################################
 
-"${SCRgfs}/exgdas_enkf_earc.py"
+"${SCRgfs}/exgdas_enkf_earc_vrfy.py"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
@@ -33,7 +33,6 @@ status=$?
 if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
-
 
 ##########################################
 # Remove the Temporary working directory

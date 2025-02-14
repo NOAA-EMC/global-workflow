@@ -48,8 +48,8 @@ class Archive(Task):
         self.archive_expdir = False
 
     @logit(logger)
-    def configure(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
-        """Determine which tarballs will need to be created.
+    def configure_vrfy(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any]):
+        """Determine which files will need to be created to archive to arcdir.
 
         Parameters
         ----------
@@ -60,8 +60,6 @@ class Archive(Task):
         ------
         arcdir_set : Dict[str, Any]
             Set of FileHandler instructions to copy files to the ARCDIR
-        atardir_sets : List[Dict[str, Any]]
-            List of tarballs and instructions for creating them via tar or htar
         """
 
         if not os.path.isdir(arch_dict.ROTDIR):
@@ -89,6 +87,44 @@ class Archive(Task):
         arcdir_set = Archive._construct_arcdir_set(arcdir_j2yaml,
                                                    arch_dict)
 
+        # Collect datasets that need to be archived
+        self.tar_cmd = ""
+
+        return arcdir_set
+
+    @logit(logger)
+    def configure_tars(self, arch_dict: Dict[str, Any]) -> (List[Dict[str, Any]]):
+        """Determine which tarballs will need to be created.
+
+        Parameters
+        ----------
+        arch_dict : Dict[str, Any]
+            Task specific keys, e.g. runtime options (DO_AERO_FCST, DO_ICE, etc)
+
+        Return
+        ------
+        atardir_sets : List[Dict[str, Any]]
+            List of tarballs and instructions for creating them via tar or htar
+        """
+
+        if not os.path.isdir(arch_dict.ROTDIR):
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
+
+        if arch_dict.RUN in ["gdas", "gfs"]:
+
+            # Copy the cyclone track files and rename the experiments
+            # TODO This really doesn't belong in archiving and should be moved elsewhere
+            Archive._rename_cyclone_expt(arch_dict)
+
+        archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
+
+        # Add the glob.glob function for capturing log filenames
+        # TODO remove this kludge once log filenames are explicit
+        arch_dict['glob'] = glob.glob
+
+        # Add the os.path.exists function to the dict for yaml parsing
+        arch_dict['path_exists'] = os.path.exists
+
         if not os.path.isdir(arch_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
@@ -109,9 +145,8 @@ class Archive(Task):
             self.chgrp_cmd = chgrp
             self.chmod_cmd = os.chmod
             self.rm_cmd = rm_p
-        else:  # Only perform local archiving.  Do not create tarballs.
-            self.tar_cmd = ""
-            return arcdir_set, []
+        else:
+            raise ValueError("FATAL ERROR: Neither HPSSARCH nor LOCALARCH are set to True!")
 
         # Determine if we are archiving the EXPDIR this cycle (always skip for ensembles)
         if "enkf" not in arch_dict.RUN and arch_dict.ARCH_EXPDIR:
@@ -138,7 +173,7 @@ class Archive(Task):
 
             atardir_sets.append(dataset)
 
-        return arcdir_set, atardir_sets
+        return atardir_sets
 
     @logit(logger)
     def execute_store_products(self, arcdir_set: Dict[str, Any]) -> None:
