@@ -176,7 +176,8 @@ class StatAnalysis(Task):
 
         for analysis_dict in analysis_config_dict[jedi_dict_key]['ob spaces']:
             diagfile = os.path.join(self.task_config.DATA, analysis_dict['output file'])
-            dest = os.path.join(f'{self.task_config.STAT_OUTDIR}/{jedi_dict_key}/', f"{analysis_dict['output file']}")
+            outdir = self.task_config['COMOUT_' + jedi_dict_key.upper() + '_ANLMON']
+            dest = os.path.join(outdir, f"{analysis_dict['output file']}")
             logger.debug(f"copying {diagfile} to {dest}")
             diag_copy = {
                 'copy': [[diagfile, dest]]
