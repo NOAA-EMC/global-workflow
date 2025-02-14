@@ -210,7 +210,7 @@ if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
     cpfs "${outfile}.idx" "${com_dir}/${outfile}.idx"
     echo "Copied ${outfile} and ${outfile}.idx from ${GRIBDATA} to COM"
   else
-    echo "Error: ${outfile} and ${outfile}.idx not found in ${GRIBDATA} to copy to COM"
+    echo "FATAL ERROR: ${outfile} and ${outfile}.idx not found in ${GRIBDATA} to copy to COM"
     exit 4
   fi
 
@@ -224,7 +224,7 @@ if [[ ! -s "${com_dir}/${outfile}.idx" ]]; then
         cpfs "${subfnam}.idx" "${com_dir}/${subfnam}.idx"
         echo "Copied ${subfnam} and ${subfnam}.idx from ${GRIBDATA} to COM"
       else
-        echo "Error: ${subfnam} and ${subfnam}.idx not found in ${GRIBDATA} to copy to COM"
+        echo "FATAL ERROR: ${subfnam} and ${subfnam}.idx not found in ${GRIBDATA} to copy to COM"
         exit 4
       fi
     done
