@@ -167,10 +167,10 @@ class AerosolAnalysis(Task):
         # ---- tar up diags
         # path of output tar statfile
         logger.info('Preparing observation space diagnostics for archiving')
-        aerostat = os.path.join(self.task_config.COMOUT_CHEM_ANALYSIS, f"{self.task_config['APREFIX']}aerostat")
+        aerostat = os.path.join(self.task_config.COMOUT_CHEM_ANALYSIS, f"{self.task_config['APREFIX']}aerostat.tgz")
 
         # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
+        diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc'))
 
         # gzip the files first
         for diagfile in diags:
