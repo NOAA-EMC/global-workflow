@@ -8,7 +8,7 @@ JOB=${2:?"Job name is required"}
 idate=$3
 
 #TODO - add rocotoboot_dryrun to repo some how
-rocotoboot_dryrun=/work2/noaa/global/mterry/rocoto_dryrun/bin/rocotoboot
+rocotoboot_dryrun=$(command -v rocotoboot_dryrun) || true
 CASEDIR="@CMAKE_CURRENT_BINARY_DIR@/RUNTESTS/EXPDIR/${TEST_NAME}"
 cd "${CASEDIR}"
 rm -f ./*.db

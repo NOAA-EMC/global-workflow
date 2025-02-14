@@ -11,14 +11,14 @@ __all__ = ['Tasks']
 
 
 class Tasks:
-    SERVICE_TASKS = ['arch', 'earc', 'stage_ic', 'fetch', 'cleanup']
+    SERVICE_TASKS = ['arch_vrfy', 'arch_tars', 'earc_vrfy', 'earc_tars', 'stage_ic', 'fetch', 'cleanup']
     VALID_TASKS = ['aerosol_init', 'stage_ic', 'fetch',
-                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', "cleanup",
+                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
                    'prepoceanobs',
                    'marineanlinit', 'marineanlletkf', 'marinebmat', 'marineanlvar', 'ocnanalecen', 'marineanlchkpt', 'marineanlfinal', 'ocnanalvrfy',
-                   'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'epos', 'esfc', 'eupd',
+                   'earc_vrfy', 'earc_tars', 'ecen', 'echgres', 'ediag', 'efcs',
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
                    'snowanl', 'esnowanl',
