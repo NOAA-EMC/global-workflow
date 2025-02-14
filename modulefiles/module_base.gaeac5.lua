@@ -46,6 +46,8 @@ load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 local hsi_mod_path=(os.getenv("hsi_mod_path") or "None")
 append_path("MODULEPATH", hsi_mod_path)
+-- TODO remove this path when the official (hsi_mod_path) is added to the DTN
+append_path("MODULEPATH", "/sw/hpss/modulefiles")
 load(pathJoin("hsi", (os.getenv("hsi_ver") or "None")))
 
 whatis("Description: GFS run setup environment")
