@@ -133,7 +133,7 @@ class StatAnalysis(Task):
                     continue  # Skip current analysis and move to next
 
                 self.task_config.OBSPACES_LIST.append(analysis_dict['name'])
-            
+
             # initialize JEDI application
             logger.info(f"Initializing JEDI variational DA application")
             self.jedi_dict[ANL].initialize(self.task_config)
