@@ -474,28 +474,14 @@ export DO_FIT2OBS="YES"      # Run fit to observations package
 export FHMAX_FITS=132
 [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
 
-# User may choose to reset these at experiment setup time 
+# IC fetching options
+# TODO replace these options with DO_FETCH and FETCH_FROM
 export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto COM
 export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
 
 # Archiving options
-export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
-export LOCALARCH="@LOCALARCH@"      # save data to local archive
-export GLOBUSARCH="NO"              # send data to HPSS via globus xfers to Niagara (intended for MSU)
-count_arch_opts=0
-for arch_opt in "${HPSSARCH}" "${LOCALARCH}" "${GLOBUSARCH}"; do
-    if [[ "${arch_opt}" == "YES" ]]; then
-        (( count_arch_opts += 1 ));
-    fi
-done
-if [[ ${count_arch_opts} -gt 1 ]]; then
-   echo "FATAL ERROR: More than one archiving option selected.  Please choose no more than one."
-   exit 4
-elif [[ ${HPSSARCH} = "YES" ]] || [[ ${LOCALARCH} = "YES" ]] || [[ ${GLOBUSARCH} = "YES" ]]; then
-   export DO_ARCHTAR="YES"
-else
-   export DO_ARCHTAR="NO"
-fi
+export DO_ARCHTAR="@DO_ARCHTAR@"    # Tar and archive the COM directories
+export ARCHTAR_TO="@ARCHTAR_TO@"    # Valid options are hpss, globus_hpss, and local
 
 # Globus UUID for this machine
 export CLIENT_GLOBUS_UUID='@CLIENT_GLOBUS_UUID@'

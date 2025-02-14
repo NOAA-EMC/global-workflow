@@ -103,7 +103,11 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_aero_anl'] = run_base.get('DO_AERO_ANL', False)
             run_options[run]['do_aero_fcst'] = run_base.get('DO_AERO_FCST', False)
 
-            run_options[run]['do_globusarch'] = run_base.get('GLOBUSARCH', False)
+            if run_options[run]['do_archtar'] and run_base.get('ARCHTAR_TO', "") == "globus_hpss":
+                run_options[run]['do_globusarch'] = True
+            else:
+                run_options[run]['do_globusarch'] = False
+
             run_options[run]['fcst_segments'] = run_base.get('FCST_SEGMENTS', None)
 
             run_options[run]['do_fetch_hpss'] = run_base.get('DO_FETCH_HPSS', False)

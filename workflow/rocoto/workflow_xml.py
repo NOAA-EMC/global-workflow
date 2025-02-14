@@ -125,7 +125,7 @@ class RocotoXML(ABC):
     def write(self, xml_file: str = None, crontab_file: str = None):
         self._write_xml(xml_file=xml_file)
         self._write_crontab(crontab_file=crontab_file)
-        if self._base["GLOBUSARCH"]:
+        if self._base["DO_ARCHTAR"] and self._base["ARCHTAR_TO"] == "globus_hpss":
             self._write_server_crontab()
 
     def _write_xml(self, xml_file: str = None) -> None:

@@ -16,11 +16,11 @@ RESERVATION: ''
 CLUSTERS: ''
 CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
-HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
 BASE_DATA: '/bucket/global-workflow-shared-data'
 BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
-LOCALARCH: 'NO'
+DO_ARCHTAR: 'NO'
+ARCHTAR_TO: 'local'
 ATARDIR: '' # TODO: This will not yet work from AWS.
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'

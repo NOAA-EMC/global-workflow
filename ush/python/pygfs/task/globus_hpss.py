@@ -60,14 +60,14 @@ class GlobusHpss(Task):
         self.scp.add_default_arg("-oPreferredAuthentications=publickey")
 
         # Get the user's server username from their ~/.ssh/config file
-        server_name = self.task_config.SERVER_NAME
+        self.server_name = self.task_config.SERVER_NAME
         try:
-            ssh_output = self.ssh("-G", f"{server_name}", output=str)
+            ssh_output = self.ssh("-G", f"{self.server_name}", output=str)
         except ProcessError as pe:
             raise ProcessError(
-                f"FATAL ERROR No host information on {server_name}!"
+                f"FATAL ERROR No host information on {self.server_name}!"
                 "\n"
-                f"Please add an entry for {server_name} into ~/.ssh/config!"
+                f"Please add an entry for {self.server_name} into ~/.ssh/config!"
             ) from pe
 
         # Parse the ssh output to find the user's Niagara username
@@ -77,7 +77,7 @@ class GlobusHpss(Task):
                 server_username = line.split()[1]
 
         # Update the home directory on the server with the username
-        server_home = self.task_config.SERVER_HOME.replace(
+        self.server_home = self.task_config.SERVER_HOME.replace(
             "{{SERVER_USERNAME}}", server_username
         )
 
@@ -85,8 +85,7 @@ class GlobusHpss(Task):
 
         local_dict = AttrDict({
             'sven_dropbox': (f"{self.task_config.SVEN_DROPBOX_ROOT}"),
-            'hpss_target_dir': f"{self.task_config.ATARDIR}/{cycle_YMDH}",
-            'server_home': server_home
+            'hpss_target_dir': f"{self.task_config.ATARDIR}/{cycle_YMDH}"
         })
 
         self.task_config = AttrDict(**self.task_config, **local_dict)
@@ -186,10 +185,14 @@ class GlobusHpss(Task):
         init_xfer_jinja = os.path.join(globus_parm, "init_xfer.sh.j2")
         init_xfer_script = Jinja(init_xfer_jinja, data=globus_dict, allow_missing=False).render
 
+        # Keep a list of server run directories so they can be cleaned at the end of the job
+        self._server_job_dirs = []
+
         # Add the remaining scripts and definitions to transfer_sets
         for transfer_set in transfer_sets:
-            server_job_dir = f"{globus_dict.server_home}/doorman/{globus_dict.jobid}/{transfer_set}"
+            server_job_dir = f"{self.server_home}/doorman/{globus_dict.jobid}/{transfer_set}"
             transfer_sets[transfer_set]["server_job_dir"] = server_job_dir
+            self._server_job_dirs.append(server_job_dir)
 
             # Render the run_doorman script
             doorman_dict = globus_dict
@@ -237,12 +240,8 @@ class GlobusHpss(Task):
         os.chmod("run_doorman.sh", 0o740)
         os.chmod("init_xfer.sh", 0o740)
 
-        self.server_job_dir = transfer_set["server_job_dir"]
-
         # Initialize the server
-        self._init_server()
-
-        server_name = self.task_config.SERVER_NAME
+        self._init_server(transfer_set["server_job_dir"])
 
         # Initialize a list of status files.
         transfer_set["status_files"] = []
@@ -276,10 +275,10 @@ class GlobusHpss(Task):
         # Note, this assumes we have unattended transfer capability.
         try:
             # Now transfer and rename the script
-            server_run_script = f"{server_job_dir}/run_doorman.sh"
-            logger.debug(f"Transfer run_doorman.sh to {server_name}:{server_run_script}")
+            server_run_script = f"{transfer_set['server_job_dir']}/run_doorman.sh"
+            logger.debug(f"Transfer run_doorman.sh to {self.server_name}:{server_run_script}")
             self.scp(
-                "run_doorman.sh", f"{server_name}:{server_run_script}",
+                "run_doorman.sh", f"{self.server_name}:{server_run_script}",
                 output=str.split, error=str.split
             )
             logger.debug("Successfully transferred the doorman script")
@@ -297,7 +296,7 @@ class GlobusHpss(Task):
         transfer_failed = False
         check_log_count = 0
         log_read = False
-        logger.debug(f"Waiting for the service to complete on {server_name}")
+        logger.debug(f"Waiting for the service to complete on {self.server_name}")
         while not all(transfer_set["completed"]) and wait_count < max_wait_count:
             sleep(sleep_time)
             for i in range(len(transfer_set["locations"])):
@@ -327,7 +326,7 @@ class GlobusHpss(Task):
 
             # Retrieve the log file (if it exists) from the server and check if it failed
             try:
-                self.scp(f"{server_name}:{server_job_dir}/run_doorman.log", '.')
+                self.scp(f"{self.server_name}:{transfer_set['server_job_dir']}/run_doorman.log", '.')
             except ProcessError:
                 check_log_count += 1
                 if check_log_count > 3:
@@ -340,7 +339,7 @@ class GlobusHpss(Task):
                 log_read = True
 
                 if "FAILURE" in doorman_lines[-1]:
-                    logger.error(f"FATAL ERROR The doorman failed to run on {server_name}")
+                    logger.error(f"FATAL ERROR The doorman failed to run on {self.server_name}")
                     transfer_failed = True
 
             if transfer_failed:
@@ -367,23 +366,21 @@ class GlobusHpss(Task):
         return
 
     @logit(logger)
-    def _init_server(self):
+    def _init_server(self, server_dir):
         # This method sends a request to create a working directory and transfers
         # the initialization script.
 
         req_file = f"req_mkdir.{self.task_config.jobid}"
         with open(req_file, "w") as mkdir_f:
-            mkdir_f.write(f"{self.server_job_dir}")
+            mkdir_f.write(f"{server_dir}")
 
-        server_name = self.task_config.SERVER_NAME
-        server_home = self.task_config.server_home
         pslot = self.task_config.PSLOT
 
-        self.scp(req_file, f"{server_name}:{server_home}/{req_file}")
+        self.scp(req_file, f"{self.server_name}:{self.server_home}/{req_file}")
 
         self.scp(
             "init_xfer.sh",
-            f"{server_name}:{server_home}/init_xfer_{self.task_config.PSLOT}.sh"
+            f"{self.server_name}:{self.server_home}/init_xfer_{pslot}.sh"
         )
 
         logger.info("Sleeping 1 minute to let the server initialize")
@@ -391,11 +388,11 @@ class GlobusHpss(Task):
 
         # Check that the server initialized successfully
         try:
-            self.scp(f"{server_name}:{server_home}/{pslot}_crontab_active.log", "crontab.log")
+            self.scp(f"{self.server_name}:{self.server_home}/{pslot}_crontab_active.log", "crontab.log")
         except ProcessError as pe:
             raise ProcessError(
                 "FATAL ERROR failed to retrieve the server log file!\n"
-                f"Check that the crontab is active on {server_name}."
+                f"Check that the crontab is active on {self.server_name}."
             ) from pe
 
         # Check the date in the log
@@ -419,22 +416,23 @@ class GlobusHpss(Task):
         Remove the temporary directories/files created by the GlobusHpss task.
         """
 
-        # Write a request to delete the working directory on Niagara
+        # Write requests to delete the working directories on Niagara
         req_file = f"req_rmdir.{self.task_config.jobid}"
-        with open(req_file, "w") as rmdir_f:
-            rmdir_f.write(f"{self.server_job_dir}")
+        for job_dir in self._server_job_dirs:
+            with open(req_file, "w") as rmdir_f:
+                rmdir_f.write(f"{job_dir}")
 
-        self.scp(req_file, f"{server_name}:{server_home}/{req_file}")
+            self.scp(req_file, f"{self.server_name}:{self.server_home}/{req_file}")
 
-        logger.info("Sleeping 5 minute to give the server time to delete the working directory")
-        # It probably takes much less time than this, but it may take a little while at high res
-        sleep(300)
+            logger.info("Sleeping 5 minute to give the server time to delete the working directory")
+            # It probably takes much less time than this, but it may take a little while at high res
+            sleep(300)
 
-        # If it was successful, then the request should be gone
-        try:
-            self.scp(f"{server_name}:{server_home}/{req_file}", ".")
-            raise RuntimeError(f"FATAL ERROR Failed to delete the run directory on {server_name}")
-        except ProcessError:
-            pass
+            # If it was successful, then the request should be gone
+            try:
+                self.scp(f"{self.server_name}:{self.server_home}/{req_file}", ".")
+                raise RuntimeError(f"FATAL ERROR Failed to delete the run directory on {self.server_name}")
+            except ProcessError:
+                pass
 
         return

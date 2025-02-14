@@ -182,7 +182,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
         if options['do_archtar']:
             tasks += ['arch_tars']
             if options['do_globusarch']:
-                tasks += ['globus']
+                tasks += ['globus_arch']
 
         tasks += ['arch_vrfy', 'cleanup']  # arch_tar, arch_vrfy, and cleanup **must** be the last tasks
 

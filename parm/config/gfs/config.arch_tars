@@ -21,9 +21,9 @@ export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS:-}
 export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS:-}
 
 # If we are running globus archiving, create tarballs in a temporary location
-if [[ "${GLOBUSARCH}" == "YES" ]]; then
+if [[ "${ARCHTAR_TO}" == "globus_hpss" ]]; then
     export ATARDIR="${DATAROOT}/archive_rotdir/${RUN}"
-    export LOCALARCH="YES"
+    export ARCHTAR_TO="local"
 fi
 
 echo "END: config.arch_tars"

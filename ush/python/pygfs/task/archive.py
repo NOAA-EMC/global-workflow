@@ -129,7 +129,7 @@ class Archive(Task):
         # Collect datasets that need to be archived
         # Each dataset represents one tarball
 
-        if arch_dict.HPSSARCH:
+        if arch_dict.ARCHTAR_TO == "hpss":
             self.tar_cmd = "htar"
             self.hsi = Hsi()
             self.htar = Htar()
@@ -137,14 +137,14 @@ class Archive(Task):
             self.rm_cmd = self.hsi.rm
             self.chgrp_cmd = self.hsi.chgrp
             self.chmod_cmd = self.hsi.chmod
-        elif arch_dict.LOCALARCH:
+        elif arch_dict.ARCHTAR_TO == "local":
             self.tar_cmd = "tar"
             self.cvf = Archive._create_tarball
             self.chgrp_cmd = chgrp
             self.chmod_cmd = os.chmod
             self.rm_cmd = rm_p
         else:
-            raise ValueError("FATAL ERROR: Neither HPSSARCH nor LOCALARCH are set to True!")
+            raise ValueError("FATAL ERROR: Invalid achiving method selected: {arch_dict.ARCHTAR_TO}")
 
         # Determine if we are archiving the EXPDIR this cycle (always skip for ensembles)
         if "enkf" not in arch_dict.RUN and arch_dict.ARCH_EXPDIR:
@@ -171,9 +171,8 @@ class Archive(Task):
 
             atardir_sets.append(dataset)
 
-        # If we are running globus, save the tarball list as a YAML
-        if self.task_config.get('GLOBUSARCH', False):
-            self._create_datasets_yaml(atardir_sets)
+        # Save the tarball list as a YAML in case we are using globus
+        self._create_datasets_yaml(atardir_sets)
 
         return atardir_sets
 
@@ -623,8 +622,10 @@ class Archive(Task):
         output_yaml = {}
 
         for dataset in datasets:
-            output_yaml[dataset.name] = {"target": dataset.target,
-                                         "has_rstprod": dataset.has_rstprod}
+            # Skip if the tarball will be empty
+            if len(dataset.fileset) > 0:
+                output_yaml[dataset.name] = {"target": dataset.target,
+                                             "has_rstprod": dataset.has_rstprod}
 
         save_as_yaml(output_yaml, yaml_filename)
 
