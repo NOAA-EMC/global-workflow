@@ -191,7 +191,7 @@ class AerosolAnalysis(Task):
         FileHandler(aero_var_final_list).sync()
 
         # open tar file for writing
-        with tarfile.open(aerostat, "w") as archive:
+        with tarfile.open(aerostat, "w|gz") as archive:
             for diagfile in diags:
                 diaggzip = f"{diagfile}.gz"
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
