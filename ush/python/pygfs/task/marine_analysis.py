@@ -281,6 +281,8 @@ class MarineAnalysis(Task):
         soca2cice_param = AttrDict({
             "ocn_ana": f"./Data/ocn.3dvarfgat_pseudo.an.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
             "ice_ana": f"./Data/ice.3dvarfgat_pseudo.an.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
+            "ocn_inc": f"./Data/ocn.3dvarfgat_pseudo.incr.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
+            "ice_inc": f"./Data/ice.3dvarfgat_pseudo.incr.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
             "ice_rst": ice_rst_ana,
             "fcst_begin": fcst_begin
         })
@@ -288,11 +290,10 @@ class MarineAnalysis(Task):
 
         # render the SOCA to CICE YAML file for the Arctic and Antarctic
         logger.info("render the SOCA to CICE YAML file for the Arctic and Antarctic")
-        varchgyamls = ['soca_2cice_global.yaml']
-        for varchgyaml in varchgyamls:
-            soca2cice_config = parse_j2yaml(path=os.path.join(self.task_config.MARINE_JCB_GDAS_ALGO, f'{varchgyaml}.j2'),
-                                            data=soca2cice_param)
-            soca2cice_config.save(os.path.join(self.task_config.DATA, varchgyaml))
+        varchgyaml = 'soca_2cice_global.yaml'
+        soca2cice_config = parse_j2yaml(path=os.path.join(self.task_config.MARINE_JCB_GDAS_ALGO, f'{varchgyaml}.j2'),
+                                        data=soca2cice_param)
+        soca2cice_config.save(os.path.join(self.task_config.DATA, varchgyaml))
 
     @logit(logger)
     def variational(self: Task) -> None:
@@ -387,6 +388,10 @@ class MarineAnalysis(Task):
             # Copy the analysis at the start of the window
             post_file_list.append([os.path.join(anl_dir, 'Data', f'{domain}.3dvarfgat_pseudo.an.{mdate}.nc'),
                                    os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.{domain}ana.nc')])
+
+        # Copy soca2cice ice increment
+        post_file_list.append([os.path.join(anl_dir, 'Data', f'ice.soca2cice.incr.{bdate}.nc'),
+                              os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.ice.incr.postproc.nc')])
 
         # Copy of the ssh diagnostics
         if nmem_ens > 2:

@@ -76,7 +76,8 @@ case "${machine}" in
 "hercules") FIX_DIR="/work/noaa/global/glopara/fix" ;;
 "jet") FIX_DIR="/lfs5/HFIP/hfv3gfs/glopara/FIX/fix" ;;
 "s4") FIX_DIR="/data/prod/glopara/fix" ;;
-"gaea") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
+"gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
+"gaeac6") FIX_DIR="/gpfs/f6/bil-fire8/world-shared/global/glopara/fix" ;;
 "noaacloud") FIX_DIR="/contrib/global-workflow-shared-data/fix" ;;
 *)
   echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
@@ -167,9 +168,6 @@ cd "${HOMEgfs}/ush" || exit 8
 for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
 done
-for file in make_ntc_bull.pl make_NTC_file.pl make_tif.sh month_name.sh; do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/ush/${file}" .
-done
 
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
@@ -178,19 +176,13 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
   "MOM6_data_table.IN"
   "ice_in.IN"
   "ufs.configure.atm.IN"
-  "ufs.configure.atm_esmf.IN"
   "ufs.configure.atmaero.IN"
-  "ufs.configure.atmaero_esmf.IN"
   "ufs.configure.s2s.IN"
-  "ufs.configure.s2s_esmf.IN"
   "ufs.configure.s2sa.IN"
-  "ufs.configure.s2sa_esmf.IN"
   "ufs.configure.s2sw.IN"
-  "ufs.configure.s2sw_esmf.IN"
   "ufs.configure.s2swa.IN"
-  "ufs.configure.s2swa_esmf.IN"
   "ufs.configure.leapfrog_atm_wav.IN"
-  "ufs.configure.leapfrog_atm_wav_esmf.IN"
+  "ww3_shel.nml.IN"
   "post_itag_gfs")
 for file in "${ufs_templates[@]}"; do
   [[ -s "${file}" ]] && rm -f "${file}"

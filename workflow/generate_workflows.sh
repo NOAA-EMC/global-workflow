@@ -5,7 +5,7 @@ function _usage() {
    cat << EOF
    This script automates the experiment setup process for the global workflow.
    Options are also available to update submodules, build the workflow (with
-   specific build flags), specicy which YAMLs and YAML directory to run, and
+   specific build flags), specify which YAMLs and YAML directory to run, and
    whether to automatically update your crontab.
 
    Usage: generate_workflows.sh [OPTIONS] /path/to/RUNTESTS
@@ -17,13 +17,13 @@ function _usage() {
        directory up from this script's residing directory.
 
     -b Run build_all.sh with default flags
-       (build the UFS, UPP, UFS_Utils, and GFS-utils only
+       (build the UFS, UPP, UFS_Utils, and GFS-utils only)
 
     -u Update submodules before building and/or generating experiments.
 
     -y "list of YAMLs to run"
        If this option is not specified, the default case (C48_ATM) will be
-       run.  This option is overidden by -G or -E (see below).
+       run.  This option is incompatible with -G, -E, or -S.
        Example: -y "C48_ATM C48_S2SW C96C48_hybatmDA"
 
     -Y /path/to/directory/with/YAMLs
@@ -43,7 +43,6 @@ function _usage() {
        Run all valid SFS cases in the specified YAML directory.
 
     NOTES:
-         - Only one of -G -E or -S may be specified
          - Valid cases are determined by the experiment:system key as
            well as the skip_ci_on_hosts list in each YAML.
 
@@ -223,6 +222,22 @@ else
    done
 fi
 
+# Empty the _yaml_list array if -G, -E, and/or -S were selected
+if [[ "${_run_all_gfs}" == "true" || \
+      "${_run_all_gefs}" == "true" || \
+      "${_run_all_sfs}" == "true" ]]; then
+
+   # Raise an error if the user specified a yaml list and any of -G -E -S
+   if [[ "${_specified_yaml_list}" == "true" ]]; then
+      echo "Ambiguous case selection."
+      echo "Please select which tests to run explicitly with -y \"list of tests\" or"
+      echo "by specifying -G (all GFS), -E (all GEFS), and/or -S (all SFS), but not both."
+      exit 3
+   fi
+
+   _yaml_list=()
+fi
+
 # If -S is specified, exit (for now).
 # TODO when SFS tests come online, enable this option.
 if [[ "${_run_all_sfs}" == "true" ]]; then
@@ -338,7 +353,15 @@ rm -f stdout
 [[ "${_debug}" == "true" ]] && set -x
 set -u
 machine=${MACHINE_ID}
-. "${HOMEgfs}/ci/platforms/config.${machine}"
+platform_config="${HOMEgfs}/ci/platforms/config.${machine}"
+if [[ -f "${platform_config}" ]]; then
+    . "${HOMEgfs}/ci/platforms/config.${machine}"
+else
+   if [[ "${_set_account}" == "false" ]] ; then
+      echo "ERROR Unknown HPC account!  Please use the -A option to specify."
+      exit 11
+   fi
+fi
 
 # If _yaml_dir is not set, set it to $HOMEgfs/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
@@ -431,8 +454,12 @@ EOM
 done
 
 # Update the account if specified
-[[ "${_set_account}" == true ]] && export HPC_ACCOUNT=${_hpc_account} && \
-   [[ "${_verbose}" == true ]] && printf "Setting HPC account to %s\n\n" "${HPC_ACCOUNT}"
+if [[ "${_set_account}" == true ]] ; then
+   export HPC_ACCOUNT=${_hpc_account}
+   if [[ "${_verbose}" == true ]]; then
+      printf "Setting HPC account to %s\n\n" "${HPC_ACCOUNT}"
+   fi
+fi
 
 # Create the experiments
 rm -f "tests.cron" "${_verbose_flag}"
@@ -455,7 +482,7 @@ for _case in "${_yaml_list[@]}"; do
          fi
          echo "${_message}"
          rm -f stdout stderr
-         exit 11
+         exit 12
       fi
       rm -f stdout stderr
    fi
