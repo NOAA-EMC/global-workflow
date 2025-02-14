@@ -339,7 +339,7 @@ $ South Pacific (PS) in Pacific Ocean and Pacific Isles (0)
 $AGPS40
 $
 $AGGX42
-$ Gulf of Mexico (GX) spectra (4) south from NC and Puerto Rico (2)
+$ Gulf of America (GX) spectra (4) south from NC and Puerto Rico (2)
    -89.67   25.90  '42001     '  10.0   DAT  NDBC     360
    -94.42   25.17  '42002     '  10.0   DAT  NDBC     360
    -85.94   26.07  '42003     '  10.0   DAT  NDBC     360
@@ -1190,7 +1190,7 @@ $
    -65.50   32.00  'BER73     '  999.   IBP  NCEP      45
    -65.50   31.75  'BER74     '  999.   IBP  NCEP      45
 $
-$ Gulf of Mexico boundary data
+$ Gulf of America boundary data
 $
    -97.     23.    'SRH51     '  999.   IBP  NCEP      45
    -96.     23.    'SRH52     '  999.   IBP  NCEP      45
