@@ -37,9 +37,9 @@ elif [ $machine = "dell" ]; then
 elif [ $machine = "wcoss2" ]; then
     FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix_nco_gfsv16.4.0"
 elif [ $machine = "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16.3.0"
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16.4.0"
 elif [ $machine = "orion" ]; then
-    FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16.3.0"
+    FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16.4.0"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; do
