@@ -28,6 +28,8 @@ case ${machine} in
       *)
         echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
         exit 3
+    esac
+    ;;
   "GAEAC5")   max_tasks_per_node=128;;
   "GAEAC6")   max_tasks_per_node=192;;
   "S4")
