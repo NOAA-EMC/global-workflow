@@ -176,7 +176,7 @@ class SnowAnalysis(Task):
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, localconf)
         logger.debug(f"{self.task_config.IMS_OBS_LIST}:\n{pformat(prep_ims_config)}")
 
-        asc_file = os.path.join(localconf.COMIN_OBS, f"{self.task_config.OPREFIX}imssnow96.asc")
+        asc_file = os.path.join(localconf.COMIN_OBS, f"{localconf.OPREFIX}imssnow96.asc")
         if not os.path.isfile(asc_file):
             logger.exception(f"Obs files are missing. Will not execute CALCFIMSEXE")
             return
