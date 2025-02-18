@@ -129,7 +129,7 @@ if [[ ${DO_GSISOILDA} = "YES" ]]; then
         export LFHR=6 # PDYcyc
     fi
 
-    $REGRIDSH
+    "${REGRIDSH}"
 
 fi
 
