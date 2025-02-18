@@ -142,7 +142,7 @@ $NLN $ANAVINFO   anavinfo
 $NLN $VLOCALEIG  vlocal_eig.dat
 
 # Bias correction coefficients based on the ensemble mean
-${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"
+${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"
 
 ################################################################################
 
@@ -171,13 +171,13 @@ fi
 
 flist="$CNVSTAT $OZNSTAT $RADSTAT"
 if [ $USE_CFP = "YES" ]; then
-   echo "${nm} ${DATA}/untar.sh ensmean ${COMOUT_ATMOS_ANALYSIS_STAT}" | tee -a "${DATA}/mp_untar.sh"
+   echo "${nm} ${DATA}/untar.sh ensmean ${COMIN_ATMOS_ANALYSIS_STAT}" | tee -a "${DATA}/mp_untar.sh"
    if [ ${CFP_MP:-"NO"} = "YES" ]; then
        nm=$((nm+1))
    fi
 else
    for ftype in $flist; do
-      fname="${COMOUT_ATMOS_ANALYSIS_STAT}/${ftype}.ensmean"
+      fname="${COMIN_ATMOS_ANALYSIS_STAT}/${ftype}.ensmean"
       tar -xvf $fname
    done
 fi
