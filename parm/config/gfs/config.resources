@@ -436,22 +436,26 @@ case ${step} in
         layout_x=8
         layout_y=8
         walltime="00:45:00"
+        tasks_per_node=24
         ;;
       "C384")
         layout_x=6
         layout_y=6
         walltime="00:30:00"
+        tasks_per_node=24
         ;;
       "C192" | "C96")
         layout_x=4
         layout_y=4
         walltime="00:20:00"
+        tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
         ;;
       "C48" )
         # this case is for testing only
         layout_x=1
         layout_y=1
         walltime="00:20:00"
+        tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
@@ -462,8 +466,7 @@ case ${step} in
     export layout_y
 
     ntasks=$(( layout_x * layout_y * 6 ))
-    threads_per_task=5
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    threads_per_task=1
     export is_exclusive=True
     ;;
 
