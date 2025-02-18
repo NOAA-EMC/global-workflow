@@ -29,7 +29,6 @@ jobs/JGDAS_ATMOS_VERFRAD @EdwardSafford-NOAA
 jobs/JGDAS_ENKF_* @RussTreadon-NOAA @CoryMartin-NOAA @CatherineThomas-NOAA
 jobs/JGDAS_FIT2OBS @jack-woollen 
 jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_ECEN @guillaumevernieres
-jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_VRFY @guillaumevernieres
 jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG @GwenChen-NOAA
 jobs/JGFS_ATMOS_CYCLONE_GENESIS @JiayiPeng-NOAA 
 jobs/JGFS_ATMOS_CYCLONE_TRACKER @JiayiPeng-NOAA 

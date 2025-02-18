@@ -153,6 +153,8 @@ pipeline {
                                         STATUS = 'Failed'
                                         error("Failed to build global-workflow on ${Machine}")
                                     }
+                                    STATUS = 'Failed'
+                                        error("Failed to build global-workflow on ${Machine} and no error.logs file found")
                                 }
                                 sh(script: './link_workflow.sh')
                             }
