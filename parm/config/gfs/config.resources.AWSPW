@@ -18,7 +18,7 @@ case ${step} in
     max_tasks_per_node=48
     ;;
 
-  "arch")
+  "arch_vrfy" | "arch_tars")
     export PARTITION_BATCH="process"
     max_tasks_per_node=24
     ;;
