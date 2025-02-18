@@ -77,7 +77,7 @@ ${NCP} "${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
         "${DATA}/gaussian_scrip.nc"
 
 # output, fixed files
-${NCP} "${FIXorog}/${CASE_OUT}/${CASE_OUT}_mosaic.nc" \ 
+${NCP} "${FIXorog}/${CASE_OUT}/${CASE_OUT}_mosaic.nc" \
         "${DATA}/${CASE_OUT}_mosaic.nc"
 
 for n in $(seq 1 "${ntiles}"); do
