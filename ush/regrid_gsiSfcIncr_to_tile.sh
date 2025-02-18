@@ -68,18 +68,23 @@ cat << EOF > regrid.nml
   dir="./",
   fname_mask="vegetation_type" 
   dir_mask="./"
-  dir_coord="${FIXorog}",
+  dir_coord="./",
  /
 EOF
 
-# fixed input files
+# input, fixed files
 ${NCP} "${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
         "${DATA}/gaussian_scrip.nc"
 
-# fixed output files
+# output, fixed files
+${NCP} "${FIXorog}/${CASE_OUT}/${CASE_OUT}_mosaic.nc" \ 
+        "${DATA}/${CASE_OUT}_mosaic.nc"
+
 for n in $(seq 1 "${ntiles}"); do
     ${NCP} "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc" \
             "${DATA}/vegetation_type.tile${n}.nc"
+    ${NCP} "${FIXorog}/${CASE_OUT}/${CASE_OUT}_grid.tile${n}.nc" \
+            "${DATA}/${CASE_OUT}_grid.tile${n}.nc"
 done
 
 if (( LFHR >= 0 )); then 
