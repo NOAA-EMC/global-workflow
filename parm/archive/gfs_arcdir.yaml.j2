@@ -51,8 +51,8 @@
     {% endif %}
 
     {% if DO_AERO_ANL %}
-        {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat",
-                                    ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
+        {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat.tgz",
+                                    ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
     {% endif %}
 
     {% if DO_PREP_OBS_AERO == True %}
