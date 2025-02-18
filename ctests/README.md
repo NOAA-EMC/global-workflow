@@ -8,24 +8,32 @@ The CTest framework consists of the following scripts:
 - **setup.sh.in**: Prepares the environment and creates the experiment.
 - **stage.sh.in**: Stages the input files needed to run a JJOB.
 - **execute.sh.in**: Executes the JJOB and monitors its status.
-- **validate.sh.in**: (TODO) Validates the results of the JJOB.
+- **validate.sh.in**: Validates the results of the JJOB.
+
+**NOTE:** So far only test C48_ATM *gfs_fcst_set0* has `output_files` for the validation step using a basic chksum for testing. Further development using grib and NETCDF comparison tools is pending. 
 
 ## Usage
 
 ### CMake Configuration
 
-To configure the CTest framework using CMake, you need to provide several environment variables or default values. Here is an example of how to configure and build the project:
+To configure the **CTest** framework using **CMake**, you need to provide several environment variables. Here is an example of how to configure and build the project:
 
 ```bash
 # Set environment variables (may also be include at command line with -D)
 export HPC_ACCOUNT="your_hpc_account"
 export ICSDIR_ROOT="/path/to/icsdir_root"
 export STAGED_TESTS_DIR="/path/to/staged_tests_dir"
+```
+**NOTE**: The the specific values for these three enviroment variables can be found in `$HOMEgfs/ci/platforms/config.$MACHINE_ID` and may also be added to the `cmake` command line with the `-D` option
 
 # Run CMake to configure the ctest framework
-cmake -S /path/to/HOMEgfs -B /path/to/build -DRUNTESTS=/path/to/runtests
-
+```shell
+cd $HOMEgfs/ctests
+mkdir build
+cd build
+cmake ../.. 
 ```
+
 
 ### Running Tests with CTest
 
@@ -45,6 +53,10 @@ You can use the `-L` option with CTest to run tests for a specific case. For exa
 ```bash
 cd /path/to/build
 ctest -L C48_ATM
+```
+Or simply use the '-R' switch to run any individual test:
+```
+ctest -R test_C48_S2SW_gfs_fcst_seg0_execute -V
 ```
 
 To add a new test use the **AddJJOBTest()** function at the end of the `$HOMEgfs/ctest/CMakeLists.txt` file as follows:
