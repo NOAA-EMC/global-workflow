@@ -123,7 +123,7 @@ if [[ ${DO_GSISOILDA} = "YES" ]]; then
     export CASE_OUT=${CASE_ENS}
     export OCNRES_OUT=${OCNRES}
     export NMEM_REGRID=${NMEM_ENS}
-    if [ $DOIAU = "YES" ]; then
+    if [[ "${DOIAU}" == "YES" ]]; then
         export LFHR=3 # match BDATE
     else # DOSFCANL_ENKF
         export LFHR=6 # PDYcyc
