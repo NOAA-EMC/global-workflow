@@ -2399,6 +2399,22 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'{self.run}_mos_{job}'}
                 deps.append(rocoto.add_dependency(dep_dict))
 
+        if self.options['do_gempak']:
+            if self.run in ['gdas']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmetancdc'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            elif self.run in ['gfs']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmeta'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                if self.app_config.mode in ['cycled']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                    if self.options['do_goes']:
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+                        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+
         if self.options['do_metp'] and self.run in ['gfs']:
             deps2 = []
             # taskvalid only handles regular tasks, so just check the first metp job exists
@@ -2441,36 +2457,96 @@ class GFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
 
         else:
+            if self.app_config.mode in ['cycled']:
+                if self.run in ['gfs']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                    if self.options['do_vminmon']:
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+                elif self.run in ['gdas']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                    if self.options['do_fit2obs']:
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_fit2obs'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+                    if self.options['do_verfozn']:
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_verfozn'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+                    if self.options['do_verfrad']:
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_verfrad'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+                    if self.options['do_vminmon']:
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+            if self.run in ['gfs'] and self.options['do_tracker']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_tracker'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            if self.run in ['gfs'] and self.options['do_genesis']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_genesis'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            if self.run in ['gfs'] and self.options['do_genesis_fsu']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_genesis_fsu'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            # Post job dependencies
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_wave']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                if self.options['do_wave_bnd']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpnt'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_ocean']:
+                if self.run in ['gfs']:
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_ice']:
+                if self.run in ['gfs']:
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+            # MOS job dependencies
+            if self.run in ['gfs'] and self.options['do_mos']:
+                mos_jobs = ["stn_prep", "grd_prep", "ext_stn_prep", "ext_grd_prep",
+                            "stn_fcst", "grd_fcst", "ext_stn_fcst", "ext_grd_fcst",
+                            "stn_prdgen", "grd_prdgen", "ext_stn_prdgen", "ext_grd_prdgen",
+                            "wx_prdgen", "wx_ext_prdgen"]
+                for job in mos_jobs:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_mos_{job}'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+
+            if self.options['do_gempak']:
+                if self.run in ['gdas']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmetancdc'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                elif self.run in ['gfs']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmeta'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                    if self.app_config.mode in ['cycled']:
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
+                        deps.append(rocoto.add_dependency(dep_dict))
+                        if self.options['do_goes']:
+                            dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
+                            deps.append(rocoto.add_dependency(dep_dict))
+                            dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
+                            deps.append(rocoto.add_dependency(dep_dict))
+
+            if self.options['do_metp'] and self.run in ['gfs']:
+                deps2 = []
+                # taskvalid only handles regular tasks, so just check the first metp job exists
+                dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_metpg2g1', 'condition': 'not'}
+                deps2.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_metp'}
+                deps2.append(rocoto.add_dependency(dep_dict))
+                deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
+
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_archtar']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
                 deps.append(rocoto.add_dependency(dep_dict))
-
-        if self.options['do_gempak']:
-            if self.run in ['gdas']:
-                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmetancdc'}
-                deps.append(rocoto.add_dependency(dep_dict))
-            elif self.run in ['gfs']:
-                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmeta'}
-                deps.append(rocoto.add_dependency(dep_dict))
-                if self.app_config.mode in ['cycled']:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
-                    deps.append(rocoto.add_dependency(dep_dict))
-                    if self.options['do_goes']:
-                        dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
-                        deps.append(rocoto.add_dependency(dep_dict))
-                        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
-                        deps.append(rocoto.add_dependency(dep_dict))
-
-        if self.options['do_metp'] and self.run in ['gfs']:
-            deps2 = []
-            # taskvalid only handles regular tasks, so just check the first metp job exists
-            dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_metpg2g1', 'condition': 'not'}
-            deps2.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_metp'}
-            deps2.append(rocoto.add_dependency(dep_dict))
-            deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
