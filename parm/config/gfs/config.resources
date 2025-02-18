@@ -431,6 +431,9 @@ case ${step} in
     ;;
 
   "aeroanlvar")
+
+    threads_per_task=1
+
     case ${CASE} in
       "C1152" | "C768")
         layout_x=8
@@ -466,7 +469,6 @@ case ${step} in
     export layout_y
 
     ntasks=$(( layout_x * layout_y * 6 ))
-    threads_per_task=1
     export is_exclusive=True
     ;;
 
