@@ -85,7 +85,8 @@ class GlobusHpss(Task):
 
         local_dict = AttrDict({
             'sven_dropbox': (f"{self.task_config.SVEN_DROPBOX_ROOT}"),
-            'hpss_target_dir': f"{self.task_config.ATARDIR}/{cycle_YMDH}"
+            'hpss_target_dir': f"{self.task_config.ATARDIR}/{cycle_YMDH}",
+            'server_home': f"{self.server_home}"
         })
 
         self.task_config = AttrDict(**self.task_config, **local_dict)
