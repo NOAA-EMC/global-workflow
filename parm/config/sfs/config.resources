@@ -323,7 +323,7 @@ case ${step} in
     export is_exclusive=False
     ;;
 
-  "arch_tars" | "globus")
+  "arch_tars")
     export walltime="06:00:00"
     export ntasks=1
     export tasks_per_node=1
