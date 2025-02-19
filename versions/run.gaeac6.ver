@@ -8,4 +8,7 @@ export hsi_mod_path="/usw/hpss/modulefiles"
 export hsi_ver=9.3
 
 source "${HOMEgfs:-}/versions/spack.ver"
+
+# Gaea uses a newer version of Fit2Obs
+export fit2obs_ver=1.1.5
 export spack_mod_path="/ncrc/proj/epic/spack-stack/c6/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
