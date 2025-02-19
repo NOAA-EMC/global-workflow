@@ -436,11 +436,16 @@ if [[ "${skip_mom6}" == "false" ]]; then
       CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
       MOM6_RESTART_SETTING='r'
       MOM6_RIVER_RUNOFF='False'
-      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
-        MOM6_DIAG_MISVAL="-1e34"
-      else
-        MOM6_DIAG_MISVAL="0.0"
-      fi
+      case ${RUN} in
+        gfs|gefs|sfs)
+          MOM6_DIAG_MISVAL="-1e34";;
+        gdas|enkfgdas|enkfgfs)
+          MOM6_DIAG_MISVAL="0.0";;
+        *)
+          echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
+          exit 10
+          ;;
+      esac
       eps_imesh="4.0e-1"
       MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_25L.nc"
       MOM6_ALLOW_LANDMASK_CHANGES='False'
@@ -459,13 +464,20 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='False'
       eps_imesh="2.5e-1"
       TOPOEDITS="ufs.topo_edits_011818.nc"
-      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
-        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
-        MOM6_DIAG_MISVAL="-1e34"
-      else
-        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-        MOM6_DIAG_MISVAL="0.0"
-      fi
+      case ${RUN} in
+        gfs|gefs|sfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+          MOM6_DIAG_MISVAL="-1e34"
+          ;;
+        gdas|enkfgdas|enkfgfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+          MOM6_DIAG_MISVAL="0.0"
+          ;;
+        *)
+          echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
+          exit 10
+          ;;
+      esac
       MOM6_ALLOW_LANDMASK_CHANGES='True'
       ;;
     "050")
@@ -480,13 +492,20 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='n'
       MOM6_RIVER_RUNOFF='True'
       eps_imesh="1.0e-1"
-      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
-        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
-        MOM6_DIAG_MISVAL="-1e34"
-      else
-        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-        MOM6_DIAG_MISVAL="0.0"
-      fi
+      case ${RUN} in
+        gfs|gefs|sfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+          MOM6_DIAG_MISVAL="-1e34"
+          ;;
+        gdas|enkfgdas|enkfgfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+          MOM6_DIAG_MISVAL="0.0"
+          ;;
+        *)
+          echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
+          exit 10
+          ;;
+      esac
       MOM6_ALLOW_LANDMASK_CHANGES='False'
       TOPOEDITS=""
       ;;
@@ -502,13 +521,20 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='True'
       MOM6_RESTART_SETTING="r"
       eps_imesh="1.0e-1"
-      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
-        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
-        MOM6_DIAG_MISVAL="-1e34"
-      else
-        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-        MOM6_DIAG_MISVAL="0.0"
-      fi
+      case ${RUN} in
+        gfs|gefs|sfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+          MOM6_DIAG_MISVAL="-1e34"
+          ;;
+        gdas|enkfgdas|enkfgfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+          MOM6_DIAG_MISVAL="0.0"
+          ;;
+        *)
+          echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
+          exit 10
+          ;;
+      esac
       MOM6_ALLOW_LANDMASK_CHANGES='False'
       TOPOEDITS=""
       ;;
