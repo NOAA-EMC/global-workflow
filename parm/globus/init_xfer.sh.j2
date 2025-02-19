@@ -40,7 +40,7 @@ if compgen -G "/collab1/data/David.Huber"/req_rmdir.* > /dev/null 2>&1 ; then
    for rmdir_req_fl in "{{server_home}}"/req_rmdir.*; do
       dir=$(cat "${rmdir_req_fl}")
       rm -rf "${dir}"
-      rm -f "${mkdir_req_fl}"
+      rm -f "${rmdir_req_fl}"
    done
 fi
 
