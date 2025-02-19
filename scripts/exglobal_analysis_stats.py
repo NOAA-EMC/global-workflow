@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     # Create list based on DA components
     StatAnl.task_config['STAT_ANALYSES'] = []
-    if StatAnl.task_config.DO_AERO:
+    if StatAnl.task_config.DO_AERO_ANL:
         StatAnl.task_config['STAT_ANALYSES'].append('aero')
     if StatAnl.task_config.DO_JEDISNOWDA:
         StatAnl.task_config['STAT_ANALYSES'].append('snow')

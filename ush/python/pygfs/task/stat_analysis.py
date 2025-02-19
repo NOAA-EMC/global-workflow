@@ -177,7 +177,12 @@ class StatAnalysis(Task):
         for analysis_dict in analysis_config_dict[jedi_dict_key]['ob spaces']:
             diagfile = os.path.join(self.task_config.DATA, analysis_dict['output file'])
             outdir = self.task_config['COMOUT_' + jedi_dict_key.upper() + '_ANLMON']
-            # TODO need to create outdir if it does not exist, can do that here or in the j-job
+
+            # Check if the directory exists; if not, create it
+            if not os.path.exists(outdir):
+                os.makedirs(outdir)
+                logger.info(f"Created directory: {outdir}")
+
             dest = os.path.join(outdir, f"{analysis_dict['output file']}")
             logger.debug(f"copying {diagfile} to {dest}")
             diag_copy = {
