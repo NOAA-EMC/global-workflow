@@ -305,18 +305,24 @@ FV3_out() {
   local restart_date restart_dates
   restart_dates=()
 
-  # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
-  if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
-    restart_date="${model_start_date_next_cycle}"
-    while (( restart_date <= forecast_end_cycle )); do
-      restart_dates+=("${restart_date:0:8}.${restart_date:8:2}0000")
-      restart_date=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
-    done
-  elif [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then # Copy restarts at the end of the forecast segment for RUN=gfs|gefs
-    if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
-      restart_dates+=("${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000")
-    fi
-  fi
+  case ${RUN} in
+    gdas|enkfgdas|enkfgfs) # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
+      restart_date="${model_start_date_next_cycle}"
+      while (( restart_date <= forecast_end_cycle )); do
+        restart_dates+=("${restart_date:0:8}.${restart_date:8:2}0000")
+        restart_date=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
+      done
+      ;;
+    gfs|gefs|sfs) # Copy restarts at the end of the forecast segment for RUN=gfs|gefs|sfs
+      if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
+        restart_dates+=("${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000")
+      fi
+      ;;
+    *)
+      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      exit 25
+      ;;
+  esac
 
   ### Check that there are restart files to copy
   if [[ ${#restart_dates[@]} -gt 0 ]]; then
@@ -536,52 +542,57 @@ MOM6_postdet() {
   fi  # if [[ "${RERUN}" == "NO" ]]; then
 
   # Link output files
-  if [[ "${RUN}" =~ "gfs" || "${RUN}" == "gefs" ]]; then  # Link output files for RUN=gfs|enkfgfs|gefs
+  case ${RUN} in
+    gfs|enkfgfs|gefs|sfs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
+      # Looping over MOM6 output hours
+      local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
+      for fhr in ${MOM6_OUTPUT_FH}; do
+        fhr3=$(printf %03i "${fhr}")
 
-    # Looping over MOM6 output hours
-    local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
-    for fhr in ${MOM6_OUTPUT_FH}; do
-      fhr3=$(printf %03i "${fhr}")
+        if [[ -z ${last_fhr:-} ]]; then
+          last_fhr=${fhr}
+          continue
+        fi
 
-      if [[ -z ${last_fhr:-} ]]; then
+        (( interval = fhr - last_fhr ))
+        (( midpoint = last_fhr + interval/2 ))
+
+        vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+        #If OFFSET_START_HOUR is greater than 0, OFFSET_START_HOUR should be added to the midpoint for first lead time
+        if (( OFFSET_START_HOUR > 0 )) &&  (( fhr == FHOUT_OCN ));then
+          vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $(( midpoint + OFFSET_START_HOUR )) hours" +%Y%m%d%H)
+        else
+          vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
+        fi
+
+        # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
+        if (( OFFSET_START_HOUR > 0 )) &&  (( fhr == FHOUT_OCN ));then
+          source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+        else
+          source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+        fi
+        dest_file="${RUN}.ocean.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+        ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATA}/MOM6_OUTPUT/${source_file}"
+
         last_fhr=${fhr}
-        continue
-      fi
 
-      (( interval = fhr - last_fhr ))
-      (( midpoint = last_fhr + interval/2 ))
+      done
+      ;;
 
-      vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-      #If OFFSET_START_HOUR is greater than 0, OFFSET_START_HOUR should be added to the midpoint for first lead time
-      if (( OFFSET_START_HOUR > 0 )) &&  (( fhr == FHOUT_OCN ));then
-        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $(( midpoint + OFFSET_START_HOUR )) hours" +%Y%m%d%H)
-      else
-        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
-      fi
-
-      # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
-      if (( OFFSET_START_HOUR > 0 )) &&  (( fhr == FHOUT_OCN ));then
-        source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-      else
-        source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-      fi
-      dest_file="${RUN}.ocean.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-      ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATA}/MOM6_OUTPUT/${source_file}"
-
-      last_fhr=${fhr}
-
-    done
-
-  elif [[ "${RUN}" =~ "gdas" ]]; then  # Link output files for RUN=gdas|enkfgdas
-
-    # Save (instantaneous) MOM6 backgrounds
-    local fhr3 vdatestr
-    for fhr in ${MOM6_OUTPUT_FH}; do
-      fhr3=$(printf %03i "${fhr}")
-      vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-      ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.inst.f${fhr3}.nc" "${DATA}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
-    done
-  fi
+    gdas|enkfgdas) # Link output files for RUN=gdas|enkfgdas
+      # Save (instantaneous) MOM6 backgrounds
+      local fhr3 vdatestr
+      for fhr in ${MOM6_OUTPUT_FH}; do
+        fhr3=$(printf %03i "${fhr}")
+        vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
+        ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.inst.f${fhr3}.nc" "${DATA}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
+      done
+      ;;
+    *)
+      echo "FATAL ERROR: Don't know how to copy MOM output files for RUN ${RUN}"
+      exit 25
+      ;;
+  esac
 
   echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 
@@ -614,30 +625,33 @@ MOM6_out() {
     *) ;;
   esac
 
-  # Copy MOM6 restarts at the end of the forecast segment to COM for RUN=gfs|gefs
-  if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
-    local restart_file
-    if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
-      echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
+  case ${RUN} in
+    gdas|enkfgdas|enkfgfs) # Copy restarts for the next cycle for RUN=gdas|enkfgdas|enkfgfs
+      local restart_date
+      restart_date="${model_start_date_next_cycle}"
+      echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
       for mom6_restart_file in "${mom6_restart_files[@]}"; do
-        restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${mom6_restart_file}"
+        restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${mom6_restart_file}"
         ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
                "${COMOUT_OCEAN_RESTART}/${restart_file}"
       done
-    fi
-  fi
-
-  # Copy restarts for the next cycle for RUN=gdas|enkfgdas|enkfgfs
-  if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
-    local restart_date
-    restart_date="${model_start_date_next_cycle}"
-    echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
-    for mom6_restart_file in "${mom6_restart_files[@]}"; do
-      restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${mom6_restart_file}"
-      ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
-             "${COMOUT_OCEAN_RESTART}/${restart_file}"
-    done
-  fi
+      ;;
+    gfs|gefs|sfs) # Copy MOM6 restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
+      if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
+        local restart_file
+        echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
+        for mom6_restart_file in "${mom6_restart_files[@]}"; do
+          restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${mom6_restart_file}"
+          ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
+                 "${COMOUT_OCEAN_RESTART}/${restart_file}"
+        done
+      fi
+      ;;
+    *)
+      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      exit 25
+      ;;
+  esac
 }
 
 CICE_postdet() {
@@ -690,13 +704,20 @@ CICE_postdet() {
     seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
     vdatestr="${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}"
 
-    if [[ "${RUN}" =~ "gfs" || "${RUN}" =~ "gefs" ]]; then
-      source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
-      dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-    elif [[ "${RUN}" =~ "gdas" ]]; then
-      source_file="iceh_inst.${vdatestr}.nc"
-      dest_file="${RUN}.ice.t${cyc}z.inst.f${fhr3}.nc"
-    fi
+    case "${RUN}" in
+      gdas|enkfgdas)
+        source_file="iceh_inst.${vdatestr}.nc"
+        dest_file="${RUN}.ice.t${cyc}z.inst.f${fhr3}.nc"
+        ;;
+      gfs|enkfgfs|gefs|sfs)
+        source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
+        dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+        ;;
+      *)
+        echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet"
+        exit 10
+    esac
+        
     ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
 
     last_fhr=${fhr}
@@ -716,31 +737,33 @@ CICE_out() {
   # Copy ice_in namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
   ${NCP} "${DATA}/ice_in" "${COMOUT_CONF}/ufs.ice_in"
 
-  # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs
-  if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
-    local seconds source_file target_file
-    if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
-      echo "Copying CICE restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
-      seconds=$(to_seconds "${forecast_end_cycle:8:2}0000")  # convert HHMMSS to seconds
-      source_file="cice_model.res.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
-      target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.cice_model.res.nc"
+  case ${RUN} in
+    gdas|enkfgdas|enkfgfs) # Copy restarts for next cycle for RUN=gdas|enkfgdas|enkfgfs
+      local restart_date
+      restart_date="${model_start_date_next_cycle}"
+      echo "Copying CICE restarts for 'RUN=${RUN}' at ${restart_date}"
+      seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+      source_file="cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
+      target_file="${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
       ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
              "${COMOUT_ICE_RESTART}/${target_file}"
-    fi
-  fi
-
-  # Copy restarts for next cycle for RUN=gdas|enkfgdas|enkfgfs
-  if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
-    local restart_date
-    restart_date="${model_start_date_next_cycle}"
-    echo "Copying CICE restarts for 'RUN=${RUN}' at ${restart_date}"
-    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
-    source_file="cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
-    target_file="${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
-    ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
-           "${COMOUT_ICE_RESTART}/${target_file}"
-  fi
-
+      ;;
+    gfs|gefs|sfs) # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
+      if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
+        local seconds source_file target_file
+        echo "Copying CICE restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
+        seconds=$(to_seconds "${forecast_end_cycle:8:2}0000")  # convert HHMMSS to seconds
+        source_file="cice_model.res.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
+        target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.cice_model.res.nc"
+        ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
+               "${COMOUT_ICE_RESTART}/${target_file}"
+      fi
+      ;;
+    *)
+      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      exit 25
+      ;;
+  esac
 }
 
 GOCART_rc() {
@@ -846,35 +869,39 @@ CMEPS_postdet() {
 CMEPS_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CMEPS mediator"
 
-  # Copy mediator restarts at the end of the forecast segment to COM for RUN=gfs|gefs
-  if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
-    echo "Copying mediator restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
-    local seconds source_file target_file
-    seconds=$(to_seconds "${forecast_end_cycle:8:2}"0000)
-    source_file="ufs.cpld.cpl.r.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
-    target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.ufs.cpld.cpl.r.nc"
-    if [[ -f "${DATArestart}/CMEPS_RESTART/${source_file}" ]]; then
-      ${NCP} "${DATArestart}/CMEPS_RESTART/${source_file}" \
-             "${COMOUT_MED_RESTART}/${target_file}"
-    else
-      echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
-    fi
-  fi
-
-  # Copy restarts for the next cycle to COM for RUN=gdas|enkfgdas|enkfgfs
-  if [[ "${RUN}" =~ "gdas" || "${RUN}" == "enkfgfs" ]]; then
-    local restart_date
-    restart_date="${model_start_date_next_cycle}"
-    echo "Copying mediator restarts for 'RUN=${RUN}' at ${restart_date}"
-    seconds=$(to_seconds "${restart_date:8:2}"0000)
-    source_file="ufs.cpld.cpl.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
-    target_file="${restart_date:0:8}.${restart_date:8:2}0000.ufs.cpld.cpl.r.nc"
-    if [[ -f "${DATArestart}/CMEPS_RESTART/${source_file}" ]]; then
-      ${NCP} "${DATArestart}/CMEPS_RESTART/${source_file}" \
-             "${COMOUT_MED_RESTART}/${target_file}"
-    else
-      echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
-    fi
-  fi
-
+  case ${RUN} in
+    gdas|enkfgdas|enkfgfs) # Copy restarts for the next cycle to COM for RUN=gdas|enkfgdas|enkfgfs
+      local restart_date
+      restart_date="${model_start_date_next_cycle}"
+      echo "Copying mediator restarts for 'RUN=${RUN}' at ${restart_date}"
+      seconds=$(to_seconds "${restart_date:8:2}"0000)
+      source_file="ufs.cpld.cpl.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
+      target_file="${restart_date:0:8}.${restart_date:8:2}0000.ufs.cpld.cpl.r.nc"
+      if [[ -f "${DATArestart}/CMEPS_RESTART/${source_file}" ]]; then
+        ${NCP} "${DATArestart}/CMEPS_RESTART/${source_file}" \
+               "${COMOUT_MED_RESTART}/${target_file}"
+      else
+        echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
+      fi
+      ;;
+    gfs|gefs|sfs) # Copy mediator restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
+      if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
+        echo "Copying mediator restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
+        local seconds source_file target_file
+        seconds=$(to_seconds "${forecast_end_cycle:8:2}"0000)
+        source_file="ufs.cpld.cpl.r.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
+        target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.ufs.cpld.cpl.r.nc"
+        if [[ -f "${DATArestart}/CMEPS_RESTART/${source_file}" ]]; then
+          ${NCP} "${DATArestart}/CMEPS_RESTART/${source_file}" \
+                 "${COMOUT_MED_RESTART}/${target_file}"
+        else
+          echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
+        fi
+      fi
+      ;;
+    *)
+      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      exit 25
+      ;;
+  esac
 }

@@ -102,12 +102,11 @@ export ROTDIR="@COMROOT@/${PSLOT}"
 
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
-export FETCHDIR="@FETCHDIR@"  # HPSS or local directory where IC tarball(s) can be found.
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
-export NET="gefs"  # NET is defined in the job-card (ecf)
-export RUN="gefs"  # RUN is defined in the job-card (ecf)
+export NET="sfs"  # NET is defined in the job-card (ecf)
+export RUN="sfs"  # RUN is defined in the job-card (ecf)
 
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
@@ -137,7 +136,7 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_EXTRACTVARS="@DO_EXTRACTVARS@" # Option to process and extract a subset of products to save on disk
 export DO_AERO_FCST="NO"
-export DOBNDPNT_WAVE="NO" # The GEFS buoys file does not currently have any boundary points
+export DOBNDPNT_WAVE="NO" # The SFS buoys file does not currently have any boundary points
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
@@ -153,7 +152,7 @@ export OPS_RES="C768" # Do not change
 
 # Resolution specific parameters
 export LEVS=128
-export CASE="@CASECTL@"  # CASE is required in GEFS to determine ocean/ice/wave resolutions
+export CASE="@CASECTL@"  # CASE is required in SFS to determine ocean/ice/wave resolutions
 export CASE_ENS="@CASEENS@"
 export OCNRES="@OCNRES@"
 export ICERES="${OCNRES}"
