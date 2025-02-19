@@ -396,7 +396,7 @@ class Tasks:
             task_clusters = self.clusters_batch
             task_reservation = self.reservation_batch
 
-        # Schuduler-specific configurations
+        # Scheduler-specific configurations
         native = None
         if scheduler in ['pbspro']:
 
