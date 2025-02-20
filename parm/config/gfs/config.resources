@@ -772,9 +772,15 @@ case ${step} in
       export UFS_THREADS=${nthreads_ufs:-1}
       nthreads_fv3=1
       nthreads_mediator=1
-      [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
-      [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
-      [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
+      if [[ "${DO_WAVE}" == "YES" ]]; then
+          nthreads_ww3=1
+      fi
+      if [[ "${DO_OCN}" == "YES" ]]; then
+          nthreads_mom6=1
+      fi
+      if [[ "${DO_ICE}" == "YES" ]]; then
+          nthreads_cice6=1
+      fi
     fi
 
     if (( ntiles > 6 )); then
@@ -947,7 +953,9 @@ case ${step} in
       ;;
     esac
     tasks_per_node=${ntasks}
-    [[ ${CASE} == "C1152" ]] && tasks_per_node=40
+    if [[ ${CASE} == "C1152" ]]; then
+        tasks_per_node=40
+    fi
 
     threads_per_task=1
 
@@ -1021,7 +1029,9 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=1
     memory="20G"
-    [[ ${CASE} == "C768" || ${CASE} == "C1152" ]] && memory="80GB"
+    if [[ ${CASE} == "C768" || ${CASE} == "C1152" ]]; then
+        memory="80GB"
+    fi
     ;;
 
   "metp")
@@ -1247,7 +1257,9 @@ case ${step} in
 
   "epos")
     walltime="00:15:00"
-    [[ ${CASE} == "C768" || ${CASE} == "C1152" ]] && walltime="00:25:00"
+    if [[ ${CASE} == "C768" || ${CASE} == "C1152" ]]; then
+        walltime="00:25:00"
+    fi
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))

@@ -127,7 +127,9 @@ if [ $DO_CALC_ANALYSIS == "YES" ]; then
    SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS_ENKF}.txt}
 
    if [ $USE_CFP = "YES" ]; then
-      [[ -f $DATA/mp_chgres.sh ]] && rm $DATA/mp_chgres.sh
+      if [[ -f $DATA/mp_chgres.sh ]]; then
+          rm $DATA/mp_chgres.sh
+      fi
    fi
 
    nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')

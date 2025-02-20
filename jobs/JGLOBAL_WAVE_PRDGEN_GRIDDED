@@ -35,7 +35,9 @@ fi
 ###################################
 ${SCRgfs}/exgfs_wave_prdgen_gridded.sh
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit ${status}
+fi
 
 ###################################
 # Remove temp directories
