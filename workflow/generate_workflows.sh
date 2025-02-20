@@ -190,6 +190,8 @@ if [[ "${_debug}" == "true" ]]; then
 fi
 
 # Create the RUNTESTS directory
+# Start by getting the full path
+_runtests="$(realpath "${_runtests}")"
 if [[ "${_verbose}" == "true" ]]; then
     printf "Creating RUNTESTS in %s\n\n" "${_runtests}"
 fi
