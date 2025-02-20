@@ -326,7 +326,7 @@ local LSEASPRAY=${lseaspray:-".true."}
 local RANDOM_CLDS=${random_clds:-".true."}
 local TRANS_TRAC=${trans_trac:-".true."}
 local CNVCLD=${cnvcld:-".true."}
-local XR_CNVCLD=${xr_cnvcld:-".true."}
+local XR_CNVCLD=${xr_cnvcld:-".false."}
 local IMFSHALCNV=${imfshalcnv:-"2"}
 local IMFDEEPCNV=${imfdeepcnv:-"2"}
 local PROGSIGMA=${progsigma:-".true."}
@@ -503,7 +503,7 @@ local FSMCL2=${FSMCL2:+\'${FSMCL2}\'}${FSMCL2:-99999}
 local FSMCL3=${FSMCL3:+\'${FSMCL3}\'}${FSMCL3:-99999}
 local FSMCL4=${FSMCL4:+\'${FSMCL4}\'}${FSMCL4:-99999}
 local LANDICE=${landice:-".true."}
-local FTSFS=${FTSFS:+\'${FTSFS}\'}${FTSFS:-90}
+local FTSFS=${FTSFS:-90}
 local FAISL=${FAISL:+\'${FAISL}\'}${FAISL:-99999}
 local FAISS=${FAISS:+\'${FAISS}\'}${FAISS:-99999}
 local FSNOL=${FSNOL:+\'${FSNOL}\'}${FSNOL:-99999}
@@ -562,5 +562,5 @@ local MOM6_RESTART_SETTING=r
 local MOM6_RESTART_DIR=MOM6_RESTART/
 
 local global_template="${HOMEgfs}/parm/ufs/fv3/global_control.nml.IN"
-atparse < "${global_template}" >> "input.nml"
-}
+
+atparse < "${global_template}" >> "input.nml"}

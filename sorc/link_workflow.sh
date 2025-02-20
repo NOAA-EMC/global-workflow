@@ -192,7 +192,13 @@ done
 # Link global_control.nml.IN template to parm/fv3
 cd "${HOMEgfs}/parm/ufs/fv3" || exit 1
 [[ -s "global_control.nml.IN" ]] && rm -f "global_control.nml.IN"
-${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/global_control.nml.IN" .
+#${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/global_control.nml.IN" .
+cp  "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/global_control.nml.IN" .
+
+# Correct global_control.nml.IN discrepancies
+sed -i "175 a xr_cnvcld    = @[XR_CNVCLD]" "global_control.nml.IN"
+sed -i "97d" "global_control.nml.IN"
+
 
 # Link the script from ufs-weather-model that parses the templates
 cd "${HOMEgfs}/ush" || exit 1
