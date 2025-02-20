@@ -125,7 +125,7 @@ done
 ${INVOBSSH:-${SCRgfs}/exgdas_enkf_select_obs.sh}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 

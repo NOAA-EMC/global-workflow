@@ -40,7 +40,7 @@ fi
 ${SCRgfs}/exgfs_atmos_postsnd.sh
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 

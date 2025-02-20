@@ -54,7 +54,7 @@ fi
 export LEVS=$(${NCLEN} ${ATMGES} pfull)
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 
@@ -93,7 +93,7 @@ fi
 ${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 

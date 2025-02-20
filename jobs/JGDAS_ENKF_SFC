@@ -45,7 +45,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 ${ENKFRESFCSH:-${SCRgfs}/exgdas_enkf_sfc.sh}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 

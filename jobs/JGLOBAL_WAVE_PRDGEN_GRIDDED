@@ -36,7 +36,7 @@ fi
 ${SCRgfs}/exgfs_wave_prdgen_gridded.sh
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 ###################################

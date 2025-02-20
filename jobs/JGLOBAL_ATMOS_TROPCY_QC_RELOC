@@ -44,7 +44,7 @@ export BKGFREQ=1                                # for hourly relocation
 ${TROPCYQCRELOSH:-${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 

@@ -34,7 +34,7 @@ if [[ ! -d ${COMOUT_WAVE_GEMPAK} ]]; then mkdir -p "${COMOUT_WAVE_GEMPAK}"; fi
 ${SCRgfs}/exgfs_wave_nawips.sh
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 ###################################
 

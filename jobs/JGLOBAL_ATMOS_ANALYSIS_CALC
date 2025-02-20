@@ -50,7 +50,7 @@ fi
 export LEVS=$(${NCLEN} ${ATMGES} pfull)
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 
@@ -64,7 +64,7 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 ${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 

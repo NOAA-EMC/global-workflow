@@ -103,7 +103,7 @@ done
 ${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 
