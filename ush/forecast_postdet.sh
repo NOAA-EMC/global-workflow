@@ -373,24 +373,19 @@ WW3_postdet() {
   elif [[ -s "${ww3_binary_restart_file}" ]]; then 
     # found binary ww3 restart file 
     export WW3_restart_from_binary=true
-    if [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
-      #if this is a cmeps continue then the wave restart name is different 
-      seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
-      local ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}"
-      ${NCP} "${ww3_binary_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
-          || ( echo "FATAL ERROR: Unable to copy binary WW3 IC, ABORT!"; exit 1 )
-    else 
-      ${NCP} "${ww3_binary_restart_file}" "${DATA}/restart.ww3" \
-          || ( echo "FATAL ERROR: Unable to copy binary WW3 IC, ABORT!"; exit 1 )
-    fi 
+    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+    local ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}"
+    ${NCP} "${ww3_binary_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
+             || ( echo "FATAL ERROR: Unable to copy binary WW3 IC, ABORT!"; exit 1 )
   else
-    if [[ "${RERUN}" == "YES" ]]; then
+    if [[ "${RERUN}" == "YES" ]] || [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
       # In the case of a RERUN, the WW3 restart file is required
-      echo "FATAL ERROR: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+      # In the case of runtype=continue, if no wave restart when using PIO, the model will fail
+      echo "FATAL ERROR: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for RERUN='${RERUN}' or runtype=continue, ABORT!"
       exit 1
     else
+      export WW3_restart_from_binary=false
       echo "WARNING: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
-      export WW3_restart_from_binary=true
     fi
   fi
 

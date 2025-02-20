@@ -11,6 +11,7 @@ export JCB_ALGO_YAML_VAR=@JCB_ALGO_YAML_VAR@
 export MARINE_OBS_YAML_DIR="${PARMgfs}/gdas/soca/obs/config"
 export MARINE_OBS_LIST_YAML=@SOCA_OBS_LIST@
 export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@
+export SOCA_ANL_GEOM=@SOCA_ANL_GEOM@
 export SOCA_NINNER=@SOCA_NINNER@
 export DOMAIN_STACK_SIZE=116640000  #TODO: Make the stack size resolution dependent
 export SOCA_ENS_BKG_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_ens_bkg_stage.yaml.j2"
