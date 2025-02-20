@@ -26,10 +26,10 @@ for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); 
   infile=${com_dir}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
   new_infile=${subdata}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}_ext.grib2
   outfile=${subdata}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
+  rm -f "${outfile}" # Remove outfile if it already exists before extraction
 
   if [[ -f "${infile}" ]]; then # Check if input file exists before extraction
     cpfs "${infile}" "${new_infile}" # Copy infile to the subdata directory
-    rm -f "${outfile}" # Remove outfile if it already exists before extraction
     # shellcheck disable=SC2312
     ${WGRIB2} "${new_infile}" | grep -F -f "${varlist_wav}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
   elif [[ -f "${infile}" ]];
