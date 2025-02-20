@@ -42,9 +42,9 @@ fi
 ###################################
 # Remove temp directories
 ###################################
-cd ${DATAROOT}
+cd "${DATAROOT}" || true
 if [ "${KEEPDATA}" != "YES" ]; then
-  rm -rf ${DATA}
+  rm -rf "${DATA}"
 fi
 
 exit 0

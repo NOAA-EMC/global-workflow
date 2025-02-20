@@ -36,7 +36,7 @@ mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 ${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 
@@ -48,15 +48,15 @@ fi
 # Final processing
 ##############################################
 if [[ -e "${pgmout}" ]] ; then
-  cat ${pgmout}
+  cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-if [[ ${KEEPDATA} = "NO" ]]; then
-    rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" = "NO" ]]; then
+    rm -rf "${DATA}"
 fi
 
 
