@@ -493,7 +493,7 @@ class Archive(Task):
             EDATE: Datetime
                 Ending cycle date.
             NET: str
-                The workflow type (gfs or gefs)
+                The workflow type (gfs, gefs, or sfs)
             ARCH_EXPDIR_FREQ: int
                 Frequency to perform EXPDIR archiving
             ROTDIR: str
