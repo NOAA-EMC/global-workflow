@@ -19,7 +19,7 @@ datacompress=${4}
 fhout_ocnice=${5}
 comout_rfcst_prod_ocnice=${6}
 
-if [[! -d "${subdata}" ]]; then
+if [[ ! -d "${subdata}" ]]; then
    mkdir -p "${subdata}"
 fi
 

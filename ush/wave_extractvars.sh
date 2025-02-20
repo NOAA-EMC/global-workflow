@@ -18,7 +18,7 @@ com_dir=${!com_varname}
 
 subdata=${1}
 
-if [[! -d "${subdata}" ]]; then
+if [[ ! -d "${subdata}" ]]; then
    mkdir -p "${subdata}"
 fi
 

@@ -133,7 +133,7 @@ export REDERR=${REDERR:-'2>'}
 ${INISCRIPT:-}
 pwd=$(pwd)
 cd "${DATA}" || exit 99
-if [[! -d "${COMOUT_ATMOS_ANALYSIS}" ]]; then
+if [[ ! -d "${COMOUT_ATMOS_ANALYSIS}" ]]; then
    mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 fi
 
