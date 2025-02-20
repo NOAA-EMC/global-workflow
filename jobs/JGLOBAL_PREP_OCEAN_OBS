@@ -40,7 +40,7 @@ fi
 # Handle the temporary working directory
 ##########################################
 cd "${DATAROOT}" || (echo "FATAL ERROR: ${DATAROOT} does not exist. ABORT!"; exit 1)
-if [[ "${KEEPDATA}" = "NO" ]]; then
+if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
 

@@ -41,7 +41,7 @@ fi
 ################################
 # Remove the Working Directory
 ################################
-if [[ "${KEEPDATA}" = "NO" ]]; then
+if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
 

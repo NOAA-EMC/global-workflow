@@ -54,7 +54,7 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || exit 1
-if [[ "${KEEPDATA}" = "NO" ]]; then
+if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
 
