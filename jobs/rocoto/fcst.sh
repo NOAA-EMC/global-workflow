@@ -13,7 +13,7 @@ else
 fi
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 export job="fcst"
@@ -23,4 +23,4 @@ export jobid="${job}.$$"
 "${HOMEgfs}/jobs/JGLOBAL_FORECAST"
 status=$?
 
-exit ${status}
+exit "${status}"

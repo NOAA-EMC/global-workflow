@@ -7,7 +7,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 ###############################################################
@@ -45,7 +45,7 @@ if [[ ${ROTDIR_DUMP} = "YES" ]]; then
    "${HOMEgfs}/ush/getdump.sh" "${PDY}${cyc}" "${RUN_local}" "${COM_OBSDMP}" "${COM_OBS}"
    status=$?
    if [[ ${status} -ne 0 ]]; then
-       exit ${status}
+       exit "${status}"
    fi
 
    #  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
@@ -53,7 +53,7 @@ if [[ ${ROTDIR_DUMP} = "YES" ]]; then
      "${HOMEgfs}/ush/getdump.sh" "${GDATE}" "${GDUMP}" "${COM_OBSDMP_PREV}" "${COM_OBS_PREV}"
      status=$?
      if [[ ${status} -ne 0 ]]; then
-         exit ${status}
+         exit "${status}"
      fi
    fi
    # exception handling to ensure no dead link
@@ -89,7 +89,7 @@ if [[ ${PROCESS_TROPCY} = "YES" ]]; then
     "${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
     status=$?
     if [[ ${status} -ne 0 ]]; then
-        exit ${status}
+        exit "${status}"
     fi
 
 else
@@ -126,7 +126,7 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP"
     status=$?
     if [[ ${status} -ne 0 ]]; then
-        exit ${status}
+        exit "${status}"
     fi
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.

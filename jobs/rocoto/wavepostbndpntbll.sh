@@ -9,7 +9,7 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 . ${HOMEgfs}/ush/load_ufswm_modules.sh
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 export job="wavepostbndpntbll"
@@ -22,7 +22,7 @@ echo "=============== START TO RUN WAVE_POST_BNDPNT ==============="
 ${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_BNDPNTBLL
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 exit 0

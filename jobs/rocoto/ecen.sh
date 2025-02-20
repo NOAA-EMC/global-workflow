@@ -7,7 +7,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 ###############################################################
@@ -24,7 +24,7 @@ for fhr in ${fhrlst}; do
     ${HOMEgfs}/jobs/JGDAS_ENKF_ECEN
     status=$?
     if [[ ${status} -ne 0 ]]; then
-        exit ${status}
+        exit "${status}"
     fi
 
 done

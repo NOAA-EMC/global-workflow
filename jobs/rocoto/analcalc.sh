@@ -7,7 +7,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit ${status}
+    exit "${status}"
 fi
 
 export job="analcalc"
@@ -19,4 +19,4 @@ ${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC
 status=$?
 
 
-exit ${status}
+exit "${status}"
