@@ -51,11 +51,7 @@ export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_O
 
 export FORECASTSH="${SCRgfs}/exglobal_forecast.sh"
 #export FORECASTSH="${SCRgfs}/exglobal_forecast.py"  # Temp. while this is worked on
-if [[ "${SFS_POST:-}" == "YES" ]]; then
-  export FCSTEXEC="sfs_model.x"
-else
-  export FCSTEXEC="gefs_model.x"
-fi
+export FCSTEXEC="${NET}_model.x"
 
 #######################################################################
 # Model configuration
