@@ -77,7 +77,7 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 
 for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  if [[ ! -d ${pr_dir} ]]; then
+  if [[ ! -d "${pr_dir}" ]]; then
       mkdir -p "${pr_dir}"
   fi
   db_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
