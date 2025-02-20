@@ -21,7 +21,8 @@ EXSCRIPT=${BUFR2IODASH:-${USHgfs}/run_bufr2ioda.py}
 ${EXSCRIPT} "${PDY}${cyc}" "${RUN}" "${DMPDIR}" "${PARMgfs}/gdas/ioda/bufr2ioda" "${COM_OBS}/"
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    (echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}")
+    echo "FATAL ERROR: Error executing ${EXSCRIPT}"
+    exit "${status}"
 fi
 
 ##############################################

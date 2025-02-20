@@ -24,13 +24,13 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
   COM_ATMOS_WMO COM_ATMOS_GEMPAK
 
-if [[ ! -d ${COM_ATMOS_BUFR} ]]; then
+if [[ ! -d "${COM_ATMOS_BUFR}" ]]; then
     mkdir -p "${COM_ATMOS_BUFR}"
 fi
-if [[ ! -d ${COM_ATMOS_GEMPAK} ]]; then
+if [[ ! -d "${COM_ATMOS_GEMPAK}" ]]; then
     mkdir -p "${COM_ATMOS_GEMPAK}"
 fi
-if [[ ! -d ${COM_ATMOS_WMO} ]]; then
+if [[ ! -d "${COM_ATMOS_WMO}" ]]; then
     mkdir -p "${COM_ATMOS_WMO}"
 fi
 

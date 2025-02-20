@@ -113,8 +113,8 @@ export SETUP_INVOBS="passive_bc=.false.,${SETUP_INVOBS}"
 
 # Ensure clean stat tarballs for ensemble mean
 for fstat in ${CNVSTAT} ${OZNSTAT} ${RADSTAT}; do
-    if [[ -f ${fstat} ]]; then
-        rm -f ${fstat}
+    if [[ -f "${fstat}" ]]; then
+        rm -f "${fstat}"
     fi
 done
 

@@ -14,7 +14,7 @@ set +x
 source "${HOMEgfs}/workflow/gw_setup.sh"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
-   exit "${status}"
+   exit "${rc}"
 fi
 set -x
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"

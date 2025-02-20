@@ -104,7 +104,7 @@ ${JAVA} -version
 
 GH=$(command -v gh || echo "${HOME}/bin/gh")
 if [[ ! -f "${GH}" ]]; then
-   echo "ERROR: GitHub CLI (gh) not found. (exiting with error)"
+   echo "FATAL ERROR: GitHub CLI (gh) not found. (exiting with error)"
    exit 1
 fi
 ${GH} --version
