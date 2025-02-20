@@ -9,7 +9,7 @@
 # Thank you for your contribution
 
 # If the MACHINE_ID variable is set, skip this script.
-if [[ -n ${MACHINE_ID:-} ]]; then
+if [[ -n "${MACHINE_ID:-}" ]]; then
     return
 fi
 

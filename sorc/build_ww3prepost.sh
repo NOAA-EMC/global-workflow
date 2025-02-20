@@ -81,7 +81,7 @@ cat "${buildswitch}"
 
 #define cmake build options
 MAKE_OPT="-DCMAKE_INSTALL_PREFIX=${path_install}"
-if [[ ${BUILD_TYPE:-"Release"} = "Debug" ]]; then
+if [[ "${BUILD_TYPE:-"Release"}" == "Debug" ]]; then
     MAKE_OPT+=" -DCMAKE_BUILD_TYPE=Debug"
 fi
 

@@ -53,7 +53,7 @@ ENKF_SPREAD=${ENKF_SPREAD:-"NO"}
 ################################################################################
 #  Preprocessing
 ENKF_SUFFIX="s"
-if [[ $SMOOTH_ENKF = "NO" ]]; then
+if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
     ENKF_SUFFIX=""
 fi
 
@@ -95,7 +95,7 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
          ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
       done
    fi
-   if [[ $ENKF_SPREAD = "YES" ]]; then
+   if [[ "${ENKF_SPREAD}" == "YES" ]]; then
        ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}atmf${fhrchar}.ensspread.nc" "atmf${fhrchar}.ensspread"
    fi
 done
@@ -103,8 +103,8 @@ done
 ################################################################################
 # Generate ensemble mean surface and atmospheric files
 
-if [[ $SMOOTH_ENKF = "YES" ]]; then
-    $NCP $HYBENSMOOTH ./hybens_smoothinfo
+if [[ "${SMOOTH_ENKF}" == "YES" ]]; then
+    $NCP "${HYBENSMOOTH}" ./hybens_smoothinfo
 fi
 
 rc=0

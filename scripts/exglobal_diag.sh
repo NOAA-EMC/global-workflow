@@ -55,17 +55,17 @@ CNVSTAT=${CNVSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat}
 OZNSTAT=${OZNSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat}
 
 # Remove stat file if file already exists
-if [[ -s $RADSTAT ]]; then
-    rm -f $RADSTAT
+if [[ -s "${RADSTAT}" ]]; then
+    rm -f "${RADSTAT}"
 fi
-if [[ -s $PCPSTAT ]]; then
-    rm -f $PCPSTAT
+if [[ -s "${PCPSTAT}" ]]; then
+    rm -f "${PCPSTAT}"
 fi
-if [[ -s $CNVSTAT ]]; then
-    rm -f $CNVSTAT
+if [[ -s "${CNVSTAT}" ]]; then
+    rm -f "${CNVSTAT}"
 fi
-if [[ -s $OZNSTAT ]]; then
-    rm -f $OZNSTAT
+if [[ -s "${OZNSTAT}" ]]; then
+    rm -f "${OZNSTAT}"
 fi
 
 # Obs diag
@@ -132,13 +132,13 @@ if [ $GENDIAG = "YES" ] ; then
    fi
 
    if [ $USE_CFP = "YES" ]; then
-      if [[ -f $DATA/diag.sh ]]; then
-          rm $DATA/diag.sh
+      if [[ -f "${DATA}/diag.sh" ]]; then
+          rm "${DATA}/diag.sh"
       fi
-      if [[ -f $DATA/mp_diag.sh ]]; then
-          rm $DATA/mp_diag.sh
+      if [[ -f "${DATA}/mp_diag.sh" ]]; then
+          rm "${DATA}/mp_diag.sh"
       fi
-      cat > $DATA/diag.sh << EOFdiag
+      cat > "${DATA}/diag.sh" << EOFdiag
 #!/bin/sh
 lrun_subdirs=\$1
 binary_diag=\$2
@@ -285,8 +285,8 @@ if [[ "$REMOVE_DIAG_DIR" = "YES" && "$err" = "0" ]]; then
 fi
 
 cd $pwd
-if [[ "${mkdata:-YES}" = "YES" ]]; then
-    rm -rf $DATA
+if [[ "${mkdata:-YES}" == "YES" ]]; then
+    rm -rf "${DATA}"
 fi
 
 

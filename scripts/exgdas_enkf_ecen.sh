@@ -102,7 +102,7 @@ fi
 cd $DATA || exit 99
 
 ENKF_SUFFIX="s"
-if [[ $SMOOTH_ENKF = "NO" ]]; then
+if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
     ENKF_SUFFIX=""
 fi
 
@@ -256,10 +256,10 @@ if [ $RECENTER_ENKF = "YES" ]; then
 
       export OMP_NUM_THREADS=$NTHREADS_CHGRES
 
-      if [[ -f $chgresnml ]]; then
-          rm -f $chgresnml
+      if [[ -f "${chgresnml}" ]]; then
+          rm -f "${chgresnml}"
       fi
-      cat > $chgresnml << EOF
+      cat > "${chgresnml}" << EOF
 &${nmltitle}_setup
   i_output=$LONB_ENKF
   j_output=$LATB_ENKF
@@ -368,9 +368,9 @@ done # loop over analysis times in window
 ################################################################################
 # Postprocessing
 cd $pwd
-if [[ $mkdata = "YES" ]]; then
-    rm -rf $DATA
+if [[ "${mkdata}" == "YES" ]]; then
+    rm -rf "${DATA}"
 fi
 
 
-exit ${err}
+exit "${err}"

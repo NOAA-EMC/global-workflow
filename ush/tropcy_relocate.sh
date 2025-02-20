@@ -350,14 +350,14 @@ for fhr in $( seq -6 $BKGFREQ 3 ) ; do
    fi
 
    sges=sg${tpref}prep
-   if [[ $fhr -lt -3 ]]; then
+   if [[ ${fhr} -lt -3 ]]; then
        sges=NULL
    fi
    echo $sges
 #   stype=sigg${tpref}
    stype=natg${tpref}
-   if [[ $RUN = cdas1 ]]; then
-       stype=sigg${tpref} ## for cfs
+   if [[ "${RUN}" = cdas1 ]]; then
+       stype="sigg${tpref}"  ## for cfs
    fi
    pges=pg${tpref}prep
    ptype=${pgpref}${tpref}

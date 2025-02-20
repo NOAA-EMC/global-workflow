@@ -500,8 +500,8 @@ ${NLN} ${ABIBF}            abibufr
 ${NLN} ${HDOB}             hdobbufr
 ${NLN} ${SSTVIIRS}         sstviirs
 
-if [[ ${DONST} = "YES" ]]; then
-    ${NLN} ${NSSTBF} nsstbufr
+if [[ "${DONST}" == "YES" ]]; then
+    ${NLN} "${NSSTBF}" nsstbufr
 fi
 
 ##############################################################
@@ -521,39 +521,39 @@ ${NLN} ${SFCG03} sfcf03
 ${NLN} ${SFCGES} sfcf06
 ${NLN} ${SFCG09} sfcf09
 
-if [[ -f ${ATMG04} ]]; then
-    ${NLN} ${ATMG04} sigf04
+if [[ -f "${ATMG04}" ]]; then
+    ${NLN} "${ATMG04}" sigf04
 fi
-if [[ -f ${ATMG05} ]]; then
-    ${NLN} ${ATMG05} sigf05
+if [[ -f "${ATMG05}" ]]; then
+    ${NLN} "${ATMG05}" sigf05
 fi
-if [[ -f ${ATMG07} ]]; then
-    ${NLN} ${ATMG07} sigf07
+if [[ -f "${ATMG07}" ]]; then
+    ${NLN} "${ATMG07}" sigf07
 fi
-if [[ -f ${ATMG08} ]]; then
-    ${NLN} ${ATMG08} sigf08
-fi
-
-if [[ -f ${SFCG04} ]]; then
-    ${NLN} ${SFCG04} sfcf04
-fi
-if [[ -f ${SFCG05} ]]; then
-    ${NLN} ${SFCG05} sfcf05
-fi
-if [[ -f ${SFCG07} ]]; then
-    ${NLN} ${SFCG07} sfcf07
-fi
-if [[ -f ${SFCG08} ]]; then
-    ${NLN} ${SFCG08} sfcf08
+if [[ -f "${ATMG08}" ]]; then
+    ${NLN} "${ATMG08}" sigf08
 fi
 
-if [ ${DOHYBVAR} = "YES" ]; then
+if [[ -f "${SFCG04}" ]]; then
+    ${NLN} "${SFCG04}" sfcf04
+fi
+if [[ -f "${SFCG05}" ]]; then
+    ${NLN} "${SFCG05}" sfcf05
+fi
+if [[ -f "${SFCG07}" ]]; then
+    ${NLN} "${SFCG07}" sfcf07
+fi
+if [[ -f "${SFCG08}" ]]; then
+    ${NLN} "${SFCG08}" sfcf08
+fi
+
+if [ "${DOHYBVAR}" == "YES" ]; then
 
    # Link ensemble members
    mkdir -p ensemble_data
 
    ENKF_SUFFIX="s"
-   if [[ ${SMOOTH_ENKF} = "NO" ]]; then
+   if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
        ENKF_SUFFIX=""
    fi
 
@@ -658,15 +658,15 @@ fi
 
 ##############################################################
 # If requested, copy and de-tar guess radstat file
-if [ ${USE_RADSTAT} = "YES" ]; then
-   if [ ${USE_CFP} = "YES" ]; then
-     if [[ -f ${DATA}/unzip.sh ]]; then
-         rm ${DATA}/unzip.sh
+if [[ "${USE_RADSTAT}" == "YES" ]]; then
+   if [[ "${USE_CFP}" == "YES" ]]; then
+     if [[ -f "${DATA}/unzip.sh" ]]; then
+         rm "${DATA}/unzip.sh"
      fi
-     if [[ -f ${DATA}/mp_unzip.sh ]]; then
-         rm ${DATA}/mp_unzip.sh
+     if [[ -f "${DATA}/mp_unzip.sh" ]]; then
+         rm "${DATA}/mp_unzip.sh"
      fi
-     cat > ${DATA}/unzip.sh << EOFunzip
+     cat > "${DATA}/unzip.sh" << EOFunzip
 #!/bin/sh
    diag_file=\$1
    diag_suffix=\$2
@@ -1007,7 +1007,7 @@ fi
 ################################################################################
 # Postprocessing
 cd ${pwd}
-if [[ ${mkdata} = "YES" ]]; then
+if [[ "${mkdata}" == "YES" ]]; then
     rm -rf ${DATA}
 fi
 

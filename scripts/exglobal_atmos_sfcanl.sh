@@ -62,11 +62,11 @@ LONB_CASE=$((res*4))
 export FNTSFA=${FNTSFA:-${COMIN_OBS}/${OPREFIX}rtgssthr.grb}
 export FNACNA=${FNACNA:-${COMIN_OBS}/${OPREFIX}seaice.5min.blend.grb}
 export FNSNOA=${FNSNOA:-${COMIN_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-if [[ ! -f ${FNSNOA} ]]; then
+if [[ ! -f "${FNSNOA}" ]]; then
     export FNSNOA="${COMIN_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
 fi
 FNSNOG=${FNSNOG:-${COMIN_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-if [[ ! -f ${FNSNOG} ]]; then
+if [[ ! -f "${FNSNOG}" ]]; then
     FNSNOG="${COMIN_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
 fi
 

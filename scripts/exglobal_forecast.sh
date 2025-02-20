@@ -106,19 +106,19 @@ common_predet
 
 echo "MAIN: Loading variables before determination of run type"
 FV3_predet
-if [[ ${cplflx} = .true. ]]; then
+if [[ "${cplflx}" == ".true." ]]; then
     CMEPS_predet
 fi
-if [[ ${cplflx} = .true. ]]; then
+if [[ "${cplflx}" == ".true." ]]; then
     MOM6_predet
 fi
-if [[ ${cplwav} = .true. ]]; then
+if [[ "${cplwav}" == ".true." ]]; then
     WW3_predet
 fi
-if [[ ${cplice} = .true. ]]; then
+if [[ "${cplice}" == ".true." ]]; then
     CICE_predet
 fi
-if [[ ${cplchm} = .true. ]]; then
+if [[ "${cplchm}" == ".true." ]]; then
     GOCART_predet
 fi
 echo "MAIN: Variables before determination of run type loaded"
@@ -129,35 +129,35 @@ echo "MAIN: run type determined"
 
 echo "MAIN: Post-determination set up of run type"
 FV3_postdet
-if [[ ${cplflx} = .true. ]]; then
+if [[ "${cplflx}" == ".true." ]]; then
     CMEPS_postdet
 fi
-if [[ ${cplflx} = .true. ]]; then
+if [[ "${cplflx}" == ".true." ]]; then
     MOM6_postdet
 fi
-if [[ ${cplwav} = .true. ]]; then
+if [[ "${cplwav}" == ".true." ]]; then
     WW3_postdet
 fi
-if [[ ${cplice} = .true. ]]; then
+if [[ "${cplice}" == ".true." ]]; then
     CICE_postdet
 fi
-if [[ ${cplchm} = .true. ]]; then
+if [[ "${cplchm}" == ".true." ]]; then
     GOCART_postdet
 fi
 echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing namelists and model configuration"
 FV3_nml
-if [[ ${cplflx} = .true. ]]; then
+if [[ "${cplflx}" == ".true." ]]; then
     MOM6_nml
 fi
-if [[ ${cplwav} = .true. ]]; then
+if [[ "${cplwav}" == ".true." ]]; then
     WW3_nml
 fi
-if [[ ${cplice} = .true. ]]; then
+if [[ "${cplice}" == ".true." ]]; then
     CICE_nml
 fi
-if [[ ${cplchm} = .true. ]]; then
+if [[ "${cplchm}" == ".true." ]]; then
     GOCART_rc
 fi
 UFS_configure
@@ -184,22 +184,22 @@ export err=${ERR}
 ${ERRSCRIPT} || exit "${err}"
 
 FV3_out
-if [[ ${cplflx} = .true. ]]; then
+if [[ "${cplflx}" == ".true." ]]; then
     MOM6_out
 fi
-if [[ ${cplflx} = .true. ]]; then
+if [[ "${cplflx}" == ".true." ]]; then
     CMEPS_out
 fi
-if [[ ${cplwav} = .true. ]]; then
+if [[ "${cplwav}" == ".true." ]]; then
     WW3_out
 fi
-if [[ ${cplice} = .true. ]]; then
+if [[ "${cplice}" == ".true." ]]; then
     CICE_out
 fi
-if [[ ${cplchm} = .true. ]]; then
+if [[ "${cplchm}" == ".true." ]]; then
     GOCART_out
 fi
-if [[ ${esmf_profile:-} = .true. ]]; then
+if [[ "${esmf_profile:-}" == ".true." ]]; then
     CPL_out
 fi
 echo "MAIN: Output copied to ROTDIR"
