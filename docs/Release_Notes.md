@@ -4,7 +4,7 @@ GFS V16.3.22 RELEASE NOTES
 PRELUDE
 -------
 
-The Gulf of Mexico is renamed to the Gulf of America.
+The Gulf of Mexico is renamed to the Gulf of America. This is a non-science change and does not impact model output.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -54,7 +54,7 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* New MODEL tag `GFS.v16.3.22` - includes WW3 updates for name change
+* New MODEL tag `GFS.v16.3.22` - includes WW3 updates for name change, results do not change
 
 JOBS CHANGES
 ------------
