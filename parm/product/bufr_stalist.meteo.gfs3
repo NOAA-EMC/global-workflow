@@ -662,11 +662,11 @@
 041004 32.50N  79.07W B#T  20 BUOY  E SAVANNAH       ATL    0 OPC 11-03                      
 041006 29.30N  77.40W B#3  20 BUOY  E DAYTONA        ATL    0 3-93                           
 041010 28.90N  78.50W B#4  20 BUOY  CANAVERAL EAST   ATL    0 NASA-JSC 3-93                  
-042001 25.90N  89.70W B#5  22 BUOY  MID GULF         MEX    0 FOUS(G2GFD) 3-93               
-042002 25.90N  93.60W B#6  22 BUOY  W GULF           MEX    0 FOUS(G2GFE) 3-93               
-042003 25.90N  85.90W B#7  22 BUOY  E GULF           MEX    0 NASA-JSCFOUS(B)                
-042019 27.90N  95.00W B#8  22 BUOY  LANELLE  GULF OF MEX    0 3-93                           
-042020 27.00N  96.50W B#9  22 BUOY  EILEEN   GULF OF MEX    0 3-93                           
+042001 25.90N  89.70W B#5  22 BUOY  MID GULF         AMR    0 FOUS(G2GFD) 3-93               
+042002 25.90N  93.60W B#6  22 BUOY  W GULF           AMR    0 FOUS(G2GFE) 3-93               
+042003 25.90N  85.90W B#7  22 BUOY  E GULF           AMR    0 NASA-JSCFOUS(B)                
+042019 27.90N  95.00W B#8  22 BUOY  LANELLE  GULF OF AMR    0 3-93                           
+042020 27.00N  96.50W B#9  22 BUOY  EILEEN   GULF OF AMR    0 3-93                           
 044004 38.50N  70.70W C7H  20 BUOY  HOTEL            ATL    0 FOUS 3-93                      
 044005 42.60N  68.60W 9B6  20 BUOY  GULF OF ME       ATL    0 FOUS 3-93                      
 044007 43.53N  70.14W B#PM 20 BUOY  NR PORTLAND ME   ATL    0 Usr Rqst 2-18
@@ -724,21 +724,21 @@
 081810 41.28N   2.07E LEBL 10 BARCELONA                     6 Baker/UPS 11-08
 082220 40.42N   4.25W      11 MADRID, SPAIN  (4NASA)      820
 082840 39.50N   0.47W LEVC 10 VALENCIA                     62 Baker/UPS 11-08
-090001 36.50N 100.80W G#1  12 PERRYTON                TX  893 GUFMEX 12-93                   
-090002 30.30N 101.70W G#2  12 SHEFFIELD               TX  726 GUFMEX 12-93                   
-090003 27.70N 102.50W G#3  12 MUZQUIZ, COAH           MX 1247 GUFMEX 12-93                   
-090004 30.50N  99.10W G#4  12 FREDRICKSBURG           TX  504 GUFMEX 12-93                   
-090005 28.40N  98.70W G#5  12 COTULLA                 TX   98 GUFMEX 12-93                   
-090006 26.30N  98.80W G#6  12 RIO GRANDE CITY         TX   53 GUFMEX 12-93                   
-090007 24.40N  97.40W G#7  22 W. GULF OF AMERICA GFMX#7      0 GUFMEX 12-93                   
-090008 25.90N  95.30W G#8  20 W. GULF OF AMERICA GFMX#8      0 GUFMEX 12-93                   
-090009 24.50N  94.40W G#9  22 W. GULF OF AMERICA GFMX#9      0 GUFMEX 12-93                   
-090010 23.30N  95.60W G#A  22 W. GULF OF AMERICA GFMX#10     0 GUFMEX 12-93                   
-090011 18.30N  94.20W G#B  10 COATZACOALCOS, V.C.     MX    0 GUFMEX 12-93                   
-090012 21.40N  93.10W G#C  20 BAY OF CAMPECHE GFMX#12       0 GUFMEX 12-93                   
-090013 23.30N  91.60W G#D  22 GULF OF AMERICA GFMX#13        0 GUFMEX 12-93                   
-090014 23.70N  88.70W G#E  22 SE GULF OF AMERICA GFMX#14     0 GUFMEX 12-93                   
-090015 23.00N  85.00W G#F  20 SE GULF OF AMERICA GFMX#15     0 GUFMEX 12-93                   
+090001 36.50N 100.80W G#1  12 PERRYTON                TX  893 GUFAMR 12-93                   
+090002 30.30N 101.70W G#2  12 SHEFFIELD               TX  726 GUFAMR 12-93                   
+090003 27.70N 102.50W G#3  12 MUZQUIZ, COAH           MX 1247 GUFAMR 12-93                   
+090004 30.50N  99.10W G#4  12 FREDRICKSBURG           TX  504 GUFAMR 12-93                   
+090005 28.40N  98.70W G#5  12 COTULLA                 TX   98 GUFAMR 12-93                   
+090006 26.30N  98.80W G#6  12 RIO GRANDE CITY         TX   53 GUFAMR 12-93                   
+090007 24.40N  97.40W G#7  22 W. GULF OF AMERICA GFAM#7      0 GUFAMR 12-93                   
+090008 25.90N  95.30W G#8  20 W. GULF OF AMERICA GFAM#8      0 GUFAMR 12-93                   
+090009 24.50N  94.40W G#9  22 W. GULF OF AMERICA GFAM#9      0 GUFAMR 12-93                   
+090010 23.30N  95.60W G#A  22 W. GULF OF AMERICA GFAM#10     0 GUFAMR 12-93                   
+090011 18.30N  94.20W G#B  10 COATZACOALCOS, V.C.     MX    0 GUFAMR 12-93                   
+090012 21.40N  93.10W G#C  20 BAY OF CAMPECHE GFAM#12       0 GUFAMR 12-93                   
+090013 23.30N  91.60W G#D  22 GULF OF AMERICA GFAM#13        0 GUFAMR 12-93                   
+090014 23.70N  88.70W G#E  22 SE GULF OF AMERICA GFAM#14     0 GUFAMR 12-93                   
+090015 23.00N  85.00W G#F  20 SE GULF OF AMERICA GFAM#15     0 GUFAMR 12-93                   
 090016 23.50N  98.00W G#G  12 NORTH OF TAMPICO, TAMPS.     77 8-97                           
 099001 46.02N  91.45W HYR  10 HAYWARD_MUNI_AIRPOR     WI  370 J. Eise 2-99                   
 099002 38.83N  82.80W PMH  10 PORTSMOUTH              OH  186 DiStefano 2-99                 
