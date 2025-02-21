@@ -509,7 +509,7 @@ case ${step} in
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     memory="24GB"
     ;;
 
@@ -517,7 +517,7 @@ case ${step} in
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     memory="48GB"
     ;;
 
@@ -525,7 +525,10 @@ case ${step} in
     npes=16
     ntasks=16
     case ${OCNRES} in
-      "025") ntasks=480;;
+      "025")
+        ntasks=480
+        memory="256GB"
+	;;
       "050")  ntasks=16;;
       "100")  ntasks=16;;
       "500")  ntasks=16;;
@@ -537,7 +540,7 @@ case ${step} in
     walltime="00:30:00"
     threads_per_task=1
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
   "marineanlvar")
@@ -545,7 +548,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=480
-        memory="96GB"
+        memory="256GB"
         ;;
       "050")
         ntasks=16
@@ -564,10 +567,10 @@ case ${step} in
         exit 4
     esac
 
-    walltime="00:15:00"
+    walltime="00:30:00"
     threads_per_task=1
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
   "ocnanalecen")
@@ -575,7 +578,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=40
-        memory="96GB"
+        memory="256GB"
         ;;
       "050")
         ntasks=16
@@ -595,9 +598,9 @@ case ${step} in
     esac
 
     walltime="00:10:00"
-    threads_per_task=1
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
   "marineanlletkf")
@@ -605,7 +608,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=480
-        memory="96GB"
+        memory="256GB"
         ;;
       "050")
         ntasks=16
@@ -624,10 +627,10 @@ case ${step} in
         exit 4
     esac
 
-    walltime="00:10:00"
-    threads_per_task=1
+    walltime="00:30:00"
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
 
@@ -635,7 +638,7 @@ case ${step} in
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     case ${OCNRES} in
       "025")
         memory="128GB"
@@ -659,7 +662,7 @@ case ${step} in
     walltime="00:30:00"
     ntasks=${max_tasks_per_node}
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     ;;
 
   "ocnanalvrfy")
