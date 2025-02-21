@@ -1,3 +1,9 @@
+correction_increment:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/fv3jedi_correction_increment.x'
+  mpi_cmd: '{{ APRUN_ECEN_FV3JEDI }}'
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
+  jcb_algo: fv3jedi_correction_increment
 ecen:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/fv3jedi_ensemble_recenter.x'

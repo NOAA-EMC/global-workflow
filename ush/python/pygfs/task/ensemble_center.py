@@ -66,7 +66,7 @@ class EnsembleCenter(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create dictionary of Jedi objects
-        expected_keys = ['ecen']
+        expected_keys = ['correction_increment', 'ensemble_recenter']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
@@ -89,8 +89,9 @@ class EnsembleCenter(Task):
         """
 
         # Initialize JEDI ensemble increment recentering application
-        logger.info(f"Initializing JEDI recentering application")
-        self.jedi_dict['ecen'].initialize(self.task_config)
+        logger.info(f"Initializing JEDI ensemble recentering applications")
+        self.jedi_dict['correction_increment'].initialize(self.task_config)
+        self.jedi_dict['ensemble_recenter'].initialize(self.task_config)
 
         # Stage fix files
         logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
@@ -120,7 +121,10 @@ class EnsembleCenter(Task):
         """
 
         # Compute correction increment for ensemble recentering
-        self.jedi_dict['ecen'].execute()
+        self.jedi_dict['correction_increment'].execute()
+
+        # Recenter increments
+        self.jedi_dict['ensemble_recenter'].execute()
 
     @logit(logger)
     def finalize(self) -> None:
