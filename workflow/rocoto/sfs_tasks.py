@@ -634,7 +634,7 @@ class SFSTasks(Tasks):
         # TODO: Add these deps when the archive tasks are created
         # dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         # deps.append(rocoto.add_dependency(dep_dict))
-        # if self.options['do_archtar']:
+        # if self.options['do_archcom']:
         #     dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
         #     deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')

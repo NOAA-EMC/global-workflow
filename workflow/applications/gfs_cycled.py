@@ -75,7 +75,7 @@ class GFSCycledAppConfig(AppConfig):
 
         configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
-        if options['do_archtar']:
+        if options['do_archcom']:
             configs += ['arch_tars']
 
         if options['do_hybvar']:
@@ -87,7 +87,7 @@ class GFSCycledAppConfig(AppConfig):
 
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy']
 
-            if options['do_archtar']:
+            if options['do_archcom']:
                 configs += ['earc_tars']
 
         if options['do_fit2obs']:
@@ -307,7 +307,7 @@ class GFSCycledAppConfig(AppConfig):
 
                 # Last items
                 task_names[run] += ['arch_vrfy']
-                if options['do_archtar']:
+                if options['do_archcom']:
                     task_names[run] += ['arch_tars']
                     if options['do_globusarch']:
                         task_names[run] += ['globus_arch']
@@ -337,7 +337,7 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run].append('epos') if 'gdas' in run else 0
 
                 task_names[run] += ['stage_ic', 'ecen', 'esfc']
-                if options['do_archtar']:
+                if options['do_archcom']:
                     task_names[run] += ['earc_tars']
 
                     # TODO Uncomment when globus ensemble archiving is ready

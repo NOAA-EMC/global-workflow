@@ -129,7 +129,7 @@ class Archive(Task):
         # Collect datasets that need to be archived
         # Each dataset represents one tarball
 
-        if arch_dict.ARCHTAR_TO == "hpss":
+        if arch_dict.ARCHCOM_TO == "hpss":
             self.tar_cmd = "htar"
             self.hsi = Hsi()
             self.htar = Htar()
@@ -137,14 +137,14 @@ class Archive(Task):
             self.rm_cmd = self.hsi.rm
             self.chgrp_cmd = self.hsi.chgrp
             self.chmod_cmd = self.hsi.chmod
-        elif arch_dict.ARCHTAR_TO == "local":
+        elif arch_dict.ARCHCOM_TO == "local":
             self.tar_cmd = "tar"
             self.cvf = Archive._create_tarball
             self.chgrp_cmd = chgrp
             self.chmod_cmd = os.chmod
             self.rm_cmd = rm_p
         else:
-            raise ValueError("FATAL ERROR: Invalid achiving method selected: {arch_dict.ARCHTAR_TO}")
+            raise ValueError("FATAL ERROR: Invalid achiving method selected: {arch_dict.ARCHCOM_TO}")
 
         # Determine if we are archiving the EXPDIR this cycle (always skip for ensembles)
         if "enkf" not in arch_dict.RUN and arch_dict.ARCH_EXPDIR:

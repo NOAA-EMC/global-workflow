@@ -19,8 +19,8 @@ CHGRP_RSTPROD: 'YES'
 CLUSTERS: ''
 CHGRP_CMD: 'chgrp rstprod'
 HPSS_PROJECT: emc-global
-DO_ARCHTAR: 'NO'
-ARCHTAR_TO: 'globus_hpss'
+DO_ARCHCOM: 'NO'
+ARCHCOM_TO: 'globus_hpss'
 # TODO let the workflow setup scripts determine the username (HPSS differs from MSU usernames)
 ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'

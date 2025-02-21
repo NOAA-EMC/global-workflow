@@ -47,7 +47,7 @@ class SFSAppConfig(AppConfig):
         if options['do_extractvars']:
             configs += ['extractvars']
 
-        if options['do_archtar']:
+        if options['do_archcom']:
             configs += ['arch_tars']
 
         configs += ['arch_vrfy', 'cleanup']

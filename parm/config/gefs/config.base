@@ -333,8 +333,8 @@ export DO_METP="NO"         # Run METPLUS jobs - set METPLUS settings in config.
 export DO_FIT2OBS="NO"      # Run fit to observations package
 
 # Archiving options
-export DO_ARCHTAR="@DO_ARCHTAR@"    # Tar and archive the COM directories
-export ARCHTAR_TO="@ARCHTAR_TO@"    # Valid options are hpss, globus_hpss, and local
+export DO_ARCHCOM="@DO_ARCHCOM@"    # Tar and archive the COM directories
+export ARCHCOM_TO="@ARCHCOM_TO@"    # Valid options are hpss, globus_hpss, and local
 
 # Globus UUID for this machine
 export CLIENT_GLOBUS_UUID='@CLIENT_GLOBUS_UUID@'

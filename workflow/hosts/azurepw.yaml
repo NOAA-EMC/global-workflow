@@ -19,8 +19,8 @@ CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
 BASE_DATA: '/bucket/global-workflow-shared-data'
 BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
-DO_ARCHTAR: 'NO'
-ARCHTAR_TO: 'local'
+DO_ARCHCOM: 'NO'
+ARCHCOM_TO: 'local'
 ATARDIR: '' # TODO: This will not yet work from AZURE.
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'

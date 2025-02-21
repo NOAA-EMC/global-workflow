@@ -654,7 +654,7 @@ class GEFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        if self.options['do_archtar']:
+        if self.options['do_archcom']:
             if self.options['do_globusarch']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
             else:

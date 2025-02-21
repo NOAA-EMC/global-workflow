@@ -47,7 +47,7 @@ class GEFSAppConfig(AppConfig):
         if options['do_extractvars']:
             configs += ['extractvars']
 
-        if options['do_archtar']:
+        if options['do_archcom']:
             configs += ['arch_tars']
             if options['do_globusarch']:
                 configs += ['globus']
@@ -101,7 +101,7 @@ class GEFSAppConfig(AppConfig):
             tasks += ['extractvars']
 
         tasks += ['cleanup']
-        if options['do_archtar']:
+        if options['do_archcom']:
             tasks += ['arch_tars']
             if options['do_globusarch']:
                 tasks += ['globus']

@@ -2511,7 +2511,7 @@ class GFSTasks(Tasks):
         if 'enkf' in self.run:
             dep_dict = {'type': 'task', 'name': f'{self.run}_earc_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.options['do_archtar']:
+            if self.options['do_archcom']:
                 if self.options['do_globusarch']:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_ens_globus_arch'}
                 else:
@@ -2607,7 +2607,7 @@ class GFSTasks(Tasks):
 
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.options['do_archtar']:
+            if self.options['do_archcom']:
                 if self.options['do_globusarch']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
                 else:

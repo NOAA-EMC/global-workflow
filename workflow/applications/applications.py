@@ -93,7 +93,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_goes'] = run_base.get('DO_GOES', False)
             run_options[run]['do_mos'] = run_base.get('DO_MOS', False)
             run_options[run]['do_extractvars'] = run_base.get('DO_EXTRACTVARS', False)
-            run_options[run]['do_archtar'] = run_base.get('DO_ARCHTAR', False)
+            run_options[run]['do_archcom'] = run_base.get('DO_ARCHCOM', False)
 
             run_options[run]['do_atm'] = run_base.get('DO_ATM', True)
             run_options[run]['do_wave'] = run_base.get('DO_WAVE', False)
@@ -103,7 +103,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_aero_anl'] = run_base.get('DO_AERO_ANL', False)
             run_options[run]['do_aero_fcst'] = run_base.get('DO_AERO_FCST', False)
 
-            if run_options[run]['do_archtar'] and run_base.get('ARCHTAR_TO', "") == "globus_hpss":
+            if run_options[run]['do_archcom'] and run_base.get('ARCHCOM_TO', "") == "globus_hpss":
                 run_options[run]['do_globusarch'] = True
             else:
                 run_options[run]['do_globusarch'] = False
