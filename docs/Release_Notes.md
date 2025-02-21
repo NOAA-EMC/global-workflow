@@ -64,7 +64,9 @@ JOBS CHANGES
 PARM/CONFIG CHANGES
 -------------------
 
-* `parm/parm_wave/bull_awips_gfswave` - internal name change
+Internal name changes updates:
+* `parm/product/bufr_stalist.meteo.gfs`
+* `parm/parm_wave/bull_awips_gfswave`
 
 SCRIPT CHANGES
 --------------
@@ -127,3 +129,4 @@ PREPARED BY
 Kate.Friedman@noaa.gov
 Jessica.Meixner@noaa.gov
 Brian.Curtis@noaa.gov
+Bo.Cui@noaa.gov
