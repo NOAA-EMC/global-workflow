@@ -61,7 +61,7 @@ set -x
 # Create a new branch from develop and move yaml files
 #########################################################
 branch="weekly_ci_$(date +%Y%m%d)"
-develop_dir="${GFS_CI_ROOT}/develop_weekly"
+develop_dir="${GFS_BASH_CI_ROOT}/develop_weekly"
 echo "Creating new branch ${branch} from develop on ${MACHINE_ID} in ${develop_dir}"
 rm -Rf "${develop_dir}"
 mkdir -p "${develop_dir}"
@@ -114,5 +114,5 @@ for label in "${PULL_REQUEST_LABELS[@]}"
 do
   "${GH}" pr edit --add-label "${label}"
 done
-cd "${GFS_CI_ROOT}"
+cd "${GFS_BASH_CI_ROOT}"
 rm -Rf "${develop_dir}"

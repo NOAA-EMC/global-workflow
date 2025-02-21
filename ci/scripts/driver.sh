@@ -67,7 +67,7 @@ export GH
 # query repo and get list of open PRs with tags {machine}-CI
 ############################################################
 
-pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
+pr_list_dbfile="${GFS_BASH_CI_ROOT}/open_pr_list.db"
 
 if [[ ! -f "${pr_list_dbfile}" ]]; then
   "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --create --dbfile "${pr_list_dbfile}"
@@ -76,10 +76,8 @@ fi
 pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
 
 for pr in ${pr_list}; do
-  pr_dir="${GFS_CI_ROOT}/PR/${pr}"
-  if [[ ! -d "${pr_dir}" ]]; then
-      mkdir -p "${pr_dir}"
-  fi
+  pr_dir="${GFS_BASH_CI_ROOT}/PR/${pr}"
+  [[ ! -d ${pr_dir} ]] && mkdir -p "${pr_dir}"
   db_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
   output_ci_single="${pr_dir}/output_single.log"
   #############################################################
@@ -164,9 +162,9 @@ for pr in ${pr_list}; do
       continue
   fi
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
-  pr_dir="${GFS_CI_ROOT}/PR/${pr}"
+  pr_dir="${GFS_BASH_CI_ROOT}/PR/${pr}"
   output_ci="${pr_dir}/output_ci_${id}"
-  output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_single.log"
+  output_ci_single="${GFS_BASH_CI_ROOT}/PR/${pr}/output_single.log"
   driver_build_PID=$$
   driver_build_HOST=$(hostname -s)
   "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
@@ -284,4 +282,4 @@ done # looping over each open and labeled PR
 # scrub working directory for older files
 ##########################################
 #
-#find "${GFS_CI_ROOT}/PR/*" -maxdepth 1 -mtime +3 -exec rm -rf {} \;
+#find "${GFS_BASH_CI_ROOT}/PR/*" -maxdepth 1 -mtime +3 -exec rm -rf {} \;
