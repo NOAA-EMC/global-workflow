@@ -25,10 +25,13 @@ export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
 
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COM_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+  COMIN_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMOUT_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
 
 MEMDIR="ensstat" RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-  COM_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
+  COMIN_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
 
 
 ###############################################################
@@ -43,7 +46,7 @@ status=$?
 # Send Alerts
 ##############################################
 if [ ${SENDDBN} = YES  ] ; then
-   "${DBNROOT}/bin/dbn_alert" "MODEL" "ENKF1_MSC_enkfstat" "${job}" "${COM_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat"
+   "${DBNROOT}/bin/dbn_alert" "MODEL" "ENKF1_MSC_enkfstat" "${job}" "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat"
 fi
 
 

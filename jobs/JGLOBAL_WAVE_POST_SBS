@@ -13,12 +13,9 @@ export MP_PULSE=0
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
     COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
-    COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
     COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
 
-for out_dir in "${COMOUT_WAVE_PREP}" "${COMOUT_WAVE_GRID}"; do
-    if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
-done
+if [[ ! -d "${COMOUT_WAVE_GRID}" ]]; then mkdir -p "${COMOUT_WAVE_GRID}"; fi
 
 if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
     for grdID in ${wavepostGRD} ${waveinterpGRD}; do
