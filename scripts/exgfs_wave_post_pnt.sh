@@ -228,8 +228,7 @@ source "${USHgfs}/preamble.sh"
 
   ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${cyc}")
   tstart="${ymdh:0:8} ${ymdh:8:2}0000"
-  dtspec=3600.            # default time step (not used here)
-  N=$(( ($FHMAX_WAV_PNT - $FHMIN_WAV) + 1 ))
+  N=$(( ($FHMAX_WAV_PNT - $FHMIN_WAV) * 3600 / $DTPNT_WAV + 1 ))
   truntime="${PDY} ${cyc}0000"
 
   # Loop through forecast hours to link output file
@@ -262,10 +261,9 @@ source "${USHgfs}/preamble.sh"
     ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${cyc}")
     YMD=${ymdh:0:8}
     tstart="${ymdh:0:8} ${ymdh:8:2}0000"
-    N=$(( ($FHMAX_WAV_PNT - $FHMIN_WAV) + 1 ))
-    dtspec=3600.            # default time step (not used here)
+    N=$(( ($FHMAX_WAV_PNT - $FHMIN_WAV) * 3600 / $DTPNT_WAV + 1 ))
     sed -e "s/TIME/${tstart}/g" \
-        -e "s/DT/${dtspec}/g" \
+        -e "s/DT/${DTPNT_WAV}/g" \
 	-e "s/999/$N/g" \
 	-e "s/^.*POINT.*/\$ &/g" \
         -e "s/ITYPE/0/g" \
@@ -356,7 +354,7 @@ source "${USHgfs}/preamble.sh"
   # Generate the ww3_outp.inp file from the template
   if [ "$DOSPC_WAV" = 'YES' ]; then
     sed -e "s/TIME/${tstart}/g" \
-        -e "s/DT/${dtspec}/g" \
+        -e "s/DT/${DTPNT_WAV}/g" \
         -e "s/999/$N/g" \
         -e "s|POINT|$points|g" \
         -e "s/ITYPE/1/g" \
@@ -369,7 +367,7 @@ source "${USHgfs}/preamble.sh"
 
   if [ "$DOBLL_WAV" = 'YES' ]; then
     sed -e "s/TIME/${tstart}/g" \
-        -e "s/DT/${dtspec}/g" \
+        -e "s/DT/${DTPNT_WAV}/g" \
         -e "s/999/$N/g" \
         -e "s|POINT|$points|g" \
         -e "s/REFT/$truntime/g" \
