@@ -6,9 +6,10 @@ import shutil
 from time import sleep
 from typing import Any, Dict, List
 import re
+import copy
 from datetime import datetime, timezone
 
-from wxflow import AttrDict, Task, to_YMD, to_YMDH, strftime, logit, parse_yaml, Jinja, which, ProcessError, to_datetime
+from wxflow import AttrDict, Task, to_YMDH, logit, parse_yaml, Jinja, which, ProcessError, to_datetime
 
 logger = logging.getLogger(__name__.split('.')[-1])
 logging.basicConfig(encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s')
@@ -37,27 +38,34 @@ class GlobusHpss(Task):
         super().__init__(config)
 
         # Declare these here so the jinja-templated scripts can be shellchecked
-        cycle_YMD = to_YMD(self.task_config.current_cycle)
         cycle_YMDH = to_YMDH(self.task_config.current_cycle)
-        cycle_HH = strftime(self.task_config.current_cycle, '%H')
 
         # Instantiate all of the executables we will need to run
         self.forsven = which("forsven")
-        self.scp = which("scp")
+        # TODO Move the globus interface to wxflow
+        self.globus = which("globus")
         self.ssh = which("ssh")
 
         if self.forsven is None:
             raise FileNotFoundError("FATAL ERROR Could not find the forsven executable!")
-        if self.scp is None:
-            raise FileNotFoundError("FATAL ERROR Could not find scp!")
-        if self.ssh is None:
-            raise FileNotFoundError("FATAL ERROR Could not find ssh!")
+        if self.globus is None:
+            raise FileNotFoundError("FATAL ERROR Could not find the globus command!")
 
-        # Disable strict host key checking by default
-        # This auto-accepts changes to keys
-        self.scp.add_default_arg("-oStrictHostKeyChecking=no")
-        # Force using publickey login
-        self.scp.add_default_arg("-oPreferredAuthentications=publickey")
+        # Prep some globus commands
+        self.globus_rm = copy.deepcopy(self.globus)
+        self.globus_xfr = copy.deepcopy(self.globus)
+        self.globus_wait = copy.deepcopy(self.globus)
+
+        # Recursively remove the target, notify on failure, and ignore missing files
+        self.globus_rm.add_default_arg(["rm", "--notify", "failed", "-f", "-r"])
+        # Transfer file, notify on failure, preserve modification times, only
+        # output task ID
+        self.globus_xfr.add_default_arg(["transfer", "--notify", "off",
+                                         "--preserve-mtime", "--sync-level", "mtime",
+                                         "--jmespath task_id", "--format=UNIX"])
+        # Wait on a task ID to finish and output the status of the transfer when complete
+        self.globus_wait.add_default_arg(["task", "wait", "--jmespath", "status",
+                                          "--format=UNIX", "--timeout", "240"])
 
         # Get the user's server username from their ~/.ssh/config file
         self.server_name = self.task_config.SERVER_NAME
@@ -278,12 +286,14 @@ class GlobusHpss(Task):
             # Now transfer and rename the script
             server_run_script = f"{transfer_set['server_job_dir']}/run_doorman.sh"
             logger.debug(f"Transfer run_doorman.sh to {self.server_name}:{server_run_script}")
-            self.scp(
-                "run_doorman.sh", f"{self.server_name}:{server_run_script}",
-                output=str.split, error=str.split
-            )
+            self._wait_on_task_id(self.globus_xfr(
+                f"{self.CLIENT_GLOBUS_UUID}:run_doorman.sh",
+                f"{self.SERVER_GLOBUS_UUID}:{server_run_script}",
+                output=str, error=str
+            ))
+
             logger.debug("Successfully transferred the doorman script")
-        except ProcessError as pe:
+        except (ProcessError, ConnectionError) as pe:
             raise ProcessError("FATAL ERROR Failed to send doorman run script to Niagara") from pe
 
         # Now wait for the doorman script to run via cron on Niagara.
@@ -327,11 +337,16 @@ class GlobusHpss(Task):
 
             # Retrieve the log file (if it exists) from the server and check if it failed
             try:
-                self.scp(f"{self.server_name}:{transfer_set['server_job_dir']}/run_doorman.log", '.')
-            except ProcessError:
+                self._wait_on_task_id(self.globus_xfr(
+                    f"{self.SERVER_GLOBUS_UUID}:{transfer_set['server_job_dir']}/run_doorman.log",
+                    f"{self.CLIENT_GLOBUS_UUID}:./run_doorman.log",
+                    output=str, error=str
+                ))
+
+            except (ProcessError, ConnectionError):
                 check_log_count += 1
                 if check_log_count > 3:
-                    logger.error(f"FATAL ERROR Unable to retrieve the run_doorman.log file")
+                    logger.error("FATAL ERROR Unable to retrieve the run_doorman.log file")
                     transfer_failed = True
             else:
                 with open("run_doorman.log") as doorman_log:
@@ -377,20 +392,36 @@ class GlobusHpss(Task):
 
         pslot = self.task_config.PSLOT
 
-        self.scp(req_file, f"{self.server_name}:{self.server_home}/{req_file}")
+        try:
+            self._wait_on_task_id(self.globus_xfr(
+                f"{self.CLIENT_GLOBUS_UUID}:{req_file}",
+                f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/{req_file}",
+                output=str, error=str
+            ))
 
-        self.scp(
-            "init_xfer.sh",
-            f"{self.server_name}:{self.server_home}/init_xfer_{pslot}.sh"
-        )
+        except (ProcessError, ConnectionError):
+            raise ProcessError("FATAL ERROR Failed to request a mkdir on the server!")
+
+        try:
+            self._wait_on_task_id(self.globus_xfr(
+                f"{self.CLIENT_GLOBUS_UUID}:init_xfer.sh",
+                f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/init_xfer_{pslot}.sh",
+                output=str, error=str
+            ))
+        except (ProcessError, ConnectionError):
+            raise ProcessError("FATAL ERROR Failed send the driver script to the server!")
 
         logger.info("Sleeping 1 minute to let the server initialize")
         sleep(60)
 
         # Check that the server initialized successfully
         try:
-            self.scp(f"{self.server_name}:{self.server_home}/{pslot}_crontab_active.log", "crontab.log")
-        except ProcessError as pe:
+            self._wait_on_task_id(self.globus_xfr(
+                f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/{pslot}_crontab_active.log",
+                f"{self.CLIENT_GLOBUS_UUID}:crontab.log",
+                output=str, error=str
+            ))
+        except (ProcessError, ConnectionError) as pe:
             raise ProcessError(
                 "FATAL ERROR failed to retrieve the server log file!\n"
                 f"Check that the crontab is active on {self.server_name}."
@@ -412,6 +443,13 @@ class GlobusHpss(Task):
         logger.info("Server initialized successfully!")
 
     @logit(logger)
+    def _wait_on_task_id(self, task_id):
+
+        status = self.globus_wait(task_id)
+        if status != "SUCCESS":
+            raise ConnectionError(f"Globus failed on task ID {task_id}")
+
+    @logit(logger)
     def clean(self):
         """
         Remove the temporary directories/files created by the GlobusHpss task.
@@ -423,7 +461,14 @@ class GlobusHpss(Task):
             with open(req_file, "w") as rmdir_f:
                 rmdir_f.write(f"{job_dir}")
 
-            self.scp(req_file, f"{self.server_name}:{self.server_home}/{req_file}")
+            try:
+                self._wait_on_task_id(self.globus_xfr(
+                    f"{self.CLIENT_GLOBUS_UUID}:{req_file}",
+                    f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/{req_file}",
+                    output=str, error=str
+                ))
+            except (ProcessError, ConnectionError):
+                raise ProcessError("FATAL ERROR Failed to request an rmdir command on the server!")
 
             logger.info("Sleeping 5 minute to give the server time to delete the working directory")
             # It probably takes much less time than this, but it may take a little while at high res
@@ -431,9 +476,13 @@ class GlobusHpss(Task):
 
             # If it was successful, then the request should be gone
             try:
-                self.scp(f"{self.server_name}:{self.server_home}/{req_file}", ".")
+                self._wait_on_task_id(self.globus_xfr(
+                    f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/{req_file}",
+                    f"{self.CLIENT_GLOBUS_UUID}:{req_file}",
+                    output=str, error=str
+                ))
                 raise RuntimeError(f"FATAL ERROR Failed to delete the run directory on {self.server_name}")
-            except ProcessError:
+            except (ProcessError, ConnectionError):
                 pass
 
         return
