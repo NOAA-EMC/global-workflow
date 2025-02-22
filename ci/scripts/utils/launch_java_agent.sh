@@ -89,7 +89,7 @@ module use "${HOMEGFS_}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
 
-JAVA_HOME="${JENKINS_AGENT_LANUCH_DIR}/JAVA/jdk-17.0.10"
+JAVA_HOME="${JENKINS_AGENT_LAUNCH_DIR}/JAVA/jdk-17.0.10"
 if [[ ! -d "${JAVA_HOME}" ]]; then
   JAVA_HOME=/usr/lib/jvm/jre-17
   if [[ ! -d "${JAVA_HOME}" ]]; then
@@ -117,13 +117,13 @@ if [[ "${check_token}" != *"*****"* ]]; then
 fi
 echo "gh authenticating with emcbot TOKEN ok"
 
-if [[ -d "${JENKINS_AGENT_LANUCH_DIR}" ]]; then
-  echo "Jenkins Agent Lanuch Directory: ${JENKINS_AGENT_LANUCH_DIR}"
+if [[ -d "${JENKINS_AGENT_LAUNCH_DIR}" ]]; then
+  echo "Jenkins Agent Lanuch Directory: ${JENKINS_AGENT_LAUNCH_DIR}"
 else
   echo "ERROR: Jenkins Agent Lanuch Directory not found. Exiting with error."
   exit 1
 fi
-cd "${JENKINS_AGENT_LANUCH_DIR}"
+cd "${JENKINS_AGENT_LAUNCH_DIR}"
 echo "Entered directory ${PWD}"
 
 if ! [[ -f agent.jar ]]; then
