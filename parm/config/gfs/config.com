@@ -36,7 +36,7 @@ echo "BEGIN: config.com"
 #
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
     COM_OBS_TMPL=$(compath.py "${envir}/obsproc/${obsproc_ver}")'/${RUN}.${YMD}/${HH}/atmos'
-    COM_RTOFS_TMPL=$(compath.py "${envir}/${WAVECUR_DID}/${rtofs_ver}")
+    COM_RTOFS_TMPL=$(compath.py "${envir}/rtofs/${rtofs_ver}")
 else
     COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
     COM_RTOFS_TMPL='${DMPDIR}'

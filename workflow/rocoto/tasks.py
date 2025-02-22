@@ -167,7 +167,7 @@ class Tasks:
             fhmax = local_config['FHMAX']
             fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))
-        elif run in ['gfs', 'gefs']:
+        elif run in ['gfs', 'gefs', 'sfs']:
             fhmax = local_config['FHMAX_GFS']
             fhout = local_config['FHOUT_GFS']
             fhout_hf = local_config['FHOUT_HF_GFS']

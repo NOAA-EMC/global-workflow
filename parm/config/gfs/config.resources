@@ -408,19 +408,23 @@ case ${step} in
       "C1152" | "C768")
         layout_x=8
         layout_y=8
+        walltime="00:30:00"
         ;;
       "C384")
         layout_x=6
         layout_y=6
+        walltime="00:20:00"
         ;;
       "C192" | "C96")
         layout_x=4
         layout_y=4
+        walltime="00:10:00"
         ;;
       "C48" )
         # this case is for testing only
         layout_x=1
         layout_y=1
+        walltime="00:10:00"
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
@@ -429,7 +433,6 @@ case ${step} in
 
     export layout_x
     export layout_y
-    walltime="00:10:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -437,23 +440,34 @@ case ${step} in
     ;;
 
   "aeroanlvar")
+
+    threads_per_task=1
+
     case ${CASE} in
       "C1152" | "C768")
         layout_x=8
         layout_y=8
+        walltime="00:45:00"
+        tasks_per_node=24
         ;;
       "C384")
         layout_x=6
         layout_y=6
+        walltime="00:30:00"
+        tasks_per_node=24
         ;;
       "C192" | "C96")
         layout_x=4
         layout_y=4
+        walltime="00:20:00"
+        tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
         ;;
       "C48" )
         # this case is for testing only
         layout_x=1
         layout_y=1
+        walltime="00:20:00"
+        tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
@@ -463,10 +477,7 @@ case ${step} in
     export layout_x
     export layout_y
 
-    walltime="00:30:00"
     ntasks=$(( layout_x * layout_y * 6 ))
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
 
@@ -507,18 +518,43 @@ case ${step} in
 
 
   "aeroanlfinal")
-    walltime="00:10:00"
+    case ${CASE} in
+      "C1152" | "C768")
+        layout_x=8
+        layout_y=8
+        walltime="00:30:00"
+        ;;
+      "C384")
+        layout_x=6
+        layout_y=6
+        walltime="00:20:00"
+        ;;
+      "C192" | "C96")
+        layout_x=4
+        layout_y=4
+        walltime="00:10:00"
+        ;;
+      "C48" )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
+        walltime="00:10:00"
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+        exit 4
+    esac
     ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    memory="3072M"
+    memory="13072M"
     ;;
 
   "marineanlinit")
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     memory="24GB"
     ;;
 
@@ -526,7 +562,7 @@ case ${step} in
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     memory="48GB"
     ;;
 
@@ -534,7 +570,10 @@ case ${step} in
     npes=16
     ntasks=16
     case ${OCNRES} in
-      "025") ntasks=480;;
+      "025")
+        ntasks=480
+        memory="256GB"
+	;;
       "050")  ntasks=16;;
       "100")  ntasks=16;;
       "500")  ntasks=16;;
@@ -546,7 +585,7 @@ case ${step} in
     walltime="00:30:00"
     threads_per_task=1
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
   "marineanlvar")
@@ -554,7 +593,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=480
-        memory="96GB"
+        memory="256GB"
         ;;
       "050")
         ntasks=16
@@ -573,10 +612,10 @@ case ${step} in
         exit 4
     esac
 
-    walltime="00:15:00"
+    walltime="00:30:00"
     threads_per_task=1
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
   "ocnanalecen")
@@ -584,7 +623,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=40
-        memory="96GB"
+        memory="256GB"
         ;;
       "050")
         ntasks=16
@@ -604,9 +643,9 @@ case ${step} in
     esac
 
     walltime="00:10:00"
-    threads_per_task=1
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
   "marineanlletkf")
@@ -614,7 +653,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=480
-        memory="96GB"
+        memory="256GB"
         ;;
       "050")
         ntasks=16
@@ -633,10 +672,10 @@ case ${step} in
         exit 4
     esac
 
-    walltime="00:10:00"
-    threads_per_task=1
+    walltime="00:30:00"
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
 
@@ -644,7 +683,7 @@ case ${step} in
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     case ${OCNRES} in
       "025")
         memory="128GB"
@@ -668,7 +707,7 @@ case ${step} in
     walltime="00:30:00"
     ntasks=${max_tasks_per_node}
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     ;;
 
   "ocnanalvrfy")
@@ -897,6 +936,7 @@ case ${step} in
     declare -x "threads_per_task"="${UFS_THREADS}"
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
 
+    # TODO: make walltimes APP dependent
     case "${CASE}" in
       "C48" | "C96" | "C192")
         declare -x "walltime_gdas"="00:20:00"
@@ -912,7 +952,7 @@ case ${step} in
         ;;
       "C768" | "C1152")
         # Not valid resolutions for ensembles
-        declare -x "walltime_gdas"="00:50:00"
+        declare -x "walltime_gdas"="01:20:00"
         declare -x "walltime_gfs"="06:00:00"
         ;;
       *)
