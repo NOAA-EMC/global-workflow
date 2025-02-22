@@ -49,24 +49,26 @@ pipeline {
                                 jenkins.model.Jenkins.get().computers.each { c ->
                                     if (c.node.selfLabel.name == NodeName[machine_name]) {
                                         run_nodes.add(c.node.selfLabel.name)
+                                        machine_names.add(machine_name)  // record machine name alongside node
                                     }
                                 }
                             }
                         }
-                        // Spawning all the jobs on the nodes matching the labels
+                        // Spawning jobs using both run_nodes and machine_names arrays
                         if (run_nodes.size() > 1) {
-                            run_nodes.init().each { node ->
-                                def machine_name = node.split('-')[0].toLowerCase()
+                            for (int i = 0; i < run_nodes.size() - 1; i++) {
+                                def node = run_nodes[i]
+                                def machine_name = machine_names[i]  // use the corresponding machine name
                                 echo "Spawning job on node: ${node} with machine name: ${machine_name}"
                                 build job: "/global-workflow/EMC-Global-Pipeline/PR-${env.CHANGE_ID}", parameters: [
                                     string(name: 'machine', value: machine_name),
-                                    string(name: 'Node', value: node) ],
-                                    wait: false
+                                    string(name: 'Node', value: node)
+                                ], wait: false
                             }
-                            machine = run_nodes.last().split('-')[0].toLowerCase()
+                            machine = machine_names[run_nodes.size() - 1]
                             echo "Running parent job: ${machine}"
                         } else {
-                            machine = run_nodes[0].split('-')[0].toLowerCase()
+                            machine = machine_names[0]
                             echo "Running only the parent job: ${machine}"
                         }
                     }
