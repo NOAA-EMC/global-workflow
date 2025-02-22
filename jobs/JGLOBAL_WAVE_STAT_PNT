@@ -2,6 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "wavestat" -c "base wave wavestat wavestat_pnt"
+source "${USHgfs}/wave_domain_grid.sh"
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -22,6 +23,7 @@ for out_dir in "${COMOUT_WAVE_PREP}" "${COMOUT_WAVE_GRID}"; do
 done
 
 for grid in ${wavepostGRD}; do
+  process_grdID "${grid}"
   prod_dir="COMOUT_WAVE_GRIB_${grid}"
   MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_WAVE_GRIB_GRID_TMPL"
   if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
