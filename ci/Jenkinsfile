@@ -248,7 +248,7 @@ pipeline {
                                                                   source ${HOMEgfs}/workflow/gw_setup.sh
                                                                   ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID} | tail -n 1
                                                                 """, returnStdout: true).trim()
-                                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${caseName} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} with error logs:\n```\n${error_logs_message}```\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body 'Experiment ${caseName} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} with error logs:\n```\n${error_logs_message}```\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})' """)
                                                                 sh(script: """
                                                                   source ${HOMEgfs}/workflow/gw_setup.sh
                                                                   ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}
