@@ -47,7 +47,6 @@
 # Forecast range
   fhour=$3
   grdname=$5
-  grdres=$6
 
   mkdir -p tmp_${para}
   cd tmp_${para}
@@ -153,7 +152,7 @@
 #    while [ ${nme} -lt ${nmemb} ]
     for im in $memid
     do
-      infile=../../${para}_0${im}.t${cyc}z.${grdname}.${grdres}.f${FH3}.grib2
+      infile=../../${para}_0${im}.t${cyc}z.${grdname}.f${FH3}.grib2
       echo "infile: ${infile}"
       if [ "${im}" = "00" ]
       then

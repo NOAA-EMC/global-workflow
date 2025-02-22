@@ -56,6 +56,9 @@
   nens=${nens:?Parameter npert required for ensemble statistics}
   nmembn=`expr ${nens} + 1`
 #
+  source "${USHgfs}/wave_domain_grid.sh"
+  process_grdID "${wavepostGRD}"
+#
   export membn=""
   for i in $(seq -f "%03g" 0 $nens); do membn="$membn $i"; done
 #
@@ -113,24 +116,25 @@
     	fi
 
     # Use ls to safely check for matching files
-    	cpfile=$(ls -1 "${cpdir}/${WAV_MOD_TAG}.t${cyc}z.${stype}.${GRDNAME}.${GRDRES}.f"???.grib2 2>/dev/null)
+    for file in "${cpdir}/${WAV_MOD_TAG}.t${cyc}z.${stype}.${grdNAME}.f"???.grib2; do
+      if [[ -f "$file" ]]; then  # Ensure it's a file before linking
+	      ln -s "$file" .
+        else
+              msg="ABNORMAL EXIT: Error in copying $cpfile"
+              postmsg "$msg"
+              echo ' '
+              echo '******************************************************* '
+              echo "*** FATAL ERROR: No $cpfile copied. *** "
+              echo '******************************************************* '
+              echo ' '
+              echo "$cpfile missing." >> "$ensemb_log"
+              export err=2
+              [ -n "$errchk" ] && eval "$errchk"
+              exit "$err"
+        fi
+        done	    
+      done
 
-    	if [ -n "$cpfile" ]; then
-        	ln -s "$cpfile" .
-    	else
-        	msg="ABNORMAL EXIT: Error in copying $cpfile"
-        	postmsg "$msg"
-        	echo ' '
-        	echo '******************************************************* '
-        	echo "*** FATAL ERROR: No $cpfile copied. *** "
-        	echo '******************************************************* '
-        	echo ' '
-        	echo "$cpfile missing." >> "$ensemb_log"
-        	export err=2
-        	[ -n "$errchk" ] && eval "$errchk"
-        	exit "$err"
-    	fi
-	done
 #
 # 3. Generate bulletin and time series files at complete set of buoy locations
 #
@@ -148,7 +152,7 @@
 
 # 3.c Create bundled grib2 file with all parameters
 
-  cat ${WAV_MOD_TAG}.t${cyc}z.mean.${GRDNAME}.${GRDRES}.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
+  cat ${WAV_MOD_TAG}.t${cyc}z.mean.${grdNAME}.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
 
   if [ -s gribfile ]
   then

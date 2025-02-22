@@ -58,6 +58,11 @@
 #
   export membn=""
   for i in $(seq -f "%03g" 0 $nens); do membn="$membn $i"; done
+
+#
+ source "${USHgfs}/wave_domain_grid.sh"
+ process_grdID "${wavepostGRD}"
+
 #
 # 0.c Time management
 #
@@ -119,20 +124,14 @@
   ngrib=0
   inc=$FHOUT_HF_WAV
   ftype="mem"
-    for grdID in $wavepostGRD
-    do
+      
       ngrib=$(( $ngrib + 1 ))
       for me in $membn
       do
         ENSTAG=${ftype}${me}
-        case $grdID in
-          glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-          glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
-	  glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-        esac
-        cpfile=${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/global.0p25/${WAV_MOD_TAG}.${cycle}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
+        cpfile=${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/${grdNAME}/${WAV_MOD_TAG}.${cycle}.${grdNAME}.f${FH3}.grib2
         if [ -s "${cpfile}" ] ; then 
-          ln -s  "$cpfile"  ./${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
+          ln -s  "$cpfile"  ./${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${grdNAME}.f${FH3}.grib2
         else
           msg="ABNORMAL EXIT: ERR in coping $cpfile "
           postmsg "$msg"
@@ -146,7 +145,6 @@
           #exit ${err}
         fi
       done
-    done
 # Prepare separate data files to reduce copy load to tmp directories
 # 
 # 2.a Command file set-up
@@ -192,84 +190,34 @@
         for me in $membn
           do
            ENSTAG=${ftype}${me}
-           infile=${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
-           outfile=${nnip}_${me}.t${cyc}z.${GRDNAME}.${GRDRES}.f${FH3}.grib2
+           infile=${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${grdNAME}.f${FH3}.grib2
+           outfile=${nnip}_${me}.t${cyc}z.${grdNAME}.f${FH3}.grib2
            wgfileout=wgrib_${nnip}_${me}.out
-	   #if [ $iline -lt ${NTASKS} ]
-	   #then
 		   if [ "${npart}" = "0" ]
 		   then 
 			   echo " $WGRIB2 -match ${nip} -match surface ${infile} -grib ${outfile} > ${wgfileout} 2>&1" >> ${fcmdnow}
 		   else
 			   echo " $WGRIB2 -match ${prepar} -match \"${paridx} in sequence\" ${infile} -grib ${outfile} > ${wgfileout} 2>&1" >> ${fcmdnow}
 		   fi
-	   #else
-	   #	   iline=0
-	   #	   nfile=$(( nfile + 1 ))
-	   #fi
         done    #for members
     fi
       iparam=`expr ${iparam} + 1`
   done    #for parameters
   # END all loops
 
-
- if [ ${CFP_MP:-"NO"} = "YES" ]; then
-    nfile=0
-    ifile=0
-    iline=1
-    ifirst='yes'
-    nlines=$( wc -l ${fcmdnow} | awk '{print $1}' )
-    while [ $iline -le $nlines ]; do
-      line=$( sed -n ''$iline'p' ${fcmdnow} )
-      if [ -z "$line" ]; then
-        break
-      else
-        if [ "$ifirst" = 'yes' ]; then
-          echo "#!/bin/sh" > cmdmfile.$nfile
-          echo "$nfile cmdmfile.$nfile" >> cmdmprog
-          chmod 744 "cmdmfile.$nfile"
-        fi
-        echo $line >> "cmdmfile.$nfile"
-        nfile=$(( nfile + 1 ))
-        if [ "$nfile" -eq "$NTASKS" ]; then
-          nfile=0
-          ifirst='no'
-        fi
-        iline=$(( iline + 1 ))
-      fi
-    done
-fi
-
-
-
-  wavenproc=$(wc -l ${fcmdnow} | awk '{print $1}')
-  wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
+# 2.c Execute poe or serial command files
 
   set +x
-  echo ' '
-  echo "   Executing the grib2_sbs scripts at : $(date)"
-  echo '   ------------------------------------'
-  echo ' '
-  #set_trace
-
-  if [ "$wavenproc" -gt '1' ]
-  then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
-    else
-      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
-    fi
-    exit=$?
-  else
-    chmod 744 ${fcmdnow}
-    ./${fcmdnow}
-    exit=$?
-  fi
+   echo ' '
+   echo " Generating $nmembn hourly to ${FHMAX_WAV}h wave ensembles stats files "
+   echo ' '
+       [[ "$LOUD" = YES ]] && set -x
+         
+               
+  "${HOMEgfs}/ush/run_mpmd.sh" $fcmdnow
+   err=$?
 
 
-#
-# 2.f Clean up larger grib2 gridded files
 #
 # 2. Generate ensemble mean, spread and probability files
 # 
@@ -278,7 +226,6 @@ fi
   rm -f cmdmfile cmdfile.$ cmdmprog
   rm -f ${fcmdnow} 
     iparam=1
-    nfile=0
     while [ ${iparam} -le ${nparam} ]
     do
       nip=${arrpar[$iparam-1]}
@@ -291,8 +238,7 @@ fi
       else
 # Line for doing per parameter, per time stamp
         echo "nip ngrib fhr: ${nip}, ${ngrib}, ${fhr}"
-        echo " ${HOMEgfs}/ush/wave_ens_stat.sh ${nip} ${ngrib} ${fhr} 1 ${GRDNAME} ${GRDRES} " >> cmdfile
-	nfile=$(( nfile + 1 ))
+        echo " ${HOMEgfs}/ush/wave_ens_stat.sh ${nip} ${ngrib} ${fhr} 1 ${grdNAME} " >> cmdfile
 
       fi
 
@@ -310,9 +256,8 @@ fi
 
 
   "${HOMEgfs}/ush/run_mpmd.sh" cmdfile
-err=$?
+   exit=$?
 
-exit "${err}"
 
   if [ "$exit" != '0' ]
   then
@@ -344,7 +289,7 @@ exit "${err}"
         HTSGW)   stypes='mean spread prob' ; snip=hs ;;
         PERPW)   stypes='mean spread prob' ; snip=tp ;;
         ICEC)    stypes='mean spread prob' ; snip=ice ;;
-        DIRPW)   stypes='mean spread prob' ; snip=pdir ;;
+        DIRPW)   stypes='mean spread ' ; snip=pdir ;;
         IMWF)    stypes='mean spread prob' ; snip=tm ;;
         MWSP)    stypes='mean spread prob' ; snip=tz ;;
         WVHGT)   stypes='mean spread prob' ; snip=wshs ;;
@@ -380,8 +325,8 @@ exit "${err}"
         do
 
           ingrib=${snip}_${stype}.${FH3}.grib2
-          outgrib=${WAV_MOD_TAG}.t${cyc}z.${stype}.${GRDNAME}.${GRDRES}.f${FH3}.grib2 
-          echo "$WGRIB2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} >> ${FH3}_${stype}.t${cyc}z.out 2>> ${FH3}_${stype}.t${cyc}z.err" >> ncmdfile.${fhr}
+          outgrib=${WAV_MOD_TAG}.t${cyc}z.${stype}.${grdNAME}.f${FH3}.grib2 
+          echo "$WGRIB2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} " >> ncmdfile
 
         done
 
@@ -390,27 +335,17 @@ exit "${err}"
       echo "IPARAM: $iparam"
     done
 
-  chmod 744 ncmdfile.*
-  ls -1 ncmdfile.* > ncmdfile
+  chmod 744 ncmdfile
 
-  set +x
-  echo ' '
-  echo " Regrouping stats files for ${nparam} parameters"
-  echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+    set +x
+    echo ' '
+    echo " Generating $nmembn hourly to ${FHMAX_WAV}h wave ensembles stats files "
+     echo ' '
+   [[ "$LOUD" = YES ]] && set -x
 
-  wavenproc=`wc -l ncmdfile | awk '{print $1}'`
-  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
 
-  if [ "$wavenproc" -gt '1' ]
-  then
-    ${wavempexec} -n ${wavenproc} ${wave_mpmd} ncmdfile
-    exit=$?
-  else
-    chmod 744 ncmdfile.${fhr}
-    ./ncmdfile.${fhr}
-    exit=$?
-  fi
+   "${HOMEgfs}/ush/run_mpmd.sh" ncmdfile
+   exit=$?
 
   if [ "$exit" != '0' ]
   then
@@ -430,22 +365,26 @@ exit "${err}"
 # 2.f Output all grib2 parameter files to COMOUT
 
     FH3=$(printf "%03d" $fhr)
+    MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_GRIB_ENS:COM_WAVE_GRIB_GRID_TMPL
+
+
     for stype in mean spread prob
     do
-      fcopy=${WAV_MOD_TAG}.t${cyc}z.${stype}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
+      fcopy=${WAV_MOD_TAG}.t${cyc}z.${stype}.${grdNAME}.f${FH3}.grib2
       if [ -s ${fcopy} ]
       then
         set +x
-        echo "   Copying ${fcopy} to ${COMOUT_WAVE_GRIB_${wavepostGRD}} and ALERT if SENDDBN=YES"
+        echo "   Copying ${fcopy} to ensstat and ALERT if SENDDBN=YES"
         [[ "$LOUD" = YES ]] && set -x
         #if [ $SENDCOM = "YES" ] ; then
-          cp -f ${fcopy} ${COMOUT_WAVE_GRIB_${wavepostGRD}}
+          cp -f ${fcopy}  "${COMOUT_WAVE_GRIB_ENS}"
 # 2.g Alert DBN
           if [ "$SENDDBN" = 'YES' ]
           then
            MODCOM=$(echo ${NET}_${COMPONENT} | tr '[a-z]' '[A-Z]')
            $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job ${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/${fcopy}
           fi
+	#fi
       else
         set +x
         echo ' '
