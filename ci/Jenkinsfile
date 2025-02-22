@@ -4,8 +4,9 @@ def CUSTOM_WORKSPACE = 'none'
 def HOMEgfs = 'none'
 def CI_CASES = ''
 def GH = 'none'
+// Map of the machine names (MACHINE_ID) to the Jenkins Node names
+def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaeac5: 'GaeaC5', gaeac6: 'Gaeac6-EMC']
 // Location of the custom workspaces for each machine in the CI system.  They are persistent for each iteration of the PR.
-def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaea: 'Gaea', gaeac6: 'Gaeac6-EMC']
 def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/global/CI/HERCULES', gaea: '/gpfs/f5/epic/proj-shared/global/CI', gaeac6: '/gpfs/f6/drsa-precip3/proj-shared/global/CI']
 def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
 def STATUS = 'Passed'
@@ -35,6 +36,7 @@ pipeline {
                     }
 
                     def run_nodes = []
+                    def machine_names = []
                     if (isSpawnedFromAnotherJob) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
@@ -244,7 +246,7 @@ pipeline {
                                                                   source ${HOMEgfs}/workflow/gw_setup.sh
                                                                   ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID} | tail -n 1
                                                                 """, returnStdout: true).trim()
-                                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body 'Experiment ${caseName} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} with error logs:\n```\n${error_logs_message}```\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})' """)
+                                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${caseName} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} with error logs:\n```\n${error_logs_message}```\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
                                                                 sh(script: """
                                                                   source ${HOMEgfs}/workflow/gw_setup.sh
                                                                   ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}
