@@ -17,3 +17,6 @@ arguments:
   interval: 24
   start: cold
   yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml
+
+skip_ci_on_hosts:
+  - gaeac5
