@@ -81,7 +81,7 @@ case ${MACHINE_ID} in
     exit 1;;
 esac
 
-LOG=lanuched_agent-$(date +%Y%m%d%M).log
+LOG=launched_agent-$(date +%Y%m%d%M).log
 rm -f "${LOG}"
 
 HOMEgfs="${HOMEGFS_}" source "${HOMEGFS_}/ush/module-setup.sh"
@@ -118,9 +118,9 @@ fi
 echo "gh authenticating with emcbot TOKEN ok"
 
 if [[ -d "${JENKINS_AGENT_LAUNCH_DIR}" ]]; then
-  echo "Jenkins Agent Lanuch Directory: ${JENKINS_AGENT_LAUNCH_DIR}"
+  echo "Jenkins Agent Launch Directory: ${JENKINS_AGENT_LAUNCH_DIR}"
 else
-  echo "ERROR: Jenkins Agent Lanuch Directory not found. Exiting with error."
+  echo "ERROR: Jenkins Agent Launch Directory not found. Exiting with error."
   exit 1
 fi
 cd "${JENKINS_AGENT_LAUNCH_DIR}"
