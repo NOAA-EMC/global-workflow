@@ -326,7 +326,7 @@
 
           ingrib=${snip}_${stype}.${FH3}.grib2
           outgrib=${WAV_MOD_TAG}.t${cyc}z.${stype}.${grdNAME}.f${FH3}.grib2 
-          echo "$WGRIB2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} " >> ncmdfile
+          echo "$WGRIB2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} " >> ${stype}.ncmdfile
 
         done
 
@@ -335,7 +335,9 @@
       echo "IPARAM: $iparam"
     done
 
-  chmod 744 ncmdfile
+  chmod 744 mean.ncmdfile
+  chmod 744 spread.ncmdfile
+  chmod 744 prob.ncmdfile
 
     set +x
     echo ' '
@@ -344,23 +346,27 @@
    [[ "$LOUD" = YES ]] && set -x
 
 
-   "${HOMEgfs}/ush/run_mpmd.sh" ncmdfile
-   exit=$?
+   #"${HOMEgfs}/ush/run_mpmd.sh" ncmdfile
 
-  if [ "$exit" != '0' ]
-  then
-    set +x
-    echo ' '
-    echo '********************************************'
-    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
-    echo '********************************************'
-    echo '     See Details Below '
-    echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-    export err=5; ${errchk}
-    exit $err
-  fi
+   for stype in $stypes
+      do
+	./${stype}.ncmdfile	      
+        exit=$?
 
+	if [ "$exit" != '0' ]
+  	 then
+    	 set +x
+	 echo ' '
+   	 echo '********************************************'
+   	 echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+   	 echo '********************************************'
+   	 echo '     See Details Below '
+   	 echo ' '
+   	 [[ "$LOUD" = YES ]] && set -x
+   	 export err=5; ${errchk}
+   	 exit $err
+	fi
+      done
 
 # 2.f Output all grib2 parameter files to COMOUT
 
