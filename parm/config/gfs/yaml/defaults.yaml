@@ -53,6 +53,7 @@ snowanl:
 
 marineanl:
   SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
   SOCA_OBS_LIST: "${PARMgfs}/gdas/soca/obs/obs_list.yaml"  # TODO: This is also repeated in oceanprepobs
   SOCA_NINNER: 100
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/soca/marine-jcb-3dfgat.yaml.j2"

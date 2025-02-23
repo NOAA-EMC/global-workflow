@@ -60,6 +60,8 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
        GFS
      - Coupled
        GEFS
+     - Coupled
+       SFS
      - GSI
        DA
      - GDASApp
@@ -78,6 +80,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 1
      - X     
      - X     
+     - X
      - X   
      - X     
      - 
@@ -91,6 +94,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 1   
      - X     
      - X     
+     - X
      - X   
      - X   
      - X     
@@ -104,6 +108,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 1   
      - X     
      - X     
+     - X
      - X   
      - X     
      - X     
@@ -117,6 +122,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 2   
      - X     
      - X     
+     - X
      - X   
      - X     
      - 
@@ -130,6 +136,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 3   
      - X     
      - X     
+     - X
      - X   
      - X     
      - 
@@ -143,6 +150,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 3   
      - X     
      - X     
+     - X
      - X   
      - X     
      - 
@@ -156,6 +164,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 3   
      - X     
      - X     
+     - X
      - X   
      - 
      - 
@@ -169,6 +178,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 3   
      - X     
      - X     
+     - X
      - 
      - 
      - 
@@ -182,6 +192,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 3   
      - X     
      - X     
+     - X
      - 
      - 
      - 
@@ -194,6 +205,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
    * - Jet     
      - 3   
      - X     
+     - 
      - 
      - X   
      - 
@@ -208,6 +220,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 3   
      - 
      - 
+     -
      - X   
      - 
      - 
