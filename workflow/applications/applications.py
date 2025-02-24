@@ -261,28 +261,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         if not local_uid_found or not rdhpcs_uid_found:
             print(f"ERROR a globus session is not yet established on {globus_conf.SERVER_NAME}")
-            print(f"      Please establish a globus connection!")
+            print("      Please establish a globus connection!")
 
-        # Check that there is an entry in the user's ssh config file for the globus server
-        server_scp_capable = False
-        scp = which("scp")
-        sshconfig = os.path.expanduser("~") + "/.ssh/config"
-        if scp is None:
-            print(f"ERROR Unable to find the scp command!")
-
-        elif os.path.exists(sshconfig):
-            with open(sshconfig, "r") as config_f:
-                ssh_config_lines = config_f.readlines()
-
-            for line in ssh_config_lines:
-                if globus_conf.SERVER_NAME in line:
-                    server_scp_capable = True
-                    break
-        else:
-            print("ERROR Unable to find a configuration file in ~/.ssh/config")
-
-        if not server_scp_capable:
-            print(f"ERROR an alias for {globus_conf.SERVER_NAME} does not exist yet!")
-            print(f"      Please add a configuration to ~/.ssh/config!")
-
-        return server_scp_capable and rdhpcs_uid_found and local_uid_found
+        return rdhpcs_uid_found and local_uid_found
