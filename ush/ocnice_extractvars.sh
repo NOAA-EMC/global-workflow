@@ -75,9 +75,9 @@ for (( nh = FHMIN_GFS + fhout_ocnice; nh <= FHMAX_GFS; nh = nh + fhout_ocnice ))
     else
       copy_to_comout "${outfile}" "${comout_rfcst_prod_ocnice}"
     fi
-  elif [[ -f "${infile}" ]];
+  elif [[ -f "${infile}" ]]; then
     echo "WARNING: ${infile} does not exist in ${com_dir}."
-  elif [[ -f "${new_infile}" ]];
+  elif [[ -f "${new_infile}" ]]; then
     echo "WARNING: ${new_infile} does not exist in ${subdata}. Copying skipped."
   else
     echo "WARNING: ${infile} and ${new_infile} do not exist."

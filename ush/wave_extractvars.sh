@@ -32,9 +32,9 @@ for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); 
     cpfs "${infile}" "${new_infile}" # Copy infile to the subdata directory
     # shellcheck disable=SC2312
     ${WGRIB2} "${new_infile}" | grep -F -f "${varlist_wav}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
-  elif [[ -f "${infile}" ]];
+  elif [[ -f "${infile}" ]]; then
     echo "WARNING: ${infile} does not exist in ${com_dir}."
-  elif [[ -f "${new_infile}" ]];
+  elif [[ -f "${new_infile}" ]]; then
     echo "WARNING: ${new_infile} does not exist in ${subdata}. Copying skipped."
   else
     echo "WARNING: ${infile} and ${new_infile} do not exist."
