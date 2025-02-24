@@ -13,11 +13,11 @@ from wxflow import (AttrDict, FileHandler, Task, Executable, Template, TemplateC
 logger = getLogger(__name__.split('.')[-1])
 
 
-class EnsembleCenter(Task):
+class EnsembleRecenter(Task):
     """
     Class for JEDI-based ensemble increment recentering
     """
-    @logit(logger, name="EnsembleCenter")
+    @logit(logger, name="EnsembleRecenter")
     def __init__(self, config):
         """Constructor for atmospheric ensemble increment recentering task
 
