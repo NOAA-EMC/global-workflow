@@ -179,8 +179,12 @@ class MarineAnalysis(Task):
         soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
-        # prepare the MOM6 input.nml
+        # prepare the deterministic MOM6 input.nml
         mdau.prep_input_nml(self.task_config)
+
+        # prepare the input.nml for the analysis geometry
+        mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml",
+                            simple_geom=True, mom_input="./anl_geom/MOM_input")
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
@@ -206,7 +210,7 @@ class MarineAnalysis(Task):
         envconfig_jcb['PARMgfs'] = self.task_config.PARMgfs
         envconfig_jcb['NMEM_ENS'] = self.task_config.NMEM_ENS
         envconfig_jcb['berror_model'] = 'marine_background_error_static_diffusion'
-        if self.task_config.NMEM_ENS >= 3:
+        if self.task_config.NMEM_ENS >= 2:
             envconfig_jcb['berror_model'] = 'marine_background_error_hybrid_diffusion_diffusion'
         envconfig_jcb['DATA'] = self.task_config.DATA
         envconfig_jcb['OPREFIX'] = self.task_config.OPREFIX
@@ -365,7 +369,7 @@ class MarineAnalysis(Task):
         post_file_list = []
 
         # Make a copy the IAU increment
-        post_file_list.append([os.path.join(anl_dir, 'inc.nc'),
+        post_file_list.append([os.path.join(anl_dir, 'ocn.inc.nc'),
                                os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.ocninc.nc')])
 
         domains = ['ocn', 'ice']

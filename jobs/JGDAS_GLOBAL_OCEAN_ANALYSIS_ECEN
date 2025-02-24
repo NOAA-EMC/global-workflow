@@ -20,6 +20,11 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMIN_ICE_RESTART:COM_ICE_RESTART_TMPL \
    COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL
 
+export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATAens="${DATAjob}/ensdata"
+export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
