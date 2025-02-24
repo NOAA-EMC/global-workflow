@@ -4,7 +4,7 @@ experiment:
 
 arguments:
   pslot: {{ 'pslot' | getenv }}
-  app: ATMA
+  app: ATM
   resdetatmos: 96
   resensatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
