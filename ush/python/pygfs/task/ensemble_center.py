@@ -2,10 +2,11 @@
 
 from datetime import timedelta
 from logging import getLogger
+import os
 from pprint import pformat
 from pygfs.jedi import Jedi
-from wxflow import (AttrDict, FileHandler, Task, Executable,
-                    add_to_datetime, to_timedelta, to_isotime,
+from wxflow import (AttrDict, FileHandler, Task, Executable, Template, TemplateConstants,
+                    add_to_datetime, to_timedelta, to_isotime, to_YMD,
                     parse_j2yaml,
                     logit)
 
@@ -143,20 +144,30 @@ class EnsembleCenter(Task):
         None
         """
 
-        # Copy files to comrot
-        fh_dict = {'copy': []}
-        data_prefix = f"{self.task_config.DATA}/enkf{self.task_config.APREFIX}cubed_sphere_grid_"
-        comrot_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS_ENSSTAT}/enkf{self.task_config.APREFIX}cubed_sphere_grid_"
-        for fh in self.task_config.IAUFHRS:
-            hr = format(fh, '03')
-            if fh == 6:
-                for itile in range(6):
-                    fh_dict['copy'].append([f"{data_prefix}catmi{hr}.tile{itile+1}.nc",
-                                            f"{comrot_prefix}catminc.tile{itile+1}.nc"])
-            else:
-                for itile in range(6):
-                    fh_dict['copy'].append([f"{data_prefix}catmi{hr}.tile{itile+1}.nc",
-                                            f"{comrot_prefix}catmi{hr}.tile{itile+1}.nc"])
+        # create template dictionaries
+        template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
+        tmpl_inc_dict = {
+            'ROTDIR': self.task_config.ROTDIR,
+            'RUN': self.task_config.RUN,
+            'YMD': to_YMD(self.task_config.current_cycle),
+            'HH': self.task_config.current_cycle.strftime('%H')
+        }
 
-        # Call FileHandler
-        FileHandler(fh_dict).sync()
+        inc_copy = {'copy': []}
+        for imem in range(1, self.task_config.NMEM_ENS + 1):
+            memchar = f"mem{imem:03d}"
+            tmpl_inc_dict['MEMDIR'] = memchar
+            incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
+            for fh in self.task_config.IAUFHRS:
+                hr = format(fh, '03')
+                for itile in range(6):
+                    src = os.path.join(self.task_config.DATA, memchar,
+                                       f"enkf{self.task_config.APREFIX}cubed_sphere_grid_ratmi{hr}.tile{itile+1}.nc")
+                    if fh == 6:
+                        dest = os.path.join(incdir,
+                                            f"enkf{self.task_config.APREFIX}cubed_sphere_grid_ratmi{hr}.tile{itile+1}.nc")
+                    else:
+                        dest = incdir
+                    inc_copy['copy'].append([src,dest])
+
+        FileHandler(inc_copy).sync()

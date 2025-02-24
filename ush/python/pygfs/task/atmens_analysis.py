@@ -262,11 +262,10 @@ class AtmEnsAnalysis(Task):
             # create output path for member analysis increment
             tmpl_inc_dict['MEMDIR'] = memchar
             incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
-            for itile in range(6):
-                src = os.path.join(self.task_config.DATA, 'anl', memchar,
-                                   f"{self.task_config.APREFIX}cubed_sphere_grid_atminc.tile{itile+1}.nc")
-                dest = incdir
-                inc_copy['copy'].append([src, dest])
+            src = os.path.join(self.task_config.DATA, 'anl', memchar,
+                               f"{self.task_config.APREFIX}cubed_sphere_grid_atminc.nc")
+            dest = incdir
+            inc_copy['copy'].append([src, dest])
 
         logger.debug(f"Copying increments")
         FileHandler(inc_copy).sync()

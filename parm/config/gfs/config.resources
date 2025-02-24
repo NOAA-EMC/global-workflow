@@ -708,7 +708,8 @@ case ${step} in
     export layout_y=${layout_y_ecen_fv3jedi}
 
     walltime="00:15:00"
-    ntasks=$(( layout_x * layout_y * 6 ))
+    ntasks_correction_increment=$(( layout_x * layout_y * 6 ))
+    ntasks_ensemble_recenter=$(( layout_x * layout_y * 6 * NMEM_ENS ))
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
