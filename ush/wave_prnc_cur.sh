@@ -93,6 +93,6 @@ then
   exit 4
 fi
 
-mv -f current.ww3 ${DATA}/${WAVECUR_DID}.${ymdh_rtofs}
+mv -f current.ww3 ${DATA}/rtofs.${ymdh_rtofs}
 
 cd ${DATA}
