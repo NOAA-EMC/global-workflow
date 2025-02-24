@@ -61,11 +61,11 @@ class AnalysisCalc(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create dictionary of Jedi objects
-        expected_keys = ['atm_add_increments']
+        expected_keys = ['atm_addincrement']
         if self.task_config.DO_AERO_ANL:
-            expected_keys.append('aero_add_increments')
+            expected_keys.append('aero_addincrement')
         if self.task_config.DO_JEDISNOWDA:
-            expected_keys.append('snow_add_increments')
+            expected_keys.append('snow_addincrement')
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
@@ -74,7 +74,7 @@ class AnalysisCalc(Task):
 
         This method will initialize the analysis calculation task.
         This includes:
-        - initializing the JEDI add_increments application
+        - initializing the JEDI addincrement application
         - staging JEDI fix files
         - staging backgrounds and increments
 
@@ -87,13 +87,13 @@ class AnalysisCalc(Task):
         None
         """
 
-        # Initialize GDASApp JEDI add_increments application
-        logger.info(f"Initializing GDASApp JEDI add_increments applications")
-        self.jedi_dict['atm_add_increments'].initialize(self.task_config)
+        # Initialize GDASApp JEDI addincrement application
+        logger.info(f"Initializing GDASApp JEDI addincrement applications")
+        self.jedi_dict['atm_addincrement'].initialize(self.task_config)
         if self.task_config.DO_AERO_ANL:
-            self.jedi_dict['aero_add_increments'].initialize(self.task_config)
+            self.jedi_dict['aero_addincrement'].initialize(self.task_config)
         if self.task_config.DO_JEDISNOWDA:
-            self.jedi_dict['snow_add_increments'].initialize(self.task_config)
+            self.jedi_dict['snow_addincrement'].initialize(self.task_config)
 
         # Stage fix files
         logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
@@ -112,7 +112,7 @@ class AnalysisCalc(Task):
         """Compute analyses
 
         This method will execute the analysis calculation task. This includes:
-        - Running the add_increments applications to compute the analysis variables
+        - Running the addincrement applications to compute the analysis variables
           and interpolate to the Gaussian grid
         - Inserting the resulting increments into the Gaussian UFS history files to obtain
           analysis files
@@ -127,11 +127,11 @@ class AnalysisCalc(Task):
         """
 
         # Convert cubed sphere increments to Gaussian grid
-        self.jedi_dict['atm_add_increments'].execute()
+        self.jedi_dict['atm_addincrement'].execute()
         if self.task_config.DO_AERO_ANL:
-            self.jedi_dict['aero_add_increments'].execute()
+            self.jedi_dict['aero_addincrement'].execute()
         if self.task_config.DO_JEDISNOWDA:
-            self.jedi_dict['snow_add_increments'].execute()
+            self.jedi_dict['snow_addincrement'].execute()
 
         # Loop through forecast hours
         auxgrid_time_str = to_fv3time(self.task_config.current_cycle).replace('.', '_') + 'z'
