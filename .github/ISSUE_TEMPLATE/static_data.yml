@@ -1,7 +1,7 @@
 name: Static Data Update
 description: Request static data be added or updated
 labels: ["Static Data Mgmt"]
-type: ["task"]
+type: task
 assignees:
   - KateFriedman-NOAA
   - WalterKolczynski-NOAA
