@@ -66,14 +66,13 @@ for outtype in "f2d" "f3d"; do
 
     com_var="COMIN_ATMOS_GRIB_${outres}"
     infile1="${!com_var}/${RUN}.t${cyc}z.pgrb2.${outres}.f${fnh}"
-    new_infile1="${outdirpre}/${RUN}.t${cyc}z.pgrb2.${outres}.f${fnh}_ext"
     infile2="${!com_var}/${RUN}.t${cyc}z.pgrb2b.${outres}.f${fnh}"
-    new_infile2="${outdirpre}/${RUN}.t${cyc}z.pgrb2b.${outres}.f${fnh}_ext"
     outfile="${outdirpre}/${RUN}.t${cyc}z.pgrb2.${outres}.f${fnh}"
     rm -f "${outfile}" #remove outfile if it already exists before extraction
 
     for infile in "${infile1}" "${infile2}"; do
       if [[ -f "${infile}" ]]; then # check if input file exists before extraction
+        new_infile="${outdirpre}/$(basename "${infile}")_ext"
         cpfs "${infile}" "${new_infile}"
         # shellcheck disable=SC2312
         ${WGRIB2} "${new_infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
@@ -94,6 +93,7 @@ for outtype in "f2d" "f3d"; do
       outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.grib2
       for infile in "${infile1}" "${infile2}"; do
         if [[ -f "${infile}" ]]; then # check if input file exists before extraction
+          new_infile="${outdirpre}/$(basename "${infile}")_ext"
           cpfs "${infile}" "${new_infile}"
           # shellcheck disable=SC2312
           ${WGRIB2} "${new_infile}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
