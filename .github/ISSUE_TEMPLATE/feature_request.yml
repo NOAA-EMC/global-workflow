@@ -1,6 +1,7 @@
 name: Feature Request
 description: Request new capability
-labels: ["feature", "triage"]
+labels: ["triage"]
+type: ["feature"]
 
 body:
   - type: markdown
