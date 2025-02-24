@@ -8,10 +8,10 @@ HOMEDIR: '/scratch1/NCEPDEV/global/${USER}'
 STMP: '/scratch1/NCEPDEV/stmp2/${USER}'
 PTMP: '/scratch1/NCEPDEV/stmp4/${USER}'
 NOSCRUB: $HOMEDIR
-ACCOUNT: da-cpu
+ACCOUNT: fv3-cpu
 SCHEDULER: slurm
-QUEUE: debug
-QUEUE_SERVICE: debug
+QUEUE: batch
+QUEUE_SERVICE: batch
 PARTITION_BATCH: hera
 PARTITION_SERVICE: service
 RESERVATION: ''

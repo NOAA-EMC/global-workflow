@@ -89,35 +89,9 @@ class MarineLETKF(Analysis):
         # make directories and stage ensemble background files
         soca_fix_stage_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_stage_list).sync()
-        # stageconf = AttrDict()
-        # keys = ['current_cycle',
-        #         'previous_cycle',
-        #         'COM_ICE_LETKF_TMPL',
-        #         'COM_OCEAN_LETKF_TMPL',
-        #         'COM_ICE_HISTORY_TMPL',
-        #         'COM_OCEAN_HISTORY_TMPL',
-        #         'COMIN_OCEAN_HISTORY_PREV',
-        #         'COMIN_ICE_HISTORY_PREV',
-        #         'COMOUT_ICE_LETKF',
-        #         'COMOUT_OCEAN_LETKF',
-        #         'DATA',
-        #         'ENSPERT_RELPATH',
-        #         'GDUMP_ENS',
-        #         'NMEM_ENS',
-        #         'OPREFIX',
-        #         'PARMgfs',
-        #         'ROTDIR',
-        #         'RUN',
-        #         'WINDOW_BEGIN',
-        #         'WINDOW_MIDDLE']
-        # for key in keys:
-        #     stageconf[key] = self.task_config[key]
-
         # stage letkf-specific files and directories
-#        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, stageconf)
         letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, self.task_config)
         FileHandler(letkf_stage_list).sync()
-        print("MARINE_OBS_LIST_YAML:", self.task_config.MARINE_OBS_LIST_YAML)
         obs_list = parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, self.task_config)
 
         # get the list of observations
@@ -162,7 +136,6 @@ class MarineLETKF(Analysis):
         jcb_base_config = parse_j2yaml(path=jcb_base_yaml, data=envconfig_jcb)
         jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
         jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
-#        jcb_algo_config = YAMLFile(path=jcb_algo_yaml)
         jcb_algo_config = parse_j2yaml(path=jcb_algo_yaml, data=envconfig_jcb)
         jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
         jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
