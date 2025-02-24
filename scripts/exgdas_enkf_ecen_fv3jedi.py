@@ -19,9 +19,9 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the EnsembleCenter task
-    Ecen = EnsembleCenter(config)
+    ensemble_center = EnsembleCenter(config)
 
     # Initialize, execute, finalize
-    Ecen.initialize()
-    Ecen.execute()
-    Ecen.finalize()
+    ensemble_center.initialize()
+    ensemble_center.execute()
+    ensemble_center.finalize()

@@ -184,7 +184,7 @@ class AnalysisCalc(Task):
         # Copy analyses to comrot
         fh_dict = {'copy': []}
         src_prefix = f"{self.task_config.DATA}/{self.task_config.GPREFIX}"
-        dest_prefix = f"{self.task_config.COM_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
+        dest_prefix = f"{self.task_config.COMOUT_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
         for fh in self.task_config.IAUFHRS:
             hr = format(fh, '03')
             if fh == 6:

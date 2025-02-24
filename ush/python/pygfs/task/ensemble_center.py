@@ -168,6 +168,6 @@ class EnsembleCenter(Task):
                                             f"enkf{self.task_config.APREFIX}cubed_sphere_grid_ratmi{hr}.tile{itile+1}.nc")
                     else:
                         dest = incdir
-                    inc_copy['copy'].append([src,dest])
+                    inc_copy['copy'].append([src, dest])
 
         FileHandler(inc_copy).sync()

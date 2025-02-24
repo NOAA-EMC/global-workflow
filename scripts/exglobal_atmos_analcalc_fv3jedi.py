@@ -18,9 +18,9 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the AnalysisCalc task
-    AnalCalc = AnalysisCalc(config)
+    analysis_calc = AnalysisCalc(config)
 
     # Initialize, execute, finalize
-    AnalCalc.initialize()
-    AnalCalc.execute()
-    AnalCalc.finalize()
+    analysis_calc.initialize()
+    analysis_calc.execute()
+    analysis_calc.finalize()
