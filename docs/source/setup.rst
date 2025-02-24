@@ -230,13 +230,14 @@ Go to your EXPDIR and check/change the following variables within your config.ba
    * STMP
    * PTMP
    * ARCDIR (location on disk for online archive used by verification system)
-   * HPSSARCH (YES turns on archival)
+   * DO_ARCHCOM (YES turns on COM archival)
+   * ARCHCOM_TO (Where and how to perform COM archiving - local, hpss, globus_hpss)
    * HPSS_PROJECT (project on HPSS if archiving)
-   * ATARDIR (location on HPSS if archiving)
+   * ATARDIR (location on HPSS or locally if archiving)
 
-Some of those variables will be found within a machine-specific if-block so make sure to change the correct ones for the machine you'll be running on.
+`NOTE`: If you selected ``ARHCOM_TO='globus_hpss``, then you will need to activate your globus connections between Niagara and MSU.  See :doc: globus_arch.rst for more details.
 
-Now is also the time to change any other variables/settings you wish to change in config.base or other configs. `Do that now.` Once done making changes to the configs in your EXPDIR go back to your clone to run the second setup script. See :doc: configure.rst for more information on configuring your run.
+Now is also the time to change any other variables/settings you wish to change in config.base or other configs. `Do that now.` Once you are done making changes to the configs in your EXPDIR, go back to your clone to run the second setup script. See :doc: configure.rst for more information on configuring your run.
 
 
 *************************************

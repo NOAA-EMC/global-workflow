@@ -45,3 +45,4 @@ Table of Contents
    wave.rst
    noaa_csp.rst
    errors_faq.rst
+   globus_arch.rst
