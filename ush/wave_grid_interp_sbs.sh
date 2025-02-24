@@ -93,7 +93,7 @@ source "${USHgfs}/preamble.sh"
   for ID in ${waveGRD} ${grdID}; do
     ${NLN} "${DATA}/mod_def.${ID}" "mod_def.${ID}"
   done
-  
+
 
 # --------------------------------------------------------------------------- #
 # 1.  Generate GRID file with all data
