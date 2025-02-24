@@ -21,8 +21,5 @@ echo "=============== START TO RUN WAVE INIT ==============="
 # Execute the JJOB
 ${HOMEgfs}/jobs/JGLOBAL_WAVE_INIT
 status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
 
-exit 0
+exit "${status}"

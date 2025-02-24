@@ -373,4 +373,4 @@ if [[ "${mkdata}" == "YES" ]]; then
 fi
 
 
-exit "${err}"
+exit 0

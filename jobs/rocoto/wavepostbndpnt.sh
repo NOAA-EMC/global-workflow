@@ -21,8 +21,5 @@ echo "=============== START TO RUN WAVE_POST_BNDPNT ==============="
 # Execute the JJOB
 ${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_BNDPNT
 status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
 
-exit 0
+exit "${status}"
