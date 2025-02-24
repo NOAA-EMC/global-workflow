@@ -45,6 +45,7 @@ class GlobusHpss(Task):
         # TODO Move the globus interface to wxflow
         self.globus = which("globus")
         self.ssh = which("ssh")
+        self.wd = os.getcwd()
 
         if self.forsven is None:
             raise FileNotFoundError("FATAL ERROR Could not find the forsven executable!")
@@ -60,12 +61,12 @@ class GlobusHpss(Task):
         self.globus_rm.add_default_arg(["rm", "--notify", "failed", "-f", "-r"])
         # Transfer file, notify on failure, preserve modification times, only
         # output task ID
-        self.globus_xfr.add_default_arg(["transfer", "--notify", "off",
+        self.globus_xfr.add_default_arg(["transfer", "--notify", "failed",
                                          "--preserve-mtime", "--sync-level", "mtime",
-                                         "--jmespath task_id", "--format=UNIX"])
+                                         "--jmespath", "task_id", "--format=UNIX"])
         # Wait on a task ID to finish and output the status of the transfer when complete
         self.globus_wait.add_default_arg(["task", "wait", "--jmespath", "status",
-                                          "--format=UNIX", "--timeout", "240"])
+                                          "--format=UNIX", "--timeout", "120"])
 
         # Get the user's server username from their ~/.ssh/config file
         self.server_name = self.task_config.SERVER_NAME
@@ -78,6 +79,8 @@ class GlobusHpss(Task):
                 f"Please add an entry for {self.server_name} into ~/.ssh/config!"
             ) from pe
 
+        self.CLIENT_GLOBUS_UUID = self.task_config.CLIENT_GLOBUS_UUID
+        self.SERVER_GLOBUS_UUID = self.task_config.SERVER_GLOBUS_UUID
         # Parse the ssh output to find the user's Niagara username
         ssh_output = ssh_output.split("\n")
         for line in ssh_output:
@@ -287,7 +290,7 @@ class GlobusHpss(Task):
             server_run_script = f"{transfer_set['server_job_dir']}/run_doorman.sh"
             logger.debug(f"Transfer run_doorman.sh to {self.server_name}:{server_run_script}")
             self._wait_on_task_id(self.globus_xfr(
-                f"{self.CLIENT_GLOBUS_UUID}:run_doorman.sh",
+                f"{self.CLIENT_GLOBUS_UUID}:{self.wd}/run_doorman.sh",
                 f"{self.SERVER_GLOBUS_UUID}:{server_run_script}",
                 output=str, error=str
             ))
@@ -339,7 +342,7 @@ class GlobusHpss(Task):
             try:
                 self._wait_on_task_id(self.globus_xfr(
                     f"{self.SERVER_GLOBUS_UUID}:{transfer_set['server_job_dir']}/run_doorman.log",
-                    f"{self.CLIENT_GLOBUS_UUID}:./run_doorman.log",
+                    f"{self.CLIENT_GLOBUS_UUID}:{self.wd}/run_doorman.log",
                     output=str, error=str
                 ))
 
@@ -394,9 +397,9 @@ class GlobusHpss(Task):
 
         try:
             self._wait_on_task_id(self.globus_xfr(
-                f"{self.CLIENT_GLOBUS_UUID}:{req_file}",
+                f"{self.CLIENT_GLOBUS_UUID}:{self.wd}/{req_file}",
                 f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/{req_file}",
-                output=str, error=str
+                output=str.split, error=str.split
             ))
 
         except (ProcessError, ConnectionError):
@@ -404,7 +407,7 @@ class GlobusHpss(Task):
 
         try:
             self._wait_on_task_id(self.globus_xfr(
-                f"{self.CLIENT_GLOBUS_UUID}:init_xfer.sh",
+                f"{self.CLIENT_GLOBUS_UUID}:{self.wd}/init_xfer.sh",
                 f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/init_xfer_{pslot}.sh",
                 output=str, error=str
             ))
@@ -418,7 +421,7 @@ class GlobusHpss(Task):
         try:
             self._wait_on_task_id(self.globus_xfr(
                 f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/{pslot}_crontab_active.log",
-                f"{self.CLIENT_GLOBUS_UUID}:crontab.log",
+                f"{self.CLIENT_GLOBUS_UUID}:{self.wd}/crontab.log",
                 output=str, error=str
             ))
         except (ProcessError, ConnectionError) as pe:
@@ -445,8 +448,11 @@ class GlobusHpss(Task):
     @logit(logger)
     def _wait_on_task_id(self, task_id):
 
-        status = self.globus_wait(task_id)
-        if status != "SUCCESS":
+        # The task_id usually has a newline character at the end.  Strip that to begin.
+        task_id = task_id.strip()
+
+        status = self.globus_wait(task_id, output=str).strip()
+        if status != "SUCCEEDED":
             raise ConnectionError(f"Globus failed on task ID {task_id}")
 
     @logit(logger)
@@ -463,7 +469,7 @@ class GlobusHpss(Task):
 
             try:
                 self._wait_on_task_id(self.globus_xfr(
-                    f"{self.CLIENT_GLOBUS_UUID}:{req_file}",
+                    f"{self.CLIENT_GLOBUS_UUID}:{self.wd}/{req_file}",
                     f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/{req_file}",
                     output=str, error=str
                 ))
@@ -478,7 +484,7 @@ class GlobusHpss(Task):
             try:
                 self._wait_on_task_id(self.globus_xfr(
                     f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/{req_file}",
-                    f"{self.CLIENT_GLOBUS_UUID}:{req_file}",
+                    f"{self.CLIENT_GLOBUS_UUID}:{self.wd}/{req_file}",
                     output=str, error=str
                 ))
                 raise RuntimeError(f"FATAL ERROR Failed to delete the run directory on {self.server_name}")
