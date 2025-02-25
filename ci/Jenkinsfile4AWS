@@ -1,0 +1,308 @@
+def Machine = 'none'
+def machine = 'none'
+def CUSTOM_WORKSPACE = 'none'
+def HOMEgfs = 'none'
+def CI_CASES = ''
+def GH = 'none'
+// Location of the custom workspaces for each machine in the CI system.  They are persistent for each iteration of the PR.
+def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaea: 'Gaea', noaacloud: 'AWS']
+def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/global/CI/HERCULES', gaea: '/gpfs/f5/epic/proj-shared/global/CI', noaacloud: /lustre/jenkins/global-workflow/CI]
+def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
+def STATUS = 'Passed'
+
+pipeline {
+
+    agent { label 'built-in' }
+
+    options {
+        skipDefaultCheckout()
+        parallelsAlwaysFailFast()
+    }
+
+    stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
+             // which is used to designate the Nodes in the Jenkins Controller by the agent label
+             // Each Jenkins Node is connected to said machine via an JAVA agent via an ssh tunnel
+             // no op 2
+
+        stage('1. Get Machine') {
+            agent { label 'built-in' }
+            steps {
+                script {
+
+                    def causes = currentBuild.rawBuild.getCauses()
+                    def isSpawnedFromAnotherJob = causes.any { cause ->
+                        cause instanceof hudson.model.Cause.UpstreamCause
+                    }
+
+                    def run_nodes = []
+                    if (isSpawnedFromAnotherJob) {
+                        echo "machine being set to value passed to this spawned job"
+                        echo "passed machine: ${params.machine}"
+                        machine = params.machine
+                    } else {
+                        echo "This is parent job so getting list of nodes matching labels:"
+                        for (label in pullRequest.labels) {
+                            if (label.matches("CI-(.*?)-Ready")) {
+                                def machine_name = label.split('-')[1].toString().toLowerCase()
+                                jenkins.model.Jenkins.get().computers.each { c ->
+                                    if (c.node.selfLabel.name == NodeName[machine_name]) {
+                                        run_nodes.add(c.node.selfLabel.name)
+                                    }
+                                }
+                            }
+                        }
+                        // Spawning all the jobs on the nodes matching the labels
+                        if (run_nodes.size() > 1) {
+                            run_nodes.init().each { node ->
+                                def machine_name = node.split('-')[0].toLowerCase()
+                                echo "Spawning job on node: ${node} with machine name: ${machine_name}"
+                                build job: "/global-workflow/EMC-Global-Pipeline/PR-${env.CHANGE_ID}", parameters: [
+                                    string(name: 'machine', value: machine_name),
+                                    string(name: 'Node', value: node) ],
+                                    wait: false
+                            }
+                            machine = run_nodes.last().split('-')[0].toLowerCase()
+                            echo "Running parent job: ${machine}"
+                        } else {
+                            machine = run_nodes[0].split('-')[0].toLowerCase()
+                            echo "Running only the parent job: ${machine}"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('2. Get Common Workspace') {
+            agent { label NodeName[machine].toLowerCase() }
+            steps {
+                script {
+                    Machine = machine[0].toUpperCase() + machine.substring(1)
+                    echo "Getting Common Workspace for ${Machine}"
+                    ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
+                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'Gaea', 'AWS'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                        GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
+                        CUSTOM_WORKSPACE = "${WORKSPACE}"
+                        HOMEgfs = "${CUSTOM_WORKSPACE}/global-workflow"
+                        sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/global-workflow; mkdir -p ${CUSTOM_WORKSPACE}/global-workflow")
+                        sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/RUNTESTS; mkdir -p ${CUSTOM_WORKSPACE}/RUNTESTS")
+                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
+                    }
+                    echo "Building and running on ${Machine} in directory ${CUSTOM_WORKSPACE}"
+                }
+            }
+        }
+
+        stage('3. Build System') {
+            agent { label NodeName[machine].toLowerCase() }
+            steps {
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    script {
+                        ws(HOMEgfs) {
+                            echo "Checking out the code on ${Machine} using scm in ${HOMEgfs}"
+                            try {
+                                checkout scm
+                            } catch (Exception e) {
+                                echo "Failed to checkout the code on ${Machine} using scm in ${HOMEgfs}, try again ..."
+                                sleep time: 45, unit: 'SECONDS'
+                                try {
+                                    checkout scm
+                                } catch (Exception ee) {
+                                    echo "Failed to checkout the code on ${Machine} using scm in ${HOMEgfs}: ${ee.getMessage()}"
+                                    if (env.CHANGE_ID) {
+                                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Checkout **Failed** on ${Machine} in Build# ${env.BUILD_NUMBER}: ${ee.getMessage()}" """)
+                                    }
+                                    STATUS = 'Failed'
+                                    error("Failed to checkout: ${ee.getMessage()}")
+                                }
+                            }
+                            def gist_url = ""
+                            def error_logs = ""
+                            def error_logs_message = ""
+                            dir("${HOMEgfs}/sorc") {
+                                try {
+                                    sh(script: './build_compute.sh all')  // build the global-workflow executables
+                                } catch (Exception error_build) {
+                                    echo "Failed to build global-workflow: ${error_build.getMessage()}"
+                                    if ( fileExists("logs/error.logs") ) {
+                                        def fileContent = readFile 'logs/error.logs'
+                                        def lines = fileContent.readLines()
+                                        for (line in lines) {
+                                            echo "archiving: ${line}"
+                                            if (fileExists("${line}") && readFile("${line}").length() > 0 ){
+                                                try {
+                                                    archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                    error_logs = error_logs + "${HOMEgfs}/sorc/${line} "
+                                                    error_logs_message = error_logs_message + "${HOMEgfs}/sorc/${line}\n"
+                                                }
+                                                catch (Exception error_arch) { echo "Failed to archive error log ${line}: ${error_arch.getMessage()}" }
+                                            }
+                                        }
+                                        try {
+                                            sh(script: """
+                                              source ${HOMEgfs}/workflow/gw_setup.sh
+                                              ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}
+                                            """)
+                                            gist_url=sh(script: """
+                                              source ${HOMEgfs}/workflow/gw_setup.sh
+                                              ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}
+                                            """, returnStdout: true).trim()
+                                            sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Build **FAILED** on **${Machine}** in Build# ${env.BUILD_NUMBER} with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                        } catch (Exception error_comment) {
+                                            echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                        }
+                                        STATUS = 'Failed'
+                                        error("Failed to build global-workflow on ${Machine}")
+                                    }
+                                    STATUS = 'Failed'
+                                        error("Failed to build global-workflow on ${Machine} and no error.logs file found")
+                                }
+                                sh(script: './link_workflow.sh')
+                            }
+                            if (env.CHANGE_ID) {
+                                try {
+                                    sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Running" --remove-label "CI-${Machine}-Building" """)
+                                } catch (Exception e) {
+                                    echo "Failed to update label from Building to Running: ${e.getMessage()}"
+                                }
+                            }
+                            // Get a list of CI cases to run
+                            CI_CASES = sh(script: """
+                              source ${HOMEgfs}/workflow/gw_setup.sh
+                              ${HOMEgfs}/ci/scripts/utils/get_host_case_list.py ${machine}
+                            """, returnStdout: true).trim().split()
+                            echo "Cases to run: ${CI_CASES}"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('4. Run Tests') {
+            when {
+                expression { STATUS != 'Failed' }
+            }
+            agent { label NodeName[machine].toLowerCase() }
+            steps {
+                script {
+                    def parallelStages = CI_CASES.collectEntries { caseName ->
+                        ["${caseName}": {
+                            stage("Create ${caseName}") {
+                                script {
+                                        env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
+                                        try {
+                                              error_output = sh(script: """
+                                                source ${HOMEgfs}/workflow/gw_setup.sh
+                                                ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml
+                                              """, returnStdout: true).trim()
+                                        } catch (Exception error_create) {
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experiment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
+                                            error("Case ${caseName} failed to create experiment directory")
+                                        }
+                                     }
+                            }
+
+                            stage("Running ${caseName}") {
+                                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                                        script {
+                                                def pslot = sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${caseName}", returnStdout: true).trim()
+                                                def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
+                                                sh(script: " rm -f ${error_file}")
+                                                try {
+                                                    sh(script: """
+                                                      source ${HOMEgfs}/workflow/gw_setup.sh
+                                                      ${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} 'global-workflow'
+                                                    """)
+                                                    sh(script: """
+                                                      source ${HOMEgfs}/workflow/gw_setup.sh
+                                                      ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cleanup_experiment ${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}
+                                                    """)
+                                                } catch (Exception error_experment) {
+                                                    sh(script: """
+                                                      source ${HOMEgfs}/workflow/gw_setup.sh
+                                                      ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh cancel_batch_jobs ${pslot}
+                                                    """)
+                                                    ws(CUSTOM_WORKSPACE) {
+                                                        def error_logs = ""
+                                                        def error_logs_message = ""
+                                                        if (fileExists(error_file)) {
+                                                            def fileContent = readFile error_file
+                                                            def lines = fileContent.readLines()
+                                                            for (line in lines) {
+                                                                echo "archiving: ${line}"
+                                                                if (fileExists("${CUSTOM_WORKSPACE}/${line}") && readFile("${CUSTOM_WORKSPACE}/${line}").length() > 0) {
+                                                                    try {
+                                                                        archiveArtifacts artifacts: "${line}", fingerprint: true
+                                                                        error_logs = error_logs + "${CUSTOM_WORKSPACE}/${line} "
+                                                                        error_logs_message = error_logs_message + "${CUSTOM_WORKSPACE}/${line}\n"
+                                                                    } catch (Exception error_arch) {
+                                                                        echo "Failed to archive error log ${line}: ${error_arch.getMessage()}"
+                                                                    }
+                                                                }
+                                                            }
+                                                            try {
+                                                                gist_url = sh(script: """
+                                                                  source ${HOMEgfs}/workflow/gw_setup.sh
+                                                                  ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_${env.CHANGE_ID}
+                                                                """, returnStdout: true).trim()
+                                                                sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${caseName} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                                                sh(script: """
+                                                                  source ${HOMEgfs}/workflow/gw_setup.sh
+                                                                  ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_${env.CHANGE_ID}
+                                                                """)
+                                                            } catch (Exception error_comment) {
+                                                                echo "Failed to comment on PR: ${error_comment.getMessage()}"
+                                                            }
+                                                        } else {
+                                                            echo "No error logs found for failed cases in ${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
+                                                        }
+                                                        STATUS = 'Failed'
+                                                        try {
+                                                            sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
+                                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Experiment ${caseName} **FAILED** on ${Machine} in Build# ${env.BUILD_NUMBER} in\n\\`${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}\\`" """)
+                                                        } catch (Exception e) {
+                                                            echo "Failed to update label from Running to ${STATUS}: ${e.getMessage()}"
+                                                        }
+                                                        error("Failed to run experiments ${caseName} on ${Machine}")
+                                                    }
+                                                }
+                                        }
+                                    }
+                            }
+                        }]
+                    }
+                parallel parallelStages + [failFast: true]
+                }
+            }
+        }
+
+        stage( '5. Finalize' ) {
+            agent { label NodeName[machine].toLowerCase() }
+            steps {
+                script {
+                    sh(script: """
+                        labels=\$(${GH} pr view ${env.CHANGE_ID} --repo ${repo_url} --json labels --jq '.labels[].name')
+                        for label in \$labels; do
+                            if [[ "\$label" == *"${Machine}"* ]]; then
+                                ${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --remove-label "\$label"
+                            fi
+                        done
+                    """, returnStatus: true)
+                    sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
+                    if (fileExists("${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log")) {
+                        sh(script: """echo "**CI ${STATUS}** on ${Machine} in Build# ${env.BUILD_NUMBER}<br>Built and ran in directory \\`${CUSTOM_WORKSPACE}\\`\n\\`\\`\\`\n" | cat - ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log > temp && mv temp ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log""", returnStatus: true)
+                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body-file ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log  """, returnStatus: true)
+                    }
+                    if (STATUS == 'Passed') {
+                        try {
+                            sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/*")
+                        } catch (Exception e) {
+                            echo "Failed to remove custom work directory ${CUSTOM_WORKSPACE} on ${Machine}: ${e.getMessage()}"
+                        }
+                    } else {
+                        echo "Failed to build and run global-workflow in ${CUSTOM_WORKSPACE} on ${Machine}"
+                    }
+                }
+            }
+        }
+    }
+}
