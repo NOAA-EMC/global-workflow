@@ -37,177 +37,125 @@ source "${USHgfs}/wave_domain_grid.sh"
 
 # 0.a Basic modes of operation
 
-  # Set wave model ID tag to include member number
-  # if ensemble; waveMEMB var empty in deterministic
-  export WAV_MOD_TAG=${RUN}wave${waveMEMB}
+# Set wave model ID tag to include member number
+export WAV_MOD_TAG="${RUN}.wave"
 
-  cd $DATA
-
-  echo "Starting WAVE POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
-
-  set +x
-  echo ' '
-  echo '                     *********************************'
-  echo '                     *** WAVE POSTPROCESSOR SCRIPT ***'
-  echo '                     *********************************'
-  echo ' '
-  echo "Starting at : $(date)"
-  echo '-------------'
-  echo ' '
-  set_trace
+cd "${DATA}" || exit 1
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
-  if [ -z ${NTASKS} ]
-  then
-    echo "FATAL ERROR: requires NTASKS to be set "
-    err=1; export err;${errchk}
-    exit $err
-  fi
+if [[ -z ${NTASKS} ]]; then
+  echo "FATAL ERROR: requires NTASKS to be set"
+  err=1; export err; ${errchk}
+  exit "${err}"
+fi
 
 # 0.c Defining model grids
 
 # 0.c.1 Grids
 
-  export waveGRD=${waveGRD?Var waveGRD Not Set}
+export waveGRD=${waveGRD?Var waveGRD Not Set}
 
 # 0.c.2 extended global grid and rtma transfer grid
-  export waveinterpGRD=${waveinterpGRD?Var wavepostGRD Not Set}
-  export wavepostGRD=${wavepostGRD?Var wavepostGRD Not Set}
+export waveinterpGRD=${waveinterpGRD?Var wavepostGRD Not Set}
+export wavepostGRD=${wavepostGRD?Var wavepostGRD Not Set}
 
+cat << EOF
+Grid information  :
+-------------------
+   Native wave grids  : ${waveGRD}
+   Interpolated grids : ${waveinterpGRD}
+   Post-process grids : ${wavepostGRD}
+EOF
 
-  set +x
-  echo ' '
-  echo 'Grid information  :'
-  echo '-------------------'
-  echo "   Native wave grids  : $waveGRD"
-  echo "   Interpolated grids : $waveinterpGRD"
-  echo "   Post-process grids : $wavepostGRD"
-  echo ' '
-  set_trace
-
-  export FHRUN=0
+export FHRUN=0
 
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
-  export DOGRB_WAV=${DOGRB_WAV:-'YES'} #Create grib2 files
-  export DOGRI_WAV=${DOGRI_WAV:-'NO'} #Create interpolated grids
+export DOGRB_WAV=${DOGRB_WAV:-'YES'} #Create grib2 files
+export DOGRI_WAV=${DOGRI_WAV:-'NO'} #Create interpolated grids
 
-  exit_code=0
-
-  set +x
-  echo ' '
-  echo 'Preparing input files :'
-  echo '-----------------------'
-  set_trace
+cat << EOF
+Preparing input files :
+-----------------------
+EOF
 
 # 1.a Model definition files and output files (set up using poe)
 
 # 1.a.1 Copy model definition files
-  for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
-    if [[ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
-      set +x
-      echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
-      set_trace
+# Eliminate duplicate grids
+declare -A grdALL
+for grd in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
+  # For ease of access, make the value the same as the key
+  grdALL["${grd}"]="${grd}"
+done
 
-      cp -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
-    fi
-  done
+for grdID in "${grdALL[@]}"; do
+  if [[ -f "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" ]]; then
+    echo "INFO: Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
+    cp -f "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
+  fi
+done
 
 # 1.a.2 Check that model definition files exist
-  for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
-    if [[ ! -f "mod_def.${grdID}" ]]; then
-      set +x
-      echo ' '
-      echo '*************************************************** '
-      echo " FATAL ERROR : NO MOD_DEF FILE mod_def.$grdID "
-      echo '*************************************************** '
-      echo ' '
-      set_trace
-      err=2; export err;${errchk}
-      exit $err
-      DOGRB_WAV='NO'
-    else
-      set +x
-      echo "File mod_def.$grdID found. Syncing to all nodes ..."
-      set_trace
-    fi
-  done
-
+for grdID in "${grdALL[@]}"; do
+  if [[ ! -f "mod_def.${grdID}" ]]; then
+    echo "FATAL ERROR : No mod_def file mod_def.${grdID}"
+    err=2; export err;${errchk}
+    exit "${err}"
+  else
+    echo "INFO: File mod_def.${grdID} found. Syncing to all nodes ..."
+  fi
+done
 
 # 1.b Input template files
 
-  if [ "$DOGRI_WAV" = 'YES' ]
-  then
-    for intGRD in $waveinterpGRD
-    do
-      if [ -f ${PARMgfs}/wave/${intGRD}_interp.inp.tmpl ]
-      then
-        cp -f ${PARMgfs}/wave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
-      fi
+if [[ "${DOGRI_WAV}" == 'YES' ]]; then
+  for intGRD in ${waveinterpGRD}; do
+    if [[ -f "${PARMgfs}/wave/${intGRD}_interp.inp.tmpl" ]]; then
+      cp -f "${PARMgfs}/wave/${intGRD}_interp.inp.tmpl" "${intGRD}_interp.inp.tmpl"
+    fi
 
-      if [ -f ${intGRD}_interp.inp.tmpl ]
-      then
-        set +x
-        echo "   ${intGRD}_interp.inp.tmpl copied. Syncing to all nodes ..."
-        set_trace
-      else
-        set +x
-        echo ' '
-        echo '*********************************************** '
-        echo '*** ERROR : NO TEMPLATE FOR GRINT INPUT FILE *** '
-        echo '*********************************************** '
-        echo ' '
-        set_trace
-        echo "${WAV_MOD_TAG} post ${PDY} ${cycle} : GRINT template file missing."
-        exit_code=1
-        DOGRI_WAV='NO'
-      fi
-    done
-  fi
+    if [[ -f "${intGRD}_interp.inp.tmpl" ]]; then
+      echo "${intGRD}_interp.inp.tmpl copied. Syncing to all nodes ..."
+    else
+      echo "FATAL ERROR: No template for ${intGRD} input file"
+      err=1
+      DOGRI_WAV='NO'
+    fi
+  done
+fi
 
-  if [ "$DOGRB_WAV" = 'YES' ]
-  then
-    for grbGRD in $waveinterpGRD $wavepostGRD
-    do
-      if [ -f ${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl ]
-      then
-        cp -f ${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
-      fi
+if [[ "${DOGRB_WAV}" == 'YES' ]]; then
+  for grbGRD in ${waveinterpGRD} ${wavepostGRD}; do
+    if [[ -f "${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl" ]]; then
+      cp -f "${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl" "ww3_grib2.${grbGRD}.inp.tmpl"
+    fi
 
-      if [ -f ww3_grib2.${grbGRD}.inp.tmpl ]
-      then
-        set +x
-        echo "   ww3_grib2.${grbGRD}.inp.tmpl copied. Syncing to all nodes ..."
-        set_trace
-      else
-        set +x
-        echo ' '
-        echo '*********************************************** '
-        echo "*** ERROR : NO TEMPLATE FOR ${grbGRD} GRIB INPUT FILE *** "
-        echo '*********************************************** '
-        echo ' '
-        set_trace
-        exit_code=2
-        DOGRB_WAV='NO'
-      fi
-    done
-  fi
+    if [[ -f "ww3_grib2.${grbGRD}.inp.tmpl" ]]; then
+      echo "INFO: ww3_grib2.${grbGRD}.inp.tmpl copied."
+    else
+      echo "FATAL ERROR: No template for ${grbGRD} grib input file"
+      err=2
+      DOGRB_WAV='NO'
+    fi
+  done
+fi
 
 
 # 1.c Data summary
+#shellcheck disable=SC2312
+cat << EOF
 
-  set +x
-  echo ' '
-  echo "   Input files read and processed at : $(date)"
-  echo ' '
-  echo '   Data summary : '
-  echo '   ---------------------------------------------'
-  echo "      Sufficient data for GRID interpolation    : $DOGRI_WAV"
-  echo "      Sufficient data for GRIB files            : $DOGRB_WAV"
-  echo ' '
-  set_trace
+Input files read and processed at : $(date)
+
+Data summary:
+---------------------------------------------
+  Sufficient data for GRID interpolation    : ${DOGRI_WAV}
+  Sufficient data for GRIB files            : ${DOGRB_WAV}
+
+EOF
 
 # --------------------------------------------------------------------------- #
 # 2.  Make consolidated grib2 file for side-by-side grids and interpolate
@@ -215,157 +163,60 @@ source "${USHgfs}/wave_domain_grid.sh"
 #
 # 2.a Command file set-up
 
-  set +x
-  echo '   Making command file for sbs grib2 and GRID Interpolation '
-  set_trace
-  fhr=$(( 10#${FHR3} ))
-  ymdh=$($NDATE $fhr ${PDY}${cyc})
-  YMD=$(echo $ymdh | cut -c1-8)
-  HMS="$(echo $ymdh | cut -c9-10)0000"
-  YMDHMS=${YMD}${HMS}
-  FH3=$(printf %03i $fhr)
+echo 'INFO: Making command file for grib2 and grid interpolation'
+valid_time=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} +${FORECAST_HOUR} hours")
+fhr3=$(printf '%03i' "${FORECAST_HOUR}")
 
-  fcmdnow=cmdfile.${FH3}
-  fcmdigrd=icmdfile.${FH3}
-  mkdir output_$YMDHMS
-  cd output_$YMDHMS
-  rm -f ${fcmdnow} ${fcmdigrd}
-  touch ${fcmdnow} ${fcmdigrd}
+rm -f "mpmd_script"
+touch "mpmd_script"
 
+# Input model data
+gfile="${RUN}.wave.t${cyc}z.${waveGRD}.f${fhr3}.bin"
+if [[ ! -s "${COMIN_WAVE_HISTORY}/${gfile}" ]]; then
+  echo "FATAL ERROR: No raw field output file ${COMIN_WAVE_HISTORY}/${gfile}"
+  err=3; export err; "${errchk}"
+  exit "${err}"
+fi
+cp "${COMIN_WAVE_HISTORY}/${gfile}" "./out_grd.${waveGRD}"
 
-# Create instances of directories for gridded output
-  export GRIBDATA=${DATA}/output_$YMDHMS
-  export GRDIDATA=${DATA}/output_$YMDHMS
-
-# Gridded data (main part, need to be run side-by-side with forecast
-  gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${waveGRD}.${YMD}.${HMS}"
-  if [[ ! -s "${gfile}" ]]; then
-    echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
-    err=3; export err; "${errchk}"
-    exit "${err}"
-  fi
-  ${NLN} "${gfile}" "./out_grd.${waveGRD}"
-
-  if [ "$DOGRI_WAV" = 'YES' ]
-  then
-    nigrd=1
-    for grdID in $waveinterpGRD
-    do
-      ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
-      echo "${USHgfs}/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
-      if [ "$DOGRB_WAV" = 'YES' ]
-      then
-        gribFL=\'$(echo ${OUTPARS_WAV})\'
-        process_grdID "${grdID}"
-        echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDREGION $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
-      fi
-      echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
-      chmod 744 ${fcmdigrd}.${nigrd}
-      nigrd=$((nigrd+1))
-    done
-  fi
-
-  if [ "$DOGRB_WAV" = 'YES' ]
-  then
-    for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
-    do
-      gribFL=\'$(echo ${OUTPARS_WAV})\'
+if [[ "${DOGRI_WAV}" == 'YES' ]]; then
+  for grdID in ${waveinterpGRD}; do
+    interp_time=$(date --utc +%Y%m%d%H -d "${valid_time:0:8} ${valid_time:8:2} -${WAVHINDH} hours")
+    dt_int=3600.
+    n_int=9999
+    echo "#! /usr/bin/env bash" > "${grdID}.sh"
+    echo "${USHgfs}/wave_grid_interp_sbs.sh ${grdID} ${interp_time} ${dt_int} ${n_int} ${FORECAST_HOUR}" >> "${grdID}.sh"
+    if [[ "${DOGRB_WAV}" == 'YES' ]]; then
+      gribFL="${OUTPARS_WAV}"
       process_grdID "${grdID}"
-      echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDREGION $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
-    done
-  fi
-
-  if [ ${CFP_MP:-"NO"} = "YES" ]; then
-    nfile=0
-    ifile=0
-    iline=1
-    ifirst='yes'
-    nlines=$( wc -l ${fcmdnow} | awk '{print $1}' )
-    while [ $iline -le $nlines ]; do
-      line=$( sed -n ''$iline'p' ${fcmdnow} )
-      if [ -z "$line" ]; then
-        break
-      else
-        if [ "$ifirst" = 'yes' ]; then
-          echo "#!/bin/sh" > cmdmfile.$nfile
-          echo "$nfile cmdmfile.$nfile" >> cmdmprog
-          chmod 744 "cmdmfile.$nfile"
-        fi
-        echo $line >> "cmdmfile.$nfile"
-        nfile=$(( nfile + 1 ))
-        if [ "$nfile" -eq "$NTASKS" ]; then
-          nfile=0
-          ifirst='no'
-        fi
-        iline=$(( iline + 1 ))
-      fi
-    done
-  fi
-
-  wavenproc=$(wc -l ${fcmdnow} | awk '{print $1}')
-  wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
-
-  set +x
-  echo ' '
-  echo "   Executing the grib2_sbs scripts at : $(date)"
-  echo '   ------------------------------------'
-  echo ' '
-  set_trace
-
-  if [ "$wavenproc" -gt '1' ]
-  then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
-    else
-      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
+      echo "${USHgfs}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${gribFL}'" >> "${grdID}.sh"
     fi
-    exit=$?
-  else
-    chmod 744 ${fcmdnow}
-    ./${fcmdnow}
-    exit=$?
-  fi
+    echo "${DATA}/${grdID}.sh" >> "mpmd_script"
+    chmod 744 "${grdID}.sh"
+  done
+fi
 
-  if [ "$exit" != '0' ]
-  then
-    set +x
-    echo ' '
-    echo '*************************************'
-    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
-    echo '*************************************'
-    echo '     See Details Below '
-    echo ' '
-    set_trace
-    err=4; export err;${errchk}
-    exit "$err"
-  fi
+if [[ "${DOGRB_WAV}" == 'YES' ]]; then
+  # First concatenate grib files for sbs grids
+  for grdID in ${wavepostGRD}; do
+    gribFL="${OUTPARS_WAV}"
+    process_grdID "${grdID}"
+    echo "${USHgfs}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${gribFL}'" >> "mpmd_script"
+  done
+fi
 
-  rm -f out_grd.* # Remove large binary grid output files
+# Run with MPMD or serial
+echo ""
+if [[ "${USE_CFP:-}" == "YES" ]]; then
+  OMP_NUM_THREADS=1 "${USHgfs}/run_mpmd.sh" "${DATA}/mpmd_script"
+  export err=$?
+else
+  chmod 755 "${DATA}/mpmd_script"
+  bash +x "${DATA}/mpmd_script" > mpmd.out 2>&1
+  export err=$?
+fi
+err_chk
 
-  cd $DATA
- 
-# Check if grib2 file created
-    ENSTAG=""
-    com_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
-    com_dir=${!com_varname}
-    if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-    gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDREGION}.${GRDRES}.f${FH3}.grib2"
-    if [ ! -s ${com_dir}/${gribchk} ]; then
-      set +x
-      echo ' '
-      echo '********************************************'
-      echo "*** FATAL ERROR: $gribchk not generated "
-      echo '********************************************'
-      echo '     See Details Below '
-      echo ' '
-      set_trace
-      err=5; export err;${errchk}
-      exit "$err"
-    fi
-
-# --------------------------------------------------------------------------- #
-# 7.  Ending output
-
-echo "$exit_code"
+cat mpmd.out
 
 # End of MWW3 prostprocessor script ---------------------------------------- #

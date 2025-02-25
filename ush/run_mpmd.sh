@@ -11,6 +11,11 @@ nprocs=$(wc -l < "${cmdfile}")
 mpmd_cmdfile="${DATA:-}/mpmd_cmdfile"
 if [[ -s "${mpmd_cmdfile}" ]]; then rm -f "${mpmd_cmdfile}"; fi
 
+cat << EOF
+  INFO: Executing MPMD job, STDOUT redirected for each process separately
+  INFO: On failure, logs for each job will be available in ${DATA}/mpmd.proc_num.out
+  INFO: The proc_num corresponds to the line in ${mpmd_cmdfile}
+EOF
 if [[ "${launcher:-}" =~ ^srun.* ]]; then  #  srun-based system e.g. Hera, Orion, etc.
 
   # Slurm requires a counter in front of each line in the script

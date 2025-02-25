@@ -69,7 +69,7 @@ source "${USHgfs}/preamble.sh"
   if [[ "$type" = "ibpcbull" ]]; then filext='cbull'; fi
 
 
-  rm -rf TAR_${filext}_$ID 
+  rm -rf TAR_${filext}_$ID
   mkdir  TAR_${filext}_$ID
 # this directory is used only for error capturing
 
@@ -110,9 +110,9 @@ source "${USHgfs}/preamble.sh"
     if [[ "${nf}" -ge "${nbm2}" ]]
     then
 
-      tar -cf "${ID}.${cycle}.${type}_tar" ./${ID}.*.${filext}
+      tar -cf "${ID}.${type}.tar" ./${ID}.*.${filext}
       exit=$?
-      filename="${ID}.${cycle}.${type}_tar" 
+      filename="${ID}.${type}.tar" 
       if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ; then
         echo "FATAL ERROR: File ${filename} not found after waiting $(( sleep_interval * (countMAX + 1) )) secs"
         exit 3
@@ -130,7 +130,7 @@ source "${USHgfs}/preamble.sh"
         exit 3
       fi
       
-      if [[ -f "${ID}.${cycle}.${type}_tar" ]]
+      if [[ -f "${ID}.${type}.tar" ]]
       then
         tardone='yes'
       fi
@@ -152,10 +152,10 @@ source "${USHgfs}/preamble.sh"
 
   if [[ "${type}" = 'spec' ]]
   then
-    if [[ -s "${ID}.${cycle}.${type}_tar" ]]
+    if [[ -s "${ID}.${type}.tar" ]]
     then
-      file_name="${ID}.${cycle}.${type}_tar.gz"
-      /usr/bin/gzip -c "${ID}.${cycle}.${type}_tar" > "${file_name}"
+      file_name="${ID}.${type}.tar.gz"
+      /usr/bin/gzip -c "${ID}.${type}.tar" > "${file_name}"
       exit=$?
 
       if  [[ "${exit}" != '0' ]]
@@ -171,7 +171,7 @@ source "${USHgfs}/preamble.sh"
       fi
     fi
   else
-    file_name="${ID}.${cycle}.${type}_tar"
+    file_name="${ID}.${type}.tar"
   fi
 
 # --------------------------------------------------------------------------- #

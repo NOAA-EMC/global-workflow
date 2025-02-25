@@ -15,10 +15,10 @@ export job="wavepostsbs"
 # shellcheck disable=SC2153
 IFS=', ' read -r -a fhr_list <<< "${FHR_LIST}"
 
-export FHR3 jobid
+export FORECAST_HOUR jobid
 for FORECAST_HOUR in "${fhr_list[@]}"; do
-	FHR3=$(printf '%03d' "${FORECAST_HOUR}")
-	jobid="${job}_f${FHR3}.$$"
+	fhr3=$(printf '%03d' "${FORECAST_HOUR}")
+	jobid="${job}_f${fhr3}.$$"
 	# Execute the JJOB
 	"${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_SBS"
 	status=$?

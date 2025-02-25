@@ -20,13 +20,12 @@ export wavempexec=${wavempexec:-"mpirun -n"}
 export wave_mpmd=${wave_mpmd:-"cfp"}
 
 # Execute the Script
-${SCRgfs}/exgfs_wave_init.sh
+"${SCRgfs}/exgfs_wave_init.sh"
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
-
+cd "${DATAROOT}" || true
+if [[ ${KEEPDATA} = "NO" ]]; then rm -rf "${DATA}"; fi
 
 exit 0

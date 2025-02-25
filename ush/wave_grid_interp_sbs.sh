@@ -26,171 +26,108 @@
 # 0.  Preparations
 
 source "${USHgfs}/preamble.sh"
+source "${USHgfs}/atparse.bash"
 
 # 0.a Basic modes of operation
 
-  cd $GRDIDATA
+cd "${DATA}" || exit 2
 
+# shellcheck disable=SC2034
+{
   grdID=$1
-  ymdh=$2
+  verif_date=$2
   dt=$3
-  nst=$4
-  echo "Making GRID Interpolation Files for $grdID."
-  rm -rf grint_${grdID}_${ymdh}
-  mkdir grint_${grdID}_${ymdh}
-  err=$?
+  nsteps=$4
+  fhr=$5
+}
 
-  if [ "$err" != '0' ]
-  then
-    set +x
-    echo ' '
-    echo '************************************************************************************* '
-    echo '*** FATAL ERROR : ERROR IN ww3_grid_interp (COULD NOT CREATE TEMP DIRECTORY) *** '
-    echo '************************************************************************************* '
-    echo ' '
-    set_trace
-    exit 1
-  fi
+echo "INFO: Making GRID Interpolation Files for ${grdID}"
+interp_data="grid_interp_${grdID}"
+rm -rf "${interp_data}"
+mkdir "${interp_data}"
+err=$?
+if [[ "${err}" != '0' ]]; then
+  echo 'FATAL ERROR: Could not create temp directory'
+  exit 1
+fi
 
-  cd grint_${grdID}_${ymdh}
+cd "${interp_data}" || exit 2
 
 # 0.b Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  set +x
-  echo ' '
-  echo '+--------------------------------+'
-  echo '!         Make GRID files        |'
-  echo '+--------------------------------+'
-  echo "   Model ID         : $WAV_MOD_TAG"
-  set_trace
-
-  if [[ -z "${PDY}" ]] || [[ -z "${cyc}" ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
-	 [[ -z "${COMOUT_WAVE_PREP}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDDBN}" ]] || \
-	 [ -z "${waveGRD}" ]
-  then
-    set +x
-    echo ' '
-    echo '***************************************************'
-    echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
-    echo '***************************************************'
-    echo ' '
-    echo "${PDY}${cyc} ${cycle} ${EXECgfs} ${COMOUT_WAVE_PREP} ${WAV_MOD_TAG} ${SENDDBN} ${waveGRD}"
-    set_trace
-    exit 1
-  fi
+echo 'INFO: Make interpolated grid files'
 
 # 0.c Links to files
 
-  rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
+if [[ ! -f "${DATA}/${grdID}_interp.inp.tmpl" ]]; then
+  cp "${PARMgfs}/wave/${grdID}_interp.inp.tmpl" "${DATA}/${grdID}_interp.inp.tmpl"
+fi
+${NLN} "../${grdID}_interp.inp.tmpl" "${grdID}_interp.inp.tmpl"
 
-  if [ ! -f ${DATA}/${grdID}_interp.inp.tmpl ]; then
-    cp "${PARMgfs}/wave/${grdID}_interp.inp.tmpl" "${DATA}/${grdID}_interp.inp.tmpl"
-  fi
-  ${NLN} "${DATA}/${grdID}_interp.inp.tmpl" "${grdID}_interp.inp.tmpl"
+# Link input file within DATA
+${NLN} "../out_grd.${waveGRD}" "out_grd.${waveGRD}"
 
-  ${NLN} "${DATA}/output_${ymdh}0000/out_grd.${waveGRD}" "out_grd.${waveGRD}"
+# Link output file within DATA
+${NLN} "../out_grd.${grdID}" "out_grd.${grdID}"
 
-  for ID in ${waveGRD} ${grdID}; do
-    ${NLN} "${DATA}/mod_def.${ID}" "mod_def.${ID}"
-  done
-  
+for id in ${waveGRD} ${grdID}; do
+  ${NLN} "../mod_def.${id}" "mod_def.${id}"
+done
+
 
 # --------------------------------------------------------------------------- #
 # 1.  Generate GRID file with all data
 # 1.a Generate Input file
 
-  time="${ymdh:0:8} ${ymdh:8:2}0000"
-
-  sed -e "s/TIME/$time/g" \
-      -e "s/DT/$dt/g" \
-      -e "s/NSTEPS/$nst/g" ${grdID}_interp.inp.tmpl > ww3_gint.inp
+# shellcheck disable=SC2034
+time="${verif_date:0:8} ${verif_date:8:2}0000"
+atparse < "${grdID}_interp.inp.tmpl" > ww3_gint.inp
 
 # Check if there is an interpolation weights file available
 
-  wht_OK='no'
-  if [ ! -f ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ]; then
-    if [ -f ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} ]
-    then
-      set +x
-      echo ' '
-      echo " Copying ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} "
-      set_trace
-      cp ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} ${DATA}
-      wht_OK='yes'
-    else
-      set +x
-      echo ' '
-      echo " Not found: ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} "
-    fi
+weights_exist='no'
+if [[ ! -f "${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID}" ]]; then
+  if [[ -f "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}" ]]; then
+    echo "INFO: Copying ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}"
+    cp "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}" "${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID}"
+    weights_exist='yes'
+  else
+    echo "INFO: Not found: ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}"
   fi
+fi
 # Check and link weights file
-  if [ -f ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ]
-  then
-    ${NLN} ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ./WHTGRIDINT.bin
-  fi
+if [[ -f "${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID}" ]]; then
+  ${NLN} "../ww3_gint.WHTGRIDINT.bin.${grdID}" "./WHTGRIDINT.bin"
+fi
 
 # 1.b Run interpolation code
 
-  export pgm="${NET,,}_ww3_gint.x"
-  source prep_step
+export pgm="${NET,,}_ww3_gint.x"
+source prep_step
 
-  set +x
-  echo "   Executing ${pgm}"
-  set_trace
+echo "INFO: Executing ${pgm}"
 
-  "${EXECgfs}/${pgm}" 1> gint.${grdID}.out 2>&1
-  export err=$?;err_chk
+"${EXECgfs}/${pgm}" 1> "gint.${grdID}.out" 2>&1
+export err=$?; err_chk
 
 # Write interpolation file to main TEMP dir area if not there yet
-  if [ "wht_OK" = 'no' ]  # FIXME: This is never going to evaluate to true, wht_OK is a string and needs to be ${wht_OK}.  With ${wht_OK}, the next line is trying to copy into ${FIXgfs} space.  This leads to a Permission denied error. The logic here needs to be evaluated and recoded.  #TODO
-  then
-    cp -f ./WHTGRIDINT.bin ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID}
-    cp -f ./WHTGRIDINT.bin ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}
-  fi
+if [[ "${weights_exist}" == 'no' ]]; then
+  cp -f "./WHTGRIDINT.bin" "../ww3_gint.WHTGRIDINT.bin.${grdID}"
+fi
 
+if [[ "${err}" != '0' ]]; then
+  echo "FATAL ERROR: Error in ${pgm} interpolation"
+  exit 3
+fi
 
-  if [ "$err" != '0' ]
-  then
-    set +x
-    echo ' '
-    echo '*************************************************** '
-    echo "*** FATAL ERROR : ERROR IN ${pgm} interpolation * "
-    echo '*************************************************** '
-    echo ' '
-    set_trace
-    exit 3
-  fi
+# 1.b Save in /com
 
-# 1.b Clean up
+# WCK - I don't think these actually need to be sent to COM
+#  Check with Jessica
 
-  rm -f grid_interp.inp
-  rm -f mod_def.*
-  mv out_grd.$grdID ${DATA}/output_${ymdh}0000/out_grd.$grdID
-
-# 1.c Save in /com
-
-  set +x
-  echo "   Saving GRID file as ${COMOUT_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
-  set_trace
-  cp "${DATA}/output_${ymdh}0000/out_grd.${grdID}" "${COMOUT_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
-
-#    if [ "$SENDDBN" = 'YES' ]
-#    then
-#      set +x
-#      echo "   Alerting GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${PDY}${cyc}
-#      set_trace
-
-#
-# PUT DBNET ALERT HERE ....
-#
-
-#    fi
-
-# --------------------------------------------------------------------------- #
-# 2.  Clean up the directory
-
-  cd ../
-  mv -f grint_${grdID}_${ymdh} done.grint_${grdID}_${ymdh}
+# outfile="${RUN}.wave.${grdID}.f${fhr3}.bin"
+# echo "INFO: Saving GRID file as ${COMOUT_WAVE_PREP}/${outfile}"
+# cpfs "out_grd.${grdID}" "${COMOUT_WAVE_PREP}/${outfile}"
 
 # End of ww3_grid_interp.sh -------------------------------------------- #
