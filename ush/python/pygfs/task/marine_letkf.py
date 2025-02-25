@@ -55,7 +55,6 @@ class MarineLETKF(Analysis):
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
-
         self.task_config.WINDOW_MIDDLE = self.task_config.current_cycle
         self.task_config.MARINE_WINDOW_MIDDLE = self.task_config.current_cycle
         self.task_config.WINDOW_BEGIN = _window_begin
@@ -147,7 +146,7 @@ class MarineLETKF(Analysis):
         jcb_config['window_begin'] = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y-%m-%dT%H:%M:%SZ')
         jcb_config['window_middle'] = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
         jcb_config['window_length'] = f"PT{self.task_config['assim_freq']}H"
- 
+
         # Render the full JEDI configuration file using JCB
         jedi_config = render(jcb_config)
         jedi_config['observations'] = observers
