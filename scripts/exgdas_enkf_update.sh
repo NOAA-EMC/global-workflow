@@ -254,7 +254,7 @@ for FHR in $nfhrs; do
       ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}sfcf00${FHR}.ensmean.nc" \
          "sfgsfc_${PDY}${cyc}_fhr0${FHR}_ensmean"
    fi
-   if [[ ${DO_GSISOILDA} = "YES" ]]; then
+   if [[ "${DO_GSISOILDA}" = "YES" ]]; then
       ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}sfcf00${FHR}.ensmean.nc" \
          "bfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
       ${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${APREFIX}sfci00${FHR}.nc" \
