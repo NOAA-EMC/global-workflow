@@ -238,7 +238,7 @@ for imem in $(seq 1 $NMEM_ENS); do
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
       fi
-      if [[ ${DO_GSISOILDA} = "YES" ]]; then
+      if [[ "${DO_GSISOILDA}" = "YES" ]]; then
           ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}sfci00${FHR}.nc" \
            "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
