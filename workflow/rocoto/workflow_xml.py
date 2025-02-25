@@ -7,7 +7,7 @@ from collections import OrderedDict
 from typing import Dict
 from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
-from wxflow import to_timedelta
+from wxflow import which, to_timedelta
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
 from hosts import Host
@@ -40,6 +40,10 @@ class RocotoXML(ABC):
         self.host_info.ACCOUNT = self._base['ACCOUNT']
         self.HOMEgfs = self._base['HOMEgfs']
         self.expdir = self._base['EXPDIR']
+
+        # If we are running scrontab, check if the rocotorc file has the right entries
+        if self.use_scrontab:
+            self._check_rocotorc()
 
         # Construct the XML
         self.xml = self._assemble_xml()
@@ -220,3 +224,30 @@ class RocotoXML(ABC):
                 fh.write('\n'.join(strings))
 
         return
+
+    def _check_rocotorc(self):
+
+        rocotorun = which(rocotorun)
+
+        if rocotorun is None:
+            raise FileNotFoundError("Could not find the rocotorun executable.  Make sure you have the module loaded!")
+
+        version = rocotorun("--version", output=str)[-1]
+
+        homedir = os.path.expanduser("~")
+        rocotorc_file = os.path.join(homedir, ".rocoto", version, "rocotorc")
+
+        if not os.path.isfile("rocotorc_file"):
+            raise FileNotFoundError(
+                "Could not find the rocotorc file!\n"
+                f"Please create '{rocotorc_file}' following the documentation at" "\n"
+                "https://global-workflow.readthedocs.io/en/latest/configure.html"
+            )
+
+        with open(rocotorc_file) as rc_f:
+            if ":BatchQueueServer: false" not in rc_f.read():
+                raise ValueError(
+                    f"':BatchQueueServer: false' should be written to {rocotorc_file}, but it is not!" "\n"
+                    "Please follow the documentation guide here:\n"
+                    "https://global-workflow.readthedocs.io/en/latest/configure.html"
+                )
