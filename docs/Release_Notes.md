@@ -4,11 +4,12 @@ GFS V16.3.23 RELEASE NOTES
 PRELUDE
 -------
 
-The GFS is updated to address the following:
+The GFS is updated for the following:
 
 * workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
 * updated GSI code and convinfo file for saildrone observations
 * ww3_outp is improved for the wave point output
+* obsproc/v1.2.3
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -54,6 +55,7 @@ VERSION FILE CHANGES
 --------------------
 
 * `versions/run.ver` - change `version=v16.3.23` and `gfs_ver=v16.3.23`
+* `versions/MACHINE.ver` - update `obsproc_run_ver=1.2.3`
 
 SORC CHANGES
 ------------
