@@ -354,4 +354,6 @@ export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requ
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
 
+export o3forc_params="McCormack-empirical-sh-ozh"
+
 echo "END: config.base"
