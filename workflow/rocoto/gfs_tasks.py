@@ -3138,8 +3138,9 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        if not self.options['do_jediatmvar']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         earcenvars = self.envars.copy()
