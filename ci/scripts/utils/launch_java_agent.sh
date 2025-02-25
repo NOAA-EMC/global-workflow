@@ -144,7 +144,7 @@ EOF
 chmod u+x parse.py
 
 # Needed for Gaea as it has C capatalized on the Node names in Jenkins
-MACHINE_ID="${MACHINE_ID//c/C}"
+MACHINE_ID="$(echo "$MACHINE_ID" | sed 's/c\([0-9]\)/C\1/g')"
 
 check_node_online() {
     rm -f curl_response
