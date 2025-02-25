@@ -51,12 +51,7 @@ send_to_hpss()
     if [[ ${file} == *.tar ]]; then
         # For now, ignore errors coming from the index command.
         # Issue RDHPCS#2025020754000121 opened with RDHPCS.
-        save_e=$-
-        set +e
-        htar -Xvf "${hpss_target}" > /dev/null 2>&1
-        if [[ "${save_e}" =~ e ]]; then
-            set -e
-        fi
+        htar -Xvf "${hpss_target}" > /dev/null 2>&1 || true
         # TODO Reinstate error checking and logging when creating index files
         #if ! htar -Xvf "${hpss_target}" >> "${log_file}" 2>&1; then
             #echo "Failed to create an index file for ${hpss_target}.  Exiting." >> "${log_file}"
