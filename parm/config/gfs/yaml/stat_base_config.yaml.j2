@@ -1,10 +1,10 @@
 aero:
   ob spaces:
   - name: viirs_npp
-    input file: "diag_viirs_npp_{{ current_cycle | to_YMDH }}.nc4"
+    input file: "diag_viirs_npp_aod_{{ current_cycle | to_YMDH }}.nc"
     output file: "viirs_npp_{{ current_cycle | to_YMDH }}_output_aod.nc"
   - name: viirs_n20
-    input file: "diag_viirs_n20_{{ current_cycle | to_YMDH }}.nc4"
+    input file: "diag_viirs_n20_aod_{{ current_cycle | to_YMDH }}.nc"
     output file: "viirs_n20_{{ current_cycle | to_YMDH }}_output_aod.nc"
 
 snow:
