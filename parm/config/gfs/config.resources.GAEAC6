@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+
+# GaeaC6-specific job resources
+
+unset memory
+unset "memory_${RUN}"

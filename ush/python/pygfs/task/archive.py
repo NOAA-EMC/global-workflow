@@ -7,10 +7,11 @@ import tarfile
 from logging import getLogger
 from typing import Any, Dict, List
 
-from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task,
-                    chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, strftime,
-                    to_YMDH)
+from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, to_timedelta,
+                    chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, rmdir,
+                    strftime, to_YMDH, which, chdir, ProcessError)
 
+git_filename = "git_info.log"
 logger = getLogger(__name__.split('.')[-1])
 
 
@@ -43,21 +44,22 @@ class Archive(Task):
         # Extend task_config with path_dict
         self.task_config = AttrDict(**self.task_config, **path_dict)
 
+        # Boolean used for cleanup if the EXPDIR was archived
+        self.archive_expdir = False
+
     @logit(logger)
-    def configure(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any], List[Dict[str, Any]]):
-        """Determine which tarballs will need to be created.
+    def configure_vrfy(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any]):
+        """Determine which files will need to be created to archive to arcdir.
 
         Parameters
         ----------
         arch_dict : Dict[str, Any]
-            Task specific keys, e.g. runtime options (DO_AERO, DO_ICE, etc)
+            Task specific keys, e.g. runtime options (DO_AERO_FCST, DO_ICE, etc)
 
         Return
         ------
         arcdir_set : Dict[str, Any]
             Set of FileHandler instructions to copy files to the ARCDIR
-        atardir_sets : List[Dict[str, Any]]
-            List of tarballs and instructions for creating them via tar or htar
         """
 
         if not os.path.isdir(arch_dict.ROTDIR):
@@ -85,6 +87,44 @@ class Archive(Task):
         arcdir_set = Archive._construct_arcdir_set(arcdir_j2yaml,
                                                    arch_dict)
 
+        # Collect datasets that need to be archived
+        self.tar_cmd = ""
+
+        return arcdir_set
+
+    @logit(logger)
+    def configure_tars(self, arch_dict: Dict[str, Any]) -> (List[Dict[str, Any]]):
+        """Determine which tarballs will need to be created.
+
+        Parameters
+        ----------
+        arch_dict : Dict[str, Any]
+            Task specific keys, e.g. runtime options (DO_AERO_FCST, DO_ICE, etc)
+
+        Return
+        ------
+        atardir_sets : List[Dict[str, Any]]
+            List of tarballs and instructions for creating them via tar or htar
+        """
+
+        if not os.path.isdir(arch_dict.ROTDIR):
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
+
+        if arch_dict.RUN in ["gdas", "gfs"]:
+
+            # Copy the cyclone track files and rename the experiments
+            # TODO This really doesn't belong in archiving and should be moved elsewhere
+            Archive._rename_cyclone_expt(arch_dict)
+
+        archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
+
+        # Add the glob.glob function for capturing log filenames
+        # TODO remove this kludge once log filenames are explicit
+        arch_dict['glob'] = glob.glob
+
+        # Add the os.path.exists function to the dict for yaml parsing
+        arch_dict['path_exists'] = os.path.exists
+
         if not os.path.isdir(arch_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
@@ -105,9 +145,18 @@ class Archive(Task):
             self.chgrp_cmd = chgrp
             self.chmod_cmd = os.chmod
             self.rm_cmd = rm_p
-        else:  # Only perform local archiving.  Do not create tarballs.
-            self.tar_cmd = ""
-            return arcdir_set, []
+        else:
+            raise ValueError("FATAL ERROR: Neither HPSSARCH nor LOCALARCH are set to True!")
+
+        # Determine if we are archiving the EXPDIR this cycle (always skip for ensembles)
+        if "enkf" not in arch_dict.RUN and arch_dict.ARCH_EXPDIR:
+            self.archive_expdir = self._archive_expdir(arch_dict)
+            arch_dict.archive_expdir = self.archive_expdir
+
+            if self.archive_expdir:
+                # If requested, get workflow hashes/statuses/diffs for EXPDIR archiving
+                if arch_dict.ARCH_HASHES or arch_dict.ARCH_DIFFS:
+                    self._pop_git_info(arch_dict)
 
         master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
 
@@ -124,7 +173,7 @@ class Archive(Task):
 
             atardir_sets.append(dataset)
 
-        return arcdir_set, atardir_sets
+        return atardir_sets
 
     @logit(logger)
     def execute_store_products(self, arcdir_set: Dict[str, Any]) -> None:
@@ -195,6 +244,12 @@ class Archive(Task):
         """
 
         fileset = []
+        # Check if any external files need to be brought into the ROTDIR (i.e. EXPDIR contents)
+        if "FileHandler" in atardir_set:
+            # Run the file handler to stage files for archiving
+            FileHandler(atardir_set["FileHandler"]).sync()
+
+        # Check that all required files are present and add them to the list of files to archive
         if "required" in atardir_set:
             if atardir_set.required is not None:
                 for item in atardir_set.required:
@@ -204,6 +259,7 @@ class Archive(Task):
                     for entry in glob_set:
                         fileset.append(entry)
 
+        # Check for optional files and add found items to the list of files to archive
         if "optional" in atardir_set:
             if atardir_set.optional is not None:
                 for item in atardir_set.optional:
@@ -244,7 +300,7 @@ class Archive(Task):
         return False
 
     @logit(logger)
-    def _protect_rstprod(self, atardir_set: Dict[str, any]) -> None:
+    def _protect_rstprod(self, atardir_set: Dict[str, Any]) -> None:
         """
         Changes the group of the target tarball to rstprod and the permissions to
         640.  If this fails for any reason, attempt to delete the file before exiting.
@@ -289,7 +345,7 @@ class Archive(Task):
                 tarball.add(filename)
 
     @logit(logger)
-    def _gen_relative_paths(self, root_path: str) -> Dict:
+    def _gen_relative_paths(self, root_path: str) -> Dict[str, Any]:
         """Generate a dict of paths in self.task_config relative to root_path
 
         Parameters
@@ -415,5 +471,149 @@ class Archive(Task):
 
         replace_string_from_to_file(in_track_file, out_track_file, "AVNO", pslot4)
         replace_string_from_to_file(in_track_p_file, out_track_p_file, "AVNO", pslot4)
+
+        return
+
+    @logit(logger)
+    def _archive_expdir(self, arch_dict: Dict[str, Any]) -> bool:
+        """
+        This function checks if the EXPDIR should be archived this RUN/cycle
+        and returns the temporary path in the ROTDIR where the EXPDIR will be
+        copied to for archiving.
+
+        Parameters
+        ----------
+        arch_dict: Dict
+            Dictionary with required parameters, including the following:
+
+            current_cycle: Datetime
+                Date of the current cycle.
+            SDATE: Datetime
+                Starting cycle date.
+            EDATE: Datetime
+                Ending cycle date.
+            NET: str
+                The workflow type (gfs, gefs, or sfs)
+            ARCH_EXPDIR_FREQ: int
+                Frequency to perform EXPDIR archiving
+            ROTDIR: str
+                Full path to the ROTDIR
+        """
+
+        # Get commonly used variables
+        current_cycle = arch_dict.current_cycle
+        sdate = arch_dict.SDATE
+        edate = arch_dict.EDATE
+        mode = arch_dict.MODE
+        assim_freq = to_timedelta(f"+{arch_dict.assim_freq}H")
+        # Convert frequency to seconds from hours
+        freq = arch_dict.ARCH_EXPDIR_FREQ * 3600
+
+        # Skip gfs and enkf cycled RUNs (only archive during gdas RUNs)
+        # (do not skip forecast-only, regardless of RUN)
+        if arch_dict.NET == "gfs" and arch_dict.MODE == "cycled" and arch_dict.RUN != "gdas":
+            return False
+
+        # Determine if we should skip this cycle
+        # If the frequency is set to 0, only run on sdate (+assim_freq for cycled) and edate
+        first_full = sdate
+        if mode in ["cycled"]:
+            first_full += assim_freq
+        if current_cycle in [first_full, edate]:
+            # Always save the first and last
+            return True
+        elif freq != 0 and (current_cycle - first_full).total_seconds() % freq == 0:
+            # Otherwise, the frequency is in hours
+            return True
+        else:
+            return False
+
+    @logit(logger)
+    def _pop_git_info(self, arch_dict: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        This function checks the configuration options ARCH_HASHES and ARCH_DIFFS
+        and ARCH_EXPDIR_FREQ to determine if the git hashes and/or diffs should be
+        added to the EXPDIR for archiving and execute the commands.  The hashes and
+        diffs will be stored in EXPDIR/git_info.log.
+
+        Parameters
+        ----------
+        arch_dict: Dict
+            Dictionary with required parameters, including the following:
+
+            EXPDIR: str
+                Location of the EXPDIR
+            HOMEgfs: str
+                Location of the HOMEgfs (the global workflow)
+            ARCH_HASHES: bool
+                Whether to archive git hashes of the workflow and submodules
+            ARCH_DIFFS: bool
+                Whether to archive git diffs of the workflow and submodules
+        """
+
+        # Get commonly used variables
+        arch_hashes = arch_dict.ARCH_HASHES
+        arch_diffs = arch_dict.ARCH_DIFFS
+        homegfs = arch_dict.HOMEgfs
+        expdir = arch_dict.EXPDIR
+
+        # Find the git command
+        git = which('git')
+        if git is None:
+            raise FileNotFoundError("FATAL ERROR: the git command could not be found!")
+
+        output = ""
+        # Navigate to HOMEgfs to run the git commands
+        with chdir(homegfs):
+
+            # Are we running git to get hashes?
+            if arch_hashes:
+                output += "Global workflow hash:\n"
+
+                try:
+                    output += git("rev-parse", "HEAD", output=str)
+                    output += "\nSubmodule hashes:\n"
+                    output += git("submodule", "status", output=str)
+                except ProcessError as pe:
+                    raise OSError("FATAL ERROR Failed to run git") from pe
+
+            # Are we running git to get diffs?
+            if arch_diffs:
+                output += "Global workflow diffs:\n"
+                # This command will only work on git v2.14+
+                try:
+                    output += git("diff", "--submodule=diff", output=str)
+                except ProcessError:
+                    # The version of git may be too old.  See if we can run just a surface diff.
+                    try:
+                        output += git("diff", output=str)
+                        print("WARNING git was unable to do a recursive diff.\n"
+                              "Only a top level diff was performed.\n"
+                              "Note that the git version must be >= 2.14 for this feature.")
+                    except ProcessError as pe:
+                        raise OSError("FATAL ERROR Failed to run 'git diff'") from pe
+
+        # Write out to the log file
+        try:
+            with open(os.path.join(expdir, git_filename), 'w') as output_file:
+                output_file.write(output)
+        except OSError as ose:
+            fname = os.path.join(expdir, git_filename)
+            raise OSError(f"FATAL ERROR Unable to write git output to '{fname}'") from ose
+
+        return
+
+    @logit(logger)
+    def clean(self):
+        """
+        Remove the temporary directories/files created by the Archive task.
+        Presently, this is only the ROTDIR/expdir directory if EXPDIR archiving
+        was performed.
+        """
+
+        if self.archive_expdir:
+            temp_expdir_path = os.path.join(self.task_config.ROTDIR, "expdir." +
+                                            to_YMDH(self.task_config.current_cycle))
+            rmdir(temp_expdir_path)
 
         return

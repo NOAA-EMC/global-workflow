@@ -1,0 +1,28 @@
+BASE_GIT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/git'
+DMPDIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/dump'
+BASE_DATA: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data'
+BASE_IC: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/ICSDIR'
+PACKAGEROOT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/nwpara'
+COMINsyn: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/com/gfs/prod/syndat'
+HOMEDIR: '/gpfs/f5/ufs-ard/scratch/${USER}'
+STMP: '/gpfs/f5/ufs-ard/scratch/${USER}'
+PTMP: '/gpfs/f5/ufs-ard/scratch/${USER}'
+NOSCRUB: $HOMEDIR
+ACCOUNT: ufs-ard
+SCHEDULER: slurm
+QUEUE: normal
+QUEUE_SERVICE: normal
+PARTITION_BATCH: batch
+PARTITION_SERVICE: batch
+RESERVATION: ''
+CLUSTERS: 'c5'
+CHGRP_RSTPROD: 'NO'
+CHGRP_CMD: 'chgrp rstprod'
+HPSSARCH: 'NO'
+HPSS_PROJECT: emc-global
+LOCALARCH: 'NO'
+ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+MAKE_NSSTBUFR: 'NO'
+MAKE_ACFTBUFR: 'NO'
+SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
+AERO_INPUTS_DIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/gocart_emissions'

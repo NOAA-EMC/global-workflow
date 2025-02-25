@@ -12,6 +12,7 @@ The major components of the system are:
 * Forecast
 * Post-processing
 * Verification
+* Archiving
 
 The Global Workflow repository contains the workflow and script layers. External components will be checked out as git submodules. All of the submodules of the system reside in their respective repositories on GitHub.
 

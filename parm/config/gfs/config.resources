@@ -11,17 +11,17 @@ if (( $# != 1 )); then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "stage_ic aerosol_init"
+    echo "stage_ic aerosol_init fetch"
     echo "prep prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal"
-    echo "snowanl esnowrecen"
+    echo "snowanl esnowanl"
     echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "anal sfcanl analcalc analdiag fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
-    echo "verfozn verfrad vminmon fit2obs metp arch cleanup"
-    echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
+    echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
+    echo "eobs ediag eomg eupd ecen esfc efcs epos earc_vrfy earc_tars"
     echo "init_chem mom6ic oceanice_products"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
@@ -47,10 +47,15 @@ case ${machine} in
               # shellcheck disable=SC2034
               mem_node_max="96GB"
     ;;
-  "GAEA")
+  "GAEAC5")
               max_tasks_per_node=128
               # shellcheck disable=SC2034
               mem_node_max="251GB"
+    ;;
+  "GAEAC6")
+              max_tasks_per_node=192
+              # shellcheck disable=SC2034
+              mem_node_max="384GB"
     ;;
   "ORION")
               max_tasks_per_node=40
@@ -107,16 +112,16 @@ case ${machine} in
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
-    npe_node_max=36
-    max_tasks_per_node=36
+    npe_node_max=48
+    max_tasks_per_node=48
     # TODO Supply a max mem/node value for AWS
     # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "AZUREPW")
     export PARTITION_BATCH="compute"
-    npe_node_max=24
-    max_tasks_per_node=24
+    npe_node_max=36
+    max_tasks_per_node=36
     # TODO Supply a max mem/node value for AZURE
     # shellcheck disable=SC2034
     mem_node_max=""
@@ -191,14 +196,15 @@ case ${step} in
     ;;
 
   "wavepostsbs")
-    walltime_gdas="00:20:00"
-    walltime_gfs="03:00:00"
+    # Walltime is per forecast hour; will be multipled by group size
+    walltime_gdas="00:15:00"
+    walltime_gfs="00:15:00"
     ntasks=8
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
-    memory_gdas="10GB"
-    memory_gfs="10GB"
+    memory_gdas="20GB"
+    memory_gfs="20GB"
     ;;
 
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
@@ -324,7 +330,7 @@ case ${step} in
   "snowanl")
     # below lines are for creating JEDI YAML
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         layout_x=6
         layout_y=6
         ;;
@@ -346,14 +352,14 @@ case ${step} in
 
     walltime="00:15:00"
     ntasks=$(( layout_x * layout_y * 6 ))
-    threads_per_task=1
+    threads_per_task=2
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "esnowrecen")
+  "esnowanl")
     # below lines are for creating JEDI YAML
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         layout_x=6
         layout_y=6
         ;;
@@ -373,9 +379,9 @@ case ${step} in
     export layout_x
     export layout_y
 
-    walltime="00:15:00"
+    walltime="00:30:00"
     ntasks=$(( layout_x * layout_y * 6 ))
-    threads_per_task=1
+    threads_per_task=2
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
@@ -390,22 +396,26 @@ case ${step} in
   "aeroanlinit")
     # below lines are for creating JEDI YAML
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         layout_x=8
         layout_y=8
+        walltime="00:30:00"
         ;;
       "C384")
         layout_x=6
         layout_y=6
+        walltime="00:20:00"
         ;;
       "C192" | "C96")
         layout_x=4
         layout_y=4
+        walltime="00:10:00"
         ;;
       "C48" )
         # this case is for testing only
         layout_x=1
         layout_y=1
+        walltime="00:10:00"
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
@@ -414,7 +424,6 @@ case ${step} in
 
     export layout_x
     export layout_y
-    walltime="00:10:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -422,23 +431,34 @@ case ${step} in
     ;;
 
   "aeroanlvar")
+
+    threads_per_task=1
+
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         layout_x=8
         layout_y=8
+        walltime="00:45:00"
+        tasks_per_node=24
         ;;
       "C384")
         layout_x=6
         layout_y=6
+        walltime="00:30:00"
+        tasks_per_node=24
         ;;
       "C192" | "C96")
         layout_x=4
         layout_y=4
+        walltime="00:20:00"
+        tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
         ;;
       "C48" )
         # this case is for testing only
         layout_x=1
         layout_y=1
+        walltime="00:20:00"
+        tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
@@ -448,16 +468,13 @@ case ${step} in
     export layout_x
     export layout_y
 
-    walltime="00:30:00"
     ntasks=$(( layout_x * layout_y * 6 ))
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
 
   "aeroanlgenb")
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         layout_x=8
         layout_y=8
         ;;
@@ -492,18 +509,43 @@ case ${step} in
 
 
   "aeroanlfinal")
-    walltime="00:10:00"
+    case ${CASE} in
+      "C1152" | "C768")
+        layout_x=8
+        layout_y=8
+        walltime="00:30:00"
+        ;;
+      "C384")
+        layout_x=6
+        layout_y=6
+        walltime="00:20:00"
+        ;;
+      "C192" | "C96")
+        layout_x=4
+        layout_y=4
+        walltime="00:10:00"
+        ;;
+      "C48" )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
+        walltime="00:10:00"
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+        exit 4
+    esac
     ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    memory="3072M"
+    memory="13072M"
     ;;
 
   "marineanlinit")
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     memory="24GB"
     ;;
 
@@ -511,7 +553,7 @@ case ${step} in
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     memory="48GB"
     ;;
 
@@ -519,7 +561,10 @@ case ${step} in
     npes=16
     ntasks=16
     case ${OCNRES} in
-      "025") ntasks=480;;
+      "025")
+        ntasks=480
+        memory="256GB"
+	;;
       "050")  ntasks=16;;
       "100")  ntasks=16;;
       "500")  ntasks=16;;
@@ -531,7 +576,7 @@ case ${step} in
     walltime="00:30:00"
     threads_per_task=1
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
   "marineanlvar")
@@ -539,7 +584,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=480
-        memory="96GB"
+        memory="256GB"
         ;;
       "050")
         ntasks=16
@@ -558,10 +603,10 @@ case ${step} in
         exit 4
     esac
 
-    walltime="00:15:00"
+    walltime="00:30:00"
     threads_per_task=1
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
   "ocnanalecen")
@@ -569,7 +614,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=40
-        memory="96GB"
+        memory="256GB"
         ;;
       "050")
         ntasks=16
@@ -589,9 +634,9 @@ case ${step} in
     esac
 
     walltime="00:10:00"
-    threads_per_task=1
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
   "marineanlletkf")
@@ -599,7 +644,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=480
-        memory="96GB"
+        memory="256GB"
         ;;
       "050")
         ntasks=16
@@ -618,10 +663,10 @@ case ${step} in
         exit 4
     esac
 
-    walltime="00:10:00"
-    threads_per_task=1
+    walltime="00:30:00"
     export is_exclusive=True
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
 
@@ -629,7 +674,7 @@ case ${step} in
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     case ${OCNRES} in
       "025")
         memory="128GB"
@@ -653,7 +698,7 @@ case ${step} in
     walltime="00:30:00"
     ntasks=${max_tasks_per_node}
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=${max_tasks_per_node}
     ;;
 
   "ocnanalvrfy")
@@ -668,7 +713,7 @@ case ${step} in
     walltime_gdas="01:20:00"
     walltime_gfs="01:00:00"
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         ntasks_gdas=780
         ntasks_gfs=825
         threads_per_task=5
@@ -704,7 +749,7 @@ case ${step} in
     export threads_per_task_echgres_gfs=12
     export is_exclusive=True
     memory="48GB"
-    if [[ "${CASE}" == "C384" || "${CASE}" == "C768" ]]; then
+    if [[ "${CASE}" == "C384" || "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
        memory="${mem_node_max}"
     fi
     ;;
@@ -775,22 +820,33 @@ case ${step} in
       export npy_nest=${npy_nest:-961}
     fi
 
-    # PETS for the atmosphere dycore
-    (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
-    echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"
+    # FV3
+    if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+      (( FV3THREADS = nthreads_fv3 ))
+      (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
+    else
+      (( FV3THREADS = UFS_THREADS ))
+      (( FV3PETS = ntasks_fv3 ))
+    fi
+    echo "FV3 using (nthreads, PETS) = (${FV3THREADS}, ${FV3PETS})"
 
-    # PETS for quilting
+    # Write grid component
+    QUILTPETS=0; QUILTTHREADS=0
     if [[ "${QUILTING:-}" == ".true." ]]; then
-      (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( QUILTTHREADS = nthreads_fv3 ))
+        (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
+      else
+        (( QUILTTHREADS = UFS_THREADS ))
+        (( QUILTPETS = ntasks_quilt ))
+      fi
       (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD ))
       export WRTTASK_PER_GROUP
-    else
-      QUILTPETS=0
     fi
-    echo "QUILT using (nthreads, PETS) = (${nthreads_fv3}, ${QUILTPETS})"
+    echo "QUILT using (nthreads, PETS) = (${QUILTTHREADS}, ${QUILTPETS})"
 
     # Total PETS for the atmosphere component
-    ATMTHREADS=${nthreads_fv3}
+    ATMTHREADS=${FV3THREADS}
     (( ATMPETS = FV3PETS + QUILTPETS ))
     export ATMPETS ATMTHREADS
     echo "FV3ATM using (nthreads, PETS) = (${ATMTHREADS}, ${ATMPETS})"
@@ -798,6 +854,7 @@ case ${step} in
     # Total PETS for the coupled model (starting w/ the atmosphere)
     NTASKS_TOT=${ATMPETS}
 
+    # Mediator
     # The mediator PETS can overlap with other components, usually it lands on the atmosphere tasks.
     # However, it is suggested limiting mediator PETS to 300, as it may cause the slow performance.
     # See https://docs.google.com/document/d/1bKpi-52t5jIfv2tuNHmQkYUe3hkKsiG_DG_s6Mnukog/edit
@@ -808,8 +865,9 @@ case ${step} in
     export MEDPETS MEDTHREADS
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
+    # GOCART
     CHMPETS=0; CHMTHREADS=0
-    if [[ "${DO_AERO}" == "YES" ]]; then
+    if [[ "${DO_AERO_FCST}" == "YES" ]]; then
       # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
       (( CHMTHREADS = ATMTHREADS ))
       (( CHMPETS = FV3PETS ))
@@ -818,28 +876,46 @@ case ${step} in
     fi
     export CHMPETS CHMTHREADS
 
+    # Waves
     WAVPETS=0; WAVTHREADS=0
     if [[ "${DO_WAVE}" == "YES" ]]; then
-      (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
-      (( WAVTHREADS = nthreads_ww3 ))
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( WAVTHREADS = nthreads_ww3 ))
+        (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
+      else
+        (( WAVTHREADS = UFS_THREADS ))
+        (( WAVPETS = ntasks_ww3 ))
+      fi
       echo "WW3 using (threads, PETS) = (${WAVTHREADS}, ${WAVPETS})"
       (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
     fi
     export WAVPETS WAVTHREADS
 
+    # Ocean
     OCNPETS=0; OCNTHREADS=0
     if [[ "${DO_OCN}" == "YES" ]]; then
-      (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
-      (( OCNTHREADS = nthreads_mom6 ))
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( OCNTHREADS = nthreads_mom6 ))
+        (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
+      else
+        (( OCNTHREADS = UFS_THREADS ))
+        (( OCNPETS = ntasks_mom6 ))
+      fi
       echo "MOM6 using (threads, PETS) = (${OCNTHREADS}, ${OCNPETS})"
       (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
     fi
     export OCNPETS OCNTHREADS
 
+    # Ice
     ICEPETS=0; ICETHREADS=0
     if [[ "${DO_ICE}" == "YES" ]]; then
-      (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
-      (( ICETHREADS = nthreads_cice6 ))
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( ICETHREADS = nthreads_cice6 ))
+        (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
+      else
+        (( ICETHREADS = UFS_THREADS ))
+        (( ICEPETS = ntasks_cice6 ))
+      fi
       echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
       (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
     fi
@@ -849,8 +925,9 @@ case ${step} in
 
     declare -x "ntasks"="${NTASKS_TOT}"
     declare -x "threads_per_task"="${UFS_THREADS}"
-    declare -x "tasks_per_node"="${max_tasks_per_node}"
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
 
+    # TODO: make walltimes APP dependent
     case "${CASE}" in
       "C48" | "C96" | "C192")
         declare -x "walltime_gdas"="00:20:00"
@@ -866,7 +943,7 @@ case ${step} in
         ;;
       "C768" | "C1152")
         # Not valid resolutions for ensembles
-        declare -x "walltime_gdas"="00:40:00"
+        declare -x "walltime_gdas"="01:20:00"
         declare -x "walltime_gfs"="06:00:00"
         ;;
       *)
@@ -880,6 +957,7 @@ case ${step} in
     ;;
 
   "oceanice_products")
+    # Walltime is per forecast hour; will be multipled by group size
     walltime="00:15:00"
     ntasks=1
     tasks_per_node=1
@@ -892,8 +970,12 @@ case ${step} in
       "C48" | "C96")
         ntasks=${CASE:1}
       ;;
-      "C192" | "C384" | "C768" )
+      "C192" | "C384" | "C768")
         ntasks=120
+        memory="${mem_node_max}"
+      ;;
+      "C1152")
+        ntasks=200
         memory="${mem_node_max}"
       ;;
       *)
@@ -902,6 +984,7 @@ case ${step} in
       ;;
     esac
     tasks_per_node=${ntasks}
+    [[ ${CASE} == "C1152" ]] && tasks_per_node=40
 
     threads_per_task=1
 
@@ -913,6 +996,7 @@ case ${step} in
     ;;
 
   "atmos_products")
+    # Walltime is per forecast hour; will be multipled by group size
     walltime="00:15:00"
     ntasks=24
     threads_per_task=1
@@ -974,7 +1058,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=1
     memory="20G"
-    [[ ${CASE} == "C768" ]] && memory="80GB"
+    [[ ${CASE} == "C768" || ${CASE} == "C1152" ]] && memory="80GB"
     ;;
 
   "metp")
@@ -1015,8 +1099,16 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "arch" | "earc" | "getic")
+  "arch_tars" | "earc_tars" | "getic" | "fetch")
     walltime="06:00:00"
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
+    memory="4096M"
+    ;;
+
+  "arch_vrfy" | "earc_vrfy")
+    walltime="00:15:00"
     ntasks=1
     tasks_per_node=1
     threads_per_task=1
@@ -1036,7 +1128,7 @@ case ${step} in
     ntasks=1
     tasks_per_node=1
     threads_per_task=1
-    export is_exclusive=True
+    memory="4096M"
     ;;
 
   "atmensanlinit")
@@ -1114,7 +1206,7 @@ case ${step} in
     fi
 
     case ${CASE} in
-      "C768")                 ntasks=200;;
+      "C1152" | "C768")       ntasks=200;;
       "C384")                 ntasks=100;;
       "C192" | "C96" | "C48") ntasks=40;;
       *)
@@ -1147,7 +1239,7 @@ case ${step} in
   "eupd")
     walltime="00:30:00"
     case ${CASE} in
-      "C768")
+      "C1152" | "C768")
         ntasks=480
         threads_per_task=6
         ;;
@@ -1182,7 +1274,7 @@ case ${step} in
     ;;
 
   "esfc")
-    walltime="00:15:00"
+    walltime="00:25:00"
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -1192,7 +1284,7 @@ case ${step} in
 
   "epos")
     walltime="00:15:00"
-    [[ ${CASE} == "C768" ]] && walltime="00:25:00"
+    [[ ${CASE} == "C768" || ${CASE} == "C1152" ]] && walltime="00:25:00"
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -1242,6 +1334,7 @@ case ${step} in
     ;;
 
   "gempak")
+    # Walltime is per forecast hour; will be multipled by group size
     walltime="00:30:00"
     ntasks_gdas=2
     ntasks_gfs=28
@@ -1257,6 +1350,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     memory="4GB"
+    tasks_per_node=1
     ;;
 
   "mos_stn_prep")

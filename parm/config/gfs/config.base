@@ -82,12 +82,13 @@ export DO_MOS="NO"                       # GFS Model Output Statistics - Only su
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
-#  if want MOS written to HPSS.   Should update arch.sh to
+#  if want MOS written to HPSS.   Should update arch_vrfy.sh and arch_tars to
 #  use RUNMOS flag
 export REALTIME="YES"
 
 # Experiment mode (cycled or forecast-only)
 export MODE="@MODE@" # cycled/forecast-only
+export DO_TEST_MODE="@DO_TEST_MODE@" # option to change configuration for automated testing
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -131,6 +132,7 @@ if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; the
 fi
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="@ATARDIR@"
+export FETCHDIR="@FETCHDIR@"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
@@ -159,6 +161,7 @@ export APP=@APP@
 
 shopt -s extglob
 # Adjust APP based on RUN
+# If a component (WAVES, etc) needs to be turned off by RUN, set it here
 case "${RUN}" in
     enkf*) # Turn off aerosols and waves
         APP="${APP/%+([WA])}"
@@ -174,11 +177,12 @@ export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
-export DO_AERO="NO"
+DO_AERO="NO"
 export DO_PREP_OBS_AERO="NO"
-export AERO_FCST_RUN="" # When to run aerosol forecast: gdas, gfs, or both
-export AERO_ANL_RUN="" # When to run aerosol analysis: gdas, gfs, or both
-export WAVE_RUN="" # When to include wave suite: gdas, gfs, or both
+aero_fcst_runs="gdas" # When to run aerosol forecast: gdas, gfs, or both
+aero_anl_runs="gdas gfs" # When to run aerosol analysis: gdas, gfs, or both
+export DO_AERO_FCST="NO"
+export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO"
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
@@ -216,11 +220,11 @@ case "${CASE}" in
         export waveGRD='uglo_100km'
         ;;
     "C768" | "C1152")
-        export waveGRD='uglo_m1g16'
+        export waveGRD='uglo_15km'
         ;;
     *)
         echo "FATAL ERROR: Unrecognized CASE ${CASE}, ABORT!"
-        exit 1
+        exit 2
         ;;
 esac
 
@@ -228,14 +232,11 @@ case "${APP}" in
   ATM)
     ;;
   ATMA)
-    export DO_AERO="YES"
-    export AERO_ANL_RUN="both"
-    export AERO_FCST_RUN="gdas"
+    DO_AERO="YES"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
-    export WAVE_RUN="both"
     ;;
   NG-GODAS)
     export DO_ATM="NO"
@@ -248,21 +249,28 @@ case "${APP}" in
     export DO_ICE="YES"
 
     if [[ "${APP}" =~ A$ ]]; then
-        export DO_AERO="YES"
-        export AERO_ANL_RUN="both"
-        export AERO_FCST_RUN="gdas"
+        DO_AERO="YES"
     fi
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
-        export WAVE_RUN="both"
     fi
     ;;
   *)
-    echo "Unrecognized APP: '${APP}'"
-    exit 2
+    echo "FATAL ERROR: Unrecognized APP: '${APP}'"
+    exit 3
     ;;
 esac
+
+# Aerosol forecasts and analyses may be RUN-dependent
+if [[ "${DO_AERO}" == "YES" ]]; then
+  if [[ ${aero_anl_runs} =~ ${RUN} ]]; then
+    export DO_AERO_ANL="YES"
+  fi
+  if [[ ${aero_fcst_runs} =~ ${RUN} ]]; then
+    export DO_AERO_FCST="YES"
+  fi
+fi
 
 # Surface cycle update frequency
 if [[ "${RUN}" =~ "gdas" ]] ; then
@@ -278,6 +286,7 @@ export FHMAX=9
 export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
 export FHOUT_OCN=3
 export FHOUT_ICE=3
+export FHOUT_AERO=3
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
 export EUPD_CYC="@EUPD_CYC@"
@@ -303,6 +312,10 @@ export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
 export FHMAX_WAV=${FHMAX:-9}
 export FHMAX_WAV_GFS=${FHMAX_GFS}
+export FHMAX_HF_GFS=$(( FHMAX_HF_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_HF_GFS ))
+export FHMAX_WAV=$(( FHMAX_WAV > FHMAX ? FHMAX : FHMAX_WAV ))
+export FHMAX_WAV_GFS=$(( FHMAX_WAV_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_WAV_GFS ))
+export FHMAX_HF_WAV=$(( FHMAX_HF_WAV > FHMAX_WAV_GFS ? FHMAX_WAV_GFS : FHMAX_HF_WAV ))
 
 # TODO: Change gempak to use standard out variables (#2348)
 export ILPOST=${FHOUT_HF_GFS}           # gempak output frequency up to F120
@@ -356,9 +369,11 @@ export DO_JEDIATMENS="@DO_JEDIATMENS@"
 export DO_JEDIOCNVAR="@DO_JEDIOCNVAR@"
 export DO_JEDISNOWDA="@DO_JEDISNOWDA@"
 export DO_MERGENSST="@DO_MERGENSST@"
+export DO_STARTMEM_FROM_JEDIICE="@DO_STARTMEM_FROM_JEDIICE@"
 
 # Hybrid related
 export DOHYBVAR="@DOHYBVAR@"
+export DOHYBVAR_OCN="@DOHYBVAR_OCN@"
 export NMEM_ENS=@NMEM_ENS@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
@@ -448,29 +463,43 @@ export INCVARS_EFOLD="5"
 export netcdf_diag=".true."
 export binary_diag=".false."
 
+# Cellular automata
+export DO_CA="YES"
+
 # Verification options
 export DO_METP="@DO_METP@"   # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
-export DO_VRFY_OCEANDA="@DO_VRFY_OCEANDA@"  # Run SOCA Ocean and Seaice DA verification tasks
 
 #--online archive of netcdf files for fit2obs verification
 export FHMAX_FITS=132
 [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
 
+# User may choose to reset these at experiment setup time 
+export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto COM
+export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
+
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export LOCALARCH="@LOCALARCH@"        # save data to local archive
 if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
-   echo "Both HPSS and local archiving selected.  Please choose one or the other."
-   exit 3
+   echo "FATAL ERROR: Both HPSS and local archiving selected.  Please choose one or the other."
+   exit 4
+elif [[ ${HPSSARCH} = "YES" ]] || [[ ${LOCALARCH} = "YES" ]]; then
+   export DO_ARCHTAR="YES"
+else
+   export DO_ARCHTAR="NO"
 fi
-export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
-export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
+export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
+export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
+export ARCH_EXPDIR='YES'     # Archive the EXPDIR configs, XML, and database
+export ARCH_EXPDIR_FREQ=0    # How often to archive the EXPDIR in hours or 0 for first and last cycle only
+export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and 'git status' for each; requires ARCH_EXPDIR
+export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
 
 # The monitor jobs are not yet supported for JEDIATMVAR.
 if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
-   export DO_FIT2OBS="NO"     # Run fit to observations package    
+   export DO_FIT2OBS="NO"     # Run fit to observations package
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring

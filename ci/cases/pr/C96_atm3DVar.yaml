@@ -8,13 +8,13 @@ arguments:
   resdetatmos: 96
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20240610
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20241120
   idate: 2021122018
   edate: 2021122106
   nens: 0
   interval: 24
   start: cold
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_metp_ci.yaml
 
 skip_ci_on_hosts:
   - wcoss2

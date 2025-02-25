@@ -13,9 +13,21 @@ export DBN_ALERT_TYPE=GFS_WAVE_GEMPAK
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_WAVE_GRID COM_WAVE_GEMPAK
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \
+   COMOUT_WAVE_GEMPAK:COM_WAVE_GEMPAK_TMPL
 
-if [[ ! -d ${COM_WAVE_GEMPAK} ]]; then mkdir -p "${COM_WAVE_GEMPAK}"; fi
+if [[ -n "${GEMPAK_GRIDS}" ]]; then
+    for grdID in ${GEMPAK_GRIDS}; do 
+        process_grdID "${grdID}"
+        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+            "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+    done
+else
+    echo "waveinterpGRD is empty. No grids to process."
+fi
+
+if [[ ! -d ${COMOUT_WAVE_GEMPAK} ]]; then mkdir -p "${COMOUT_WAVE_GEMPAK}"; fi
 
 ########################################################
 # Execute the script.

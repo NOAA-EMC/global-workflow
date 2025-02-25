@@ -32,7 +32,7 @@ source "${USHgfs}/preamble.sh"
 # 0.a Basic modes of operation
 
   cd $DATA
-  
+
   rm -rf ice
   mkdir ice
   cd ice
@@ -57,7 +57,7 @@ source "${USHgfs}/preamble.sh"
   if [[ -z "${YMDH}" ]] || [[ -z "${cycle}" ]] || \
      [[ -z "${COMOUT_WAVE_PREP}" ]] || [[ -z "${FIXgfs}" ]] || [[ -z "${EXECgfs}" ]] || \
      [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${WAVEICE_FID}" ]] || [[ -z "${COMIN_OBS}" ]]; then
-  
+
     set +x
     echo ' '
     echo '**************************************************'
@@ -129,7 +129,7 @@ source "${USHgfs}/preamble.sh"
   fi
 
   rm -f wgrib.out
-  rm -f ice.grib 
+  rm -f ice.grib
   rm -f ice.index
 
 
@@ -142,14 +142,14 @@ source "${USHgfs}/preamble.sh"
 
   cp -f ${DATA}/ww3_prnc.ice.$WAVEICE_FID.inp.tmpl ww3_prnc.inp
 
-  export pgm=ww3_prnc;. prep_step
+  export pgm="${NET,,}_ww3_prnc.x"
+  source prep_step
 
-  ${EXECgfs}/ww3_prnc 1> prnc_${WAVEICE_FID}_${cycle}.out 2>&1
+  "${EXECgfs}/${pgm}" 1> prnc_${WAVEICE_FID}_${cycle}.out 2>&1
   export err=$?; err_chk
-
   if [ "$err" != '0' ]
   then
-    cat prnc_${WAVEICE_FID}_${cycle}.out 
+    cat prnc_${WAVEICE_FID}_${cycle}.out
     set +x
     echo ' '
     echo '******************************************** '
@@ -170,13 +170,13 @@ source "${USHgfs}/preamble.sh"
 # and only WAV_MOD_ID if WW3ATMIENS=F
 #
   if [ "${WW3ATMIENS}" = "T" ]
-  then 
+  then
     icefile=${WAV_MOD_TAG}.${WAVEICE_FID}.$cycle.ice
   elif [ "${WW3ATMIENS}" = "F" ]
-  then 
+  then
     icefile=${RUN}wave.${WAVEICE_FID}.$cycle.ice
   fi
- 
+
   set +x
   echo "   Saving ice.ww3 as ${COMOUT_WAVE_PREP}/${icefile}"
   set_trace

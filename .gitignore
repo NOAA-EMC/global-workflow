@@ -81,10 +81,13 @@ parm/ufs/MOM6_data_table.IN
 parm/ufs/ice_in.IN
 parm/ufs/ufs.configure.*.IN
 parm/ufs/post_itag_gfs
-parm/wafs
+parm/ufs/ww3_shel.nml.IN
 
 # Ignore sorc and logs folders from externals
 #--------------------------------------------
+sorc/build.xml
+sorc/build.db
+sorc/build_lock.db
 sorc/*log
 sorc/logs
 sorc/calc_analysis.fd
@@ -159,10 +162,6 @@ ush/global_cycle_driver.sh
 ush/jediinc2fv3.py
 ush/ufsda
 ush/soca
-ush/make_NTC_file.pl
-ush/make_ntc_bull.pl
-ush/make_tif.sh
-ush/month_name.sh
 ush/imsfv3_scf2ioda.py
 ush/atparse.bash
 ush/run_bufr2ioda.py

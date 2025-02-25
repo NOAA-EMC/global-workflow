@@ -66,8 +66,7 @@ source "${USHgfs}/preamble.sh"
   set_trace
 
   if [[ -z "${PDY}" ]] || [[ -z "${cyc}" ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
-	 [[ -z "${COMOUT_WAVE_PREP}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDDBN}" ]] || \
-	 [ -z "${waveGRD}" ]
+	 [[ -z "${waveGRD}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDDBN}" ]] 
   then
     set +x
     echo ' '
@@ -75,7 +74,7 @@ source "${USHgfs}/preamble.sh"
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    echo "${PDY}${cyc} ${cycle} ${EXECgfs} ${COMOUT_WAVE_PREP} ${WAV_MOD_TAG} ${SENDDBN} ${waveGRD}"
+    echo "${PDY}${cyc} ${cycle} ${EXECgfs} ${WAV_MOD_TAG} ${SENDDBN} ${waveGRD}"
     set_trace
     exit 1
   fi
@@ -89,13 +88,12 @@ source "${USHgfs}/preamble.sh"
   fi
   ${NLN} "${DATA}/${grdID}_interp.inp.tmpl" "${grdID}_interp.inp.tmpl"
 
-  for ID in ${waveGRD}; do
-    ${NLN} "${DATA}/output_${ymdh}0000/out_grd.${ID}" "out_grd.${ID}"
-  done
+  ${NLN} "${DATA}/output_${ymdh}0000/out_grd.${waveGRD}" "out_grd.${waveGRD}"
 
   for ID in ${waveGRD} ${grdID}; do
     ${NLN} "${DATA}/mod_def.${ID}" "mod_def.${ID}"
   done
+
 
 # --------------------------------------------------------------------------- #
 # 1.  Generate GRID file with all data
@@ -133,29 +131,22 @@ source "${USHgfs}/preamble.sh"
 
 # 1.b Run interpolation code
 
+  export pgm="${NET,,}_ww3_gint.x"
+  source prep_step
+
   set +x
-  echo "   Run ww3_gint
-  echo "   Executing ${EXECgfs}/ww3_gint
+  echo "   Executing ${pgm}"
   set_trace
 
-  export pgm=ww3_gint;. prep_step
-  ${EXECgfs}/ww3_gint 1> gint.${grdID}.out 2>&1
+  "${EXECgfs}/${pgm}" 1> gint.${grdID}.out 2>&1
   export err=$?;err_chk
-
-# Write interpolation file to main TEMP dir area if not there yet
-  if [ "wht_OK" = 'no' ]
-  then
-    cp -f ./WHTGRIDINT.bin ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID}
-    cp -f ./WHTGRIDINT.bin ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}
-  fi
-
 
   if [ "$err" != '0' ]
   then
     set +x
     echo ' '
     echo '*************************************************** '
-    echo '*** FATAL ERROR : ERROR IN ww3_gint interpolation * '
+    echo "*** FATAL ERROR : ERROR IN ${pgm} interpolation * "
     echo '*************************************************** '
     echo ' '
     set_trace
@@ -167,25 +158,6 @@ source "${USHgfs}/preamble.sh"
   rm -f grid_interp.inp
   rm -f mod_def.*
   mv out_grd.$grdID ${DATA}/output_${ymdh}0000/out_grd.$grdID
-
-# 1.c Save in /com
-
-  set +x
-  echo "   Saving GRID file as ${COMOUT_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
-  set_trace
-  cp "${DATA}/output_${ymdh}0000/out_grd.${grdID}" "${COMOUT_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
-
-#    if [ "$SENDDBN" = 'YES' ]
-#    then
-#      set +x
-#      echo "   Alerting GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${PDY}${cyc}
-#      set_trace
-
-#
-# PUT DBNET ALERT HERE ....
-#
-
-#    fi
 
 # --------------------------------------------------------------------------- #
 # 2.  Clean up the directory

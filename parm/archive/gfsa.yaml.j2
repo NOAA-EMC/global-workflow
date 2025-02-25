@@ -6,7 +6,7 @@ gfsa:
         # Logs
         # TODO explicitly name all logs to include
         {% for log in glob("logs/" ~ cycle_YMDH ~ "/gfs*.log") %}
-        {% if not "gfs_arch.log" in log %}
+        {% if not "gfs_arch_tars.log" in log %}
         - "{{ log }}"
         {% endif %}
         {% endfor %}
@@ -38,8 +38,8 @@ gfsa:
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
         {% endif %}
-        {% if AERO_ANL_RUN == "gfs" or AERO_ANL_RUN == "both" %}
-        - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat"
+        {% if DO_AERO_ANL %}
+        - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat.tgz"
         {% endif %}
         {% if DO_PREP_OBS_AERO %}
         - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"

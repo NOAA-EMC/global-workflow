@@ -33,6 +33,7 @@
 # 0.  Preparations
 
 source "${USHgfs}/preamble.sh"
+source "${USHgfs}/wave_domain_grid.sh"
 
 # 0.a Basic modes of operation
 
@@ -217,219 +218,150 @@ source "${USHgfs}/preamble.sh"
   set +x
   echo '   Making command file for sbs grib2 and GRID Interpolation '
   set_trace
+  fhr=$(( 10#${FHR3} ))
+  ymdh=$($NDATE $fhr ${PDY}${cyc})
+  YMD=$(echo $ymdh | cut -c1-8)
+  HMS="$(echo $ymdh | cut -c9-10)0000"
+  YMDHMS=${YMD}${HMS}
+  FH3=$(printf %03i $fhr)
 
-# 1.a.2 Loop over forecast time to generate post files
-# When executed side-by-side, serial mode (cfp when run after the fcst step)
-# Contingency for RERUN=YES
-  if [ "${RERUN-NO}" = "YES" ]; then
-    fhr=$((FHRUN + FHMIN_WAV))
-    if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
-      FHINCG=$FHOUT_HF_WAV
-    else
-      FHINCG=$FHOUT_WAV
-    fi
-    fhr=$((fhr + FHINCG))
-  else
-    fhr=$FHMIN_WAV
-  fi
-  fhrg=$fhr
-  sleep_interval=10
-  iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
-  while [ $fhr -le $FHMAX_WAV ]; do
-
-    ymdh=$($NDATE $fhr ${PDY}${cyc})
-    YMD=$(echo $ymdh | cut -c1-8)
-    HMS="$(echo $ymdh | cut -c9-10)0000"
-    YMDHMS=${YMD}${HMS}
-    FH3=$(printf %03i $fhr)
-
-    fcmdnow=cmdfile.${FH3}
-    fcmdigrd=icmdfile.${FH3}
-    mkdir output_$YMDHMS
-    cd output_$YMDHMS
-    rm -f ${fcmdnow} ${fcmdigrd}
-    touch ${fcmdnow} ${fcmdigrd}
+  fcmdnow=cmdfile.${FH3}
+  fcmdigrd=icmdfile.${FH3}
+  mkdir output_$YMDHMS
+  cd output_$YMDHMS
+  rm -f ${fcmdnow} ${fcmdigrd}
+  touch ${fcmdnow} ${fcmdigrd}
 
 
 # Create instances of directories for gridded output
-    export GRIBDATA=${DATA}/output_$YMDHMS
-    export GRDIDATA=${DATA}/output_$YMDHMS
+  export GRIBDATA=${DATA}/output_$YMDHMS
+  export GRDIDATA=${DATA}/output_$YMDHMS
 
 # Gridded data (main part, need to be run side-by-side with forecast
-    
-    if [ $fhr = $fhrg ]
-    then
-      for wavGRD in ${waveGRD}; do
-        gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}"
-        if ! wait_for_file "${gfile}" "${sleep_interval}" "${iwaitmax}"; then
-          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.${grdID}"
-          echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
-          err=3; export err; "${errchk}"
-          exit "${err}"
-        fi
-        ${NLN} "${gfile}" "./out_grd.${wavGRD}"
-      done
-      
-      if [ "$DOGRI_WAV" = 'YES' ]
-      then
-        nigrd=1
-        for grdID in $waveinterpGRD
-        do
-          ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
-          echo "${USHgfs}/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
-          if [ "$DOGRB_WAV" = 'YES' ]
-          then
-            gribFL=\'$(echo ${OUTPARS_WAV})\'
-            case $grdID in
-              glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-              reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-              glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-              glo_100) GRDNAME='global' ; GRDRES=1p00 ; GRIDNR=255  ; MODNR=11 ;;
-              glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
-              glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
-              glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
-              glo_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
-              at_10m) GRDNAME='atlocn' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-              ep_10m) GRDNAME='epacif' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-              wc_10m) GRDNAME='wcoast' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-              ak_10m) GRDNAME='alaska' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-            esac
-            echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
-          fi
-          echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
-          chmod 744 ${fcmdigrd}.${nigrd}
-          nigrd=$((nigrd+1))
-        done
-      fi
+  gfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_grd.${waveGRD}.${YMD}.${HMS}"
+  if [[ ! -s "${gfile}" ]]; then
+    echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE ${gfile}"
+    err=3; export err; "${errchk}"
+    exit "${err}"
+  fi
+  ${NLN} "${gfile}" "./out_grd.${waveGRD}"
 
+  if [ "$DOGRI_WAV" = 'YES' ]
+  then
+    nigrd=1
+    for grdID in $waveinterpGRD
+    do
+      ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
+      echo "${USHgfs}/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
       if [ "$DOGRB_WAV" = 'YES' ]
       then
-        for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
-        do
-          gribFL=\'$(echo ${OUTPARS_WAV})\'
-          case $grdID in
-              aoc_9km) GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=11   ;;
-              ant_9km) GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=11   ;;
-              glo_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-              gnh_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
-              gsh_15m) GRDNAME='gsouth' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-              glo_15m) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-              ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
-              so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
-              glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-              reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-              glo_025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
-              glo_100) GRDNAME='global' ; GRDRES=1p00 ; GRIDNR=255  ; MODNR=11 ;;
-	      glo_200) GRDNAME='global' ; GRDRES=2p00 ; GRIDNR=255  ; MODNR=11 ;;
-              glo_500) GRDNAME='global' ; GRDRES=5p00 ; GRIDNR=255  ; MODNR=11 ;;
-              gwes_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=10 ;;
-          esac
-          echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
-        done
+        gribFL=\'$(echo ${OUTPARS_WAV})\'
+        process_grdID "${grdID}"
+        echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDREGION $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
       fi
+      echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
+      chmod 744 ${fcmdigrd}.${nigrd}
+      nigrd=$((nigrd+1))
+    done
+  fi
 
-    fi
+  if [ "$DOGRB_WAV" = 'YES' ]
+  then
+    for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
+    do
+      gribFL=\'$(echo ${OUTPARS_WAV})\'
+      process_grdID "${grdID}"
+      echo "${USHgfs}/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDREGION $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+    done
+  fi
 
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      nfile=0
-      ifile=0
-      iline=1
-      ifirst='yes'
-      nlines=$( wc -l ${fcmdnow} | awk '{print $1}' )
-      while [ $iline -le $nlines ]; do
-        line=$( sed -n ''$iline'p' ${fcmdnow} )
-        if [ -z "$line" ]; then
-          break
-        else
-          if [ "$ifirst" = 'yes' ]; then
-            echo "#!/bin/sh" > cmdmfile.$nfile
-            echo "$nfile cmdmfile.$nfile" >> cmdmprog
-            chmod 744 cmdmfile.$nfile
-          fi
-          echo $line >> cmdmfile.$nfile
-          nfile=$(( nfile + 1 ))
-          if [ $nfile -eq $NTASKS ]; then
-            nfile=0
-            ifirst='no'
-          fi
-          iline=$(( iline + 1 ))
+  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    nfile=0
+    ifile=0
+    iline=1
+    ifirst='yes'
+    nlines=$( wc -l ${fcmdnow} | awk '{print $1}' )
+    while [ $iline -le $nlines ]; do
+      line=$( sed -n ''$iline'p' ${fcmdnow} )
+      if [ -z "$line" ]; then
+        break
+      else
+        if [ "$ifirst" = 'yes' ]; then
+          echo "#!/bin/sh" > cmdmfile.$nfile
+          echo "$nfile cmdmfile.$nfile" >> cmdmprog
+          chmod 744 "cmdmfile.$nfile"
         fi
-      done
+        echo $line >> "cmdmfile.$nfile"
+        nfile=$(( nfile + 1 ))
+        if [ "$nfile" -eq "$NTASKS" ]; then
+          nfile=0
+          ifirst='no'
+        fi
+        iline=$(( iline + 1 ))
+      fi
+    done
+  fi
+
+  wavenproc=$(wc -l ${fcmdnow} | awk '{print $1}')
+  wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
+
+  set +x
+  echo ' '
+  echo "   Executing the grib2_sbs scripts at : $(date)"
+  echo '   ------------------------------------'
+  echo ' '
+  set_trace
+
+  if [ "$wavenproc" -gt '1' ]
+  then
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
+    else
+      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
     fi
+    exit=$?
+  else
+    chmod 744 ${fcmdnow}
+    ./${fcmdnow}
+    exit=$?
+  fi
 
-    wavenproc=$(wc -l ${fcmdnow} | awk '{print $1}')
-    wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
-
+  if [ "$exit" != '0' ]
+  then
     set +x
     echo ' '
-    echo "   Executing the grib2_sbs scripts at : $(date)"
-    echo '   ------------------------------------'
+    echo '*************************************'
+    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+    echo '*************************************'
+    echo '     See Details Below '
     echo ' '
     set_trace
+    err=4; export err;${errchk}
+    exit "$err"
+  fi
 
-    if [ "$wavenproc" -gt '1' ]
-    then
-      if [ ${CFP_MP:-"NO"} = "YES" ]; then
-        ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
-      else
-        ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
-      fi
-      exit=$?
-    else
-      chmod 744 ${fcmdnow}
-      ./${fcmdnow}
-      exit=$?
-    fi
+  rm -f out_grd.* # Remove large binary grid output files
 
-    if [ "$exit" != '0' ]
-    then
+  cd $DATA
+ 
+# Check if grib2 file created
+    ENSTAG=""
+    com_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
+    com_dir=${!com_varname}
+    if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
+    gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDREGION}.${GRDRES}.f${FH3}.grib2"
+    if [ ! -s ${com_dir}/${gribchk} ]; then
       set +x
       echo ' '
-      echo '*************************************'
-      echo '*** FATAL ERROR: CMDFILE FAILED   ***'
-      echo '*************************************'
+      echo '********************************************'
+      echo "*** FATAL ERROR: $gribchk not generated "
+      echo '********************************************'
       echo '     See Details Below '
       echo ' '
       set_trace
-      err=4; export err;${errchk}
-      exit $err
+      err=5; export err;${errchk}
+      exit "$err"
     fi
-
-    rm -f out_grd.* # Remove large binary grid output files
-
-    cd $DATA
-
-    FHINCG=$(( DTFLD_WAV / 3600 ))
-    if [ $fhr = $fhrg ]
-    then
-# Check if grib2 file created
-      ENSTAG=""
-      if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-      gribchk="${RUN}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2"
-      if [ ! -s ${COMOUT_WAVE_GRID}/${gribchk} ]; then
-        set +x
-        echo ' '
-        echo '********************************************'
-        echo "*** FATAL ERROR: $gribchk not generated "
-        echo '********************************************'
-        echo '     See Details Below '
-        echo ' '
-        set_trace
-        err=5; export err;${errchk}
-        exit $err
-      fi
-      if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
-        FHINCG=$FHOUT_HF_WAV
-      else
-        FHINCG=$FHOUT_WAV
-      fi
-      fhrg=$((fhr+FHINCG))
-    fi
-    echo $fhrg
-
-    fhr=$fhrg #loop with out_grd stride
-
-  done
 
 # --------------------------------------------------------------------------- #
 # 7.  Ending output

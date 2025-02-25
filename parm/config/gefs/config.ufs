@@ -83,6 +83,7 @@ case "${fv3_res}" in
         export xr_cnvcld=".true."  # Pass conv. clouds to Xu-Randall cloud fraction
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="40.0,1.77,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=6.0
         export k_split=1
         export n_split=4
         export tau=10.0
@@ -98,8 +99,8 @@ case "${fv3_res}" in
         export DELTIM=600
         export layout_x=2
         export layout_y=2
-        export layout_x_gfs=4
-        export layout_y_gfs=4
+        export layout_x_gfs=6
+        export layout_y_gfs=8
         export nthreads_fv3=1
         export nthreads_fv3_gfs=1
         export nthreads_ufs=1
@@ -107,6 +108,7 @@ case "${fv3_res}" in
         export xr_cnvcld=".true."  # Pass conv. clouds to Xu-Randall cloud fraction
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="20.0,2.5,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=6.0
         export knob_ugwp_tauamp=3.0e-3      # setting for UGWPv1 non-stationary GWD
         export k_split=1
         export n_split=4
@@ -130,6 +132,7 @@ case "${fv3_res}" in
         export nthreads_ufs_gfs=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="10.0,3.5,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=6.0
         export knob_ugwp_tauamp=1.5e-3      # setting for UGWPv1 non-stationary GWD
         export xr_cnvcld=".true."  # Pass conv. clouds to Xu-Randall cloud fraction
         export k_split=2
@@ -154,6 +157,7 @@ case "${fv3_res}" in
         export nthreads_ufs_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="5.0,5.0,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=6.0
         export knob_ugwp_tauamp=0.8e-3      # setting for UGWPv1 non-stationary GWD
         export k_split=2
         export n_split=4
@@ -177,6 +181,7 @@ case "${fv3_res}" in
         export nthreads_ufs_gfs=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="2.5,7.5,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=6.0
         export knob_ugwp_tauamp=0.5e-3      # setting for UGWPv1 non-stationary GWD
         export k_split=2
         export n_split=4
@@ -200,6 +205,7 @@ case "${fv3_res}" in
         export nthreads_ufs_gfs=4
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="1.67,8.8,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=2.0
         export knob_ugwp_tauamp=0.35e-3      # setting for UGWPv1 non-stationary GWD
         export k_split=2
         export n_split=6
@@ -223,6 +229,7 @@ case "${fv3_res}" in
         export nthreads_ufs_gfs=4
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="0.625,14.1,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=2.0
         export knob_ugwp_tauamp=0.13e-3      # setting for UGWPv1 non-stationary GWD
         export k_split=4
         export n_split=5
@@ -268,7 +275,7 @@ case ${fv3_res} in
   "C384" | "C768" | "C1152" | "C3072")
     zstandard_level=0
     ideflate=1
-    quantize_nsd=5
+    quantize_nsd=14
     OUTPUT_FILETYPE_ATM="netcdf_parallel"
     if [[ "${fv3_res}" == "C384" ]]; then
       OUTPUT_FILETYPE_SFC="netcdf"  # For C384, the write grid component is better off with serial netcdf
@@ -319,11 +326,16 @@ if [[ "${skip_mom6}" == "false" ]]; then
       CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
       MOM6_RESTART_SETTING='r'
       MOM6_RIVER_RUNOFF='False'
-      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
-        MOM6_DIAG_MISVAL="-1e34"
-      else
-        MOM6_DIAG_MISVAL="0.0"
-      fi
+      case ${RUN} in
+        gfs|gefs|sfs)
+          MOM6_DIAG_MISVAL="-1e34";;
+        gdas|enkfgdas|enkfgfs)
+          MOM6_DIAG_MISVAL="0.0";;
+        *)
+          echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
+          exit 10
+          ;;
+      esac
       eps_imesh="4.0e-1"
       MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_25L.nc"
       MOM6_ALLOW_LANDMASK_CHANGES='False'
@@ -342,13 +354,20 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='False'
       eps_imesh="2.5e-1"
       TOPOEDITS="ufs.topo_edits_011818.nc"
-      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
-        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
-        MOM6_DIAG_MISVAL="-1e34"
-      else
-        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-        MOM6_DIAG_MISVAL="0.0"
-      fi
+      case ${RUN} in
+        gfs|gefs|sfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+          MOM6_DIAG_MISVAL="-1e34"
+          ;;
+        gdas|enkfgdas|enkfgfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+          MOM6_DIAG_MISVAL="0.0"
+          ;;
+        *)
+          echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
+          exit 10
+          ;;
+      esac
       MOM6_ALLOW_LANDMASK_CHANGES='True'
       ;;
     "050")
@@ -363,13 +382,20 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='n'
       MOM6_RIVER_RUNOFF='True'
       eps_imesh="1.0e-1"
-      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
-        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
-        MOM6_DIAG_MISVAL="-1e34"
-      else
-        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-        MOM6_DIAG_MISVAL="0.0"
-      fi
+      case ${RUN} in
+        gfs|gefs|sfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+          MOM6_DIAG_MISVAL="-1e34"
+          ;;
+        gdas|enkfgdas|enkfgfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+          MOM6_DIAG_MISVAL="0.0"
+          ;;
+        *)
+          echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
+          exit 10
+          ;;
+      esac
       MOM6_ALLOW_LANDMASK_CHANGES='False'
       TOPOEDITS=""
       ;;
@@ -385,13 +411,20 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='True'
       MOM6_RESTART_SETTING="r"
       eps_imesh="1.0e-1"
-      if [[ ${RUN} == "gfs" || "${RUN}" == "gefs" ]]; then
-        MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
-        MOM6_DIAG_MISVAL="-1e34"
-      else
-        MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
-        MOM6_DIAG_MISVAL="0.0"
-      fi
+      case ${RUN} in
+        gfs|gefs|sfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+          MOM6_DIAG_MISVAL="-1e34"
+          ;;
+        gdas|enkfgdas|enkfgfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+          MOM6_DIAG_MISVAL="0.0"
+          ;;
+        *)
+          echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
+          exit 10
+          ;;
+      esac
       MOM6_ALLOW_LANDMASK_CHANGES='False'
       TOPOEDITS=""
       ;;
@@ -505,9 +538,7 @@ fi
 
 # Set the name of the UFS (previously nems) configure template to use
 # Default ufs.configure templates for supported model configurations
-if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
-  tmpl_suffix="_esmf"
-fi
+# WW3 restart field variable is different for slow vs fast loop.  Add  WW3_RSTFLDS="ice" for slow loop variables based on coupling scheme. 
 case "${model_list}" in
   atm)
     default_template="${PARMgfs}/ufs/ufs.configure.atm${tmpl_suffix:-}.IN"
@@ -526,9 +557,11 @@ case "${model_list}" in
     ;;
   atm.ocean.ice.wave)
     default_template="${PARMgfs}/ufs/ufs.configure.s2sw${tmpl_suffix:-}.IN"
+    WW3_RSTFLDS="ice"
     ;;
   atm.ocean.ice.wave.aero)
     default_template="${PARMgfs}/ufs/ufs.configure.s2swa${tmpl_suffix:-}.IN"
+    WW3_RSTFLDS="ice"
     ;;
   *)
     echo "FATAL ERROR: Unsupported UFSWM configuration for ${model_list}"
@@ -539,6 +572,9 @@ esac
 # Allow user to override the default template
 export ufs_configure_template=${ufs_configure_template:-${default_template:-"/dev/null"}}
 unset model_list default_template
+
+#export wave restart variable: 
+export WW3_RSTFLDS=${WW3_RSTFLDS:-" "}
 
 if [[ ! -r "${ufs_configure_template}" ]]; then
   echo "FATAL ERROR: ${ufs_configure_template} either doesn't exist or is not readable."

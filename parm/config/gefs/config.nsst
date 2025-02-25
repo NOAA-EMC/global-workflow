@@ -12,10 +12,6 @@ export NST_MODEL=2
 
 # nstf_name(2) : NST_SPINUP : 0 = OFF, 1 = ON,
 export NST_SPINUP=0
-cdate="${PDY}${cyc}"
-if (( cdate < 2017072000 )); then
-    export NST_SPINUP=1
-fi
 
 # nstf_name(3) : NST_RESV (Reserved, NSST Analysis) : 0 = OFF, 1 = ON
 export NST_RESV=0

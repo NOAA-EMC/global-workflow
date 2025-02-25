@@ -33,7 +33,7 @@ datasets:
     {% endfilter %}
 {% endif %}
 
-{% if AERO_FCST_RUN == "gfs" or AERO_FCST_RUN == "both" %}
+{% if DO_AERO_FCST %}
     # Aerosol forecasts
     {% filter indent(width=4) %}
 {% include "chem.yaml.j2" %}
@@ -97,4 +97,11 @@ datasets:
 {% include "gfs_restarta.yaml.j2" %}
         {% endfilter %}
     {% endif %}
+{% endif %}
+
+# Archive the EXPDIR if requested
+{% if archive_expdir %}
+{% filter indent(width=4) %}
+{% include "expdir.yaml.j2" %}
+{% endfilter %}
 {% endif %}

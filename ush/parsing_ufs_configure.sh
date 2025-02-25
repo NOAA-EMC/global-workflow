@@ -53,12 +53,14 @@ if [[ "${cplflx}" = ".true." ]]; then
   local CMEPS_RESTART_DIR="CMEPS_RESTART/"
   local CPLMODE="${cplmode}"
   local coupling_interval_fast_sec="${CPL_FAST}"
-  local RESTART_N="${restart_interval}"
+  local RESTART_N=999999
   local ocean_albedo_limit=0.06
   local ATMTILESIZE="${CASE:1}"
   local ocean_albedo_limit=0.06
   local pio_rearranger=${pio_rearranger:-"box"}
   local MED_history_n=1000000 
+
+  local histaux_enabled=".false."
 fi
 
 if [[ "${cplice}" = ".true." ]]; then
@@ -74,8 +76,15 @@ if [[ "${cplwav}" = ".true." ]]; then
   local wav_model="ww3"
   local wav_petlist_bounds="$(( ATMPETS+OCNPETS+ICEPETS )) $(( ATMPETS+OCNPETS+ICEPETS+WAVPETS-1 ))"
   local wav_omp_num_threads="${WAVTHREADS}"
-  local MULTIGRID="${waveMULTIGRID}"
-  local WW3_user_sets_restname="false"
+
+  local WW3_user_histname="false"
+  local WW3_historync="false"
+  local WW3_restartnc="true"
+  local WW3_PIO_FORMAT="pnetcdf"
+  local WW3_PIO_IOTASKS=-99
+  local WW3_PIO_STRIDE=4
+  local WW3_PIO_REARR="box"
+  local WW3_PIO_ROOT=-99
 
 fi
 
@@ -86,6 +95,13 @@ if [[ "${cplchm}" = ".true." ]]; then
   local chm_omp_num_threads="${CHMTHREADS}"
   local coupling_interval_sec="${CPL_FAST}"
 
+fi
+
+#Set ESMF_THREADING variable for ufs configure 
+if [[ "${USE_ESMF_THREADING}" = "YES" ]]; then 
+  local ESMF_THREADING="true" 
+else
+  local ESMF_THREADING="false" 
 fi
 
 # Ensure the template exists

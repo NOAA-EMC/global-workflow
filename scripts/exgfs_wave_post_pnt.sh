@@ -271,18 +271,18 @@ source "${USHgfs}/preamble.sh"
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
     ${NLN} ./out_pnt.${waveuoutpGRD} ./out_pnt.ww3
     ${NLN} ./mod_def.${waveuoutpGRD} ./mod_def.ww3
-    export pgm=ww3_outp;. prep_step
-    ${EXECgfs}/ww3_outp > buoy_lst.loc 2>&1
+
+    export pgm="${NET,,}_ww3_outp.x"
+    source prep_step
+
+    "${EXECgfs}/${pgm}" > buoy_lst.loc 2>&1
     export err=$?;err_chk
-
-
     if [ "$err" != '0' ] && [ ! -f buoy_log.ww3 ]
     then
-      pgm=wave_post
       set +x
       echo ' '
       echo '******************************************** '
-      echo '*** FATAL ERROR : ERROR IN ww3_outp *** '
+      echo "*** FATAL ERROR : ERROR IN ${pgm} *** "
       echo '******************************************** '
       echo ' '
       cat buoy_tmp.loc
@@ -618,13 +618,13 @@ source "${USHgfs}/preamble.sh"
   if [ ${CFP_MP:-"NO"} = "YES" ] && [ "$DOBLL_WAV" = "YES" ]; then
     if [ "$DOBNDPNT_WAV" = YES ]; then
       if [ "$DOSPC_WAV" = YES ]; then
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
         nm=$(( nm + 1 ))
       fi
       if [ "$DOBLL_WAV" = YES ]; then
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpbull $Nb > ${WAV_MOD_TAG}_ibpbull_tar.out 2>&1 "   >> cmdtarfile
         nm=$(( nm + 1 ))
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpcbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpcbull $Nb > ${WAV_MOD_TAG}_ibpcbull_tar.out 2>&1 "   >> cmdtarfile
         nm=$(( nm + 1 ))
       fi
     else
@@ -633,28 +633,28 @@ source "${USHgfs}/preamble.sh"
         nm=$(( nm + 1 ))
       fi
       if [ "$DOBLL_WAV" = YES ]; then
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_bull_tar.out 2>&1 "   >> cmdtarfile
         nm=$(( nm + 1 ))
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_cbull_tar.out 2>&1 "   >> cmdtarfile
         nm=$(( nm + 1 ))
       fi
     fi
   else
     if [ "$DOBNDPNT_WAV" = YES ]; then
       if [ "$DOSPC_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
       fi
       if [ "$DOBLL_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpcbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpbull $Nb > ${WAV_MOD_TAG}_ibpbull_tar.out 2>&1 "   >> cmdtarfile
+        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpcbull $Nb > ${WAV_MOD_TAG}_ibpcbull_tar.out 2>&1 "   >> cmdtarfile
       fi
     else
       if [ "$DOSPC_WAV" = YES ]; then
         echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
       fi
       if [ "$DOBLL_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_bull_tar.out 2>&1 "   >> cmdtarfile
+        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_cbull_tar.out 2>&1 "   >> cmdtarfile
       fi
     fi
   fi

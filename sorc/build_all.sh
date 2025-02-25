@@ -13,32 +13,23 @@ set +x
 #------------------------------------
 function _usage() {
   cat << EOF
-Builds all of the global-workflow components by calling the individual build
-  scripts in sequence.
+Builds all of the global-workflow components by calling the individual build scripts in parallel.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-j n][-v][-w][-y]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-v] [gfs] [gefs] [sfs] [gsi] [gdas] [all]
   -a UFS_app:
-    Build a specific UFS app instead of the default
+    Build a specific UFS app instead of the default.  This will be applied to all UFS (GFS, GEFS, SFS) builds.
   -d:
     Build in debug mode
   -f:
-    Build the UFS model using the -DFASTER=ON option
-  -g:
-    Build GSI
+    Build the UFS model(s) using the -DFASTER=ON option.
   -h:
     Print this help message and exit
-  -j:
-    Specify maximum number of build jobs (n)
   -k:
     Kill all builds if any build fails
-  -u:
-    Build UFS-DA
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
-  -w:
-    Use structured wave grid
-  -y:
-    Use hydrostatic version of FV3
+
+  Specified systems (gfs, gefs, sfs, gsi, gdas) are non-exclusive, so they can be built together.
 EOF
   exit 1
 }
@@ -48,29 +39,21 @@ readonly HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." 
 cd "${HOMEgfs}/sorc" || exit 1
 
 _build_ufs_opt=""
-_build_ufsda="NO"
-_build_gsi="NO"
 _build_debug=""
 _verbose_opt=""
-_wave_opt=""
-_hydro_opt=""
 _build_job_max=20
 _quick_kill="NO"
+_ufs_exec="-e gfs_model.x"
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:dfghj:kuvwy" option; do
+while getopts ":a:dfhkv" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
     f) _build_ufs_opt+="-f ";;
     d) _build_debug="-d" ;;
-    g) _build_gsi="YES" ;;
     h) _usage;;
-    j) _build_job_max="${OPTARG} ";;
     k) _quick_kill="YES" ;;
-    u) _build_ufsda="YES" ;;
-    v) _verbose_opt="-v";;
-    w) _wave_opt="-w";;
-    y) _hydro_opt="-y";;
+    v) _verbose_opt="-v" ;;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       _usage
@@ -81,8 +64,26 @@ while getopts ":a:dfghj:kuvwy" option; do
       ;;
   esac
 done
-
 shift $((OPTIND-1))
+
+# If no build system was specified, build for gfs forecast-only
+if [[ $# -eq 0 ]]; then
+   selected_systems="gfs"
+else
+   selected_systems="$*"
+fi
+
+supported_systems=("gfs" "gefs" "sfs" "gsi" "gdas" "all")
+
+declare -A system_builds
+system_builds=(
+   ["gfs"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs"
+   ["gefs"]="ufs_gefs gfs_utils ufs_utils upp ww3_gefs"
+   ["sfs"]="ufs_sfs gfs_utils ufs_utils upp ww3_gefs"
+   ["gsi"]="gsi_enkf gsi_monitor gsi_utils"
+   ["gdas"]="gdas gsi_monitor gsi_utils"
+   ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils"
+)
 
 logs_dir="${HOMEgfs}/sorc/logs"
 if [[ ! -d "${logs_dir}" ]]; then
@@ -90,11 +91,64 @@ if [[ ! -d "${logs_dir}" ]]; then
   mkdir -p "${logs_dir}" || exit 1
 fi
 
-# Check final exec folder exists
-if [[ ! -d "${HOMEgfs}/exec" ]]; then
-  echo "Creating ${HOMEgfs}/exec folder"
-  mkdir -p "${HOMEgfs}/exec"
-fi
+# Jobs per build ("min max")
+declare -A build_jobs build_opts build_scripts
+build_jobs=(
+    ["ufs_gfs"]=8 ["ufs_gefs"]=8 ["ufs_sfs"]=8 ["gdas"]=8 ["gsi_enkf"]=2 ["gfs_utils"]=1 ["ufs_utils"]=1
+    ["ww3_gfs"]=1 ["ww3_gefs"]=1 ["gsi_utils"]=1 ["gsi_monitor"]=1 ["gfs_utils"]=1 ["upp"]=1
+)
+
+# Establish build options for each job
+_gfs_exec="gfs_model.x"
+_gefs_exec="gefs_model.x"
+_sfs_exec="sfs_model.x"
+build_opts=(
+    ["ufs_gfs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gfs_exec}"
+    ["ufs_gefs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -w -e ${_gefs_exec}"
+    ["ufs_sfs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -y -e ${_sfs_exec}"
+    ["upp"]="${_build_debug}"
+    ["ww3_gfs"]="${_verbose_opt} ${_build_debug}"
+    ["ww3_gefs"]="-w ${_verbose_opt} ${_build_debug}"
+    ["gdas"]="${_verbose_opt} ${_build_debug}"
+    ["ufs_utils"]="${_verbose_opt} ${_build_debug}"
+    ["gfs_utils"]="${_verbose_opt} ${_build_debug}"
+    ["gsi_utils"]="${_verbose_opt} ${_build_debug}"
+    ["gsi_enkf"]="${_verbose_opt} ${_build_debug}"
+    ["gsi_monitor"]="${_verbose_opt} ${_build_debug}"
+)
+
+# Set the build script name for each build
+build_scripts=(
+    ["ufs_gfs"]="build_ufs.sh"
+    ["ufs_gefs"]="build_ufs.sh"
+    ["ufs_sfs"]="build_ufs.sh"
+    ["gdas"]="build_gdas.sh"
+    ["gsi_enkf"]="build_gsi_enkf.sh"
+    ["gfs_utils"]="build_gfs_utils.sh"
+    ["ufs_utils"]="build_ufs_utils.sh"
+    ["ww3_gfs"]="build_ww3prepost.sh"
+    ["ww3_gefs"]="build_ww3prepost.sh"
+    ["gsi_utils"]="build_gsi_utils.sh"
+    ["gsi_monitor"]="build_gsi_monitor.sh"
+    ["gfs_utils"]="build_gfs_utils.sh"
+    ["upp"]="build_upp.sh"
+)
+
+# Check the requested systems to make sure we can build them
+declare -A builds
+system_count=0
+for system in ${selected_systems}; do
+   # shellcheck disable=SC2076
+   if [[ " ${supported_systems[*]} " =~ " ${system} " ]]; then
+      (( system_count += 1 ))
+      for build in ${system_builds["${system}"]}; do
+         builds["${build}"]="yes"
+      done
+   else
+      echo "Unsupported build system: ${system}"
+      _usage
+   fi
+done
 
 #------------------------------------
 # GET MACHINE
@@ -106,6 +160,9 @@ if [[ -z "${MACHINE_ID}" ]]; then
   echo "FATAL: Unable to determine target machine"
   exit 1
 fi
+
+# Create the log directory
+mkdir -p "${HOMEgfs}/sorc/logs"
 
 #------------------------------------
 # SOURCE BUILD VERSION FILES
@@ -122,87 +179,18 @@ ERRSCRIPT=${ERRSCRIPT:-'eval [[ $errs = 0 ]]'}
 # shellcheck disable=
 errs=0
 
-declare -A build_jobs
-declare -A build_opts
-
 #------------------------------------
 # Check which builds to do and assign # of build jobs
 #------------------------------------
 
-# Mandatory builds, unless otherwise specified, for the UFS
-big_jobs=0
-build_jobs["ufs"]=8
-big_jobs=$((big_jobs+1))
-build_opts["ufs"]="${_wave_opt} ${_hydro_opt} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
-
-build_jobs["upp"]=1
-build_opts["upp"]="${_build_debug}"
-
-build_jobs["ufs_utils"]=1
-build_opts["ufs_utils"]="${_verbose_opt} ${_build_debug}"
-
-build_jobs["gfs_utils"]=1
-build_opts["gfs_utils"]="${_verbose_opt} ${_build_debug}"
-
-build_jobs["ww3prepost"]=1
-build_opts["ww3prepost"]="${_wave_opt} ${_verbose_opt} ${_build_ufs_opt} ${_build_debug}"
-
-# Optional DA builds
-if [[ "${_build_ufsda}" == "YES" ]]; then
-   if [[ "${MACHINE_ID}" != "orion" && "${MACHINE_ID}" != "hera" && "${MACHINE_ID}" != "hercules" && "${MACHINE_ID}" != "wcoss2" && "${MACHINE_ID}" != "noaacloud" && "${MACHINE_ID}" != "gaea" ]]; then
-      echo "NOTE: The GDAS App is not supported on ${MACHINE_ID}.  Disabling build."
-   else
-      build_jobs["gdas"]=8
-      big_jobs=$((big_jobs+1))
-      build_opts["gdas"]="${_verbose_opt} ${_build_debug}"
-   fi
-fi
-if [[ "${_build_gsi}" == "YES" ]]; then
-   build_jobs["gsi_enkf"]=2
-   build_opts["gsi_enkf"]="${_verbose_opt} ${_build_debug}"
-fi
-if [[ "${_build_gsi}" == "YES" || "${_build_ufsda}" == "YES" ]] ; then
-   build_jobs["gsi_utils"]=1
-   build_opts["gsi_utils"]="${_verbose_opt} ${_build_debug}"
-   build_jobs["gsi_monitor"]=1
-   build_opts["gsi_monitor"]="${_verbose_opt} ${_build_debug}"
-fi
-
-# Go through all builds and adjust CPU counts down if necessary
-requested_cpus=0
-build_list=""
-for build in "${!build_jobs[@]}"; do
-   if [[ -z "${build_list}" ]]; then
-      build_list="${build}"
-   else
-      build_list="${build_list}, ${build}"
-   fi
-   if [[ ${build_jobs[${build}]} -gt ${_build_job_max} ]]; then
-      build_jobs[${build}]=${_build_job_max}
-   fi
-   requested_cpus=$(( requested_cpus + build_jobs[${build}] ))
-done
-
 echo "Building ${build_list}"
-
-# Go through all builds and adjust CPU counts up if possible
-if [[ ${requested_cpus} -lt ${_build_job_max} && ${big_jobs} -gt 0 ]]; then
-   # Add cores to the gdas and ufs build jobs
-   extra_cores=$(( _build_job_max - requested_cpus ))
-   extra_cores=$(( extra_cores / big_jobs ))
-   for build in "${!build_jobs[@]}"; do
-      if [[ "${build}" == "gdas" || "${build}" == "ufs" ]]; then
-         build_jobs[${build}]=$(( build_jobs[${build}] + extra_cores ))
-      fi
-   done
-fi
 
 procs_in_use=0
 declare -A build_ids
 
 check_builds()
 {
-   for chk_build in "${!build_jobs[@]}"; do
+   for chk_build in "${!builds[@]}"; do
       # Check if the build is complete and if so what the status was
       if [[ -n "${build_ids[${chk_build}]+0}" ]]; then
          if ! ps -p "${build_ids[${chk_build}]}" > /dev/null; then
@@ -212,7 +200,7 @@ check_builds()
                echo "build_${chk_build}.sh failed!  Exiting!"
                echo "Check logs/build_${chk_build}.log for details."
                echo "logs/build_${chk_build}.log" > "${HOMEgfs}/sorc/logs/error.logs"
-               for kill_build in "${!build_jobs[@]}"; do
+               for kill_build in "${!builds[@]}"; do
                   if [[ -n "${build_ids[${kill_build}]+0}" ]]; then
                      pkill -P "${build_ids[${kill_build}]}"
                   fi
@@ -227,15 +215,15 @@ check_builds()
 
 builds_started=0
 # Now start looping through all of the jobs until everything is done
-while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
-   for build in "${!build_jobs[@]}"; do
+while [[ ${builds_started} -lt ${#builds[@]} ]]; do
+   for build in "${!builds[@]}"; do
       # Has the job started?
       if [[ -n "${build_jobs[${build}]+0}" && -z "${build_ids[${build}]+0}" ]]; then
          # Do we have enough processors to run it?
          if [[ ${_build_job_max} -ge $(( build_jobs[build] + procs_in_use )) ]]; then
             # double-quoting build_opts here will not work since it is a string of options
             #shellcheck disable=SC2086
-            "./build_${build}.sh" ${build_opts[${build}]:-} -j "${build_jobs[${build}]}" > \
+            "./${build_scripts[${build}]}" ${build_opts[${build}]:-} -j "${build_jobs[${build}]}" > \
                "${logs_dir}/build_${build}.log" 2>&1 &
             build_ids["${build}"]=$!
             echo "Starting build_${build}.sh"
@@ -248,7 +236,7 @@ while [[ ${builds_started} -lt ${#build_jobs[@]} ]]; do
    # Also recalculate how many processors are in use to account for completed builds
    builds_started=0
    procs_in_use=0
-   for build in "${!build_jobs[@]}"; do
+   for build in "${!builds[@]}"; do
       # Has the build started?
       if [[ -n "${build_ids[${build}]+0}" ]]; then
          builds_started=$(( builds_started + 1))
@@ -274,7 +262,7 @@ done
 
 
 # Wait for all jobs to complete and check return statuses
-while [[ "${#build_jobs[@]}" -gt 0 ]]; do
+while [[ "${#builds[@]}" -gt 0 ]]; do
 
    # If requested, check if any build has failed and exit if so
    if [[ "${_quick_kill}" == "YES" ]]; then
@@ -285,7 +273,7 @@ while [[ "${#build_jobs[@]}" -gt 0 ]]; do
       fi
    fi
 
-   for build in "${!build_jobs[@]}"; do
+   for build in "${!builds[@]}"; do
       # Test if each job is complete and if so, notify and remove from the array
       if [[ -n "${build_ids[${build}]+0}" ]]; then
          if ! ps -p "${build_ids[${build}]}" > /dev/null; then
@@ -293,14 +281,14 @@ while [[ "${#build_jobs[@]}" -gt 0 ]]; do
             build_stat=$?
             errs=$((errs+build_stat))
             if [[ ${build_stat} == 0 ]]; then
-               echo "build_${build}.sh completed successfully!"
+               echo "${build_scripts[${build}]} completed successfully!"
             else
-               echo "build_${build}.sh failed with status ${build_stat}!"
+               echo "${build_scripts[${build}]} failed with status ${build_stat}!"
             fi
 
             # Remove the completed build from the list of PIDs
             unset 'build_ids[${build}]'
-            unset 'build_jobs[${build}]'
+            unset 'builds[${build}]'
          fi
       fi
    done

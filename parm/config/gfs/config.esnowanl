@@ -1,0 +1,38 @@
+#! /usr/bin/env bash
+
+########## config.esnowanl ##########
+# configuration common to snow ensemble analysis tasks
+
+echo "BEGIN: config.esnowanl"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" esnowanl
+
+export OBS_LIST="${PARMgfs}/gdas/snow/obs/lists/gdas_snow.yaml.j2"
+export GTS_SNOW_STAGE_YAML="${PARMgfs}/gdas/snow/obs/config/bufr2ioda_mapping.yaml.j2"
+
+export JCB_BASE_YAML="${PARMgfs}/gdas/snow/jcb-base.yaml.j2"
+export JCB_ALGO_YAML_VAR="${PARMgfs}/gdas/snow/jcb-prototype_2dvar.yaml.j2"
+
+# Process IMS snowcover into snow depth
+export IMS_OBS_LIST="${PARMgfs}/gdas/snow/prep/prep_ims.yaml.j2"
+export CALCFIMSEXE="${EXECgfs}/calcfIMS.exe"
+export FIMS_NML_TMPL="${PARMgfs}/gdas/snow/prep/fims.nml.j2"
+export IMS2IODACONV="${USHgfs}/imsfv3_scf2ioda.py"
+
+export JEDI_FIX_YAML="${PARMgfs}/gdas/snow_jedi_fix.yaml.j2"
+export BERROR_STAGING_YAML="${PARMgfs}/gdas/staging/snow_berror.yaml.j2"
+export SNOW_ENS_STAGE_TMPL="${PARMgfs}/gdas/snow_stage_ens_update.yaml.j2"
+export SNOW_OROG_STAGE_TMPL="${PARMgfs}/gdas/snow_stage_orog.yaml.j2"
+export SNOW_ENS_FINALIZE_TMPL="${PARMgfs}/gdas/snow_finalize_ens_update.yaml.j2"
+
+# Name of the executable that applies increment to bkg and its namelist template
+export APPLY_INCR_EXE="${EXECgfs}/apply_incr.exe"
+export ENS_APPLY_INCR_NML_TMPL="${PARMgfs}/gdas/snow/ens_apply_incr_nml.j2"
+
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/esnowanl_jedi_config.yaml.j2"
+
+export io_layout_x=@IO_LAYOUT_X@
+export io_layout_y=@IO_LAYOUT_Y@
+
+echo "END: config.esnowanl"

@@ -1,0 +1,21 @@
+experiment:
+  system: gfs
+  mode: forecast-only
+
+arguments:
+  pslot: {{ 'pslot' | getenv }}
+  app: S2SW
+  resdetatmos: 48
+  resdetocean: 5.0
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  idate: 2021032312
+  edate: 2021032312
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_extended_ci.yaml
+
+skip_ci_on_hosts:
+  - hera
+  - gaea
+  - orion
+  - hercules
+  - wcoss2  # TODO run on WCOSS2 once the gfs_waveawipsbulls job is fixed
