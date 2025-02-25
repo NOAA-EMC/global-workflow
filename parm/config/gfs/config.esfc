@@ -28,9 +28,9 @@ fi
 
 # set up soil analysis
 if [[ ${DO_GSISOILDA} == "YES" ]]; then
-     export GCYCLE_DO_SOILINCR=".true."
-     export GCYCLE_INTERP_LANDINCR=".false."
-     export LSOIL_INCR=2
+    export GCYCLE_DO_SOILINCR=".true."
+    export GCYCLE_INTERP_LANDINCR=".false."
+    export LSOIL_INCR=2
     export REGRID_EXEC="${HOMEgfs}/sorc/gdas.cd/build/bin/regridStates.x"
 fi
 
