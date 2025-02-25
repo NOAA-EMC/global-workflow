@@ -122,7 +122,6 @@ else
   export WAVEICE_FID=glix_10m
 fi
 
-export WAVECUR_DID=rtofs
 if [[ ${DO_OCN} == "YES" ]]; then
   export WW3CURINP='CPL'
   export WAVECUR_FID=
