@@ -1,22 +1,19 @@
 experiment:
-  system: gefs
+  system: sfs
   mode: forecast-only
 
 arguments:
+  idate: 1994050100
+  edate: 1994050100
   pslot: {{ 'pslot' | getenv }}
-  app: S2SWA
+  app: S2S
   resdetatmos: 96
-  resdetocean: 1.0
   resensatmos: 96
+  resdetocean: 1
+  start: 'cold'
   nens: 2
-  interval: 6
-  start: warm
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  idate: 2020110100
-  edate: 2020110100
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/gefs_replay_ci.yaml
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/sfs_defaults.yaml
 
-skip_ci_on_hosts:
-  - None

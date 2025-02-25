@@ -9,7 +9,7 @@ arguments:
   resdetocean: 5.0
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20241120
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20250218
   idate: 2021032418
   edate: 2021032500
   nens: 0
