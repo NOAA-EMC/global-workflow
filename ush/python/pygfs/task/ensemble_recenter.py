@@ -144,6 +144,8 @@ class EnsembleRecenter(Task):
         None
         """
 
+        fh_dict = {'copy': []}
+
         # create template dictionaries
         template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
         tmpl_inc_dict = {
@@ -153,7 +155,7 @@ class EnsembleRecenter(Task):
             'HH': self.task_config.current_cycle.strftime('%H')
         }
 
-        inc_copy = {'copy': []}
+        # Copy increments to COM
         for imem in range(1, self.task_config.NMEM_ENS + 1):
             memchar = f"mem{imem:03d}"
             tmpl_inc_dict['MEMDIR'] = memchar
@@ -168,6 +170,15 @@ class EnsembleRecenter(Task):
                                             f"enkf{self.task_config.APREFIX}cubed_sphere_grid_ratmi{hr}.tile{itile+1}.nc")
                     else:
                         dest = incdir
-                    inc_copy['copy'].append([src, dest])
+                    fh_dict['copy'].append([src, dest])
 
-        FileHandler(inc_copy).sync()
+        # Copy YAMLs to COM
+        for app_name in self.jedi_dict.keys():
+            src = os.path.join(self.task_config.DATA,
+                               f"{app_name}.yaml")
+            dest = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS,
+                                f"{self.task_config.APREFIX}{app_name}.yaml")
+            fh_dict['copy'].append([src, dest])
+
+        # Sync file handler
+        FileHandler(fh_dict).sync()

@@ -2,6 +2,7 @@
 
 from logging import getLogger
 import netCDF4 as nc
+import os
 from pprint import pformat
 from pygfs.jedi import Jedi
 from wxflow import (AttrDict, FileHandler, Task,
@@ -173,7 +174,7 @@ class AnalysisCalc(Task):
         None
         """
 
-        # Copy analyses to comrot
+        # Copy analyses to COM
         fh_dict = {'copy': []}
         src_prefix = f"{self.task_config.DATA}/{self.task_config.GPREFIX}"
         dest_prefix = f"{self.task_config.COMOUT_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
@@ -181,6 +182,14 @@ class AnalysisCalc(Task):
                                 f"{dest_prefix}atmanl.nc"])
         fh_dict['copy'].append([f"{src_prefix}sfcf006.nc",
                                 f"{dest_prefix}sfcanl.nc"])
+
+        # Copy YAMLs to COM
+        for app_name in self.jedi_dict.keys():
+            src = os.path.join(self.task_config.DATA,
+                               f"{app_name}.yaml")
+            dest = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS,
+                                f"{self.task_config.APREFIX}{app_name}.yaml")
+            fh_dict['copy'].append([src, dest])
 
         # Call FileHandler
         FileHandler(fh_dict).sync()
