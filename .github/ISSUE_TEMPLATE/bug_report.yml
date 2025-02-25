@@ -1,7 +1,8 @@
 name: Bug Report
 description: Report something that is incorrect or broken
 labels: ["triage"]
-type: bug
+type: "bug"
+projects: ["global-workflow development"]
 
 body:
   - type: markdown

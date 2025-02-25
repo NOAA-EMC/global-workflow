@@ -1,7 +1,8 @@
 name: Feature Request
 description: Request new capability
 labels: ["triage"]
-type: feature
+type: "feature"
+projects: ["global-workflow development"]
 
 body:
   - type: markdown

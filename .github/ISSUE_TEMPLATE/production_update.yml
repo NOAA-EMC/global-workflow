@@ -1,7 +1,8 @@
 name: Production Update
 description: Begin the process of an operational production update
 labels: ["production update", "triage"]
-type: feature
+type: "feature"
+projects: ["global-workflow development"]
 assignees:
   - WalterKolczynski-NOAA
   - KateFriedman-NOAA
