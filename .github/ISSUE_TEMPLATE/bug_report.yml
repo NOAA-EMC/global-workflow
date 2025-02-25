@@ -2,7 +2,7 @@ name: Bug Report
 description: Report something that is incorrect or broken
 labels: ["triage"]
 type: "bug"
-projects: ["global-workflow development"]
+projects: ["NOAA-EMC/41"]
 
 body:
   - type: markdown
