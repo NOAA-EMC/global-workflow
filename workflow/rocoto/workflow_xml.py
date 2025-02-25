@@ -10,6 +10,7 @@ from rocoto.workflow_tasks import get_wf_tasks
 from wxflow import to_timedelta
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
+from hosts import Host
 
 
 class RocotoXML(ABC):
@@ -32,6 +33,15 @@ class RocotoXML(ABC):
         self.tasks = '\n'.join(task_list)
         self.footer = self._get_workflow_footer()
 
+        # Collect info needed to write an scrontab file
+        self.host_info = Host().info
+        self.use_scrontab = self.host_info.get("USE_SCRONTAB", False)
+        # Replace ACCOUNT with whatever is in config.base
+        self.host_info.ACCOUNT = self._base['ACCOUNT']
+        self.HOMEgfs = self._base['HOMEgfs']
+        self.expdir = self._base['EXPDIR']
+
+        # Construct the XML
         self.xml = self._assemble_xml()
 
     @staticmethod
@@ -154,27 +164,59 @@ class RocotoXML(ABC):
         rocotorunstr = f'{rocotoruncmd} -d {expdir}/{pslot}.db -w {expdir}/{pslot}.xml'
         cronintstr = f'*/{cronint} * * * *'
 
-        try:
-            replyto = os.environ['REPLYTO']
-        except KeyError:
-            replyto = ''
+        replyto = os.environ.get('REPLYTO', "")
 
-        strings = ['',
-                   f'#################### {pslot} ####################',
-                   f'MAILTO="{replyto}"'
-                   ]
+        crontab_strings = ['',
+                           f'#################### {pslot} ####################'
+                          ]
+
+        # Construct the crontab or scrontab
+        if self.use_scrontab:
+            # The slurm crontab needs an SCRON entry that calls a script
+            # envery n minutes.  That script will actually run rocoto.
+            account = self.host_info.ACCOUNT
+            partition = self.host_info.PARTITION_SERVICE
+            clusters = self.host_info.get("CLUSTERS", None)
+            crontab_strings.extend([
+                f'#SCRON --partition={partition}',
+                f'#SCRON --account={self.host_info.PARTITION_SERVICE}',
+                f'#SCRON --mail-user={replyto}',
+                f'#SCRON --dependency=singleton',
+                f'#SCRON --job-name=scron_{pslot}'
+            ])
+
+            # Now write the script that actually runs rocotorun
+            cron_cmd = f"{self.expdir}/{pslot}.scron.sh"
+            with open(cron_cmd, "w") as script_f:
+                script_f.writelines([
+                    "#!/usr/bin/env bash",
+                    "set -x",
+                    f". {self.HOMEgfs}/workflow/gw_setup.sh",
+                    rocotorunstr
+                ])
+        else:
+            cron_cmd = rocotorunstr
+            crontab_strings.extend([
+                f'MAILTO="{replyto}"'
+            ])
+
+        crontab_strings.extend([
+            f'{cronintstr} {cron_cmd}',
+            '#################################################################',
+            ''
+        ])
+                               ''
         # AWS need 'SHELL', and 'BASH_ENV' defined, or, the crontab job won't start.
         if os.environ.get('PW_CSP', None) in ['aws', 'azure', 'google']:
-            strings.extend([f'SHELL="/bin/bash"',
+            crontab_strings.extend([f'SHELL="/bin/bash"',
                             f'BASH_ENV="/etc/bashrc"'])
-        strings.extend([f'{cronintstr} {rocotorunstr}',
-                        '#################################################################',
-                        ''])
 
         if crontab_file is None:
             crontab_file = f"{expdir}/{pslot}.crontab"
 
+        # Write out the crontab/scrontab file
         with open(crontab_file, 'w') as fh:
-            fh.write('\n'.join(strings))
+            if self.use_scrontab:
+                fh.write('\n'.join(strings))
 
         return
