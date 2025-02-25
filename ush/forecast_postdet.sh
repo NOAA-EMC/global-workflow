@@ -435,7 +435,7 @@ WW3_postdet() {
   fhinc=${FHINCP_WAV}
   while (( fhr <= FHMAX_WAV )); do
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate}" "${DATA}/${vdate}.out_pnt.ww3"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate}.nc" "${DATA}/${vdate}.out_pnt.ww3.nc"
 
     fhr=$((fhr + fhinc))
   done
