@@ -145,7 +145,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
   datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
 
-  if [[ ${DO_GSISOILDA} = "YES" ]]; then
+  if [[ "${DO_GSISOILDA}" = "YES" ]]; then
         for (( nn=1; nn <= ntiles; nn++ )); do
         ${NCP} "${COMIN_ATMOS_ANALYSIS}/sfci00${FHR}.tile${nn}.nc" \
            "${DATA}/soil_xainc.00${nn}" 
