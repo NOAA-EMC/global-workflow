@@ -74,7 +74,7 @@ host=$(hostname)
 
 source "${HOMEGFS_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules | wcoss2 | gaea | gaea6 )
+  hera | orion | hercules | wcoss2 | gaea | gaeac6 )
     echo "Launch Jenkins Java Controler on ${MACHINE_ID}";;
   *)
     echo "Unsupported platform. Exiting with error."
