@@ -1,6 +1,8 @@
 name: Feature Request
 description: Request new capability
-labels: ["feature", "triage"]
+labels: ["triage"]
+type: "feature"
+projects: ["NOAA-EMC/41"]
 
 body:
   - type: markdown
