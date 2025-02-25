@@ -2620,9 +2620,7 @@ class GFSTasks(Tasks):
         deps = []
         if self.options['lobsdiag_forenkf']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_ediag'}
-        else:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_eomg'}
-        deps.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('eupd')

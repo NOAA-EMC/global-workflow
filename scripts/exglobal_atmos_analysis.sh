@@ -56,7 +56,6 @@ cao_check=${cao_check:-".true."}
 ta2tb=${ta2tb:-".true."}
 
 # Diagnostic files options
-lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 binary_diag=${binary_diag:-".false."}
 
@@ -723,7 +722,6 @@ cat > gsiparm.anl << EOF
   diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=${nhr_obsbin:-3},
   cwoption=3,imp_physics=${imp_physics},lupp=${lupp},cnvw_option=${cnvw_option},cao_check=${cao_check},
   netcdf_diag=${netcdf_diag},binary_diag=${binary_diag},
-  lobsdiag_forenkf=${lobsdiag_forenkf},
   write_fv3_incr=${write_fv3_increment},
   nhr_anal=${IAUFHRS},
   ta2tb=${ta2tb},
