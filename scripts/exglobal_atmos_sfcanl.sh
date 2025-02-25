@@ -123,7 +123,7 @@ if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of 
 fi
 
 # if doing GSI soil anaysis, copy increment file and re-grid it to native model resolution
-if [[ ${DO_GSISOILDA} = "YES" ]]; then
+if [[ "${DO_GSISOILDA}" = "YES" ]]; then
  
     export COMIN_SOIL_ANALYSIS_MEM="${COMIN_ATMOS_ENKF_ANALYSIS_STAT}"
     export COMOUT_ATMOS_ANALYSIS_MEM="${COMIN_ATMOS_ANALYSIS}"
