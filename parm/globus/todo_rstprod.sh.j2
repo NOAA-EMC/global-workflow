@@ -27,12 +27,12 @@ send_to_hpss()
     # Write a command file to place the file on hpss and protect it
     local hpss_target="${hpss_target_dir}/${file}"
     local command_file="command_file_${globus_xfer_id}"
-    {
-        echo "mkdir -p ${hpss_target_dir}"
-        echo "put ${file_full} : ${hpss_target}"
-        echo "chgrp rstprod ${hpss_target}"
-        echo "chmod 640 ${hpss_target}"
-    } > "${command_file}"
+    cat << "    EOF" > "${command_file}"
+        mkdir -p "${hpss_target_dir}"
+        put "${file_full}" : "${hpss_target}"
+        chgrp rstprod "${hpss_target}"
+        chmod 640 "${hpss_target}"
+    EOF
 
     hsi in "${command_file}" >> "${log_file}" 2>&1
     # shellcheck disable=SC2181
