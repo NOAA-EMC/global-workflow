@@ -163,19 +163,32 @@ EOF
         delimiter=""
         IAU_INC_FILES=""
         for iaufhr in "${iaufhrs[@]}"; do
-          if (( iaufhr == 6 )); then
-            inc_file="atminc.nc"
+          if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
+            for tile in {1..6}; do
+              if (( iaufhr == 6 )); then
+                inc_file="atminc.tile${tile}.nc"
+              else
+                inc_file="atmi$(printf %03i "${iaufhr}").tile${tile}.nc"
+              fi
+              inc_files+=("${inc_file}")
+              IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
+            done
           else
-            inc_file="atmi$(printf %03i "${iaufhr}").nc"
+            if (( iaufhr == 6 )); then
+              inc_file="atminc.nc"
+            else
+              inc_file="atmi$(printf %03i "${iaufhr}").nc"
+            fi
+            inc_files+=("${inc_file}")
+            IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
           fi
-          inc_files+=("${inc_file}")
-          IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
+
           delimiter=","
         done
       else  # "${DOIAU}" == "NO"
         read_increment=".true."
         res_latlon_dynamics="atminc.nc"
-        if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
+        if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
           inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
           increment_file_on_native_grid=".true."
         else
