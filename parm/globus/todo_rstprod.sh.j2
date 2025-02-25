@@ -15,8 +15,7 @@ mkdir -p "${log_directory}"
 log_file="${log_directory}/hpss_status_${globus_xfer_id}.log"
 rm -f "${log_file}"
 
-send_to_hpss()
-{
+send_to_hpss() {
     # Change the group of the file to rstprod
     if ! chgrp "rstprod" "${file_full}" > "${log_file}" 2>&1; then
         rm -f "${file_full}"
