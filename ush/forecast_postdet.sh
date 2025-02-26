@@ -187,12 +187,14 @@ EOF
         done
       else  # "${DOIAU}" == "NO"
         read_increment=".true."
-        res_latlon_dynamics="atminc.nc"
+
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
           inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
           increment_file_on_native_grid=".true."
+          res_latlon_dynamics="atminc"
         else
           inc_files=("atminc.nc")
+          res_latlon_dynamics="atminc.nc"
           increment_file_on_native_grid=".false."
         fi
         if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
