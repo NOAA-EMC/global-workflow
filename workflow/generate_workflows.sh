@@ -528,7 +528,7 @@ if [[ "${_update_cron}" == "true" ]]; then
 
    if [[ "${_use_scron}" == true ]]; then
       # Strip out any existing SCRON directives and use the new ones
-      sed -i '/^#SCRON.*\n/d' existing.cron
+      sed -i '/^#SCRON/d' existing.cron
       cat scron.directives existing.cron >> final.cron
    fi
 
@@ -536,7 +536,9 @@ if [[ "${_update_cron}" == "true" ]]; then
       # Replace the existing email in the crontab
       [[ "${_verbose}" == "true" ]] && printf "Updating crontab email to %s\n\n" "${_email}"
       if [[ "${_use_scron}" == true ]]; then
+         cat final.cron
          sed -i "s/.*--mail-user.*/#SCRON --mail-user=${_email}/" final.cron
+         exit 3
       else
          sed -i "/^MAILTO/d" existing.cron
          echo "MAILTO=\"${_email}\"" >> final.cron
@@ -554,7 +556,7 @@ if [[ "${_update_cron}" == "true" ]]; then
       echo "#######################"
    fi
 
-   crontab final.cron
+   ${_crontab_cmd} final.cron
 else
    _message="Add the following to your crontab or scrontab to start running:"
    if [[ "${_use_scron}" == true ]]; then
