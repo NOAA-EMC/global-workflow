@@ -170,34 +170,35 @@ class RocotoXML(ABC):
 
         replyto = os.environ.get('REPLYTO', "")
 
-        crontab_strings = ['',
-                           f'#################### {pslot} ####################'
-                          ]
+        crontab_strings = [
+            '',
+            f'#################### {pslot} ####################'
+        ]
 
         # Construct the crontab or scrontab
         if self.use_scrontab:
             # The slurm crontab needs an SCRON entry that calls a script
             # envery n minutes.  That script will actually run rocoto.
             account = self.host_info.ACCOUNT
-            partition = self.host_info.PARTITION_SERVICE
-            clusters = self.host_info.get("CLUSTERS", None)
+            partition = self.host_info.get("PARTITION_CRON", None) or self.host_info.PARTITION_SERVICE
             crontab_strings.extend([
                 f'#SCRON --partition={partition}',
                 f'#SCRON --account={self.host_info.PARTITION_SERVICE}',
                 f'#SCRON --mail-user={replyto}',
-                f'#SCRON --dependency=singleton',
-                f'#SCRON --job-name=scron_{pslot}'
+                '#SCRON --dependency=singleton'
             ])
+
+            print(crontab_strings)
 
             # Now write the script that actually runs rocotorun
             cron_cmd = f"{self.expdir}/{pslot}.scron.sh"
-            with open(cron_cmd, "w") as script_f:
-                script_f.writelines([
-                    "#!/usr/bin/env bash",
-                    "set -x",
-                    f". {self.HOMEgfs}/workflow/gw_setup.sh",
-                    rocotorunstr
-                ])
+            with open(cron_cmd, "w") as script_fh:
+                script_fh.write(
+                    "#!/usr/bin/env bash\n" +
+                    "set -x\n" +
+                    f"source {self.HOMEgfs}/workflow/gw_setup.sh" + "\n" +
+                    rocotorunstr + "\n"
+                )
         else:
             cron_cmd = rocotorunstr
             crontab_strings.extend([
@@ -209,11 +210,13 @@ class RocotoXML(ABC):
             '#################################################################',
             ''
         ])
-                               ''
+
         # AWS need 'SHELL', and 'BASH_ENV' defined, or, the crontab job won't start.
         if os.environ.get('PW_CSP', None) in ['aws', 'azure', 'google']:
-            crontab_strings.extend([f'SHELL="/bin/bash"',
-                            f'BASH_ENV="/etc/bashrc"'])
+            crontab_strings.extend([
+                f'SHELL="/bin/bash"',
+                f'BASH_ENV="/etc/bashrc"'
+            ])
 
         if crontab_file is None:
             crontab_file = f"{expdir}/{pslot}.crontab"
@@ -221,23 +224,30 @@ class RocotoXML(ABC):
         # Write out the crontab/scrontab file
         with open(crontab_file, 'w') as fh:
             if self.use_scrontab:
-                fh.write('\n'.join(strings))
+                print(crontab_strings)
+                fh.write('\n'.join(crontab_strings))
+                print('\n'.join(crontab_strings))
 
         return
 
     def _check_rocotorc(self):
 
-        rocotorun = which(rocotorun)
+        rocotorun = which("rocotorun")
 
         if rocotorun is None:
             raise FileNotFoundError("Could not find the rocotorun executable.  Make sure you have the module loaded!")
 
-        version = rocotorun("--version", output=str)[-1]
+        version = rocotorun("--version", output=str.split, error=str.split).split()[-1].strip()
+
+        print(rocotorun("--version", output=str.split, error=str.split).split())
+        print(rocotorun("--version", output=str.split, error=str.split).split()[-1])
+        print(rocotorun("--version", output=str.split, error=str.split).split()[-1].strip())
+        print('version: ', version)
 
         homedir = os.path.expanduser("~")
         rocotorc_file = os.path.join(homedir, ".rocoto", version, "rocotorc")
 
-        if not os.path.isfile("rocotorc_file"):
+        if not os.path.isfile(rocotorc_file):
             raise FileNotFoundError(
                 "Could not find the rocotorc file!\n"
                 f"Please create '{rocotorc_file}' following the documentation at" "\n"
