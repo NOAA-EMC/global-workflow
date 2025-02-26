@@ -56,7 +56,12 @@ class GitHubPR(Github):
         if TOKEN is None:
             gh_cli = which('gh')
             gh_cli.add_default_arg(['auth', 'status', '--show-token'])
-            TOKEN = gh_cli(output=str, error=str).split('\n')[3].split(': ')[1]
+            gh_output = gh_cli(output=str, error=str)
+            token_match = re.search(r"Token:\s*([a-zA-Z0-9_]+)", gh_output)
+            if token_match:
+                TOKEN = token_match.group(1)
+            else:
+                raise ValueError("Token not found in gh CLI output.")
         super().__init__(TOKEN)
 
         self.repo = self.get_repo_url(repo_url)
