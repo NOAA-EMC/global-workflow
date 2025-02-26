@@ -23,11 +23,12 @@ class GFSCycledAppConfig(AppConfig):
             elif ens_run in ['gfs', 'gdas']:
                 self.ens_runs = [ens_run]
 
-        # Now construct self.runs the desired XML order (gdas, enkfgdas, gfs, enkfgfs)
-        self.runs = ["gdas"]  # We always have a 'gdas' run
+        # Now construct self.runs the desired XML order (gfs, enkfgfs, gdas, enkfgdas)
+        self.runs = []
+        self.runs.append('gfs') if base['INTERVAL_GFS'] > 0 else 0
+        self.runs.append('enkfgfs') if 'gfs' in self.ens_runs and 'gfs' in self.runs else 0
+        self.runs.append('gdas')  # We always have a 'gdas' run
         self.runs.append('enkfgdas') if 'gdas' in self.ens_runs else 0
-        self.runs.append("gfs") if base['INTERVAL_GFS'] > 0 else 0
-        self.runs.append('enkfgfs') if 'gfs' in self.ens_runs and "gfs" in self.runs else 0
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
 
