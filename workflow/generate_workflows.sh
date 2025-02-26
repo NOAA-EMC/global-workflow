@@ -500,9 +500,11 @@ for _case in "${_yaml_list[@]}"; do
    fi
 
    if [[ "${_use_scron}" == true ]]; then
-      grep "^#.*${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
-      grep "^#SCRON" "${cron_file}" >> tests.cron
-      grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
+      {
+      grep "^#.*${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+      grep "^#SCRON" "${cron_file}"
+      grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+      } >> tests.cron
    else
       grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
 
