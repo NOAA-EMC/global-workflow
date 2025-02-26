@@ -183,7 +183,7 @@ class RocotoXML(ABC):
             partition = self.host_info.get("PARTITION_CRON", None) or self.host_info.PARTITION_SERVICE
             crontab_strings.extend([
                 f'#SCRON --partition={partition}',
-                f'#SCRON --account={self.host_info.PARTITION_SERVICE}',
+                f'#SCRON --account={account}',
                 f'#SCRON --mail-user={replyto}',
                 '#SCRON --dependency=singleton'
             ])

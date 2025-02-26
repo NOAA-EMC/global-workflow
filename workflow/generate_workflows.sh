@@ -500,8 +500,8 @@ for _case in "${_yaml_list[@]}"; do
    fi
 
    if [[ "${_use_scron}" == true ]]; then
-      grep "^#SCRON" "${cron_file}" > scron.directives
       grep "^#.*${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
+      grep "^#SCRON" "${cron_file}" >> tests.cron
       grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
    else
       grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
@@ -526,28 +526,17 @@ if [[ "${_update_cron}" == "true" ]]; then
       echo "#######################"
    fi
 
-   if [[ "${_use_scron}" == true ]]; then
-      # Strip out any existing SCRON directives and use the new ones
-      sed -i '/^#SCRON/d' existing.cron
-      cat scron.directives existing.cron >> final.cron
-   fi
-
    if [[ "${_set_email}" == "true" ]]; then
       # Replace the existing email in the crontab
       [[ "${_verbose}" == "true" ]] && printf "Updating crontab email to %s\n\n" "${_email}"
       if [[ "${_use_scron}" == true ]]; then
-         cat final.cron
-         sed -i "s/.*--mail-user.*/#SCRON --mail-user=${_email}/" final.cron
-         exit 3
+         sed -i "s/.*--mail-user.*/#SCRON --mail-user=\"${_email}\"/" tests.cron
       else
-         sed -i "/^MAILTO/d" existing.cron
-         echo "MAILTO=\"${_email}\"" >> final.cron
+         sed -i "s/^MAILTO.*/MAILTO=\"${_email}\"/" existing.cron
       fi
    fi
 
-   if [[ "${_use_scron}" == false ]]; then
-      cat existing.cron tests.cron >> final.cron
-   fi
+   cat existing.cron tests.cron >> final.cron
 
    if [[ "${_verbose}" == "true" ]]; then
       echo "Setting crontab to:"
@@ -560,7 +549,7 @@ if [[ "${_update_cron}" == "true" ]]; then
 else
    _message="Add the following to your crontab or scrontab to start running:"
    if [[ "${_use_scron}" == true ]]; then
-      cat scron.directives tests.cron > final.cron
+      cat tests.cron > final.cron
    else
       mv tests.cron final.cron
    fi
@@ -573,7 +562,7 @@ else
 fi
 
 # Cleanup
-[[ "${_debug}" == "false" ]] && rm -f scron.directives final.cron existing.cron tests.cron "${_verbose_flag}"
+[[ "${_debug}" == "false" ]] && rm -f final.cron existing.cron tests.cron "${_verbose_flag}"
 
 echo "Success!!"
 if [[ "${_set_email}" == true && "${_debug}" == "true" ]]; then
