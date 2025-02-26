@@ -1,12 +1,15 @@
-GFS V16.3.22 RELEASE NOTES
+GFS V16.3.23 RELEASE NOTES
 
 -------
 PRELUDE
 -------
-The upstream OBSPROC package is updated to v1.3. Along with this are the following companion updates:
+
+The GFS is updated for the following:
+
 * workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
 * updated GSI code and convinfo file for saildrone observations
 * ww3_outp is improved for the wave point output
+* obsproc/v1.2.3
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -15,9 +18,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.22
-cd gfs.v16.3.22
-git clone -b EMC-v16.3.22 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.23
+cd gfs.v16.3.23
+git clone -b EMC-v16.3.23 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -26,7 +29,7 @@ The checkout script extracts the following GFS components:
 
 | Component | Tag         | POC               |
 | --------- | ----------- | ----------------- |
-| MODEL     | GFS.v16.3.22   | Jun.Wang@noaa.gov |
+| MODEL     | GFS.v16.3.23 | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
 | GSI       | gfsda.v16.3.22 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.20 | George.Gayno@noaa.gov |
@@ -51,7 +54,8 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.22`, `gfs_ver=v16.3.22`, and `obsproc_ver=v1.3`
+* `versions/run.ver` - change `version=v16.3.23` and `gfs_ver=v16.3.23`
+* `versions/MACHINE.ver` - update `obsproc_run_ver=1.2.3`
 
 SORC CHANGES
 ------------
@@ -86,7 +90,7 @@ FIX CHANGES
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
@@ -120,22 +124,22 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 PREPARED BY
 -----------
