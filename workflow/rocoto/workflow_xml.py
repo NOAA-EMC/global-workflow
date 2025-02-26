@@ -188,8 +188,6 @@ class RocotoXML(ABC):
                 '#SCRON --dependency=singleton'
             ])
 
-            print(crontab_strings)
-
             # Now write the script that actually runs rocotorun
             cron_cmd = f"{self.expdir}/{pslot}.scron.sh"
             with open(cron_cmd, "w") as script_fh:
@@ -224,9 +222,7 @@ class RocotoXML(ABC):
         # Write out the crontab/scrontab file
         with open(crontab_file, 'w') as fh:
             if self.use_scrontab:
-                print(crontab_strings)
                 fh.write('\n'.join(crontab_strings))
-                print('\n'.join(crontab_strings))
 
         return
 
@@ -238,11 +234,6 @@ class RocotoXML(ABC):
             raise FileNotFoundError("Could not find the rocotorun executable.  Make sure you have the module loaded!")
 
         version = rocotorun("--version", output=str.split, error=str.split).split()[-1].strip()
-
-        print(rocotorun("--version", output=str.split, error=str.split).split())
-        print(rocotorun("--version", output=str.split, error=str.split).split()[-1])
-        print(rocotorun("--version", output=str.split, error=str.split).split()[-1].strip())
-        print('version: ', version)
 
         homedir = os.path.expanduser("~")
         rocotorc_file = os.path.join(homedir, ".rocoto", version, "rocotorc")
