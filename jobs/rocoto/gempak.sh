@@ -6,11 +6,20 @@ status=$?
 if (( status != 0 )); then exit "${status}"; fi
 
 export job="gempak"
-export jobid="${job}.$$"
 
+# shellcheck disable=SC2153
+IFS=', ' read -r -a fhr_list <<< "${FHR_LIST}"
 
-# Execute the JJOB
-"${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
+export FHR3 jobid
+for fhr in "${fhr_list[@]}"; do
+	FHR3=$(printf '%03d' "${fhr}")
+	jobid="${job}_f${FHR3}.$$"
+	###############################################################
+	# Execute the JJOB
+	###############################################################
+	"${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
+	status=$?
+	[[ ${status} -ne 0 ]] && exit "${status}"
+done
 
-status=$?
-exit "${status}"
+exit 0

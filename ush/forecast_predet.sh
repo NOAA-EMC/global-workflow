@@ -351,11 +351,15 @@ FV3_predet(){
     if [[ "${TYPE}" == "nh" ]]; then  # monotonic and non-hydrostatic
       hord_mt=${hord_mt_nh_mono:-"10"}
       hord_xx=${hord_xx_nh_mono:-"10"}
-      hord_dp=-${hord_xx_nh_nonmono:-"-10"}
+      hord_dp=${hord_xx_nh_mono:-"10"}
     else  # monotonic and hydrostatic
       hord_mt=${hord_mt_hydro_mono:-"10"}
       hord_xx=${hord_xx_hydro_mono:-"10"}
-      hord_dp=-${hord_xx_nh_nonmono:-"-10"}
+      hord_dp=${hord_xx_hydro_mono:-"10"}
+      kord_tm=${kord_tm_hydro_mono:-"-12"}
+      kord_mt=${kord_mt_hydro_mono:-"12"}
+      kord_wz=${kord_wz_hydro_mono:-"12"}
+      kord_tr=${kord_tr_hydro_mono:-"12"}
     fi
   else  # non-monotonic options
     d_con=${d_con_nonmono:-"1."}
@@ -363,15 +367,11 @@ FV3_predet(){
     if [[ "${TYPE}" == "nh" ]]; then  # non-monotonic and non-hydrostatic
       hord_mt=${hord_mt_nh_nonmono:-"5"}
       hord_xx=${hord_xx_nh_nonmono:-"5"}
-      hord_dp=${hord_xx_hydro_mono:-"-5"}
+      hord_dp=${hord_dp_nh_nonmono:-"-5"}
     else # non-monotonic and hydrostatic
       hord_mt=${hord_mt_hydro_nonmono:-"10"}
       hord_xx=${hord_xx_hydro_nonmono:-"10"}
-      hord_dp=${hord_xx_hydro_mono:-"10"}
-      kord_tm=${kord_tm_hydro_mono:-"-12"}
-      kord_mt=${kord_mt_hydro_mono:-"12"}
-      kord_wz=${kord_wz_hydro_mono:-"12"}
-      kord_tr=${kord_tr_hydro_mono:-"12"}
+      hord_dp=${hord_xx_hydro_nonmono:-"10"}
     fi
   fi
 
@@ -564,16 +564,39 @@ FV3_predet(){
     ${NCP} "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}" "${DATA}/params_grib2_tbl_new"
     ${NCP} "${PARMgfs}/ufs/post_itag_gfs"                         "${DATA}/itag"  # TODO: Need a GEFS version when available in the UFS-weather-model
     # TODO: These should be replaced with ones from the ufs-weather-model when available there
-    if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gfs" ]]; then  # RUN = gdas | enkfgdas | gfs | enkfgfs
-      ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt"     "${DATA}/postxconfig-NT.txt"
-      ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
-    elif [[ "${RUN}" == "gefs" && "${SFS_POST:-NO}" == "NO" ]]; then  # RUN = gefs
-      ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt"       "${DATA}/postxconfig-NT.txt"
-      ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
-    elif [[ "${RUN}" == "gefs" && "${SFS_POST:-NO}" == "YES" ]]; then  # RUN = sfs output
-      ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
-      ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
-    fi
+    case ${NET} in
+      gfs)
+        ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt"     "${DATA}/postxconfig-NT.txt"
+        ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
+        ;;
+      gefs)
+        ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt"       "${DATA}/postxconfig-NT.txt"
+        ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
+        # Provide ensemble header information for GEFS
+        if [[ "${ENSMEM}" == "000" ]]; then
+          export e1=1
+        else
+          export e1=3
+        fi
+        export e2="${ENSMEM:1:2}"
+        export e3="${NMEM_ENS}"
+        ;;
+      sfs)
+        ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
+        ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
+        # Provide ensemble header information for SFS
+        if [[ "${ENSMEM}" == "000" ]]; then
+          export e1=1
+        else
+          export e1=3
+        fi
+        export e2="${ENSMEM:1:2}"
+        export e3="${NMEM_ENS}"
+        ;;
+      *)
+        echo "FATAL ERROR: Unknown NET ${NET}, unable to determine appropriate post files"
+        exit 20
+    esac
   fi
 }
 
@@ -695,6 +718,7 @@ MOM6_predet(){
 
 }
 
+# shellcheck disable=SC2178 
 CMEPS_predet(){
   echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
 
@@ -703,6 +727,29 @@ CMEPS_predet(){
   if [[ ! -d "${DATArestart}/CMEPS_RESTART" ]]; then mkdir -p "${DATArestart}/CMEPS_RESTART"; fi
   ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
 
+  # For CMEPS, CICE, MOM6 and WW3 determine restart writes
+  # Note FV3 has its own restart intervals  
+  cmeps_restart_interval=${restart_interval:-${FHMAX}}
+  # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
+  # Convert restart interval into an explicit list for FV3
+  if (( cmeps_restart_interval == 0 )); then
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      CMEPS_RESTART_FH=$(( FHMAX + half_window ))
+    else
+      CMEPS_RESTART_FH=("${FHMAX}")
+    fi
+  else
+    if [[ "${DOIAU:-NO}" == "YES" ]] && [[ "${warm_start}" == ".true." ]] ; then
+      local restart_interval_start=$(( cmeps_restart_interval + half_window ))
+      local restart_interval_end=$(( FHMAX + half_window ))
+    else
+      local restart_interval_start=${cmeps_restart_interval}
+      local restart_interval_end=${FHMAX}
+    fi
+    CMEPS_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${cmeps_restart_interval}" "${restart_interval_end}")"
+  fi
+  export CMEPS_RESTART_FH
+  # TODO: For GEFS, once cycling waves "self-cycles" and therefore needs to have a restart at 6 hour
 }
 
 # shellcheck disable=SC2034

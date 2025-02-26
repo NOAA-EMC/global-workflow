@@ -219,7 +219,7 @@ case ${step} in
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "walltime"="03:00:00"
+        declare -x "walltime"="04:00:00"
         ;;
       "C384" | "C768" | "C1152")
         declare -x "walltime"="06:00:00"
@@ -234,6 +234,7 @@ case ${step} in
     ;;
 
   "atmos_products")
+    # Walltime is per forecast hour; will be multipled by group size
     export walltime="00:15:00"
     export ntasks=24
     export threads_per_task=1
@@ -242,7 +243,8 @@ case ${step} in
     ;;
 
   "atmos_ensstat")
-    export walltime="00:30:00"
+    # Walltime is per forecast hour; will be multipled by group size
+    export walltime="00:15:00"
     export ntasks=6
     export threads_per_task=1
     export tasks_per_node="${ntasks}"
@@ -250,6 +252,7 @@ case ${step} in
     ;;
 
   "oceanice_products")
+    # Walltime is per forecast hour; will be multipled by group size
     export walltime="00:15:00"
     export ntasks=1
     export tasks_per_node=1
@@ -258,7 +261,8 @@ case ${step} in
     ;;
 
   "wavepostsbs")
-    export walltime="03:00:00"
+    # Walltime is per forecast hour; will be multipled by group size
+    export walltime="00:15:00"
     export ntasks=1
     export threads_per_task=1
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -308,18 +312,18 @@ case ${step} in
     ;;
 
   "extractvars")
-    export walltime_gefs="00:30:00"
-    export ntasks_gefs=1
-    export threads_per_task_gefs=1
-    export tasks_per_node_gefs="${ntasks_gefs}"
-    export walltime_gfs="${walltime_gefs}"
-    export ntasks_gfs="${ntasks_gefs}"
-    export threads_per_tasks_gfs="${threads_per_task_gefs}"
-    export tasks_per_node_gfs="${tasks_per_node_gefs}"
+    export walltime="00:30:00"
+    export ntasks=1
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
+    export walltime_gfs="${walltime}"
+    export ntasks_gfs="${ntasks}"
+    export threads_per_tasks_gfs="${threads_per_task}"
+    export tasks_per_node_gfs="${tasks_per_node}"
     export is_exclusive=False
     ;;
 
-  "arch")
+  "arch_tars")
     export walltime="06:00:00"
     export ntasks=1
     export tasks_per_node=1
@@ -327,8 +331,16 @@ case ${step} in
     export memory="4096M"
     ;;
 
-  "cleanup")
+  "arch_vrfy")
     export walltime="00:15:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
+    ;;
+
+  "cleanup")
+    export walltime="00:30:00"
     export ntasks=1
     export tasks_per_node=1
     export threads_per_task=1

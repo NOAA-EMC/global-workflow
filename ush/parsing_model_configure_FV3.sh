@@ -25,6 +25,7 @@ local SHOUR=${model_start_date:8:2}
 local FHROT=${IAU_FHROT:-0}
 local DT_ATMOS=${DELTIM}
 local RESTART_INTERVAL="${FV3_RESTART_FH[*]}"
+local RESTART_FH="${CMEPS_RESTART_FH:-" "}"
 # QUILTING
 local QUILTING_RESTART="${QUILTING_RESTART:-${QUILTING}}"
 local WRITE_GROUP=${WRITE_GROUP:-1}
@@ -54,6 +55,9 @@ local IMO=${LONB_IMO}
 local JMO=${LATB_JMO}
 local OUTPUT_FH=${FV3_OUTPUT_FH_NML}
 local IAU_OFFSET=${IAU_OFFSET:-0}
+
+#set FV3 output directory:
+local FV3ATM_OUTPUT_DIR="./"
 
 # Ensure the template exists
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then

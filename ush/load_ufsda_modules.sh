@@ -34,13 +34,21 @@ source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
 case "${MACHINE_ID}" in
-  ("hera" | "orion" | "hercules" | "wcoss2")
+  ("hera" | "orion" | "hercules" | "wcoss2" | "gaeac5" | "gaeac6")
+    #TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
+    if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+      export LMOD_TMOD_FIND_FIRST=yes
+      # TODO: Add path to GDASApp libraries and cray-mpich as temporary patches
+      # TODO: Remove LD_LIBRARY_PATH lines as soon as permanent solutions are available	
+      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEgfs}/sorc/gdas.cd/build/lib"
+      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/cray/pe/mpich/8.1.19/ofi/intel/19.0/lib"
+    fi
     module load "${MODS}/${MACHINE_ID}"
     ncdump=$( command -v ncdump )
     NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
     export NETCDF
     ;;
-  ("jet" | "gaea" | "s4" | "acorn")
+  ("jet" | "s4" | "acorn")
     echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
     ;;  
   *)

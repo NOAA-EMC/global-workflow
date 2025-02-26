@@ -1,0 +1,371 @@
+#! /usr/bin/env bash
+
+########## config.resources ##########
+# Set resource information for job tasks
+# e.g. walltime, node, cores per node, memory etc.
+
+if (( $# != 1 )); then
+
+    echo "Must specify an input task argument to set resource variables!"
+    exit 1
+
+fi
+
+step=$1
+
+echo "BEGIN: config.resources"
+
+case ${machine} in
+  "WCOSS2")   max_tasks_per_node=128;;
+  "HERA")     max_tasks_per_node=40;;
+  "ORION")    max_tasks_per_node=40;;
+  "HERCULES") max_tasks_per_node=80;;
+  "JET")
+    case ${PARTITION_BATCH} in
+      "xjet")          max_tasks_per_node=24;;
+      "vjet" | "sjet") max_tasks_per_node=16;;
+      "kjet")          max_tasks_per_node=40;;
+      *)
+        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
+        exit 3
+    esac
+    ;;
+  "S4")
+    case ${PARTITION_BATCH} in
+      "s4")  max_tasks_per_node=32;;
+      "ivy") max_tasks_per_node=20;;
+      *)
+        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
+        exit 3
+    esac
+    ;;
+  "AWSPW")
+    export PARTITION_BATCH="compute"
+    max_tasks_per_node=48
+    ;;
+  "AZUREPW")
+    export PARTITION_BATCH="compute"
+    max_tasks_per_node=36
+    ;;
+  "GOOGLEPW")
+    export PARTITION_BATCH="compute"
+    max_tasks_per_node=30
+    ;;
+  *)
+    echo "FATAL ERROR: Unknown machine encountered by ${BASH_SOURCE[0]}"
+    exit 2
+    ;;
+esac
+export max_tasks_per_node
+
+case ${step} in
+
+  "stage_ic")
+    export walltime="00:15:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
+    ;;
+
+  "waveinit")
+    export walltime="00:10:00"
+    export ntasks=12
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export NTASKS=${ntasks}
+    export memory="2GB"
+    ;;
+
+  "prep_emissions")
+    export walltime="00:10:00"
+    export ntasks=1
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export memory="1GB"
+    ;;
+
+  "fcst" | "efcs")
+    export is_exclusive=True
+
+    export layout_x=${layout_x_gfs}
+    export layout_y=${layout_y_gfs}
+    export WRITE_GROUP=${WRITE_GROUP_GFS}
+    export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GFS}
+    ntasks_fv3=${ntasks_fv3_gfs}
+    ntasks_quilt=${ntasks_quilt_gfs}
+    nthreads_fv3=${nthreads_fv3_gfs}
+    nthreads_ufs=${nthreads_ufs_gfs}
+
+    # Determine if using ESMF-managed threading or traditional threading
+    # If using traditional threading, set them to 1
+    if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+      export UFS_THREADS=1
+    else  # traditional threading
+      export UFS_THREADS=${nthreads_ufs:-1}
+      nthreads_fv3=1
+      nthreads_mediator=1
+      [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
+      [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
+      [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
+    fi
+
+    # FV3
+    if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+      (( FV3THREADS = nthreads_fv3 ))
+      (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
+    else
+      (( FV3THREADS = UFS_THREADS ))
+      (( FV3PETS = ntasks_fv3 ))
+    fi
+    echo "FV3 using (nthreads, PETS) = (${FV3THREADS}, ${FV3PETS})"
+
+    # Write grid component
+    QUILTPETS=0; QUILTTHREADS=0
+    if [[ "${QUILTING:-}" == ".true." ]]; then
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( QUILTTHREADS = nthreads_fv3 ))
+        (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
+      else
+        (( QUILTTHREADS = UFS_THREADS ))
+        (( QUILTPETS = ntasks_quilt ))
+      fi
+      (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP_PER_THREAD ))
+      export WRTTASK_PER_GROUP
+    fi
+    echo "QUILT using (nthreads, PETS) = (${QUILTTHREADS}, ${QUILTPETS})"
+
+    # Total PETS for the atmosphere component
+    ATMTHREADS=${FV3THREADS}
+    (( ATMPETS = FV3PETS + QUILTPETS ))
+    export ATMPETS ATMTHREADS
+    echo "FV3ATM using (nthreads, PETS) = (${ATMTHREADS}, ${ATMPETS})"
+
+    # Total PETS for the coupled model (starting w/ the atmosphere)
+    NTASKS_TOT=${ATMPETS}
+
+    # Mediator
+    # The mediator PETS can overlap with other components, usually it lands on the atmosphere tasks.
+    # However, it is suggested limiting mediator PETS to 300, as it may cause the slow performance.
+    # See https://docs.google.com/document/d/1bKpi-52t5jIfv2tuNHmQkYUe3hkKsiG_DG_s6Mnukog/edit
+    # TODO: Update reference when moved to ufs-weather-model RTD
+    MEDTHREADS=${nthreads_mediator:-1}
+    MEDPETS=${MEDPETS:-${FV3PETS}}
+    (( "${MEDPETS}" > 300 )) && MEDPETS=300
+    export MEDPETS MEDTHREADS
+    echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
+
+    # GOCART
+    CHMPETS=0; CHMTHREADS=0
+    if [[ "${DO_AERO_FCST}" == "YES" ]]; then
+      # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
+      (( CHMTHREADS = ATMTHREADS ))
+      (( CHMPETS = FV3PETS ))
+      # Do not add to NTASKS_TOT
+      echo "GOCART using (threads, PETS) = (${CHMTHREADS}, ${CHMPETS})"
+    fi
+    export CHMPETS CHMTHREADS
+
+    # Waves
+    WAVPETS=0; WAVTHREADS=0
+    if [[ "${DO_WAVE}" == "YES" ]]; then
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( WAVTHREADS = nthreads_ww3 ))
+        (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
+      else
+        (( WAVTHREADS = UFS_THREADS ))
+        (( WAVPETS = ntasks_ww3 ))
+      fi
+      echo "WW3 using (threads, PETS) = (${WAVTHREADS}, ${WAVPETS})"
+      (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
+    fi
+    export WAVPETS WAVTHREADS
+
+    # Ocean
+    OCNPETS=0; OCNTHREADS=0
+    if [[ "${DO_OCN}" == "YES" ]]; then
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( OCNTHREADS = nthreads_mom6 ))
+        (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
+      else
+        (( OCNTHREADS = UFS_THREADS ))
+        (( OCNPETS = ntasks_mom6 ))
+      fi
+      echo "MOM6 using (threads, PETS) = (${OCNTHREADS}, ${OCNPETS})"
+      (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
+    fi
+    export OCNPETS OCNTHREADS
+
+    # Ice
+    ICEPETS=0; ICETHREADS=0
+    if [[ "${DO_ICE}" == "YES" ]]; then
+      if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
+        (( ICETHREADS = nthreads_cice6 ))
+        (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
+      else
+        (( ICETHREADS = UFS_THREADS ))
+        (( ICEPETS = ntasks_cice6 ))
+      fi
+      echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
+      (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
+    fi
+    export ICEPETS ICETHREADS
+
+    echo "Total PETS = ${NTASKS_TOT}"
+
+    declare -x "ntasks"="${NTASKS_TOT}"
+    declare -x "threads_per_task"="${UFS_THREADS}"
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+
+    case "${CASE}" in
+      "C48" | "C96" | "C192")
+        declare -x "walltime"="04:00:00"
+        ;;
+      "C384" | "C768" | "C1152")
+        declare -x "walltime"="06:00:00"
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+        exit 4
+        ;;
+    esac
+
+    unset NTASKS_TOT
+    ;;
+
+  "atmos_products")
+    # Walltime is per forecast hour; will be multipled by group size
+    export walltime="00:15:00"
+    export ntasks=24
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
+    export is_exclusive=True
+    ;;
+
+  "atmos_ensstat")
+    # Walltime is per forecast hour; will be multipled by group size
+    export walltime="00:15:00"
+    export ntasks=6
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
+    export is_exclusive=True
+    ;;
+
+  "oceanice_products")
+    # Walltime is per forecast hour; will be multipled by group size
+    export walltime="00:15:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="96GB"
+    ;;
+
+  "wavepostsbs")
+    # Walltime is per forecast hour; will be multipled by group size
+    export walltime="00:15:00"
+    export ntasks=1
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export NTASKS=${ntasks}
+    export memory="10GB"
+    ;;
+
+  # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
+  # Limit the number of tasks/node to 40.
+  "wavepostbndpnt")
+    export walltime="03:00:00"
+    export ntasks=240
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
+    if [[ ${tasks_per_node} -gt 40 ]]; then
+        export tasks_per_node=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${ntasks}
+    ;;
+
+  "wavepostbndpntbll")
+    export walltime="01:00:00"
+    export ntasks=448
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
+    if [[ ${tasks_per_node} -gt 40 ]]; then
+        export tasks_per_node=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${ntasks}
+    ;;
+
+  "wavepostpnt")
+    export walltime="04:00:00"
+    export ntasks=200
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
+    if [[ ${tasks_per_node} -gt 40 ]]; then
+        export tasks_per_node=40
+        export is_exclusive=False
+    fi
+    export NTASKS=${ntasks}
+    ;;
+
+  "extractvars")
+    export walltime="00:30:00"
+    export ntasks=1
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
+    export walltime_gfs="${walltime}"
+    export ntasks_gfs="${ntasks}"
+    export threads_per_tasks_gfs="${threads_per_task}"
+    export tasks_per_node_gfs="${tasks_per_node}"
+    export is_exclusive=False
+    ;;
+
+  "arch_tars")
+    export walltime="06:00:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
+    ;;
+
+  "arch_vrfy")
+    export walltime="00:15:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
+    ;;
+
+  "cleanup")
+    export walltime="00:30:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
+    ;;
+  *)
+    echo "FATAL ERROR: Invalid job ${step} passed to ${BASH_SOURCE[0]}"
+    exit 1
+    ;;
+
+esac
+
+# Get machine-specific resources, overriding/extending the above assignments
+if [[ -f "${EXPDIR}/config.resources.${machine}" ]]; then
+   source "${EXPDIR}/config.resources.${machine}"
+fi
+
+# Check for RUN-specific variables and export them
+for resource_var in threads_per_task ntasks tasks_per_node NTASKS memory walltime; do
+   run_resource_var="${resource_var}_${RUN}"
+   if [[ -n "${!run_resource_var+0}" ]]; then
+      declare -x "${resource_var}"="${!run_resource_var}"
+   elif [[ -n "${!resource_var+0}" ]]; then
+      export "${resource_var?}"
+   fi
+done
+
+echo "END: config.resources"
