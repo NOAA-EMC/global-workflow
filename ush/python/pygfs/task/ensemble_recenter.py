@@ -167,7 +167,7 @@ class EnsembleRecenter(Task):
                                        f"enkf{self.task_config.APREFIX}cubed_sphere_grid_ratmi{hr}.tile{itile+1}.nc")
                     if fh == 6:
                         dest = os.path.join(incdir,
-                                            f"enkf{self.task_config.APREFIX}cubed_sphere_grid_ratmi{hr}.tile{itile+1}.nc")
+                                            f"enkf{self.task_config.APREFIX}cubed_sphere_grid_ratminc.tile{itile+1}.nc")
                     else:
                         dest = incdir
                     fh_dict['copy'].append([src, dest])

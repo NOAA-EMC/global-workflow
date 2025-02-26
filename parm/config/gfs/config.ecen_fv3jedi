@@ -11,6 +11,8 @@ echo "BEGIN: config.ecen_fv3jedi"
 export layout_x_ecen_fv3jedi=1
 export layout_y_ecen_fv3jedi=1
 
+export NMEM_ENS=@NMEM_ENS@
+
 # Get task specific resources
 . "${EXPDIR}/config.resources" ecen_fv3jedi
 
