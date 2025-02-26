@@ -24,10 +24,10 @@ class FetchFIXdata():
         self.localdir = localdir
         self.verbose = verbose
 
-        #if (os.path.isdir(localdir)):
+        # if (os.path.isdir(localdir)):
         #    print('Prepare to download FIX data for %s and %s to %s' %(atmgrid, ocngrid, localdir))
-        #else:
-        #    print('local dir: <%s> does not exist. Stop' %(localdir))
+        # else:
+        #    print(f'local dir: <{localdir}> does not exist. Stop')
         #    sys.exit(-1)
 
         self.verdict = {}
@@ -35,7 +35,7 @@ class FetchFIXdata():
         self.s3dict['raworog'] = 'raw/orog'
 
         if (self.localdir.find('fix') < 0):
-            self.targetdir = '%s/fix.subset' %(self.localdir)
+            self.targetdir = f'{self.localdir}/fix.subset'
         else:
             self.targetdir = self.localdir
 
@@ -53,34 +53,34 @@ class FetchFIXdata():
 
         for key in self.fix_ver_dict.keys():
             val = self.fix_ver_dict[key]
-            if ( key == 'aer_ver' ):
-                self.s3dict['aer'] = 'aer/%s' %(val)
-            elif ( key == 'am_ver' ):
-                self.s3dict['am'] = 'am/%s' %(val)
-            elif ( key == 'chem_ver' ):
-                self.s3dict['fimdata_chem'] = 'chem/%s/fimdata_chem' %(val)
-                self.s3dict['Emission_data'] = 'chem/%s/Emission_data' %(val)
-            elif ( key == 'datm_ver' ):
-                self.s3dict['cfsr'] = 'datm/%s/cfsr' %(val)
-                self.s3dict['gefs'] = 'datm/%s/gefs' %(val)
-                self.s3dict['gfs'] = 'datm/%s/gfs' %(val)
-                self.s3dict['mom6'] = 'datm/%s/mom6' %(val)
-            elif ( key == 'glwu_ver' ):
-                self.s3dict['glwu'] = 'glwu/%s' %(val)
-            elif ( key == 'gsi_ver' ):
-                self.s3dict['gsi'] = 'gsi/%s' %(val)
-            elif ( key == 'lut_ver' ):
-                self.s3dict['lut'] = 'lut/%s' %(val)
-            elif ( key == 'mom6_ver' ):
-                self.s3dict['mom6post'] = 'mom6/%s/post' %(val)
-            elif ( key == 'reg2grb2_ver' ):
-                self.s3dict['reg2grb2'] = 'reg2grb2/%s' %(val)
-            elif ( key == 'sfc_climb_ver' ):
-                self.s3dict['sfc_climo'] = 'sfc_climo/%s' %(val)
-            elif ( key == 'verif_ver' ):
-                self.s3dict['verif'] = 'verif/%s' %(val)
-            elif ( key == 'wave_ver' ):
-                self.s3dict['wave'] = 'wave/%s' %(val)
+            if (key == 'aer_ver'):
+                self.s3dict['aer'] = f'aer/{val}'
+            elif ( key == 'am_ver'):
+                self.s3dict['am'] = f'am/{val}'
+            elif (key == 'chem_ver'):
+                self.s3dict['fimdata_chem'] = f'chem/{val}/fimdata_chem'
+                self.s3dict['Emission_data'] = f'chem/{val}/Emission_data'
+            elif (key == 'datm_ver'):
+                self.s3dict['cfsr'] = f'datm/{val}/cfsr'
+                self.s3dict['gefs'] = f'datm/{val}/gefs'
+                self.s3dict['gfs'] = f'datm/{val}/gfs'
+                self.s3dict['mom6'] = f'datm/{val}/mom6'
+            elif (key == 'glwu_ver'):
+                self.s3dict['glwu'] = f'glwu/{val}'
+            elif (key == 'gsi_ver'):
+                self.s3dict['gsi'] = f'gsi/{val}'
+            elif (key == 'lut_ver'):
+                self.s3dict['lut'] = f'lut/{val}'
+            elif (key == 'mom6_ver'):
+                self.s3dict['mom6post'] = f'mom6/{val}/post'
+            elif (key == 'reg2grb2_ver'):
+                self.s3dict['reg2grb2'] = f'reg2grb2/{val}'
+            elif (key == 'sfc_climb_ver' ):
+                self.s3dict['sfc_climo'] = f'sfc_climo/{val}'
+            elif (key == 'verif_ver'):
+                self.s3dict['verif'] = f'verif/{val}'
+            elif (key == 'wave_ver'):
+                self.s3dict['wave'] = f'wave/{val}'
 
     # ----------------------------------------------------------------------------------------------------------------
     def add_grid_data(self):
