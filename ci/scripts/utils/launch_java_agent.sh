@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -74,7 +74,7 @@ host=$(hostname)
 
 source "${HOMEGFS_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules | wcoss2 | gaea)
+  hera | orion | hercules | wcoss2 | gaea | gaeac6 )
     echo "Launch Jenkins Java Controler on ${MACHINE_ID}";;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -84,6 +84,7 @@ esac
 LOG=lanuched_agent-$(date +%Y%m%d%M).log
 rm -f "${LOG}"
 
+HOMEgfs="${HOMEGFS_}"
 source "${HOMEGFS_}/ush/module-setup.sh"
 module use "${HOMEGFS_}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
@@ -141,6 +142,9 @@ with open(sys.argv[1], 'r') as file:
 print(data.get('offline','True'))
 EOF
 chmod u+x parse.py
+
+# Needed for Gaea as it has C capatalized on the Node names in Jenkins
+MACHINE_ID="${MACHINE_ID//c/C}"
 
 check_node_online() {
     rm -f curl_response

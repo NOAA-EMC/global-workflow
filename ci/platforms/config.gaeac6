@@ -5,3 +5,6 @@ export ICSDIR_ROOT=/gpfs/f6/drsa-precip3/world-shared/role.glopara/data/ICSDIR
 export HPC_ACCOUNT=drsa-precip3
 export max_concurrent_cases=5
 export max_concurrent_pr=4
+
+export JENKINS_AGENT_LANUCH_DIR=/ncrc/proj/nggps_emc/role.glopara/GFS_CI_CD/Jenkins/agent
+export JENKINS_WORK_DIR=/ncrc/proj/nggps_emc/role.glopara/GFS_CI_CD/Jenkins/workspace
