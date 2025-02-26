@@ -10,13 +10,13 @@ import getopt
 import subprocess
 from pathlib import Path
 
-# ----------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class FetchFIXdata():
 
 
     def __init__(self, atmgridarray=['C48'], ocngridarray=['500'], localdir=None, verbose=0):
 
-        self.aws_fix_bucket='s3://noaa-nws-global-pds/fix'
+        self.aws_fix_bucket= 's3://noaa-nws-global-pds/fix'
         self.aws_cp='aws --no-sign-request s3 cp'
         self.aws_sync='aws --no-sign-request s3 sync'
 
@@ -40,7 +40,7 @@ class FetchFIXdata():
         else:
             self.targetdir=self.localdir
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def update_s3dict(self):
 
         self.update_s3dick_grid_independent()
@@ -49,14 +49,14 @@ class FetchFIXdata():
         if (self.verbose):
             self.printinfo()
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def update_s3dick_grid_independent(self):
 
         for key in self.fix_ver_dict.keys():
             val=self.fix_ver_dict[key]
             if (key == 'aer_ver'):
                 self.s3dict['aer']=f'aer/{val}'
-            elif ( key == 'am_ver'):
+            elif (key == 'am_ver'):
                 self.s3dict['am']=f'am/{val}'
             elif (key == 'chem_ver'):
                 self.s3dict['fimdata_chem']=f'chem/{val}/fimdata_chem'
@@ -76,14 +76,14 @@ class FetchFIXdata():
                 self.s3dict['mom6post']=f'mom6/{val}/post'
             elif (key == 'reg2grb2_ver'):
                 self.s3dict['reg2grb2']=f'reg2grb2/{val}'
-            elif (key == 'sfc_climb_ver' ):
+            elif (key == 'sfc_climb_ver'):
                 self.s3dict['sfc_climo']=f'sfc_climo/{val}'
             elif (key == 'verif_ver'):
                 self.s3dict['verif']=f'verif/{val}'
             elif (key == 'wave_ver'):
                 self.s3dict['wave']=f'wave/{val}'
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def add_grid_data(self):
 
         for key in self.fix_ver_dict.keys():
@@ -99,21 +99,21 @@ class FetchFIXdata():
             elif (key == 'cpl_ver'):
                 self.add_cpl2s3dict('cpl', key, val)
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def add_atmgrid2s3dict(self, varname, key, val):
 
         for atmgrid in self.atmgridarray:
             newkey=f'{key}_{atmgrid}'
             self.s3dict[newkey]=f'{varname}/{val}/{atmgrid}'
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def add_ocngrid2s3dict(self, varname, key, val):
 
         for ocngrid in self.ocngridarray:
             newkey=f'{key}_{atmgrid}'
             self.s3dict[newkey]=f'{varname}/{val}/{ocngrid}'
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def add_cpl2s3dict(self, varname, key, val):
 
         for atmgrid in self.atmgridarray:
@@ -121,7 +121,7 @@ class FetchFIXdata():
                 newkey=f'{key}_a{atmgrid}o{ocngrid}'
                 self.s3dict[newkey]=f'{varname}/{val}/a{atmgrid}o{ocngrid}'
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def printinfo(self):
 
         print(f'Preparing to fetch')
@@ -133,7 +133,7 @@ class FetchFIXdata():
             val=self.s3dict[key]
             print(f'{key}: {val}')
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def fetchdata(self):
 
         if (self.verbose):
@@ -147,7 +147,7 @@ class FetchFIXdata():
         for key in self.s3dict.keys():
             self.fetch_dir(self.s3dict[key])
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def fetch_dir(self, dir):
 
         remotedir=f'{self.aws_fix_bucket}/{dir}'
@@ -155,7 +155,7 @@ class FetchFIXdata():
         cmd=f'{self.aws_sync} {remotedir} {localdir}'
         self.download_dir(cmd, localdir)
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def download_dir(self, cmd, localdir):
 
         # returned_value=os.system(cmd)  # returns the exit code in unix
@@ -176,7 +176,7 @@ class FetchFIXdata():
             if (self.verbose):
                 print('returned value:', returned_value)
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def fetch_ugwp_limb_tau(self):
 
         ugwp_limb_tau_remotepath=f'{self.aws_fix_bucket}/ugwd/{self.fix_ver_dict['ugwd_ver']}/ugwp_limb_tau.nc'
@@ -187,7 +187,7 @@ class FetchFIXdata():
         cmd=f'{self.aws_cp} {ugwp_limb_tau_remotepath} {filename}'
         self.download_file(cmd, filename)
 
-    # ----------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def download_file(self, cmd, filename):
 
        # returned_value=os.system(cmd)  # returns the exit code in unix
@@ -199,11 +199,11 @@ class FetchFIXdata():
             if (self.verbose):
                 print(cmd)
             print(f'Downloading {filename}')
-            returned_value= subprocess.call(cmd, shell=True)  # returns the exit code in unix
+            returned_value=subprocess.call(cmd, shell=True)  # returns the exit code in unix
             if (self.verbose):
                 print('returned value:', returned_value)
 
-    # --------------------------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def set_fix_ver_from_gwhome(self, gwhome, verdict):
 
         fix_ver_file=f'{gwhome}/versions/fix.ver'
@@ -218,12 +218,12 @@ class FetchFIXdata():
         else:
             print(f'fix_ver_file: {ix_ver_file}s does not exist.')
 
-    # --------------------------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------
     def set_default_fix_ver(self, verdict):
 
         self.fix_ver_dict=verdict
 
-# ----------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def print_usage(verdict):
 
 
@@ -238,7 +238,7 @@ def print_usage(verdict):
     for key in verdict.keys():
         print(f'\t--{key}=yyyymmdd  default: {verdict[key]}')
 
-# ----------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 if __name__ == '__main__':
 
 
@@ -347,4 +347,3 @@ if __name__ == '__main__':
     ffd.update_s3dict()
 
     ffd.fetchdata()
-
