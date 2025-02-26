@@ -102,41 +102,41 @@ class FetchFIXdata():
     def add_atmgrid2s3dict(self, varname, key, val):
 
         for atmgrid in self.atmgridarray:
-            newkey = '%s_%s' %( key, atmgrid )
-            self.s3dict[newkey] = '%s/%s/%s' %(varname, val, atmgrid)
+            newkey = f'{key}_{atmgrid}'
+            self.s3dict[newkey] = f'{varname}/{val}/{atmgrid}'
 
     # ----------------------------------------------------------------------------------------------------------------
     def add_ocngrid2s3dict(self, varname, key, val):
 
         for ocngrid in self.ocngridarray:
-            newkey = '%s_%s' %(key, atmgrid)
-            self.s3dict[newkey] = '%s/%s/%s' %(varname, val, ocngrid)
+            newkey = f'{key}_{atmgrid}'
+            self.s3dict[newkey] = f'{varname}/{val}/{ocngrid}'
 
     # ----------------------------------------------------------------------------------------------------------------
     def add_cpl2s3dict(self, varname, key, val):
 
         for atmgrid in self.atmgridarray:
             for ocngrid in self.ocngridarray:
-                newkey = '%s_a%so%s' %( key, atmgrid, ocngrid )
-                self.s3dict[newkey] = '%s/%s/a%so%s' %(varname, val, atmgrid, ocngrid)
+                newkey = f'{key}_a{atmgrid}o{ocngrid}'
+                self.s3dict[newkey] = f'{varname}/{val}/a{atmgrid}o{ocngrid}'
 
     # ----------------------------------------------------------------------------------------------------------------
     def printinfo(self):
 
-        print('Preparing to fetch')
-        print('ATM grid: ', self.atmgridarray)
-        print('ONC grid: ', self.ocngridarray)
-        print('From: %s' %( self.aws_fix_bucket ))
-        print('To: %s' %( self.targetdir ))
+        print(f'Preparing to fetch')
+        print(f'ATM grid: {self.atmgridarray}')
+        print(f'ONC grid: {self.ocngridarray}')
+        print(f'From: {self.aws_fix_bucket}')
+        print(f'To: {self.targetdir}')
         for key in self.s3dict.keys():
             val = self.s3dict[key]
-            print('%s: %s' %( key, val ))
+            print(f'{key}: {val}')
 
     # ----------------------------------------------------------------------------------------------------------------
     def fetchdata(self):
 
         if (self.verbose):
-            print('Create local fix dir: ', self.targetdir)
+            print('Create local fix dir: {self.targetdir}')
 
         path = Path(self.targetdir)
         path.mkdir(parents=True, exist_ok=True)
@@ -149,28 +149,28 @@ class FetchFIXdata():
     # ----------------------------------------------------------------------------------------------------------------
     def fetch_dir(self, dir):
 
-        remotedir = '%s/%s' %(self.aws_fix_bucket, dir)
-        localdir = '%s/%s' %( self.targetdir, dir )
-        cmd = '%s %s %s' %(self.aws_sync, remotedir, localdir)
+        remotedir = f'{self.aws_fix_bucket}/{dir}'
+        localdir = f'{self.targetdir}/{dir}'
+        cmd = f'{self.aws_sync} {remotedir} {localdir}'
         self.download_dir(cmd, localdir)
 
     # ----------------------------------------------------------------------------------------------------------------
     def download_dir(self, cmd, localdir):
 
-        #returned_value = os.system(cmd)  # returns the exit code in unix
-        #print('returned value:', returned_value)
+        # returned_value = os.system(cmd)  # returns the exit code in unix
+        # print('returned value:', returned_value)
 
         if (os.path.isdir(localdir)):
-            print('%s already exist. skip' %(localdir))
+            print(f'{localdir} already exist. skip'
         else:
             parentdir, dirname = os.path.split(localdir)
             if (self.verbose):
-                print('Create local %s dir: ' %(parentdir))
+                print(f'Create local {parentdir} dir:')
             path = Path(parentdir)
             path.mkdir(parents=True, exist_ok=True)
             if (self.verbose):
                 print(cmd)
-            print('Downloading ', localdir)
+            print(f'Downloading {localdir}')
             returned_value = subprocess.call(cmd, shell=True)  # returns the exit code in unix
             if (self.verbose):
                 print('returned value:', returned_value)
@@ -178,26 +178,26 @@ class FetchFIXdata():
     # ----------------------------------------------------------------------------------------------------------------
     def fetch_ugwp_limb_tau(self):
 
-        ugwp_limb_tau_remotepath = '%s/ugwd/%s/ugwp_limb_tau.nc' %(self.aws_fix_bucket, self.fix_ver_dict['ugwd_ver'])
-        ugwp_limb_tau_localdir = '%s/ugwd/%s' %(self.targetdir, self.fix_ver_dict['ugwd_ver'])
-        filename = '%s/ugwp_limb_tau.nc' %(ugwp_limb_tau_localdir)
+        ugwp_limb_tau_remotepath = f'{self.aws_fix_bucket}/ugwd/{self.fix_ver_dict['ugwd_ver']}/ugwp_limb_tau.nc'
+        ugwp_limb_tau_localdir = f'{self.targetdir}/ugwd/{self.fix_ver_dict['ugwd_ver']}'
+        filename = f'{ugwp_limb_tau_localdir}/ugwp_limb_tau.nc'
         path = Path(ugwp_limb_tau_localdir)
         path.mkdir(parents=True, exist_ok=True)
-        cmd = '%s %s %s'%(self.aws_cp, ugwp_limb_tau_remotepath, filename)
+        cmd = f'{self.aws_cp} {ugwp_limb_tau_remotepath} {filename}'
         self.download_file(cmd, filename)
 
     # ----------------------------------------------------------------------------------------------------------------
     def download_file(self, cmd, filename):
 
-       #returned_value = os.system(cmd)  # returns the exit code in unix
-       #print('returned value:', returned_value)
+       # returned_value = os.system(cmd)  # returns the exit code in unix
+       # print('returned value:', returned_value)
 
         if (os.path.isfile(filename)):
-            print('%s already exist. skip' %( filename ))
+            print(f'{filename} already exist. skip')
         else:
             if (self.verbose):
                 print(cmd)
-            print('Downloading ', filename)
+            print(f'Downloading {filename}')
             returned_value = subprocess.call(cmd, shell=True)  # returns the exit code in unix
             if (self.verbose):
                 print('returned value:', returned_value)
@@ -205,7 +205,7 @@ class FetchFIXdata():
     # ----------------------------------------------------------------------------------------------------------------
     def set_fix_ver_from_gwhome(self, gwhome, verdict):
 
-        fix_ver_file = '%s/versions/fix.ver'
+        fix_ver_file = f'{gwhome}/versions/fix.ver'
         self.fix_ver_dict = verdict
         if (os.path.isfile(fix_ver_file)):
             with open(fix_ver_file, "r") as file:
@@ -215,7 +215,7 @@ class FetchFIXdata():
                         exphead, _, key = headstr.partition(' ')
                         self.fix_ver_dict[key] = value
         else:
-            print('fix_ver_file: %s does not exist.' %(fix_ver_file))
+            print(f'fix_ver_file: {ix_ver_file}s does not exist.')
 
     # ----------------------------------------------------------------------------------------------------------------
     def set_default_fix_ver(self, verdict):
@@ -224,6 +224,7 @@ class FetchFIXdata():
 
 # ----------------------------------------------------------------------------------------------------------------
 def print_usage(verdict):
+
 
     print('Usage: python fetch-fix-data.py \\')
     print('       --atmgrid=AtmospericGrid (for multiple grids, separate with ",") \\')
@@ -234,10 +235,11 @@ def print_usage(verdict):
     print('\t--gwhome=xxxx (Global-Workflow directory)')
 
     for key in verdict.keys():
-        print( '\t--%s=yyyymmdd  default: %s' %( key, verdict[key] ) )
+        print(f'\t--{key}=yyyymmdd  default: {verdict[key]}')
 
 # ----------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
+
 
     atmgridlist = ['C48', 'C96', 'C192', 'C384', 'C768', 'C1152']
     ocngridlist = ['500', '100', '050', '025']
@@ -247,7 +249,7 @@ if __name__ == '__main__':
     ocngrid = '500'
     localdir = '/contrib/global-workflow-shared-data'
 
-    #default fix-version
+    # default fix-version
     verdict = {}
     verdict['aer_ver'] = '20220805'
     verdict['am_ver'] = '20220805'
@@ -266,7 +268,7 @@ if __name__ == '__main__':
     verdict['verif_ver'] = '20220805'
     verdict['wave_ver'] = '20240105'
 
-    gwhome=None
+    gwhome = None
 
     opts, args = getopt.getopt(sys.argv[1:], '', ['help', 'atmgrid=', 'ocngrid=',
                                                   'verbose=', 'localdir=',
@@ -288,7 +290,7 @@ if __name__ == '__main__':
                                                   'verif_ver=',
                                                   'wave_ver='])
     for o, a in opts:
-        #print( 'o: %s, a: %s' %(o, a) )
+        # print(f'o: {o}, a: {a}')
         if o in ['--help']:
             print_usage(verdict)
             sys.exit(0)
@@ -304,7 +306,7 @@ if __name__ == '__main__':
             gwhome = a
         else:
             _, vername = o.split('--')
-            print( 'vername: <%s>' %(vername) )
+            print(f'vername: <{vername}>')
             verdict[vername] = a
 
     if (atmgrid.find(',') > 0):
