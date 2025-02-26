@@ -20,4 +20,6 @@ case ${step} in
         ;;
     esac
   ;;
+  *)
+  ;;
 esac
