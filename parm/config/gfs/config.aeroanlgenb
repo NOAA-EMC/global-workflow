@@ -12,17 +12,16 @@ export JEDI_CONFIG_YAML="${PARMgfs}/gdas/aero_bmat_jedi_config.yaml.j2"
 export JCB_BASE_YAML="${PARMgfs}/gdas/aero/jcb-base.yaml.j2"
 export AERO_BMATRIX_STAGE_TMPL="${PARMgfs}/gdas/aero_stage_bmatrix_bkg.yaml.j2"
 export AERO_BMATRIX_FINALIZE_TMPL="${PARMgfs}/gdas/aero_finalize_bmatrix_bkg.yaml.j2"
-export aero_diffusion_iter=10
-export aero_diffusion_horiz_len=2500e3
-export aero_diffusion_fixed_val=1.0
+export aero_diffusion_iter=200
+export aero_diffusion_horiz_len=300e3
+export aero_diffusion_fixed_val=20.0
 export npx_clim_b=97
 export npy_clim_b=97
 export aero_diagb_weight=0.9
 export aero_staticb_rescaling_factor=2.0
-export aero_diagb_rescale=20.0
 export aero_diagb_n_halo=4
 export aero_diagb_n_neighbors=16
-export aero_diagb_smooth_horiz_iter=0
+export aero_diagb_smooth_horiz_iter=200
 export aero_diagb_smooth_vert_iter=0
 
 echo "END: config.aeroanlgenb"
