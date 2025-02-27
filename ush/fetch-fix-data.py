@@ -12,6 +12,7 @@ from pathlib import Path
 
 # ------------------------------------------------------------------------------
 
+
 class FetchFIXdata():
 
     def __init__(self, atmgridarray=['C48'], ocngridarray=['500'], localdir=None, verbose=0):
@@ -225,6 +226,7 @@ class FetchFIXdata():
 
 # -----------------------------------------------------------------------------
 
+
 def print_usage(verdict):
 
     print('Usage: python fetch-fix-data.py \\')
@@ -239,6 +241,7 @@ def print_usage(verdict):
         print(f'\t--{key}=yyyymmdd  default: {verdict[key]}')
 
 # ------------------------------------------------------------------------------
+
 
 if __name__ == '__main__':
 
