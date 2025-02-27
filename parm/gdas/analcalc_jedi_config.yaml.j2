@@ -1,13 +1,15 @@
 atm_addincrement:
   rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/fv3jedi_addincrement.x'
+  exe_src: '{{ EXECgfs }}/gdas.x'
+  jedi_args: ['fv3jedi', 'addincrement']
   mpi_cmd: '{{ APRUN_ANALCALC_FV3JEDI }}'
   jcb_base_yaml: '{{ PARMgfs }}/gdas/atm/jcb-base.yaml.j2'
   jcb_algo: atm_addincrement
 {% if DO_AERO_ANL %}
 aero_addincrement:
   rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/fv3jedi_addincrement.x'
+  exe_src: '{{ EXECgfs }}/gdas.x'
+  jedi_args: ['fv3jedi', 'addincrement']
   mpi_cmd: '{{ APRUN_ANALCALC_FV3JEDI }}'
   jcb_base_yaml: '{{ PARMgfs }}/gdas/aero/jcb-base.yaml.j2'
   jcb_algo: aero_addincrement
@@ -15,7 +17,8 @@ aero_addincrement:
 {% if DO_JEDISNOWDA %}
 snow_addincrement:
   rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/fv3jedi_addincrement.x'
+  exe_src: '{{ EXECgfs }}/gdas.x'
+  jedi_args: ['fv3jedi', 'addincrement']
   mpi_cmd: '{{ APRUN_ANALCALC_FV3JEDI }}'
   jcb_base_yaml: '{{ PARMgfs }}/gdas/snow/jcb-base.yaml.j2'
   jcb_algo: snow_addincrement

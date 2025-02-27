@@ -87,6 +87,15 @@ def update_configs(host, inputs):
     stage_output = f'{inputs.expdir}/{inputs.pslot}/config.stage_ic'
     edit_config(stage_input, stage_output, host_dict, stage_dict)
 
+    # Update fv3jedi-based recentering
+    if yaml_dict.base.DO_JEDIATMENS == "YES":
+        ecen_dict = {
+            "@NMEM_ENS@": inputs.nens
+        }
+        ecen_input = f'{inputs.configdir}/config.ecen_fv3jedi'
+        ecen_output = f'{inputs.expdir}/{inputs.pslot}/config.ecen_fv3jedi'
+        edit_config(ecen_input, ecen_output, host_dict, ecen_dict)
+
     # Loop over other configs and update them with defaults
     for cfg in yaml_dict.keys():
         if cfg == 'base':
@@ -180,7 +189,7 @@ def edit_config(input_config, output_config, host_info, config_dict):
     with open(output_config, 'wt') as fo:
         fo.write(config_str)
 
-    print(f'EDITED:  {output_config} as per user input.')
+    print(f'EDITED:  {output_config} as per u12qser input.')
 
     return
 
