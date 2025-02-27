@@ -36,8 +36,6 @@ for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); 
     echo "WARNING: ${infile} does not exist in ${com_dir}."
   elif [[ ! -f "${new_infile}" ]]; then
     echo "WARNING: ${new_infile} does not exist in ${subdata}. Copying skipped."
-  else
-    echo "WARNING: ${infile} and ${new_infile} do not exist."
   fi
   copy_to_comout "${outfile}" "${ARC_RFCST_PROD_WAV}"
 done # nh

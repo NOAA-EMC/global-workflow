@@ -80,8 +80,6 @@ for outtype in "f2d" "f3d"; do
           echo "WARNING: ${infile} does not exist in ${com_dir}."
         elif [[ ! -f "${new_infile}" ]]; then
           echo "WARNING: ${new_infile} does not exist in ${subdata}. Copying skipped."
-        else
-          echo "WARNING: ${infile} and ${new_infile} do not exist."
       fi
     done
 
@@ -101,8 +99,6 @@ for outtype in "f2d" "f3d"; do
           echo "WARNING: ${infile} does not exist in ${com_dir}."
         elif [[ ! -f "${new_infile}" ]]; then
           echo "WARNING: ${new_infile} does not exist in ${subdata}. Copying skipped."
-        else
-          echo "WARNING: ${infile} and ${new_infile} do not exist."
         fi
       done
       if [[ ${fcnt} -eq 4 ]]; then

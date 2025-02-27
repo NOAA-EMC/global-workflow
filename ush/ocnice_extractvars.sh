@@ -79,8 +79,6 @@ for (( nh = FHMIN_GFS + fhout_ocnice; nh <= FHMAX_GFS; nh = nh + fhout_ocnice ))
     echo "WARNING: ${infile} does not exist in ${com_dir}."
   elif [[ ! -f "${new_infile}" ]]; then
     echo "WARNING: ${new_infile} does not exist in ${subdata}. Copying skipped."
-  else
-    echo "WARNING: ${infile} and ${new_infile} do not exist."
   fi
 done # nh
 
