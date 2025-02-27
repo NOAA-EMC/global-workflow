@@ -36,7 +36,7 @@ while getopts ":ho-:" option; do
     fi
     ;;
   :)
-    echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
+     "[${BASH_SOURCE[0]}]: ${option} requires an argument"
     usage
     ;;
   *)
@@ -56,7 +56,7 @@ else
 fi
 
 # shellcheck disable=SC1091
-COMPILER="intel" source "${HOMEgfs}/sorc/gfs_utils.fd/ush/detect_machine.sh" # (sets MACHINE_ID)
+COMPILER="intel" source "${HOMEgfs}/ush/detect_machine.sh" # (sets MACHINE_ID)
 # shellcheck disable=
 machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 

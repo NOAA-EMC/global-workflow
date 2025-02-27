@@ -20,6 +20,7 @@ nohup.out
 exec/
 build*/
 install*/
+venv/
 
 # Ignore fix directory symlinks
 #------------------------------

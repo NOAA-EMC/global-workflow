@@ -23,7 +23,7 @@ export RESERVATION="{{ RESERVATION }}"
 export HPSS_PROJECT="{{ HPSS_PROJECT }}"
 
 # Directories relative to installation areas:
-export HOMEgfs={{ HOMEgfs }}
+export HOMEgfs="{{ HOMEgfs }}"
 export EXECgfs=${HOMEgfs}/exec
 export FIXgfs=${HOMEgfs}/fix
 export PARMgfs=${HOMEgfs}/parm
@@ -92,8 +92,8 @@ export BASE_ENV="${HOMEgfs}/env"
 export BASE_JOB="${HOMEgfs}/jobs/rocoto"
 
 # EXPERIMENT specific environment parameters
-export SDATE={{ SDATE }}
-export EDATE={{ EDATE }}
+export SDATE="{{ SDATE }}"
+export EDATE="{{ EDATE }}"
 export EXP_WARM_START="{{ EXP_WARM_START }}"
 export assim_freq=6
 export PSLOT="{{ PSLOT }}"
@@ -126,7 +126,7 @@ export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 
 # APP settings
-export APP={{ APP }}
+export APP="{{ APP }}"
 
 # Defaults:
 export DO_ATM="YES"
@@ -219,11 +219,11 @@ export FHOUT_ICE=3
 export FHOUT_AERO=3
 
 # GFS cycle info
-export INTERVAL_GFS={{ INTERVAL_GFS }} # Frequency of GFS forecast
-export SDATE_GFS={{ SDATE_GFS }}
+export INTERVAL_GFS="{{ INTERVAL_GFS }}"  # Frequency of GFS forecast
+export SDATE_GFS="{{ SDATE_GFS }}"
 
 # set variables needed for use with REPLAY ICs
-export REPLAY_ICS={{ REPLAY_ICS }}
+export REPLAY_ICS="{{ REPLAY_ICS }}"
 if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
     export OFFSET_START_HOUR=$(( assim_freq / 2 ))
     echo "WARNING: Replay ICs require perturbation files, ignoring any previous settings"
@@ -231,8 +231,8 @@ if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
     export USE_ATM_ENS_PERTURB_FILES="YES"
 else
     export OFFSET_START_HOUR=0
-    export USE_OCN_ENS_PERTURB_FILES={{ USE_OCN_ENS_PERTURB_FILES }}
-    export USE_ATM_ENS_PERTURB_FILES={{ USE_ATM_ENS_PERTURB_FILES }}
+    export USE_OCN_ENS_PERTURB_FILES="{{ USE_OCN_ENS_PERTURB_FILES }}"
+    export USE_ATM_ENS_PERTURB_FILES="{{ USE_ATM_ENS_PERTURB_FILES }}"
 fi
 
 # GFS output and frequency
@@ -242,11 +242,11 @@ export FHMAX_GFS="{{ FHMAX_GFS }}"
 breakpnts="{{ FCST_BREAKPOINTS }}"
 export FCST_SEGMENTS="${FHMIN_GFS},${breakpnts:+${breakpnts},}${FHMAX_GFS}"
 
-export FHOUT_GFS={{ FHOUT_GFS }}
-export FHMAX_HF_GFS={{ FHMAX_HF_GFS }}
-export FHOUT_HF_GFS={{ FHOUT_HF_GFS }}
-export FHOUT_OCN_GFS={{ FHOUT_OCN_GFS }}
-export FHOUT_ICE_GFS={{ FHOUT_ICE_GFS }}
+export FHOUT_GFS="{{ FHOUT_GFS }}"
+export FHMAX_HF_GFS="{{ FHMAX_HF_GFS }}"
+export FHOUT_HF_GFS="{{ FHOUT_HF_GFS }}"
+export FHOUT_OCN_GFS="{{ FHOUT_OCN_GFS }}"
+export FHOUT_ICE_GFS="{{ FHOUT_ICE_GFS }}"
 export FHMIN_WAV=${OFFSET_START_HOUR:-0}
 export FHOUT_WAV=3
 export FHMAX_HF_WAV=120
@@ -289,7 +289,7 @@ export DO_MERGENSST="NO"
 export DO_STARTMEM_FROM_JEDIICE="NO"
 
 # Hybrid related
-export NMEM_ENS={{ NMEM_ENS }}
+export NMEM_ENS="{{ NMEM_ENS }}"
 
 # set default member number memdir for control
 # this will be overwridden for the perturbed members
