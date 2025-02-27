@@ -10,33 +10,38 @@ if [[ ! -f "${runtime_log}" ]]; then
 fi
 
 # Look for mkdir requests
-for mkdir_req_fl in $(find "{{server_home}}" -maxdepth 1 -name "req_mkdir.*"); do
+while IFS= read -r -d '' mkdir_req_fl
+do
+
     echo "${run_time}" > "${runtime_log}"
     dir=$(cat "${mkdir_req_fl}")
     mkdir -p "${dir}" || exit 2
     rm -f "${mkdir_req_fl}"
-done
+done <  <(find "{{server_home}}" -maxdepth 1 -name "req_mkdir.*")
 
 # Look for scripts
-for dir in $(find "{{server_home}}/doorman" -maxdepth 1 -type d -name "globus_*.*"); do
+while IFS= read -r -d '' dir
+do
    echo "${run_time}" > "${runtime_log}"
-   for script in $(find "${dir}" -name "run_doorman.sh"); do
+   while IFS= read -r -d '' script
+   do
       chmod +x "${script}"
       # Check if the corresponding log has already been written
       log="${script/.sh/.log}"
       if [[ ! -f "${log}" ]]; then
          "${script}"
       fi
-   done
-done
+   done <  <(find "${dir}" -name "run_doorman.sh")
+done <  <(find "{{server_home}}/doorman" -maxdepth 1 -type d -name "globus_*.*")
 
 # Look for rmdir requests
-for rmdir_req_fl in $(find "{{server_home}}" -maxdepth 1 -name "req_rmdir.*"); do
+while IFS= read -r -d '' rmdir_req_fl
+do
    echo "${run_time}" > "${runtime_log}"
    dir=$(cat "${rmdir_req_fl}")
    rm -rf "${dir}"
    rm -f "${rmdir_req_fl}"
-done
+done <  <(find "{{server_home}}" -maxdepth 1 -name "req_rmdir.*")
 
 
 # Check if it has been a while since this script had anything to do
