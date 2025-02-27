@@ -9,6 +9,7 @@ The GFS is updated for the following:
 * workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
 * updated GSI code and convinfo file for saildrone observations
 * ww3_outp is improved for the wave point output
+* bufr station updates to three stations and the addition of 121 new stations
 * obsproc/v1.2.3
 
 IMPLEMENTATION INSTRUCTIONS
@@ -76,6 +77,11 @@ In `config.resources.emc.dyn` and `config.resources.nco.static` following resour
 * for wavepostbndpnt: npe from 240 to 1; wtime from 1hr to 30min
 * for wavepostbndpntbll: npe from 448 to 2; wtime from 1hr to 10min
 * for wavepostpnt: npe from 200 to 3; wtime from 1.5hr to 35min
+
+Bufr station updates:
+* `parm/parm_wave/bull_awips_gfswave`
+* `parm/product/bufr_ij13km.txt`
+* `parm/product/bufr_stalist.meteo.gfs`
 
 SCRIPT CHANGES
 --------------
