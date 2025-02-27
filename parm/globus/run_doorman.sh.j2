@@ -3,14 +3,14 @@
 # Redirect all output to a local file -- it cannot be sent back directly with tty/pty
 script_relpath="$(dirname "${BASH_SOURCE[0]}")"
 log_file="${script_relpath}/run_doorman.log"
-cd "${script_relpath}"
+cd "${script_relpath}" || exit 1
 
 # Initialize the shell (hpss, modules, etc) (this is a Niagara-specific path; parameterize if needed)
 if [[ -f /etc/bashrc ]]; then
-    . /etc/bashrc
+    source /etc/bashrc
 fi
 
-run_doorman(){
+run_doorman() {
 set -ux
 
 rm -f dm.conf
@@ -59,12 +59,12 @@ set -e
 
 # Parse the FLIST file created by receive.sh to get the transfer IDs
 packages=$(grep "package_location" FLIST)
-IDs=""
+IDs=()
 while IFS= read -r line; do
     package_name=$(echo "${line}" | grep -o "package_location_.*\.tgz")
     tmp="${package_name#package_location_}"
     ID="${tmp%.tgz}"
-    IDs="${IDs} ${ID}"
+    IDs+=("${ID}")
 done < <(echo "${packages}")
 
 set +e
@@ -81,7 +81,7 @@ if [[ ${proc_stat} -ne 0 ]]; then
 fi
 
 # Validate and generate the acknowledgement for each transfer ID
-for ID in ${IDs}; do
+for ID in "${IDs[@]}"; do
     bash -ex ack.sh "${ID}"
     ack_stat=$?
     if [[ ${ack_stat} != 0 ]]; then
