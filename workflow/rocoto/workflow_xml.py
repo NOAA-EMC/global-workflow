@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 import os
+import stat
 from distutils.spawn import find_executable
 from datetime import datetime
 from collections import OrderedDict
 from typing import Dict
 from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
-from wxflow import which, to_timedelta
+from wxflow import which, to_timedelta, mkdir
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
 from hosts import Host
@@ -25,14 +26,6 @@ class RocotoXML(ABC):
         self._base['interval_gdas'] = to_timedelta(f'{self._base["assim_freq"]}H')
         self._base['interval_gfs'] = to_timedelta(f'{self._base["INTERVAL_GFS"]}H')
 
-        self.preamble = self._get_preamble()
-        self.definitions = self._get_definitions()
-        self.header = self._get_workflow_header()
-        self.cycledefs = self.get_cycledefs()
-        task_list = get_wf_tasks(app_config)
-        self.tasks = '\n'.join(task_list)
-        self.footer = self._get_workflow_footer()
-
         # Collect info needed to write an scrontab file
         self.host_info = Host().info
         self.use_scrontab = self.host_info.get("USE_SCRONTAB", False)
@@ -40,6 +33,16 @@ class RocotoXML(ABC):
         self.host_info.ACCOUNT = self._base['ACCOUNT']
         self.HOMEgfs = self._base['HOMEgfs']
         self.expdir = self._base['EXPDIR']
+        self.pslot = self._base['PSLOT']
+
+        # Get sections need to construct the XML
+        self.preamble = self._get_preamble()
+        self.definitions = self._get_definitions()
+        self.header = self._get_workflow_header()
+        self.cycledefs = self.get_cycledefs()
+        task_list = get_wf_tasks(app_config)
+        self.tasks = '\n'.join(task_list)
+        self.footer = self._get_workflow_footer()
 
         # If we are running scrontab, check if the rocotorc file has the right entries
         if self.use_scrontab:
@@ -75,7 +78,7 @@ class RocotoXML(ABC):
 
         entity = OrderedDict()
 
-        entity['PSLOT'] = self._base['PSLOT']
+        entity['PSLOT'] = self.pslot
 
         entity['ROTDIR'] = self._base['ROTDIR']
         entity['JOBS_DIR'] = self._base['BASE_JOB']
@@ -99,14 +102,12 @@ class RocotoXML(ABC):
         taskthrottle = self.rocoto_config['taskthrottle']
         verbosity = self.rocoto_config['verbosity']
 
-        expdir = self._base['EXPDIR']
-
         strings = ['',
                    ']>',
                    '',
                    f'<workflow realtime="F" scheduler="{scheduler}" cyclethrottle="{cyclethrottle}" taskthrottle="{taskthrottle}">',
                    '',
-                   f'\t<log verbosity="{verbosity}"><cyclestr>{expdir}/logs/@Y@m@d@H.log</cyclestr></log>',
+                   f'\t<log verbosity="{verbosity}"><cyclestr>{self.expdir}/logs/@Y@m@d@H.log</cyclestr></log>',
                    '',
                    '\t<!-- Define the cycles -->',
                    '']
@@ -142,11 +143,8 @@ class RocotoXML(ABC):
 
     def _write_xml(self, xml_file: str = None) -> None:
 
-        expdir = self._base['EXPDIR']
-        pslot = self._base['PSLOT']
-
         if xml_file is None:
-            xml_file = f"{expdir}/{pslot}.xml"
+            xml_file = f"{self.expdir}/{self.pslot}.xml"
 
         with open(xml_file, 'w') as fh:
             fh.write(self.xml)
@@ -162,17 +160,14 @@ class RocotoXML(ABC):
             print('Failed to find rocotorun, crontab will not be created')
             return
 
-        expdir = self._base['EXPDIR']
-        pslot = self._base['PSLOT']
-
-        rocotorunstr = f'{rocotoruncmd} -d {expdir}/{pslot}.db -w {expdir}/{pslot}.xml'
+        rocotorunstr = f'{rocotoruncmd} -d {self.expdir}/{self.pslot}.db -w {self.expdir}/{self.pslot}.xml'
         cronintstr = f'*/{cronint} * * * *'
 
         replyto = os.environ.get('REPLYTO', "")
 
         crontab_strings = [
             '',
-            f'#################### {pslot} ####################'
+            f'#################### {self.pslot} ####################'
         ]
 
         # Construct the crontab or scrontab
@@ -181,15 +176,20 @@ class RocotoXML(ABC):
             # envery n minutes.  That script will actually run rocoto.
             account = self.host_info.ACCOUNT
             partition = self.host_info.get("PARTITION_CRON", None) or self.host_info.PARTITION_SERVICE
+            log_dir = os.path.join(self.expdir, "logs")
+            mkdir(log_dir)
             crontab_strings.extend([
                 f'#SCRON --partition={partition}',
                 f'#SCRON --account={account}',
                 f'#SCRON --mail-user={replyto}',
+                f'#SCRON --job-name={self.pslot}_scron',
+                f'#SCRON --output={self.expdir}/logs/scron.log',
+                '#SCRON --time=00:10:00',
                 '#SCRON --dependency=singleton'
             ])
 
             # Now write the script that actually runs rocotorun
-            cron_cmd = f"{self.expdir}/{pslot}.scron.sh"
+            cron_cmd = f"{self.expdir}/{self.pslot}.scron.sh"
             with open(cron_cmd, "w") as script_fh:
                 script_fh.write(
                     "#!/usr/bin/env bash\n" +
@@ -197,6 +197,10 @@ class RocotoXML(ABC):
                     f"source {self.HOMEgfs}/workflow/gw_setup.sh" + "\n" +
                     rocotorunstr + "\n"
                 )
+
+            # Make the script executable
+            mode = os.stat(cron_cmd)
+            os.chmod(cron_cmd, mode.st_mode | stat.S_IEXEC)
         else:
             cron_cmd = rocotorunstr
             crontab_strings.extend([
@@ -217,7 +221,7 @@ class RocotoXML(ABC):
             ])
 
         if crontab_file is None:
-            crontab_file = f"{expdir}/{pslot}.crontab"
+            crontab_file = f"{self.expdir}/{self.pslot}.crontab"
 
         # Write out the crontab/scrontab file
         with open(crontab_file, 'w') as fh:
@@ -233,7 +237,7 @@ class RocotoXML(ABC):
         if rocotorun is None:
             raise FileNotFoundError("Could not find the rocotorun executable.  Make sure you have the module loaded!")
 
-        version = rocotorun("--version", output=str.split, error=str.split).split()[-1].strip()
+        version = rocotorun("--version", output=str, error=str).split()[-1].strip()
 
         homedir = os.path.expanduser("~")
         rocotorc_file = os.path.join(homedir, ".rocoto", version, "rocotorc")
