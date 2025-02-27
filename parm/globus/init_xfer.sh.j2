@@ -10,40 +10,33 @@ if [[ ! -f "${runtime_log}" ]]; then
 fi
 
 # Look for mkdir requests
-if compgen -G "/collab1/data/David.Huber"/req_mkdir.* > /dev/null 2>&1 ; then
-   echo "${run_time}" > "${runtime_log}"
-   for mkdir_req_fl in "{{server_home}}"/req_mkdir.*; do
-      dir=$(cat "${mkdir_req_fl}")
-      mkdir -p "${dir}" || exit 2
-      rm -f "${mkdir_req_fl}"
-   done
-fi
+for mkdir_req_fl in $(find "{{server_home}}" -maxdepth 1 -name "req_mkdir.*"); do
+    echo "${run_time}" > "${runtime_log}"
+    dir=$(cat "${mkdir_req_fl}")
+    mkdir -p "${dir}" || exit 2
+    rm -f "${mkdir_req_fl}"
+done
 
 # Look for scripts
-if compgen -G "{{server_home}}"/doorman/globus_*.* > /dev/null 2>&1 ; then
+for dir in $(find "{{server_home}}/doorman" -maxdepth 1 -type d -name "globus_*.*"); do
    echo "${run_time}" > "${runtime_log}"
-   for dir in "{{server_home}}"/doorman/globus_*.*; do
-      flist=$(find "${dir}" -name "run_doorman.sh")
-      for script in ${flist}; do
-         chmod +x "${script}"
-         # Check if the corresponding log has already been written
-         log="${script/.sh/.log}"
-         if [[ ! -f "${log}" ]]; then
-            "${script}"
-         fi
-      done
+   for script in $(find "${dir}" -name "run_doorman.sh"); do
+      chmod +x "${script}"
+      # Check if the corresponding log has already been written
+      log="${script/.sh/.log}"
+      if [[ ! -f "${log}" ]]; then
+         "${script}"
+      fi
    done
-fi
+done
 
 # Look for rmdir requests
-if compgen -G "/collab1/data/David.Huber"/req_rmdir.* > /dev/null 2>&1 ; then
+for rmdir_req_fl in $(find "{{server_home}}" -maxdepth 1 -name "req_rmdir.*"); do
    echo "${run_time}" > "${runtime_log}"
-   for rmdir_req_fl in "{{server_home}}"/req_rmdir.*; do
-      dir=$(cat "${rmdir_req_fl}")
-      rm -rf "${dir}"
-      rm -f "${rmdir_req_fl}"
-   done
-fi
+   dir=$(cat "${rmdir_req_fl}")
+   rm -rf "${dir}"
+   rm -f "${rmdir_req_fl}"
+done
 
 
 # Check if it has been a while since this script had anything to do
