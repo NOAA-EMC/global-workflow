@@ -154,7 +154,7 @@ local NO_DYCORE=${no_dycore}
 local AGRID_VEL_RST=${agrid_vel_rst:-".true."}
 local READ_INCREMENT=${read_increment}
 local RES_LATLON_DYNAMICS=${res_latlon_dynamics}
-local INCREMENT_FILE_ON_NATIVE_GRID=.true.
+local INCREMENT_FILE_ON_NATIVE_GRID=.false.
 
 local FILTERED_TERRAIN=${filtered_terrain}
 local NPZP=${LEVS} #levp
@@ -326,7 +326,7 @@ local LSEASPRAY=${lseaspray:-".true."}
 local RANDOM_CLDS=${random_clds:-".true."}
 local TRANS_TRAC=${trans_trac:-".true."}
 local CNVCLD=${cnvcld:-".true."}
-local XR_CNVCLD=${xr_cnvcld:-".false."}
+local XR_CNVCLD=${xr_cnvcld:-".true."}
 local IMFSHALCNV=${imfshalcnv:-"2"}
 local IMFDEEPCNV=${imfdeepcnv:-"2"}
 local PROGSIGMA=${progsigma:-".true."}
@@ -529,7 +529,7 @@ local SKEB_LSCALE=${SKEB_LSCALE:-"-999."}
 local SKEBNORM=${SKEBNORM:-"1"}
 local SKEB_NPASS=${SKEB_NPASS:-"30"}
 local SKEB_VDOF=${SKEB_VDOF:-"5"}
-local SHUM=${SHUM:-"0.005"}
+local SHUM=${SHUM:-"-999."}
 local ISEED_SHUM=${ISEED_SHUM:-${ISEED}}
 local SHUM_TAU=${SHUM_TAU:-"-999."}
 local SHUM_LSCALE=${SHUM_LSCALE:-"-999."}
@@ -561,6 +561,19 @@ local MOM6_OUTPUT_DIR=MOM6_OUTPUT/
 local MOM6_RESTART_SETTING=r
 local MOM6_RESTART_DIR=MOM6_RESTART/
 
-local global_template="${HOMEgfs}/parm/ufs/fv3/global_control.nml.IN"
+# Land IAU defaults
+local DO_LAND_IAU=.false.
+local LAND_IAU_FHRS=3,6,9
+local LAND_IAU_DELHRS=6
+local LAND_IAU_INC_FILES="'sfc_inc',''"
+local LSOIL_INCR=3
+local LAND_IAU_FILTER_INC=.false.
+local LAND_IAU_UPD_STC=.true.
+local LAND_IAU_UPD_SLC=.true.
+local LAND_IAU_DP_STCSMC_ADJ=.true.
+local LAND_IAU_MIN_T_INC=0.0001
 
-atparse < "${global_template}" >> "input.nml"}
+local global_template="${HOMEgfs}/parm/ufs/fv3/global_control.nml.IN"
+atparse < "${global_template}" >> "input.nml"
+
+}
