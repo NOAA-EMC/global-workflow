@@ -1,6 +1,8 @@
 name: Bug Report
 description: Report something that is incorrect or broken
-labels: ["bug", "triage"]
+labels: ["triage"]
+type: "bug"
+projects: ["NOAA-EMC/41"]
 
 body:
   - type: markdown
