@@ -24,7 +24,7 @@ pwd=$(pwd)
 
 # Base variables
 DONST=${DONST:-"NO"}
-GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
+DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
 DOSFCANL_ENKF=${DOSFCANL_ENKF:-"YES"}
 export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
@@ -58,6 +58,7 @@ DOIAU=${DOIAU_ENKF:-"NO"}
 
 # Global_cycle stuff
 CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
+REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
 export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
@@ -115,6 +116,23 @@ else
     export NST_FILE="NULL"
 fi
 
+# regrid the surface increment files
+if [[ ${DO_GSISOILDA} = "YES" ]]; then
+ 
+    export CASE_IN=${CASE_ENS}
+    export CASE_OUT=${CASE_ENS}
+    export OCNRES_OUT=${OCNRES}
+    export NMEM_REGRID=${NMEM_ENS}
+    if [[ "${DOIAU}" == "YES" ]]; then
+        export LFHR=3 # match BDATE
+    else # DOSFCANL_ENKF
+        export LFHR=6 # PDYcyc
+    fi
+
+    "${REGRIDSH}"
+
+fi
+
 export APRUNCY=${APRUN_CYCLE:-$APRUN_ESFC}
 export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE:-$NTHREADS_ESFC}
 export MAX_TASKS_CY=$NMEM_ENS
@@ -144,7 +162,7 @@ if [ $DOIAU = "YES" ]; then
                 COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+                COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
@@ -163,11 +181,11 @@ if [ $DOIAU = "YES" ]; then
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
-            if [[ ${GSI_SOILANAL} = "YES" ]]; then
-                FHR=6
-                ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-                   "${DATA}/lnd_incr.${cmem}"
+            if [[ ${DO_GSISOILDA} = "YES" ]]; then
+                 ${NCP} "${COMIN_ATMOS_ANALYSIS_MEM}/sfci00${LFHR}.tile${n}.nc" \
+                   "${DATA}/soil_xainc.${cmem}" 
             fi
+
         done # ensembles
 
         CDATE="${PDY}${cyc}" ${CYCLESH}
@@ -186,25 +204,16 @@ if [ $DOIAU = "YES" ]; then
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
-
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
             cpfs "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
 
-
-            if [[ ${GSI_SOILANAL} = "YES" ]]; then
-                FHR=6
-                ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-                   "${DATA}/lnd_incr.${cmem}"
-            fi
         done # ensembles
 
     done
 
 fi
 
-if [ $DOSFCANL_ENKF = "YES" ]; then
+if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
     for n in $(seq 1 $ntiles); do
 
         export TILE_NUM=$n
@@ -216,14 +225,17 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
                smem=$((smem - NMEM_ENS_MAX))
             fi
             gmemchar="mem"$(printf %03i "$smem")
-            cmem=$(printf %03i $imem)
-            memchar="mem$cmem"
+            cmem=$(printf %03i ${imem})
+            memchar="mem${cmem}"
 
             RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
 
             RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
                 COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+                COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
             # determine where the input snow restart files come from
             if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
@@ -238,6 +250,10 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
+            if [[ ${DO_GSISOILDA} = "YES" ]]; then
+                 ${NCP} "${COMIN_ATMOS_ANALYSIS_MEM}/sfci00${LFHR}.tile${n}.nc" \
+                   "${DATA}/soil_xainc.${cmem}" 
+            fi
         done
 
         CDATE="${PDY}${cyc}" ${CYCLESH}
@@ -272,4 +288,4 @@ fi
 cd "${pwd}" || exit 1
 
 
-exit ${err}
+exit "${err}"

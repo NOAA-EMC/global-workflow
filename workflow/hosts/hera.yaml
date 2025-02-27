@@ -30,3 +30,5 @@ COMINecmwf: /scratch1/NCEPDEV/global/glopara/data/external_gempak/ecmwf
 COMINnam: /scratch1/NCEPDEV/global/glopara/data/external_gempak/nam
 COMINukmet: /scratch1/NCEPDEV/global/glopara/data/external_gempak/ukmet
 AERO_INPUTS_DIR: /scratch1/NCEPDEV/global/glopara/data/gocart_emissions
+# TODO Reenable when RDHPCS#2025022654000078 is resolved
+DO_METP: 'NO'

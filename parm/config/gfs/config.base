@@ -435,7 +435,7 @@ else
   export restart_interval_gdas="6"
 fi
 
-export GSI_SOILANAL=@GSI_SOILANAL@
+export DO_GSISOILDA=@DO_GSISOILDA@
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
