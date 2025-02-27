@@ -1339,7 +1339,6 @@ class GFSTasks(Tasks):
         # Adjust walltime based on the largest group
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
         resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
-        print(resources['walltime'])
 
         task_name = f'{self.run}_wavegempak_#fhr_label#'
         task_dict = {'task_name': task_name,
