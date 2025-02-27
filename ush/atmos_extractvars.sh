@@ -74,7 +74,7 @@ for outtype in "f2d" "f3d"; do
       if [[ -f "${infile}" ]]; then # check if input file exists before extraction
         new_infile="${outdirpre}/$(basename "${infile}")_ext"
         cpfs "${infile}" "${new_infile}"
-        # shellcheck disable=SC2312
+        #shellcheck disable=SC2312
         ${WGRIB2} "${new_infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
         elif [[ ! -f "${infile}" ]]; then
           echo "WARNING: ${infile} does not exist in ${com_dir}."
