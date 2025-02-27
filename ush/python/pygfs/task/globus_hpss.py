@@ -17,9 +17,6 @@ logging.basicConfig(encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %
 
 class GlobusHpss(Task):
     """Task to send tarballs (created by the archive task) to HPSS via Globus
-       NOTE: For this to work, an entry in ~/.ssh/config titled "niagara" must
-             be present.  If it is not, then see the wiki on how to set it up.
-             TODO: Add link to the wiki.
     """
 
     @logit(logger, name="GlobusHpss")
