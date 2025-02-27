@@ -17,7 +17,7 @@ do
     dir=$(cat "${mkdir_req_fl}")
     mkdir -p "${dir}" || exit 2
     rm -f "${mkdir_req_fl}"
-done <  <(find "{{server_home}}" -maxdepth 1 -name "req_mkdir.*")
+done <  <(find "{{server_home}}" -maxdepth 1 -name "req_mkdir.*" || true)
 
 # Look for scripts
 while IFS= read -r -d '' dir
@@ -31,8 +31,8 @@ do
       if [[ ! -f "${log}" ]]; then
          "${script}"
       fi
-   done <  <(find "${dir}" -name "run_doorman.sh")
-done <  <(find "{{server_home}}/doorman" -maxdepth 1 -type d -name "globus_*.*")
+   done <  <(find "${dir}" -name "run_doorman.sh" || true)
+done <  <(find "{{server_home}}/doorman" -maxdepth 1 -type d -name "globus_*.*" || true)
 
 # Look for rmdir requests
 while IFS= read -r -d '' rmdir_req_fl
@@ -41,7 +41,7 @@ do
    dir=$(cat "${rmdir_req_fl}")
    rm -rf "${dir}"
    rm -f "${rmdir_req_fl}"
-done <  <(find "{{server_home}}" -maxdepth 1 -name "req_rmdir.*")
+done <  <(find "{{server_home}}" -maxdepth 1 -name "req_rmdir.*" || true)
 
 
 # Check if it has been a while since this script had anything to do
