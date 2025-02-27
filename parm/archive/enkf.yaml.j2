@@ -10,14 +10,16 @@ enkf:
         {% for fhr in range(fhmin, fhmax + 1, fhout) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % (fhr - fhmin) }}.log"
         {% endfor %}
+        {% if not DO_JEDIATMENS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_echgres.log"
+        {% endif %}
         {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc.log"
         {% if not DO_JEDIATMENS %}
         {% for grp in range(IAUFHRS | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_ecen{{ '%03d' % grp }}.log"
-        {% endif %}
         {% endfor %}
+        {% endif %}
 
         {% if lobsdiag_forenkf %}
            {% if DO_JEDIATMENS %}
