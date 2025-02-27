@@ -13,17 +13,16 @@ from pathlib import Path
 # ------------------------------------------------------------------------------
 class FetchFIXdata():
 
-
     def __init__(self, atmgridarray=['C48'], ocngridarray=['500'], localdir=None, verbose=0):
 
-        self.aws_fix_bucket= 's3://noaa-nws-global-pds/fix'
-        self.aws_cp='aws --no-sign-request s3 cp'
-        self.aws_sync='aws --no-sign-request s3 sync'
+        self.aws_fix_bucket= f's3://noaa-nws-global-pds/fix'
+        self.aws_cp = f'aws --no-sign-request s3 cp'
+        self.aws_sync = f'aws --no-sign-request s3 sync'
 
-        self.atmgridarray=atmgridarray
-        self.ocngridarray=ocngridarray
-        self.localdir=localdir
-        self.verbose=verbose
+        self.atmgridarray = atmgridarray
+        self.ocngridarray = ocngridarray
+        self.localdir = localdir
+        self.verbose = verbose
 
         # if (os.path.isdir(localdir)):
         #    print('Prepare to download FIX data for %s and %s to %s' %(atmgrid, ocngrid, localdir))
@@ -31,14 +30,14 @@ class FetchFIXdata():
         #    print(f'local dir: <{localdir}> does not exist. Stop')
         #    sys.exit(-1)
 
-        self.verdict={}
-        self.s3dict={}
-        self.s3dict['raworog']='raw/orog'
+        self.verdict = {}
+        self.s3dict = {}
+        self.s3dict['raworog'] = f'raw/orog'
 
         if (self.localdir.find('fix') < 0):
-            self.targetdir=f'{self.localdir}/fix.subset'
+            self.targetdir = f'{self.localdir}/fix.subset'
         else:
-            self.targetdir=self.localdir
+            self.targetdir = self.localdir
 
     # --------------------------------------------------------------------------
     def update_s3dict(self):
@@ -118,8 +117,8 @@ class FetchFIXdata():
 
         for atmgrid in self.atmgridarray:
             for ocngrid in self.ocngridarray:
-                newkey=f'{key}_a{atmgrid}o{ocngrid}'
-                self.s3dict[newkey]=f'{varname}/{val}/a{atmgrid}o{ocngrid}'
+                newkey = f'{key}_a{atmgrid}o{ocngrid}'
+                self.s3dict[newkey] = f'{varname}/{val}/a{atmgrid}o{ocngrid}'
 
     # -------------------------------------------------------------------------
     def printinfo(self):
@@ -137,13 +136,13 @@ class FetchFIXdata():
     def fetchdata(self):
 
         if (self.verbose):
-            print('Create local fix dir: {self.targetdir}')
+            print(f'Create local fix dir: {self.targetdir}')
 
         path=Path(self.targetdir)
         path.mkdir(parents=True, exist_ok=True)
 
         self.fetch_ugwp_limb_tau()
-        
+
         for key in self.s3dict.keys():
             self.fetch_dir(self.s3dict[key])
 
@@ -162,7 +161,7 @@ class FetchFIXdata():
         # print('returned value:', returned_value)
 
         if (os.path.isdir(localdir)):
-            print(f'{localdir} already exist. skip'
+            print(f'{localdir} already exist. skip')
         else:
             parentdir, dirname=os.path.split(localdir)
             if (self.verbose):
@@ -190,8 +189,8 @@ class FetchFIXdata():
     # -------------------------------------------------------------------------
     def download_file(self, cmd, filename):
 
-       # returned_value=os.system(cmd)  # returns the exit code in unix
-       # print('returned value:', returned_value)
+        # returned_value=os.system(cmd)  # returns the exit code in unix
+        # print('returned value:', returned_value)
 
         if (os.path.isfile(filename)):
             print(f'{filename} already exist. skip')
@@ -226,7 +225,6 @@ class FetchFIXdata():
 # -----------------------------------------------------------------------------
 def print_usage(verdict):
 
-
     print('Usage: python fetch-fix-data.py \\')
     print('       --atmgrid=AtmospericGrid (for multiple grids, separate with ",") \\')
     print('       --ocngrid=OceanGrid (for multiple grids, separate with ",") \\')
@@ -240,7 +238,6 @@ def print_usage(verdict):
 
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
-
 
     atmgridlist=['C48', 'C96', 'C192', 'C384', 'C768', 'C1152']
     ocngridlist=['500', '100', '050', '025']
@@ -345,5 +342,4 @@ if __name__ == '__main__':
         ffd.set_fix_ver_from_gwhome(gwhome, verdict)
 
     ffd.update_s3dict()
-
     ffd.fetchdata()
