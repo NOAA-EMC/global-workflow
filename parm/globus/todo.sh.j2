@@ -19,7 +19,7 @@ send_to_hpss() {
     # Write a command file to place the file on hpss and protect it
     local hpss_target="${hpss_target_dir}/${file}"
     local command_file="command_file_${globus_xfer_id}"
-    echo "mkdir -p ${hpss_target_dir}" >> "${command_file}"
+    echo "mkdir -p ${hpss_target_dir}" > "${command_file}"
     echo "put ${file_full} :  ${hpss_target}" >> "${command_file}"
 
     hsi in "${command_file}" >> "${log_file}" 2>&1
@@ -36,7 +36,7 @@ send_to_hpss() {
         # For now, ignore errors coming from the index command.
         # Issue RDHPCS#2025020754000121 opened with RDHPCS.
         htar -Xvf "${hpss_target}" > /dev/null 2>&1 || true
-        # TODO Reinstate error checking and logging when creating index files
+        # TODO Reinstate error checking and logging when creating index files when HPSS's tar version is upgraded
         #if ! htar -Xvf "${hpss_target}" >> "${log_file}" 2>&1; then
             #echo "Failed to create an index file for ${hpss_target}.  Exiting." >> "${log_file}"
             #return 2
