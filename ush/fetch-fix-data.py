@@ -11,8 +11,8 @@ import subprocess
 from pathlib import Path
 
 # ------------------------------------------------------------------------------
-class FetchFIXdata():
 
+class FetchFIXdata():
 
     def __init__(self, atmgridarray=['C48'], ocngridarray=['500'], localdir=None, verbose=0):
 
@@ -224,8 +224,8 @@ class FetchFIXdata():
         self.fix_ver_dict = verdict
 
 # -----------------------------------------------------------------------------
-def print_usage(verdict):
 
+def print_usage(verdict):
 
     print('Usage: python fetch-fix-data.py \\')
     print('       --atmgrid=AtmospericGrid (for multiple grids, separate with ",") \\')
@@ -239,8 +239,8 @@ def print_usage(verdict):
         print(f'\t--{key}=yyyymmdd  default: {verdict[key]}')
 
 # ------------------------------------------------------------------------------
-if __name__ == '__main__':
 
+if __name__ == '__main__':
 
     atmgridlist = ['C48', 'C96', 'C192', 'C384', 'C768', 'C1152']
     ocngridlist = ['500', '100', '050', '025']
