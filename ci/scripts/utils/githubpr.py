@@ -3,7 +3,7 @@
 import os
 import re
 
-from github import Github, GithubException, InputFileContent, UnknownObjectException
+from github import Auth, Github, GithubException, InputFileContent, UnknownObjectException
 from wxflow import which, Logger
 
 # Initialize logger with environment variable for logging level
@@ -73,7 +73,8 @@ class GitHubPR(Github):
         else:
             logger.info("Using provided TOKEN.")
 
-        super().__init__(TOKEN)
+        auth = Auth.Token(TOKEN)
+        super().__init__(auth=auth)
 
         self.repo = self.get_repo_url(repo_url)
         self.pulls = self.repo.get_pulls(state='open', sort='updated', direction='desc')
