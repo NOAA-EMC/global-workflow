@@ -14,24 +14,8 @@
 source "${USHgfs}/preamble.sh"
 source "${USHgfs}/wave_domain_grid.sh"
 
-#export grids=${GEMPAK_GRIDS:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
-export grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  #Native grids
-export RUNwave=${RUNwave:-${RUN}wave}
-export fstart=${fstart:-0}
-export FHMAX_WAV=${FHMAX_WAV:-180}  #180 Total of hours to process
-export FHMAX_HF_WAV=${FHMAX_HF_WAV:-72}
-export FHOUT_WAV=${FHOUT_WAV:-6}
-export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
-export maxtries=${maxtries:-720}
-export cycle=${cycle:-t${cyc}z}
-export GEMwave=${GEMwave:-${HOMEgfs}/gempak}
-export DATA=${DATA:-${DATAROOT:?}/${jobid}}
-if [ ! -d ${DATA} ];then
-  mkdir -p ${DATA}
-fi
-
-cd ${DATA}
-cp ${GEMwave}/fix/g2varswmo2.tbl .
+cd "${DATA}" || exit 1
+cp "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" .
 
 cpyfil=gds
 garea=dset
@@ -45,121 +29,106 @@ pdsext=no
 g2tbls=g2varswmo2.tbl
 NAGRIB=nagrib2
 
-sleep_interval=20
-maxtries=15
-fhcnt=${fstart}
-while [ ${fhcnt} -le ${FHMAX_WAV} ]; do
-  fhr=$(printf "%03d" ${fhcnt})
-  for grid in ${grids};do
-    case ${grid} in
-      ao_9km)  grdIDin='arctic.9km'
-               #grdIDout='gfswaveao9km' ;;
-               grdIDout='gfswavearc' ;;
-      at_10m)  grdIDin='atlocn.0p16'
-               grdIDout='gfswaveat10m' ;;
-      ep_10m)  grdIDin='epacif.0p16'
-               grdIDout='gfswaveep10m' ;;
-      wc_10m)  grdIDin='wcoast.0p16'
-               grdIDout='gfswavewc10m' ;;
-      glo_30m) grdIDin='global.0p25'
-               grdIDout='gfswavegl30m' ;;
-      glo_10m) grdIDin='global.0p16'   
-               #grdIDout='gfswaveg16k' ;;
-               grdIDout='gfswavenh' ;;
-      gso_15m) grdIDin='gsouth.0p25' 
-               #grdIDout='gfswaves25k' ;;
-               grdIDout='gfswavesh' ;;
-      glo_200) grdIDin='global.2p00'
-               grdIDout='gfswaves200k' ;;
-      *)       grdIDin= 
-               grdIDout= ;;
+fhr3=$(printf "%03d" "${FORECAST_HOUR}")
+for grid in ${GEMPAK_GRIDS};do
+    case "${grid}" in
+      ao_9km)
+        #grdIDout='gfswaveao9km' ;;
+        grdIDout='gfswavearc'
+        ;;
+      at_10m)
+        grdIDout='gfswaveat10m'
+        ;;
+      ep_10m)
+        grdIDout='gfswaveep10m'
+        ;;
+      wc_10m)
+        grdIDout='gfswavewc10m'
+        ;;
+      glo_30m)
+        grdIDout='gfswavegl30m'
+        ;;
+      glo_10m)
+        #grdIDout='gfswaveg16k' ;;
+        grdIDout='gfswavenh'
+        ;;
+      gso_15m)
+        #grdIDout='gfswaves25k' ;;
+        grdIDout='gfswavesh'
+        ;;
+      glo_200)
+        grdIDout='gfswaves200k'
+        ;;
+      *)
+        echo "FATAL ERROR: Unknown wave grid ${grid}"
+        exit 10
+        ;;
     esac
     process_grdID "${grid}"
     com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
     com_dir=${!com_varname}
-    GRIBIN="${com_dir}/${RUNwave}.${cycle}.${grdIDin}.f${fhr}.grib2"
-    GRIBIN_chk=${GRIBIN}.idx
-    if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${maxtries}"; then
-      echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( maxtries - 1))) secs"
-      echo "${RUNwave} ${grdID} ${fhr} prdgen ${date} ${cycle} : GRIB file missing." >> "${wavelog}"
-      err=1;export err;"${errchk}" || exit "${err}"
-    fi
+    GRIBIN="${RUN}.wave.${cycle}.${GRDRES}.f${fhr3}.${GRDREGION}.grib2"
+    cp "${com_dir}/${GRIBIN}" "./${GRIBIN}"
 
-    #if [ "$grdIDin" = "global.0p25" && "$grid" = "glo_30m" ]; then
-    if [ "${grdIDin}" = "global.0p25" ]; then
-      ${WGRIB2} -lola 0:720:0.5 -90:361:0.5 gribfile.${grdIDout}.f${fhr}  grib \
-                                          ${GRIBIN} 1> out 2>&1
-      OK=$?
-      if [ "${OK}" != '0' ]; then
-        msg="ABNORMAL EXIT: ERROR IN interpolation the global grid"
-        #set +x
-        echo ' '
-        echo '************************************************************* '
-        echo '*** FATAL ERROR : ERROR IN making  gribfile.$grdID.f${fhr}*** '
-        echo '************************************************************* '
-        echo ' '
-        echo ${msg}
-        #set_trace
-        echo "${RUNwave} ${grdID} prdgen ${date} ${cycle} : error in grbindex." >> ${wavelog}
-        err=2;export err;err_chk
+    if [[ "${GRDREGION}.${GRDRES}" == "global.0p25" ]]; then
+      ${WGRIB2} -lola 0:720:0.5 -90:361:0.5 \
+        "${RUN}.wave.t${cyc}z.f${fhr3}.${grdIDout}.grib2" grib "${GRIBIN}"
+      err=$?
+      if [[ "${err}" -ne 0 ]]; then
+        echo 'FATAL ERROR: Error interolating the global grid'
+        err=2; export err; err_chk
       else
-        #cp $GRIBIN gribfile.$grdID.f${fhr}
-        GRIBIN=gribfile.${grdIDout}.f${fhr}
+        GRIBIN="${RUN}.wave.t${cyc}z.f${fhr3}.${grdIDout}.grib2"
       fi
     fi
-    echo ${GRIBIN}
+    echo "INFO: ${GRIBIN}"
 
-    GEMGRD=${grdIDout}_${PDY}${cyc}f${fhr}
+    GEMGRD="${RUN}.wave.t${cyc}z.gempak.f${fhr3}.${grdIDout}.gem"
 
-    cp ${GRIBIN} grib_${grid}
-
+    pgm=${NAGRIB}
     startmsg
-
-	${NAGRIB} <<-EOF
-	GBFILE   = grib_${grid}
-	INDXFL   = 
-	GDOUTF   = ${GEMGRD}
-	PROJ     = ${proj}
-	GRDAREA  = ${grdarea}
-	KXKY     = ${kxky}
-	MAXGRD   = ${maxgrd}
-	CPYFIL   = ${cpyfil}
-	GAREA    = ${garea}
-	OUTPUT   = ${output}
-	GBTBLS   = ${gbtbls}
-	G2TBLS   = ${g2tbls}
-	GBDIAG   = 
-	PDSEXT   = ${pdsext}
-	l
-	r
-	EOF
-    export err=$?;pgm=${NAGRIB};err_chk
+    cat << EOF > gempak_ctrl
+        GBFILE   = ${GRIBIN}
+        INDXFL   = 
+        GDOUTF   = ${GEMGRD}
+        PROJ     = ${proj}
+        GRDAREA  = ${grdarea}
+        KXKY     = ${kxky}
+        MAXGRD   = ${maxgrd}
+        CPYFIL   = ${cpyfil}
+        GAREA    = ${garea}
+        OUTPUT   = ${output}
+        GBTBLS   = ${gbtbls}
+        G2TBLS   = ${g2tbls}
+        GBDIAG   = 
+        PDSEXT   = ${pdsext}
+        l
+        r
+EOF
+    ${pgm} < gempak_ctrl
+    export err=$?; err_chk
     #####################################################
     # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
     # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
     # FOR THIS CASE HERE.
     #####################################################
-    ls -l ${GEMGRD}
-    export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+    ls -l "${GEMGRD}"
+    export err=$?
+    if [[ "${err}" -ne 0 ]]; then
+        echo "FATAL ERROR: Gempak failed to create gem file"
+        pgm="GEMPAK CHECK FILE" err_chk
+    fi
 
-    if [ "${NAGRIB}" = "nagrib2" ] ; then
+    if [[ "${NAGRIB}" == "nagrib2" ]] ; then
       gpend
     fi
 
     cpfs "${GEMGRD}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
-    if [ ${SENDDBN} = "YES" ] ; then
+    if [[ "${SENDDBN}" == "YES" ]] ; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
     else
-        echo "##### DBN_ALERT is: MODEL ${DBN_ALERT_TYPE} ${job} ${COMOUT_WAVE_GEMPAK}/${GEMGRD}#####"
+        echo "INFO: DBN_ALERT is: MODEL ${DBN_ALERT_TYPE} ${job} ${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
     fi
-    rm grib_${grid}
-  done
-  if [ ${fhcnt} -ge ${FHMAX_HF_WAV} ]; then
-    inc=${FHOUT_WAV}
-  else
-    inc=${FHOUT_HF_WAV}
-  fi
-  let fhcnt=fhcnt+inc
 done
 #####################################################################
 

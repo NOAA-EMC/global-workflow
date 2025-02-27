@@ -179,7 +179,7 @@ else
 fi
 
 # Verify grib2 file created
-if [[ ! -s ${comout}/${outfile} ]]; then
+if [[ ! -s "${comout}/${outfile}" ]]; then
   echo "FATAL ERROR: ${comout}/${outfile} not generated"
   err=5; export err; ${errchk}
   exit "${err}"

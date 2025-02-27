@@ -1,18 +1,27 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
-source $HOMEgfs/ush/load_fv3gfs_modules.sh
-status=$?
-[[ $status -ne 0 ]] && exit $status
+source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+err=$?
+if [[ "${err}" -ne 0 ]]; then exit "${err}"; fi
 
-export job="post"
+export job="wavegempak"
 export jobid="${job}.$$"
 
 ###############################################################
-# Execute the JJOB
-$HOMEgfs/jobs/JGLOBAL_WAVE_GEMPAK
-status=$?
+# shellcheck disable=SC2153
+IFS=', ' read -r -a fhr_list <<< "${FHR_LIST}"
 
-exit $status
+export FORECAST_HOUR jobid
+for FORECAST_HOUR in "${fhr_list[@]}"; do
+	fhr3=$(printf '%03d' "${FORECAST_HOUR}")
+	jobid="${job}_f${fhr3}.$$"
+	# Execute the JJOB
+	"${HOMEgfs}/jobs/JGLOBAL_WAVE_GEMPAK"
+	err=$?
+	if [[ "${err}" -ne 0 ]]; then exit "${err}"; fi
+done
+
+exit "${err}"
