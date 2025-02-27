@@ -84,6 +84,9 @@ esac
 LOG=lanuched_agent-$(date +%Y%m%d%M).log
 rm -f "${LOG}"
 
+#shellcheck ignore=SC2034
+# Needed for the module-setup.sh script
+# but did not want to set it globally
 HOMEgfs="${HOMEGFS_}"
 source "${HOMEGFS_}/ush/module-setup.sh"
 module use "${HOMEGFS_}/modulefiles"
