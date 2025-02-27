@@ -167,8 +167,8 @@ class RocotoXML(ABC):
                    ]
         # AWS need 'SHELL', and 'BASH_ENV' defined, or, the crontab job won't start.
         if os.environ.get('PW_CSP', None) in ['aws', 'azure', 'google']:
-            strings.extend([f'SHELL="/bin/bash"',
-                            f'BASH_ENV="/etc/bashrc"'])
+            strings.extend(['SHELL="/bin/bash"',
+                            'BASH_ENV="/etc/bashrc"'])
         strings.extend([f'{cronintstr} {rocotorunstr}',
                         '#################################################################',
                         ''])
@@ -216,7 +216,7 @@ class RocotoXML(ABC):
         except KeyError:
             replyto = ''
 
-        crontab_file = f"{expdir}/{pslot}.{server}.crontab"
+        crontab_file = os.path.join(expdir, f"{pslot}.{server}.crontab")
 
         init_script = f"{server_home}/init_xfer_{pslot}.sh"
         strings = ['',
