@@ -28,6 +28,7 @@ cd "${DATA}" || exit 99
 
 # Dependent Scripts and Executables
 CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
+REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
 export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
@@ -111,18 +112,45 @@ fi
 
 # Collect the dates in the window to update surface restarts
 gcycle_dates=("${PDY}${cyc}")  # Always update surface restarts at middle of window
+soilinc_fhrs=("${assim_freq}") # increment file at middle of window
+LFHR=${assim_freq}
 if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
   half_window=$(( assim_freq / 2 ))
+  soilinc_fhrs+=("${half_window}")
+  LFHR=-1
   BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
   gcycle_dates+=("${BDATE}")
 fi
 
-# Loop over the dates in the window to update the surface restarts
-for gcycle_date in "${gcycle_dates[@]}"; do
+# if doing GSI soil anaysis, copy increment file and re-grid it to native model resolution
+if [[ "${DO_GSISOILDA}" = "YES" ]]; then
+ 
+    export COMIN_SOIL_ANALYSIS_MEM="${COMIN_ATMOS_ENKF_ANALYSIS_STAT}"
+    export COMOUT_ATMOS_ANALYSIS_MEM="${COMIN_ATMOS_ANALYSIS}"
+    export CASE_IN="${CASE_ENS}"
+    export CASE_OUT="${CASE}"
+    export OCNRES_OUT="${OCNRES}"
+    export LFHR
+ 
+    "${REGRIDSH}"
 
+fi
+
+# Loop over the dates in the window to update the surface restarts
+for hr in "${!gcycle_dates[@]}"; do
+
+  gcycle_date=${gcycle_dates[hr]}
+  FHR=${soilinc_fhrs[hr]}
   echo "Updating surface restarts for ${gcycle_date} ..."
 
   datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
+
+  if [[ "${DO_GSISOILDA}" = "YES" ]]; then
+        for (( nn=1; nn <= ntiles; nn++ )); do
+        ${NCP} "${COMIN_ATMOS_ANALYSIS}/sfci00${FHR}.tile${nn}.nc" \
+           "${DATA}/soil_xainc.00${nn}" 
+        done
+  fi
 
   # Copy inputs from COMIN to DATA
   for (( nn=1; nn <= ntiles; nn++ )); do
