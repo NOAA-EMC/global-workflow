@@ -23,15 +23,14 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_RADMON:COM_ATMOS_RADMON_TMPL
 YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
+    COMIN_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
 
 export biascr="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias"
 export radstat="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat"
 export TANKverf_rad=${TANKverf_rad:-${COMOUT_ATMOS_RADMON}}
-export TANKverf_radM1=${TANKverf_radM1:-${COMOUT_ATMOS_RADMON_PREV}}
+export TANKverf_radM1=${TANKverf_radM1:-${COMIN_ATMOS_RADMON_PREV}}
 
 if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p ${TANKverf_rad} ; fi
-if [[ ! -d ${TANKverf_radM1} ]]; then mkdir -p ${TANKverf_radM1} ; fi
 
 ########################################################
 # Execute the script.
