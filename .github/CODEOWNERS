@@ -180,6 +180,7 @@ syndat_qctropcy.sh @JiayiPeng-NOAA
 tropcy_relocate.sh @JiayiPeng-NOAA 
 tropcy_relocate_extrkr.sh @JiayiPeng-NOAA 
 wave_*.sh @JessicaMeixner-NOAA @sbanihash
+regrid_gsiSfcIncr_to_tile.sh @ClaraDraper-NOAA
 
 # ush/python
 ush/python/pygfs/jedi/__init__.py @aerorahul @DavidNew-NOAA
