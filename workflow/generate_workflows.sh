@@ -504,10 +504,9 @@ for _case in "${_yaml_list[@]}"; do
       grep "^#.*${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
       grep "^#SCRON" "${cron_file}"
       grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
-      } >> tests.cron
+      } > tests.cron
    else
-      grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
-
+      grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" > tests.cron
    fi
 done
 echo
@@ -550,11 +549,6 @@ if [[ "${_update_cron}" == "true" ]]; then
    ${_crontab_cmd} final.cron
 else
    _message="Add the following to your crontab or scrontab to start running:"
-   if [[ "${_use_scron}" == true ]]; then
-      cat tests.cron > final.cron
-   else
-      mv tests.cron final.cron
-   fi
    _cron_tests=$(cat tests.cron)
    _message="${_message}"$'\n'"${_cron_tests}"
    echo "${_message}"
