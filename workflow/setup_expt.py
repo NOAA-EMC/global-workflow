@@ -29,6 +29,7 @@ def makedirs_if_missing(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
+
 @logit(logger)
 def update_configs(host, inputs):
     """
@@ -383,6 +384,8 @@ def main(*argv):
 if __name__ == '__main__':
 
     # Setup the logger
-    logger = Logger(logfile_path=os.environ.get("LOGFILE_PATH"), level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=os.environ.get("COLORED_LOG", True))
+    logger = Logger(logfile_path=os.environ.get("LOGFILE_PATH"),
+                    level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
+                    colored_log=os.environ.get("COLORED_LOG", True))
 
     main()
