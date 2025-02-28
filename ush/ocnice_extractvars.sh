@@ -51,7 +51,6 @@ for (( nh = FHMIN_GFS + fhout_ocnice; nh <= FHMAX_GFS; nh = nh + fhout_ocnice ))
   outfile=${subdata}/${RUN}.${component_name}.t${cyc}z.${datares}.f${fnh}.nc
 
   if [[ -f "${infile}" ]]; then #check if input file exists before extraction
-    cpfs "${infile}" "${new_infile}" #copy infile to the subdata directory
     if ! cpfs "${infile}" "${new_infile}"; then
       echo "ERROR: Failed to copy ${infile} to ${new_infile}. Skipping."
       continue
