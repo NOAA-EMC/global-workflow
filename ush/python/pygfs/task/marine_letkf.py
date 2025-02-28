@@ -184,8 +184,26 @@ class MarineLETKF(Analysis):
 
         letkfsaveconf = AttrDict()
         keys = ['current_cycle', 'DATA', 'NMEM_ENS', 'WINDOW_BEGIN', 'GDUMP_ENS',
-                'PARMgfs', 'ROTDIR', 'COM_OCEAN_LETKF_TMPL', 'COM_ICE_LETKF_TMPL']
+                'PARMgfs', 'ROTDIR', 'COM_OCEAN_LETKF_TMPL', 'COM_ICE_LETKF_TMPL',
+                'COMOUT_OCEAN_LETKF', 'COMOUT_ICE_LETKF', 'WINDOW_MIDDLE',
+                'MARINE_OBS_LIST_YAML']
         for key in keys:
             letkfsaveconf[key] = self.task_config[key]
+
+        # get the list of obs output files
+        obs_list = parse_j2yaml(letkfsaveconf.MARINE_OBS_LIST_YAML, self.task_config)
+        obs_files = []
+        for ob in obs_list['observers']:
+            obs_files.append(ob['obs space']['obsdataout']['engine']['obsfile'])
+        obs_files_to_copy = []
+        # copy obs from diags to COMOUT
+        for obs_src in obs_files:
+            obs_dst = os.path.join(letkfsaveconf.COMOUT_OCEAN_LETKF, 'diags',
+                                   os.path.basename(obs_src))
+            if os.path.exists(obs_src):
+                obs_files_to_copy.append([obs_src, obs_dst])
+        # stage the desired diag files
+        FileHandler({'mkdir': [os.path.join(letkfsaveconf.COMOUT_OCEAN_LETKF, 'diags')]}).sync()
+        FileHandler({'copy': obs_files_to_copy}).sync()
         letkf_save_list = parse_j2yaml(self.task_config.MARINE_LETKF_SAVE_YAML_TMPL, letkfsaveconf)
         FileHandler(letkf_save_list).sync()
