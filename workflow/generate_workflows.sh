@@ -504,9 +504,9 @@ for _case in "${_yaml_list[@]}"; do
       grep "^#.*${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
       grep "^#SCRON" "${cron_file}"
       grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
-      } > tests.cron
+      } >> tests.cron
    else
-      grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" > tests.cron
+      grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
    fi
 done
 echo
