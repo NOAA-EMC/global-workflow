@@ -21,7 +21,11 @@ export aero_diagb_weight=0.9
 export aero_staticb_rescaling_factor=2.0
 export aero_diagb_n_halo=4
 export aero_diagb_n_neighbors=16
-export aero_diagb_smooth_horiz_iter=200
+aero_diagb_smooth_horiz_iter=0
 export aero_diagb_smooth_vert_iter=0
+if [[ "${CASE_ANL}" == "C384" ]]; then
+  aero_diagb_smooth_horiz_iter=200
+fi
+export aero_diagb_smooth_horiz_iter
 
 echo "END: config.aeroanlgenb"
