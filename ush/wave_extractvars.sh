@@ -30,8 +30,9 @@ for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); 
 
   if [[ -f "${infile}" ]]; then # Check if input file exists before extraction
     cpfs "${infile}" "${new_infile}" # Copy infile to the subdata directory
-    if [[ ! -f "${new_infile}" ]]; then
-      echo "WARNING: ${new_infile} does not exist in ${subdata}. Copying skipped."
+    if [[ $? -ne 0 ]]; then
+      echo "ERROR: Failed to copy ${infile} to ${new_infile}. Skipping."
+      continue
     fi
     # shellcheck disable=SC2312
     ${WGRIB2} "${new_infile}" | grep -F -f "${varlist_wav}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
