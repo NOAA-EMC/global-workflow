@@ -216,8 +216,8 @@ class RocotoXML(ABC):
         # AWS need 'SHELL', and 'BASH_ENV' defined, or, the crontab job won't start.
         if os.environ.get('PW_CSP', None) in ['aws', 'azure', 'google']:
             crontab_strings.extend([
-                f'SHELL="/bin/bash"',
-                f'BASH_ENV="/etc/bashrc"'
+                'SHELL="/bin/bash"',
+                'BASH_ENV="/etc/bashrc"'
             ])
 
         if crontab_file is None:
@@ -225,8 +225,7 @@ class RocotoXML(ABC):
 
         # Write out the crontab/scrontab file
         with open(crontab_file, 'w') as fh:
-            if self.use_scrontab:
-                fh.write('\n'.join(crontab_strings))
+            fh.write('\n'.join(crontab_strings))
 
         return
 
