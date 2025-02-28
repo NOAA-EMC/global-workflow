@@ -4,13 +4,19 @@ Entry point for setting up Rocoto XML for all applications in global-workflow
 """
 
 import os
+from logging import getLogger
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from applications.application_factory import app_config_factory
 from rocoto.rocoto_xml_factory import rocoto_xml_factory
-from wxflow import Configuration
+from wxflow import Configuration, Logger, logit
 
 
+# Setup the logger
+logger = getLogger(__name__)
+
+
+@logit(logger)
 def input_args(*argv):
     """
     Method to collect user arguments for `setup_xml.py`
@@ -40,15 +46,17 @@ def input_args(*argv):
     return parser.parse_args(argv[0][0] if len(argv[0]) else None)
 
 
+@logit(logger)
 def check_expdir(cmd_expdir, cfg_expdir):
 
     if not os.path.samefile(cmd_expdir, cfg_expdir):
-        print('MISMATCH in experiment directories!')
-        print(f'config.base:   EXPDIR = {cfg_expdir}')
-        print(f'  input arg: --expdir = {cmd_expdir}')
+        logger.info('MISMATCH in experiment directories!')
+        logger.info(f'config.base:   EXPDIR = {cfg_expdir}')
+        logger.info(f'  input arg: --expdir = {cmd_expdir}')
         raise ValueError('Abort!')
 
 
+@logit(logger, name='setup_xml.main')
 def main(*argv):
 
     user_inputs = input_args(argv)
@@ -75,5 +83,8 @@ def main(*argv):
 
 
 if __name__ == '__main__':
+
+    # Setup the logger
+    logger = Logger(logfile_path=os.environ.get("LOGFILE_PATH"), level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=os.environ.get("COLORED_LOG", True))
 
     main()

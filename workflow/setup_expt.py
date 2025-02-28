@@ -6,18 +6,22 @@ Entry point for setting up an experiment in the global-workflow
 
 import os
 import shutil
+from logging import getLogger
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, ArgumentTypeError
-from pprint import pprint
 
 from hosts import Host
 
-from wxflow import parse_j2yaml, AttrDict, to_datetime, to_timedelta, to_YMDH, Jinja
+from wxflow import parse_j2yaml, AttrDict, to_datetime, to_timedelta, to_YMDH, Jinja, Logger, logit
 
 
 _here = os.path.dirname(__file__)
 _top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
 
+# Setup the logger
+logger = getLogger(__name__)
 
+
+@logit(logger)
 def makedirs_if_missing(dirname):
     """
     Creates a directory if not already present
@@ -25,7 +29,7 @@ def makedirs_if_missing(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
-
+@logit(logger)
 def update_configs(host, inputs):
     """
     Method to copy config files from workflow to experiment directory and render templates
@@ -33,6 +37,7 @@ def update_configs(host, inputs):
         inputs: user inputs to `setup_expt.py`
     """
 
+    @logit(logger)
     def _update_defaults(dict_in: dict) -> dict:
         # Given an input dict_in of the form
         # {defaults: {config_name: {var1: value1, ...}, }, config_name: {var1: value1, ...}}
@@ -69,7 +74,7 @@ def update_configs(host, inputs):
     files = [ff for ff in os.listdir(inputs.configdir) if os.path.isfile(os.path.join(inputs.configdir, ff))]
     for file in files:
         if file.endswith('.j2'):
-            print(f'Jinja2 template found: {file}')
+            logger.info(f'Jinja2 template found: {file}')
             input_template = f'{inputs.configdir}/{file}'
             cfg_file = file[:-3]  # remove the .j2 extension
             output_config = f'{inputs.expdir}/{inputs.pslot}/{cfg_file}'  # output file in EXPDIR
@@ -86,6 +91,7 @@ def update_configs(host, inputs):
     return
 
 
+@logit(logger)
 def map_inputs_to_configs(inputs):
 
     if inputs.start in ["warm"]:
@@ -122,6 +128,7 @@ def map_inputs_to_configs(inputs):
     return dict_out
 
 
+@logit(logger)
 def input_args(*argv):
     """
     Method to collect user arguments for `setup_expt.py`
@@ -287,6 +294,7 @@ def input_args(*argv):
     return inputs
 
 
+@logit(logger)
 def query_and_clean(dirname, force_clean=False):
     """
     Method to query if a directory exists and gather user input for further action
@@ -294,10 +302,10 @@ def query_and_clean(dirname, force_clean=False):
 
     create_dir = True
     if os.path.exists(dirname):
-        print(f'\ndirectory already exists in {dirname}')
+        logger.info(f'\ndirectory already exists in {dirname}')
         if force_clean:
             overwrite = "YES"
-            print(f'removing directory ........ {dirname}\n')
+            logger.info(f'removing directory ........ {dirname}\n')
         else:
             overwrite = input('Do you wish to over-write [y/N]: ')
         create_dir = True if overwrite in [
@@ -308,6 +316,7 @@ def query_and_clean(dirname, force_clean=False):
     return create_dir
 
 
+@logit(logger)
 def validate_user_request(host, inputs):
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
     machine = host.machine
@@ -320,6 +329,7 @@ def validate_user_request(host, inputs):
             raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
 
 
+@logit(logger)
 def get_ocean_resolution(resdetatmos):
     """
     Method to determine the ocean resolution based on the atmosphere resolution
@@ -335,6 +345,7 @@ def get_ocean_resolution(resdetatmos):
         raise KeyError(f"Ocean resolution for {resdetatmos} is not implemented")
 
 
+@logit(logger, name='setup_expt.main')
 def main(*argv):
 
     user_inputs = input_args(*argv)
@@ -363,12 +374,15 @@ def main(*argv):
         makedirs_if_missing(expdir)
         update_configs(host, user_inputs)
 
-    print(f"*" * 100)
-    print(f'EXPDIR: {expdir}')
-    print(f'ROTDIR: {rotdir}')
-    print(f"*" * 100)
+    logger.info(f"*" * 100)
+    logger.info(f'EXPDIR: {expdir}')
+    logger.info(f'ROTDIR: {rotdir}')
+    logger.info(f"*" * 100)
 
 
 if __name__ == '__main__':
+
+    # Setup the logger
+    logger = Logger(logfile_path=os.environ.get("LOGFILE_PATH"), level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=os.environ.get("COLORED_LOG", True))
 
     main()
