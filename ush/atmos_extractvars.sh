@@ -74,7 +74,7 @@ for outtype in "f2d" "f3d"; do
       if [[ -f "${infile}" ]]; then # check if input file exists before extraction
         new_infile="${outdirpre}/$(basename "${infile}")_ext"
         cpfs "${infile}" "${new_infile}"
-        if [[ $? -ne 0 ]]; then
+        if ! cpfs "${infile}" "${new_infile}"; then
           echo "ERROR: Failed to copy ${infile} to ${new_infile}. Skipping."
           continue
         fi
@@ -95,7 +95,7 @@ for outtype in "f2d" "f3d"; do
         if [[ -f "${infile}" ]]; then # check if input file exists before extraction
           new_infile="${outdirpre}/$(basename "${infile}")_ext"
           cpfs "${infile}" "${new_infile}"
-          if [[ $? -ne 0 ]]; then
+          if ! cpfs "${infile}" "${new_infile}"; then
             echo "ERROR: Failed to copy ${infile} to ${new_infile}. Skipping."
             continue
           fi
