@@ -52,7 +52,7 @@ for (( nh = FHMIN_GFS + fhout_ocnice; nh <= FHMAX_GFS; nh = nh + fhout_ocnice ))
 
   if [[ -f "${infile}" ]]; then #check if input file exists before extraction
     if ! cpfs "${infile}" "${new_infile}"; then
-      echo "ERROR: Failed to copy ${infile} to ${new_infile}. Skipping."
+      echo "WARNING: Failed to copy ${infile} to ${new_infile}. Skipping."
       continue
     fi
     varsrequested=$(paste -s "${varlist}")

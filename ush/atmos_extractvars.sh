@@ -94,7 +94,7 @@ for outtype in "f2d" "f3d"; do
         if [[ -f "${infile}" ]]; then # check if input file exists before extraction
           new_infile="${outdirpre}/$(basename "${infile}")_ext"
           if ! cpfs "${infile}" "${new_infile}"; then
-            echo "ERROR: Failed to copy ${infile} to ${new_infile}. Skipping."
+            echo "WARNING: Failed to copy ${infile} to ${new_infile}. Skipping."
             continue
           fi
           # shellcheck disable=SC2312

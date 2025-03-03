@@ -30,7 +30,7 @@ for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); 
 
   if [[ -f "${infile}" ]]; then # Check if input file exists before extraction
     if ! cpfs "${infile}" "${new_infile}"; then
-      echo "ERROR: Failed to copy ${infile} to ${new_infile}. Skipping."
+      echo "WARNING: Failed to copy ${infile} to ${new_infile}. Skipping."
       continue
     fi
     # shellcheck disable=SC2312
