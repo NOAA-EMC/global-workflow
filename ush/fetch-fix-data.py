@@ -7,17 +7,32 @@ import os
 import time
 import sys
 import getopt
+import argparse
 import subprocess
 from pathlib import Path
+import logging
+
+# Create and configure logger
+logging.basicConfig(filename="cfetch-fix-data.log",
+                    format='%(asctime)s %(message)s',
+                    filemode='w')
+
+# Creating an object
+logger = logging.getLogger()
+
+# Setting the threshold of logger to DEBUG
+logger.setLevel(logging.DEBUG)
 
 # ------------------------------------------------------------------------------
 
 
 class FetchFIXdata():
 
-    def __init__(self, atmgridarray=['C48'], ocngridarray=['500'], localdir=None, verbose=0):
+    def __init__(self, atmgridarray=['C48'], ocngridarray=['500'],
+                 fix_bucket=None, localdir=None, verbose=0):
 
-        self.aws_fix_bucket = f's3://noaa-nws-global-pds/fix'
+        # self.aws_fix_bucket = f's3://noaa-nws-global-pds/fix'
+        self.aws_fix_bucket = fix_bucket
         self.aws_cp = f'aws --no-sign-request s3 cp'
         self.aws_sync = f'aws --no-sign-request s3 sync'
 
@@ -26,11 +41,11 @@ class FetchFIXdata():
         self.localdir = localdir
         self.verbose = verbose
 
-        # if (os.path.isdir(localdir)):
-        #    print('Prepare to download FIX data for %s and %s to %s' %(atmgrid, ocngrid, localdir))
-        # else:
-        #    print(f'local dir: <{localdir}> does not exist. Stop')
-        #    sys.exit(-1)
+        if (os.path.isdir(localdir)):
+           logger.info(f'Prepare to download FIX data for {atmgrid} and {ocngrid} to {localdir}')
+        else:
+           logger.info(f'local dir: <{localdir}> does not exist. Stop')
+           sys.exit(-1)
 
         self.verdict = {}
         self.s3dict = {}
@@ -125,20 +140,20 @@ class FetchFIXdata():
     # -------------------------------------------------------------------------
     def printinfo(self):
 
-        print(f'Preparing to fetch')
-        print(f'ATM grid: {self.atmgridarray}')
-        print(f'ONC grid: {self.ocngridarray}')
-        print(f'From: {self.aws_fix_bucket}')
-        print(f'To: {self.targetdir}')
+        logger.info(f'Preparing to fetch')
+        logger.info(f'ATM grid: {self.atmgridarray}')
+        logger.info(f'ONC grid: {self.ocngridarray}')
+        logger.info(f'From: {self.aws_fix_bucket}')
+        logger.info(f'To: {self.targetdir}')
         for key in self.s3dict.keys():
             val = self.s3dict[key]
-            print(f'{key}: {val}')
+            logger.info(f'{key}: {val}')
 
     # -------------------------------------------------------------------------
     def fetchdata(self):
 
         if (self.verbose):
-            print(f'Create local fix dir: {self.targetdir}')
+            logger.info(f'Create local fix dir: {self.targetdir}')
 
         path = Path(self.targetdir)
         path.mkdir(parents=True, exist_ok=True)
@@ -160,28 +175,29 @@ class FetchFIXdata():
     def download_dir(self, cmd, localdir):
 
         # returned_value = os.system(cmd)  # returns the exit code in unix
-        # print('returned value:', returned_value)
+        # logger.info('returned value:', returned_value)
 
         if (os.path.isdir(localdir)):
-            print(f'{localdir} already exist. skip')
+            logger.info(f'{localdir} already exist. skip')
         else:
             parentdir, dirname = os.path.split(localdir)
             if (self.verbose):
-                print(f'Create local {parentdir} dir:')
+                logger.info(f'Create local {parentdir} dir:')
             path = Path(parentdir)
             path.mkdir(parents=True, exist_ok=True)
             if (self.verbose):
-                print(cmd)
-            print(f'Downloading {localdir}')
+                logger.info(cmd)
+            logger.info(f'Downloading {localdir}')
             returned_value = subprocess.call(cmd, shell=True)  # returns the exit code in unix
             if (self.verbose):
-                print('returned value:', returned_value)
+                logger.info('returned value:', returned_value)
 
     # --------------------------------------------------------------------------
     def fetch_ugwp_limb_tau(self):
 
-        ugwp_limb_tau_remotepath = f'{self.aws_fix_bucket}/ugwd/{self.fix_ver_dict['ugwd_ver']}/ugwp_limb_tau.nc'
-        ugwp_limb_tau_localdir = f'{self.targetdir}/ugwd/{self.fix_ver_dict['ugwd_ver']}'
+        ugwd_ver = self.fix_ver_dict['ugwd_ver']
+        ugwp_limb_tau_remotepath = f'{self.aws_fix_bucket}/ugwd/{ugwd_ver}/ugwp_limb_tau.nc'
+        ugwp_limb_tau_localdir = f'{self.targetdir}/ugwd/{ugwd_ver}'
         filename = f'{ugwp_limb_tau_localdir}/ugwp_limb_tau.nc'
         path = Path(ugwp_limb_tau_localdir)
         path.mkdir(parents=True, exist_ok=True)
@@ -192,17 +208,17 @@ class FetchFIXdata():
     def download_file(self, cmd, filename):
 
         # returned_value = os.system(cmd)  # returns the exit code in unix
-        # print('returned value:', returned_value)
+        # logger.info('returned value:', returned_value)
 
         if (os.path.isfile(filename)):
-            print(f'{filename} already exist. skip')
+            logger.info(f'{filename} already exist. skip')
         else:
             if (self.verbose):
-                print(cmd)
-            print(f'Downloading {filename}')
+                logger.info(cmd)
+            logger.info(f'Downloading {filename}')
             returned_value = subprocess.call(cmd, shell=True)  # returns the exit code in unix
             if (self.verbose):
-                print('returned value:', returned_value)
+                logger.info('returned value:', returned_value)
 
     # --------------------------------------------------------------------------
     def set_fix_ver_from_gwhome(self, gwhome, verdict):
@@ -217,7 +233,7 @@ class FetchFIXdata():
                         exphead, _, key = headstr.partition(' ')
                         self.fix_ver_dict[key] = value
         else:
-            print(f'fix_ver_file: {ix_ver_file}s does not exist.')
+            logger.info(f'fix_ver_file: {fix_ver_file}s does not exist.')
 
     # ------------------------------------------------------------------------
     def set_default_fix_ver(self, verdict):
@@ -227,18 +243,11 @@ class FetchFIXdata():
 # -----------------------------------------------------------------------------
 
 
-def print_usage(verdict):
-
-    print('Usage: python fetch-fix-data.py \\')
-    print('       --atmgrid=AtmospericGrid (for multiple grids, separate with ",") \\')
-    print('       --ocngrid=OceanGrid (for multiple grids, separate with ",") \\')
-    print('       --localdir=Your-local-fix-dir \\')
-    print('       [options]')
-    print('options are:')
-    print('\t--gwhome=xxxx (Global-Workflow directory)')
-
-    for key in verdict.keys():
-        print(f'\t--{key}=yyyymmdd  default: {verdict[key]}')
+def namespace_to_dict(namespace):
+    return {
+        k: namespace_to_dict(v) if isinstance(v, argparse.Namespace) else v
+        for k, v in vars(namespace).items()
+    }
 
 # ------------------------------------------------------------------------------
 
@@ -248,71 +257,43 @@ if __name__ == '__main__':
     atmgridlist = ['C48', 'C96', 'C192', 'C384', 'C768', 'C1152']
     ocngridlist = ['500', '100', '050', '025']
 
-    verbose = 0
-    atmgrid = f'C48'
-    ocngrid = f'500'
-    localdir = f'/contrib/global-workflow-shared-data'
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true",
+                        help="increase output verbosity")
+    parser.add_argument("-a", "--atmgrid", type=str, required=True,
+                        help="ATM grid, like: C48, C96, C192, C384, C768, C1152")
+    parser.add_argument("-o", "--ocngrid", type=str, required=True,
+                        help="OCN grid, like: 500, 100, 050, 025")
+    parser.add_argument("--localdir", type=str, required=True,
+                        help="local directory to store FIX data subset")
+    parser.add_argument("--gwhome", type=str, default='unknown',
+                        help="GW home diretory where can find fix.ver")
+    parser.add_argument("--fix_bucket", type=str, default='s3://noaa-nws-global-pds/fix',
+                        help="S3 Bucket directory of FIX data")
+    parser.add_argument("--aer_ver", type=str, default='20220805', help="AER version")
+    parser.add_argument("--am_ver", type=str, default='20220805', help="AM version")
+    parser.add_argument("--chem_ver", type=str, default='20220805', help="chem version")
+    parser.add_argument("--cice_ver", type=str, default='20240416', help="cice version")
+    parser.add_argument("--cpl_ver", type=str, default='20230526', help="cpl version")
+    parser.add_argument("--datm_ver", type=str, default='20220805', help="datm version")
+    parser.add_argument("--glwu_ver", type=str, default='20220805', help="glwu version")
+    parser.add_argument("--gsi_ver", type=str, default='20240208', help="gsi version")
+    parser.add_argument("--lut_ver", type=str, default='20220805', help="lut version")
+    parser.add_argument("--mom6_ver", type=str, default='20240416', help="mom6 version")
+    parser.add_argument("--orog_ver", type=str, default='20231027', help="orog version")
+    parser.add_argument("--reg2grb2_ver", type=str, default='20220805', help="reg2grb2 version")
+    parser.add_argument("--sfc_climo_ver", type=str, default='20220805', help="sfc_climo version")
+    parser.add_argument("--ugwd_ver", type=str, default='20220805', help="ugwd version")
+    parser.add_argument("--verif_ver", type=str, default='20220805', help="verif version")
+    parser.add_argument("--wave_ver", type=str, default='20220805', help="wave version")
+    args = parser.parse_args()
 
-    # default fix-version
-    verdict = {}
-    verdict['aer_ver'] = f'20220805'
-    verdict['am_ver'] = f'20220805'
-    verdict['chem_ver'] = f'20220805'
-    verdict['cice_ver'] = f'20240416'
-    verdict['cpl_ver'] = f'20230526'
-    verdict['datm_ver'] = f'20220805'
-    verdict['glwu_ver'] = f'20220805'
-    verdict['gsi_ver'] = f'20240208'
-    verdict['lut_ver'] = f'20220805'
-    verdict['mom6_ver'] = f'20240416'
-    verdict['orog_ver'] = f'20231027'
-    verdict['reg2grb2_ver'] = f'20220805'
-    verdict['sfc_climo_ver'] = f'20220805'
-    verdict['ugwd_ver'] = f'20240624'
-    verdict['verif_ver'] = f'20220805'
-    verdict['wave_ver'] = f'20240105'
+    if args.verbose:
+        logger.info(f"the atmgrid is {args.atmgrid}")
+    else:
+        logger.info(f"the atmgrid is {args.atmgrid}")
 
-    gwhome = None
-
-    opts, args = getopt.getopt(sys.argv[1:], '', ['help', 'atmgrid=', 'ocngrid=',
-                                                  'verbose=', 'localdir=',
-                                                  'gwhome=',
-                                                  'aer_ver=',
-                                                  'am_ver=',
-                                                  'chem_ver=',
-                                                  'cice_ver=',
-                                                  'cpl_ver=',
-                                                  'datm_ver=',
-                                                  'glwu_ver=',
-                                                  'gsi_ver=',
-                                                  'lut_ver=',
-                                                  'mom6_ver=',
-                                                  'orog_ver=',
-                                                  'reg2grb2_ver=',
-                                                  'sfc_climo_ver=',
-                                                  'ugwd_ver=',
-                                                  'verif_ver=',
-                                                  'wave_ver='])
-    for o, a in opts:
-        # print(f'o: {o}, a: {a}')
-        if o in ['--help']:
-            print_usage(verdict)
-            sys.exit(0)
-        elif o in ['--verbose']:
-            verbose = int(a)
-        elif o in ['--atmgrid']:
-            atmgrid = a
-        elif o in ['--ocngrid']:
-            ocngrid = a
-        elif o in ['--localdir']:
-            localdir = a
-        elif o in ['--gwhome']:
-            gwhome = a
-        else:
-            _, vername = o.split('--')
-            print(f'vername: <{vername}>')
-            verdict[vername] = a
-
+    atmgrid = args.atmgrid
     if (atmgrid.find(',') > 0):
         atmgridarray = atmgrid.split(',')
     else:
@@ -320,11 +301,11 @@ if __name__ == '__main__':
 
     for grid in atmgridarray:
         if (grid not in atmgridlist):
-            print('atmgrid: ', grid)
-            print('is not in supported grids: ', atmgridlist)
-            print_usage(verdict)
+            logger.info(f'atmgrid: {grid}')
+            logger.info(f'is not in supported grids: {atmgridlist}')
             sys.exit(-1)
 
+    ocngrid = args.ocngrid
     if (ocngrid.find(',') > 0):
         ocngridarray = ocngrid.split(',')
     else:
@@ -332,20 +313,22 @@ if __name__ == '__main__':
 
     for grid in ocngridarray:
         if (grid not in ocngridlist):
-            print('ocngrid: ', grid)
-            print('is not in supported grids: ', ocngridlist)
-            print_usage(verdict)
+            logger.info(f'ocngrid: {grid}')
+            logger.info(f'is not in supported grids: {ocngridlist}')
             sys.exit(-1)
+
+    verdict = namespace_to_dict(args)
 
     # ------------------------------------------------------------------
     ffd = FetchFIXdata(atmgridarray=atmgridarray,
                        ocngridarray=ocngridarray,
-                       localdir=localdir, verbose=verbose)
+                       fix_bucket=args.fix_bucket,
+                       localdir=args.localdir, verbose=args.verbose)
 
-    if (gwhome is None):
+    if (args.gwhome is None):
         ffd.set_default_fix_ver(verdict)
     else:
-        ffd.set_fix_ver_from_gwhome(gwhome, verdict)
+        ffd.set_fix_ver_from_gwhome(args.gwhome, verdict)
 
     ffd.update_s3dict()
     ffd.fetchdata()
