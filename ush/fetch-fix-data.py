@@ -42,10 +42,10 @@ class FetchFIXdata():
         self.verbose = verbose
 
         if (os.path.isdir(localdir)):
-           logger.info(f'Prepare to download FIX data for {atmgrid} and {ocngrid} to {localdir}')
+            logger.info(f'Prepare to download FIX data for {atmgrid} and {ocngrid} to {localdir}')
         else:
-           logger.info(f'local dir: <{localdir}> does not exist. Stop')
-           sys.exit(-1)
+            logger.info(f'local dir: <{localdir}> does not exist. Stop')
+            sys.exit(-1)
 
         self.verdict = {}
         self.s3dict = {}
