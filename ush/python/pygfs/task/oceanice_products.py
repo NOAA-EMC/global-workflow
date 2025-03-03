@@ -5,6 +5,7 @@ from logging import getLogger
 from typing import List, Dict, Any
 from pprint import pformat
 import xarray as xr
+from shutil import copyfileobj
 
 from wxflow import (AttrDict,
                     parse_j2yaml,
@@ -14,7 +15,7 @@ from wxflow import (AttrDict,
                     Task,
                     add_to_datetime, to_timedelta,
                     WorkflowException,
-                    Executable)
+                    Executable, which)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -171,14 +172,18 @@ class OceanIceProducts(Task):
         # Run the ocnicepost.x executable
         OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
 
-        # Convert interpolated netCDF file to grib2
-        OceanIceProducts.netCDF_to_grib2(config, product_grid)
+        if config.component in ['ocean']:
+            # Concatenate the 2D and 3D grib2 files
+            OceanIceProducts.concatenate(config)
+
+        # Index the interpolated grib2 file
+        OceanIceProducts.index(config, product_grid)
 
     @staticmethod
     @logit(logger)
     def interp(workdir: str, aprun_cmd: str, exec_name: str = "ocnicepost.x") -> None:
         """
-        Run the interpolation executable to generate rectilinear netCDF file
+        Run the interpolation executable to generate interpolated file
 
         Parameters
         ----------
@@ -205,38 +210,62 @@ class OceanIceProducts(Task):
 
     @staticmethod
     @logit(logger)
-    def netCDF_to_grib2(config: Dict, grid: str) -> None:
-        """Convert interpolated netCDF file to grib2
+    def index(config: Dict, grid: str) -> None:
+        """
+        Index the grib2 file
 
         Parameters
         ----------
-        config : Dict
-            Configuration dictionary for the task
-        grid : str
-            Target product grid to process
+        workdir : str | os.PathLike
+            Working directory where to run containing the necessary files and executable
+        forecast_hour : int
+            forecast hour to index
+
+        Environment Parameters
+        ----------------------
+        WGRIB2: str (optional)
+            path to executable "grb2index"
+            Typically set in the modulefile
 
         Returns
-        ------
+        -------
         None
         """
 
         os.chdir(config.DATA)
+        logger.info("Generate index file")
 
-        exec_cmd = Executable(config.oceanice_yaml.nc2grib2.script)
-        arguments = [config.component, grid, config.current_cycle.strftime("%Y%m%d%H"), config.avg_period]
-        if config.component == 'ocean':
-            levs = config.oceanice_yaml.ocean.namelist.ocean_levels
-            arguments.append(':'.join(map(str, levs)))
+        wgrib2_cmd = os.environ.get("WGRIB2", None)
 
-        logger.info(f"Executing {exec_cmd} with arguments {arguments}")
-        try:
-            exec_cmd(*arguments)
-        except OSError:
-            logger.exception(f"FATAL ERROR: Failed to execute {exec_cmd}")
-            raise OSError(f"{exec_cmd}")
-        except Exception:
-            logger.exception(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
-            raise WorkflowException(f"{exec_cmd}")
+        grbfile = f"{config.component}.grib2"
+        grbfidx = f"{grbfile}.grib2.idx"
+
+        if not os.path.exists(grbfile):
+            logger.info(f"No {grbfile} to process, skipping ...")
+            return
+
+        logger.info(f"Creating index file for {grbfile}")
+        exec_cmd = which("wgrib2") if wgrib2_cmd is None else Executable(wgrib2_cmd)
+        exec_cmd.add_default_arg(os.path.join(config.DATA, grbfile))
+        exec_cmd.add_default_arg(os.path.join(config.DATA, grbfidx))
+
+        OceanIceProducts._call_executable(exec_cmd)
+
+    @staticmethod
+    @logit(logger)
+    def concatenate(config: Dict) -> None:
+
+        os.chdir(config.DATA)
+        outfile = f"{config.component}.grb2"
+        fout = open(os.path.join(config.DATA, outfile), "wb")
+        for file in ['2D', '3D']:
+            infile = f"{config.component}.{file}.grb2"
+            fin = open(os.path.join(config.DATA, infile), "rb")
+            copyfileobj(fin, fout)
+            fin.close()
+        fout.close()
+
+        return
 
     @staticmethod
     @logit(logger)
