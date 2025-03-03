@@ -24,6 +24,9 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
 
+RUN="enkfgdas" MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMIN_ATMOS_ENKF_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+
 mkdir -p "${COMOUT_ATMOS_RESTART}"
 
 

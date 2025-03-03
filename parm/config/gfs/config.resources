@@ -718,12 +718,12 @@ case ${step} in
         ntasks_gfs=825
         threads_per_task=5
         ;;
-      "C384")
+      "C384" | "C192")
         ntasks_gdas=160
         ntasks_gfs=160
         threads_per_task=10
         ;;
-      "C192" | "C96" | "C48")
+      "C96" | "C48")
         ntasks_gdas=84
         ntasks_gfs=84
         threads_per_task=5
@@ -1274,7 +1274,7 @@ case ${step} in
     ;;
 
   "esfc")
-    walltime="00:25:00"
+    walltime="01:00:00"
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))

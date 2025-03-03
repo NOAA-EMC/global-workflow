@@ -17,3 +17,6 @@ arguments:
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
   yaml: {{ HOMEgfs }}/ci/cases/yamls/sfs_defaults.yaml
 
+skip_ci_on_hosts:
+  - gaeac6
+  - gaeac5

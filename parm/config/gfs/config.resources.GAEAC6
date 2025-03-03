@@ -4,3 +4,22 @@
 
 unset memory
 unset "memory_${RUN}"
+
+case ${step} in
+  "fcst" | "efcs")
+    case "${CASE}" in
+      "C768")
+        export tasks_per_node=144
+        ;;
+      "C1152")
+        #TODO set tasks_per_node after investigating a safe threshold
+        ;;
+      *)
+        # Nothing to do for other resolutions
+        true
+        ;;
+    esac
+  ;;
+  *)
+  ;;
+esac
