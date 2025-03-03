@@ -1,6 +1,8 @@
 name: Global Observation Dump Request
 description: Request additional dates be added to a machine's global dump archive (GDA) or introduce experimental dump data to the GDA
 labels: ["Static Data Mgmt"]
+type: "task"
+projects: ["NOAA-EMC/41"]
 assignees:
   - KateFriedman-NOAA
   - WalterKolczynski-NOAA

@@ -54,3 +54,5 @@ prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Ob
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 whatis("Description: GFS run environment")
+
+load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))

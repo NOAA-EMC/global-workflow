@@ -100,7 +100,7 @@ def update_configs(host, inputs):
 
 def edit_baseconfig(host, inputs, yaml_dict):
     """
-    Parses and populates the templated `HOMEgfs/parm/config/<gfs|gefs>/config.base`
+    Parses and populates the templated `HOMEgfs/parm/config/<gfs|gefs|sfs>/config.base`
     to `EXPDIR/pslot/config.base`
     """
 
@@ -259,14 +259,14 @@ def input_args(*argv):
         parser.add_argument('--sdate_gfs', help='date to start GFS', type=lambda dd: to_datetime(dd), required=False, default=None)
         return parser
 
-    def _gfs_or_gefs_ensemble_args(parser):
+    def _any_ensemble_args(parser):
         parser.add_argument('--resensatmos', help='atmosphere resolution of the ensemble model forecast',
                             type=int, required=False, default=192)
         parser.add_argument('--nens', help='number of ensemble members',
                             type=int, required=False, default=20)
         return parser
 
-    def _gfs_or_gefs_forecast_args(parser):
+    def _any_forecast_args(parser):
         parser.add_argument('--app', help='UFS application', type=str,
                             choices=ufs_apps, required=False, default='ATM')
         return parser
@@ -278,6 +278,15 @@ def input_args(*argv):
                             default=os.path.join(_top, 'parm/config/gefs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
                             default=os.path.join(_top, 'parm/config/gefs/yaml/defaults.yaml'))
+        return parser
+
+    def _sfs_args(parser):
+        parser.add_argument('--start', help='restart mode: warm or cold', type=str,
+                            choices=['warm', 'cold'], required=False, default='cold')
+        parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
+                            default=os.path.join(_top, 'parm/config/sfs'))
+        parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
+                            default=os.path.join(_top, 'parm/config/sfs/yaml/defaults.yaml'))
         return parser
 
     description = """
@@ -293,6 +302,7 @@ def input_args(*argv):
     sysparser = parser.add_subparsers(dest='system')
     gfs = sysparser.add_parser('gfs', help='arguments for GFS')
     gefs = sysparser.add_parser('gefs', help='arguments for GEFS')
+    sfs = sysparser.add_parser('sfs', help='arguments for SFS')
 
     gfsmodeparser = gfs.add_subparsers(dest='mode')
     gfscycled = gfsmodeparser.add_parser('cycled', help='arguments for cycled mode')
@@ -301,8 +311,11 @@ def input_args(*argv):
     gefsmodeparser = gefs.add_subparsers(dest='mode')
     gefsforecasts = gefsmodeparser.add_parser('forecast-only', help='arguments for forecast-only mode')
 
+    sfsmodeparser = sfs.add_subparsers(dest='mode')
+    sfsforecasts = sfsmodeparser.add_parser('forecast-only', help='arguments for forecast-only mode')
+
     # Common arguments across all modes
-    for subp in [gfscycled, gfsforecasts, gefsforecasts]:
+    for subp in [gfscycled, gfsforecasts, gefsforecasts, sfsforecasts]:
         subp = _common_args(subp)
 
     # GFS-only arguments
@@ -310,12 +323,12 @@ def input_args(*argv):
         subp = _gfs_args(subp)
 
     # ensemble-only arguments
-    for subp in [gfscycled, gefsforecasts]:
-        subp = _gfs_or_gefs_ensemble_args(subp)
+    for subp in [gfscycled, gefsforecasts, sfsforecasts]:
+        subp = _any_ensemble_args(subp)
 
     # GFS/GEFS forecast-only additional arguments
-    for subp in [gfsforecasts, gefsforecasts]:
-        subp = _gfs_or_gefs_forecast_args(subp)
+    for subp in [gfsforecasts, gefsforecasts, sfsforecasts]:
+        subp = _any_forecast_args(subp)
 
     # cycled mode additional arguments
     for subp in [gfscycled]:
@@ -324,6 +337,10 @@ def input_args(*argv):
     # GEFS forecast-only arguments
     for subp in [gefsforecasts]:
         subp = _gefs_args(subp)
+
+    # SFS arguments
+    for subp in [sfsforecasts]:
+        subp = _sfs_args(subp)
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)
 
