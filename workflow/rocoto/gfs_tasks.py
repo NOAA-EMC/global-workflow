@@ -2547,7 +2547,7 @@ class GFSTasks(Tasks):
                 deps2.append(rocoto.add_dependency(dep_dict))
                 deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
 
-            if self.options['do_awips']:
+            if self.options['do_awips'] and self.run in ['gfs']:
 
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_awips_20km_1p0deg'}
                 deps.append(rocoto.add_dependency(dep_dict))
