@@ -15,7 +15,8 @@ arguments:
 
 skip_ci_on_hosts:
   - hera
-  - gaea
+  - gaeac5
+  - gaeac6
   - orion
   - hercules
   - wcoss2  # TODO run on WCOSS2 once the gfs_waveawipsbulls job is fixed
