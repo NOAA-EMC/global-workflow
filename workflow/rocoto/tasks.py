@@ -11,25 +11,26 @@ __all__ = ['Tasks']
 
 
 class Tasks:
-    SERVICE_TASKS = ['arch_vrfy', 'arch_tars', 'earc_vrfy', 'earc_tars', 'stage_ic', 'fetch', 'cleanup']
+    SERVICE_TASKS = ['arch_vrfy', 'earc_vrfy', 'stage_ic', 'cleanup']
+    DTN_TASKS = ['arch_tars', 'earc_tars', 'fetch']
     VALID_TASKS = ['aerosol_init', 'stage_ic', 'fetch',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
-                   'prepoceanobs',
+                   'prep_emissions', 'prepoceanobs',
                    'marineanlinit', 'marineanlletkf', 'marinebmat', 'marineanlvar', 'ocnanalecen', 'marineanlchkpt', 'marineanlfinal', 'ocnanalvrfy',
                    'earc_vrfy', 'earc_tars', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
-                   'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
+                   'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
                    'snowanl', 'esnowanl',
                    'fcst',
-                   'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
-                   'atmos_prod', 'ocean_prod', 'ice_prod',
+                   'upp', 'atmanlprod', 'atmupp', 'goesupp',
+                   'atmos_products', 'oceanice_products',
                    'verfozn', 'verfrad', 'vminmon',
-                   'metp',
+                   'metp', 'fit2obs', 'extractvars',
                    'tracker', 'genesis', 'genesis_fsu',
-                   'postsnd', 'awips_20km_1p0deg', 'fbwind',
-                   'gempak', 'gempakmeta', 'gempakmetancdc', 'gempakncdcupapgif', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg'
+                   'postsnd', 'awips', 'awips_20km_1p0deg', 'fbwind',
+                   'gempak', 'gempakmeta', 'gempakmetancdc', 'gempakncdcupapgif', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
                    'npoess',
@@ -64,8 +65,6 @@ class Tasks:
         self._base['interval_gdas'] = to_timedelta(f'{self._base["assim_freq"]}H')
         self._base['interval_gfs'] = to_timedelta(f'{self._base["INTERVAL_GFS"]}H')
 
-        self.n_tiles = 6  # TODO - this needs to be elsewhere
-
         # DATAROOT is set by prod_envir in ops.  Here, we use `STMP` to construct DATAROOT
         dataroot_str = f"{self._base.get('STMP')}/RUNDIRS/{self._base.get('PSLOT')}/{self.run}.<cyclestr>@Y@m@d@H</cyclestr>"
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
@@ -79,16 +78,46 @@ class Tasks:
                       'COMROOT': self._base.get('COMROOT'),
                       'DATAROOT': dataroot_str}
 
-        self.envars = self._set_envars(envar_dict)
+        self._set_envars(envar_dict)
 
-    @staticmethod
-    def _set_envars(envar_dict) -> list:
+        self._set_system_settings()
+
+    def _set_envars(self, envar_dict) -> None:
 
         envars = []
         for key, value in envar_dict.items():
             envars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        return envars
+        self.envars = envars
+
+    def _set_system_settings(self) -> None:
+
+        def _validate_system_key(input_dict, key):
+            # This helper function returns None if
+            # 1) the value held in 'key' matches '@' + key + '@'
+            # 2) the value is an empty string, or
+            # 3) the key does not exist in the dictionary.
+
+            value = input_dict.get(key, None)
+            value = None if value == '' else value
+            return None if value == f'@{key}@' else value
+
+        # Check the system configuration
+        base = self._base
+        self.clusters_batch = _validate_system_key(base, 'CLUSTERS')
+        self.clusters_service = _validate_system_key(base, 'CLUSTERS_SERVICE')
+        self.clusters_dtn = _validate_system_key(base, 'CLUSTERS_DTN')
+
+        # Reservations are only valid for batch nodes (at least for now)
+        self.reservation_batch = _validate_system_key(base, 'RESERVATION')
+
+        self.partition_batch = _validate_system_key(base, 'PARTITION_BATCH')
+        self.partition_service = _validate_system_key(base, 'PARTITION_SERVICE')
+        self.partition_dtn = _validate_system_key(base, 'PARTITION_DTN')
+
+        self.queue_batch = _validate_system_key(base, 'QUEUE')
+        self.queue_service = _validate_system_key(base, 'QUEUE_SERVICE')
+        self.queue_dtn = _validate_system_key(base, 'QUEUE_DTN')
 
     def _template_to_rocoto_cycstring(self, template: str, subs_dict: dict = {}) -> str:
         '''
@@ -323,39 +352,83 @@ class Tasks:
         # Memory is not required
         memory = task_config.get(f'memory', None)
 
+        dtn_task = task_name in Tasks.DTN_TASKS
+        service_task = task_name in Tasks.SERVICE_TASKS
+
+        if task_name not in Tasks.VALID_TASKS:
+            raise KeyError(f"ERROR {task_name} is not a valid tasks!")
+
+        # Combine the task configuration with the system configuration
+        if service_task:
+            task_queue = self.queue_service if self.queue_service else self.queue_batch
+            task_partition = self.partition_service if self.partition_service else self.partition_batch
+            task_clusters = self.clusters_service if self.clusters_service else self.clusters_batch
+            task_reservation = None  # Reservations are only for batch nodes
+        elif dtn_task:
+            # First check if there is a DTN queue, partition, or clusters
+            # If not, then try SERVICE queue, partition, clusters
+            if self.queue_dtn:
+                task_queue = self.queue_dtn
+            elif self.queue_service:
+                task_queue = self.queue_service
+            else:
+                task_queue = self.queue_batch
+
+            if self.partition_dtn:
+                task_partition = self.partition_dtn
+            elif self.partition_service:
+                task_partition = self.partition_service
+            else:
+                task_partition = self.partition_batch
+
+            if self.clusters_dtn:
+                task_clusters = self.clusters_dtn
+            elif self.clusters_service:
+                task_clusters = self.clusters_service
+            else:
+                task_clusters = self.clusters_batch
+
+            task_reservation = None
+
+        else:  # This is a batch task
+            task_partition = self.partition_batch
+            task_queue = self.queue_batch
+            task_clusters = self.clusters_batch
+            task_reservation = self.reservation_batch
+
+        # Scheduler-specific configurations
+        native = None
         if scheduler in ['pbspro']:
+
+            # Check memory usage at the end
             if task_config.get('prepost', False):
                 memory += ':prepost=true'
 
-        native = None
-        if scheduler in ['pbspro']:
             # Set place=vscatter by default and debug=true if DEBUG_POSTSCRIPT="YES"
             if self._base['DEBUG_POSTSCRIPT']:
                 native = '-l debug=true,place=vscatter'
             else:
                 native = '-l place=vscatter'
+
             # Set either exclusive or shared - default on WCOSS2 is exclusive when not set
             if task_config.get('is_exclusive', False):
                 native += ':exclhost'
             else:
                 native += ':shared'
+
         elif scheduler in ['slurm']:
             if task_config.get('is_exclusive', False):
                 native = '--exclusive'
             else:
                 native = '--export=NONE'
-            if task_config['RESERVATION'] != "":
-                native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION']
-            if task_config.get('CLUSTERS', "") not in ["", '@CLUSTERS@']:
-                native += ' --clusters=' + task_config['CLUSTERS']
 
-        queue = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['QUEUE']
+            if task_reservation:
+                native += ' --reservation=' + task_reservation
 
-        partition = None
-        if scheduler in ['slurm']:
-            partition = task_config['PARTITION_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config[
-                'PARTITION_BATCH']
+            if task_clusters:
+                native += ' --clusters=' + task_clusters
 
+        # Finally, construct and return the task resource dictionary
         task_resource = {'account': account,
                          'walltime': walltime,
                          'nodes': nodes,
@@ -364,8 +437,8 @@ class Tasks:
                          'threads': threads,
                          'memory': memory,
                          'native': native,
-                         'queue': queue,
-                         'partition': partition}
+                         'queue': task_queue,
+                         'partition': task_partition}
 
         return task_resource
 

@@ -44,5 +44,8 @@ load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 prepend_path("MODULEPATH", pathJoin("/gpfs/f5/ufs-ard/world-shared/global/glopara/data/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
+local hsi_mod_path=(os.getenv("hsi_mod_path") or "None")
+append_path("MODULEPATH", hsi_mod_path)
+load(pathJoin("hsi", (os.getenv("hsi_ver") or "None")))
 
 whatis("Description: GFS run setup environment")

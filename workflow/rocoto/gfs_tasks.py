@@ -169,7 +169,8 @@ class GFSTasks(Tasks):
 
         deps = []
         # Files from current cycle
-        files = ['gfs_ctrl.nc'] + [f'gfs_data.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
+        ntiles = self._base['ntiles']
+        files = ['gfs_ctrl.nc'] + [f'gfs_data.tile{tile}.nc' for tile in range(1, ntiles + 1)]
         for file in files:
             data = f'{input_path}/{file}'
             dep_dict = {'type': 'data', 'data': data}
@@ -185,8 +186,8 @@ class GFSTasks(Tasks):
 
         # Files from previous cycle
         files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
-                [f'@Y@m@d.@H0000.fv_core.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)] + \
-                [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
+                [f'@Y@m@d.@H0000.fv_core.res.tile{tile}.nc' for tile in range(1, ntiles + 1)] + \
+                [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.ntiles + 1)]
 
         for file in files:
             data = [f'{restart_path}/', file]
@@ -2545,6 +2546,19 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_metp'}
                 deps2.append(rocoto.add_dependency(dep_dict))
                 deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
+
+            if self.options['do_awips']:
+
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_awips_20km_1p0deg'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'{self.run}_fbwind'}
+                deps.append(rocoto.add_dependency(dep_dict))
+
+                if self.options['do_wave']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_waveawipsbulls'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_waveawipsgridded'}
+                    deps.append(rocoto.add_dependency(dep_dict))
 
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
