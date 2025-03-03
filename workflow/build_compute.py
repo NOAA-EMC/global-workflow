@@ -103,13 +103,13 @@ def get_host_specs(host: Dict) -> Dict:
         native = '-l place=vscatter'
     elif host.info.SCHEDULER in ['slurm']:
         native = '--export=NONE'
-        if host.info.PARTITION_BATCH not in [""]:
+        if host.info.get("PARTITION_BATCH", "") != "":
             partition = host.info.PARTITION_BATCH
 
-    if host.info.RESERVATION not in [""]:
+    if host.info.get("RESERVATION", "") != "":
         native += f' --reservation={host.info.RESERVATION}'
 
-    if host.info.CLUSTERS not in [""]:
+    if host.info.get("CLUSTERS", "") != "":
         native += f' --clusters={host.info.CLUSTERS}'
 
     specs = AttrDict()
