@@ -39,8 +39,7 @@ function _usage() {
     -E Run all valid GEFS cases in the specified YAML directory.
        If -b is specified, then "-w" will be passed to build_all.sh.
 
-    -S (Not yet supported!)
-       Run all valid SFS cases in the specified YAML directory.
+    -S Run all valid SFS cases in the specified YAML directory.
 
     NOTES:
          - Valid cases are determined by the experiment:system key as
@@ -238,16 +237,6 @@ if [[ "${_run_all_gfs}" == "true" || \
    _yaml_list=()
 fi
 
-# If -S is specified, exit (for now).
-# TODO when SFS tests come online, enable this option.
-if [[ "${_run_all_sfs}" == "true" ]]; then
-   echo "There are no known SFS tests at this time.  Aborting."
-   echo "If you have prepared YAMLs for SFS cases, specify their"
-   echo "location and names without '-S', e.g."
-   echo "generate_workflows.sh -y \"C48_S2S_SFS\" -Y \"/path/to/yaml/directory\""
-   exit 0
-fi
-
 # Set HOMEgfs if it wasn't set by the user
 if [[ "${_specified_home}" == "false" ]]; then
    script_relpath="$(dirname "${BASH_SOURCE[0]}")"
@@ -337,6 +326,15 @@ if [[ "${_run_all_gfs}" == "true" ]]; then
    declare -a _gfs_yaml_list
    select_all_yamls "gfs" "_gfs_yaml_list"
    _yaml_list=("${_yaml_list[@]}" "${_gfs_yaml_list[@]}")
+fi
+
+# Check if running all SFS cases
+if [[ "${_run_all_sfs}" == "true" ]]; then
+   _build_flags="${_build_flags} sfs "
+
+   declare -a _gfs_yaml_list
+   select_all_yamls "sfs" "_sfs_yaml_list"
+   _yaml_list=("${_yaml_list[@]}" "${_sfs_yaml_list[@]}")
 fi
 
 # Loading modules sometimes raises unassigned errors, so disable checks
@@ -486,7 +484,30 @@ for _case in "${_yaml_list[@]}"; do
       fi
       rm -f stdout stderr
    fi
-   grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
+   # Check if this experiment is using cron or scron
+   cron_file="${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+   scron_sh_file="${_runtests}/EXPDIR/${_pslot}/${_pslot}.scron.sh"
+   if [[ -f "${scron_sh_file}" ]]; then
+      _use_scron=true
+      _crontab_cmd="scrontab"
+   elif [[ -f "${cron_file}" ]]; then
+      _use_scron=false
+      _crontab_cmd="crontab"
+   else
+      echo "Could not find a crontab file for case ${_pslot}!"
+      echo "Expected to find ${cron_file}"
+      exit 13
+   fi
+
+   if [[ "${_use_scron}" == true ]]; then
+      {
+      grep "^#.*${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+      grep "^#SCRON" "${cron_file}"
+      grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+      } >> tests.cron
+   else
+      grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
+   fi
 done
 echo
 
@@ -497,10 +518,7 @@ if [[ "${_update_cron}" == "true" ]]; then
    rm -f existing.cron final.cron "${_verbose_flag}"
    touch existing.cron final.cron
 
-   # disable -e in case crontab is empty
-   set +e
-   crontab -l > existing.cron
-   set -e
+   ${_crontab_cmd} -l | grep -v "no crontab for" > existing.cron || true
 
    if [[ "${_debug}" == "true" ]]; then
       echo "Existing crontab: "
@@ -512,8 +530,11 @@ if [[ "${_update_cron}" == "true" ]]; then
    if [[ "${_set_email}" == "true" ]]; then
       # Replace the existing email in the crontab
       [[ "${_verbose}" == "true" ]] && printf "Updating crontab email to %s\n\n" "${_email}"
-      sed -i "/^MAILTO/d" existing.cron
-      echo "MAILTO=\"${_email}\"" >> final.cron
+      if [[ "${_use_scron}" == true ]]; then
+         sed -i "s/.*--mail-user.*/#SCRON --mail-user=\"${_email}\"/" tests.cron
+      else
+         sed -i "s/^MAILTO.*/MAILTO=\"${_email}\"/" existing.cron
+      fi
    fi
 
    cat existing.cron tests.cron >> final.cron
@@ -525,7 +546,7 @@ if [[ "${_update_cron}" == "true" ]]; then
       echo "#######################"
    fi
 
-   crontab final.cron
+   ${_crontab_cmd} final.cron
 else
    _message="Add the following to your crontab or scrontab to start running:"
    _cron_tests=$(cat tests.cron)
@@ -540,7 +561,7 @@ fi
 [[ "${_debug}" == "false" ]] && rm -f final.cron existing.cron tests.cron "${_verbose_flag}"
 
 echo "Success!!"
-if [[ "${_set_email}" == true ]]; then
+if [[ "${_set_email}" == true && "${_debug}" == "true" ]]; then
    final_message=$'Success!\n'"${final_message:-}"
    _subject="generate_workflow.sh completed successfully" send_email "${final_message}"
 fi
