@@ -2547,6 +2547,19 @@ class GFSTasks(Tasks):
                 deps2.append(rocoto.add_dependency(dep_dict))
                 deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
 
+            if self.options['do_awips']:
+
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_awips_20km_1p0deg'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'{self.run}_fbwind'}
+                deps.append(rocoto.add_dependency(dep_dict))
+
+                if self.options['do_wave']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_waveawipsbulls'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_waveawipsgridded'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_archtar']:
