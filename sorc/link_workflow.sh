@@ -36,7 +36,7 @@ while getopts ":ho-:" option; do
     fi
     ;;
   :)
-     "[${BASH_SOURCE[0]}]: ${option} requires an argument"
+     echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
     usage
     ;;
   *)
