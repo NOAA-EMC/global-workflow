@@ -45,6 +45,7 @@ pipeline {
                         for (label in pullRequest.labels) {
                             if (label.matches("CI-(.*?)-Ready")) {
                                 def machine_name = label.split('-')[1].toString().toLowerCase()
+                                print machine_name
                                 jenkins.model.Jenkins.get().computers.each { c ->
                                     if (c.node.selfLabel.name == NodeName[machine_name]) {
                                         run_nodes.add(c.node.selfLabel.name)
