@@ -47,6 +47,7 @@ pipeline {
                                 def machine_name = label.split('-')[1].toString().toLowerCase()
                                 print machine_name
                                 jenkins.model.Jenkins.get().computers.each { c ->
+                                    print c.node.selfLabel.name
                                     if (c.node.selfLabel.name == NodeName[machine_name]) {
                                         run_nodes.add(c.node.selfLabel.name)
                                     }
