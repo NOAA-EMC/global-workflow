@@ -13,4 +13,16 @@ if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"
 fi
 
+if [[ "${RUN/enkf}" == "gfs" ]]; then  
+    echo "turning off gsi soilda for gfs run"
+    DO_GSISOILDA="NO"
+fi
+
+if [[ "${DO_GSISOILDA}" == "YES" ]]; then
+    export GCYCLE_DO_SOILINCR=".true."
+    export GCYCLE_INTERP_LANDINCR=".false."
+    export LSOIL_INCR=2
+    export REGRID_EXEC=${REGRID_EXEC:-"${HOMEgfs}/sorc/gdas.cd/build/bin/regridStates.x"}
+fi
+
 echo "END: config.sfcanl"

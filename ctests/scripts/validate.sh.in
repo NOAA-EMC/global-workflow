@@ -13,7 +13,9 @@ HOMEgfs="@PROJECT_SOURCE_DIR@"
 set +x
 source "${HOMEgfs}/workflow/gw_setup.sh"
 rc=$?
-[[ "${rc}" -ne 0 ]] && exit "${status}"
+if [[ "${rc}" -ne 0 ]]; then
+   exit "${rc}"
+fi
 set -x
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH
