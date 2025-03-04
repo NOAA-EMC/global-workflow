@@ -62,6 +62,8 @@ fi
 
 # shellcheck disable=SC2155,SC2312
 HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+
+mkdir -p "${HOMEgfs}/sorc/logs" || exit 1
 cd "${HOMEgfs}/sorc" || exit 1
 
 # Delete the rocoto XML and database if they exist
@@ -76,7 +78,9 @@ set +e
 "${HOMEgfs}/workflow/build_compute.py" --yaml "${HOMEgfs}/workflow/build_opts.yaml" --systems "${systems}"
 rc=$?
 if (( rc != 0 )); then
-  echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
+  msg="FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
+  echo "${msg}"
+  echo "${msg}" > logs/error.logs
   exit 1
 fi
 
@@ -87,7 +91,7 @@ finished=false
 ${runcmd}
 echo "Running builds on compute nodes"
 while [[ "${finished}" == "false" ]]; do
-   sleep 3m
+   sleep 1m
    ${runcmd}
    state="$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")"
    if [[ "${verbose_opt}" == "true" ]]; then
@@ -101,8 +105,10 @@ while [[ "${finished}" == "false" ]]; do
    elif [[ "${state}" == "RUNNING" ]]; then
       finished=false
    else
-      echo "FATAL ERROR: ${BASH_SOURCE[0]} rocoto failed with state '${state}'"
+      msg="FATAL ERROR: ${BASH_SOURCE[0]} rocoto failed with state '${state}'"
+      echo "${msg}"
       rm -f logs/error.logs
+      echo "${msg}" > logs/error.logs
       # Determine which build(s) failed
       stat_out="$(rocotostat -w "${build_xml}" -d "${build_db}")"
       echo "${stat_out}" > rocotostat.out

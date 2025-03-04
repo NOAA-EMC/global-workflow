@@ -53,7 +53,9 @@ fi
 # Get LEVS
 export LEVS=$(${NCLEN} ${ATMGES} pfull)
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 
 if [ ${DOHYBVAR} = "YES" ]; then
@@ -90,7 +92,9 @@ fi
 
 ${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh}
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 
 ##############################################
@@ -117,8 +121,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

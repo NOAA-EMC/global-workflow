@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_tars" -c "base earc_tars"
 ##############################################
 # Set variables used in the script
 ##############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_TOP
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COMIN_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL \
   COMIN_ATMOS_HISTORY_ENSSTAT:COM_ATMOS_HISTORY_TMPL \
@@ -19,7 +18,9 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 "${SCRgfs}/exgdas_enkf_earc_tars.py"
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 ###############################################################
 
@@ -39,6 +40,8 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
-[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 exit 0

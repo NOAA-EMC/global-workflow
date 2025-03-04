@@ -453,7 +453,9 @@ FV3_predet(){
   FNSMCC=${FNSMCC:-"${FIXgfs}/am/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
 
   # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
-  [[ ! -f "${FNSMCC}" ]] && FNSMCC="${FIXgfs}/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
+  if [[ ! -f "${FNSMCC}" ]]; then
+      FNSMCC="${FIXgfs}/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
+  fi
 
   # Grid and orography data
   if [[ "${cplflx}" == ".false." ]] ; then
