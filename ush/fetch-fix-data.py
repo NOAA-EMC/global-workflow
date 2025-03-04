@@ -31,7 +31,7 @@ class FetchFIXdata():
     """
 
     def __init__(self, atmgridarray=['C48'], ocngridarray=['500'],
-                 fix_bucket=None, fix_ver=None, localdir=None, verbose=0):
+                 fix_bucket=None, fix_ver=None, localdir=None, verbose=False):
         """Constructor for FetchFIXdata
         The constructor is responsible for collecting necessary parameters.
 
@@ -63,6 +63,11 @@ class FetchFIXdata():
         self.fix_ver = fix_ver
         self.verbose = verbose
 
+        logger.info(f'localdir: {localdir'})
+        logger.info(f'fix_ver: {fix_ver'})
+        logger.info(f'fix_buck: {fix_bucket'})
+        logger.info(f'verbose: {verbose'})
+
         if (os.path.isdir(localdir)):
             logger.info(f'Prepare to download FIX data for {atmgrid} and {ocngrid} to {localdir}')
         else:
@@ -88,10 +93,16 @@ class FetchFIXdata():
 
     # --------------------------------------------------------------------------
     def create_s3dict(self):
-
+        """
+        Create a dictionay based on fix_ver file,
+        corresponding to FIX data s3 bucket directory.
+        returns
+        ----------
+        None
+        """
         for key in self.fix_ver_dict.keys():
             val = self.fix_ver_dict[key]
-            s3key, versym = val.split('_')
+            s3key, _ = key.split('_ver')
             if (s3key == 'chem'):
                 self.s3dict['fimdata_chem'] = f'chem/{val}/fimdata_chem'
                 self.s3dict['Emission_data'] = f'chem/{val}/Emission_data'
@@ -101,54 +112,72 @@ class FetchFIXdata():
                 self.s3dict['gfs'] = f'datm/{val}/gfs'
                 self.s3dict['mom6'] = f'datm/{val}/mom6'
             else:
-                self.s3dict[s3key] = f'{s3key}/{val}'
                 if (s3key in ['orog', 'ugwd']):
-                    self.add_atmgrid2s3dict(s3key, key, val)
+                    self.add_atmgrid2s3dict(s3key, val)
                 elif (s3key in ['mom6', 'cice']):
-                    self.add_ocngrid2s3dict(s3key, key, val)
+                    self.add_ocngrid2s3dict(s3key, val)
                 elif (s3key == 'cpl'):
-                    self.add_cpl2s3dict(s3key, key, val)
+                    self.add_cpl2s3dict(s3key, val)
+                else:
+                    self.s3dict[s3key] = f'{s3key}/{val}'
 
         if (self.verbose):
             self.printinfo()
 
     # --------------------------------------------------------------------------
-    def add_atmgrid2s3dict(self, varname, key, val):
-
+    def add_atmgrid2s3dict(self, key, val):
+        """
+        Add ATM grid data to dict.
+        returns
+        ----------
+        None
+        """
         for atmgrid in self.atmgridarray:
             newkey = f'{key}_{atmgrid}'
-            self.s3dict[newkey] = f'{varname}/{val}/{atmgrid}'
+            self.s3dict[newkey] = f'{key}/{val}/{atmgrid}'
 
     # -------------------------------------------------------------------------
-    def add_ocngrid2s3dict(self, varname, key, val):
-
+    def add_ocngrid2s3dict(self, key, val):
+        """
+        Add OCN grid data to dict.
+        returns
+        ----------
+        None
+        """
         for ocngrid in self.ocngridarray:
             newkey = f'{key}_{atmgrid}'
-            self.s3dict[newkey] = f'{varname}/{val}/{ocngrid}'
+            self.s3dict[newkey] = f'{key}/{val}/{ocngrid}'
 
     # -------------------------------------------------------------------------
-    def add_cpl2s3dict(self, varname, key, val):
-
+    def add_cpl2s3dict(self, key, val):
+        """
+        Add CPL (complar) grid data to dict.
+        returns
+        ----------
+        None
+        """
         for atmgrid in self.atmgridarray:
             for ocngrid in self.ocngridarray:
                 newkey = f'{key}_a{atmgrid}o{ocngrid}'
-                self.s3dict[newkey] = f'{varname}/{val}/a{atmgrid}o{ocngrid}'
+                self.s3dict[newkey] = f'{key}/{val}/a{atmgrid}o{ocngrid}'
 
     # -------------------------------------------------------------------------
     def printinfo(self):
-
-        logger.info(f'Preparing to fetch')
-        logger.info(f'ATM grid: {self.atmgridarray}')
-        logger.info(f'ONC grid: {self.ocngridarray}')
-        logger.info(f'From: {self.aws_fix_bucket}')
-        logger.info(f'To: {self.targetdir}')
+        """Print dict info (data to download)
+        """
+        print(f'Preparing to fetch')
+        print(f'ATM grid: {self.atmgridarray}')
+        print(f'ONC grid: {self.ocngridarray}')
+        print(f'From: {self.aws_fix_bucket}')
+        print(f'To: {self.targetdir}')
         for key in self.s3dict.keys():
             val = self.s3dict[key]
-            logger.info(f'{key}: {val}')
+            print(f'{key}: {val}')
 
     # -------------------------------------------------------------------------
     def fetchdata(self):
-
+        """Fetch data defined in s3bucket.
+        """
         if (self.verbose):
             logger.info(f'Create local fix dir: {self.targetdir}')
 
@@ -158,21 +187,19 @@ class FetchFIXdata():
         self.fetch_ugwp_limb_tau()
 
         for key in self.s3dict.keys():
-            self.fetch_dir(self.s3dict[key])
+            self.download_dir(self.s3dict[key])
 
-    # -------------------------------------------------------------------------
-    def fetch_dir(self, dir):
-
+    # --------------------------------------------------------------------------
+    def download_dir(self, dir):
+        """download a directory
+        """
         remotedir = f'{self.aws_fix_bucket}/{dir}'
         localdir = f'{self.targetdir}/{dir}'
         cmd = f'{self.aws_sync} {remotedir} {localdir}'
-        self.download_dir(cmd, localdir)
-
-    # --------------------------------------------------------------------------
-    def download_dir(self, cmd, localdir):
 
         # returned_value = os.system(cmd)  # returns the exit code in unix
-        # logger.info('returned value:', returned_value)
+        # if (self.verbose):
+        #     logger.info(f'returned value: {returned_value}')
 
         if (os.path.isdir(localdir)):
             logger.info(f'{localdir} already exist. skip')
@@ -187,11 +214,12 @@ class FetchFIXdata():
             logger.info(f'Downloading {localdir}')
             returned_value = subprocess.call(cmd, shell=True)  # returns the exit code in unix
             if (self.verbose):
-                logger.info('returned value:', returned_value)
+                logger.info(f'returned value: {returned_value}')
 
     # --------------------------------------------------------------------------
     def fetch_ugwp_limb_tau(self):
-
+        """download ugwp_limb_tau.nc
+        """
         ugwd_ver = self.fix_ver_dict['ugwd_ver']
         ugwp_limb_tau_remotepath = f'{self.aws_fix_bucket}/ugwd/{ugwd_ver}/ugwp_limb_tau.nc'
         ugwp_limb_tau_localdir = f'{self.targetdir}/ugwd/{ugwd_ver}'
@@ -199,13 +227,10 @@ class FetchFIXdata():
         path = Path(ugwp_limb_tau_localdir)
         path.mkdir(parents=True, exist_ok=True)
         cmd = f'{self.aws_cp} {ugwp_limb_tau_remotepath} {filename}'
-        self.download_file(cmd, filename)
-
-    # -------------------------------------------------------------------------
-    def download_file(self, cmd, filename):
 
         # returned_value = os.system(cmd)  # returns the exit code in unix
-        # logger.info('returned value:', returned_value)
+        # if (self.verbose):
+        #     logger.info(f'returned value: {returned_value}')
 
         if (os.path.isfile(filename)):
             logger.info(f'{filename} already exist. skip')
@@ -215,21 +240,24 @@ class FetchFIXdata():
             logger.info(f'Downloading {filename}')
             returned_value = subprocess.call(cmd, shell=True)  # returns the exit code in unix
             if (self.verbose):
-                logger.info('returned value:', returned_value)
+                logger.info(f'returned value: {returned_value}')
 
     # --------------------------------------------------------------------------
     def get_fix_ver_dict(self):
         """Get fix ver as dictionay from FIX ver file.
         """
-
         self.fix_ver_dict = {}
         with open(self.fix_ver, "r") as file:
             for line in file.readlines():
                 if (line.find('export ') >= 0):
-                    # headstr, _, value = line.strip().partition('=')
-                    # exphead, _, key = headstr.partition(' ')
                     key, value = line.replace('export ', '', 1).split('=')
-                    self.fix_ver_dict[key] = value
+                    # skip gdas data, for DA projects, one should keep gdas part.
+                    if (key.find('gdas_') >= 0):
+                        continue
+                    # skip nest data
+                    if (key.find('nest') > 0):
+                        continue
+                    self.fix_ver_dict[key] = value.strip()
 
 # ------------------------------------------------------------------------------
 
@@ -269,9 +297,9 @@ if __name__ == '__main__':
 
     for grid in atmgridarray:
         if (grid not in ATMGRIDLIST):
-            logger.info(f'atmgrid: {grid}')
-            logger.info(f'is not in supported grids: {ATMGRIDLIST}')
-            sys.exit(-1)
+            logger.error(f'atmgrid: {grid}')
+            logger.error(f'is not in supported grids: {ATMGRIDLIST}')
+            raise SystemExit
 
     ocngrid = args.ocngrid
     if (ocngrid.find(',') > 0):
@@ -281,15 +309,13 @@ if __name__ == '__main__':
 
     for grid in ocngridarray:
         if (grid not in OCNGRIDLIST):
-            logger.info(f'ocngrid: {grid}')
-            logger.info(f'is not in supported grids: {OCNGRIDLIST}')
-            sys.exit(-1)
+            logger.error(f'ocngrid: {grid}')
+            logger.error(f'is not in supported grids: {OCNGRIDLIST}')
+            raise SystemExit
 
-    # ------------------------------------------------------------------
-    ffd = FetchFIXdata(atmgridarray=atmgridarray,
-                       ocngridarray=ocngridarray,
-                       fix_bucket=args.fix_bucket,
+    # ----------------------------------------------------------------------
+    ffd = FetchFIXdata(atmgridarray=atmgridarray, ocngridarray=ocngridarray,
+                       fix_ver=args.fix_ver, fix_bucket=args.fix_bucket,
                        localdir=args.localdir, verbose=args.verbose)
 
-    ffd.update_s3dict()
     ffd.fetchdata()
