@@ -6,7 +6,6 @@ HOMEDIR: '/contrib/${USER}'
 STMP: '/lustre/${USER}/stmp/'
 PTMP: '/lustre/${USER}/ptmp/'
 NOSCRUB: '${HOMEDIR}'
-ACCOUNT: '${USER}'
 SCHEDULER: slurm
 QUEUE: batch
 PARTITION_BATCH: compute

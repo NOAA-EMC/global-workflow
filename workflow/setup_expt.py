@@ -117,7 +117,8 @@ def map_inputs_to_configs(inputs):
         "SDATE_GFS": to_YMDH(inputs.sdate_gfs),
         "APP": inputs.app,
         "NMEM_ENS": getattr(inputs, 'nens', 0),
-        "ICSDIR": inputs.icsdir
+        "ICSDIR": inputs.icsdir,
+        "ACCOUNT": inputs.account,
     })
 
     if dict_out.NMEM_ENS > 0:
