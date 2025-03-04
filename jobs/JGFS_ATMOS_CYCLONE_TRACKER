@@ -73,7 +73,7 @@ export err=$?; err_chk
 #------------------------------------------------
 
 machine=${machine:-$(echo ${SITE})}
-${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
+${USHens_tracker}/extrkr_gfs.sh "${loopnum}" "${cmodel}" "${CDATE}" "${pert}" "${DATA}"
 export err=$?; err_chk
 
 
@@ -89,14 +89,16 @@ export err=$?; err_chk
 # Final processing
 ##############################################
 if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+  cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

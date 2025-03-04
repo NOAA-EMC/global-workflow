@@ -155,10 +155,18 @@ if [ $DO_CALC_ANALYSIS == "YES" ]; then
    $NLN $ATMGES sigf06
    $NLN $ATMG09 sigf09
 
-   [[ -f $ATMG04 ]] && $NLN $ATMG04 sigf04
-   [[ -f $ATMG05 ]] && $NLN $ATMG05 sigf05
-   [[ -f $ATMG07 ]] && $NLN $ATMG07 sigf07
-   [[ -f $ATMG08 ]] && $NLN $ATMG08 sigf08
+   if [[ -f "${ATMG04}" ]]; then
+       $NLN "${ATMG04}" sigf04
+   fi
+   if [[ -f "${ATMG05}" ]]; then
+       $NLN "${ATMG05}" sigf05
+   fi
+   if [[ -f "${ATMG07}" ]]; then
+       $NLN "${ATMG07}" sigf07
+   fi
+   if [[ -f "${ATMG08}" ]]; then
+       $NLN "${ATMG08}" sigf08
+   fi
 
    # Link hourly backgrounds (if present)
    if [ -f $ATMG04 -a -f $ATMG05 -a -f $ATMG07 -a -f $ATMG08 ]; then
@@ -186,7 +194,9 @@ echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMO
 ################################################################################
 # Postprocessing
 cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+if [[ "${mkdata}" == "YES" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit $err

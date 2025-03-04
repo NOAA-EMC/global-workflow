@@ -10,7 +10,7 @@ case ${step} in
     ;;
 
   "anal")
-    case ${CASE} in
+    case "${CASE}" in
       "C384")
         #Some of the intermediate data can be lost if the number of tasks
         #per node does not match the number of reserved cores/node.

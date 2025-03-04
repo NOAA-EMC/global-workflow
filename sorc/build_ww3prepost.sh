@@ -51,7 +51,9 @@ fi
 export SWITCHFILE="${WW3_DIR}/${ww3switch}"
 
 #create build directory:
-[[ -d "${path_build}" ]] && rm -rf "${path_build}"
+if [[ -d "${path_build}" ]]; then
+    rm -rf "${path_build}"
+fi
 mkdir -p "${path_build}" || exit 1
 cd "${path_build}" || exit 1
 echo "Forcing a SHRD build"
@@ -79,7 +81,9 @@ cat "${buildswitch}"
 
 #define cmake build options
 MAKE_OPT="-DCMAKE_INSTALL_PREFIX=${path_install}"
-[[ ${BUILD_TYPE:-"Release"} = "Debug" ]] && MAKE_OPT+=" -DCMAKE_BUILD_TYPE=Debug"
+if [[ "${BUILD_TYPE:-"Release"}" == "Debug" ]]; then
+    MAKE_OPT+=" -DCMAKE_BUILD_TYPE=Debug"
+fi
 
 #Build executables:
 # shellcheck disable=SC2086
