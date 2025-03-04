@@ -16,10 +16,18 @@ export CASE="${CASE_ENS}"
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE}"
 # Ocean/Ice/Waves ensemble configurations are identical to deterministic member
-[[ "${DO_OCN}" == "YES" ]] && string="${string} --mom6 ${OCNRES}"
-[[ "${DO_ICE}" == "YES" ]] && string="${string} --cice6 ${ICERES}"
-[[ "${DO_WAVE}" == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
-[[ "${DO_AERO_FCST}" == "YES" ]] && string="${string} --gocart"
+if [[ "${DO_OCN}" == "YES" ]]; then
+    string="${string} --mom6 ${OCNRES}"
+fi
+if [[ "${DO_ICE}" == "YES" ]]; then
+    string="${string} --cice6 ${ICERES}"
+fi
+if [[ "${DO_WAVE}" == "YES" ]]; then
+    string="${string} --ww3 ${waveGRD// /;}"
+fi
+if [[ "${DO_AERO_FCST}" == "YES" ]]; then
+    string="${string} --gocart"
+fi
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
 

@@ -19,7 +19,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlvar" -c "base aeroanl aeroanlv
 EXSCRIPT=${GDASAEROVARSH:-${SCRgfs}/exglobal_aero_analysis_variational.py}
 ${EXSCRIPT}
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work

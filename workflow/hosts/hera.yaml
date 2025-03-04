@@ -11,12 +11,9 @@ NOSCRUB: $HOMEDIR
 ACCOUNT: fv3-cpu
 SCHEDULER: slurm
 QUEUE: batch
-QUEUE_SERVICE: batch
 PARTITION_BATCH: hera
 PARTITION_SERVICE: service
-RESERVATION: ''
 CHGRP_RSTPROD: 'YES'
-CLUSTERS: ''
 CHGRP_CMD: 'chgrp rstprod'
 HPSSARCH: 'YES'
 HPSS_PROJECT: emc-global
@@ -30,3 +27,5 @@ COMINecmwf: /scratch1/NCEPDEV/global/glopara/data/external_gempak/ecmwf
 COMINnam: /scratch1/NCEPDEV/global/glopara/data/external_gempak/nam
 COMINukmet: /scratch1/NCEPDEV/global/glopara/data/external_gempak/ukmet
 AERO_INPUTS_DIR: /scratch1/NCEPDEV/global/glopara/data/gocart_emissions
+# TODO Reenable when RDHPCS#2025022654000078 is resolved
+DO_METP: 'NO'
