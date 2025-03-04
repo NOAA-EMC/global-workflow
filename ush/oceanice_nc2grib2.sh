@@ -182,7 +182,9 @@ function _ocean3D_nc2grib2 {
   zl=0
   for depth in "${depths[@]}"; do
 
-    [[ -f "tmp.gb2" ]] && rm -f "tmp.gb2"
+    if [[ -f "tmp.gb2" ]]; then
+        rm -f "tmp.gb2"
+    fi
 
     ${WGRIB2} "${template}" \
     -import_netcdf "${infile}" "temp" "0:1:${zl}:1:${latlon_dims}" \

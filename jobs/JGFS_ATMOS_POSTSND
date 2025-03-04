@@ -24,16 +24,24 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
   COM_ATMOS_WMO COM_ATMOS_GEMPAK
 
-[[ ! -d ${COM_ATMOS_BUFR} ]] && mkdir -p "${COM_ATMOS_BUFR}"
-[[ ! -d ${COM_ATMOS_GEMPAK} ]] && mkdir -p "${COM_ATMOS_GEMPAK}"
-[[ ! -d ${COM_ATMOS_WMO} ]] && mkdir -p "${COM_ATMOS_WMO}"
+if [[ ! -d "${COM_ATMOS_BUFR}" ]]; then
+    mkdir -p "${COM_ATMOS_BUFR}"
+fi
+if [[ ! -d "${COM_ATMOS_GEMPAK}" ]]; then
+    mkdir -p "${COM_ATMOS_GEMPAK}"
+fi
+if [[ ! -d "${COM_ATMOS_WMO}" ]]; then
+    mkdir -p "${COM_ATMOS_WMO}"
+fi
 
 
 ########################################################
 # Execute the script.
 ${SCRgfs}/exgfs_atmos_postsnd.sh
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 
 ##############################################
@@ -50,8 +58,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

@@ -21,7 +21,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlvar" -c "base atmanl atmanlvar"
 EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atm_analysis_variational.py}
 ${EXSCRIPT}
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work

@@ -36,12 +36,20 @@ load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
 load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 
 setenv("WGRIB2","wgrib2")
+
+-- Stop gap fix for wgrib with spack-stack 1.6.0
+-- TODO Remove this when spack-stack issue #1097 is resolved
+setenv("WGRIB","wgrib")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 
-prepend_path("MODULEPATH", pathJoin("/gpfs/f6/bil-fire8/world-shared/global/glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/gpfs/f6/drsa-precip3/world-shared/role.glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
-prepend_path("MODULEPATH", pathJoin("/gpfs/f6/bil-fire8/world-shared/global/glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/gpfs/f6/drsa-precip3/world-shared/role.glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
+
+local hsi_mod_path=(os.getenv("hsi_mod_path") or "None")
+append_path("MODULEPATH", hsi_mod_path)
+load(pathJoin("hsi", (os.getenv("hsi_ver") or "None")))
 
 whatis("Description: GFS run setup environment")

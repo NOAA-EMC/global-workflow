@@ -14,7 +14,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 #if (( status != 0 )); then exit "${status}"; fi
 # Temporarily load modules from UPP on WCOSS2
 source "${HOMEgfs}/ush/detect_machine.sh"
-if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
+if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
   set +x
   source "${HOMEgfs}/ush/module-setup.sh"
   module use "${HOMEgfs}/sorc/ufs_model.fd/FV3/upp/modulefiles"

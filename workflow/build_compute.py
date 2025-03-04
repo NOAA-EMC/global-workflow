@@ -63,7 +63,7 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.task_name = task_name
     task_dict.cycledef = "build"
     task_dict.maxtries = 1
-    task_dict.command = f"cd {HOMEgfs}/sorc/; {task_spec.command}"
+    task_dict.command = f"cd {HOMEgfs}/sorc/; {task_spec.command} -j {task_spec.cores}"
     task_dict.job_name = task_name
     task_dict.log = f"{HOMEgfs}/sorc/logs/{task_name}.log"
 
@@ -103,13 +103,13 @@ def get_host_specs(host: Dict) -> Dict:
         native = '-l place=vscatter'
     elif host.info.SCHEDULER in ['slurm']:
         native = '--export=NONE'
-        if host.info.PARTITION_BATCH not in [""]:
+        if host.info.get("PARTITION_BATCH", "") != "":
             partition = host.info.PARTITION_BATCH
 
-    if host.info.RESERVATION not in [""]:
+    if host.info.get("RESERVATION", "") != "":
         native += f' --reservation={host.info.RESERVATION}'
 
-    if host.info.CLUSTERS not in [""]:
+    if host.info.get("CLUSTERS", "") != "":
         native += f' --clusters={host.info.CLUSTERS}'
 
     specs = AttrDict()
