@@ -126,6 +126,7 @@ pipeline {
                             def gist_url = ""
                             def error_logs = ""
                             def error_logs_message = ""
+                            HOMEgfs = "${CUSTOM_WORKSPACE}/${aws_gw_name}/${aws_gw_name}"
                             dir("${HOMEgfs}/sorc") {
                                 try {
                                     sh(script: 'ls *.sh')	// list files here to make sure all files exist.
