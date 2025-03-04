@@ -1,5 +1,5 @@
 BASE_GIT: '/lfs/h2/emc/global/save/emc.global/git'
-DMPDIR: '/lfs/h2/emc/dump/noscrub/dump'
+DMPDIR: '/lfs/h2/emc/da/noscrub/catherine.thomas/obs/combined'
 BASE_DATA: '/lfs/h2/emc/global/noscrub/emc.global/data'
 BASE_IC: '/lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR'
 PACKAGEROOT: '${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}'
@@ -24,4 +24,4 @@ SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
 COMINecmwf: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ecmwf
 COMINnam: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam
 COMINukmet: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ukmet
-AERO_INPUTS_DIR: /lfs/h2/emc/global/noscrub/emc.global/data/gocart_emissions
+AERO_INPUTS_DIR: /lfs/h2/emc/lam/noscrub/barry.baker/emissions/GEFS_ExtData

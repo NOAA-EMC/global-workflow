@@ -438,7 +438,7 @@ case ${step} in
       "C1152" | "C768")
         layout_x=8
         layout_y=8
-        walltime="00:45:00"
+        walltime="01:45:00"
         tasks_per_node=24
         ;;
       "C384")
@@ -949,7 +949,7 @@ case ${step} in
         ;;
       "C768" | "C1152")
         # Not valid resolutions for ensembles
-        declare -x "walltime_gdas"="01:20:00"
+        declare -x "walltime_gdas"="01:30:00"
         declare -x "walltime_gfs"="06:00:00"
         ;;
       *)
@@ -1134,7 +1134,7 @@ case ${step} in
     ;;
 
   "stage_ic")
-    walltime="00:15:00"
+    walltime="00:30:00"
     ntasks=1
     tasks_per_node=1
     threads_per_task=1
@@ -1271,7 +1271,7 @@ case ${step} in
     ;;
 
   "ecen")
-    walltime="00:10:00"
+    walltime="00:20:00"
     ntasks=80
     threads_per_task=4
     if [[ "${CASE}" == "C384" || "${CASE}" == "C192" || "${CASE}" == "C96" || "${CASE}" == "C48" ]]; then
