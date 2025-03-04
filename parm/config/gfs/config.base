@@ -476,7 +476,9 @@ export DO_FIT2OBS="YES"      # Run fit to observations package
 
 #--online archive of netcdf files for fit2obs verification
 export FHMAX_FITS=132
-[[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
+if [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]]; then
+    export FHMAX_FITS=${FHMAX_GFS}
+fi
 
 # User may choose to reset these at experiment setup time 
 export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto COM

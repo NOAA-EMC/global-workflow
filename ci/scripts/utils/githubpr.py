@@ -3,8 +3,11 @@
 import os
 import re
 
-from github import Github, GithubException, InputFileContent, UnknownObjectException
-from wxflow import which
+from github import Auth, Github, GithubException, InputFileContent, UnknownObjectException
+from wxflow import which, Logger
+
+# Initialize logger with environment variable for logging level
+logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
 
 class GitHubDBError(Exception):
@@ -54,10 +57,24 @@ class GitHubPR(Github):
         environment variable when repo_url is not provided.
         """
         if TOKEN is None:
-            gh_cli = which('gh')
-            gh_cli.add_default_arg(['auth', 'status', '--show-token'])
-            TOKEN = gh_cli(output=str, error=str).split('\n')[3].split(': ')[1]
-        super().__init__(TOKEN)
+            TOKEN = os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
+            if TOKEN:
+                logger.info("Using TOKEN from environment variable.")
+            else:
+                gh_cli = which('gh')
+                gh_cli.add_default_arg(['auth', 'status', '--show-token'])
+                gh_output = gh_cli(output=str, error=str)
+                token_match = re.search(r"Token:\s*([a-zA-Z0-9_]+)", gh_output)
+                if token_match:
+                    TOKEN = token_match.group(1)
+                    logger.info("Using TOKEN from gh CLI tool.")
+                else:
+                    raise ValueError("Token not found in gh CLI output.")
+        else:
+            logger.info("Using provided TOKEN.")
+
+        auth = Auth.Token(TOKEN)
+        super().__init__(auth=auth)
 
         self.repo = self.get_repo_url(repo_url)
         self.pulls = self.repo.get_pulls(state='open', sort='updated', direction='desc')

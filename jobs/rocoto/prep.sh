@@ -6,7 +6,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Source FV3GFS workflow modules
 . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 ###############################################################
 export job="prep"
@@ -42,17 +44,25 @@ if [[ ! -d "${COM_OBS}" ]]; then mkdir -p "${COM_OBS}"; fi
 if [[ ${ROTDIR_DUMP} = "YES" ]]; then
    "${HOMEgfs}/ush/getdump.sh" "${PDY}${cyc}" "${RUN_local}" "${COM_OBSDMP}" "${COM_OBS}"
    status=$?
-   [[ ${status} -ne 0 ]] && exit ${status}
+   if [[ ${status} -ne 0 ]]; then
+       exit "${status}"
+   fi
 
    #  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
    if [[ ! -s "${COM_OBS_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" ]]; then
      "${HOMEgfs}/ush/getdump.sh" "${GDATE}" "${GDUMP}" "${COM_OBSDMP_PREV}" "${COM_OBS_PREV}"
      status=$?
-     [[ ${status} -ne 0 ]] && exit ${status}
+     if [[ ${status} -ne 0 ]]; then
+         exit "${status}"
+     fi
    fi
    # exception handling to ensure no dead link
-   [[ $(find ${COM_OBS} -xtype l | wc -l) -ge 1 ]] && exit 9
-   [[ $(find ${COM_OBS_PREV} -xtype l | wc -l) -ge 1 ]] && exit 9
+   if [[ $(find ${COM_OBS} -xtype l | wc -l) -ge 1 ]]; then
+       exit 9
+   fi
+   if [[ $(find ${COM_OBS_PREV} -xtype l | wc -l) -ge 1 ]]; then
+       exit 9
+   fi
 fi
 
 
@@ -78,7 +88,9 @@ if [[ ${PROCESS_TROPCY} = "YES" ]]; then
 
     "${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
     status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
+    if [[ ${status} -ne 0 ]]; then
+        exit "${status}"
+    fi
 
 else
     if [[ ${ROTDIR_DUMP} = "NO" ]]; then cp "${COM_OBSDMP}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00" "${COM_OBS}/"; fi
@@ -113,7 +125,9 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
 
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP"
     status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
+    if [[ ${status} -ne 0 ]]; then
+        exit "${status}"
+    fi
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then

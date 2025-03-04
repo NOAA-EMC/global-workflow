@@ -32,6 +32,6 @@ MAKE_ACFTBUFR: 'NO'
 DO_TRACKER: 'YES'
 DO_GENESIS: 'YES'
 DO_METP: 'NO'
-SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
+SUPPORTED_RESOLUTIONS: ['C768', 'C384', 'C192', 'C96', 'C48']
 AERO_INPUTS_DIR: '/gpfs/f6/drsa-precip3/world-shared/role.glopara/data/gocart_emissions'
 USE_SCRONTAB: 'YES'

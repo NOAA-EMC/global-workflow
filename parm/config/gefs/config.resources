@@ -107,9 +107,15 @@ case ${step} in
       export UFS_THREADS=${nthreads_ufs:-1}
       nthreads_fv3=1
       nthreads_mediator=1
-      [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
-      [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
-      [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
+      if [[ "${DO_WAVE}" == "YES" ]]; then
+          nthreads_ww3=1
+      fi
+      if [[ "${DO_OCN}" == "YES" ]]; then
+          nthreads_mom6=1
+      fi
+      if [[ "${DO_ICE}" == "YES" ]]; then
+          nthreads_cice6=1
+      fi
     fi
 
     # FV3

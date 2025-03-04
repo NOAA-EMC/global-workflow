@@ -24,13 +24,15 @@ if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi
 
 ${SCRgfs}/exgfs_wave_prdgen_bulls.sh
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 ###################################
 # Remove temp directories
-cd ${DATAROOT}
+cd "${DATAROOT}" || true
 if [ "${KEEPDATA}" != "YES" ]; then
-  rm -rf ${DATA}
+  rm -rf "${DATA}"
 fi
 
 

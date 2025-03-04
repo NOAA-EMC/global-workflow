@@ -53,7 +53,9 @@ ENKF_SPREAD=${ENKF_SPREAD:-"NO"}
 ################################################################################
 #  Preprocessing
 ENKF_SUFFIX="s"
-[[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
+if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
+    ENKF_SUFFIX=""
+fi
 
 ################################################################################
 # Copy executables to working directory
@@ -93,13 +95,17 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
          ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
       done
    fi
-   [[ $ENKF_SPREAD = "YES" ]] && ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}atmf${fhrchar}.ensspread.nc" "atmf${fhrchar}.ensspread"
+   if [[ "${ENKF_SPREAD}" == "YES" ]]; then
+       ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}atmf${fhrchar}.ensspread.nc" "atmf${fhrchar}.ensspread"
+   fi
 done
 
 ################################################################################
 # Generate ensemble mean surface and atmospheric files
 
-[[ $SMOOTH_ENKF = "YES" ]] && $NCP $HYBENSMOOTH ./hybens_smoothinfo
+if [[ "${SMOOTH_ENKF}" == "YES" ]]; then
+    $NCP "${HYBENSMOOTH}" ./hybens_smoothinfo
+fi
 
 rc=0
 for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
