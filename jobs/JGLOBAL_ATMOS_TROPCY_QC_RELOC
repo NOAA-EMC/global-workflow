@@ -43,7 +43,9 @@ export BKGFREQ=1                                # for hourly relocation
 
 ${TROPCYQCRELOSH:-${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh}
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 
 ##############################################
@@ -56,8 +58,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

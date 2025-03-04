@@ -6,7 +6,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Source FV3GFS workflow modules
 . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 export job="epos"
 export jobid="${job}.$$"
@@ -22,7 +24,9 @@ for fhr in ${fhrlst}; do
     export FHOUT_EPOS=${fhr}
     ${HOMEgfs}/jobs/JGDAS_ENKF_POST
     status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
+    if [[ ${status} -ne 0 ]]; then
+        exit "${status}"
+    fi
 
 done
 

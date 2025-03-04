@@ -24,7 +24,9 @@ MEMDIR="mem001" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY_MEM
 # Run relevant script
 ${CHGRESFCSTSH:-${SCRgfs}/exgdas_atmos_chgres_forenkf.sh}
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 
 ##############################################
@@ -41,8 +43,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

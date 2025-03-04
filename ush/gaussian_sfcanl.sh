@@ -133,7 +133,9 @@ export REDERR=${REDERR:-'2>'}
 ${INISCRIPT:-}
 pwd=$(pwd)
 cd "${DATA}" || exit 99
-[[ -d "${COMOUT_ATMOS_ANALYSIS}" ]] || mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
+if [[ ! -d "${COMOUT_ATMOS_ANALYSIS}" ]]; then
+   mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
+fi
 
 ################################################################################
 #  Make surface analysis

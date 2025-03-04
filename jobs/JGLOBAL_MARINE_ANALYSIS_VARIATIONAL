@@ -23,7 +23,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlvar" -c "base marineanl mari
 EXSCRIPT=${GDASMARINERUNSH:-${SCRgfs}/exglobal_marine_analysis_variational.py}
 ${EXSCRIPT}
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work
