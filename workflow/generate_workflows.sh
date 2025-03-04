@@ -39,8 +39,7 @@ function _usage() {
     -E Run all valid GEFS cases in the specified YAML directory.
        If -b is specified, then "-w" will be passed to build_all.sh.
 
-    -S (Not yet supported!)
-       Run all valid SFS cases in the specified YAML directory.
+    -S Run all valid SFS cases in the specified YAML directory.
 
     NOTES:
          - Valid cases are determined by the experiment:system key as
@@ -190,7 +189,11 @@ if [[ "${_debug}" == "true" ]]; then
 fi
 
 # Create the RUNTESTS directory
-[[ "${_verbose}" == "true" ]] && printf "Creating RUNTESTS in %s\n\n" "${_runtests}"
+# Start by getting the full path
+_runtests="$(realpath "${_runtests}")"
+if [[ "${_verbose}" == "true" ]]; then
+    printf "Creating RUNTESTS in %s\n\n" "${_runtests}"
+fi
 if [[ ! -d "${_runtests}" ]]; then
    set +e
    if ! mkdir -p "${_runtests}" "${_verbose_flag}"; then
@@ -238,25 +241,19 @@ if [[ "${_run_all_gfs}" == "true" || \
    _yaml_list=()
 fi
 
-# If -S is specified, exit (for now).
-# TODO when SFS tests come online, enable this option.
-if [[ "${_run_all_sfs}" == "true" ]]; then
-   echo "There are no known SFS tests at this time.  Aborting."
-   echo "If you have prepared YAMLs for SFS cases, specify their"
-   echo "location and names without '-S', e.g."
-   echo "generate_workflows.sh -y \"C48_S2S_SFS\" -Y \"/path/to/yaml/directory\""
-   exit 0
-fi
-
 # Set HOMEgfs if it wasn't set by the user
 if [[ "${_specified_home}" == "false" ]]; then
    script_relpath="$(dirname "${BASH_SOURCE[0]}")"
    HOMEgfs="$(cd "${script_relpath}/.." && pwd)"
-   [[ "${_verbose}" == "true" ]] && printf "Setting HOMEgfs to %s\n\n" "${HOMEgfs}"
+   if [[ "${_verbose}" == "true" ]]; then
+       printf "Setting HOMEgfs to %s\n\n" "${HOMEgfs}"
+   fi
 fi
 
 # Set the _yaml_dir to HOMEgfs/ci/cases/pr if not explicitly set
-[[ "${_specified_yaml_dir}" == false ]] && _yaml_dir="${HOMEgfs}/ci/cases/pr"
+if [[ "${_specified_yaml_dir}" == false ]]; then
+    _yaml_dir="${HOMEgfs}/ci/cases/pr"
+fi
 
 function select_all_yamls()
 {
@@ -289,7 +286,9 @@ function select_all_yamls()
          # Strip .yaml from the filename to get the case name
          _yaml="${_yaml//.yaml/}"
          _nameref_yaml_list+=("${_yaml}")
-         [[ "${_verbose}" == true ]] && echo "Found test ${_yaml//.yaml/}"
+         if [[ "${_verbose}" == true ]]; then
+             echo "Found test ${_yaml//.yaml/}"
+         fi
          (( _yaml_count+=1 ))
       done
 
@@ -339,18 +338,35 @@ if [[ "${_run_all_gfs}" == "true" ]]; then
    _yaml_list=("${_yaml_list[@]}" "${_gfs_yaml_list[@]}")
 fi
 
+# Check if running all SFS cases
+if [[ "${_run_all_sfs}" == "true" ]]; then
+   _build_flags="${_build_flags} sfs "
+
+   declare -a _gfs_yaml_list
+   select_all_yamls "sfs" "_sfs_yaml_list"
+   _yaml_list=("${_yaml_list[@]}" "${_sfs_yaml_list[@]}")
+fi
+
 # Loading modules sometimes raises unassigned errors, so disable checks
 set +u
-[[ "${_verbose}" == "true" ]] && printf "Loading modules\n\n"
-[[ "${_debug}" == "true" ]] && set +x
+if [[ "${_verbose}" == "true" ]]; then
+    printf "Loading modules\n\n"
+fi
+if [[ "${_debug}" == "true" ]]; then
+    set +x
+fi
 if ! source "${HOMEgfs}/workflow/gw_setup.sh" >& stdout; then
    cat stdout
    echo "Failed to source ${HOMEgfs}/workflow/gw_setup.sh!"
    exit 7
 fi
-[[ "${_verbose}" == "true" ]] && cat stdout
+if [[ "${_verbose}" == "true" ]]; then
+    cat stdout
+fi
 rm -f stdout
-[[ "${_debug}" == "true" ]] && set -x
+if [[ "${_debug}" == "true" ]]; then
+    set -x
+fi
 set -u
 machine=${MACHINE_ID}
 platform_config="${HOMEgfs}/ci/platforms/config.${machine}"
@@ -403,7 +419,9 @@ if [[ "${_build}" == "true" ]]; then
 fi
 
 # Link the workflow silently unless there's an error
-[[ "${_verbose}" == true ]] && printf "Linking the workflow\n\n"
+if [[ "${_verbose}" == true ]]; then
+    printf "Linking the workflow\n\n"
+fi
 if ! "${HOMEgfs}/sorc/link_workflow.sh" >& stdout; then
    cat stdout
    echo "link_workflow.sh failed!"
@@ -417,7 +435,9 @@ fi
 rm -f stdout
 
 # Configure the environment for running create_experiment.py
-[[ "${_verbose}" == true ]] && printf "Setting up the environment to run create_experiment.py\n\n"
+if [[ "${_verbose}" == true ]]; then
+    printf "Setting up the environment to run create_experiment.py\n\n"
+fi
 for i in "${!_yaml_list[@]}"; do
    _yaml_file="${_yaml_dir}/${_yaml_list[${i}]}.yaml"
    # Verify that the YAMLs are where we are pointed
@@ -465,9 +485,13 @@ fi
 rm -f "tests.cron" "${_verbose_flag}"
 echo "Running create_experiment.py for ${#_yaml_list[@]} cases"
 
-[[ "${_verbose}" == true ]] && printf "Selected cases: %s\n\n" "${_yaml_list[*]}"
+if [[ "${_verbose}" == true ]]; then
+    printf "Selected cases: %s\n\n" "${_yaml_list[*]}"
+fi
 for _case in "${_yaml_list[@]}"; do
-   [[ "${_verbose}" == false ]] && echo "${_case}"
+   if [[ "${_verbose}" == false ]]; then
+       echo "${_case}"
+   fi
    _pslot="${_case}${_tag}"
    _create_exp_cmd="./create_experiment.py -y ../ci/cases/pr/${_case}.yaml --overwrite"
    if [[ "${_verbose}" == true ]]; then
@@ -486,7 +510,30 @@ for _case in "${_yaml_list[@]}"; do
       fi
       rm -f stdout stderr
    fi
-   grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
+   # Check if this experiment is using cron or scron
+   cron_file="${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+   scron_sh_file="${_runtests}/EXPDIR/${_pslot}/${_pslot}.scron.sh"
+   if [[ -f "${scron_sh_file}" ]]; then
+      _use_scron=true
+      _crontab_cmd="scrontab"
+   elif [[ -f "${cron_file}" ]]; then
+      _use_scron=false
+      _crontab_cmd="crontab"
+   else
+      echo "Could not find a crontab file for case ${_pslot}!"
+      echo "Expected to find ${cron_file}"
+      exit 13
+   fi
+
+   if [[ "${_use_scron}" == true ]]; then
+      {
+      grep "^#.*${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+      grep "^#SCRON" "${cron_file}"
+      grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+      } >> tests.cron
+   else
+      grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
+   fi
 done
 echo
 
@@ -497,10 +544,7 @@ if [[ "${_update_cron}" == "true" ]]; then
    rm -f existing.cron final.cron "${_verbose_flag}"
    touch existing.cron final.cron
 
-   # disable -e in case crontab is empty
-   set +e
-   crontab -l > existing.cron
-   set -e
+   ${_crontab_cmd} -l | grep -v "no crontab for" > existing.cron || true
 
    if [[ "${_debug}" == "true" ]]; then
       echo "Existing crontab: "
@@ -511,9 +555,15 @@ if [[ "${_update_cron}" == "true" ]]; then
 
    if [[ "${_set_email}" == "true" ]]; then
       # Replace the existing email in the crontab
-      [[ "${_verbose}" == "true" ]] && printf "Updating crontab email to %s\n\n" "${_email}"
-      sed -i "/^MAILTO/d" existing.cron
-      echo "MAILTO=\"${_email}\"" >> final.cron
+      if [[ "${_verbose}" == "true" ]]; then
+         printf "Updating crontab/scrontab email to %s\n\n" "${_email}"
+      fi
+
+      if [[ "${_use_scron}" == true ]]; then
+         sed -i "s/.*--mail-user.*/#SCRON --mail-user=\"${_email}\"/" tests.cron
+      else
+         sed -i "s/^MAILTO.*/MAILTO=\"${_email}\"/" existing.cron
+      fi
    fi
 
    cat existing.cron tests.cron >> final.cron
@@ -525,7 +575,7 @@ if [[ "${_update_cron}" == "true" ]]; then
       echo "#######################"
    fi
 
-   crontab final.cron
+   ${_crontab_cmd} final.cron
 else
    _message="Add the following to your crontab or scrontab to start running:"
    _cron_tests=$(cat tests.cron)
@@ -537,10 +587,12 @@ else
 fi
 
 # Cleanup
-[[ "${_debug}" == "false" ]] && rm -f final.cron existing.cron tests.cron "${_verbose_flag}"
+if [[ "${_debug}" == "false" ]]; then
+    rm -f final.cron existing.cron tests.cron "${_verbose_flag}"
+fi
 
 echo "Success!!"
-if [[ "${_set_email}" == true ]]; then
+if [[ "${_set_email}" == true && "${_debug}" == "true" ]]; then
    final_message=$'Success!\n'"${final_message:-}"
    _subject="generate_workflow.sh completed successfully" send_email "${final_message}"
 fi

@@ -1,27 +1,37 @@
-BASE_GIT: '/gpfs/f6/bil-fire8/world-shared/global/glopara/git'
-DMPDIR: '/gpfs/f6/bil-fire8/world-shared/global/glopara/dump'
-BASE_DATA: '/gpfs/f6/bil-fire8/world-shared/global/glopara'
-BASE_IC: '/gpfs/f6/bil-fire8/world-shared/global/glopara/data/ICSDIR'
-PACKAGEROOT: '/gpfs/f6/bil-fire8/world-shared/global/glopara/nwpara'
-COMINsyn: '/gpfs/f6/bil-fire8/world-shared/global/glopara/com/syndat'
-HOMEDIR: '/gpfs/f6/bil-fire8/scratch/${USER}'
-STMP: '/gpfs/f6/bil-fire8/scratch/${USER}'
-PTMP: '/gpfs/f6/bil-fire8/scratch/${USER}'
+BASE_GIT: '/gpfs/f6/drsa-precip3/world-shared/role.glopara/git'
+DMPDIR: '/gpfs/f6/drsa-precip3/world-shared/role.glopara/dump'
+BASE_DATA: '/gpfs/f6/drsa-precip3/world-shared/role.glopara/data'
+BASE_IC: '/gpfs/f6/drsa-precip3/world-shared/role.glopara/data/ICSDIR'
+PACKAGEROOT: '/gpfs/f6/drsa-precip3/world-shared/role.glopara/nwpara'
+COMINsyn: '/gpfs/f6/drsa-precip3/world-shared/role.glopara/com/syndat'
+HOMEDIR: '/gpfs/f6/${ACCOUNT}/scratch/${USER}'
+STMP: '/gpfs/f6/${ACCOUNT}/scratch/${USER}'
+PTMP: '/gpfs/f6/${ACCOUNT}/scratch/${USER}'
 NOSCRUB: $HOMEDIR
-ACCOUNT: bil-fire8
+ACCOUNT: drsa-precip3
 SCHEDULER: slurm
 QUEUE: normal
 QUEUE_SERVICE: normal
+QUEUE_DTN: 'hpss'
 PARTITION_BATCH: batch
 PARTITION_SERVICE: batch
+PARTITION_DTN: 'dtn_f5_f6'
+PARTITION_CRON: 'cron_c6'
 RESERVATION: ''
 CLUSTERS: 'c6'
+CLUSTERS_DTN: 'es'
 CHGRP_RSTPROD: 'NO'
 CHGRP_CMD: 'chgrp rstprod'
+# TODO enable HPSS archiving by default when DTN/f6 sluggishness is resolved
 HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global
 LOCALARCH: 'NO'
 ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
-SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
+DO_TRACKER: 'YES'
+DO_GENESIS: 'YES'
+DO_METP: 'NO'
+SUPPORTED_RESOLUTIONS: ['C768', 'C384', 'C192', 'C96', 'C48']
+AERO_INPUTS_DIR: '/gpfs/f6/drsa-precip3/world-shared/role.glopara/data/gocart_emissions'
+USE_SCRONTAB: 'YES'

@@ -1,6 +1,8 @@
 name: Static Data Update
 description: Request static data be added or updated
 labels: ["Static Data Mgmt"]
+type: "task"
+projects: ["NOAA-EMC/41"]
 assignees:
   - KateFriedman-NOAA
   - WalterKolczynski-NOAA
