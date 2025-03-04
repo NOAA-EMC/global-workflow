@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -74,7 +74,7 @@ host=$(hostname)
 
 source "${HOMEGFS_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules | wcoss2 | gaea)
+  hera | orion | hercules | wcoss2 | gaeac5 | gaeac6 )
     echo "Launch Jenkins Java Controler on ${MACHINE_ID}";;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -84,7 +84,7 @@ esac
 LOG=lanuched_agent-$(date +%Y%m%d%M).log
 rm -f "${LOG}"
 
-source "${HOMEGFS_}/ush/module-setup.sh"
+HOMEgfs="${HOMEGFS_}" source "${HOMEGFS_}/ush/module-setup.sh"
 module use "${HOMEGFS_}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
@@ -103,7 +103,10 @@ echo "JAVA VERSION: "
 ${JAVA} -version
 
 GH=$(command -v gh || echo "${HOME}/bin/gh")
-[[ -f "${GH}" ]] || ( echo "ERROR: GitHub CLI (gh) not found. (exiting with error)"; exit 1 )
+if [[ ! -f "${GH}" ]]; then
+   echo "FATAL ERROR: GitHub CLI (gh) not found. (exiting with error)"
+   exit 1
+fi
 ${GH} --version
 export GH
 

@@ -126,11 +126,13 @@ if [ $DO_CALC_ANALYSIS == "YES" ]; then
    export OMP_NUM_THREADS=$NTHREADS_CHGRES
    SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS_ENKF}.txt}
 
-   if [ $USE_CFP = "YES" ]; then
-      [[ -f $DATA/mp_chgres.sh ]] && rm $DATA/mp_chgres.sh
+   if [[ "${USE_CFP}" == "YES" ]]; then
+      if [[ -f "${DATA}/mp_chgres.sh" ]]; then
+          rm "${DATA}/mp_chgres.sh"
+      fi
    fi
 
-   nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
+   nfhrs=$(echo "${IAUFHRS_ENKF}" | sed 's/,/ /g')
    for FHR in $nfhrs; do
      echo "Regridding deterministic forecast for forecast hour $FHR"
      rm -f chgres_nc_gauss0$FHR.nml

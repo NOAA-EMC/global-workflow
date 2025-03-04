@@ -119,7 +119,9 @@ HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS_ENKF}.txt}
 ANAVINFO=${ANAVINFO:-${FIXgfs}/gsi/global_anavinfo.l${LEVS_ENKF}.txt}
 VLOCALEIG=${VLOCALEIG:-${FIXgfs}/gsi/vlocal_eig_l${LEVS_ENKF}.dat}
 ENKF_SUFFIX="s"
-[[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
+if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
+    ENKF_SUFFIX=""
+fi
 
 ################################################################################
 # Preprocessing
@@ -147,9 +149,13 @@ ${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"
 ################################################################################
 
 if [ $USE_CFP = "YES" ]; then
-   [[ -f $DATA/untar.sh ]] && rm $DATA/untar.sh
-   [[ -f $DATA/mp_untar.sh ]] && rm $DATA/mp_untar.sh
-   cat > $DATA/untar.sh << EOFuntar
+   if [[ -f "${DATA}/untar.sh" ]]; then
+       rm "${DATA}/untar.sh"
+   fi
+   if [[ -f "${DATA}/mp_untar.sh" ]]; then
+       rm "${DATA}/mp_untar.sh"
+   fi
+   cat > "${DATA}/untar.sh" << EOFuntar
 #!/bin/sh
 memchar=\$1
 COMOUT_ATMOS_ANALYSIS=\$2
@@ -423,7 +429,9 @@ cat stdout stderr > "${COMOUT_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
 ################################################################################
 #  Postprocessing
 cd "$pwd"
-[[ $mkdata = "YES" ]] && rm -rf "${DATA}"
+if [[ "${mkdata}" == "YES" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit ${err}

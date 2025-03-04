@@ -26,7 +26,7 @@ case ${step} in
     ;;
 
   "eupd")
-    case ${CASE} in
+    case "${CASE}" in
       "C384")
         export ntasks=80
         ;;
