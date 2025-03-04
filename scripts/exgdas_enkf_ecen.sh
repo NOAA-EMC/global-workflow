@@ -102,7 +102,9 @@ fi
 cd $DATA || exit 99
 
 ENKF_SUFFIX="s"
-[[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
+if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
+    ENKF_SUFFIX=""
+fi
 
 ################################################################################
 # Link ensemble member guess, analysis and increment files
@@ -254,8 +256,10 @@ if [ $RECENTER_ENKF = "YES" ]; then
 
       export OMP_NUM_THREADS=$NTHREADS_CHGRES
 
-      [[ -f $chgresnml ]] && rm -f $chgresnml
-      cat > $chgresnml << EOF
+      if [[ -f "${chgresnml}" ]]; then
+          rm -f "${chgresnml}"
+      fi
+      cat > "${chgresnml}" << EOF
 &${nmltitle}_setup
   i_output=$LONB_ENKF
   j_output=$LATB_ENKF
@@ -300,7 +304,9 @@ EOF
 
       # make the small namelist file for incvars_to_zero
 
-      [[ -f recenter.nml ]] && rm recenter.nml
+      if [[ -f recenter.nml ]]; then
+          rm recenter.nml
+      fi
       cat > recenter.nml << EOF
 &recenter
   incvars_to_zero = $INCREMENTS_TO_ZERO
@@ -333,7 +339,9 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
    . prep_step
 
    $NCP $CALCINCEXEC $DATA
-   [[ -f calc_increment.nml ]] && rm calc_increment.nml
+   if [[ -f calc_increment.nml ]]; then
+       rm calc_increment.nml
+   fi
    cat > calc_increment.nml << EOF
 &setup
   datapath = './'
@@ -360,7 +368,9 @@ done # loop over analysis times in window
 ################################################################################
 # Postprocessing
 cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+if [[ "${mkdata}" == "YES" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
-exit ${err}
+exit 0

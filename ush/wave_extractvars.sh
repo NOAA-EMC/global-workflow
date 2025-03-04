@@ -18,7 +18,9 @@ com_dir=${!com_varname}
 
 subdata=${1}
 
-[[ -d "${subdata}" ]] || mkdir -p "${subdata}"
+if [[ ! -d "${subdata}" ]]; then
+   mkdir -p "${subdata}"
+fi
 
 for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); do
   fnh=$(printf "%3.3d" "${nh}")
