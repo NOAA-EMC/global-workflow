@@ -52,8 +52,8 @@ for (( nh = FHMIN_GFS + fhout_ocnice; nh <= FHMAX_GFS; nh = nh + fhout_ocnice ))
 
   if [[ -f "${infile}" ]]; then #check if input file exists before extraction
     if ! cpfs "${infile}" "${new_infile}"; then
-      echo "WARNING: Failed to copy ${infile} to ${new_infile}. Skipping."
-      continue
+      echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
+      exit 1
     fi
     varsrequested=$(paste -s "${varlist}")
     varsinfile=$(cdo -showname "${new_infile}")

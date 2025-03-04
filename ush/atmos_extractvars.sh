@@ -74,8 +74,8 @@ for outtype in "f2d" "f3d"; do
       if [[ -f "${infile}" ]]; then # check if input file exists before extraction
         new_infile="${outdirpre}/$(basename "${infile}")_ext"
         if ! cpfs "${infile}" "${new_infile}"; then
-          echo "WARNING: Failed to copy ${infile} to ${new_infile}. Skipping."
-          continue
+          echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
+          exit 1
         fi
         # shellcheck disable=SC2312
         ${WGRIB2} "${new_infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
@@ -94,8 +94,8 @@ for outtype in "f2d" "f3d"; do
         if [[ -f "${infile}" ]]; then # check if input file exists before extraction
           new_infile="${outdirpre}/$(basename "${infile}")_ext"
           if ! cpfs "${infile}" "${new_infile}"; then
-            echo "WARNING: Failed to copy ${infile} to ${new_infile}. Skipping."
-            continue
+            echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
+            exit 1
           fi
           # shellcheck disable=SC2312
           ${WGRIB2} "${new_infile}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
