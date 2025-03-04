@@ -27,10 +27,31 @@ logger.setLevel(logging.DEBUG)
 
 
 class FetchFIXdata():
+    """Fetch a subset of FIX data from NOAA s3 bucket.
+    """
 
     def __init__(self, atmgridarray=['C48'], ocngridarray=['500'],
-                 fix_bucket=None, localdir=None, verbose=0):
+                 fix_bucket=None, fix_ver=None, localdir=None, verbose=0):
+        """Constructor for FetchFIXdata
+        The constructor is responsible for collecting necessary parameters.
 
+        Parameters
+        ----------
+        atmgrdiarray:
+            A list of ATM grids
+        ocngrdiarray:
+            A list of OCN grids
+        fix_bucket:
+            NOAA s3 bucket
+        fix_ver:
+            FIX version file
+        localdir:
+            Local dir to store the subset of FIX data.
+
+        Returns
+        -------
+        None
+        """
         # self.aws_fix_bucket = f's3://noaa-nws-global-pds/fix'
         self.aws_fix_bucket = fix_bucket
         self.aws_cp = f'aws --no-sign-request s3 cp'
@@ -39,13 +60,20 @@ class FetchFIXdata():
         self.atmgridarray = atmgridarray
         self.ocngridarray = ocngridarray
         self.localdir = localdir
+        self.fix_ver = fix_ver
         self.verbose = verbose
 
         if (os.path.isdir(localdir)):
             logger.info(f'Prepare to download FIX data for {atmgrid} and {ocngrid} to {localdir}')
         else:
-            logger.info(f'local dir: <{localdir}> does not exist. Stop')
-            sys.exit(-1)
+            logger.error(f'local dir: <{localdir}> does not exist. Stop')
+            raise SystemExit
+
+        if (os.path.isfile(fix_ver)):
+            logger.info(f'Prepare to read FIX data for {atmgrid} and {ocngrid} to {fix_ver}')
+        else:
+            logger.error(f'File fix_ver: <{fix_ver}> does not exist. Stop')
+            raise SystemExit
 
         self.verdict = {}
         self.s3dict = {}
@@ -221,16 +249,17 @@ class FetchFIXdata():
                 logger.info('returned value:', returned_value)
 
     # --------------------------------------------------------------------------
-    def set_fix_ver_from_gwhome(self, gwhome, verdict):
+    def set_fix_ver_from_gwhome(self, verdict):
 
         fix_ver_file = f'{gwhome}/versions/fix.ver'
-        self.fix_ver_dict = verdict
+        self.fix_ver_dict = {}
         if (os.path.isfile(fix_ver_file)):
             with open(fix_ver_file, "r") as file:
                 for line in file.readlines():
                     if (line.find('export ') >= 0):
-                        headstr, _, value = line.strip().partition('=')
-                        exphead, _, key = headstr.partition(' ')
+                       #headstr, _, value = line.strip().partition('=')
+                       #exphead, _, key = headstr.partition(' ')
+                        key, value = line.replace('export ', '', 1).split('=')
                         self.fix_ver_dict[key] = value
         else:
             logger.info(f'fix_ver_file: {fix_ver_file}s does not exist.')
@@ -254,8 +283,8 @@ def namespace_to_dict(namespace):
 
 if __name__ == '__main__':
 
-    atmgridlist = ['C48', 'C96', 'C192', 'C384', 'C768', 'C1152']
-    ocngridlist = ['500', '100', '050', '025']
+    ATMGRIDLIST = ['C48', 'C96', 'C192', 'C384', 'C768', 'C1152']
+    OCNGRIDLIST = ['500', '100', '050', '025']
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true",
@@ -264,28 +293,14 @@ if __name__ == '__main__':
                         help="ATM grid, like: C48, C96, C192, C384, C768, C1152")
     parser.add_argument("-o", "--ocngrid", type=str, required=True,
                         help="OCN grid, like: 500, 100, 050, 025")
-    parser.add_argument("--localdir", type=str, required=True,
+    parser.add_argument("-d", "--localdir", type=str, required=True,
                         help="local directory to store FIX data subset")
-    parser.add_argument("--gwhome", type=str, default='unknown',
-                        help="GW home diretory where can find fix.ver")
-    parser.add_argument("--fix_bucket", type=str, default='s3://noaa-nws-global-pds/fix',
+    parser.add_argument("-f", "--fix_ver", type=str, required=True,
+                        default='unknown',
+                        help="fix.ver file")
+    parser.add_argument("-b", "--fix_bucket", type=str, required=True,
+                        default='s3://noaa-nws-global-pds/fix',
                         help="S3 Bucket directory of FIX data")
-    parser.add_argument("--aer_ver", type=str, default='20220805', help="AER version")
-    parser.add_argument("--am_ver", type=str, default='20220805', help="AM version")
-    parser.add_argument("--chem_ver", type=str, default='20220805', help="chem version")
-    parser.add_argument("--cice_ver", type=str, default='20240416', help="cice version")
-    parser.add_argument("--cpl_ver", type=str, default='20230526', help="cpl version")
-    parser.add_argument("--datm_ver", type=str, default='20220805', help="datm version")
-    parser.add_argument("--glwu_ver", type=str, default='20220805', help="glwu version")
-    parser.add_argument("--gsi_ver", type=str, default='20240208', help="gsi version")
-    parser.add_argument("--lut_ver", type=str, default='20220805', help="lut version")
-    parser.add_argument("--mom6_ver", type=str, default='20240416', help="mom6 version")
-    parser.add_argument("--orog_ver", type=str, default='20231027', help="orog version")
-    parser.add_argument("--reg2grb2_ver", type=str, default='20220805', help="reg2grb2 version")
-    parser.add_argument("--sfc_climo_ver", type=str, default='20220805', help="sfc_climo version")
-    parser.add_argument("--ugwd_ver", type=str, default='20220805', help="ugwd version")
-    parser.add_argument("--verif_ver", type=str, default='20220805', help="verif version")
-    parser.add_argument("--wave_ver", type=str, default='20220805', help="wave version")
     args = parser.parse_args()
 
     if args.verbose:
@@ -300,9 +315,9 @@ if __name__ == '__main__':
         atmgridarray = [atmgrid]
 
     for grid in atmgridarray:
-        if (grid not in atmgridlist):
+        if (grid not in ATMGRIDLIST):
             logger.info(f'atmgrid: {grid}')
-            logger.info(f'is not in supported grids: {atmgridlist}')
+            logger.info(f'is not in supported grids: {ATMGRIDLIST}')
             sys.exit(-1)
 
     ocngrid = args.ocngrid
@@ -312,23 +327,16 @@ if __name__ == '__main__':
         ocngridarray = [ocngrid]
 
     for grid in ocngridarray:
-        if (grid not in ocngridlist):
+        if (grid not in OCNGRIDLIST):
             logger.info(f'ocngrid: {grid}')
-            logger.info(f'is not in supported grids: {ocngridlist}')
+            logger.info(f'is not in supported grids: {OCNGRIDLIST}')
             sys.exit(-1)
-
-    verdict = namespace_to_dict(args)
 
     # ------------------------------------------------------------------
     ffd = FetchFIXdata(atmgridarray=atmgridarray,
                        ocngridarray=ocngridarray,
                        fix_bucket=args.fix_bucket,
                        localdir=args.localdir, verbose=args.verbose)
-
-    if (args.gwhome is None):
-        ffd.set_default_fix_ver(verdict)
-    else:
-        ffd.set_fix_ver_from_gwhome(args.gwhome, verdict)
 
     ffd.update_s3dict()
     ffd.fetchdata()
