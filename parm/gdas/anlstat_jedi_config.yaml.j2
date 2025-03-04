@@ -9,6 +9,17 @@ aero:
   jcb_algo_yaml: '{{ JCB_ALGO_YAML }}'
   jcb_algo: 'anlstat'
   base_config: '{{ STAT_BASE_CONFIG_YAML }}'
+atmos:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ JEDIEXE }}'
+  mpi_cmd: '{{ APRUN_ANLSTAT }}'
+  stat_file_path: '{{ COMIN_ATMOS_ANALYSIS }}'
+  stat_file_name: 'radstat'
+  # jedi_args: None
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/stat/atmos/jcb-base.yaml.j2'
+  jcb_algo_yaml: '{{ JCB_ALGO_YAML }}'
+  jcb_algo: 'anlstat'
+  base_config: '{{ STAT_BASE_CONFIG_YAML }}'
 snow:
   rundir: '{{ DATA }}'
   exe_src: '{{ JEDIEXE }}'

@@ -7,6 +7,12 @@ aero:
     input file: "diag_viirs_n20_aod_{{ current_cycle | to_YMDH }}.nc"
     output file: "viirs_n20_{{ current_cycle | to_YMDH }}_output_aod.nc"
 
+atmos:
+  ob spaces:
+  - name: amsua_n19
+    input file: "diag_amsua_n19_ges.{{ current_cycle | to_YMDH }}.nc4"
+    output file: "amsua_n19_{{ current_cycle | to_YMDH }}_output_atmos.nc"
+
 snow:
   ob spaces:
   - name: ims_snow

@@ -29,6 +29,8 @@ if __name__ == '__main__':
         StatAnl.task_config['STAT_ANALYSES'].append('aero')
     if StatAnl.task_config.DO_JEDISNOWDA:
         StatAnl.task_config['STAT_ANALYSES'].append('snow')
+    if StatAnl.task_config.DO_JEDIATMVAR:
+        StatAnl.task_config['STAT_ANALYSES'].append('atmos')
 
     # Initialize JEDI variational analysis
     StatAnl.initialize()
