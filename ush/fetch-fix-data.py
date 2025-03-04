@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# cfetch-fix-data.py
+# fetch-fix-data.py
 # wei.huang@noaa.gov
 # 2025-02-26
 # script to download a subset of FIX data to local machines.
@@ -13,7 +13,7 @@ from pathlib import Path
 import logging
 
 # Create and configure logger
-logging.basicConfig(filename="cfetch-fix-data.log",
+logging.basicConfig(filename="fetch-fix-data.log",
                     format='%(asctime)s %(message)s',
                     filemode='w')
 
@@ -63,10 +63,10 @@ class FetchFIXdata():
         self.fix_ver = fix_ver
         self.verbose = verbose
 
-        logger.info(f'localdir: {localdir'})
-        logger.info(f'fix_ver: {fix_ver'})
-        logger.info(f'fix_buck: {fix_bucket'})
-        logger.info(f'verbose: {verbose'})
+        logger.info(f'localdir: {localdir}')
+        logger.info(f'fix_ver: {fix_ver}')
+        logger.info(f'fix_buck: {fix_bucket}')
+        logger.info(f'verbose: {verbose}')
 
         if (os.path.isdir(localdir)):
             logger.info(f'Prepare to download FIX data for {atmgrid} and {ocngrid} to {localdir}')
