@@ -19,7 +19,9 @@ datacompress=${4}
 fhout_ocnice=${5}
 comout_rfcst_prod_ocnice=${6}
 
-[[ -d "${subdata}" ]] || mkdir -p "${subdata}"
+if [[ ! -d "${subdata}" ]]; then
+   mkdir -p "${subdata}"
+fi
 
 for (( nh = FHMIN_GFS + fhout_ocnice; nh <= FHMAX_GFS; nh = nh + fhout_ocnice )); do
   fnh=$(printf "%3.3d" "${nh}")

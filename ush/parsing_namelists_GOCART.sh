@@ -33,7 +33,9 @@ GOCART_namelists() {
       base_in="$(basename "${template_in}")"
       atparse < "${template_in}" >> "${DATA}/${base_in}"
       status=$?
-      [[ ${status} -ne 0 ]] && exit "${status}"
+      if [[ ${status} -ne 0 ]]; then
+          exit "${status}"
+      fi
     done
 
     # attempt to generate ExtData configuration file if not provided

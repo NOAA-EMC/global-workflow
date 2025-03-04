@@ -31,7 +31,7 @@ case ${step} in
     ;;
 
   "eupd")
-    case ${CASE} in
+    case "${CASE}" in
       "C1152" | "C768")
         export ntasks=80
         export threads_per_task=20
