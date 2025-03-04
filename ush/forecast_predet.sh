@@ -500,7 +500,7 @@ FV3_predet(){
 
   if [[ "${new_o3forc:-YES}" == "YES" ]]; then
     if [[ "${o3forc_params:-McCormack}" == "McCormack-empirical-sh-ozh" ]]; then
-      O3FORC="ozprdlos_2015_new_sbuvO3_tclm15_nuchem_zhozhvlogp.f77"
+      O3FORC="ozprdlos_2015_new_sbuvO3_tclm15_nuchem_shozhvlogp.f77"
     else
       O3FORC="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
     fi
