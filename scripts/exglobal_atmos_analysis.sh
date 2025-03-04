@@ -100,10 +100,10 @@ OSCATBF=${OSCATBF:-${COMIN_OBS}/${OPREFIX}oscatw.tm00.bufr_d${OSUFFIX}}
 RAPIDSCATBF=${RAPIDSCATBF:-${COMIN_OBS}/${OPREFIX}rapidscatw.tm00.bufr_d${OSUFFIX}}
 GSNDBF=${GSNDBF:-${COMIN_OBS}/${OPREFIX}goesnd.tm00.bufr_d${OSUFFIX}}
 GSNDBF1=${GSNDBF1:-${COMIN_OBS}/${OPREFIX}goesfv.tm00.bufr_d${OSUFFIX}}
-#B1HRS2=${B1HRS2:-${COMIN_OBS}/${OPREFIX}1bhrs2.tm00.bufr_d${OSUFFIX}} # HIRS temporarily disabled due to CRTM versioning issues
+B1HRS2=${B1HRS2:-${COMIN_OBS}/${OPREFIX}1bhrs2.tm00.bufr_d${OSUFFIX}} # HIRS temporarily disabled due to CRTM versioning issues
 B1MSU=${B1MSU:-${COMIN_OBS}/${OPREFIX}1bmsu.tm00.bufr_d${OSUFFIX}}
-#B1HRS3=${B1HRS3:-${COMIN_OBS}/${OPREFIX}1bhrs3.tm00.bufr_d${OSUFFIX}} # HIRS temporarily disabled due to CRTM versioning issues
-#B1HRS4=${B1HRS4:-${COMIN_OBS}/${OPREFIX}1bhrs4.tm00.bufr_d${OSUFFIX}} # HIRS temporarily disabled due to CRTM versioning issues
+B1HRS3=${B1HRS3:-${COMIN_OBS}/${OPREFIX}1bhrs3.tm00.bufr_d${OSUFFIX}} # HIRS temporarily disabled due to CRTM versioning issues
+B1HRS4=${B1HRS4:-${COMIN_OBS}/${OPREFIX}1bhrs4.tm00.bufr_d${OSUFFIX}} # HIRS temporarily disabled due to CRTM versioning issues
 B1AMUA=${B1AMUA:-${COMIN_OBS}/${OPREFIX}1bamua.tm00.bufr_d${OSUFFIX}}
 B1AMUB=${B1AMUB:-${COMIN_OBS}/${OPREFIX}1bamub.tm00.bufr_d${OSUFFIX}}
 AQUAAMUA=${AQUAAMUA:-${COMIN_OBS}/${OPREFIX}aquaamua.tm00.bufr_d${OSUFFIX}}
@@ -153,11 +153,11 @@ TCVITL=${TCVITL:-${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00}
 B1AVHAM=${B1AVHAM:-${COMIN_OBS}/${OPREFIX}avcsam.tm00.bufr_d${OSUFFIX}}
 B1AVHPM=${B1AVHPM:-${COMIN_OBS}/${OPREFIX}avcspm.tm00.bufr_d${OSUFFIX}}
 HDOB=${HDOB:-${COMIN_OBS}/${OPREFIX}hdob.tm00.bufr_d${OSUFFIX}}
-OMIEFFNC=${OMIEFFNC:-${COMIN_OBS/OMIeff-adj.${PDY}_${cyc}z.nc}
-OMPSNMEFFNC=${OMPSNMEFFNC:-${COMIN_OBS/OMPSNM.${PDY}_${cyc}z.nc}
-OMPSNPNC=${OMPSNPNC:-${COMIN_OBS/OMPSNP.${PDY}_${cyc}z.nc}
-OMPSLPNC=${OMPSLPNC:-${COMIN_OBS/OMPS-LPoz-Vis.${PDY}_${cyc}z.nc}
-MLS55NC=${MLS55NC:-${COMIN_OBS/MLS-v5.0-oz.${PDY}_${cyc}z.nc}
+OMIEFFNC=${OMIEFFNC:-${COMIN_OBS}/OMIeff-adj.${PDY}_${cyc}z.nc}}
+OMPSNMEFFNC=${OMPSNMEFFNC:-${COMIN_OBS}/OMPSNM.${PDY}_${cyc}z.nc}}
+OMPSNPNC=${OMPSNPNC:-${COMIN_OBS}/OMPSNP.${PDY}_${cyc}z.nc}}
+OMPSLPNC=${OMPSLPNC:-${COMIN_OBS}/OMPS-LPoz-Vis.${PDY}_${cyc}z.nc}}
+MLS55NC=${MLS55NC:-${COMIN_OBS}/MLS-v5.0-oz.${PDY}_${cyc}z.nc}}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
@@ -310,6 +310,7 @@ SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
 HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
 OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
 OBS_INPUT=${OBS_INPUT:-${FIXgfs}/gsi/build_gsinfo/obs_input_ops.txt}
+HIRS_FIX=${HIRS_FIX:-${CRTM_FIX}}
 
 # GSI namelist
 SETUP=${SETUP:-""}
@@ -434,7 +435,12 @@ fi
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
 for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
-   ${NLN} ${CRTM_FIX}/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
+   instr=`echo $file | cut -c1-4`
+   if [ $instr == "hirs" ]; then
+      ${NLN} ${HIRS_FIX}/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
+   else
+      ${NLN} ${CRTM_FIX}/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
+   fi
    ${NLN} ${CRTM_FIX}/${file}.TauCoeff.bin ./crtm_coeffs/${file}.TauCoeff.bin
 done
 ${NLN} ${CRTM_FIX}/amsua_metop-a_v2.SpcCoeff.bin ./crtm_coeffs/amsua_metop-a_v2.SpcCoeff.bin
