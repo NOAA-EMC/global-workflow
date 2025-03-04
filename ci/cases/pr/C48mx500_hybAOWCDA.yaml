@@ -19,7 +19,6 @@ arguments:
   yaml: {{ HOMEgfs }}/ci/cases/yamls/soca_hyb_gfs_defaults_ci.yaml
 
 skip_ci_on_hosts:
-  - wcoss2
   - gaeac5
   - gaeac6
   - orion
