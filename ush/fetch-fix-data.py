@@ -75,7 +75,6 @@ class FetchFIXdata():
             logger.error(f'File fix_ver: <{fix_ver}> does not exist. Stop')
             raise SystemExit
 
-        self.verdict = {}
         self.s3dict = {}
         self.s3dict['raworog'] = f'raw/orog'
 
@@ -84,64 +83,34 @@ class FetchFIXdata():
         else:
             self.targetdir = self.localdir
 
-    # --------------------------------------------------------------------------
-    def update_s3dict(self):
-
-        self.update_s3dick_grid_independent()
-        self.add_grid_data()
-
-        if (self.verbose):
-            self.printinfo()
+        self.get_fix_ver_dict()
+        self.create_s3dict()
 
     # --------------------------------------------------------------------------
-    def update_s3dick_grid_independent(self):
+    def create_s3dict(self):
 
         for key in self.fix_ver_dict.keys():
             val = self.fix_ver_dict[key]
-            if (key == 'aer_ver'):
-                self.s3dict['aer'] = f'aer/{val}'
-            elif (key == 'am_ver'):
-                self.s3dict['am'] = f'am/{val}'
-            elif (key == 'chem_ver'):
+            s3key, versym = val.split('_')
+            if (s3key == 'chem'):
                 self.s3dict['fimdata_chem'] = f'chem/{val}/fimdata_chem'
                 self.s3dict['Emission_data'] = f'chem/{val}/Emission_data'
-            elif (key == 'datm_ver'):
+            elif (s3key == 'datm'):
                 self.s3dict['cfsr'] = f'datm/{val}/cfsr'
                 self.s3dict['gefs'] = f'datm/{val}/gefs'
                 self.s3dict['gfs'] = f'datm/{val}/gfs'
                 self.s3dict['mom6'] = f'datm/{val}/mom6'
-            elif (key == 'glwu_ver'):
-                self.s3dict['glwu'] = f'glwu/{val}'
-            elif (key == 'gsi_ver'):
-                self.s3dict['gsi'] = f'gsi/{val}'
-            elif (key == 'lut_ver'):
-                self.s3dict['lut'] = f'lut/{val}'
-            elif (key == 'mom6_ver'):
-                self.s3dict['mom6post'] = f'mom6/{val}/post'
-            elif (key == 'reg2grb2_ver'):
-                self.s3dict['reg2grb2'] = f'reg2grb2/{val}'
-            elif (key == 'sfc_climb_ver'):
-                self.s3dict['sfc_climo'] = f'sfc_climo/{val}'
-            elif (key == 'verif_ver'):
-                self.s3dict['verif'] = f'verif/{val}'
-            elif (key == 'wave_ver'):
-                self.s3dict['wave'] = f'wave/{val}'
+            else:
+                self.s3dict[s3key] = f'{s3key}/{val}'
+                if (s3key in ['orog', 'ugwd']):
+                    self.add_atmgrid2s3dict(s3key, key, val)
+                elif (s3key in ['mom6', 'cice']):
+                    self.add_ocngrid2s3dict(s3key, key, val)
+                elif (s3key == 'cpl'):
+                    self.add_cpl2s3dict(s3key, key, val)
 
-    # --------------------------------------------------------------------------
-    def add_grid_data(self):
-
-        for key in self.fix_ver_dict.keys():
-            val = self.fix_ver_dict[key]
-            if (key == 'orog_ver'):
-                self.add_atmgrid2s3dict('orog', key, val)
-            elif (key == 'ugwd_ver'):
-                self.add_atmgrid2s3dict('ugwd', key, val)
-            elif (key == 'mom6_ver'):
-                self.add_ocngrid2s3dict('mom6', key, val)
-            elif (key == 'cice_ver'):
-                self.add_ocngrid2s3dict('cice', key, val)
-            elif (key == 'cpl_ver'):
-                self.add_cpl2s3dict('cpl', key, val)
+        if (self.verbose):
+            self.printinfo()
 
     # --------------------------------------------------------------------------
     def add_atmgrid2s3dict(self, varname, key, val):
@@ -249,34 +218,18 @@ class FetchFIXdata():
                 logger.info('returned value:', returned_value)
 
     # --------------------------------------------------------------------------
-    def set_fix_ver_from_gwhome(self, verdict):
+    def get_fix_ver_dict(self):
+        """Get fix ver as dictionay from FIX ver file.
+        """
 
-        fix_ver_file = f'{gwhome}/versions/fix.ver'
         self.fix_ver_dict = {}
-        if (os.path.isfile(fix_ver_file)):
-            with open(fix_ver_file, "r") as file:
-                for line in file.readlines():
-                    if (line.find('export ') >= 0):
-                       #headstr, _, value = line.strip().partition('=')
-                       #exphead, _, key = headstr.partition(' ')
-                        key, value = line.replace('export ', '', 1).split('=')
-                        self.fix_ver_dict[key] = value
-        else:
-            logger.info(f'fix_ver_file: {fix_ver_file}s does not exist.')
-
-    # ------------------------------------------------------------------------
-    def set_default_fix_ver(self, verdict):
-
-        self.fix_ver_dict = verdict
-
-# -----------------------------------------------------------------------------
-
-
-def namespace_to_dict(namespace):
-    return {
-        k: namespace_to_dict(v) if isinstance(v, argparse.Namespace) else v
-        for k, v in vars(namespace).items()
-    }
+        with open(self.fix_ver, "r") as file:
+            for line in file.readlines():
+                if (line.find('export ') >= 0):
+                    # headstr, _, value = line.strip().partition('=')
+                    # exphead, _, key = headstr.partition(' ')
+                    key, value = line.replace('export ', '', 1).split('=')
+                    self.fix_ver_dict[key] = value
 
 # ------------------------------------------------------------------------------
 
