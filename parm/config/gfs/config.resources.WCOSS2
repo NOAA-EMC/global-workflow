@@ -13,7 +13,7 @@ case ${step} in
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
         export threads_per_task=8
         # Make ntasks a multiple of 16
-        if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gdas ]]; then
           ntasks=784
         elif [[ "${RUN}" = *gfs ]]; then
           ntasks=832
@@ -25,7 +25,7 @@ case ${step} in
     ;;
 
   "atmanlvar")
-    if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+    if [[ "${RUN}" = *gdas ]]; then
       export tasks_per_node=48
     elif [[ "${RUN}" = *gfs ]]; then
       export tasks_per_node=48

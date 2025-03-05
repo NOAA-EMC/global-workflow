@@ -72,7 +72,7 @@ fi
 case "${fv3_res}" in
     "C48")
         export DELTIM=1200
-        if [[ "${RUN}" = *gfs ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gfs ]]; then
           export layout_x=1
           export layout_y=1
           export nthreads_fv3=1
@@ -99,7 +99,7 @@ case "${fv3_res}" in
         ;;
     "C96")
         export DELTIM=600
-        if [[ "${RUN}" = *gfs ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gfs ]]; then
           export layout_x=6
           export layout_y=8
           export nthreads_fv3=1
@@ -125,7 +125,7 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
         ;;
     "C192")
-        if [[ "${RUN}" = *gfs ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gfs ]]; then
           export layout_x=4
           export layout_y=6
           export nthreads_fv3=2
@@ -154,7 +154,7 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=5
         ;;
     "C384")
-        if [[ "${RUN}" = *gfs ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gfs ]]; then
           export layout_x=8
           export layout_y=8
           export nthreads_fv3=2
@@ -180,7 +180,7 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=8
         ;;
     "C768")
-        if [[ "${RUN}" = *gfs ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gfs ]]; then
           export layout_x=12
           export layout_y=16
           export nthreads_fv3=4
@@ -206,7 +206,7 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
         ;;
     "C1152")
-        if [[ "${RUN}" = *gfs ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gfs ]]; then
           export layout_x=8
           export layout_y=16
           export nthreads_fv3=4
@@ -232,7 +232,7 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
         ;;
     "C3072")
-        if [[ "${RUN}" = *gfs ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gfs ]]; then
           export layout_x=16
           export layout_y=32
           export nthreads_fv3=4
