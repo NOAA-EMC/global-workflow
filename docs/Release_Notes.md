@@ -1,16 +1,11 @@
-GFS V16.3.23 RELEASE NOTES
+GFS V16.4.0 RELEASE NOTES
 
 -------
 PRELUDE
 -------
+TODO: ADD DA UPDATE DETAILS
 
-The GFS is updated for the following:
-
-* workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
-* updated GSI code and convinfo file for saildrone observations
-* ww3_outp is improved for the wave point output
-* bufr station updates to three stations and the addition of 121 new stations
-* obsproc/v1.2.3
+Also included in this upgrade are changes to add an indicator log file for WW3 gridded output.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -19,9 +14,10 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.23
-cd gfs.v16.3.23
-git clone -b EMC-v16.3.23 https://github.com/NOAA-EMC/global-workflow.git .
+
+mkdir gfs.v16.4.0
+cd gfs.v16.4.0
+git clone -b EMC-v16.4.0 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -30,7 +26,7 @@ The checkout script extracts the following GFS components:
 
 | Component | Tag         | POC               |
 | --------- | ----------- | ----------------- |
-| MODEL     | GFS.v16.3.23 | Jun.Wang@noaa.gov |
+| MODEL     | GFS.v16.4.0   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
 | GSI       | gfsda.v16.3.22 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.20 | George.Gayno@noaa.gov |
@@ -54,44 +50,29 @@ cd ../ecf
 ```
 VERSION FILE CHANGES
 --------------------
+* `versions/run.ver` - change `version=v16.4.0` and `gfs_ver=v16.4.0`
 
-* `versions/run.ver` - change `version=v16.3.23` and `gfs_ver=v16.3.23`
-* `versions/MACHINE.ver` - update `obsproc_run_ver=1.2.3`
 
 SORC CHANGES
 ------------
-
-* New UFS_UTILS tag - `emcsfc_snow2mdl` program and associated scripts are updated to process global AFWA snow data
-* New GSI tag - `src/gsi/read_prepbufr.f90` code update for new saildrone subtype
-* New MODEL tag - WW3 program `ww3_outp` and associated scripts are improved to process the per-time-step point outputs more efficiently.
+* New MODEL tag: `GFS.v16.4.0`
 
 JOBS CHANGES
 ------------
-
-* `jobs/JGLOBAL_ATMOS_EMCSFC_SFC_PREP` - new AFWA filename
+* No changes from GFS v16.3.22
 
 PARM/CONFIG CHANGES
 -------------------
-
-In `config.resources.emc.dyn` and `config.resources.nco.static` following resources are changed:
-* for wavepostbndpnt: npe from 240 to 1; wtime from 1hr to 30min
-* for wavepostbndpntbll: npe from 448 to 2; wtime from 1hr to 10min
-* for wavepostpnt: npe from 200 to 3; wtime from 1.5hr to 35min
-
-Bufr station updates:
-* `parm/parm_wave/bull_awips_gfswave`
-* `parm/product/bufr_ij13km.txt`
-* `parm/product/bufr_stalist.meteo.gfs`
+* No changes from GFS v16.3.22
 
 SCRIPT CHANGES
 --------------
-
-* `scripts/exgfs_wave_post_pnt.sh` is changed to be compatible with the  new `ww3_outp`.
+* WW3-related changes to `scripts/exgfs_wave_post_gridded_sbs.sh` and `scripts/exglobal_forecast.sh`. Grid loop and counter updates. Log files are now checked for completion instead of the associated gridded output.
 
 FIX CHANGES
 -----------
 
-* GSI `global_convinfo.txt` fix update for saildrone
+* No changes from GFS v16.3.22
 
 MODULE CHANGES
 --------------
@@ -101,27 +82,18 @@ MODULE CHANGES
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-No longer ingest:
-* `${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb` (`AFWA_NH_FILE`)
-* `${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb` (`AFWA_SH_FILE`)
-
-Now ingest:
-* `${RUN}.${cycle}.snow.usaf.grib2` (`AFWA_GLOBAL_FILE`)
+* No changes from GFS v16.3.22
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-Reduce the ncpu and wtime as follow:
-* for jobs/JGLOBAL_WAVE_POST_BNDPNT; ncpu from 240 to 1; wtime from 1hr to 30min
-* for jobs/JGLOBAL_WAVE_POST_BNDPNTBLL; ncpu from 448 to 2; wtime from 1hr to 10min
-* for jobs/JGLOBAL_WAVE_POST_PNT; ncpu from 200 to 3; wtime from 1.5hr to 35min
+* No changes from GFS v16.3.22
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * wave_post_bndpnt
-  * wave_post_bndpntbll
+* All DA and wave jobs
 * Does this change require a 30-day evaluation?
   * No
 
@@ -148,7 +120,5 @@ DOCUMENTATION
 PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
-George.Gayno@noaa.gov
-Andrew.Collard@noaa.gov
+Matthew.Masarik@noaa.gov
 Jessica.Meixner@noaa.gov
-Ali.Salimi@noaa.gov
