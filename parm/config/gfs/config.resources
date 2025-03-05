@@ -342,7 +342,7 @@ case ${step} in
 
   "snowanl")
     # below lines are for creating JEDI YAML
-    case ${CASE} in
+    case "${CASE}" in
       "C1152" | "C768")
         layout_x=6
         layout_y=6
@@ -371,7 +371,7 @@ case ${step} in
 
   "esnowanl")
     # below lines are for creating JEDI YAML
-    case ${CASE} in
+    case "${CASE}" in
       "C1152" | "C768")
         layout_x=6
         layout_y=6
@@ -408,7 +408,7 @@ case ${step} in
 
   "aeroanlinit")
     # below lines are for creating JEDI YAML
-    case ${CASE} in
+    case "${CASE}" in
       "C1152" | "C768")
         layout_x=8
         layout_y=8
@@ -447,7 +447,7 @@ case ${step} in
 
     threads_per_task=1
 
-    case ${CASE} in
+    case "${CASE}" in
       "C1152" | "C768")
         layout_x=8
         layout_y=8
@@ -486,7 +486,7 @@ case ${step} in
     ;;
 
   "aeroanlgenb")
-    case ${CASE} in
+    case "${CASE}" in
       "C1152" | "C768")
         layout_x=8
         layout_y=8
@@ -841,9 +841,15 @@ case ${step} in
       export UFS_THREADS=${nthreads_ufs:-1}
       nthreads_fv3=1
       nthreads_mediator=1
-      [[ "${DO_WAVE}" == "YES" ]] && nthreads_ww3=1
-      [[ "${DO_OCN}" == "YES" ]] && nthreads_mom6=1
-      [[ "${DO_ICE}" == "YES" ]] && nthreads_cice6=1
+      if [[ "${DO_WAVE}" == "YES" ]]; then
+          nthreads_ww3=1
+      fi
+      if [[ "${DO_OCN}" == "YES" ]]; then
+          nthreads_mom6=1
+      fi
+      if [[ "${DO_ICE}" == "YES" ]]; then
+          nthreads_cice6=1
+      fi
     fi
 
     if (( ntiles > 6 )); then
@@ -1054,7 +1060,9 @@ fi
       ;;
     esac
     tasks_per_node=${ntasks}
-    [[ ${CASE} == "C1152" ]] && tasks_per_node=40
+    if [[ "${CASE}" == "C1152" ]]; then
+        tasks_per_node=40
+    fi
 
     threads_per_task=1
 
@@ -1128,7 +1136,9 @@ fi
     threads_per_task=1
     tasks_per_node=1
     memory="20G"
-    [[ ${CASE} == "C768" || ${CASE} == "C1152" ]] && memory="80GB"
+    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
+        memory="80GB"
+    fi
     ;;
 
   "metp")
@@ -1278,7 +1288,7 @@ fi
       walltime="00:30:00"
     fi
 
-    case ${CASE} in
+    case "${CASE}" in
       "C1152" | "C768")       ntasks=200;;
       "C384")                 ntasks=100;;
       "C192" | "C96" | "C48") ntasks=40;;
@@ -1311,7 +1321,7 @@ fi
 
   "eupd")
     walltime="00:30:00"
-    case ${CASE} in
+    case "${CASE}" in
       "C1152" | "C768")
         ntasks=480
         threads_per_task=6
@@ -1337,7 +1347,7 @@ fi
     walltime="00:10:00"
     ntasks=80
     threads_per_task=4
-    if [[ ${CASE} == "C384" || ${CASE} == "C192" || ${CASE} == "C96" || ${CASE} == "C48" ]]; then
+    if [[ "${CASE}" == "C384" || "${CASE}" == "C192" || "${CASE}" == "C96" || "${CASE}" == "C48" ]]; then
       threads_per_task=2
     fi
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -1357,7 +1367,9 @@ fi
 
   "epos")
     walltime="00:15:00"
-    [[ ${CASE} == "C768" || ${CASE} == "C1152" ]] && walltime="00:25:00"
+    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
+        walltime="00:25:00"
+    fi
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -1368,7 +1380,7 @@ fi
     walltime="02:00:00"
     export ntasks=141
     export ntasks_postsndcfp=9
-    case ${CASE} in
+    case "${CASE}" in
       "C768")
         tasks_per_node=21
         threads_per_task=6

@@ -16,7 +16,10 @@ else
     echo "trying system doxygen"
     doxygen=$(which doxygen)
     rc=$?
-    [[ $rc -ne 0 ]] && (echo "doxygen not found, ABORT!"; exit 1)
+    if [[ "${rc}" -ne 0 ]]; then
+        echo "doxygen not found, ABORT!"
+        exit 1
+    fi
 fi
 
 $doxygen
