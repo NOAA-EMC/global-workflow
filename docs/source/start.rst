@@ -69,6 +69,7 @@ Scrontab instead launches a script and requires SCRON directives to launch an sb
 
 .. code::
 
+   `---`
    :DatabaseType: SQLite3
    :BatchQueueServer: false
    :WorkflowDocType: XML
