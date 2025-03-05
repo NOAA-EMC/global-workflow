@@ -69,7 +69,7 @@ Scrontab instead launches a script and requires SCRON directives to launch an sb
 
 .. code::
 
-   """
+   # This "---" is the required first line of the file
    ---
    :DatabaseType: SQLite3
    :BatchQueueServer: false
@@ -83,4 +83,3 @@ Scrontab instead launches a script and requires SCRON directives to launch an sb
    :SubmitThreads: 8
    :JobQueueTimeout: 45
    :JobAcctTimeout: 45
-   """
