@@ -142,7 +142,13 @@ ush/link_crtm_fix.sh
 ush/mkwfsgbl.sh
 ush/mod_icec.sh
 ush/radmon_ck_stdout.sh
+ush/radmon_diag_ck.sh
 ush/radmon_err_rpt.sh
+ush/radmon_verf_angle.sh
+ush/radmon_verf_bcoef.sh
+ush/radmon_verf_bcor.sh
+ush/radmon_verf_time.sh
+ush/rstprod.sh
 ush/trim_rh.sh
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh

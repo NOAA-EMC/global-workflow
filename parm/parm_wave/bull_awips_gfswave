@@ -181,7 +181,7 @@ export b55020=AGPS40_KWBJ_OSBM01
 export b55033=AGPS40_KWBJ_OSBM02
 export b55035=AGPS40_KWBJ_OSBM03
 export b55039=AGPS40_KWBJ_OSBM04
-# Gulf of Mexico (GX) spectra (4) south from NC and Puerto Rico (2)
+# Gulf of America (GX) spectra (4) south from NC and Puerto Rico (2)
 export b42001=AGGX42_KWBJ_OSBM01
 export b42002=AGGX42_KWBJ_OSBM02
 export b42003=AGGX42_KWBJ_OSBM03

@@ -35,11 +35,11 @@ if [ $machine == "cray" ]; then
 elif [ $machine = "dell" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16.3.0"
 elif [ $machine = "wcoss2" ]; then
-    FIX_DIR="/lfs/h2/emc/global/save/emc.global/FIX/fix_nco_gfsv16.3.0"
+    FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix_nco_gfsv16.3.22"
 elif [ $machine = "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16.3.0"
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16.3.22"
 elif [ $machine = "orion" ]; then
-    FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16.3.0"
+    FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16.3.22"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; do
@@ -155,7 +155,6 @@ cd ${pwd}/../ush                ||exit 8
 #C    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcoef.sh          .
 #C    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcor.sh           .
 #C    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_time.sh           .
-
 
 #------------------------------
 #--link executables
