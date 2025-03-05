@@ -89,7 +89,7 @@ pipeline {
                         HOMEgfs = "${CUSTOM_WORKSPACE}/${aws_gw_name}"
                         sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/${aws_gw_name}; mkdir -p ${CUSTOM_WORKSPACE}/${aws_gw_name}")
                         sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/RUNTESTS; mkdir -p ${CUSTOM_WORKSPACE}/RUNTESTS")
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
+                        // sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
                     }
                     echo "Building and running on ${Machine} in directory ${CUSTOM_WORKSPACE}"
                 }
@@ -126,11 +126,12 @@ pipeline {
                             def gist_url = ""
                             def error_logs = ""
                             def error_logs_message = ""
+                            HOMEgfs = "${CUSTOM_WORKSPACE}/${aws_gw_name}/${aws_gw_name}"
                             dir("${HOMEgfs}/sorc") {
                                 try {
                                     sh(script: 'ls *.sh')	// list files here to make sure all files exist.
                                     sh(script: 'ls ./build_compute.sh')	// list files here to make sure all files exist.
-                                    sh(script: './build_compute.sh all')  // build the global-workflow executables
+                                    sh(script: './build_compute.sh gfs')  // build the global-workflow executables
                                 } catch (Exception error_build) {
                                     echo "Failed to build global-workflow: ${error_build.getMessage()}"
                                     if ( fileExists("logs/error.logs") ) {
