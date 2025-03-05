@@ -15,5 +15,11 @@ analysis:
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endif %}
         {% endfor %}
+        %{ if DO_JEDIATMVAR %}
+        {% for itile in range(6) %}
+        {% for ftype in ["atminc.tile{{ itile+1 }}.nc", "atmi009.tile{{ itile+1 }}.nc", "atmi003.tile{{ itile+1 }}.nc", "radstat", "ratminc.tile{{ itile+1 }}.nc", "ratmi009.tile{{ itile+1 }}.nc", "ratmi003.tile{{ itile+1 }}.nc"] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        {% endfor %}
+        {% endif %}
         {% endfor %} # mem loop
 {% endif %}

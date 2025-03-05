@@ -163,7 +163,7 @@ EOF
         delimiter=""
         IAU_INC_FILES=""
         for iaufhr in "${iaufhrs[@]}"; do
-          if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
+          if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
             for tile in {1..6}; do
               if (( iaufhr == 6 )); then
                 inc_file="atminc.tile${tile}.nc"
@@ -188,7 +188,7 @@ EOF
       else  # "${DOIAU}" == "NO"
         read_increment=".true."
 
-        if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
+        if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
           inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
           increment_file_on_native_grid=".true."
           res_latlon_dynamics="atminc"
@@ -212,7 +212,7 @@ EOF
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] && [[ "${PDY}${cyc}" != "${SDATE}" ]]; then
+        if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
           increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
         else
           increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
