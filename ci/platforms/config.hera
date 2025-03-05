@@ -15,6 +15,6 @@ export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
 # CI BASH test directories
 export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/Bash
 
-export HPC_ACCOUNT=nems
+export HPC_ACCOUNT=fv3-cpu
 export max_concurrent_cases=5
 export max_concurrent_pr=4
