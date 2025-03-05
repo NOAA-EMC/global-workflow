@@ -15,7 +15,7 @@ GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 GDUMP="gdas"
-rCDUMP="${RUN/enkf}"
+export rCDUMP="${RUN/enkf}"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -33,10 +33,12 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 # Run relevant script
 ##############################################
 
-EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atmos_analcalc_fv3jedi.py}
+EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atmos_analysis_calc_fv3jedi.py}
 ${EXSCRIPT}
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+if [[ ${status} -ne 0 ]]; then
+  exit "${status}"
+fi
 
 # Write analysis log file
 echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.loganl.txt"
