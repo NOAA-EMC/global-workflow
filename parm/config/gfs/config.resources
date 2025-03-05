@@ -743,7 +743,7 @@ case ${step} in
         exit 4
       esac
     elif [[ "${RUN}" =~ *gfs ]]; then
-      walltime_gfs="01:00:00"
+      walltime="01:00:00"
       case ${CASE} in
         "C1152" | "C768")
           ntasks=825
@@ -825,13 +825,6 @@ case ${step} in
         declare "${var}"="${!ufs_var_name}"
       fi
     done
-
-    # Will not set mediator threads if we are skipping the mediator
-    if [[ ${_RUN} == "gfs" ]]; then
-      nthreads_mediator=${nthreads_mediator_gfs:-}
-    elif [[ ${_RUN} == "gdas" ]]; then
-      nthreads_mediator=${nthreads_mediator_gdas:-}
-    fi
 
     # Determine if using ESMF-managed threading or traditional threading
     # If using traditional threading, set them to 1
