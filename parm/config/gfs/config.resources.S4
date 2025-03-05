@@ -17,22 +17,34 @@ case ${step} in
         #On the S4-s4 partition, this is accomplished by increasing the task
         #count to a multiple of 32
         if [[ ${PARTITION_BATCH} = "s4" ]]; then
-          export ntasks_gdas=416
-          export ntasks_gfs=416
+          if [[ "${RUN}" =~ *gdas ]]; then
+            export ntasks=416
+          elif [[ "${RUN}" =~ *gfs ]]; then
+            export ntasks=416
+          fi
         fi
         #S4 is small, so run this task with just 1 thread
         export threads_per_task=1
-        export walltime_gdas="02:00:00"
-        export walltime_gfs="02:00:00"
+        if [[ "${RUN}" =~ *gdas ]]; then
+          export walltime="02:00:00"
+        elif [[ "${RUN}" =~ *gfs ]]; then
+          export walltime="02:00:00"
+        fi
         ;;
       "C192" | "C96" | "C48")
         export threads_per_task=4
         if [[ ${PARTITION_BATCH} == "s4" ]]; then
-          export ntasks_gdas=88
-          export ntasks_gfs=88
+          if [[ "${RUN}" =~ *gdas ]]; then
+            export ntasks=88
+          elif [[ "${RUN}" =~ *gfs ]]; then
+            export ntasks=88
+          fi
         elif [[ ${PARTITION_BATCH} == "ivy" ]]; then
-          export ntasks_gdas=90
-          export ntasks_gfs=90
+          if [[ "${RUN}" =~ *gdas ]]; then
+            export ntasks=90
+          elif [[ "${RUN}" =~ *gfs ]]; then
+            export ntasks=90
+          fi
         fi
         ;;
       *)
