@@ -453,7 +453,9 @@ FV3_predet(){
   FNSMCC=${FNSMCC:-"${FIXgfs}/am/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
 
   # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
-  [[ ! -f "${FNSMCC}" ]] && FNSMCC="${FIXgfs}/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
+  if [[ ! -f "${FNSMCC}" ]]; then
+      FNSMCC="${FIXgfs}/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
+  fi
 
   # Grid and orography data
   if [[ "${cplflx}" == ".false." ]] ; then
@@ -499,7 +501,11 @@ FV3_predet(){
   fi
 
   if [[ "${new_o3forc:-YES}" == "YES" ]]; then
-    O3FORC="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
+    if [[ "${o3forc_params:-McCormack}" == "McCormack-empirical-sh-ozh" ]]; then
+      O3FORC="ozprdlos_2015_new_sbuvO3_tclm15_nuchem_shozhvlogp.f77"
+    else
+      O3FORC="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
+    fi
   else
     O3FORC="global_o3prdlos.f77"
   fi

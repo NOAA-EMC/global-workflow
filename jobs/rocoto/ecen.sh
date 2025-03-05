@@ -6,7 +6,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Source FV3GFS workflow modules
 . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 ###############################################################
 # Loop over groups to Execute the JJOB
@@ -21,7 +23,9 @@ for fhr in ${fhrlst}; do
 
     ${HOMEgfs}/jobs/JGDAS_ENKF_ECEN
     status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
+    if [[ ${status} -ne 0 ]]; then
+        exit "${status}"
+    fi
 
 done
 

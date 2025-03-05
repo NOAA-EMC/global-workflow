@@ -63,7 +63,7 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.task_name = task_name
     task_dict.cycledef = "build"
     task_dict.maxtries = 1
-    task_dict.command = f"cd {HOMEgfs}/sorc/; {task_spec.command}"
+    task_dict.command = f"cd {HOMEgfs}/sorc/; {task_spec.command} -j {task_spec.cores}"
     task_dict.job_name = task_name
     task_dict.log = f"{HOMEgfs}/sorc/logs/{task_name}.log"
 
