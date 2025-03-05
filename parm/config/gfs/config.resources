@@ -967,66 +967,66 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
 
     # TODO: make walltimes APP dependent
-if [[ "${RUN}" =~ gdas ]]; then
-  case "${CASE}" in
-    "C48" | "C96" | "C192")
-      declare -x "walltime"="00:20:00"
-      ;;
-    "C384")
-      declare -x "walltime"="00:30:00"
-      ;;
-    "C768" | "C1152")
-      # Not valid resolutions for ensembles
-      declare -x "walltime"="01:20:00"
-      ;;
-    *)
-      echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
-      exit 4
-      ;;
-  esac
-elif [[ "${RUN}" =~ enkfgdas ]]; then
-  case "${CASE}" in
-    "C48" | "C96" | "C192")
-      declare -x "walltime"="00:20:00"
-      ;;
-    "C384")
-      declare -x "walltime"="00:30:00"
-      ;;
-    *)
-      echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
-      exit 4
-      ;;
-  esac
-elif [[ "${RUN}" =~ gfs ]]; then
-  case "${CASE}" in
-    "C48" | "C96" | "C192")
-      declare -x "walltime"="03:00:00"
-      ;;
-    "C384")
-      declare -x "walltime"="06:00:00"
-      ;;
-    "C768" | "C1152")
-      declare -x "walltime"="06:00:00"
-      ;;
-    *)
-      echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
-      exit 4
-      ;;
-  esac
-elif [[ "${RUN}" =~ enkfgfs ]]; then
-  case "${CASE}" in
-    "C48" | "C96" | "C192")
-      declare -x "walltime"="00:20:00"
-      ;;
-    "C384")
-      declare -x "walltime"="00:30:00"
-      ;;
-    *)
-      echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
-      exit 4
-      ;;
-  esac
-fi
+    if [[ "${RUN}" =~ gdas ]]; then
+      case "${CASE}" in
+        "C48" | "C96" | "C192")
+          declare -x "walltime"="00:20:00"
+          ;;
+        "C384")
+          declare -x "walltime"="00:30:00"
+          ;;
+        "C768" | "C1152")
+          # Not valid resolutions for ensembles
+          declare -x "walltime"="01:20:00"
+          ;;
+        *)
+          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+          exit 4
+          ;;
+      esac
+    elif [[ "${RUN}" =~ enkfgdas ]]; then
+      case "${CASE}" in
+        "C48" | "C96" | "C192")
+          declare -x "walltime"="00:20:00"
+          ;;
+        "C384")
+          declare -x "walltime"="00:30:00"
+          ;;
+        *)
+          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+          exit 4
+          ;;
+      esac
+    elif [[ "${RUN}" =~ gfs ]]; then
+      case "${CASE}" in
+        "C48" | "C96" | "C192")
+          declare -x "walltime"="03:00:00"
+          ;;
+        "C384")
+          declare -x "walltime"="06:00:00"
+          ;;
+        "C768" | "C1152")
+          declare -x "walltime"="06:00:00"
+          ;;
+        *)
+          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+          exit 4
+          ;;
+      esac
+    elif [[ "${RUN}" =~ enkfgfs ]]; then
+      case "${CASE}" in
+        "C48" | "C96" | "C192")
+          declare -x "walltime"="00:20:00"
+          ;;
+        "C384")
+          declare -x "walltime"="00:30:00"
+          ;;
+        *)
+          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+          exit 4
+          ;;
+      esac
+    fi
 
     unset _RUN
     unset NTASKS_TOT
