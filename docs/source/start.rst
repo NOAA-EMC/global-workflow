@@ -62,7 +62,7 @@ Scrontab instead launches a script and requires SCRON directives to launch an sb
 
    */5 * * * * /path/to/rocoto/launch/script
 
-.. NOTICE::
+.. note::
    When running rocoto via scrontab, it is not possible to run rocoto's queue server, so this feature must be disabled.  This is accomplished by editing the rocotorc file.  This file is created when rocotorun is executed.  If you have not run that script yet, then you may need to create it yourself.
 
    The file is located here: ``~/.rocoto/<rocoto version>/rocotorc``.  Here is a sample working version of this file:
