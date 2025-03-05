@@ -8,7 +8,7 @@ from collections import OrderedDict
 from typing import Dict
 from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
-from wxflow import which, to_timedelta, mkdir
+from wxflow import to_timedelta, which, ProcessError, mkdir
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
 from hosts import Host
@@ -140,6 +140,8 @@ class RocotoXML(ABC):
     def write(self, xml_file: str = None, crontab_file: str = None):
         self._write_xml(xml_file=xml_file)
         self._write_crontab(crontab_file=crontab_file)
+        if self._base["DO_ARCHCOM"] and self._base["ARCHCOM_TO"] == "globus_hpss":
+            self._write_server_crontab()
 
     def _write_xml(self, xml_file: str = None) -> None:
 
@@ -228,6 +230,58 @@ class RocotoXML(ABC):
             fh.write('\n'.join(crontab_strings))
 
         return
+
+    def _write_server_crontab(self, cronint: int = 1):
+        # This method generates a script and a cron entry to run it.
+        # It is the user's responsibility to add the cron entry to the server's crontab.
+
+        globus_conf = self._app_config.configs[next(iter(self._app_config.configs))]['globus']
+
+        expdir = globus_conf["EXPDIR"]
+        pslot = globus_conf["PSLOT"]
+        server = globus_conf["SERVER_NAME"]
+        server_home = globus_conf["SERVER_HOME"]
+
+        # Get the server username from ~/.ssh/config
+        # TODO move this to an earlier point and actually amend config.globus with the username
+        ssh = which("ssh")
+        if ssh is None:
+            raise ProcessError("Failed to locate the ssh command!")
+
+        try:
+            ssh_output = ssh("-G", server, output=str).split("\n")
+        except ProcessError:
+            raise ProcessError(f"Failed to run ssh -G {server} to identify the server username!")
+
+        for line in ssh_output:
+            if line.startswith("user "):
+                server_username = line.split()[1]
+
+        server_home = server_home.replace(
+            "{{SERVER_USERNAME}}", server_username
+        )
+
+        try:
+            replyto = os.environ['REPLYTO']
+        except KeyError:
+            replyto = ''
+
+        crontab_file = os.path.join(expdir, f"{pslot}.{server}.crontab")
+
+        init_script = f"{server_home}/init_xfer_{pslot}.sh"
+        strings = ['',
+                   f'#################### {pslot} ####################',
+                   f'MAILTO="{replyto}"',
+                   f'*/{cronint} * * * * [[ -f {init_script} ]] && {init_script} || true',
+                   ""
+                   ]
+
+        with open(crontab_file, 'w') as fh:
+            fh.write('\n'.join(strings))
+
+        print("*******************************************************")
+        print(f"Please add the contents of \n{crontab_file}\nto your {server} crontab.")
+        print("*******************************************************")
 
     def _check_rocotorc(self):
 
