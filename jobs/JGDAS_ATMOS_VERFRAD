@@ -1,0 +1,136 @@
+#!/bin/sh
+#############################################################
+# Set up environment for GDAS Radiance Monitor job
+#############################################################
+set -xa
+echo `date` $0 `date -u` begin
+export PS4='$SECONDS + '
+
+###############################
+# Specify NET, RUN, and COMPONENT name
+##############################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gdas}
+export COMPONENT=${COMPONENT:-atmos}
+
+########################################################### 
+# obtain unique process id (pid) and make temp directories
+###########################################################
+export pid=$$
+export outid=${outid:-"LL$job"}
+export RAD_DATA_IN=${RAD_DATA_IN:-${DATAROOT}/${jobid:?}}
+
+export RADMON_SUFFIX=${RADMON_SUFFIX:-${RUN}}
+export CYCLE_INTERVAL=${CYCLE_INTERVAL:-6}
+
+mkdir -p $RAD_DATA_IN
+cd $RAD_DATA_IN
+
+####################################
+# Determine Job Output Name on System
+####################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+export cycle=t${cyc}z
+
+##############################################
+# Specify Execution Areas
+##############################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export SCRgfs=${SCRgfs:-$HOMEgfs/scripts}
+
+export FIXgdas=${FIXgdas:-$HOMEgfs/fix/gdas}
+export PARMmon=${PARMmon:-$HOMEgfs/parm/mon}
+
+export HOMEradmon=${HOMEradmon:-${HOMEgfs}}
+export EXECradmon=${EXECradmon:-$HOMEradmon/exec}
+export FIXradmon=${FIXradmon:-${FIXgfs}}
+export USHradmon=${USHradmon:-$HOMEradmon/ush}
+
+
+###################################
+# source the parm file
+###################################
+parm_file=${parm_file:-${PARMmon}/da_mon.parm}
+.  ${parm_file}
+
+
+#############################################
+# Run setpdy and initialize PDY variables
+#############################################
+if [[ $MY_MACHINE != "HERA" && $MY_MACHINE != "hera" ]]; then
+   setpdy.sh
+   . ./PDY
+fi   
+
+#############################################
+#  determine PDY and cyc for previous cycle
+#############################################
+
+cdate=`${NDATE} -6 ${PDY}${cyc}`
+echo 'pdate = ${pdate}'
+
+export P_PDY=`echo ${cdate} | cut -c1-8`
+export p_cyc=`echo ${cdate} | cut -c9-10`
+
+#############################################
+# COMOUT - WHERE GSI OUTPUT RESIDES
+# TANKverf - WHERE OUTPUT DATA WILL RESIDE
+#############################################
+export TANKverf=${TANKverf:-$(compath.py ${envir}/${NET}/${gfs_ver})}
+export TANKverf_rad=${TANKverf_rad:-${TANKverf}/${RUN}.${PDY}/${cyc}/$COMPONENT/radmon}
+export TANKverf_radM1=${TANKverf_radM1:-${TANKverf}/${RUN}.${P_PDY}/${p_cyc}/$COMPONENT/radmon}
+export COM_IN=${COM_IN:-$(compath.py ${envir}/${NET}/${gfs_ver})}
+export COMIN=${COMIN:-${COM_IN}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+
+################################
+#  backwards compatibility for
+#  gfs v15 which doesn't have 
+#  a $COMPONENT in output path 
+################################
+if [[ ! -d ${COMIN} ]]; then
+   export COMIN=${COM_IN}/${RUN}.${PDY}/${cyc}
+fi
+
+
+mkdir -p -m 775 $TANKverf_rad
+ 
+env
+
+########################################
+# Set necessary environment variables
+########################################
+export RAD_AREA=${RAD_AREA:-glb}
+
+export biascr=${biascr:-$COMIN/gdas.t${cyc}z.abias}
+export radstat=${radstat:-$COMIN/gdas.t${cyc}z.radstat}
+
+echo " "
+echo "JOB HAS STARTED"
+echo " "
+
+
+########################################################
+# Execute the script.
+${RADMONSH:-${SCRgfs}/exgdas_atmos_verfrad.sh} ${PDY} ${cyc}
+err=$?
+
+if [[ $err -ne 0 ]] ; then
+   exit $err
+else
+   echo " "
+   echo "JOB HAS COMPLETED NORMALLY"
+   echo " "
+fi
+
+################################
+# Remove the Working Directory
+################################
+KEEPDATA=${KEEPDATA:-YES}
+cd $DATAROOT
+if [ ${KEEPDATA} = NO ] ; then 
+  rm -rf $RAD_DATA_IN
+fi
+
+date
+

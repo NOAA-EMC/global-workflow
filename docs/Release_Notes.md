@@ -3,7 +3,6 @@ GFS V16.4.0 RELEASE NOTES
 -------
 PRELUDE
 -------
-
 TODO: ADD DA UPDATE DETAILS
 
 Also included in this upgrade are changes to add an indicator log file for WW3 gridded output.
@@ -15,6 +14,7 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
+
 mkdir gfs.v16.4.0
 cd gfs.v16.4.0
 git clone -b EMC-v16.4.0 https://github.com/NOAA-EMC/global-workflow.git .
@@ -50,27 +50,23 @@ cd ../ecf
 ```
 VERSION FILE CHANGES
 --------------------
-
 * `versions/run.ver` - change `version=v16.4.0` and `gfs_ver=v16.4.0`
+
 
 SORC CHANGES
 ------------
-
 * New MODEL tag: `GFS.v16.4.0`
 
 JOBS CHANGES
 ------------
-
 * No changes from GFS v16.3.22
 
 PARM/CONFIG CHANGES
 -------------------
-
 * No changes from GFS v16.3.22
 
 SCRIPT CHANGES
 --------------
-
 * WW3-related changes to `scripts/exgfs_wave_post_gridded_sbs.sh` and `scripts/exglobal_forecast.sh`. Grid loop and counter updates. Log files are now checked for completion instead of the associated gridded output.
 
 FIX CHANGES
@@ -97,7 +93,7 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * All DA and wave jobs
+* All DA and wave jobs
 * Does this change require a 30-day evaluation?
   * No
 

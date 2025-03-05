@@ -77,7 +77,8 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}${head}gsistat                          " >>gfsa.txt
     echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
     echo  "${dirname}${head}prepbufr                         " >>gfsa.txt
-    echo  "${dirname}${head}prepbufr_pre-qc                  " >>gfsa.txt
+    # prepbufr_pre-qc is not always there
+    [ -f ${dirname}${head}prepbufr_pre-qc ] && echo  "${dirname}${head}prepbufr_pre-qc                  " >>gfsa.txt
     echo  "${dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
     echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfsa.txt
     echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfsa.txt
@@ -289,7 +290,8 @@ if [ $type = "gdas" ]; then
   fi
   echo  "${dirname}${head}nsstbufr                 " >>gdas_restarta.txt
   echo  "${dirname}${head}prepbufr                 " >>gdas_restarta.txt
-  echo  "${dirname}${head}prepbufr_pre-qc          " >>gdas_restarta.txt
+  # prepbufr_pre-qc is not always there
+  [ -f ${dirname}${head}prepbufr_pre-qc ] && echo  "${dirname}${head}prepbufr_pre-qc          " >>gdas_restarta.txt
   echo  "${dirname}${head}prepbufr.acft_profiles   " >>gdas_restarta.txt
   echo  "${dirname}${head}abias                    " >>gdas_restarta.txt
   echo  "${dirname}${head}abias_air                " >>gdas_restarta.txt
