@@ -613,8 +613,8 @@ case ${step} in
     ntasks=16
     case ${OCNRES} in
       "025")
-        ntasks=40
-        memory="256GB"
+        ntasks=256
+        memory="500GB"
         ;;
       "050")
         ntasks=16
@@ -643,8 +643,8 @@ case ${step} in
     ntasks=16
     case ${OCNRES} in
       "025")
-        ntasks=480
-        memory="256GB"
+        ntasks=800
+        memory="500GB"
         ;;
       "050")
         ntasks=16
