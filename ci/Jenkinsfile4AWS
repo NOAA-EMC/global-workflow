@@ -89,7 +89,7 @@ pipeline {
                         HOMEgfs = "${CUSTOM_WORKSPACE}/${aws_gw_name}"
                         sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/${aws_gw_name}; mkdir -p ${CUSTOM_WORKSPACE}/${aws_gw_name}")
                         sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/RUNTESTS; mkdir -p ${CUSTOM_WORKSPACE}/RUNTESTS")
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
+                        // sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
                     }
                     echo "Building and running on ${Machine} in directory ${CUSTOM_WORKSPACE}"
                 }
