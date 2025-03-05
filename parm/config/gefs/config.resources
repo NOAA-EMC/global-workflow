@@ -30,6 +30,8 @@ case ${machine} in
         exit 3
     esac
     ;;
+  "GAEAC5")   max_tasks_per_node=128;;
+  "GAEAC6")   max_tasks_per_node=192;;
   "S4")
     case ${PARTITION_BATCH} in
       "s4")  max_tasks_per_node=32;;
