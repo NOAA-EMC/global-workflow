@@ -15,7 +15,9 @@ fcnt=1 # 1 is 1st quarter, 2 is 2nd quarter and 3 is 3rd quarter of the day
 dcnt=1 # lead day
 subdata=${1}
 
-[[ -d "${subdata}" ]] || mkdir -p "${subdata}"
+if [[ ! -d "${subdata}" ]]; then
+   mkdir -p "${subdata}"
+fi
 
 for outtype in "f2d" "f3d"; do
 
@@ -29,7 +31,9 @@ for outtype in "f2d" "f3d"; do
   fi
 
   outdirpre="${subdata}/${outtype}"
-  [[ -d "${outdirpre}" ]] || mkdir -p "${outdirpre}"
+  if [[ ! -d "${outdirpre}" ]]; then
+     mkdir -p "${outdirpre}"
+  fi
 
   if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
     if [[ "${outtype}" == "f2d" ]]; then

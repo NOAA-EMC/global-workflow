@@ -20,7 +20,10 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
 EXSCRIPT=${BUFR2IODASH:-${USHgfs}/run_bufr2ioda.py}
 ${EXSCRIPT} "${PDY}${cyc}" "${RUN}" "${DMPDIR}" "${PARMgfs}/gdas/ioda/bufr2ioda" "${COM_OBS}/"
 status=$?
-[[ ${status} -ne 0 ]] && (echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}")
+if [[ ${status} -ne 0 ]]; then
+    echo "FATAL ERROR: Error executing ${EXSCRIPT}"
+    exit "${status}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work

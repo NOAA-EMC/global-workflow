@@ -91,7 +91,7 @@ finished=false
 ${runcmd}
 echo "Running builds on compute nodes"
 while [[ "${finished}" == "false" ]]; do
-   sleep 3m
+   sleep 1m
    ${runcmd}
    state="$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")"
    if [[ "${verbose_opt}" == "true" ]]; then

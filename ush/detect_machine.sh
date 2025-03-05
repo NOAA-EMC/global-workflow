@@ -9,7 +9,9 @@
 # Thank you for your contribution
 
 # If the MACHINE_ID variable is set, skip this script.
-[[ -n ${MACHINE_ID:-} ]] && return
+if [[ -n "${MACHINE_ID:-}" ]]; then
+    return
+fi
 
 # First detect w/ hostname
 case $(hostname -f) in
