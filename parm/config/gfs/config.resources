@@ -184,27 +184,32 @@ case ${step} in
 
   "waveprep")
     walltime="00:10:00"
-    ntasks_gdas=5
-    ntasks_gfs=65
     threads_per_task=1
-
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    NTASKS_gdas=${ntasks_gdas}
-    NTASKS_gfs=${ntasks_gfs}
-    memory_gdas="100GB"
-    memory_gfs="150GB"
+    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+      ntasks=5
+      memory="100GB"
+      NTASKS=${ntasks}
+    elif [[ "${RUN}" =~ *gfs ]]; then
+      ntasks=65
+      memory="150GB"
+      NTASKS=${ntasks}
+    fi
     ;;
 
   "wavepostsbs")
     # Walltime is per forecast hour; will be multipled by group size
-    walltime_gdas="00:15:00"
-    walltime_gfs="00:15:00"
     ntasks=8
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
-    memory_gdas="20GB"
-    memory_gfs="20GB"
+    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+      walltime="00:15:00"
+      memory="20GB"
+    elif [[ "${RUN}" =~ *gfs ]]; then
+      walltime="00:15:00"
+      memory="20GB"
+    fi
     ;;
 
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
@@ -272,7 +277,9 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
-    memory_gfs="1GB"
+    if [[ "${RUN}" =~ *gfs ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+      memory="1GB"
+    fi
     ;;
 
   "atmanlinit")
@@ -294,13 +301,16 @@ case ${step} in
     export layout_y=${layout_y_atmanl}
 
     walltime="00:30:00"
-    ntasks_gdas=$(( layout_x * layout_y * 6 ))
-    ntasks_gfs=$(( layout_x * layout_y * 6 ))
-    threads_per_task_gdas=1
-    threads_per_task_gfs=${threads_per_task_gdas}
-    tasks_per_node_gdas=$(( max_tasks_per_node / threads_per_task_gdas ))
-    tasks_per_node_gfs=$(( max_tasks_per_node / threads_per_task_gfs ))
     memory="96GB"
+    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+      ntasks=$(( layout_x * layout_y * 6 ))
+      threads_per_task=1
+      tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    elif [[ "${RUN}" =~ *gfs ]]; then
+      ntasks=$(( layout_x * layout_y * 6 ))
+      threads_per_task=1
+      tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    fi
     export is_exclusive=True
     ;;
 
@@ -309,13 +319,16 @@ case ${step} in
     export layout_y=${layout_y_atmanl}
 
     walltime="00:30:00"
-    ntasks_gdas=$(( layout_x * layout_y * 6 ))
-    ntasks_gfs=$(( layout_x * layout_y * 6 ))
-    threads_per_task_gdas=1
-    threads_per_task_gfs=${threads_per_task_gdas}
-    tasks_per_node_gdas=$(( max_tasks_per_node / threads_per_task_gdas ))
-    tasks_per_node_gfs=$(( max_tasks_per_node / threads_per_task_gfs ))
     memory="96GB"
+    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+      ntasks=$(( layout_x * layout_y * 6 ))
+      threads_per_task=1
+      tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    elif [[ "${RUN}" =~ *gfs ]]; then
+      ntasks=$(( layout_x * layout_y * 6 ))
+      threads_per_task=1
+      tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    fi
     export is_exclusive=True
     ;;
 
@@ -710,29 +723,46 @@ case ${step} in
     ;;
 
   "anal")
-    walltime_gdas="01:20:00"
-    walltime_gfs="01:00:00"
-    case ${CASE} in
-      "C1152" | "C768")
-        ntasks_gdas=780
-        ntasks_gfs=825
-        threads_per_task=5
-        ;;
-      "C384" | "C192")
-        ntasks_gdas=160
-        ntasks_gfs=160
-        threads_per_task=10
-        ;;
-      "C96" | "C48")
-        ntasks_gdas=84
-        ntasks_gfs=84
-        threads_per_task=5
-        ;;
+    if [[ "${RUN}" =~ *gdas ]]; then
+      walltime="01:20:00"
+      case ${CASE} in
+        "C1152" | "C768")
+          ntasks=780
+          threads_per_task=5
+          ;;
+        "C384" | "C192")
+          ntasks=160
+          threads_per_task=10
+          ;;
+        "C96" | "C48")
+          ntasks=84
+          threads_per_task=5
+          ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
-        ;;
-    esac
+      esac
+    elif [[ "${RUN}" =~ *gfs ]]; then
+      walltime_gfs="01:00:00"
+      case ${CASE} in
+        "C1152" | "C768")
+          ntasks=825
+          threads_per_task=5
+          ;;
+        "C384" | "C192")
+          ntasks=160
+          threads_per_task=10
+          ;;
+        "C96" | "C48")
+          ntasks=84
+          threads_per_task=5
+          ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+        exit 4
+      esac
+    fi
+
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export threads_per_task_cycle=${threads_per_task}
     export tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
@@ -745,8 +775,11 @@ case ${step} in
     export ntasks_calcanl="${ntasks}"
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export threads_per_task_echgres_gdas=4
-    export threads_per_task_echgres_gfs=12
+    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+      export threads_per_task_echgres=4
+    elif [[ "${RUN}" =~ *gfs ]]; then
+      export threads_per_task_echgres=12
+    fi
     export is_exclusive=True
     memory="48GB"
     if [[ "${CASE}" == "C384" || "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
@@ -928,29 +961,66 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
 
     # TODO: make walltimes APP dependent
-    case "${CASE}" in
-      "C48" | "C96" | "C192")
-        declare -x "walltime_gdas"="00:20:00"
-        declare -x "walltime_enkfgdas"="00:20:00"
-        declare -x "walltime_gfs"="03:00:00"
-        declare -x "walltime_enkfgfs"="00:20:00"
-        ;;
-      "C384")
-        declare -x "walltime_gdas"="00:30:00"
-        declare -x "walltime_enkfgdas"="00:30:00"
-        declare -x "walltime_gfs"="06:00:00"
-        declare -x "walltime_enkfgfs"="00:30:00"
-        ;;
-      "C768" | "C1152")
-        # Not valid resolutions for ensembles
-        declare -x "walltime_gdas"="01:20:00"
-        declare -x "walltime_gfs"="06:00:00"
-        ;;
-      *)
-        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
-        exit 4
-        ;;
-    esac
+if [[ "${RUN}" =~ gdas ]]; then
+  case "${CASE}" in
+    "C48" | "C96" | "C192")
+      declare -x "walltime"="00:20:00"
+      ;;
+    "C384")
+      declare -x "walltime"="00:30:00"
+      ;;
+    "C768" | "C1152")
+      # Not valid resolutions for ensembles
+      declare -x "walltime"="01:20:00"
+      ;;
+    *)
+      echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+      exit 4
+      ;;
+  esac
+elif [[ "${RUN}" =~ enkfgdas ]]; then
+  case "${CASE}" in
+    "C48" | "C96" | "C192")
+      declare -x "walltime"="00:20:00"
+      ;;
+    "C384")
+      declare -x "walltime"="00:30:00"
+      ;;
+    *)
+      echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+      exit 4
+      ;;
+  esac
+elif [[ "${RUN}" =~ gfs ]]; then
+  case "${CASE}" in
+    "C48" | "C96" | "C192")
+      declare -x "walltime"="03:00:00"
+      ;;
+    "C384")
+      declare -x "walltime"="06:00:00"
+      ;;
+    "C768" | "C1152")
+      declare -x "walltime"="06:00:00"
+      ;;
+    *)
+      echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+      exit 4
+      ;;
+  esac
+elif [[ "${RUN}" =~ enkfgfs ]]; then
+  case "${CASE}" in
+    "C48" | "C96" | "C192")
+      declare -x "walltime"="00:20:00"
+      ;;
+    "C384")
+      declare -x "walltime"="00:30:00"
+      ;;
+    *)
+      echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+      exit 4
+      ;;
+  esac
+fi
 
     unset _RUN
     unset NTASKS_TOT
@@ -1063,8 +1133,11 @@ case ${step} in
 
   "metp")
     threads_per_task=1
-    walltime_gdas="03:00:00"
-    walltime_gfs="06:00:00"
+    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+      walltime="03:00:00"
+    elif [[ "${RUN}" =~ *gfs ]]; then
+      walltime="06:00:00"
+    fi
     ntasks=1
     tasks_per_node=1
     export memory="80G"
@@ -1336,13 +1409,16 @@ case ${step} in
   "gempak")
     # Walltime is per forecast hour; will be multipled by group size
     walltime="00:30:00"
-    ntasks_gdas=2
-    ntasks_gfs=28
-    tasks_per_node_gdas=2
-    tasks_per_node_gfs=28
     threads_per_task=1
-    memory_gdas="4GB"
-    memory_gfs="2GB"
+    if [[ "${RUN}" =~ *gdas ]]; then
+      ntasks=2
+      tasks_per_node=2
+      memory="4GB"
+    elif [[ "${RUN}" =~ *gfs ]]; then
+      ntasks=28
+      tasks_per_node=28
+      memory="2GB"
+    fi
     ;;
 
   "fbwind")
