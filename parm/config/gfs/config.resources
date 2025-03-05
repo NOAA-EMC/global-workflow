@@ -806,22 +806,22 @@ case ${step} in
   "fcst" | "efcs")
     export is_exclusive=True
 
-    _RUN=${RUN:-"gfs"}
-    _RUN=${RUN/enkf/}
+    RUN_NAME=${RUN:-"gfs"}
+    RUN_NAME=${RUN/enkf/}
 
-    # Declare variables from config.ufs based on _RUN
+    # Declare variables from config.ufs based on RUN_NAME
     # Export layout and write task variables, but not ntasks/threads
-    # Capitalize _RUN for write tasks
+    # Capitalize RUN_NAME for write tasks
     for var in layout_x layout_y ntasks_fv3 ntasks_quilt nthreads_fv3 nthreads_ufs \
                WRITE_GROUP WRTTASK_PER_GROUP_PER_THREAD; do
       if [[ ${var} =~ "layout" ]]; then
-        ufs_var_name="${var}_${_RUN}"
+        ufs_var_name="${var}_${RUN_NAME}"
         declare -x "${var}"="${!ufs_var_name}"
       elif [[ ${var} =~ "WR" ]]; then
-        ufs_var_name="${var}_${_RUN^^}"
+        ufs_var_name="${var}_${RUN_NAME^^}"
         declare -x "${var}"="${!ufs_var_name}"
       else
-        ufs_var_name="${var}_${_RUN}"
+        ufs_var_name="${var}_${RUN_NAME}"
         declare "${var}"="${!ufs_var_name}"
       fi
     done
@@ -1021,7 +1021,7 @@ case ${step} in
       esac
     fi
 
-    unset _RUN
+    unset RUN_NAME
     unset NTASKS_TOT
     ;;
 
