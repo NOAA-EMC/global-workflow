@@ -181,6 +181,6 @@ function cleanup_experiment() {
 function build_compute () {
 
   source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
-  "${HOMEgfs}/ci/scripts/utils/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
+  "${HOMEgfs}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
 
 }
