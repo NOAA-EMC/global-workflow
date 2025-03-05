@@ -87,14 +87,14 @@ fi
 # (Standard) Model resolution dependent variables
 case "${fv3_res}" in
     "C48")
-        if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
           export layout_x=1
           export layout_y=1
           export nthreads_fv3=1
           export nthreads_ufs=1
           export WRITE_GROUP=1
           export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
-        elif [[ "${RUN}" =~ *gfs ]]; then
+        elif [[ "${RUN}" = *gfs ]]; then
           export layout_x=1
           export layout_y=1
           export nthreads_fv3=1
@@ -116,10 +116,10 @@ case "${fv3_res}" in
         ;;
     "C96")
         if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-          if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+          if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
             export WRITE_GROUP=2
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=2
-          elif [[ "${RUN}" =~ *gfs ]]; then
+          elif [[ "${RUN}" = *gfs ]]; then
             export layout_x=4
             export layout_y=4
             export WRITE_GROUP=2
@@ -137,14 +137,14 @@ case "${fv3_res}" in
           export NEST_DLAT=0.25
           export psl_gwd_dx_factor=6.0
         else
-          if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+          if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
             export nthreads_fv3=1
             export nthreads_ufs=1
             export layout_x=2
             export layout_y=2
             export WRITE_GROUP=1
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
-          elif [[ "${RUN}" =~ *gfs ]]; then
+          elif [[ "${RUN}" = *gfs ]]; then
             export nthreads_fv3=1
             export nthreads_ufs=1
             export layout_x=2
@@ -168,10 +168,10 @@ case "${fv3_res}" in
     "C192")
         if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
           export DELTIM=225
-          if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+          if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
             export WRITE_GROUP=2
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=15
-          elif [[ "${RUN}" =~ *gfs ]]; then
+          elif [[ "${RUN}" = *gfs ]]; then
             export layout_x=5
             export layout_y=6
             export WRITE_GROUP=2
@@ -188,14 +188,14 @@ case "${fv3_res}" in
           export NEST_DLAT=0.125
           export psl_gwd_dx_factor=6.0
         else
-          if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+          if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
             export layout_x=4
             export layout_y=6
             export nthreads_fv3=1
             export nthreads_ufs=1
             export WRITE_GROUP=1
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-          elif [[ "${RUN}" =~ *gfs ]]; then
+          elif [[ "${RUN}" = *gfs ]]; then
             export layout_x=4
             export layout_y=6
             export nthreads_fv3=2
@@ -218,14 +218,14 @@ case "${fv3_res}" in
     "C384")
         if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
           export DELTIM=150
-          if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+          if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
             export layout_x=8
             export layout_y=8
             export nthreads_fv3=1
             export nthreads_ufs=1
             export WRITE_GROUP=2
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20
-          elif [[ "${RUN}" =~ *gfs ]]; then
+          elif [[ "${RUN}" = *gfs ]]; then
             export layout_x=8
             export layout_y=8
             export nthreads_fv3=2
@@ -245,14 +245,14 @@ case "${fv3_res}" in
           export psl_gwd_dx_factor=2.0
         else
           export DELTIM=300
-          if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+          if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
             export layout_x=8
             export layout_y=8
             export nthreads_fv3=2
             export nthreads_ufs=2
             export WRITE_GROUP=4
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-          elif [[ "${RUN}" =~ *gfs ]]; then
+          elif [[ "${RUN}" = *gfs ]]; then
             export layout_x=8
             export layout_y=8
             export nthreads_fv3=2
@@ -274,13 +274,13 @@ case "${fv3_res}" in
     "C768")
         if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
           export DELTIM=75
-          if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+          if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
             export layout_x=16
             export layout_y=10
             export nthreads_fv3=2
             export WRITE_GROUP=2
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=90
-          elif [[ "${RUN}" =~ *gfs ]]; then
+          elif [[ "${RUN}" = *gfs ]]; then
             export layout_x=16
             export layout_y=10
             export nthreads_fv3=2
@@ -299,14 +299,14 @@ case "${fv3_res}" in
           export NEST_DLAT=0.0325
           export psl_gwd_dx_factor=2.0
         else
-          if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+          if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
             export layout_x=8
             export layout_y=12
             export nthreads_fv3=4
             export nthreads_ufs=4
             export WRITE_GROUP=2
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=15 #Note this should be 10 for WCOSS2
-          elif [[ "${RUN}" =~ *gfs ]]; then
+          elif [[ "${RUN}" = *gfs ]]; then
             export layout_x=12
             export layout_y=16
             export nthreads_fv3=4
@@ -328,14 +328,14 @@ case "${fv3_res}" in
         ;;
     "C1152")
         export DELTIM=150
-        if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
           export layout_x=8
           export layout_y=16
           export nthreads_fv3=4
           export nthreads_ufs=4
           export WRITE_GROUP=4
           export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
-        elif [[ "${RUN}" =~ *gfs ]]; then
+        elif [[ "${RUN}" = *gfs ]]; then
           export layout_x=8
           export layout_y=16
           export nthreads_fv3=4
@@ -355,14 +355,14 @@ case "${fv3_res}" in
         ;;
     "C3072")
         export DELTIM=90
-        if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+        if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
           export layout_x=16
           export layout_y=32
           export nthreads_fv3=4
           export nthreads_ufs=4
           export WRITE_GROUP=4
           export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10 # TODO: refine these numbers when a case is available
-        elif [[ "${RUN}" =~ *gfs ]]; then
+        elif [[ "${RUN}" = *gfs ]]; then
           export layout_x=16
           export layout_y=32
           export nthreads_fv3=4

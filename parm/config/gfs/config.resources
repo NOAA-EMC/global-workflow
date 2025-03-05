@@ -186,11 +186,11 @@ case ${step} in
     walltime="00:10:00"
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+    if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
       ntasks=5
       memory="100GB"
       NTASKS=${ntasks}
-    elif [[ "${RUN}" =~ *gfs ]]; then
+    elif [[ "${RUN}" = *gfs ]]; then
       ntasks=65
       memory="150GB"
       NTASKS=${ntasks}
@@ -203,10 +203,10 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
-    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+    if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
       walltime="00:15:00"
       memory="20GB"
-    elif [[ "${RUN}" =~ *gfs ]]; then
+    elif [[ "${RUN}" = *gfs ]]; then
       walltime="00:15:00"
       memory="20GB"
     fi
@@ -277,7 +277,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
-    if [[ "${RUN}" =~ *gfs ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+    if [[ "${RUN}" = *gfs ]]; then  # That is, RUN=gdas or RUN=enkfgdas
       memory="1GB"
     fi
     ;;
@@ -302,11 +302,11 @@ case ${step} in
 
     walltime="00:30:00"
     memory="96GB"
-    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+    if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
       ntasks=$(( layout_x * layout_y * 6 ))
       threads_per_task=1
       tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    elif [[ "${RUN}" =~ *gfs ]]; then
+    elif [[ "${RUN}" = *gfs ]]; then
       ntasks=$(( layout_x * layout_y * 6 ))
       threads_per_task=1
       tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -320,11 +320,11 @@ case ${step} in
 
     walltime="00:30:00"
     memory="96GB"
-    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+    if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
       ntasks=$(( layout_x * layout_y * 6 ))
       threads_per_task=1
       tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    elif [[ "${RUN}" =~ *gfs ]]; then
+    elif [[ "${RUN}" = *gfs ]]; then
       ntasks=$(( layout_x * layout_y * 6 ))
       threads_per_task=1
       tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -723,7 +723,7 @@ case ${step} in
     ;;
 
   "anal")
-    if [[ "${RUN}" =~ *gdas ]]; then
+    if [[ "${RUN}" = *gdas ]]; then
       walltime="01:20:00"
       case ${CASE} in
         "C1152" | "C768")
@@ -742,7 +742,7 @@ case ${step} in
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
       esac
-    elif [[ "${RUN}" =~ *gfs ]]; then
+    elif [[ "${RUN}" = *gfs ]]; then
       walltime="01:00:00"
       case ${CASE} in
         "C1152" | "C768")
@@ -775,9 +775,9 @@ case ${step} in
     export ntasks_calcanl="${ntasks}"
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+    if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
       export threads_per_task_echgres=4
-    elif [[ "${RUN}" =~ *gfs ]]; then
+    elif [[ "${RUN}" = *gfs ]]; then
       export threads_per_task_echgres=12
     fi
     export is_exclusive=True
@@ -1136,9 +1136,9 @@ case ${step} in
 
   "metp")
     threads_per_task=1
-    if [[ "${RUN}" =~ *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
+    if [[ "${RUN}" = *gdas ]]; then  # That is, RUN=gdas or RUN=enkfgdas
       walltime="03:00:00"
-    elif [[ "${RUN}" =~ *gfs ]]; then
+    elif [[ "${RUN}" = *gfs ]]; then
       walltime="06:00:00"
     fi
     ntasks=1
@@ -1415,11 +1415,11 @@ case ${step} in
     # Walltime is per forecast hour; will be multipled by group size
     walltime="00:30:00"
     threads_per_task=1
-    if [[ "${RUN}" =~ *gdas ]]; then
+    if [[ "${RUN}" = *gdas ]]; then
       ntasks=2
       tasks_per_node=2
       memory="4GB"
-    elif [[ "${RUN}" =~ *gfs ]]; then
+    elif [[ "${RUN}" = *gfs ]]; then
       ntasks=28
       tasks_per_node=28
       memory="2GB"
