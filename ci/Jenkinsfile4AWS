@@ -90,7 +90,7 @@ pipeline {
                         HOMEgfs = "${CUSTOM_WORKSPACE}"
                         sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/${aws_gw_name}; mkdir -p ${CUSTOM_WORKSPACE}/${aws_gw_name}")
                         sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/RUNTESTS; mkdir -p ${CUSTOM_WORKSPACE}/RUNTESTS")
-                        sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
+                        // sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
                     }
                     echo "Building and running on ${Machine} in directory ${CUSTOM_WORKSPACE}"
                 }
@@ -105,15 +105,15 @@ pipeline {
                         ws(HOMEgfs) {
                             echo "Checking out the code on ${Machine} using scm in ${HOMEgfs}"
                             try {
-                                checkout scm
-                                // sh(script: "git clone --recursive ${repo_url}")
+                                // checkout scm
+                                sh(script: "git clone --recursive ${repo_url}")
                                 sh(script: "ls ${HOMEgfs}")
                             } catch (Exception e) {
                                 echo "Failed to checkout the code on ${Machine} using scm in ${HOMEgfs}, try again ..."
                                 sleep time: 45, unit: 'SECONDS'
                                 try {
-                                    checkout scm
-                                    // sh(script: "git clone --recursive ${repo_url}")
+                                    // checkout scm
+                                    sh(script: "git clone --recursive ${repo_url}")
                                     sh(script: "ls ${HOMEgfs}")
                                 } catch (Exception ee) {
                                     echo "Failed to checkout the code on ${Machine} using scm in ${HOMEgfs}: ${ee.getMessage()}"
