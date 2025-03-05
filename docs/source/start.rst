@@ -68,7 +68,7 @@ Scrontab instead launches a script and requires SCRON directives to launch an sb
    The file is located here: ``~/.rocoto/<rocoto version>/rocotorc``.  Here is a sample working version of this file:
 
 .. code::
-   ---
+
    :DatabaseType: SQLite3
    :BatchQueueServer: false
    :WorkflowDocType: XML
