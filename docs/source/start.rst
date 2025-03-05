@@ -75,7 +75,6 @@ Scrontab instead launches a script and requires SCRON directives to launch an sb
    :BatchQueueServer: false
    :WorkflowDocType: XML
    :DatabaseServer: true
-   :BatchQueueServer: true
    :WorkflowIOServer: true
    :MaxUnknowns: 3
    :MaxLogDays: 7
