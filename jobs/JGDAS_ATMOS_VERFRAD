@@ -18,17 +18,19 @@ export gcyc=${GDATE:8:2}
 # COMOUT - WHERE GSI OUTPUT RESIDES
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_RADMON
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COM_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMOUT_ATMOS_RADMON:COM_ATMOS_RADMON_TMPL
+YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+    COMIN_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
 
-export biascr="${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias"
-export radstat="${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat"
-export TANKverf_rad=${TANKverf_rad:-${COM_ATMOS_RADMON}}
-export TANKverf_radM1=${TANKverf_radM1:-${COM_ATMOS_RADMON_PREV}}
+export biascr="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias"
+export radstat="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat"
+export TANKverf_rad=${TANKverf_rad:-${COMOUT_ATMOS_RADMON}}
+export TANKverf_radM1=${TANKverf_radM1:-${COMIN_ATMOS_RADMON_PREV}}
 
-if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p -m 775 ${TANKverf_rad} ; fi
-if [[ ! -d ${TANKverf_radM1} ]]; then mkdir -p -m 775 ${TANKverf_radM1} ; fi
+if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p ${TANKverf_rad} ; fi
 
 ########################################################
 # Execute the script.
