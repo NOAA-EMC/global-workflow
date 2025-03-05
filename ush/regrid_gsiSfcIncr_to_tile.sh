@@ -9,7 +9,8 @@ source "${USHgfs}/preamble.sh"
 #-------------------------------------------------------------------------------------------------
 
 # temporary files on hera, until g-w issue 3392 is resolved.
-TMP_FIX_FILES=/scratch2/BMC/gsienkf/Clara.Draper/gw_new_fix_files/
+TMP_FIX_FILES=/lfs/h2/emc/da/noscrub/catherine.thomas/gsi/fix/soil/gw_new_fix_files/
+#TMP_FIX_FILES=/scratch2/BMC/gsienkf/Clara.Draper/gw_new_fix_files/
 
 
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
