@@ -45,7 +45,9 @@ pipeline {
                     } else {
                         echo "This is parent job so getting list of nodes matching labels:"
                         for (label in pullRequest.labels) {
+                            echo "label in pullReqest: ${label}"
                             if (label.matches("CI-(.*?)-Ready")) {
+                                echo "Found Ready Label: ${label}"
                                 def machine_name = label.split('-')[1].toString().toLowerCase()
                                 jenkins.model.Jenkins.get().computers.each { c ->
                                     if (c.node.selfLabel.name == NodeName[machine_name]) {
