@@ -788,9 +788,6 @@ case ${step} in
   "fcst" | "efcs")
     export is_exclusive=True
 
-    RUN_NAME=${RUN:-"gfs"}
-    RUN_NAME=${RUN/enkf/}
-
     # Determine if using ESMF-managed threading or traditional threading
     # If using traditional threading, set them to 1
     if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
