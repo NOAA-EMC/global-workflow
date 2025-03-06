@@ -283,7 +283,7 @@ class RocotoXML(ABC):
         strings = ['',
                    f'#################### {pslot} ####################',
                    f'MAILTO="{replyto}"',
-                   f'*/{cronint} * * * * [[ -f {init_script} ]] && {init_script} || true',
+                   f'*/{cronint} * * * * [[ -f {init_script} ]] && chmod +x {init_script} && {init_script} || true',
                    ""
                    ]
 
