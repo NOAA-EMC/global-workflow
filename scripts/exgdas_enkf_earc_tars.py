@@ -41,18 +41,14 @@ def main():
         if key.startswith("COM"):
             archive_dict[key] = archive.task_config[key]
 
-    cwd = os.getcwd()
+    with chdir(config.ROTDIR):
 
-    os.chdir(config.ROTDIR)
+        # Determine which archives to create
+        atardir_sets = archive.configure_tars(archive_dict)
 
-    # Determine which archives to create
-    atardir_sets = archive.configure_tars(archive_dict)
-
-    # Create the backup tarballs and store in ATARDIR
-    for atardir_set in atardir_sets:
-        archive.execute_backup_dataset(atardir_set)
-
-    os.chdir(cwd)
+        # Create the backup tarballs and store in ATARDIR
+        for atardir_set in atardir_sets:
+            archive.execute_backup_dataset(atardir_set)
 
 
 if __name__ == '__main__':

@@ -12,7 +12,9 @@ else
    . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 fi
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 export job="fcst"
 export jobid="${job}.$$"
@@ -21,4 +23,4 @@ export jobid="${job}.$$"
 "${HOMEgfs}/jobs/JGLOBAL_FORECAST"
 status=$?
 
-exit ${status}
+exit "${status}"

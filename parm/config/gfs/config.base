@@ -15,10 +15,14 @@ export RUN_ENVIR="emc"
 export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
 export QUEUE_SERVICE="@QUEUE_SERVICE@"
+export QUEUE_DTN="@QUEUE_DTN@"
 export PARTITION_BATCH="@PARTITION_BATCH@"
 export PARTITION_SERVICE="@PARTITION_SERVICE@"
+export PARTITION_DTN="@PARTITION_DTN@"
 export RESERVATION="@RESERVATION@"
 export CLUSTERS="@CLUSTERS@"
+export CLUSTERS_SERVICE="@CLUSTERS_SERVICE@"
+export CLUSTERS_DTN="@CLUSTERS_DTN@"
 
 # Project to use in mass store:
 export HPSS_PROJECT="@HPSS_PROJECT@"
@@ -435,7 +439,7 @@ else
   export restart_interval_gdas="6"
 fi
 
-export GSI_SOILANAL=@GSI_SOILANAL@
+export DO_GSISOILDA=@DO_GSISOILDA@
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
@@ -472,7 +476,9 @@ export DO_FIT2OBS="YES"      # Run fit to observations package
 
 #--online archive of netcdf files for fit2obs verification
 export FHMAX_FITS=132
-[[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]] && export FHMAX_FITS=${FHMAX_GFS}
+if [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]]; then
+    export FHMAX_FITS=${FHMAX_GFS}
+fi
 
 # User may choose to reset these at experiment setup time 
 export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto COM
