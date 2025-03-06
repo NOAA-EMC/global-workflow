@@ -20,6 +20,7 @@ analysis:
         {% for ftype in ["atminc.tile{{ itile+1 }}.nc", "atmi009.tile{{ itile+1 }}.nc", "atmi003.tile{{ itile+1 }}.nc", "ratminc.tile{{ itile+1 }}.nc", "ratmi009.tile{{ itile+1 }}.nc", "ratmi003.tile{{ itile+1 }}.nc"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endfor %}
+        {% endfor %}
         {% endif %}
         {% endfor %} # mem loop
 {% endif %}

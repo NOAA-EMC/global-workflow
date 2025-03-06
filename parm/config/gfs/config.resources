@@ -743,7 +743,9 @@ case ${step} in
     export layout_x=${layout_x_ecen_fv3jedi}
     export layout_y=${layout_y_ecen_fv3jedi}
 
-    NIAUFHRS=$(echo "$IAUFHRS" | awk -F, '{print NF}')
+    # Ignore possible spelling error (nothing is misspelled)
+    # shellcheck disable=SC2153
+    NIAUFHRS=$(echo "${IAUFHRS}" | awk -F, '{print NF}')
 
     walltime="00:15:00"
     ntasks_correction_increment=$(( layout_x * layout_y * 6 ))
