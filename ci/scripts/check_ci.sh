@@ -64,7 +64,7 @@ else
   echo "rocotocheck being used from ${rocotocheck}"
 fi
 
-pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
+pr_list_dbfile="${GFS_BASH_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
@@ -82,10 +82,10 @@ fi
 
 for pr in ${pr_list}; do
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
-  output_ci="${GFS_CI_ROOT}/PR/${pr}/output_runtime_${id}"
-  output_ci_single="${GFS_CI_ROOT}/PR/${pr}/output_runtime_single.log"
+  output_ci="${GFS_BASH_CI_ROOT}/PR/${pr}/output_runtime_${id}"
+  output_ci_single="${GFS_BASH_CI_ROOT}/PR/${pr}/output_runtime_single.log"
   echo "Processing Pull Request #${pr} and looking for cases"
-  pr_dir="${GFS_CI_ROOT}/PR/${pr}"
+  pr_dir="${GFS_BASH_CI_ROOT}/PR/${pr}"
 
   # If there is no RUNTESTS dir for this PR then cases have not been made yet
   if [[ ! -d "${pr_dir}/RUNTESTS" ]]; then
