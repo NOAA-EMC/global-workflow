@@ -5,9 +5,12 @@ from hosts import Host
 from wxflow import Configuration, which
 import importlib.util
 from abc import ABC, ABCMeta, abstractmethod
+from logging import getLogger
 import os
 
 __all__ = ['AppConfig']
+
+logger = getLogger(__name__.split('.')[-1])
 
 
 class AppConfigInit(ABCMeta):
@@ -117,9 +120,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
 
             if run_options[run]['do_globusarch'] and not globus_checked:
-                status = self.check_globus(conf)
-                if not status:
-                    raise ConnectionError("The globus server is not configured properly!")
+                self._check_globus(conf)
                 globus_checked = True
 
         # Return the dictionary of run options
@@ -224,7 +225,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         else:
             return all(x < y for x, y in zip(test_list, test_list[1:]))
 
-    def check_globus(self, conf):
+    def _check_globus(self, conf):
         # This method checks that globus can be used on this platform
         # and is configured properly.
 
@@ -260,7 +261,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 rdhpcs_uid_found = True
 
         if not local_uid_found or not rdhpcs_uid_found:
-            print(f"ERROR a globus session is not yet established on {globus_conf.SERVER_NAME}")
-            print("      Please establish a globus connection!")
+            logger.error(f"ERROR a globus session is not yet established on {globus_conf.SERVER_NAME}.  "
+                         "Please establish a globus connection!")
 
-        return rdhpcs_uid_found and local_uid_found
+            raise ConnectionError("The globus server is not configured properly!")
+
+        return
