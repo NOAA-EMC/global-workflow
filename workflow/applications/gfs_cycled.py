@@ -313,7 +313,6 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['arch_tars']
                     if options['do_globusarch']:
                         task_names[run] += ['globus_arch']
-                        print("here")
 
                 task_names[run] += ['cleanup']
 
