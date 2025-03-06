@@ -6,7 +6,6 @@ from wxflow import Configuration, which
 import importlib.util
 from abc import ABC, ABCMeta, abstractmethod
 from logging import getLogger
-import os
 
 __all__ = ['AppConfig']
 
@@ -245,25 +244,20 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         # Check that a globus connection to the server is open
         globus_output = globus("session", "show", output=str).splitlines()[2:]
 
-        local_uid_found = False
         rdhpcs_uid_found = False
 
-        # There should be two sessions (MSU and RDHPCS), but if someone is running
-        # this elsewhere (e.g. NOAA cloud), it may be just one (RDHPCS).
-        local_uid = os.environ['LOGNAME'].lower()
+        # There should be at least one session for RDHPCS.  Check if it is active.
         for line in globus_output:
-            uid = line.split("|")[0].split("@")[0].lower()
             domain = line.split("|")[0].split("@")[1].lower()
 
-            if uid == local_uid:
-                local_uid_found = True
             if "rdhpcs" in domain:
                 rdhpcs_uid_found = True
+                break
 
-        if not local_uid_found or not rdhpcs_uid_found:
+        if not rdhpcs_uid_found:
             logger.error(f"ERROR a globus session is not yet established on {globus_conf.SERVER_NAME}.  "
                          "Please establish a globus connection!")
 
-            raise ConnectionError("The globus server is not configured properly!")
+            raise ConnectionError("The globus sesseion is not configured properly!")
 
         return
