@@ -12,6 +12,9 @@ from wxflow import to_timedelta, which, ProcessError, mkdir
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
 from hosts import Host
+from logging import getLogger
+
+logger = getLogger(__name__.split('.')[-1])
 
 
 class RocotoXML(ABC):
@@ -251,11 +254,19 @@ class RocotoXML(ABC):
         try:
             ssh_output = ssh("-G", server, output=str).split("\n")
         except ProcessError:
-            raise ProcessError(f"Failed to run ssh -G {server} to identify the server username!")
+            logger.warning(f"Failed to automatically determine the username for {server}.")
+            ssh_output = ""
 
+        server_username = None
         for line in ssh_output:
             if line.startswith("user "):
                 server_username = line.split()[1]
+
+        # If ssh -G failed or the username could not be determined, ask for it
+        if not server_username:
+            server_username = input(f"Please provide your username for {server} (this is required to use globus): ")
+            if server_username == "":
+                raise ValueError("A valid username must be provided!")
 
         server_home = server_home.replace(
             "{{SERVER_USERNAME}}", server_username
