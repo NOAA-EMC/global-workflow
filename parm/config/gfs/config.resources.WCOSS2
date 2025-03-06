@@ -24,16 +24,7 @@ case ${step} in
     fi
     ;;
 
-  "atmanlvar")
-    if [[ "${RUN}" = *gdas ]]; then
-      export tasks_per_node=48
-    elif [[ "${RUN}" = *gfs ]]; then
-      export tasks_per_node=48
-    fi
-    export memory="400GB"
-    ;;
-
-  "atmensanlobs")
+  "atmanlvar" | "atmensanlobs")
     export tasks_per_node=48
     export memory="400GB"
     ;;

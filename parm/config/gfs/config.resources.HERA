@@ -10,29 +10,13 @@ case ${step} in
 
   "anal")
     if [[ "${CASE}" == "C384" ]]; then
-    if [[ "${RUN}" = *gdas ]]; then
-      export ntasks=270
-    elif [[ "${RUN}" = *gfs ]]; then
-      export ntasks=270
-    fi
-      export threads_per_task=8
-      export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export ntasks=270
+    export threads_per_task=8
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
 
-  "atmanlvar")
-    if [[ "${RUN}" = *gdas ]]; then
-      export tasks_per_node=12
-    elif [[ "${RUN}" = *gfs ]]; then
-      export tasks_per_node=12
-    fi
-    ;;
-
-  "atmensanlobs")
-    export tasks_per_node=12
-    ;;
-
-  "atmensanlsol")
+  "atmanlvar" | "atmensanlobs" | "atmensanlsol")
     export tasks_per_node=12
     ;;
 

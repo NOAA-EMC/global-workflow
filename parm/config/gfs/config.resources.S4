@@ -34,17 +34,9 @@ case ${step} in
       "C192" | "C96" | "C48")
         export threads_per_task=4
         if [[ ${PARTITION_BATCH} == "s4" ]]; then
-          if [[ "${RUN}" = *gdas ]]; then
-            export ntasks=88
-          elif [[ "${RUN}" = *gfs ]]; then
-            export ntasks=88
-          fi
+          export ntasks=88
         elif [[ ${PARTITION_BATCH} == "ivy" ]]; then
-          if [[ "${RUN}" = *gdas ]]; then
-            export ntasks=90
-          elif [[ "${RUN}" = *gfs ]]; then
-            export ntasks=90
-          fi
+          export ntasks=90
         fi
         ;;
       *)
