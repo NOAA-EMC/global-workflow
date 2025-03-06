@@ -2,10 +2,17 @@
 
 export GFS_CI_ROOT=/work2/noaa/stmp/GFS_CI_ROOT/ORION
 export ICSDIR_ROOT=/work/noaa/global/glopara/data/ICSDIR
+
+# Jenkins directories
+export JENKINS_AGENT_LANUCH_DIR=/home/role-nems/GFS_CI_ROOT_JENKINS/AGENT_mterry
+export JENKINS_WORK_DIR=/home/role-nems/GFS_CI_ROOT_JENKINS
+
+# CI BASH test directories
+export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
+
+# CTest functional test directories for pre stagged input data
 export STAGED_TESTS_DIR=/work/noaa/stmp/GFS_CI_ROOT/ORION/STAGED_TESTS_DIR
+
 export HPC_ACCOUNT=nems
 export max_concurrent_cases=5
 export max_concurrent_pr=4
-
-export JENKINS_AGENT_LANUCH_DIR=/home/role-nems/GFS_CI_ROOT_JENKINS/AGENT_mterry
-export JENKINS_WORK_DIR=/home/role-nems/GFS_CI_ROOT_JENKINS

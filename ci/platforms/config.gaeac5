@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+
 export GFS_CI_ROOT=/gpfs/f5/ufs-ard/world-shared/global/GFS_CI_ROOT
 export ICSDIR_ROOT=/gpfs/f5/ufs-ard/world-shared/global/glopara/data/ICSDIR
 export HPC_ACCOUNT=epic

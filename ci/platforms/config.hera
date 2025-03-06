@@ -1,12 +1,20 @@
 #!/usr/bin/bash
 
-export GFS_CI_ROOT=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT
+export GFS_CI_ROOT=/scratch1/NCEPDEV/global/glopara/GFS_CI_CD
 export ICSDIR_ROOT=/scratch1/NCEPDEV/global/glopara/data/ICSDIR
 
+# Jenkins directories
+export JENKINS_AGENT_LANUCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
+# JENKINS custom_workspace directory where CI jobs are run
+# /scratch1/NCEPDEV/global/glopara/CI
+
+# CTest functional test directories for pre stagged input data
 export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
-export HPC_ACCOUNT=nems
+
+# CI BASH test directories
+export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
+
+export HPC_ACCOUNT=fv3-cpu
 export max_concurrent_cases=5
 export max_concurrent_pr=4
-
-export JENKINS_AGENT_LANUCH_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness/Jenkins
-export JENKINS_WORK_DIR=/scratch1/NCEPDEV/global/Terry.McGuinness

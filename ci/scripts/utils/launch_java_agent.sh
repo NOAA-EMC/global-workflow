@@ -110,8 +110,8 @@ fi
 ${GH} --version
 export GH
 
-check_mark=$("${GH}" auth status -t 2>&1 | grep "Token:" | awk '{print $1}') || true
-if [[ "${check_mark}" != "✓" ]]; then
+check_token=$("${GH}" auth status 2>&1 | grep "Token:") || true
+if [[ "${check_token}" != *"*****"* ]]; then
   echo "gh not authenticating with emcbot token"
   exit 1
 fi
@@ -124,6 +124,7 @@ else
   exit 1
 fi
 cd "${JENKINS_AGENT_LANUCH_DIR}"
+echo "Entered directory ${PWD}"
 
 if ! [[ -f agent.jar ]]; then
   curl -sO "${controller_url}/jnlpJars/agent.jar"
@@ -134,6 +135,7 @@ if [[ ! -f "${controller_user_auth_token}" ]]; then
    echo "User Jenkins authetication TOKEN to the controller for using the Remote API does not exist"
    exit 1
 fi
+
 JENKINS_TOKEN=$(cat "${controller_user_auth_token}")
 
 cat << EOF > parse.py
@@ -152,8 +154,12 @@ check_node_online() {
        echo "ERROR: Jenkins controller not reachable. Exiting with error."
        exit 1
     fi
+    if [[ "${curl_response}" == *"Token expired"* ]]; then
+       echo "ERROR: Jenkins Token expired"
+       exit 1
+    fi
     echo -n "${curl_response}" > curl_response
-    ./parse.py curl_response
+    ONLINE_STATUS=$(./parse.py curl_response)
 }
 
 lauch_agent () {
@@ -170,7 +176,8 @@ if [[ "${force_launch}" == "True" ]]; then
   exit
 fi
 
-offline=$(set -e; check_node_online)
+check_node_online
+offline="${ONLINE_STATUS}"
 
 if [[ "${offline}" != "False" ]]; then
    if [[ "${skip_wait}" != "True" ]]; then
