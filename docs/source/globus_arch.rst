@@ -10,7 +10,7 @@ Setup Globus Connections for HPSS
 Setting Up Globus
 ^^^^^^^^^^^^^^^^^
 
-The Globus service offers extremely fast connections between MSU and RDHPCS machines.  To make use of this service, you will first need to establish connections from the client (e.g. Hercules) and the server (i.e. Niagara).  RDHPCS maintains a guide on this procedure, which can be found in their "Globus Guide" <https://docs.rdhpcs.noaa.gov/data/globus_online_data_transfer.html>_.  The simplest way to establish your connection is by running ``globus login`` (after loading the ``globus-cli`` module).  If you have trouble with this or working through the guide, contact RDHPCS for assistance.
+The Globus service offers extremely fast connections between MSU and RDHPCS machines.  To make use of this service, you will first need to establish connections from the client (e.g. Hercules) and the server (i.e. Niagara).  RDHPCS maintains a guide on this procedure, which can be found in their `Globus Guide <https://docs.rdhpcs.noaa.gov/data/globus_online_data_transfer.html>`__.  The simplest way to establish your connection is by running ``globus login`` (after loading the ``globus-cli`` module).  If you have trouble with this or working through the guide, contact RDHPCS for assistance.
 
 Once you are logged in, verify that the Globus connection is active on the client.  First, load the ``globus-cli`` module, then run ``globus session show``.  You should see an entry for your RDHPCS user account.
 
