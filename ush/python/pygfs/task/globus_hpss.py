@@ -9,7 +9,8 @@ import re
 import copy
 from datetime import datetime, timezone
 
-from wxflow import AttrDict, Task, to_YMDH, logit, parse_yaml, Jinja, which, ProcessError, to_datetime
+from wxflow import (AttrDict, Task, to_YMDH, logit, parse_yaml, Jinja, which, ProcessError, to_datetime,
+                    CommandNotFoundError)
 
 logger = logging.getLogger(__name__.split('.')[-1])
 logging.basicConfig(encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s')
@@ -38,16 +39,23 @@ class GlobusHpss(Task):
         cycle_YMDH = to_YMDH(self.task_config.current_cycle)
 
         # Instantiate all of the executables we will need to run
-        self.forsven = which("forsven")
-        # TODO Move the globus interface to wxflow
-        self.globus = which("globus")
-        self.ssh = which("ssh")
-        self.wd = os.getcwd()
+        try:
+            self.forsven = which("forsven", required=True)
+        except CommandNotFoundError:
+            raise CommandNotFoundError("FATAL ERROR Could not find the forsven executable!")
 
-        if self.forsven is None:
-            raise FileNotFoundError("FATAL ERROR Could not find the forsven executable!")
-        if self.globus is None:
+        # TODO Move the globus interface to wxflow
+        try:
+            self.globus = which("globus", required=True)
+        except CommandNotFoundError:
             raise FileNotFoundError("FATAL ERROR Could not find the globus command!")
+
+        try:
+            self.ssh = which("ssh", required=True)
+        except CommandNotFoundError:
+            raise FileNotFoundError("FATAL ERROR Could not find the ssh command!")
+
+        self.wd = os.getcwd()
 
         # Prep some globus commands
         self.globus_rm = copy.deepcopy(self.globus)
