@@ -5,6 +5,7 @@ Entry point for setting up an experiment in the global-workflow
 """
 
 import os
+import stat
 import glob
 import shutil
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, ArgumentTypeError
@@ -14,6 +15,7 @@ from hosts import Host
 from wxflow import parse_j2yaml
 from wxflow import AttrDict
 from wxflow import to_datetime, to_timedelta, datetime_to_YMDH
+
 
 
 _here = os.path.dirname(__file__)
@@ -26,6 +28,21 @@ def makedirs_if_missing(dirname):
     """
     if not os.path.exists(dirname):
         os.makedirs(dirname)
+
+def chmod_dir_permission(dirname):
+    """
+    change the permission mode of a directory as writable
+    """
+    permission_mode = stat.S_IRWXU
+    try:
+        os.chmod(dirname, permission_mode)
+        print(f"Permissions for '{dirname}' changed successfully to {oct(permission_mode)}.")
+    except FileNotFoundError:
+        print(f"Error: Directory '{dirname}' not found.")
+    except PermissionError:
+        print(f"Error: You do not have permission to change permissions for '{dirname}'.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 
 def fill_expdir(inputs):
@@ -424,6 +441,11 @@ def main(*argv):
     # Update the default host account if the user supplied one
     if user_inputs.account is not None:
         host.info.ACCOUNT = user_inputs.account
+
+    # chmod directories (HOMEDIR, STMP, PTMP) as writable
+    chmod_dir_permission(host.info.HOMEDIR)
+    chmod_dir_permission(host.info.STMP)
+    chmod_dir_permission(host.info.PTMP)
 
     # Determine ocean resolution if not provided
     if user_inputs.resdetocean <= 0:
