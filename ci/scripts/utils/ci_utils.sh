@@ -177,3 +177,10 @@ function cleanup_experiment() {
     rm -Rf "${EXPDIR}/${pslot:?}"
     rm -Rf "${STMP}/RUNDIRS/${pslot:?}"
 }
+
+function build_compute () {
+
+  source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
+  "${HOMEgfs}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
+
+}
