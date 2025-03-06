@@ -83,6 +83,7 @@ pipeline {
             agent { label NodeName[machine].toLowerCase() }
             steps {
                 script {
+                    // Capitalize the first letter of the machine name and use if for labels
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                     echo "Getting Common Workspace for ${Machine}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
