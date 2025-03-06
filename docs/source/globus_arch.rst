@@ -16,7 +16,7 @@ Once you are logged in, verify that the Globus connection is active on the clien
 
 To test the connection and verify that your session is active, you can attempt a test transfer:
 
-.. code:: bash
+.. code-block:: bash
 
    echo "Example" > example.file  # Create a test file
    globus endpoint search rdhpcs#niagara  # Get Niagara's Globus ID
