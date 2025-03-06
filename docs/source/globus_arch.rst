@@ -25,7 +25,7 @@ To test the connection and verify that your session is active, you can attempt a
    # Transfer the file; this will print a transfer ID if successfully initialized
    globus transfer '<Hercules ID (????????-????-????-????-????????????)>:/full/path/to/example.file' '<Niagara ID >:/collab1/data/<your username>/example.file'
    # Wait on the transfer to complete
-   globus wait <transfer ID>
+   globus task wait <transfer ID>
 
 If the above snippet is successful, then you are good to go.  It's possible that you may need to authenticate and/or update permissions on one or both machines.  Globus should give you step-by-step instructions for this.  If it fails, then please reference the guide and/or email RDHPCS for support.
 
