@@ -55,7 +55,8 @@ class AtmEnsAnalysis(Task):
                 'ATM_WINDOW_BEGIN': _window_begin,
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'OPREFIX': f"{self.task_config.EUPD_CYC}.t{self.task_config.cyc:02d}z.",
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'APREFIX': f"{self.task_config.RUN.replace('enkf', '')}.t{self.task_config.cyc:02d}z.",
+                'APREFIX_ENS': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'atm_obsdatain_path': f"./obs/",
                 'atm_obsdataout_path': f"./diags/",
@@ -201,7 +202,7 @@ class AtmEnsAnalysis(Task):
 
         # ---- tar up diags
         # path of output tar statfile
-        atmensstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX}atmensstat")
+        atmensstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX_ENS}atmensstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
@@ -228,7 +229,7 @@ class AtmEnsAnalysis(Task):
         for src in yamls:
             logger.info(f"Copying {src} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
             yaml_base = os.path.splitext(os.path.basename(src))[0]
-            dest_yaml_name = f"{self.task_config.APREFIX}{yaml_base}.yaml"
+            dest_yaml_name = f"{self.task_config.APREFIX_ENS}{yaml_base}.yaml"
             dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
@@ -247,7 +248,7 @@ class AtmEnsAnalysis(Task):
 
         # copy ensemble mean analysis to comrot
         logger.info("Copy ensemble mean analysis")
-        fh_dict = {'copy': [[f"{self.task_config.DATA}/anl/{self.task_config.APREFIX}cubed_sphere_grid_atmanl.ensmean.nc",
+        fh_dict = {'copy': [[f"{self.task_config.DATA}/anl/{self.task_config.APREFIX_ENS}cubed_sphere_grid_atmanl.ensmean.nc",
                              f"{self.task_config.COM_ATMOS_ANALYSIS_ENS}"]]}
         FileHandler(fh_dict).sync()
 
@@ -263,7 +264,7 @@ class AtmEnsAnalysis(Task):
             tmpl_inc_dict['MEMDIR'] = memchar
             incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
             src = os.path.join(self.task_config.DATA, 'anl', memchar,
-                               f"{self.task_config.APREFIX}cubed_sphere_grid_atminc.nc")
+                               f"{self.task_config.APREFIX_ENS}cubed_sphere_grid_atminc.nc")
             dest = incdir
             inc_copy['copy'].append([src, dest])
 

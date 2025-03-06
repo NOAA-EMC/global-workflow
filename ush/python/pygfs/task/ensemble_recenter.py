@@ -57,7 +57,8 @@ class EnsembleRecenter(Task):
                 'npz_anl': self.task_config.LEVS - 1,
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'ATM_WINDOW_BEGIN': _window_begin,
-                'APREFIX': f"gdas.t{self.task_config.cyc:02d}z.",
+                'APREFIX': f"{self.task_config.RUN.replace('enkf', '')}.t{self.task_config.cyc:02d}z.",
+                'APREFIX_ENS': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'iau_times_iso': _iau_times_iso
             }
@@ -164,10 +165,10 @@ class EnsembleRecenter(Task):
                 hr = format(fh, '03')
                 for itile in range(6):
                     src = os.path.join(self.task_config.DATA, memchar,
-                                       f"enkf{self.task_config.APREFIX}cubed_sphere_grid_ratmi{hr}.tile{itile+1}.nc")
+                                       f"{self.task_config.APREFIX_ENS}cubed_sphere_grid_ratmi{hr}.tile{itile+1}.nc")
                     if fh == 6:
                         dest = os.path.join(incdir,
-                                            f"enkf{self.task_config.APREFIX}cubed_sphere_grid_ratminc.tile{itile+1}.nc")
+                                            f"{self.task_config.APREFIX_ENS}cubed_sphere_grid_ratminc.tile{itile+1}.nc")
                     else:
                         dest = incdir
                     fh_dict['copy'].append([src, dest])
@@ -177,7 +178,7 @@ class EnsembleRecenter(Task):
             src = os.path.join(self.task_config.DATA,
                                f"{app_name}.yaml")
             dest = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS_ENSSTAT,
-                                f"enkf{self.task_config.APREFIX}{app_name}.yaml")
+                                f"{self.task_config.APREFIX_ENS}{app_name}.yaml")
             fh_dict['copy'].append([src, dest])
 
         # Sync file handler

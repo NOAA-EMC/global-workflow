@@ -58,6 +58,7 @@ class AtmAnalysis(Task):
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'APREFIX_ENS': f"enkf{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'atm_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'atm_obsdataout_path': f"{self.task_config.DATA}/diags/",
