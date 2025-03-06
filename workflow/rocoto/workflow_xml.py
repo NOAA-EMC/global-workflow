@@ -245,7 +245,7 @@ class RocotoXML(ABC):
             raise FileNotFoundError(
                 "Could not find the rocotorc file!\n"
                 f"Please create '{rocotorc_file}' following the documentation at" "\n"
-                "https://global-workflow.readthedocs.io/en/latest/configure.html"
+                "https://global-workflow.readthedocs.io/en/latest/start.html#set-up-your-experiment-cron-or-scron"
             )
 
         with open(rocotorc_file) as rc_f:
@@ -253,5 +253,5 @@ class RocotoXML(ABC):
                 raise ValueError(
                     f"':BatchQueueServer: false' should be written to {rocotorc_file}, but it is not!" "\n"
                     "Please follow the documentation guide here:\n"
-                    "https://global-workflow.readthedocs.io/en/latest/configure.html"
+                    "https://global-workflow.readthedocs.io/en/latest/start.html#set-up-your-experiment-cron-or-scron"
                 )
