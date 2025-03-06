@@ -4,8 +4,6 @@ labels: ["triage"]
 type: "bug"
 projects: ["NOAA-EMC/41"]
 
-type: "bug"
-
 body:
   - type: markdown
     attributes:
