@@ -50,75 +50,80 @@ cd ../ecf
 ```
 VERSION FILE CHANGES
 --------------------
-* `versions/run.ver` - change `version=v16.4.0` and `gfs_ver=v16.4.0`
 
+* `versions/run.ver` - change `version=v16.4.0` and `gfs_ver=v16.4.0`
 
 SORC CHANGES
 ------------
+
 * New MODEL tag: `GFS.v16.4.0`
 
 JOBS CHANGES
 ------------
-* No changes from GFS v16.3.22
+
+* No changes from GFS v16.3.24
 
 PARM/CONFIG CHANGES
 -------------------
-* No changes from GFS v16.3.22
+
+* No changes from GFS v16.3.24
 
 SCRIPT CHANGES
 --------------
+
 * WW3-related changes to `scripts/exgfs_wave_post_gridded_sbs.sh` and `scripts/exglobal_forecast.sh`. Grid loop and counter updates. Log files are now checked for completion instead of the associated gridded output.
 
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.24
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.24
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.24
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.24
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-* All DA and wave jobs
+  * All DA and wave jobs
 * Does this change require a 30-day evaluation?
   * No
 
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.24
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.24
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.24
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.22
+* No changes from GFS v16.3.24
 
 PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
+Andrew.Collard@noaa.gov
 Matthew.Masarik@noaa.gov
 Jessica.Meixner@noaa.gov

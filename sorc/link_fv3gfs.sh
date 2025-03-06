@@ -91,34 +91,10 @@ cd ${pwd}/../util               ||exit 8
         $LINK ../sorc/ufs_utils.fd/util/$file .
     done
 
-#-----------------------------------
-#--add gfs_wafs link if checked out
-if [ -d ${pwd}/gfs_wafs.fd ]; then
-#-----------------------------------
- cd ${pwd}/../jobs               ||exit 8
-     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
- cd ${pwd}/../parm               ||exit 8
-     [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
- cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
- cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
- cd ${pwd}/../fix                ||exit 8
-    [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
-fi
-
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi
 cd ${pwd}/../ush                ||exit 8
-# The following are now explicitly in the global-workflow repository
-#    $LINK ../sorc/gsi.fd/ush/gsi_utils.py        .
-#    $LINK ../sorc/gsi.fd/ush/calcanl_gfs.py      .
-#    $LINK ../sorc/gsi.fd/ush/calcinc_gfs.py      .
-#    $LINK ../sorc/gsi.fd/ush/getncdimlen         .
-
 
 #------------------------------
 #--add DA Monitor file
