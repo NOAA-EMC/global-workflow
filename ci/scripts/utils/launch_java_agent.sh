@@ -163,7 +163,7 @@ check_node_online() {
 }
 
 lauch_agent () {
-    echo "Launching Jenkins Agent on ${host}"
+    echo "Launching Jenkins Agent on ${host} using internal workspace ${JENKINS_WORK_DIR}"
     command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
     echo -e "Launching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
     ${command} >> "${LOG}" 2>&1 &
