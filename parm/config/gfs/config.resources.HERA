@@ -10,9 +10,9 @@ case ${step} in
 
   "anal")
     if [[ "${CASE}" == "C384" ]]; then
-    export ntasks=270
-    export threads_per_task=8
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+      export ntasks=270
+      export threads_per_task=8
+      export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
 

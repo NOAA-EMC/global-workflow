@@ -87,21 +87,12 @@ fi
 # (Standard) Model resolution dependent variables
 case "${fv3_res}" in
     "C48")
-        if [[ "${RUN}" = *gdas ]]; then
-          export layout_x=1
-          export layout_y=1
-          export nthreads_fv3=1
-          export nthreads_ufs=1
-          export WRITE_GROUP=1
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
-        elif [[ "${RUN}" = *gfs ]]; then
-          export layout_x=1
-          export layout_y=1
-          export nthreads_fv3=1
-          export nthreads_ufs=1
-          export WRITE_GROUP=1
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
-        fi
+        export layout_x=1
+        export layout_y=1
+        export nthreads_fv3=1
+        export nthreads_ufs=1
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
         export DELTIM=1200
         export xr_cnvcld=".false."  # Do not pass conv. clouds to Xu-Randall cloud fraction
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
@@ -137,21 +128,12 @@ case "${fv3_res}" in
           export NEST_DLAT=0.25
           export psl_gwd_dx_factor=6.0
         else
-          if [[ "${RUN}" = *gdas ]]; then
-            export nthreads_fv3=1
-            export nthreads_ufs=1
-            export layout_x=2
-            export layout_y=2
-            export WRITE_GROUP=1
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
-          elif [[ "${RUN}" = *gfs ]]; then
-            export nthreads_fv3=1
-            export nthreads_ufs=1
-            export layout_x=2
-            export layout_y=2
-            export WRITE_GROUP=1
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
-          fi
+          export nthreads_fv3=1
+          export nthreads_ufs=1
+          export layout_x=2
+          export layout_y=2
+          export WRITE_GROUP=1
+          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
           export DELTIM=600
           export xr_cnvcld=.false. # Do not pass conv. clouds to Xu-Randall cloud fraction
           export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
@@ -188,16 +170,14 @@ case "${fv3_res}" in
           export NEST_DLAT=0.125
           export psl_gwd_dx_factor=6.0
         else
+          export layout_x=4
+          export layout_y=6
           if [[ "${RUN}" = *gdas ]]; then
-            export layout_x=4
-            export layout_y=6
             export nthreads_fv3=1
             export nthreads_ufs=1
             export WRITE_GROUP=1
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
           elif [[ "${RUN}" = *gfs ]]; then
-            export layout_x=4
-            export layout_y=6
             export nthreads_fv3=2
             export nthreads_ufs=2
             export WRITE_GROUP=2
@@ -245,21 +225,12 @@ case "${fv3_res}" in
           export psl_gwd_dx_factor=2.0
         else
           export DELTIM=300
-          if [[ "${RUN}" = *gdas ]]; then
-            export layout_x=8
-            export layout_y=8
-            export nthreads_fv3=2
-            export nthreads_ufs=2
-            export WRITE_GROUP=4
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-          elif [[ "${RUN}" = *gfs ]]; then
-            export layout_x=8
-            export layout_y=8
-            export nthreads_fv3=2
-            export nthreads_ufs=2
-            export WRITE_GROUP=4
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-          fi
+          export layout_x=8
+          export layout_y=8
+          export nthreads_fv3=2
+          export nthreads_ufs=2
+          export WRITE_GROUP=4
+          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
           export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
           export cdmbgwd_gsl="5.0,5.0,1.0,1.0"   # settings for GSL drag suite
           export psl_gwd_dx_factor=6.0
@@ -274,19 +245,11 @@ case "${fv3_res}" in
     "C768")
         if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
           export DELTIM=75
-          if [[ "${RUN}" = *gdas ]]; then
-            export layout_x=16
-            export layout_y=10
-            export nthreads_fv3=2
-            export WRITE_GROUP=2
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=90
-          elif [[ "${RUN}" = *gfs ]]; then
-            export layout_x=16
-            export layout_y=10
-            export nthreads_fv3=2
-            export WRITE_GROUP=2
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=90
-          fi
+          export layout_x=16
+          export layout_y=10
+          export nthreads_fv3=2
+          export WRITE_GROUP=2
+          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=90
           export layout_x_nest=48
           export layout_y_nest=45
           export nthreads_fv3_nest=2
