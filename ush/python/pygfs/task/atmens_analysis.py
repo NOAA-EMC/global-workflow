@@ -58,6 +58,7 @@ class AtmEnsAnalysis(Task):
                 'APREFIX': f"{self.task_config.RUN.replace('enkf', '')}.t{self.task_config.cyc:02d}z.",
                 'APREFIX_ENS': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'atm_obsdatain_path': f"./obs/",
                 'atm_obsdataout_path': f"./diags/",
                 'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications

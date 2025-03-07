@@ -60,6 +60,7 @@ class AtmAnalysis(Task):
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX_ENS': f"enkf{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'atm_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'atm_obsdataout_path': f"{self.task_config.DATA}/diags/",
                 'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications

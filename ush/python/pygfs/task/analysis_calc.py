@@ -54,7 +54,9 @@ class AnalysisCalc(Task):
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'ATM_WINDOW_BEGIN': _window_begin,
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'APREFIX_ENS': f"enkf{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
             }
         )
 
