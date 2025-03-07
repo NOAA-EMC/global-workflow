@@ -29,6 +29,8 @@ def makedirs_if_missing(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
+    return
+
 def chmod_dir_permission(dirname):
     """
     change the permission mode of a directory as writable
@@ -44,6 +46,7 @@ def chmod_dir_permission(dirname):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
+    return
 
 def fill_expdir(inputs):
     """
