@@ -405,7 +405,7 @@ local IAU_DRYMASSFIXER=.false.
 local IAU_FILTER_INCREMENTS=${IAU_FILTER_INCREMENTS:-".false."}
 
 # CA options
-local DO_CA=.true.
+local DO_CA=".true."
 local CA_GLOBAL=${ca_global:-".false."}
 local CA_SGS=${ca_sgs:-".true."}
 local NCA=${nca:-"1"}
@@ -427,7 +427,7 @@ local PERT_MP=${PERT_MP:-".false."}
 local PERT_RADTEND=${PERT_RADTEND:-".false."}
 local PERT_CLDS=${PERT_CLDS:-".false."}
 
-if [[ ${DO_SPPT} = "YES" ]]; then
+if [[ ${DO_SPPT} = ".true." ]]; then
   local PERT_CLDS=".true."
 fi
   
@@ -522,7 +522,8 @@ local FNTSFA="'${FNTSFA:-}'"
 #fv_grid_nml options
 
 #nam stochy options
-local SKEB=${SKEB:-"-999."}
+local STOCHINI=${stochini:-".false."}
+local SKEB=${SKEB:-0}
 local ISEED_SKEB=${ISEED_SKEB:-${ISEED}}
 local SKEB_TAU=${SKEB_TAU:-"-999."}
 local SKEB_LSCALE=${SKEB_LSCALE:-"-999."}
@@ -558,7 +559,7 @@ local LNDP_VAR_LIST=${lndp_var_list:-"'XXX'"}
 local LNDP_PRT_LIST=${lndp_prt_list:-"-999"}
 
 local MOM6_OUTPUT_DIR=MOM6_OUTPUT/
-local MOM6_RESTART_SETTING=r
+local MOM6_RESTART_SETTING=${MOM6_RESTART_SETTING:-'n'}
 local MOM6_RESTART_DIR=MOM6_RESTART/
 
 # Land IAU defaults
