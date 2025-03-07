@@ -169,14 +169,24 @@ if [[ "$netwk" = "namopl" || "$resol" = "namopl" ]];then
   typef=restrt
   resol=namopl
 fi
-[[ $resol = 57464 || $resol = 38264 || $resol = 19064 || $resol = 25464 || $resol = 17042 || $resol = 12628 ]]&&resol=high
-[[ $resol = 6228 ]]&&resol=low
+if [[ "${resol}" == "57464" || "${resol}" == "38264" || "${resol}" == "19064" || "${resol}" == "25464" || "${resol}" == "17042" || "${resol}" == "12628" ]]; then
+    resol=high
+fi
+if [[ "${resol}" == "6228" ]]; then
+    resol=low
+fi
 resolsuf=""
-[[ $resol == *deg ]]&&resolsuf=.$resol
+if [[ ${resol} == *deg ]]; then
+    resolsuf=.$resol
+fi
 fhbeg=$(${NHOUR:?} $valid)
-[[ $fhbeg -le 0 ]]&&fhbeg=03
-((fhbeg=(10#$fhbeg-1)/3*3+3))
-[[ $fhbeg -lt 10 ]]&&fhbeg=0$fhbeg
+if [[ ${fhbeg} -le 0 ]]; then
+    fhbeg=03
+fi
+((fhbeg=(10#${fhbeg}-1)/3*3+3))
+if [[ $fhbeg -lt 10 ]]; then
+    fhbeg="0${fhbeg}"
+fi
 if [[ $typef = enggrb ]];then
  typef=icegrb
  echo '************************************************************' >&2
@@ -1320,24 +1330,42 @@ fi
 fh=$fhbeg
 if [ -z "$PDY" ];then echo "getges.sh WARNING: \$PDY variable not set" >&2; fi
 while [[ $fh -le $fhend ]];do
- ((fhm6=10#$fh-6))
- [[ $fhm6 -lt 10 && $fhm6 -ge 0 ]]&&fhm6=0$fhm6
- ((fhm5=10#$fh-5))
- [[ $fhm5 -lt 10 && $fhm5 -ge 0 ]]&&fhm5=0$fhm5
- ((fhm4=10#$fh-4))
- [[ $fhm4 -lt 10 && $fhm4 -ge 0 ]]&&fhm4=0$fhm4
- ((fhm3=10#$fh-3))
- [[ $fhm3 -lt 10 && $fhm3 -ge 0 ]]&&fhm3=0$fhm3
- ((fhm2=10#$fh-2))
- [[ $fhm2 -lt 10 && $fhm2 -ge 0 ]]&&fhm2=0$fhm2
- ((fhm1=10#$fh-1))
- [[ $fhm1 -lt 10 && $fhm1 -ge 0 ]]&&fhm1=0$fhm1
- ((fhp1=10#$fh+1))
- [[ $fhp1 -lt 10 ]]&&fhp1=0$fhp1
- ((fhp2=10#$fh+2))
- [[ $fhp2 -lt 10 ]]&&fhp2=0$fhp2
- ((fhp3=10#$fh+3))
- [[ $fhp3 -lt 10 ]]&&fhp3=0$fhp3
+ ((fhm6=10#${fh}-6))
+ if [[ ${fhm6} -lt 10 && ${fhm6} -ge 0 ]]; then
+     fhm6=0${fhm6}
+ fi
+ ((fhm5=10#${fh}-5))
+ if [[ ${fhm5} -lt 10 && ${fhm5} -ge 0 ]]; then
+     fhm5=0${fhm5}
+ fi
+ ((fhm4=10#${fh}-4))
+ if [[ ${fhm4} -lt 10 && ${fhm4} -ge 0 ]]; then
+     fhm4=0${fhm4}
+ fi
+ ((fhm3=10#${fh}-3))
+ if [[ ${fhm3} -lt 10 && ${fhm3} -ge 0 ]]; then
+     fhm3=0${fhm3}
+ fi
+ ((fhm2=10#${fh}-2))
+ if [[ ${fhm2} -lt 10 && ${fhm2} -ge 0 ]]; then
+     fhm2=0${fhm2}
+ fi
+ ((fhm1=10#${fh}-1))
+ if [[ ${fhm1} -lt 10 && ${fhm1} -ge 0 ]]; then
+     fhm1=0${fhm1}
+ fi
+ ((fhp1=10#${fh}+1))
+ if [[ ${fhp1} -lt 10 ]]; then
+     fhp1=0${fhp1}
+ fi
+ ((fhp2=10#${fh}+2))
+ if [[ ${fhp2} -lt 10 ]]; then
+     fhp2=0${fhp2}
+ fi
+ ((fhp3=10#${fh}+3))
+ if [[ ${fhp3} -lt 10 ]]; then
+     fhp3=0${fhp3}
+ fi
  gh=$fh;[[ $gh -lt 100 ]]&&gh=0$gh
  ghm6=$fhm6;[[ $ghm6 -lt 100 ]]&&ghm6=0$ghm6
  ghm5=$fhm5;[[ $ghm5 -lt 100 ]]&&ghm5=0$ghm5
@@ -1353,17 +1381,25 @@ while [[ $fh -le $fhend ]];do
  day=$(echo $id | xargs | cut -c8)
  cyc=$(echo $id | xargs | rev | cut -c1-2 | rev)
  eval list=\$getlist$fh
- [[ -z "$list" ]]&&list=${geslist}
+ if [[ -z "${list}" ]]; then
+     list=${geslist}
+ fi
  for ges_var in $list;do
   # Replace variables in guess with their values
   eval ges_val=$ges_var
   # Replace the current PDY with the valid date
   ges=${ges_val/$PDY\//$day/}
-  [[ $quiet = NO ]]&&echo Checking: $ges >&2
-  [[ -r $ges ]]&&break 2
+  if [[ "${quiet}" == "NO" ]]; then
+      echo Checking: "${ges}" >&2
+  fi
+  if [[ -r "${ges}" ]]; then
+      break 2
+  fi
  done
- fh=$((10#$fh+10#$fhinc))
- [[ $fh -lt 10 ]]&&fh=0$fh
+ fh=$((10#${fh}+10#${fhinc}))
+ if [[ ${fh} -lt 10 ]]; then
+     fh=0${fh}
+ fi
 done
 if [[ $fh -gt $fhend ]];then
  echo getges.sh: unable to find $netwk.$envir.$typef.$resol.$valid >&2

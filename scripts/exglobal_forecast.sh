@@ -106,11 +106,21 @@ common_predet
 
 echo "MAIN: Loading variables before determination of run type"
 FV3_predet
-[[ ${cplflx} = .true. ]] && CMEPS_predet
-[[ ${cplflx} = .true. ]] && MOM6_predet
-[[ ${cplwav} = .true. ]] && WW3_predet
-[[ ${cplice} = .true. ]] && CICE_predet
-[[ ${cplchm} = .true. ]] && GOCART_predet
+if [[ "${cplflx}" == ".true." ]]; then
+    CMEPS_predet
+fi
+if [[ "${cplflx}" == ".true." ]]; then
+    MOM6_predet
+fi
+if [[ "${cplwav}" == ".true." ]]; then
+    WW3_predet
+fi
+if [[ "${cplice}" == ".true." ]]; then
+    CICE_predet
+fi
+if [[ "${cplchm}" == ".true." ]]; then
+    GOCART_predet
+fi
 echo "MAIN: Variables before determination of run type loaded"
 
 echo "MAIN: Determining run type"
@@ -119,19 +129,37 @@ echo "MAIN: run type determined"
 
 echo "MAIN: Post-determination set up of run type"
 FV3_postdet
-[[ ${cplflx} = .true. ]] && CMEPS_postdet
-[[ ${cplflx} = .true. ]] && MOM6_postdet
-[[ ${cplwav} = .true. ]] && WW3_postdet
-[[ ${cplice} = .true. ]] && CICE_postdet
-[[ ${cplchm} = .true. ]] && GOCART_postdet
+if [[ "${cplflx}" == ".true." ]]; then
+    CMEPS_postdet
+fi
+if [[ "${cplflx}" == ".true." ]]; then
+    MOM6_postdet
+fi
+if [[ "${cplwav}" == ".true." ]]; then
+    WW3_postdet
+fi
+if [[ "${cplice}" == ".true." ]]; then
+    CICE_postdet
+fi
+if [[ "${cplchm}" == ".true." ]]; then
+    GOCART_postdet
+fi
 echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing namelists and model configuration"
 FV3_nml
-[[ ${cplflx} = .true. ]] && MOM6_nml
-[[ ${cplwav} = .true. ]] && WW3_nml
-[[ ${cplice} = .true. ]] && CICE_nml
-[[ ${cplchm} = .true. ]] && GOCART_rc
+if [[ "${cplflx}" == ".true." ]]; then
+    MOM6_nml
+fi
+if [[ "${cplwav}" == ".true." ]]; then
+    WW3_nml
+fi
+if [[ "${cplice}" == ".true." ]]; then
+    CICE_nml
+fi
+if [[ "${cplchm}" == ".true." ]]; then
+    GOCART_rc
+fi
 UFS_configure
 echo "MAIN: Name lists and model configuration written"
 
@@ -156,12 +184,24 @@ export err=${ERR}
 ${ERRSCRIPT} || exit "${err}"
 
 FV3_out
-[[ ${cplflx} = .true. ]] && MOM6_out
-[[ ${cplflx} = .true. ]] && CMEPS_out
-[[ ${cplwav} = .true. ]] && WW3_out
-[[ ${cplice} = .true. ]] && CICE_out
-[[ ${cplchm} = .true. ]] && GOCART_out
-[[ ${esmf_profile:-} = .true. ]] && CPL_out
+if [[ "${cplflx}" == ".true." ]]; then
+    MOM6_out
+fi
+if [[ "${cplflx}" == ".true." ]]; then
+    CMEPS_out
+fi
+if [[ "${cplwav}" == ".true." ]]; then
+    WW3_out
+fi
+if [[ "${cplice}" == ".true." ]]; then
+    CICE_out
+fi
+if [[ "${cplchm}" == ".true." ]]; then
+    GOCART_out
+fi
+if [[ "${esmf_profile:-}" == ".true." ]]; then
+    CPL_out
+fi
 echo "MAIN: Output copied to ROTDIR"
 
 #------------------------------------------------------------------
