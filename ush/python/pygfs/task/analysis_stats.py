@@ -20,15 +20,15 @@ from pygfs.jedi import Jedi
 logger = getLogger(__name__.split('.')[-1])
 
 
-class StatAnalysis(Task):
+class AnalysisStats(Task):
     """
-    Class for JEDI-based global stat analysis tasks
+    Class for JEDI-based global analysis stats tasks
     """
-    @logit(logger, name="StatAnalysis")
+    @logit(logger, name="AnalysisStats")
     def __init__(self, config: Dict[str, Any]):
         """
-        Constructor global stat analysis task
-        This method will construct a global stat analysis task.
+        Constructor global analysis stats task
+        This method will construct a global analysis stats task.
         This includes:
         - extending the task_config attribute AttrDict to include parameters required for this task
         - instantiate the Jedi attribute objects
@@ -60,8 +60,7 @@ class StatAnalysis(Task):
     @logit(logger)
     def initialize(self) -> None:
         """
-        Initialize a global stat analysis
-        This method will initialize a global stat analysis.
+        This method will initialize a global analysis stats task.
         This includes:
         - initialize JEDI applications
         - copying stat files
@@ -114,8 +113,8 @@ class StatAnalysis(Task):
             # Extract info from stat config file
             analysis_config_dict = parse_j2yaml(self.obs_dict[ANL]['base_config'], self.task_config)
 
-            self.task_config.OBSPACES_LIST = []
-            for analysis_dict in analysis_config_dict[ANL]['ob spaces']:
+            self.task_config.OBSSPACES_LIST = []
+            for analysis_dict in analysis_config_dict[ANL]['obs spaces']:
                 # Gunzip .nc files
                 logger.info("Gunzip files from tar file")
                 gz_file = os.path.join(ob_dir_str, (analysis_dict['input file'] + ".gz"))
@@ -132,7 +131,7 @@ class StatAnalysis(Task):
                     logger.warning("Moving to next analysis ...")
                     continue  # Skip current analysis and move to next
 
-                self.task_config.OBSPACES_LIST.append(analysis_dict['name'])
+                self.task_config.OBSSPACES_LIST.append(analysis_dict['name'])
 
             # initialize JEDI application
             logger.info(f"Initializing JEDI variational DA application")
@@ -140,7 +139,7 @@ class StatAnalysis(Task):
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
-        """Execute JEDI application of stat analysis
+        """Execute JEDI application of analysis stats
 
         Parameters
         ----------
@@ -156,9 +155,9 @@ class StatAnalysis(Task):
 
     @logit(logger)
     def finalize(self, jedi_dict_key: str) -> None:
-        """Finalize the statistic analysis job.
+        """Finalize the analysis statistics job.
 
-        This method will finalize the statistic analysis job using JEDI.
+        This method will finalize the analysis statistics job using JEDI.
         This includes:
         - copying stat files to specified outdir
 
@@ -174,7 +173,7 @@ class StatAnalysis(Task):
 
         analysis_config_dict = parse_j2yaml(self.obs_dict[jedi_dict_key]['base_config'], self.task_config)
 
-        for analysis_dict in analysis_config_dict[jedi_dict_key]['ob spaces']:
+        for analysis_dict in analysis_config_dict[jedi_dict_key]['obs spaces']:
             diagfile = os.path.join(self.task_config.DATA, analysis_dict['output file'])
             outdir = self.task_config['COMOUT_' + jedi_dict_key.upper() + '_ANLMON']
 
