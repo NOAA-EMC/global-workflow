@@ -83,45 +83,45 @@ class AnalysisStats(Task):
         self.obs_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
 
         # Loop through a copy of ob space list
-        for ANL in self.task_config.STAT_ANALYSES[:]:
-            logger.info(f"Working on current observation: {ANL}")
+        for analysis in self.task_config.STAT_ANALYSES[:]:
+            logger.info(f"Working on analysis type: {analysis}")
 
             # Copy stat files to DATA path
-            instat_files = os.path.join(self.obs_dict[ANL]['stat_file_path'], f"{self.task_config['APREFIX']}{self.obs_dict[ANL]['stat_file_name']}")
-            ob_dir_str = f"{self.task_config.DATA}" + f"/{ANL}"
-            os.mkdir(ob_dir_str)
+            input_tar = os.path.join(self.obs_dict[analysis]['stat_file_path'], 
+                                     f"{self.task_config['APREFIX']}{self.obs_dict[analysis]['stat_file_name']}")
+            diag_dir_path = os.path.join(self.task_config.DATA, analysis)
 
-            dest = os.path.join(ob_dir_str, self.obs_dict[ANL]['stat_file_name'])
-            logger.info(f"Copying {instat_files} to {dest} ...")
-            statlist = [[instat_files, dest]]
-            FileHandler({'copy': statlist}).sync()
+            dest = os.path.join(diag_dir_path, self.obs_dict[analysis]['stat_file_name'])
+            logger.info(f"Copying {input_tar} to {dest} ...")
+            tarball_list = [[input_tar, dest]]
+            FileHandler({'mkdir': [diag_dir_path], 'copy': tarball_list}).sync()
 
             # Open tar file
-            logger.info(f"Open tarred stat file in {dest}")
+            logger.info(f"Open tarred diagnostic files in {dest}")
             with tarfile.open(dest, "r") as tar:
                 # Check if tar file is empty
                 if not tar.getnames():
                     logger.warning(f"WARNING. The tar file {dest} is empty. No files to extract.")
                     logger.warning("Moving to next analysis ...")
-                    # Remove ANL from STAT_ANALYSES and move to next
-                    self.task_config.STAT_ANALYSES.remove(ANL)
+                    # Remove analysis from STAT_ANALYSES and move to next
+                    self.task_config.STAT_ANALYSES.remove(analysis)
                     logger.info(f"current analysis list: {self.task_config.STAT_ANALYSES}")
                     continue
                 # Extract all files to the current directory
-                tar.extractall(path=f'{ob_dir_str}')
+                tar.extractall(path=diag_dir_path)
 
             # Extract info from stat config file
-            analysis_config_dict = parse_j2yaml(self.obs_dict[ANL]['base_config'], self.task_config)
+            analysis_config_dict = parse_j2yaml(self.obs_dict[analysis]['base_config'], self.task_config)
 
             self.task_config.OBSSPACES_LIST = []
-            for analysis_dict in analysis_config_dict[ANL]['obs spaces']:
+            for analysis_dict in analysis_config_dict[analysis]['obs spaces']:
                 # Gunzip .nc files
                 logger.info("Gunzip files from tar file")
-                gz_file = os.path.join(ob_dir_str, (analysis_dict['input file'] + ".gz"))
+                gz_file = os.path.join(diag_dir_path, (analysis_dict['input file'] + ".gz"))
 
                 # Check if the file exists
                 if os.path.exists(gz_file):
-                    output_file = os.path.join(ob_dir_str, analysis_dict['input file'])
+                    output_file = os.path.join(diag_dir_path, analysis_dict['input file'])
                     # Open the .gz file
                     with gzip.open(gz_file, 'rb') as f_in:
                         with open(output_file, 'wb') as f_out:
@@ -134,8 +134,8 @@ class AnalysisStats(Task):
                 self.task_config.OBSSPACES_LIST.append(analysis_dict['name'])
 
             # initialize JEDI application
-            logger.info(f"Initializing JEDI variational DA application")
-            self.jedi_dict[ANL].initialize(self.task_config)
+            logger.info(f"Initializing JEDI ioda-stats extraction application")
+            self.jedi_dict[analysis].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -174,17 +174,16 @@ class AnalysisStats(Task):
         analysis_config_dict = parse_j2yaml(self.obs_dict[jedi_dict_key]['base_config'], self.task_config)
 
         for analysis_dict in analysis_config_dict[jedi_dict_key]['obs spaces']:
-            diagfile = os.path.join(self.task_config.DATA, analysis_dict['output file'])
+            statfile = os.path.join(self.task_config.DATA, analysis_dict['output file'])
             outdir = self.task_config['COMOUT_' + jedi_dict_key.upper() + '_ANLMON']
 
             # Check if the directory exists; if not, create it
             if not os.path.exists(outdir):
-                os.makedirs(outdir)
-                logger.info(f"Created directory: {outdir}")
+                FileHandler({'mkdir': [outdir]}).sync()
 
             dest = os.path.join(outdir, f"{analysis_dict['output file']}")
-            logger.debug(f"copying {diagfile} to {dest}")
-            diag_copy = {
-                'copy': [[diagfile, dest]]
+            logger.debug(f"copying {statfile} to {dest}")
+            stat_copy = {
+                'copy': [[statfile, dest]]
             }
-            FileHandler(diag_copy).sync()
+            FileHandler(stat_copy).sync()
