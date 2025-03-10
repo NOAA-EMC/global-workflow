@@ -4,23 +4,21 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 # Source FV3GFS workflow modules
-. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+. "${HOMEgfs}"/ush/load_fv3gfs_modules.sh
 status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 ###############################################################
 # setup python path for workflow utilities and tasks
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
 export PYTHONPATH
 
-export job="earc_tars"
+export job="globus_arch"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_ENS_ARCHIVE_TARS"
+"${HOMEgfs}"/jobs/JGLOBAL_GLOBUS_ARCH
 status=$?
 
 exit "${status}"
