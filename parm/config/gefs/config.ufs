@@ -126,12 +126,6 @@ case "${fv3_res}" in
         export fv_sg_adj=1800
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-        if [[ "${RUN}" = *gfs ]]; then
-          export nthreads_fv3=2
-          export nthreads_ufs=2
-          export WRITE_GROUP=2
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=5
-        fi
         ;;
     "C384")
         export DELTIM=300
@@ -150,11 +144,6 @@ case "${fv3_res}" in
         export fv_sg_adj=900
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=8
-        if [[ "${RUN}" = *gfs ]]; then
-          export nthreads_fv3=2
-          export nthreads_ufs=2
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-        fi
         ;;
     "C768")
         export DELTIM=150
@@ -173,12 +162,6 @@ case "${fv3_res}" in
         export fv_sg_adj=450
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-        if [[ "${RUN}" = *gfs ]]; then
-          export layout_x=12
-          export layout_y=16
-          export WRITE_GROUP=4
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 #Note this should be 10 for WCOSS2
-        fi
         ;;
     "C1152")
         export DELTIM=150
@@ -197,9 +180,6 @@ case "${fv3_res}" in
         export fv_sg_adj=450
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
-        if [[ "${RUN}" = *gfs ]]; then
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
-        fi
         ;;
     "C3072")
         export DELTIM=90
