@@ -35,8 +35,12 @@ source "./tests/detect_machine.sh"
 source "./tests/module-setup.sh"
 
 MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
-[[ ${PDLIB:-"OFF"} = "ON" ]] && MAKE_OPT+=" -DPDLIB=ON"
-[[ ${HYDRO:-"OFF"} = "ON" ]] && MAKE_OPT+=" -DHYDRO=ON"
+if [[ ${PDLIB:-"OFF"} = "ON" ]]; then
+    MAKE_OPT+=" -DPDLIB=ON"
+fi
+if [[ ${HYDRO:-"OFF"} = "ON" ]]; then
+    MAKE_OPT+=" -DHYDRO=ON"
+fi
 if [[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] ; then
     MAKE_OPT+=" -DDEBUG=ON"
 elif [[ "${FASTER:-OFF}" == ON ]] ; then

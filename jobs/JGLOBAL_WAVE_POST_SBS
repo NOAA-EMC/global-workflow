@@ -45,14 +45,16 @@ ${SCRgfs}/exgfs_wave_post_gridded_sbs.sh
 err=$?
 if [ ${err} -ne 0 ]; then
   echo "FATAL ERROR: ex-script of GWES_POST failed!"
-  exit ${err}
+  exit "${err}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

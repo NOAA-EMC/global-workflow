@@ -6,7 +6,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Source FV3GFS workflow modules
 . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 export job="echgres"
 export jobid="${job}.$$"
@@ -17,4 +19,4 @@ ${HOMEgfs}/jobs/JGDAS_ATMOS_CHGRES_FORENKF
 status=$?
 
 
-exit ${status}
+exit "${status}"
