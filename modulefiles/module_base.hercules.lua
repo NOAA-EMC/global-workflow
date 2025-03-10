@@ -52,7 +52,4 @@ load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 load("globus-cli")
 
--- Set the path for the globus package handler, Sven
-setenv("sven_dir", "/home/gfekete/sven")
-
 whatis("Description: GFS run environment")
