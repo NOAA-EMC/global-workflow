@@ -37,15 +37,15 @@ class FetchFIXdata():
 
         Parameters
         ----------
-        atmgrdiarray:
+        atmgrdiarray: list
             A list of ATM grids
-        ocngrdiarray:
+        ocngrdiarray: list
             A list of OCN grids
-        fix_bucket:
-            NOAA s3 bucket
-        fix_ver:
+        fix_bucket: str
+            NOAA s3 bucket of Global-Workflow full FIX data
+        fix_ver: str
             FIX version file
-        localdir:
+        localdir: str
             Local dir to store the subset of FIX data.
 
         Returns
@@ -151,7 +151,7 @@ class FetchFIXdata():
     # -------------------------------------------------------------------------
     def add_cpl2s3dict(self, key, val):
         """
-        Add CPL (complar) grid data to dict.
+        Add CPL (ATM and OCN complar) grid data to dict.
         returns
         ----------
         None
@@ -260,34 +260,37 @@ class FetchFIXdata():
                     self.fix_ver_dict[key] = value.strip()
 
 # ------------------------------------------------------------------------------
+def main() -> None:
 
-
-if __name__ == '__main__':
-
+    # define available ATM and OCN grids.
     ATMGRIDLIST = ['C48', 'C96', 'C192', 'C384', 'C768', 'C1152']
     OCNGRIDLIST = ['500', '100', '050', '025']
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="increase output verbosity")
-    parser.add_argument("-a", "--atmgrid", type=str, required=True,
-                        help="ATM grid, like: C48, C96, C192, C384, C768, C1152")
-    parser.add_argument("-o", "--ocngrid", type=str, required=True,
-                        help="OCN grid, like: 500, 100, 050, 025")
     parser.add_argument("-d", "--localdir", type=str, required=True,
                         help="local directory to store FIX data subset")
     parser.add_argument("-f", "--fix_ver", type=str, required=True,
-                        default='unknown',
-                        help="fix.ver file")
-    parser.add_argument("-b", "--fix_bucket", type=str, required=True,
-                        default='s3://noaa-nws-global-pds/fix',
-                        help="S3 Bucket directory of FIX data")
+                        default="unknown",
+                        help="fix.ver file from Global-Workflow versions directory")
+    parser.add_argument("-b", "--fix_bucket", type=str, required=False,
+                        default="s3://noaa-nws-global-pds/fix",
+                        help="Optional S3 Bucket directory of FIX data, default <s3://noaa-nws-global-pds/fix>")
+    parser.add_argument("-a", "--atmgrid", type=str, required=False,
+                        default="C48",
+                        help="ATM grid, like: C48,C96,C192,C384,C768,C1152, default: C48")
+    parser.add_argument("-o", "--ocngrid", type=str, required=False,
+                        default="100",
+                        help="OCN grid, like: 500,100,050,025, default: 100")
     args = parser.parse_args()
 
     if args.verbose:
-        logger.info(f"the atmgrid is {args.atmgrid}")
-    else:
-        logger.info(f"the atmgrid is {args.atmgrid}")
+        print(f"the atmgrid is {args.atmgrid}")
+        print(f"the ocngrid is {args.ocngrid}")
+        print(f"the localdir is {args.localdir}")
+        print(f"the fix_file is {args.fix_ver}")
+        print(f"the s3 bucket is {args.fix_bucket}")
 
     atmgrid = args.atmgrid
     if (atmgrid.find(',') > 0):
@@ -319,3 +322,8 @@ if __name__ == '__main__':
                        localdir=args.localdir, verbose=args.verbose)
 
     ffd.fetchdata()
+
+# ------------------------------------------------------------------------------
+if __name__ == '__main__':
+    main()
+
