@@ -87,7 +87,7 @@ class AnalysisStats(Task):
             logger.info(f"Working on analysis type: {analysis}")
 
             # Copy stat files to DATA path
-            input_tar = os.path.join(self.obs_dict[analysis]['stat_file_path'], 
+            input_tar = os.path.join(self.obs_dict[analysis]['stat_file_path'],
                                      f"{self.task_config['APREFIX']}{self.obs_dict[analysis]['stat_file_name']}")
             diag_dir_path = os.path.join(self.task_config.DATA, analysis)
 
