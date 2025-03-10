@@ -85,14 +85,18 @@ if [[ "${RUN}" == "gfs" ]]; then
     fhmax=$((FHMAX_FITS + 36))
     RDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${fhmax} hours")
     verify_dir="${ROTDIR}/vrfyarch/${RUN}.${RDATE:0:8}"
-    [[ -d ${verify_dir} ]] && rm -rf "${verify_dir}"
+    if [[ -d "${verify_dir}" ]]; then
+        rm -rf "${verify_dir}"
+    fi
 
     touch_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_FITS} hours")
     while (( touch_date < "${PDY}${cyc}" )); do
         touch_PDY="${touch_date:0:8}"
         touch_cyc="${touch_date:8:2}"
         touch_dir="${ROTDIR}/vrfyarch/${RUN}.${touch_PDY}/${touch_cyc}"
-        [[ -d ${touch_dir} ]] && touch "${touch_dir}"/*
+        if [[ -d "${touch_dir}" ]]; then
+            touch "${touch_dir}"/*
+        fi
         touch_date=$(date --utc +%Y%m%d%H -d "${touch_PDY} ${touch_cyc} +6 hours")
     done
 fi

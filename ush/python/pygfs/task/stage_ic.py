@@ -56,9 +56,9 @@ class Stage(Task):
         # Add the glob.glob function for capturing filenames
         stage_dict['glob'] = glob.glob
 
-        # Parse stage yaml to get list of files to copy
+        # Parse staging yaml to get list of files to stage
         stage_set = parse_j2yaml(self.task_config.STAGE_IC_YAML_TMPL, stage_dict, allow_missing=False)
 
-        # Copy files to ROTDIR
+        # stage files to ROTDIR
         for key in stage_set.keys():
             FileHandler(stage_set[key]).sync()
