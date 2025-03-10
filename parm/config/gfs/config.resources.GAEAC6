@@ -4,3 +4,35 @@
 
 unset memory
 unset "memory_${RUN}"
+export FI_CXI_RX_MATCH_MODE=hybrid
+
+case ${step} in
+  "fcst" | "efcs")
+    case "${CASE}" in
+      "C768")
+        export tasks_per_node=144
+        ;;
+      "C1152")
+        #TODO set tasks_per_node after investigating a safe threshold
+        ;;
+      *)
+        # Nothing to do for other resolutions
+        true
+        ;;
+    esac
+  ;;
+  "eupd")
+    # update ntasks to 80 and threads_per_task to 20
+    case ${CASE} in
+      "C768")
+        export ntasks=80
+        export threads_per_task=20
+        ;;
+      *)
+        ;;
+    esac
+  export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+  ;;
+  *)
+  ;;
+esac

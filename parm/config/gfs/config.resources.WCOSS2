@@ -43,7 +43,7 @@ case ${step} in
     ;;
 
   "eupd")
-    case ${CASE} in
+    case "${CASE}" in
       "C1152" | "C768" | "C384")
         export ntasks=315
         export threads_per_task=14
@@ -55,7 +55,7 @@ case ${step} in
     ;;
 
   "eobs")
-    case ${CASE} in
+    case "${CASE}" in
       "C1152" | "C768" | "C384")
         export tasks_per_node=50
         ;;

@@ -629,14 +629,43 @@ class GEFSTasks(Tasks):
 
         return task
 
-    def cleanup(self):
+    def globus(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_archtar']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('globus')
+        task_name = 'globus_arch'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': 'gefs',
+                     'dependency': dependencies,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus_arch.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def cleanup(self):
+        deps = []
+        if self.options['do_archcom']:
+            if self.options['do_globusarch']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
+            else:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
             deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
+
+        dep_dict = {'type': 'task', 'name': 'gefs_arch_vrfy'}
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
         resources = self.get_resource('cleanup')
         task_name = f'{self.run}_cleanup'
         task_dict = {'task_name': task_name,
