@@ -104,7 +104,9 @@ export err=$?; err_chk
 ################################################################################
 # Postprocessing
 cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+if [[ "${mkdata}" == "YES" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit $err

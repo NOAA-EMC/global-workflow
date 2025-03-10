@@ -18,6 +18,8 @@ arguments:
 
 skip_ci_on_hosts:
   - hera
-  - gaea
+  - gaeac5
+  - gaeac6
   - orion
   - hercules
+  - awsepicglobalworkflow

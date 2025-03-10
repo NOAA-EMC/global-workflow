@@ -1,7 +1,18 @@
 #!/usr/bin/bash
 
-export GFS_CI_ROOT=/gpfs/f6/drsa-precip3/scratch/${USER}/GFS_CI_ROOT
+export GFS_CI_ROOT=/ncrc/proj/nggps_emc/${USER}/GFS_CI_CD
 export ICSDIR_ROOT=/gpfs/f6/bil-fire8/world-shared/global/glopara/data/ICSDIR
+
+# CI BASH test directories
+export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/Bash
+
+# Jenkins directories
+export JENKINS_AGENT_LANUCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
+
+# CTest functional test directories for pre stagged input data
+export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
+
 export HPC_ACCOUNT=drsa-precip3
 export max_concurrent_cases=5
 export max_concurrent_pr=4

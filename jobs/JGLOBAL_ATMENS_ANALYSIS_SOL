@@ -19,7 +19,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlsol" -c "base atmensanl atme
 EXSCRIPT=${GDASATMENSSOLSH:-${SCRgfs}/exglobal_atmens_analysis_sol.py}
 ${EXSCRIPT}
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work

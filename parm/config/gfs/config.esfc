@@ -21,10 +21,17 @@ if [[ "${DO_JEDIATMENS}" == "YES" ]]; then
    export DONST="NO"
 fi
 
+if [[ "${RUN/enkf}" == "gfs" ]]; then  
+    echo "turning off gsi soilda for gfs run"
+    DO_GSISOILDA="NO"
+fi
+
 # set up soil analysis
-if [[ ${GSI_SOILANAL} = "YES" ]]; then
-    export DO_LNDINC=".true."
-    export LND_SOI_FILE="lnd_incr"
+if [[ ${DO_GSISOILDA} == "YES" ]]; then
+    export GCYCLE_DO_SOILINCR=".true."
+    export GCYCLE_INTERP_LANDINCR=".false."
+    export LSOIL_INCR=2
+    export REGRID_EXEC="${HOMEgfs}/sorc/gdas.cd/build/bin/regridStates.x"
 fi
 
 echo "END: config.esfc"
