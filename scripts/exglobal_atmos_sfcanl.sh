@@ -39,8 +39,6 @@ export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
 
 # Other info used in this script
-RUN_GETGES=${RUN_GETGES:-"NO"}
-GETGESSH=${GETGESSH:-"getges.sh"}
 export gesenvir=${gesenvir:-${envir}}
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
@@ -81,14 +79,8 @@ else
 fi
 
 # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
-if [[ ${RUN_GETGES} = "YES" ]]; then
-  snoprv=$(${GETGESSH} -q -t "snogrb_${JCAP_CASE}" -e "${gesenvir}" -n "${GDUMP}" -v "${GDATE}")
-else
-  snoprv=${snoprv:-${FNSNOG}}
-fi
-
 if [[ $(${WGRIB} -4yr "${FNSNOA}" 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
-  $(${WGRIB} -4yr "${snoprv}" 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ]] ; then
+  $(${WGRIB} -4yr "${FNSNOG}" 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ]] ; then
   export FNSNOA=" "
   export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
 else
