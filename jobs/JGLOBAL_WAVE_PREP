@@ -14,7 +14,7 @@ export MP_PULSE=0
 # CDO required for processing RTOFS currents
 export CDO=${CDO_ROOT}/bin/cdo
 
-# Set COM Paths and GETGES environment
+# Set COM Paths
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMIN_OBS:COM_OBS_TMPL \
 	COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
