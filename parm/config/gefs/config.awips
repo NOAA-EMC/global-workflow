@@ -1,0 +1,17 @@
+#! /usr/bin/env bash
+
+########## config.awips ##########
+# GFS awips step specific
+
+echo "BEGIN: config.awips"
+
+# Maximum number of rocoto tasks per member
+export MAX_TASKS=25
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" awips
+
+# No. of concurrent awips jobs
+export NAWIPSGRP=42
+
+echo "END: config.awips"

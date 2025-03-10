@@ -259,6 +259,14 @@ case ${step} in
     export is_exclusive=True
     ;;
 
+  "awips")
+    export walltime="03:30:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="3GB"
+    ;;
+
   "oceanice_products")
     # Walltime is per forecast hour; will be multipled by group size
     export walltime="00:15:00"

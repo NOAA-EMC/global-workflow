@@ -44,6 +44,9 @@ class GEFSAppConfig(AppConfig):
         if options['do_aero_fcst']:
             configs += ['prep_emissions']
 
+        if options['do_awips']:
+            configs += ['awips']
+
         if options['do_extractvars']:
             configs += ['extractvars']
 
@@ -82,6 +85,9 @@ class GEFSAppConfig(AppConfig):
 
         if options['nens'] > 0:
             tasks += ['atmos_ensstat']
+
+        if options['do_awips']:
+            tasks += ['awips']
 
         if options['do_ocean']:
             tasks += ['ocean_prod']
