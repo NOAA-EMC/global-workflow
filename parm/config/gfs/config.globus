@@ -1,0 +1,31 @@
+#! /usr/bin/env bash
+
+########## config.globus ##########
+# Globus-specific variables for all globus-based jobs
+
+echo "BEGIN: config.globus"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" globus
+
+# Set the globus staging directory populated by the arch jobs
+export STAGE_DIR="${DATAROOT}/archive_rotdir/${PSLOT}"
+
+# Set variables used by the Sven and Doorman services
+# General delivery location on Niagara (staging area for data)
+export SERVER_HOME='/collab1/data/{{SERVER_USERNAME}}'
+
+# Sven's dropbox
+export SVEN_DROPBOX_ROOT="${DATA}/SVEN_DROPBOX"
+
+# Location of the doorman package on Niagara
+export DOORMAN_ROOT="/home/David.Huber/doorman"
+
+# Server name (should match ~/.ssh/config)
+export SERVER_NAME="niagara"
+
+# Server globus UUID
+niagara_UUID="1bfd8a79-52b2-4589-88b2-0648e0c0b35d"
+export SERVER_GLOBUS_UUID="${niagara_UUID}"
+
+echo "END: config.globus"
