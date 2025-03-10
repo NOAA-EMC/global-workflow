@@ -4,7 +4,6 @@
 # and runs the initialize, execute, and finalize
 # methods which executes the analysis calculation
 import os
-from datetime import datetime
 
 from wxflow import Logger, cast_strdict_as_dtypedict
 from pygfs.task.analysis_calc import AnalysisCalc
