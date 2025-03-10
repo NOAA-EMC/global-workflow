@@ -13,7 +13,7 @@
     {% set bkg_times = [] %}
     {% do bkg_times.append(current_cycle) %}
 {% endif %}
-{% set fvfiles = ['fv_core.res.', 'fv_tracer.res.', 'sfc_data.'] %}
+{% set fvfiles = ['fv_core.res.', 'fv_tracer.res.'] %}
 ######################################
 mkdir:
 - "{{ DATA }}/anl"
