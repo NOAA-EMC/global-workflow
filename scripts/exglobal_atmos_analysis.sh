@@ -58,7 +58,7 @@ ta2tb=${ta2tb:-".true."}
 # Diagnostic files options
 netcdf_diag=${netcdf_diag:-".true."}
 binary_diag=${binary_diag:-".false."}
-lobsdiag_forenkf=${lobsdiag_forenkf:-".false.")
+lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
     
 # IAU
 DOIAU=${DOIAU:-"NO"}
