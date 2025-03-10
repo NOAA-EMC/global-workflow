@@ -3,7 +3,7 @@ ocnicepost:
   namelist:
     debug: False
     write_grib2: False
-    write_netcdf: False
+    write_netcdf: True
   fix_data:
     mkdir:
       - "{{ DATA }}"
