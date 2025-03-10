@@ -25,10 +25,3 @@ if __name__ == '__main__':
     analysis_calc.initialize()
     analysis_calc.execute()
     analysis_calc.finalize()
-
-    # Write analysis log file
-    formatted_date = datetime.now().strftime("%a %b %d %H:%M:%S %Z%Y")
-    log_file = os.path.join(config.COMOUT_ATMOS_ANALYSIS, f"{config.RUN}.t{config.cyc}z.loganl.txt")
-    message = f"{config.rCDUMP} {config.PDY}{config.cyc} atmanl and sfcanl done at {formatted_date}"
-    with open(log_file, "w") as file:
-        file.write(f"{message}\n")
