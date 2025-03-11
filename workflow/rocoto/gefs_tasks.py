@@ -264,6 +264,67 @@ class GEFSTasks(Tasks):
 
         return task
 
+
+    def postsnd(self):
+
+        resources = self.get_resource('postsnd')
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod_mem#member#_#fhr_label#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        fhrs = self._get_forecast_hours(self.run, self._configs['postsnd'])
+
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        is_replay = self._configs['postsnd']['REPLAY_ICS']
+        if is_replay and 0 in fhrs:
+            fhrs.remove(0)
+
+        max_tasks = self._configs['postsnd']['MAX_TASKS']
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Adjust walltime based on the largest group
+        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
+        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
+
+        postenvars = self.envars.copy()
+        postenvar_dict = {'ENSMEM': '#member#',
+                          'MEMDIR': 'mem#member#',
+                          'FHR_LIST': '#fhr_list#',
+                         }
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        task_name = f'{self.run}_atmos_prod_mem#member#_#fhr_label#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': postenvars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/postsnd.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        fhr_metatask_dict = {'task_name': f'{self.run}_postsnd_mem#member#',
+                             'task_dict': task_dict,
+                             'var_dict': fhr_var_dict}
+
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_postsnd',
+                                'task_dict': fhr_metatask_dict,
+                                'var_dict': member_var_dict
+                                }
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
+
+
     def atmos_ensstat(self):
 
         resources = self.get_resource('atmos_ensstat')
@@ -331,8 +392,6 @@ class GEFSTasks(Tasks):
         if is_replay and 0 in fhrs:
             fhrs.remove(0)
 
-
-        print(self._configs['awips'])
         max_tasks = self._configs['awips']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
