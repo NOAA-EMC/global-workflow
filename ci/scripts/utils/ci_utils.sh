@@ -119,11 +119,20 @@ function create_experiment () {
   case=$(basename "${yaml_config}" .yaml) || true
   export pslot=${case}_${pr_sha}
   
-  source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
+  if [[ ${MACHINE_ID} == "noaacloud" ]]; then
+      source "${HOMEgfs}/ci/platforms/config.${PW_CSP}"
+  else
+      source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
+  fi
+
   source "${HOMEgfs}/workflow/gw_setup.sh"
 
   # Remove RUNDIRS dir incase this is a retry (STMP now in host file)
-  STMP=$("${HOMEgfs}/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs}/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
+  if [[ ${MACHINE_ID} == "noaacloud" ]]; then
+      STMP=$("${HOMEgfs}/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs}/workflow/hosts/${PW_CSP}pw.yaml" -k STMP -s)
+  else
+      STMP=$("${HOMEgfs}/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs}/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
+  fi
   echo "Removing ${STMP}/RUNDIRS/${pslot} directory incase this is a retry"
   rm -Rf "${STMP}/RUNDIRS/${pslot}"
 
