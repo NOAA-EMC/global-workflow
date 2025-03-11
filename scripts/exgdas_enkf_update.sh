@@ -201,7 +201,7 @@ for imem in $(seq 1 $NMEM_ENS); do
    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
       COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-   mkdir -p "${COM_ATMOS_ANALYSIS_MEM}"
+   mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
    
    for FHR in $nfhrs; do
       ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
