@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 
 from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, to_timedelta,
                     chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, rmdir,
-                    strftime, to_YMDH, which, chdir, ProcessError)
+                    strftime, to_YMDH, which, chdir, ProcessError, save_as_yaml)
 
 git_filename = "git_info.log"
 logger = getLogger(__name__.split('.')[-1])
@@ -22,8 +22,6 @@ class Archive(Task):
     @logit(logger, name="Archive")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the Archive task
-        The constructor is responsible for collecting necessary yamls based on
-        the runtime options and RUN.
 
         Parameters
         ----------
@@ -131,7 +129,7 @@ class Archive(Task):
         # Collect datasets that need to be archived
         # Each dataset represents one tarball
 
-        if arch_dict.HPSSARCH:
+        if arch_dict.ARCHCOM_TO == "hpss":
             self.tar_cmd = "htar"
             self.hsi = Hsi()
             self.htar = Htar()
@@ -139,14 +137,14 @@ class Archive(Task):
             self.rm_cmd = self.hsi.rm
             self.chgrp_cmd = self.hsi.chgrp
             self.chmod_cmd = self.hsi.chmod
-        elif arch_dict.LOCALARCH:
+        elif arch_dict.ARCHCOM_TO == "local":
             self.tar_cmd = "tar"
             self.cvf = Archive._create_tarball
             self.chgrp_cmd = chgrp
             self.chmod_cmd = os.chmod
             self.rm_cmd = rm_p
         else:
-            raise ValueError("FATAL ERROR: Neither HPSSARCH nor LOCALARCH are set to True!")
+            raise ValueError("FATAL ERROR: Invalid achiving method selected: {arch_dict.ARCHCOM_TO}")
 
         # Determine if we are archiving the EXPDIR this cycle (always skip for ensembles)
         if "enkf" not in arch_dict.RUN and arch_dict.ARCH_EXPDIR:
@@ -172,6 +170,9 @@ class Archive(Task):
             dataset["has_rstprod"] = Archive._has_rstprod(dataset.fileset)
 
             atardir_sets.append(dataset)
+
+        # Save the tarball list as a YAML in case we are using globus
+        self._create_datasets_yaml(atardir_sets)
 
         return atardir_sets
 
@@ -602,6 +603,31 @@ class Archive(Task):
             raise OSError(f"FATAL ERROR Unable to write git output to '{fname}'") from ose
 
         return
+
+    @logit(logger)
+    def _create_datasets_yaml(self, datasets):
+        """
+        Go through the dataset dictionaries, extract the tarball names and has_rstprod
+        boolean, and write a YAML with the info in COM_CONF.
+        """
+
+        if len(datasets) == 0:
+            logger.warning("WARNING: Skipping dataset YAML creation as no datasets were provided.")
+            return
+
+        com_conf = self.task_config.COMOUT_CONF
+        yaml_filename = "backup_tarballs.yaml"
+        yaml_filename = os.path.join(com_conf, yaml_filename)
+
+        output_yaml = {}
+
+        for dataset in datasets:
+            # Skip if the tarball will be empty
+            if len(dataset.fileset) > 0:
+                output_yaml[dataset.name] = {"target": dataset.target,
+                                             "has_rstprod": dataset.has_rstprod}
+
+        save_as_yaml(output_yaml, yaml_filename)
 
     @logit(logger)
     def clean(self):
