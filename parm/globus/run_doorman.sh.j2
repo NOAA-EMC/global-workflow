@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# This script runs on Niagara to interact with the Doorman service
+# Redirect all output to a local file -- it cannot be sent back directly with tty/pty
+script_relpath="$(dirname "${BASH_SOURCE[0]}")"
+log_file="${script_relpath}/run_doorman.log"
+cd "${script_relpath}" || exit 1
+
+# Initialize the shell (hpss, modules, etc) (this is a Niagara-specific path; parameterize if needed)
+if [[ -f /etc/bashrc ]]; then
+    source /etc/bashrc
+fi
+
+run_doorman() {
+set -ux
+
+rm -f dm.conf
+rm -f places.inc
+rm -f FLIST
+general_delivery_root="{{run_directory}}/GENERAL_DELIVERY"
+rm -rf "${general_delivery_root}"
+
+# Tell the doorman where the general delivery space is on Niagara (unique for each RUN/cycle)
+{
+    # This is where tarballs will be received and confirmations are written and sent.
+    echo "export GENDEL=${general_delivery_root}"
+    # Tell the doorman what the sender's UUID is
+    echo 'export CLIENT_ENDPOINT="{{CLIENT_GLOBUS_UUID}}"'
+    # Tell the doorman where the sending client's dropbox is (why twice??)
+    echo 'export CLIENT_DROPBOX="{{sven_dropbox}}"'
+    # Tell the doorman what it's own UUID is
+    echo 'export NIAG_GLC="{{SERVER_GLOBUS_UUID}}"'
+} > places.inc
+
+# Point to the doorman executable scripts
+export PATH="${PATH}:{{DOORMAN_ROOT}}/bin"
+
+set +e
+
+# Create the general delivery space if it wasn't already
+bash -ex initialize.sh
+init_stat=$?
+
+if [[ ${init_stat} -ne 0 ]]; then
+    echo "initialize.sh failed!"
+    return 1
+fi
+
+# Transfer the data from the sender and execute the 'todo' script
+bash -ex receive.sh --go
+receive_stat=$?
+
+# If receive didn't produce an FLIST file, then something went wrong
+if [[ ! -f FLIST || ${receive_stat} -ne 0 ]]; then
+    echo "receive.sh failed!"
+    return 2
+fi
+
+set -e
+
+# Parse the FLIST file created by receive.sh to get the transfer IDs
+packages=$(grep "package_location" FLIST)
+IDs=()
+while IFS= read -r line; do
+    package_name=$(echo "${line}" | grep -o "package_location_.*\.tgz")
+    tmp="${package_name#package_location_}"
+    ID="${tmp%.tgz}"
+    IDs+=("${ID}")
+done < <(echo "${packages}")
+
+set +e
+
+# Sleep allow time for all globus artifacts to resolve
+sleep 10s
+
+# Process the transfer requests (this is the long step)
+bash -ex process.sh
+proc_stat=$?
+if [[ ${proc_stat} -ne 0 ]]; then
+    echo "Failed to process the globus requests!"
+    return 3
+fi
+
+# Validate and generate the acknowledgement for each transfer ID
+for ID in "${IDs[@]}"; do
+    bash -ex ack.sh "${ID}"
+    ack_stat=$?
+    if [[ ${ack_stat} != 0 ]]; then
+        echo "ack.sh failed for file ID ${ID}!"
+        return 4
+    fi
+done
+
+# Sleep again to allow time for all globus artifacts to resolve
+sleep 10s
+
+# Send the acknowledgement back to the sender
+bash -ex send.sh
+
+send_stat=$?
+
+if [[ ${send_stat} -ne 0 ]]; then
+    echo "Failed to send status back to client!"
+    return 5
+fi
+
+set +eux
+}
+
+# Run the function, halting the function on errors, and capture the output
+( set -e; run_doorman ) >& "${log_file}"
+doorman_stat=$?
+
+if [[ ${doorman_stat} -ne 0 ]]; then
+    echo "Failed to run the doorman service!"
+    echo "FAILURE" >> "${log_file}"
+    exit 9
+fi
+
+echo "SUCCESS" >> "${log_file}"
+
+exit 0

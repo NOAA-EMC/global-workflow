@@ -44,7 +44,7 @@ else
   echo "rocotorun being used from ${rocotorun}"
 fi
 
-pr_list_dbfile="${GFS_CI_ROOT}/open_pr_list.db"
+pr_list_dbfile="${GFS_BASH_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
@@ -64,7 +64,7 @@ fi
 
 for pr in ${pr_list}; do
   echo "Processing Pull Request #${pr} and looking for cases"
-  pr_dir="${GFS_CI_ROOT}/PR/${pr}"
+  pr_dir="${GFS_BASH_CI_ROOT}/PR/${pr}"
   # If the directory RUNTESTS is not present then
   # setupexpt.py has no been run yet for this PR
   if [[ ! -d "${pr_dir}/RUNTESTS" ]]; then
