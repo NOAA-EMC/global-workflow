@@ -1,17 +1,23 @@
 #!/usr/bin/bash
 
+# Main CI root directory
 export GFS_CI_ROOT=/ncrc/proj/nggps_emc/${USER}/GFS_CI_CD
+# ICSDIR root directory used on the create_experment.py command line
 export ICSDIR_ROOT=/gpfs/f6/bil-fire8/world-shared/global/glopara/data/ICSDIR
 
-# CI BASH test directories
-export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
-
-# Jenkins directories
-export JENKINS_AGENT_LANUCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+# JENKINS launch directory for agent
+export JENKINS_AGENT_LAUNCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+# JENKINS internal working directories for CI jobs (not for users use)
 export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
+# NOTE: JENKINS custom_workspace directory where CI jobs are run
+# /gpfs/f6/drsa-precip3/proj-shared/global/CI
+# is defined in the Jenkinsfile
 
 # CTest functional test directories for pre stagged input data
 export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
+
+# CI BASH test directories
+export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
 
 export HPC_ACCOUNT=drsa-precip3
 export max_concurrent_cases=5
