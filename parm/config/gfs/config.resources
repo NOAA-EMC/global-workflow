@@ -1109,7 +1109,7 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "arch_tars" | "earc_tars" | "getic" | "fetch")
+  "arch_tars" | "getic" | "fetch" | "globus" | "globus_earc" )
     walltime="06:00:00"
     ntasks=1
     tasks_per_node=1
