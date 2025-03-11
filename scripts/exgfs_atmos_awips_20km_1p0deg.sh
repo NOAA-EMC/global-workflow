@@ -23,7 +23,6 @@ source "${USHgfs}/preamble.sh"
 
 fcsthrs="$1"
 num=$#
-job_name=${job/[jpt]gfs/gfs}
 
 if (( num != 1 )); then
    echo ""
@@ -212,7 +211,7 @@ for GRID in conus ak prico pac 003; do
       ##############################
 
       mv "grib2.awpgfs_20km_${GRID}_f${fcsthrs}" \
-         "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${job_name}"
+         "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}"
 
       ##############################
       # Distribute Data
@@ -220,9 +219,9 @@ for GRID in conus ak prico pac 003; do
 
       if [[ "${SENDDBN}" = 'YES' || "${SENDAWIP}" = 'YES' ]]; then
           "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
-				     "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${job_name}"
+				     "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}"
       else
-          echo "File ${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${job_name} not posted to db_net."
+          echo "File ${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs} not posted to db_net."
       fi
    fi
    echo "Awip Processing ${fcsthrs} hour completed normally"

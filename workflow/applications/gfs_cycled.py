@@ -77,7 +77,7 @@ class GFSCycledAppConfig(AppConfig):
 
         configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
-        if options['do_archtar']:
+        if options['do_archcom']:
             configs += ['arch_tars']
 
         if options['do_hybvar']:
@@ -89,7 +89,7 @@ class GFSCycledAppConfig(AppConfig):
 
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy']
 
-            if options['do_archtar']:
+            if options['do_archcom']:
                 configs += ['earc_tars']
 
         if options['do_fit2obs']:
@@ -151,6 +151,15 @@ class GFSCycledAppConfig(AppConfig):
                         'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
                         'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
                         'mos_wx_prdgen', 'mos_wx_ext_prdgen']
+
+        if options['do_globusarch']:
+            configs += ['globus']
+            # TODO Enable when the globus archiving feature is available for ensembles
+            if options['do_hybvar']:
+                print("WARNING Globus archiving is currently only possible for deterministic members")
+                print("        Ensemble members will NOT be archived with this option!!")
+            # if options['do_hybvar']:
+            #     configs += ['globus_earc']
 
         return configs
 
@@ -300,8 +309,11 @@ class GFSCycledAppConfig(AppConfig):
 
                 # Last items
                 task_names[run] += ['arch_vrfy']
-                if options['do_archtar']:
+                if options['do_archcom']:
                     task_names[run] += ['arch_tars']
+                    if options['do_globusarch']:
+                        task_names[run] += ['globus_arch']
+
                 task_names[run] += ['cleanup']
 
             # Ensemble tasks
@@ -326,8 +338,13 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run].append('epos') if 'gdas' in run else 0
 
                 task_names[run] += ['stage_ic', 'ecen', 'esfc']
-                if options['do_archtar']:
+                if options['do_archcom']:
                     task_names[run] += ['earc_tars']
+
+                    # TODO Uncomment when globus ensemble archiving is ready
+                    # if options['do_globusarch']:
+                    #     task_names[run] += ['globus_earc']
+
                 task_names[run] += ['earc_vrfy', 'cleanup']
 
         return task_names

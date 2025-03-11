@@ -2,10 +2,15 @@
 
 from typing import Dict, List, Any
 from hosts import Host
-from wxflow import Configuration
+from wxflow import Configuration, which
+import importlib.util
 from abc import ABC, ABCMeta, abstractmethod
+from logging import getLogger
+import os
 
 __all__ = ['AppConfig']
+
+logger = getLogger(__name__.split('.')[-1])
 
 
 class AppConfigInit(ABCMeta):
@@ -70,6 +75,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         '''
 
         run_options = {run: {} for run in dict.fromkeys(self.runs)}
+        globus_checked = False
         for run in self.runs:
             # Read config.base with RUN specified
             run_base = conf.parse_config('config.base', RUN=run)
@@ -90,7 +96,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_goes'] = run_base.get('DO_GOES', False)
             run_options[run]['do_mos'] = run_base.get('DO_MOS', False)
             run_options[run]['do_extractvars'] = run_base.get('DO_EXTRACTVARS', False)
-            run_options[run]['do_archtar'] = run_base.get('DO_ARCHTAR', False)
+            run_options[run]['do_archcom'] = run_base.get('DO_ARCHCOM', False)
 
             run_options[run]['do_atm'] = run_base.get('DO_ATM', True)
             run_options[run]['do_wave'] = run_base.get('DO_WAVE', False)
@@ -100,7 +106,11 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_aero_anl'] = run_base.get('DO_AERO_ANL', False)
             run_options[run]['do_aero_fcst'] = run_base.get('DO_AERO_FCST', False)
 
-            run_options[run]['do_hpssarch'] = run_base.get('HPSSARCH', False)
+            if run_options[run]['do_archcom'] and run_base.get('ARCHCOM_TO', "") == "globus_hpss":
+                run_options[run]['do_globusarch'] = True
+            else:
+                run_options[run]['do_globusarch'] = False
+
             run_options[run]['fcst_segments'] = run_base.get('FCST_SEGMENTS', None)
 
             run_options[run]['do_fetch_hpss'] = run_base.get('DO_FETCH_HPSS', False)
@@ -108,6 +118,10 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
             if not AppConfig.is_monotonic(run_options[run]['fcst_segments']):
                 raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
+
+            if run_options[run]['do_globusarch'] and not globus_checked:
+                self._check_globus(conf)
+                globus_checked = True
 
         # Return the dictionary of run options
         return run_options
@@ -210,3 +224,46 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             return all(x > y for x, y in zip(test_list, test_list[1:]))
         else:
             return all(x < y for x, y in zip(test_list, test_list[1:]))
+
+    def _check_globus(self, conf):
+        # This method checks that globus can be used on this platform
+        # and is configured properly.
+
+        # Test that globus can be imported
+        spec = importlib.util.find_spec("globus_cli")
+        if spec is None:
+            raise ImportError("Globus-cli module not found!  Check that the module is loaded!")
+
+        globus_conf = conf.parse_config(['config.base', 'config.globus'])
+
+        # Initialize globus
+        globus = which("globus")
+
+        if globus is None:
+            raise FileNotFoundError("Could not find the globus command!")
+
+        # Check that a globus connection to the server is open
+        globus_output = globus("session", "show", output=str).splitlines()[2:]
+
+        local_uid_found = False
+        rdhpcs_uid_found = False
+
+        # There should be two sessions (MSU and RDHPCS), but if someone is running
+        # this elsewhere (e.g. NOAA cloud), it may be just one (RDHPCS).
+        local_uid = os.environ['LOGNAME'].lower()
+        for line in globus_output:
+            uid = line.split("|")[0].split("@")[0].lower()
+            domain = line.split("|")[0].split("@")[1].lower()
+
+            if uid == local_uid:
+                local_uid_found = True
+            if "rdhpcs" in domain:
+                rdhpcs_uid_found = True
+
+        if not local_uid_found or not rdhpcs_uid_found:
+            logger.error(f"ERROR a globus session is not yet established on {globus_conf.SERVER_NAME}.  "
+                         "Please establish a globus connection!")
+
+            raise ConnectionError("The globus sesseion is not configured properly!")
+
+        return

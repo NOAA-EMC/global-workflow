@@ -22,10 +22,10 @@ CLUSTERS: 'c6'
 CLUSTERS_DTN: 'es'
 CHGRP_RSTPROD: 'NO'
 CHGRP_CMD: 'chgrp rstprod'
-# TODO enable HPSS archiving by default when DTN/f6 sluggishness is resolved
-HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global
-LOCALARCH: 'NO'
+# TODO enable HPSS archiving by default when DTN/f6 sluggishness is resolved
+DO_ARCHCOM: 'NO'
+ARCHCOM_TO: 'local'
 ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
