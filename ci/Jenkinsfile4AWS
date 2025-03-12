@@ -99,25 +99,12 @@ pipeline {
         stage('3. Build System') {
             agent { label NodeName[machine].toLowerCase() }
             steps {
+                checkout scm
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     script {
                         ws(HOMEgfs) {
                             echo "Checking out the code on ${Machine} using scm in ${HOMEgfs}"
                             try {
-                                 
-                                 checkout([$class: 'GitSCM',
-                                  branches: [[name: "develop"]],
-                                  doGenerateSubmoduleConfigurations: false,
-                                  extensions: [[$class: 'SubmoduleOption',
-                                                disableSubmodules: false,
-                                                parentCredentials: false,
-                                                recursiveSubmodules: true,
-                                                reference: '',
-                                                trackingSubmodules: false],
-                                                [$class: 'CleanBeforeCheckout'], 
-                                                [$class: 'CleanCheckout']],
-                                  submoduleCfg: [], 
-                                  userRemoteConfigs: [[url: ${repo_url}]]])
                                 //sh(script: "git clone --recursive ${repo_url}")
                                 sh(script: "ls ${HOMEgfs}")
                             } catch (Exception e) {
@@ -125,19 +112,6 @@ pipeline {
                                 sleep time: 45, unit: 'SECONDS'
                                 try {
                                     // checkout scm
-                                    checkout([$class: 'GitSCM',
-                                  branches: [[name: "develop"]],
-                                  doGenerateSubmoduleConfigurations: false,
-                                  extensions: [[$class: 'SubmoduleOption',
-                                                disableSubmodules: false,
-                                                parentCredentials: false,
-                                                recursiveSubmodules: true,
-                                                reference: '',
-                                                trackingSubmodules: false],
-                                                [$class: 'CleanBeforeCheckout'],
-                                                [$class: 'CleanCheckout']],
-                                  submoduleCfg: [],
-                                  userRemoteConfigs: [[url: ${repo_url}]]])
                                     //sh(script: "git clone --recursive ${repo_url}")
                                     sh(script: "ls ${HOMEgfs}")
                                 } catch (Exception ee) {
