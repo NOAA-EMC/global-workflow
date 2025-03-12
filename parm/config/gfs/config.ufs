@@ -285,20 +285,15 @@ case "${fv3_res}" in
         ;;
     "C1152")
         export DELTIM=150
+        export nthreads_fv3=4
+        export nthreads_ufs=4
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
         if [[ "${RUN}" = *gdas ]]; then
           export layout_x=8
           export layout_y=16
-          export nthreads_fv3=4
-          export nthreads_ufs=4
-          export WRITE_GROUP=4
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
         elif [[ "${RUN}" = *gfs ]]; then
-          export layout_x=8
-          export layout_y=16
-          export nthreads_fv3=4
-          export nthreads_ufs=4
-          export WRITE_GROUP=4
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
+          export layout_x=16
+          export layout_y=24
         fi
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="1.67,8.8,1.0,1.0"   # settings for GSL drag suite
@@ -583,7 +578,7 @@ if [[ "${skip_ww3}" == "false" ]]; then
   export cplwav=".true."
   export cplwav2atm=".true."
   model_list="${model_list}.wave"
-  nthreads_ww3=2
+  nthreads_ww3=1
   case "${ww3_res}" in
     "gnh_10m;aoc_9km;gsh_15m")
       ntasks_ww3=140
@@ -596,26 +591,22 @@ if [[ "${skip_ww3}" == "false" ]]; then
       ;;
     "glo_100")
       ntasks_ww3=20
-      nthreads_ww3=1
       ;;
     "glo_200")
       ntasks_ww3=30
-      nthreads_ww3=1
       ;;
     "glo_500")
       ntasks_ww3=12
-      nthreads_ww3=1
       ;;
     "mx025")
       ntasks_ww3=80
       ;;
     "uglo_15km")
       ntasks_ww3=1000
-      nthreads_ww3=1
+      nthreads_ww3=2
       ;;
     "uglo_100km")
       ntasks_ww3=40
-      nthreads_ww3=1
       ;;
     *)
       echo "FATAL ERROR: Unsupported WW3 resolution = ${ww3_res}, ABORT!"
