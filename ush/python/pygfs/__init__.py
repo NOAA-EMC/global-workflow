@@ -8,7 +8,7 @@ from .task.aero_bmatrix import AerosolBMatrix
 from .task.atm_analysis import AtmAnalysis
 from .task.atmens_analysis import AtmEnsAnalysis
 from .task.ensemble_recenter import EnsembleRecenter
-from .task.analysis_calc import AnalysisCalc
+from .task.fv3_analysis_calc import FV3AnalysisCalc
 from .task.marine_bmat import MarineBMat
 from .task.snow_analysis import SnowAnalysis
 from .task.snowens_analysis import SnowEnsAnalysis

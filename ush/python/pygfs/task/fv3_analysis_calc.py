@@ -14,11 +14,11 @@ from wxflow import (AttrDict, FileHandler, Task,
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AnalysisCalc(Task):
+class FV3AnalysisCalc(Task):
     """
     Class for analysis calculation
     """
-    @logit(logger, name="AnalysisCalc")
+    @logit(logger, name="FV3AnalysisCalc")
     def __init__(self, config):
         """Constructor for analysis calculation task
 
