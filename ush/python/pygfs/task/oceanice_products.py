@@ -139,6 +139,8 @@ class OceanIceProducts(Task):
         localconf.cosvar = config.oceanice_yaml[config.component].namelist.cosvar
         localconf.angvar = config.oceanice_yaml[config.component].namelist.angvar
         localconf.debug = ".true." if config.oceanice_yaml.ocnicepost.namelist.debug else ".false."
+        localconf.write_grib2 = ".true." if config.oceanice_yaml.ocnicepost.namelist.write_grib2 else ".false."
+        localconf.write_netcdf = ".true." if config.oceanice_yaml.ocnicepost.namelist.write_netcdf else ".false."
 
         logger.debug(f"localconf:\n{pformat(localconf)}")
 
