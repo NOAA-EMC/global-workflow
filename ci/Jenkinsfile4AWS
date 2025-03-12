@@ -9,7 +9,7 @@ def GH = 'none'
 def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaea: 'Gaea', awsepicglobalworkflow: 'Awsepicglobalworkflow']
 def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/global/CI/HERCULES', gaea: '/gpfs/f5/epic/proj-shared/global/CI', awsepicglobalworkflow: '/lustre/jenkins']
 // def repo_url = 'https://github.com/NOAA-EPIC/global-workflow-cloud.git'
-def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
+def repo_url = 'git@github.com:NOAA-EPIC/global-workflow-cloud.git'
 def aws_gw_name = 'global-workflow-cloud'
 def STATUS = 'Passed'
 
