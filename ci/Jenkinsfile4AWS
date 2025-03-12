@@ -113,7 +113,7 @@ pipeline {
                                 try {
                                     // checkout scm
                                     //sh(script: "git clone --recursive ${repo_url}")
-                                    sh(script: "ls ${HOMEgfs}")
+                                    sh(script: "ls ${HOMEgfs}/sorc")
                                 } catch (Exception ee) {
                                     echo "Failed to checkout the code on ${Machine} using scm in ${HOMEgfs}: ${ee.getMessage()}"
                                     if (env.CHANGE_ID) {
@@ -126,7 +126,7 @@ pipeline {
                             def gist_url = ""
                             def error_logs = ""
                             def error_logs_message = ""
-                            HOMEgfs = "${CUSTOM_WORKSPACE}/${aws_gw_name}/${aws_gw_name}"
+                            HOMEgfs = "${CUSTOM_WORKSPACE}"
                             dir("${HOMEgfs}/sorc") {
                                 try {
                                     sh(script: 'ls *.sh')	// list files here to make sure all files exist.
