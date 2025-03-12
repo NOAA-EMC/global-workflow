@@ -46,6 +46,10 @@ jobs:
         shell: bash
         run: |
           sudo mkdir -p /scratch1/NCEPDEV
+          sudo mkdir -p /scratch1/NCEPDEV/stmp2
+          sudo mkdir -p /scratch1/NCEPDEV/stmp4
+          sudo mkdir -p /scratch1/NCEPDEV/global
+          sudo chmod -R a+w /scratch1/NCEPDEV
           cd $GITHUB_WORKSPACE/sorc
           git submodule update --init -j 9
           ./link_workflow.sh
