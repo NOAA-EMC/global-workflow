@@ -196,6 +196,7 @@ pipeline {
                             stage("Create ${caseName}") {
                                 script {
                                         env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
+                                        def error_output = ""
                                         try {
                                               error_output = sh(script: """
                                                 source ${HOMEgfs}/workflow/gw_setup.sh
