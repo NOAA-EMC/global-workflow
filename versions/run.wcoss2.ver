@@ -18,7 +18,7 @@ export cray_pals_ver=1.0.17
 export cfp_ver=2.0.4
 
 export python_ver=3.8.6
-export gempak_ver=7.14.1
+export gempak_ver=7.15.1
 export perl_ver=5.32.0
 export libjpeg_ver=9c
 export udunits_ver=2.2.28

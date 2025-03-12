@@ -36,17 +36,20 @@ load(pathJoin("met", (os.getenv("met_ver") or "None")))
 load(pathJoin("metplus", (os.getenv("metplus_ver") or "None")))
 load(pathJoin("py-xarray", (os.getenv("py_xarray_ver") or "None")))
 
+-- TODO remove this once we move to spack-stack 1.8.0+; as WGRIB2 will be assigned by the wgrib2 module
 setenv("WGRIB2","wgrib2")
 
--- Stop gap fix for wgrib with spack-stack 1.6.0
--- TODO Remove this when spack-stack issue #1097 is resolved
-setenv("WGRIB","wgrib")
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
+
+-- Set the path for the Sven executables
+append_path("PATH", pathJoin((os.getenv("sven_root_path") or "None"), "bin"))
 
 prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git_rocky9/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
 prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git_rocky9/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
+
+load("globus-cli")
 
 whatis("Description: GFS run environment")
