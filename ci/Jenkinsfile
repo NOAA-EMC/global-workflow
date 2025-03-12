@@ -202,7 +202,7 @@ pipeline {
                                                 ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml
                                               """, returnStdout: true).trim()
                                         } catch (Exception error_create) {
-                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experiment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body '${caseName} **FAILED** to create experiment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n```\n${error_output}```' """)
                                             error("Case ${caseName} failed to create experiment directory")
                                         }
                                      }
