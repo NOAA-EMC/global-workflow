@@ -15,10 +15,11 @@ PARTITION_BATCH: orion
 PARTITION_SERVICE: service
 CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod'
-HPSSARCH: 'NO'
 HPSS_PROJECT: emc-global
-LOCALARCH: 'NO'
-ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+DO_ARCHCOM: 'NO'
+ARCHCOM_TO: 'globus_hpss'
+# TODO let the workflow setup scripts determine the username (HPSS differs from MSU usernames)
+ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
 DO_TRACKER: 'NO'
@@ -29,3 +30,4 @@ COMINecmwf: /work/noaa/global/glopara/data/external_gempak/ecmwf
 COMINnam: /work/noaa/global/glopara/data/external_gempak/nam
 COMINukmet: /work/noaa/global/glopara/data/external_gempak/ukmet
 AERO_INPUTS_DIR: /work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions
+CLIENT_GLOBUS_UUID: '869912fe-f6de-46c0-af10-b22efd84a022'
