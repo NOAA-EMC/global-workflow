@@ -287,6 +287,7 @@ case "${fv3_res}" in
         export DELTIM=150
         export nthreads_fv3=4
         export nthreads_ufs=4
+        export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
         if [[ "${RUN}" = *gdas ]]; then
           export layout_x=8
