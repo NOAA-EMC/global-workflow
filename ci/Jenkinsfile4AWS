@@ -104,8 +104,21 @@ pipeline {
                         ws(HOMEgfs) {
                             echo "Checking out the code on ${Machine} using scm in ${HOMEgfs}"
                             try {
-                                // checkout scm
-                                sh(script: "git clone --recursive ${repo_url}")
+                                 
+                                 checkout([$class: 'GitSCM',
+                                  branches: [[name: "develop"]],
+                                  doGenerateSubmoduleConfigurations: false,
+                                  extensions: [[$class: 'SubmoduleOption',
+                                                disableSubmodules: false,
+                                                parentCredentials: false,
+                                                recursiveSubmodules: true,
+                                                reference: '',
+                                                trackingSubmodules: false],
+                                                [$class: 'CleanBeforeCheckout'], 
+                                                [$class: 'CleanCheckout']],
+                                  submoduleCfg: [], 
+                                  userRemoteConfigs: [[url: ${repo_url}]]])
+                                //sh(script: "git clone --recursive ${repo_url}")
                                 sh(script: "ls ${HOMEgfs}")
                             } catch (Exception e) {
                                 echo "Failed to checkout the code on ${Machine} using scm in ${HOMEgfs}, try again ..."
