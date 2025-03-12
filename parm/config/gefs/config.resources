@@ -355,11 +355,11 @@ case ${step} in
     ;;
 
   "gempak")
-    walltime="00:30:00"
-    ntasks_gdas=28
-    tasks_per_node=28
-    threads_per_task=1
-    memory="2GB"
+    export walltime="00:30:00"
+    export ntasks_gdas=28
+    export tasks_per_node=28
+    export threads_per_task=1
+    export memory="2GB"
     ;;
 
   "extractvars")
