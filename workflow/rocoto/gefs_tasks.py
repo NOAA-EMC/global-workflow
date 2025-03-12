@@ -369,7 +369,6 @@ class GEFSTasks(Tasks):
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 
-
         member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
         member_metatask_dict = {'task_name': f'{self.run}_gempak',
                                 'task_dict': fhr_metatask_dict,
