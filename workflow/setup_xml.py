@@ -48,6 +48,7 @@ def check_expdir(cmd_expdir, cfg_expdir):
         print(f'  input arg: --expdir = {cmd_expdir}')
         raise ValueError('Abort!')
 
+
 def check_dir_writable(dirPath):
     if os.path.isdir(dirPath):
         if os.access(dirPath, os.W_OK):
