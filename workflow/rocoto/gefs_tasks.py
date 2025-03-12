@@ -323,7 +323,6 @@ class GEFSTasks(Tasks):
 
         return task
 
-
     def gempak(self):
 
         resources = self.get_resource('gempak')
@@ -382,7 +381,6 @@ class GEFSTasks(Tasks):
 
         return task
 
-
     def atmos_ensstat(self):
 
         resources = self.get_resource('atmos_ensstat')
@@ -437,7 +435,6 @@ class GEFSTasks(Tasks):
 
         resources = self.get_resource('awips')
 
-
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat_#fhr_label#'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -480,7 +477,6 @@ class GEFSTasks(Tasks):
         task = rocoto.create_task(fhr_metatask_dict)
 
         return task
-
 
     def wavepostsbs(self):
 

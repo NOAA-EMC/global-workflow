@@ -271,11 +271,10 @@ case ${step} in
     export tasks_per_node_postsndcfp=1
     postsnd_req_cores=$(( tasks_per_node * threads_per_task ))
     if (( postsnd_req_cores > max_tasks_per_node )); then
-        tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+      tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     export is_exclusive=True
     ;;
-
 
   "atmos_ensstat")
     # Walltime is per forecast hour; will be multipled by group size
