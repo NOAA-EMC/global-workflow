@@ -299,8 +299,8 @@ case "${fv3_res}" in
         export DELTIM=150
         export layout_x_gdas=8
         export layout_y_gdas=16
-        export layout_x_gfs=8
-        export layout_y_gfs=16
+        export layout_x_gfs=16
+        export layout_y_gfs=24
         export nthreads_fv3_gdas=4
         export nthreads_fv3_gfs=4
         export nthreads_ufs_gdas=4
@@ -605,7 +605,7 @@ if [[ "${skip_ww3}" == "false" ]]; then
   export cplwav=".true."
   export cplwav2atm=".true."
   model_list="${model_list}.wave"
-  nthreads_ww3=2
+  nthreads_ww3=1
   case "${ww3_res}" in
     "gnh_10m;aoc_9km;gsh_15m")
       ntasks_ww3=140
@@ -618,26 +618,22 @@ if [[ "${skip_ww3}" == "false" ]]; then
       ;;
     "glo_100")
       ntasks_ww3=20
-      nthreads_ww3=1
       ;;
     "glo_200")
       ntasks_ww3=30
-      nthreads_ww3=1
       ;;
     "glo_500")
       ntasks_ww3=12
-      nthreads_ww3=1
       ;;
     "mx025")
       ntasks_ww3=80
       ;;
     "uglo_15km")
       ntasks_ww3=1000
-      nthreads_ww3=1
+      nthreads_ww3=2
       ;;
     "uglo_100km")
       ntasks_ww3=40
-      nthreads_ww3=1
       ;;
     *)
       echo "FATAL ERROR: Unsupported WW3 resolution = ${ww3_res}, ABORT!"
