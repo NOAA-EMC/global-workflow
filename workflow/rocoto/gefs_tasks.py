@@ -264,7 +264,6 @@ class GEFSTasks(Tasks):
 
         return task
 
-
     def postsnd(self):
 
         resources = self.get_resource('postsnd')
@@ -310,8 +309,8 @@ class GEFSTasks(Tasks):
 
         fhr_metatask_dict = {'task_name': f'{self.run}_postsnd_mem#member#',
                              'task_dict': task_dict,
-                             'var_dict': fhr_var_dict}
-
+                             'var_dict': fhr_var_dict
+                             }
 
         member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
         member_metatask_dict = {'task_name': f'{self.run}_postsnd',
