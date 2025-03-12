@@ -19,7 +19,7 @@ def main():
 
     # Pull out all the configuration keys needed to run the rest of archive steps
     keys = ['ATARDIR', 'current_cycle', 'IAUFHRS', 'RUN', 'PDY',
-            'PSLOT', 'HPSSARCH', 'LOCALARCH', 'ROTDIR', 'PARMgfs',
+            'PSLOT', 'DO_ARCHCOM', 'ARCHCOM_TO', 'ROTDIR', 'PARMgfs',
             'ARCDIR', 'SDATE', 'MODE', 'ENSGRP', 'NMEM_EARCGRP',
             'NMEM_ENS', 'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS',
             'lobsdiag_forenkf', 'FHMIN_ENKF', 'FHMAX_ENKF_GFS',

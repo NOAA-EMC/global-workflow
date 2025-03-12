@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# This script prepares the server directory and launches the doorman scripts for {{PSLOT}} on {{SERVER_NAME}}
+mkdir -p "{{server_home}}/doorman" || exit 2
+run_time=$(date -u '+%Y-%m-%dT%H:%M:%S')
+echo "${run_time}" > "{{server_home}}/{{PSLOT}}_crontab_active.log"
+
+runtime_log="{{server_home}}/{{PSLOT}}_last_runtime.log"
+if [[ ! -f "${runtime_log}" ]]; then
+   echo "${run_time}" > "${runtime_log}"
+fi
+
+# Look for mkdir requests
+while IFS= read -r mkdir_req_fl
+do
+
+    echo "${run_time}" > "${runtime_log}"
+    dir=$(cat "${mkdir_req_fl}")
+    mkdir -p "${dir}" || exit 2
+    rm -f "${mkdir_req_fl}"
+done < <(find "{{server_home}}" -maxdepth 1 -name "req_mkdir.*" || true)
+
+# Look for scripts
+while IFS= read -r dir
+do
+   echo "${run_time}" > "${runtime_log}"
+   while IFS= read -r script
+   do
+      chmod +x "${script}"
+      # Check if the corresponding log has already been written
+      log="${script/.sh/.log}"
+      if [[ ! -f "${log}" ]]; then
+         "${script}"
+      fi
+   done < <(find "${dir}" -name "run_doorman.sh" || true)
+done < <(find "{{server_home}}/doorman" -maxdepth 1 -type d -name "globus_*.*" || true)
+
+# Look for rmdir requests
+while IFS= read -r rmdir_req_fl
+do
+   echo "${run_time}" > "${runtime_log}"
+   dir=$(cat "${rmdir_req_fl}")
+   rm -rf "${dir}"
+   rm -f "${rmdir_req_fl}"
+done < <(find "{{server_home}}" -maxdepth 1 -name "req_rmdir.*" || true)
+
+
+# Check if it has been a while since this script had anything to do
+last_runtime=$(cat "${runtime_log}")
+last_runtime_s=$(date -d "${last_runtime}" '+%s')
+current_time_s=$(date -d "${run_time}" '+%s')
+
+diff_d=$(( (current_time_s - last_runtime_s) / 86400 ))
+
+if [[ ${diff_d} -gt 3 ]]; then
+    # If the user added their email to REPLYTO, they will get this message
+    echo "WARNING the {{SERVER_NAME}} service for {{PSLOT}} has not run in > 3 days!"
+    echo "Turning off the crontab for {{PSLOT}}!!"
+    scriptpath="$( realpath "${0}" )"
+    cron_out=$(crontab -l)
+    entry=$(echo "${cron_out}" | grep "${scriptpath}")
+    echo "Deleting crontab entry"
+    echo "${entry}"
+    cron_in=$(echo "${cron_out}" | grep -v "${scriptpath}")
+    echo "${cron_in}" | crontab -l
+fi
