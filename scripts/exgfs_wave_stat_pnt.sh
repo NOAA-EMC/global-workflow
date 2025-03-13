@@ -152,7 +152,9 @@
 
 # 3.c Create bundled grib2 file with all parameters
 
-  cat ${WAV_MOD_TAG}.t${cyc}z.mean.${grdNAME}.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
+  
+
+  cat ${WAV_MOD_TAG}.t${cyc}z.{mean,prob,spread}.${grdNAME}.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
 
   if [ -s gribfile ]
   then
@@ -163,7 +165,7 @@
       set +x
       echo ' '
       echo '************************************************* '
-      echo "*** FATAL ERROR: No gribfile created, no bulls  *"
+      echo "*** FATAL ERROR: No gribfile created for ${TYPE}, no bulls  *"
       echo '************************************************* '
       echo ' '
       echo "$modIE fcst $date $cycle: No gribfile created." >> $wavelog
@@ -172,6 +174,7 @@
       export err=7;${errchk}
       exit $err
     fi
+
 
 # 3.d Loop through buoys and populate cmdfiles with calls to wave_ens_bull.sh
   ifile=0
@@ -183,16 +186,13 @@
     blon=`echo $bline | awk '{print $1}'`
     bnom=`echo $bline | awk '{print $3}' | sed "s/'//g"`
 
-    echo "$HOMEgfs/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} 1> bull_${bnom}.out 2>&1" >> cmdfile.${fhr}
+    echo "$HOMEgfs/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} 1> bull_${bnom}.out 2>&1" >> cmdfile
 
     ibuoy=`expr ${ibuoy} + 1`
     ifile=`expr ${ifile} + 1`
 
   done
 
-
-  chmod 744 cmdfile.*
-  ls -1 cmdfile.* > cmdfile
 
 
 # 3.e Execute poe or serial cmdfile
@@ -202,18 +202,8 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  wavenproc=`wc -l cmdfile | awk '{print $1}'`
-  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
-
-  if [ "$wavenproc" -gt '1' ]
-  then
-    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    "${HOMEgfs}/ush/run_mpmd.sh" cmdfile    
     exit=$?
-  else
-    chmod 744 cmdfile
-    ./cmdfile.${fhr}
-    exit=$?
-  fi
 
   if [ "$exit" != '0' ]
   then
@@ -272,6 +262,8 @@
   tar cf ${WAV_MOD_TAG}.t${cyc}z.station_tar ${WAV_MOD_TAG}.*.ts
   rm -f ${WAV_MOD_TAG}.*.ts
 
+  MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_GRIB_ENS:COM_WAVE_GRIB_GRID_TMPL
+
   set +x
   echo ' '
   echo 'Saving output files :'
@@ -281,9 +273,9 @@
   if [ -s ${WAV_MOD_TAG}.t${cyc}z.bull_tar ]
   then
     set +x
-    echo "   Copying ${WAV_MOD_TAG}.t${cyc}z.bull_tar  to ${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/station"
+    echo "   Copying ${WAV_MOD_TAG}.t${cyc}z.bull_tar  to COMOUT_WAVE_GRIB_ENS"
     [[ "$LOUD" = YES ]] && set -x
-    cp -f ${WAV_MOD_TAG}.t${cyc}z.bull_tar ${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/station
+    cp -f ${WAV_MOD_TAG}.t${cyc}z.bull_tar ${COMOUT_WAVE_GRIB_ENS}
    else
      set +x
      echo ' '
@@ -303,9 +295,9 @@
   if [ -s ${WAV_MOD_TAG}.t${cyc}z.station_tar ]
   then
     set +x
-    echo "   Copying ${WAV_MOD_TAG}.t${cyc}z.bull_tar  to ${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/station"
+    echo "   Copying ${WAV_MOD_TAG}.t${cyc}z.bull_tar  to ${COMOUT_WAVE_GRIB_ENS}"
     [[ "$LOUD" = YES ]] && set -x
-    cp -f ${WAV_MOD_TAG}.t${cyc}z.station_tar ${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/station
+    cp -f ${WAV_MOD_TAG}.t${cyc}z.station_tar ${COMOUT_WAVE_GRIB_ENS}
    else
      set +x
      echo ' '
