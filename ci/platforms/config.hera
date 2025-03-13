@@ -1,13 +1,17 @@
 #!/usr/bin/bash
 
+# Main CI root directory
 export GFS_CI_ROOT=/scratch1/NCEPDEV/global/glopara/GFS_CI_CD
+# ICSDIR root directory used on the create_experment.py command line
 export ICSDIR_ROOT=/scratch1/NCEPDEV/global/glopara/data/ICSDIR
 
-# Jenkins directories
-export JENKINS_AGENT_LANUCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+# JENKINS launch directory for agent
+export JENKINS_AGENT_LAUNCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+# JENKINS internal working directories for CI jobs (not for users use)
 export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
 # JENKINS custom_workspace directory where CI jobs are run
 # /scratch1/NCEPDEV/global/glopara/CI
+# is defined in the Jenkinsfile
 
 # CTest functional test directories for pre stagged input data
 export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
@@ -15,6 +19,7 @@ export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
 # CI BASH test directories
 export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
 
+# HPC account which overides the default account
 export HPC_ACCOUNT=fv3-cpu
 export max_concurrent_cases=5
 export max_concurrent_pr=4
