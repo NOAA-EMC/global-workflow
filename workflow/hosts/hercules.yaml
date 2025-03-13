@@ -4,9 +4,9 @@ BASE_DATA: '/work2/noaa/global/role-global/data'
 BASE_IC: '/work2/noaa/global/role-global/data/ICSDIR'
 PACKAGEROOT: '/work2/noaa/global/role-global/nwpara'
 COMINsyn: '/work2/noaa/global/role-global/com/gfs/prod/syndat'
-HOMEDIR: '/work/noaa/global/${USER}'
-STMP: '/work/noaa/stmp/${USER}/HERCULES'
-PTMP: '/work/noaa/stmp/${USER}/HERCULES'
+HOMEDIR: '/work2/noaa/global/${USER}'
+STMP: '/work2/noaa/stmp/${USER}/HERCULES'
+PTMP: '/work2/noaa/stmp/${USER}/HERCULES'
 NOSCRUB: $HOMEDIR
 SCHEDULER: slurm
 ACCOUNT: fv3-cpu

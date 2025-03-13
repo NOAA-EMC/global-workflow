@@ -1,4 +1,4 @@
-#! /usr/bin/env bash                                                                                                                                                                          
+#! /usr/bin/env bash
 
 ################################################################################
 ## UNIX Script Documentation Block
@@ -26,16 +26,21 @@ for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); 
   fnh=$(printf "%3.3d" "${nh}")
 
   infile=${com_dir}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
+  new_infile=${subdata}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}_ext.grib2
   outfile=${subdata}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
   rm -f "${outfile}" # Remove outfile if it already exists before extraction
 
   if [[ -f "${infile}" ]]; then # Check if input file exists before extraction
-    # shellcheck disable=SC2312 
-    ${WGRIB2} "${infile}" | grep -F -f "${varlist_wav}" | ${WGRIB2} -i "${infile}" -append -grib "${outfile}"
+    if ! cpfs "${infile}" "${new_infile}"; then
+      echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
+      exit 1
+    fi
+    # shellcheck disable=SC2312
+    ${WGRIB2} "${new_infile}" | grep -F -f "${varlist_wav}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
   else
-    echo "WARNING: ${infile} does not exist."
-  fi 
+    echo "WARNING: ${infile} does not exist in ${com_dir}."
+  fi
   copy_to_comout "${outfile}" "${ARC_RFCST_PROD_WAV}"
 done # nh
 
-exit 0                                                                                                                                                                                        
+exit 0
