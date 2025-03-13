@@ -9,9 +9,9 @@ aero:
 
 atmos:
   obs spaces:
-  - name: amsua_n19
-    input file: "diag_amsua_n19_ges.{{ current_cycle | to_YMDH }}.nc4"
-    output file: "amsua_n19_{{ current_cycle | to_YMDH }}_output_atmos.nc"
+  - name: conventional_ps
+    input file: "diag_conventional_ps_{{ current_cycle | to_YMDH }}.nc4"
+    output file: "diag_conventional_ps_{{ current_cycle | to_YMDH }}_output_atmos.nc"
 
 snow:
   obs spaces:
