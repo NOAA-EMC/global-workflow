@@ -4,7 +4,7 @@ export GFS_CI_ROOT=/work2/noaa/stmp/GFS_CI_ROOT/ORION
 export ICSDIR_ROOT=/work/noaa/global/glopara/data/ICSDIR
 
 # Jenkins directories
-export JENKINS_AGENT_LANUCH_DIR=/home/role-nems/GFS_CI_ROOT_JENKINS/AGENT_mterry
+export JENKINS_AGENT_LAUNCH_DIR=/home/role-nems/GFS_CI_ROOT_JENKINS/AGENT_mterry
 export JENKINS_WORK_DIR=/home/role-nems/GFS_CI_ROOT_JENKINS
 
 # CI BASH test directories

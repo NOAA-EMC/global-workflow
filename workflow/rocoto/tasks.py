@@ -11,9 +11,9 @@ __all__ = ['Tasks']
 
 
 class Tasks:
-    SERVICE_TASKS = ['arch_vrfy', 'earc_vrfy', 'stage_ic', 'cleanup']
+    SERVICE_TASKS = ['arch_vrfy', 'earc_vrfy', 'stage_ic', 'cleanup', 'globus', 'ens_globus']
     DTN_TASKS = ['arch_tars', 'earc_tars', 'fetch']
-    VALID_TASKS = ['aerosol_init', 'stage_ic', 'fetch',
+    VALID_TASKS = ['aerosol_init', 'stage_ic', 'fetch', 'globus', 'ens_globus',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars', "cleanup",
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
                    'prep_emissions', 'prepoceanobs',
@@ -341,16 +341,16 @@ class Tasks:
 
         account = task_config['ACCOUNT']
 
-        walltime = task_config[f'walltime']
-        ntasks = task_config[f'ntasks']
-        ppn = task_config[f'tasks_per_node']
+        walltime = task_config['walltime']
+        ntasks = task_config['ntasks']
+        ppn = task_config['tasks_per_node']
 
         nodes = int(np.ceil(float(ntasks) / float(ppn)))
 
-        threads = task_config[f'threads_per_task']
+        threads = task_config['threads_per_task']
 
         # Memory is not required
-        memory = task_config.get(f'memory', None)
+        memory = task_config.get('memory', None)
 
         dtn_task = task_name in Tasks.DTN_TASKS
         service_task = task_name in Tasks.SERVICE_TASKS

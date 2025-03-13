@@ -16,5 +16,6 @@ load(pathJoin("python", python_ver))
 load("py-jinja2")
 load("py-pyyaml")
 load("py-numpy")
+try_load("globus-cli")
 
 whatis("Description: GFS run setup environment")

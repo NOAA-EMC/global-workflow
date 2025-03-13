@@ -49,6 +49,33 @@ def check_expdir(cmd_expdir, cfg_expdir):
         raise ValueError('Abort!')
 
 
+def check_dir_writable(dirPath):
+    if os.path.isdir(dirPath):
+        if os.access(dirPath, os.W_OK):
+            return True
+        else:
+            print(f"{dirPath} is unwritable.")
+            return False
+    elif os.path.isfile(dirPath):
+        print(f'{dirPath} is not a directory')
+        return False
+    else:  # Find the nearest parent directory that already exists
+        test_parent = os.path.dirname(dirPath)
+        if len(test_parent) == 0:
+            print(f'{dirPath} is an invalid directory')
+            return False
+        while test_parent:
+            if os.path.exists(test_parent):
+                # Call check_dir_writable on the parent
+                return check_dir_writable(test_parent)
+            test_parent = os.path.dirname(test_parent)
+            if len(test_parent) == 0:
+                break
+        if len(test_parent) == 0:
+            print(f'{dirPath} is not a valid directory')
+            return False
+
+
 def main(*argv):
 
     user_inputs = input_args(argv)
@@ -62,6 +89,13 @@ def main(*argv):
     base = cfg.parse_config('config.base')
 
     check_expdir(user_inputs.expdir, base['EXPDIR'])
+
+    # Check if "HOMEDIR","STMP","PTMP" dirrctories are writable
+    dirKeys = ["HOMEDIR", "STMP", "PTMP"]
+    for dk in dirKeys:
+        check_dir_writable(base[dk])
+        if not check_dir_writable(base[dk]):
+            raise PermissionError(f'The {dk} path {base[dk]} cannot be written to!  Please correct this path and try again')
 
     net = base['NET']
     mode = base['MODE']
