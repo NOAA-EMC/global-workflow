@@ -170,135 +170,38 @@ local USE_UFO=${use_ufo:-".true."}
 local PRE_RAD=${pre_rad:-".false."}
 local IMP_PHYSICS=${imp_physics:-"99"}
 
-
-case "${CCPP_SUITE:-}" in
-  "FV3_GFS_v15p2_coupled")
-    local OZ_PHYS_NEW=.false. #oz_phys
-    local OZ_PHYS_OLD=.true. #oz_phys_2015
-  ;;
-  "FV3_GSD_v0")
-    local IOVR=${iovr:-"3"}
-    local LTAEROSOL=${ltaerosol:-".false."}
-    local LRADAR=${lradar:-".false."}
-    local TTENDLIM=${ttendlim:-0.005}
-    local OZ_PHYS_NEW=${oz_phys:-".false."}
-    local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
-    local LSOIL_LSM=${lsoil_lsm:-"4"}
-    local DO_MYNNEDMF=${do_mynnedmf:-".false."}
-    local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
-    local ICLOUD_BL=${icloud_bl:-"1"}
-    local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
-    local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
-    local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
-    local MIN_LAKEICE=${min_lakeice:-"0.15"}
-    local MIN_SEAICE=${min_seaice:-"0.15"}
-    local USE_CICE_ALB=${use_cice_alb:-".false."}
-  ;;
-  FV3_GFS_v16_coupled*)
-    local IOVR=${iovr:-"3"}
-    local LTAEROSOL=${ltaerosol:-".false."}
-    local LRADAR=${lradar:-".false."}
-    local TTENDLIM=${ttendlim:-"0.005"}
-    local OZ_PHYS_NEW=${oz_phys:-".false."}
-    local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
-    local DO_MYNNEDMF=${do_mynnedmf:-".false."}
-    local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
-    local ICLOUD_BL=${icloud_bl:-"1"}
-    local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
-    local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
-    local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
-    local MIN_LAKEICE=${min_lakeice:-"0.15"}
-    local MIN_SEAICE=${min_seaice:-"0.15"}
-  ;;
-  FV3_GFS_v16*)
-    local IOVR=${iovr:-"3"}
-    local LTAEROSOL=${ltaerosol:-".false."}
-    local LRADAR=${lradar:-".false."}
-    local TTENDLIM=${ttendlim:-"0.005"}
-    local OZ_PHYS_NEW=${oz_phys:-".false."}
-    local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
-    local LSOIL_LSM=${lsoil_lsm:-"4"}
-    local DO_MYNNEDMF=${do_mynnedmf:-".false."}
-    local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
-    local ICLOUD_BL=${icloud_bl:-"1"}
-    local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
-    local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
-    local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
-    local MIN_LAKEICE=${min_lakeice:-"0.15"}
-    local MIN_SEAICE=${min_seaice:-"0.15"}
-  ;;
-  FV3_GFS_v17*)
-    local DT_INNER=$(( DELTIM/2 ))
-    local IOVR=${iovr:-"3"}
-    local LTAEROSOL=${ltaerosol:-".false."}
-    local LRADAR=${lradar:-".true."}
-    local TTENDLIM=${ttendlim:-"-999"}
-    local DT_INNER=${dt_inner:-"${default_dt_inner}"}
-    local SEDI_SEMI=${sedi_semi:-".true."}
-    local DECFL=${decfl:-"10"}
-    local OZ_PHYS_NEW=${oz_phys:-".false."}
-    local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
-    local LSOIL_LSM=${lsoil_lsm:-"4"}
-    local DO_MYNNEDMF=${do_mynnedmf:-".false."}
-    local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
-    local ICLOUD_BL=${icloud_bl:-"1"}
-    local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
-    local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
-    local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
-    local DO_UGWP=${do_ugwp:-".false."}
-    local DO_TOFD=${do_tofd:-".false."}
-    local GWD_OPT=${gwd_opt:-"2"}
-    local DO_UGWP_V0=${do_ugwp_v0:-".false."}
-    local DO_UGWP_V1=${do_ugwp_v1:-".true."}
-    local DO_UGWP_V0_OROG_ONLY=${do_ugwp_v0_orog_only:-".false."}
-    local DO_UGWP_V0_NST_ONLY=${do_ugwp_v0_nst_only:-".false."}
-    local DO_GSL_DRAG_LS_BL=${do_gsl_drag_ls_bl:-".true."}
-    local DO_GSL_DRAG_SS=${do_gsl_drag_ss:-".true."}
-    local DO_GSL_DRAG_TOFD=${do_gsl_drag_tofd:-".true."}
-    local DO_GWD_OPT_PSL=${do_gwd_opt_psl:-".false."}
-    local DO_UGWP_V1_OROG_ONLY=${do_ugwp_v1_orog_only:-".false."}
-    local MIN_LAKEICE=${min_lakeice:-"0.15"}
-    local MIN_SEAICE=${min_seaice:-"0.15"}
-    local USE_CICE_ALB=${use_cice_alb:-".false."}
-  ;;
-  FV3_global_nest*)
-    local DT_INNER=$(( DELTIM/2 ))
-    local IOVR=${iovr:-"3"}
-    local LCNORM=${lcnorm:-".false."}
-    local LTAEROSOL=${ltaerosol:-".false."}
-    local LRADAR=${lradar:-".true."}
-    local TTENDLIM=${ttendlim:-"-999"}
-    local DT_INNER=${dt_inner:-"${default_dt_inner}"}
-    local SEDI_SEMI=${sedi_semi:-".true."}
-    local DECFL=${decfl:-"10"}
-    local OZ_PHYS_NEW=${oz_phys:-".false."}
-    local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
-    local LSOIL_LSM=${lsoil_lsm:-"4"}
-    local DO_MYNNEDMF=${do_mynnedmf:-".false."}
-    local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
-    local ICLOUD_BL=${icloud_bl:-"1"}
-    local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
-    local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
-    local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
-    local DO_UGWP=${do_ugwp:-".false."}
-    local DO_TOFD=${do_tofd:-".false."}
-    local GWD_OPT=${gwd_opt:-"2"}
-    local DO_UGWP_V0=${do_ugwp_v0:-".false."}
-    local DO_UGWP_V1=${do_ugwp_v1:-".true."}
-    local DO_UGWP_V0_OROG_ONLY=${do_ugwp_v0_orog_only:-".false."}
-    local DO_UGWP_V0_NST_ONLY=${do_ugwp_v0_nst_only:-".false."}
-    local DO_GSL_DRAG_LS_BL=${do_gsl_drag_ls_bl:-".true."}
-    local DO_GSL_DRAG_SS=${do_gsl_drag_ss:-".true."}
-    local DO_GSL_DRAG_TOFD=${do_gsl_drag_tofd:-".true."}
-    local DO_UGWP_V1_OROG_ONLY=${do_ugwp_v1_orog_only:-".false."}
-    local MIN_LAKEICE=${min_lakeice:-"0.15"}
-    local MIN_SEAICE=${min_seaice:-"0.15"}
-    local USE_CICE_ALB=${use_cice_alb:-".false."}
-  ;;
-  *)
-    local IOVR=${iovr:-"3"}
-  ;;
-esac
+local default_dt_inner=$(( DELTIM/2 ))
+local IOVR=${iovr:-"3"}
+local LTAEROSOL=${ltaerosol:-".false."}
+local LRADAR=${lradar:-".true."}
+local TTENDLIM=${ttendlim:-"-999"}
+local DT_INNER=${dt_inner:-"${default_dt_inner}"}
+local SEDI_SEMI=${sedi_semi:-".true."}
+local DECFL=${decfl:-"10"}
+local OZ_PHYS_NEW=${oz_phys:-".false."}
+local OZ_PHYS_OLD=${oz_phys_2015:-".true."}
+local LSOIL_LSM=${lsoil_lsm:-"4"}
+local DO_MYNNEDMF=${do_mynnedmf:-".false."}
+local DO_MYNNSFCLAY=${do_mynnsfclay:-".false."}
+local ICLOUD_BL=${icloud_bl:-"1"}
+local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
+local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
+local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
+local DO_UGWP=${do_ugwp:-".false."}
+local DO_TOFD=${do_tofd:-".false."}
+local GWD_OPT=${gwd_opt:-"2"}
+local DO_UGWP_V0=${do_ugwp_v0:-".false."}
+local DO_UGWP_V1=${do_ugwp_v1:-".true."}
+local DO_UGWP_V0_OROG_ONLY=${do_ugwp_v0_orog_only:-".false."}
+local DO_UGWP_V0_NST_ONLY=${do_ugwp_v0_nst_only:-".false."}
+local DO_GSL_DRAG_LS_BL=${do_gsl_drag_ls_bl:-".true."}
+local DO_GSL_DRAG_SS=${do_gsl_drag_ss:-".true."}
+local DO_GSL_DRAG_TOFD=${do_gsl_drag_tofd:-".true."}
+local DO_GWD_OPT_PSL=${do_gwd_opt_psl:-".false."}
+local DO_UGWP_V1_OROG_ONLY=${do_ugwp_v1_orog_only:-".false."}
+local MIN_LAKEICE=${min_lakeice:-"0.15"}
+local MIN_SEAICE=${min_seaice:-"0.15"}
+local USE_CICE_ALB=${use_cice_alb:-".false."}
 
 local PDFCLD=${pdfcld:-".false."}
 local FHSWR=${FHSWR:-"3600."}
