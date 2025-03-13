@@ -355,8 +355,8 @@ case ${step} in
 
   "gempak")
     export walltime="00:30:00"
-    export ntasks_gdas=28
-    export tasks_per_node=28
+    export ntasks=1
+    export tasks_per_node=1
     export threads_per_task=1
     export memory="2GB"
     ;;
