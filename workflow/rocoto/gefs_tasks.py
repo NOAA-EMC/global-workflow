@@ -352,7 +352,7 @@ class GEFSTasks(Tasks):
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        task_name = f'{self.run}_gempak_mem#member#_#fhr_label#'
+        task_name = f'{self.run}_atmos_prod_#member#_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,

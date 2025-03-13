@@ -9,7 +9,7 @@ echo "BEGIN: config.postsnd"
 export MAX_TASKS=25
 
 # Get task specific resources
-. $EXPDIR/config.resources postsnd
+. "$EXPDIR/config.resources" postsnd
 
 export ENDHOUR=180
 if [[ "$FHMAX_GFS" -lt "$ENDHOUR" ]] ; then export ENDHOUR=$FHMAX_GFS ; fi
