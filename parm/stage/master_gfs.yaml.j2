@@ -10,13 +10,17 @@
 #         - "COM directory to create"
 #     copy:
 #         - ["source_file", "destination_file"]
+#     link:
+#         - ["target", "link_name"]
 # key2:
 #     mkdir:
 #         - "COM directory to create"
 #     copy:
 #         - ["source_file", "destination_file"]
+#     link:
+#         - ["target", "link_name"]
 #
-# Any number of keys with nested mkdir and copy are permitted
+# Any number of keys with nested mkdir, copy, and link are permitted
 # Jinja is permitted in this yaml, as long as the keys are:
 # - COMOUT_
 # - DO_ATM, DO_OCN, DO_ICE, etc.

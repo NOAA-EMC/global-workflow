@@ -22,61 +22,61 @@ systems:
     - "gefs_ww3_prepost"
 build:
   gfs_model:
-    command: "./build_ufs.sh -e gfs_model.x -j 12"
+    command: "./build_ufs.sh -e gfs_model.x"
     cores: 12
     walltime: "00:30:00"
 
   gfs_ww3prepost:
-    command: "./build_ww3prepost.sh -j 4"
+    command: "./build_ww3prepost.sh"
     cores: 4
     walltime: "00:10:00"
 
   gefs_model:
-    command: "./build_ufs.sh -w -e gefs_model.x -j 12"
+    command: "./build_ufs.sh -w -e gefs_model.x"
     cores: 12
     walltime: "00:30:00"
 
   gefs_ww3_prepost:
-    command: "./build_ww3prepost.sh -w -j 4"
+    command: "./build_ww3prepost.sh -w"
     cores: 4
     walltime: "00:10:00"
 
   sfs_model:
-    command: "./build_ufs.sh -y -e sfs_model.x -j 12"
+    command: "./build_ufs.sh -y -e sfs_model.x"
     cores: 12
     walltime: "00:30:00"
 
   upp:
-    command: "./build_upp.sh -j 8"
+    command: "./build_upp.sh"
     cores: 8
     walltime: "00:10:00"
 
   gsi_enkf:
-    command: "./build_gsi_enkf.sh -j 8"
+    command: "./build_gsi_enkf.sh"
     cores: 8
     walltime: "00:15:00"
 
   gsi_monitor:
-    command: "./build_gsi_monitor.sh -j 4"
+    command: "./build_gsi_monitor.sh"
     cores: 4
     walltime: "00:10:00"
 
   gsi_utils:
-    command: "./build_gsi_utils.sh -j 6"
+    command: "./build_gsi_utils.sh"
     cores: 6
     walltime: "00:10:00"
 
   ufs_utils:
-    command: "./build_ufs_utils.sh -j 8"
+    command: "./build_ufs_utils.sh"
     cores: 8
     walltime: "00:10:00"
 
   gfs_utils:
-    command: "./build_gfs_utils.sh -j 6"
+    command: "./build_gfs_utils.sh"
     cores: 6
     walltime: "00:10:00"
 
   gdas:
-    command: "./build_gdas.sh -j 24"
-    cores: 24
+    command: "./build_gdas.sh"
+    cores: 40
     walltime: "01:30:00"

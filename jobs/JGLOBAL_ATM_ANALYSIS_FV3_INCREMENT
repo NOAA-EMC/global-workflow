@@ -21,7 +21,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfv3inc" -c "base atmanl atmanlf
 EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atm_analysis_fv3_increment.py}
 ${EXSCRIPT}
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work

@@ -23,11 +23,12 @@ class GFSCycledAppConfig(AppConfig):
             elif ens_run in ['gfs', 'gdas']:
                 self.ens_runs = [ens_run]
 
-        # Now construct self.runs the desired XML order (gdas, enkfgdas, gfs, enkfgfs)
-        self.runs = ["gdas"]  # We always have a 'gdas' run
+        # Now construct self.runs the desired XML order (gfs, enkfgfs, gdas, enkfgdas)
+        self.runs = []
+        self.runs.append('gfs') if base['INTERVAL_GFS'] > 0 else 0
+        self.runs.append('enkfgfs') if 'gfs' in self.ens_runs and 'gfs' in self.runs else 0
+        self.runs.append('gdas')  # We always have a 'gdas' run
         self.runs.append('enkfgdas') if 'gdas' in self.ens_runs else 0
-        self.runs.append("gfs") if base['INTERVAL_GFS'] > 0 else 0
-        self.runs.append('enkfgfs') if 'gfs' in self.ens_runs and "gfs" in self.runs else 0
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
 
@@ -47,6 +48,7 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
             run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
+            run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
 
         return run_options
@@ -75,7 +77,7 @@ class GFSCycledAppConfig(AppConfig):
 
         configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
-        if options['do_archtar']:
+        if options['do_archcom']:
             configs += ['arch_tars']
 
         if options['do_hybvar']:
@@ -87,7 +89,7 @@ class GFSCycledAppConfig(AppConfig):
 
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy']
 
-            if options['do_archtar']:
+            if options['do_archcom']:
                 configs += ['earc_tars']
 
         if options['do_fit2obs']:
@@ -149,6 +151,15 @@ class GFSCycledAppConfig(AppConfig):
                         'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
                         'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
                         'mos_wx_prdgen', 'mos_wx_ext_prdgen']
+
+        if options['do_globusarch']:
+            configs += ['globus']
+            # TODO Enable when the globus archiving feature is available for ensembles
+            if options['do_hybvar']:
+                print("WARNING Globus archiving is currently only possible for deterministic members")
+                print("        Ensemble members will NOT be archived with this option!!")
+            # if options['do_hybvar']:
+            #     configs += ['globus_earc']
 
         return configs
 
@@ -298,8 +309,11 @@ class GFSCycledAppConfig(AppConfig):
 
                 # Last items
                 task_names[run] += ['arch_vrfy']
-                if options['do_archtar']:
+                if options['do_archcom']:
                     task_names[run] += ['arch_tars']
+                    if options['do_globusarch']:
+                        task_names[run] += ['globus_arch']
+
                 task_names[run] += ['cleanup']
 
             # Ensemble tasks
@@ -324,8 +338,13 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run].append('epos') if 'gdas' in run else 0
 
                 task_names[run] += ['stage_ic', 'ecen', 'esfc']
-                if options['do_archtar']:
+                if options['do_archcom']:
                     task_names[run] += ['earc_tars']
+
+                    # TODO Uncomment when globus ensemble archiving is ready
+                    # if options['do_globusarch']:
+                    #     task_names[run] += ['globus_earc']
+
                 task_names[run] += ['earc_vrfy', 'cleanup']
 
         return task_names
