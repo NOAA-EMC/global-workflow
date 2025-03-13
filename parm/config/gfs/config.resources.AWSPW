@@ -18,6 +18,12 @@ case ${step} in
     ;;
 
 
+  "atmos_products" | "oceanice_products" | "wavepostsbs" )
+    export PARTITION_BATCH="process"
+    max_tasks_per_node=24
+    ;;
+
+
   *)
     export PARTITION_BATCH="process"
     max_tasks_per_node=24
