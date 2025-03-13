@@ -54,8 +54,6 @@ function _usage() {
        If this option is not chosen, the new entries that would have been
        written to your crontab will be printed to stdout.
        NOTES:
-          - This option is not supported on Gaea.  Instead, the output will
-            need to be written to scrontab manually.
           - For Orion/Hercules, this option will not work unless run on
             the [orion|hercules]-login-1 head node.
 
