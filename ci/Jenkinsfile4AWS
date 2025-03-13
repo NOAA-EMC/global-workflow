@@ -107,7 +107,7 @@ pipeline {
                         ws(HOMEgfs) {
                             echo "Checking out the code on ${Machine} using scm in ${HOMEgfs}"
                             try {
-                                 echo "HOMEgfs: ${HOMEgfs}")
+                                 echo "HOMEgfs: ${HOMEgfs}"
                                  sh(script: "pwd")
                                  sh(script: "env")
                                  // sh(script: "git clone --recursive ${repo_url}")
@@ -137,7 +137,7 @@ pipeline {
                                 try {
                                     // checkout scm
                                     // sh(script: "git clone --recursive ${repo_url}")
-                                    echo "HOMEgfs: ${HOMEgfs}")
+                                    echo "HOMEgfs: ${HOMEgfs}"
                                     sh(script: "pwd")
                                     sh(script: "env")
                                     checkout([$class: 'GitSCM',
