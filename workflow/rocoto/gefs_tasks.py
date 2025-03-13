@@ -290,8 +290,7 @@ class GEFSTasks(Tasks):
         postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
                           'MEMDIR': 'mem#member#',
-                          'FHR_LIST': '#fhr_list#'
-                         }
+                          'FHR_LIST': '#fhr_list#'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -348,8 +347,8 @@ class GEFSTasks(Tasks):
         postenvars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
                           'MEMDIR': 'mem#member#',
-                          'FHR_LIST': '#fhr_list#',
-                         }
+                          'FHR_LIST': '#fhr_list#'}
+
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
