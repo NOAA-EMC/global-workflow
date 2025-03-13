@@ -119,6 +119,10 @@ class Tasks:
         self.queue_service = _validate_system_key(base, 'QUEUE_SERVICE')
         self.queue_dtn = _validate_system_key(base, 'QUEUE_DTN')
 
+        self.constraint_batch = _validate_system_key(base, 'CONSTRAINT')
+        self.constraint_service = _validate_system_key(base, 'CONSTRAINT_SERVICE')
+        self.constraint_dtn = _validate_system_key(base, 'CONSTRAINT_DTN')
+
     def _template_to_rocoto_cycstring(self, template: str, subs_dict: dict = {}) -> str:
         '''
         Takes a string templated with ${ } and converts it into a string suitable
@@ -363,6 +367,7 @@ class Tasks:
             task_queue = self.queue_service if self.queue_service else self.queue_batch
             task_partition = self.partition_service if self.partition_service else self.partition_batch
             task_clusters = self.clusters_service if self.clusters_service else self.clusters_batch
+            task_constraint = self.constraint_service if self.constraint_service else self.constraint_batch
             task_reservation = None  # Reservations are only for batch nodes
         elif dtn_task:
             # First check if there is a DTN queue, partition, or clusters
@@ -388,12 +393,20 @@ class Tasks:
             else:
                 task_clusters = self.clusters_batch
 
+            if self.constraint_dtn:
+                task_constraint = self.constraint_dtn
+            elif self.constraint_service:
+                task_constraint = self.constraint_service
+            else:
+                task_constraint = self.constraint_batch
+
             task_reservation = None
 
         else:  # This is a batch task
             task_partition = self.partition_batch
             task_queue = self.queue_batch
             task_clusters = self.clusters_batch
+            task_constraint = self.constraint_batch
             task_reservation = self.reservation_batch
 
         # Scheduler-specific configurations
@@ -427,6 +440,9 @@ class Tasks:
 
             if task_clusters:
                 native += ' --clusters=' + task_clusters
+
+            if task_constraint:
+                native += ' --constraint=' + task_constraint
 
         # Finally, construct and return the task resource dictionary
         task_resource = {'account': account,
