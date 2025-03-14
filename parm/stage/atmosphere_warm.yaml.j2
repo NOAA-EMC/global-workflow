@@ -4,11 +4,14 @@ atmosphere_warm:
         {% set imem = mem - first_mem %}
         {% set COMOUT_ATMOS_RESTART_PREV_MEM = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
         - "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"
+        {% set COMOUT_ATMOS_RESTART_MEM = COMOUT_ATMOS_RESTART_MEM_list[imem] %}
+        - "{{ COMOUT_ATMOS_RESTART_MEM }}"
         {% endfor %} # mem loop
     link:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ATMOS_RESTART_PREV_MEM = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
+        {% set COMOUT_ATMOS_RESTART_MEM = COMOUT_ATMOS_RESTART_MEM_list[imem] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".atm_stoch.res.nc") %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.atm_stoch.res.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
         {% endif %} # path_exists
@@ -24,8 +27,8 @@ atmosphere_warm:
         {% endif %}
         {% endfor %} # ntile
         {% for ntile in range(1, ntiles + 1) %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) ~ "/" ~ p_prefix ~ ".sfcanl_data.tile" ~ ntile ~ ".nc") %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ p_prefix }}.sfcanl_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_RESTART_MEM | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".sfcanl_data.tile" ~ ntile ~ ".nc") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.sfcanl_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_MEM }}"]
         {% endif %} # path_exists
         {% endfor %} # ntile
         {% endfor %} # mem loop
