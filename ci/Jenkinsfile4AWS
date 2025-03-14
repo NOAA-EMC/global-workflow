@@ -85,6 +85,8 @@ pipeline {
                     echo "Getting Common Workspace for ${Machine}"
                     echo "Common Workspace for ${Machine} is ${custom_workspace[machine]}/${env.CHANGE_ID}"
                     echo "WORKSPACE: ${WORKSPACE}"
+                    WORKSPACE = ${custom_workspace[machine]}/${env.CHANGE_ID}
+                    echo "WORKSPACE: ${WORKSPACE}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'Gaea', 'Awsepicglobalworkflow'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
