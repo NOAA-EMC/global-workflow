@@ -269,9 +269,12 @@ class GEFSTasks(Tasks):
         resources = self.get_resource('postsnd')
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod_mem#member#_#fhr_label#'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        for member in range(0, self.nmem + 1):
+            task = f'{self.run}_atmos_prod_mem{member:03d}_#fhr_label#'
+            dep_dict = {'type': 'task', 'name': task}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         fhrs = self._get_forecast_hours(self.run, self._configs['postsnd'])
 
@@ -294,7 +297,7 @@ class GEFSTasks(Tasks):
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        task_name = f'{self.run}_atmos_prod_mem#member#_#fhr_label#'
+        task_name = f'{self.run}_postsnd_mem#member#_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -306,7 +309,7 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        fhr_metatask_dict = {'task_name': f'{self.run}_postsnd_mem#member#',
+        fhr_metatask_dict = {'task_name': f'{self.run}_postsnd_#member#',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict
                              }
@@ -355,7 +358,7 @@ class GEFSTasks(Tasks):
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        task_name = f'{self.run}_gempak_#member#_#fhr_label#'
+        task_name = f'{self.run}_gempak_mem#member#_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -367,7 +370,7 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        fhr_metatask_dict = {'task_name': f'{self.run}_gempak_mem#member#',
+        fhr_metatask_dict = {'task_name': f'{self.run}_gempak_#member#',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 
