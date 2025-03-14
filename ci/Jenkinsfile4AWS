@@ -113,8 +113,8 @@ pipeline {
                                  // sh(script: "git clone --recursive ${repo_url}")
                                  echo "Getting Common Workspace for ${Machine}"
                                  echo "Common Workspace for ${Machine} is ${custom_workspace[machine]}/${env.CHANGE_ID}"
-                                 echo "WORKSPACE: {WORKSPACE}"
-                                 echo "CUSTOM_WORKSPACE: {CUSTOM_WORKSPACE}"
+                                 echo "WORKSPACE: ${WORKSPACE}"
+                                 echo "CUSTOM_WORKSPACE: ${CUSTOM_WORKSPACE}"
                                  
                                  checkout([$class: 'GitSCM',
                                   branches: [[name: "develop"]],
