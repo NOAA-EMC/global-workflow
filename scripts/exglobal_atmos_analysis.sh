@@ -83,8 +83,6 @@ CALCINCPY=${CALCINCPY:-${USHgfs}/calcinc_gfs.py}
 RUN=${RUN:-""}
 SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
-RUN_GETGES=${RUN_GETGES:-"NO"}
-GETGESSH=${GETGESSH:-"getges.sh"}
 export gesenvir=${gesenvir:-${envir}}
  
 export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}

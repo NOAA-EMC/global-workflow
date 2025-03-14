@@ -14,7 +14,7 @@ if (( $# != 1 )); then
     echo "stage_ic aerosol_init fetch"
     echo "prep prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
-    echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal"
+    echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
     echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "anal sfcanl analcalc analdiag fcst echgres"
@@ -736,6 +736,30 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export threads_per_task_cycle=${threads_per_task}
     export tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
+    export is_exclusive=True
+    ;;
+
+  "ecen_fv3jedi")
+    export layout_x=${layout_x_ecen_fv3jedi}
+    export layout_y=${layout_y_ecen_fv3jedi}
+
+    walltime="00:15:00"
+    ntasks_correction_increment=$(( layout_x * layout_y * 6 ))
+    ntasks_ensemble_recenter=$(( layout_x * layout_y * 6 * NMEM_ENS ))
+    ntasks=$(( ntasks_ensemble_recenter ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
+    ;;
+
+  "analcalc_fv3jedi")
+    export layout_x=${layout_x_analcalc_fv3jedi}
+    export layout_y=${layout_y_analcalc_fv3jedi}
+
+    walltime="00:15:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
 

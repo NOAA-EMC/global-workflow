@@ -10,6 +10,6 @@ copy:
                          '${YMD}': previous_cycle | to_YMD,
                          '${HH}': previous_cycle | strftime('%H'),
                          '${MEMDIR}': memchar }) %}
-- ['{{ COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) }}/enkf{{ GPREFIX }}cubed_sphere_grid_atmf006.nc', '{{ DATA }}/ens/{{ memchar }}/']
-- ['{{ COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) }}/enkf{{ GPREFIX }}cubed_sphere_grid_sfcf006.nc', '{{ DATA }}/ens/{{ memchar }}/']
+- ['{{ COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) }}/{{ GPREFIX_ENS }}cubed_sphere_grid_atmf006.nc', '{{ DATA }}/ens/{{ memchar }}/']
+- ['{{ COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) }}/{{ GPREFIX_ENS }}cubed_sphere_grid_sfcf006.nc', '{{ DATA }}/ens/{{ memchar }}/']
 {% endfor %}
