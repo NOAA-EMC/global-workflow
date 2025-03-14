@@ -33,8 +33,14 @@ class GEFSAppConfig(AppConfig):
         if options['do_bufrsnd']:
             configs += ['postsnd']
 
+        if options['do_gempak']:
+            configs += ['gempak']
+
         if options['nens'] > 0:
             configs += ['efcs', 'atmos_ensstat']
+
+        if options['do_awips']:
+            configs += ['awips']
 
         if options['do_wave']:
             configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
@@ -46,12 +52,6 @@ class GEFSAppConfig(AppConfig):
 
         if options['do_aero_fcst']:
             configs += ['prep_emissions']
-
-        if options['do_awips']:
-            configs += ['awips']
-
-        if options['do_gempak']:
-            configs += ['gempak']
 
         if options['do_extractvars']:
             configs += ['extractvars']
@@ -94,14 +94,14 @@ class GEFSAppConfig(AppConfig):
         if options['do_bufrsnd']:
             tasks += ['postsnd']
 
+        if options['do_gempak']:
+            tasks += ['gempak']
+
         if options['nens'] > 0:
             tasks += ['atmos_ensstat']
 
         if options['do_awips']:
             tasks += ['awips']
-
-        if options['do_gempak']:
-            tasks += ['gempak']
 
         if options['do_ocean']:
             tasks += ['ocean_prod']
