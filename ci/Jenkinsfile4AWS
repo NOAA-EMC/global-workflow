@@ -85,9 +85,9 @@ pipeline {
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'Gaea', 'Awsepicglobalworkflow'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
-                        CUSTOM_WORKSPACE = "${custom_workspace[machine]}/${env.CHANGE_ID}/${aws_gw_name}"
+                        CUSTOM_WORKSPACE = "${custom_workspace[machine]}/${env.CHANGE_ID}/${aws_gw_name}/${aws_gw_name}"
                         HOMEgfs = "${CUSTOM_WORKSPACE}"
-                        sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/${aws_gw_name}; mkdir -p ${CUSTOM_WORKSPACE}/${aws_gw_name}")
+                        sh(script: "rm -Rf ${CUSTOM_WORKSPACE}; mkdir -p ${CUSTOM_WORKSPACE}/${aws_gw_name}")
                         sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/RUNTESTS; mkdir -p ${CUSTOM_WORKSPACE}/RUNTESTS")
                         // sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
                     }
@@ -99,7 +99,7 @@ pipeline {
         stage('3. Build System') {
             agent { label NodeName[machine].toLowerCase() }
             steps {
-                dir("${CUSTOM_WORKSPACE}/${aws_gw_name}") {
+                dir("${CUSTOM_WORKSPACE}") {
                 checkout scm
                 }
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
