@@ -19,7 +19,7 @@ pipeline {
     options {
         skipDefaultCheckout()
         parallelsAlwaysFailFast()
-        workspace "${custom_workspace[params.machine]}/${env.CHANGE_ID}/${aws_gw_name}"
+        // workspace "${custom_workspace[params.machine]}/${env.CHANGE_ID}/${aws_gw_name}"
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
