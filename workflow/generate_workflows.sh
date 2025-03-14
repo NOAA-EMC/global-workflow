@@ -31,8 +31,8 @@ function _usage() {
        directory is used.
 
     -G Run all valid GFS cases in the specified YAML directory.
-       If -b is specified, then "-g -u" (build the GSI and GDASApp)
-       will be passed to build_all.sh.
+       If -b is specified, then the GSI and GDASApp will also be
+       built via build_all.sh.
        Note that these builds are disabled on some systems, which
        will result in a warning from build_all.sh.
 
@@ -54,8 +54,6 @@ function _usage() {
        If this option is not chosen, the new entries that would have been
        written to your crontab will be printed to stdout.
        NOTES:
-          - This option is not supported on Gaea.  Instead, the output will
-            need to be written to scrontab manually.
           - For Orion/Hercules, this option will not work unless run on
             the [orion|hercules]-login-1 head node.
 
@@ -331,7 +329,7 @@ fi
 
 # Check if running all GFS cases
 if [[ "${_run_all_gfs}" == "true" ]]; then
-   _build_flags="${_build_flags} gfs "
+   _build_flags="${_build_flags} gfs gsi gdas "
 
    declare -a _gfs_yaml_list
    select_all_yamls "gfs" "_gfs_yaml_list"

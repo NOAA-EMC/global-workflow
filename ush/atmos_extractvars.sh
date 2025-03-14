@@ -76,10 +76,15 @@ for outtype in "f2d" "f3d"; do
 
     for infile in "${infile1}" "${infile2}"; do
       if [[ -f "${infile}" ]]; then # check if input file exists before extraction
+        new_infile="${outdirpre}/$(basename "${infile}")_ext"
+        if ! cpfs "${infile}" "${new_infile}"; then
+          echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
+          exit 1
+        fi
         # shellcheck disable=SC2312
-        ${WGRIB2} "${infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${infile}" -append -grib "${outfile}"
+        ${WGRIB2} "${new_infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
       else
-        echo "WARNING: ${infile} does not exist."
+        echo "WARNING: ${infile} does not exist in ${com_dir}."
       fi
     done
 
@@ -91,10 +96,15 @@ for outtype in "f2d" "f3d"; do
       outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.grib2
       for infile in "${infile1}" "${infile2}"; do
         if [[ -f "${infile}" ]]; then # check if input file exists before extraction
+          new_infile="${outdirpre}/$(basename "${infile}")_ext"
+          if ! cpfs "${infile}" "${new_infile}"; then
+            echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
+            exit 1
+          fi
           # shellcheck disable=SC2312
-          ${WGRIB2} "${infile}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${infile}" -append -grib "${outfile}"
+          ${WGRIB2} "${new_infile}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
         else
-          echo "WARNING: ${infile} does not exist."
+          echo "WARNING: ${infile} does not exist in ${com_dir}."
         fi
       done
       if [[ ${fcnt} -eq 4 ]]; then

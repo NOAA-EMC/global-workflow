@@ -185,9 +185,9 @@ class GFSTasks(Tasks):
         offset = timedelta_to_HMS(-interval)
 
         # Files from previous cycle
-        files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
-                [f'@Y@m@d.@H0000.fv_core.res.tile{tile}.nc' for tile in range(1, ntiles + 1)] + \
-                [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.ntiles + 1)]
+        files = ['@Y@m@d.@H0000.fv_core.res.nc'] + \
+                [f'@Y@m@d.@H0000.fv_core.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)] + \
+                [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
 
         for file in files:
             data = [f'{restart_path}/', file]
@@ -281,10 +281,7 @@ class GFSTasks(Tasks):
     def analcalc(self):
 
         deps = []
-        if self.options['do_jediatmvar']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
-        else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -547,7 +544,7 @@ class GFSTasks(Tasks):
 
         deps = []
         dep_dict = {
-            'type': 'task', 'name': f'gdas_aeroanlgenb',
+            'type': 'task', 'name': 'gdas_aeroanlgenb',
             'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}",
         }
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2451,15 +2448,79 @@ class GFSTasks(Tasks):
 
         return task
 
-# cleanup
+    # Globus transfer for HPSS archiving
+    def globus_arch(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('globus')
+        task_name = f'{self.run}_globus_arch'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus_arch.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    # Ensemble globus transfer for HPSS archiving
+    def globus_earc(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        # Integer division is floor division, but we need ceiling division
+        n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
+        groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
+
+        resources = self.get_resource('globus')
+        var_dict = {'grp': groups}
+
+        task_name = f'{self.run}_globus_earc'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus_earc.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        metatask_dict = {'task_name': f'{self.run}_ens_globus_arch',
+                         'var_dict': var_dict,
+                         'task_dict': task_dict
+                         }
+
+        task = rocoto.create_task(metatask_dict)
+
+        return task
+
+    # Cleanup
     def cleanup(self):
         deps = []
         if 'enkf' in self.run:
             dep_dict = {'type': 'task', 'name': f'{self.run}_earc_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.options['do_archtar']:
-                dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
-                deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_archcom']:
+                if self.options['do_globusarch']:
+                    # TODO add this back in when ensemble globus archiving is enabled
+                    # dep_dict = {'type': 'metatask', 'name': f'{self.run}_ens_globus_arch'}
+                    pass
+                else:
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
+                    deps.append(rocoto.add_dependency(dep_dict))
 
         else:
             if self.app_config.mode in ['cycled']:
@@ -2562,8 +2623,12 @@ class GFSTasks(Tasks):
 
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.options['do_archtar']:
-                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+            if self.options['do_archcom']:
+                if self.options['do_globusarch']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
+                else:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+
                 deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -2842,10 +2907,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jediatmens']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
-        else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2881,16 +2943,73 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(metatask_dict)
         return task
 
+    def ecen_fv3jedi(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf','')}_atmanlfinal"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('ecen_fv3jedi')
+        task_name = f'{self.run}_ecen_fv3jedi'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ecen_fv3jedi.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def analcalc_fv3jedi(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f"{self.run}_atmanlfinal"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_aero_anl']:
+            dep_dict = {'type': 'task', 'name': f"{self.run}_aeroanlfinal"}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jedisnowda']:
+            dep_dict = {'type': 'task', 'name': f"{self.run}_snowanl"}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('analcalc_fv3jedi')
+        task_name = f'{self.run}_analcalc_fv3jedi'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/analcalc_fv3jedi.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def esfc(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
-        deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jediatmens']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
         else:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
-        deps.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esnowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -2916,8 +3035,12 @@ class GFSTasks(Tasks):
     def efcs(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jediatmens']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_ecen_fv3jedi'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        else:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
@@ -3062,8 +3185,9 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        if not self.options['do_jediatmvar']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         earcenvars = self.envars.copy()
@@ -3093,8 +3217,9 @@ class GFSTasks(Tasks):
         if 'enkfgdas' in self.run:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
-            deps.append(rocoto.add_dependency(dep_dict))
+            if not self.options['do_jediatmvar']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+                deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:  # early cycle enkf run (enkfgfs)
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
@@ -3108,7 +3233,7 @@ class GFSTasks(Tasks):
         n_groups = -(self.nmem // -self._configs['earc_tars']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
-        resources = self.get_resource('earc_tars')
+        resources = self.get_resource('arch_tars')
 
         var_dict = {'grp': groups}
 
