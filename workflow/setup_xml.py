@@ -36,6 +36,8 @@ def input_args(*argv):
                         default=25, required=False)
     parser.add_argument('--verbosity', help='verbosity level of Rocoto', type=int,
                         default=10, required=False)
+    parser.add_argument('--force', help='raise warnings instead of errors when possible',
+                        action='store_true', dest="force")
 
     return parser.parse_args(argv[0][0] if len(argv[0]) else None)
 
@@ -54,15 +56,12 @@ def check_dir_writable(dirPath):
         if os.access(dirPath, os.W_OK):
             return True
         else:
-            print(f"{dirPath} is unwritable.")
             return False
     elif os.path.isfile(dirPath):
-        print(f'{dirPath} is not a directory')
         return False
     else:  # Find the nearest parent directory that already exists
         test_parent = os.path.dirname(dirPath)
         if len(test_parent) == 0:
-            print(f'{dirPath} is an invalid directory')
             return False
         while test_parent:
             if os.path.exists(test_parent):
@@ -72,7 +71,6 @@ def check_dir_writable(dirPath):
             if len(test_parent) == 0:
                 break
         if len(test_parent) == 0:
-            print(f'{dirPath} is not a valid directory')
             return False
 
 
@@ -95,7 +93,11 @@ def main(*argv):
     for dk in dirKeys:
         check_dir_writable(base[dk])
         if not check_dir_writable(base[dk]):
-            raise PermissionError(f'The {dk} path {base[dk]} cannot be written to!  Please correct this path and try again')
+            msg = f'The {dk} path {base[dk]} cannot be written to!  Please correct this path and try again.'
+            if user_inputs.force:
+                print(f"WARNING {msg}")
+            else:
+                raise PermissionError(f'{msg}')
 
     net = base['NET']
     mode = base['MODE']
