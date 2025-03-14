@@ -71,6 +71,8 @@ def input_args():
         '-y', '--yaml', help='full path to yaml file describing the experiment configuration', type=Path, required=True)
     parser.add_argument(
         '-o', '--overwrite', help='overwrite previously created experiment', action="store_true", required=False)
+    parser.add_argument('--force', help='raise warnings instead of errors when possible',
+                        action='store_true', dest="force")
 
     return parser.parse_args()
 
@@ -102,6 +104,9 @@ if __name__ == '__main__':
         Path(testconf.arguments.expdir), Path(testconf.arguments.pslot)))
 
     setup_xml_args = [str(experiment_dir)]
+
+    if user_inputs.force:
+        setup_xml_args.append("--force")
 
     logger.info(f"Call: setup_xml.main()")
     logger.debug(f"setup_xml.py {' '.join(setup_xml_args)}")
