@@ -326,9 +326,12 @@ class GEFSTasks(Tasks):
         resources = self.get_resource('gempak')
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod_mem#member#_#fhr_label#'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        for member in range(0, self.nmem + 1):
+            task = f'{self.run}_atmos_prod_mem{member:03d}_#fhr_label#'
+            dep_dict = {'type': 'task', 'name': task}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         fhrs = self._get_forecast_hours(self.run, self._configs['gempak'])
 
