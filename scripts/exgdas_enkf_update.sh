@@ -72,7 +72,6 @@ letkf_flag=${letkf_flag:-".false."}
 getkf=${getkf:-".false."}
 denkf=${denkf:-".false."}
 nobsl_max=${nobsl_max:-10000}
-lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 write_spread_diag=${write_spread_diag:-".false."}
 cnvw_option=${cnvw_option:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
@@ -202,20 +201,8 @@ for imem in $(seq 1 $NMEM_ENS); do
    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
       COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-   if [ $lobsdiag_forenkf = ".false." ]; then
-      if [ $USE_CFP = "YES" ]; then
-         echo "${nm} ${DATA}/untar.sh ${memchar} ${COMOUT_ATMOS_ANALYSIS_MEM}" | tee -a "${DATA}/mp_untar.sh"
-         if [ ${CFP_MP:-"NO"} = "YES" ]; then
-             nm=$((nm+1))
-         fi
-      else
-         for ftype in $flist; do
-            fname="${COMOUT_ATMOS_ANALYSIS_MEM}/${ftype}"
-            tar -xvf $fname
-         done
-      fi
-   fi
    mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
+   
    for FHR in $nfhrs; do
       ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
@@ -300,7 +287,7 @@ cat > enkf.nml << EOFnml
    univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
    letkf_flag=${letkf_flag},nobsl_max=${nobsl_max},denkf=${denkf},getkf=${getkf}.,
    nhr_anal=${IAUFHRS_ENKF},nhr_state=${IAUFHRS_ENKF},
-   lobsdiag_forenkf=${lobsdiag_forenkf},taperanalperts=${taperanalperts},
+   lobsdiag_forenkf=.true.,taperanalperts=${taperanalperts},
    write_spread_diag=$write_spread_diag,
    modelspace_vloc=$modelspace_vloc,
    use_correlated_oberrs=${use_correlated_oberrs},
