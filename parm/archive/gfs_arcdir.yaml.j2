@@ -127,8 +127,6 @@
     {% if DO_JEDIATMENS == True %}
         {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atmensstat",
                                  ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
-        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atminc.ensmean.nc",
-                                 ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ~ ".ensmean.nc"]) %}
     {% else %}
         {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "enkfstat",
                                  ARCDIR ~ "/enkfstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}

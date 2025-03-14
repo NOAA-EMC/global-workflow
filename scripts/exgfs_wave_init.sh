@@ -210,7 +210,7 @@ source "${USHgfs}/preamble.sh"
   done
 
 # Copy to other members if needed
-if (( NMEM_ENS > 0 )); then
+if [[ "${NET}" == "gefs" && ${NMEM_ENS} -gt 0 ]]; then
   for mem in $(seq -f "%03g" 1 "${NMEM_ENS}"); do
     MEMDIR="mem${mem}" YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_PREP_MEM:COM_WAVE_PREP_TMPL
     mkdir -p "${COMOUT_WAVE_PREP_MEM}"
