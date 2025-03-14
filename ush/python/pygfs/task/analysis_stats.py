@@ -118,6 +118,7 @@ class AnalysisStats(Task):
                 # Gunzip .nc files
                 logger.info("Gunzip files from tar file")
                 gz_file = os.path.join(diag_dir_path, (analysis_dict['input file'] + ".gz"))
+                print(gz_file)
 
                 # Check if the file exists
                 if os.path.exists(gz_file):

@@ -10,8 +10,8 @@ aero:
 atmos:
   obs spaces:
   - name: conventional_ps
-    input file: "diag_conventional_ps_{{ current_cycle | to_YMDH }}.nc4"
-    output file: "diag_conventional_ps_{{ current_cycle | to_YMDH }}_output_atmos.nc"
+    input file: "diag_conventional_ps_{{ current_cycle | to_YMDH }}.nc"
+    output file: "conventional_ps_{{ current_cycle | to_YMDH }}_output_atmos.nc"
 
 snow:
   obs spaces:
