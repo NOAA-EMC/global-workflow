@@ -19,6 +19,7 @@ pipeline {
     options {
         skipDefaultCheckout()
         parallelsAlwaysFailFast()
+        workspace "${custom_workspace[params.machine]}/${env.CHANGE_ID}/${aws_gw_name}"
     }
 
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
@@ -72,6 +73,15 @@ pipeline {
                             echo "Running only the parent job: ${machine}"
                         }
                     }
+                }
+            }
+        }
+
+        stage('1.1. check Common Workspace') {
+            agent { label 'check Common Workspace' }
+            steps {
+                script {
+                    sh 'pwd'  // whos the custom workspace firectory
                 }
             }
         }
