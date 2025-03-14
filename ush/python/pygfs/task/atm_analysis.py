@@ -6,12 +6,10 @@ import gzip
 import tarfile
 from logging import getLogger
 from pprint import pformat
-from typing import Any, Dict, List, Optional
-from wxflow import (AttrDict,
-                    FileHandler,
-                    add_to_datetime, to_fv3time, to_timedelta, to_YMDH,
-                    Task,
-                    parse_j2yaml, save_as_yaml,
+from typing import Any, Dict
+from wxflow import (AttrDict, FileHandler, Task,
+                    add_to_datetime, to_timedelta,
+                    parse_j2yaml,
                     logit)
 from pygfs.jedi import Jedi
 
@@ -60,7 +58,9 @@ class AtmAnalysis(Task):
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'APREFIX_ENS': f"enkf{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'atm_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'atm_obsdataout_path': f"{self.task_config.DATA}/diags/",
                 'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
@@ -230,7 +230,7 @@ class AtmAnalysis(Task):
         # copy full YAML from executable to ROTDIR
         for src in yamls:
             yaml_base = os.path.splitext(os.path.basename(src))[0]
-            dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
+            dest_yaml_name = f"{self.task_config.APREFIX}{yaml_base}.yaml"
             dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
@@ -269,14 +269,16 @@ class AtmAnalysis(Task):
 
         # Copy FV3 atm increment to comrot directory
         logger.info("Copy UFS model readable atm increment file")
-        cdate = to_fv3time(self.task_config.current_cycle)
-        cdate_inc = cdate.replace('.', '_')
-        src = os.path.join(self.task_config.DATA, 'anl', f"atminc.{cdate_inc}z.nc4")
-        dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f'{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc')
-        logger.debug(f"Copying {src} to {dest}")
-        inc_copy = {
-            'copy': [[src, dest]]
-        }
+        inc_copy = {'copy': []}
+        for itile in range(6):
+            src = os.path.join(self.task_config.DATA, "anl",
+                               f"{self.task_config.APREFIX}cubed_sphere_grid_atminc.tile{itile+1}.nc")
+            dest = self.task_config.COM_ATMOS_ANALYSIS
+            inc_copy['copy'].append([src, dest])
+
+        # copy increments
+        src_list, dest_list = zip(*inc_copy['copy'])
+        logger.debug(f"Copying {src_list}\nto {dest_list}")
         FileHandler(inc_copy).sync()
 
     def clean(self):
