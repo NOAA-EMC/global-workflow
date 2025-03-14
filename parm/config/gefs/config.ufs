@@ -74,12 +74,8 @@ case "${fv3_res}" in
         export DELTIM=1200
         export layout_x=1
         export layout_y=1
-        export layout_x_gfs=1
-        export layout_y_gfs=1
         export nthreads_fv3=1
-        export nthreads_fv3_gfs=1
         export nthreads_ufs=1
-        export nthreads_ufs_gfs=1
         export xr_cnvcld=".true."  # Pass conv. clouds to Xu-Randall cloud fraction
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="40.0,1.77,1.0,1.0"   # settings for GSL drag suite
@@ -92,19 +88,13 @@ case "${fv3_res}" in
         export knob_ugwp_tauamp=6.0e-3      # setting for UGWPv1 non-stationary GWD
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
-        export WRITE_GROUP_GFS=1
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=1
         ;;
     "C96")
         export DELTIM=600
         export layout_x=2
         export layout_y=2
-        export layout_x_gfs=6
-        export layout_y_gfs=8
         export nthreads_fv3=1
-        export nthreads_fv3_gfs=1
         export nthreads_ufs=1
-        export nthreads_ufs_gfs=1
         export xr_cnvcld=".true."  # Pass conv. clouds to Xu-Randall cloud fraction
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="20.0,2.5,1.0,1.0"   # settings for GSL drag suite
@@ -117,19 +107,13 @@ case "${fv3_res}" in
         export fv_sg_adj=1800
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
-        export WRITE_GROUP_GFS=1
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=1
         ;;
     "C192")
         export DELTIM=600
         export layout_x=4
         export layout_y=6
-        export layout_x_gfs=4
-        export layout_y_gfs=6
         export nthreads_fv3=1
-        export nthreads_fv3_gfs=2
         export nthreads_ufs=1
-        export nthreads_ufs_gfs=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="10.0,3.5,1.0,1.0"   # settings for GSL drag suite
         export psl_gwd_dx_factor=6.0
@@ -142,19 +126,13 @@ case "${fv3_res}" in
         export fv_sg_adj=1800
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-        export WRITE_GROUP_GFS=2
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=5
         ;;
     "C384")
         export DELTIM=300
         export layout_x=6
         export layout_y=8
-        export layout_x_gfs=8
-        export layout_y_gfs=8
         export nthreads_fv3=1
-        export nthreads_fv3_gfs=2
         export nthreads_ufs=1
-        export nthreads_ufs_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="5.0,5.0,1.0,1.0"   # settings for GSL drag suite
         export psl_gwd_dx_factor=6.0
@@ -166,19 +144,13 @@ case "${fv3_res}" in
         export fv_sg_adj=900
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=8
-        export WRITE_GROUP_GFS=2
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10
         ;;
     "C768")
         export DELTIM=150
         export layout_x=8
         export layout_y=12
-        export layout_x_gfs=12
-        export layout_y_gfs=16
         export nthreads_fv3=4
-        export nthreads_fv3_gfs=4
         export nthreads_ufs=4
-        export nthreads_ufs_gfs=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="2.5,7.5,1.0,1.0"   # settings for GSL drag suite
         export psl_gwd_dx_factor=6.0
@@ -190,19 +162,13 @@ case "${fv3_res}" in
         export fv_sg_adj=450
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-        export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=20 #Note this should be 10 for WCOSS2
         ;;
     "C1152")
         export DELTIM=150
         export layout_x=8
         export layout_y=16
-        export layout_x_gfs=8
-        export layout_y_gfs=16
         export nthreads_fv3=4
-        export nthreads_fv3_gfs=4
         export nthreads_ufs=4
-        export nthreads_ufs_gfs=4
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="1.67,8.8,1.0,1.0"   # settings for GSL drag suite
         export psl_gwd_dx_factor=2.0
@@ -214,19 +180,13 @@ case "${fv3_res}" in
         export fv_sg_adj=450
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
-        export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=20  # TODO: refine these numbers when a case is available
         ;;
     "C3072")
         export DELTIM=90
         export layout_x=16
         export layout_y=32
-        export layout_x_gfs=16
-        export layout_y_gfs=32
         export nthreads_fv3=4
-        export nthreads_fv3_gfs=4
         export nthreads_ufs=4
-        export nthreads_ufs_gfs=4
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="0.625,14.1,1.0,1.0"   # settings for GSL drag suite
         export psl_gwd_dx_factor=2.0
@@ -238,8 +198,6 @@ case "${fv3_res}" in
         export fv_sg_adj=300
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
-        export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS=10  # TODO: refine these numbers when a case is available
         ;;
     *)
         echo "FATAL ERROR: Unsupported FV3 resolution = ${fv3_res}, ABORT!"
@@ -248,19 +206,13 @@ case "${fv3_res}" in
 esac
 
 (( WRTTASK_PER_GROUP_PER_THREAD = WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6 ))
-(( WRTTASK_PER_GROUP_PER_THREAD_GFS = WRTTASK_PER_GROUP_PER_THREAD_PER_TILE_GFS * 6 ))
 export WRTTASK_PER_GROUP_PER_THREAD
-export WRTTASK_PER_GROUP_PER_THREAD_GFS
 
 (( ntasks_fv3 = layout_x * layout_y * 6 ))
-(( ntasks_fv3_gfs = layout_x_gfs * layout_y_gfs * 6 ))
 export ntasks_fv3
-export ntasks_fv3_gfs
 
 (( ntasks_quilt = WRITE_GROUP * WRTTASK_PER_GROUP_PER_THREAD ))
-(( ntasks_quilt_gfs = WRITE_GROUP_GFS * WRTTASK_PER_GROUP_PER_THREAD_GFS ))
 export ntasks_quilt
-export ntasks_quilt_gfs
 
 # Determine whether to use compression in the write grid component
 # and whether to use parallel NetCDF based on resolution
@@ -538,7 +490,7 @@ fi
 
 # Set the name of the UFS (previously nems) configure template to use
 # Default ufs.configure templates for supported model configurations
-# WW3 restart field variable is different for slow vs fast loop.  Add  WW3_RSTFLDS="ice" for slow loop variables based on coupling scheme. 
+# WW3 restart field variable is different for slow vs fast loop.  Add  WW3_RSTFLDS="ice" for slow loop variables based on coupling scheme.
 case "${model_list}" in
   atm)
     default_template="${PARMgfs}/ufs/ufs.configure.atm${tmpl_suffix:-}.IN"
@@ -573,7 +525,7 @@ esac
 export ufs_configure_template=${ufs_configure_template:-${default_template:-"/dev/null"}}
 unset model_list default_template
 
-#export wave restart variable: 
+#export wave restart variable:
 export WW3_RSTFLDS=${WW3_RSTFLDS:-" "}
 
 if [[ ! -r "${ufs_configure_template}" ]]; then

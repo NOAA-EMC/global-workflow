@@ -13,19 +13,18 @@ case ${step} in
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
         export threads_per_task=8
         # Make ntasks a multiple of 16
+        if [[ "${RUN}" = *gdas ]]; then
+          ntasks=784
+        elif [[ "${RUN}" = *gfs ]]; then
+          ntasks=832
+        fi
         export ntasks_gdas=784
         export ntasks_gfs=832
         export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
 
-  "atmanlvar")
-    export tasks_per_node_gdas=48
-    export tasks_per_node_gfs=48   
-    export memory="400GB"
-    ;;
-
-  "atmensanlobs")
+  "atmanlvar" | "atmensanlobs")
     export tasks_per_node=48
     export memory="400GB"
     ;;
