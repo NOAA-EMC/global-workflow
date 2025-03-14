@@ -90,15 +90,6 @@ case ${step} in
   "fcst" | "efcs")
     export is_exclusive=True
 
-    export layout_x=${layout_x_gfs}
-    export layout_y=${layout_y_gfs}
-    export WRITE_GROUP=${WRITE_GROUP_GFS}
-    export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GFS}
-    ntasks_fv3=${ntasks_fv3_gfs}
-    ntasks_quilt=${ntasks_quilt_gfs}
-    nthreads_fv3=${nthreads_fv3_gfs}
-    nthreads_ufs=${nthreads_ufs_gfs}
-
     # Determine if using ESMF-managed threading or traditional threading
     # If using traditional threading, set them to 1
     if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
@@ -324,10 +315,6 @@ case ${step} in
     export ntasks=1
     export threads_per_task=1
     export tasks_per_node="${ntasks}"
-    export walltime_gfs="${walltime}"
-    export ntasks_gfs="${ntasks}"
-    export threads_per_tasks_gfs="${threads_per_task}"
-    export tasks_per_node_gfs="${tasks_per_node}"
     export is_exclusive=False
     ;;
 

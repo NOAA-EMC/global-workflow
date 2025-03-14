@@ -86,7 +86,7 @@ class GFSCycledAppConfig(AppConfig):
                             'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
                             'ecen_fv3jedi']
             else:
-                configs += ['eobs', 'eomg', 'ediag', 'eupd', 'echgres', 'ecen']
+                configs += ['eobs', 'ediag', 'eupd', 'echgres', 'ecen']
 
             configs += ['esfc', 'efcs', 'epos', 'earc_vrfy']
 
@@ -332,7 +332,7 @@ class GFSCycledAppConfig(AppConfig):
                 else:
                     task_names[run] += ['eobs', 'eupd', 'ecen']
                     task_names[run].append('echgres') if 'gdas' in run else 0
-                    task_names[run] += ['ediag'] if options['lobsdiag_forenkf'] else ['eomg']
+                    task_names[run] += ['ediag']
 
                 task_names[run].append('esnowanl') if options['do_jedisnowda'] else 0
                 task_names[run].append('efcs') if 'gdas' in run else 0

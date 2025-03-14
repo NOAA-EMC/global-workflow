@@ -40,8 +40,6 @@ export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
 
 # Other info used in this script
-RUN_GETGES=${RUN_GETGES:-"NO"}
-GETGESSH=${GETGESSH:-"getges.sh"}
 export gesenvir=${gesenvir:-${envir}}
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
@@ -63,23 +61,33 @@ LONB_CASE=$((res*4))
 export FNTSFA=${FNTSFA:-${COMIN_OBS}/${OPREFIX}rtgssthr.grb}
 export FNACNA=${FNACNA:-${COMIN_OBS}/${OPREFIX}seaice.5min.blend.grb}
 export FNSNOA=${FNSNOA:-${COMIN_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-if [[ ! -f "${FNSNOA}" ]]; then
-    export FNSNOA="${COMIN_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
+# Check if resolution specific FNSNOA exists, if not use t1534 version
+if [[ ! -f ${FNSNOA} ]]; then
+  export FNSNOA="${COMIN_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
 fi
-FNSNOG=${FNSNOG:-${COMIN_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-if [[ ! -f "${FNSNOG}" ]]; then
-    FNSNOG="${COMIN_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
-fi
-
-# Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
-if [[ ${RUN_GETGES} = "YES" ]]; then
-  snoprv=$(${GETGESSH} -q -t "snogrb_${JCAP_CASE}" -e "${gesenvir}" -n "${GDUMP}" -v "${GDATE}")
+if [[ ! -f ${FNSNOA} ]]; then
+  echo "WARNING: Current cycle snow file ${FNSNOA} is missing.  Snow coverage will not be updated."
 else
-  snoprv=${snoprv:-${FNSNOG}}
+  echo "INFO: Current cycle snow file is ${FNSNOA}"
+fi
+export FNSNOG=${FNSNOG:-${COMIN_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+# Check if resolution specific FNSNOG exists, if not use t1534 version
+if [[ ! -f ${FNSNOG} ]]; then
+  export FNSNOG="${COMIN_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
+fi
+if [[ ! -f ${FNSNOG} ]]; then
+  echo "WARNING: Previous cycle snow file ${FNSNOG} is missing.  Snow coverage will not be updated."
+else
+  echo "INFO: Previous cycle snow file is ${FNSNOG}"
 fi
 
-if [[ $(${WGRIB} -4yr "${FNSNOA}" 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
-  $(${WGRIB} -4yr "${snoprv}" 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ]] ; then
+# If any snow files are missing, don't apply snow in the global_cycle step.
+if [[ ! -f ${FNSNOA} ]] || [[ ! -f ${FNSNOG} ]]; then
+  export FNSNOA=" "
+  export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+# Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
+elif [[ $(${WGRIB} -4yr "${FNSNOA}" 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
+  $(${WGRIB} -4yr "${FNSNOG}" 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ]] ; then
   export FNSNOA=" "
   export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
 else
