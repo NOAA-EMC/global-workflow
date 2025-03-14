@@ -40,8 +40,6 @@ for vi in $( seq 1 "${LSOIL_INCR}" ); do
     soil_incr_vars=${soil_incr_vars}'"slc'${vi}'_inc"',
 done
 
-whereis cpfs
-
 cat << EOF > regrid.nml
  &config
   n_vars=${n_vars},
