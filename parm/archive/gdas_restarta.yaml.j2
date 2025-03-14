@@ -4,7 +4,13 @@ gdas_restarta:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdas_restarta.tar"
     required:
         # Deterministic analysis increments
+        {% if DO_JEDIATMVAR %}
+        {% for itile in range(6) %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc"
+        {% endfor %}
+        {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
+        {% endif %}
         # IAU increments
         {% for iaufhr in IAUFHRS if iaufhr != 6 %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iaufhr }}.nc"
