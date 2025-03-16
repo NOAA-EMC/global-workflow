@@ -15,8 +15,11 @@ case ${step} in
     # Remove this block once GSI issue is resolved
     # https://github.com/NOAA-EMC/GSI/pull/764
     # https://github.com/JCSDA/spack-stack/issues/1166
-    export walltime_gdas="02:40:00"
-    export walltime_gfs="02:00:00"
+    if [[ "${RUN}" = *gdas ]]; then
+      export walltime="02:40:00"
+    elif [[ "${RUN}" = *gfs ]]; then
+      export walltime="02:00:00"
+    fi
   ;;
   "eobs")
     # TODO:
@@ -25,8 +28,7 @@ case ${step} in
   ;;
   "atmanlvar")
     # Run on 8 nodes for memory requirement
-    export tasks_per_node_gdas=8
-    export tasks_per_node_gfs=8      
+    export tasks_per_node=8
     export walltime="00:45:00"
   ;;
   "atmensanlobs")
@@ -36,7 +38,7 @@ case ${step} in
   ;;
   "atmensanlsol")
     export tasks_per_node=12
-  ;;  
+  ;;
   *)
   ;;
 esac

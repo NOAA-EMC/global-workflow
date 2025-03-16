@@ -83,7 +83,7 @@ case ${MACHINE_ID} in
     exit 1;;
 esac
 
-LOG=lanuched_agent-$(date +%Y%m%d%M).log
+LOG=launched_agent-$(date +%Y%m%d%M).log
 rm -f "${LOG}"
 
 HOMEgfs="${HOMEGFS_}" source "${HOMEGFS_}/ush/module-setup.sh"
@@ -96,7 +96,7 @@ else
   source "${HOMEgfs_}/ci/platforms/config.${MACHINE_ID}"
 fi
 
-JAVA_HOME="${JENKINS_AGENT_LANUCH_DIR}/JAVA/jdk-17.0.10"
+JAVA_HOME="${JENKINS_AGENT_LAUNCH_DIR}/JAVA/jdk-17.0.10"
 if [[ ! -d "${JAVA_HOME}" ]]; then
   JAVA_HOME=/usr/lib/jvm/jre-17
   if [[ ! -d "${JAVA_HOME}" ]]; then
@@ -117,20 +117,21 @@ fi
 ${GH} --version
 export GH
 
-check_mark=$("${GH}" auth status -t 2>&1 | grep "Token:" | awk '{print $1}') || true
-if [[ "${check_mark}" != "✓" ]]; then
+check_token=$("${GH}" auth status 2>&1 | grep "Token:") || true
+if [[ "${check_token}" != *"*****"* ]]; then
   echo "gh not authenticating with emcbot token"
   exit 1
 fi
 echo "gh authenticating with emcbot TOKEN ok"
 
-if [[ -d "${JENKINS_AGENT_LANUCH_DIR}" ]]; then
-  echo "Jenkins Agent Lanuch Directory: ${JENKINS_AGENT_LANUCH_DIR}"
+if [[ -d "${JENKINS_AGENT_LAUNCH_DIR}" ]]; then
+  echo "Jenkins Agent Launch Directory: ${JENKINS_AGENT_LAUNCH_DIR}"
 else
-  echo "ERROR: Jenkins Agent Lanuch Directory not found. Exiting with error."
+  echo "ERROR: Jenkins Agent Launch Directory not found. Exiting with error."
   exit 1
 fi
-cd "${JENKINS_AGENT_LANUCH_DIR}"
+cd "${JENKINS_AGENT_LAUNCH_DIR}"
+echo "Entered directory ${PWD}"
 
 if ! [[ -f agent.jar ]]; then
   curl -sO "${controller_url}/jnlpJars/agent.jar"
@@ -141,6 +142,7 @@ if [[ ! -f "${controller_user_auth_token}" ]]; then
    echo "User Jenkins authetication TOKEN to the controller for using the Remote API does not exist"
    exit 1
 fi
+
 JENKINS_TOKEN=$(cat "${controller_user_auth_token}")
 
 cat << EOF > parse.py
@@ -159,12 +161,23 @@ check_node_online() {
        echo "ERROR: Jenkins controller not reachable. Exiting with error."
        exit 1
     fi
+    if [[ "${curl_response}" == *"Token expired"* ]]; then
+       echo "ERROR: Jenkins Token expired"
+       exit 1
+    fi
     echo -n "${curl_response}" > curl_response
-    ./parse.py curl_response
+    ONLINE_STATUS=$(./parse.py curl_response)
 }
 
 lauch_agent () {
-    echo "Launching Jenkins Agent on ${host}"
+    echo "Launching Jenkins Agent on ${host} using internal workspace ${JENKINS_WORK_DIR}"
+    
+    # Clear the remoting cache
+    if [[ -d "${JENKINS_WORK_DIR}/remoting" ]]; then
+        echo "Clearing remoting cache in ${JENKINS_WORK_DIR}/remoting"
+        rm -rf "${JENKINS_WORK_DIR}/remoting"
+    fi
+    
     command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
     echo -e "Launching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
     ${command} >> "${LOG}" 2>&1 &
@@ -177,7 +190,8 @@ if [[ "${force_launch}" == "True" ]]; then
   exit
 fi
 
-offline=$(set -e; check_node_online)
+check_node_online
+offline="${ONLINE_STATUS}"
 
 if [[ "${offline}" != "False" ]]; then
    if [[ "${skip_wait}" != "True" ]]; then
