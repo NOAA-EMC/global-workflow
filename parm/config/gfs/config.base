@@ -480,28 +480,17 @@ if [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]]; then
     export FHMAX_FITS=${FHMAX_GFS}
 fi
 
-# User may choose to reset these at experiment setup time 
+# IC fetching options
+# TODO replace these options with DO_FETCH and FETCH_FROM
 export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto COM
 export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
 
 # Archiving options
-export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
-export LOCALARCH="@LOCALARCH@"        # save data to local archive
-if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
-   echo "FATAL ERROR: Both HPSS and local archiving selected.  Please choose one or the other."
-   exit 4
-elif [[ ${HPSSARCH} = "YES" ]] || [[ ${LOCALARCH} = "YES" ]]; then
-   export DO_ARCHTAR="YES"
-else
-   export DO_ARCHTAR="NO"
-fi
-export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
-export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
-export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
-export ARCH_EXPDIR='YES'     # Archive the EXPDIR configs, XML, and database
-export ARCH_EXPDIR_FREQ=0    # How often to archive the EXPDIR in hours or 0 for first and last cycle only
-export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and 'git status' for each; requires ARCH_EXPDIR
-export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
+export DO_ARCHCOM="@DO_ARCHCOM@"    # Tar and archive the COM directories
+export ARCHCOM_TO="@ARCHCOM_TO@"    # Valid options are hpss, globus_hpss, and local
+
+# Globus UUID for this machine
+export CLIENT_GLOBUS_UUID='@CLIENT_GLOBUS_UUID@'
 
 # The monitor jobs are not yet supported for JEDIATMVAR.
 if [[ ${DO_JEDIATMVAR} = "YES" ]]; then
