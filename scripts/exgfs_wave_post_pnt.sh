@@ -265,6 +265,7 @@ source "${USHgfs}/preamble.sh"
     sed -e "s/TIME/${tstart}/g" \
         -e "s/DT/${DTPNT_WAV}/g" \
 	-e "s/999/$N/g" \
+	-e "s/PREFIX/$RUNwave/g" \
 	-e "s/^.*POINT.*/\$ &/g" \
         -e "s/ITYPE/0/g" \
         -e "s/FORMAT/F/g" \
@@ -302,7 +303,6 @@ source "${USHgfs}/preamble.sh"
     rm -f buoy_log.dat
     mv buoy_log.tmp buoy_log.dat
 
-    buoys=`awk '{ print $2 }' buoy_log.dat`
     Nb=$(wc buoy_log.dat | awk '{ print $1 }')
 
     if [ -s buoy_log.dat ]
@@ -348,7 +348,7 @@ source "${USHgfs}/preamble.sh"
   
   grep -F -f ibp_tags buoy_log.dat | awk '{ print $2 }' > buoys
   grep -F -f buoys buoy_log.ww3 | awk '{ print $1 }' > points
-  points=$(cat points | awk '{print $0 "\\n"}' | tr -d '\n')
+  points=$(awk '{print $0 "\\n"}' points | tr -d '\n')
   rm buoys
 
   # Generate the ww3_outp.inp file from the template
@@ -356,6 +356,7 @@ source "${USHgfs}/preamble.sh"
     sed -e "s/TIME/${tstart}/g" \
         -e "s/DT/${DTPNT_WAV}/g" \
         -e "s/999/$N/g" \
+	-e "s/PREFIX/$RUNwave/g" \
         -e "s|POINT|$points|g" \
         -e "s/ITYPE/1/g" \
         -e "s/FORMAT/F/g" \
@@ -369,6 +370,7 @@ source "${USHgfs}/preamble.sh"
     sed -e "s/TIME/${tstart}/g" \
         -e "s/DT/${DTPNT_WAV}/g" \
         -e "s/999/$N/g" \
+	-e "s/PREFIX/$RUNwave/g" \
         -e "s|POINT|$points|g" \
         -e "s/REFT/$truntime/g" \
                            ww3_outp_bull.inp.tmpl > ww3_outp.inp
