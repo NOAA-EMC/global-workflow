@@ -2676,42 +2676,6 @@ class GFSTasks(Tasks):
 
         return task
 
-    def eomg(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_eobs'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        eomgenvars = self.envars.copy()
-        eomgenvars_dict = {'ENSMEM': '#member#',
-                           'MEMDIR': 'mem#member#'
-                           }
-        for key, value in eomgenvars_dict.items():
-            eomgenvars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        resources = self.get_resource('eomg')
-        task_name = f'{self.run}_eomg_mem#member#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': eomgenvars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/eomg.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
-        metatask_dict = {'task_name': f'{self.run}_eomg',
-                         'var_dict': member_var_dict,
-                         'task_dict': task_dict,
-                         }
-
-        task = rocoto.create_task(metatask_dict)
-
-        return task
-
     def ediag(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_eobs'}
@@ -2737,10 +2701,7 @@ class GFSTasks(Tasks):
 
     def eupd(self):
         deps = []
-        if self.options['lobsdiag_forenkf']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_ediag'}
-        else:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_eomg'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_ediag'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
