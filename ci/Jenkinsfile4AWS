@@ -8,8 +8,8 @@ def GH = 'none'
 // Location of the custom workspaces for each machine in the CI system.  They are persistent for each iteration of the PR.
 def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaea: 'Gaea', awsepicglobalworkflow: 'Awsepicglobalworkflow']
 def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/global/CI/HERCULES', gaea: '/gpfs/f5/epic/proj-shared/global/CI', awsepicglobalworkflow: '/lustre/jenkins']
-def repo_url = 'https://github.com/NOAA-EPIC/global-workflow-cloud.git'
-def aws_gw_name = 'global-workflow-cloud'
+def repo_url = 'https://github.com/NOAA-EMC/global-workflow.git'
+def aws_gw_name = 'global-workflow'
 def STATUS = 'Passed'
 
 pipeline {
@@ -130,7 +130,6 @@ pipeline {
                             def error_logs_message = ""
                             dir("${HOMEgfs}/sorc") {
                                 try {
-                                    sh(script: 'ls *.sh')	// list files here to make sure all files exist.
                                     sh(script: 'ls ./build_compute.sh')	// list files here to make sure all files exist.
                                     sh(script: './build_compute.sh gfs')  // build the global-workflow executables
                                     sh(script: './build_compute.sh gefs')  // build the global-workflow executables
@@ -223,7 +222,7 @@ pipeline {
                                                 try {
                                                     sh(script: """
                                                       source ${HOMEgfs}/workflow/gw_setup.sh
-                                                      ${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} 'global-workflow-cloud'
+                                                      ${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} 'global-workflow'
                                                     """)
                                                     sh(script: """
                                                       source ${HOMEgfs}/workflow/gw_setup.sh
