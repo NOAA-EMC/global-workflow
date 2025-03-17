@@ -69,13 +69,13 @@ class FetchFIXdata():
         logger.info(f'verbose: {verbose}')
 
         if (os.path.isdir(localdir)):
-            logger.info(f'Prepare to download FIX data for {atmgrid} and {ocngrid} to {localdir}')
+            logger.info(f'Prepare to download FIX data for {self.atmgridarray} and {self.ocngridarray} to {localdir}')
         else:
             logger.error(f'local dir: <{localdir}> does not exist. Stop')
             raise SystemExit
 
         if (os.path.isfile(fix_ver)):
-            logger.info(f'Prepare to read FIX data for {atmgrid} and {ocngrid} to {fix_ver}')
+            logger.info(f'Prepare to read FIX data for {self.atmgridarray} and {self.ocngridarray} to {fix_ver}')
         else:
             logger.error(f'File fix_ver: <{fix_ver}> does not exist. Stop')
             raise SystemExit
@@ -145,7 +145,7 @@ class FetchFIXdata():
         None
         """
         for ocngrid in self.ocngridarray:
-            newkey = f'{key}_{atmgrid}'
+            newkey = f'{key}_{ocngrid}'
             self.s3dict[newkey] = f'{key}/{val}/{ocngrid}'
 
     # -------------------------------------------------------------------------
@@ -259,6 +259,7 @@ class FetchFIXdata():
                         continue
                     self.fix_ver_dict[key] = value.strip()
 
+
 # ------------------------------------------------------------------------------
 def main() -> None:
 
@@ -323,7 +324,7 @@ def main() -> None:
 
     ffd.fetchdata()
 
+
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
     main()
-
