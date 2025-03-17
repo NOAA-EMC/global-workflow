@@ -3,7 +3,7 @@
 # Hercules-specific job resources
 
 case ${step} in
-  "eobs" | "eomg")
+  "eobs")
     # The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     # For Hercules, this is only an issue at C384; use 20 tasks/node
@@ -12,8 +12,7 @@ case ${step} in
     fi
     ;;
   "atmanlvar")
-    export tasks_per_node_gdas=48
-    export tasks_per_node_gfs=48
+    export tasks_per_node=48
     export memory="400GB"
     ;;
 
@@ -21,7 +20,7 @@ case ${step} in
     export tasks_per_node=48
     export memory="400GB"
     ;;
-  
+
   *)
     ;;
 esac
