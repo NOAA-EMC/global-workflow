@@ -5,6 +5,7 @@ import f90nml
 from jcb import render
 from logging import getLogger
 import os
+from pygfs.jedi import Jedi
 from pygfs.task.analysis import Analysis
 import pygfs.utils.marine_da_utils as mdau
 from typing import Dict
@@ -69,6 +70,16 @@ class MarineLETKF(Analysis):
         self.task_config.ENSPERT_RELPATH = _enspert_relpath
         self.task_config.PARMsoca = os.path.join(self.task_config.PARMgfs, 'gdas', 'soca')
 
+        # Create dictionary of JEDI objects
+        expected_keys = ['marineanlletkf']
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        self.jedi_dict.PARMgfs = self.task_config.PARMgfs
+        #self.jedi_dict.MARINE_WINDOW_BEGIN = _window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')
+        self.jedi_dict.MARINE_WINDOW_BEGIN = _window_begin
+        self.jedi_dict.MARINE_WINDOW_END = _window_end
+        print("jedi_dict: ",self.jedi_dict)
+
+
     @logit(logger)
     def initialize(self):
         """Method initialize for ocean and sea ice LETKF task
@@ -122,6 +133,13 @@ class MarineLETKF(Analysis):
         FileHandler({'copy': obs_files_to_copy}).sync()
 
 ####################################################################################################
+
+
+        # initialize JEDI LETKF observer application
+        #self.task_config['jcb_algo'] = 'marine_letkf'
+        logger.info(f"Initializing JEDI LETKF observer application")
+        #self.jedi_dict['marineanlletkf'].initialize(self.task_config)
+        self.jedi_dict['marineanlletkf'].initialize(self.jedi_dict)
 
         envconfig_jcb = copy.deepcopy(self.task_config)
         envconfig_jcb['cyc'] = int(os.getenv('cyc'))
