@@ -76,20 +76,27 @@ source "${HOMEGFS_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion | hercules | wcoss2 | gaeac5 | gaeac6 )
     echo "Launch Jenkins Java Controler on ${MACHINE_ID}";;
+  noaacloud )
+    echo "Launch Jenkins Java Controler on ${PW_CSP}";;
   *)
     echo "Unsupported platform. Exiting with error."
     exit 1;;
 esac
 
-LOG=lanuched_agent-$(date +%Y%m%d%M).log
+LOG=launched_agent-$(date +%Y%m%d%M).log
 rm -f "${LOG}"
 
 HOMEgfs="${HOMEGFS_}" source "${HOMEGFS_}/ush/module-setup.sh"
 module use "${HOMEGFS_}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
-source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
 
-JAVA_HOME="${JENKINS_AGENT_LANUCH_DIR}/JAVA/jdk-17.0.10"
+if [[ ${MACHINE_ID} == "noaacloud" ]]; then
+  source "${HOMEgfs_}/ci/platforms/config.${PW_CSP}"
+else
+  source "${HOMEgfs_}/ci/platforms/config.${MACHINE_ID}"
+fi
+
+JAVA_HOME="${JENKINS_AGENT_LAUNCH_DIR}/JAVA/jdk-17.0.10"
 if [[ ! -d "${JAVA_HOME}" ]]; then
   JAVA_HOME=/usr/lib/jvm/jre-17
   if [[ ! -d "${JAVA_HOME}" ]]; then
@@ -117,13 +124,13 @@ if [[ "${check_token}" != *"*****"* ]]; then
 fi
 echo "gh authenticating with emcbot TOKEN ok"
 
-if [[ -d "${JENKINS_AGENT_LANUCH_DIR}" ]]; then
-  echo "Jenkins Agent Lanuch Directory: ${JENKINS_AGENT_LANUCH_DIR}"
+if [[ -d "${JENKINS_AGENT_LAUNCH_DIR}" ]]; then
+  echo "Jenkins Agent Launch Directory: ${JENKINS_AGENT_LAUNCH_DIR}"
 else
-  echo "ERROR: Jenkins Agent Lanuch Directory not found. Exiting with error."
+  echo "ERROR: Jenkins Agent Launch Directory not found. Exiting with error."
   exit 1
 fi
-cd "${JENKINS_AGENT_LANUCH_DIR}"
+cd "${JENKINS_AGENT_LAUNCH_DIR}"
 echo "Entered directory ${PWD}"
 
 if ! [[ -f agent.jar ]]; then
@@ -163,7 +170,14 @@ check_node_online() {
 }
 
 lauch_agent () {
-    echo "Launching Jenkins Agent on ${host}"
+    echo "Launching Jenkins Agent on ${host} using internal workspace ${JENKINS_WORK_DIR}"
+    
+    # Clear the remoting cache
+    if [[ -d "${JENKINS_WORK_DIR}/remoting" ]]; then
+        echo "Clearing remoting cache in ${JENKINS_WORK_DIR}/remoting"
+        rm -rf "${JENKINS_WORK_DIR}/remoting"
+    fi
+    
     command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
     echo -e "Launching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
     ${command} >> "${LOG}" 2>&1 &
