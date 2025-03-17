@@ -56,10 +56,10 @@ cao_check=${cao_check:-".true."}
 ta2tb=${ta2tb:-".true."}
 
 # Diagnostic files options
-lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 binary_diag=${binary_diag:-".false."}
-
+lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
+    
 # IAU
 DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6"}
@@ -83,8 +83,6 @@ CALCINCPY=${CALCINCPY:-${USHgfs}/calcinc_gfs.py}
 RUN=${RUN:-""}
 SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
-RUN_GETGES=${RUN_GETGES:-"NO"}
-GETGESSH=${GETGESSH:-"getges.sh"}
 export gesenvir=${gesenvir:-${envir}}
  
 export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
