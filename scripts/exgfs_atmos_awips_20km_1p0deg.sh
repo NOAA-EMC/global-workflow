@@ -195,7 +195,7 @@ for GRID in conus ak prico pac 003; do
           "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
 				     "${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}"
       else
-          echo "File ${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc} not posted to db_net."
+          echo "File ${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID} not posted to db_net."
       fi
    elif [[ ${GRID} != "003" ]]; then
       export FORT11="awps_file_f${fcsthrs}_${GRID}"
