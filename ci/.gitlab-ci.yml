@@ -1,0 +1,41 @@
+stages:
+  - build
+  - test
+
+variables:
+  SCHEDULE: "0 0 * * *"
+  WORKSPACE_DIRS:
+    orion: "/work2/noaa/global/role-global/GFS_CI_CD/ORION/GITLAB/CI"
+    hercules: "/work2/noaa/global/role-global/GFS_CI_CD/HERCULES/GITLAB/CI"
+  MACHINES: ["orion", "hercules"]
+
+build:
+  stage: build
+  script:
+    - sorc/build_compute.sh all
+  tags:
+    - ${MACHINE}
+  only:
+    - schedules
+  parallel:
+    matrix:
+      - MACHINE: ["orion", "hercules"]
+  strategy:
+    fetch: true
+
+test:
+  stage: test
+  script:
+    - cd ${WORKSPACE_DIRS[$MACHINE]}
+    - bash test.sh
+  tags:
+    - ${MACHINE}
+  only:
+    - schedules
+  parallel:
+    matrix:
+      - MACHINE: ["orion", "hercules"]
+  dependencies:
+    - build
+  strategy:
+    depend: true
