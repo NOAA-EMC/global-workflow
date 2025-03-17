@@ -17,8 +17,3 @@ arguments:
   start: cold
   yaml: {{ HOMEgfs }}/ci/cases/yamls/atmsoilDA_defaults_ci.yaml
 
-skip_ci_on_hosts:
-  - orion
-  - gaeac5
-  - gaeac6
-  - hercules
