@@ -39,6 +39,7 @@ class GFSCycledAppConfig(AppConfig):
 
             run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
             run_options[run]['do_hybvar_ocn'] = base.get('DOHYBVAR_OCN', False)
+            run_options[run]['do_letkf_ocn'] = base.get('DOLETKF_OCN', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
             if run_options[run]['do_hybvar']:
                 run_options[run]['lobsdiag_forenkf'] = base.get('lobsdiag_forenkf', False)
@@ -68,8 +69,10 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_jediocnvar']:
             configs += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
+            if options['do_letkf_ocn']:
+                configs += ['marineanlletkf']
             if options['do_hybvar']:
-                configs += ['marineanlletkf', 'ocnanalecen']
+                configs += ['ocnanalecen']
             configs += ['marineanlchkpt', 'marineanlfinal']
 
         if options['do_ocean'] or options['do_ice']:
@@ -192,8 +195,10 @@ class GFSCycledAppConfig(AppConfig):
 
                 if options['do_jediocnvar']:
                     task_names[run] += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
+                    if options['do_letkf_ocn']:
+                        task_names[run] += ['marineanlletkf']
                     if options['do_hybvar']:
-                        task_names[run] += ['marineanlletkf', 'ocnanalecen']
+                        task_names[run] += ['ocnanalecen']
                     task_names[run] += ['marineanlchkpt', 'marineanlfinal']
 
                 task_names[run] += ['sfcanl']
