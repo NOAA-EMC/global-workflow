@@ -56,10 +56,10 @@ cao_check=${cao_check:-".true."}
 ta2tb=${ta2tb:-".true."}
 
 # Diagnostic files options
-lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 binary_diag=${binary_diag:-".false."}
-
+lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
+    
 # IAU
 DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6"}
