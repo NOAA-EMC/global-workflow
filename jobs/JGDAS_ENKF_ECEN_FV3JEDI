@@ -1,0 +1,67 @@
+#! /usr/bin/env bash
+
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen_fv3jedi" -c "base ecen_fv3jedi"
+
+##############################################
+# Set variables used in the script
+##############################################
+
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+gPDY=${GDATE:0:8}
+gcyc=${GDATE:8:2}
+GDUMP="gdas"
+GDUMP_ENS="enkfgdas"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} RUN=${GDUMP} declare_from_tmpl -rx \
+   COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+YMD=${PDY} HH=${cyc} RUN=${GDUMP} declare_from_tmpl -rx \
+   COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMIN_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL
+MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMOUT_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+   COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+
+##############################################
+# Run relevant script
+##############################################
+
+EXSCRIPT=${GDASATMRUNPY:-${SCRgfs}/exgdas_enkf_ecen_fv3jedi.py}
+${EXSCRIPT}
+status=$?
+if [[ ${status} -ne 0 ]]; then
+  exit "${status}"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+##############################################
+# Remove the Temporary working directory
+##############################################
+
+cd "${DATAROOT}" || ( echo "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"; exit 1 )
+if [[ ${KEEPDATA} = "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

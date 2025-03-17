@@ -166,7 +166,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             # All must source config.base first
             files = ['config.base']
 
-            if config in ['eobs', 'eomg']:
+            if config in ['eobs']:
                 files += ['config.anal', 'config.eobs']
             elif config in ['eupd']:
                 files += ['config.anal', 'config.eupd']
