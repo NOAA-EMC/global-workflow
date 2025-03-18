@@ -10,9 +10,9 @@ host=$(hostname)
 source "${HOMEGFS_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion | hercules | wcoss2 | gaeac5 | gaeac6 )
-    echo "Launch Jenkins Java Controler on ${MACHINE_ID}";;
+    echo "Launch GitLab Runner on ${MACHINE_ID}";;
   noaacloud )
-    echo "Launch Jenkins Java Controler on ${PW_CSP}";;
+    echo "Launch GitLab Runner on ${PW_CSP}";;
   *)
     echo "Unsupported platform. Exiting with error."
     exit 1;;
