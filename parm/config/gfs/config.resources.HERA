@@ -10,23 +10,13 @@ case ${step} in
 
   "anal")
     if [[ "${CASE}" == "C384" ]]; then
-      export ntasks_gdas=270
-      export ntasks_gfs=270
+      export ntasks=270
       export threads_per_task=8
       export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
 
-  "atmanlvar")
-    export tasks_per_node_gdas=12
-    export tasks_per_node_gfs=12
-    ;;
-
-  "atmensanlobs")
-    export tasks_per_node=12
-    ;;
-
-  "atmensanlsol")
+  "atmanlvar" | "atmensanlobs" | "atmensanlsol")
     export tasks_per_node=12
     ;;
 

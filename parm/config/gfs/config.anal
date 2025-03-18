@@ -27,7 +27,7 @@ fi
 
 # Set namelist option for LETKF
 export lobsdiag_forenkf=".false."  # anal does not need to write out jacobians
-                   # set to .true. in config.eobs and config.eupd
+                                   # set to .true. in config.eobs and config.eupd
 
 # Reduce number of iterations for testing mode
 if [[ ${DO_TEST_MODE} = "YES" ]]; then
