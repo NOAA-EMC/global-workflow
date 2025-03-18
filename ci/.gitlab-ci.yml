@@ -51,7 +51,8 @@ run_tests:
   stage: run_tests
   script:
     - export CI_PROJECT_DIR=$GIT_CLONE_PATH
-    - echo "Running tests for machine ${MACHINE}"  # replace with actual test commands
+    - source ${HOMEgfs}/workflow/gw_setup.sh
+    - ci/scripts/run-check_ci.sh ${CI_PROJECT_DIR} ${pslot} 'global-workflow' --get_pslot_list
   tags:
     - ${MACHINE}
   only:
