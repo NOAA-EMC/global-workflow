@@ -19,4 +19,5 @@ skip_ci_on_hosts:
   - gaeac6
   - orion
   - hercules
+  - awsepicglobalworkflow
   - wcoss2  # TODO run on WCOSS2 once the gfs_waveawipsbulls job is fixed
