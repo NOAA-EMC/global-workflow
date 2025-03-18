@@ -17,4 +17,5 @@ services:
       - '/home/tmcguinness/GITLAB/logs:/var/log/gitlab'
       - '/home/tmcguinness/GITLAB/data:/var/opt/gitlab'
     shm_size: '256m'
+    user: "${UID}:${GID}"
 

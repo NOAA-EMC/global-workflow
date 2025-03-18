@@ -4,15 +4,15 @@ stages:
 
 variables:
   SCHEDULE: "0 0 * * *"
-  WORKSPACE_DIRS:
-    orion: "/work2/noaa/global/role-global/GFS_CI_CD/ORION/GITLAB/CI"
-    hercules: "/work2/noaa/global/role-global/GFS_CI_CD/HERCULES/GITLAB/CI"
-  MACHINES: ["orion", "hercules"]
+  GIT_CLONE_PATH: '$CI_BUILDS_DIR/$CI_JOB_ID/$CI_PROJECT_NAME'
 
 build:
   stage: build
   script:
-    - sorc/build_compute.sh all
+    - export CI_PROJECT_DIR=$GIT_CLONE_PATH
+    - export HASH=$(git rev-parse HEAD)            # Get git hash from the clone
+    - echo $HASH > .githash                         # Save hash to file
+    - ci/scripts/utils/ci_utils_wrapper.sh build_compute 
   tags:
     - ${MACHINE}
   only:
@@ -22,12 +22,19 @@ build:
       - MACHINE: ["orion", "hercules"]
   strategy:
     fetch: true
+  artifacts:
+    paths:
+      - .githash                                  # Pass git hash to next stage
+    expire_in: 1 hour
 
-test:
-  stage: test
+setup:
+  stage: create_experments
   script:
-    - cd ${WORKSPACE_DIRS[$MACHINE]}
-    - bash test.sh
+    - export CI_PROJECT_DIR=$GIT_CLONE_PATH
+    - export HASH=$(cat .githash)                   # Retrieve git hash from artifact
+    - RUNTESTS_DIR="${CI_BUILD_DIR}/${CI_JOB_ID}/RUNTESTS"
+    - mkdir -p ${RUNTESTS_DIR}
+    - workflow/generate_workflow.sh -G -t ${HASH} -D ${RUNTESTS_DIR}
   tags:
     - ${MACHINE}
   only:
@@ -39,3 +46,18 @@ test:
     - build
   strategy:
     depend: true
+
+run_tests:
+  stage: run_tests
+  script:
+    - export CI_PROJECT_DIR=$GIT_CLONE_PATH
+    - echo "Running tests for machine ${MACHINE}"  # replace with actual test commands
+  tags:
+    - ${MACHINE}
+  only:
+    - schedules
+  parallel:
+    matrix:
+      - MACHINE: ["orion", "hercules"]
+  dependencies:
+    - setup
