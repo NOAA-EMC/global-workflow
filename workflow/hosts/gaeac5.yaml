@@ -8,7 +8,7 @@ HOMEDIR: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
 STMP: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
 PTMP: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
 NOSCRUB: $HOMEDIR
-ACCOUNT: ufs-ard
+ACCOUNT: epic 
 SCHEDULER: slurm
 QUEUE: normal
 QUEUE_SERVICE: normal
@@ -19,6 +19,7 @@ PARTITION_DTN: 'dtn_f5_f6'
 RESERVATION: ''
 CLUSTERS: 'c5'
 CLUSTERS_DTN: 'es'
+CONSTRAINT_DTN: 'f5'
 CHGRP_RSTPROD: 'NO'
 CHGRP_CMD: 'chgrp rstprod'
 HPSS_PROJECT: emc-global
