@@ -4,10 +4,12 @@ def CUSTOM_WORKSPACE = 'none'
 def HOMEgfs = 'none'
 def CI_CASES = ''
 def GH = 'none'
+// Map of the machine names (MACHINE_ID) to the Jenkins Node names
+def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaeac5: 'GaeaC5', gaeac6: 'Gaeac6-EMC']
 // Location of the custom workspaces for each machine in the CI system.  They are persistent for each iteration of the PR.
-def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaea: 'Gaea', gaeac6: 'Gaeac6-EMC']
-def custom_workspace = [hera: '/scratch1/NCEPDEV/global/glopara/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/global/role-global/GFS_CI_CD/HERCULES/CI', gaea: '/gpfs/f5/epic/proj-shared/global/CI', gaeac6: '/gpfs/f6/drsa-precip3/proj-shared/global/CI']
+def custom_workspace = [hera: '/scratch1/NCEPDEV/global/glopara/CI', orion: '/work2/noaa/global/role-global/GFS_CI_CD/ORION/CI', hercules: '/work2/noaa/global/role-global/GFS_CI_CD/HERCULES/CI', gaeac5: '/gpfs/f5/epic/proj-shared/global/CI', gaeac6: '/gpfs/f6/drsa-precip3/proj-shared/global/CI']
 def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
+
 def STATUS = 'Passed'
 
 pipeline {
@@ -22,7 +24,6 @@ pipeline {
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
              // which is used to designate the Nodes in the Jenkins Controller by the agent label
              // Each Jenkins Node is connected to said machine via an JAVA agent via an ssh tunnel
-             // no op 2
 
         stage('1. Get Machine') {
             agent { label 'built-in' }
@@ -35,6 +36,7 @@ pipeline {
                     }
 
                     def run_nodes = []
+                    def machine_names = []
                     if (isSpawnedFromAnotherJob) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
@@ -42,29 +44,33 @@ pipeline {
                     } else {
                         echo "This is parent job so getting list of nodes matching labels:"
                         for (label in pullRequest.labels) {
+                            echo "label in pullReqest: ${label}"
                             if (label.matches("CI-(.*?)-Ready")) {
+                                echo "Found Ready Label: ${label}"
                                 def machine_name = label.split('-')[1].toString().toLowerCase()
                                 jenkins.model.Jenkins.get().computers.each { c ->
                                     if (c.node.selfLabel.name == NodeName[machine_name]) {
                                         run_nodes.add(c.node.selfLabel.name)
+                                        machine_names.add(machine_name)  // record machine name alongside node
                                     }
                                 }
                             }
                         }
-                        // Spawning all the jobs on the nodes matching the labels
+                        // Spawning jobs using both run_nodes and machine_names arrays
                         if (run_nodes.size() > 1) {
-                            run_nodes.init().each { node ->
-                                def machine_name = node.split('-')[0].toLowerCase()
+                            for (int i = 0; i < run_nodes.size() - 1; i++) {
+                                def node = run_nodes[i]
+                                def machine_name = machine_names[i]  // use the corresponding machine name
                                 echo "Spawning job on node: ${node} with machine name: ${machine_name}"
                                 build job: "/global-workflow/EMC-Global-Pipeline/PR-${env.CHANGE_ID}", parameters: [
                                     string(name: 'machine', value: machine_name),
-                                    string(name: 'Node', value: node) ],
-                                    wait: false
+                                    string(name: 'Node', value: node)
+                                ], wait: false
                             }
-                            machine = run_nodes.last().split('-')[0].toLowerCase()
+                            machine = machine_names[run_nodes.size() - 1]
                             echo "Running parent job: ${machine}"
                         } else {
-                            machine = run_nodes[0].split('-')[0].toLowerCase()
+                            machine = machine_names[0]
                             echo "Running only the parent job: ${machine}"
                         }
                     }
@@ -76,10 +82,11 @@ pipeline {
             agent { label NodeName[machine].toLowerCase() }
             steps {
                 script {
+                    // Capitalize the first letter of the machine name and use if for labels
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                     echo "Getting Common Workspace for ${Machine}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
-                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'Gaea', 'GaeaC6-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'GaeaC5', 'GaeaC6-EMC'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
                         CUSTOM_WORKSPACE = "${WORKSPACE}"
                         HOMEgfs = "${CUSTOM_WORKSPACE}/global-workflow"
@@ -184,18 +191,20 @@ pipeline {
             agent { label NodeName[machine].toLowerCase() }
             steps {
                 script {
+                  ws(HOMEgfs) {
                     def parallelStages = CI_CASES.collectEntries { caseName ->
                         ["${caseName}": {
                             stage("Create ${caseName}") {
                                 script {
                                         env.RUNTESTS = "${CUSTOM_WORKSPACE}/RUNTESTS"
+                                        def error_output = ""
                                         try {
                                               error_output = sh(script: """
                                                 source ${HOMEgfs}/workflow/gw_setup.sh
                                                 ${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEgfs}/ci/cases/pr/${caseName}.yaml
                                               """, returnStdout: true).trim()
                                         } catch (Exception error_create) {
-                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "${Case} **FAILED** to create experiment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n\\`\\`\\`\n${error_output}\\`\\`\\`" """)
+                                            sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body '${caseName} **FAILED** to create experiment on ${Machine} in BUILD# ${env.BUILD_NUMBER}\n with the error:\n```\n${error_output}```' """)
                                             error("Case ${caseName} failed to create experiment directory")
                                         }
                                      }
@@ -271,8 +280,9 @@ pipeline {
                         }]
                     }
                 parallel parallelStages + [failFast: true]
-                }
-            }
+              }
+            } 
+          }
         }
 
         stage( '5. Finalize' ) {

@@ -6,17 +6,12 @@ import gzip
 import tarfile
 from logging import getLogger
 from pprint import pformat
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
-from wxflow import (AttrDict,
-                    FileHandler,
-                    add_to_datetime, to_fv3time, to_timedelta, to_YMDH, to_YMD,
-                    chdir,
-                    Task,
-                    parse_j2yaml, save_as_yaml,
+from wxflow import (AttrDict, FileHandler, Task,
+                    add_to_datetime, to_timedelta, to_YMD,
+                    parse_j2yaml,
                     logit,
-                    Executable,
-                    WorkflowException,
                     Template, TemplateConstants)
 from pygfs.jedi import Jedi
 
@@ -60,8 +55,10 @@ class AtmEnsAnalysis(Task):
                 'ATM_WINDOW_BEGIN': _window_begin,
                 'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'OPREFIX': f"{self.task_config.EUPD_CYC}.t{self.task_config.cyc:02d}z.",
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'APREFIX': f"{self.task_config.RUN.replace('enkf', '')}.t{self.task_config.cyc:02d}z.",
+                'APREFIX_ENS': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'atm_obsdatain_path': f"./obs/",
                 'atm_obsdataout_path': f"./diags/",
                 'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
@@ -206,7 +203,7 @@ class AtmEnsAnalysis(Task):
 
         # ---- tar up diags
         # path of output tar statfile
-        atmensstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX}atmensstat")
+        atmensstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX_ENS}atmensstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
@@ -233,7 +230,7 @@ class AtmEnsAnalysis(Task):
         for src in yamls:
             logger.info(f"Copying {src} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
             yaml_base = os.path.splitext(os.path.basename(src))[0]
-            dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
+            dest_yaml_name = f"{self.task_config.APREFIX_ENS}{yaml_base}.yaml"
             dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
@@ -250,27 +247,30 @@ class AtmEnsAnalysis(Task):
             'HH': self.task_config.current_cycle.strftime('%H')
         }
 
+        # copy ensemble mean analysis to comrot
+        logger.info("Copy ensemble mean analysis")
+        fh_dict = {'copy': [[f"{self.task_config.DATA}/anl/{self.task_config.APREFIX_ENS}cubed_sphere_grid_atmanl.ensmean.nc",
+                             f"{self.task_config.COM_ATMOS_ANALYSIS_ENS}"]]}
+        FileHandler(fh_dict).sync()
+
         # copy FV3 atm increment to comrot directory
         logger.info("Copy UFS model readable atm increment file")
-        cdate = to_fv3time(self.task_config.current_cycle)
-        cdate_inc = cdate.replace('.', '_')
 
         # loop over ensemble members
+        inc_copy = {'copy': []}
         for imem in range(1, self.task_config.NMEM_ENS + 1):
             memchar = f"mem{imem:03d}"
 
             # create output path for member analysis increment
             tmpl_inc_dict['MEMDIR'] = memchar
             incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
-            src = os.path.join(self.task_config.DATA, 'anl', memchar, f"atminc.{cdate_inc}z.nc4")
-            dest = os.path.join(incdir, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.atminc.nc")
+            src = os.path.join(self.task_config.DATA, 'anl', memchar,
+                               f"{self.task_config.APREFIX_ENS}cubed_sphere_grid_atminc.nc")
+            dest = incdir
+            inc_copy['copy'].append([src, dest])
 
-            # copy increment
-            logger.debug(f"Copying {src} to {dest}")
-            inc_copy = {
-                'copy': [[src, dest]]
-            }
-            FileHandler(inc_copy).sync()
+        logger.debug(f"Copying increments")
+        FileHandler(inc_copy).sync()
 
     def clean(self):
         super().clean()

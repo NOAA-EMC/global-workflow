@@ -23,9 +23,15 @@ enkf_grp:
         {% if not lobsdiag_forenkf %}
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat"
         {% endif %}
+        {% if DO_JEDIATMENS %}
+        {% for itile in range(6) %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_ratminc.tile{{ itile+1 }}.nc"
+        {% endfor %}
+        {% else %}
         {% if do_calc_increment %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
+        {% endif %}
         {% endif %}
         {% endfor %}  # first_group_mem to last_group_mem
