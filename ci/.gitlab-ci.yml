@@ -1,6 +1,6 @@
 stages:
   - build
-  - create_experments
+  - create_experiments
   - run_tests
   
 variables:
@@ -17,10 +17,11 @@ build:
   
   stage: build
   script:
-    - 'echo "Using build directory: ${HOMEGFS} (dated: ${BUILD_DATE})"'
     - export CI_PROJECT_DIR=$HOMEGFS
+    - echo "Using build directory ${HOMEGFS} (dated ${BUILD_DATE})"
     - ci/scripts/utils/ci_utils_wrapper.sh build_compute
     - sorc/link_workflow.sh
+    - mkdir -p ${RUNTESTS_DIR}
   parallel:
     matrix:
       - MACHINE: ["gaeac6"]
@@ -30,18 +31,13 @@ build:
 setup:
   variables:
     GIT_STRATEGY: none
-  stage: create_experments
+  stage: create_experiments
   script:
-    - 'echo "Using build directory: $HOMEGFS (dated: ${BUILD_DATE})"'
-    - export CI_PROJECT_DIR=$HOMEGFS
-    - cd ${HOMEGFS}/workflow
-    - HASH=$(git rev-parse HEAD)
-    - mkdir -p ${RUNTESTS_DIR}
-    - echo ${PWD}
-    - ./generate_workflows.sh -G -t ${HASH} ${RUNTESTS_DIR}
+    - ${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEGFS}/ci/cases/pr/${caseName}
   parallel:
     matrix:
       - MACHINE: ["gaeac6"]
+      - caseName: ["C48_ATM", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C48_S2SWA_gefs", "C48_S2SW_extended", "C48_S2SW", "C96_atm3DVar_extended", "C96_atm3DVar", "C96C48_hybatmaerosnowDA", "C96C48_hybatmDA", "C96C48_ufs_hybatmDA", "C96mx100_S2S"]
   tags:
     - ${MACHINE}
   dependencies:
@@ -52,10 +48,7 @@ run_tests:
     GIT_STRATEGY: none
   stage: run_tests
   script:
-    - 'echo "Using build directory: $HOMEGFS (dated: ${BUILD_DATE})"'
-    - echo ${PWD}
-    - export CI_PROJECT_DIR=$HOMEGFS
-    - echo ${PWD}
+    - echo "Using build directory ${HOMEGFS} (dated ${BUILD_DATE})"
     - echo "stubbing run-check"
     #- ${HOMEGFS}/ci/scripts/run-check_ci.sh ${HOMEGFS} ${pslot} global-workflow-${BUILD_DATE}  --get_pslot_list
   parallel:
@@ -64,4 +57,4 @@ run_tests:
   tags:
     - ${MACHINE}
   dependencies:
-    - setup
+    - setup_generate_workflows
