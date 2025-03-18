@@ -20,12 +20,5 @@ if [[ $1 == "install_service" ]]; then
 fi
 
 if [[ $1 == "register" ]]; then
-  gitlab-runner register  --url http://localhost:8929  --token ${TOKEN} \
-    --executor shell \
-    --description "gitlab-runner" \
-    --name "orion" \
-    --tag-list "orion" \
-    --run-untagged="true" \
-    --locked="false" \
-    --access-level="not_protected"
+  gitlab-runner register -n -t ${TOKEN} --url http://localhost:8929 --executor shell
 fi
