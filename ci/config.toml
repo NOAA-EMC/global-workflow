@@ -1,0 +1,24 @@
+concurrent = 1
+check_interval = 0
+shutdown_timeout = 0
+
+builds_dir = "/home/tmcguinness/GITLAB/RUNNER/CI"
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "Orion-login-1.HPC.MsState.Edu"
+  url = "http://localhost:8929"
+  id = 1
+  token = "glrt-t3_ZTdxY19NwELUjMTg8Kdn"
+  token_obtained_at = 2025-03-18T21:32:07Z
+  token_expires_at = 0001-01-01T00:00:00Z
+  executor = "shell"
+  [runners.cache]
+    MaxUploadedArchiveSize = 0
+    [runners.cache.s3]
+    [runners.cache.gcs]
+    [runners.cache.azure]
+   [runners.custom_build_dir]
+    enabled = true
