@@ -33,6 +33,17 @@ case ${step} in
     esac
   export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
   ;;
+
+  "anal")
+    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
+        export threads_per_task=8
+        # Make ntasks a multiple of 16
+        export ntasks_gdas=784
+        export ntasks_gfs=832
+        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    fi
+    ;;
   *)
+
   ;;
 esac
