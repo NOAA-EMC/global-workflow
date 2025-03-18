@@ -7,7 +7,7 @@ PRELUDE
 The GFS is updated for the following:
 
 * workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
-* updated GSI code and convinfo file for saildrone observations
+* updated GSI code and convinfo file for saildrone observations and to allow assimilation of GOES-19 AMVs
 * ww3_outp is improved for the wave point output
 * bufr station updates to three stations and the addition of 121 new stations
 * obsproc/v1.2.3
@@ -32,7 +32,7 @@ The checkout script extracts the following GFS components:
 | --------- | ----------- | ----------------- |
 | MODEL     | GFS.v16.3.23 | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
-| GSI       | gfsda.v16.3.22 | Andrew.Collard@noaa.gov |
+| GSI       | gfsda.v16.3.23 | Andrew.Collard@noaa.gov |
 | UFS_UTILS | ops-gfsv16.3.20 | George.Gayno@noaa.gov |
 | POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
 
@@ -91,7 +91,7 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* GSI `global_convinfo.txt` fix update for saildrone
+* GSI `global_convinfo.txt` fix update for saildrone and GOES-19
 
 MODULE CHANGES
 --------------
