@@ -155,8 +155,6 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_globusarch']:
             configs += ['globus']
-            if options['do_hybvar']:
-                configs += ['globus_earc']
 
         return configs
 
