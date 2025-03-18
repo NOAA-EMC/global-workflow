@@ -2626,8 +2626,6 @@ class GFSTasks(Tasks):
 
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
-            print('arcom?', self.options['do_archcom'])
-
             if self.options['do_archcom']:
                 if self.options['do_globusarch']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
