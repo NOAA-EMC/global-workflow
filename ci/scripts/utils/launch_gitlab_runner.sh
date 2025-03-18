@@ -46,7 +46,7 @@ if [[ $1 == "register" ]]; then
   ./gitlab-runner register -n -t ${GITLAB_RUNNER_TOKEN} --url ${GITLAB_URL} --executor shell --shell bash --builds-dir ${GITLAB_BUILDS_DIR} --custom_build_dir-enabled true
 fi
 if [[ $1 == "run" ]]; then
-  ./gitlab-runner run --working-directory ${GITLAB_BUILDS_DIR} --user ${USER} --group ${USER} --log-level debug
+  nohup ./gitlab-runner run --working-directory ${GITLAB_BUILDS_DIR} --user ${USER} --group ${USER} --log-level debug >> ${GITLAB_LOG} 2>&1 &
 fi
 if [[ $1 == "unregister" ]]; then
   ./gitlab-runner unregister --name ${GITLAB_RUNNER_NAME}
