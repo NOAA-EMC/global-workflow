@@ -4,13 +4,7 @@
 
 export is_exclusive="True"
 unset memory
-
-# shellcheck disable=SC2312
-for mem_var in $(env | grep '^memory_' | cut -d= -f1); do
-  unset "${mem_var}"
-done
-
-step=$1
+unset "memory_${RUN}"
 
 case ${step} in
   "fcst" | "efcs")
@@ -19,6 +13,12 @@ case ${step} in
     ;;
 
   "arch_vrfy" | "arch_tars")
+    export PARTITION_BATCH="process"
+    max_tasks_per_node=24
+    ;;
+
+
+  "atmos_products" | "oceanice_products" | "wavepostsbs" )
     export PARTITION_BATCH="process"
     max_tasks_per_node=24
     ;;
