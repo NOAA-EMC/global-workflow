@@ -58,6 +58,9 @@ run_tests:
     - echo "Using build directory ${HOMEGFS} (dated ${BUILD_DATE})"
     - pslot=$(${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${RUNTESTS_DIR} ${caseName})
     - ${HOMEGFS}/ci/scripts/run-check_ci.sh ${HOMEGFS} ${pslot} global-workflow-${BUILD_DATE}
+  rules:
+      script:
+        - grep -q ${caseName} cases_on_host.txt
   parallel:
     matrix:
       - caseName: ["C48_ATM", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C48_S2SWA_gefs", "C48_S2SW_extended", "C48_S2SW", "C96_atm3DVar_extended", "C96_atm3DVar", "C96C48_hybatmaerosnowDA", "C96C48_hybatmDA", "C96C48_ufs_hybatmDA", "C96mx100_S2S"]
