@@ -2523,8 +2523,7 @@ class GFSTasks(Tasks):
                     pass
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
-
-                deps.append(rocoto.add_dependency(dep_dict))
+                    deps.append(rocoto.add_dependency(dep_dict))
 
         else:
             if self.app_config.mode in ['cycled']:
@@ -2632,6 +2631,8 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
                 else:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+
+                deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
