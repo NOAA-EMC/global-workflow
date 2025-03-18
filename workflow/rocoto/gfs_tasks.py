@@ -2489,7 +2489,7 @@ class GFSTasks(Tasks):
         resources = self.get_resource('globus')
         var_dict = {'grp': groups}
 
-        task_name = f'{self.run}_globus_earc'
+        task_name = f'{self.run}_globus_earc_#grp#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2501,7 +2501,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}_ens_globus_arch',
+        metatask_dict = {'task_name': f'{self.run}_globus_earc',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
