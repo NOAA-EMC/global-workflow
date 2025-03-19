@@ -4,7 +4,6 @@ stages:
   - run_tests
   
 variables:
-#  SCHEDULE: "0 0 * * *"
   GIT_CLONE_PATH: '$CI_BUILDS_DIR/$CI_JOB_ID/$CI_PROJECT_NAME'
 
 build:
@@ -16,15 +15,15 @@ build:
   script:
     - export CI_PROJECT_DIR=$GIT_CLONE_PATH
     - export HASH=$(git rev-parse HEAD)            # Get git hash from the clone
-    - echo $HASH > .githash                         # Save hash to file
-    - ci/scripts/utils/ci_utils_wrapper.sh build_compute 
+    - echo $HASH > .githash                        # Save hash to file
+    #- ci/scripts/utils/ci_utils_wrapper.sh build_compute
+    - sorc/build_all.sh all
+    - sorc/link_workflow.sh
   parallel:
     matrix:
-      - MACHINE: ["orion"]
+      - MACHINE: ["gaeac6"]
   tags:
     - ${MACHINE}
-  #only:
-  #  - schedules
   artifacts:
     paths:
       - .githash                                  # Pass git hash to next stage
@@ -36,17 +35,15 @@ setup:
   stage: create_experments
   script:
     - export CI_PROJECT_DIR=$GIT_CLONE_PATH
-    - export HASH=$(cat .githash)                   # Retrieve git hash from artifact
+    - export HASH=$(cat .githash)                # Retrieve git hash from artifact
     - RUNTESTS_DIR="${CI_BUILD_DIR}/${CI_JOB_ID}/RUNTESTS"
     - mkdir -p ${RUNTESTS_DIR}
     - workflow/generate_workflow.sh -G -t ${HASH} -D ${RUNTESTS_DIR}
   parallel:
     matrix:
-      - MACHINE: ["orion"]
+      - MACHINE: ["gaeac6"]
   tags:
     - ${MACHINE}
-  #only:
-  #  - schedules
   dependencies:
     - build
 
@@ -60,10 +57,8 @@ run_tests:
     - ci/scripts/run-check_ci.sh ${CI_PROJECT_DIR} ${pslot} 'global-workflow' --get_pslot_list
   parallel:
     matrix:
-      - MACHINE: ["orion"]
+      - MACHINE: ["gaeac6"]
   tags:
     - ${MACHINE}
-  #only:
-  #  - schedules
   dependencies:
     - setup
