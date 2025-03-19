@@ -94,6 +94,10 @@ class Jedi:
         self.jedi_config.input_config = self.render_jcb(task_config)
         logger.debug(f"JEDI config:\n{pformat(self.jedi_config.input_config)}")
 
+        # Clean empty obs spaces
+        logger.debug(f"Cleaning empty obs spaces in JEDI YAML config: {self.jedi_config.yaml}")
+        self.clean_empty_obsspaces()
+
         # Save JEDI config dictionary to YAML in run directory
         logger.debug(f"Writing JEDI YAML config to: {self.jedi_config.yaml}")
         save_as_yaml(self.jedi_config.input_config, self.jedi_config.yaml)
@@ -199,6 +203,32 @@ class Jedi:
         logger.warn("Linking is not permitted per EE2.")
         if not os.path.exists(self.jedi_config.exe):
             os.symlink(self.jedi_config.exe_src, self.jedi_config.exe)
+
+    @logit(logger)
+    def clean_empty_obsspaces(self):
+        """
+        Remove obs spaces that point to non-existent file and save
+        """
+
+        has_obs_spaces = False
+        if 'cost function' in self.jedi_config.input_config:
+            if 'observations' in self.jedi_config.input_config['cost function']:
+                if 'observers' in self.jedi_config.input_config['cost function']['observations']:
+                    has_obs_spaces = True
+                    obs_spaces = self.jedi_config.input_config['cost function']['observations']['observers']
+
+        if has_obs_spaces:
+            # remove obs spaces that point to a non existant file
+            cleaned_obs_spaces = []
+            for obs_space in obs_spaces:
+                fname = obs_space['obs space']['obsdatain']['engine']['obsfile']
+                if os.path.isfile(fname):
+                    cleaned_obs_spaces.append(obs_space)
+                else:
+                    logger.info(f"WARNING: {fname} does not exist, removing obs space")
+
+            # update obs spaces
+            self.jedi_config.input_config['cost function']['observations']['observers'] = cleaned_obs_spaces
 
     @staticmethod
     @logit(logger)

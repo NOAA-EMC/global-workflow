@@ -5,7 +5,8 @@
 
 echo "BEGIN: config.marineanl"
 
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/soca_bmat_jedi_config.yaml.j2"
+export JEDI_CONFIG_YAML_BMAT="${PARMgfs}/gdas/soca_bmat_jedi_config.yaml.j2"
+export JEDI_CONFIG_YAML_ANALYSIS="${PARMgfs}/gdas/soca_analysis_jedi_config.yaml.j2"
 export JCB_ALGO_YAML_VAR=@JCB_ALGO_YAML_VAR@
 
 export MARINE_OBS_YAML_DIR="${PARMgfs}/gdas/soca/obs/config"

@@ -98,7 +98,7 @@ def test_hist_date(histfile: str, ref_date: datetime) -> None:
 
 
 @logit(logger)
-def gen_bkg_list(bkg_path: str, window_begin=' ', yaml_name='bkg.yaml', ice_rst=False) -> None:
+def gen_bkg_list(bkg_path: str, window_begin=' ', ice_rst=False) -> None:
     """
     Generate a YAML of the list of backgrounds for the pseudo model
     """
@@ -141,9 +141,7 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', yaml_name='bkg.yaml', ice_rst=
 
         bkg_list.append(bkg_dict)
 
-    # save pseudo model yaml configuration
-    save_as_yaml(bkg_list, yaml_name)
-
+    return bkg_list
 
 @logit(logger)
 def clean_empty_obsspaces(config, target, app='var'):

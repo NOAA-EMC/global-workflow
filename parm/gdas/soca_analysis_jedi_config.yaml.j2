@@ -11,9 +11,15 @@ socaincr2mom6:
   jedi_args: ['soca', 'convertstate']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'
   jcb_algo: socaincr2mom6
-socaincr2mom6:
+soca_2cice_global:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/gdas_incr_handler.x'
   mpi_cmd: '{{ APRUN_MARINEANLCHKPT }}'
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'
+  jcb_algo: soca_2cice_global
+gdassoca_obsstats:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdassoca_obsstats.x'
+  mpi_cmd: 'launcher -n 1'
   jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'
   jcb_algo: soca_2cice_global
