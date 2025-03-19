@@ -5,6 +5,7 @@ stages:
   
 variables:
   GIT_CLONE_PATH: '$CI_BUILDS_DIR/$CI_JOB_ID/$CI_PROJECT_NAME'
+  HOMEgfs: $GIT_CLONE_PATH
 
 build:
   variables:
@@ -16,8 +17,7 @@ build:
     - export CI_PROJECT_DIR=$GIT_CLONE_PATH
     - export HASH=$(git rev-parse HEAD)            # Get git hash from the clone
     - echo $HASH > .githash                        # Save hash to file
-    #- ci/scripts/utils/ci_utils_wrapper.sh build_compute
-    - sorc/build_all.sh all
+    - ci/scripts/utils/ci_utils_wrapper.sh build_compute
     - sorc/link_workflow.sh
   parallel:
     matrix:
@@ -36,9 +36,10 @@ setup:
   script:
     - export CI_PROJECT_DIR=$GIT_CLONE_PATH
     - export HASH=$(cat .githash)                # Retrieve git hash from artifact
-    - RUNTESTS_DIR="${CI_BUILD_DIR}/${CI_JOB_ID}/RUNTESTS"
+    - RUNTESTS_DIR="${CI_BUILDS_DIR}/${CI_JOB_ID}/RUNTESTS"
     - mkdir -p ${RUNTESTS_DIR}
-    - workflow/generate_workflow.sh -G -t ${HASH} -D ${RUNTESTS_DIR}
+    - ${HOMEgfs}/workflow/generate_workflow.sh -G -t ${HASH} -D ${RUNTESTS_DIR}
+
   parallel:
     matrix:
       - MACHINE: ["gaeac6"]
@@ -54,7 +55,7 @@ run_tests:
   script:
     - export CI_PROJECT_DIR=$GIT_CLONE_PATH
     - source ${HOMEgfs}/workflow/gw_setup.sh
-    - ci/scripts/run-check_ci.sh ${CI_PROJECT_DIR} ${pslot} 'global-workflow' --get_pslot_list
+    - ${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot} ${CI_PROJECT_NAME} --get_pslot_list
   parallel:
     matrix:
       - MACHINE: ["gaeac6"]
