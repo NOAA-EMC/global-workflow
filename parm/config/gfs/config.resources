@@ -963,7 +963,7 @@ case ${step} in
           exit 4
           ;;
       esac
-    elif [[ "$RUN" == enkfgfs || "$RUN" == enkfgdas ]]; then
+    elif [[ "${RUN}" == enkfgfs || "${RUN}" == enkfgdas ]]; then
       case "${CASE_ENS}" in
         "C48" | "C96" | "C192")
           declare -x "walltime"="00:20:00"
