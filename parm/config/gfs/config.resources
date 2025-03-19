@@ -964,7 +964,7 @@ case ${step} in
           ;;
       esac
     elif [[ "${RUN}" =~ enkfg(das|fs) ]]; then
-      case "${CASE}" in
+      case "${CASE_ENS}" in
         "C48" | "C96" | "C192")
           declare -x "walltime"="00:20:00"
           ;;
@@ -1242,10 +1242,10 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
-    
+
   "eobs")
     walltime="00:15:00"
-    
+
     case ${CASE} in
       "C1152" | "C768")       ntasks=200;;
       "C384")                 ntasks=100;;
