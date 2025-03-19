@@ -2518,9 +2518,7 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_archcom']:
                 if self.options['do_globusarch']:
-                    # TODO add this back in when ensemble globus archiving is enabled
-                    # dep_dict = {'type': 'metatask', 'name': f'{self.run}_ens_globus_arch'}
-                    pass
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_globus_arch'}
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
                     deps.append(rocoto.add_dependency(dep_dict))
