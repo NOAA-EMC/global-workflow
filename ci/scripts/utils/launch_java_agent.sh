@@ -76,6 +76,8 @@ source "${HOMEGFS_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion | hercules | wcoss2 | gaeac5 | gaeac6 )
     echo "Launch Jenkins Java Controler on ${MACHINE_ID}";;
+  noaacloud )
+    echo "Launch Jenkins Java Controler on ${PW_CSP}";;
   *)
     echo "Unsupported platform. Exiting with error."
     exit 1;;
@@ -87,7 +89,12 @@ rm -f "${LOG}"
 HOMEgfs="${HOMEGFS_}" source "${HOMEGFS_}/ush/module-setup.sh"
 module use "${HOMEGFS_}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
-source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
+
+if [[ ${MACHINE_ID} == "noaacloud" ]]; then
+  source "${HOMEgfs_}/ci/platforms/config.${PW_CSP}"
+else
+  source "${HOMEgfs_}/ci/platforms/config.${MACHINE_ID}"
+fi
 
 JAVA_HOME="${JENKINS_AGENT_LAUNCH_DIR}/JAVA/jdk-17.0.10"
 if [[ ! -d "${JAVA_HOME}" ]]; then
@@ -164,6 +171,13 @@ check_node_online() {
 
 lauch_agent () {
     echo "Launching Jenkins Agent on ${host} using internal workspace ${JENKINS_WORK_DIR}"
+    
+    # Clear the remoting cache
+    if [[ -d "${JENKINS_WORK_DIR}/remoting" ]]; then
+        echo "Clearing remoting cache in ${JENKINS_WORK_DIR}/remoting"
+        rm -rf "${JENKINS_WORK_DIR}/remoting"
+    fi
+    
     command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
     echo -e "Launching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
     ${command} >> "${LOG}" 2>&1 &

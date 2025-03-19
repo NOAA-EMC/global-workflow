@@ -4,10 +4,12 @@ def CUSTOM_WORKSPACE = 'none'
 def HOMEgfs = 'none'
 def CI_CASES = ''
 def GH = 'none'
+//Trivial change
 // Location of the custom workspaces for each machine in the CI system.  They are persistent for each iteration of the PR.
-def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaea: 'Gaea', noaacloud: 'awsepicglobalworkflow']
-def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/global/CI/HERCULES', gaea: '/gpfs/f5/epic/proj-shared/global/CI', noaacloud: '/lustre/jenkins']
-def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
+def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaea: 'Gaea', awsepicglobalworkflow: 'Awsepicglobalworkflow']
+def custom_workspace = [hera: '/scratch1/NCEPDEV/global/CI', orion: '/work2/noaa/stmp/CI/ORION', hercules: '/work2/noaa/global/CI/HERCULES', gaea: '/gpfs/f5/epic/proj-shared/global/CI', awsepicglobalworkflow: '/lustre/jenkins']
+def repo_url = 'https://github.com/NOAA-EMC/global-workflow.git'
+def aws_gw_name = 'global-workflow'
 def STATUS = 'Passed'
 
 pipeline {
@@ -42,9 +44,12 @@ pipeline {
                     } else {
                         echo "This is parent job so getting list of nodes matching labels:"
                         for (label in pullRequest.labels) {
+                            echo "Checking label: ${label}"
                             if (label.matches("CI-(.*?)-Ready")) {
                                 def machine_name = label.split('-')[1].toString().toLowerCase()
+                                print machine_name
                                 jenkins.model.Jenkins.get().computers.each { c ->
+                                    print c.node.selfLabel.name
                                     if (c.node.selfLabel.name == NodeName[machine_name]) {
                                         run_nodes.add(c.node.selfLabel.name)
                                     }
@@ -56,7 +61,7 @@ pipeline {
                             run_nodes.init().each { node ->
                                 def machine_name = node.split('-')[0].toLowerCase()
                                 echo "Spawning job on node: ${node} with machine name: ${machine_name}"
-                                build job: "/global-workflow/EMC-Global-Pipeline/PR-${env.CHANGE_ID}", parameters: [
+                                build job: "/${aws_gw_name}/AWS-EPIC-Global-Workflow-Pipeline/PR-${env.CHANGE_ID}", parameters: [
                                     string(name: 'machine', value: machine_name),
                                     string(name: 'Node', value: node) ],
                                     wait: false
@@ -79,11 +84,11 @@ pipeline {
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                     echo "Getting Common Workspace for ${Machine}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
-                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'Gaea', 'awsepicglobalworkflow'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'Gaea', 'Awsepicglobalworkflow'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
-                        CUSTOM_WORKSPACE = "${WORKSPACE}"
-                        HOMEgfs = "${CUSTOM_WORKSPACE}/global-workflow"
-                        sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/global-workflow; mkdir -p ${CUSTOM_WORKSPACE}/global-workflow")
+                        CUSTOM_WORKSPACE = "${custom_workspace[machine]}/${env.CHANGE_ID}/${aws_gw_name}"
+                        HOMEgfs = "${CUSTOM_WORKSPACE}/${aws_gw_name}"
+                        sh(script: "rm -Rf ${CUSTOM_WORKSPACE}; mkdir -p ${CUSTOM_WORKSPACE}/${aws_gw_name}")
                         sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/RUNTESTS; mkdir -p ${CUSTOM_WORKSPACE}/RUNTESTS")
                         sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-Building" --remove-label "CI-${Machine}-Ready" """)
                     }
@@ -95,17 +100,24 @@ pipeline {
         stage('3. Build System') {
             agent { label NodeName[machine].toLowerCase() }
             steps {
+                dir("${HOMEgfs}") {
+                checkout scm
+                }
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     script {
                         ws(HOMEgfs) {
                             echo "Checking out the code on ${Machine} using scm in ${HOMEgfs}"
                             try {
-                                checkout scm
+                                // checkout scm
+                                // sh(script: "git clone --recursive ${repo_url}")
+                                sh(script: "ls ${HOMEgfs}")
                             } catch (Exception e) {
                                 echo "Failed to checkout the code on ${Machine} using scm in ${HOMEgfs}, try again ..."
                                 sleep time: 45, unit: 'SECONDS'
                                 try {
-                                    checkout scm
+                                    // checkout scm
+                                    // sh(script: "git clone --recursive ${repo_url}")
+                                    sh(script: "ls ${HOMEgfs}/sorc")
                                 } catch (Exception ee) {
                                     echo "Failed to checkout the code on ${Machine} using scm in ${HOMEgfs}: ${ee.getMessage()}"
                                     if (env.CHANGE_ID) {
@@ -120,7 +132,9 @@ pipeline {
                             def error_logs_message = ""
                             dir("${HOMEgfs}/sorc") {
                                 try {
-                                    sh(script: './build_compute.sh all')  // build the global-workflow executables
+                                    sh(script: 'ls ./build_compute.sh')	// list files here to make sure all files exist.
+                                    sh(script: './build_compute.sh gfs')  // build the global-workflow executables
+                                    sh(script: './build_compute.sh gefs')  // build the global-workflow executables
                                 } catch (Exception error_build) {
                                     echo "Failed to build global-workflow: ${error_build.getMessage()}"
                                     if ( fileExists("logs/error.logs") ) {

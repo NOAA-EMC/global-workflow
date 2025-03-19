@@ -70,6 +70,7 @@
 # ----------------------------------------------------
 {% set COMOUT_ATMOS_INPUT_MEM_list = [] %}
 {% set COMOUT_ATMOS_RESTART_PREV_MEM_list = [] %}
+{% set COMOUT_ATMOS_RESTART_MEM_list = [] %}
 {% set COMOUT_ATMOS_ANALYSIS_MEM_list = [] %}
 {% set COMOUT_ICE_ANALYSIS_MEM_list = [] %}
 {% set COMOUT_ICE_RESTART_PREV_MEM_list = [] %}
@@ -101,6 +102,7 @@
 
     {% set COMOUT_ATMOS_INPUT_MEM = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_cycle_dict) %}
     {% set COMOUT_ATMOS_RESTART_PREV_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
+    {% set COMOUT_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(current_cycle_dict) %}
     {% set COMOUT_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
     {% set COMOUT_ICE_ANALYSIS_MEM = COM_ICE_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
     {% set COMOUT_ICE_RESTART_PREV_MEM = COM_ICE_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
@@ -112,6 +114,7 @@
     # Append the member COM directories
     {% do COMOUT_ATMOS_INPUT_MEM_list.append(COMOUT_ATMOS_INPUT_MEM)%}
     {% do COMOUT_ATMOS_RESTART_PREV_MEM_list.append(COMOUT_ATMOS_RESTART_PREV_MEM)%}
+    {% do COMOUT_ATMOS_RESTART_MEM_list.append(COMOUT_ATMOS_RESTART_MEM)%}
     {% do COMOUT_ATMOS_ANALYSIS_MEM_list.append(COMOUT_ATMOS_ANALYSIS_MEM)%}
     {% do COMOUT_ICE_ANALYSIS_MEM_list.append(COMOUT_ICE_ANALYSIS_MEM)%}
     {% do COMOUT_ICE_RESTART_PREV_MEM_list.append(COMOUT_ICE_RESTART_PREV_MEM)%}

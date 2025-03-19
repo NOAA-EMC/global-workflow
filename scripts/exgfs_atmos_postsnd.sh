@@ -162,21 +162,21 @@ cd "${DATA}" || exit 2
 ########################################
 # Send the single tar file to OSO
 ########################################
-if [[ "${SENDDBN}" == 'YES' ]]; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL GFS_BUFRSND_TAR "${job}" \
         "${COM_ATMOS_BUFR}/${RUN}.${cycle}.bufrsnd.tar.gz"
 fi
 
 ########################################
-# Create Regional Collectives of BUFR data and 
-# add appropriate WMO Headers.
+# Create Regional Collectives of BUFR
+# data and add appropriate WMO Headers
 ########################################
 rm -rf poe_col
 for (( m = 1; m <= NUM_SND_COLLECTIVES; m++ )); do
     echo "sh ${USHgfs}/gfs_sndp.sh ${m} " >> poe_col
 done
 
-if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
+if [[ "${CFP_MP:-"NO"}" == "YES" ]]; then
     nl -n ln -v 0 poe_col > cmdfile
 else
     mv poe_col cmdfile
@@ -187,8 +187,13 @@ chmod +x cmdfile
 
 ${APRUN_POSTSNDCFP} cmdfile
 
-sh "${USHgfs}/gfs_bfr2gpk.sh"
-
+########################################
+# Read BUFR output and transfer into
+# GEMPAK surface and sounding data files
+########################################
+if [[ "${DO_GEMPAK:-"NO"}" == "YES" ]]; then
+  sh "${USHgfs}/gfs_bfr2gpk.sh"
+fi
 
 
 ############## END OF SCRIPT #######################
