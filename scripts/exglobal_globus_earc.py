@@ -37,8 +37,6 @@ def main():
     for transfer_set in ["standard", "rstprod"]:
         if len(transfer_sets[transfer_set]['locations']) > 0:
             has_rstprod = transfer_set == "rstprod"
-            print("on reentry")
-            print(transfer_sets[transfer_set]["todo"])
             globus.execute_transfer_data(transfer_sets[transfer_set], has_rstprod)
             count_sets += 1
 
