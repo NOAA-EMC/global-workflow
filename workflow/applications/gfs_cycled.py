@@ -91,7 +91,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['esfc', 'efcs', 'epos', 'earc_vrfy']
 
             if options['do_archcom']:
-                configs += ['earc_tars']
+                configs += ['earc_tars', 'earc_groups']
 
         if options['do_fit2obs']:
             configs += ['fit2obs']

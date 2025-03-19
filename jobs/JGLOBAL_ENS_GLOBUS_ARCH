@@ -1,7 +1,14 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_earc" -c "base globus globus_earc"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_earc" -c "base globus earc_groups"
+
+
+##############################################
+# Set variables used in the script
+##############################################
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMIN_CONF:COM_CONF_TMPL
 
 
 ###############################################################

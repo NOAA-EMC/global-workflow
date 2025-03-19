@@ -2479,8 +2479,11 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        earcenvars = self.envars.copy()
+        earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+
         # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
+        n_groups = -(self.nmem // -self._configs['earc_groups']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
         resources = self.get_resource('globus')
@@ -2490,7 +2493,7 @@ class GFSTasks(Tasks):
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': earcenvars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/globus_earc.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -3230,7 +3233,7 @@ class GFSTasks(Tasks):
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
         # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['earc_tars']['NMEM_EARCGRP'])
+        n_groups = -(self.nmem // -self._configs['earc_groups']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
         resources = self.get_resource('arch_tars')
