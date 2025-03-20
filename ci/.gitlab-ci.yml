@@ -4,8 +4,20 @@ stages:
   - run_tests
   
 variables:
-  GIT_CLONE_PATH: '$CI_BUILDS_DIR/$CI_JOB_ID/$CI_PROJECT_NAME'
+  # Use a date-based unique identifier in the build path for nightly builds
+  # Format: YYYY-MM-DD (year-month-day)
+  BUILD_DATE: '$(date +%Y-%m-%d)'
+  # Fixed workspace path with date-based identifier to ensure each nightly build gets its own workspace
+  GIT_CLONE_PATH: '$CI_BUILDS_DIR/global-workflow-${BUILD_DATE}'
   HOMEgfs: $GIT_CLONE_PATH
+  # Add GIT_DEPTH to speed up cloning
+  GIT_DEPTH: 1
+
+# Define a cache to preserve the workspace between jobs
+cache:
+  key: ${CI_COMMIT_REF_SLUG}-${BUILD_DATE}
+  paths:
+    - $GIT_CLONE_PATH
 
 build:
   variables:
@@ -14,6 +26,7 @@ build:
   
   stage: build
   script:
+    - echo "Using build directory: $GIT_CLONE_PATH (dated: ${BUILD_DATE})"
     - export CI_PROJECT_DIR=$GIT_CLONE_PATH
     - export HASH=$(git rev-parse HEAD)            # Get git hash from the clone
     - echo $HASH > .githash                        # Save hash to file
@@ -31,15 +44,16 @@ build:
 
 setup:
   variables:
-    GIT_STRATEGY: fetch
+    # Don't re-clone, just use the existing workspace
+    GIT_STRATEGY: none
   stage: create_experments
   script:
+    - echo "Using build directory: $GIT_CLONE_PATH (dated: ${BUILD_DATE})"
     - export CI_PROJECT_DIR=$GIT_CLONE_PATH
     - export HASH=$(cat .githash)                # Retrieve git hash from artifact
-    - RUNTESTS_DIR="${CI_BUILDS_DIR}/${CI_JOB_ID}/RUNTESTS"
+    - RUNTESTS_DIR="${CI_BUILDS_DIR}/RUNTESTS-${BUILD_DATE}"
     - mkdir -p ${RUNTESTS_DIR}
     - ${HOMEgfs}/workflow/generate_workflow.sh -G -t ${HASH} -D ${RUNTESTS_DIR}
-
   parallel:
     matrix:
       - MACHINE: ["gaeac6"]
@@ -50,9 +64,11 @@ setup:
 
 run_tests:
   variables:
-    GIT_STRATEGY: fetch
+    # Don't re-clone, just use the existing workspace
+    GIT_STRATEGY: none
   stage: run_tests
   script:
+    - echo "Using build directory: $GIT_CLONE_PATH (dated: ${BUILD_DATE})"
     - export CI_PROJECT_DIR=$GIT_CLONE_PATH
     - source ${HOMEgfs}/workflow/gw_setup.sh
     - ${HOMEgfs}/ci/scripts/run-check_ci.sh ${HOMEgfs} ${pslot} ${CI_PROJECT_NAME} --get_pslot_list
