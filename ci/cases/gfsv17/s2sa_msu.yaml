@@ -20,7 +20,7 @@ base:
 
 prepoceanobs:
   use_exp_obs: "YES"
-  dmpdir_exp: /lfs/h2/emc/da/noscrub/common
+  dmpdir_exp: /work/noaa/da/marineda/gfs-marine/data/obs 
 
 marineanl:
   SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca            
