@@ -4,9 +4,6 @@ base:
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
   DO_JEDIOCNVAR: "YES"
   DOHYBVAR_OCN: "YES"
-  EUPD_CYC: "both"
-  INTERVAL_GFS: 6
-  SDATE_GFS: 2021032500
   DOLETKF_OCN: "YES"
 marineanl:
   SOCA_NINNER: 1
