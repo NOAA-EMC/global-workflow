@@ -1,0 +1,19 @@
+experiment:
+  system: gfs
+  mode: cycled
+
+arguments:
+  pslot: {{ 'pslot' | getenv }}
+  app: S2SWA
+  resdetatmos: 1152
+  resensatmos: 384
+  resdetocean: 0.25
+  nens: 80
+  interval: 0
+  start: warm
+  comroot: /lfs/h2/emc/ptmp/emc.global/RETRO_GFSv17/comroot
+  expdir: /lfs/h2/emc/global/noscrub/emc.global/RETRO_GFSv17/expdir  
+  idate: 2023041506
+  edate: 2023061600
+  icsdir: /work/noaa/da/gvernier/ensda/ictest/1440x1080x75/
+  yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sa_msu.yaml

@@ -290,8 +290,8 @@ case "${fv3_res}" in
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
         if [[ "${RUN}" = *gdas ]]; then
-          export layout_x=8
-          export layout_y=16
+          export layout_x=16
+          export layout_y=24
         elif [[ "${RUN}" = *gfs ]]; then
           export layout_x=16
           export layout_y=24

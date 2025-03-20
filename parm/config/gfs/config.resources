@@ -956,7 +956,7 @@ case ${step} in
           ;;
         "C768" | "C1152")
           # Not valid resolutions for ensembles
-          declare -x "walltime"="01:20:00"
+          declare -x "walltime"="01:50:00"
           ;;
         *)
           echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE} for ${RUN}"
@@ -1285,7 +1285,7 @@ case ${step} in
     ;;
 
   "eupd")
-    walltime="00:30:00"
+    walltime="00:45:00"
     case "${CASE}" in
       "C1152" | "C768")
         ntasks=480

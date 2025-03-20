@@ -1,5 +1,5 @@
 BASE_GIT: '/work2/noaa/global/role-global/git'
-DMPDIR: '/work/noaa/rstprod/dump'
+DMPDIR: '/lfs/h2/emc/da/noscrub/catherine.thomas/obs/combined'
 BASE_DATA: '/work2/noaa/global/role-global/data'
 BASE_IC: '/work2/noaa/global/role-global/data/ICSDIR'
 PACKAGEROOT: '/work2/noaa/global/role-global/nwpara'
