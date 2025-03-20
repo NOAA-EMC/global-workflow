@@ -19,6 +19,10 @@ export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
 # CI BASH test directories
 export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
 
+# CI GitLab test directories
+GITLAB_URL=https://vlab.noaa.gov/gitlab-licensed
+GITLAB_BUILDS_DIR=/gpfs/f6/drsa-precip3/scratch/role.glopara/GFS_CI_ROOT/GITLAB/CI
+
 export HPC_ACCOUNT=drsa-precip3
 export max_concurrent_cases=5
 export max_concurrent_pr=4
