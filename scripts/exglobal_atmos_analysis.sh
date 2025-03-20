@@ -752,7 +752,7 @@ cat > gsiparm.anl << EOF
   lobsdiag_forenkf=${lobsdiag_forenkf},
   write_fv3_incr=${write_fv3_increment},
   nhr_anal=${IAUFHRS},
-  ta2tb=${ta2tb},
+  ta2tb=${ta2tb},optconv=${optconv},
   ${WRITE_INCR_ZERO}
   ${WRITE_ZERO_STRAT}
   ${WRITE_STRAT_EFOLD}
