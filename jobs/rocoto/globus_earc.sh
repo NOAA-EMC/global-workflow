@@ -4,9 +4,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 # Source FV3GFS workflow modules
-. "${HOMEgfs}"/ush/load_fv3gfs_modules.sh
+. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+if [[ ${status} -ne 0 ]]; then exit "${status}"; fi
 
 ###############################################################
 # setup python path for workflow utilities and tasks
@@ -18,7 +18,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/jobs/JGLOBAL_ENS_GLOBUS_ARCH
+"${HOMEgfs}/jobs/JGLOBAL_ENS_GLOBUS_ARCH"
 status=$?
 
 exit "${status}"

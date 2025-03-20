@@ -41,7 +41,7 @@ def main():
             count_sets += 1
 
     if count_sets == 0:
-        raise RuntimeError("FATAL ERROR Transfer sets were all empty!")
+        raise RuntimeError("FATAL ERROR: Transfer sets were all empty!")
 
     # Clean up any temporary files
     globus.clean()
