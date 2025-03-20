@@ -14,7 +14,7 @@ QUEUE: 'dev'
 QUEUE_SERVICE: 'dev_transfer'
 CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod'
-DO_ARCHCOM: 'NO'
+DO_ARCHCOM: 'YES'
 ARCHCOM_TO: 'hpss'
 HPSS_PROJECT: emc-global
 ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'

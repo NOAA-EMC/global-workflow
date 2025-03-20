@@ -11,8 +11,8 @@ arguments:
   nens: 80
   interval: 0
   start: warm
-  comroot: /lfs/h2/emc/ptmp/emc.global/RETRO_GFSv17/comroot
-  expdir: /lfs/h2/emc/global/noscrub/emc.global/RETRO_GFSv17/expdir  
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2023041506
   edate: 2023061600
   icsdir: /work/noaa/da/gvernier/ensda/ictest/1440x1080x75/
