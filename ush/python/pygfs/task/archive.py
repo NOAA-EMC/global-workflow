@@ -611,6 +611,10 @@ class Archive(Task):
         Go through the dataset dictionaries, extract the tarball names and has_rstprod
         boolean, and write a YAML with the info in COM_CONF.  The group number is appended
         to the YAML name if it is not -1.
+        Group definitions
+            group=-1: deterministic (non-ensemble)
+            group=0: ensemble aggregates (means, spreads, etc)
+            group=1..n: groups of individual ensemble members
         """
 
         if len(datasets) == 0:
