@@ -54,6 +54,10 @@ cnvw_option=${cnvw_option:-".false."}
 # Observation usage options
 cao_check=${cao_check:-".true."}
 ta2tb=${ta2tb:-".true."}
+optconv=${optconv:-0.06}
+AIRS_CADS=${AIRS_CADS:-".true."}
+IASI_CADS=${IASI_CADS:-".true."}
+CRIS_CADS=${CRIS_CADS:-".true."}
 
 # Diagnostic files options
 netcdf_diag=${netcdf_diag:-".true."}
