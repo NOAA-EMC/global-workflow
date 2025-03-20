@@ -22,6 +22,7 @@ base:
   EUPD_CYC: "gdas"
   FHMAX_ENKF_GFS: 12
   DOHYBVAR_OCN: "NO"
+  DOLETKF_OCN: "NO"
   DO_TEST_MODE: "NO"
 
 atmanl:
