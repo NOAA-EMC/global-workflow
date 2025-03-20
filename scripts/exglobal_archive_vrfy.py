@@ -25,7 +25,7 @@ def main():
             logger.info(f"key ({key}) not found in archive.task_config!")
 
     # Pull out all the configuration keys needed to run the rest of archive steps
-    keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMgfs', 'VFYARC', 'REPLAY_ICS',
+    keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMgfs', 'REPLAY_ICS',
             'ARCDIR', 'MODE', 'DO_JEDIATMENS', 'DO_FIT2OBS', 'DO_JEDIATMVAR', 'FHMIN_GFS',
             'DO_JEDISNOWDA', 'DO_AERO_ANL', 'DO_PREP_OBS_AERO', 'NET', 'MODE', 'FHOUT_GFS',
             'FHMAX_HF_GFS', 'FHOUT_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT', 'FHMAX_GFS']
