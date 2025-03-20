@@ -9,7 +9,7 @@ unset "memory_${RUN}"
 step=$1
 
 case ${step} in
-  "fcst" | "efcs" | "wavepostbndpnt" | "wavepostpnt")
+  "fcst" | "efcs" | "wavepostpnt")
     export PARTITION_BATCH="compute"
     unset PARTITION_SERVICE
     max_tasks_per_node=48
