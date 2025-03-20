@@ -17,6 +17,7 @@ load(pathJoin("cdo", (os.getenv("cdo_ver") or "None")))
 load(pathJoin("hdf5", (os.getenv("hdf5_ver") or "None")))
 load(pathJoin("netcdf-c", (os.getenv("netcdf_c_ver") or "None")))
 load(pathJoin("netcdf-fortran", (os.getenv("netcdf_fortran_ver") or "None")))
+load(pathJoin("esmf", (os.getenv("esmf_ver") or "None")))
 
 load(pathJoin("nco", (os.getenv("nco_ver") or "None")))
 load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))

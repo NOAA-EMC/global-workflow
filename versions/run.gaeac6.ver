@@ -1,6 +1,6 @@
 export stack_intel_ver=2023.2.0
 export stack_cray_mpich_ver=8.1.29
-export spack_env=gsi-addon
+export spack_env=gsi-addon-dev-fms-2024.01
 
 export perl_ver=5.38.2
 
