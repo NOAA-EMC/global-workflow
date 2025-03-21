@@ -6,3 +6,8 @@ export globus_cli_ver=3.27
 source "${HOMEgfs:-}/versions/spack.ver"
 export spack_mod_path="/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
 export sven_root_path="/home/dhuber/sven"
+
+
+# modules updated in spack.ver for gsi-addon-dev-fms-2024.01
+export export esmf_ver=8.5.0
+export g2tmpl_ver=1.10.2

@@ -16,3 +16,7 @@ export spack_mod_path="/contrib/spack-stack/spack-stack-${spack_stack_ver}/envs/
 # Local version of TC_tracker
 export ens_tracker_ver=v1.1.15.7
 
+# modules updated in spack.ver for gsi-addon-dev-fms-2024.01
+export export esmf_ver=8.5.0
+export g2tmpl_ver=1.10.2
+
