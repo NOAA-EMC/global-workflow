@@ -11,8 +11,8 @@ __all__ = ['Tasks']
 
 
 class Tasks:
-    SERVICE_TASKS = ['arch', 'earc_vrfy', 'stage_ic', 'cleanup', 'globus', 'ens_globus']
-    DTN_TASKS = ['arch_tars', 'earc_tars', 'fetch']
+    SERVICE_TASKS = ['earc_vrfy', 'cleanup', 'globus', 'ens_globus']
+    DTN_TASKS = ['arch_tars', 'earc_tars', 'fetch', 'stage_ic', 'arch']
     VALID_TASKS = ['aerosol_init', 'stage_ic', 'fetch', 'globus', 'ens_globus',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', 'arch_tars', "cleanup",
                    'ecen_fv3jedi', 'analcalc_fv3jedi',
