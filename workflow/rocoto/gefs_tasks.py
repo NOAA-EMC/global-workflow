@@ -270,7 +270,7 @@ class GEFSTasks(Tasks):
 
         deps = []
         for member in range(0, self.nmem + 1):
-            task = f'{self.run}_atmos_prod_mem{member:03d}_#fhr_label#'
+            task = f'{self.run}_fcst_mem#member#_#seg_dep#'
             dep_dict = {'type': 'task', 'name': task}
             deps.append(rocoto.add_dependency(dep_dict))
 
