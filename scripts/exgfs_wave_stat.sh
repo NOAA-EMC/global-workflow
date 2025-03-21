@@ -2,7 +2,7 @@
 #                                                                       
 ################################################################################
 #                                                                              #
-# exwave_stats.sh - Compute unified statistics for global wave ensemble        #
+# exgefs_wave_stats.sh - Compute unified statistics for global wave ensemble   #
 #                                                                              #        
 # Packs ensemble mean, spread and probabilities in grib2 format.               #
 #                                                                              #             
@@ -29,11 +29,11 @@
 # Update log since 2014                                                        #
 # Nov2019 JHAlves - Transitioning to GEFS workflow                             #
 # Dec2019 JHAlves RPadilla - Merging wave scripts to global workflow           #
-# Jan2025 SBanihash - Adding this script to the global workflow                #
+# Jan2025 SBanihash - Adding this script to the global workflow for gefsv13    #
 ################################################################################
 #
   set -x
-  #£ Use LOUD variable to turn on/off trace.  Defaults to YES (on).
+  #se LOUD variable to turn on/off trace.  Defaults to YES (on).
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
@@ -94,32 +94,9 @@
 #
 # 1. Get Input files for current script 
 #
-# 1.a Check if buoy input files exist and copy
-#
-  buoyfile=wave_${NET}.buoys
-  if [ -s ${PARMgfs}/wave/${buoyfile} ] ; then
-    cp  ${PARMgfs}/wave/${buoyfile} buoy_file.data
-    echo " ${PARMgfs}/wave/${buoyfile} copied to buoy_file.data."
-  else
-    msg="ABNORMAL EXIT: ERR in coping ${buoyfile}."
-    postmsg "$msg"
-    set +x
-    echo ' '
-    echo '******************************************************* '
-    echo "*** FATAL ERROR: No ${PARMgfs}/wave/${buoyfile} copied. *** "
-    echo '******************************************************* '
-    echo ' '
-    echo "$PARMgfs/wave/wave_gefs_buoy.data  missing." >> $ensemb_log
-    [[ "$LOUD" = YES ]] && set -x
-    echo "${PARMgfs}/wave/wave_${NET}_buoy.data  missing." >> $ensemb_log
-    msg="ABNORMAL EXIT: NO FILE $buoyfile"
-    postmsg "$msg"
-    export err=1;${errchk};
-    exit ${err}
-  fi
 
 #
-# 1.b Link grib2 data for all members
+# 1.a Link grib2 data for all members
 #
   ngrib=0
   inc=$FHOUT_HF_WAV
@@ -346,7 +323,6 @@
    [[ "$LOUD" = YES ]] && set -x
 
 
-   #"${HOMEgfs}/ush/run_mpmd.sh" ncmdfile
 
    for stype in $stypes
       do
@@ -368,7 +344,206 @@
 	fi
       done
 
-# 2.f Output all grib2 parameter files to COMOUT
+
+# 3 Check if buoy input files exist and copy
+# #
+#
+  buoyfile=wave_${NET}.buoys
+  if [ -s ${PARMgfs}/wave/${buoyfile} ] ; then
+    cp  ${PARMgfs}/wave/${buoyfile} buoy_file.data
+    echo " ${PARMgfs}/wave/${buoyfile} copied to buoy_file.data."
+  else
+    msg="ABNORMAL EXIT: ERR in coping ${buoyfile}."
+    postmsg "$msg"
+    set +x
+    echo ' '
+    echo '******************************************************* '
+    echo "*** FATAL ERROR: No ${PARMgfs}/wave/${buoyfile} copied. *** "
+    echo '******************************************************* '
+    echo ' '
+    echo "$PARMgfs/wave/wave_gefs_buoy.data  missing." >> $ensemb_log
+    [[ "$LOUD" = YES ]] && set -x
+    echo "${PARMgfs}/wave/wave_${NET}_buoy.data  missing." >> $ensemb_log
+    msg="ABNORMAL EXIT: NO FILE $buoyfile"
+    postmsg "$msg"
+    export err=1;${errchk};
+    exit ${err}
+  fi 
+
+											      
+# 3.a Buoy locations file massaging
+
+  sed '/\$/d' buoy_file.data | sed '/STOPSTRING/d ' > buoy.file
+
+  nbuoys=`cat buoy.file | wc -l`
+
+# 3.b Command file set-up
+  rm -f cmdfile cmdfile.$
+
+  ibuoy=1
+
+# 3.c Create bundled grib2 file with all parameters
+
+
+
+  cat ${WAV_MOD_TAG}.t${cyc}z.{mean,prob,spread}.${grdNAME}.f${FH3}.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1
+
+  if [ -s gribfile ]
+  then
+     set +x
+     echo "   Gribfile for bulletins created"
+     [[ "$LOUD" = YES ]] && set -x
+    else
+      set +x
+      echo ' '
+      echo '************************************************* '
+      echo "*** FATAL ERROR: No gribfile created for ${TYPE}, no bulls  *"
+      echo '************************************************* '
+      echo ' '
+      echo "$modIE fcst $date $cycle: No gribfile created." >> $wavelog
+      echo $msg
+      [[ "$LOUD" = YES ]] && set -x
+      export err=7;${errchk}
+      exit $err
+    fi
+
+
+  rm -f ${fcmdnow} 
+  touch ${fcmdnow} 
+
+# 3.d Loop through buoys and populate cmdfiles with calls to wave_ens_bull.sh
+  ifile=0
+  while [ ${ibuoy} -le ${nbuoys} ]
+  do
+
+    bline=`sed ''$ibuoy'!d' buoy.file`
+    blat=`echo $bline | awk '{print $2}'`
+    blon=`echo $bline | awk '{print $1}'`
+    bnom=`echo $bline | awk '{print $3}' | sed "s/'//g"`
+
+    echo "$HOMEgfs/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} ${fhr} > bull_${bnom}.out 2>&1" >> ${fcmdnow}
+
+    ibuoy=`expr ${ibuoy} + 1`
+    ifile=`expr ${ifile} + 1`
+
+  done
+
+
+
+# 3.e Execute poe or serial cmdfile
+  set +x
+  echo ' '
+  echo " Generating bulletins and ts files for ${nbuoys} locations."
+  echo ' '
+  [[ "$LOUD" = YES ]] && set -x
+
+  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    nfile=0
+    ifile=0
+    iline=1
+    ifirst='yes'
+    nlines=$( wc -l ${fcmdnow} | awk '{print $1}' )
+    while [ $iline -le $nlines ]; do
+      line=$( sed -n ''$iline'p' ${fcmdnow} )
+      if [ -z "$line" ]; then
+        break
+      else
+        if [ "$ifirst" = 'yes' ]; then
+          echo "#!/bin/sh" > cmdmfile.$nfile
+          echo "$nfile cmdmfile.$nfile" >> cmdmprog
+          chmod 744 "cmdmfile.$nfile"
+        fi
+        echo $line >> "cmdmfile.$nfile"
+        nfile=$(( nfile + 1 ))
+        if [ "$nfile" -eq "$NTASKS" ]; then
+          nfile=0
+          ifirst='no'
+        fi
+        iline=$(( iline + 1 ))
+      fi
+    done
+  fi
+
+  wavenproc=$(wc -l ${fcmdnow} | awk '{print $1}')
+  wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
+
+  set +x
+  echo ' '
+  echo "   Executing the wave_ens_bull scripts at : $(date)"
+  echo '   ------------------------------------'
+  echo ' '
+  
+
+  if [ "$wavenproc" -gt '1' ]
+  then
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
+    else
+      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
+    fi
+    exit=$?
+  else
+    chmod 744 ${fcmdnow}
+    ./${fcmdnow}
+    exit=$?
+  fi
+
+  if [ "$exit" != '0' ]
+  then
+    set +x
+    echo ' '
+    echo '*************************************'
+    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+    echo '*************************************'
+    echo '     See Details Below '
+    echo ' '
+    set_trace
+    err=4; export err;${errchk}
+    exit "$err"
+  fi
+
+
+  ibuoy=1
+# 3.f Check for errors
+  while [ ${ibuoy} -le ${nbuoys} ]
+  do
+
+    bline=`sed ''$ibuoy'!d' buoy.file`
+    blat=`echo $bline | awk '{print $2}'`
+    blon=`echo $bline | awk '{print $1}'`
+    bnom=`echo $bline | awk '{print $3}' | sed "s/'//g"`
+
+    if [ ! -s ${WAV_MOD_TAG}.${bnom}.f${FH3}.bull ]
+    then
+     msg="ABNORMAL EXIT: ERR in generating bulettin file"
+     postmsg "$msg"
+     set +x
+     echo ' '
+     echo '***************************************** '
+     echo "***            FATAL ERROR            *** "
+     echo "--- No ${WAV_MOD_TAG}.${bnom}.bull file created --- "
+     echo '***************************************** '
+     echo ' '
+     [[ "$LOUD" = YES ]] && set -x
+     echo "No ${WAV_MOD_TAG}.${bnom}.f${FH3}.bull " >> $wavelog
+     export err=9;${errchk}
+     exit $err
+   else
+     set +x
+     echo -e "\n Bulletin file ${WAV_MOD_TAG}.${bnom}.${FH3}.bull generated succesfully.\n"
+     [[ "$LOUD" = YES ]] && set -x
+     rm -f bull_${bnom}.out
+   fi
+    ibuoy=`expr ${ibuoy} + 1`
+ done
+
+
+   tar cf ${WAV_MOD_TAG}.t${cyc}z.f${FH3}.bull_tar ${WAV_MOD_TAG}.*.f*.bull
+   rm -f ${WAV_MOD_TAG}.*.bull
+   tar cf ${WAV_MOD_TAG}.t${cyc}z.f${FH3}.station_tar ${WAV_MOD_TAG}.*.f*.ts
+   rm -f ${WAV_MOD_TAG}.*.ts
+
+# 4.a Output all grib2 parameter files to COMOUT
 
     FH3=$(printf "%03d" $fhr)
     MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_GRIB_ENS:COM_WAVE_GRIB_GRID_TMPL
@@ -404,8 +579,33 @@
         export err=6;${errchk}
         exit $err
       fi
-    done
+    done 
 
+
+    # 4.b Output all station and bull tars to COMOUT (TO DO: this should go somewhere else)
+    #
+      bcopy_station=${WAV_MOD_TAG}.t${cyc}z.f${FH3}.station_tar
+      bcopy_bull=${WAV_MOD_TAG}.t${cyc}z.f${FH3}.bull_tar
+      if [ -s "$bcopy_station" ] && [ -s "$bcopy_bull" ]; then
+        set +x
+        echo "   Copying tar files to ensstat"
+        [[ "$LOUD" = YES ]] && set -x
+        #if [ $SENDCOM = "YES" ] ; then
+          cp -f ${bcopy_station}  "${COMOUT_WAVE_GRIB_ENS}"
+          cp -f ${bcopy_bull}  "${COMOUT_WAVE_GRIB_ENS}"
+      else
+        set +x
+        echo ' '
+        echo '*************************************** '
+        echo "*** FATAL ERROR: No ${fcopy} file found *"
+        echo '*************************************** '
+        echo ' '
+        echo "$modIE fcst $date $cycle: ${bcopy_station} and ${bcopy_bull} not fouund." >> $wavelog
+        echo $msg
+        [[ "$LOUD" = YES ]] && set -x
+        export err=6;${errchk}
+        exit $err
+      fi
 
   msg="$job completed normally"
   postmsg "$msg"

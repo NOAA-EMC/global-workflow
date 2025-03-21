@@ -53,7 +53,8 @@
   blon=$1
   blat=$2 
   bnom=$3 
-  bfil=$4
+  bfhr=$4
+  
 #
 # 0.d Plumbing
 #
@@ -78,8 +79,10 @@
 #
 # 0.e Output file names
 #
-  bfil="${RUNwave}.${bnom}.bull"
-  tfil="${RUNwave}.${bnom}.ts"
+
+  FH3=$(printf "%03d" $bfhr)
+  bfil="${WAV_MOD_TAG}.${bnom}.f${FH3}.bull"
+  tfil="${WAV_MOD_TAG}.${bnom}.f${FH3}.ts"
 #
 # 1. Prepare input data
 #
@@ -174,17 +177,22 @@
     [[ "$LOUD" = YES ]] && set -x
     postmsg "WARNING: parameter is UNDEFINED in grbint.${bnom} in ${scripname}"
   fi
+
+# testing purposes
+  FHMIN_WAV=005
 #
 # 2. Generate bulletin
 #
-    printf "\n Location : "$bnom"      ("$blat"N  "$blon"W)\n" > $bfil
-    printf " Model    : NCEP Global Wave Ensemble System (${RUNwave})\n" >> $bfil
-    printf " Cycle    : "$PDY" "$cycle" UTC\n" >> $bfil
-    printf "\n+-------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+\n" >> $bfil
-    printf   "| day   | Hs avg | Hs spr | Tp avg | Tp spr | U10avg | U10spr | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) |\n" >> $bfil
-    printf   "|  hour |  (m)   |  (m)   |  (s)   |  (s)   |  (m/s) |  (m/s) |  1.00m |  2.00m | 3.00m  |  5.50m |  7.00m |  9.00m |\n" >> $bfil
-    printf   "+-------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+\n" >> $bfil
-
+    if [ "$bfhr" -eq "${FHMIN_WAV}" ]
+    then
+    	printf "\n Location : "$bnom"      ("$blat"N  "$blon"W)\n" > $bfil
+    	printf " Model    : NCEP Global Wave Ensemble System (${WAV_MOD_TAG})\n" >> $bfil
+    	printf " Cycle    : "$PDY" "$cycle" UTC\n" >> $bfil
+    	printf "\n+-------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+\n" >> $bfil
+    	printf   "| day   | Hs avg | Hs spr | Tp avg | Tp spr | U10avg | U10spr | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) |\n" >> $bfil
+    	printf   "|  hour |  (m)   |  (m)   |  (s)   |  (s)   |  (m/s) |  (m/s) |  1.00m |  2.00m | 3.00m  |  5.50m |  7.00m |  9.00m |\n" >> $bfil
+    	printf   "+-------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+\n" >> $bfil
+    fi
     for (( it=1; it<=$tlen; it++ ))
     do
       tdum=`expr ${valt[$it-1]} / 1`
@@ -206,20 +214,26 @@
       printf ' |\n' >> $bfil
     done
 
-    printf   "+-------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+\n" >> $bfil
-    printf "                                                               Hs  : Significant wave height\n" >> $bfil
-    printf "                                                               Tp  : Peak period\n" >> $bfil
-    printf "                                                               U10 : Wind speed at a height of 10m above the surface\n" >> $bfil
-    printf "                                                               avg : Average of ensemble members\n" >> $bfil
-    printf "                                                               spr : Spread (standard deviation) of ensemble members\n" >> $bfil
-    printf "                                                               P(Hs >): Probability of Hs exceeding given threshold\n" >> $bfil
-    printf " NOAA/NWS/NCEP Marine Modeling and Analysis Branch, $PDY" >> $bfil
+    if [ "$bfhr" -eq "${FHMAX_WAV}" ]
+    then
+	    printf   "+-------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+\n" >> $bfil
+	    printf "                                                               Hs  : Significant wave height\n" >> $bfil
+	    printf "                                                               Tp  : Peak period\n" >> $bfil
+	    printf "                                                               U10 : Wind speed at a height of 10m above the surface\n" >> $bfil
+	    printf "                                                               avg : Average of ensemble members\n" >> $bfil
+	    printf "                                                               spr : Spread (standard deviation) of ensemble members\n" >> $bfil
+	    printf "                                                               P(Hs >): Probability of Hs exceeding given threshold\n" >> $bfil
+	    printf " NOAA/NWS/NCEP Marine Modeling and Analysis Branch, $PDY" >> $bfil
+    fi
 #
 # 2.b Create time series output
 #
-  printf   " date   hour Hs avg Hs spr Tp avg Tp spr U10avg U10spr \n" >> $tfil
-  printf   "               (m)    (m)    (s)    (s)  (m/s)  (m/s)  \n" >> $tfil
-  printf   " ----------------------------------------------------- \n" >> $tfil
+    if [ "$bfhr" -eq "${FHMIN_WAV}" ] 
+    then
+	    printf   " date   hour Hs avg Hs spr Tp avg Tp spr U10avg U10spr \n" >> $tfil
+	    printf   "               (m)    (m)    (s)    (s)  (m/s)  (m/s)  \n" >> $tfil
+	    printf   " ----------------------------------------------------- \n" >> $tfil
+    fi 
   for (( it=1; it<=$tlen; it++ ))
   do
     tdum=`expr ${valt[$it-1]} / 1`
@@ -238,7 +252,7 @@
 #
   if [ -f ${bfil} ] && [ -f ${tfil} ]
   then
-    echo -e "\n ${RUNwave} bulletin and ts-file created for location ${bnom}.\n"
+    echo -e "\n ${WAV_MOD_TAG} bulletin and ts-file created for location ${bnom}.\n"
   else
     set +x
     echo ' '

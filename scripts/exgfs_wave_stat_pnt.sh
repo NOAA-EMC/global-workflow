@@ -2,44 +2,28 @@
 #                                                                       
 ################################################################################
 #                                                                              #
-# exwave_stats.sh - Compute unified statistics for global wave ensemble        #
+# exgefs_stats_pnt.sh - Compute point output statistics for gefs wave products #
 #                                                                              #        
-# Packs ensemble mean, spread and probabilities in grib2 format.               #
+# Packs ensemble mean, spread and probabilities in bull_tar and station_tar    #
 #                                                                              #             
 # Requirements:                                                                #    
 # - WGRIB2 with IPOLATES library                                               #              
 #                                                                              #              
 # Origination:                                                                 #
-# - Unreported Waves Group Developer, Feb 2008                                 #               
+# - EMC Wave model Developer- Saeideh Banihashemi, March 2025 	               #               
 #                                                                              #          
-# Changes:                                                                     #           
-# - expanded parameter list including partitioned data                         #
-#   (list in parameter array) (JH Alves, Jan 2014)                             #                 #                                                                              #
-# - introduced wave ensemble bulletin following spectral bulletin format       #
-#   (JH Alves, Jan 2014)                                                       #    
-# - introduced two USH scripts for post proc                                   #
-#   - wave_ens_stats.sh : generate unified stats files (mean, spread, prob)    #
-#   - wave_ens_bull.sh : generates wave ensemble bulletin files                #
-#   (JH Alves, Jan 2014)                                                       #
-# - mpiserial for parallel processing (JH Alves, Jan 2014)                     #
-# - Changes to wave_ens_stats (fortran) for paralellism: code now              #
-#    computes separately stats type (mean, spread or prob) and prob            #
-#    level (JH Alves, Jan 2014)                                                #
-#                                                                              #
-# Update log since 2014                                                        #
-# Nov2019 JHAlves - Transitioning to GEFS workflow                             #
-# Dec2019 JHAlves RPadilla - Merging wave scripts to global workflow           #
+# Update log since 2025                                                        #
 # Jan2025 SBanihash - Adding this script to the global workflow                #
 ################################################################################
 #
   set -x
-  #£ Use LOUD variable to turn on/off trace.  Defaults to YES (on).
+  #Use LOUD variable to turn on/off trace.  Defaults to YES (on).
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
   set +x
   echo -e '                   ******************************************\n'
-  echo '                   *** WAVE ENSEMBLE STATS SCRIPT ***'
+  echo '                   *** WAVE POINT JOB ENSEMBLE STATS SCRIPT ***'
   echo -e '                   ******************************************\n'
   echo "Starting at : `date`"
   [[ "$LOUD" = YES ]] && set -x
@@ -58,9 +42,10 @@
 #
   source "${USHgfs}/wave_domain_grid.sh"
   process_grdID "${wavepostGRD}"
+
+  MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_GRIB_ENS:COM_WAVE_GRIB_GRID_TMPL
+
 #
-  export membn=""
-  for i in $(seq -f "%03g" 0 $nens); do membn="$membn $i"; done
 #
 # 0.c Time management
 #
@@ -70,55 +55,32 @@
   HMS="$(echo $ymdh | cut -c9-10)0000"
   YMDHMS=${YMD}${HMS}
 
-  fcmdnow=cmdfile
+
   mkdir output_$YMDHMS
   cd output_$YMDHMS
-  rm -f ${fcmdnow} 
-  touch ${fcmdnow}
+
+  STATION_TAR="./${WAV_MOD_TAG}.t${cyc}z.station_tar"
+  BULL_TAR="./${WAV_MOD_TAG}.t${cyc}z.bull_tar"
+
 
 
 # 1.a Check if buoy input files exist and copy
 #
-  buoyfile=wave_${NET}.buoys
-  if [ -s ${PARMgfs}/wave/${buoyfile} ] ; then
-    cp  ${PARMgfs}/wave/${buoyfile} buoy_file.data
-    echo " ${PARMgfs}/wave/${buoyfile} copied to buoy_file.data."
-  else
-    msg="ABNORMAL EXIT: ERR in coping ${buoyfile}."
-    postmsg "$msg"
-    set +x
-    echo ' '
-    echo '******************************************************* '
-    echo "*** FATAL ERROR: No ${PARMgfs}/wave/${buoyfile} copied. *** "
-    echo '******************************************************* '
-    echo ' '
-    echo "$PARMgfs/wave/wave_gefs_buoy.data  missing." >> $ensemb_log
-    [[ "$LOUD" = YES ]] && set -x
-    echo "${PARMgfs}/wave/wave_${NET}_buoy.data  missing." >> $ensemb_log
-    msg="ABNORMAL EXIT: NO FILE $buoyfile"
-    postmsg "$msg"
-    export err=1;${errchk};
-    exit ${err}
-  fi
+# 2. link station files
 
-# 2. link grib files
-
-    for stype in mean spread prob
-	do
     # Correct indirect variable expansion
-    	dir_var="COMOUT_WAVE_GRIB_${wavepostGRD}"
-    	cpdir="${!dir_var}"
+       dir_var="${COMOUT_WAVE_GRIB_ENS}"
+#       cpdir="${!dir_var}"
 
     # Ensure directory exists before proceeding
-    	if [ -z "$cpdir" ] || [ ! -d "$cpdir" ]; then
-        	echo "Error: Directory '$cpdir' does not exist or is empty."
+       if  [ ! -d "$dir_var" ]; then
+               echo "Error: Directory '$cpdir' does not exist or is empty."
         exit 2
-    	fi
-
+       fi
     # Use ls to safely check for matching files
-    for file in "${cpdir}/${WAV_MOD_TAG}.t${cyc}z.${stype}.${grdNAME}.f"???.grib2; do
+    for file in "${dir_var}/${WAV_MOD_TAG}.t${cyc}z.f"???.*_tar; do
       if [[ -f "$file" ]]; then  # Ensure it's a file before linking
-	      ln -s "$file" .
+	      cp -rp "$file" .
         else
               msg="ABNORMAL EXIT: Error in copying $cpfile"
               postmsg "$msg"
@@ -132,135 +94,39 @@
               [ -n "$errchk" ] && eval "$errchk"
               exit "$err"
         fi
-        done	    
-      done
+      done	    
 
 #
-# 3. Generate bulletin and time series files at complete set of buoy locations
-#
-  
-# 3.a Buoy locations file massaging
 
-  sed '/\$/d' buoy_file.data | sed '/STOPSTRING/d ' > buoy.file
-  
-  nbuoys=`cat buoy.file | wc -l`
-
-# 3.b Command file set-up
-  rm -f cmdfile cmdfile.$ 
-
-  ibuoy=1
-
-# 3.c Create bundled grib2 file with all parameters
-
-  
-
-  cat ${WAV_MOD_TAG}.t${cyc}z.{mean,prob,spread}.${grdNAME}.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
-
-  if [ -s gribfile ]
-  then
-     set +x
-     echo "   Gribfile for bulletins created"
-     [[ "$LOUD" = YES ]] && set -x
-    else
-      set +x
-      echo ' '
-      echo '************************************************* '
-      echo "*** FATAL ERROR: No gribfile created for ${TYPE}, no bulls  *"
-      echo '************************************************* '
-      echo ' '
-      echo "$modIE fcst $date $cycle: No gribfile created." >> $wavelog
-      echo $msg
-      [[ "$LOUD" = YES ]] && set -x
-      export err=7;${errchk}
-      exit $err
-    fi
-
-
-# 3.d Loop through buoys and populate cmdfiles with calls to wave_ens_bull.sh
-  ifile=0
-  while [ ${ibuoy} -le ${nbuoys} ]
-  do
-
-    bline=`sed ''$ibuoy'!d' buoy.file`
-    blat=`echo $bline | awk '{print $2}'`
-    blon=`echo $bline | awk '{print $1}'`
-    bnom=`echo $bline | awk '{print $3}' | sed "s/'//g"`
-
-    echo "$HOMEgfs/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} 1> bull_${bnom}.out 2>&1" >> cmdfile
-
-    ibuoy=`expr ${ibuoy} + 1`
-    ifile=`expr ${ifile} + 1`
-
-  done
-
-
-
-# 3.e Execute poe or serial cmdfile
-  set +x
-  echo ' '
-  echo " Generating bulletins and ts files for ${nbuoys} locations."
-  echo ' '
-  [[ "$LOUD" = YES ]] && set -x
-
-    "${HOMEgfs}/ush/run_mpmd.sh" cmdfile    
-    exit=$?
-
-  if [ "$exit" != '0' ]
-  then
-    set +x
-    echo ' '
-    echo '********************************************'
-    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
-    echo '********************************************'
-    echo '     See Details Below '
-    echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-    export err=8; ${errchk}
-    exit $err
-  fi
-
-# echo ' Checking for errors after bulletins cfp'
-
-# 3.f Check for errors
-  while [ ${ibuoy} -le ${nbuoys} ]
-  do
-
-    bline=`sed ''$ibuoy'!d' buoy.file`
-    blat=`echo $bline | awk '{print $2}'`
-    blon=`echo $bline | awk '{print $1}'`
-    bnom=`echo $bline | awk '{print $3}' | sed "s/'//g"`
-
-    if [ ! -s ${modID}.${bnom}.bull ]
-    then
-     msg="ABNORMAL EXIT: ERR in generating bulettin file"
-     postmsg "$msg"
-     set +x
-     echo ' '
-     echo '***************************************** '
-     echo "***            FATAL ERROR            *** "
-     echo "--- No ${WAV_MOD_TAG}.${bnom}.bull file created --- "
-     echo '***************************************** '
-     echo ' '
-     [[ "$LOUD" = YES ]] && set -x
-     echo "No ${modIE}.${bnom}.bull " >> $wavelog
-     export err=9;${errchk}
-     exit $err
-   else
-     set +x
-     echo -e "\n Bulletin file ${modID}.${bnom}.bull generated succesfully.\n"
-     [[ "$LOUD" = YES ]] && set -x
-     rm -f bull_${bnom}.out
-   fi
+# Extract all .bull_tar files
+ echo "Extracting all bull_tar files..."
+ for tarfile in ./${WAV_MOD_TAG}.t*z.f*.bull_tar; do
+	 tar -xf "$tarfile"  
  done
-#
-# 4. Output and closing management calls
-#
 
-# 4.a Compress bulletins into tar file and copy to COMOUT
-  tar cf ${WAV_MOD_TAG}.t${cyc}z.bull_tar ${WAV_MOD_TAG}.*.bull
-  rm -f ${WAV_MOD_TAG}.*.bull
-  tar cf ${WAV_MOD_TAG}.t${cyc}z.station_tar ${WAV_MOD_TAG}.*.ts
-  rm -f ${WAV_MOD_TAG}.*.ts
+ for tarfile in ./${WAV_MOD_TAG}.t*z.f*.station_tar; do
+	 tar -xf "$tarfile" 
+ done
+
+
+     # Get unique buoy numbers from extracted files
+     BUOY_LIST=$(ls "${WAV_MOD_TAG}".*.*.bull | cut -d'.' -f2 | sort -u)
+
+     # Merge files for each buoy
+     for buoy in $BUOY_LIST; do
+         cat "${WAV_MOD_TAG}"."$buoy".f*.bull > "${WAV_MOD_TAG}.${buoy}.bull"
+	 cat "${WAV_MOD_TAG}"."$buoy".f*.ts > "${WAV_MOD_TAG}.${buoy}.ts"
+	 rm  "${WAV_MOD_TAG}"."$buoy".f*.ts "${WAV_MOD_TAG}"."$buoy".f*.bull
+     done
+
+         # Step 3: Archive the processed buoy files
+         echo "Creating final tar archive..."
+         tar -cf "$BULL_TAR" "${WAV_MOD_TAG}".*.bull
+	 tar -cf "$STATION_TAR" "${WAV_MOD_TAG}".*.ts
+
+
+         echo "Processing complete. Final tar: $FINAL_TAR"
+
 
   MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_GRIB_ENS:COM_WAVE_GRIB_GRID_TMPL
 
@@ -324,8 +190,8 @@
 #
   if [ "$exit_code" -ne '0' ]
   then
-     echo "FATAL ERROR: Problem in WAVE STAT"
-     msg="ABNORMAL EXIT: Problem in WAVE STAT"
+     echo "FATAL ERROR: Problem in WAVE POINT STAT"
+     msg="ABNORMAL EXIT: Problem in WAVE POINT STAT"
      postmsg "$msg"
      echo $msg
      export err=12;${errchk}
