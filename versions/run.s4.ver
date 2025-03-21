@@ -6,3 +6,7 @@ export ncl_ver=6.4.0-precompiled
 
 source "${HOMEgfs:-}/versions/spack.ver"
 export spack_mod_path="/data/prod/jedi/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
+
+# modules updated in spack.ver for gsi-addon-dev-fms-2024.01
+export export esmf_ver=8.5.0
+export g2tmpl_ver=1.10.2
