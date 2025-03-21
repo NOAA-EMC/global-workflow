@@ -44,10 +44,10 @@ setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 -- Set the path for the Sven executables
 append_path("PATH", pathJoin((os.getenv("sven_root_path") or "None"), "bin"))
 
-prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git_rocky9/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/work2/noaa/global/role-global/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
-prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git_rocky9/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/work2/noaa/global/role-global/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 load("globus-cli")

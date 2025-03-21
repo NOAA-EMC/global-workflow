@@ -144,7 +144,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 
      - 
      - 
-     - 
+     - X
      - X
    * - Gaea C6 
      - 1   
@@ -158,7 +158,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 
      - 
      - X
-     - 
+     - X
      - X
    * - AWS (PW)
      - 3   
