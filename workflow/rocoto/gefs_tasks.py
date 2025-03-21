@@ -269,10 +269,9 @@ class GEFSTasks(Tasks):
         resources = self.get_resource('postsnd')
 
         deps = []
-        for member in range(0, self.nmem + 1):
-            task = f'{self.run}_fcst_mem#member#_#seg_dep#'
-            dep_dict = {'type': 'task', 'name': task}
-            deps.append(rocoto.add_dependency(dep_dict))
+        task = f'{self.run}_fcst_mem#member#_#seg_dep#'
+        dep_dict = {'type': 'task', 'name': task}
+        deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
