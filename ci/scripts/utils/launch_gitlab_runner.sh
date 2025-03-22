@@ -10,9 +10,9 @@ host=$(hostname)
 source "${HOMEGFS_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion | hercules | wcoss2 | gaeac5 | gaeac6 )
-    echo "Launch GitLab Runner on ${MACHINE_ID}";;
+    echo "Launching GitLab Runner on ${MACHINE_ID}";;
   noaacloud )
-    echo "Launch GitLab Runner on ${PW_CSP}";;
+    echo "Launching GitLab Runner on ${PW_CSP}";;
   *)
     echo "Unsupported platform. Exiting with error."
     exit 1;;
@@ -43,10 +43,12 @@ if [[ ! -f gitlab-runner ]]; then
 fi
 
 if [[ $1 == "register" ]]; then
-  ./gitlab-runner register -n -t ${GITLAB_RUNNER_TOKEN} --url ${GITLAB_URL} --executor shell --shell bash --builds-dir ${GITLAB_BUILDS_DIR} --custom_build_dir-enabled true
+  ./gitlab-runner register -n -t ${GITLAB_RUNNER_TOKEN} --url ${GITLAB_URL} --executor shell --shell bash --builds-dir ${GITLAB_BUILDS_DIR} --custom_build_dir-enabled true --request-concurrency 24
+  sed -i 's/concurrent.*/concurrent = 24/' ~/.gitlab-runner/config.toml
 fi
 if [[ $1 == "run" ]]; then
-  nohup ./gitlab-runner run --working-directory ${GITLAB_BUILDS_DIR} --user ${USER} --group ${USER} --log-level debug >> ${GITLAB_LOG} 2>&1 &
+  echo "Running gitlab-runner with nohup see log ${PWD}/${GITLAB_LOG}"
+  nohup ./gitlab-runner run --working-directory ${GITLAB_BUILDS_DIR} --user ${USER} >> ${GITLAB_LOG} 2>&1 &
 fi
 if [[ $1 == "unregister" ]]; then
   ./gitlab-runner unregister --name ${GITLAB_RUNNER_NAME}
