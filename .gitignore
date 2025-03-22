@@ -10,6 +10,8 @@ __pycache__
 #nohup.out - some users do not want this to be a part of .gitignore.  TODO: review against best practices
 .idea/
 .vscode/
+.venv/
+venv/
 nohup.out
 
 # Ignore editor generated backup files
@@ -20,7 +22,6 @@ nohup.out
 exec/
 build*/
 install*/
-venv/
 
 # Ignore fix directory symlinks
 #------------------------------
