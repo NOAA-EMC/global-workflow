@@ -9,14 +9,7 @@ set -eu
 
 TEST_DIR=${1:-${TEST_DIR:-?}}  # Location of the root of the testing directory
 pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this script
-SYSTEM_BUILD_DIR=${3:-"global-workflow"}  # Name of the system build directory, default is "global-workflow"
-GET_PSLOTS=${4:-"false"}  # Flag to get the list of pslots from the the directory pslot
-
-# Check for usage
-if [[ $# -lt 2 || $# -gt 4 ]]; then
-  echo "Usage: $0 <TEST_DIR> <pslot> [SYSTEM_BUILD_DIR] [--get_pslot_list]"
-  exit 1
-fi
+SYSTEM_BUILD_DIR=${3:-"global-workflow"}  # Name of the system build directory, default is "global-workflow
 
 # TEST_DIR contains 2 directories;
 # 1. HOMEgfs: clone of the global-workflow
@@ -26,7 +19,7 @@ fi
 # ├── HOMEgfs
 # └── RUNTESTS
 #     ├── COMROOT
-#     │   └── ${pslot}
+#     │   └── ${pslot}
 #     └── EXPDIR
 #         └── ${pslot}
 # Two system build directories created at build time gfs, and gdas
@@ -39,91 +32,80 @@ run_check_logfile="${RUNTESTS}/ci-run_check.log"
 echo "Source modules."
 source "${HOMEgfs}/workflow/gw_setup.sh"
 
-if [[ "${GET_PSLOTS}" == "--get_pslot_list" ]]; then
-  pslot_list=$("${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh" get_pslot_list "${RUNTESTS}")
-else
-  pslot_list=(${pslot})
+# cd into the experiment directory
+echo "cd ${RUNTESTS}/EXPDIR/${pslot}"
+cd "${RUNTESTS}/EXPDIR/${pslot}" || (echo "FATAL ERROR: Unable to cd into '${RUNTESTS}/EXPDIR/${pslot}', ABORT!"; exit 1)
+
+# Name of the Rocoto XML and database files
+xml="${pslot}.xml"
+db="${pslot}.db"
+
+# Ensure the XML is present for the experiment
+if [[ ! -f "${xml}" ]]; then
+  echo "FATAL ERROR: XML file ${xml} not found in '${pslot}', experiment ${pslot} failed, ABORT!"
+  exit 1
 fi
-echo "Experment being ran with rocotorun and rocotostat.py: ${pslot_list}"
 
-for pslot in ${pslot_list[@]}; do
+# Launch experiment
+echo "Launch experiment with Rocoto."
+rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
+sleep 10
+if [[ ! -f "${db}" ]]; then
+  echo "FATAL ERROR: Rocoto database file ${db} not found, experiment ${pslot} failed, ABORT!"
+  exit 2
+fi
 
-  # cd into the experiment directory
-  echo "cd ${RUNTESTS}/EXPDIR/${pslot}"
-  cd "${RUNTESTS}/EXPDIR/${pslot}" || (echo "FATAL ERROR: Unable to cd into '${RUNTESTS}/EXPDIR/${pslot}', ABORT!"; exit 1)
+# Experiment launched
+rc=99
+set +e
+while true; do
 
-  # Name of the Rocoto XML and database files
-  xml="${pslot}.xml"
-  db="${pslot}.db"
-
-  # Ensure the XML is present for the experiment
-  if [[ ! -f "${xml}" ]]; then
-    echo "FATAL ERROR: XML file ${xml} not found in '${pslot}', experiment ${pslot} failed, ABORT!"
-    exit 1
-  fi
-
-  # Launch experiment
-  echo "Launch experiment with Rocoto."
+  echo "Run rocotorun."
   rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
-  sleep 10
-  if [[ ! -f "${db}" ]]; then
-    echo "FATAL ERROR: Rocoto database file ${db} not found, experiment ${pslot} failed, ABORT!"
-    exit 2
+
+  # Wait before running rocotostat
+  sleep 60
+
+  # Get job statistics
+  echo "Gather Rocoto statistics"
+  # shellcheck disable=SC2312 # We want to use the exit code of the command
+  full_state=$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
+  error_stat=$?
+
+  for state in CYCLES_TOTAL CYCLES_DONE SUCCEEDED FAIL DEAD; do
+    declare "${state}"="$(echo "${full_state}" | grep "${state}" | cut -d: -f2)" || true
+  done
+  ROCOTO_STATE=$(echo "${full_state}" | tail -1) || exit 1
+
+  echo -e "(${pslot} on ${MACHINE_ID^})\n\tTotal Cycles: ${CYCLES_TOTAL}\n\tNumber Cycles done: ${CYCLES_DONE}\n\tState: ${ROCOTO_STATE}"
+
+  if [[ ${error_stat} -ne 0 ]]; then
+    {
+      echo "Experiment ${pslot} Terminated with ${FAIL} tasks failed and ${DEAD} dead at $(date)" || true
+      echo "Experiment ${pslot} Terminated: *${ROCOTO_STATE}*"
+    } | tee -a "${run_check_logfile}"
+    if [[ "${DEAD}" -ne 0 ]]; then
+      error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
+      {
+        echo "Error logs:"
+        echo "${error_logs}"
+      } | tee -a  "${run_check_logfile}"
+      rm -f "${RUNTESTS}/${pslot}_error.logs"
+      for log in ${error_logs}; do
+        echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/${pslot}_error.logs"
+      done
+   fi
+   rc=1
+   break
   fi
 
-  # Experiment launched
-  rc=99
-  set +e
-  while true; do
-
-    echo "Run rocotorun."
-    rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
-
-    # Wait before running rocotostat
-    sleep 60
-
-    # Get job statistics
-    echo "Gather Rocoto statistics"
-    # shellcheck disable=SC2312 # We want to use the exit code of the command
-    full_state=$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
-    error_stat=$?
-
-    for state in CYCLES_TOTAL CYCLES_DONE SUCCEEDED FAIL DEAD; do
-      declare "${state}"="$(echo "${full_state}" | grep "${state}" | cut -d: -f2)" || true
-    done
-    ROCOTO_STATE=$(echo "${full_state}" | tail -1) || exit 1
-
-    echo -e "(${pslot} on ${MACHINE_ID^})\n\tTotal Cycles: ${CYCLES_TOTAL}\n\tNumber Cycles done: ${CYCLES_DONE}\n\tState: ${ROCOTO_STATE}"
-
-    if [[ ${error_stat} -ne 0 ]]; then
-      {
-        echo "Experiment ${pslot} Terminated with ${FAIL} tasks failed and ${DEAD} dead at $(date)" || true
-        echo "Experiment ${pslot} Terminated: *${ROCOTO_STATE}*"
-      } | tee -a "${run_check_logfile}"
-      if [[ "${DEAD}" -ne 0 ]]; then
-        error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
-        {
-          echo "Error logs:"
-          echo "${error_logs}"
-        } | tee -a  "${run_check_logfile}"
-        rm -f "${RUNTESTS}/${pslot}_error.logs"
-        for log in ${error_logs}; do
-          echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/${pslot}_error.logs"
-        done
-      fi
-      rc=1
-      break
-    fi
-
-    if [[ "${ROCOTO_STATE}" == "DONE" ]]; then
-      {
-        echo "Experiment ${pslot} Completed ${CYCLES_DONE} Cycles: *SUCCESS* at $(date)" || true
-      } | tee -a "${run_check_logfile}"
-      rc=0
-      break
-    fi
-
-  done
+  if [[ "${ROCOTO_STATE}" == "DONE" ]]; then
+    {
+      echo "Experiment ${pslot} Completed ${CYCLES_DONE} Cycles: *SUCCESS* at $(date)" || true
+    } | tee -a "${run_check_logfile}"
+    rc=0
+    break
+  fi
 
   # Wait before running rocotorun again
   sleep 300
@@ -131,3 +113,4 @@ for pslot in ${pslot_list[@]}; do
 done
 
 exit "${rc}"
+
