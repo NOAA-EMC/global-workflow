@@ -19,7 +19,7 @@ def main():
 
     # Pull out all the configuration keys needed to run the rest of archive steps
     keys = ['ATARDIR', 'current_cycle', 'IAUFHRS', 'RUN', 'PDY',
-            'PSLOT', 'HPSSARCH', 'LOCALARCH', 'ROTDIR', 'PARMgfs',
+            'PSLOT', 'DO_ARCHCOM', 'ARCHCOM_TO', 'ROTDIR', 'PARMgfs',
             'ARCDIR', 'SDATE', 'MODE', 'ENSGRP', 'NMEM_EARCGRP',
             'NMEM_ENS', 'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS',
             'lobsdiag_forenkf', 'FHMIN_ENKF', 'FHMAX_ENKF_GFS',
@@ -38,21 +38,17 @@ def main():
 
     # Also import all COMIN* directory and template variables
     for key in archive.task_config.keys():
-        if key.startswith("COMIN"):
+        if key.startswith("COM"):
             archive_dict[key] = archive.task_config[key]
 
-    cwd = os.getcwd()
+    with chdir(config.ROTDIR):
 
-    os.chdir(config.ROTDIR)
+        # Determine which archives to create
+        atardir_sets = archive.configure_tars(archive_dict)
 
-    # Determine which archives to create
-    atardir_sets = archive.configure_tars(archive_dict)
-
-    # Create the backup tarballs and store in ATARDIR
-    for atardir_set in atardir_sets:
-        archive.execute_backup_dataset(atardir_set)
-
-    os.chdir(cwd)
+        # Create the backup tarballs and store in ATARDIR
+        for atardir_set in atardir_sets:
+            archive.execute_backup_dataset(atardir_set)
 
 
 if __name__ == '__main__':

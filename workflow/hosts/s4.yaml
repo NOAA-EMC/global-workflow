@@ -1,4 +1,3 @@
-# Paths
 BASE_GIT: '/data/prod/glopara/git'
 DMPDIR: '/data/prod/glopara/dump'
 BASE_DATA: '/data/prod/glopara'
@@ -9,20 +8,20 @@ HOMEDIR: '/data/users/${USER}'
 STMP: '/scratch/users/${USER}'
 PTMP: '/scratch/users/${USER}'
 NOSCRUB: ${HOMEDIR}
-ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
-AERO_INPUTS_DIR: /data/prod/glopara/gocart_emissions
-# BQS Properties
+ACCOUNT: star
 SCHEDULER: slurm
 QUEUE: s4
 QUEUE_SERVICE: serial
 PARTITION_BATCH: s4
 PARTITION_SERVICE: serial
-HPSS_PROJECT: emc-global
 CHGRP_RSTPROD: 'NO'
 CHGRP_CMD: 'ls'
-# Features
-SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
-HPSSARCH: 'NO'
-LOCALARCH: 'NO'
+HPSS_PROJECT: emc-global
+DO_ARCHCOM: 'NO'
+ARCHCOM_TO: 'local'
+ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
 MAKE_NSSTBUFR: 'YES'
 MAKE_ACFTBUFR: 'YES'
+SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
+AERO_INPUTS_DIR: /data/prod/glopara/GEFS_ExtData/20250310
+
