@@ -5,10 +5,10 @@ PACKAGEROOT: ''
 HOMEDIR: '/home/${USER}'
 STMP: '/home/${USER}'
 PTMP: '/home/${USER}'
-NOSCRUB: $HOMEDIR
+NOSCRUB: '${HOMEDIR}'
 COMINsyn: ''
 # BQS properties
-SCHEDULER: none
+SCHEDULER: 'none'
 QUEUE: ''
 QUEUE_SERVICE: ''
 PARTITION_BATCH: ''
