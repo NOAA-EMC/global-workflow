@@ -22,8 +22,10 @@ source ${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}
 cd ${GITLAB_RUNNER_DIR}
 
 GITLAB_LOG=launched_gitlab_runner-$(date +%Y%m%d%M).log
+GITLAB_RUNNER_NAME="RDHPCS Gaea C6"
 rm -f "${LOG}"
 echo "Registering Gitlab Runner ${MACHINE_ID} on host ${host} at $(date)" >> "${GITLAB_LOG}"
+echo "with runner name: ${GITLAB_RUNNER_NAME}" >> "${GITLAB_LOG}"
 
 # Get token from 2nd arg, env, or file
 GITLAB_RUNNER_TOKEN=${2:-${GITLAB_RUNNER_TOKEN}}
@@ -47,8 +49,11 @@ if [[ $1 == "register" ]]; then
   sed -i 's/concurrent.*/concurrent = 24/' ~/.gitlab-runner/config.toml
 fi
 if [[ $1 == "run" ]]; then
-  echo "Running gitlab-runner with nohup see log ${PWD}/${GITLAB_LOG}"
-  nohup ./gitlab-runner run --working-directory ${GITLAB_BUILDS_DIR} --user ${USER} >> ${GITLAB_LOG} 2>&1 &
+  COMMAND="nohup ./gitlab-runner run --working-directory ${GITLAB_BUILDS_DIR}"
+  # --user ${USER}"
+  echo -e "Running gitlab-runner with the command:\n${COMMAND}\nsee log ${PWD}/${GITLAB_LOG}"
+  nohup $COMMAND >> ${GITLAB_LOG} 2>&1 &
+  cat ${GITLAB_LOG}
 fi
 if [[ $1 == "unregister" ]]; then
   ./gitlab-runner unregister --name ${GITLAB_RUNNER_NAME}
