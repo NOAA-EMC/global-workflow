@@ -41,7 +41,7 @@ _top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
 
 # Setup the logger
 logger = Logger(logfile_path=os.environ.get("LOGFILE_PATH"),
-                level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
+                level=os.environ.get("LOGGING_LEVEL", "INFO"),
                 colored_log=os.environ.get("COLORED_LOG", True))
 
 

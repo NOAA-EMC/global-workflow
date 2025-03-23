@@ -52,9 +52,9 @@ def input_args(*argv):
 def check_expdir(cmd_expdir, cfg_expdir):
 
     if not os.path.samefile(cmd_expdir, cfg_expdir):
-        logger.info('MISMATCH in experiment directories!')
-        logger.info(f'config.base:   EXPDIR = {cfg_expdir}')
-        logger.info(f'  input arg: --expdir = {cmd_expdir}')
+        logger.exception('MISMATCH in experiment directories!')
+        logger.error(f'config.base:   EXPDIR = {cfg_expdir}')
+        logger.error(f'  input arg: --expdir = {cmd_expdir}')
         raise ValueError('Abort!')
 
 
@@ -123,7 +123,7 @@ if __name__ == '__main__':
 
     # Setup the logger
     logger = Logger(logfile_path=os.environ.get("LOGFILE_PATH"),
-                    level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
+                    level=os.environ.get("LOGGING_LEVEL", "INFO"),
                     colored_log=os.environ.get("COLORED_LOG", True))
 
     main()

@@ -50,41 +50,38 @@ def update_configs(host, inputs):
         defaults.update(dict_in)
         return defaults
 
-    # Convert the inputs to an AttrDict
-    data = AttrDict(host.info, **inputs.__dict__)
+    # map inputs_dict keys to keys used in configs
+    inputs_dict_remapped = map_inputs_to_configs(inputs)
 
-    # Read in the YAML file to fill out templates
-    data.HOMEgfs = _top
+    # Combine host.info and inputs_dict into a single dict, add some additional keys
+    host_plus_inputs_dict = AttrDict(host.info, **inputs_dict_remapped)
+    host_plus_inputs_dict.HOMEgfs = _top
+    host_plus_inputs_dict.MACHINE = host.machine.upper()
+
+    # Read in the YAML file
     yaml_path = inputs.yaml
     if not os.path.exists(yaml_path):
         raise FileNotFoundError(f'YAML file does not exist, check path: {yaml_path}')
-    yaml_dict = parse_j2yaml(yaml_path, data)
+    yaml_dict = parse_j2yaml(yaml_path, host_plus_inputs_dict)
 
     # yaml_dict is in the form {defaults: {key1: val1, ...}, base: {key1: val1, ...}, ...}
     # _update_defaults replaces any keys/values in defaults with matching keys in base
     yaml_dict = _update_defaults(yaml_dict)
 
-    # Need to map inputs_dict keys to keys used in configs
-    inputs_dict_remapped = map_inputs_to_configs(inputs)
-
-    # Combine host.info and inputs_dict into a single dict
-    combined_dict = AttrDict(host.info, **inputs_dict_remapped)
-    combined_dict.HOMEgfs = _top
-    combined_dict.MACHINE = host.machine.upper()
-
+    # Copy the config files to the experiment directory
     files = [ff for ff in os.listdir(inputs.configdir) if os.path.isfile(os.path.join(inputs.configdir, ff))]
     for file in files:
-        if file.endswith('.j2'):
+        if file.endswith('.j2'):  # Jinja2 template; render it
             logger.info(f'Jinja2 template found: {file}')
             input_template = f'{inputs.configdir}/{file}'
             cfg_file = file[:-3]  # remove the .j2 extension
             output_config = f'{inputs.expdir}/{inputs.pslot}/{cfg_file}'  # output file in EXPDIR
             cfg_key = '.'.join(cfg_file.split('.')[1:])  # key to look for in yaml_dict
-            _data = combined_dict
+            _data = host_plus_inputs_dict.copy()
             if cfg_key in yaml_dict.keys():
                 _data = AttrDict(_data, **yaml_dict[cfg_key])
             Jinja(input_template, _data).save(output_config)
-        else:
+        else:  # copy the file as is
             input_file = f'{inputs.configdir}/{file}'
             output_config = f'{inputs.expdir}/{inputs.pslot}/{file}'
             shutil.copy(input_file, output_config)
@@ -95,34 +92,32 @@ def update_configs(host, inputs):
 @logit(logger)
 def map_inputs_to_configs(inputs):
 
-    if inputs.start in ["warm"]:
-        is_warm_start = ".true."
-    elif inputs.start in ["cold"]:
-        is_warm_start = ".false."
-    else:
-        raise ValueError(f"Invalid start type: {inputs.start}")
+    warm_start_map = {'warm': '.true.', 'cold': '.false.'}
 
     # Construct a dictionary from user inputs
-    dict_out = AttrDict({
-        "PSLOT": inputs.pslot,
-        "SDATE": to_YMDH(inputs.idate),
-        "EDATE": to_YMDH(inputs.edate),
-        "CASECTL": f'C{inputs.resdetatmos}',
-        "OCNRES": f"{int(100.*inputs.resdetocean):03d}",
-        "EXPDIR": inputs.expdir,
-        "COMROOT": inputs.comroot,
-        "EXP_WARM_START": is_warm_start,
-        "MODE": inputs.mode,
-        "INTERVAL_GFS": inputs.interval,
-        "SDATE_GFS": to_YMDH(inputs.sdate_gfs),
-        "APP": inputs.app,
-        "NMEM_ENS": getattr(inputs, 'nens', 0),
-        "ICSDIR": inputs.icsdir,
-        "ACCOUNT": inputs.account,
-    })
+    try:
+        dict_out = AttrDict({
+            "PSLOT": inputs.pslot,
+            "SDATE": to_YMDH(inputs.idate),
+            "EDATE": to_YMDH(inputs.edate),
+            "CASE_CTL": f'C{inputs.resdetatmos}',
+            "OCNRES": f"{int(100.*inputs.resdetocean):03d}",
+            "EXPDIR": inputs.expdir,
+            "COMROOT": inputs.comroot,
+            "EXP_WARM_START": warm_start_map[inputs.start],
+            "MODE": inputs.mode,
+            "INTERVAL_GFS": inputs.interval,
+            "SDATE_GFS": to_YMDH(inputs.sdate_gfs),
+            "APP": inputs.app,
+            "NMEM_ENS": getattr(inputs, 'nens', 0),
+            "ICSDIR": inputs.icsdir,
+            "ACCOUNT": inputs.account,
+        })
+    except Exception as ee:
+        raise Exception("Error in constructing dictionary from user inputs, check inputs: ", ee)
 
     if dict_out.NMEM_ENS > 0:
-        dict_out.CASEENS = f'C{inputs.resensatmos}'
+        dict_out.CASE_ENS = f'C{inputs.resensatmos}'
 
     if inputs.mode in ['cycled']:
         dict_out.DOHYBVAR = "YES" if dict_out.NMEM_ENS > 0 else "NO"
@@ -304,10 +299,12 @@ def query_and_clean(dirname, force_clean=False):
 
     create_dir = True
     if os.path.exists(dirname):
-        logger.info(f'\ndirectory already exists in {dirname}')
+        logger.warning(f'directory already exists in:')
+        logger.warning(f'  {dirname}')
         if force_clean:
             overwrite = "YES"
-            logger.info(f'removing directory ........ {dirname}\n')
+            logger.warning(f'removing directory ...')
+            logger.warning(f'  {dirname}')
         else:
             overwrite = input('Do you wish to over-write [y/N]: ')
         create_dir = True if overwrite in [
@@ -376,17 +373,18 @@ def main(*argv):
         makedirs_if_missing(expdir)
         update_configs(host, user_inputs)
 
-    logger.info(f"*" * 100)
+    max_len = max(len(expdir), len(rotdir)) + 8
+    logger.info(f"*" * max_len)
     logger.info(f'EXPDIR: {expdir}')
     logger.info(f'ROTDIR: {rotdir}')
-    logger.info(f"*" * 100)
+    logger.info(f"*" * max_len)
 
 
 if __name__ == '__main__':
 
     # Setup the logger
     logger = Logger(logfile_path=os.environ.get("LOGFILE_PATH"),
-                    level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
+                    level=os.environ.get("LOGGING_LEVEL", "INFO"),
                     colored_log=os.environ.get("COLORED_LOG", True))
 
     main()
