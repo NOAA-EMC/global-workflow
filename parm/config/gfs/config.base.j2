@@ -386,12 +386,12 @@ export lwrite4danl=".true."
 export DO_CALC_INCREMENT="NO"
 
 # Early-cycle EnKF parameters
-export NMEM_ENS_GFS=30
-export NMEM_ENS_GFS_OFFSET=20
+export NMEM_ENS_GFS="{{ NMEM_ENS_GFS }}"
+export NMEM_ENS_GFS_OFFSET="{{ NMEM_ENS_GFS_OFFSET }}"
 export DO_CALC_INCREMENT_ENKF_GFS="NO"
 
 # EnKF output frequency
-if [[ ${DOHYBVAR} = "YES" ]]; then
+if [[ "${DOHYBVAR}" = "YES" ]]; then
     export FHMIN_ENKF=3
     export FHMAX_ENKF=9
     export FHMAX_ENKF_GFS="{{ FHMAX_ENKF_GFS }}"
