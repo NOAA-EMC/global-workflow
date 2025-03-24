@@ -9,7 +9,7 @@
 #########################################################################
 
 # Main CI root directory - Base directory for all CI/CD operations
-export GFS_CI_ROOT=/ncrc/proj/nggps_emc/${USER}/GFS_CI_CD
+export GFS_CI_ROOT="/ncrc/proj/nggps_emc/${USER}/GFS_CI_CD"
 
 # ICSDIR root directory - Contains initial condition data
 # Used by create_experiment.py for setting up test cases
@@ -20,11 +20,11 @@ export ICSDIR_ROOT=/gpfs/f6/bil-fire8/world-shared/global/glopara/data/ICSDIR
 #########################################################################
 
 # JENKINS launch directory for agent - Where Jenkins agents are launched from
-export JENKINS_AGENT_LAUNCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+export JENKINS_AGENT_LAUNCH_DIR="${GFS_CI_ROOT}/Jenkins/agent"
 
 # JENKINS internal working directories for CI jobs (not for users use)
 # Where Jenkins stores temporary files during CI job execution
-export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
+export JENKINS_WORK_DIR="${GFS_CI_ROOT}/Jenkins/workspace"
 
 # NOTE: JENKINS custom_workspace directory where CI jobs are run
 # /gpfs/f6/drsa-precip3/proj-shared/global/CI
@@ -36,10 +36,10 @@ export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
 
 # CTest functional test directories for pre-staged input data
 # Contains data needed for functional tests
-export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
+export STAGED_TESTS_DIR="${GFS_CI_ROOT}/STAGED_TESTS_DIR"
 
 # CI BASH test directories - Used for bash script testing
-export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
+export GFS_BASH_CI_ROOT="${GFS_CI_ROOT}/GFS_BASH_CI"
 
 #########################################################################
 # GitLab CI configuration
@@ -61,7 +61,7 @@ export GITLAB_BUILDS_DIR=/gpfs/f6/drsa-precip3/scratch/role.glopara/GFS_CI_ROOT/
 # 1. Store the gitlab-runner binary
 # 2. Execute the runner from
 # 3. Write log files to
-export GITLAB_RUNNER_DIR=${GFS_CI_ROOT}/GitLab/Runner
+export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
 
 #########################################################################
 # HPC and parallel execution settings
