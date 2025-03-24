@@ -38,8 +38,8 @@ def main():
 
     # Also import all COMIN* directory and template variables
     for key in archive.task_config.keys():
-        if key.startswith("COM"):
-            archive_dict[key] = archive.task_config[key]
+        if key.startswith(("COM_", "COMIN_")):
+            archive_dict[key] = archive.task_config.get(key)
 
     with chdir(config.ROTDIR):
 
@@ -49,6 +49,9 @@ def main():
         # Create the backup tarballs and store in ATARDIR
         for atardir_set in atardir_sets:
             archive.execute_backup_dataset(atardir_set)
+
+        # Clean up any temporary files
+        archive.clean()
 
 
 if __name__ == '__main__':
