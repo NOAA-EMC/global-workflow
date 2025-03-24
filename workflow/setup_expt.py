@@ -114,7 +114,7 @@ def map_inputs_to_configs(inputs):
             "ACCOUNT": inputs.account,
         })
     except Exception as ee:
-        raise Exception("Error in constructing dictionary from user inputs, check inputs: ", ee)
+        raise Exception("Error in constructing dictionary from user inputs, check inputs: ") from ee
 
     if dict_out.NMEM_ENS > 0:
         dict_out.CASE_ENS = f'C{inputs.resensatmos}'
