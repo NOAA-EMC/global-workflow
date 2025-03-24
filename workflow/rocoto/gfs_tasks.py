@@ -3217,6 +3217,8 @@ class GFSTasks(Tasks):
         if 'enkfgdas' in self.run:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
             deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+            deps.append(rocoto.add_dependency(dep_dict))
             if not self.options['do_jediatmvar']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
                 deps.append(rocoto.add_dependency(dep_dict))
