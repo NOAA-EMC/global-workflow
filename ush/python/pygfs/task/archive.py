@@ -172,7 +172,8 @@ class Archive(Task):
             atardir_sets.append(dataset)
 
         # Save the tarball list as a YAML in case we are using globus
-        self._create_datasets_yaml(atardir_sets)
+        group = arch_dict.get("ENSGRP", -1)
+        self._create_datasets_yaml(atardir_sets, group)
 
         return atardir_sets
 
@@ -605,10 +606,15 @@ class Archive(Task):
         return
 
     @logit(logger)
-    def _create_datasets_yaml(self, datasets):
+    def _create_datasets_yaml(self, datasets, group=-1):
         """
         Go through the dataset dictionaries, extract the tarball names and has_rstprod
-        boolean, and write a YAML with the info in COM_CONF.
+        boolean, and write a YAML with the info in COM_CONF.  The group number is appended
+        to the YAML name if it is not -1.
+        Group definitions
+            group=-1: deterministic (non-ensemble)
+            group=0: ensemble aggregates (means, spreads, etc)
+            group=1..n: groups of individual ensemble members
         """
 
         if len(datasets) == 0:
@@ -616,7 +622,12 @@ class Archive(Task):
             return
 
         com_conf = self.task_config.COMOUT_CONF
-        yaml_filename = "backup_tarballs.yaml"
+
+        if group < 0:
+            yaml_filename = "backup_tarballs.yaml"
+        else:
+            yaml_filename = f"backup_tarballs_group{group}.yaml"
+
         yaml_filename = os.path.join(com_conf, yaml_filename)
 
         output_yaml = {}
