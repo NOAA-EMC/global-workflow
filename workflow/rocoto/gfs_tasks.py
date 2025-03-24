@@ -2519,18 +2519,21 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        earcenvars = self.envars.copy()
+        earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+
         # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
+        n_groups = -(self.nmem // -self._configs['earc_groups']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
         resources = self.get_resource('globus')
         var_dict = {'grp': groups}
 
-        task_name = f'{self.run}_globus_earc'
+        task_name = f'{self.run}_globus_earc_#grp#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': earcenvars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/globus_earc.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -2538,7 +2541,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}_ens_globus_arch',
+        metatask_dict = {'task_name': f'{self.run}_globus_earc',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
@@ -2555,9 +2558,7 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_archcom']:
                 if self.options['do_globusarch']:
-                    # TODO add this back in when ensemble globus archiving is enabled
-                    # dep_dict = {'type': 'metatask', 'name': f'{self.run}_ens_globus_arch'}
-                    pass
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_globus_arch'}
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
                     deps.append(rocoto.add_dependency(dep_dict))
@@ -3222,11 +3223,12 @@ class GFSTasks(Tasks):
         deps = []
         if 'enkfgdas' in self.run:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if not self.options['do_jediatmvar']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+                deps.append(rocoto.add_dependency(dep_dict))
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        if not self.options['do_jediatmvar']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -3270,7 +3272,7 @@ class GFSTasks(Tasks):
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
         # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['earc_tars']['NMEM_EARCGRP'])
+        n_groups = -(self.nmem // -self._configs['earc_groups']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
         resources = self.get_resource('arch_tars')
