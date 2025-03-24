@@ -16,7 +16,7 @@ from wxflow import Configuration, Logger, logit
 logger = getLogger(__name__)
 
 
-#@logit(logger)
+# @logit(logger)
 def input_args(*argv):
     """
     Method to collect user arguments for `setup_xml.py`
@@ -48,7 +48,7 @@ def input_args(*argv):
     return parser.parse_args(argv[0][0] if len(argv[0]) else None)
 
 
-#@logit(logger)
+# @logit(logger)
 def check_expdir(cmd_expdir, cfg_expdir):
 
     if not os.path.samefile(cmd_expdir, cfg_expdir):
@@ -58,17 +58,17 @@ def check_expdir(cmd_expdir, cfg_expdir):
         raise ValueError('Abort!')
 
 
-#@logit(logger)
-def check_dir_writable(dirPath):
-    if os.path.isdir(dirPath):
-        if os.access(dirPath, os.W_OK):
+# @logit(logger)
+def check_dir_writable(dir_path):
+    if os.path.isdir(dir_path):
+        if os.access(dir_path, os.W_OK):
             return True
         else:
             return False
-    elif os.path.isfile(dirPath):
+    elif os.path.isfile(dir_path):
         return False
     else:  # Find the nearest parent directory that already exists
-        test_parent = os.path.dirname(dirPath)
+        test_parent = os.path.dirname(dir_path)
         if len(test_parent) == 0:
             return False
         while test_parent:
@@ -82,7 +82,7 @@ def check_dir_writable(dirPath):
             return False
 
 
-#logit(logger, name="setup_xml.main")
+@logit(logger, name="setup_xml.main")
 def main(*argv):
 
     user_inputs = input_args(argv)
@@ -98,8 +98,8 @@ def main(*argv):
     check_expdir(user_inputs.expdir, base['EXPDIR'])
 
     # Check if "HOMEDIR","STMP","PTMP" dirrctories are writable
-    dirKeys = ["HOMEDIR", "STMP", "PTMP"]
-    for dk in dirKeys:
+    dir_keys = ["HOMEDIR", "STMP", "PTMP"]
+    for dk in dir_keys:
         check_dir_writable(base[dk])
         if not check_dir_writable(base[dk]):
             msg = f'The {dk} path {base[dk]} cannot be written to!  Please correct this path and try again.'
