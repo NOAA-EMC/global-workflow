@@ -441,7 +441,7 @@ class GEFSTasks(Tasks):
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        
+
         task_name = f'{self.run}_awips'
         task_dict = {'task_name': task_name,
                      'resources': resources,
