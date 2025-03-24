@@ -273,7 +273,7 @@ class GEFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': task}
         deps.append(rocoto.add_dependency(dep_dict))
 
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dependencies = rocoto.create_dependency(dep=deps)
 
         fhrs = self._get_forecast_hours(self.run, self._configs['postsnd'])
 
