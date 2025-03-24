@@ -963,7 +963,7 @@ case ${step} in
           exit 4
           ;;
       esac
-    elif [[ "${RUN}" =~ enkfg(das|fs) ]]; then
+    elif [[ "${RUN}" == enkfgfs || "${RUN}" == enkfgdas ]]; then
       case "${CASE_ENS}" in
         "C48" | "C96" | "C192")
           declare -x "walltime"="00:20:00"
@@ -976,7 +976,7 @@ case ${step} in
           exit 4
           ;;
       esac
-    elif [[ "${RUN}" =~ gfs ]]; then
+    elif [[ "${RUN}" == gfs ]]; then
       case "${CASE}" in
         "C48" | "C96" | "C192")
           declare -x "walltime"="03:00:00"
