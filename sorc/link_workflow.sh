@@ -72,8 +72,8 @@ ${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/ru
 case "${machine}" in
 "wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
 "hera") FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
-"orion") FIX_DIR="/work/noaa/global/glopara/fix" ;;
-"hercules") FIX_DIR="/work/noaa/global/glopara/fix" ;;
+"orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
+"hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "jet") FIX_DIR="/lfs5/HFIP/hfv3gfs/glopara/FIX/fix" ;;
 "s4") FIX_DIR="/data/prod/glopara/fix" ;;
 "gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
@@ -394,6 +394,8 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     "fv3jedi_plot_field.x"
     "gdasapp_chem_diagb.x"
     "fv3jedi_fv3inc.x"
+    "fv3jedi_correction_increment.x"
+    "fv3jedi_ensemble_add_increment.x"
     "gdas_ens_handler.x"
     "gdas_incr_handler.x"
     "gdas_obsprovider2ioda.x"

@@ -153,7 +153,7 @@ tbp=""
 if [[ "${progsigma}" == ".true." ]]; then tbp="_progsigma" ; fi
 
 # Radiation options
-if [[ "${DO_AERO_FCST}" == "YES" ]]; then
+if [[ "${DO_AERO_FCST}" == "YES" && "${RUN}" =~ "gfs" ]]; then
     export IAER=2011  # spectral band mapping method for aerosol optical properties
 else
     export IAER=1011

@@ -281,10 +281,7 @@ class GFSTasks(Tasks):
     def analcalc(self):
 
         deps = []
-        if self.options['do_jediatmvar']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
-        else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2482,18 +2479,21 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        earcenvars = self.envars.copy()
+        earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+
         # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['earc']['NMEM_EARCGRP'])
+        n_groups = -(self.nmem // -self._configs['earc_groups']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
         resources = self.get_resource('globus')
         var_dict = {'grp': groups}
 
-        task_name = f'{self.run}_globus_earc'
+        task_name = f'{self.run}_globus_earc_#grp#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': earcenvars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/globus_earc.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -2501,7 +2501,7 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}_ens_globus_arch',
+        metatask_dict = {'task_name': f'{self.run}_globus_earc',
                          'var_dict': var_dict,
                          'task_dict': task_dict
                          }
@@ -2518,9 +2518,7 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_archcom']:
                 if self.options['do_globusarch']:
-                    # TODO add this back in when ensemble globus archiving is enabled
-                    # dep_dict = {'type': 'metatask', 'name': f'{self.run}_ens_globus_arch'}
-                    pass
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_globus_arch'}
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
                     deps.append(rocoto.add_dependency(dep_dict))
@@ -2679,42 +2677,6 @@ class GFSTasks(Tasks):
 
         return task
 
-    def eomg(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_eobs'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        eomgenvars = self.envars.copy()
-        eomgenvars_dict = {'ENSMEM': '#member#',
-                           'MEMDIR': 'mem#member#'
-                           }
-        for key, value in eomgenvars_dict.items():
-            eomgenvars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        resources = self.get_resource('eomg')
-        task_name = f'{self.run}_eomg_mem#member#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': eomgenvars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/eomg.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
-        metatask_dict = {'task_name': f'{self.run}_eomg',
-                         'var_dict': member_var_dict,
-                         'task_dict': task_dict,
-                         }
-
-        task = rocoto.create_task(metatask_dict)
-
-        return task
-
     def ediag(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_eobs'}
@@ -2740,10 +2702,7 @@ class GFSTasks(Tasks):
 
     def eupd(self):
         deps = []
-        if self.options['lobsdiag_forenkf']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_ediag'}
-        else:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_eomg'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_ediag'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -2949,10 +2908,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jediatmens']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
-        else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2988,16 +2944,73 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(metatask_dict)
         return task
 
+    def ecen_fv3jedi(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf','')}_atmanlfinal"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('ecen_fv3jedi')
+        task_name = f'{self.run}_ecen_fv3jedi'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/ecen_fv3jedi.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def analcalc_fv3jedi(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f"{self.run}_atmanlfinal"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_aero_anl']:
+            dep_dict = {'type': 'task', 'name': f"{self.run}_aeroanlfinal"}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jedisnowda']:
+            dep_dict = {'type': 'task', 'name': f"{self.run}_snowanl"}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('analcalc_fv3jedi')
+        task_name = f'{self.run}_analcalc_fv3jedi'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/analcalc_fv3jedi.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def esfc(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
-        deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jediatmens']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
         else:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_analcalc'}
+            deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
-        deps.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esnowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -3023,8 +3036,12 @@ class GFSTasks(Tasks):
     def efcs(self):
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jediatmens']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_ecen_fv3jedi'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        else:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
@@ -3166,11 +3183,13 @@ class GFSTasks(Tasks):
         deps = []
         if 'enkfgdas' in self.run:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if not self.options['do_jediatmvar']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+                deps.append(rocoto.add_dependency(dep_dict))
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
-        deps.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         earcenvars = self.envars.copy()
@@ -3200,8 +3219,9 @@ class GFSTasks(Tasks):
         if 'enkfgdas' in self.run:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
-            deps.append(rocoto.add_dependency(dep_dict))
+            if not self.options['do_jediatmvar']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+                deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:  # early cycle enkf run (enkfgfs)
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
@@ -3212,7 +3232,7 @@ class GFSTasks(Tasks):
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
         # Integer division is floor division, but we need ceiling division
-        n_groups = -(self.nmem // -self._configs['earc_tars']['NMEM_EARCGRP'])
+        n_groups = -(self.nmem // -self._configs['earc_groups']['NMEM_EARCGRP'])
         groups = ' '.join([f'{grp:02d}' for grp in range(0, n_groups + 1)])
 
         resources = self.get_resource('arch_tars')

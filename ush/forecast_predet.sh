@@ -389,6 +389,7 @@ FV3_predet(){
   warm_start=".false."
   read_increment=".false."
   res_latlon_dynamics='""'
+  increment_file_on_native_grid=".false."
 
   # Stochastic Physics Options
   do_skeb=".false."
@@ -724,7 +725,7 @@ MOM6_predet(){
 
 }
 
-# shellcheck disable=SC2178 
+# shellcheck disable=SC2178
 CMEPS_predet(){
   echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
 
@@ -734,7 +735,7 @@ CMEPS_predet(){
   ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
 
   # For CMEPS, CICE, MOM6 and WW3 determine restart writes
-  # Note FV3 has its own restart intervals  
+  # Note FV3 has its own restart intervals
   cmeps_restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
   # Convert restart interval into an explicit list for FV3
