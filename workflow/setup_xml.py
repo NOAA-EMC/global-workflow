@@ -16,7 +16,7 @@ from wxflow import Configuration, Logger, logit
 logger = getLogger(__name__)
 
 
-@logit(logger)
+#@logit(logger)
 def input_args(*argv):
     """
     Method to collect user arguments for `setup_xml.py`
@@ -48,7 +48,7 @@ def input_args(*argv):
     return parser.parse_args(argv[0][0] if len(argv[0]) else None)
 
 
-@logit(logger)
+#@logit(logger)
 def check_expdir(cmd_expdir, cfg_expdir):
 
     if not os.path.samefile(cmd_expdir, cfg_expdir):
@@ -58,7 +58,7 @@ def check_expdir(cmd_expdir, cfg_expdir):
         raise ValueError('Abort!')
 
 
-@logit(logger)
+#@logit(logger)
 def check_dir_writable(dirPath):
     if os.path.isdir(dirPath):
         if os.access(dirPath, os.W_OK):
@@ -82,7 +82,7 @@ def check_dir_writable(dirPath):
             return False
 
 
-@logit(logger, name="setup_xml.main")
+#logit(logger, name="setup_xml.main")
 def main(*argv):
 
     user_inputs = input_args(argv)

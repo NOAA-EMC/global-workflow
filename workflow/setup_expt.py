@@ -21,7 +21,7 @@ _top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
 logger = getLogger(__name__)
 
 
-@logit(logger)
+#@logit(logger)
 def makedirs_if_missing(dirname):
     """
     Creates a directory if not already present
@@ -30,7 +30,7 @@ def makedirs_if_missing(dirname):
         os.makedirs(dirname)
 
 
-@logit(logger)
+#@logit(logger)
 def update_configs(host, inputs):
     """
     Method to copy config files from workflow to experiment directory and render templates
@@ -38,7 +38,7 @@ def update_configs(host, inputs):
         inputs: user inputs to `setup_expt.py`
     """
 
-    @logit(logger)
+    #@logit(logger)
     def _update_defaults(dict_in: dict) -> dict:
         # Given an input dict_in of the form
         # {defaults: {config_name: {var1: value1, ...}, }, config_name: {var1: value1, ...}}
@@ -89,7 +89,7 @@ def update_configs(host, inputs):
     return
 
 
-@logit(logger)
+#@logit(logger)
 def map_inputs_to_configs(inputs):
 
     warm_start_map = {'warm': '.true.', 'cold': '.false.'}
@@ -125,7 +125,7 @@ def map_inputs_to_configs(inputs):
     return dict_out
 
 
-@logit(logger)
+#@logit(logger)
 def input_args(*argv):
     """
     Method to collect user arguments for `setup_expt.py`
@@ -291,7 +291,7 @@ def input_args(*argv):
     return inputs
 
 
-@logit(logger)
+#@logit(logger)
 def query_and_clean(dirname, force_clean=False):
     """
     Method to query if a directory exists and gather user input for further action
@@ -315,7 +315,7 @@ def query_and_clean(dirname, force_clean=False):
     return create_dir
 
 
-@logit(logger)
+#@logit(logger)
 def validate_user_request(host, inputs):
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
     machine = host.machine
@@ -328,7 +328,7 @@ def validate_user_request(host, inputs):
             raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
 
 
-@logit(logger)
+#@logit(logger)
 def get_ocean_resolution(resdetatmos):
     """
     Method to determine the ocean resolution based on the atmosphere resolution
@@ -344,7 +344,7 @@ def get_ocean_resolution(resdetatmos):
         raise KeyError(f"Ocean resolution for {resdetatmos} is not implemented")
 
 
-@logit(logger, name='setup_expt.main')
+#@logit(logger, name='setup_expt.main')
 def main(*argv):
 
     user_inputs = input_args(*argv)
