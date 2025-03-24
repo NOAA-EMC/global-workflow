@@ -49,7 +49,7 @@ GITLAB_RUNNER_NAME="RDHPCS Gaea C6"
 # Remove any existing log file
 rm -f "${LOG}"
 # Log the registration details
-echo "Registering GitLab Runner ${MACHINE_ID} on host ${host} at $(date)" >> "${GITLAB_LOG}"
+echo "Registering GitLab Runner ${MACHINE_ID} on host ${host} at $(date)" >> "${GITLAB_LOG}" || true
 echo "with runner name: ${GITLAB_RUNNER_NAME}" >> "${GITLAB_LOG}"
 
 #########################################################################
@@ -74,7 +74,7 @@ fi
 
 # Download the GitLab runner binary if it does not exist
 if [[ ! -f gitlab-runner ]]; then
-  curl -L --output "$PWD/gitlab-runner" https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+  curl -L --output "${PWD}/gitlab-runner" https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
   chmod +x ./gitlab-runner
 fi
 
