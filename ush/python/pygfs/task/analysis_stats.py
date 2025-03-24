@@ -79,19 +79,19 @@ class AnalysisStats(Task):
 
         logger.info(f"Copying files to {self.task_config.DATA}/stats")
 
-        # Parse JEDI analysis stat jinja file
-        self.obs_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
+        # Extract info from stat config file
+        analysis_config_dict = parse_j2yaml(self.task_config.STAT_BASE_CONFIG_YAML, self.task_config)
 
         # Loop through a copy of ob space list
         for analysis in self.task_config.STAT_ANALYSES[:]:
             logger.info(f"Working on analysis type: {analysis}")
 
             # Copy stat files to DATA path
-            input_tar = os.path.join(self.obs_dict[analysis]['stat_file_path'],
-                                     f"{self.task_config['APREFIX']}{self.obs_dict[analysis]['stat_file_name']}")
+            input_tar = os.path.join(analysis_config_dict[analysis]['stat_file_path'],
+                                     f"{self.task_config['APREFIX']}{analysis_config_dict[analysis]['stat_file_name']}")
             diag_dir_path = os.path.join(self.task_config.DATA, analysis)
 
-            dest = os.path.join(diag_dir_path, self.obs_dict[analysis]['stat_file_name'])
+            dest = os.path.join(diag_dir_path, analysis_config_dict[analysis]['stat_file_name'])
             logger.info(f"Copying {input_tar} to {dest} ...")
             tarball_list = [[input_tar, dest]]
             FileHandler({'mkdir': [diag_dir_path], 'copy': tarball_list}).sync()
@@ -109,9 +109,6 @@ class AnalysisStats(Task):
                     continue
                 # Extract all files to the current directory
                 tar.extractall(path=diag_dir_path)
-
-            # Extract info from stat config file
-            analysis_config_dict = parse_j2yaml(self.obs_dict[analysis]['base_config'], self.task_config)
 
             self.task_config.OBSSPACES_LIST = []
             for analysis_dict in analysis_config_dict[analysis]['obs spaces']:
@@ -172,7 +169,7 @@ class AnalysisStats(Task):
         None
         """
 
-        analysis_config_dict = parse_j2yaml(self.obs_dict[jedi_dict_key]['base_config'], self.task_config)
+        analysis_config_dict = parse_j2yaml(self.task_config.STAT_BASE_CONFIG_YAML, self.task_config)
 
         for analysis_dict in analysis_config_dict[jedi_dict_key]['obs spaces']:
             statfile = os.path.join(self.task_config.DATA, analysis_dict['output file'])
