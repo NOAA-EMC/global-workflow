@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 #########################################################################
 # launch_gitlab_runner.sh - Script to manage GitLab runners for CI/CD
 # 
@@ -40,16 +42,17 @@ esac
 source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
 
 # Change to the GitLab runner directory defined in the platform config
-cd "${GITLAB_RUNNER_DIR}"
+cd "${GITLAB_RUNNER_DIR}" || exit 1
 
 # Set the log file name with the current date and time
-GITLAB_LOG="launched_gitlab_runner-$(date +%Y%m%d%M).log"
+DATE=$(date +%Y%m%d%M) || true
+GITLAB_LOG="launched_gitlab_runner-${DATE}.log"
 # Set the GitLab runner name - this name will appear in the GitLab UI
 GITLAB_RUNNER_NAME="RDHPCS Gaea C6"
 # Remove any existing log file
 rm -f "${LOG}"
 # Log the registration details
-echo "Registering GitLab Runner ${MACHINE_ID} on host ${host} at $(date)" >> "${GITLAB_LOG}" || true
+echo "Registering GitLab Runner ${MACHINE_ID} on host ${host} at ${DATE}" >> "${GITLAB_LOG}"
 echo "with runner name: ${GITLAB_RUNNER_NAME}" >> "${GITLAB_LOG}"
 
 #########################################################################
@@ -115,7 +118,7 @@ if [[ "${1}" == "run" ]]; then
   echo -e "Running gitlab-runner with the command:\n${COMMAND}\nsee log ${PWD}/${GITLAB_LOG}"
   
   # Run the command in the background and redirect output to the log file
-  nohup $COMMAND >> "${GITLAB_LOG}" 2>&1 &
+  nohup "${COMMAND}" >> "${GITLAB_LOG}" 2>&1 &
   
   # Display the current contents of the log file
   cat "${GITLAB_LOG}"
