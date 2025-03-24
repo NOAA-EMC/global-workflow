@@ -117,7 +117,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 
      - X   
      - X        
-     -
+     - X
    * - Orion   
      - 2   
      - X     
@@ -131,7 +131,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 
      - X   
      - X        
-     -
+     - X
    * - Gaea C5 
      - 3   
      - X     
