@@ -4,7 +4,7 @@ stages:
   - run_tests
   
 variables:
-  BUILD_DATE: 'friday'
+  BUILD_DATE: 'today'
   GIT_CLONE_PATH: '$CI_BUILDS_DIR/global-workflow-${BUILD_DATE}'
   HOMEGFS: $GIT_CLONE_PATH
   RUNTESTS_DIR: $CI_BUILDS_DIR/RUNTESTS
