@@ -26,3 +26,6 @@ if __name__ == '__main__':
 
     # Insert the seaice analysis into the CICE6 restart
     MarineAnl.execute('soca_2cice_global')
+
+    # Compute the observation space statistics
+    MarineAnl.execute('soca_diag_stats')

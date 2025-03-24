@@ -83,7 +83,7 @@ class MarineAnalysis(Task):
         # Extend task_config with local_dict
         self.task_config.update(local_dict)
 
-        expected_keys = ['var', 'socaincr2mom6', 'soca_2cice_global', 'gdassoca_obsstats']
+        expected_keys = ['var', 'socaincr2mom6', 'soca_2cice_global', 'soca_diag_stats']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML_ANALYSIS, self.task_config, expected_keys)
 
     @logit(logger)
@@ -133,17 +133,24 @@ class MarineAnalysis(Task):
                                    os.path.join(self.task_config.DATA,
                                                 'ice.ens_weights.nc')]]}).sync()
 
-        # prepare the yaml configuration to run the SOCA variational application
-        #self._prep_variational_yaml()
-
-        # prepare the yaml configuration to run the SOCA to MOM6 IAU increment
-#        self._prep_checkpoint()
-
         # Generate background list
         self.task_config.marine_pseudo_model_states = mdau.gen_bkg_list(bkg_path='./bkg',
                                                                         window_begin=self.task_config.MARINE_WINDOW_BEGIN)
 
-        # TEST
+        # make a copy of the CICE6 restart
+        # set the restart date, dependent on the cycling type
+        if self.task_config.DOIAU:
+            # forecast initialized at the begining of the DA window
+            fcst_begin = self.task_config.MARINE_WINDOW_BEGIN_ISO
+            rst_date = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y%m%d.%H%M%S')
+        else:
+            # forecast initialized at the middle of the DA window
+            fcst_begin = self.task_config.MARINE_WINDOW_MIDDLE_ISO
+            rst_date = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y%m%d.%H%M%S')
+        ice_rst = os.path.join(self.task_config.COMIN_ICE_RESTART_PREV, f'{rst_date}.cice_model.res.nc')
+        ice_rst_ana = os.path.join(self.task_config.DATA, 'Data', rst_date + '.cice_model.res.nc')
+        FileHandler({'copy': [[ice_rst, ice_rst_ana]]}).sync()
+
         # Write obs_list_short
         save_as_yaml(parse_obs_list_file(self.task_config.MARINE_OBS_LIST_YAML), 'obs_list_short.yaml')
         os.environ['OBS_LIST_SHORT'] = 'obs_list_short.yaml'
@@ -152,6 +159,7 @@ class MarineAnalysis(Task):
         self.jedi_dict['var'].initialize(self.task_config)
         self.jedi_dict['socaincr2mom6'].initialize(self.task_config)
         self.jedi_dict['soca_2cice_global'].initialize(self.task_config)
+        self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -203,9 +211,6 @@ class MarineAnalysis(Task):
 
         FileHandler({'copy': obs_list}).sync()
 
-        #
-
-
     @logit(logger)
     def _prep_scratch_dir(self: Task) -> None:
         """Create and stage all the resources needed to run SOCA/JEDI, including the necesssary
@@ -237,151 +242,6 @@ class MarineAnalysis(Task):
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
         soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
         FileHandler(soca_utility_list).sync()
-
-    @logit(logger)
-    def _prep_variational_yaml(self: Task) -> None:
-        """Create the yaml configuration to run the SOCA variational application
-        """
-
-        # prepare background list for the pseudo model, check bkg date for consistency
-#        mdau.gen_bkg_list(bkg_path='./bkg',
-#                          window_begin=self.task_config.MARINE_WINDOW_BEGIN,
-#                          yaml_name='bkg_list.yaml')
-
-        # Make a copy of the env config before modifying to avoid breaking something else
-#        envconfig_jcb = copy.deepcopy(self.task_config)
-#        logger.info(f"---------------- Prepare the yaml configuration")
-#        logger.info(f"{envconfig_jcb}")       # Prepare the yaml configuration
-
-        # Add the things to the envconfig in order to template JCB files
-#        envconfig_jcb['PARMgfs'] = self.task_config.PARMgfs
-#        envconfig_jcb['NMEM_ENS'] = self.task_config.NMEM_ENS
-#        envconfig_jcb['berror_model'] = 'marine_background_error_static_diffusion'
-#        if self.task_config.NMEM_ENS >= 2:
-#            envconfig_jcb['berror_model'] = 'marine_background_error_hybrid_diffusion_diffusion'
-#        envconfig_jcb['DATA'] = self.task_config.DATA
-#        envconfig_jcb['OPREFIX'] = self.task_config.OPREFIX
-#        envconfig_jcb['PDY'] = os.getenv('PDY')
-#        envconfig_jcb['cyc'] = os.getenv('cyc')
-#        envconfig_jcb['SOCA_NINNER'] = self.task_config.SOCA_NINNER
-#        envconfig_jcb['obs_list'] = ['adt_rads_all']
-#        envconfig_jcb['HOMEgfs'] = self.task_config.HOMEgfs
-#        envconfig_jcb['DO_TEST_MODE'] = self.task_config.DO_TEST_MODE
-#        envconfig_jcb['RUN'] = self.task_config.RUN
-#        envconfig_jcb['current_cycle'] = self.task_config.current_cycle
-#        envconfig_jcb['MOM6_LEVS'] = mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3))
-
-        # Write obs_list_short
-#        save_as_yaml(parse_obs_list_file(self.task_config.MARINE_OBS_LIST_YAML), 'obs_list_short.yaml')
-#        os.environ['OBS_LIST_SHORT'] = 'obs_list_short.yaml'
-
-        # Render the JCB configuration files
-#        jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-base.yaml')
-#        jcb_algo_yaml = self.task_config.JCB_ALGO_YAML_VAR
-
-#        jcb_base_config = parse_j2yaml(path=jcb_base_yaml, data=envconfig_jcb)
-#        jcb_algo_config = parse_j2yaml(path=jcb_algo_yaml, data=envconfig_jcb)
-
-        # Override base with the application specific config
-#        jcb_config = {**jcb_base_config, **jcb_algo_config}
-
-        # convert datetime to string
-#        jcb_config['window_begin'] = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y-%m-%dT%H:%M:%SZ')
-#        jcb_config['window_middle'] = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
-
-        # Current hack so that this is not done directly in the JCB base yaml
-#        jcb_config['marine_pseudo_model_states'] = parse_yaml('bkg_list.yaml')
-
-        # Render the full JEDI configuration file using JCB
-#        jedi_config = render(jcb_config)
-
-        # Save the JEDI configuration file
-#        var_yaml_jcb = 'var.yaml'
-#        mdau.clean_empty_obsspaces(jedi_config, target=var_yaml_jcb, app='var')
-
-    def _prep_checkpoint(self: Task) -> None:
-        """Create the yaml configuration to run the SOCA to MOM6 IAU increment
-        """
-        # prepare the socaincr2mom6.yaml
-#        logger.info("Generate the SOCA to MOM6 IAU increment YAML file")
-#        data = {'marine_window_begin': self.task_config.MARINE_WINDOW_BEGIN_ISO,
-#                'marine_window_middle': self.task_config.MARINE_WINDOW_MIDDLE_ISO}
-#        soca2mom6inc_config = parse_j2yaml(path=os.path.join(self.task_config.MARINE_JCB_GDAS_ALGO, 'socaincr2mom6.yaml.j2'),
-#                                           data=data)
-#        soca2mom6inc_config.save(os.path.join(self.task_config.DATA, 'socaincr2mom6.yaml'))
-
-        # prepare the SOCA to CICE YAML file
-#        logger.info("Generate the SOCA to CICE RST YAML file")
-
-        # set the restart date, dependent on the cycling type
-#        if self.task_config.DOIAU:
-#            # forecast initialized at the begining of the DA window
-#            fcst_begin = self.task_config.MARINE_WINDOW_BEGIN_ISO
-#            rst_date = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y%m%d.%H%M%S')
-#        else:
-#            # forecast initialized at the middle of the DA window
-#            fcst_begin = self.task_config.MARINE_WINDOW_MIDDLE_ISO
-#            rst_date = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y%m%d.%H%M%S')
-
-        # make a copy of the CICE6 restart
-        ice_rst = os.path.join(self.task_config.COMIN_ICE_RESTART_PREV, f'{rst_date}.cice_model.res.nc')
-        ice_rst_ana = os.path.join(self.task_config.DATA, 'Data', rst_date + '.cice_model.res.nc')
-        FileHandler({'copy': [[ice_rst, ice_rst_ana]]}).sync()
-
-        # prepare the necessary configuration for the SOCA to CICE application
-#        soca2cice_param = AttrDict({
-#            "ocn_ana": f"./Data/ocn.3dvarfgat_pseudo.an.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
-#            "ice_ana": f"./Data/ice.3dvarfgat_pseudo.an.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
-#            "ocn_inc": f"./Data/ocn.3dvarfgat_pseudo.incr.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
-#            "ice_inc": f"./Data/ice.3dvarfgat_pseudo.incr.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc",
-#            "ice_rst": ice_rst_ana,
-#            "fcst_begin": fcst_begin
-#        })
-#        logger.debug(f"{soca2cice_param}")
-
-        # render the SOCA to CICE YAML file for the Arctic and Antarctic
-#        logger.info("render the SOCA to CICE YAML file for the Arctic and Antarctic")
-#        varchgyaml = 'soca_2cice_global.yaml'
-#        soca2cice_config = parse_j2yaml(path=os.path.join(self.task_config.MARINE_JCB_GDAS_ALGO, f'{varchgyaml}.j2'),
-#                                        data=soca2cice_param)
-#        soca2cice_config.save(os.path.join(self.task_config.DATA, varchgyaml))
-
-#    @logit(logger)
-#    def variational(self: Task) -> None:
-#        # link gdas_soca_gridgen.x
-#        mdau.link_executable(self.task_config, 'gdas.x')
-#        exec_cmd = Executable(self.task_config.APRUN_MARINEANLVAR)
-#        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
-#        exec_cmd.add_default_arg(exec_name)
-#        exec_cmd.add_default_arg('soca')
-#        exec_cmd.add_default_arg('variational')
-#        exec_cmd.add_default_arg('var.yaml')
-#
-#        mdau.run(exec_cmd)
-
-#    @logit(logger)
-#    def checkpoint_cice6(self: Task, soca2ciceyaml) -> None:
-#        # link gdas_soca_gridgen.x
-#        mdau.link_executable(self.task_config, 'gdas.x')
-#        exec_cmd = Executable(self.task_config.APRUN_MARINEANLCHKPT)
-#        exec_name = os.path.join(self.task_config.DATA, 'gdas.x')
-#        exec_cmd.add_default_arg(exec_name)
-#        exec_cmd.add_default_arg('soca')
-#        exec_cmd.add_default_arg('convertstate')
-#        exec_cmd.add_default_arg(soca2ciceyaml)
-#
-#        mdau.run(exec_cmd)
-
-#    @logit(logger)
-#    def checkpoint_mom6_iau(self: Task, socaincr2mom6yaml) -> None:
-#        # link gdas_incr_handler.x
-#        mdau.link_executable(self.task_config, 'gdas_incr_handler.x')
-#        exec_cmd = Executable(self.task_config.APRUN_MARINEANLCHKPT)
-#        exec_name = os.path.join(self.task_config.DATA, 'gdas_incr_handler.x')
-#        exec_cmd.add_default_arg(exec_name)
-#        exec_cmd.add_default_arg(socaincr2mom6yaml)
-#
-#        mdau.run(exec_cmd)
 
     @logit(logger)
     def finalize(self: Task) -> None:
@@ -484,6 +344,11 @@ class MarineAnalysis(Task):
         fh_list = list_all_files(os.path.join(self.task_config.DATA),
                                  os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS, 'yaml'), wc='*.yaml', fh_list=fh_list)
 
+        FileHandler({'copy': fh_list}).sync()
+
+        # obs space statistics
+        fh_list = list_all_files(os.path.join(self.task_config.DATA),
+                                 os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS), wc='*stats.csv', fh_list=fh_list)
         FileHandler({'copy': fh_list}).sync()
 
     @logit(logger)
