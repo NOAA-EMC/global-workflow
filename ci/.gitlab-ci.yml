@@ -2,7 +2,8 @@ stages:
   - build
   - create_experiments
   - run_tests
-  
+
+# Global variables
 variables:
   BUILD_DATE: 'today'
   GIT_CLONE_PATH: '$CI_BUILDS_DIR/global-workflow-${BUILD_DATE}'
@@ -12,11 +13,12 @@ variables:
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
 
+
+# Build stage for the global workflow on compute nodes
 build:
   variables:
     GIT_STRATEGY: clone
     GIT_SUBMODULE_STRATEGY: recursive
-  
   stage: build
   script:
     - export CI_PROJECT_DIR=$HOMEGFS
@@ -24,28 +26,23 @@ build:
     - ci/scripts/utils/ci_utils_wrapper.sh build_compute
     - sorc/link_workflow.sh
     - mkdir -p ${RUNTESTS_DIR}
-  # NEED skip_ci_on_hosts to work (skipping for now)
-  #  - source ${HOMEGFS}/workflow/gw_setup.sh
-  #  - cases_on_host=$(${HOMEGFS}/ci/scripts/utils/get_host_case_list.py $MACHINE)
-  #  - echo "cases_on_host=$cases_on_host" >> variables.env
+  # TODO - Add more machines to the list and make
+  # the setup and run_tests stages 2D matrices
   parallel:
     matrix:
       - MACHINE: ["gaeac6"]
-  #artifacts:
-  #  reports:
-  #    dotenv: variables.env
   tags:
     - ${MACHINE}
 
 
+# Create experiments stage from a fixed list of cases in $HOMEGFS/ci/cases/pr
+# TODO: Find a way to dynamically generate the list of cases (maybe using Jinja2)
 setup_experiments:
   variables:
     GIT_STRATEGY: none
   stage: create_experiments
   script:
     - ${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEGFS}/ci/cases/pr/${caseName}.yaml
-  #rules:
-  #  - if: '$cases_on_host =~ /$caseName/'
   parallel:
     matrix:
       - caseName: ["C48_ATM", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA"]
@@ -54,6 +51,8 @@ setup_experiments:
   dependencies:
     - build
 
+# Running the list of experiments created in the previous stage
+# using the run-check_ci.sh script from $HOMEgfs/ci/scripts directory
 run_tests:
   variables:
     GIT_STRATEGY: none
@@ -62,8 +61,6 @@ run_tests:
     - echo "Using build directory ${HOMEGFS} (dated ${BUILD_DATE})"
     - pslot=$(${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${RUNTESTS_DIR} ${caseName})
     - ${HOMEGFS}/ci/scripts/run-check_ci.sh ${CI_BUILDS_DIR} ${pslot} global-workflow-${BUILD_DATE}
-  #rules:
-  #  - if: '$cases_on_host =~ /$caseName/'
   parallel:
     matrix:
        - caseName: ["C48_ATM", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA"]
