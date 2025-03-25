@@ -10,7 +10,7 @@ The GFS is updated for the following:
 * updated GSI code and convinfo file for saildrone observations and to allow assimilation of GOES-19 AMVs
 * ww3_outp is improved for the wave point output
 * bufr station updates to three stations and the addition of 121 new stations
-* obsproc/v1.2.3
+* obsproc/v1.2.4
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -56,7 +56,7 @@ VERSION FILE CHANGES
 --------------------
 
 * `versions/run.ver` - change `version=v16.3.23` and `gfs_ver=v16.3.23`
-* `versions/MACHINE.ver` - update `obsproc_run_ver=1.2.3`
+* `versions/MACHINE.ver` - update `obsproc_run_ver=1.2.4`
 
 SORC CHANGES
 ------------
