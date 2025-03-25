@@ -44,14 +44,9 @@ source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
 cd "${GITLAB_RUNNER_DIR}" || exit 1
 
 # Set the log file name with the current date and time
-DATE=$(date +%Y%m%d%M) || true
-GITLAB_LOG="launched_gitlab_runner-${DATE}.log"
-# Set the GitLab runner name - this name will appear in the GitLab UI
-GITLAB_RUNNER_NAME="RDHPCS Gaea C6"
+DATE=$(date +%Y-%m%d%M) || true
+GITLAB_LOG="${PWD}/launched_gitlab_runner-${DATE}.log"
 rm -f "${LOG}"
-# Log the registration details
-echo "Registering GitLab Runner ${MACHINE_ID} on host ${host} at ${DATE}" >> "${GITLAB_LOG}"
-echo "with runner name: ${GITLAB_RUNNER_NAME}" >> "${GITLAB_LOG}"
 
 #########################################################################
 # GitLab Token Handling
@@ -85,6 +80,9 @@ fi
 #########################################################################
 
 if [[ "${1}" == "register" ]]; then
+
+  echo "Registering GitLab Runner ${MACHINE_ID} on host ${host} at ${DATE}" >> "${GITLAB_LOG}"
+  echo "with runner name: ${GITLAB_RUNNER_NAME}" >> "${GITLAB_LOG}"
   # Register the GitLab runner with the following parameters:
   # -n: Run in non-interactive mode
   # -t: Registration token from GitLab
@@ -97,6 +95,7 @@ if [[ "${1}" == "register" ]]; then
   
   # Set the concurrent job limit in the GitLab runner config file
   sed -i 's/concurrent.*/concurrent = 24/' ~/.gitlab-runner/config.toml
+  exit 0
 fi
 
 #########################################################################
@@ -104,20 +103,13 @@ fi
 #########################################################################
 
 if [[ "${1}" == "run" ]]; then
-  # Construct the command to run the GitLab runner
-  # nohup: Run the command immune to hangups
-  # --working-directory: Directory where the runner will store its working files (from config.gaeac6)
+  # --working-directory: Directory where the runner will store its working files (from config.$MACHINE_ID)
   COMMAND="nohup ./gitlab-runner run --working-directory ${GITLAB_CI_BUILDS_DIR}"
-  # --user ${USER}"  # This line is commented out in the original script
-  
-  # Print the command and log file location
-  echo -e "Running gitlab-runner with the command:\n${COMMAND}\nsee log ${PWD}/${GITLAB_LOG}"
-  
-  # Run the command in the background and redirect output to the log file
-  nohup "${COMMAND}" >> "${GITLAB_LOG}" 2>&1 &
-  
-  # Display the current contents of the log file
+  echo -e "Running gitlab-runner with the command:\n${COMMAND}\nsee log ${GITLAB_LOG}"
+  echo -e "Running gitlab-runner with the command:${COMMAND}" >& "${GITLAB_LOG}"
+  ${COMMAND} >> "${GITLAB_LOG}" 2>&1 &
   cat "${GITLAB_LOG}"
+  exit 0
 fi
 
 #########################################################################
