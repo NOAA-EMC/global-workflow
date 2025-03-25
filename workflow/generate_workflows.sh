@@ -26,7 +26,7 @@ function _usage() {
        run.  This option is incompatible with -G, -E, or -S.
        Example: -y "C48_ATM C48_S2SW C96C48_hybatmDA"
 
-    -D Delete the RUNTESTS and RUNDIRS directories if they already exist
+    -D Delete the RUNTESTS and DATAROOT directories if they already exist
 
     -Y /path/to/directory/with/YAMLs
        If this option is not specified, then the \${HOMEgfs}/ci/cases/pr
@@ -527,10 +527,10 @@ for _case in "${_yaml_list[@]}"; do
       rm -f stdout stderr
    fi
 
-   # Check if STMP is already present; eval will return just STMP from the sourcing
+   # Check if DATAROOT is already present; eval will return just DATAROOT from the sourcing
    eval $(PDY=0 cyc=0 source "${_runtests}/EXPDIR/${_pslot}/config.base" >& /dev/null; echo _dataroot="${STMP}/RUNDIRS/${_pslot}")
    if [[ -d "${_dataroot}" ]]; then
-      echo "WARNING STMP already exists for ${_pslot} in ${_dataroot}"
+      echo "WARNING DATAROOT already exists for ${_pslot} in ${_dataroot}"
       if [[ "${_auto_del}" == "true" ]]; then
          echo "Deleting."
          rm -rf "${_dataroot}"
