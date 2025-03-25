@@ -47,6 +47,9 @@ export NOSCRUB="@NOSCRUB@"
 # Base directories for various builds
 export BASE_GIT="@BASE_GIT@"
 
+# Toggle to turn on/off EMCSFC_SFC_PREP job
+export DO_SFCPREP="NO"    # SNOGRB dump file production
+
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="YES"    # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products

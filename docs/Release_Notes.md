@@ -1,10 +1,16 @@
-GFS V16.3.22 RELEASE NOTES
+GFS V16.3.23 RELEASE NOTES
 
 -------
 PRELUDE
 -------
 
-The Gulf of Mexico is renamed to the Gulf of America. This is a non-science change and does not impact model output.
+The GFS is updated for the following:
+
+* workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
+* updated GSI code and convinfo file for saildrone observations and to allow assimilation of GOES-19 AMVs
+* ww3_outp is improved for the wave point output
+* bufr station updates to three stations and the addition of 121 new stations
+* obsproc/v1.2.4
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +19,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.22
-cd gfs.v16.3.22
-git clone -b EMC-v16.3.22 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.23
+cd gfs.v16.3.23
+git clone -b EMC-v16.3.23 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -24,10 +30,10 @@ The checkout script extracts the following GFS components:
 
 | Component | Tag         | POC               |
 | --------- | ----------- | ----------------- |
-| MODEL     | GFS.v16.3.22 | Jun.Wang@noaa.gov |
+| MODEL     | GFS.v16.3.23 | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
-| GSI       | gfsda.v16.3.20 | Andrew.Collard@noaa.gov |
-| UFS_UTILS | ops-gfsv16.3.0 | George.Gayno@noaa.gov |
+| GSI       | gfsda.v16.3.23 | Andrew.Collard@noaa.gov |
+| UFS_UTILS | ops-gfsv16.3.20 | George.Gayno@noaa.gov |
 | POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
 
 To build all the GFS components, execute:
@@ -49,84 +55,102 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.22` and `gfs_ver=v16.3.22`
+* `versions/run.ver` - change `version=v16.3.23` and `gfs_ver=v16.3.23`
+* `versions/MACHINE.ver` - update `obsproc_run_ver=1.2.4`
 
 SORC CHANGES
 ------------
 
-* New MODEL tag `GFS.v16.3.22` - includes WW3 updates for name change, results do not change
+* New UFS_UTILS tag - `emcsfc_snow2mdl` program and associated scripts are updated to process global AFWA snow data
+* New GSI tag - `src/gsi/read_prepbufr.f90` code update for new saildrone subtype
+* New MODEL tag - WW3 program `ww3_outp` and associated scripts are improved to process the per-time-step point outputs more efficiently.
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.21
+* `jobs/JGLOBAL_ATMOS_EMCSFC_SFC_PREP` - new AFWA filename
 
 PARM/CONFIG CHANGES
 -------------------
 
-Internal name changes updates:
-* `parm/product/bufr_stalist.meteo.gfs`
+In `config.resources.emc.dyn` and `config.resources.nco.static` following resources are changed:
+* for wavepostbndpnt: npe from 240 to 1; wtime from 1hr to 30min
+* for wavepostbndpntbll: npe from 448 to 2; wtime from 1hr to 10min
+* for wavepostpnt: npe from 200 to 3; wtime from 1.5hr to 35min
+
+Bufr station updates:
 * `parm/parm_wave/bull_awips_gfswave`
+* `parm/product/bufr_ij13km.txt`
+* `parm/product/bufr_stalist.meteo.gfs`
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.21
+* `scripts/exgfs_wave_post_pnt.sh` is changed to be compatible with the  new `ww3_outp`.
 
 FIX CHANGES
 -----------
 
-Internal name change updates:
-* `wave_gfs.buoys`
-* `wave_gfs.buoys.full`
-* `wave_gfs.buoys.dat`
+* GSI `global_convinfo.txt` fix update for saildrone and GOES-19
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No changes from GFS v16.3.21
+No longer ingest:
+* `${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb` (`AFWA_NH_FILE`)
+* `${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb` (`AFWA_SH_FILE`)
+
+Now ingest:
+* `${RUN}.${cycle}.snow.usaf.grib2` (`AFWA_GLOBAL_FILE`)
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.21
+Reduce the ncpu and wtime as follow:
+* for jobs/JGLOBAL_WAVE_POST_BNDPNT; ncpu from 240 to 1; wtime from 1hr to 30min
+* for jobs/JGLOBAL_WAVE_POST_BNDPNTBLL; ncpu from 448 to 2; wtime from 1hr to 10min
+* for jobs/JGLOBAL_WAVE_POST_PNT; ncpu from 200 to 3; wtime from 1.5hr to 35min
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * None
+  * emcsfc_sfc_prep and analysis
+  * wave_post_pnt
+  * wave_post_bndpnt
+  * wave_post_bndpntbll
 * Does this change require a 30-day evaluation?
   * No
 
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.21
+* No changes from GFS v16.3.22
 
 PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
+George.Gayno@noaa.gov
+Andrew.Collard@noaa.gov
 Jessica.Meixner@noaa.gov
-Brian.Curtis@noaa.gov
-Bo.Cui@noaa.gov
+Ali.Salimi@noaa.gov
