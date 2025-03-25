@@ -7,7 +7,7 @@ echo '! sens/instr/sat lev  use pressure gross   obs    b_oz  pg_oz'
 echo '!                                  error  error variational qc'
 # loop over satellites
 cd "${FIXgfs}/gsi/build_gsinfo/ozinfo" || exit 1
-grep -v '^ *#' satellites | while IFS= read -r sat
+grep -v '^ *#' satellites | while IFS= read -r sat || true
 do
     # find matching date
     usedate=""

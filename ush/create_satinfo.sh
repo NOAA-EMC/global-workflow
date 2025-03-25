@@ -5,14 +5,14 @@ date=$1
 echo '!sensor/instr/sat      chan iuse  error  error_cld  ermax   var_b    var_pg  icld_det icloud iaerosol'
 # loop over satellites
 cd "${FIXgfs}/gsi/build_gsinfo/satinfo" || exit 1
-grep -v '^ *#' satellites | while IFS= read -r sat
+grep -v '^ *#' satellites | while IFS= read -r sat || true
 do
     # find matching date
     usedate=""
     for f in "${sat}"/*; do
         if [[ ${f} != "${sat}/readme" ]]; then # skip readme file
            datex=$(basename "${f}")
-	   if [[ $date -ge $datex ]]; then
+	   if [[ ${date} -ge ${datex} ]]; then
               usedate=${datex}
            fi
         fi
