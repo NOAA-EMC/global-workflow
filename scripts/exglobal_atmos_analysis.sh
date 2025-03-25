@@ -370,7 +370,7 @@ cd ${DATA} || exit 99
 ${NLN} ${BERROR}       berror_stats
 ${NLN} ${SATANGL}      satbias_angle
 if [[ ${SATINFO} == "generate" ]]; then
-   sh ${SCRgfs}/create_satinfo.sh  ${PDY}${cyc} > satinfo
+   sh ${USHgfs}/create_satinfo.sh  ${PDY}${cyc} > satinfo
 else
    ${NLN} ${SATINFO}      satinfo
 fi
@@ -378,14 +378,14 @@ ${NLN} ${RADCLOUDINFO} cloudy_radiance_info.txt
 ${NLN} ${ATMSFILTER}   atms_beamwidth.txt
 ${NLN} ${ANAVINFO}     anavinfo
 if [[ ${CONVINFO} == "generate" ]]; then
-   sh ${SCRgfs}/create_convinfo.sh  ${PDY}${cyc} > convinfo
+   sh ${USHgfs}/create_convinfo.sh  ${PDY}${cyc} > convinfo
 else
    ${NLN} ${CONVINFO}     convinfo
 fi
 ${NLN} ${vqcdat}       vqctp001.dat
 ${NLN} ${INSITUINFO}   insituinfo
 if [[ ${OZINFO} == "generate" ]]; then
-   sh ${SCRgfs}/create_ozinfo.sh  ${PDY}${cyc} > ozinfo
+   sh ${USHgfs}/create_ozinfo.sh  ${PDY}${cyc} > ozinfo
 else
    ${NLN} ${OZINFO}       ozinfo
 fi
