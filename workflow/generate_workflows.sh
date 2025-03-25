@@ -528,7 +528,7 @@ for _case in "${_yaml_list[@]}"; do
    fi
 
    # Check if DATAROOT is already present; eval will return just DATAROOT from the sourcing
-   eval $(PDY=0 cyc=0 source "${_runtests}/EXPDIR/${_pslot}/config.base" >& /dev/null; echo _dataroot="${STMP}/RUNDIRS/${_pslot}")
+   eval "$(PDY=0 cyc=0 source "${_runtests}/EXPDIR/${_pslot}/config.base" >& /dev/null; echo _dataroot="${STMP}/RUNDIRS/${_pslot}")"
    if [[ -d "${_dataroot}" ]]; then
       echo "WARNING DATAROOT already exists for ${_pslot} in ${_dataroot}"
       if [[ "${_auto_del}" == "true" ]]; then
