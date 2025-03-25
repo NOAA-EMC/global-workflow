@@ -42,12 +42,10 @@ source "${USHgfs}/preamble.sh"
 
   cd $DATA
 
-  # Set wave model ID tag to include member number
-  # if ensemble; waveMEMB var empty in deterministic
   export WAV_MOD_TAG="${RUN}.wave.t${cyc}z"
 
   echo "HAS BEGUN on $(hostname)"
-  echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
+  echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for ${WAV_MOD_TAG}"
 
   set +x
   echo ' '
