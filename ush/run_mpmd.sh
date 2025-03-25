@@ -27,7 +27,7 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then  #  srun-based system e.g. Hera, Orion
   ${launcher:-} ${mpmd_opt:-} -n ${nprocs} "${mpmd_cmdfile}"
   err=$?
   set_strict
-  if [[ ${err} =-eq 0 ]]; then
+  if [[ ${err} -eq 0 ]]; then
     out_files=$(find . -name 'mpmd.*.*.out')
   fi
 
