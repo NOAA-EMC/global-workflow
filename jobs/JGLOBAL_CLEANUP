@@ -4,8 +4,8 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
 
 "${SCRgfs}/exglobal_cleanup.sh"
-status=$?
-(( status != 0 )) && exit "${status}"
+err=$?
+(( err != 0 )) && exit "${err}"
 
 ##########################################
 # Remove the Temporary working directory

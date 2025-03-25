@@ -23,8 +23,8 @@ export PREFIX="${RUN}.t${cyc}z."
 ###############################################################
 # Run exglobal script
 "${SCRgfs}/exglobal_atmos_products.sh"
-status=$?
-(( status != 0 )) && exit "${status}"
+err=$?
+(( err != 0 )) && exit "${err}"
 
 ##############################################
 # End JOB SPECIFIC work

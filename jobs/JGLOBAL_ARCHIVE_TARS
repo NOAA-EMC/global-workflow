@@ -75,9 +75,9 @@ fi
 ###############################################################
 
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_tars.py}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 ##############################################
