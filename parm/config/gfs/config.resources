@@ -21,7 +21,7 @@ if (( $# != 1 )); then
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
-    echo "eobs ediag eomg eupd ecen esfc efcs epos earc_vrfy earc_tars"
+    echo "eobs ediag eupd ecen esfc efcs epos earc_vrfy earc_tars"
     echo "init_chem mom6ic oceanice_products"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
@@ -959,12 +959,12 @@ case ${step} in
           declare -x "walltime"="01:20:00"
           ;;
         *)
-          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE} for ${RUN}"
           exit 4
           ;;
       esac
-    elif [[ "${RUN}" =~ enkfg(das|fs) ]]; then
-      case "${CASE}" in
+    elif [[ "${RUN}" == enkfgfs || "${RUN}" == enkfgdas ]]; then
+      case "${CASE_ENS}" in
         "C48" | "C96" | "C192")
           declare -x "walltime"="00:20:00"
           ;;
@@ -972,11 +972,11 @@ case ${step} in
           declare -x "walltime"="00:30:00"
           ;;
         *)
-          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE_ENS} for ${RUN}"
           exit 4
           ;;
       esac
-    elif [[ "${RUN}" =~ gfs ]]; then
+    elif [[ "${RUN}" == gfs ]]; then
       case "${CASE}" in
         "C48" | "C96" | "C192")
           declare -x "walltime"="03:00:00"
@@ -985,7 +985,7 @@ case ${step} in
           declare -x "walltime"="06:00:00"
           ;;
         *)
-          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE} for ${RUN}"
           exit 4
           ;;
       esac
@@ -1243,14 +1243,10 @@ case ${step} in
     export is_exclusive=True
     ;;
 
-  "eobs" | "eomg")
-    if [[ "${step}" == "eobs" ]]; then
-      walltime="00:15:00"
-    else
-      walltime="00:30:00"
-    fi
+  "eobs")
+    walltime="00:15:00"
 
-    case "${CASE}" in
+    case ${CASE} in
       "C1152" | "C768")       ntasks=200;;
       "C384")                 ntasks=100;;
       "C192" | "C96" | "C48") ntasks=40;;

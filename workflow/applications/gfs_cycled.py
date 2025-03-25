@@ -39,6 +39,7 @@ class GFSCycledAppConfig(AppConfig):
 
             run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
             run_options[run]['do_hybvar_ocn'] = base.get('DOHYBVAR_OCN', False)
+            run_options[run]['do_letkf_ocn'] = base.get('DOLETKF_OCN', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
             if run_options[run]['do_hybvar']:
                 run_options[run]['lobsdiag_forenkf'] = base.get('lobsdiag_forenkf', False)
@@ -68,8 +69,10 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_jediocnvar']:
             configs += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
+            if options['do_letkf_ocn']:
+                configs += ['marineanlletkf']
             if options['do_hybvar']:
-                configs += ['marineanlletkf', 'ocnanalecen']
+                configs += ['ocnanalecen']
             configs += ['marineanlchkpt', 'marineanlfinal']
 
         if options['do_ocean'] or options['do_ice']:
@@ -86,12 +89,12 @@ class GFSCycledAppConfig(AppConfig):
                             'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
                             'ecen_fv3jedi']
             else:
-                configs += ['eobs', 'eomg', 'ediag', 'eupd', 'echgres', 'ecen']
+                configs += ['eobs', 'ediag', 'eupd', 'echgres', 'ecen']
 
             configs += ['esfc', 'efcs', 'epos', 'earc_vrfy']
 
             if options['do_archcom']:
-                configs += ['earc_tars']
+                configs += ['earc_tars', 'earc_groups']
 
         if options['do_fit2obs']:
             configs += ['fit2obs']
@@ -155,12 +158,6 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_globusarch']:
             configs += ['globus']
-            # TODO Enable when the globus archiving feature is available for ensembles
-            if options['do_hybvar']:
-                print("WARNING Globus archiving is currently only possible for deterministic members")
-                print("        Ensemble members will NOT be archived with this option!!")
-            # if options['do_hybvar']:
-            #     configs += ['globus_earc']
 
         return configs
 
@@ -192,8 +189,10 @@ class GFSCycledAppConfig(AppConfig):
 
                 if options['do_jediocnvar']:
                     task_names[run] += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
+                    if options['do_letkf_ocn']:
+                        task_names[run] += ['marineanlletkf']
                     if options['do_hybvar']:
-                        task_names[run] += ['marineanlletkf', 'ocnanalecen']
+                        task_names[run] += ['ocnanalecen']
                     task_names[run] += ['marineanlchkpt', 'marineanlfinal']
 
                 task_names[run] += ['sfcanl']
@@ -320,6 +319,7 @@ class GFSCycledAppConfig(AppConfig):
             # Ensemble tasks
             elif 'enkf' in run:
 
+                task_names[run] += ['stage_ic']
                 if options['do_jediatmens']:
                     task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'ecen_fv3jedi']
                     if options['lobsdiag_forenkf']:
@@ -332,20 +332,20 @@ class GFSCycledAppConfig(AppConfig):
                 else:
                     task_names[run] += ['eobs', 'eupd', 'ecen']
                     task_names[run].append('echgres') if 'gdas' in run else 0
-                    task_names[run] += ['ediag'] if options['lobsdiag_forenkf'] else ['eomg']
+                    task_names[run] += ['ediag']
 
                 task_names[run].append('esnowanl') if options['do_jedisnowda'] else 0
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
 
-                task_names[run] += ['stage_ic', 'esfc']
+                task_names[run] += ['esfc']
+                task_names[run] += ['earc_vrfy']
+
                 if options['do_archcom']:
                     task_names[run] += ['earc_tars']
+                    if options['do_globusarch']:
+                        task_names[run] += ['globus_earc']
 
-                    # TODO Uncomment when globus ensemble archiving is ready
-                    # if options['do_globusarch']:
-                    #     task_names[run] += ['globus_earc']
-
-                task_names[run] += ['earc_vrfy', 'cleanup']
+                task_names[run] += ['cleanup']
 
         return task_names
