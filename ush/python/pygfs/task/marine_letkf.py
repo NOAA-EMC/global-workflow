@@ -77,6 +77,8 @@ class MarineLETKF(Analysis):
         #self.jedi_dict.MARINE_WINDOW_BEGIN = _window_begin.strftime('%Y-%m-%dT%H:%M:%SZ')
         self.jedi_dict.MARINE_WINDOW_BEGIN = _window_begin
         self.jedi_dict.MARINE_WINDOW_END = _window_end
+        #self.jedi_dict.MARINE_WINDOW_LENGTH = _window_end - _window_begin
+        self.jedi_dict.MARINE_WINDOW_LENGTH = f"PT{self.task_config['assim_freq']}H"
         print("jedi_dict: ",self.jedi_dict)
 
 
