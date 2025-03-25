@@ -103,8 +103,9 @@ fi
 #########################################################################
 
 if [[ "${1}" == "run" ]]; then
-  # --working-directory: Directory where the runner will store its working files (from config.$MACHINE_ID)
-  COMMAND="nohup ./gitlab-runner run --working-directory ${GITLAB_CI_BUILDS_DIR}"
+  # --working-directory: Directory where the runner is launched and keeps its working files (from config.$MACHINE_ID)
+  # do not confuse this with GitLabs CI_BUILDS_DIR which is designate by GFS_CI_BUILDS_DIR and is where the builds are stored
+  COMMAND="nohup ./gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}"
   echo -e "Running gitlab-runner with the command:\n${COMMAND}\nsee log ${GITLAB_LOG}"
   echo -e "Running gitlab-runner with the command:${COMMAND}" >& "${GITLAB_LOG}"
   ${COMMAND} >> "${GITLAB_LOG}" 2>&1 &
