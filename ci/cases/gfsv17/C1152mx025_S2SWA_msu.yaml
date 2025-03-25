@@ -14,6 +14,6 @@ arguments:
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2023041506
-  edate: 2023061600
-  icsdir: /work/noaa/da/gvernier/ensda/ictest/1440x1080x75/
+  edate: 2023041800
+  icsdir: /work/noaa/da/gvernier/ensda/HR-test 
   yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sa_msu.yaml
