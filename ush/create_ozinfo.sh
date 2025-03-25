@@ -1,9 +1,12 @@
-# create global_satinfo file for a given date
+#! /usr/bin/env bash
+# create global_ozinfo file for a given date
 date=$1
 # header
-echo '!sensor/instr/sat      chan iuse  error  error_cld  ermax   var_b    var_pg  icld_det icloud iaerosol'
+echo '! For mls data, pressure and obs errors are pulled from bufr, so not listed here'
+echo '! sens/instr/sat lev  use pressure gross   obs    b_oz  pg_oz'
+echo '!                                  error  error variational qc'
 # loop over satellites
-cd ${FIXgfs}/gsi/build_gsinfo/satinfo
+cd ${FIXgfs}/gsi/build_gsinfo/ozinfo
 for sat in $(cat satellites); do
     # find matching date
     usedate=""

@@ -1,3 +1,4 @@
+#! /usr/bin/env bash
 # create global_ozinfo file for a given date
 date=$1
 cd ${FIXgfs}/gsi/build_gsinfo/convinfo
