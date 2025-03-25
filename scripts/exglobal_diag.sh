@@ -106,7 +106,7 @@ if [ $GENDIAG = "YES" ] ; then
 
    diagtype[0]="conv conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_tcp conv_uv conv_spd"
    diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
-   if [ ${USE_BUILD_GSINFO} == "YES" ]; then
+   if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
    diagtype[2]=$(cat ${FIXgfs}/gsi/build_gsinfo/ozinfo/satellites)
    diagtype[3]=$(cat ${FIXgfs}/gsi/build_gsinfo/satinfo/satellites)
    else

@@ -151,11 +151,11 @@ TCVITL=${TCVITL:-${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00}
 B1AVHAM=${B1AVHAM:-${COMIN_OBS}/${OPREFIX}avcsam.tm00.bufr_d${OSUFFIX}}
 B1AVHPM=${B1AVHPM:-${COMIN_OBS}/${OPREFIX}avcspm.tm00.bufr_d${OSUFFIX}}
 HDOB=${HDOB:-${COMIN_OBS}/${OPREFIX}hdob.tm00.bufr_d${OSUFFIX}}
-OMIEFFNC=${OMIEFFNC:-${COMIN_OBS}/OMIeff-adj.${PDY}_${cyc}z.nc}}
-OMPSNMEFFNC=${OMPSNMEFFNC:-${COMIN_OBS}/OMPSNM.${PDY}_${cyc}z.nc}}
-OMPSNPNC=${OMPSNPNC:-${COMIN_OBS}/OMPSNP.${PDY}_${cyc}z.nc}}
-OMPSLPNC=${OMPSLPNC:-${COMIN_OBS}/OMPS-LPoz-Vis.${PDY}_${cyc}z.nc}}
-MLS55NC=${MLS55NC:-${COMIN_OBS}/MLS-v5.0-oz.${PDY}_${cyc}z.nc}}
+OMIEFFNC=${OMIEFFNC:-${COMIN_OBS}/OMIeff-adj.${PDY}_${cyc}z.nc}
+OMPSNMEFFNC=${OMPSNMEFFNC:-${COMIN_OBS}/OMPSNM.${PDY}_${cyc}z.nc}
+OMPSNPNC=${OMPSNPNC:-${COMIN_OBS}/OMPSNP.${PDY}_${cyc}z.nc}
+OMPSLPNC=${OMPSLPNC:-${COMIN_OBS}/OMPS-LPoz-Vis.${PDY}_${cyc}z.nc}
+MLS55NC=${MLS55NC:-${COMIN_OBS}/MLS-v5.0-oz.${PDY}_${cyc}z.nc}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
@@ -369,7 +369,7 @@ cd ${DATA} || exit 99
 # Fixed files
 ${NLN} ${BERROR}       berror_stats
 ${NLN} ${SATANGL}      satbias_angle
-if [ $SATINFO == "generate" ]; then
+if [[ ${SATINFO} == "generate" ]]; then
    sh ${SCRgfs}/create_satinfo.sh  ${PDY}${cyc} > satinfo
 else
    ${NLN} ${SATINFO}      satinfo
@@ -377,14 +377,14 @@ fi
 ${NLN} ${RADCLOUDINFO} cloudy_radiance_info.txt
 ${NLN} ${ATMSFILTER}   atms_beamwidth.txt
 ${NLN} ${ANAVINFO}     anavinfo
-if [ $CONVINFO == "generate" ]; then
+if [[ ${CONVINFO} == "generate" ]]; then
    sh ${SCRgfs}/create_convinfo.sh  ${PDY}${cyc} > convinfo
 else
    ${NLN} ${CONVINFO}     convinfo
 fi
 ${NLN} ${vqcdat}       vqctp001.dat
 ${NLN} ${INSITUINFO}   insituinfo
-if [ $OZINFO == "generate" ]; then
+if [[ ${OZINFO} == "generate" ]]; then
    sh ${SCRgfs}/create_ozinfo.sh  ${PDY}${cyc} > ozinfo
 else
    ${NLN} ${OZINFO}       ozinfo
@@ -433,8 +433,8 @@ fi
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
 for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
-   instr=`echo $file | cut -c1-4`
-   if [ $instr == "hirs" ]; then
+   instr=$(echo $file | cut -c1-4)
+   if [[ ${instr} == "hirs" ]]; then
       ${NLN} ${HIRS_FIX}/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
    else
       ${NLN} ${CRTM_FIX}/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
