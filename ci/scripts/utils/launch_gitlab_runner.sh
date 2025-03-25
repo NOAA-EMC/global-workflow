@@ -38,7 +38,6 @@ esac
 # Source the platform-specific configuration file
 # This file contains platform-specific variables such as GITLAB_URL, GITLAB_CI_BUILDS_DIR, 
 # and GITLAB_RUNNER_DIR which are required for runner registration and execution
-# See config.gaeac6 for details on these variables
 source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
 
 # Change to the GitLab runner directory defined in the platform config
@@ -49,7 +48,6 @@ DATE=$(date +%Y%m%d%M) || true
 GITLAB_LOG="launched_gitlab_runner-${DATE}.log"
 # Set the GitLab runner name - this name will appear in the GitLab UI
 GITLAB_RUNNER_NAME="RDHPCS Gaea C6"
-# Remove any existing log file
 rm -f "${LOG}"
 # Log the registration details
 echo "Registering GitLab Runner ${MACHINE_ID} on host ${host} at ${DATE}" >> "${GITLAB_LOG}"
@@ -90,10 +88,9 @@ if [[ "${1}" == "register" ]]; then
   # Register the GitLab runner with the following parameters:
   # -n: Run in non-interactive mode
   # -t: Registration token from GitLab
-  # --url: URL of the GitLab server (from config.gaeac6)
+  # --url: URL of the GitLab server (from config.MACHINE_ID)
   # --executor: Type of executor (shell in this case)
-  # --shell: Shell to use for job execution
-  # --builds-dir: Directory where builds will be stored (from config.gaeac6)
+  # --builds-dir: Directory where builds will be stored (from config.MACHINE_ID)
   # --custom_build_dir-enabled: Enable custom build directories
   # --request-concurrency: Number of concurrent requests that can be handled
   ./gitlab-runner register -n -t "${GITLAB_RUNNER_TOKEN}" --url "${GITLAB_URL}" --executor shell --shell bash --builds-dir "${GITLAB_CI_BUILDS_DIR}" --custom_build_dir-enabled true --request-concurrency 24
@@ -103,8 +100,7 @@ if [[ "${1}" == "register" ]]; then
 fi
 
 #########################################################################
-# RUN argument handling
-# Starts a GitLab runner in the background
+# RUN: Starts a GitLab runner in the background
 #########################################################################
 
 if [[ "${1}" == "run" ]]; then
@@ -125,8 +121,7 @@ if [[ "${1}" == "run" ]]; then
 fi
 
 #########################################################################
-# UNREGISTER argument handling
-# Removes a GitLab runner from the GitLab server
+# UNREGISTER: Removes a GitLab runner from the GitLab server
 #########################################################################
 
 if [[ "${1}" == "unregister" ]]; then
