@@ -537,6 +537,11 @@ for _case in "${_yaml_list[@]}"; do
       else
          delete_dir "${_dataroot}"
       fi
+
+      if [[ -d "${_dataroot}" ]]; then
+         echo "Exiting!"
+         exit 16
+      fi
    fi
 
    # Check if this experiment is using cron or scron
