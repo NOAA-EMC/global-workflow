@@ -54,7 +54,7 @@ export GITLAB_URL=https://vlab.noaa.gov/gitlab-licensed
 # Used in launch_gitlab_runner.sh for:
 # 1. --builds-dir parameter during 'register'
 # 2. --working-directory parameter during 'run'
-export GITLAB_BUILDS_DIR=/gpfs/f6/drsa-precip3/scratch/role.glopara/GFS_CI_ROOT/GITLAB/CI
+export GITLAB_CI_BUILDS_DIR=/gpfs/f6/drsa-precip3/scratch/role.glopara/GFS_CI_ROOT/GITLAB/CI
 
 # Directory for GitLab runner
 # Used by launch_gitlab_runner.sh as the directory to:
