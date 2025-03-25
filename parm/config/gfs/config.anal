@@ -157,7 +157,8 @@ if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
 else
    export OBS_INPUT=${FIXgfs}/gsi/build_gsinfo/obs_input/obs_input_ops.txt
 fi
-export HIRS_FIX=/gpfs/f6/drsa-precip4/proj-shared/Jeffrey.S.Whitaker/hirs_fix
+# path to "fixed" crtm coefficient files (needed for crtm < 3)
+export HIRS_FIX=${FIXgfs}/gsi/build_gsinfo/hirs_fix
 
 # Flag to turn on (.true.) or off (.false.) the infrared cloud and aerosol detection software
 # for AIRS, CrIS, and IASI.  Default is .false.
