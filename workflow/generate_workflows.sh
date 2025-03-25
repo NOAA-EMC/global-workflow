@@ -26,6 +26,8 @@ function _usage() {
        run.  This option is incompatible with -G, -E, or -S.
        Example: -y "C48_ATM C48_S2SW C96C48_hybatmDA"
 
+    -D Delete the RUNTESTS and DATAROOT directories if they already exist
+
     -Y /path/to/directory/with/YAMLs
        If this option is not specified, then the \${HOMEgfs}/ci/cases/pr
        directory is used.
@@ -41,7 +43,7 @@ function _usage() {
 
     -S Run all valid SFS cases in the specified YAML directory.
 
-    NOTES:
+    NOTES on -G, -E, and -S:
          - Valid cases are determined by the experiment:system key as
            well as the skip_ci_on_hosts list in each YAML.
 
@@ -101,10 +103,11 @@ _verbose_flag="--"
 _debug="false"
 _cwd=$(pwd)
 _runtests="${RUNTESTS:-${_runtests:-}}"
+_auto_del=false
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-   while getopts ":H:bB:uy:Y:GESA:ce:t:vVdh" option; do
+   while getopts ":H:bDuy:Y:GESA:ce:t:vVdh" option; do
       case "${option}" in
         H)
            HOMEgfs="${OPTARG}"
@@ -115,6 +118,7 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
            fi
            ;;
         b) _build=true ;;
+        D) _auto_del=true ;;
         u) _update_submods=true ;;
         y) # Start over with an empty _yaml_list
            declare -a _yaml_list=()
@@ -174,6 +178,33 @@ function send_email() {
    echo "${_body}" | mail -s "${_subject}" "${_email}"
 }
 
+function delete_dir() {
+   local dir_to_rm="${1:-}"
+   if [[ -z "${dir_to_rm}" ]]; then
+      echo "Invalid call to delete_dir"
+      exit 8
+   fi
+
+   echo "Would you like to remove ${dir_to_rm}?"
+   _attempts=0
+   while read -r _from_stdin; do
+      if [[ "${_from_stdin^^}" =~ Y ]]; then
+         rm -rf "${dir_to_rm}"
+         break
+      elif [[ "${_from_stdin^^}" =~ N ]]; then
+         echo "Continuing without removing the directory"
+         break
+      else
+         (( _attempts+=1 ))
+         if [[ ${_attempts} == 3 ]]; then
+            echo "Exiting."
+            exit 99
+         fi
+         echo "'${_from_stdin}' is not a valid choice.  Please type Y or N"
+      fi
+   done
+}
+
 if [[ -z "${_runtests}" ]]; then
    echo "Mising run directory (RUNTESTS) argument/environment variable."
    sleep 2
@@ -202,25 +233,12 @@ if [[ ! -d "${_runtests}" ]]; then
    set -e
 else
    echo "The RUNTESTS directory ${_runtests} already exists."
-   echo "Would you like to remove it?"
-   _attempts=0
-   while read -r _from_stdin; do
-      if [[ "${_from_stdin^^}" =~ Y ]]; then
-         rm -rf "${_runtests}"
-         mkdir -p "${_runtests}"
-         break
-      elif [[ "${_from_stdin^^}" =~ N ]]; then
-         echo "Continuing without removing the directory"
-         break
-      else
-         (( _attempts+=1 ))
-         if [[ ${_attempts} == 3 ]]; then
-            echo "Exiting."
-            exit 99
-         fi
-         echo "'${_from_stdin}' is not a valid choice.  Please type Y or N"
-      fi
-   done
+   if [[ "${_auto_del}" == "true" ]]; then
+      echo "Removing."
+      rm -rf "${_runtests}"
+   else
+      delete_dir "${_runtests}"
+   fi
 fi
 
 # Empty the _yaml_list array if -G, -E, and/or -S were selected
@@ -484,14 +502,14 @@ rm -f "tests.cron" "${_verbose_flag}"
 echo "Running create_experiment.py for ${#_yaml_list[@]} cases"
 
 if [[ "${_verbose}" == true ]]; then
-    printf "Selected cases: %s\n\n" "${_yaml_list[*]}"
+   printf "Selected cases: %s\n\n" "${_yaml_list[*]}"
 fi
 for _case in "${_yaml_list[@]}"; do
    if [[ "${_verbose}" == false ]]; then
-       echo "${_case}"
+      echo "${_case}"
    fi
    _pslot="${_case}${_tag}"
-   _create_exp_cmd="./create_experiment.py -y ../ci/cases/pr/${_case}.yaml --overwrite"
+   _create_exp_cmd="./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
    if [[ "${_verbose}" == true ]]; then
       pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd}
    else
@@ -508,6 +526,25 @@ for _case in "${_yaml_list[@]}"; do
       fi
       rm -f stdout stderr
    fi
+
+   # Check if DATAROOT is already present; eval will return just DATAROOT from the sourcing
+   # shellcheck disable=SC2312
+   eval "$(PDY=0 cyc=0 source "${_runtests}/EXPDIR/${_pslot}/config.base" >& /dev/null; echo _dataroot="${STMP}/RUNDIRS/${_pslot}")"
+   if [[ -d "${_dataroot}" ]]; then
+      echo "WARNING DATAROOT already exists for ${_pslot} in ${_dataroot}"
+      if [[ "${_auto_del}" == "true" ]]; then
+         echo "Deleting."
+         rm -rf "${_dataroot}"
+      else
+         delete_dir "${_dataroot}"
+      fi
+
+      if [[ -d "${_dataroot}" ]]; then
+         echo "Exiting!"
+         exit 16
+      fi
+   fi
+
    # Check if this experiment is using cron or scron
    cron_file="${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
    scron_sh_file="${_runtests}/EXPDIR/${_pslot}/${_pslot}.scron.sh"

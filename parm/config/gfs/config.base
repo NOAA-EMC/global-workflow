@@ -378,6 +378,7 @@ export DO_STARTMEM_FROM_JEDIICE="@DO_STARTMEM_FROM_JEDIICE@"
 # Hybrid related
 export DOHYBVAR="@DOHYBVAR@"
 export DOHYBVAR_OCN="@DOHYBVAR_OCN@"
+export DOLETKF_OCN="@DOLETKF_OCN@"
 export NMEM_ENS=@NMEM_ENS@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
