@@ -67,24 +67,19 @@ for grdID in "${grdALL[@]}"; do
     if [[ -f "${FIXgfs}/wave/${grdID}.msh" ]]; then
       cp "${FIXgfs}/wave/${grdID}.msh" "${grdID}.msh"
     fi
-    #TODO: how do we say "it's unstructured, and therefore need to have error check here" 
+    #TODO: how do we say "it's unstructured, and therefore need to have error check here"
 
     echo "${USHgfs}/wave_grid_moddef.sh ${grdID}" >> mpmd_script
   fi
 done
 
 # 1.a.1 Execute MPMD or process serially
-if [[ "${USE_CFP:-}" == "YES" ]]; then
-  OMP_NUM_THREADS=1 "${USHgfs}/run_mpmd.sh" "${DATA}/mpmd_script"
-  export err=$?
-else
-  chmod 755 "${DATA}/mpmd_script"
-  bash +x "${DATA}/mpmd_script" > mpmd.out 2>&1
-  export err=$?
+"${USHgfs}/run_mpmd.sh" "${DATA}/mpmd_script"
+export err=$?
+if [[ "${err}" -ne 0 ]]; then
+  echo "FATAL ERROR: run_mpmd.sh failed!"
+  exit "${err}"
 fi
-${errchk}
-
-cat mpmd.out
 
 # 1.a.3 File check
 for grdID in "${grdALL[@]}"; do
