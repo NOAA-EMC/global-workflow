@@ -27,5 +27,5 @@ SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
 COMINecmwf: '/work2/noaa/global/role-global/data/external_gempak/ecmwf'
 COMINnam: '/work2/noaa/global/role-global/data/external_gempak/nam'
 COMINukmet: '/work2/noaa/global/role-global/data/external_gempak/ukmet'
-AERO_INPUTS_DIR: '/work2/noaa/global/role-global/data/gocart_emissions'
+AERO_INPUTS_DIR: '/work2/noaa/global/role-global/data/GEFS_ExtData/20250310'
 CLIENT_GLOBUS_UUID: '869912fe-f6de-46c0-af10-b22efd84a022'

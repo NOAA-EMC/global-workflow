@@ -42,7 +42,7 @@ jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS @WenMeng-NOAA
 jobs/JGFS_ATMOS_POSTSND @BoCui-NOAA
 jobs/JGFS_ATMOS_VERIFICATION
 jobs/JGLOBAL_AERO_ANALYSIS_* @CoryMartin-NOAA
-jobs/JGLOBAL_ARCHIVE @DavidHuber-NOAA
+jobs/JGLOBAL_*ARCH* @DavidHuber-NOAA
 jobs/JGLOBAL_ATMENS_ANALYSIS_* @RussTreadon-NOAA @CoryMartin-NOAA @DavidNew-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS @RussTreadon-NOAA @CatherineThomas-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS_CALC @RussTreadon-NOAA @CatherineThomas-NOAA @CoryMartin-NOAA
@@ -75,8 +75,7 @@ scripts/exgdas_atmos_gempak_gif_ncdc.sh @GwenChen-NOAA
 scripts/exgdas_atmos_nawips.sh @GwenChen-NOAA
 scripts/exgdas_atmos_verfozn.sh @EdwardSafford-NOAA
 scripts/exgdas_atmos_verfrad.sh @EdwardSafford-NOAA
-scripts/exgdas_enkf_earc_vrfy.py @DavidHuber-NOAA
-scripts/exgdas_enkf_earc_tars.py @DavidHuber-NOAA
+scripts/exgdas_enkf_earc_*.py @DavidHuber-NOAA
 scripts/exgdas_enkf_ecen.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
 scripts/exgdas_enkf_post.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
 scripts/exgdas_enkf_select_obs.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
@@ -97,7 +96,8 @@ scripts/exgfs_pmgr.sh
 scripts/exgfs_prdgen_manager.sh
 scripts/exgfs_wave_* @JessicaMeixner-NOAA @sbanihash
 scripts/exglobal_aero_analysis_* @CoryMartin-NOAA
-scripts/exglobal_archive.py @DavidHuber-NOAA
+scripts/exglobal_archive_*.py @DavidHuber-NOAA
+scripts/exglobal_globus_*.py @DavidHuber-NOAA
 scripts/exglobal_atm_analysis_* @RussTreadon-NOAA @DavidNew-NOAA
 scripts/exglobal_atmens_analysis_* @RussTreadon-NOAA @DavidNew-NOAA
 scripts/exglobal_atmos_analysis*.sh @RussTreadon-NOAA @CoryMartin-NOAA

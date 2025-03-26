@@ -32,4 +32,4 @@ DO_TRACKER: 'NO'
 DO_GENESIS: 'NO'
 DO_METP: 'NO'
 SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
-AERO_INPUTS_DIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/gocart_emissions'
+AERO_INPUTS_DIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/GEFS_ExtData/20250310'
