@@ -256,7 +256,7 @@ class GFSTasks(Tasks):
         if self.options['do_gsisoilda'] and self.run in ['gdas']:
             dep_dict = {'type': 'task', 'name': 'enkfgdas_eupd'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda'] or ( self.options['do_gsisoilda'] and self.run in ['gdas']):
+        if self.options['do_jedisnowda'] or (self.options['do_gsisoilda'] and self.run in ['gdas']):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dependencies = rocoto.create_dependency(dep=deps)
