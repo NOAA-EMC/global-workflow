@@ -9,7 +9,7 @@ export numproc=23
 # Find the last hour available
 for (( fhr = fhend; fhr >= fhbeg; fhr = fhr - fhinc )) ; do
   fhr3=$(printf "%03d" "${fhr}")
-  if [[ -r "${COM_ATMOS_GEMPAK_1p00}/${GEMGRD1}${fhr3}" ]]; then
+  if [[ -r "${COMOUT_ATMOS_GEMPAK_1p00}/${GEMGRD1}${fhr3}" ]]; then
     break
   fi
 done
@@ -32,7 +32,7 @@ while (( fhr <= fhend )); do
     fhr=126
   fi
 
-  gempak_file="${COM_ATMOS_GEMPAK_1p00}/${GEMGRD1}${fhr3}"
+  gempak_file="${COMOUT_ATMOS_GEMPAK_1p00}/${GEMGRD1}${fhr3}"
   if ! wait_for_file "${gempak_file}" "${sleep_interval}" "${max_tries}"; then
     echo "FATAL ERROR: gempak grid file ${gempak_file} not available after maximum wait time."
     exit 7
