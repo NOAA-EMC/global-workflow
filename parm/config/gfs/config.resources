@@ -1077,11 +1077,11 @@ case ${step} in
     ;;
 
   "genesis")
-    walltime="00:25:00"
+    walltime="00:40:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
-    memory="10G"
+    memory="20G"
     ;;
 
   "genesis_fsu")
@@ -1102,7 +1102,8 @@ case ${step} in
         memory="80GB"
 	;;
       "C1152")
-        memory="200GB"
+        memory="400GB"
+	walltime="00:40:00"
 	;;
       *)
         memory="20GB"
@@ -1160,7 +1161,7 @@ case ${step} in
     ;;
 
   "arch_vrfy" | "earc_vrfy")
-    walltime="00:15:00"
+    walltime="00:30:00"
     ntasks=1
     tasks_per_node=1
     threads_per_task=1
