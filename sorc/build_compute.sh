@@ -10,7 +10,7 @@ Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT [gfs gefs sfs gsi gdas all]
   -v:
     Verbose mode
   -A:
-    HPC account to use for the compute-node builds
+    HPC account to use for the compute-node builds [REQUIRED]
 
   Input arguments are the system(s) to build.
   Valid options are
@@ -29,6 +29,7 @@ verbose="NO"
 build_xml="build.xml"
 build_db="build.db"
 build_lock_db="build_lock.db"
+HPC_ACCOUNT="UNDEFINED"
 
 OPTIND=1
 while getopts ":hA:v" option; do
@@ -53,6 +54,11 @@ if [[ $# -eq 0 ]]; then
    systems="gfs"
 else
    systems=$*
+fi
+
+if [[ "${HPC_ACCOUNT}" == "UNDEFINED" ]]; then
+  echo "FATAL ERROR: -A <HPC_ACCOUNT> is required, ABORT!"
+  _usage
 fi
 
 if [[ "${verbose}" == "YES" ]]; then
