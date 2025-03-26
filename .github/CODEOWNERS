@@ -89,7 +89,7 @@ scripts/exgfs_atmos_fbwind.sh @ChristopherHill-NOAA
 scripts/exgfs_atmos_gempak_gif_ncdc_skew_t.sh @ChristopherHill-NOAA
 scripts/exgfs_atmos_gempak_meta.sh @ChristopherHill-NOAA
 scripts/exgfs_atmos_goes_nawips.sh @ChristopherHill-NOAA
-scripts/exgfs_atmos_grib2_special_npoess.sh @WenMeng-NOAA
+scripts/exgfs_atmos_grib2_special_npoess.sh @ChristopherHill-NOAA
 scripts/exgfs_atmos_nawips.sh @ChristopherHill-NOAA
 scripts/exgfs_atmos_postsnd.sh @BoCui-NOAA
 scripts/exgfs_pmgr.sh
