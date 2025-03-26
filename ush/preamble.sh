@@ -113,10 +113,10 @@ function err_exit() {
     # a message for the logfile by passing it to the script as an argument.
 
     msg1=${@:-Job ${jobid} failed}
-    if [ -n "${pgm}" ]; then
+    if [[ -n "${pgm}" ]]; then
       msg1+=", ERROR IN ${pgm}"
     fi
-    if [ -n "${err}" ]; then
+    if [[ -n "${err}" ]]; then
       msg1+=" RETURN CODE ${err}"
     fi
 
@@ -136,7 +136,7 @@ function err_exit() {
     >&2 echo "${msg1}"
 
     # list files in temporary working directory
-    if [ -n "${DATA}" ]; then
+    if [[ -n "${DATA}" ]]; then
       >&2 echo "${DATA}"
       >&2 ls -ltr "${DATA}"
     else
@@ -144,30 +144,30 @@ function err_exit() {
     fi
 
     # save standard output
-    if [ -n "${pgmout}" ]; then
-      if [ -s errfile ]; then
+    if [[ -n "${pgmout}" ]]; then
+      if [[ -s errfile ]]; then
         echo "----- contents of errfile -----" >> ${pgmout}
         cat errfile >> ${pgmout}
       fi
       >&2 cat "${pgmout}"
-    elif [ -s errfile ]; then
+    elif [[ -s errfile ]]; then
       >&2 cat errfile
     fi
 
     # Write to ecflow log:
-    if [ "${SENDECF}" = "YES" ]; then
+    if [[ "${SENDECF}" = "YES" ]]; then
       timeout 30 ecflow_client --msg "$ECF_NAME: ${msg1}"
       timeout 30 ssh "${ECF_HOST}" "echo \"$msg2\" >> ${ECF_JOBOUT:?}"
     fi
 
     # KILL THE JOB:
-    if [ "${SENDECF}" = "YES" ]; then
+    if [[ "${SENDECF}" = "YES" ]]; then
       ecflow_client --kill=${ECF_NAME:?}
     fi
 
-    if [ ! -z "${PBS_JOBID}" ]; then
+    if [[ ! -z "${PBS_JOBID}" ]]; then
       qdel "${PBS_JOBID}"
-    elif [ ! -z "${SLURM_JOB_ID}" ]; then
+    elif [[ ! -z "${SLURM_JOB_ID}" ]]; then
       scancel "${SLURM_JOB_ID}"
     fi
 }
