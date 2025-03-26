@@ -79,7 +79,7 @@ Continuous Integration (CI)
 
 The global workflow comes fitted with a suite of system tests that run various types of workflow.  These tests are commonly run for pull requests before they may be merged into the develop branch.  At a minimum, developers are expected to run the CI test(s) that will be impacted by their changes on at least one platform.
 
-The commonly run tests are written in YAML format and can be found in the ``ci/cases/pr`` directory.  The ``workflow/generate_workflows.sh`` tool is available to aid running these cases.  See the help documentation by running ``./generate_workflows.sh -h``.  The script has the capability to prepare the EXPDIR and COMROOT directories for a specified or implied suite of CI tests (see :doc:`setup` for details on these directories).  The script also has options to automatically build and run all tests for a given system (i.e. GFS or GEFS and a placeholder for SFS).  For instance, to build the workflow and run all of the GFS tests, one would execute
+The commonly run tests are written in YAML format and can be found in the ``ci/cases/pr`` directory.  The ``workflow/generate_workflows.sh`` tool is available to aid running these cases.  See the help documentation by running ``./generate_workflows.sh -h``.  The script has the capability to prepare the EXPDIR and COMROOT directories for a specified or implied suite of CI tests (see :doc:`setup` for details on these directories).  The script also has options to automatically build and run all tests for a given system (i.e. GFS, GEFS or SFS).  For instance, to build the workflow and run all of the GFS tests, one would execute
 
 ::
 

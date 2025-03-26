@@ -389,6 +389,7 @@ FV3_predet(){
   warm_start=".false."
   read_increment=".false."
   res_latlon_dynamics='""'
+  increment_file_on_native_grid=".false."
 
   # Stochastic Physics Options
   do_skeb=".false."
@@ -453,7 +454,9 @@ FV3_predet(){
   FNSMCC=${FNSMCC:-"${FIXgfs}/am/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
 
   # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
-  [[ ! -f "${FNSMCC}" ]] && FNSMCC="${FIXgfs}/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
+  if [[ ! -f "${FNSMCC}" ]]; then
+      FNSMCC="${FIXgfs}/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
+  fi
 
   # Grid and orography data
   if [[ "${cplflx}" == ".false." ]] ; then
@@ -499,7 +502,11 @@ FV3_predet(){
   fi
 
   if [[ "${new_o3forc:-YES}" == "YES" ]]; then
-    O3FORC="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
+    if [[ "${o3forc_params:-McCormack}" == "McCormack-empirical-sh-ozh" ]]; then
+      O3FORC="ozprdlos_2015_new_sbuvO3_tclm15_nuchem_shozhvlogp.f77"
+    else
+      O3FORC="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
+    fi
   else
     O3FORC="global_o3prdlos.f77"
   fi
@@ -564,28 +571,39 @@ FV3_predet(){
     ${NCP} "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}" "${DATA}/params_grib2_tbl_new"
     ${NCP} "${PARMgfs}/ufs/post_itag_gfs"                         "${DATA}/itag"  # TODO: Need a GEFS version when available in the UFS-weather-model
     # TODO: These should be replaced with ones from the ufs-weather-model when available there
-    if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gfs" ]]; then  # RUN = gdas | enkfgdas | gfs | enkfgfs
-      ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt"     "${DATA}/postxconfig-NT.txt"
-      ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
-    elif [[ "${RUN}" == "gefs" && "${SFS_POST:-NO}" == "NO" ]]; then  # RUN = gefs
-      ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt"       "${DATA}/postxconfig-NT.txt"
-      ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
-    elif [[ "${RUN}" == "gefs" && "${SFS_POST:-NO}" == "YES" ]]; then  # RUN = sfs output
-      ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
-      ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
-    fi
-
-    # For gefs run, provide ensemble header information
-    if [[ "${RUN}" == "gefs" ]]; then
-      if [[ "${ENSMEM}" == "000" ]]; then
-        export e1=1
-      else
-        export e1=3
-      fi
-      export e2="${ENSMEM:1:2}"
-      export e3="${NMEM_ENS}"
-    fi
-
+    case ${NET} in
+      gfs)
+        ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt"     "${DATA}/postxconfig-NT.txt"
+        ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
+        ;;
+      gefs)
+        ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt"       "${DATA}/postxconfig-NT.txt"
+        ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
+        # Provide ensemble header information for GEFS
+        if [[ "${ENSMEM}" == "000" ]]; then
+          export e1=1
+        else
+          export e1=3
+        fi
+        export e2="${ENSMEM:1:2}"
+        export e3="${NMEM_ENS}"
+        ;;
+      sfs)
+        ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
+        ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
+        # Provide ensemble header information for SFS
+        if [[ "${ENSMEM}" == "000" ]]; then
+          export e1=1
+        else
+          export e1=3
+        fi
+        export e2="${ENSMEM:1:2}"
+        export e3="${NMEM_ENS}"
+        ;;
+      *)
+        echo "FATAL ERROR: Unknown NET ${NET}, unable to determine appropriate post files"
+        exit 20
+    esac
   fi
 }
 
@@ -707,7 +725,7 @@ MOM6_predet(){
 
 }
 
-# shellcheck disable=SC2178 
+# shellcheck disable=SC2178
 CMEPS_predet(){
   echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
 
@@ -717,7 +735,7 @@ CMEPS_predet(){
   ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
 
   # For CMEPS, CICE, MOM6 and WW3 determine restart writes
-  # Note FV3 has its own restart intervals  
+  # Note FV3 has its own restart intervals
   cmeps_restart_interval=${restart_interval:-${FHMAX}}
   # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
   # Convert restart interval into an explicit list for FV3

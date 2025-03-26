@@ -16,7 +16,7 @@ ic_versions['C384C192']=20240610
 ic_versions['C384mx025']=20241120
 
 ic_versions['C768']=20241120
-ic_versions['C768mx025']=20241120
+ic_versions['C768mx025']=20250115
 
 ic_versions['C1152']=20241120
-ic_versions['C1152mx025']=20241120
+ic_versions['C1152mx025']=20250115

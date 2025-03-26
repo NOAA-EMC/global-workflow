@@ -23,11 +23,12 @@ class GFSCycledAppConfig(AppConfig):
             elif ens_run in ['gfs', 'gdas']:
                 self.ens_runs = [ens_run]
 
-        # Now construct self.runs the desired XML order (gdas, enkfgdas, gfs, enkfgfs)
-        self.runs = ["gdas"]  # We always have a 'gdas' run
+        # Now construct self.runs the desired XML order (gfs, enkfgfs, gdas, enkfgdas)
+        self.runs = []
+        self.runs.append('gfs') if base['INTERVAL_GFS'] > 0 else 0
+        self.runs.append('enkfgfs') if 'gfs' in self.ens_runs and 'gfs' in self.runs else 0
+        self.runs.append('gdas')  # We always have a 'gdas' run
         self.runs.append('enkfgdas') if 'gdas' in self.ens_runs else 0
-        self.runs.append("gfs") if base['INTERVAL_GFS'] > 0 else 0
-        self.runs.append('enkfgfs') if 'gfs' in self.ens_runs and "gfs" in self.runs else 0
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
 
@@ -38,6 +39,7 @@ class GFSCycledAppConfig(AppConfig):
 
             run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
             run_options[run]['do_hybvar_ocn'] = base.get('DOHYBVAR_OCN', False)
+            run_options[run]['do_letkf_ocn'] = base.get('DOLETKF_OCN', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
             if run_options[run]['do_hybvar']:
                 run_options[run]['lobsdiag_forenkf'] = base.get('lobsdiag_forenkf', False)
@@ -47,6 +49,7 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
             run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
+            run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
 
         return run_options
@@ -60,35 +63,38 @@ class GFSCycledAppConfig(AppConfig):
         configs = ['prep']
 
         if options['do_jediatmvar']:
-            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
+            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
         else:
-            configs += ['anal', 'analdiag']
+            configs += ['anal', 'analdiag', 'analcalc']
 
         if options['do_jediocnvar']:
             configs += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
+            if options['do_letkf_ocn']:
+                configs += ['marineanlletkf']
             if options['do_hybvar']:
-                configs += ['marineanlletkf', 'ocnanalecen']
+                configs += ['ocnanalecen']
             configs += ['marineanlchkpt', 'marineanlfinal']
 
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic', 'sfcanl', 'analcalc', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
-        if options['do_archtar']:
+        if options['do_archcom']:
             configs += ['arch_tars']
 
         if options['do_hybvar']:
             if options['do_jediatmens']:
                 configs += ['atmensanlinit', 'atmensanlobs', 'atmensanlsol',
-                            'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal']
+                            'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
+                            'ecen_fv3jedi']
             else:
-                configs += ['eobs', 'eomg', 'ediag', 'eupd']
+                configs += ['eobs', 'ediag', 'eupd', 'echgres', 'ecen']
 
-            configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc_vrfy']
+            configs += ['esfc', 'efcs', 'epos', 'earc_vrfy']
 
-            if options['do_archtar']:
-                configs += ['earc_tars']
+            if options['do_archcom']:
+                configs += ['earc_tars', 'earc_groups']
 
         if options['do_fit2obs']:
             configs += ['fit2obs']
@@ -150,6 +156,9 @@ class GFSCycledAppConfig(AppConfig):
                         'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen',
                         'mos_wx_prdgen', 'mos_wx_ext_prdgen']
 
+        if options['do_globusarch']:
+            configs += ['globus']
+
         return configs
 
     @staticmethod
@@ -174,17 +183,19 @@ class GFSCycledAppConfig(AppConfig):
             if run in ['gdas', 'gfs']:
                 task_names[run] += ['prep']
                 if options['do_jediatmvar']:
-                    task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal']
+                    task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
                 else:
-                    task_names[run] += ['anal']
+                    task_names[run] += ['anal', 'analcalc']
 
                 if options['do_jediocnvar']:
                     task_names[run] += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
+                    if options['do_letkf_ocn']:
+                        task_names[run] += ['marineanlletkf']
                     if options['do_hybvar']:
-                        task_names[run] += ['marineanlletkf', 'ocnanalecen']
+                        task_names[run] += ['ocnanalecen']
                     task_names[run] += ['marineanlchkpt', 'marineanlfinal']
 
-                task_names[run] += ['sfcanl', 'analcalc']
+                task_names[run] += ['sfcanl']
 
                 if options['do_jedisnowda']:
                     task_names[run] += ['snowanl']
@@ -298,34 +309,43 @@ class GFSCycledAppConfig(AppConfig):
 
                 # Last items
                 task_names[run] += ['arch_vrfy']
-                if options['do_archtar']:
+                if options['do_archcom']:
                     task_names[run] += ['arch_tars']
+                    if options['do_globusarch']:
+                        task_names[run] += ['globus_arch']
+
                 task_names[run] += ['cleanup']
 
             # Ensemble tasks
             elif 'enkf' in run:
 
+                task_names[run] += ['stage_ic']
                 if options['do_jediatmens']:
-                    task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal']
-                    # Only run echgres for the gdas cycle
-                    task_names[run] += ['echgres'] if 'gdas' in run else 0
+                    task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'ecen_fv3jedi']
                     if options['lobsdiag_forenkf']:
                         task_names[run] += ['atmensanlobs', 'atmensanlsol']
                     else:
                         task_names[run] += ['atmensanlletkf']
+                    task_names[run].append('efcs') if 'gdas' in run else 0
+                    task_names[run].append('epos') if 'gdas' in run else 0
 
                 else:
-                    task_names[run] += ['eobs', 'eupd']
+                    task_names[run] += ['eobs', 'eupd', 'ecen']
                     task_names[run].append('echgres') if 'gdas' in run else 0
-                    task_names[run] += ['ediag'] if options['lobsdiag_forenkf'] else ['eomg']
+                    task_names[run] += ['ediag']
 
                 task_names[run].append('esnowanl') if options['do_jedisnowda'] else 0
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
 
-                task_names[run] += ['stage_ic', 'ecen', 'esfc']
-                if options['do_archtar']:
+                task_names[run] += ['esfc']
+                task_names[run] += ['earc_vrfy']
+
+                if options['do_archcom']:
                     task_names[run] += ['earc_tars']
-                task_names[run] += ['earc_vrfy', 'cleanup']
+                    if options['do_globusarch']:
+                        task_names[run] += ['globus_earc']
+
+                task_names[run] += ['cleanup']
 
         return task_names

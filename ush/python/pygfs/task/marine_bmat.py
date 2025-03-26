@@ -74,7 +74,7 @@ class MarineBMat(Task):
 
         # Create dictionary of Jedi objects
         expected_keys = ['gridgen', 'soca_diagb', 'soca_parameters_diffusion_vt', 'soca_setcorscales',
-                         'soca_parameters_diffusion_hz', 'soca_ensb', 'soca_ensweights']
+                         'soca_parameters_diffusion_hz', 'soca_ensb', 'soca_ensweights', 'soca_chgres']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
@@ -105,8 +105,12 @@ class MarineBMat(Task):
         soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
-        # prepare the MOM6 input.nml
+        # prepare the deterministic MOM6 input.nml
         mdau.prep_input_nml(self.task_config)
+
+        # prepare the input.nml for the analysis geometry
+        mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml",
+                            simple_geom=True, mom_input="./anl_geom/MOM_input")
 
         # stage backgrounds
         # TODO(G): Check ocean backgrounds dates for consistency
@@ -127,6 +131,7 @@ class MarineBMat(Task):
         # initialize JEDI applications
         self.jedi_dict['gridgen'].initialize(self.task_config)
         self.jedi_dict['soca_diagb'].initialize(self.task_config)
+        self.jedi_dict['soca_chgres'].initialize(self.task_config)
         self.jedi_dict['soca_parameters_diffusion_vt'].initialize(self.task_config)
         self.jedi_dict['soca_setcorscales'].initialize(self.task_config)
         self.jedi_dict['soca_parameters_diffusion_hz'].initialize(self.task_config)
@@ -163,10 +168,14 @@ class MarineBMat(Task):
         None
         """
 
+        # soca grid generation
         self.jedi_dict['gridgen'].execute()
 
         # variance partitioning
         self.jedi_dict['soca_diagb'].execute()
+
+        # Interpolate f009 bkg to analysis geometry
+        self.jedi_dict['soca_chgres'].execute()
 
         # horizontal diffusion
         self.jedi_dict['soca_setcorscales'].execute()

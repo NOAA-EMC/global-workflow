@@ -20,11 +20,11 @@ Clone the `global-workflow` and `cd` into the `sorc` directory:
 
 .. _build_examples:
 
-The build_all.sh script can be used to build all required components of the global workflow.  The accepted arguments is a list of systems to be built.  This includes builds for GFS and GEFS forecast-only experiments, GSI and GDASApp-based DA for cycled GFS experiments.  See `feature availability <hpc.html#feature-availability-by-hpc>`__ to see which system(s) are available on each supported system.
+The build_all.sh script can be used to build all required components of the global workflow.  The accepted arguments is a list of systems to be built.  This includes builds for GFS, GEFS, and SFS forecast-only experiments, GSI and GDASApp-based DA for cycled GFS experiments.  See `feature availability <hpc.html#feature-availability-by-hpc>`__ to see which system(s) are available on each supported system.
 
 ::
 
-   ./build_all.sh [gfs] [gefs] [gs] [gdas] [all]
+   ./build_all.sh [gfs] [gefs] [sfs] [gsi] [gdas] [all]
 
 For example, to run GFS experiments with GSI DA, execute:
 
@@ -34,7 +34,7 @@ For example, to run GFS experiments with GSI DA, execute:
 
 This builds the GFS, UFS-utils, GFS-utils, WW3 with PDLIB (structured wave grids), UPP, GSI, GSI-monitor, and GSI-utils executables.
 
-For coupled cycling (include new UFSDA) execute:
+For coupled cycling (using only new UFSDA) execute:
 
 ::
 
@@ -49,6 +49,14 @@ To run GEFS (forecast-only) execute:
    ./build_all.sh gefs
 
 This builds the GEFS, UFS-utils, GFS-utils, WW3 *without* PDLIB (unstructure wave grids), and UPP executables.
+
+To run SFS (forecast-only) execute:
+
+::
+
+   ./build_all.sh sfs
+
+This builds the same components as GEFS, except the UFS model is built in hydrostatic mode.
 
 Once the building is complete, link workflow artifacts such as executables, configuration files, and scripts via
 
@@ -121,7 +129,7 @@ Under the ``/sorc`` folder is a script to build all components called ``build_al
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
 
-  Lastly, pass to build_all.sh a list of systems to build.  This includes `gfs`, `gefs`, `sfs` (not fully supported), `gsi`, `gdas`, and `all`.
+  Lastly, pass to build_all.sh a list of systems to build.  This includes `gfs`, `gefs`, `sfs`, `gsi`, `gdas`, and `all`.
 
 For examples of how to use this script, see :ref:`build examples <build_examples>`.
 

@@ -51,8 +51,8 @@
     {% endif %}
 
     {% if DO_AERO_ANL %}
-        {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat",
-                                    ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
+        {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat.tgz",
+                                    ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
     {% endif %}
 
     {% if DO_PREP_OBS_AERO == True %}
@@ -127,8 +127,6 @@
     {% if DO_JEDIATMENS == True %}
         {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atmensstat",
                                  ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
-        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atminc.ensmean.nc",
-                                 ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ~ ".ensmean.nc"]) %}
     {% else %}
         {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "enkfstat",
                                  ARCDIR ~ "/enkfstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}

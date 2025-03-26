@@ -10,27 +10,28 @@ enkf:
         {% for fhr in range(fhmin, fhmax + 1, fhout) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % (fhr - fhmin) }}.log"
         {% endfor %}
+        {% if not DO_JEDIATMENS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_echgres.log"
         {% endif %}
+        {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc.log"
+        {% if not DO_JEDIATMENS %}
         {% for grp in range(IAUFHRS | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_ecen{{ '%03d' % grp }}.log"
         {% endfor %}
+        {% endif %}
 
         {% if lobsdiag_forenkf %}
            {% if DO_JEDIATMENS %}
-              {% set steps = ["atmensanlinit", "atmensanlobs", "atmensanlsol", "atmensanlfv3inc", "atmensanlfinal"] %}
+              {% set steps = ["atmensanlinit", "atmensanlobs", "atmensanlsol", "atmensanlfv3inc", "atmensanlfinal", "ecen_fv3jedi"] %}
            {% else %}
               {% set steps = ["eobs", "ediag", "eupd"] %}
            {% endif %}
         {% else %}
            {% if DO_JEDIATMENS %}
-              {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal"] %}
+              {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal", "ecen_fv3jedi"] %}
            {% else %}
               {% set steps = ["eobs", "eupd"] %}
-              {% for mem in range(1, nmem_ens + 1) %}
-                 {% do steps.append("eomg_mem" ~ '%03d' % mem) %}
-              {% endfor %}
            {% endif %}
         {% endif %}
 
@@ -61,12 +62,14 @@ enkf:
         {% set da_files = ["atmensanlobs.yaml",
                            "atmensanlsol.yaml",
                            "atmensanlfv3inc.yaml",
-                           "atminc.ensmean.nc",
+                           "correction_increment.yaml",
+                           "ensemble_recenter.yaml",
                            "atmensstat"] %}
         {% else %}
         {% set da_files = ["atmensanlletkf.yaml",
                            "atmensanlfv3inc.yaml",
-                           "atminc.ensmean.nc",
+                           "correction_increment.yaml",
+                           "ensemble_recenter.yaml",
                            "atmensstat"] %}
         {% endif %}
         {% endif %}
@@ -84,22 +87,32 @@ enkf:
 
         # Ensemble mean analyses/increments
         # 6-hr analysis/increment
+        {% if not DO_JEDIATMENS %}
         {% if do_calc_increment %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmanl.ensmean.nc"
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atminc.ensmean.nc"
+        {% endif %}
+        {% else %}
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atmanl.ensmean.nc"
         {% endif %}
 
         {% if DOIAU %}
         # IAU increments/analyses
 
         {% for fhr in IAUFHRS if fhr != 6 %}
+        {% if not DO_JEDIATMENS %}
         {% if do_calc_increment %}
         # Store analyses instead of increments
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensmean.nc"
         {% else %}
+        {% if not DO_JEDIATMENS %}
         # Store increments
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmi{{ '%03d' % fhr }}.ensmean.nc"
+        {% endif %}
+        {% endif %}
+        {% else %}
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atma{{ '%03d' % fhr }}.ensmean.nc"
         {% endif %}
         {% endfor %}
 

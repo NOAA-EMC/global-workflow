@@ -1,0 +1,6 @@
+defaults:
+  !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
+base:
+  DO_GSISOILDA: "YES"
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
+  DO_TEST_MODE: "NO"

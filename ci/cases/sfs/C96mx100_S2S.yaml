@@ -1,9 +1,9 @@
 experiment:
-  system: gefs
+  system: sfs
   mode: forecast-only
 
 arguments:
-  idate: 1994050100 
+  idate: 1994050100
   edate: 1994050100
   pslot: {{ 'pslot' | getenv }}
   app: S2S
@@ -14,6 +14,6 @@ arguments:
   nens: 10
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'TOPICDIR' | getenv }}/HR4/C96mx100
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/sfs_defaults.yaml
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
+  yaml: {{ HOMEgfs }}/ci/cases/yamls/sfs_full.yaml
 

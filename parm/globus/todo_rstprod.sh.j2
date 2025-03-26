@@ -1,0 +1,71 @@
+#!/bin/bash
+# Jinja-templated variables
+hpss_target_dir="{{hpss_target_dir}}"
+log_directory="{{server_home}}/doorman/{{jobid}}/logs/"
+
+cwd=$(pwd)
+file="${1}"
+# In lieu of an actual ID, construct from the filename
+# TODO when the doorman can provide an xfer ID, use that instead
+globus_xfer_id="${file}"
+
+file_full="${cwd}/${file}"
+mkdir -p "${log_directory}"
+
+log_file="${log_directory}/hpss_status_${globus_xfer_id}.log"
+rm -f "${log_file}"
+
+send_to_hpss() {
+    # Change the group of the file to rstprod
+    if ! chgrp "rstprod" "${file_full}" > "${log_file}" 2>&1; then
+        rm -f "${file_full}"
+        echo "Failed to run chmod on ${file_full}.  Deleting and exiting." >> "${log_file}"
+        return 1
+    fi
+
+    # Write a command file to place the file on hpss and protect it
+    local hpss_target="${hpss_target_dir}/${file}"
+    local command_file="command_file_${globus_xfer_id}"
+    cat << EOF > "${command_file}"
+        mkdir -p "${hpss_target_dir}"
+        put "${file_full}" : "${hpss_target}"
+        chgrp rstprod "${hpss_target}"
+        chmod 640 "${hpss_target}"
+EOF
+
+    hsi in "${command_file}" >> "${log_file}" 2>&1
+    # shellcheck disable=SC2181
+    if [[ $? != 0 ]]; then
+        echo "Failed to send ${file} to HPSS and/or protect it." >> "${log_file}"
+        echo "Deleting from hpss.  Please verify it was deleted!!" >> "${log_file}"
+        set +e
+        hsi rm "${hpss_target}"
+        set -e
+        return 3
+    fi
+
+    rm -f "${command_file}"
+
+    # Create an index file if the file is a tarball
+    if [[ ${file} == *.tar ]]; then
+        # For now, ignore errors coming from the index command.
+        # Issue RDHPCS#2025020754000121 opened with RDHPCS.
+        htar -Xvf "${hpss_target}" > /dev/null 2>&1 || true
+        # TODO Reinstate error checking and logging when creating index files
+        #if ! htar -Xvf "${hpss_target}" >> "${log_file}" 2>&1; then
+            #echo "Failed to create an index file for ${hpss_target}.  Exiting." >> "${log_file}"
+            #return 2
+        #fi
+    fi
+
+    return 0
+}
+
+send_to_hpss
+hpss_stat=$?
+
+if [[ ${hpss_stat} -eq 0 ]]; then
+    echo "SUCCESS" >> "${log_file}"
+else
+    echo "FAILURE" >> "${log_file}"
+fi

@@ -197,6 +197,11 @@ class SnowEnsAnalysis(Task):
         prep_ims_config = parse_j2yaml(self.task_config.IMS_OBS_LIST, localconf)
         logger.debug(f"{self.task_config.IMS_OBS_LIST}:\n{pformat(prep_ims_config)}")
 
+        asc_file = os.path.join(localconf.COMIN_OBS, f"{localconf.OPREFIX}imssnow96.asc")
+        if not os.path.isfile(asc_file):
+            logger.warning(f"WARNING: Obs files are missing. Will not execute CALCFIMSEXE")
+            return
+
         # copy the IMS obs files from COMIN_OBS to DATA/obs
         logger.info("Copying IMS obs for CALCFIMSEXE")
         FileHandler(prep_ims_config.calcfims).sync()

@@ -24,7 +24,7 @@ pwd=$(pwd)
 
 # Base variables
 DONST=${DONST:-"NO"}
-GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
+DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
 DOSFCANL_ENKF=${DOSFCANL_ENKF:-"YES"}
 export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
@@ -58,6 +58,7 @@ DOIAU=${DOIAU_ENKF:-"NO"}
 
 # Global_cycle stuff
 CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
+REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
 export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
@@ -78,41 +79,70 @@ bPDY=${BDATE:0:8}
 bcyc=${BDATE:8:2}
 
 # Get dimension information based on CASE
-res=${CASE:2:}
+res=${CASE:1}
 JCAP_CASE=$((res*2-2))
 LATB_CASE=$((res*2))
 LONB_CASE=$((res*4))
 
 # Global cycle requires these files
 export FNTSFA=${FNTSFA:-'                  '}
-export FNACNA=${FNACNA:-${COM_OBS}/${OPREFIX}seaice.5min.blend.grb}
-export FNSNOA=${FNSNOA:-${COM_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-[[ ! -f $FNSNOA ]] && export FNSNOA="${COM_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
-FNSNOG=${FNSNOG:-${COM_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-[[ ! -f $FNSNOG ]] && FNSNOG="${COM_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
-
-# Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
-if [ ${RUN_GETGES:-"NO"} = "YES" ]; then
-    # Ignore possible spelling error (nothing is misspelled)
-    # shellcheck disable=SC2153
-    snoprv=$($GETGESSH -q -t snogrb_$JCAP_CASE -e $gesenvir -n $GDUMP -v $GDATE)
+export FNACNA=${FNACNA:-${COMIN_OBS}/${OPREFIX}seaice.5min.blend.grb}
+export FNSNOA=${FNSNOA:-${COMIN_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+# Check if resolution specific FNSNOA exists, if not use t1534 version
+if [[ ! -f ${FNSNOA} ]]; then
+    export FNSNOA="${COMIN_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
+fi
+if [[ ! -f ${FNSNOA} ]]; then
+  echo "WARNING: Current cycle snow file ${FNSNOA} is missing. Snow coverage will not be updated."
 else
-    snoprv=${snoprv:-$FNSNOG}
+  echo "INFO: Current cycle snow file is ${FNSNOA}"
+fi
+export FNSNOG=${FNSNOG:-${COMIN_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+# Check if resolution specific FNSNOG exists, if not use t1534 version
+if [[ ! -f ${FNSNOG} ]]; then
+  export FNSNOG="${COMIN_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
+fi
+if [[ ! -f ${FNSNOG} ]]; then
+  echo "WARNING: Previous cycle snow file ${FNSNOG} is missing. Snow coverage will not be updated."
+else
+  echo "INFO: Previous cycle snow file is ${FNSNOG}"
 fi
 
-if [ $($WGRIB -4yr $FNSNOA 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
-     $($WGRIB -4yr $snoprv 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ] ; then
-    export FNSNOA=" "
-    export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+# If any snow files are missing, don't apply snow in the global_cycle step.
+if [[ ! -f ${FNSNOA} ]] || [[ ! -f ${FNSNOG} ]]; then
+  export FNSNOA=" "
+  export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+# Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
+elif [ $($WGRIB -4yr $FNSNOA 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
+     $($WGRIB -4yr $FNSNOG 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ] ; then
+  export FNSNOA=" "
+  export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
 else
-    export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
-    export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
+  export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
+  export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
 fi
 
 if [ $DONST = "YES" ]; then
-    export NST_FILE=${NST_FILE:-${COM_ATMOS_ANALYSIS_DET}/${APREFIX}dtfanl.nc}
+  export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}dtfanl.nc}
 else
-    export NST_FILE="NULL"
+  export NST_FILE="NULL"
+fi
+
+# regrid the surface increment files
+if [[ ${DO_GSISOILDA} = "YES" ]]; then
+ 
+    export CASE_IN=${CASE_ENS}
+    export CASE_OUT=${CASE_ENS}
+    export OCNRES_OUT=${OCNRES}
+    export NMEM_REGRID=${NMEM_ENS}
+    if [[ "${DOIAU}" == "YES" ]]; then
+        export LFHR=3 # match BDATE
+    else # DOSFCANL_ENKF
+        export LFHR=6 # PDYcyc
+    fi
+
+    "${REGRIDSH}"
+
 fi
 
 export APRUNCY=${APRUN_CYCLE:-$APRUN_ESFC}
@@ -138,13 +168,13 @@ if [ $DOIAU = "YES" ]; then
             memchar="mem$cmem"
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+                COMOUT_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
             MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
                 COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+                COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
@@ -156,18 +186,20 @@ if [ $DOIAU = "YES" ]; then
                 sfcdata_dir="${COMIN_ATMOS_RESTART_MEM_PREV}"
             fi
 
-            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
+            if [[ ${TILE_NUM} -eq 1 ]]; then
+                mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
+            fi
             ${NCP} "${sfcdata_dir}/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc" \
                 "${DATA}/fnbgsi.${cmem}"
             ${NCP} "${DATA}/fnbgsi.${cmem}" "${DATA}/fnbgso.${cmem}"
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
-            if [[ ${GSI_SOILANAL} = "YES" ]]; then
-                FHR=6
-                ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-                   "${DATA}/lnd_incr.${cmem}"
+            if [[ ${DO_GSISOILDA} = "YES" ]]; then
+                 ${NCP} "${COMIN_ATMOS_ANALYSIS_MEM}/sfci00${LFHR}.tile${n}.nc" \
+                   "${DATA}/soil_xainc.${cmem}" 
             fi
+
         done # ensembles
 
         CDATE="${PDY}${cyc}" ${CYCLESH}
@@ -184,27 +216,21 @@ if [ $DOIAU = "YES" ]; then
             memchar="mem$cmem"
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+                COMOUT_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
-
-            [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
-            cpfs "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
-
-
-            if [[ ${GSI_SOILANAL} = "YES" ]]; then
-                FHR=6
-                ${NCP} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-                   "${DATA}/lnd_incr.${cmem}"
+            if [[ ${TILE_NUM} -eq 1 ]]; then
+                mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
             fi
+
+            cpfs "${DATA}/fnbgso.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
+
         done # ensembles
 
     done
 
 fi
 
-if [ $DOSFCANL_ENKF = "YES" ]; then
+if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
     for n in $(seq 1 $ntiles); do
 
         export TILE_NUM=$n
@@ -216,14 +242,17 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
                smem=$((smem - NMEM_ENS_MAX))
             fi
             gmemchar="mem"$(printf %03i "$smem")
-            cmem=$(printf %03i $imem)
-            memchar="mem$cmem"
+            cmem=$(printf %03i ${imem})
+            memchar="mem${cmem}"
 
             RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
                 COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
 
             RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
                 COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+
+            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+                COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
             # determine where the input snow restart files come from
             if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
@@ -238,6 +267,10 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
             ${NCP} "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
+            if [[ ${DO_GSISOILDA} = "YES" ]]; then
+                 ${NCP} "${COMIN_ATMOS_ANALYSIS_MEM}/sfci00${LFHR}.tile${n}.nc" \
+                   "${DATA}/soil_xainc.${cmem}" 
+            fi
         done
 
         CDATE="${PDY}${cyc}" ${CYCLESH}
@@ -254,11 +287,13 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
             memchar="mem${cmem}"
 
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+                COMOUT_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            [[ ! -d "${COM_ATMOS_RESTART_MEM}" ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"
+            if [[ ! -d "${COMOUT_ATMOS_RESTART_MEM}" ]]; then
+                mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
+            fi
 
-            cpfs "${DATA}/fnbgso.${cmem}" "${COM_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+            cpfs "${DATA}/fnbgso.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
 
         done
 
@@ -272,4 +307,4 @@ fi
 cd "${pwd}" || exit 1
 
 
-exit ${err}
+exit "${err}"

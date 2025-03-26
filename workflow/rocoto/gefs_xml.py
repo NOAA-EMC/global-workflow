@@ -6,8 +6,6 @@ from wxflow import to_timedelta, timedelta_to_HMS
 from typing import Dict
 
 
-# Copy of GFSForecastOnlyRocotoXML for now, other than changing cycledef names from 'gfs' to 'gefs'
-#   If it remains this way, we can consolidate into a single forecast-only class
 class GEFSRocotoXML(RocotoXML):
 
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
