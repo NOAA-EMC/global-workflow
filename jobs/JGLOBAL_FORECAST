@@ -88,7 +88,9 @@ fi
 ###############################################################
 "${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}"
 err=$?
-(( err != 0 )) && exit "${err}"
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 # Send DBN alerts for EnKF
 # TODO: Should these be in post manager instead?

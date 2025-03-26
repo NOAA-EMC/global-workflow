@@ -17,7 +17,9 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 ${GLOBALGLOBUSARCHSH:-${SCRgfs}/exglobal_globus_earc.py}
 err=$?
-[[ ${err} -ne 0 ]] && exit "${err}"
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work

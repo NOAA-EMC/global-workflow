@@ -30,7 +30,9 @@ done
 if [[ "${RUN_GRID2GRID_STEP1}" == "YES" || "${RUN_GRID2OBS_STEP1}" == "YES" || "${RUN_PRECIP_STEP1}" == "YES" ]]; then
     ${VERIF_GLOBALSH}
     err=$?
-	if (( err != 0 )); then exit "${err}"; fi
+    if [[ ${err} -ne 0 ]]; 
+        then exit "${err}"
+    fi
 fi
 
 if [[ ${KEEPDATA:-"NO"} = "NO" ]] ; then rm -rf "${DATAROOT}" ; fi  # TODO: This should be $DATA
