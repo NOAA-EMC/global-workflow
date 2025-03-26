@@ -8,7 +8,7 @@
 #########################################################################
 
 # Main CI root directory - Base directory for all CI/CD operations
-export GFS_CI_ROOT="/ncrc/proj/nggps_emc/${USER}/GFS_CI_CD"
+export GFS_CI_ROOT="/gpfs/f6/drsa-precip3/proj-shared/${USER}/GFS_CI_CD"
 
 # ICSDIR root directory - Contains initial condition data
 # Used by create_experiment.py for setting up test cases
@@ -61,3 +61,4 @@ export STAGED_TESTS_DIR="${GFS_CI_ROOT}/STAGED_TESTS_DIR"
 
 # HPC account information - For job submission
 export HPC_ACCOUNT=drsa-precip3
+
