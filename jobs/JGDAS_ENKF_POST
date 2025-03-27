@@ -23,9 +23,9 @@ export LEVS=$((LEVS-1))
 # Run relevant script
 
 ${ENKFPOSTSH:-${SCRgfs}/exgdas_enkf_post.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 
