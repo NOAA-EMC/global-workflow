@@ -74,7 +74,7 @@ FV3_postdet() {
       done
       # If aerosol analysis is to be done, replace fv_tracer with aeroanl_fv_tracer
       # restart files from current cycle (if found)
-      if [[ ${DO_AERO_ANL} == "YES" ]]; then
+      if [[ ${DO_AERO_FCST} == "YES" ]]; then
         local nn
         local use_anl_aero="YES"
         for (( nn = 1; nn <= ntiles; nn++ )); do
@@ -93,7 +93,7 @@ FV3_postdet() {
           done
         fi # if [[ ${use_anl_aero} == "YES" ]]; then
 
-      fi # [[ ${DO_AERO_ANL} == "YES" ]]; then
+      fi # [[ ${DO_AERO_FCST} == "YES" ]]; then
       
     fi  # if [[ "${RERUN}" == "YES" ]]; then
 
