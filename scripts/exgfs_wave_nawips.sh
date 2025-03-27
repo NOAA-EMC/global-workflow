@@ -19,16 +19,16 @@ NAGRIB="nagrib2"
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
 cd "${DATA}" || exit 99
-cpreq "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" .
+cpreq "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" "${DATA}/"
 
-grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  #Native grids
+grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  # Native grids
 
 # Create a template for the GEMPAK control file
 rm -f "${DATA}/gempak.parm.tmpl"
 cat << EOF > "${DATA}/gempak.parm.tmpl"
-GBFILE   = @GBFILE@
+GBFILE   = @[GBFILE]
 INDXFL   =
-GDOUTF   = @GEMGRD@
+GDOUTF   = @[GEMGRD]
 PROJ     =
 GRDAREA  =
 KXKY     =
@@ -80,25 +80,25 @@ for grid in ${grids}; do
 
   com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
   com_dir=${!com_varname}
-  GRIBIN="${RUN}.wave.${cycle}.${GRDRES}.f${fhr3}.${GRDREGION}.grib2"
+  GRIBIN="${RUN}.wave.${cycle}.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
   cpreq "${com_dir}/${GRIBIN}" "./${GRIBIN}"
 
+  nagrib_file="${GRIBIN}"
   if [[ "${GRDREGION}.${GRDRES}" = "global.0p25" ]]; then
-    nagrib_file="${RUN}.wave.${cycle}.${gridIDout}.${fhr3}.global.grib2"
+    nagrib_file="${RUN}.wave.${cycle}.global.${gridIDout}.${fhr3}.grib2"
     ${WGRIB2} -lola 0:720:0.5 -90:361:0.5 "${nagrib_file}" grib "${GRIBIN}"
     export err=$?
     if [[ "${err}" -ne 0 ]]; then
-      echo "FATAL ERROR: Error intepolating grid with wgrib2"
+      echo "FATAL ERROR: wgrib2 failed to interpolate"
+      export pgm="${WGRIB2}"
       err_chk
-    else
-      nagrib_file="${GRIBIN}"
     fi
   fi
 
   GEMGRD="${grdIDout}_${PDY}${cyc}f${fhr3}"
   GBFILE="grib_${grid}"
 
-  cp "${nagrib_file}" "${GBFILE}"
+  cpreq "${nagrib_file}" "${GBFILE}"
 
   rm -f "gempak.parm.${grid}"
   atparse < "${DATA}/gempak.parm.tmpl" >> "${DATA}/gempak.parm.${grid}"
