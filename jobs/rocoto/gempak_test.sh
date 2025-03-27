@@ -18,7 +18,9 @@ for fhr in "${fhr_list[@]}"; do
 	# Execute the JJOB
 	###############################################################
 	echo "add J-script here."
-	status=$?
+    # Save the status of the previous command to avoid overwriting
+    prev_status=$?
+    status=$prev_status
 	[[ ${status} -ne 0 ]] && exit "${status}"
 done
 
