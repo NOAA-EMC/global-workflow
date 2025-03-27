@@ -33,7 +33,9 @@ if [[ ! -d ${COMOUT_WAVE_GEMPAK} ]]; then mkdir -p "${COMOUT_WAVE_GEMPAK}"; fi
 # Execute the script.
 "${SCRgfs}/exgfs_wave_nawips.sh"
 err=$?
-if [[ "${err}" -ne 0 ]]; then exit "${err}"; fi
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 ###################################
 
 # Remove temp directories

@@ -20,9 +20,9 @@ if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 ###############################################################
 
 "${SCRgfs}/exgdas_enkf_earc_tars.py"
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 ###############################################################
