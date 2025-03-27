@@ -35,7 +35,9 @@ mkdir -p "${COMOUT_ATMOS_RESTART}"
 
 ${SFCANALSH:-${SCRgfs}/exglobal_atmos_sfcanl.sh}
 err=$?
-(( err != 0 )) && exit "${err}"
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 
 ##############################################

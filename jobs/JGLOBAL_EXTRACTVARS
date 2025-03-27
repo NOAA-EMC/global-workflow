@@ -41,7 +41,9 @@ fi
 # Execute the Script
 "${SCRgfs}/exglobal_extractvars.sh"
 err=$?
-(( err != 0 )) && exit "${err}"
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 ##########################################
 # Remove the Temporary working directory

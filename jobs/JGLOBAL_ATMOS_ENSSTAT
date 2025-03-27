@@ -25,7 +25,9 @@ done
 # Run exglobal script
 "${SCRgfs}/exglobal_atmos_ensstat.sh"
 err=$?
-(( err != 0 )) && exit "${err}"
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work
