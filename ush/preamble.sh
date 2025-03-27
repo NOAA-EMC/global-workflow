@@ -101,8 +101,9 @@ postamble() {
     exit "${rc}"
 }
 
+# TODO Remove this when moving to operations
 function err_exit() {
-    # Taken from prod_util v2.1.0
+    # Taken from NCO prod_util v2.1.0
     # SCRIPT NAME:  err_exit
     #
     # ABSTRACT:  This script is to be used when a fatal error or condition 
