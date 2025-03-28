@@ -3,6 +3,7 @@ experiment:
   mode: cycled
 
 arguments:
+  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: S2S
   resdetatmos: 48
@@ -20,6 +21,5 @@ arguments:
 
 skip_ci_on_hosts:
   - gaeac5
-  - gaeac6
   - orion
   - awsepicglobalworkflow

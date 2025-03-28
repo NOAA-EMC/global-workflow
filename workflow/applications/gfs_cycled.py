@@ -94,7 +94,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['esfc', 'efcs', 'epos', 'earc_vrfy']
 
             if options['do_archcom']:
-                configs += ['earc_tars']
+                configs += ['earc_tars', 'earc_groups']
 
         if options['do_fit2obs']:
             configs += ['fit2obs']
@@ -158,12 +158,6 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_globusarch']:
             configs += ['globus']
-            # TODO Enable when the globus archiving feature is available for ensembles
-            if options['do_hybvar']:
-                print("WARNING Globus archiving is currently only possible for deterministic members")
-                print("        Ensemble members will NOT be archived with this option!!")
-            # if options['do_hybvar']:
-            #     configs += ['globus_earc']
 
         return configs
 
@@ -325,6 +319,7 @@ class GFSCycledAppConfig(AppConfig):
             # Ensemble tasks
             elif 'enkf' in run:
 
+                task_names[run] += ['stage_ic']
                 if options['do_jediatmens']:
                     task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'ecen_fv3jedi']
                     if options['lobsdiag_forenkf']:
@@ -343,14 +338,14 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
 
-                task_names[run] += ['stage_ic', 'esfc']
+                task_names[run] += ['esfc']
+                task_names[run] += ['earc_vrfy']
+
                 if options['do_archcom']:
                     task_names[run] += ['earc_tars']
+                    if options['do_globusarch']:
+                        task_names[run] += ['globus_earc']
 
-                    # TODO Uncomment when globus ensemble archiving is ready
-                    # if options['do_globusarch']:
-                    #     task_names[run] += ['globus_earc']
-
-                task_names[run] += ['earc_vrfy', 'cleanup']
+                task_names[run] += ['cleanup']
 
         return task_names
