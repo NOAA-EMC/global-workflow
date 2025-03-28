@@ -31,8 +31,8 @@ export JEDI_CONFIG_YAML="${PARMgfs}/gdas/aeroanl_jedi_config.yaml.j2"
 export AERO_STAGE_VARIATIONAL_TMPL="${PARMgfs}/gdas/aero_stage_variational.yaml.j2"
 export AERO_FINALIZE_VARIATIONAL_TMPL="${PARMgfs}/gdas/aero_finalize_variational.yaml.j2"
 
-export io_layout_x=@IO_LAYOUT_X@
-export io_layout_y=@IO_LAYOUT_Y@
+export io_layout_x="{{ IO_LAYOUT_X }}"
+export io_layout_y="{{ IO_LAYOUT_Y }}"
 
 export JEDIEXE="${EXECgfs}/gdas.x"
 

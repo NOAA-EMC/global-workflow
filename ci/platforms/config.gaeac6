@@ -3,7 +3,7 @@
 # Main CI root directory
 export GFS_CI_ROOT=/ncrc/proj/nggps_emc/${USER}/GFS_CI_CD
 # ICSDIR root directory used on the create_experment.py command line
-export ICSDIR_ROOT=/gpfs/f6/bil-fire8/world-shared/global/glopara/data/ICSDIR
+export ICSDIR_ROOT=/gpfs/f6/drsa-precip3/world-shared/role.glopara/data/ICSDIR
 
 # JENKINS launch directory for agent
 export JENKINS_AGENT_LAUNCH_DIR=${GFS_CI_ROOT}/Jenkins/agent

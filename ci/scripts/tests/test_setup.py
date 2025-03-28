@@ -16,8 +16,9 @@ def test_setup_expt():
     arguments = [
         "gfs", "forecast-only",
         "--pslot", pslot, "--app", "ATM", "--resdetatmos", "48",
-        "--comroot", f"{RUNDIR}", "--expdir", f"{RUNDIR}",
-        "--idate", "2021032312", "--edate", "2021032312", "--overwrite"
+        "--comroot", RUNDIR, "--expdir", RUNDIR,
+        "--idate", "2021032312", "--edate", "2021032312", "--overwrite",
+        "--account", account
     ]
     setup_expt_script = Executable(os.path.join(HOMEgfs, "workflow", "setup_expt.py"))
     setup_expt_script.add_default_arg(arguments)
