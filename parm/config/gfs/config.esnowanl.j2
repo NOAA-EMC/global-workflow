@@ -32,7 +32,7 @@ export ENS_APPLY_INCR_NML_TMPL="${PARMgfs}/gdas/snow/ens_apply_incr_nml.j2"
 
 export JEDI_CONFIG_YAML="${PARMgfs}/gdas/esnowanl_jedi_config.yaml.j2"
 
-export io_layout_x=@IO_LAYOUT_X@
-export io_layout_y=@IO_LAYOUT_Y@
+export io_layout_x="{{ IO_LAYOUT_X }}"
+export io_layout_y="{{ IO_LAYOUT_Y }}"
 
 echo "END: config.esnowanl"
