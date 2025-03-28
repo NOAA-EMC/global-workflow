@@ -4,8 +4,6 @@ ocnicepost:
     write_grib2: True
     write_netcdf: False
     debug: False
-    write_grib2: False
-    write_netcdf: True
   fix_data:
     mkdir:
       - "{{ DATA }}"
