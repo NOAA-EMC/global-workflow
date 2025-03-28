@@ -4,19 +4,19 @@
 
 echo "BEGIN: config.prepoceanobs"
 
-export OCNOBS2IODAEXEC=${HOMEgfs}/sorc/gdas.cd/build/bin/gdas_obsprovider2ioda.x
+export OCNOBS2IODAEXEC="${HOMEgfs}/sorc/gdas.cd/build/bin/gdas_obsprovider2ioda.x"
 
-export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@
+export SOCA_INPUT_FIX_DIR="{{ SOCA_INPUT_FIX_DIR }}"
 
 export MARINE_OBS_YAML_DIR="${PARMgfs}/gdas/soca/obs/config"
-export OBSPREP_YAML=@OBSPREP_YAML@
-export OBS_LIST=@SOCA_OBS_LIST@
+export OBSPREP_YAML="{{ OBSPREP_YAML }}"
+export OBS_LIST="{{ SOCA_OBS_LIST }}"
 export OBS_YAML=${OBS_LIST}
 
 # ocean analysis needs own dmpdir until standard dmpdir has full ocean obs
-use_exp_obs="@use_exp_obs@"
+use_exp_obs="{{ use_exp_obs }}"
 if [[ "${use_exp_obs}" == "YES" ]]; then
-    dmpdir_exp="@dmpdir_exp@"
+    dmpdir_exp="{{ dmpdir_exp }}"
 fi
 
 export DMPDIR="${dmpdir_exp:-${DMPDIR}}"

@@ -95,13 +95,16 @@ class Tasks:
 
         def _validate_system_key(input_dict, key):
             # This helper function returns None if
-            # 1) the value held in 'key' matches '@' + key + '@'
+            # 1) the value held in 'key' matches '{{' + " "* key + " "* + '}}'
             # 2) the value is an empty string, or
             # 3) the key does not exist in the dictionary.
 
             value = input_dict.get(key, None)
             value = None if value == '' else value
-            return None if value == f'@{key}@' else value
+            if isinstance(value, str):
+                return None if value.replace(" ", "") == "{{" + key + "}}" else value
+            else:
+                return value
 
         # Check the system configuration
         base = self._base
