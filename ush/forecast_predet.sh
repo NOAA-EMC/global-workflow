@@ -95,6 +95,7 @@ common_predet(){
   rCDUMP=${rCDUMP:-${RUN}}
 
   CDATE=${CDATE:-"${PDY}${cyc}"}
+  SDATE=${SDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}
   MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 
@@ -746,9 +747,14 @@ CMEPS_predet(){
       CMEPS_RESTART_FH=("${FHMAX}")
     fi
   else
-    if [[ "${DOIAU:-NO}" == "YES" ]] && [[ "${warm_start}" == ".true." ]] ; then
-      local restart_interval_start=$(( cmeps_restart_interval + half_window ))
-      local restart_interval_end=$(( FHMAX + half_window ))
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
+         local restart_interval_start=${cmeps_restart_interval}
+         local restart_interval_end=${FHMAX}
+      else
+         local restart_interval_start=$(( cmeps_restart_interval + half_window ))
+         local restart_interval_end=$(( FHMAX + half_window ))
+      fi
     else
       local restart_interval_start=${cmeps_restart_interval}
       local restart_interval_end=${FHMAX}
