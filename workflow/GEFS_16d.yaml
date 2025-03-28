@@ -1,0 +1,15 @@
+experiment:
+  system: gefs
+  mode: forecast-only
+arguments:
+  idate: 2018010300
+  edate: 2018010300
+  pslot: "rfcst_gaea_16d_test"
+  resdetatmos: 384
+  resensatmos: 384
+  start: 'warm'
+  interval: 168
+  nens: 4
+  comroot: "/gpfs/f6/drsa-precip3/scratch/Eric.Sinsky/GW_DATA/rfcst_gaea_16d_test/COMROOT"
+  expdir: "/gpfs/f6/drsa-precip3/scratch/Eric.Sinsky/GW_DATA/rfcst_gaea_16d_test/EXPDIR"
+  yaml: GEFS_options_16d.yaml
