@@ -4,7 +4,6 @@ base:
   DOIAU: "NO"
   DO_JEDIATMVAR: "YES"
   DO_JEDIATMENS: "YES"
-  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
   DO_TEST_MODE: "NO"
 atmanl:
   JCB_ALGO_YAML_VAR: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_3dvar_ufs_hybatmDA.yaml.j2"

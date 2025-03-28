@@ -23,9 +23,9 @@ mkdir -p "${COMOUT_CHEM_BMAT}"
 
 EXSCRIPT=${GDASAEROBMATPY:-${SCRgfs}/exgdas_aero_analysis_generate_bmatrix.py}
 ${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 ##############################################

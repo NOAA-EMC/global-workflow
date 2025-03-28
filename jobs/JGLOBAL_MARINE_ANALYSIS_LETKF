@@ -40,9 +40,9 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 EXSCRIPT=${GDASOCNLETKFPY:-${HOMEgfs}/scripts/exglobal_marine_analysis_letkf.py}
 ${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 ##############################################
