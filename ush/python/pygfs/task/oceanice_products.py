@@ -2,10 +2,9 @@
 
 import os
 from logging import getLogger
-from typing import List, Dict, Any
+from typing import Dict, Any
 from pprint import pformat
 import xarray as xr
-from shutil import copyfileobj
 
 from wxflow import (AttrDict,
                     parse_j2yaml,
@@ -174,10 +173,6 @@ class OceanIceProducts(Task):
         # Run the ocnicepost.x executable
         OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
 
-        if config.component in ['ocean']:
-            # Concatenate the 2D and 3D grib2 files
-            OceanIceProducts.concatenate(config, product_grid)
-
         # Index the interpolated grib2 file
         OceanIceProducts.index(config, product_grid)
 
@@ -260,20 +255,6 @@ class OceanIceProducts(Task):
 
     @staticmethod
     @logit(logger)
-    def concatenate(config: Dict, grid:str) -> None:
-
-        os.chdir(config.DATA)
-        with open(os.path.join(config.DATA, f"{config.component}.{grid}.grib2"), "wb") as fout:
-            for file in ['', '_3D']:
-                infile = f"{config.component}.{grid}{file}.grb2"
-                fin = open(os.path.join(config.DATA, infile), "rb")
-                copyfileobj(fin, fout)
-                fin.close()
-
-        return
-
-    @staticmethod
-    @logit(logger)
     def subset(config: Dict) -> None:
         """
         Subset a list of variables from a netcdf file and save to a new netcdf file.
@@ -281,7 +262,7 @@ class OceanIceProducts(Task):
 
         Parameters
         ----------
-        config : Dict
+        config: Dict
             Configuration dictionary for the task
 
         Returns
