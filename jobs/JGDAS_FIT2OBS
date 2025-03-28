@@ -67,9 +67,9 @@ if [[ ${CDATE} -gt ${SDATE} ]]; then
   ##############################################
 
   "${SCRIPTSfit2obs}/excfs_gdas_vrfyfits.sh"
-  status=$?
-  if [[ ${status} -ne 0 ]]; then
-      exit "${status}"
+  err=$?
+  if [[ ${err} -ne 0 ]]; then
+      exit "${err}"
   fi
 
   ##############################################

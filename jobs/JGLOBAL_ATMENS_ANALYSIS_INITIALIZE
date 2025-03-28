@@ -27,9 +27,9 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 EXSCRIPT=${GDASATMENSINITPY:-${SCRgfs}/exglobal_atmens_analysis_initialize.py}
 ${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 ##############################################

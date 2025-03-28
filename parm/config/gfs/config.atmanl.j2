@@ -5,10 +5,10 @@
 
 echo "BEGIN: config.atmanl"
 
-export JCB_ALGO_YAML_VAR=@JCB_ALGO_YAML_VAR@
-export JCB_ALGO_YAML_FV3INC=@JCB_ALGO_YAML_FV3INC@
+export JCB_ALGO_YAML_VAR="{{ JCB_ALGO_YAML_VAR }}"
+export JCB_ALGO_YAML_FV3INC="{{ JCB_ALGO_YAML_FV3INC }}"
 
-export STATICB_TYPE=@STATICB_TYPE@
+export STATICB_TYPE="{{ STATICB_TYPE }}"
 export LOCALIZATION_TYPE="bump"
 export INTERP_METHOD='barycentric'
 
@@ -29,10 +29,10 @@ export VAR_BKG_STAGING_YAML="${PARMgfs}/gdas/staging/atm_var_bkg.yaml.j2"
 export BERROR_STAGING_YAML="${PARMgfs}/gdas/staging/atm_berror_${STATICB_TYPE}.yaml.j2"
 export FV3ENS_STAGING_YAML="${PARMgfs}/gdas/staging/atm_var_fv3ens.yaml.j2"
 
-export layout_x_atmanl=@LAYOUT_X_ATMANL@
-export layout_y_atmanl=@LAYOUT_Y_ATMANL@
+export layout_x_atmanl="{{ LAYOUT_X_ATMANL }}"
+export layout_y_atmanl="{{ LAYOUT_Y_ATMANL }}"
 
-export io_layout_x=@IO_LAYOUT_X@
-export io_layout_y=@IO_LAYOUT_Y@
+export io_layout_x="{{ IO_LAYOUT_X }}"
+export io_layout_y="{{ IO_LAYOUT_Y }}"
 
 echo "END: config.atmanl"
