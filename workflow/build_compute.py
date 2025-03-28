@@ -30,9 +30,9 @@ def input_args(*argv):
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
+    parser.add_argument('--account', help='HPC account to use', required=True)
     parser.add_argument('--yaml', help='Input YAML file',
                         type=str, required=False, default='build_opts.yaml')
-    parser.add_argument('--account', help='HPC account to use; default is host-dependent', required=False, default=os.getenv('HPC_ACCOUNT'))
     parser.add_argument('--systems', help='System(s) to build (options: gfs, gefs, sfs, gsi, gdas, or all)', required=False, default='gfs')
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)
@@ -63,7 +63,7 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.task_name = task_name
     task_dict.cycledef = "build"
     task_dict.maxtries = 1
-    task_dict.command = f"cd {HOMEgfs}/sorc/; {task_spec.command}"
+    task_dict.command = f"cd {HOMEgfs}/sorc/; {task_spec.command} -j {task_spec.cores}"
     task_dict.job_name = task_name
     task_dict.log = f"{HOMEgfs}/sorc/logs/{task_name}.log"
 
@@ -103,18 +103,17 @@ def get_host_specs(host: Dict) -> Dict:
         native = '-l place=vscatter'
     elif host.info.SCHEDULER in ['slurm']:
         native = '--export=NONE'
-        if host.info.PARTITION_BATCH not in [""]:
+        if host.info.get("PARTITION_BATCH", "") != "":
             partition = host.info.PARTITION_BATCH
 
-    if host.info.RESERVATION not in [""]:
+    if host.info.get("RESERVATION", "") != "":
         native += f' --reservation={host.info.RESERVATION}'
 
-    if host.info.CLUSTERS not in [""]:
+    if host.info.get("CLUSTERS", "") != "":
         native += f' --clusters={host.info.CLUSTERS}'
 
     specs = AttrDict()
     specs.scheduler = host.info.SCHEDULER
-    specs.account = host.info.ACCOUNT
     specs.queue = host.info.QUEUE
     specs.partition = partition
     specs.native = native
@@ -125,12 +124,13 @@ def get_host_specs(host: Dict) -> Dict:
 def main(*argv):
 
     user_inputs = input_args(*argv)
+
+    # Gather host specs and place the user supplied account
+    # into the host_specs dict
     host_specs = get_host_specs(Host())
+    host_specs.account = user_inputs.account
 
-    # Update the default host account if the user supplied one
-    if user_inputs.account is not None:
-        host_specs.account = user_inputs.account
-
+    # Retrieve build specificatiosn from user provided yaml
     build_specs = AttrDict(parse_yaml(user_inputs.yaml))
 
     systems = user_inputs.systems.split() if "all" not in user_inputs.systems else ["all"]

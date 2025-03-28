@@ -49,8 +49,10 @@ mkdir -p "${COMOUT_ICE_BMATRIX}"
 
 EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRgfs}/exglobal_marinebmat.py}
 ${EXSCRIPT}
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work

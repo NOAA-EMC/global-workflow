@@ -60,8 +60,10 @@ fi
 # shellcheck disable=SC2153,SC2312
 LEVS=$(${NCDUMP} -h "${ATMGES_ENSMEAN}" | grep -i "pfull" | head -1 | awk -F" = " '{print $2}' | awk -F" " '{print $1}') # get LEVS
 # shellcheck disable=
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 export LEVS
 
 # Link observational data
@@ -111,7 +113,9 @@ export SETUP_INVOBS="passive_bc=.false.,${SETUP_INVOBS}"
 
 # Ensure clean stat tarballs for ensemble mean
 for fstat in ${CNVSTAT} ${OZNSTAT} ${RADSTAT}; do
-    [[ -f ${fstat} ]] && rm -f ${fstat}
+    if [[ -f "${fstat}" ]]; then
+        rm -f "${fstat}"
+    fi
 done
 
 
@@ -119,8 +123,10 @@ done
 # Run relevant script
 
 ${INVOBSSH:-${SCRgfs}/exgdas_enkf_select_obs.sh}
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 
 ##############################################
@@ -145,8 +151,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

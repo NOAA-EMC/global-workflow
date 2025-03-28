@@ -27,8 +27,10 @@ done
 ###############################################################
 
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work
@@ -45,6 +47,8 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
-[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 exit 0

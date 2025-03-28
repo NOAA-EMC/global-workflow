@@ -38,8 +38,10 @@ mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
 
 EXSCRIPT=${GDASATMINITPY:-${SCRgfs}/exglobal_atm_analysis_initialize.py}
 ${EXSCRIPT}
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work

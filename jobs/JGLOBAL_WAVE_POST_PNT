@@ -8,7 +8,7 @@ export errchk=${errchk:-err_chk}
 
 export MP_PULSE=0
 
-# Set COM Paths and GETGES environment
+# Set COM Paths
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
    COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
@@ -42,8 +42,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

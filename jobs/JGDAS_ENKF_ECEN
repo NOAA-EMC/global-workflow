@@ -42,8 +42,10 @@ MEMDIR="ensstat" RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 # Run relevant script
 
 ${ENKFRECENSH:-${SCRgfs}/exgdas_enkf_ecen.sh}
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 
 ##############################################
@@ -60,8 +62,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

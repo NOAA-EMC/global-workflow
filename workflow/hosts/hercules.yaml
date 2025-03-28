@@ -1,34 +1,34 @@
-BASE_GIT: '/work/noaa/global/glopara/git_rocky9'
+# Paths
 DMPDIR: '/work/noaa/rstprod/dump'
-BASE_DATA: '/work/noaa/global/glopara/data'
-BASE_IC: '/work/noaa/global/glopara/data/ICSDIR'
-PACKAGEROOT: '/work/noaa/global/glopara/nwpara'
-COMINsyn: '/work/noaa/global/glopara/com/gfs/prod/syndat'
-HOMEDIR: '/work/noaa/global/${USER}'
-STMP: '/work/noaa/stmp/${USER}/HERCULES'
-PTMP: '/work/noaa/stmp/${USER}/HERCULES'
-NOSCRUB: $HOMEDIR
+BASE_GIT: '/work2/noaa/global/role-global/git'
+BASE_DATA: '/work2/noaa/global/role-global/data'
+BASE_IC: '/work2/noaa/global/role-global/data/ICSDIR'
+AERO_INPUTS_DIR: '/work2/noaa/global/role-global/data/GEFS_ExtData/20250310'
+PACKAGEROOT: '/work2/noaa/global/role-global/nwpara'
+HOMEDIR: '/work2/noaa/global/${USER}'
+STMP: '/work2/noaa/stmp/${USER}/${machine^^}'
+PTMP: '/work2/noaa/stmp/${USER}/${machine^^}'
+NOSCRUB: '${HOMEDIR}'
+COMINsyn: '/work2/noaa/global/role-global/com/gfs/prod/syndat'
+COMINecmwf: '/work2/noaa/global/role-global/data/external_gempak/ecmwf'
+COMINnam: '/work2/noaa/global/role-global/data/external_gempak/nam'
+COMINukmet: '/work2/noaa/global/role-global/data/external_gempak/ukmet'
+# BQS properties
 SCHEDULER: slurm
-ACCOUNT: fv3-cpu
 QUEUE: batch
-QUEUE_SERVICE: batch
 PARTITION_BATCH: hercules
 PARTITION_SERVICE: service
-RESERVATION: ''
-CHGRP_RSTPROD: 'YES'
-CLUSTERS: ''
-CHGRP_CMD: 'chgrp rstprod'
-HPSSARCH: 'NO'
+# HPSS properties
 HPSS_PROJECT: emc-global
-LOCALARCH: 'NO'
-ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+ARCHCOM_TO: 'globus_hpss'
+# TODO: let the workflow setup scripts determine the username (HPSS differs from MSU usernames)
+ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
+CHGRP_RSTPROD: 'YES'
+CHGRP_CMD: 'chgrp rstprod'
+CLIENT_GLOBUS_UUID: '869912fe-f6de-46c0-af10-b22efd84a022'
+# Features
+SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
+DO_ARCHCOM: 'NO'
+DO_AWIPS: 'NO'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
-DO_TRACKER: 'NO'
-DO_GENESIS: 'NO'
-DO_AWIPS: 'NO'
-SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
-COMINecmwf: /work/noaa/global/glopara/data/external_gempak/ecmwf
-COMINnam: /work/noaa/global/glopara/data/external_gempak/nam
-COMINukmet: /work/noaa/global/glopara/data/external_gempak/ukmet
-AERO_INPUTS_DIR: /work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions

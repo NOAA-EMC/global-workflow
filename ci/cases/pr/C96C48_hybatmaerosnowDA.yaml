@@ -3,6 +3,7 @@ experiment:
   mode: cycled
 
 arguments:
+  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: ATMA
   resdetatmos: 96
@@ -18,7 +19,7 @@ arguments:
   yaml: {{ HOMEgfs }}/ci/cases/yamls/atmaerosnowDA_defaults_ci.yaml
 
 skip_ci_on_hosts:
-  - wcoss2
   - orion
-  - gaea
+  - gaeac5
   - hercules
+  - awsepicglobalworkflow

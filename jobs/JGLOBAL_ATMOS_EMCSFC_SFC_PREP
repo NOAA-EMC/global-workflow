@@ -35,8 +35,10 @@ export BLENDED_ICE_FILE_m6hrs=${BLENDED_ICE_FILE_m6hrs:-${COMIN_m6hrs}/${RUN}.${
 ###############################################################
 
 ${EMCSFCPREPSH:-${SCRgfs}/exemcsfc_global_sfc_prep.sh}
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work
@@ -52,8 +54,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

@@ -48,8 +48,10 @@ fi
 
 # Get LEVS
 export LEVS=$(${NCLEN} ${ATMGES} pfull)
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 
 # Generate Gaussian surface analysis  # TODO: Should this be removed now that sfcanl is its own job?
@@ -60,8 +62,10 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 # Run relevant script
 
 ${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh}
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 
 ##############################################
@@ -78,8 +82,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0
