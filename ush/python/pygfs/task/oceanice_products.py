@@ -176,7 +176,7 @@ class OceanIceProducts(Task):
 
         if config.component in ['ocean']:
             # Concatenate the 2D and 3D grib2 files
-            OceanIceProducts.concatenate(config)
+            OceanIceProducts.concatenate(config, product_grid)
 
         # Index the interpolated grib2 file
         OceanIceProducts.index(config, product_grid)
@@ -207,8 +207,11 @@ class OceanIceProducts(Task):
 
         exec_cmd = Executable(aprun_cmd)
         exec_cmd.add_default_arg(os.path.join(workdir, exec_name))
-
-        OceanIceProducts._call_executable(exec_cmd)
+        try:
+            exec_cmd()
+        except Exception:
+            logger.exception(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
+            raise WorkflowException(f"{exec_cmd}")
 
     @staticmethod
     @logit(logger)
@@ -218,15 +221,15 @@ class OceanIceProducts(Task):
 
         Parameters
         ----------
-        workdir : str | os.PathLike
-            Working directory where to run containing the necessary files and executable
-        forecast_hour : int
-            forecast hour to index
+        config : Dict
+            Configuration dictionary for the task
+        grid : str
+            Target product grid to process
 
         Environment Parameters
         ----------------------
         WGRIB2: str (optional)
-            path to executable "grb2index"
+            path to executable "wgrib2"
             Typically set in the modulefile
 
         Returns
@@ -239,33 +242,33 @@ class OceanIceProducts(Task):
 
         wgrib2_cmd = os.environ.get("WGRIB2", None)
 
-        grbfile = f"{config.component}.grib2"
-        grbfidx = f"{grbfile}.grib2.idx"
+        grbfile = f"{config.component}.{grid}.grib2"
+        grbfidx = f"{grbfile}.idx"
 
         if not os.path.exists(grbfile):
-            logger.info(f"No {grbfile} to process, skipping ...")
+            logger.warning(f"WARNING: No {grbfile} to index!")
             return
 
         logger.info(f"Creating index file for {grbfile}")
         exec_cmd = which("wgrib2") if wgrib2_cmd is None else Executable(wgrib2_cmd)
-        exec_cmd.add_default_arg(os.path.join(config.DATA, grbfile))
-        exec_cmd.add_default_arg(os.path.join(config.DATA, grbfidx))
-
-        OceanIceProducts._call_executable(exec_cmd)
+        exec_cmd.add_default_arg("-s")
+        try:
+            exec_cmd(grbfile, output=grbfidx)
+        except Exception:
+            logger.exception(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
+            raise WorkflowException(f"{exec_cmd}")
 
     @staticmethod
     @logit(logger)
-    def concatenate(config: Dict) -> None:
+    def concatenate(config: Dict, grid:str) -> None:
 
         os.chdir(config.DATA)
-        outfile = f"{config.component}.grb2"
-        fout = open(os.path.join(config.DATA, outfile), "wb")
-        for file in ['2D', '3D']:
-            infile = f"{config.component}.{file}.grb2"
-            fin = open(os.path.join(config.DATA, infile), "rb")
-            copyfileobj(fin, fout)
-            fin.close()
-        fout.close()
+        with open(os.path.join(config.DATA, f"{config.component}.{grid}.grib2"), "wb") as fout:
+            for file in ['', '_3D']:
+                infile = f"{config.component}.{grid}{file}.grb2"
+                fin = open(os.path.join(config.DATA, infile), "rb")
+                copyfileobj(fin, fout)
+                fin.close()
 
         return
 
@@ -323,34 +326,6 @@ class OceanIceProducts(Task):
             # close the netcdf files
             ds.close()
             ds_subset.close()
-
-    @staticmethod
-    @logit(logger)
-    def _call_executable(exec_cmd: Executable) -> None:
-        """Internal method to call executable
-
-        Parameters
-        ----------
-        exec_cmd : Executable
-            Executable to run
-
-        Raises
-        ------
-        OSError
-            Failure due to OS issues
-        WorkflowException
-            All other exceptions
-        """
-
-        logger.info(f"Executing {exec_cmd}")
-        try:
-            exec_cmd()
-        except OSError:
-            logger.exception(f"FATAL ERROR: Failed to execute {exec_cmd}")
-            raise OSError(f"{exec_cmd}")
-        except Exception:
-            logger.exception(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
-            raise WorkflowException(f"{exec_cmd}")
 
     @staticmethod
     @logit(logger)
