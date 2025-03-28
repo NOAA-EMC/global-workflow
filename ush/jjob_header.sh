@@ -107,5 +107,5 @@ done
 # Source machine runtime environment
 ##########################################
 source "${HOMEgfs}/env/${machine}.env" "${env_job}" && true
-err=$?
+export err=$?
 err_chk "FATAL [${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"
