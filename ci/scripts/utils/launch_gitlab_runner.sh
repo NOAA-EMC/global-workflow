@@ -44,7 +44,7 @@ source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
 cd "${GITLAB_RUNNER_DIR}" || exit 1
 
 # Set the log file name with the current date and time
-DATE=$(date +%Y-%m%d%M) || true
+DATE=$(date +%Y%m%d%M) || true
 GITLAB_LOG="${PWD}/launched_gitlab_runner-${DATE}.log"
 rm -f "${LOG}"
 
