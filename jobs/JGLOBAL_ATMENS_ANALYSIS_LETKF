@@ -18,9 +18,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlletkf" -c "base atmensanl at
 
 EXSCRIPT=${GDASATMENSRUNSH:-${SCRgfs}/exglobal_atmens_analysis_letkf.py}
 ${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 ##############################################

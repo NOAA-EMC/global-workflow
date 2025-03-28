@@ -23,9 +23,9 @@ if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi
 # Execute the Script
 
 ${SCRgfs}/exgfs_wave_prdgen_bulls.sh
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 ###################################
