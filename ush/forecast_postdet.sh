@@ -19,8 +19,10 @@ FV3_postdet() {
     echo "Copying FV3 cold start files for 'RUN=${RUN}' at '${current_cycle}' from '${COMIN_ATMOS_INPUT}'"
     local fv3_file
     for fv3_file in ${file_list}; do
-      ${NCP} "${COMIN_ATMOS_INPUT}/${fv3_file}" "${DATA}/INPUT/${fv3_file}" \
-      || ( echo "FATAL ERROR: Unable to copy FV3 IC, ABORT!"; exit 1 )
+      if ! ${NCP} "${COMIN_ATMOS_INPUT}/${fv3_file}" "${DATA}/INPUT/${fv3_file}"; then
+        export err=1
+        err_chk "FATAL ERROR: Unable to copy FV3 IC, ABORT!"
+      fi
     done
 
   # warm start case
@@ -43,8 +45,10 @@ FV3_postdet() {
     local fv3_file restart_file
     for fv3_file in ${file_list}; do
       restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${fv3_file}"
-      ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${fv3_file}" \
-      || ( echo "FATAL ERROR: Unable to copy FV3 IC, ABORT!"; exit 1 )
+      if ! ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${fv3_file}"; then
+        export err=1
+        err_chk "FATAL ERROR: Unable to copy FV3 IC, ABORT!"
+      fi
     done
 
     if [[ "${RERUN}" == "YES" ]]; then
@@ -55,8 +59,10 @@ FV3_postdet() {
         echo "Copying stochastic restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
         for stoch_file in $(stoch_restarts); do
           restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${stoch_file}"
-          ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${stoch_file}" \
-          || ( echo "FATAL ERROR: Unable to copy stochastic restart, ABORT!"; exit 1 )
+          if ! ${NCP} "${restart_dir}/${restart_file}" "${DATA}/INPUT/${stoch_file}"; then
+            export err=1
+            err_chk "FATAL ERROR: Unable to copy stochastic restart, ABORT!"
+          fi
         done
       fi
     else
@@ -121,8 +127,8 @@ FV3_postdet() {
         if [[ -f "${increment_file}" ]]; then
           ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
         else
-          echo "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
-          exit 1
+          export err=1
+          err_chk "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
         fi
       done
     fi
@@ -225,8 +231,8 @@ EOF
         if [[ -f "${increment_file}" ]]; then
           ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
         else
-          echo "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
-          exit 1
+          export err=1
+          err_chk "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
         fi
       done
 
@@ -352,8 +358,8 @@ FV3_out() {
       fi
       ;;
     *)
-      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
-      exit 25
+      export err=25
+      err_chk "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
       ;;
   esac
 
@@ -401,21 +407,25 @@ WW3_postdet() {
     export WW3_restart_from_binary=false
     seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
     local ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
-    ${NCP} "${ww3_netcdf_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
-             || ( echo "FATAL ERROR: Unable to copy netcdf WW3 IC, ABORT!"; exit 1 )
+    if ! ${NCP} "${ww3_netcdf_restart_file}" "${DATA}/${ww3_restart_dest_file}"; then
+      export err=1
+      err_chk "FATAL ERROR: Unable to copy netcdf WW3 IC, ABORT!"
+    fi
   elif [[ -s "${ww3_binary_restart_file}" ]]; then
     # found binary ww3 restart file
     export WW3_restart_from_binary=true
     seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
     local ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}"
-    ${NCP} "${ww3_binary_restart_file}" "${DATA}/${ww3_restart_dest_file}" \
-             || ( echo "FATAL ERROR: Unable to copy binary WW3 IC, ABORT!"; exit 1 )
+    if ! ${NCP} "${ww3_binary_restart_file}" "${DATA}/${ww3_restart_dest_file}"; then
+      export err=1
+      err_chk "FATAL ERROR: Unable to copy binary WW3 IC, ABORT!"
+    fi
   else
     if [[ "${RERUN}" == "YES" ]] || [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
       # In the case of a RERUN, the WW3 restart file is required
       # In the case of runtype=continue, if no wave restart when using PIO, the model will fail
-      echo "FATAL ERROR: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for RERUN='${RERUN}' or runtype=continue, ABORT!"
-      exit 1
+      export err=1
+      err_chk "FATAL ERROR: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for RERUN='${RERUN}' or runtype=continue, ABORT!"
     else
       export WW3_restart_from_binary=false
       echo "WARNING: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
@@ -541,15 +551,19 @@ MOM6_postdet() {
   fi
 
   # Copy MOM6 ICs
-  ${NCP} "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc" \
-  || ( echo "FATAL ERROR: Unable to copy MOM6 IC, ABORT!"; exit 1 )
+  if ! ${NCP} "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"; then
+    export err=1
+    err_chk "FATAL ERROR: Unable to copy MOM6 IC, ABORT!"
+  fi
   case ${OCNRES} in
     "025")
       local nn
       for (( nn = 1; nn <= 4; nn++ )); do
         if [[ -f "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res_${nn}.nc" ]]; then
-          ${NCP} "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc" \
-          || ( echo "FATAL ERROR: Unable to copy MOM6 IC, ABORT!"; exit 1 )
+          if ! ${NCP} "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"; then
+            export err=1
+            err_chk "FATAL ERROR: Unable to copy MOM6 IC, ABORT!"
+          fi
         fi
       done
     ;;
@@ -559,13 +573,17 @@ MOM6_postdet() {
   # Copy increment (only when RERUN=NO)
   if [[ "${RERUN}" == "NO" ]]; then
     if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
-      ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
-      || ( echo "FATAL ERROR: Unable to copy MOM6 increment, ABORT!"; exit 1 )
+      if ! ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"; then
+        export err=1
+        err_chk "FATAL ERROR: Unable to copy MOM6 increment, ABORT!"
+      fi
     fi
 
     if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-      ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc" \
-      || ( echo "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"; exit 1 )
+      if ! ${NCP} "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"; then
+        export err=1
+        err_chk "FATAL ERROR: Unable to copy ensemble MOM6 increment, ABORT!"
+      fi
     fi
   fi  # if [[ "${RERUN}" == "NO" ]]; then
 
@@ -617,8 +635,8 @@ MOM6_postdet() {
       done
       ;;
     *)
-      echo "FATAL ERROR: Don't know how to copy MOM output files for RUN ${RUN}"
-      exit 25
+      export err=25
+      err_chk "FATAL ERROR: Don't know how to copy MOM output files for RUN ${RUN}"
       ;;
   esac
 
@@ -676,8 +694,8 @@ MOM6_out() {
       fi
       ;;
     *)
-      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
-      exit 25
+      export err=25
+      err_chk "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
       ;;
   esac
 }
@@ -706,8 +724,10 @@ CICE_postdet() {
   fi
 
   # Copy CICE ICs
-  ${NCP} "${cice_restart_file}" "${DATA}/cice_model.res.nc" \
-  || ( echo "FATAL ERROR: Unable to copy CICE IC, ABORT!"; exit 1 )
+  if ! ${NCP} "${cice_restart_file}" "${DATA}/cice_model.res.nc"; then
+    export err=1
+    err_chk "FATAL ERROR: Unable to copy CICE IC, ABORT!"
+  fi
 
   # Link iceh_ic file to COM.  This is the initial condition file from CICE (f000)
   # TODO: Is this file needed in COM? Is this going to be used for generating any products?
@@ -742,8 +762,8 @@ CICE_postdet() {
         dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
         ;;
       *)
-        echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet"
-        exit 10
+        export err=10
+        err_chk "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet"
     esac
 
     ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
@@ -788,8 +808,8 @@ CICE_out() {
       fi
       ;;
     *)
-      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
-      exit 25
+      export err=25
+      err_chk "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
       ;;
   esac
 }
@@ -876,8 +896,10 @@ CMEPS_postdet() {
 
     # Copy CMEPS restarts
     if [[ -f "${cmeps_restart_file}" ]]; then
-      ${NCP} "${cmeps_restart_file}" "${DATA}/ufs.cpld.cpl.r.nc" \
-      || ( echo "FATAL ERROR: Unable to copy CMEPS restarts, ABORT!"; exit 1 )
+      if ! ${NCP} "${cmeps_restart_file}" "${DATA}/ufs.cpld.cpl.r.nc"; then
+        export err=1
+        err_chk "FATAL ERROR: Unable to copy CMEPS restarts, ABORT!"
+      fi
       rm -f "${DATA}/rpointer.cpl"
       touch "${DATA}/rpointer.cpl"
       echo "ufs.cpld.cpl.r.nc" >> "${DATA}/rpointer.cpl"
@@ -888,8 +910,8 @@ CMEPS_postdet() {
       echo "WARNING: CMEPS restart file '${cmeps_restart_file}' not found for warm_start='${warm_start}', will initialize!"
       if [[ "${RERUN}" == "YES" ]]; then
         # In the case of a RERUN, the CMEPS restart file is required
-        echo "FATAL ERROR: CMEPS restart file '${cmeps_restart_file}' not found for RERUN='${RERUN}', ABORT!"
-        exit 1
+        export err=1
+        err_chk "FATAL ERROR: CMEPS restart file '${cmeps_restart_file}' not found for RERUN='${RERUN}', ABORT!"
       fi
     fi
 
@@ -930,8 +952,8 @@ CMEPS_out() {
       fi
       ;;
     *)
-      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
-      exit 25
+      export err=25
+      err_chk "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
       ;;
   esac
 }

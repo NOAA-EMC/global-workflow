@@ -130,7 +130,10 @@ common_predet(){
 
   if [[ ! -d "${COMOUT_CONF}" ]]; then mkdir -p "${COMOUT_CONF}"; fi
 
-  cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
+  if ! cd "${DATA}"; then
+    export err=8
+    err_chk "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"
+  fi
 
   # Several model components share DATA/INPUT for input data
   if [[ ! -d "${DATA}/INPUT" ]]; then mkdir -p "${DATA}/INPUT"; fi
@@ -274,8 +277,8 @@ FV3_predet(){
 
   local suite_file="${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml"
   if [[ ! -f "${suite_file}" ]]; then
-    echo "FATAL ERROR: CCPP Suite file ${suite_file} does not exist, ABORT!"
-    exit 2
+    export err=2
+    err_chk "FATAL ERROR: CCPP Suite file ${suite_file} does not exist, ABORT!"
   fi
 
   # Scan suite file to determine whether it uses Noah-MP
@@ -488,8 +491,8 @@ FV3_predet(){
   # NoahMP table
   local noahmptablefile="${PARMgfs}/ufs/noahmptable.tbl"
   if [[ ! -f "${noahmptablefile}" ]]; then
-    echo "FATAL ERROR: missing noahmp table file '${noahmptablefile}'"
-    exit 1
+    export err=1
+    err_chk "FATAL ERROR: missing noahmp table file '${noahmptablefile}'"
   else
     ${NCP} "${noahmptablefile}" "${DATA}/noahmptable.tbl"
   fi
@@ -602,8 +605,8 @@ FV3_predet(){
         export e3="${NMEM_ENS}"
         ;;
       *)
-        echo "FATAL ERROR: Unknown NET ${NET}, unable to determine appropriate post files"
-        exit 20
+        export err=20
+        err_chk "FATAL ERROR: Unknown NET ${NET}, unable to determine appropriate post files"
     esac
   fi
 }
@@ -623,27 +626,33 @@ WW3_predet(){
   # Copy mod_def files for wave grids
   local ww3_grid
   #if shel, only 1 waveGRD which is linked to mod_def.ww3
-  ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
-  || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"; exit 1 )
+  if ! ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3"; then
+    export err=1
+    err_chk "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"
+  fi
 
   if [[ "${WW3ICEINP}" == "YES" ]]; then
     local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
     if [[ ! -f "${wavicefile}" ]]; then
-      echo "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
-      exit 1
+      export err=1
+      err_chk "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
     fi
-    ${NCP} "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}" \
-    || ( echo "FATAL ERROR: Unable to copy '${wavicefile}', ABORT!"; exit 1 )
+    if ! ${NCP} "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}"; then
+      export err=1
+      err_chk "FATAL ERROR: Unable to copy '${wavicefile}', ABORT!"
+    fi
   fi
 
   if [[ "${WW3CURINP}" == "YES" ]]; then
     local wavcurfile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
     if [[ ! -f "${wavcurfile}" ]]; then
-      echo "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
-      exit 1
+      export err=1
+      err_chk "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
     fi
-    ${NCP} "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}" \
-    || ( echo "FATAL ERROR: Unable to copy '${wavcurfile}', ABORT!"; exit 1 )
+    if ! ${NCP} "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}"; then
+      export err=1
+      err_chk "FATAL ERROR: Unable to copy '${wavcurfile}', ABORT!"
+    fi
   fi
 
   # Fix files
@@ -720,8 +729,8 @@ MOM6_predet(){
   if [[ -s "${spec_file}" ]]; then
     ${NCP} "${spec_file}" "${DATA}/INPUT/"
   else
-    echo "FATAL ERROR: coupled grid_spec file '${spec_file}' does not exist"
-    exit 3
+    export err=3
+    err_chk "FATAL ERROR: coupled grid_spec file '${spec_file}' does not exist"
   fi
 
 }

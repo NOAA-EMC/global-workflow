@@ -46,20 +46,20 @@ while getopts "c:e:" option; do
         c)  read -ra configs <<< "${OPTARG}" ;;
         e)  env_job=${OPTARG} ;;
         :)
-            echo "FATAL [${BASH_SOURCE[0]}]: ${option} requires an argument"
-            exit 1
+            export err=1
+            err_chk "FATAL [${BASH_SOURCE[0]}]: ${option} requires an argument"
             ;;
         *)
-            echo "FATAL [${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-            exit 1
+            export err=1
+            err_chk "FATAL [${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
             ;;
     esac
 done
 shift $((OPTIND-1))
 
 if [[ -z ${env_job} ]]; then
-    echo "FATAL [${BASH_SOURCE[0]}]: Must specify a job name with -e"
-    exit 1
+    export err=1
+    err_chk "FATAL [${BASH_SOURCE[0]}]: Must specify a job name with -e"
 fi
 
 ##############################################
@@ -70,7 +70,10 @@ if [[ ${WIPE_DATA:-YES} == "YES" ]]; then
     rm -rf "${DATA}"
 fi
 mkdir -p "${DATA}"
-cd "${DATA}" || ( echo "FATAL [${BASH_SOURCE[0]}]: ${DATA} does not exist"; exit 1 )
+if ! cd "${DATA}"; then
+  export err=1
+  err_chk "FATAL [${BASH_SOURCE[0]}]: ${DATA} does not exist"
+fi
 
 
 ##############################################
@@ -94,21 +97,15 @@ export pgmerr=errfile
 #############################
 export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
 for config in "${configs[@]:-''}"; do
-    source "${EXPDIR}/config.${config}"
-    status=$?
-    if (( status != 0 )); then
-        echo "FATAL [${BASH_SOURCE[0]}]: Unable to load config config.${config}"
-        exit "${status}"
-    fi
+    source "${EXPDIR}/config.${config}" && true
+    export err=$?
+    err_chk "FATAL ERROR [${BASH_SOURCE[0]}]: Unable to load config config.${config}"
 done
 
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-source "${HOMEgfs}/env/${machine}.env" "${env_job}"
-status=$?
-if (( status != 0 )); then
-    echo "FATAL [${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"
-    exit "${status}"
-fi
+source "${HOMEgfs}/env/${machine}.env" "${env_job}" && true
+err=$?
+err_chk "FATAL [${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"

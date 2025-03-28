@@ -20,8 +20,8 @@ WW3_namelists(){
     echo "ww3_points.list copied (${PARMgfs}/wave/wave_${NET}.buoys)."
     set_trace
   else
-    echo "FATAL ERROR : ww3_points.list (${PARMgfs}/wave/wave_${NET}.buoys) NOT FOUND"
-    exit 12 
+    export err=12
+    err_chk "FATAL ERROR : ww3_points.list (${PARMgfs}/wave/wave_${NET}.buoys) NOT FOUND"
   fi
 
   #set coupling to ice/current
@@ -54,8 +54,8 @@ WW3_namelists(){
   # Ensure the template exists
   local template=${WW3_INPUT_TEMPLATE:-"${PARMgfs}/ufs/ww3_shel.nml.IN"}
   if [[ ! -f "${template}" ]]; then
-    echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
-    exit 1
+    export err=1
+    err_chk "FATAL ERROR: template '${template}' does not exist, ABORT!"
   fi
   rm -f "${DATA}/ww3_shel.nml"
   atparse < "${template}" >> "${DATA}/ww3_shel.nml"

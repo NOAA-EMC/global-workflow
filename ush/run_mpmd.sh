@@ -53,8 +53,8 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
 
 else
 
-  echo "FATAL ERROR: CFP is not usable with launcher: '${launcher:-}'"
-  err=1
+  export err=1
+  err_chk "FATAL ERROR: CFP is not usable with launcher: '${launcher:-}'"
 
 fi
 
