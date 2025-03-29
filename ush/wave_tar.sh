@@ -88,8 +88,6 @@ source "${USHgfs}/preamble.sh"
     exit 2
   fi
 
-  cd "${STA_DIR}/${filext}"
-
 # --------------------------------------------------------------------------- #
 # 2.  Generate tar file (spectral files are compressed)
 
