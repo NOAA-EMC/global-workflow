@@ -3,6 +3,7 @@ experiment:
   mode: cycled
 
 arguments:
+  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: ATM
   resdetatmos: 96
@@ -16,8 +17,5 @@ arguments:
   interval: 24
   start: cold
   yaml: {{ HOMEgfs }}/ci/cases/yamls/atmsoilDA_defaults_ci.yaml
-
-skip_ci_on_hosts:
-  - orion
 
 
