@@ -11,7 +11,6 @@ from multiprocessing import Process
 import subprocess
 import yaml
 from jcb import render
-from pprint import pprint
 
 from wxflow import (AttrDict,
                     FileHandler,
@@ -240,8 +239,6 @@ class MarineAnalysis(Task):
         # Current hack so that this is not done directly in the JCB base yaml
         jcb_config['marine_pseudo_model_states'] = parse_yaml('bkg_list.yaml')
 
-        print("barbar")
-        pprint(jcb_config)
         # Render the full JEDI configuration file using JCB
         jedi_config = render(jcb_config)
 
