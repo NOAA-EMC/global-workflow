@@ -72,24 +72,29 @@ FV3_postdet() {
           break
         fi
       done
-      # Replace fv_tracer with aeroanl_fv_tracer restart files from current cycle (if found)
-      local nn
-      local use_anl_aero="YES"
-      for (( nn = 1; nn <= ntiles; nn++ )); do
-        test_tracer_file="${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc"
-        if [[ ! -f  "${test_tracer_file}" ]]; then
-          use_anl_aero="NO"
-          echo "WARNING: File ${test_tracer_file} does not exist, will not replace any files from the aerosol analysis"
-          break
-        fi
-      done
-      if [[ ${use_anl_aero} == "YES" ]]; then
+      # If aerosol analysis is to be done, replace fv_tracer with aeroanl_fv_tracer
+      # restart files from current cycle (if found)
+      if [[ ${DO_AERO_FCST} == "YES" ]]; then
+        local nn
+        local use_anl_aero="YES"
         for (( nn = 1; nn <= ntiles; nn++ )); do
-          rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
-          ${NCP} "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
-                 "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
+          test_tracer_file="${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc"
+          if [[ ! -f  "${test_tracer_file}" ]]; then
+            use_anl_aero="NO"
+            echo "WARNING: File ${test_tracer_file} does not exist, will not replace any files from the aerosol analysis"
+            break
+          fi
         done
-      fi # if [[ ${use_anl_aero} == "YES" ]]; then
+        if [[ ${use_anl_aero} == "YES" ]]; then
+          for (( nn = 1; nn <= ntiles; nn++ )); do
+            rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
+            ${NCP} "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
+                   "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
+          done
+        fi # if [[ ${use_anl_aero} == "YES" ]]; then
+
+      fi # [[ ${DO_AERO_FCST} == "YES" ]]; then
+      
     fi  # if [[ "${RERUN}" == "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then

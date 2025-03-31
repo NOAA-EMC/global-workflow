@@ -959,12 +959,12 @@ case ${step} in
           declare -x "walltime"="01:20:00"
           ;;
         *)
-          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE} for ${RUN}"
           exit 4
           ;;
       esac
-    elif [[ "${RUN}" =~ enkfg(das|fs) ]]; then
-      case "${CASE}" in
+    elif [[ "${RUN}" == enkfgfs || "${RUN}" == enkfgdas ]]; then
+      case "${CASE_ENS}" in
         "C48" | "C96" | "C192")
           declare -x "walltime"="00:20:00"
           ;;
@@ -972,11 +972,11 @@ case ${step} in
           declare -x "walltime"="00:30:00"
           ;;
         *)
-          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE_ENS} for ${RUN}"
           exit 4
           ;;
       esac
-    elif [[ "${RUN}" =~ gfs ]]; then
+    elif [[ "${RUN}" == gfs ]]; then
       case "${CASE}" in
         "C48" | "C96" | "C192")
           declare -x "walltime"="03:00:00"
@@ -985,7 +985,7 @@ case ${step} in
           declare -x "walltime"="06:00:00"
           ;;
         *)
-          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+          echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE} for ${RUN}"
           exit 4
           ;;
       esac
@@ -1242,10 +1242,10 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
-    
+
   "eobs")
     walltime="00:15:00"
-    
+
     case ${CASE} in
       "C1152" | "C768")       ntasks=200;;
       "C384")                 ntasks=100;;
