@@ -55,7 +55,8 @@ class MarineAnalysis(Task):
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
+                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS
             }
         )
 
@@ -124,9 +125,6 @@ class MarineAnalysis(Task):
         # but the obs_list as such is needed later
         self.task_config.observations = parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, self.task_config)['observations']
         self.task_config.obs_list = self.task_config.observations
-
-        # also expected by JCB
-        self.task_config.app_path_observations = self.task_config.MARINE_JCB_GDAS_OBS
 
         obsconfigfile = os.path.join(self.task_config['PARMgfs'], 'gdas/soca/obs/obs_list_base_yaml.j2')
         self.task_config.observations = parse_j2yaml(obsconfigfile, self.task_config)
