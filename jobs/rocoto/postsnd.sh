@@ -16,7 +16,8 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-${HOMEgfs}/jobs/JGFS_ATMOS_POSTSND
+#${HOMEgfs}/jobs/JGFS_ATMOS_POSTSND
+echo "add J-script here."
 status=$?
 
 

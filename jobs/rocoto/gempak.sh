@@ -12,14 +12,15 @@ IFS=', ' read -r -a fhr_list <<< "${FHR_LIST}"
 
 export FHR3 jobid
 for fhr in "${fhr_list[@]}"; do
-	FHR3=$(printf '%03d' "${fhr}")
-	jobid="${job}_f${FHR3}.$$"
-	###############################################################
-	# Execute the JJOB
-	###############################################################
-	"${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
-	status=$?
-	[[ ${status} -ne 0 ]] && exit "${status}"
+    FHR3=$(printf '%03d' "${fhr}")
+    jobid="${job}_f${FHR3}.$$"
+    ###############################################################
+    # Execute the JJOB
+    ###############################################################
+    #"${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
+    echo "add J-script here."
+    status=$?
+    [[ ${status} -ne 0 ]] && exit "${status}"
 done
 
 exit 0
