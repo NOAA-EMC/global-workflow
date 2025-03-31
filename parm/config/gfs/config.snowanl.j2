@@ -32,7 +32,7 @@ export JEDI_CONFIG_YAML="${PARMgfs}/gdas/snowanl_jedi_config.yaml.j2"
 
 export JEDIEXE=${EXECgfs}/gdas.x
 
-export io_layout_x=@IO_LAYOUT_X@
-export io_layout_y=@IO_LAYOUT_Y@
+export io_layout_x="{{ IO_LAYOUT_X }}"
+export io_layout_y="{{ IO_LAYOUT_Y }}"
 
 echo "END: config.snowanl"
