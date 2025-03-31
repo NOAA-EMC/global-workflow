@@ -5,21 +5,23 @@ Entry point for setting up an experiment in the global-workflow
 """
 
 import os
-import glob
 import shutil
+from logging import getLogger
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, ArgumentTypeError
 
 from hosts import Host
 
-from wxflow import parse_j2yaml
-from wxflow import AttrDict
-from wxflow import to_datetime, to_timedelta, datetime_to_YMDH
+from wxflow import parse_j2yaml, AttrDict, to_datetime, to_timedelta, to_YMDH, Jinja, Logger, logit
 
 
 _here = os.path.dirname(__file__)
 _top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
 
+# Setup the logger
+logger = getLogger(__name__)
 
+
+# @logit(logger)
 def makedirs_if_missing(dirname):
     """
     Creates a directory if not already present
@@ -28,26 +30,15 @@ def makedirs_if_missing(dirname):
         os.makedirs(dirname)
 
 
-def fill_expdir(inputs):
+# @logit(logger)
+def update_configs(host, inputs):
     """
-    Method to copy config files from workflow to experiment directory
+    Method to copy config files from workflow to experiment directory and render templates
     INPUTS:
         inputs: user inputs to `setup_expt.py`
     """
-    configdir = inputs.configdir
-    expdir = os.path.join(inputs.expdir, inputs.pslot)
 
-    configs = glob.glob(f'{configdir}/config.*')
-    if len(configs) == 0:
-        raise IOError(f'no config files found in {configdir}')
-    for config in configs:
-        shutil.copy(config, expdir)
-
-    return
-
-
-def update_configs(host, inputs):
-
+    # @logit(logger)
     def _update_defaults(dict_in: dict) -> dict:
         # Given an input dict_in of the form
         # {defaults: {config_name: {var1: value1, ...}, }, config_name: {var1: value1, ...}}
@@ -59,148 +50,82 @@ def update_configs(host, inputs):
         defaults.update(dict_in)
         return defaults
 
-    # Convert the inputs to an AttrDict
-    data = AttrDict(host.info, **inputs.__dict__)
+    # map inputs_dict keys to keys used in configs
+    inputs_dict_remapped = map_inputs_to_configs(inputs)
 
-    # Read in the YAML file to fill out templates
-    data.HOMEgfs = _top
+    # Combine host.info and inputs_dict into a single dict, add some additional keys
+    host_plus_inputs_dict = AttrDict(host.info, **inputs_dict_remapped)
+    host_plus_inputs_dict.HOMEgfs = _top
+    host_plus_inputs_dict.MACHINE = host.machine.upper()
+
+    # Read in the YAML file
     yaml_path = inputs.yaml
     if not os.path.exists(yaml_path):
         raise FileNotFoundError(f'YAML file does not exist, check path: {yaml_path}')
-    yaml_dict = parse_j2yaml(yaml_path, data)
+    yaml_dict = parse_j2yaml(yaml_path, host_plus_inputs_dict)
 
     # yaml_dict is in the form {defaults: {key1: val1, ...}, base: {key1: val1, ...}, ...}
     # _update_defaults replaces any keys/values in defaults with matching keys in base
     yaml_dict = _update_defaults(yaml_dict)
 
-    # Override the YAML defaults with the host-specific capabilities
-    # First update config.base
-    edit_baseconfig(host, inputs, yaml_dict)
-
-    # Update stage config
-    stage_dict = {
-        "@ICSDIR@": inputs.icsdir
-    }
-    host_dict = get_template_dict(host.info)
-    stage_dict = dict(stage_dict, **host_dict)
-    stage_input = f'{inputs.configdir}/config.stage_ic'
-    stage_output = f'{inputs.expdir}/{inputs.pslot}/config.stage_ic'
-    edit_config(stage_input, stage_output, host_dict, stage_dict)
-
-    # Loop over other configs and update them with defaults
-    for cfg in yaml_dict.keys():
-        if cfg == 'base':
-            continue
-        cfg_file = f'{inputs.expdir}/{inputs.pslot}/config.{cfg}'
-        cfg_dict = get_template_dict(yaml_dict[cfg])
-        edit_config(cfg_file, cfg_file, host_dict, cfg_dict)
+    # Copy the config files to the experiment directory
+    files = [ff for ff in os.listdir(inputs.configdir) if os.path.isfile(os.path.join(inputs.configdir, ff))]
+    for file in files:
+        if file.endswith('.j2'):  # Jinja2 template; render it
+            logger.info(f'Jinja2 template found: {file}')
+            input_template = f'{inputs.configdir}/{file}'
+            cfg_file = file[:-3]  # remove the .j2 extension
+            output_config = f'{inputs.expdir}/{inputs.pslot}/{cfg_file}'  # output file in EXPDIR
+            cfg_key = '.'.join(cfg_file.split('.')[1:])  # key to look for in yaml_dict
+            _data = host_plus_inputs_dict.copy()
+            if cfg_key in yaml_dict.keys():
+                _data = AttrDict(_data, **yaml_dict[cfg_key])
+            Jinja(input_template, _data).save(output_config)
+        else:  # copy the file as is
+            input_file = f'{inputs.configdir}/{file}'
+            output_config = f'{inputs.expdir}/{inputs.pslot}/{file}'
+            shutil.copy(input_file, output_config)
 
     return
 
 
-def edit_baseconfig(host, inputs, yaml_dict):
-    """
-    Parses and populates the templated `HOMEgfs/parm/config/<gfs|gefs|sfs>/config.base`
-    to `EXPDIR/pslot/config.base`
-    """
+# @logit(logger)
+def map_inputs_to_configs(inputs):
 
-    # Create base_dict which holds templated variables to be written to config.base
-    base_dict = {
-        "@HOMEgfs@": _top,
-        "@MACHINE@": host.machine.upper()}
-
-    if inputs.start in ["warm"]:
-        is_warm_start = ".true."
-    elif inputs.start in ["cold"]:
-        is_warm_start = ".false."
-    else:
-        raise ValueError(f"Invalid start type: {inputs.start}")
+    warm_start_map = {'warm': '.true.', 'cold': '.false.'}
 
     # Construct a dictionary from user inputs
-    extend_dict = {
-        "@PSLOT@": inputs.pslot,
-        "@SDATE@": datetime_to_YMDH(inputs.idate),
-        "@EDATE@": datetime_to_YMDH(inputs.edate),
-        "@CASECTL@": f'C{inputs.resdetatmos}',
-        "@OCNRES@": f"{int(100.*inputs.resdetocean):03d}",
-        "@EXPDIR@": inputs.expdir,
-        "@COMROOT@": inputs.comroot,
-        "@EXP_WARM_START@": is_warm_start,
-        "@MODE@": inputs.mode,
-        "@INTERVAL_GFS@": inputs.interval,
-        "@SDATE_GFS@": datetime_to_YMDH(inputs.sdate_gfs),
-        "@APP@": inputs.app,
-        "@NMEM_ENS@": getattr(inputs, 'nens', 0)
-    }
+    try:
+        dict_out = AttrDict({
+            "PSLOT": inputs.pslot,
+            "SDATE": to_YMDH(inputs.idate),
+            "EDATE": to_YMDH(inputs.edate),
+            "CASE_CTL": f'C{inputs.resdetatmos}',
+            "OCNRES": f"{int(100.*inputs.resdetocean):03d}",
+            "EXPDIR": inputs.expdir,
+            "COMROOT": inputs.comroot,
+            "EXP_WARM_START": warm_start_map[inputs.start],
+            "MODE": inputs.mode,
+            "INTERVAL_GFS": inputs.interval,
+            "SDATE_GFS": to_YMDH(inputs.sdate_gfs),
+            "APP": inputs.app,
+            "NMEM_ENS": getattr(inputs, 'nens', 0),
+            "ICSDIR": inputs.icsdir,
+            "ACCOUNT": inputs.account,
+        })
+    except Exception as ee:
+        raise Exception("Error in constructing dictionary from user inputs, check inputs: ") from ee
 
-    if getattr(inputs, 'nens', 0) > 0:
-        extend_dict['@CASEENS@'] = f'C{inputs.resensatmos}'
+    if dict_out.NMEM_ENS > 0:
+        dict_out.CASE_ENS = f'C{inputs.resensatmos}'
 
     if inputs.mode in ['cycled']:
-        extend_dict["@DOHYBVAR@"] = "YES" if inputs.nens > 0 else "NO"
+        dict_out.DOHYBVAR = "YES" if dict_out.NMEM_ENS > 0 else "NO"
 
-    # Further extend/redefine base_dict with extend_dict
-    base_dict = dict(base_dict, **extend_dict)
-
-    # Add/override 'base'-specific declarations in base_dict
-    if 'base' in yaml_dict:
-        base_dict = dict(base_dict, **get_template_dict(yaml_dict['base']))
-
-    base_input = f'{inputs.configdir}/config.base'
-    base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
-    edit_config(base_input, base_output, host.info, base_dict)
-
-    return
+    return dict_out
 
 
-def edit_config(input_config, output_config, host_info, config_dict):
-    """
-    Given a templated input_config filename, parse it based on config_dict and
-    host_info and write it out to the output_config filename.
-    """
-
-    # Override defaults with machine-specific capabilties
-    # e.g. some machines are not able to run metp jobs
-    host_dict = get_template_dict(host_info)
-    config_dict = dict(config_dict, **host_dict)
-
-    # Read input config
-    with open(input_config, 'rt') as fi:
-        config_str = fi.read()
-
-    # Substitute from config_dict
-    for key, val in config_dict.items():
-        config_str = config_str.replace(key, str(val))
-
-    # Ensure no output_config file exists
-    if os.path.exists(output_config):
-        os.unlink(output_config)
-
-    # Write output config
-    with open(output_config, 'wt') as fo:
-        fo.write(config_str)
-
-    print(f'EDITED:  {output_config} as per user input.')
-
-    return
-
-
-def get_template_dict(input_dict):
-    # Reads a templated input dictionary and updates the output
-
-    output_dict = dict()
-
-    for key, value in input_dict.items():
-        # In some cases, the same config may be templated twice
-        # Prevent adding additional "@"s
-        if "@" in key:
-            output_dict[f'{key}'] = value
-        else:
-            output_dict[f'@{key}@'] = value
-
-    return output_dict
-
-
+# @logit(logger)
 def input_args(*argv):
     """
     Method to collect user arguments for `setup_expt.py`
@@ -366,6 +291,7 @@ def input_args(*argv):
     return inputs
 
 
+# @logit(logger)
 def query_and_clean(dirname, force_clean=False):
     """
     Method to query if a directory exists and gather user input for further action
@@ -373,10 +299,12 @@ def query_and_clean(dirname, force_clean=False):
 
     create_dir = True
     if os.path.exists(dirname):
-        print(f'\ndirectory already exists in {dirname}')
+        logger.warning(f'directory already exists in:')
+        logger.warning(f'  {dirname}')
         if force_clean:
             overwrite = "YES"
-            print(f'removing directory ........ {dirname}\n')
+            logger.warning(f'removing directory ...')
+            logger.warning(f'  {dirname}')
         else:
             overwrite = input('Do you wish to over-write [y/N]: ')
         create_dir = True if overwrite in [
@@ -387,6 +315,7 @@ def query_and_clean(dirname, force_clean=False):
     return create_dir
 
 
+# @logit(logger)
 def validate_user_request(host, inputs):
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
     machine = host.machine
@@ -399,6 +328,7 @@ def validate_user_request(host, inputs):
             raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
 
 
+# @logit(logger)
 def get_ocean_resolution(resdetatmos):
     """
     Method to determine the ocean resolution based on the atmosphere resolution
@@ -414,6 +344,7 @@ def get_ocean_resolution(resdetatmos):
         raise KeyError(f"Ocean resolution for {resdetatmos} is not implemented")
 
 
+@logit(logger, name='setup_expt.main')
 def main(*argv):
 
     user_inputs = input_args(*argv)
@@ -440,15 +371,20 @@ def main(*argv):
 
     if create_expdir:
         makedirs_if_missing(expdir)
-        fill_expdir(user_inputs)
         update_configs(host, user_inputs)
 
-    print(f"*" * 100)
-    print(f'EXPDIR: {expdir}')
-    print(f'ROTDIR: {rotdir}')
-    print(f"*" * 100)
+    max_len = max(len(expdir), len(rotdir)) + 8
+    logger.info(f"*" * max_len)
+    logger.info(f'EXPDIR: {expdir}')
+    logger.info(f'ROTDIR: {rotdir}')
+    logger.info(f"*" * max_len)
 
 
 if __name__ == '__main__':
+
+    # Setup the logger
+    logger = Logger(logfile_path=os.environ.get("LOGFILE_PATH"),
+                    level=os.environ.get("LOGGING_LEVEL", "INFO"),
+                    colored_log=os.environ.get("COLORED_LOG", True))
 
     main()

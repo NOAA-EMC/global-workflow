@@ -209,8 +209,8 @@ case ${step} in
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
   # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
-    walltime="03:00:00"
-    ntasks=240
+    walltime="00:30:00"
+    ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
@@ -222,8 +222,8 @@ case ${step} in
     ;;
 
   "wavepostbndpntbll")
-    walltime="01:00:00"
-    ntasks=448
+    walltime="00:10:00"
+    ntasks=2
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
@@ -235,8 +235,8 @@ case ${step} in
     ;;
 
   "wavepostpnt")
-    walltime="04:00:00"
-    ntasks=200
+    walltime="00:35:00"
+    ntasks=3
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
@@ -1077,11 +1077,11 @@ case ${step} in
     ;;
 
   "genesis")
-    walltime="00:25:00"
+    walltime="00:40:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
-    memory="10G"
+    memory="20G"
     ;;
 
   "genesis_fsu")
@@ -1093,7 +1093,7 @@ case ${step} in
     ;;
 
   "fit2obs")
-    walltime="00:20:00"
+    walltime="01:20:00"
     ntasks=3
     threads_per_task=1
     tasks_per_node=1
@@ -1102,7 +1102,8 @@ case ${step} in
         memory="80GB"
 	;;
       "C1152")
-        memory="200GB"
+        memory="400GB"
+	walltime="00:40:00"
 	;;
       *)
         memory="20GB"
@@ -1160,7 +1161,7 @@ case ${step} in
     ;;
 
   "arch_vrfy" | "earc_vrfy")
-    walltime="00:15:00"
+    walltime="00:30:00"
     ntasks=1
     tasks_per_node=1
     threads_per_task=1

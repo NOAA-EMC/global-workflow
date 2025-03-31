@@ -21,11 +21,17 @@ class Host:
 
     def __init__(self, host=None):
 
-        detected_host = self.detect()
+        if host is not None and host not in Host.SUPPORTED_HOSTS:
+            raise NotImplementedError(f'{host} is not a supported host.\n' +
+                                      'Currently supported hosts are:\n' +
+                                      f'{" | ".join(Host.SUPPORTED_HOSTS)}')
+
+        # Detect the host if not provided
+        detected_host = self.detect() if host is None else host
 
         if host is not None and host != detected_host:
             raise ValueError(
-                f'detected host: "{detected_host}" does not match host: "{host}"')
+                f'detected host: "{detected_host}" does not match provided host: "{host}"')
 
         self.machine = detected_host
         self.info = self._get_info
@@ -34,10 +40,18 @@ class Host:
     @classmethod
     def detect(cls):
 
-        machine = 'NOTFOUND'
+        machine = os.getenv('MACHINE_ID', 'UNKNOWN')
+        pw_csp = os.getenv('PW_CSP', 'UNKNOWN')
         container = os.getenv('SINGULARITY_NAME', None)
-        pw_csp = os.getenv('PW_CSP', None)
 
+        # Detect the machine since MACHINE_ID is set,
+        # Additionaly, if PW_CSP is set, then the machine is a cloud machine
+        if machine != 'UNKNOWN':
+            if pw_csp != 'UNKNOWN':
+                machine = f"{pw_csp.upper()}PW"
+            return machine
+
+        # Detect the machine since MACHINE_ID is not set
         if os.path.exists('/scratch1/NCEPDEV'):
             machine = 'HERA'
         elif os.path.exists('/work/noaa'):
@@ -57,7 +71,7 @@ class Host:
         elif pw_csp is not None:
             if pw_csp.lower() not in ['azure', 'aws', 'google']:
                 raise ValueError(
-                    f'NOAA cloud service provider "{pw_csp}" is not supported.')
+                    f'cloud service provider "{pw_csp}" is not supported.')
             machine = f"{pw_csp.upper()}PW"
 
         if machine not in Host.SUPPORTED_HOSTS:

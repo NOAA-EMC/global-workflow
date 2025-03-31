@@ -60,9 +60,9 @@ fi
 # shellcheck disable=SC2153,SC2312
 LEVS=$(${NCDUMP} -h "${ATMGES_ENSMEAN}" | grep -i "pfull" | head -1 | awk -F" = " '{print $2}' | awk -F" " '{print $1}') # get LEVS
 # shellcheck disable=
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 export LEVS
 
@@ -123,9 +123,9 @@ done
 # Run relevant script
 
 ${INVOBSSH:-${SCRgfs}/exgdas_enkf_select_obs.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 
