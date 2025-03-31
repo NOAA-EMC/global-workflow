@@ -15,6 +15,5 @@ arguments:
   expdir: /lfs/h2/emc/global/noscrub/emc.global/RETRO_GFSv17/expdir  
   idate: 2023041506
   edate: 2023061600
-  #icsdir: /work/noaa/da/gvernier/ensda/ictest/1440x1080x75/
   icsdir: /lfs/h2/emc/da/noscrub/catherine.thomas/ICS/C1152C384/2023041506
   yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sa.yaml
