@@ -99,7 +99,7 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    # existence of the restart files
    ###############################
    export pgm="postcheck"
-   grib_file="${COMOUT_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}.idx"
+   grib_file="${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}.idx"
    if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
       echo "FATAL ERROR: 0p50 grib file not available after max sleep time"
       export err=9
@@ -110,8 +110,8 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    # Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
    ######################################################################
    paramlist="${PARMgfs}/product/global_npoess_paramlist_g2"
-   cp "${COMOUT_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2.0p50.f${fhr3}" tmpfile2
-   cp "${COMOUT_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}" tmpfile2b
+   cp "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2.0p50.f${fhr3}" tmpfile2
+   cp "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}" tmpfile2b
    cat tmpfile2 tmpfile2b > tmpfile
    # shellcheck disable=SC2312
    ${WGRIB2} tmpfile | grep -F -f "${paramlist}" | ${WGRIB2} -i -grib  pgb2file tmpfile
