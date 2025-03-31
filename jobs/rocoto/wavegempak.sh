@@ -5,7 +5,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 ###############################################################
 source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 err=$?
-if [[ "${err}" -ne 0 ]]; then exit "${err}"; fi
+if [[ "${err}" -ne 0 ]]; then
+  exit "${err}"
+fi
 
 export job="wavegempak"
 export jobid="${job}.$$"
@@ -21,7 +23,9 @@ for FORECAST_HOUR in "${fhr_list[@]}"; do
   # Execute the JJOB
   "${HOMEgfs}/jobs/JGLOBAL_WAVE_GEMPAK"
   err=$?
-  if [[ "${err}" -ne 0 ]]; then exit "${err}"; fi
+  if [[ "${err}" -ne 0 ]]; then
+    exit "${err}"
+  fi
 done
 
 exit 0

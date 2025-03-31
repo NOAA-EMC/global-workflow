@@ -7,7 +7,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 #. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 source "${HOMEgfs}/ush/load_ufswm_modules.sh"
 err=$?
-if [[ "${err}" -ne 0 ]]; then exit "${err}"; fi
+if [[ "${err}" -ne 0 ]]; then
+  exit "${err}"
+fi
 
 export job="wavepostsbs"
 
@@ -22,7 +24,9 @@ for FORECAST_HOUR in "${fhr_list[@]}"; do
   # Execute the JJOB
   "${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_SBS"
   err=$?
-  if [[ "${err}" -ne 0 ]]; then exit "${err}"; fi
+  if [[ "${err}" -ne 0 ]]; then
+    exit "${err}"
+  fi
 done
 
 exit 0
