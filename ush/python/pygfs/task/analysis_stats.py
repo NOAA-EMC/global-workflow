@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import glob
 import gzip
 import tarfile
-import yaml
 from logging import getLogger
 from pprint import pformat
 from typing import Optional, Dict, Any
@@ -125,7 +123,7 @@ class AnalysisStats(Task):
                         with open(output_file, 'wb') as f_out:
                             f_out.write(f_in.read())
                 else:
-                    logger.warning("WARNING. No .gz files to extract.")
+                    logger.warning(f"WARNING. {gz_file} does not exist to extract.")
                     logger.warning("Moving to next analysis ...")
                     continue  # Skip current analysis and move to next
 
