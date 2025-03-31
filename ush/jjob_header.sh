@@ -47,11 +47,11 @@ while getopts "c:e:" option; do
         e)  env_job=${OPTARG} ;;
         :)
             export err=1
-            err_chk "FATAL [${BASH_SOURCE[0]}]: ${option} requires an argument"
+            err_chk "FATAL ERROR: [${BASH_SOURCE[0]}]: ${option} requires an argument"
             ;;
         *)
             export err=1
-            err_chk "FATAL [${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
+            err_chk "FATAL ERROR: [${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
             ;;
     esac
 done
@@ -59,7 +59,7 @@ shift $((OPTIND-1))
 
 if [[ -z ${env_job} ]]; then
     export err=1
-    err_chk "FATAL [${BASH_SOURCE[0]}]: Must specify a job name with -e"
+    err_chk "FATAL ERROR: [${BASH_SOURCE[0]}]: Must specify a job name with -e"
 fi
 
 ##############################################
@@ -72,7 +72,7 @@ fi
 mkdir -p "${DATA}"
 if ! cd "${DATA}"; then
   export err=1
-  err_chk "FATAL [${BASH_SOURCE[0]}]: ${DATA} does not exist"
+  err_chk "FATAL ERROR: [${BASH_SOURCE[0]}]: ${DATA} does not exist"
 fi
 
 
@@ -108,4 +108,4 @@ done
 ##########################################
 source "${HOMEgfs}/env/${machine}.env" "${env_job}" && true
 export err=$?
-err_chk "FATAL [${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"
+err_chk "FATAL ERROR: [${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"
