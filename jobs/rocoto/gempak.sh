@@ -19,8 +19,8 @@ for fhr in "${fhr_list[@]}"; do
     ###############################################################
     #"${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
     echo "add J-script here."
-    status=$?
-    [[ ${status} -ne 0 ]] && exit "${status}"
+    #status=$?
+    #[[ ${status} -ne 0 ]] && exit "${status}"
 done
 
 exit 0
