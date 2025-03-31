@@ -6,7 +6,6 @@ from logging import getLogger
 import os
 from pygfs.task.analysis import Analysis
 from typing import Dict
-from pprint import pprint
 from wxflow import (AttrDict,
                     Executable,
                     FileHandler,
