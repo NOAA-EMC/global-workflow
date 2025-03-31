@@ -626,10 +626,7 @@ WW3_predet(){
   # Copy mod_def files for wave grids
   local ww3_grid
   #if shel, only 1 waveGRD which is linked to mod_def.ww3
-  if ! ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3"; then
-    export err=1
-    err_chk "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"
-  fi
+  cpreq "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3"
 
   if [[ "${WW3ICEINP}" == "YES" ]]; then
     local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
@@ -637,10 +634,7 @@ WW3_predet(){
       export err=1
       err_chk "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
     fi
-    if ! ${NCP} "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}"; then
-      export err=1
-      err_chk "FATAL ERROR: Unable to copy '${wavicefile}', ABORT!"
-    fi
+    cpreq "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}"
   fi
 
   if [[ "${WW3CURINP}" == "YES" ]]; then
@@ -649,10 +643,7 @@ WW3_predet(){
       export err=1
       err_chk "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
     fi
-    if ! ${NCP} "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}"; then
-      export err=1
-      err_chk "FATAL ERROR: Unable to copy '${wavcurfile}', ABORT!"
-    fi
+    cpreq "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}"
   fi
 
   # Fix files
