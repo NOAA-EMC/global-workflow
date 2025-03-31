@@ -18,9 +18,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlvar" -c "base aeroanl aeroanlv
 
 EXSCRIPT=${GDASAEROVARSH:-${SCRgfs}/exglobal_aero_analysis_variational.py}
 ${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 ##############################################

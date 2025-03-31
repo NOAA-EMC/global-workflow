@@ -1,28 +1,32 @@
-BASE_GIT: '/lfs5/HFIP/hfv3gfs/glopara/git'
+# Paths
 DMPDIR: '/lfs5/HFIP/hfv3gfs/glopara/dump'
+BASE_GIT: '/lfs5/HFIP/hfv3gfs/glopara/git'
 BASE_DATA: '/lfs5/HFIP/hfv3gfs/glopara/data'
 BASE_IC: '/mnt/lfs5/HFIP/hfv3gfs/glopara/data/ICSDIR'
+AERO_INPUTS_DIR: /lfs5/HFIP/hfv3gfs/glopara/data/GEFS_ExtData/20250310
 PACKAGEROOT: '/lfs5/HFIP/hfv3gfs/glopara/nwpara'
-COMINsyn: '/lfs5/HFIP/hfv3gfs/glopara/com/gfs/prod/syndat'
 HOMEDIR: '/lfs5/HFIP/hfv3gfs/${USER}'
 STMP: '/lfs5/HFIP/hfv3gfs/${USER}/stmp'
 PTMP: '/lfs5/HFIP/hfv3gfs/${USER}/ptmp'
-NOSCRUB: $HOMEDIR
-ACCOUNT: hfv3gfs
+NOSCRUB: '${HOMEDIR}'
+COMINsyn: '/lfs5/HFIP/hfv3gfs/glopara/com/gfs/prod/syndat'
+COMINecmwf: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/ecmwf
+COMINnam: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/nam
+COMINukmet: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/ukmet
+# BQS properties
 SCHEDULER: slurm
 QUEUE: batch
 PARTITION_BATCH: kjet
 PARTITION_SERVICE: service
-CHGRP_RSTPROD: 'YES'
-CHGRP_CMD: 'chgrp rstprod'
+# HPSS properties
 HPSS_PROJECT: emc-global
-DO_ARCHCOM: 'YES'
 ARCHCOM_TO: 'hpss'
 ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
+CHGRP_RSTPROD: 'YES'
+CHGRP_CMD: 'chgrp rstprod'
+# Features
+SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
+DO_ARCHCOM: 'YES'
+DO_AWIPS: 'NO'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
-SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
-COMINecmwf: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/ecmwf
-COMINnam: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/nam
-COMINukmet: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/external_gempak/ukmet
-AERO_INPUTS_DIR: /lfs5/HFIP/hfv3gfs/glopara/data/GEFS_ExtData/20250310
