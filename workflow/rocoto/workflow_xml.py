@@ -32,7 +32,7 @@ class RocotoXML(ABC):
         # Collect info needed to write an scrontab file
         self.host_info = Host().info
         self.use_scrontab = self.host_info.get("USE_SCRONTAB", False)
-        # Replace ACCOUNT with whatever is in config.base
+        # Add ACCOUNT to host_info, with that from config.base
         self.host_info.ACCOUNT = self._base['ACCOUNT']
         self.HOMEgfs = self._base['HOMEgfs']
         self.expdir = self._base['EXPDIR']

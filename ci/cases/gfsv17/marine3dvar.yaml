@@ -13,7 +13,6 @@ base:
   DO_VERFOZN: "YES"
   DO_VERFRAD: "YES"
   FHMAX_GFS: 240
-  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
   DO_TEST_MODE: "YES"
 
 prepoceanobs:
