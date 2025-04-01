@@ -81,7 +81,7 @@ gdas:
         - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat.tgz"
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}aerovar.yaml"
                 {% for itile in range(1,7) %}
-        - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/aeroinc.{{ current_cycle | strftime('%Y%m%d.%H0000') }}.fv_tracer.res.tile{{ itile }}.nc"
+        - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/aeroinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.fv_tracer.res.tile{{ itile }}.nc"
                 {% endfor %}
             {% endif %}
             {% if DO_PREP_OBS_AERO %}
