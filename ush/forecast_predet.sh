@@ -131,7 +131,8 @@ common_predet(){
   if [[ ! -d "${COMOUT_CONF}" ]]; then mkdir -p "${COMOUT_CONF}"; fi
 
   cd "${DATA}" && true
-  if [[ $? -ne 0 ]]; then
+  err=$?
+  if [[ ${err} -ne 0 ]]; then
      echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"
      exit 1
   fi
