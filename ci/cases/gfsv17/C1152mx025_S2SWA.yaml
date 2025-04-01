@@ -13,7 +13,9 @@ arguments:
   start: warm
   comroot: /lfs/h2/emc/ptmp/emc.global/RETRO_GFSv17/comroot
   expdir: /lfs/h2/emc/global/noscrub/emc.global/RETRO_GFSv17/expdir  
-  idate: 2023041506
+  idate: 2023042212
   edate: 2023061600
-  icsdir: /lfs/h2/emc/da/noscrub/catherine.thomas/ICS/C1152C384/2023041506
+  #icsdir: /lfs/h2/emc/da/noscrub/catherine.thomas/ICS/C1152C384/2023041506
+  icsdir: /lfs/h2/emc/ptmp/emc.global/RETRO_GFSv17/comroot/retrotestgfs03 
   yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sa.yaml
+  account: {{ 'HPC_ACCOUNT' | getenv }}
