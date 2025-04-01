@@ -123,4 +123,4 @@ function detect_py_ver() {
 
 declare -xf declare_from_tmpl
 declare -xf wait_for_file
-declare -xf detect_py
+declare -xf detect_py_ver
