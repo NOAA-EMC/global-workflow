@@ -14,7 +14,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGLOBAL_WAVE_GEMPAK
+${HOMEgfs}/jobs/JGLOBAL_WAVE_GEMPAK
 status=$?
 
 exit "${status}"

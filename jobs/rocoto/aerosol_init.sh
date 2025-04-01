@@ -29,7 +29,7 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-$HOMEgfs/scripts/exgfs_aero_init_aerosol.py
+${HOMEgfs}/scripts/exgfs_aero_init_aerosol.py
 
 status=$?
 if [[ ${status} -ne 0 ]]; then

@@ -15,8 +15,8 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGLOBAL_WAVE_PRDGEN_BULLS
+${HOMEgfs}/jobs/JGLOBAL_WAVE_PRDGEN_BULLS
 status=$?
 
 
-exit $status
+exit ${status}
