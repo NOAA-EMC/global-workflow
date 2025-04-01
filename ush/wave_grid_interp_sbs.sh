@@ -7,7 +7,7 @@
 # Script description:  Interpolate from native grids to target grid
 #
 # Author:   J-Henrique Alves    Org: NCEP/EMC      Date: 2019-11-02
-# Abstract: Creates grib2 files from WW3 binary output
+# Abstract: Creates grib2 files from WW3 binary output (FIXME: No, this does not create grib2 files)
 #
 # Script history log:
 # 2019-11-02  J-Henrique Alves Ported to global-workflow.
@@ -18,151 +18,76 @@
 # Attributes:
 #   Language: Bourne-again (BASH) shell
 #
-# Requirements:
-# - wgrib2 with IPOLATES library
-#
 ################################################################################
-# --------------------------------------------------------------------------- #
-# 0.  Preparations
 
 source "${USHgfs}/preamble.sh"
 
-# 0.a Basic modes of operation
+grdID=$1
+valid_time=$2
+dt=$3
+nst=$4
 
-  cd $GRDIDATA
+cd "${DATA}" || exit 99
+interp_DATA="${DATA}/grid_interp_${grdID}"
+rm -rf "${interp_DATA}"
+mkdir -p "${interp_DATA}"
+cd "${interp_DATA}" || exit 99
 
-  grdID=$1
-  ymdh=$2
-  dt=$3
-  nst=$4
-  echo "Making GRID Interpolation Files for $grdID."
-  rm -rf grint_${grdID}_${ymdh}
-  mkdir grint_${grdID}_${ymdh}
-  err=$?
+# Copy template files to interp_DATA (required for interpolation)
+cpreq "${PARMgfs}/wave/${grdID}_interp.inp.tmpl" "${grdID}_interp.inp.tmpl"
 
-  if [ "$err" != '0' ]
-  then
-    set +x
-    echo ' '
-    echo '************************************************************************************* '
-    echo '*** FATAL ERROR : ERROR IN ww3_grid_interp (COULD NOT CREATE TEMP DIRECTORY) *** '
-    echo '************************************************************************************* '
-    echo ' '
-    set_trace
-    exit 1
+# Link input files (WW3 output) from DATA into interp_DATA
+${NLN} "${DATA}/out_grd.${waveGRD}" "./out_grd.${waveGRD}"
+
+# Link mod_def files from DATA into interp_DATA
+for ID in ${waveGRD} ${grdID}; do
+  ${NLN} "${DATA}/mod_def.${ID}" "./mod_def.${ID}"
+done
+
+# Check if there is an interpolation weights file available, and copy it if so
+if [[ -f "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}" ]]; then
+  echo "INFO: Interpolation weights found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}'"
+  cp "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}" "./WHTGRIDINT.bin"
+  weights_found=1
+else
+  echo "WARNING: No weights file found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}'"
+  echo "INFO: Interpolation will create a new weights file"
+  weights_found=0
+fi
+
+# Create the input file for the interpolation code
+ymdhms="${valid_time:0:8} ${valid_time:8:2}0000"
+sed -e "s/TIME/${ymdhms}/g" \
+    -e "s/DT/${dt}/g" \
+    -e "s/NSTEPS/${nst}/g" \
+    "${grdID}_interp.inp.tmpl" > ww3_gint.inp
+cat ww3_gint.inp
+
+# Run the interpolation code
+export pgm="${NET,,}_ww3_gint.x"
+source prep_step
+echo "INFO: Executing '${pgm}'"
+"${EXECgfs}/${pgm}" > grid_interp.${grdID}.out 2>&1
+export err=$?; err_chk
+cat "grid_interp.${grdID}.out"
+if [[ "${err}" -ne 0 ]]; then
+  echo "FATAL ERROR: '${pgm}' failed!"
+  exit 3
+fi
+
+if [[ "${weights_found}" -eq 0 ]]; then
+  echo "INFO: Interpolation created a new weights file at: '${interp_DATA}/WHTGRIDINT.bin'"
+fi
+
+# Link output file (interpolated output) within DATA (this program generates this file)
+if [[ -f "./out_grd.${grdID}" ]]; then
+  if [[ -f "${DATA}/out_grd.${grdID}" ]]; then
+    echo "FATAL ERROR: '${DATA}/out_grd.${grdID}' already exists, ABORT!"
+    exit 4
+  else
+    ${NLN} "${interp_DATA}/out_grd.${grdID}" "${DATA}/out_grd.${grdID}"
   fi
-
-  cd grint_${grdID}_${ymdh}
-
-# 0.b Define directories and the search path.
-#     The tested variables should be exported by the postprocessor script.
-
-  set +x
-  echo ' '
-  echo '+--------------------------------+'
-  echo '!         Make GRID files        |'
-  echo '+--------------------------------+'
-  echo "   Model ID         : $WAV_MOD_TAG"
-  set_trace
-
-  if [[ -z "${PDY}" ]] || [[ -z "${cyc}" ]] || [[ -z "${cycle}" ]] || [[ -z "${EXECgfs}" ]] || \
-	 [[ -z "${waveGRD}" ]] || [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${SENDDBN}" ]] 
-  then
-    set +x
-    echo ' '
-    echo '***************************************************'
-    echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
-    echo '***************************************************'
-    echo ' '
-    echo "${PDY}${cyc} ${cycle} ${EXECgfs} ${WAV_MOD_TAG} ${SENDDBN} ${waveGRD}"
-    set_trace
-    exit 1
-  fi
-
-# 0.c Links to files
-
-  rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
-
-  if [ ! -f ${DATA}/${grdID}_interp.inp.tmpl ]; then
-    cp "${PARMgfs}/wave/${grdID}_interp.inp.tmpl" "${DATA}/${grdID}_interp.inp.tmpl"
-  fi
-  ${NLN} "${DATA}/${grdID}_interp.inp.tmpl" "${grdID}_interp.inp.tmpl"
-
-  ${NLN} "${DATA}/output_${ymdh}0000/out_grd.${waveGRD}" "out_grd.${waveGRD}"
-
-  for ID in ${waveGRD} ${grdID}; do
-    ${NLN} "${DATA}/mod_def.${ID}" "mod_def.${ID}"
-  done
-
-
-# --------------------------------------------------------------------------- #
-# 1.  Generate GRID file with all data
-# 1.a Generate Input file
-
-  time="${ymdh:0:8} ${ymdh:8:2}0000"
-
-  sed -e "s/TIME/$time/g" \
-      -e "s/DT/$dt/g" \
-      -e "s/NSTEPS/$nst/g" ${grdID}_interp.inp.tmpl > ww3_gint.inp
-
-# Check if there is an interpolation weights file available
-
-  wht_OK='no'
-  if [ ! -f ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ]; then
-    if [ -f ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} ]
-    then
-      set +x
-      echo ' '
-      echo " Copying ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} "
-      set_trace
-      cp ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} ${DATA}
-      wht_OK='yes'
-    else
-      set +x
-      echo ' '
-      echo " Not found: ${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID} "
-    fi
-  fi
-# Check and link weights file
-  if [ -f ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ]
-  then
-    ${NLN} ${DATA}/ww3_gint.WHTGRIDINT.bin.${grdID} ./WHTGRIDINT.bin
-  fi
-
-# 1.b Run interpolation code
-
-  export pgm="${NET,,}_ww3_gint.x"
-  source prep_step
-
-  set +x
-  echo "   Executing ${pgm}"
-  set_trace
-
-  "${EXECgfs}/${pgm}" 1> gint.${grdID}.out 2>&1
-  export err=$?;err_chk
-
-  if [ "$err" != '0' ]
-  then
-    set +x
-    echo ' '
-    echo '*************************************************** '
-    echo "*** FATAL ERROR : ERROR IN ${pgm} interpolation * "
-    echo '*************************************************** '
-    echo ' '
-    set_trace
-    exit 3
-  fi
-
-# 1.b Clean up
-
-  rm -f grid_interp.inp
-  rm -f mod_def.*
-  mv out_grd.$grdID ${DATA}/output_${ymdh}0000/out_grd.$grdID
-
-# --------------------------------------------------------------------------- #
-# 2.  Clean up the directory
-
-  cd ../
-  mv -f grint_${grdID}_${ymdh} done.grint_${grdID}_${ymdh}
-
-# End of ww3_grid_interp.sh -------------------------------------------- #
+else
+  echo "FATAL ERROR: '${pgm}' failed to generate output file at: '${interp_DATA}/out_grd.${grdID}'"
+  exit 4
+fi

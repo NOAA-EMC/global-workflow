@@ -18,11 +18,11 @@
 # 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
 # 2020-07-30  Jessica Meixner: Points only - no gridded data
 # 2020-09-29  Jessica Meixner: optimized by changing loop structures
-# 2025-02-12  Ali Salimi-Tarazou: Changed to be compatible with the new optimized ww3_outp 
+# 2025-02-12  Ali Salimi-Tarazouj: Changed to be compatible with the new optimized ww3_outp 
 #
 # COM inputs:
-#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}
-#  - ${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}
+#  - ${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin
+#  - ${COMIN_WAVE_HISTORY}/${RUN}.wave.t${cyc}z.points.f${FH3}.bin
 #
 # $Id$
 #
@@ -40,12 +40,10 @@ source "${USHgfs}/preamble.sh"
 
   cd $DATA
 
-  # Set wave model ID tag to include member number
-  # if ensemble; waveMEMB var empty in deterministic
-  export WAV_MOD_TAG=${RUN}wave${waveMEMB}
+  export WAV_MOD_TAG="${RUN}.wave.t${cyc}z"
 
   echo "HAS BEGUN on $(hostname)"
-  echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
+  echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for ${WAV_MOD_TAG}"
 
   set +x
   echo ' '
@@ -108,12 +106,12 @@ source "${USHgfs}/preamble.sh"
 # Copy model definition files
   iloop=0
   for grdID in ${waveuoutpGRD}; do
-    if [[ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" ]]; then
       set +x
       echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
 
-      cp -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      cp -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
       iloop=$((iloop + 1))
     fi
   done
@@ -237,7 +235,9 @@ source "${USHgfs}/preamble.sh"
     ymdh=$($NDATE $fhr "${PDY}${cyc}")
     YMD=${ymdh:0:8}
     HMS="${ymdh:8:2}0000"
-    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}.nc"
+    YMDHMS=${YMD}${HMS}
+    FH3=$(printf %03i ${fhr})
+    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f${FH3}.nc"
     if [[ -f "${pfile}" ]]; then
       ${NLN} "${pfile}" "./${YMD}.${HMS}.out_pnt.ww3.nc"
     else
@@ -270,7 +270,7 @@ source "${USHgfs}/preamble.sh"
         -e "s/ITYPE/0/g" \
         -e "s/FORMAT/F/g" \
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
-    fi
+  fi
 
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
     ${NLN} ./mod_def.${waveuoutpGRD} ./mod_def.ww3
@@ -395,9 +395,9 @@ source "${USHgfs}/preamble.sh"
 
 # 3.b Execute the taring
 
-  if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0; fi
+  if [ ${USE_CFP:-"NO"} = "YES" ]; then nm=0; fi
 
-  if [ ${CFP_MP:-"NO"} = "YES" ] && [ "$DOBLL_WAV" = "YES" ]; then
+  if [ ${USE_CFP:-"NO"} = "YES" ] && [ "$DOBLL_WAV" = "YES" ]; then
     if [ "$DOBNDPNT_WAV" = YES ]; then
       if [ "$DOSPC_WAV" = YES ]; then
         echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
@@ -453,7 +453,7 @@ source "${USHgfs}/preamble.sh"
 
   if [ "$wavenproc" -gt '1' ]
   then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    if [ ${USE_CFP:-"NO"} = "YES" ]; then
       ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdtarfile
     else
       ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
