@@ -122,7 +122,8 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
     fi
 
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
-    if [[ $? -ne 0 ]]; then
+    err=$?
+    if [[ ${err} -ne 0 ]]; then
        echo "FATAL ERROR: Global prep job failed!"
        exit 1
     fi
