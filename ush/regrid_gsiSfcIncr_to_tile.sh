@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${USHgfs}/preamble.sh"
 
 #-------------------------------------------------------------------------------------------------
 # Script to regrid surface increment from GSI grid 

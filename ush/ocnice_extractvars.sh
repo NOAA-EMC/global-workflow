@@ -10,7 +10,6 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/preamble.sh"
 
 subdata=${1}
 varlist=${2}

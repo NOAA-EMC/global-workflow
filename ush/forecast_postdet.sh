@@ -115,12 +115,7 @@ FV3_postdet() {
       local increment_file
       for inc_file in "${inc_files[@]}"; do
         increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${inc_file}"
-        if [[ -f "${increment_file}" ]]; then
-          ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
-        else
-          export err=1
-          err_chk "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
-        fi
+        cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
       done
     fi
 
@@ -219,12 +214,7 @@ EOF
         else
           increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
         fi
-        if [[ -f "${increment_file}" ]]; then
-          ${NCP} "${increment_file}" "${DATA}/INPUT/${inc_file}"
-        else
-          export err=1
-          err_chk "FATAL ERROR: missing increment file '${increment_file}', ABORT!"
-        fi
+        cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
       done
 
     fi  # if [[ "${RERUN}" == "YES" ]]; then
@@ -349,8 +339,8 @@ FV3_out() {
       fi
       ;;
     *)
-      export err=25
-      err_chk "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      exit 25
       ;;
   esac
 
@@ -409,8 +399,8 @@ WW3_postdet() {
     if [[ "${RERUN}" == "YES" ]] || [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
       # In the case of a RERUN, the WW3 restart file is required
       # In the case of runtype=continue, if no wave restart when using PIO, the model will fail
-      export err=1
-      err_chk "FATAL ERROR: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for RERUN='${RERUN}' or runtype=continue, ABORT!"
+      echo "FATAL ERROR: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for RERUN='${RERUN}' or runtype=continue, ABORT!"
+      exit 1
     else
       export WW3_restart_from_binary=false
       echo "WARNING: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
@@ -608,8 +598,8 @@ MOM6_postdet() {
       done
       ;;
     *)
-      export err=25
-      err_chk "FATAL ERROR: Don't know how to copy MOM output files for RUN ${RUN}"
+      echo "FATAL ERROR: Don't know how to copy MOM output files for RUN ${RUN}"
+      exit 25
       ;;
   esac
 
@@ -667,8 +657,8 @@ MOM6_out() {
       fi
       ;;
     *)
-      export err=25
-      err_chk "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      exit 25
       ;;
   esac
 }
@@ -732,8 +722,8 @@ CICE_postdet() {
         dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
         ;;
       *)
-        export err=10
-        err_chk "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet"
+        echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet"
+        exit 10
     esac
 
     ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
@@ -778,8 +768,8 @@ CICE_out() {
       fi
       ;;
     *)
-      export err=25
-      err_chk "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      exit 25
       ;;
   esac
 }
@@ -877,8 +867,8 @@ CMEPS_postdet() {
       echo "WARNING: CMEPS restart file '${cmeps_restart_file}' not found for warm_start='${warm_start}', will initialize!"
       if [[ "${RERUN}" == "YES" ]]; then
         # In the case of a RERUN, the CMEPS restart file is required
-        export err=1
-        err_chk "FATAL ERROR: CMEPS restart file '${cmeps_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+        echo "FATAL ERROR: CMEPS restart file '${cmeps_restart_file}' not found for RERUN='${RERUN}', ABORT!"
+        exit 1
       fi
     fi
 
@@ -919,8 +909,8 @@ CMEPS_out() {
       fi
       ;;
     *)
-      export err=25
-      err_chk "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      echo "FATAL ERROR: Not sure how to copy restart files for RUN ${RUN}"
+      exit 25
       ;;
   esac
 }

@@ -7,7 +7,6 @@
 #   1) 2004-09-10       Steve Gilbert       First Implementation
 ################################################################
 
-source "${USHgfs}/preamble.sh"
 
   #  Create "collectives" consisting of groupings of the soundings
   #  into files designated by geographical region.   Each input

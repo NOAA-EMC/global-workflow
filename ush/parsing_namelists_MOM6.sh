@@ -94,8 +94,8 @@ fi
 # Ensure the template exists
 local template=${MOM6_INPUT_TEMPLATE:-"${PARMgfs}/ufs/MOM_input_${OCNRES}.IN"}
 if [[ ! -f "${template}" ]]; then
-  export err=1
-  err_chk "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  exit 1
 fi
 rm -f "${DATA}/INPUT/MOM_input"
 atparse < "${template}" >> "${DATA}/INPUT/MOM_input"
@@ -111,8 +111,8 @@ local MOM6_FRUNOFF=${FRUNOFF}
 # Ensure the template exists
 local template=${MOM6_DATA_TABLE_TEMPLATE:-"${PARMgfs}/ufs/MOM6_data_table.IN"}
 if [[ ! -f "${template}" ]]; then
-  export err=1
-  err_chk "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  exit 1
 fi
 rm -f "${DATA}/data_table"
 atparse < "${template}" >> "${DATA}/data_table"

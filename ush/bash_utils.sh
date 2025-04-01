@@ -51,8 +51,8 @@ function declare_from_tmpl() {
             template="${com_var}_TMPL"
         fi
         if [[ ! -v "${template}" ]]; then
-            export err=2
-            err_chk "FATAL ERROR in declare_from_tmpl: Requested template ${template} not defined!"
+            echo "FATAL ERROR in declare_from_tmpl: Requested template ${template} not defined!"
+            exit 2
         fi
         value=$(echo "${!template}" | envsubst)
         # shellcheck disable=SC2086
@@ -115,8 +115,8 @@ function detect_py_ver() {
     if [[ $(python --version) =~ ${regex} ]]; then
 	    echo "${BASH_REMATCH[0]}"
     else
-	    export err=1
-	    err_chk "FATAL ERROR: Could not detect the python version"
+	    echo "FATAL ERROR: Could not detect the python version"
+	    exit 1
     fi
 }
 # shellcheck disable=

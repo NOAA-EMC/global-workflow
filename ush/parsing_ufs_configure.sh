@@ -106,8 +106,8 @@ fi
 
 # Ensure the template exists
 if [[ ! -r "${ufs_configure_template}" ]]; then
-  export err=1
-  err_chk "FATAL ERROR: template '${ufs_configure_template}' does not exist, ABORT!"
+  echo "FATAL ERROR: template '${ufs_configure_template}' does not exist, ABORT!"
+  exit 1
 else
   echo "INFO: using ufs.configure template: '${ufs_configure_template}'"
 fi

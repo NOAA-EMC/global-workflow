@@ -68,8 +68,8 @@ else
   template="${PARMgfs}/ufs/model_configure.IN"
 fi
 if [[ ! -f ${template} ]]; then
-  export err=1
-  err_chk "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  exit 1
 fi
 rm -f "${DATA}/model_configure"
 atparse < "${template}" >> "${DATA}/model_configure"

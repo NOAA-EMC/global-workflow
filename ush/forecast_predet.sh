@@ -130,9 +130,10 @@ common_predet(){
 
   if [[ ! -d "${COMOUT_CONF}" ]]; then mkdir -p "${COMOUT_CONF}"; fi
 
-  if ! cd "${DATA}"; then
-    export err=8
-    err_chk "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"
+  cd "${DATA}" && true
+  if [[ $? -ne 0 ]]; then
+     echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"
+     exit 1
   fi
 
   # Several model components share DATA/INPUT for input data
@@ -277,8 +278,8 @@ FV3_predet(){
 
   local suite_file="${HOMEgfs}/sorc/ufs_model.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml"
   if [[ ! -f "${suite_file}" ]]; then
-    export err=2
-    err_chk "FATAL ERROR: CCPP Suite file ${suite_file} does not exist, ABORT!"
+    echo "FATAL ERROR: CCPP Suite file ${suite_file} does not exist, ABORT!"
+    exit 2
   fi
 
   # Scan suite file to determine whether it uses Noah-MP
@@ -490,12 +491,7 @@ FV3_predet(){
 
   # NoahMP table
   local noahmptablefile="${PARMgfs}/ufs/noahmptable.tbl"
-  if [[ ! -f "${noahmptablefile}" ]]; then
-    export err=1
-    err_chk "FATAL ERROR: missing noahmp table file '${noahmptablefile}'"
-  else
-    ${NCP} "${noahmptablefile}" "${DATA}/noahmptable.tbl"
-  fi
+  cpreq "${noahmptablefile}" "${DATA}/noahmptable.tbl"
 
   #  Thompson microphysics fix files
   if (( imp_physics == 8 )); then
@@ -605,8 +601,7 @@ FV3_predet(){
         export e3="${NMEM_ENS}"
         ;;
       *)
-        export err=20
-        err_chk "FATAL ERROR: Unknown NET ${NET}, unable to determine appropriate post files"
+        exit 20
     esac
   fi
 }
@@ -631,8 +626,8 @@ WW3_predet(){
   if [[ "${WW3ICEINP}" == "YES" ]]; then
     local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
     if [[ ! -f "${wavicefile}" ]]; then
-      export err=1
-      err_chk "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
+      echo "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
+      exit 1
     fi
     cpreq "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}"
   fi
@@ -640,8 +635,8 @@ WW3_predet(){
   if [[ "${WW3CURINP}" == "YES" ]]; then
     local wavcurfile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
     if [[ ! -f "${wavcurfile}" ]]; then
-      export err=1
-      err_chk "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
+      echo "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
+      exit 1
     fi
     cpreq "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}"
   fi
@@ -717,11 +712,12 @@ MOM6_predet(){
   # Copy coupled grid_spec
   local spec_file
   spec_file="${FIXgfs}/cpl/a${CASE}o${OCNRES}/grid_spec.nc"
+  # Test that the file exists and is not zero-sized
   if [[ -s "${spec_file}" ]]; then
-    ${NCP} "${spec_file}" "${DATA}/INPUT/"
+    cpreq "${spec_file}" "${DATA}/INPUT/"
   else
-    export err=3
-    err_chk "FATAL ERROR: coupled grid_spec file '${spec_file}' does not exist"
+    echo "FATAL ERROR: coupled grid_spec file '${spec_file}' does not exist or is size 0"
+    exit 3
   fi
 
 }

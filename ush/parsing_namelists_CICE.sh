@@ -129,8 +129,8 @@ local stream_files_dice="none"
 # Ensure the template exists
 local template=${CICE_TEMPLATE:-"${PARMgfs}/ufs/ice_in.IN"}
 if [[ ! -f "${template}" ]]; then
-  export err=1
-  err_chk "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
+  exit 1
 fi
 rm -f "${DATA}/ice_in"
 atparse < "${template}" >> "${DATA}/ice_in"

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-source "${USHgfs}/preamble.sh"
 
 cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in MPMD mode"}
 
@@ -53,8 +52,9 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
 
 else
 
-  export err=1
-  err_chk "FATAL ERROR: CFP is not usable with launcher: '${launcher:-}'"
+  # TODO test this actually kills the MPMD job
+  echo "FATAL ERROR: CFP is not usable with launcher: '${launcher:-}'"
+  exit 1
 
 fi
 

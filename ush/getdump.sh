@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${USHgfs}/preamble.sh"
 
 COMPONENT=${COMPONENT:-atmos}
 
