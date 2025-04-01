@@ -63,7 +63,6 @@ marineanl:
 
 prepoceanobs:
   SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
-  SOCA_OBS_LIST: "${PARMgfs}/gdas/soca/obs/obs_list.yaml.j2"  # TODO: This is also repeated in ocnanal
   OBSPREP_YAML: "${PARMgfs}/gdas/soca/obsprep/obsprep_config.yaml"
   use_exp_obs: "YES"
   dmpdir_exp: "${BASE_DATA}/experimental_obs"

@@ -58,6 +58,7 @@ class MarineLETKF(Analysis):
         self.task_config.cyc = os.getenv('cyc')
         self.task_config.PDY = os.getenv('PDY')
         self.task_config.app_path_observations = self.task_config.MARINE_JCB_GDAS_OBS
+        self.task_config.letkf_app = "true"
 
     @logit(logger)
     def initialize(self):
@@ -79,6 +80,7 @@ class MarineLETKF(Analysis):
         keys = ['app_path_observations',
                 'cyc',
                 'current_cycle',
+                'letkf_app',
                 'previous_cycle',
                 'COM_ICE_LETKF_TMPL',
                 'COM_OCEAN_LETKF_TMPL',
