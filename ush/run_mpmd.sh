@@ -52,9 +52,8 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
 
 else
 
-  # TODO test this actually kills the MPMD job
   echo "FATAL ERROR: CFP is not usable with launcher: '${launcher:-}'"
-  exit 1
+  err=1
 
 fi
 
