@@ -20,7 +20,6 @@ base:
   INTERVAL_GFS: 6
   SDATE_GFS: 2023041512
   FHMAX_GFS: 240
-  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
 
 prepoceanobs:
   use_exp_obs: "YES"

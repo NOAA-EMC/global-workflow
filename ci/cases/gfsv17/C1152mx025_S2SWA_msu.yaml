@@ -17,3 +17,4 @@ arguments:
   edate: 2023041800
   icsdir: /work/noaa/da/gvernier/ensda/HR-test 
   yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sa_msu.yaml
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
