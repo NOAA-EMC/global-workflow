@@ -637,6 +637,8 @@ class SFSTasks(Tasks):
         # if self.options['do_archcom']:
         #     dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
         #     deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+        deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ice']:
