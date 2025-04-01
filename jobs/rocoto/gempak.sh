@@ -17,10 +17,13 @@ for fhr in "${fhr_list[@]}"; do
     ###############################################################
     # Execute the JJOB
     ###############################################################
-    #"${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
-    echo "add J-script here."
-    #status=$?
-    #[[ ${status} -ne 0 ]] && exit "${status}"
+    if [[ "${RUN}" == "gefs" ]]; then
+        echo "add J-script here for GEFS."
+    else
+        "${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
+        status=$?
+        [[ ${status} -ne 0 ]] && exit "${status}"
+    fi
 done
 
 exit 0
