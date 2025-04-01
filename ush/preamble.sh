@@ -37,7 +37,7 @@ _calling_script=$(basename "${BASH_SOURCE[1]}")
 start_time_human=$(date -d"@${start_time}" -u)
 echo "Begin ${_calling_script} at ${start_time_human}"
 
-declare -rx PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'"${id}: "
+declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'"${id}: "
 
 set_strict() {
     if [[ ${STRICT:-"YES"} == "YES" ]]; then
@@ -113,6 +113,9 @@ function err_exit() {
     # script: jobid, SENDECF, pgm, pgmout, DATA. One can provide
     # a message for the logfile by passing it to the script as an argument.
 
+    # Do not fail in err_exit
+    set +eux
+
     msg1=${*:-Job ${jobid} failed}
     if [[ -n "${pgm}" ]]; then
       msg1+=", ERROR IN ${pgm}"
@@ -182,5 +185,6 @@ trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 source "${HOMEgfs}/ush/bash_utils.sh"
 
 # Turn on our settings
+export SHELLOPTS
 set_strict
 set_trace

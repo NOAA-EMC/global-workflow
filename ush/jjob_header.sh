@@ -40,6 +40,8 @@
 #   - $pid          : Override the default process id
 #                     [default: $$]
 
+source "${HOMEgfs}/ush/preamble.sh"
+
 OPTIND=1
 while getopts "c:e:" option; do
     case "${option}" in
@@ -80,8 +82,8 @@ fi
 # Run setpdy and initialize PDY variables
 ##############################################
 export cycle="t${cyc}z"
-setpdy.sh
-source ./PDY
+setpdy.sh || true
+source ./PDY || true
 
 
 ##############################################
@@ -90,6 +92,9 @@ source ./PDY
 export pid="${pid:-$$}"
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
+# TODO remove this when going to production
+# Needs to be set for err_chk/err_exit
+export pgm=${pgm:-}
 
 
 #############################
