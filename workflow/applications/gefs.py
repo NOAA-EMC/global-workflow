@@ -39,9 +39,6 @@ class GEFSAppConfig(AppConfig):
         if options['nens'] > 0:
             configs += ['efcs', 'atmos_ensstat']
 
-        if options['do_awips']:
-            configs += ['awips']
-
         if options['do_wave']:
             configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
             if options['do_wave_bnd']:
@@ -99,9 +96,6 @@ class GEFSAppConfig(AppConfig):
 
         if options['nens'] > 0:
             tasks += ['atmos_ensstat']
-
-        if options['do_awips']:
-            tasks += ['awips']
 
         if options['do_ocean']:
             tasks += ['ocean_prod']
