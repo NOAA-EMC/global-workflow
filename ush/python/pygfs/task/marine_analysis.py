@@ -132,8 +132,11 @@ class MarineAnalysis(Task):
         obs_files = []
 
         for observer in self.task_config['observations']['observers']:
-            logger.info(f"******** {self.task_config.OPREFIX}{observer['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4")
-            obs_files.append(f"{self.task_config.OPREFIX}{observer['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4")
+            #logger.info(f"******** {self.task_config.OPREFIX}{observer['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4")
+            #obs_files.append(f"{self.task_config.OPREFIX}{observer['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4")
+            filename = f"{self.task_config.OPREFIX}{observer['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4"
+            logger.info(f"******** {filename}")
+            obs_files.append(filename)
 
         obs_files_to_copy = []
 

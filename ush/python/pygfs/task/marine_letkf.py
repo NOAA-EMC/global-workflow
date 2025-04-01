@@ -108,7 +108,7 @@ class MarineLETKF(Analysis):
         jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-base.yaml')
         jcb_base_config = parse_j2yaml(path=jcb_base_yaml, data=stageconfig)
 
-        jcb_config = {**jcb_base_config,  **stageconfig}
+        jcb_config = {**jcb_base_config, **stageconfig}
 
         # stage letkf-specific files
         letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, jcb_config)
