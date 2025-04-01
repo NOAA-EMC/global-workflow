@@ -23,7 +23,7 @@ done
 
 ###############################################################
 # Source machine runtime environment
-source $BASE_ENV/${machine}.env aerosol_init
+source ${BASE_ENV}/${machine}.env aerosol_init
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"

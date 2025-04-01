@@ -121,7 +121,7 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
         export MAKE_NSSTBUFR="NO"
     fi
 
-    "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP"
+    "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
     if [[ $? -ne 0 ]]; then
        echo "FATAL ERROR: Global prep job failed!"
        exit 1
