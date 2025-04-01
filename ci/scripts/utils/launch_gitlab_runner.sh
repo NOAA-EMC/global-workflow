@@ -27,9 +27,9 @@ source "${HOMEGFS_}/ush/detect_machine.sh"
 # Check the MACHINE_ID and set up the environment accordingly
 case "${MACHINE_ID}" in
   hera | orion | hercules | wcoss2 | gaeac5 | gaeac6 )
-    echo "Launching GitLab Runner on ${MACHINE_ID}";;
+    echo "Running GitLab Runner script on ${MACHINE_ID}";;
   noaacloud )
-    echo "Launching GitLab Runner on ${PW_CSP}";;
+    echo "Running GitLab Runner script on ${PW_CSP}";;
   *)
     echo "Unsupported platform. Exiting with error."
     exit 1;;
