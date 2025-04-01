@@ -49,8 +49,12 @@ export JYYYY=${PDY:0:4}
 # Run relevant script
 ##############################################
 
-${SCRIPTens_tracker}/exgfs_tc_genesis.sh
+# Do not fail on errors or unassigned variables in external code
+set +eu
+${SCRIPTens_tracker}/exgfs_tc_genesis.sh && true
 export err=$?; err_chk
+
+set_strict
 
 ##############################################
 # Final processing

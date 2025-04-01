@@ -74,11 +74,10 @@ fi
 # Run archive script
 ###############################################################
 
+set +eu
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_tars.py}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+export err=$?; err_chk "FATAL ERROR: failed to archive the COM structure"
+set_strict
 
 ##############################################
 # End JOB SPECIFIC work

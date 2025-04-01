@@ -123,11 +123,11 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
         export MAKE_NSSTBUFR="NO"
     fi
 
+    # Do not fail on errors/unassigned variables in external software
+    set +eu
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP"
-    status=$?
-    if [[ ${status} -ne 0 ]]; then
-        exit "${status}"
-    fi
+    export err=$?; err_chk "FATAL ERROR: Global prep job failed!"
+    set_strict
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then

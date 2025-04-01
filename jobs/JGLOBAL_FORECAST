@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 if (( 10#${ENSMEM:-0} > 0 )); then
   export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
   export DATA="${DATAjob}/${jobid}"
