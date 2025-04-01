@@ -77,8 +77,6 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/preamble.sh"
-
 # include all subroutines. Executions later.
 source "${USHgfs}/forecast_predet.sh" 	# include functions for variable definition
 source "${USHgfs}/forecast_det.sh"  # include functions for run type determination
