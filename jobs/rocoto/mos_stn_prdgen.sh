@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+set -x
 
 ###############################################################
 # Source FV3GFS workflow modules

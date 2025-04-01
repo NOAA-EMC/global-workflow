@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -123,11 +123,11 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
         export MAKE_NSSTBUFR="NO"
     fi
 
-    # Do not fail on errors/unassigned variables in external software
-    set +eu
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP"
-    export err=$?; err_chk "FATAL ERROR: Global prep job failed!"
-    set_strict
+    if [[ $? -ne 0 ]]; then
+       echo "FATAL ERROR: Global prep job failed!"
+       exit 1
+    fi
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
