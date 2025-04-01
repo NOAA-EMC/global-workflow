@@ -47,8 +47,10 @@ mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
 EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snowens_analysis.py}
 ${EXSCRIPT}
-status=$?
-(( status != 0 )) && exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 ##############################################
 # End JOB SPECIFIC work

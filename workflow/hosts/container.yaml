@@ -1,25 +1,28 @@
-BASE_GIT: ''
+# Paths
 DMPDIR: '/home/${USER}'
+BASE_GIT: ''
 PACKAGEROOT: ''
-COMINsyn: ''
 HOMEDIR: '/home/${USER}'
 STMP: '/home/${USER}'
 PTMP: '/home/${USER}'
-NOSCRUB: $HOMEDIR
-SCHEDULER: none
-ACCOUNT: ''
+NOSCRUB: '${HOMEDIR}'
+COMINsyn: ''
+# BQS properties
+SCHEDULER: 'none'
 QUEUE: ''
 QUEUE_SERVICE: ''
 PARTITION_BATCH: ''
 PARTITION_SERVICE: ''
 RESERVATION: ''
 CLUSTERS: ''
-CHGRP_RSTPROD: 'YES'
-CHGRP_CMD: 'chgrp rstprod'
+# HPSS properties
 HPSS_PROJECT: emc-global
-DO_ARCHCOM: 'NO'
 ARCHCOM_TO: 'local'
 ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+CHGRP_RSTPROD: 'YES'
+CHGRP_CMD: 'chgrp rstprod'
+# Features
+SUPPORTED_RESOLUTIONS: ['C96', 'C48']
+DO_ARCHCOM: 'NO'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
-SUPPORTED_RESOLUTIONS: ['C96', 'C48']

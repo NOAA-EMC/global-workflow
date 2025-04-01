@@ -29,8 +29,10 @@ done
 # TODO: If none of these are on, why are we running this job?
 if [[ "${RUN_GRID2GRID_STEP1}" == "YES" || "${RUN_GRID2OBS_STEP1}" == "YES" || "${RUN_PRECIP_STEP1}" == "YES" ]]; then
     ${VERIF_GLOBALSH}
-    status=$?
-	if (( status != 0 )); then exit "${status}"; fi
+    err=$?
+    if [[ ${err} -ne 0 ]]; 
+        then exit "${err}"
+    fi
 fi
 
 if [[ ${KEEPDATA:-"NO"} = "NO" ]] ; then rm -rf "${DATAROOT}" ; fi  # TODO: This should be $DATA
