@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 export STRICT="NO"
-set -x
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 # Source UFSDA workflow modules

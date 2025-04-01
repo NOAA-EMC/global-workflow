@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-set -x
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 # Source UFSDA workflow modules
