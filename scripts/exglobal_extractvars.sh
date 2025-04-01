@@ -9,7 +9,6 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/preamble.sh"
 source "${USHgfs}/extractvars_tools.sh"
 
 # Scripts used

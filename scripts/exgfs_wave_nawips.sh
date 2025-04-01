@@ -11,7 +11,6 @@
 #  March-2020 Roberto.Padilla@noaa.gov                                   
 #####################################################################
 
-source "${USHgfs}/preamble.sh"
 source "${USHgfs}/wave_domain_grid.sh"
 
 #export grids=${GEMPAK_GRIDS:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids

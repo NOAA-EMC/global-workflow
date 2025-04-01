@@ -23,7 +23,6 @@
 #                          it requires 7 nodes & allocate 21 processes per node(num_ppn=21)
 ################################################################
 
-source "${USHgfs}/preamble.sh"
 
 runscript=${USHgfs}/gfs_bufr.sh 
 

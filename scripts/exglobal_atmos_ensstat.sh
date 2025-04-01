@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
