@@ -1202,10 +1202,10 @@ class GFSTasks(Tasks):
 
         wave_grid = self._configs['base']['waveGRD']
         history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
-        history_file = f'/{self.run}wave.out_grd.{wave_grid}.@Y@m@d.@H@M@S'
+        history_file = f'/{self.run}.wave.t@Hz.{wave_grid}.f#fhr3_next#.bin'
 
         deps = []
-        dep_dict = {'type': 'data', 'data': [history_path, history_file], 'offset': [None, '#fhr3_next#:00:00']}
+        dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_#seg_dep#'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1271,12 +1271,10 @@ class GFSTasks(Tasks):
     def wavepostbndpntbll(self):
 
         # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
-        last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
+        last_fhr = self._configs['wavepostbndpntbll']['FHMAX_WAV_IBP']
 
         deps = []
-        atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
-        data = f'{atmos_hist_path}/{self.run}.t@Hz.atm.logf{last_fhr:03d}.txt'
-        dep_dict = {'type': 'data', 'data': data}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpnt'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1325,16 +1323,30 @@ class GFSTasks(Tasks):
 
     def wavegempak(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs_#fhr_label#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        # Hour groupings need to match gridded post for dependencies to be correct
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
+        max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        wave_post_envars = self.envars.copy()
+        postenvar_dict = {'FHR_LIST': '#fhr_list#'}
+        for key, value in postenvar_dict.items():
+            wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
         resources = self.get_resource('wavegempak')
-        task_name = f'{self.run}_wavegempak'
+        # Adjust walltime based on the largest group
+        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
+        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
+
+        task_name = f'{self.run}_wavegempak_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': wave_post_envars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/jobs/rocoto/wavegempak.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -1342,7 +1354,11 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        metatask_dict = {'task_name': f'{self.run}_wavegempak',
+                         'task_dict': task_dict,
+                         'var_dict': fhr_var_dict}
+
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
@@ -2599,6 +2615,9 @@ class GFSTasks(Tasks):
                             deps.append(rocoto.add_dependency(dep_dict))
                             dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
                             deps.append(rocoto.add_dependency(dep_dict))
+                    if self.options['do_wave']:
+                        dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavegempak'}
+                        deps.append(rocoto.add_dependency(dep_dict))
 
             if self.options['do_metp'] and self.run in ['gfs']:
                 deps2 = []
