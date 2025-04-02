@@ -602,6 +602,7 @@ FV3_predet(){
         export e3="${NMEM_ENS}"
         ;;
       *)
+        echo "FATAL ERROR: Unknown NET ${NET}, unable to determine appropriate post files"
         exit 20
     esac
   fi
