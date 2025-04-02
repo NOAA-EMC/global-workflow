@@ -2,6 +2,9 @@
 [![shellnorms](https://github.com/NOAA-EMC/global-workflow/actions/workflows/linters.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/linters.yaml)
 [![pynorms](https://github.com/NOAA-EMC/global-workflow/actions/workflows/pynorms.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/pynorms.yaml)
 
+[![Pipeline GAEAC6](https://vlab.noaa.gov/gitlab-licensed/EMC/global-workflow/-/badges/main/pipeline.svg?job=run_tests-gaeac6)](https://vlab.noaa.gov/gitlab-licensed/EMC/global-workflow/-/pipelines)
+[![Pipeline HERA](https://vlab.noaa.gov/gitlab-licensed/EMC/global-workflow/-/badges/main/pipeline.svg?job=run_tests-hera)](https://vlab.noaa.gov/gitlab-licensed/EMC/global-workflow/-/pipelines)
+
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/hera.json)
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/hercules.json)
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/wcoss2.json)
