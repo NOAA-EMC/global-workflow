@@ -23,6 +23,6 @@ else
     ################################################################
     # Execute the JJOB
     ${HOMEgfs}/jobs/J${RUN^^}_ATMOS_POSTSND
-    status=$?
-    exit "${status}"
+    err=$?
+    exit "${err}"
 fi
