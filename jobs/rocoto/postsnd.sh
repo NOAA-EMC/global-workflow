@@ -20,7 +20,7 @@ else
     export jobid="${job}.$$"
     ################################################################
     # Execute the JJOB
-    ${HOMEgfs}/jobs/JGFS_ATMOS_POSTSND
+    ${HOMEgfs}/jobs/J${RUN^^}_ATMOS_POSTSND
     status=$?
     exit "${status}"
 fi
