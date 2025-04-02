@@ -21,8 +21,10 @@ for fhr in "${fhr_list[@]}"; do
         echo "add J-script here for GEFS."
     else
         "${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
-        status=$?
-        [[ ${status} -ne 0 ]] && exit "${status}"
+        err=$?
+        if [[ ${err} -ne 0 ]]: then
+          exit "${err}"
+        fi
     fi
 done
 
