@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in MPMD mode"}
 
 # Determine the number of MPMD processes from incoming ${cmdfile}

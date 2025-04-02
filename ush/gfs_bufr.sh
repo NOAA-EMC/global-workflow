@@ -22,7 +22,6 @@
 # echo "History: February 2003 - First implementation of this utility script"
 #
 
-
 fhr="${1}"
 fhr_p="${2}"
 FINT="${3}"

@@ -10,7 +10,6 @@
 # Main body starts here
 #######################
 
-
 subdata=${1}
 varlist=${2}
 datares=${3}

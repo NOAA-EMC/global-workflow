@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-
 # Get CRTM fix directory from (in this order):
 # 1. First argument to script, or
 # 2. $CRTM_FIX environment variable, or

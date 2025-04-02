@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-
 #-------------------------------------------------------------------------------------------------
 # Script to regrid surface increment from GSI grid 
 # to fv3 tiles. 

@@ -21,7 +21,6 @@
 #   TANK_TROPCY  - path to home directory containing tropical cyclone record
 #                  data base
 
-
 cd $DATA
 
 if [ "$#" -ne '1' ]; then

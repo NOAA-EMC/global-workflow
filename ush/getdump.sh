@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-
 COMPONENT=${COMPONENT:-atmos}
 
 CDATE=${1:-""}

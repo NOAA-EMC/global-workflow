@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-
 grid=${1}
 fhr3=${2}
 grid_type=${3:-''}

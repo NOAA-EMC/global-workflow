@@ -20,7 +20,6 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-
 # 0.a Basic modes of operation
 
   echo "Generating mod_def file"

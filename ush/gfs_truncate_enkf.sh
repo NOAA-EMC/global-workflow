@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-
 member=$1
 export SIGINP=$2
 export SIGOUT=$3

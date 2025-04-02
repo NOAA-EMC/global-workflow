@@ -76,7 +76,6 @@
 ################################################################################
 #-------------------------------------------------------------------------------
 
-
 # Set some default parameters.
 fhbeg=03                         # hour to begin searching backward for guess
 fhinc=03                         # hour to increment backward in search

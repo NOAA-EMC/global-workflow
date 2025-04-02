@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-
 cd "${DATA}" || exit 2
 
 outname=out.tif
