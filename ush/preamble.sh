@@ -6,38 +6,30 @@
 #   crude script timing and provides a postamble that runs on exit.
 #
 # Syntax:
-#   preamble.sh [id]
+#   preamble.sh
 #   
-#   Aruguments:
-#     id: Optional identifier string. Use when running the same script 
-#           multiple times in the same job (e.g. MPMD)
-#
 # Input environment variables:
 #   TRACE (YES/NO): Whether to echo every command (set -x) [default: "YES"]
 #   STRICT (YES/NO): Whether to exit immediately on error or undefined variable
 #     (set -eu) [default: "YES"]
 #   POSTAMBLE_CMD (empty/set): A command to run at the end of the job
 #     [default: empty]
+#   _calling_script: The name of the calling script (optional)
 #
 #######
 set +x
-if (( $# > 0 )); then
-    id="(${1})"
-else
-    id=""
-fi
 
 # Record the start time so we can calculate the elapsed time later
 start_time=$(date +%s)
 
 # Get the base name of the calling script
-_calling_script=$(basename "${BASH_SOURCE[1]}")
+_calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 # Announce the script has begun
 start_time_human=$(date -d"@${start_time}" -u)
 echo "Begin ${_calling_script} at ${start_time_human}"
 
-declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'"${id}: "
+declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'
 
 set_strict() {
     if [[ ${STRICT:-"YES"} == "YES" ]]; then
@@ -186,5 +178,9 @@ source "${HOMEgfs}/ush/bash_utils.sh"
 
 # Turn on our settings
 export SHELLOPTS
+declare -xf set_strict
+declare -xf set_trace
+declare -xf postamble
+declare -xf err_exit
 set_strict
 set_trace
