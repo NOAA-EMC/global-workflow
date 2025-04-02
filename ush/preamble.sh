@@ -93,7 +93,7 @@ postamble() {
     exit "${rc}"
 }
 
-# TODO Remove this when moving to operations
+# TODO: Remove this when moving to operations
 function err_exit() {
     # Taken from NCO prod_util v2.1.0
     # SCRIPT NAME:  err_exit
