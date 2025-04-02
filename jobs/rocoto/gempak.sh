@@ -20,7 +20,7 @@ for fhr in "${fhr_list[@]}"; do
     if [[ "${RUN}" == "gefs" ]]; then
         echo "add J-script here for GEFS."
     else
-        "${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
+        "${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK"
         err=$?
         if [[ ${err} -ne 0 ]]: then
           exit "${err}"
