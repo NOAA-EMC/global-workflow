@@ -25,9 +25,9 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then  #  srun-based system e.g. Hera, Orion
   set +e
   # shellcheck disable=SC2086
   ${launcher:-} ${mpmd_opt:-} -n ${nprocs} "${mpmd_cmdfile}"
-  rc=$?
+  err=$?
   set_strict
-  if (( rc == 0 )); then
+  if [[ ${err} -eq 0 ]]; then
     out_files=$(find . -name 'mpmd.*.*.out')
   fi
 
@@ -46,20 +46,20 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
   chmod 755 "${mpmd_cmdfile}"
   # shellcheck disable=SC2086
   ${launcher:-} -np ${nprocs} ${mpmd_opt:-} "${mpmd_cmdfile}"
-  rc=$?
-  if (( rc == 0 )); then
+  err=$?
+  if [[ ${err} -eq 0 ]]; then
     out_files=$(find . -name 'mpmd.*.out')
   fi
 
 else
 
   echo "FATAL ERROR: CFP is not usable with launcher: '${launcher:-}'"
-  rc=1
+  err=1
 
 fi
 
 # On success concatenate processor specific output into a single mpmd.out
-if (( rc == 0 )); then
+if [[ ${err} -eq 0 ]]; then
   rm -f "${mpmd_cmdfile}"
   for file in ${out_files}; do
     cat "${file}" >> mpmd.out
@@ -67,4 +67,4 @@ if (( rc == 0 )); then
   done
 fi
 
-exit "${rc}"
+exit "${err}"

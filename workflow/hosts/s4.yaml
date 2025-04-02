@@ -1,27 +1,29 @@
-BASE_GIT: '/data/prod/glopara/git'
+# Paths
 DMPDIR: '/data/prod/glopara/dump'
+BASE_GIT: '/data/prod/glopara/git'
 BASE_DATA: '/data/prod/glopara'
 BASE_IC: '/data/prod/glopara/coupled_ICs'
+AERO_INPUTS_DIR: /data/prod/glopara/GEFS_ExtData/20250310
 PACKAGEROOT: '/data/prod/glopara/nwpara'
-COMINsyn: '/data/prod/glopara/com/gfs/prod/syndat'
 HOMEDIR: '/data/users/${USER}'
 STMP: '/scratch/users/${USER}'
 PTMP: '/scratch/users/${USER}'
-NOSCRUB: ${HOMEDIR}
-ACCOUNT: star
+NOSCRUB: '${HOMEDIR}'
+COMINsyn: '/data/prod/glopara/com/gfs/prod/syndat'
+# BQS properties
 SCHEDULER: slurm
 QUEUE: s4
 QUEUE_SERVICE: serial
 PARTITION_BATCH: s4
 PARTITION_SERVICE: serial
-CHGRP_RSTPROD: 'NO'
-CHGRP_CMD: 'ls'
+# HPSS properties
 HPSS_PROJECT: emc-global
-DO_ARCHCOM: 'NO'
 ARCHCOM_TO: 'local'
 ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+CHGRP_RSTPROD: 'NO'
+CHGRP_CMD: 'ls'
+# Features
+SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
+DO_ARCHCOM: 'NO'
 MAKE_NSSTBUFR: 'YES'
 MAKE_ACFTBUFR: 'YES'
-SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
-AERO_INPUTS_DIR: /data/prod/glopara/GEFS_ExtData/20250310
-

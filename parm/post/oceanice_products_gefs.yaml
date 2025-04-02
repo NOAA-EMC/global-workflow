@@ -1,9 +1,9 @@
 ocnicepost:
   executable: "ocnicepost.x"
   namelist:
+    write_grib2: True
+    write_netcdf: False
     debug: False
-    write_grib2: False
-    write_netcdf: True
   fix_data:
     mkdir:
       - "{{ DATA }}"
@@ -19,9 +19,6 @@ ocnicepost:
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.conserve.nc", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/template.global.{{ grid }}.gb2", "{{ DATA }}/"]
       {% endfor %}
-
-nc2grib2:
-  script: "{{ USHgfs }}/oceanice_nc2grib2.sh"
 
 ocean:
   namelist:
@@ -49,7 +46,8 @@ ocean:
     copy:
       - ["{{ DATA }}/ocean_subset.nc", "{{ COM_OCEAN_NETCDF }}/native/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
       {% for grid in product_grids %}
-      - ["{{ DATA }}/ocean.{{ grid }}.nc", "{{ COM_OCEAN_NETCDF }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
+      - ["{{ DATA }}/ocean.{{ grid }}.grib2", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ocean.{{ grid }}.grib2.idx", "{{ COM_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.ocean.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
       {% endfor %}
 
 ice:
@@ -73,5 +71,6 @@ ice:
     copy:
       - ["{{ DATA }}/ice_subset.nc", "{{ COM_ICE_NETCDF }}/native/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
       {% for grid in product_grids %}
-      - ["{{ DATA }}/ice.{{ grid }}.nc", "{{ COM_ICE_NETCDF }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
+      - ["{{ DATA }}/ice.{{ grid }}.grib2", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
+      - ["{{ DATA }}/ice.{{ grid }}.grib2.idx", "{{ COM_ICE_GRIB }}/{{ grid }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
       {% endfor %}
