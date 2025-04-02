@@ -242,7 +242,7 @@ case ${step} in
     ;;
 
   "postsnd")
-    walltime="02:00:00"
+    export walltime="02:00:00"
     export ntasks=141
     export ntasks_postsndcfp=9
     export tasks_per_node=21
