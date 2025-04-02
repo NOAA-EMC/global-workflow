@@ -29,14 +29,14 @@ gfswave:
         {% endfor %}
 
         # Wave bulletins
-        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}bull_tar"
-        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}cbull_tar"
-        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}spec_tar.gz"
+        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}bull.tar"
+        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}cbull.tar"
+        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}spec.tar.gz"
 
         # Wave IBP bulletins
         {% if DOIBP_WAV %}
-        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpbull_tar"
-        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpcbull_tar"
-        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibp_tar"
+        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpbull.tar"
+        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpcbull.tar"
+        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibp.tar"
         {% endif %}
         {% endfor %}
