@@ -1,25 +1,61 @@
 #!/usr/bin/bash
 
-# Main CI root directory
+#########################################################################
+# config.hera - Platform-specific configuration for Hera
+#
+# This file contains environment variables used by CI/CD scripts,
+# directories, and settings specific to the Gaea C6 platform.
+#########################################################################
+
+# Main CI root directory - Base directory for all CI/CD operations
 export GFS_CI_ROOT=/scratch1/NCEPDEV/global/glopara/GFS_CI_CD
-# ICSDIR root directory used on the create_experment.py command line
+
+# ICSDIR root directory - Contains initial condition data
+# Used by create_experiment.py for setting up test cases
 export ICSDIR_ROOT=/scratch1/NCEPDEV/global/glopara/data/ICSDIR
 
-# JENKINS launch directory for agent
+
+#########################################################################
+# Jenkins configuration settings
+#########################################################################
+
+# JENKINS launch directory for agent - Where Jenkins agents are launched from
 export JENKINS_AGENT_LAUNCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+
 # JENKINS internal working directories for CI jobs (not for users use)
+# Where Jenkins stores temporary files during CI job execution
 export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
-# JENKINS custom_workspace directory where CI jobs are run
+
+# NOTE: JENKINS custom_workspace directory where CI jobs are run
+# and is defined in $HOMEgfs/ci/Jenkinsfile as custom_workspace
 # /scratch1/NCEPDEV/global/glopara/CI
-# is defined in the Jenkinsfile
+
+
+#########################################################################
+# GitLab CI configuration
+# These variables are referenced directly by launch_gitlab_runner.sh
+#########################################################################
+
+# Used in the 'register' step of launch_gitlab_runner.sh for --url parameter
+export GITLAB_URL=https://vlab.noaa.gov/gitlab-licensed
+export GITLAB_RUNNER_NAME="RDHPCS Hera"
+
+# Directory for GitLab builds
+# Used in launch_gitlab_runner.sh for location of builds
+export GITLAB_CI_BUILDS_DIR=/scratch1/NCEPDEV/global/glopara/GFS_CI_CD/CI_WORKSPACES/CI_GITLAB
+# Directory for GitLab runner used by launch_gitlab_runner.sh
+export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
+
 
 # CTest functional test directories for pre stagged input data
 export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
 
-# CI BASH test directories
+#########################################################################
+# CI CRON system configuration
+#########################################################################
 export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
+export max_concurrent_cases=5
+export max_concurrent_pr=4
 
 # HPC account which overides the default account
 export HPC_ACCOUNT=fv3-cpu
-export max_concurrent_cases=5
-export max_concurrent_pr=4
