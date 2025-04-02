@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-
 GEMGRD1="${RUN}_1p00_${PDY}${cyc}f"
 
 export numproc=23

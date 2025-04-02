@@ -22,7 +22,6 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-
 # 0.a Basic modes of operation
 
 # PATH for working and home directories

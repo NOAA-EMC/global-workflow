@@ -7,7 +7,6 @@
 # in the future, we should move it above somewhere else.
 ##############################################################
 
-
 cd "${DATA}" || exit 1
 
 export NTS="${HOMEgfs}/gempak/ush/restore"

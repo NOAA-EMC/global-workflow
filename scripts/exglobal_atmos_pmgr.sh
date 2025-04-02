@@ -6,7 +6,6 @@
 #  This script monitors the progress of the gfs_fcst job
 #
 
-
 hour=00
 
 case $RUN in

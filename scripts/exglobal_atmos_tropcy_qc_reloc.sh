@@ -10,7 +10,6 @@
 # echo "            Oct 2013 - Use main USH vars as part of minor pkg cleanup"
 ############################################################################
 
-
 # Make sure we are in the $DATA directory
 cd $DATA
 

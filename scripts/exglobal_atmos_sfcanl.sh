@@ -19,7 +19,6 @@
 
 #  Set environment.
 
-
 #  Directories.
 cd "${DATA}" || exit 99
 

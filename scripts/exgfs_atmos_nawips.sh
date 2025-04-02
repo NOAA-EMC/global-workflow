@@ -4,7 +4,6 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
-
 #### If EMC GFS PARA runs hourly file are not available, The ILPOST
 #### will set to 3 hour in EMC GFS PARA.
 #### Note:  ILPOST default set to 1

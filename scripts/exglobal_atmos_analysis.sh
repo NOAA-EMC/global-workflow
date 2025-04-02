@@ -19,7 +19,6 @@
 
 #  Set environment.
 
-
 #  Directories.
 pwd=$(pwd)
 
