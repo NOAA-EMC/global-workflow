@@ -40,6 +40,7 @@
 #   - $pid          : Override the default process id
 #                     [default: $$]
 
+_calling_script="${BASH_SOURCE[1]}"
 source "${HOMEgfs}/ush/preamble.sh"
 
 OPTIND=1
