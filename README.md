@@ -4,7 +4,7 @@
 
 [![pipeline status](https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/badges/ci_gitlab_multihost/pipeline.svg)](https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/-/commits/ci_gitlab_multihost)
 [![pipeline GAEAC6](https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/badges/develop/pipeline.svg?job=run_tests-gaeac6&key_text=Nightly+GaeaC6&key_width=110)](https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/-/commits/ci_gitlab_multihost)
-[![pipeline HERA](https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/badges/develop/pipeline.svg?job=run_tests-hera&key_text=Nightly+Hera&key_width=110)](https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/-/commits/ci_gitlab_multihost)
+[![pipeline HERA](https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/badges/develop/pipeline.svg&key_text=Nightly+Hera&key_width=110)](https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/-/commits/ci_gitlab_multihost)
 
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/hera.json)
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/hercules.json)
