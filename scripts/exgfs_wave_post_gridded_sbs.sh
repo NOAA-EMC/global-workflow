@@ -82,10 +82,10 @@ fi
 # Data summary
 cat << EOF
   INFO: Summary:
-  INFO:   Grid interp: DOGRI_WAV='${DOGRI_WAV}'
-  INFO:   Grib files:  DOGRB_WAV='${DOGRB_WAV}'
+  INFO:   Grid interp: DOGRI_WAV="${DOGRI_WAV}"
+  INFO:   Grib files:  DOGRB_WAV="${DOGRB_WAV}"
   INFO:   Fields to be included in grib files:
-  INFO:     OUTPARS_WAV=${OUTPARS_WAV}
+  INFO:     OUTPARS_WAV="${OUTPARS_WAV}"
 EOF
 
 if [[ "${DOGRB_WAV}" = "NO" ]]; then
@@ -143,7 +143,7 @@ fi
 echo "INFO: Running MPMD job with ${count} commands"
 "${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile"
 err=$?
-if [[ "${err}" -ne 0 ]]; then
+if [[ ${err} -ne 0 ]]; then
   echo "FATAL ERROR: run_mpmd.sh failed!"
   exit "${err}"
 fi
