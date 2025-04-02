@@ -22,7 +22,7 @@ for fhr in "${fhr_list[@]}"; do
     else
         "${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK"
         err=$?
-        if [[ ${err} -ne 0 ]]: then
+        if [[ ${err} -ne 0 ]]; then
           exit "${err}"
         fi
     fi
