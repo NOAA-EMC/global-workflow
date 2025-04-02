@@ -27,7 +27,9 @@ done
 
 # TODO: If none of these are on, why are we running this job?
 if [[ "${RUN_GRID2GRID_STEP1}" == "YES" || "${RUN_GRID2OBS_STEP1}" == "YES" || "${RUN_PRECIP_STEP1}" == "YES" ]]; then
-    ${VERIF_GLOBALSH}
+    # Override the -e in VERIF_GLOBALSH's shebang
+    # TODO clean up the verif-global script so it does not raise false-positive errors
+    bash -x ${VERIF_GLOBALSH}
     err=$?
     if [[ ${err} -ne 0 ]]; 
         then exit "${err}"
