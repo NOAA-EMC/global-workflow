@@ -2,6 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "wavegempak" -c "base wave wavegempak"
+source "${USHgfs}/wave_domain_grid.sh"
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -14,24 +15,23 @@ export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-   COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \
-   COMOUT_WAVE_GEMPAK:COM_WAVE_GEMPAK_TMPL
+ COMOUT_WAVE_GEMPAK:COM_WAVE_GEMPAK_TMPL
 
 if [[ -n "${GEMPAK_GRIDS}" ]]; then
-    for grdID in ${GEMPAK_GRIDS}; do 
-        process_grdID "${grdID}"
-        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-            "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
-    done
+  for grdID in ${GEMPAK_GRIDS}; do
+    process_grdID "${grdID}"
+    YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+      "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+  done
 else
-    echo "waveinterpGRD is empty. No grids to process."
+    echo "'GEMPAK_GRIDS' is empty. No grids to process."
 fi
 
 if [[ ! -d ${COMOUT_WAVE_GEMPAK} ]]; then mkdir -p "${COMOUT_WAVE_GEMPAK}"; fi
 
 ########################################################
 # Execute the script.
-${SCRgfs}/exgfs_wave_nawips.sh
+"${SCRgfs}/exgfs_wave_nawips.sh"
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"
@@ -40,7 +40,7 @@ fi
 
 # Remove temp directories
 cd "${DATAROOT}" || true
-if [ "${KEEPDATA}" != "YES" ]; then
+if [[ "${KEEPDATA}" != "YES" ]]; then
   rm -rf "${DATA}"
 fi
 

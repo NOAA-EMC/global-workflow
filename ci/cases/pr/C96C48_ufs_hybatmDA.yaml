@@ -20,6 +20,7 @@ arguments:
 
 skip_ci_on_hosts:
   - gaeac5
+  - gaeac6
   - orion
   - hercules
   - awsepicglobalworkflow
