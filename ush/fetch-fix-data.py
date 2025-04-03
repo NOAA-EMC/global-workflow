@@ -284,11 +284,11 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.verbose:
-        print(f"the atmgrid is {args.atmgrid}")
-        print(f"the ocngrid is {args.ocngrid}")
-        print(f"the localdir is {args.localdir}")
-        print(f"the fix_file is {args.fix_ver}")
-        print(f"the s3 bucket is {args.fix_bucket}")
+        logger.info(f"the atmgrid is {args.atmgrid}")
+        logger.info(f"the ocngrid is {args.ocngrid}")
+        logger.info(f"the localdir is {args.localdir}")
+        logger.info(f"the fix_file is {args.fix_ver}")
+        logger.info(f"the s3 bucket is {args.fix_bucket}")
 
     atmgrid = args.atmgrid
     if (atmgrid.find(',') > 0):
