@@ -3,7 +3,6 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "waveinit" -c "base wave waveinit"
 
-
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
@@ -11,7 +10,7 @@ export MP_PULSE=0
 
 # Set COM Paths
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-   COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL
+    COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL
 
 if [[ ! -d "${COMOUT_WAVE_PREP}" ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
 
@@ -20,15 +19,16 @@ export wavempexec=${wavempexec:-"mpirun -n"}
 export wave_mpmd=${wave_mpmd:-"cfp"}
 
 # Execute the Script
-${SCRgfs}/exgfs_wave_init.sh
+"${SCRgfs}/exgfs_wave_init.sh"
+err=$?
+if [[ "${err}" -ne 0 ]]; then exit "${err}"; fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || true
-if [[ "${KEEPDATA}" == "NO" ]]; then
-    rm -rf "${DATA}"
+if [[ "${KEEPDATA}" != "YES" ]]; then
+  rm -rf "${DATA}"
 fi
-
 
 exit 0
