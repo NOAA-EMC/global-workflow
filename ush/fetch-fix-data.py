@@ -1,12 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # fetch-fix-data.py
 # wei.huang@noaa.gov
 # 2025-02-26
 # script to download a subset of FIX data to local machines.
 import os
-import time
-import sys
-import getopt
 import argparse
 import subprocess
 from pathlib import Path
