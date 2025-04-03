@@ -4,9 +4,6 @@
 # 2025-02-26
 # script to download a subset of FIX data to local machines.
 import os
-import time
-import sys
-import getopt
 import argparse
 import subprocess
 from pathlib import Path
