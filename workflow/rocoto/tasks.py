@@ -410,7 +410,7 @@ class Tasks:
             task_partition = self.partition_batch
             # on CSPs, partition_batch for fcst/efcs/wavepostbndpnt is "compute",
             # others are "process". So need to modify task_partition here.
-            if (task_config['PARTITION_BATCH'] != self.partition_batch):
+            if task_config['PARTITION_BATCH'] != self.partition_batch and task_partition is not None:
                 task_partition = task_config['PARTITION_BATCH']
             task_queue = self.queue_batch
             task_clusters = self.clusters_batch
