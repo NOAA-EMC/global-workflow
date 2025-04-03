@@ -446,16 +446,17 @@ WW3_postdet() {
   #fi
 
   # Link output files
-  local wavprfx="${RUN}wave${WAV_MEMBER:-}"
+  local wavprfx="${RUN}.wave.t${cyc}z"
   ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
 
   # Loop for gridded output (uses FHINC)
-  local fhr vdate FHINC ww3_grid
+  local fhr fhr3 vdate FHINC ww3_grid
   fhr=${FHMIN_WAV}
   fhinc=${FHOUT_WAV}
   while (( fhr <= FHMAX_WAV )); do
+    fhr3=$(printf '%03d' "${fhr}")
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_grd.${waveGRD}.${vdate}" "${DATA}/${vdate}.out_grd.ww3"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.${waveGRD}.f${fhr3}.bin" "${DATA}/${vdate}.out_grd.ww3"
 
     if (( FHMAX_HF_WAV > 0 && FHOUT_HF_WAV > 0 && fhr < FHMAX_HF_WAV )); then
       fhinc=${FHOUT_HF_WAV}
@@ -467,8 +468,9 @@ WW3_postdet() {
   fhr=${FHMIN_WAV}
   fhinc=${FHINCP_WAV}
   while (( fhr <= FHMAX_WAV )); do
+    fhr3=$(printf '%03d' "${fhr}")
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.out_pnt.${waveuoutpGRD}.${vdate}" "${DATA}/${vdate}.out_pnt.ww3"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.points.f${fhr3}.bin" "${DATA}/${vdate}.out_pnt.ww3"
 
     fhr=$((fhr + fhinc))
   done
