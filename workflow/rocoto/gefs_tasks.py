@@ -269,7 +269,7 @@ class GEFSTasks(Tasks):
         resources = self.get_resource('postsnd')
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mem#member#'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mem#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep=deps)
@@ -289,7 +289,7 @@ class GEFSTasks(Tasks):
                      'envars': postsnd_envars,
                      'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/postsnd.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'job_name': f'{self.pslot}_{task_name}',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
@@ -345,7 +345,7 @@ class GEFSTasks(Tasks):
                      'envars': postenvars,
                      'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/gempak.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'job_name': f'{self.pslot}_{task_name}',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }

@@ -10,13 +10,8 @@ fi
 export job="postsnd"
 export jobid="${job}.$$"
 
-# shellcheck disable=SC2153
-if [[ "${RUN}" == "gefs" ]]; then
-  echo "add J-script here for GEFS."
-else
-  ################################################################
-  # Execute the JJOB
-  ${HOMEgfs}/jobs/JGFS_ATMOS_POSTSND
-  err=$?
-  exit "${err}"
-fi
+################################################################
+# Execute the JJOB
+${HOMEgfs}/jobs/JGFS_ATMOS_POSTSND
+err=$?
+exit "${err}"
