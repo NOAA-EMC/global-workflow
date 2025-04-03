@@ -276,7 +276,7 @@ class GEFSTasks(Tasks):
 
         postsnd_envars = self.envars.copy()
         postenvar_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#',
+                          'MEMDIR': 'mem#member#'
                          }
 
         for key, value in postenvar_dict.items():
