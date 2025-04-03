@@ -132,18 +132,10 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   done  # for (( iproc = 1 ; iproc <= nproc ; iproc++ )); do
 
   # Run with MPMD or serial
-  if [[ "${USE_CFP:-}" = "YES" ]]; then
-    OMP_NUM_THREADS=1 "${USHgfs}/run_mpmd.sh" "${DATA}/poescript"
-    export err=$?
-  else
-    chmod 755 "${DATA}/poescript"
-    bash +x "${DATA}/poescript" > mpmd.out 2>&1
-    export err=$?
-  fi
-  err_chk
+  "${USHgfs}/run_mpmd.sh" "${DATA}/poescript"
+  export err=$?; err_chk
 
   # We are in a loop over downset, save output from mpmd into nset specific output
-  cat mpmd.out  # so we capture output into the main logfile
   mv mpmd.out "mpmd_${nset}.out"
 
   # Concatenate grib files from each processor into a single one

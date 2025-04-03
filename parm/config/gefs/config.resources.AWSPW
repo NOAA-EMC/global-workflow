@@ -4,66 +4,26 @@
 
 export is_exclusive="True"
 unset memory
-
-# shellcheck disable=SC2312
-for mem_var in $(env | grep '^memory_' | cut -d= -f1); do
-  unset "${mem_var}"
-done
+unset "memory_${RUN}"
 
 step=$1
 
 case ${step} in
-  "fcst" | "efcs")
+  "fcst" | "efcs" | "wavepostbndpnt" | "wavepostpnt")
     export PARTITION_BATCH="compute"
+    unset PARTITION_SERVICE
     max_tasks_per_node=48
-    ;;
-
-  "arch_vrfy" | "arch_tars")
-    export PARTITION_BATCH="process"
-    max_tasks_per_node=24
-    ;;
-
-  "prep_emissions")
-    export PARTITION_BATCH="process"
-    max_tasks_per_node=24
-    export ntasks=1
-    export threads_per_task=1
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    ;;
-
-  "waveinit")
-    export PARTITION_BATCH="process"
-    max_tasks_per_node=24
-    export ntasks=12
-    export threads_per_task=1
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export NTASKS=${ntasks}
-    ;;
-
-  "wavepostpnt")
-    export PARTITION_BATCH="compute"
-    max_tasks_per_node=48
-    export ntasks=240
-    export threads_per_task=1
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export NTASKS=${ntasks}
-    ;;
-
-  "wavepostsbs" | "wavepostbndpnt" | "wavepostbndpntbll")
-    export PARTITION_BATCH="process"
-    max_tasks_per_node=24
-    export ntasks=24
-    export threads_per_task=1
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export NTASKS=${ntasks}
+    tasks_per_node=48
     ;;
 
   *)
     export PARTITION_BATCH="process"
+    unset PARTITION_SERVICE
     max_tasks_per_node=24
+    tasks_per_node=24
     ;;
 
 esac
 
 export max_tasks_per_node
-
+export tasks_per_node
