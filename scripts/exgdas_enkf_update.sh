@@ -259,7 +259,7 @@ if [[ $USE_CFP = "YES" ]]; then
    if [[ $ncmd -gt 0 ]]; then
       ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
       APRUNCFP=$(eval echo $APRUNCFP)
-      $APRUNCFP $DATA/mp_untar.sh
+      $APRUNCFP $DATA/mp_untar.sh && true
       export err=$?; err_chk
    fi
 fi
@@ -405,7 +405,7 @@ export pgm=$ENKFEXEC
 . prep_step
 
 $NCP $ENKFEXEC $DATA
-$APRUN_ENKF ${DATA}/$(basename $ENKFEXEC) 1>stdout 2>stderr
+$APRUN_ENKF "${DATA}/$(basename $ENKFEXEC)" 1>stdout 2>stderr &&
 export err=$?; err_chk
 
 # Cat runtime output files.
@@ -419,4 +419,4 @@ if [[ "${mkdata}" == "YES" ]]; then
 fi
 
 
-exit ${err}
+exit "${err}"
