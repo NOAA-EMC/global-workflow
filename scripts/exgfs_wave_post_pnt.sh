@@ -23,8 +23,8 @@
 # 2020-09-29  Jessica Meixner: optimized by changing loop structures
 #
 # COM inputs:
-#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}
-#  - ${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}
+#  - ${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin
+#  - ${COMIN_WAVE_HISTORY}/${RUN}.wave.t${cyc}z.points.f${FH3}.bin
 #
 # $Id$
 #
@@ -40,12 +40,10 @@
 
   cd $DATA
 
-  # Set wave model ID tag to include member number
-  # if ensemble; waveMEMB var empty in deterministic
-  export WAV_MOD_TAG=${RUN}wave${waveMEMB}
+  export WAV_MOD_TAG="${RUN}.wave.t${cyc}z"
 
   echo "HAS BEGUN on $(hostname)"
-  echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
+  echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for ${WAV_MOD_TAG}"
 
   set +x
   echo ' '
@@ -119,12 +117,12 @@
 # Copy model definition files
   iloop=0
   for grdID in ${waveuoutpGRD}; do
-    if [[ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" ]]; then
       set +x
       echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
 
-      cp -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      cp -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
       iloop=$((iloop + 1))
     fi
   done
@@ -250,15 +248,12 @@
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
     ${NLN} mod_def.$waveuoutpGRD mod_def.ww3
-    #export OFFSET_START_HOUR=$( printf "%02d" ${half_assim} )
-    hh=$( printf "%02d" $(( cyc + OFFSET_START_HOUR )) )
-    HMS="${hh}0000"
-    if [[ -f "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" ]]; then
-      ${NLN} "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}" \
+    if [[ -f "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f000.bin" ]]; then
+      ${NLN} "${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f000.bin" \
         "./out_pnt.${waveuoutpGRD}"
     else
       echo '*************************************************** '
-      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.${waveuoutpGRD}.${PDY}.${HMS} "
+      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE ${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f000.bin"
       echo '*************************************************** '
       echo ' '
       set_trace
@@ -375,12 +370,12 @@
     export BULLDATA=${DATA}/output_$YMDHMS
     cp $DATA/mod_def.${waveuoutpGRD} mod_def.${waveuoutpGRD}
 
-    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}"
+    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f${FH3}.bin"
     if [ -f  ${pfile} ]
     then
       ${NLN} ${pfile} ./out_pnt.${waveuoutpGRD}
     else
-      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS} "
+      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE ${WAV_MOD_TAG}.points.f${FH3}.bin"
       echo ' '
       set_trace
       err=7; export err;${errchk}
@@ -437,7 +432,7 @@
   done
 
 
-  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+  if [ ${USE_CFP:-"NO"} = "YES" ]; then
     nfile=0
     ifile=0
     iline=1
@@ -476,7 +471,7 @@
 
   if [ "$wavenproc" -gt '1' ]
   then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    if [ ${USE_CFP:-"NO"} = "YES" ]; then
       ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
     else
       ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
@@ -526,7 +521,7 @@
     sed "s/^\(.*\)$/${escaped_USHgfs}\/wave_outp_cat.sh \1 ${FHMAX_WAV_PNT} bull > ${escaped_CATOUTDIR}\/bull_cat_\1.out 2>\&1/" buoy_lst.txt >> cmdfile.buoy
   fi
 
-  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+  if [ ${USE_CFP:-"NO"} = "YES" ]; then
     nfile=0
     ifile=0
     iline=1
@@ -565,7 +560,7 @@
 
   if [ "$wavenproc" -gt '1' ]
   then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    if [ ${USE_CFP:-"NO"} = "YES" ]; then
       # shellcheck disable=SC2086
       ${wavempexec} -n "${wavenproc}" ${wave_mpmd} cmdmprogbuoy
     else
@@ -611,9 +606,9 @@
 
 # 6.b Spectral data files
 
-  if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0; fi
+  if [ ${USE_CFP:-"NO"} = "YES" ]; then nm=0; fi
 
-  if [ ${CFP_MP:-"NO"} = "YES" ] && [ "$DOBLL_WAV" = "YES" ]; then
+  if [ ${USE_CFP:-"NO"} = "YES" ] && [ "$DOBLL_WAV" = "YES" ]; then
     if [ "$DOBNDPNT_WAV" = YES ]; then
       if [ "$DOSPC_WAV" = YES ]; then
         echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
@@ -669,7 +664,7 @@
 
   if [ "$wavenproc" -gt '1' ]
   then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    if [ ${USE_CFP:-"NO"} = "YES" ]; then
       ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdtarfile
     else
       ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile

@@ -623,7 +623,7 @@ WW3_predet(){
   # Copy mod_def files for wave grids
   local ww3_grid
   #if shel, only 1 waveGRD which is linked to mod_def.ww3
-  cpreq "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3"
+  cpreq "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${waveGRD}.bin" "${DATA}/mod_def.ww3"
 
   if [[ "${WW3ICEINP}" == "YES" ]]; then
     local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
@@ -652,7 +652,7 @@ WW3_predet(){
     ${NCP} "${FIXgfs}/wave/${MESH_WAV}" "${DATA}/"
   fi
 
-  WAV_MOD_TAG="${RUN}wave${waveMEMB}"
+  WAV_MOD_TAG="${RUN}.wave"
 }
 
 # shellcheck disable=SC2034
