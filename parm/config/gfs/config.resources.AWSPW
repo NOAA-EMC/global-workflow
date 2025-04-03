@@ -6,30 +6,24 @@ export is_exclusive="True"
 unset memory
 unset "memory_${RUN}"
 
+step=$1
+
 case ${step} in
-  "fcst" | "efcs")
+  "fcst" | "efcs" | "wavepostpnt")
     export PARTITION_BATCH="compute"
+    unset PARTITION_SERVICE
     max_tasks_per_node=48
+    tasks_per_node=48
     ;;
-
-  "arch_vrfy" | "arch_tars")
-    export PARTITION_BATCH="process"
-    max_tasks_per_node=24
-    ;;
-
-
-  "atmos_products" | "oceanice_products" | "wavepostsbs" )
-    export PARTITION_BATCH="process"
-    max_tasks_per_node=24
-    ;;
-
 
   *)
     export PARTITION_BATCH="process"
+    unset PARTITION_SERVICE
     max_tasks_per_node=24
+    tasks_per_node=24
     ;;
 
 esac
 
 export max_tasks_per_node
-
+export tasks_per_node

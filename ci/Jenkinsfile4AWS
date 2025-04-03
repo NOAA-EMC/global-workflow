@@ -24,7 +24,6 @@ pipeline {
     stages { // This initial stage is used to get the Machine name from the GitHub labels on the PR
              // which is used to designate the Nodes in the Jenkins Controller by the agent label
              // Each Jenkins Node is connected to said machine via an JAVA agent via an ssh tunnel
-             // no op 2
 
         stage('1. Get Machine') {
             agent { label 'built-in' }
@@ -37,6 +36,7 @@ pipeline {
                     }
 
                     def run_nodes = []
+                    def machine_names = []
                     if (isSpawnedFromAnotherJob) {
                         echo "machine being set to value passed to this spawned job"
                         echo "passed machine: ${params.machine}"
@@ -44,32 +44,33 @@ pipeline {
                     } else {
                         echo "This is parent job so getting list of nodes matching labels:"
                         for (label in pullRequest.labels) {
-                            echo "Checking label: ${label}"
+                            echo "label in pullReqest: ${label}"
                             if (label.matches("CI-(.*?)-Ready")) {
+                                echo "Found Ready Label: ${label}"
                                 def machine_name = label.split('-')[1].toString().toLowerCase()
-                                print machine_name
                                 jenkins.model.Jenkins.get().computers.each { c ->
-                                    print c.node.selfLabel.name
                                     if (c.node.selfLabel.name == NodeName[machine_name]) {
                                         run_nodes.add(c.node.selfLabel.name)
+                                        machine_names.add(machine_name)  // record machine name alongside node
                                     }
                                 }
                             }
                         }
-                        // Spawning all the jobs on the nodes matching the labels
+                        // Spawning jobs using both run_nodes and machine_names arrays
                         if (run_nodes.size() > 1) {
-                            run_nodes.init().each { node ->
-                                def machine_name = node.split('-')[0].toLowerCase()
+                            for (int i = 0; i < run_nodes.size() - 1; i++) {
+                                def node = run_nodes[i]
+                                def machine_name = machine_names[i]  // use the corresponding machine name
                                 echo "Spawning job on node: ${node} with machine name: ${machine_name}"
                                 build job: "/${aws_gw_name}/AWS-EPIC-Global-Workflow-Pipeline/PR-${env.CHANGE_ID}", parameters: [
                                     string(name: 'machine', value: machine_name),
-                                    string(name: 'Node', value: node) ],
-                                    wait: false
+                                    string(name: 'Node', value: node)
+                                ], wait: false
                             }
-                            machine = run_nodes.last().split('-')[0].toLowerCase()
+                            machine = machine_names[run_nodes.size() - 1]
                             echo "Running parent job: ${machine}"
                         } else {
-                            machine = run_nodes[0].split('-')[0].toLowerCase()
+                            machine = machine_names[0]
                             echo "Running only the parent job: ${machine}"
                         }
                     }
@@ -81,10 +82,11 @@ pipeline {
             agent { label NodeName[machine].toLowerCase() }
             steps {
                 script {
+                    // Capitalize the first letter of the machine name and use if for labels
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                     echo "Getting Common Workspace for ${Machine}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
-                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'Gaea', 'Awsepicglobalworkflow'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'GaeaC5', 'GaeaC6-EMC', 'Awsepicglobalworkflow'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
                         CUSTOM_WORKSPACE = "${custom_workspace[machine]}/${env.CHANGE_ID}/${aws_gw_name}"
                         HOMEgfs = "${CUSTOM_WORKSPACE}/${aws_gw_name}"
@@ -132,9 +134,8 @@ pipeline {
                             def error_logs_message = ""
                             dir("${HOMEgfs}/sorc") {
                                 try {
-                                    sh(script: 'ls ./build_compute.sh')	// list files here to make sure all files exist.
-                                    sh(script: './build_compute.sh gfs')  // build the global-workflow executables
-                                    sh(script: './build_compute.sh gefs')  // build the global-workflow executables
+                                    // sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils_wrapper.sh build_compute") // build the global-workflow executables
+                                    sh(script: './build_compute.sh -A ${USER} gfs gefs sfs')  // build the global-workflow executables
                                 } catch (Exception error_build) {
                                     echo "Failed to build global-workflow: ${error_build.getMessage()}"
                                     if ( fileExists("logs/error.logs") ) {
@@ -154,13 +155,13 @@ pipeline {
                                         try {
                                             sh(script: """
                                               source ${HOMEgfs}/workflow/gw_setup.sh
-                                              ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --repo PR_BUILD_${env.CHANGE_ID}
+                                              ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID} | tail -n 1
                                             """)
                                             gist_url=sh(script: """
                                               source ${HOMEgfs}/workflow/gw_setup.sh
                                               ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${error_logs} --gist PR_BUILD_${env.CHANGE_ID}
                                             """, returnStdout: true).trim()
-                                            sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Build **FAILED** on **${Machine}** in Build# ${env.BUILD_NUMBER} with error logs:\n\\`\\`\\`\n${error_logs_message}\\`\\`\\`\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})" """)
+                                            sh(script:  """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body 'Build **FAILED** on **${Machine}** in Build# ${env.BUILD_NUMBER} with error logs:\n```\n${error_logs_message}```\n\nFollow link here to view the contents of the above file(s): [(link)](${gist_url})' """)
                                         } catch (Exception error_comment) {
                                             echo "Failed to comment on PR: ${error_comment.getMessage()}"
                                         }
