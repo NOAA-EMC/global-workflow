@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # fetch-fix-data.py
 # wei.huang@noaa.gov
 # 2025-02-26
