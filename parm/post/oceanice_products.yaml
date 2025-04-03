@@ -1,9 +1,9 @@
 ocnicepost:
   executable: "ocnicepost.x"
   namelist:
+    write_grib2: True
+    write_netcdf: False
     debug: False
-    write_grib2: False
-    write_netcdf: True
   fix_data:
     mkdir:
       - "{{ DATA }}"
@@ -19,9 +19,6 @@ ocnicepost:
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.conserve.nc", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/template.global.{{ grid }}.gb2", "{{ DATA }}/"]
       {% endfor %}
-
-nc2grib2:
-  script: "{{ USHgfs }}/oceanice_nc2grib2.sh"
 
 ocean:
   namelist:

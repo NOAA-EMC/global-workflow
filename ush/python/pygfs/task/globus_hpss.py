@@ -149,13 +149,17 @@ class GlobusHpss(Task):
         com_conf = globus_dict.COMIN_CONF
 
         # Collect the files and properties from the input YAML
-        backup_yaml = os.path.join(com_conf, "backup_tarballs.yaml")
+        group = globus_dict.get("ENSGRP", -1)
+        if group < 0:
+            backup_yaml = os.path.join(com_conf, "backup_tarballs.yaml")
+        else:
+            backup_yaml = os.path.join(com_conf, f"backup_tarballs_group{group}.yaml")
 
         # Parse the list of tarballs to archive
         if os.path.isfile(backup_yaml):
             backup_set = AttrDict(**parse_yaml(backup_yaml))
         else:
-            raise FileNotFoundError("Backup tarball YAML is missing! ({backup_yaml})")
+            raise FileNotFoundError(f"Backup tarball YAML is missing! ({backup_yaml})")
 
         # Create a standard and rstprod backup sets for any restricted tarballs
         standard_backup_set = []
@@ -190,7 +194,7 @@ class GlobusHpss(Task):
         todo_script = Jinja(todo_jinja, data=globus_dict, allow_missing=False).render
         transfer_sets["standard"]["todo"] = todo_script
 
-        rstprod_todo_jinja = os.path.join(globus_parm, "rstprod_todo.sh.j2")
+        rstprod_todo_jinja = os.path.join(globus_parm, "todo_rstprod.sh.j2")
         rstprod_todo_script = Jinja(rstprod_todo_jinja, data=globus_dict, allow_missing=False).render
         transfer_sets["rstprod"]["todo"] = rstprod_todo_script
 
@@ -252,10 +256,6 @@ class GlobusHpss(Task):
             doorman_f.write(transfer_set["run_doorman.sh"])
         with open("init_xfer.sh", "w") as init_f:
             init_f.write(transfer_set["init_xfer.sh"])
-
-        # Make run_doorman.sh and init_xfer.sh executable
-        os.chmod("run_doorman.sh", 0o740)
-        os.chmod("init_xfer.sh", 0o740)
 
         # Initialize the server
         self._init_server(transfer_set["server_job_dir"])
