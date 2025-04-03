@@ -8,18 +8,12 @@ if [[ ${status} -ne 0 ]]; then
 fi
 
 export job="postsnd"
+export jobid="${job}.$$"
 
 # shellcheck disable=SC2153
 if [[ "${RUN}" == "gefs" ]]; then
-  IFS=', ' read -r -a fhr_list <<< "${FHR_LIST}"
-  export FHR3 jobid
-  for fhr in "${fhr_list[@]}"; do
-    FHR3=$(printf '%03d' "${fhr}")
-    jobid="${job}_f${FHR3}.$$"
-    echo "add J-script here for GEFS."
-  done
+  echo "add J-script here for GEFS."
 else
-  export jobid="${job}.$$"
   ################################################################
   # Execute the JJOB
   ${HOMEgfs}/jobs/JGFS_ATMOS_POSTSND
