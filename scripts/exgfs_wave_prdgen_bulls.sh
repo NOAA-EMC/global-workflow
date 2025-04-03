@@ -22,8 +22,6 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${USHgfs}/preamble.sh"
-
 # 0.a Basic modes of operation
 
 # PATH for working and home directories

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -23,13 +23,13 @@ done
 
 ###############################################################
 # Source machine runtime environment
-source $BASE_ENV/${machine}.env aerosol_init
+source ${BASE_ENV}/${machine}.env aerosol_init
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-$HOMEgfs/scripts/exgfs_aero_init_aerosol.py
+${HOMEgfs}/scripts/exgfs_aero_init_aerosol.py
 
 status=$?
 if [[ ${status} -ne 0 ]]; then

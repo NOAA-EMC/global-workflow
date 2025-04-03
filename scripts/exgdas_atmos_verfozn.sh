@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${USHgfs}/preamble.sh"
-
 ################################################################################
 # exgdas_atmos_verfozn.sh
 #
