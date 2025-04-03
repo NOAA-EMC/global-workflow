@@ -2,17 +2,23 @@ enkf_grp:
     name: "ENKF_GRP"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_grp{{ ENSGRP }}.tar"
     required:
+        {% set head_ocean = "enkfgdas.ocean.t" + cycle_HH + "z." %}
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
         {% set imem = mem - first_group_mem %}
         # Construct member COM directories
         {% set COMIN_ATMOS_ANALYSIS_MEM = COMIN_ATMOS_ANALYSIS_MEM_list[imem] %}
         {% set COMIN_ATMOS_HISTORY_MEM = COMIN_ATMOS_HISTORY_MEM_list[imem] %}
         {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
+        {% set COMIN_OCEAN_HISTORY_MEM = COMIN_OCEAN_HISTORY_MEM_list[imem] %}
+
 
         # Forecast data
         {% if RUN == 'enkfgdas' %}
         {% for fhr in range(3, 10, 3) %}
         - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % fhr }}.nc"
+        {% if DOHYBVAR_OCN %}
+        - "{{ COMIN_OCEAN_HISTORY_MEM | relpath(ROTDIR) }}/{{ head_ocean }}inst.{{ "%03d" % fhr }}.nc"
+        {% endif %}
         {% endfor %}
 
         # Only store the 6-hour surface forecast

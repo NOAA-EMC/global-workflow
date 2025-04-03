@@ -21,6 +21,7 @@ datasets:
     {% set COMIN_ATMOS_ANALYSIS_MEM_list = [] %}
     {% set COMIN_ATMOS_RESTART_MEM_list = [] %}
     {% set COMIN_ATMOS_HISTORY_MEM_list = [] %}
+    {% set COMIN_OCEAN_HISTORY_MEM_list = [] %}
 
     # Determine which ensemble members belong to this group
     {% set first_group_mem = (ENSGRP - 1) * NMEM_EARCGRP + 1 %}
@@ -40,11 +41,13 @@ datasets:
         {% set COMIN_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
         {% set COMIN_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
         {% set COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_OCEAN_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
 
         # Append the member COM directories
         {% do COMIN_ATMOS_ANALYSIS_MEM_list.append(COMIN_ATMOS_ANALYSIS_MEM)%}
         {% do COMIN_ATMOS_HISTORY_MEM_list.append(COMIN_ATMOS_HISTORY_MEM)%}
         {% do COMIN_ATMOS_RESTART_MEM_list.append(COMIN_ATMOS_RESTART_MEM)%}
+        {% do COMIN_OCEAN_HISTORY_MEM_list.append(COMIN_ATMOS_HISTORY_MEM)%}
 
     {% endfor %}
 
