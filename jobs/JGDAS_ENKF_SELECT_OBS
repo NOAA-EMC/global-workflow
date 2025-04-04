@@ -55,12 +55,8 @@ if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     err_chk "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
 fi
 
-set +eu
-set -o pipefail
 LEVS=$(${NCLEN} ${ATMGES} pfull) && true
 export err=$?
-err_chk
-set +o pipefail
 set_strict
 
 export LEVS
