@@ -11,7 +11,6 @@
 #  March-2020 Roberto.Padilla@noaa.gov
 #####################################################################
 
-source "${USHgfs}/preamble.sh"
 source "${USHgfs}/wave_domain_grid.sh"
 source "${USHgfs}/atparse.bash"
 

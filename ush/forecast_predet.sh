@@ -130,7 +130,12 @@ common_predet(){
 
   if [[ ! -d "${COMOUT_CONF}" ]]; then mkdir -p "${COMOUT_CONF}"; fi
 
-  cd "${DATA}" || ( echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"; exit 8 )
+  cd "${DATA}" && true
+  err=$?
+  if [[ ${err} -ne 0 ]]; then
+     echo "FATAL ERROR: Unable to 'cd ${DATA}', ABORT!"
+     exit 1
+  fi
 
   # Several model components share DATA/INPUT for input data
   if [[ ! -d "${DATA}/INPUT" ]]; then mkdir -p "${DATA}/INPUT"; fi
@@ -487,12 +492,7 @@ FV3_predet(){
 
   # NoahMP table
   local noahmptablefile="${PARMgfs}/ufs/noahmptable.tbl"
-  if [[ ! -f "${noahmptablefile}" ]]; then
-    echo "FATAL ERROR: missing noahmp table file '${noahmptablefile}'"
-    exit 1
-  else
-    ${NCP} "${noahmptablefile}" "${DATA}/noahmptable.tbl"
-  fi
+  cpreq "${noahmptablefile}" "${DATA}/noahmptable.tbl"
 
   #  Thompson microphysics fix files
   if (( imp_physics == 8 )); then
@@ -623,8 +623,7 @@ WW3_predet(){
   # Copy mod_def files for wave grids
   local ww3_grid
   #if shel, only 1 waveGRD which is linked to mod_def.ww3
-  ${NCP} "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${waveGRD}.bin" "${DATA}/mod_def.ww3" \
-  || ( echo "FATAL ERROR: Failed to copy '${RUN}.wave.t${cyc}z.mod_def.${waveGRD}.bin' from '${COMIN_WAVE_PREP}'"; exit 1 )
+  cpreq "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${waveGRD}.bin" "${DATA}/mod_def.ww3"
 
   if [[ "${WW3ICEINP}" == "YES" ]]; then
     local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
@@ -632,8 +631,7 @@ WW3_predet(){
       echo "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
       exit 1
     fi
-    ${NCP} "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}" \
-    || ( echo "FATAL ERROR: Unable to copy '${wavicefile}', ABORT!"; exit 1 )
+    cpreq "${wavicefile}" "${DATA}/ice.${WAVEICE_FID}"
   fi
 
   if [[ "${WW3CURINP}" == "YES" ]]; then
@@ -642,8 +640,7 @@ WW3_predet(){
       echo "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
       exit 1
     fi
-    ${NCP} "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}" \
-    || ( echo "FATAL ERROR: Unable to copy '${wavcurfile}', ABORT!"; exit 1 )
+    cpreq "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}"
   fi
 
   # Fix files
@@ -717,10 +714,11 @@ MOM6_predet(){
   # Copy coupled grid_spec
   local spec_file
   spec_file="${FIXgfs}/cpl/a${CASE}o${OCNRES}/grid_spec.nc"
+  # Test that the file exists and is not zero-sized
   if [[ -s "${spec_file}" ]]; then
-    ${NCP} "${spec_file}" "${DATA}/INPUT/"
+    cpreq "${spec_file}" "${DATA}/INPUT/"
   else
-    echo "FATAL ERROR: coupled grid_spec file '${spec_file}' does not exist"
+    echo "FATAL ERROR: coupled grid_spec file '${spec_file}' does not exist or is size 0"
     exit 3
   fi
 
