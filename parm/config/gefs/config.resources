@@ -241,6 +241,20 @@ case ${step} in
     export is_exclusive=True
     ;;
 
+  "postsnd")
+    export walltime="02:00:00"
+    export ntasks=141
+    export ntasks_postsndcfp=9
+    export tasks_per_node=21
+    export threads_per_task=6
+    export tasks_per_node_postsndcfp=1
+    postsnd_req_cores=$(( tasks_per_node * threads_per_task ))
+    if [[ ${postsnd_req_cores} -gt ${max_tasks_per_node} ]]; then
+      tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    fi
+    export is_exclusive=True
+    ;;
+
   "atmos_ensstat")
     # Walltime is per forecast hour; will be multipled by group size
     export walltime="00:15:00"
@@ -308,6 +322,14 @@ case ${step} in
         export is_exclusive=False
     fi
     export NTASKS=${ntasks}
+    ;;
+
+  "gempak")
+    export walltime="00:30:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="2GB"
     ;;
 
   "extractvars")
