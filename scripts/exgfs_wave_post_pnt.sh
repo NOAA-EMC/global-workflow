@@ -235,7 +235,6 @@ source "${USHgfs}/preamble.sh"
     ymdh=$($NDATE $fhr "${PDY}${cyc}")
     YMD=${ymdh:0:8}
     HMS="${ymdh:8:2}0000"
-    YMDHMS=${YMD}${HMS}
     FH3=$(printf %03i ${fhr})
     pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f${FH3}.nc"
     if [[ -f "${pfile}" ]]; then
