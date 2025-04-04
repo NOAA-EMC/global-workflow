@@ -86,7 +86,7 @@ class GlobusHpss(Task):
 
         self.CLIENT_GLOBUS_UUID = self.task_config.CLIENT_GLOBUS_UUID
         self.SERVER_GLOBUS_UUID = self.task_config.SERVER_GLOBUS_UUID
-        # Parse the ssh output to find the user's Niagara username
+        # Parse the ssh output to find the user's Mercury username
         ssh_output = ssh_output.split("\n")
         for line in ssh_output:
             if line.startswith("user "):
@@ -113,7 +113,7 @@ class GlobusHpss(Task):
         send them to HPSS via Globus and verify success.
 
         There are two services running that handle passing and running scripts.
-        On the client (e.g. Hercules), there is Sven.  On the server (i.e. Niagara), there is
+        On the client (e.g. Hercules), there is Sven.  On the server (i.e. Mercury), there is
         the Doorman.  Sven packages up the file list and scripts that need to run on the server
         and the Doorman executes the scripts on each of the files.  The six files involved are
 
@@ -232,7 +232,7 @@ class GlobusHpss(Task):
 
     @logit(logger)
     def execute_transfer_data(self, transfer_set: Dict[str, Any], has_rstprod: bool) -> None:
-        """Interface function with Sven to send tarballs to HPSS via Niagara.
+        """Interface function with Sven to send tarballs to HPSS via Mercury.
 
         Parameters
         ----------
@@ -288,7 +288,7 @@ class GlobusHpss(Task):
             transfer_set["completed"].append(False)
             transfer_set["successes"].append(False)
 
-        # Transfer the doorman script to Niagara.
+        # Transfer the doorman script to Mercury.
         # Note, this assumes we have unattended transfer capability.
         try:
             # Now transfer and rename the script
@@ -302,9 +302,9 @@ class GlobusHpss(Task):
 
             logger.debug("Successfully transferred the doorman script")
         except (ProcessError, ConnectionError) as pe:
-            raise ProcessError("FATAL ERROR Failed to send doorman run script to Niagara") from pe
+            raise ProcessError("FATAL ERROR Failed to send doorman run script to Mercury") from pe
 
-        # Now wait for the doorman script to run via cron on Niagara.
+        # Now wait for the doorman script to run via cron on Mercury.
         # Once complete, Sven's dropbox should fill up with status files.
         wait_count = 0
         sleep_time = 60  # s
@@ -466,7 +466,7 @@ class GlobusHpss(Task):
         Remove the temporary directories/files created by the GlobusHpss task.
         """
 
-        # Write requests to delete the working directories on Niagara
+        # Write requests to delete the working directories on Mercury
         req_file = f"req_rmdir.{self.task_config.jobid}"
         for job_dir in self._server_job_dirs:
             with open(req_file, "w") as rmdir_f:

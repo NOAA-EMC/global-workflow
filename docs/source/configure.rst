@@ -55,7 +55,7 @@ The global-workflow configs contain switches that change how the system runs. Ma
 |                  |                                  | or globus_hpss|             | where the COM structure tarballs should be saved. |
 |                  |                                  |               |             | Choices are 'hpss', 'local', or 'globus_hpss'.    |
 |                  |                                  |               |             | HPSS archiving requires a direct connection.      |
-|                  |                                  |               |             | Globus-HPSS archiving uses Niagara as a server to |
+|                  |                                  |               |             | Globus-HPSS archiving uses Mercury as a server to |
 |                  |                                  |               |             | archiving to HPSS.  This is currently only        |
 |                  |                                  |               |             | supported on Hercules.  Defaults are machine      |
 |                  |                                  |               |             | specific.                                         |
