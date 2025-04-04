@@ -55,7 +55,8 @@ def add_logs_to_gist(args, emcbot_gh):
                 file_content = f.read()
             gist_files[os.path.basename(file.name)] = emcbot_gh.InputFileContent(file_content)
 
-            gist = emcbot_gh.user.create_gist(public=True, files=gist_files, description=f"error log file from CI run {args.gist[0]} - {os.path.basename(file.name)}")
+            gist = emcbot_gh.user.create_gist(public=True, files=gist_files,
+                                              description=f"error log file from CI run {args.gist[0]} - {os.path.basename(file.name)}")
 
             filename = os.path.basename(file.name)
             url = gist.html_url
