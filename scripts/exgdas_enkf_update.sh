@@ -405,8 +405,9 @@ export pgm=$ENKFEXEC
 . prep_step
 
 $NCP $ENKFEXEC $DATA
-$APRUN_ENKF "${DATA}/$(basename $ENKFEXEC)" 1>stdout 2>stderr &&
-export err=$?; err_chk
+$APRUN_ENKF "${DATA}/$(basename $ENKFEXEC)" 1>stdout 2>stderr && true
+export err=$?
+err_chk
 
 # Cat runtime output files.
 cat stdout stderr > "${COMOUT_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
