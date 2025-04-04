@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_tars" -c "base arch_tars earc_tars earc_groups"
 
 
@@ -19,11 +18,11 @@ if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 # Run archive script
 ###############################################################
 
+# Calls an external bash command; do not fail on unassigned/error
+set +eu
 "${SCRgfs}/exgdas_enkf_earc_tars.py"
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+export err=$?; err_chk "FATAL ERROR Failed to archive the ensemble COM structure"
+set_strict
 
 ###############################################################
 

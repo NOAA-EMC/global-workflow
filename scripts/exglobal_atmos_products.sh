@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${USHgfs}/preamble.sh"
-
 # Programs used
 export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 
