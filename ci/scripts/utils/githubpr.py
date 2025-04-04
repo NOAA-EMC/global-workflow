@@ -7,7 +7,7 @@ from github import Auth, Github, GithubException, InputFileContent, UnknownObjec
 from wxflow import which, Logger
 
 # Initialize logger with environment variable for logging level
-logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
+logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), logfile_path=os.environ.get("LOGFILE_PATH"), colored_log=False)
 
 
 class GitHubDBError(Exception):
