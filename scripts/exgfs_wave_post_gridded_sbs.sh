@@ -27,7 +27,6 @@
 #
 ###############################################################################
 
-source "${USHgfs}/preamble.sh"
 source "${USHgfs}/wave_domain_grid.sh"
 
 DOGRI_WAV=${DOGRI_WAV:-"NO"}  # Interpolate to a grid

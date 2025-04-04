@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 if (( 10#${ENSMEM:-0} > 0 )); then
   export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
   export DATA="${DATAjob}/${jobid}"
@@ -86,11 +84,8 @@ fi
 ###############################################################
 # Run relevant exglobal script
 ###############################################################
-"${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}"
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+"${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}" && true  # The && true prevents the shell from exiting when set -e
+export err=$?; err_chk
 
 # Send DBN alerts for EnKF
 # TODO: Should these be in post manager instead?

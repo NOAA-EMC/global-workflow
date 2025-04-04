@@ -1,4 +1,4 @@
-#! /usr/bin/env bash                                                                                                                                                                    
+#! /usr/bin/env bash
 
 ################################################################################
 ## UNIX Script Documentation Block
@@ -9,7 +9,6 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/preamble.sh"
 source "${USHgfs}/extractvars_tools.sh"
 
 # Scripts used
