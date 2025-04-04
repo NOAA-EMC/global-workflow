@@ -116,13 +116,13 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    ra=$?
    rc=$((rc+ra))
 
-   export_pgm=${GETATMENSMEANEXEC}
+   export pgm=${GETATMENSMEANEXEC}
    . prep_step
 
    if [ $ENKF_SPREAD = "YES" ]; then
-      $APRUN_EPOS "${DATA}/$(basename ${GETATMENSMEANEXEC})" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" "atmf${fhrchar}.ensspread" && true
+      ${APRUN_EPOS} "${DATA}/$(basename ${GETATMENSMEANEXEC})" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" "atmf${fhrchar}.ensspread" && true
    else
-      $APRUN_EPOS "${DATA}/$(basename ${GETATMENSMEANEXEC})" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" && true
+      ${APRUN_EPOS} "${DATA}/$(basename ${GETATMENSMEANEXEC})" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" && true
    fi
    ra=$?
    rc=$((rc+ra))
@@ -163,4 +163,4 @@ fi
 #  Postprocessing
 cd $pwd
 
-exit ${err}
+exit "${err}"

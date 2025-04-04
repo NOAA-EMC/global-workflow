@@ -57,7 +57,7 @@ fi
 
 set +eu
 set -o pipefail
-LEVS=$(${NCDUMP} -h "${ATMGES_ENSMEAN}" | grep -i "pfull" | head -1 | awk -F" = " '{print $2}' | awk -F" " '{print $1}') # get LEVS
+LEVS=$(${NCLEN} ${ATMGES} pfull) && true
 export err=$?
 err_chk
 set +o pipefail

@@ -200,7 +200,7 @@ if [ $DOIAU = "YES" ]; then
 
         done # ensembles
 
-        CDATE="${PDY}${cyc}" ${CYCLESH} && true
+        CDATE="${PDY}${cyc}" "${CYCLESH}" && true
         export err=$?; err_chk
 
         # Copy outputs from DATA to COMOUT

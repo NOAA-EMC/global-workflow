@@ -259,7 +259,7 @@ if [[ $USE_CFP = "YES" ]]; then
    if [[ $ncmd -gt 0 ]]; then
       ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
       APRUNCFP=$(eval echo $APRUNCFP)
-      $APRUNCFP $DATA/mp_untar.sh && true
+      ${APRUNCFP} "${DATA}/mp_untar.sh" && true
       export err=$?; err_chk
    fi
 fi
