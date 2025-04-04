@@ -24,6 +24,8 @@ base:
   DOHYBVAR_OCN: "NO"
   DOLETKF_OCN: "NO"
   DO_TEST_MODE: "NO"
+  NMEM_ENS_GFS: 30
+  NMEM_ENS_GFS_OFFSET: 20
 
 atmanl:
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"

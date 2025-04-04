@@ -46,7 +46,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                                       f'{", ".join(self.VALID_MODES)}\n')
 
         self.net = base['NET']
-        print(f"Generating the XML for a {self.mode}_{self.net} case")
+        logger.info(f"Generating the XML for a {self.mode}_{self.net} case")
 
     def _init_finalize(self, conf: Configuration):
         '''

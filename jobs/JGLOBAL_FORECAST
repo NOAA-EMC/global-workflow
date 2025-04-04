@@ -87,8 +87,10 @@ fi
 # Run relevant exglobal script
 ###############################################################
 "${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}"
-status=$?
-(( status != 0 )) && exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
 
 # Send DBN alerts for EnKF
 # TODO: Should these be in post manager instead?

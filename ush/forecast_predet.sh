@@ -95,6 +95,7 @@ common_predet(){
   rCDUMP=${rCDUMP:-${RUN}}
 
   CDATE=${CDATE:-"${PDY}${cyc}"}
+  SDATE=${SDATE:-"${PDY}${cyc}"}
   ENSMEM=${ENSMEM:-000}
   MEMBER=$(( 10#${ENSMEM:-"-1"} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 
@@ -622,8 +623,8 @@ WW3_predet(){
   # Copy mod_def files for wave grids
   local ww3_grid
   #if shel, only 1 waveGRD which is linked to mod_def.ww3
-  ${NCP} "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${waveGRD}" "${DATA}/mod_def.ww3" \
-  || ( echo "FATAL ERROR: Failed to copy '${RUN}wave.mod_def.${waveGRD}' from '${COMIN_WAVE_PREP}'"; exit 1 )
+  ${NCP} "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${waveGRD}.bin" "${DATA}/mod_def.ww3" \
+  || ( echo "FATAL ERROR: Failed to copy '${RUN}.wave.t${cyc}z.mod_def.${waveGRD}.bin' from '${COMIN_WAVE_PREP}'"; exit 1 )
 
   if [[ "${WW3ICEINP}" == "YES" ]]; then
     local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
@@ -654,7 +655,7 @@ WW3_predet(){
     ${NCP} "${FIXgfs}/wave/${MESH_WAV}" "${DATA}/"
   fi
 
-  WAV_MOD_TAG="${RUN}wave${waveMEMB}"
+  WAV_MOD_TAG="${RUN}.wave"
 }
 
 # shellcheck disable=SC2034
@@ -746,9 +747,14 @@ CMEPS_predet(){
       CMEPS_RESTART_FH=("${FHMAX}")
     fi
   else
-    if [[ "${DOIAU:-NO}" == "YES" ]] && [[ "${warm_start}" == ".true." ]] ; then
-      local restart_interval_start=$(( cmeps_restart_interval + half_window ))
-      local restart_interval_end=$(( FHMAX + half_window ))
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
+         local restart_interval_start=${cmeps_restart_interval}
+         local restart_interval_end=${FHMAX}
+      else
+         local restart_interval_start=$(( cmeps_restart_interval + half_window ))
+         local restart_interval_end=$(( FHMAX + half_window ))
+      fi
     else
       local restart_interval_start=${cmeps_restart_interval}
       local restart_interval_end=${FHMAX}

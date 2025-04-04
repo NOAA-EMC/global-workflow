@@ -35,9 +35,9 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 EXSCRIPT=${GDASATMRUNPY:-${SCRgfs}/exglobal_atmos_analysis_calc_fv3jedi.py}
 ${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-  exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+  exit "${err}"
 fi
 
 # Write analysis log file

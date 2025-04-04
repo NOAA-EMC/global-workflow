@@ -1,0 +1,4 @@
+numpy>=1.23
+jinja2>=3.0
+pyyaml>=6.0
+pycodestyle>=2.12

@@ -318,10 +318,10 @@ class GEFSTasks(Tasks):
 
         wave_grid = self._configs['base']['waveGRD']
         history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'], {'MEMDIR': 'mem#member#'})
-        history_file = f'/{self.run}wave.out_grd.{wave_grid}.@Y@m@d.@H@M@S'
+        history_file = f'/{self.run}.wave.t@Hz.{wave_grid}.f#fhr3_next#.bin'
 
         deps = []
-        dep_dict = {'type': 'data', 'data': [history_path, history_file], 'offset': [None, '#fhr3_next#:00:00']}
+        dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mem#member#_#seg_dep#'}
         deps.append(rocoto.add_dependency(dep_dict))
