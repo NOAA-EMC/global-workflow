@@ -264,6 +264,105 @@ class GEFSTasks(Tasks):
 
         return task
 
+    def postsnd(self):
+
+        resources = self.get_resource('postsnd')
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        postsnd_envars = self.envars.copy()
+        postenvar_dict = {'ENSMEM': '#member#',
+                          'MEMDIR': 'mem#member#'}
+
+        for key, value in postenvar_dict.items():
+            postsnd_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        resources = self.get_resource('postsnd')
+        task_name = f'{self.run}_postsnd_mem#member#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': postsnd_envars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/postsnd.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_postsnd',
+                                'task_dict': task_dict,
+                                'var_dict': member_var_dict
+                                }
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
+    def gempak(self):
+
+        resources = self.get_resource('gempak')
+
+        deps = []
+        task = f'{self.run}_atmos_prod_mem#member#_#fhr_label#'
+        dep_dict = {'type': 'task', 'name': task}
+        deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        fhrs = self._get_forecast_hours(self.run, self._configs['gempak'])
+
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        is_replay = self._configs['gempak']['REPLAY_ICS']
+        if is_replay and 0 in fhrs:
+            fhrs.remove(0)
+
+        max_tasks = self._configs['gempak']['MAX_TASKS']
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Adjust walltime based on the largest group
+        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
+        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
+
+        postenvars = self.envars.copy()
+        postenvar_dict = {'ENSMEM': '#member#',
+                          'MEMDIR': 'mem#member#',
+                          'FHR_LIST': '#fhr_list#'}
+
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        task_name = f'{self.run}_gempak_mem#member#_#fhr_label#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': postenvars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/gempak.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        fhr_metatask_dict = {'task_name': f'{self.run}_gempak_#member#',
+                             'task_dict': task_dict,
+                             'var_dict': fhr_var_dict}
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_gempak',
+                                'task_dict': fhr_metatask_dict,
+                                'var_dict': member_var_dict
+                                }
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
     def atmos_ensstat(self):
 
         resources = self.get_resource('atmos_ensstat')

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+set -x
 
 ###############################################################
 ## Offline UPP driver script
@@ -28,7 +28,7 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
   export WGRIB2=wgrib2
   module load python/3.8.6
   module load crtm/2.4.0  # TODO: This is only needed when UPP_RUN=goes.  Is there a better way to handle this?
-  set_trace
+  set -x
 
   # Add wxflow to PYTHONPATH
   wxflowPATH="${HOMEgfs}/ush/python"

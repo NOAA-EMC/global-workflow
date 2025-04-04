@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
 export DATAens="${DATAjob}/ensdata"

@@ -14,8 +14,6 @@
 # echo "         Nov 2019 - B Vuong  Removed WINTEMV bulletin (retired)"
 #####################################################################
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 cd "${DATA}" || exit 2
 
 ######################

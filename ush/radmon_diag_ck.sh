@@ -87,7 +87,7 @@ echo "--> radmon_diag_ck.sh"
    #    report anything missing 
    #
    for sat in ${satype_contents}; do
-     content_count=$(echo "${radstat_contents}" | grep -c "${sat}")
+     content_count=$(echo "${radstat_contents}" | grep -c "${sat}" || true)
 
      if (( content_count <= 0 )); then
         missing_diag="${missing_diag} ${sat}"

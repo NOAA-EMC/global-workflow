@@ -25,7 +25,6 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${USHgfs}/preamble.sh"
 
 # Script inputs
 grdID=$1

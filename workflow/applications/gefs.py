@@ -30,6 +30,12 @@ class GEFSAppConfig(AppConfig):
         options = self.run_options[run]
         configs = ['stage_ic', 'fcst', 'atmos_products']
 
+        if options['do_bufrsnd']:
+            configs += ['postsnd']
+
+        if options['do_gempak']:
+            configs += ['gempak']
+
         if options['nens'] > 0:
             configs += ['efcs', 'atmos_ensstat']
 
@@ -82,6 +88,12 @@ class GEFSAppConfig(AppConfig):
 
         tasks += ['atmos_prod']
 
+        if options['do_bufrsnd']:
+            tasks += ['postsnd']
+
+        if options['do_gempak']:
+            tasks += ['gempak']
+
         if options['nens'] > 0:
             tasks += ['atmos_ensstat']
 
@@ -100,7 +112,6 @@ class GEFSAppConfig(AppConfig):
         if options['do_extractvars']:
             tasks += ['extractvars']
 
-        tasks += ['cleanup']
         if options['do_archcom']:
             tasks += ['arch_tars']
             if options['do_globusarch']:
