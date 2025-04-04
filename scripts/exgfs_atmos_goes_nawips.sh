@@ -4,8 +4,6 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
-source "${USHgfs}/preamble.sh"
-
 cd "${DATA}" || exit 1
 fhr3=$1
 

@@ -6,8 +6,6 @@
 #  This script monitors the progress of the gfs_fcst job
 #
 
-source "${USHgfs}/preamble.sh"
-
 hour=00
 
 case $RUN in

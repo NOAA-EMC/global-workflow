@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
 
 ###############################################################
+if [[ "$-" == *x* ]]; then
+    set_x=YES
+else
+    set_x=NO
+fi
+
 if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     echo "Loading modules quietly..."
     set +x
@@ -57,6 +63,14 @@ case "${MACHINE_ID}" in
 esac
 
 module list
+
+ftype=$(type -t set_trace || echo "")
+if [[ "${ftype}" == "function" ]]; then
+  set_trace
+elif [[ "${set_x}" == "YES" ]]; then
+  set -x
+fi
+
 pip list
 
 # Add wxflow to PYTHONPATH
@@ -67,5 +81,3 @@ export PYTHONPATH
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
 unset ulimit_s
-
-set_trace

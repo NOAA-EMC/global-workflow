@@ -183,8 +183,6 @@
 #
 ####
 
-source "${USHgfs}/preamble.sh"
-
 MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
 
 export OPSROOT=${OPSROOT:-/lfs/h1/ops/prod}
