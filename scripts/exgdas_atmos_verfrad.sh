@@ -157,5 +157,5 @@ for rtype in ${rlist}; do
 done
 
 err_chk
-exit ${err}
+exit "${err}"
 
