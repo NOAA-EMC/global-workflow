@@ -54,14 +54,13 @@ def add_logs_to_gist(args, emcbot_gh):
             with open(file.name, 'r', encoding='latin-1') as f:
                 file_content = f.read()
             gist_files[os.path.basename(file.name)] = emcbot_gh.InputFileContent(file_content)
-            
-            gist = emcbot_gh.user.create_gist(public=True, files=gist_files, 
-                                            description=f"error log file from CI run {args.gist[0]} - {os.path.basename(file.name)}")
-            
+
+            gist = emcbot_gh.user.create_gist(public=True, files=gist_files, description=f"error log file from CI run {args.gist[0]} - {os.path.basename(file.name)}")
+
             filename = os.path.basename(file.name)
             url = gist.html_url
             urls.append((filename, url))
-        
+
         # Format output based on the format option
         if args.format == 'github':
             # GitHub markdown format: (filename1) (filename2) ... (filenameN) with actual parentheses
@@ -82,7 +81,7 @@ def add_logs_to_gist(args, emcbot_gh):
             gist_files[os.path.basename(file.name)] = emcbot_gh.InputFileContent(file_content)
 
         gist = emcbot_gh.user.create_gist(public=True, files=gist_files, description=f"error log file from CI run {args.gist[0]}")
-        
+
         # Format output based on the format option
         if args.format == 'github' and len(args.file) > 1:
             # Multiple files in a single gist with GitHub markdown format
@@ -135,7 +134,7 @@ def upload_logs_to_repo(args, emcbot_gh, emcbot_ci_url):
         file_path_in_repo = f"{repo_path}/{path_header}/" + str(os.path.basename(file.name))
         emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
 
-    file_url = f"{emcbot_ci_url.rsplit('.',1)[0]}/tree/{repo_branch}/{repo_path}/{path_header}"
+    file_url = f"{emcbot_ci_url.rsplit('.', 1)[0]}/tree/{repo_branch}/{repo_path}/{path_header}"
     print(file_url)
 
 
