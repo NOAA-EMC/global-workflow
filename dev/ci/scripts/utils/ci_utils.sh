@@ -61,7 +61,7 @@ function get_pr_case_list () {
     # loop over every yaml file in the PR's ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    for yaml_config in "${HOMEgfs}/ci/cases/pr/"*.yaml; do
+    for yaml_config in "${HOMEgfs}/dev/ci/cases/pr/"*.yaml; do
       case=$(basename "${yaml_config}" .yaml) || true
       echo "${case}"
     done
@@ -70,7 +70,7 @@ function get_pr_case_list () {
 function get_pslot_list () {
 
     local RUNTESTS="${1}"
-  
+
     #############################################################
     # loop over expdir directories in RUNTESTS
     # and create list of the directory names (pslot) with the hash tag
@@ -86,7 +86,7 @@ function get_pslot () {
 
     local RUNTESTS="${1}"
     local case="${2}"
-  
+
     #############################################################
     # loop over expdir directories in RUNTESTS
     # and return the name of the pslot with its tag that matches the case
@@ -118,25 +118,25 @@ function create_experiment () {
   pr_sha=$(git rev-parse --short HEAD)
   case=$(basename "${yaml_config}" .yaml) || true
   export pslot=${case}_${pr_sha}
-  
+
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-      source "${HOMEgfs}/ci/platforms/config.${PW_CSP}"
+      source "${HOMEgfs}/dev/ci/platforms/config.${PW_CSP}"
   else
-      source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
+      source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
   fi
 
-  source "${HOMEgfs}/workflow/gw_setup.sh"
+  source "${HOMEgfs}/dev/workflow/gw_setup.sh"
 
   # Remove RUNDIRS dir incase this is a retry (STMP now in host file)
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-      STMP=$("${HOMEgfs}/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs}/workflow/hosts/${PW_CSP}pw.yaml" -k STMP -s)
+      STMP=$("${HOMEgfs}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs}/dev/workflow/hosts/${PW_CSP}pw.yaml" -k STMP -s)
   else
-      STMP=$("${HOMEgfs}/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs}/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
+      STMP=$("${HOMEgfs}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs}/dev/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
   fi
   echo "Removing ${STMP}/RUNDIRS/${pslot} directory incase this is a retry"
   rm -Rf "${STMP}/RUNDIRS/${pslot}"
 
-  "${HOMEgfs}/${system}/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
+  "${HOMEgfs}/${system}/dev/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
 
 }
 
@@ -160,8 +160,8 @@ function publish_logs() {
 
     if [[ -n "${full_paths}" ]]; then
         # shellcheck disable=SC2027,SC2086
-        ${HOMEgfs}/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo ${PR_header} > /dev/null
-        URL="$("${HOMEgfs}/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
+        ${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo ${PR_header} > /dev/null
+        URL="$("${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
     fi
     echo "${URL}"
 }
@@ -178,7 +178,7 @@ function cleanup_experiment() {
     pslot=$(basename "${EXPDIR}")
 
     # Use the Python utility to get the required variables
-    read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEgfs}/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
+    read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEgfs}/dev/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
 
     rm -Rf "${ARCDIR:?}"
     rm -Rf "${ATARDIR:?}"
@@ -189,7 +189,7 @@ function cleanup_experiment() {
 
 function build_compute () {
 
-  source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
+  source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
   "${HOMEgfs}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
 
 }

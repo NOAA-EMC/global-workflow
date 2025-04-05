@@ -15,7 +15,7 @@ from wxflow import parse_j2yaml, AttrDict, to_datetime, to_timedelta, to_YMDH, J
 
 
 _here = os.path.dirname(__file__)
-_top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
+_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
 
 # Setup the logger
 logger = getLogger(__name__)

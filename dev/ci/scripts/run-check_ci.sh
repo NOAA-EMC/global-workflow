@@ -30,7 +30,7 @@ run_check_logfile="${RUNTESTS}/ci-run_check.log"
 
 # Source modules and setup logging
 echo "Source modules."
-source "${HOMEgfs}/workflow/gw_setup.sh"
+source "${HOMEgfs}/dev/workflow/gw_setup.sh"
 
 # cd into the experiment directory
 echo "cd ${RUNTESTS}/EXPDIR/${pslot}"
@@ -69,7 +69,7 @@ while true; do
   # Get job statistics
   echo "Gather Rocoto statistics"
   # shellcheck disable=SC2312 # We want to use the exit code of the command
-  full_state=$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
+  full_state=$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
   error_stat=$?
 
   for state in CYCLES_TOTAL CYCLES_DONE SUCCEEDED FAIL DEAD; do
@@ -113,4 +113,3 @@ while true; do
 done
 
 exit "${rc}"
-

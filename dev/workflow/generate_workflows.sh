@@ -29,7 +29,7 @@ function _usage() {
     -D Delete the RUNTESTS and DATAROOT directories if they already exist
 
     -Y /path/to/directory/with/YAMLs
-       If this option is not specified, then the \${HOMEgfs}/ci/cases/pr
+       If this option is not specified, then the \${HOMEgfs}/dev/ci/cases/pr
        directory is used.
 
     -G Run all valid GFS cases in the specified YAML directory.
@@ -49,7 +49,7 @@ function _usage() {
 
     -A "HPC account name"  Set the HPC account name.
        If this is not set, the default in
-       \$HOMEgfs/ci/platform/config.\$machine
+       \$HOMEgfs/dev/ci/platform/config.\$machine
        will be used.
 
     -c Append the chosen set of tests to your existing crontab
@@ -260,15 +260,15 @@ fi
 # Set HOMEgfs if it wasn't set by the user
 if [[ "${_specified_home}" == "false" ]]; then
    script_relpath="$(dirname "${BASH_SOURCE[0]}")"
-   HOMEgfs="$(cd "${script_relpath}/.." && pwd)"
+   HOMEgfs="$(cd "${script_relpath}/../.." && pwd)"
    if [[ "${_verbose}" == "true" ]]; then
        printf "Setting HOMEgfs to %s\n\n" "${HOMEgfs}"
    fi
 fi
 
-# Set the _yaml_dir to HOMEgfs/ci/cases/pr if not explicitly set
+# Set the _yaml_dir to HOMEgfs/dev/ci/cases/pr if not explicitly set
 if [[ "${_specified_yaml_dir}" == false ]]; then
-    _yaml_dir="${HOMEgfs}/ci/cases/pr"
+    _yaml_dir="${HOMEgfs}/dev/ci/cases/pr"
 fi
 
 function select_all_yamls()
@@ -325,7 +325,7 @@ EOM
          _yaml="${_nameref_yaml_list[${i}]}"
          _found=$(grep -l "system: *${system}" "${_yaml_dir}/${_yaml}.yaml")
          if [[ -z "${_found}" ]]; then
-            echo "WARNING the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_SYSTEM} system"
+            echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_SYSTEM} system"
             echo "Removing this yaml from the set of cases to run"
             unset '_nameref_yaml_list[${i}]'
             # Sleep 2 seconds to give the user a moment to react
@@ -371,9 +371,9 @@ fi
 if [[ "${_debug}" == "true" ]]; then
     set +x
 fi
-if ! source "${HOMEgfs}/workflow/gw_setup.sh" >& stdout; then
+if ! source "${HOMEgfs}/dev/workflow/gw_setup.sh" >& stdout; then
    cat stdout
-   echo "Failed to source ${HOMEgfs}/workflow/gw_setup.sh!"
+   echo "Failed to source ${HOMEgfs}/dev/workflow/gw_setup.sh!"
    exit 7
 fi
 if [[ "${_verbose}" == "true" ]]; then
@@ -385,9 +385,9 @@ if [[ "${_debug}" == "true" ]]; then
 fi
 set -u
 machine=${MACHINE_ID}
-platform_config="${HOMEgfs}/ci/platforms/config.${machine}"
+platform_config="${HOMEgfs}/dev/ci/platforms/config.${machine}"
 if [[ -f "${platform_config}" ]]; then
-    . "${HOMEgfs}/ci/platforms/config.${machine}"
+    source "${HOMEgfs}/dev/ci/platforms/config.${machine}"
 else
    if [[ "${_set_account}" == "false" ]] ; then
       echo "ERROR Unknown HPC account!  Please use the -A option to specify."
@@ -395,9 +395,9 @@ else
    fi
 fi
 
-# If _yaml_dir is not set, set it to $HOMEgfs/ci/cases/pr
+# If _yaml_dir is not set, set it to $HOMEgfs/dev/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
-   _yaml_dir="${HOMEgfs}/ci/cases/pr"
+   _yaml_dir="${HOMEgfs}/dev/ci/cases/pr"
 fi
 
 # Update submodules if requested

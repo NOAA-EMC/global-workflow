@@ -22,7 +22,7 @@ if __name__ == '__main__':
     data = AttrDict(HOMEgfs=_top)
     data.update(os.environ)
 
-    case_files = glob.glob(f'{HOMEgfs}/ci/cases/pr/*.yaml')
+    case_files = glob.glob(f'{HOMEgfs}/dev/ci/cases/pr/*.yaml')
     for case_yaml in case_files:
         case_conf = parse_j2yaml(path=case_yaml, data=data)
         if 'skip_ci_on_hosts' in case_conf:

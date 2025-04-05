@@ -9,7 +9,7 @@ set -eux
 # Abstract TODO
 #####################################################################################
 
-HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
+HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
@@ -22,7 +22,7 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion | hercules | wcoss2 | gaea)
    echo "Running Automated Testing on ${MACHINE_ID}"
-   source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
+   source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
    ;;
  *)
    echo "Unsupported platform. Exiting with error."
@@ -48,7 +48,7 @@ pr_list_dbfile="${GFS_BASH_CI_ROOT}/open_pr_list.db"
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${HOMEgfs}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Running) || true
+  pr_list=$("${HOMEgfs}/dev/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Running) || true
   pr_list=$(echo "${pr_list}" |  tr ' ' '\n' | head -n "${max_concurrent_pr}" | tr '\n' ' ') || true
 fi
 if [[ -z "${pr_list}" ]]; then

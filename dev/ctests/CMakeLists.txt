@@ -74,24 +74,24 @@ function(AddJJOBTest)
                         ${ARGN})
 
   set(TEST_NAME ${ARG_CASE}_${ARG_JOB})
-  set(CASE_PATH ${HOMEgfs}/ci/cases/pr)
+  set(CASE_PATH ${HOMEgfs}/dev/ci/cases/pr)
   set(CASE_YAML ${CASE_PATH}/${ARG_CASE}.yaml)
 
   add_test(NAME test_${TEST_NAME}_setup
     COMMAND ./setup.sh ${TEST_NAME} ${CASE_YAML} ${ARG_TEST_DATE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
   set_tests_properties(test_${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE};${ARG_JOB}")
-    
+
   add_test(NAME test_${TEST_NAME}_stage
       COMMAND ./stage.sh ${TEST_NAME} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
   set_tests_properties(test_${TEST_NAME}_stage PROPERTIES DEPENDS test_${TEST_NAME}_setup LABELS "${ARG_CASE};${ARG_JOB}")
-  
+
   add_test(NAME test_${TEST_NAME}_execute
       COMMAND ./execute.sh ${TEST_NAME} ${ARG_JOB} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
   set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${ARG_CASE};${ARG_JOB}")
- 
+
   # TODO - This is a stub for the validation step
   add_test(NAME test_${TEST_NAME}_validate
       COMMAND ./validate.sh ${TEST_NAME} ${ARG_TEST_DATE}

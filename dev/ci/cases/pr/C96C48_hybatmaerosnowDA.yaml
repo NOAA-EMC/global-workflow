@@ -16,7 +16,7 @@ arguments:
   nens: 2
   interval: 24
   start: cold
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/atmaerosnowDA_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/atmaerosnowDA_defaults_ci.yaml
 
 skip_ci_on_hosts:
   - orion

@@ -10,8 +10,8 @@ RUNDIR = os.path.join(_here, 'testdata/RUNDIR')
 
 def test_create_experiment():
 
-    create_experiment_script = Executable(f'{HOMEgfs}/workflow/create_experiment.py')
-    yaml_dir = yaml_dir = os.path.join(HOMEgfs, 'ci/cases/pr')
+    create_experiment_script = Executable(f'{HOMEgfs}/dev/workflow/create_experiment.py')
+    yaml_dir = yaml_dir = os.path.join(HOMEgfs, 'dev/ci/cases/pr')
     env = os.environ.copy()
     env['RUNTESTS'] = RUNDIR
 

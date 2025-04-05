@@ -27,9 +27,9 @@ export JENKINS_WORK_DIR="${GFS_CI_ROOT}/Jenkins/workspace"
 
 # NOTE: JENKINS custom_workspace directory where CI jobs are run
 # /gpfs/f6/drsa-precip3/proj-shared/global/CI
-# and is defined in $HOMEgfs/ci/Jenkinsfile
+# and is defined in $HOMEgfs/dev/ci/Jenkinsfile
 
- 
+
 #########################################################################
 # GitLab CI configuration
 # These variables are referenced directly by launch_gitlab_runner.sh
@@ -62,4 +62,3 @@ export STAGED_TESTS_DIR="${GFS_CI_ROOT}/STAGED_TESTS_DIR"
 
 # HPC account information - For job submission
 export HPC_ACCOUNT=drsa-precip3
-

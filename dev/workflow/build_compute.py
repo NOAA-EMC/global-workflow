@@ -15,7 +15,7 @@ import rocoto.rocoto as rocoto
 
 
 _here = os.path.dirname(__file__)
-HOMEgfs = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
+HOMEgfs = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
 
 
 def input_args(*argv):

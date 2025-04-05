@@ -2,11 +2,11 @@
 
 """
 Basic python script to create an experiment directory on the fly from a given
-yaml file for the arguments to the two scripts below in ${HOMEgfs}/workflow
+yaml file for the arguments to the two scripts below in ${HOMEgfs}/dev/workflow
 where ${HOMEgfs} is determined from the location of this script.
 
- ${HOMEgfs}/workflow/setup_expt.py
- ${HOMEgfs}/workflow/setup_xml.py
+ ${HOMEgfs}/dev/workflow/setup_expt.py
+ ${HOMEgfs}/dev/workflow/setup_xml.py
 
 The yaml file are simply the arguments for these two scripts.
 After this scripts runs the experiment is ready for launch.
@@ -37,7 +37,7 @@ import setup_xml
 
 
 _here = os.path.dirname(__file__)
-_top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
+_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
 
 # Setup the logger
 logger = Logger(logfile_path=os.environ.get("LOGFILE_PATH"),

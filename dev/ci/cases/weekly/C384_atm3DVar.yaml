@@ -17,4 +17,4 @@ arguments:
   nens: 0
   interval: 24
   start: cold
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml

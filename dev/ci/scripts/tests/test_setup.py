@@ -20,7 +20,7 @@ def test_setup_expt():
         "--idate", "2021032312", "--edate", "2021032312", "--overwrite",
         "--account", account
     ]
-    setup_expt_script = Executable(os.path.join(HOMEgfs, "workflow", "setup_expt.py"))
+    setup_expt_script = Executable(os.path.join(HOMEgfs, "dev/workflow/setup_expt.py"))
     setup_expt_script.add_default_arg(arguments)
     setup_expt_script()
     assert (setup_expt_script.returncode == 0)
@@ -28,7 +28,7 @@ def test_setup_expt():
 
 def test_setup_xml():
 
-    setup_xml_script = Executable(os.path.join(HOMEgfs, "workflow/setup_xml.py"))
+    setup_xml_script = Executable(os.path.join(HOMEgfs, "dev/workflow/setup_xml.py"))
     setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
     setup_xml_script()
     assert (setup_xml_script.returncode == 0)
@@ -58,7 +58,7 @@ export HOMEgfs=foobar
     os.chmod('run_setup_xml.sh', 0o755)
 
     try:
-        setup_xml_script = Executable(os.path.join(HOMEgfs, "ci", "scripts", "tests", "run_setup_xml.sh"))
+        setup_xml_script = Executable(os.path.join(HOMEgfs, "dev/ci/scripts/tests/run_setup_xml.sh"))
         setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
         setup_xml_script()
         assert (setup_xml_script.returncode == 0)

@@ -15,7 +15,7 @@ arguments:
   nens: 0
   interval: 6
   start: cold
-  yaml: {{ HOMEgfs }}/ci/cases/yamls/gfs_extended_ci.yaml
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_extended_ci.yaml
 
 skip_ci_on_hosts:
   - hera

@@ -4,7 +4,7 @@ set -e
 
 #########################################################################
 # launch_gitlab_runner.sh - Script to manage GitLab runners for CI/CD
-# 
+#
 # This script handles three main operations for GitLab runners:
 # 1. register - Registers a new GitLab runner with the GitLab server
 # 2. run - Starts a GitLab runner in the background
@@ -14,7 +14,7 @@ set -e
 #########################################################################
 
 # Set the HOMEGFS_ variable to the root directory of the global workflow
-HOMEGFS_="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../.." >/dev/null 2>&1 && pwd )"
+HOMEGFS_="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../../.." >/dev/null 2>&1 && pwd )"
 # Get the hostname of the current machine
 host="$(hostname)"
 
@@ -36,9 +36,9 @@ case "${MACHINE_ID}" in
 esac
 
 # Source the platform-specific configuration file
-# This file contains platform-specific variables such as GITLAB_URL, GITLAB_CI_BUILDS_DIR, 
+# This file contains platform-specific variables such as GITLAB_URL, GITLAB_CI_BUILDS_DIR,
 # and GITLAB_RUNNER_DIR which are required for runner registration and execution
-source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
+source "${HOMEGFS_}/dev/ci/platforms/config.${MACHINE_ID}"
 
 # Change to the GitLab runner directory defined in the platform config
 cd "${GITLAB_RUNNER_DIR}" || exit 1
@@ -59,14 +59,14 @@ rm -f "${GITLAB_LOG}"
 # 3. A gitlab_token file in the current directory
 GITLAB_RUNNER_TOKEN="${2:-${GITLAB_RUNNER_TOKEN}}"
 if [[ -z "${GITLAB_RUNNER_TOKEN}" ]]; then
-  if [[ -f gitlab_token ]]; then	
+  if [[ -f gitlab_token ]]; then
    source gitlab_token
-  fi 
+  fi
 fi
 if [[ -z "${GITLAB_RUNNER_TOKEN}" ]]; then
   echo "ERROR: GITLAB_RUNNER_TOKEN not set"
   exit 1
-fi  
+fi
 
 # Download the GitLab runner binary if it does not exist
 if [[ ! -f gitlab-runner ]]; then
@@ -92,7 +92,7 @@ if [[ "${1}" == "register" ]]; then
   # --custom_build_dir-enabled: Enable custom build directories
   # --request-concurrency: Number of concurrent requests that can be handled
   ./gitlab-runner register -n -t "${GITLAB_RUNNER_TOKEN}" --url "${GITLAB_URL}" --executor shell --shell bash --builds-dir "${GITLAB_CI_BUILDS_DIR}" --custom_build_dir-enabled true --request-concurrency 24
-  
+
   # Set the concurrent job limit in the GitLab runner config file
   sed -i 's/concurrent.*/concurrent = 24/' ~/.gitlab-runner/config.toml
   exit 0

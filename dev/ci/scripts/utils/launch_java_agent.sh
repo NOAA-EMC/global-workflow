@@ -65,7 +65,7 @@ controller_url="https://jenkins.epic.oarcloud.noaa.gov"
 controller_user=${controller_user:-"terry.mcguinness"}
 controller_user_auth_token="jenkins_token"
 
-HOMEGFS_="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../.." >/dev/null 2>&1 && pwd )"
+HOMEGFS_="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../../.." >/dev/null 2>&1 && pwd )"
 host=$(hostname)
 
 #########################################################################
@@ -91,9 +91,9 @@ module use "${HOMEGFS_}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 
 if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-  source "${HOMEGFS_}/ci/platforms/config.${PW_CSP}"
+  source "${HOMEGFS_}/dev/ci/platforms/config.${PW_CSP}"
 else
-  source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
+  source "${HOMEGFS_}/dev/ci/platforms/config.${MACHINE_ID}"
 fi
 
 JAVA_HOME="${JENKINS_AGENT_LAUNCH_DIR}/JAVA/jdk-17.0.10"
@@ -171,13 +171,13 @@ check_node_online() {
 
 lauch_agent () {
     echo "Launching Jenkins Agent on ${host} using internal workspace ${JENKINS_WORK_DIR}"
-    
+
     # Clear the remoting cache
     if [[ -d "${JENKINS_WORK_DIR}/remoting" ]]; then
         echo "Clearing remoting cache in ${JENKINS_WORK_DIR}/remoting"
         rm -rf "${JENKINS_WORK_DIR}/remoting"
     fi
-    
+
     command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
     echo -e "Launching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
     ${command} >> "${LOG}" 2>&1 &

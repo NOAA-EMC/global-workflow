@@ -27,7 +27,7 @@ export JENKINS_AGENT_LAUNCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
 export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
 
 # NOTE: JENKINS custom_workspace directory where CI jobs are run
-# and is defined in $HOMEgfs/ci/Jenkinsfile as custom_workspace
+# and is defined in $HOMEgfs/dev/ci/Jenkinsfile as custom_workspace
 # /scratch1/NCEPDEV/global/glopara/CI
 
 

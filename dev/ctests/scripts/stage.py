@@ -20,7 +20,6 @@ Example:
 """
 
 import os
-import datetime
 
 from argparse import ArgumentParser
 from pathlib import Path

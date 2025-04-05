@@ -19,7 +19,7 @@ export REPO_URL=${REPO_URL:-"git@github.com:NOAA-EMC/global-workflow.git"}
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging
 ################################################################
-ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
+ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date  +'%D %r')" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
@@ -32,7 +32,7 @@ source "${ROOT_DIR}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion | hercules | wcoss2 | gaea)
     echo "Running Automated Testing on ${MACHINE_ID}"
-    source "${ROOT_DIR}/ci/platforms/config.${MACHINE_ID}"
+    source "${ROOT_DIR}/dev/ci/platforms/config.${MACHINE_ID}"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -46,7 +46,7 @@ esac
 HOMEgfs=${ROOT_DIR}
 export HOMEgfs
 set +x
-source "${ROOT_DIR}/ci/scripts/utils/ci_utils.sh"
+source "${ROOT_DIR}/dev/ci/scripts/utils/ci_utils.sh"
 source "${ROOT_DIR}/ush/module-setup.sh"
 module use "${ROOT_DIR}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
@@ -70,7 +70,7 @@ export GH
 pr_list_dbfile="${GFS_BASH_CI_ROOT}/open_pr_list.db"
 
 if [[ ! -f "${pr_list_dbfile}" ]]; then
-  "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --create --dbfile "${pr_list_dbfile}"
+  "${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --create --dbfile "${pr_list_dbfile}"
 fi
 
 pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open" | awk '{print $1}') || true
@@ -78,7 +78,7 @@ pr_list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" -
 for pr in ${pr_list}; do
   pr_dir="${GFS_BASH_CI_ROOT}/PR/${pr}"
   [[ ! -d ${pr_dir} ]] && mkdir -p "${pr_dir}"
-  db_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
+  db_list=$("${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}")
   output_ci_single="${pr_dir}/output_single.log"
   #############################################################
   # Check if a Ready labeled PR has changed back from once set
@@ -89,7 +89,7 @@ for pr in ${pr_list}; do
   if [[ "${db_list}" == *"already is in list"* ]]; then
     # Get the the PID and HOST of the driver.sh cron job
     # that is stored int he CI database for this PR
-    driver_ID=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
+    driver_ID=$("${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --display "${pr}" | awk '{print $4}') || true
     driver_PID=$(echo "${driver_ID}" | cut -d":" -f1) || true
     driver_HOST=$(echo "${driver_ID}" | cut -d":" -f2) || true
     host_name=$(hostname -s)
@@ -135,14 +135,14 @@ for pr in ${pr_list}; do
       sed -i "1 i\`\`\`" "${output_ci_single}"
     fi
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
-    "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
-    "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    "${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    "${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --add_pr "${pr}" --dbfile "${pr_list_dbfile}"
   fi
 done
 
 pr_list=""
 if [[ -f "${pr_list_dbfile}" ]]; then
-  pr_list=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Ready) || true
+  pr_list=$("${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --list Open Ready) || true
 fi
 if [[ -z "${pr_list}" ]]; then
   echo "no PRs open and ready for checkout/build .. exiting"
@@ -157,7 +157,7 @@ fi
 
 for pr in ${pr_list}; do
   # Skip pr's that are currently Building for when overlapping driver scripts are being called from within cron
-  pr_building=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
+  pr_building=$("${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | grep Building) || true
   if [[ -n "${pr_building}" ]]; then
       continue
   fi
@@ -168,7 +168,7 @@ for pr in ${pr_list}; do
   driver_build_PID=$$
   driver_build_HOST=$(hostname -s)
   "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Building"
-  "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building "${driver_build_PID}:${driver_build_HOST}"
+  "${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Building "${driver_build_PID}:${driver_build_HOST}"
   rm -Rf "${pr_dir}"
   mkdir -p "${pr_dir}"
   {
@@ -184,7 +184,7 @@ for pr in ${pr_list}; do
   fi
   "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci_single}"
   set +e
-  "${ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${output_ci}"
+  "${ROOT_DIR}/dev/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${output_ci}"
   ci_status=$?
   ##################################################################
   # Checking for special case when Ready label was updated
@@ -193,7 +193,7 @@ for pr in ${pr_list}; do
   # we need to exit this instance of the driver script
   #################################################################
   if [[ ${ci_status} -ne 0 ]]; then
-     build_PID_check=$("${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | awk '{print $4}' | cut -d":" -f1) || true
+     build_PID_check=$("${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --display "${pr}" --dbfile "${pr_list_dbfile}" | awk '{print $4}' | cut -d":" -f1) || true
      if [[ "${build_PID_check}" -ne "$$" ]]; then
         echo "Driver build PID: ${build_PID_check} no longer running this build ... exiting"
         exit 0
@@ -201,7 +201,7 @@ for pr in ${pr_list}; do
   fi
   set -e
   if [[ ${ci_status} -eq 0 ]]; then
-    "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Built "0:0"
+    "${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Built "0:0"
     #setup space to put an experiment
     # export RUNTESTS for yaml case files to pickup
     export RUNTESTS="${pr_dir}/RUNTESTS"
@@ -215,23 +215,23 @@ for pr in ${pr_list}; do
     cd "${HOMEgfs}"
     pr_sha=$(git rev-parse --short HEAD)
 
-    for yaml_config in "${HOMEgfs}/ci/cases/pr/"*.yaml; do
+    for yaml_config in "${HOMEgfs}/dev/ci/cases/pr/"*.yaml; do
       case=$(basename "${yaml_config}" .yaml) || true
       # export pslot for yaml case files to pickup
       export pslot="${case}_${pr_sha}"
       rm -Rf "${STMP}/RUNDIRS/${pslot}"
       set +e
-      export LOGFILE_PATH="${HOMEgfs}/ci/scripts/create_experiment.log"
+      export LOGFILE_PATH="${HOMEgfs}/dev/ci/scripts/create_experiment.log"
       rm -f "${LOGFILE_PATH}"
-      yaml_case_file="${HOMEgfs}/ci/cases/pr/${case}.yaml"
-      skip_hosts=$("${HOMEgfs}/ci/scripts/utils/parse_yaml.py" --yaml "${yaml_case_file}" --key skip_ci_on_hosts --string)
+      yaml_case_file="${HOMEgfs}/dev/ci/cases/pr/${case}.yaml"
+      skip_hosts=$("${HOMEgfs}/dev/ci/scripts/utils/parse_yaml.py" --yaml "${yaml_case_file}" --key skip_ci_on_hosts --string)
       if [[ "${skip_hosts}" == *"${MACHINE_ID}"* ]]; then
         {
           echo "Case setup: Skipped for experiment ${pslot}" || true
         } >> "${output_ci}"
         continue
       fi
-      "${HOMEgfs}/workflow/create_experiment.py" --yaml "${HOMEgfs}/ci/cases/pr/${case}.yaml" --overwrite  > "${LOGFILE_PATH}" 2>&1
+      "${HOMEgfs}/dev/workflow/create_experiment.py" --yaml "${HOMEgfs}/dev/ci/cases/pr/${case}.yaml" --overwrite  > "${LOGFILE_PATH}" 2>&1
       ci_status=$?
       set -e
       if [[ ${ci_status} -eq 0 ]]; then
@@ -245,14 +245,14 @@ for pr in ${pr_list}; do
           cat "${LOGFILE_PATH}"
         } >> "${output_ci}"
         "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-        "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+        "${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
         "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
         exit 1
       fi
     done
 
     "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Running"
-    "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running "0:0"
+    "${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --dbfile "${pr_list_dbfile}" --update_pr "${pr}" Open Running "0:0"
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${output_ci}"
 
   else # failed to clone and build
@@ -263,10 +263,10 @@ for pr in ${pr_list}; do
     } >> "${output_ci}"
 
     "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Building" --add-label "CI-${MACHINE_ID^}-Failed"
-    "${ROOT_DIR}/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
+    "${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
 
     if [[ -f "${HOMEgfs}/sorc/logs/error.logs" ]]; then
-      gist_URL=$("${ROOT_DIR}/ci/scripts/utils/ci_utils_wrapper.sh" publish_logs "PR_${pr}" "${HOMEgfs}/sorc"  "${HOMEgfs}/sorc/logs/error.logs")
+      gist_URL=$("${ROOT_DIR}/dev/ci/scripts/utils/ci_utils_wrapper.sh" publish_logs "PR_${pr}" "${HOMEgfs}/sorc"  "${HOMEgfs}/sorc/logs/error.logs")
       {
         echo -e "\nError logs from build"
         echo "Gist URL: ${gist_URL}"
