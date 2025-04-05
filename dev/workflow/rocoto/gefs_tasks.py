@@ -16,7 +16,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'envars': self.envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/stage_ic.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/stage_ic.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -33,7 +33,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'envars': self.envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/waveinit.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/waveinit.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -50,7 +50,7 @@ class GEFSTasks(Tasks):
                      'resources': resources,
                      'envars': self.envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/prep_emissions.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/prep_emissions.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -88,7 +88,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': fcst_vars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/fcst.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -145,7 +145,7 @@ class GEFSTasks(Tasks):
                          'dependency': dependencies,
                          'envars': efcsenvars,
                          'cycledef': self.run,
-                         'command': f'{self.HOMEgfs}/jobs/rocoto/fcst.sh',
+                         'command': f'{self.HOMEgfs}/dev/jobs/fcst.sh',
                          'job_name': f'{self.pslot}_{task_name}_@H',
                          'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                          'maxtries': '&MAXTRIES;'
@@ -246,7 +246,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': postenvars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/{config}.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/{config}.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'}
@@ -288,7 +288,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': postsnd_envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/postsnd.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/postsnd.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -343,7 +343,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': postenvars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/gempak.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/gempak.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -400,7 +400,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': postenvars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/atmos_ensstat.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/atmos_ensstat.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'}
@@ -456,7 +456,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': wave_post_envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostsbs.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/wavepostsbs.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -495,7 +495,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': wave_post_bndpnt_envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostbndpnt.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/wavepostbndpnt.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -540,7 +540,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': wave_post_bndpnt_bull_envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostbndpntbll.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/wavepostbndpntbll.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -579,7 +579,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': wave_post_pnt_envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavepostpnt.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/wavepostpnt.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -624,7 +624,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': extractvars_envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/extractvars.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/extractvars.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -674,7 +674,7 @@ class GEFSTasks(Tasks):
                      'envars': self.envars,
                      'cycledef': self.run,
                      'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_vrfy.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/arch_vrfy.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -718,7 +718,7 @@ class GEFSTasks(Tasks):
                      'envars': self.envars,
                      'cycledef': self.run,
                      'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/arch_tars.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/arch_tars.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -741,7 +741,7 @@ class GEFSTasks(Tasks):
                      'envars': self.envars,
                      'cycledef': 'gefs',
                      'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/globus_arch.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/globus_arch.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -772,7 +772,7 @@ class GEFSTasks(Tasks):
                      'envars': self.envars,
                      'cycledef': self.run,
                      'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/cleanup.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/cleanup.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
