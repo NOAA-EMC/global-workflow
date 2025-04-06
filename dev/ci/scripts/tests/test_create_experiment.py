@@ -23,7 +23,8 @@ def test_create_experiment():
     for case in os.listdir(yaml_dir):
         if case.endswith('.yaml'):
             env['pslot'] = os.path.splitext(case)[0]
-            create_experiment(['-y', f'{yaml_dir}/{case}'], env=env)
+            cmd_args = ['-y', f'{yaml_dir}/{case}']
+            create_experiment(*cmd_args, env=env)
             if create_experiment.returncode:
                 print(f"FATAL ERROR: Failed to create experiment for {case}")
                 err = 1
