@@ -4,7 +4,8 @@ from shutil import rmtree
 from wxflow import Executable
 
 _here = os.path.dirname(__file__)
-HOMEgfs = os.sep.join(_here.split(os.sep)[:-3])
+
+HOMEgfs = os.path.abspath(os.path.join(os.path.abspath(_here), '../../../..'))
 RUNDIR_FAKE = os.path.join(_here, 'testdata/RUNDIR')
 ICSDIR_FAKE = os.path.join(_here, 'testdata/ICSDIR')
 
@@ -22,7 +23,7 @@ def test_create_experiment():
     for case in os.listdir(yaml_dir):
         if case.endswith('.yaml'):
             env['pslot'] = os.path.splitext(case)[0]
-            create_experiment(['-y', f'{HOMEgfs}/dev/ci/cases/pr/{case}'], env=env)
+            create_experiment(['-y', f'{yaml_dir}/{case}'], env=env)
             if create_experiment.returncode:
                 print(f"FATAL ERROR: Failed to create experiment for {case}")
                 err = 1
