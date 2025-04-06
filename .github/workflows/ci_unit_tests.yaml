@@ -1,6 +1,9 @@
 name: CI Unit Tests
 on: [pull_request, push, workflow_dispatch]
 
+env:
+  ROCOTO_VERSION: "1.3.7"
+
 jobs:
 
   ci_pytest:
@@ -24,23 +27,25 @@ jobs:
           sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
           python -m pip install --upgrade pip
           pip install pytest
-          pip install wxflow
           pip install wget
 
-      - name: Cache Rocoto Install
+      - name: Cache Rocoto
+        id: cache-rocoto
         uses: actions/cache@v4
         with:
-          path: ~/rocoto
-          key: ${{ runner.os }}-rocoto-${{ hashFiles('**/ci-unit_tests.yaml') }}
+          path: ${HOME}/rocoto
+          key: ${{ runner.os }}-rocoto-${{ env.ROCOTO_VERSION }}
 
       - name: Install Rocoto
+        id: install-rocoto
+        if: steps.cache-rocoto.outputs.cache-hit != 'true'
+        shell: bash
         run: |
-          if [ ! -d "$HOME/rocoto/bin" ]; then
-            git clone https://github.com/christopherwharrop/rocoto.git $HOME/rocoto
-            cd $HOME/rocoto
-            ./INSTALL
-          fi
-          echo "$HOME/rocoto/bin" >> $GITHUB_PATH
+          git clone https://github.com/christopherwharrop/rocoto.git ${HOME}/rocoto
+          cd ${HOME}/rocoto
+          git checkout ${{ env.ROCOTO_VERSION }}
+          ./INSTALL
+          echo "${HOME}/rocoto/bin" >> ${GITHUB_PATH}
 
       - name: Run tests
         shell: bash
@@ -50,19 +55,18 @@ jobs:
           sudo mkdir -p /scratch1/NCEPDEV/stmp4
           sudo mkdir -p /scratch1/NCEPDEV/global
           sudo chmod -R a+w /scratch1/NCEPDEV
-          cd $GITHUB_WORKSPACE/sorc
-          git submodule update --init -j 9
+          cd ${GITHUB_WORKSPACE}/sorc
+          git submodule update --init -j 9 wxflow ufs_model.fd
           ./link_workflow.sh
-          cd $GITHUB_WORKSPACE/ci/scripts/tests
-          ln -s ../wxflow
+          cd ${GITHUB_WORKSPACE}/dev/ci/scripts/tests
 
-          pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
+          pytest -v --junitxml ${GITHUB_WORKSPACE}/dev/ci/scripts/tests/test-results.xml
 
 
       - name: Publish Test Results
         if: always()
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          files: ci/scripts/tests/test-results.xml
+          files: dev/ci/scripts/tests/test-results.xml
           job_summary: true
           comment_mode: off
