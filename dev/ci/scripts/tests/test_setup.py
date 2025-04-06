@@ -1,10 +1,11 @@
-from wxflow import Executable, Configuration, ProcessError
-from shutil import rmtree
-import pytest
 import os
+import pytest
+from shutil import rmtree
+
+from wxflow import Executable, Configuration, ProcessError
 
 _here = os.path.dirname(__file__)
-HOMEgfs = os.sep.join(_here.split(os.sep)[:-3])
+HOMEgfs = os.path.abspath(os.path.join(os.path.abspath(_here), '../../../..'))
 RUNDIR = os.path.join(_here, 'testdata/RUNDIR')
 pslot = "C48_ATM"
 account = "fv3-cpu"

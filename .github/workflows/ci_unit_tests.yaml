@@ -57,7 +57,7 @@ jobs:
           sudo mkdir -p /scratch1/NCEPDEV/global
           sudo chmod -R a+w /scratch1/NCEPDEV
           cd ${GITHUB_WORKSPACE}/sorc
-          git submodule update --init -j 9 wxflow ufs_model.fd
+          git submodule update --init -j 2 wxflow ufs_model.fd
           ./link_workflow.sh
           cd ${GITHUB_WORKSPACE}/dev/ci/scripts/tests
 

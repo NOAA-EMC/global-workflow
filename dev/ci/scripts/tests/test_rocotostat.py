@@ -6,8 +6,8 @@ import wget
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(os.path.dirname(script_dir), 'utils'))
 
-from rocotostat import rocoto_statcount, rocotostat_summary, is_done, is_stalled, CommandNotFoundError
-from wxflow import which
+from rocotostat import rocoto_statcount, rocotostat_summary, is_done, is_stalled
+from wxflow import which, CommandNotFoundError
 
 test_data_url = 'https://noaa-nws-global-pds.s3.amazonaws.com/data/CI/'
 
