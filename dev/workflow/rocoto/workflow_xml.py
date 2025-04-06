@@ -82,10 +82,7 @@ class RocotoXML(ABC):
         entity = OrderedDict()
 
         entity['PSLOT'] = self.pslot
-
         entity['ROTDIR'] = self._base['ROTDIR']
-        entity['JOBS_DIR'] = self._base['BASE_JOB']
-
         entity['MAXTRIES'] = self.rocoto_config['maxtries']
 
         # Put them all in an XML key-value syntax
