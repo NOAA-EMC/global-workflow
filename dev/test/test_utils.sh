@@ -2,7 +2,7 @@
 
 basename_list() {
 	#
-	# Take a list of paths, determines the base name, then 
+	# Take a list of paths, determines the base name, then
 	#   prepends it to a base path.
 	#
 	# Syntax:
@@ -13,14 +13,15 @@ basename_list() {
 	#     file_in: List of paths relative to $base/
 	#
 	# Returns:
-	#     List of paths constructed by prepending $base to each 
+	#     List of paths constructed by prepending $base to each
 	#       item in $file_in
 	#
 	base="${1}"
 	list=""
 
 	for file_in in "${@:2}"; do
-		list="$list ${base}$(basename $file_in)"
+    # shellcheck disable=SC2086
+		list="${list} ${base}$(basename ${file_in})"
 	done
-	echo $list
+	echo "${list}"
 }
