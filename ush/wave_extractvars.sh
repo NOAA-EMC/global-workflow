@@ -9,7 +9,6 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/preamble.sh"
 source "${USHgfs}/wave_domain_grid.sh"
 
 process_grdID "${waveGRD}"

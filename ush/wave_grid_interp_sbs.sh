@@ -20,7 +20,7 @@
 #
 ################################################################################
 
-source "${USHgfs}/preamble.sh"
+# 0.a Basic modes of operation
 
 grdID=$1
 valid_time=$2
