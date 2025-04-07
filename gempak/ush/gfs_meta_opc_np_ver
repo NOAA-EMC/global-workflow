@@ -17,7 +17,7 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 mdl=gfs
@@ -162,10 +162,10 @@ if [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit 100
 fi
 
-mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
+mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
+        "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
 fi
 
 exit

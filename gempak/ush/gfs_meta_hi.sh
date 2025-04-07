@@ -17,7 +17,7 @@ device="nc | mrfhi.meta"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 if [[ "${envir}" = "prod" ]] ; then
@@ -180,14 +180,14 @@ if (( err != 0 )) || [[ ! -s mrfhi.meta ]] &> /dev/null; then
     exit $(( err + 100 ))
 fi
 
-mv mrfhi.meta "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_hi"
+mv mrfhi.meta "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_hi"
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-    "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_hi"
+    "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_hi"
     if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-            "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_hi"
+            "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_hi"
     fi
 fi
 
