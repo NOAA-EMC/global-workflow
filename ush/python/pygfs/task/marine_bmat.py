@@ -250,10 +250,6 @@ class MarineBMat(Task):
         dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f"{APREFIX}ocean.bkgerr_ens_stddev.nc")
         diagb_list.append([src, dst])
 
-        src = os.path.join(self.task_config.DATAstaticb, f"ocn.ssh_recentering_error.incr.{window_begin_iso}.nc")
-        dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f"{APREFIX}ocean.recentering_error.nc")
-        diagb_list.append([src, dst])
-
         # ice diag B
         os.rename(os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.incr.{window_end_iso}.nc"),
                   os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc"))
@@ -261,9 +257,14 @@ class MarineBMat(Task):
         dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX, f"{APREFIX}ice.bkgerr_ens_stddev.nc")
         diagb_list.append([src, dst])
 
-        src = os.path.join(self.task_config.DATAstaticb, f"ice.ssh_recentering_error.incr.{window_begin_iso}.nc")
-        dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX, f"{APREFIX}ice.recentering_error.nc")
-        diagb_list.append([src, dst])
+        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
+            src = os.path.join(self.task_config.DATAstaticb, f"ocn.ssh_recentering_error.incr.{window_begin_iso}.nc")
+            dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f"{APREFIX}ocean.recentering_error.nc")
+            diagb_list.append([src, dst])
+
+            src = os.path.join(self.task_config.DATAstaticb, f"ice.ssh_recentering_error.incr.{window_begin_iso}.nc")
+            dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX, f"{APREFIX}ice.recentering_error.nc")
+            diagb_list.append([src, dst])
 
         FileHandler({'copy': diagb_list}).sync()
 
