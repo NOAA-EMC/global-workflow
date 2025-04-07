@@ -251,7 +251,7 @@ class MarineBMat(Task):
         diagb_list.append([src, dst])
 
         src = os.path.join(self.task_config.DATAstaticb, f"ocn.ssh_recentering_error.incr.{window_begin_iso}.nc")
-        dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,f"{APREFIX}ocean.recentering_error.nc")
+        dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f"{APREFIX}ocean.recentering_error.nc")
         diagb_list.append([src, dst])
 
         # ice diag B
@@ -262,7 +262,7 @@ class MarineBMat(Task):
         diagb_list.append([src, dst])
 
         src = os.path.join(self.task_config.DATAstaticb, f"ice.ssh_recentering_error.incr.{window_begin_iso}.nc")
-        dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,f"{APREFIX}ice.recentering_error.nc")
+        dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX, f"{APREFIX}ice.recentering_error.nc")
         diagb_list.append([src, dst])
 
         FileHandler({'copy': diagb_list}).sync()
@@ -283,8 +283,7 @@ class MarineBMat(Task):
             # Copy the ssh diagnostics
             for string in ['ssh_steric_stddev', 'ssh_unbal_stddev', 'ssh_total_stddev', 'steric_explained_variance']:
                 weight_list.append([os.path.join(self.task_config.DATA, 'staticb', f'ocn.{string}.incr.{window_begin_iso}.nc'),
-                                       os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f'{APREFIX}ocean.{string}.nc')])
-
+                                    os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f'{APREFIX}ocean.{string}.nc')])
 
             FileHandler({'copy': weight_list}).sync()
 
