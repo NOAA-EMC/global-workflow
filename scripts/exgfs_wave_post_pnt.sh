@@ -4,21 +4,13 @@
 #
 # UNIX Script Documentation Block
 # Script name:         exgfs_wave_post_pnt.sh
-# Script description:  Creates point output products from binary WW3 data
+# Script description:  Creates point output products from NetCDF WW3 point data
 #
-# Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2019-12-06
 # Abstract: This script is the point postprocessor for the wave component in GFS.
 #           It executes several scripts forpreparing and creating output data
 #           as follows:
 #
 #  wave_tar.sh               : tars the spectral and bulletin multiple files
-#
-# Script history log:
-# 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007
-# 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
-# 2020-07-30  Jessica Meixner: Points only - no gridded data
-# 2020-09-29  Jessica Meixner: optimized by changing loop structures
-# 2025-02-12  Ali Salimi-Tarazouj: Changed to be compatible with the new optimized ww3_outp 
 #
 # COM inputs:
 #  - ${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin
@@ -360,7 +352,7 @@
                            ww3_outp_spec.inp.tmpl > ww3_outp.inp
         
     export pgm="${NET,,}_ww3_outp.x"
-    "${EXECgfs}/${pgm}" > ww3_outp_spec.log 2>&1
+    "${EXECgfs}/${pgm}" 
   fi
 
   if [ "$DOBLL_WAV" = 'YES' ]; then
@@ -372,7 +364,7 @@
         -e "s/REFT/$truntime/g" \
                            ww3_outp_bull.inp.tmpl > ww3_outp.inp
     export pgm="${NET,,}_ww3_outp.x"
-    "${EXECgfs}/${pgm}" > ww3_outp_bull.log 2>&1
+    "${EXECgfs}/${pgm}" 
   fi
 
 # --------------------------------------------------------------------------- #
@@ -482,4 +474,4 @@
 
 exit "${exit_code}"
 
-# End of MWW3 point prostprocessor script ---------------------------------------- #
+# End of WW3 point prostprocessor script ---------------------------------------- #
