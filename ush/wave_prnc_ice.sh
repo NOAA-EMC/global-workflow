@@ -27,8 +27,6 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${USHgfs}/preamble.sh"
-
 # 0.a Basic modes of operation
 
   cd $DATA

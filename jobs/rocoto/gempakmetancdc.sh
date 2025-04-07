@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+set -x
 
 ###############################################################
 . "${HOMEgfs}/ush/load_fv3gfs_modules.sh"

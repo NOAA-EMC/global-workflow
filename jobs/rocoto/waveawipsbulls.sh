@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -15,8 +15,8 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGLOBAL_WAVE_PRDGEN_BULLS
+${HOMEgfs}/jobs/JGLOBAL_WAVE_PRDGEN_BULLS
 status=$?
 
 
-exit $status
+exit ${status}
