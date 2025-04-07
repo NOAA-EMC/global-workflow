@@ -125,7 +125,7 @@ function create_experiment () {
       source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
   fi
 
-  source "${HOMEgfs}/dev/workflow/gw_setup.sh"
+  source "${HOMEgfs}/dev/ush/gw_setup.sh"
 
   # Remove RUNDIRS dir incase this is a retry (STMP now in host file)
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then

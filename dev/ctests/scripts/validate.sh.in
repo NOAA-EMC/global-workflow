@@ -11,7 +11,7 @@ HOMEgfs="@PROJECT_SOURCE_DIR@"
 
 # Load the runtime environment for this script (needs wxflow and its dependencies)
 set +x
-source "${HOMEgfs}/dev/workflow/gw_setup.sh"
+source "${HOMEgfs}/dev/ush/gw_setup.sh"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
    exit "${rc}"

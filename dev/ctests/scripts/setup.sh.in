@@ -12,7 +12,7 @@ ICSDIR_ROOT="@ICSDIR_ROOT@"
 HPC_ACCOUNT="@HPC_ACCOUNT@"
 
 set +x
-source "${HOMEgfs}/dev/workflow/gw_setup.sh"
+source "${HOMEgfs}/dev/ush/gw_setup.sh"
 set -x
 
 pslot="${TEST_NAME}" \

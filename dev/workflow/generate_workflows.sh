@@ -371,9 +371,9 @@ fi
 if [[ "${_debug}" == "true" ]]; then
     set +x
 fi
-if ! source "${HOMEgfs}/dev/workflow/gw_setup.sh" >& stdout; then
+if ! source "${HOMEgfs}/dev/ush/gw_setup.sh" >& stdout; then
    cat stdout
-   echo "Failed to source ${HOMEgfs}/dev/workflow/gw_setup.sh!"
+   echo "Failed to source ${HOMEgfs}/dev/ush/gw_setup.sh!"
    exit 7
 fi
 if [[ "${_verbose}" == "true" ]]; then

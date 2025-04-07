@@ -30,7 +30,7 @@ run_check_logfile="${RUNTESTS}/ci-run_check.log"
 
 # Source modules and setup logging
 echo "Source modules."
-source "${HOMEgfs}/dev/workflow/gw_setup.sh"
+source "${HOMEgfs}/dev/ush/gw_setup.sh"
 
 # cd into the experiment directory
 echo "cd ${RUNTESTS}/EXPDIR/${pslot}"
