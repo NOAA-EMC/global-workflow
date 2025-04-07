@@ -75,7 +75,7 @@ cd "${HOMEgfs}/sorc" || exit 1
 rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
 echo "Sourcing global-workflow modules ..."
-source "${HOMEgfs}/dev/workflow/gw_setup.sh"
+source "${HOMEgfs}/dev/ush/gw_setup.sh"
 
 echo "Generating build.xml for building global-workflow programs on compute nodes ..."
 # Catch errors manually from here out

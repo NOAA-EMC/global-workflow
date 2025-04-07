@@ -8,7 +8,7 @@ Experiment Setup
 
  ::
 
-   source dev/workflow/gw_setup.sh
+   source dev/ush/gw_setup.sh
 
 .. warning::
    Sourcing gw_setup.sh will wipe your existing lmod environment

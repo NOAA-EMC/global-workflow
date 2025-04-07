@@ -395,7 +395,7 @@ or accessing the cluster from your web terminal, you can start to clone, compile
 
       gwhome=/contrib/Wei.Huang/src/global-workflow-cloud  # Change this to your own "global-workflow" source directory
       cd ${gwhome}/sorc
-      source ${gwhome}/dev/workflow/gw_setup.sh
+      source ${gwhome}/dev/ush/gw_setup.sh
       #build_all.sh
       build_all.sh -w
       link_workflow.sh
@@ -417,4 +417,3 @@ EPIC has copied the C48 and C96 ATM, GEFS, and some other data to AWS, and the c
 If users want to run their own case, they need to make changes to the IC path and others to make it work.
 The execution of the global-workflow should now follow the same steps
 as those for the RDHPCS on-premises hosts.
-
