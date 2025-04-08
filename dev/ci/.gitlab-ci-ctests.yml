@@ -1,14 +1,9 @@
-# CTests modality configuration for the global-workflow project
-# This file defines jobs specific to the CTests workflow
-# It is included when triggered via GitHub API (GITHUB_API_TRIGGER=true)
-
-# Base configuration for ctest jobs
-.base_config:
-  variables:
-    GIT_STRATEGY: none
+# =======================================
+# Templates for CTests
+# =======================================
 
 # Setup job for ctests using CMake
-create_ctests:
+.create_ctests:
   extends: .base_config
   stage: create_experiments
   script:
@@ -20,10 +15,12 @@ create_ctests:
   dependencies:
     - build-${machine}
   tags:
-    - hera
+    - ${machine}
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
 
-# Template for CTest execution jobs
-.ctests_template:
+# Main template for CTest execution jobs
+.run_ctests_template:
   extends: .base_config
   stage: run_tests
   allow_failure: true
@@ -40,28 +37,5 @@ create_ctests:
     - ctest -R test_${CTEST}_execute
   dependencies:
     - create_ctests
-
-# Template for CTest jobs that will be used across machines
-.run_ctests_template:
-  extends: .ctests_template
-  stage: run_tests
-  parallel:
-    matrix:
-      - CTEST: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0', 'C48_S2SW_gfs_atmos_prod']
-
-
-run_ctests-hera:
-  extends: .run_ctests_template
-  variables:
-    machine: hera
-  tags: ["hera"]
-  dependencies:
-    - create_ctests
-
-run_ctests-gaeac6:
-  extends: .run_ctests_template
-  variables:
-    machine: gaeac6
-  tags: ["gaeac6"]
-  dependencies:
-    - create_ctests
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"

@@ -1,7 +1,4 @@
-# Host-specific configurations for the global-workflow project
-# This file contains host-specific configurations for both standard cases and CTests modes
-# It is designed to be generated automatically by the pipeline generator
-
+# =======================================
 # Standard Cases configurations by host
 # =======================================
 
@@ -62,11 +59,17 @@ run_tests-gaeac6:
 # CTests configurations by host
 # =======================================
 
+# Template for CTest jobs that will be used across machines
+.run_ctests_cases_template:
+  extends: .ctests_template
+  stage: run_tests
+  parallel:
+    matrix:
+      - CTEST: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0', 'C48_S2SW_gfs_atmos_prod']
+
 # Host: Hera - CTests
 run_ctests-hera:
-  extends: .run_ctests_template
-  variables:
-    machine: hera
+  extends: .run_ctests_cases_template
   tags: ["hera"]
   dependencies:
     - create_ctests
@@ -76,8 +79,6 @@ run_ctests-hera:
 # Host: GAEAC6 - CTests
 run_ctests-gaeac6:
   extends: .run_ctests_template
-  variables:
-    machine: gaeac6
   tags: ["gaeac6"]
   dependencies:
     - create_ctests

@@ -28,7 +28,3 @@
     - ${HOMEGFS}/dev/ci/scripts/run_check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
   dependencies:
     - setup_experiments-${machine}
-
-# Include host-specific job configurations
-include:
-  - local: 'dev/ci/.gitlab-ci-cases-hosts.yml'
