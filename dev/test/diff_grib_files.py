@@ -1,4 +1,4 @@
-#! /bin/env python3
+#! /usr/bin/env python3
 '''
 Compares two grib2 files and print any variables that have a
   non-identity correlation.
