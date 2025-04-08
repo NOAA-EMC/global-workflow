@@ -30,6 +30,8 @@
 
 set -eu
 
+# shellcheck disable=SC2311  # TODO: #FIXME: remove this when this script is corrected
+
 usage() {
 	#
 	# Print usage statement
