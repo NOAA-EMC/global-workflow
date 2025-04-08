@@ -60,8 +60,8 @@ run_tests-gaeac6:
 # =======================================
 
 # Template for CTest jobs that will be used across machines
-.run_ctests_cases_template:
-  extends: .ctests_template
+.ctests_cases_template:
+  extends: .run_ctests_template
   stage: run_tests
   parallel:
     matrix:
