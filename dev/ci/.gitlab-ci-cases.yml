@@ -1,4 +1,20 @@
-# This file defines jobs to create and run specific to PR cases
+# ==========================================================================
+# Templates for Standard Test Cases
+# ==========================================================================
+#
+# This file defines templates for setting up and running standard experiment 
+# test cases for the global-workflow project. These cases represent more 
+# comprehensive, end-to-end testing scenarios than the CTesting framework.
+#
+# These templates are used primarily for PR testing when GITHUB_API_TRIGGER=false.
+# The actual test case matrix for each host is defined in .gitlab-ci-hosts.yml.
+#
+# Key templates:
+# - .setup_template: Creates experiment directories based on case YAML files
+# - .run_tests_template: Executes and validates the experiment workflows
+#
+# Test cases are defined as YAML files in the dev/ci/cases/pr directory and
+# are referenced by name in the host configuration file's test matrix.
 
 # Template for experiment setup jobs
 .setup_template:

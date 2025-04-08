@@ -1,3 +1,20 @@
+# ==========================================================================
+# Host-Specific Configurations for the global-workflow CI Pipeline
+# ==========================================================================
+#
+# This file defines host-specific job configurations for different computing
+# platforms supported by the global-workflow testing pipeline. It's designed
+# to be easily extendable with new computing platforms.
+#
+# Key features:
+# - Per-host test case matrices that define which tests run on which hosts
+# - Separate configurations for standard cases and CTests
+# - Host-specific tags and variables for job routing
+# - Conditional rules based on trigger type (PR vs API)
+#
+# The GITHUB_API_TRIGGER variable (set in the main .gitlab-ci.yml) controls
+# whether to run CTests (true) or standard cases (false).
+
 # =======================================
 # Standard Cases configurations by host
 # =======================================
@@ -60,6 +77,7 @@ run_tests-gaeac6:
   rules:
     - if: $GITHUB_API_TRIGGER != "true"
 
+# =======================================
 # CTests configurations by host
 # =======================================
 
@@ -119,6 +137,7 @@ run_ctests-gaeac6:
 # =======================================
 # Common build configurations by host
 # These will always be included, regardless of modality
+# =======================================
 
 build-hera:
   extends: .build_template

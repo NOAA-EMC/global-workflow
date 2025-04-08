@@ -1,5 +1,26 @@
-# Main gitlab-ci.yml for the global-workflow project
-# This file defines common stages and includes appropriate modality file based on trigger
+# ==========================================================================
+# Main GitLab CI Configuration for the global-workflow Project
+# ==========================================================================
+#
+# This is the primary CI/CD configuration file that orchestrates the GitLab CI
+# testing framework for the global-workflow project. It defines pipeline stages
+# and includes specialized configuration files for different testing aspects.
+#
+# The pipeline architecture supports:
+#   1. Multiple host environments (hera, gaeac6, etc.)
+#   2. Two primary testing modes:
+#      - PR validation via standard test cases
+#      - CTest-based tests triggered via GitHub API
+#
+# Included files:
+#   - .gitlab-ci-ctests.yml: Handles CMake/CTest-based testing framework
+#   - .gitlab-ci-cases.yml: Defines templates for standard experiment cases
+#   - .gitlab-ci-hosts.yml: Contains host-specific configurations and test matrices
+#                          that can be extended to support additional hosts
+#
+# The host configuration in .gitlab-ci-hosts.yml is designed to be easily 
+# extended with new computing platforms and allows per-host specification 
+# of which test cases to run.
 
 stages:
   - build
@@ -16,13 +37,15 @@ variables:
   GIT_DEPTH: 1
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
+  # Controls pipeline behavior: CTests (true) or PR cases (false)
   GITHUB_API_TRIGGER: ${GITHUB_API_TRIGGER:-"false"}
   PR_NUMBER: ${PR_NUMBER:-"0"}
 
+# Include specialized pipeline configuration files
 include:
-  - local: 'dev/ci/.gitlab-ci-ctests.yml'
-  - local: 'dev/ci/.gitlab-ci-cases.yml'
-  - local: 'dev/ci/.gitlab-ci-hosts.yml'
+  - local: 'dev/ci/.gitlab-ci-ctests.yml'  # CTest framework configuration
+  - local: 'dev/ci/.gitlab-ci-cases.yml'   # Standard test case templates
+  - local: 'dev/ci/.gitlab-ci-hosts.yml'   # Host-specific configurations
 
 .base_config:
   variables:
