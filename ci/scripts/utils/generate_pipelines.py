@@ -114,7 +114,7 @@ def read_template_file(template_path):
 
     for i, line in enumerate(lines):
         if line.strip() == marker_line:
-            return ''.join(lines[:i+1])
+            return ''.join(lines[:i + 1])
 
     # If marker line not found, return the entire template
     return ''.join(lines)
