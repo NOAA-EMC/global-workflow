@@ -16,7 +16,6 @@ UFS_det(){
     # Since restarts are not available from the previous cycle, this is likely a cold start
     # Ensure cold start ICs are present when warm start is not set
     # TODO: add checks for other cold start ICs as well
-
     if [[ ! -f "${COMIN_ATMOS_INPUT}/gfs_ctrl.nc" ]]; then
       echo "FATAL ERROR: Cold start ICs are missing from '${COMIN_ATMOS_INPUT}'"
       exit 1
