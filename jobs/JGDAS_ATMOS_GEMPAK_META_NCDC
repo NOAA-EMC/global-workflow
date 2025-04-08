@@ -4,7 +4,6 @@
 # GDAS GEMPAK META NCDC PRODUCT GENERATION
 ############################################
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 
 # Now set up GEMPAK/NTRANS environment

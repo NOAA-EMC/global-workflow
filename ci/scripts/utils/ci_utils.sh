@@ -190,6 +190,11 @@ function cleanup_experiment() {
 function build_compute () {
 
   source "${HOMEgfs}/ci/platforms/config.${MACHINE_ID}"
-  "${HOMEgfs}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
+  # TODO: when it's safe to build on C6 compute nodes again, do so
+  if [[ "${MACHINE_ID}" == "gaeac6" ]]; then
+     "${HOMEgfs}/sorc/build_all.sh" -v -k all
+  else
+     "${HOMEgfs}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
+  fi
 
 }

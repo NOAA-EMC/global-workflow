@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "metp" -c "base metp"
 
 ###############################################################
@@ -28,7 +27,11 @@ done
 
 # TODO: If none of these are on, why are we running this job?
 if [[ "${RUN_GRID2GRID_STEP1}" == "YES" || "${RUN_GRID2OBS_STEP1}" == "YES" || "${RUN_PRECIP_STEP1}" == "YES" ]]; then
-    ${VERIF_GLOBALSH}
+    # Override the -e in VERIF_GLOBALSH's shebang and un-export SHELLOPTS
+    # TODO: clean up the verif-global script so it does not raise false-positive errors
+    set +eu
+    export -n SHELLOPTS
+    bash -x "${VERIF_GLOBALSH}"
     err=$?
     if [[ ${err} -ne 0 ]]; 
         then exit "${err}"

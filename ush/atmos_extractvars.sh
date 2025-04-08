@@ -9,8 +9,6 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/preamble.sh"
-
 fcnt=1 # 1 is 1st quarter, 2 is 2nd quarter and 3 is 3rd quarter of the day
 dcnt=1 # lead day
 subdata=${1}
