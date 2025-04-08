@@ -8,8 +8,8 @@
 #
 # Key features:
 # - Per-host test case matrices that define which tests run on which hosts
-# - Separate configurations for standard cases and CTests
-# - Host-specific tags and variables for job routing
+# - Includes two sections supporting the standard PR Cases and CTests
+# - Host-specific tags and variables for job routing to the correct runners
 # - Conditional rules based on trigger type (PR vs API)
 #
 # The GITHUB_API_TRIGGER variable (set in the main .gitlab-ci.yml) controls
