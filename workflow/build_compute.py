@@ -34,6 +34,8 @@ def input_args(*argv):
     parser.add_argument('--yaml', help='Input YAML file',
                         type=str, required=False, default='build_opts.yaml')
     parser.add_argument('--systems', help='System(s) to build (options: gfs, gefs, sfs, gsi, gdas, or all)', required=False, default='gfs')
+    parser.add_argument('--host', help='Input host name (used to determine which host yaml to load)',
+                        type=str, required=False, default=None)
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)
 
@@ -127,7 +129,7 @@ def main(*argv):
 
     # Gather host specs and place the user supplied account
     # into the host_specs dict
-    host_specs = get_host_specs(Host())
+    host_specs = get_host_specs(Host(user_inputs.host))
     host_specs.account = user_inputs.account
 
     # Retrieve build specificatiosn from user provided yaml

@@ -77,10 +77,23 @@ rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 echo "Sourcing global-workflow modules ..."
 source "${HOMEgfs}/workflow/gw_setup.sh"
 
+# Determine yaml and "host" to use
+case ${MACHINE_ID} in
+  "gaeac6")
+    # C6 does not allow builds on compute nodes, so submit to the login nodes
+    yaml="${HOMEgfs}/workflow/build_service_opts.yaml"
+    host="${MACHINE_ID^^}_BUILD"
+    ;;
+  *)
+    yaml="${HOMEgfs}/workflow/build_opts.yaml"
+    host="${MACHINE_ID^^}"
+    ;;
+esac
+
 echo "Generating build.xml for building global-workflow programs on compute nodes ..."
 # Catch errors manually from here out
 set +e
-"${HOMEgfs}/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${HOMEgfs}/workflow/build_opts.yaml" --systems "${systems}"
+"${HOMEgfs}/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}" --host "${host}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
   msg="FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
