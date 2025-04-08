@@ -7,7 +7,8 @@ setup_experiments-hera:
   extends: .setup_template
   variables:
     machine: hera
-  tags: hera
+  tags:
+      - hera
   parallel:
     matrix:
       - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
@@ -20,7 +21,8 @@ run_tests-hera:
   extends: .run_tests_template
   variables:
     machine: hera
-  tags: hera
+  tags:
+    - hera
   parallel:
     matrix:
       - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
@@ -34,7 +36,8 @@ setup_experiments-gaeac6:
   extends: .setup_template
   variables:
     machine: gaeac6
-  tags: gaeac6
+  tags:
+    - gaeac6
   parallel:
     matrix:
       - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
@@ -47,7 +50,8 @@ run_tests-gaeac6:
   extends: .run_tests_template
   variables:
     machine: gaeac6
-  tags: gaeac6
+  tags:
+    - gaeac6
   parallel:
     matrix:
       - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
@@ -70,7 +74,8 @@ run_tests-gaeac6:
 # Host: Hera - CTests
 run_ctests-hera:
   extends: .ctests_cases_template
-  tags: hera
+  tags:
+    - hera
   dependencies:
     - create_ctests
   rules:
@@ -79,7 +84,8 @@ run_ctests-hera:
 # Host: GAEAC6 - CTests
 run_ctests-gaeac6:
   extends: .ctests_cases_template
-  tags: gaeac6
+  tags:
+    - gaeac6
   dependencies:
     - create_ctests
   rules:
@@ -93,10 +99,12 @@ build-hera:
   extends: .build_template
   variables:
     machine: hera
-  tags: hera
+  tags:
+    - hera
 
 build-gaeac6:
   extends: .build_template
   variables:
     machine: gaeac6
-  tags: gaeac6
+  tags:
+    - gaeac6
