@@ -25,7 +25,7 @@ variables:
   stage: build
   allow_failure: true
   script:
-    - echo "Using build directory ${HOMEGFS} (dated $BUILD_DATE)"
+    - echo "Using build directory $HOMEGFS (dated $BUILD_DATE)"
     - ci/scripts/utils/ci_utils_wrapper.sh build_compute
     - sorc/link_workflow.sh
     - mkdir -p ${RUNTESTS_DIR}
@@ -36,7 +36,7 @@ variables:
   allow_failure: true
   script:
     - export RUNTESTS=${RUNTESTS_DIR}
-    - $HOMEGFS/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEGFS}/ci/cases/pr/${caseName}.yaml
+    - ${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEGFS}/ci/cases/pr/${caseName}.yaml
   dependencies:
     - build-${MACHINE}
 
@@ -49,7 +49,7 @@ variables:
     - pslot=$(${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${RUNTESTS_DIR} ${caseName})
     - ${HOMEGFS}/ci/scripts/run-check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
   dependencies:
-    - setup_experiments-${MACHINE}
+    - setup_experiments-$MACHINE
 
 # Machine-specific jobs generated from template:
 

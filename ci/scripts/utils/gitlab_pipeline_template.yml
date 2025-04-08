@@ -6,9 +6,10 @@ stages:
   - run_tests
 
 variables:
-  GIT_CLONE_PATH: '$CI_BUILDS_DIR/$CI_BUILD_ID/global-workflow'
-  HOMEGFS: $GIT_CLONE_PATH
-  RUNTESTS_DIR: $CI_BUILDS_DIR/$CI_BUILD_ID/RUNTESTS
+  CI_RUN_PATH: ${CI_BUILDS_DIR}/${CI_COMMIT_SHORT_SHA}
+  GIT_CLONE_PATH: '${CI_RUN_PATH}/global-workflow'
+  HOMEGFS: ${GIT_CLONE_PATH}
+  RUNTESTS_DIR: ${CI_RUN_PATH}/RUNTESTS
   GIT_DEPTH: 1
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
@@ -24,7 +25,7 @@ variables:
   stage: build
   allow_failure: true
   script:
-    - echo "Using build directory $HOMEGFS (dated $BUILD_DATE)"
+    - echo "Using build directory ${HOMEGFS}"
     - ci/scripts/utils/ci_utils_wrapper.sh build_compute
     - sorc/link_workflow.sh
     - mkdir -p ${RUNTESTS_DIR}
@@ -35,7 +36,7 @@ variables:
   allow_failure: true
   script:
     - export RUNTESTS=${RUNTESTS_DIR}
-    - $HOMEGFS/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEGFS}/ci/cases/pr/${caseName}.yaml
+    - ${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEGFS}/ci/cases/pr/${caseName}.yaml
   dependencies:
     - build-${MACHINE}
 
@@ -46,8 +47,6 @@ variables:
   script:
     - echo "Using build directory $HOMEGFS (dated $BUILD_DATE)"
     - pslot=$(${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${RUNTESTS_DIR} ${caseName})
-    - ${HOMEGFS}/ci/scripts/run-check_ci.sh $CI_BUILDS_DIR/$CI_BUILD_ID ${pslot} global-workflow
+    - ${HOMEGFS}/ci/scripts/run-check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
   dependencies:
-    - setup_experiments-$MACHINE
-
-# Machine-specific jobs generated from template:
+    - setup_experiments-${MACHINE}
