@@ -19,15 +19,16 @@ from get_host_case_list import get_host_cases
 _here = os.path.dirname(os.path.abspath(__file__))
 _top = os.path.abspath(os.path.join(_here, '../../..'))
 
+
 def get_case_list_for_machine(machine):
     """
     Get the list of supported cases for the given machine.
-    
+
     Parameters
     ----------
     machine : str
         The name of the machine to get supported cases for.
-        
+
     Returns
     -------
     list
@@ -37,17 +38,18 @@ def get_case_list_for_machine(machine):
     cases = get_host_cases(machine, homegfs=_top)
     return cases
 
+
 def generate_machine_config(machine, case_list):
     """
     Generate the machine-specific configuration sections for GitLab CI.
-    
+
     Parameters
     ----------
     machine : str
         The name of the machine for which to generate configuration.
     case_list : list
         A list of test case names supported on the machine.
-        
+
     Returns
     -------
     str
@@ -55,8 +57,8 @@ def generate_machine_config(machine, case_list):
     """
 
     case_str = '", "'.join(case_list)
-    case_list_yaml = f'["{ case_str }"]'
-    
+    case_list_yaml = f'["{case_str}"]'
+
     machine_config = f'''
 build-{machine}:
   extends: .build_template
@@ -88,15 +90,16 @@ run_tests-{machine}:
 '''
     return machine_config
 
+
 def read_template_file(template_path):
     """
     Read the template file and extract the content up to the marker line.
-    
+
     Parameters
     ----------
     template_path : str
-        Path to the template file containing the base GitLab CI configuration.
-        
+       Path to the template file containing the base GitLab CI configuration.
+
     Returns
     -------
     str
@@ -105,24 +108,25 @@ def read_template_file(template_path):
     """
     with open(template_path, 'r') as f:
         lines = f.readlines()
-    
+
     # Find the marker line that separates the template from machine-specific configs
     marker_line = "# Machine-specific jobs generated from template:"
-    
+
     for i, line in enumerate(lines):
         if line.strip() == marker_line:
             return ''.join(lines[:i+1])
-    
+
     # If marker line not found, return the entire template
     return ''.join(lines)
+
 
 def generate_pipeline_config(machines, template_file, output_file=None):
     """
     Generate the complete GitLab CI pipeline configuration.
-    
+
     This function combines a template file with machine-specific configurations
     based on the supported test cases for each machine.
-    
+
     Parameters
     ----------
     machines : list
@@ -133,7 +137,7 @@ def generate_pipeline_config(machines, template_file, output_file=None):
     output_file : str, optional
         Path where the generated configuration will be written.
         If not provided, defaults to ci/.gitlab-ci.yml in the repository root.
-    
+
     Raises
     ------
     ValueError
@@ -141,37 +145,38 @@ def generate_pipeline_config(machines, template_file, output_file=None):
     """
     # Set default output file path if not specified
     output_file = output_file or os.path.join(_top, 'ci', '.gitlab-ci.yml')
-    
+
     # Initialize with the template content
     if os.path.exists(template_file):
         config_content = read_template_file(template_file)
     else:
         raise ValueError(f"Template file {template_file} not found")
-    
+
     # Generate machine-specific configurations
     for machine in machines:
         case_list = get_case_list_for_machine(machine)
         if not case_list:
             print(f"Warning: No supported cases found for machine {machine}", file=sys.stderr)
             continue
-        
+
         machine_config = generate_machine_config(machine, case_list)
         config_content += machine_config
-    
+
     # Write the complete configuration to the output file
     with open(output_file, 'w') as f:
         f.write(config_content)
-    
+
     print(f"GitLab CI pipeline configuration generated at {output_file}")
+
 
 def main():
     """
     Parse command line arguments and generate the GitLab CI pipeline configuration.
-    
+
     This is the main entry point for the script when executed directly.
     It parses command line arguments and calls generate_pipeline_config()
     with the appropriate parameters.
-    
+
     Command line arguments:
     --machines : str
         Comma-separated list of machines to include in the pipeline.
@@ -179,7 +184,7 @@ def main():
         Path to the template file containing the base configuration.
     --output : str, optional
         Path where the generated configuration will be written.
-        
+
     Returns
     -------
     None
@@ -189,11 +194,12 @@ def main():
     parser.add_argument('--machines', required=True, help='Comma-separated list of machines to include in the pipeline')
     parser.add_argument('--template', required=True, help='Path to the template file for the pipeline configuration')
     parser.add_argument('--output', default=None, help='Path to the output file (default: ci/.gitlab-ci.yml)')
-    
+
     args = parser.parse_args()
-    
+
     machines = [machine.strip() for machine in args.machines.split(',')]
     generate_pipeline_config(machines, args.template, args.output)
+
 
 if __name__ == '__main__':
     main()
