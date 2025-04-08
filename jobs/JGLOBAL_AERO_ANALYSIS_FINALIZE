@@ -15,6 +15,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlfinal" -c "base aeroanl aeroan
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
+    COMOUT_CONF:COM_CONF_TMPL \
     COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
 
 ###############################################################
