@@ -44,26 +44,8 @@ include:
     - sorc/link_workflow.sh
     - mkdir -p ${RUNTESTS_DIR}
 
-# Common finalization job for both modalities
-create_gist_from_svg_url:
-  image: ghcr.io/cli/cli:latest
-  stage: finalize
-  allow_failure: true
-  when: always
-  script:
-    - |
-      # Set your SVG URL, output filename, and Gist ID
-      SVG_URL="https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/badges/develop/pipeline.svg"
-      SVG_FILE="badge.svg"
-      GIST_ID="ab937691224bdf50427cbeca666bf67b"
-      # Download the SVG (add authentication if needed)
-      curl -L "$SVG_URL" -o "$SVG_FILE"
-      # Authenticate GitHub CLI (requires GITHUB_TOKEN env variable)
-      echo "$GITHUB_TOKEN" | gh auth login --with-token
-      # Update the existing public Gist with the SVG file
-      gh gist edit "$GIST_ID" "$SVG_FILE"
-  variables:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# Note: Badge updating has been moved to a separate CI/CD pipeline
+# See the repository: global-workflow-badges
 
 # The following sections are generated for multiple hosts by the generate_pipelines.py script
 
