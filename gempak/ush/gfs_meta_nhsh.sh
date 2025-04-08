@@ -15,7 +15,7 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 if [[ "${envir}" == "para" ]] ; then
@@ -113,14 +113,14 @@ for metaname in Nmeta_nh Nmeta_sh; do
         exit $(( err + 100 ))
     fi
 
-    mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_${metaname/Nmeta_}"
+    mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_${metaname/Nmeta_}"
     if [[ "${SENDDBN}" == "YES" ]] ; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-            "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_${metaname/Nmeta_}"
+            "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_${metaname/Nmeta_}"
         if [[ ${DBN_ALERT_TYPE} = "GFS_METAFILE_LAST" ]] ; then
             DBN_ALERT_TYPE=GFS_METAFILE
             "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-                "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_${metaname/Nmeta_}"
+                "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_${metaname/Nmeta_}"
         fi
     fi
 done
