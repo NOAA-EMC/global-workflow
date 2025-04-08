@@ -37,12 +37,14 @@ The CTests pipeline when triggered via GitLab API from GitHub:
 - Skips the standard experiment creation
 - Runs specialized CTest test cases on each machine
 
-### Currently Supported CTests
+### Currently Supported Functional CTests
 
 The pipeline currently supports the following tests:
 - `C48_ATM_gfs_fcst_seg0`
 - `C48_S2SW_gfs_fcst_seg0`
 - `C48_S2SW_gfs_atmos_prod`
+
+NOTE: The input/output data needes to be updated on all these
 
 Additional tests will be added in the future from within the ctest framework in `dev/ctests`.
 
