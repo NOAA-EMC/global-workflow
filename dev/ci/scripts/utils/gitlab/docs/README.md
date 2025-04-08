@@ -100,14 +100,6 @@ The configuration is split across multiple files:
    - Contains specific configurations for CTests
    - Included conditionally when triggered via GitHub API
 
-## Pipeline Generation Process
-
-1. The `generate_pipelines.py` script:
-   - Reads the template file
-   - Determines which test cases each machine supports
-   - Generates machine-specific jobs for both standard tests and ctests
-   - Outputs the complete pipeline configuration
-
 2. When the pipeline runs:
    - GitLab detects if `GITHUB_API_TRIGGER` is set to "true"
    - If true, includes the `.gitlab-ci-ctests.yml` file
