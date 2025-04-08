@@ -58,23 +58,4 @@ variables:
     - ${HOMEGFS}/dev/ci/scripts/run_check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
   dependencies:
     - setup_experiments-${machine}
-
-create_gist_from_svg_url:
-  image: ghcr.io/cli/cli:latest
-  stage: finalize
-  allow_failure: true
-  when: always
-  script:
-    - |
-      # Set your SVG URL, output filename, and Gist ID
-      SVG_URL="https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/badges/develop/pipeline.svg"
-      SVG_FILE="badge.svg"
-      GIST_ID="ab937691224bdf50427cbeca666bf67b"
-      # Download the SVG (add authentication if needed)
-      curl -L "$SVG_URL" -o "$SVG_FILE"
-      # Authenticate GitHub CLI (requires GITHUB_TOKEN env variable)
-      echo "$GITHUB_TOKEN" | gh auth login --with-token
-      # Update the existing public Gist with the SVG file
-      gh gist edit "$GIST_ID" "$SVG_FILE"
-  variables:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  

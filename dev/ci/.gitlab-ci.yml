@@ -52,27 +52,7 @@ variables:
     - ${HOMEGFS}/dev/ci/scripts/run_check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
   dependencies:
     - setup_experiments-${machine}
-
-create_gist_from_svg_url:
-  image: ghcr.io/cli/cli:latest
-  stage: finalize
-  allow_failure: true
-  when: always
-  script:
-    - |
-      # Set your SVG URL, output filename, and Gist ID
-      SVG_URL="https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/badges/develop/pipeline.svg"
-      SVG_FILE="badge.svg"
-      GIST_ID="ab937691224bdf50427cbeca666bf67b"
-      # Download the SVG (add authentication if needed)
-      curl -L "$SVG_URL" -o "$SVG_FILE"
-      # Authenticate GitHub CLI (requires GITHUB_TOKEN env variable)
-      echo "$GITHUB_TOKEN" | gh auth login --with-token
-      # Update the existing public Gist with the SVG file
-      gh gist edit "$GIST_ID" "$SVG_FILE"
-  variables:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+  
 # The following sections are generated for multiple hosts and dynamic case lists
 
 build-hera:
@@ -88,7 +68,7 @@ setup_experiments-hera:
   tags: ["hera"]
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA", "C96_atm3DVar", "C96mx100_S2S"]
   dependencies:
     - build-hera
 
@@ -99,7 +79,7 @@ run_tests-hera:
   tags: ["hera"]
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA", "C96_atm3DVar", "C96mx100_S2S"]
   dependencies:
     - setup_experiments-hera
 
@@ -116,7 +96,7 @@ setup_experiments-gaeac6:
   tags: ["gaeac6"]
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA", "C96_atm3DVar"]
   dependencies:
     - build-gaeac6
 
@@ -127,7 +107,7 @@ run_tests-gaeac6:
   tags: ["gaeac6"]
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA", "C96_atm3DVar"]
   dependencies:
     - setup_experiments-gaeac6
 
