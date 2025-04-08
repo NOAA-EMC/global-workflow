@@ -12,19 +12,12 @@ import os
 import sys
 import argparse
 from pathlib import Path
-import yaml
-import importlib.util
+
+from get_host_case_list import get_host_cases
 
 # Get the path to the top directory of the repository
 _here = os.path.dirname(os.path.abspath(__file__))
 _top = os.path.abspath(os.path.join(_here, '../../..'))
-
-# Import the get_host_cases function from get_host_case_list using the absolute path
-get_host_case_list_path = os.path.join(_here, 'get_host_case_list.py')
-spec = importlib.util.spec_from_file_location("get_host_case_list", get_host_case_list_path)
-get_host_case_list_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(get_host_case_list_module)
-get_host_cases = get_host_case_list_module.get_host_cases
 
 def get_case_list_for_machine(machine):
     """
@@ -40,7 +33,7 @@ def get_case_list_for_machine(machine):
     list
         A list of test case names supported on the specified machine.
     """
-    # Directly call the imported function instead of using subprocess
+
     cases = get_host_cases(machine, homegfs=_top)
     return cases
 
@@ -60,6 +53,7 @@ def generate_machine_config(machine, case_list):
     str
         YAML configuration for the machine's build, setup, and run_tests jobs.
     """
+
     case_str = '", "'.join(case_list)
     case_list_yaml = f'["{ case_str }"]'
     
@@ -122,7 +116,7 @@ def read_template_file(template_path):
     # If marker line not found, return the entire template
     return ''.join(lines)
 
-def generate_pipeline_config(machines, template_file=None, output_file=None):
+def generate_pipeline_config(machines, template_file, output_file=None):
     """
     Generate the complete GitLab CI pipeline configuration.
     
@@ -133,7 +127,7 @@ def generate_pipeline_config(machines, template_file=None, output_file=None):
     ----------
     machines : list
         List of machine names to include in the pipeline configuration.
-    template_file : str, optional
+    template_file : str
         Path to the template file containing the base configuration.
         The template should end with a marker line: "# Machine-specific jobs generated from template:"
     output_file : str, optional
@@ -148,8 +142,8 @@ def generate_pipeline_config(machines, template_file=None, output_file=None):
     # Set default output file path if not specified
     output_file = output_file or os.path.join(_top, 'ci', '.gitlab-ci.yml')
     
-    # Initialize with the template content or use default if no template provided
-    if template_file and os.path.exists(template_file):
+    # Initialize with the template content
+    if os.path.exists(template_file):
         config_content = read_template_file(template_file)
     else:
         raise ValueError(f"Template file {template_file} not found")
@@ -190,6 +184,7 @@ def main():
     -------
     None
     """
+
     parser = argparse.ArgumentParser(description='Generate GitLab CI pipeline configuration.')
     parser.add_argument('--machines', required=True, help='Comma-separated list of machines to include in the pipeline')
     parser.add_argument('--template', required=True, help='Path to the template file for the pipeline configuration')
