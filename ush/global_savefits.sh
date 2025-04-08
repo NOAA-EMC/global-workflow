@@ -3,7 +3,6 @@
 ########################################################
 #  save fit and horiz files for all analysis cycles
 ########################################################
-source "${USHgfs}/preamble.sh"
 
 export FIT_DIR=${FIT_DIR:-$COMOUT/fits}
 export HORZ_DIR=${HORZ_DIR:-$COMOUT/horiz}

@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostsbs" -c "base wave wavepostsbs"
 source "${USHgfs}/wave_domain_grid.sh"
 
