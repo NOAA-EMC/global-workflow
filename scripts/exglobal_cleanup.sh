@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${USHgfs}/preamble.sh"
-
 ###############################################################
 echo "Begin Cleanup ${DATAROOT}!"
 

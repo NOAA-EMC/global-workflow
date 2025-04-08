@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_vrfy wave"
 
 
@@ -27,9 +26,9 @@ done
 ###############################################################
 
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 ##############################################

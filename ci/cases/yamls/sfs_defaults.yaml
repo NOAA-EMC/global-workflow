@@ -21,7 +21,6 @@ base:
   USE_ATM_ENS_PERTURB_FILES: "YES"
   HPSSARCH: "NO"
   LOCALARCH: "NO"
-  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
 fcst:
   TYPE: "hydro"
   MONO: "mono"

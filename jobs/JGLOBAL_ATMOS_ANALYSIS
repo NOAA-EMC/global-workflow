@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
 
 
@@ -52,9 +51,9 @@ fi
 
 # Get LEVS
 export LEVS=$(${NCLEN} ${ATMGES} pfull)
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 
@@ -91,9 +90,9 @@ fi
 # Run relevant script
 
 ${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 

@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
 
 
@@ -48,9 +47,9 @@ fi
 
 # Get LEVS
 export LEVS=$(${NCLEN} ${ATMGES} pfull)
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 
@@ -62,9 +61,9 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 # Run relevant script
 
 ${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 
