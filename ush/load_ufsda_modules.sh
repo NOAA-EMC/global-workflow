@@ -54,7 +54,7 @@ case "${MACHINE_ID}" in
     NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
     export NETCDF
     ;;
-  ("jet" | "s4" | "acorn")
+  ("acorn")
     echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
     ;;  
   *)
