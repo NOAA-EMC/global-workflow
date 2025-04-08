@@ -29,8 +29,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL \
 
 EXSCRIPT=${ANLSTATSPY:-${SCRgfs}/exglobal_analysis_stats.py}
 ${EXSCRIPT}
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+export err=$?; err_chk
 
 ##############################################
 # End JOB SPECIFIC work

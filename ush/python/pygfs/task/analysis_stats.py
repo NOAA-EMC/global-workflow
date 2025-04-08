@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import glob
 import gzip
 import tarfile
-import yaml
 from logging import getLogger
 from pprint import pformat
 from typing import Optional, Dict, Any
@@ -113,19 +111,18 @@ class AnalysisStats(Task):
             self.task_config.OBSSPACES_LIST = []
             for analysis_dict in analysis_config_dict[analysis]['obs spaces']:
                 # Gunzip .nc files
-                logger.info("Gunzip files from tar file")
                 gz_file = os.path.join(diag_dir_path, (analysis_dict['input file'] + ".gz"))
-                print(gz_file)
 
                 # Check if the file exists
                 if os.path.exists(gz_file):
+                    logger.info(f"Now processing {gz_file}")
                     output_file = os.path.join(diag_dir_path, analysis_dict['input file'])
                     # Open the .gz file
                     with gzip.open(gz_file, 'rb') as f_in:
                         with open(output_file, 'wb') as f_out:
                             f_out.write(f_in.read())
                 else:
-                    logger.warning("WARNING. No .gz files to extract.")
+                    logger.warning(f"WARNING. {gz_file} does not exist to extract.")
                     logger.warning("Moving to next analysis ...")
                     continue  # Skip current analysis and move to next
 
