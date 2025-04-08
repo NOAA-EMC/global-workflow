@@ -21,11 +21,27 @@ variables:
   GIT_DEPTH: 1
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
+  # GitHub API trigger detection - defaults to false
+  GITHUB_API_TRIGGER: ${GITHUB_API_TRIGGER:-"false"}
+  PR_NUMBER: ${PR_NUMBER:-"0"}
 
+# Include the appropriate modality file based on the trigger
+include:
+  # Include ctests configuration when triggered via GitHub API
+  - local: 'dev/ci/.gitlab-ci-ctests.yml'
+    rules:
+      - if: $GITHUB_API_TRIGGER == "true"
+  # Include standard cases configuration when not triggered via GitHub API
+  - local: 'dev/ci/.gitlab-ci-cases.yml'
+    rules:
+      - if: $GITHUB_API_TRIGGER != "true"
+
+# Base configuration
 .base_config:
   variables:
     GIT_STRATEGY: none
 
+# Common build template for all modalities
 .build_template:
   variables:
     GIT_STRATEGY: clone

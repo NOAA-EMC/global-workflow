@@ -1,0 +1,32 @@
+# =======================================
+# Templates for CTests
+# =======================================
+
+# Setup job for ctests using CMake
+.create_ctests:
+  extends: .base_config
+  stage: create_experiments
+  script:
+    - echo "Setting up for ctests workflow"
+    - source ${HOMEGFS}/dev/ci/platforms/config.${machine}
+    - cd ${HOMEGFS}/dev/ctests
+    - mkdir -p build
+    - cd build
+    - cmake ../../..
+    - ctest -N
+    - num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
+    - '[ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }'
+    - echo "CTests have been created and configured successfully"
+  needs:
+    - build-${machine}
+
+# Main template for CTest execution jobs
+.run_ctests_template:
+  extends: .base_config
+  stage: run_tests
+  script:
+    - echo "Running ${CTEST} tests in ${HOMEGFS}/dev/ctests"
+    - cd ${HOMEGFS}/dev/ctests/build
+    - ctest -L ${CTEST}
+  needs:
+    - create_ctests-${machine}
