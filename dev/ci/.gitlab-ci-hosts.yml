@@ -1,0 +1,101 @@
+# Host-specific configurations for the global-workflow project
+# This file contains host-specific configurations for both standard cases and CTests modes
+# It is designed to be generated automatically by the pipeline generator
+
+# Standard Cases configurations by host
+# =======================================
+
+# Host: Hera - Standard Cases
+setup_experiments-hera:
+  extends: .setup_template
+  variables:
+    machine: hera
+  tags: ["hera"]
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+  dependencies:
+    - build-hera
+  rules:
+    - if: $GITHUB_API_TRIGGER != "true"
+
+run_tests-hera:
+  extends: .run_tests_template
+  variables:
+    machine: hera
+  tags: ["hera"]
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+  dependencies:
+    - setup_experiments-hera
+  rules:
+    - if: $GITHUB_API_TRIGGER != "true"
+
+# Host: GAEAC6 - Standard Cases
+setup_experiments-gaeac6:
+  extends: .setup_template
+  variables:
+    machine: gaeac6
+  tags: ["gaeac6"]
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+  dependencies:
+    - build-gaeac6
+  rules:
+    - if: $GITHUB_API_TRIGGER != "true"
+
+run_tests-gaeac6:
+  extends: .run_tests_template
+  variables:
+    machine: gaeac6
+  tags: ["gaeac6"]
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+  dependencies:
+    - setup_experiments-gaeac6
+  rules:
+    - if: $GITHUB_API_TRIGGER != "true"
+
+# CTests configurations by host
+# =======================================
+
+# Host: Hera - CTests
+run_ctests-hera:
+  extends: .run_ctests_template
+  variables:
+    machine: hera
+  tags: ["hera"]
+  dependencies:
+    - create_ctests
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
+
+# Host: GAEAC6 - CTests
+run_ctests-gaeac6:
+  extends: .run_ctests_template
+  variables:
+    machine: gaeac6
+  tags: ["gaeac6"]
+  dependencies:
+    - create_ctests
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
+
+# =======================================
+# Common build configurations by host
+# These will always be included, regardless of modality
+
+build-hera:
+  extends: .build_template
+  variables:
+    machine: hera
+  tags: ["hera"]
+
+build-gaeac6:
+  extends: .build_template
+  variables:
+    machine: gaeac6
+  tags: ["gaeac6"]

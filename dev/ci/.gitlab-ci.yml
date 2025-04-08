@@ -30,6 +30,8 @@ include:
   - local: 'dev/ci/.gitlab-ci-cases.yml'
     rules:
       - if: $GITHUB_API_TRIGGER != "true"
+  # Always include host-specific configurations
+  - local: 'dev/ci/.gitlab-ci-hosts.yml'
 
 # Common build template for all modalities
 .build_template:
@@ -43,22 +45,3 @@ include:
     - dev/ci/scripts/utils/ci_utils.sh build_compute
     - sorc/link_workflow.sh
     - mkdir -p ${RUNTESTS_DIR}
-
-# Note: Badge updating has been moved to a separate CI/CD pipeline
-# See the repository: global-workflow-badges
-
-# The following sections are generated for multiple hosts by the generate_pipelines.py script
-
-build-hera:
-  extends: .build_template
-  variables:
-    machine: hera
-  tags: ["hera"]
-
-build-gaeac6:
-  extends: .build_template
-  variables:
-    machine: gaeac6
-  tags: ["gaeac6"]
-
-# End of generated sections
