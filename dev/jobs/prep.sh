@@ -2,7 +2,7 @@
 
 ###############################################################
 # Source FV3GFS workflow modules
-. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
+source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -20,7 +20,7 @@ RUN_local="${RUN/enkf}"
 # Set script and dependency variables
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 # shellcheck disable=
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
@@ -55,10 +55,12 @@ if [[ ${ROTDIR_DUMP} = "YES" ]]; then
      fi
    fi
    # exception handling to ensure no dead link
-   if [[ $(find ${COM_OBS} -xtype l | wc -l) -ge 1 ]]; then
+   # shellcheck disable=SC2312
+   if [[ $(find "${COM_OBS}" -xtype l | wc -l) -ge 1 ]]; then
        exit 9
    fi
-   if [[ $(find ${COM_OBS_PREV} -xtype l | wc -l) -ge 1 ]]; then
+   # shellcheck disable=SC2312
+   if [[ $(find "${COM_OBS_PREV}" -xtype l | wc -l) -ge 1 ]]; then
        exit 9
    fi
 fi
@@ -75,10 +77,10 @@ if [[ ${PROCESS_TROPCY} = "YES" ]]; then
 
     export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
     export ARCHSYND=${ROTDIR}/syndat
-    if [[ ! -d ${ARCHSYND} ]]; then mkdir -p ${ARCHSYND}; fi
+    if [[ ! -d ${ARCHSYND} ]]; then mkdir -p "${ARCHSYND}"; fi
     if [[ ! -s ${ARCHSYND}/syndat_akavit ]]; then
         for file in syndat_akavit syndat_dateck syndat_stmcat.scr syndat_stmcat syndat_sthisto syndat_sthista ; do
-            cp ${COMINsyn}/${file} ${ARCHSYND}/.
+            cp "${COMINsyn}/${file}" "${ARCHSYND}"/.
         done
     fi
 
