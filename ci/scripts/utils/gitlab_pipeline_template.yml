@@ -6,9 +6,9 @@ stages:
   - run_tests
 
 variables:
-  GIT_CLONE_PATH: '${CI_BUILDS_DIR}/${CI_BUILD_ID}/global-workflow'
-  HOMEGFS: ${GIT_CLONE_PATH}
-  RUNTESTS_DIR: ${CI_BUILDS_DIR}/${CI_BUILD_ID}/RUNTESTS
+  GIT_CLONE_PATH: '$CI_BUILDS_DIR/$CI_BUILD_ID/global-workflow'
+  HOMEGFS: $GIT_CLONE_PATH
+  RUNTESTS_DIR: $CI_BUILDS_DIR/$CI_BUILD_ID/RUNTESTS
   GIT_DEPTH: 1
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
@@ -46,7 +46,7 @@ variables:
   script:
     - echo "Using build directory $HOMEGFS (dated $BUILD_DATE)"
     - pslot=$(${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${RUNTESTS_DIR} ${caseName})
-    - ${HOMEGFS}/ci/scripts/run-check_ci.sh ${CI_BUILDS_DIR}/${CI_BUILD_ID} ${pslot} global-workflow
+    - ${HOMEGFS}/ci/scripts/run-check_ci.sh $CI_BUILDS_DIR/$CI_BUILD_ID ${pslot} global-workflow
   dependencies:
     - setup_experiments-$MACHINE
 
