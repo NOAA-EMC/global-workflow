@@ -25,7 +25,7 @@ variables:
   stage: build
   allow_failure: true
   script:
-    - echo "Using build directory $HOMEGFS (dated $BUILD_DATE)"
+    - echo "Using build directory ${HOMEGFS}"
     - ci/scripts/utils/ci_utils_wrapper.sh build_compute
     - sorc/link_workflow.sh
     - mkdir -p ${RUNTESTS_DIR}
@@ -49,9 +49,7 @@ variables:
     - pslot=$(${HOMEGFS}/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${RUNTESTS_DIR} ${caseName})
     - ${HOMEGFS}/ci/scripts/run-check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
   dependencies:
-    - setup_experiments-$MACHINE
-
-# Machine-specific jobs generated from template:
+    - setup_experiments-${MACHINE}
 
 build-gaeac6:
   extends: .build_template
