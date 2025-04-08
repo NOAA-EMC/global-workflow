@@ -2,9 +2,6 @@
 # Templates for CTests
 # =======================================
 
-include:
-  - local: 'dev/ci/.gitlab-ci-hosts.yml'
-
 # Setup job for ctests using CMake
 .create_ctests:
   extends: .base_config

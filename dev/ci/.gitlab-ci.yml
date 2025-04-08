@@ -20,17 +20,9 @@ variables:
   GITHUB_API_TRIGGER: ${GITHUB_API_TRIGGER:-"false"}
   PR_NUMBER: ${PR_NUMBER:-"0"}
 
-# Include the appropriate modality file based on the trigger
 include:
-  # Include ctests configuration when triggered via GitHub API
   - local: 'dev/ci/.gitlab-ci-ctests.yml'
-    rules:
-      - if: $GITHUB_API_TRIGGER == "true"
-  # Include standard cases configuration when not triggered via GitHub API
   - local: 'dev/ci/.gitlab-ci-cases.yml'
-    rules:
-      - if: $GITHUB_API_TRIGGER != "true"
-  # Always include host-specific configurations
   - local: 'dev/ci/.gitlab-ci-hosts.yml'
 
 # Common build template for all modalities
