@@ -4,8 +4,6 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
-source "${USHgfs}/preamble.sh" "${2}"
-
 #### If EMC GFS PARA runs hourly file are not available, The ILPOST
 #### will set to 3 hour in EMC GFS PARA.
 #### Note:  ILPOST default set to 1
@@ -68,7 +66,7 @@ case ${grid} in
   *) grid_in="1p00";;
 esac
 
-source_var="COM_ATMOS_GRIB_${grid_in}"
+source_var="COMIN_ATMOS_GRIB_${grid_in}"
 export GRIBIN="${!source_var}/${model}.${cycle}.pgrb2.${grid_in}.f${fhr3}"
 GRIBIN_chk="${!source_var}/${model}.${cycle}.pgrb2.${grid_in}.f${fhr3}.idx"
 

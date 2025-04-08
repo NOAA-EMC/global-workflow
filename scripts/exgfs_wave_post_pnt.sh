@@ -21,8 +21,8 @@
 # 2025-02-12  Ali Salimi-Tarazou: Changed to be compatible with the new optimized ww3_outp 
 #
 # COM inputs:
-#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}
-#  - ${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${PDY}.${HMS}
+#  - ${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin
+#  - ${COMIN_WAVE_HISTORY}/${RUN}.wave.t${cyc}z.points.f${FH3}.bin
 #
 # $Id$
 #
@@ -34,18 +34,14 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${USHgfs}/preamble.sh"
-
 # 0.a Basic modes of operation
 
   cd $DATA
 
-  # Set wave model ID tag to include member number
-  # if ensemble; waveMEMB var empty in deterministic
-  export WAV_MOD_TAG=${RUN}wave${waveMEMB}
+  export WAV_MOD_TAG="${RUN}.wave.t${cyc}z"
 
   echo "HAS BEGUN on $(hostname)"
-  echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
+  echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for ${WAV_MOD_TAG}"
 
   set +x
   echo ' '
@@ -108,12 +104,12 @@ source "${USHgfs}/preamble.sh"
 # Copy model definition files
   iloop=0
   for grdID in ${waveuoutpGRD}; do
-    if [[ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]; then
+    if [[ -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" ]]; then
       set +x
       echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
 
-      cp -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" "mod_def.${grdID}"
+      cp -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
       iloop=$((iloop + 1))
     fi
   done
@@ -395,9 +391,9 @@ source "${USHgfs}/preamble.sh"
 
 # 3.b Execute the taring
 
-  if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0; fi
+  if [ ${USE_CFP:-"NO"} = "YES" ]; then nm=0; fi
 
-  if [ ${CFP_MP:-"NO"} = "YES" ] && [ "$DOBLL_WAV" = "YES" ]; then
+  if [ ${USE_CFP:-"NO"} = "YES" ] && [ "$DOBLL_WAV" = "YES" ]; then
     if [ "$DOBNDPNT_WAV" = YES ]; then
       if [ "$DOSPC_WAV" = YES ]; then
         echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
@@ -453,7 +449,7 @@ source "${USHgfs}/preamble.sh"
 
   if [ "$wavenproc" -gt '1' ]
   then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    if [ ${USE_CFP:-"NO"} = "YES" ]; then
       ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdtarfile
     else
       ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile

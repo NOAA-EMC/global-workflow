@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 grid=${1}
 fhr3=${2}
 grid_type=${3:-''}
