@@ -71,13 +71,38 @@ run_tests-gaeac6:
     matrix:
       - CTEST: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0', 'C48_S2SW_gfs_atmos_prod']
 
+# Host-specific CTest setup jobs
+create_ctests-hera:
+  extends: .create_ctests
+  stage: create_experiments
+  tags:
+    - hera
+  variables:
+    machine: hera
+  dependencies:
+    - build-hera
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
+
+create_ctests-gaeac6:
+  extends: .create_ctests
+  stage: create_experiments
+  tags:
+    - gaeac6
+  variables:
+    machine: gaeac6
+  dependencies:
+    - build-gaeac6
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
+
 # Host: Hera - CTests
 run_ctests-hera:
   extends: .ctests_cases_template
   tags:
     - hera
   dependencies:
-    - create_ctests
+    - create_ctests-hera
   rules:
     - if: $GITHUB_API_TRIGGER == "true"
 
@@ -87,9 +112,11 @@ run_ctests-gaeac6:
   tags:
     - gaeac6
   dependencies:
-    - create_ctests
+    - create_ctests-gaeac6
   rules:
     - if: $GITHUB_API_TRIGGER == "true"
+
+
 
 # =======================================
 # Common build configurations by host
