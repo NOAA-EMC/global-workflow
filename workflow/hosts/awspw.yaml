@@ -14,6 +14,9 @@ COMINsyn: '' #TODO: This does not yet exist.
 SCHEDULER: slurm
 QUEUE: batch
 PARTITION_BATCH: compute
+PARTITION_SERVICE: process
+CHGRP_RSTPROD: 'YES'
+CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 # HPSS properties
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
 ARCHCOM_TO: 'local'

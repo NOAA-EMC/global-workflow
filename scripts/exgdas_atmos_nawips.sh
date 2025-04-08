@@ -4,8 +4,6 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
-source "${USHgfs}/preamble.sh" "${2}"
-
 cd "${DATA}" || exit 1
 grid=$1
 fhr3=$2
@@ -39,7 +37,7 @@ pdsext=no
 
 
 GEMGRD="${RUN}_${grid}_${PDY}${cyc}f${fhr3}"
-source_dirvar="COM_ATMOS_GRIB_${grid}"
+source_dirvar="COMOUT_ATMOS_GRIB_${grid}"
 export GRIBIN="${!source_dirvar}/${model}.${cycle}.pgrb2.${grid}.f${fhr3}"
 GRIBIN_chk="${GRIBIN}.idx"
 

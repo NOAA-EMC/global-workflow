@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 cd "${DATA}" || exit 2
 
 outname=out.tif
