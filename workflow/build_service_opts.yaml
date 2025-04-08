@@ -29,7 +29,7 @@ build:
   gfs_ww3prepost:
     command: "./build_ww3prepost.sh"
     cores: 4
-    walltime: "00:15:00"
+    walltime: "00:30:00"
 
   gefs_model:
     command: "./build_ufs.sh -w -e gefs_model.x"
@@ -39,7 +39,7 @@ build:
   gefs_ww3_prepost:
     command: "./build_ww3prepost.sh -w"
     cores: 4
-    walltime: "00:15:00"
+    walltime: "00:30:00"
 
   sfs_model:
     command: "./build_ufs.sh -y -e sfs_model.x"
@@ -54,7 +54,7 @@ build:
   gsi_enkf:
     command: "./build_gsi_enkf.sh"
     cores: 8
-    walltime: "00:15:00"
+    walltime: "00:30:00"
 
   gsi_monitor:
     command: "./build_gsi_monitor.sh"
