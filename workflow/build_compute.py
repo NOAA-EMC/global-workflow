@@ -99,20 +99,21 @@ def get_build_specs(build_specs: Dict, host_spec: Dict) -> Dict:
     """
 
     # Get host overrides, if present
-    if build_specs.get("host_override") is not None:
-        if build_specs.host_override.get(host_spec.machine, None) is not None:
-            override = build_specs.host_override[host_spec.machine]
-            for key in build_specs.build:
-                if build_specs.build[key].cores > override.max_cores:
-                    # Adjust the walltime based on the ratio of max_cores/build.walltime
-                    in_walltime = to_timedelta(build_specs.build[key].walltime)
-                    override_walltime = in_walltime * (build_specs.build[key].cores / override.max_cores)
-                    build_specs.build[key].cores = override.max_cores
-                    build_specs.build[key].walltime = timedelta_to_HMS(override_walltime)
+    if build_specs.get("host_override", None) is None or build_specs.host_override.get(host_spec.machine, None) is None:
+        return build_specs
 
-                # Adjust build walltime by the walltime_ratio
-                build_specs.build[key].walltime = timedelta_to_HMS(
-                    to_timedelta(build_specs.build[key].walltime) * override.walltime_ratio)
+    override = build_specs.host_override[host_spec.machine]
+    for key in build_specs.build:
+        if build_specs.build[key].cores > override.max_cores:
+            # Adjust the walltime based on the ratio of max_cores/build.walltime
+            in_walltime = to_timedelta(build_specs.build[key].walltime)
+            override_walltime = in_walltime * (build_specs.build[key].cores / override.max_cores)
+            build_specs.build[key].cores = override.max_cores
+            build_specs.build[key].walltime = timedelta_to_HMS(override_walltime)
+
+        # Adjust build walltime by the walltime_ratio
+        build_specs.build[key].walltime = timedelta_to_HMS(
+            to_timedelta(build_specs.build[key].walltime) * override.walltime_ratio)
 
     return build_specs
 
