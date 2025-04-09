@@ -1797,6 +1797,40 @@ class GFSTasks(Tasks):
 
         return task
 
+    def anlstat(self):
+        deps = []
+        if self.options['do_jediatmvar']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jediocnvar']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jedisnowda']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_aero_anl']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('anlstat')
+        task_name = f'{self.run}_anlstat'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/anlstat.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def tracker(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
@@ -2364,6 +2398,9 @@ class GFSTasks(Tasks):
                 if self.options['do_vminmon']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                     deps.append(rocoto.add_dependency(dep_dict))
+                if self.options['do_anlstat']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
+                    deps.append(rocoto.add_dependency(dep_dict))
             elif self.run in ['gdas']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
                 deps.append(rocoto.add_dependency(dep_dict))
@@ -2378,6 +2415,9 @@ class GFSTasks(Tasks):
                     deps.append(rocoto.add_dependency(dep_dict))
                 if self.options['do_vminmon']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                if self.options['do_anlstat']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                     deps.append(rocoto.add_dependency(dep_dict))
         if self.run in ['gfs'] and self.options['do_tracker']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_tracker'}

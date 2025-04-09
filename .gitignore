@@ -52,6 +52,7 @@ parm/gdas/io
 parm/gdas/ioda
 parm/gdas/snow
 parm/gdas/soca
+parm/gdas/stat
 parm/gdas/jcb-gdas
 parm/gdas/jcb-algorithms
 parm/monitor
