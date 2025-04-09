@@ -171,7 +171,8 @@ def main(*argv):
     host_specs.account = user_inputs.account
 
     # Retrieve build specificatiosn from user provided yaml
-    build_specs = get_build_specs(AttrDict(parse_yaml(user_inputs.yaml)), host_specs)
+    user_yaml_dict = AttrDict(parse_yaml(user_inputs.yaml))
+    build_specs = get_build_specs(user_yaml_dict, host_specs)
 
     systems = user_inputs.systems.split() if "all" not in user_inputs.systems else ["all"]
 
