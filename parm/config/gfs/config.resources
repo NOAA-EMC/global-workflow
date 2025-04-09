@@ -1331,6 +1331,7 @@ case ${step} in
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="${mem_node_max}"
     export is_exclusive=True
     ;;
 
