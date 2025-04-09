@@ -21,12 +21,9 @@ export LEVS=$((LEVS-1))
 ###############################################################
 # Run relevant script
 
-${ENKFPOSTSH:-${SCRgfs}/exgdas_enkf_post.sh}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
-
+${ENKFPOSTSH:-${SCRgfs}/exgdas_enkf_post.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
