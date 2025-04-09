@@ -631,12 +631,29 @@ class SFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        # TODO: Add these deps when the archive tasks are created
-        # dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
-        # deps.append(rocoto.add_dependency(dep_dict))
-        # if self.options['do_archcom']:
-        #     dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
-        #     deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_ice']:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_ocean']:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_wave']:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_pnt'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_wave_bnd']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_bndpnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_bndpnt_bull'}
+                deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_extractvars']:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_extractvars'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         resources = self.get_resource('cleanup')
         task_name = f'{self.run}_cleanup'

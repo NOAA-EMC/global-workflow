@@ -75,7 +75,10 @@ fi
 
 set +eu
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_tars.py}
-export err=$?; err_chk "FATAL ERROR: failed to archive the COM structure"
+export err=$?
+set +x
+err_chk "FATAL ERROR: failed to archive the COM structure"
+set_trace
 set_strict
 
 ##############################################

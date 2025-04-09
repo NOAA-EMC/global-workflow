@@ -36,12 +36,9 @@ MEMDIR="ensstat" RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 ###############################################################
 # Run relevant script
 
-${ENKFUPDSH:-${SCRgfs}/exgdas_enkf_update.sh}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
-
+${ENKFUPDSH:-${SCRgfs}/exgdas_enkf_update.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # Send Alerts
