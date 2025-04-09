@@ -44,8 +44,8 @@ MEMDIR="ensstat" RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.ensmean.nc"
 if [ ! -f ${ATMGES_ENSMEAN} ]; then
-    echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
-    exit 1
+    export err=1
+    err_chk "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
 fi
 
 # Link observational data
@@ -99,12 +99,9 @@ done
 ###############################################################
 # Run relevant script
 
-${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
-
+${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
