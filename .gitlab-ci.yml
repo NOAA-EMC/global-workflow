@@ -63,10 +63,22 @@ include:
   stage: build
   script:
     - |
+      set -e  # Fail the job if any command fails
+      echo "Setting up build environment for ${machine}"
       echo "Using build directory ${GW_HOMEgfs}"
       # Add diagnostic output for submodules before build
       echo "Checking submodule status:"
       git submodule status || echo "Continuing despite submodule status check issues"
+
+      # Run build script and explicitly capture exit code
       dev/ci/scripts/utils/ci_utils.sh build
+      build_status=$?
+
+      # Fail immediately if build fails
+      if [ $build_status -ne 0 ]; then
+        echo "Build failed with exit code $build_status"
+        exit $build_status
+      fi
+
       sorc/link_workflow.sh
       mkdir -p ${RUNTESTS_DIR}
