@@ -7,7 +7,7 @@
 # (OznMon) DA package.
 #
 ################################################################################
-err=0
+export err=0
 
 data_available=0
 
@@ -36,13 +36,13 @@ if [[ -s ${oznstat} ]]; then
 
    export OZNMON_NETCDF=${netcdf}
 
-   "${USHgfs}/ozn_xtrct.sh"
-   err=$?
+   "${USHgfs}/ozn_xtrct.sh" && true
+   export err=$?
 
 else
    # oznstat file not found
-   err=1
+   export err=1
 fi
 
-exit ${err}
-
+err_chk
+exit 0
