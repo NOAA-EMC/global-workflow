@@ -100,6 +100,7 @@ def get_build_specs(build_specs: Dict, host_spec: Dict) -> Dict:
 
     # Get host overrides, if present
     if build_specs.get("host_override", None) is None or build_specs.host_override.get(host_spec.machine, None) is None:
+        # Nothing to override, return with original build_specs
         return build_specs
 
     override = build_specs.host_override[host_spec.machine]
