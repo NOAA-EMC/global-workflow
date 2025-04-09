@@ -1,6 +1,0 @@
-# BQS properties
-SCHEDULER: slurm
-QUEUE: normal
-CLUSTERS: 'es'
-PARTITION_BATCH: 'eslogin_c6'
-USE_SCRONTAB: 'YES'
