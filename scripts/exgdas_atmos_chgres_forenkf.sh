@@ -154,8 +154,9 @@ EOF
          export pgm=$CHGRESNCEXEC
          . prep_step
 
-         $APRUN_CHGRES $CHGRESNCEXEC chgres_nc_gauss0$FHR.nml
-         export err=$?; err_chk
+         ${APRUN_CHGRES} "${CHGRESNCEXEC}" "chgres_nc_gauss0${FHR}.nml" && true
+         export err=$?
+         err_chk
      fi
    done
 
@@ -169,8 +170,9 @@ EOF
          export pgm=$CHGRESNCEXEC
          . prep_step
 
-         $APRUNCFP_CHGRES $DATA/mp_chgres.sh
-         export err=$?; err_chk
+         ${APRUNCFP_CHGRES} "${DATA}/mp_chgres.sh" && true
+         export err=$?
+         err_chk
       fi
    fi
 
