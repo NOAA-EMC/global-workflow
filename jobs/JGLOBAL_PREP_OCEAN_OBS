@@ -1,5 +1,5 @@
 #!/bin/bash
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base prepoceanobs"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base marineanl prepoceanobs"
 
 
 ##############################################
