@@ -51,12 +51,12 @@ export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
 
 
 # CTest functional test directories for pre stagged input data
-export STAGED_TESTS_DIR=${GW_CI_ROOT}/STAGED_TESTS_DIR
+export CTESTS_STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
 
 #########################################################################
 # CI CRON system configuration
 #########################################################################
-export GW_BASH_CI_ROOT=${GW_CI_ROOT}/GFS_BASH_CI
+export GW_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
 export max_concurrent_cases=5
 export max_concurrent_pr=4
 
