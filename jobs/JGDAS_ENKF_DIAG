@@ -101,9 +101,9 @@ done
 # Run relevant script
 
 ${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 

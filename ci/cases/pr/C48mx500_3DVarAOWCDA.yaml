@@ -3,6 +3,7 @@ experiment:
   mode: cycled
 
 arguments:
+  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: S2SW
   resdetatmos: 48
@@ -18,7 +19,6 @@ arguments:
   yaml: {{ HOMEgfs }}/ci/cases/yamls/soca_gfs_defaults_ci.yaml
 
 skip_ci_on_hosts:
-  - gaeac6
   - gaeac5
   - orion
   - awsepicglobalworkflow

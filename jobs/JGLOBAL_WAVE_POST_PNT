@@ -16,13 +16,6 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 if [[ ! -d "${COMOUT_WAVE_STATION}" ]]; then mkdir -p "${COMOUT_WAVE_STATION}"; fi
 
-# Set wave model ID tag to include member number
-# if ensemble; waveMEMB var empty in deterministic
-membTAG='p'
-if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
-export membTAG
-export WAV_MOD_TAG=${RUN}wave${waveMEMB}
-
 export CFP_VERBOSE=1
 
 export FHMAX_WAV_PNT=$(( FHMAX_WAV - OFFSET_START_HOUR ))

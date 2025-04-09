@@ -91,9 +91,9 @@ module use "${HOMEGFS_}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 
 if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-  source "${HOMEgfs_}/ci/platforms/config.${PW_CSP}"
+  source "${HOMEGFS_}/ci/platforms/config.${PW_CSP}"
 else
-  source "${HOMEgfs_}/ci/platforms/config.${MACHINE_ID}"
+  source "${HOMEGFS_}/ci/platforms/config.${MACHINE_ID}"
 fi
 
 JAVA_HOME="${JENKINS_AGENT_LAUNCH_DIR}/JAVA/jdk-17.0.10"

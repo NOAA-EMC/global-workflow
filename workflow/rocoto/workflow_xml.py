@@ -32,7 +32,7 @@ class RocotoXML(ABC):
         # Collect info needed to write an scrontab file
         self.host_info = Host().info
         self.use_scrontab = self.host_info.get("USE_SCRONTAB", False)
-        # Replace ACCOUNT with whatever is in config.base
+        # Add ACCOUNT to host_info, with that from config.base
         self.host_info.ACCOUNT = self._base['ACCOUNT']
         self.HOMEgfs = self._base['HOMEgfs']
         self.expdir = self._base['EXPDIR']
@@ -209,6 +209,7 @@ class RocotoXML(ABC):
         else:
             cron_cmd = rocotorunstr
             crontab_strings.extend([
+                'SHELL="/bin/bash"',
                 f'MAILTO="{replyto}"'
             ])
 
@@ -217,13 +218,6 @@ class RocotoXML(ABC):
             '#################################################################',
             ''
         ])
-
-        # AWS need 'SHELL', and 'BASH_ENV' defined, or, the crontab job won't start.
-        if os.environ.get('PW_CSP', None) in ['aws', 'azure', 'google']:
-            crontab_strings.extend([
-                'SHELL="/bin/bash"',
-                'BASH_ENV="/etc/bashrc"'
-            ])
 
         if crontab_file is None:
             crontab_file = f"{self.expdir}/{self.pslot}.crontab"
