@@ -72,7 +72,7 @@ if [[ "${cplice}" = ".true." ]]; then
 fi
 
 if [[ "${cplwav}" = ".true." ]]; then
-
+  local MAPUV3D="true"
   local wav_model="ww3"
   local wav_petlist_bounds="$(( ATMPETS+OCNPETS+ICEPETS )) $(( ATMPETS+OCNPETS+ICEPETS+WAVPETS-1 ))"
   local wav_omp_num_threads="${WAVTHREADS}"
