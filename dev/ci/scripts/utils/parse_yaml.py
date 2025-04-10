@@ -11,7 +11,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 _here = os.path.dirname(__file__)
-_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../../..'))
+_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../../../..'))
 
 description = """parse yaml file and return value of key"""
 

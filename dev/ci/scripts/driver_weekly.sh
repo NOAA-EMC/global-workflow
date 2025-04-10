@@ -27,7 +27,7 @@ export REPO_URL="ssh://git@ssh.github.com:443/NOAA-EMC/global-workflow.git"
 ################################################################
 # Setup the relative paths to scripts and PS4 for better logging
 ################################################################
-ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
+ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE[0]})[${LINENO}]'

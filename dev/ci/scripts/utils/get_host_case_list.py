@@ -7,7 +7,7 @@ from wxflow import parse_j2yaml
 from wxflow import AttrDict
 
 _here = os.path.dirname(__file__)
-_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../../..'))
+_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../../../..'))
 
 if __name__ == '__main__':
 
