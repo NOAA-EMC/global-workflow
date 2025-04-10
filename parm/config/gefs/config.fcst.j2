@@ -281,4 +281,9 @@ export reforecast="{{ reforecast }}"
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst
 
+# Which ozone parameters to use
+# McCormack-empirical-sh-ozh is empirically-corrected to include ozone hole
+# McCormack is from the 2006 paper as updated for the 2015 implementation
+export o3forc_params="McCormack-empirical-sh-ozh"
+
 echo "END: config.fcst"
