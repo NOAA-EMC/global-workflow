@@ -24,7 +24,7 @@ dev/ush/compare_f90nml.py @WalterKolczynski-NOAA @aerorahul
 # Specific workflow scripts
 dev/workflow/generate_workflows.sh @DavidHuber-NOAA
 dev/workflow/build_compute.py @DavidHuber-NOAA @aerorahul
-dev/workflow/build_opts.yaml @DavidHuber-NOAA @aerorahul
+dev/workflow/build_*opts.yaml @DavidHuber-NOAA @aerorahul
 
 # build scripts
 sorc/build_*.sh @WalterKolczynski-NOAA @DavidHuber-NOAA @aerorahul @KateFriedman-NOAA
@@ -54,6 +54,7 @@ jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS @WenMeng-NOAA
 jobs/JGFS_ATMOS_POSTSND @BoCui-NOAA
 jobs/JGFS_ATMOS_VERIFICATION
 jobs/JGLOBAL_AERO_ANALYSIS_* @CoryMartin-NOAA
+jobs/JGLOBAL_ANALYSIS_STATS @CoryMartin-NOAA
 jobs/JGLOBAL_*ARCH* @DavidHuber-NOAA
 jobs/JGLOBAL_ATMENS_ANALYSIS_* @RussTreadon-NOAA @CoryMartin-NOAA @DavidNew-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS @RussTreadon-NOAA @CatherineThomas-NOAA
@@ -107,6 +108,7 @@ scripts/exgfs_pmgr.sh
 scripts/exgfs_prdgen_manager.sh
 scripts/exgfs_wave_* @JessicaMeixner-NOAA @sbanihash
 scripts/exglobal_aero_analysis_* @CoryMartin-NOAA
+scripts/exglobal_analysis_stats.py @CoryMartin-NOAA
 scripts/exglobal_archive_*.py @DavidHuber-NOAA
 scripts/exglobal_globus_*.py @DavidHuber-NOAA
 scripts/exglobal_atm_analysis_* @RussTreadon-NOAA @DavidNew-NOAA
@@ -200,6 +202,7 @@ ush/python/pygfs/task/aero_bmatrix.py @DavidNew-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/aero_emissions.py @bbakernoaa
 ush/python/pygfs/task/aero_prepobs.py @CoryMartin-NOAA
 ush/python/pygfs/task/analysis.py @DavidNew-NOAA @RussTreadon-NOAA
+ush/python/pygfs/task/analysis_stats.py @CoryMartin-NOAA
 ush/python/pygfs/task/archive.py @DavidHuber-NOAA
 ush/python/pygfs/task/atm_analysis.py @DavidNew-NOAA @RussTreadon-NOAA
 ush/python/pygfs/task/atmens_analysis.py @DavidNew-NOAA @RussTreadon-NOAA
@@ -218,3 +221,4 @@ ush/python/pygfs/ufswm/gfs.py @aerorahul
 ush/python/pygfs/ufswm/ufs.py @aerorahul
 ush/python/pygfs/utils/__init__.py @aerorahul
 ush/python/pygfs/utils/marine_da_utils.py @guillaumevernieres @AndrewEichmann-NOAA
+

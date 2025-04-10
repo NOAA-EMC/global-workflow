@@ -8,7 +8,7 @@ import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from typing import Dict
 
-from wxflow import parse_yaml, AttrDict
+from wxflow import parse_yaml, AttrDict, to_timedelta, timedelta_to_HMS
 
 from hosts import Host
 import rocoto.rocoto as rocoto
@@ -73,13 +73,58 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.resources.partition = host_spec.partition
     task_dict.resources.walltime = task_spec.walltime
     task_dict.resources.native = host_spec.native
-    task_dict.resources.memory = None
+    task_dict.resources.memory = task_spec.get("memory", None)
     task_dict.resources.nodes = 1
     task_dict.resources.ntasks = task_spec.cores
     task_dict.resources.ppn = task_spec.cores
     task_dict.resources.threads = 1
 
     return task_dict
+
+
+def get_build_specs(build_specs: Dict, host_spec: Dict) -> Dict:
+    """Generate build specifications from a rendered yaml AttrDict
+
+    Parameters
+    ----------
+    build_specs : Dict
+        Build specifications and any host-specific overrides
+    host_spec: Dict
+        The specification of the host, containing account, queue, partition, and native.
+
+    Returns
+    -------
+    build_specs: Dict
+        Overridden build specifications
+    """
+
+    # Get host overrides, if present
+    if build_specs.get("host_override", None) is None or build_specs.host_override.get(host_spec.machine, None) is None:
+        # Nothing to override, return with original build_specs
+        return build_specs
+
+    override = build_specs.host_override[host_spec.machine]
+    override_build = override.get("build", {})
+    for key in build_specs.build:
+        # Override the specific build specs if the key and spec is present in the
+        if key in override_build:
+            for spec in override_build[key]:
+                build_specs.build[key][spec] = override_build[key][spec]
+
+        # Otherwise, take the blanket exceptions and apply to the job
+        else:
+            if build_specs.build[key].cores > override.max_cores:
+                # Adjust the walltime based on the ratio of max_cores/build.walltime
+                in_walltime = to_timedelta(build_specs.build[key].walltime)
+                override_walltime = in_walltime * (build_specs.build[key].cores / override.max_cores)
+                build_specs.build[key].cores = override.max_cores
+                build_specs.build[key].walltime = timedelta_to_HMS(override_walltime)
+
+            # Adjust build walltime by the walltime_ratio
+            build_specs.build[key].walltime = timedelta_to_HMS(
+                to_timedelta(build_specs.build[key].walltime) * override.walltime_ratio)
+
+    return build_specs
 
 
 def get_host_specs(host: Dict) -> Dict:
@@ -103,13 +148,17 @@ def get_host_specs(host: Dict) -> Dict:
         native = '-l place=vscatter'
     elif host.info.SCHEDULER in ['slurm']:
         native = '--export=NONE'
-        if host.info.get("PARTITION_BATCH", "") != "":
+        if host.info.get("PARTITION_BUILD", "") != "":
+            partition = host.info.PARTITION_BUILD
+        elif host.info.get("PARTITION_BATCH", "") != "":
             partition = host.info.PARTITION_BATCH
 
     if host.info.get("RESERVATION", "") != "":
         native += f' --reservation={host.info.RESERVATION}'
 
-    if host.info.get("CLUSTERS", "") != "":
+    if host.info.get("CLUSTERS_BUILD", None) is not None:
+        native += f' --clusters={host.info.CLUSTERS_BUILD}'
+    elif host.info.get("CLUSTERS", None) is not None:
         native += f' --clusters={host.info.CLUSTERS}'
 
     specs = AttrDict()
@@ -117,6 +166,7 @@ def get_host_specs(host: Dict) -> Dict:
     specs.queue = host.info.QUEUE
     specs.partition = partition
     specs.native = native
+    specs.machine = host.machine
 
     return specs
 
@@ -131,7 +181,8 @@ def main(*argv):
     host_specs.account = user_inputs.account
 
     # Retrieve build specificatiosn from user provided yaml
-    build_specs = AttrDict(parse_yaml(user_inputs.yaml))
+    user_yaml_dict = AttrDict(parse_yaml(user_inputs.yaml))
+    build_specs = get_build_specs(user_yaml_dict, host_specs)
 
     systems = user_inputs.systems.split() if "all" not in user_inputs.systems else ["all"]
 
