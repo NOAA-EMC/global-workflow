@@ -50,6 +50,10 @@ case ${step} in
     fi
     ;;
 
+  "epos")
+    tasks_per_node=20
+    ;;
+
   *)
     ;;
 esac

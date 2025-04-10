@@ -105,7 +105,9 @@ export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
 for config in "${configs[@]:-''}"; do
     source "${EXPDIR}/config.${config}" && true
     export err=$?
+    set +x
     err_chk "FATAL ERROR [${BASH_SOURCE[0]}]: Unable to load config config.${config}"
+    set_trace
 done
 
 
@@ -114,4 +116,6 @@ done
 ##########################################
 source "${HOMEgfs}/env/${machine}.env" "${env_job}" && true
 export err=$?
+set +x
 err_chk "FATAL ERROR: [${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"
+set_trace

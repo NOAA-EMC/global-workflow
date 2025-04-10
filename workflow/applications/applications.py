@@ -88,6 +88,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_verfozn'] = run_base.get('DO_VERFOZN', True)
             run_options[run]['do_verfrad'] = run_base.get('DO_VERFRAD', True)
             run_options[run]['do_vminmon'] = run_base.get('DO_VMINMON', True)
+            run_options[run]['do_anlstat'] = run_base.get('DO_ANLSTAT', True)
             run_options[run]['do_tracker'] = run_base.get('DO_TRACKER', True)
             run_options[run]['do_genesis'] = run_base.get('DO_GENESIS', True)
             run_options[run]['do_genesis_fsu'] = run_base.get('DO_GENESIS_FSU', False)
