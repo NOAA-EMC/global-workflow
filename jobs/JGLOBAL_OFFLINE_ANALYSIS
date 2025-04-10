@@ -4,14 +4,12 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
 
 # Execute generation of increments from offline analysis
-"${SCRgfs}/exglobal_offline_analysis.py" 
 err=$?
-
-###############################################################
-# Check for errors and exit if any of the above failed
-if [[ "${err}" -ne 0 ]]; then
-  echo "FATAL ERROR: Unable to produce increments from offline analysis; ABORT!"
-  exit "${err}"
+EXSCRIPT=${OFFLINEANLPY:-${SCRgfs}/exglobal_offline_analysis.py}
+${EXSCRIPT}
+status=$?
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
 fi
 
 ##########################################
