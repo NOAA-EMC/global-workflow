@@ -33,11 +33,9 @@ if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p ${TANKverf_rad} ; fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgdas_atmos_verfrad.sh"
-err=$?
-if (( err != 0 )); then
-    exit "${err}"
-fi
+"${SCRgfs}/exgdas_atmos_verfrad.sh" && true
+export err=$?
+err_chk
 
 ################################
 # Remove the Working Directory
