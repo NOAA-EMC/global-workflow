@@ -4,7 +4,7 @@ experiment:
 
 arguments:
   pslot: {{ 'pslot' | getenv }}
-  app: S2SWA
+  app: S2SW
   resdetatmos: 1152
   resensatmos: 384
   resdetocean: 0.25
@@ -16,5 +16,5 @@ arguments:
   idate: 2023041506
   edate: 2023061600
   icsdir: /lfs/h2/emc/da/noscrub/catherine.thomas/ICS/C1152C384/2023041506
-  yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sa.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sw.yaml
   account: {{ 'HPC_ACCOUNT' | getenv }}
