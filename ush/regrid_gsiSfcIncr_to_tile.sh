@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${USHgfs}/preamble.sh"
-
 #-------------------------------------------------------------------------------------------------
 # Script to regrid surface increment from GSI grid 
 # to fv3 tiles. 

@@ -17,8 +17,6 @@
 #
 ################################################################################
 
-source "${USHgfs}/preamble.sh"
-
 #  Directories.
 pwd=$(pwd)
 
@@ -60,22 +58,22 @@ SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS}.txt}
 APREFIX=${APREFIX:-""}
 APREFIX_ENS=${APREFIX_ENS:-""}
 # at full resolution
-ATMF03=${ATMF03:-${COM_ATMOS_HISTORY}/${APREFIX}atmf003.nc}
-ATMF04=${ATMF04:-${COM_ATMOS_HISTORY}/${APREFIX}atmf004.nc}
-ATMF05=${ATMF05:-${COM_ATMOS_HISTORY}/${APREFIX}atmf005.nc}
-ATMF06=${ATMF06:-${COM_ATMOS_HISTORY}/${APREFIX}atmf006.nc}
-ATMF07=${ATMF07:-${COM_ATMOS_HISTORY}/${APREFIX}atmf007.nc}
-ATMF08=${ATMF08:-${COM_ATMOS_HISTORY}/${APREFIX}atmf008.nc}
-ATMF09=${ATMF09:-${COM_ATMOS_HISTORY}/${APREFIX}atmf009.nc}
+ATMF03=${ATMF03:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf003.nc}
+ATMF04=${ATMF04:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf004.nc}
+ATMF05=${ATMF05:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf005.nc}
+ATMF06=${ATMF06:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf006.nc}
+ATMF07=${ATMF07:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf007.nc}
+ATMF08=${ATMF08:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf008.nc}
+ATMF09=${ATMF09:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf009.nc}
 # at ensemble resolution
-ATMF03ENS=${ATMF03ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf003.ensres.nc}
-ATMF04ENS=${ATMF04ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf004.ensres.nc}
-ATMF05ENS=${ATMF05ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf005.ensres.nc}
-ATMF06ENS=${ATMF06ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf006.ensres.nc}
-ATMF07ENS=${ATMF07ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf007.ensres.nc}
-ATMF08ENS=${ATMF08ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf008.ensres.nc}
-ATMF09ENS=${ATMF09ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf009.ensres.nc}
-ATMFCST_ENSRES=${ATMFCST_ENSRES:-${COM_ATMOS_HISTORY_MEM}/${APREFIX_ENS}atmf006.nc}
+ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf003.ensres.nc}
+ATMF04ENS=${ATMF04ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf004.ensres.nc}
+ATMF05ENS=${ATMF05ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf005.ensres.nc}
+ATMF06ENS=${ATMF06ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf006.ensres.nc}
+ATMF07ENS=${ATMF07ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf007.ensres.nc}
+ATMF08ENS=${ATMF08ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf008.ensres.nc}
+ATMF09ENS=${ATMF09ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf009.ensres.nc}
+ATMFCST_ENSRES=${ATMFCST_ENSRES:-${COMIN_ATMOS_HISTORY_MEM}/${APREFIX_ENS}atmf006.nc}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -156,8 +154,9 @@ EOF
          export pgm=$CHGRESNCEXEC
          . prep_step
 
-         $APRUN_CHGRES $CHGRESNCEXEC chgres_nc_gauss0$FHR.nml
-         export err=$?; err_chk
+         ${APRUN_CHGRES} "${CHGRESNCEXEC}" "chgres_nc_gauss0${FHR}.nml" && true
+         export err=$?
+         err_chk
      fi
    done
 
@@ -171,8 +170,9 @@ EOF
          export pgm=$CHGRESNCEXEC
          . prep_step
 
-         $APRUNCFP_CHGRES $DATA/mp_chgres.sh
-         export err=$?; err_chk
+         ${APRUNCFP_CHGRES} "${DATA}/mp_chgres.sh" && true
+         export err=$?
+         err_chk
       fi
    fi
 

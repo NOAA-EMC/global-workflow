@@ -27,7 +27,7 @@ class Tasks:
                    'fcst',
                    'upp', 'atmanlprod', 'atmupp', 'goesupp',
                    'atmos_products', 'oceanice_products',
-                   'verfozn', 'verfrad', 'vminmon',
+                   'verfozn', 'verfrad', 'vminmon', 'anlstat',
                    'metp', 'fit2obs', 'extractvars',
                    'tracker', 'genesis', 'genesis_fsu',
                    'postsnd', 'awips', 'awips_20km_1p0deg', 'fbwind',

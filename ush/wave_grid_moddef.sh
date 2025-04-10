@@ -20,8 +20,6 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${USHgfs}/preamble.sh"
-
 # 0.a Basic modes of operation
   grdID=${1?Must provide grdID}
 

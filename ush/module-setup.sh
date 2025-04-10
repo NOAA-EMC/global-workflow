@@ -101,6 +101,13 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
     export PATH=${PATH}:${SPACK_ROOT}/bin
     . "${SPACK_ROOT}"/share/spack/setup-env.sh
 
+elif [[ $MACHINE_ID = container ]] ; then
+    # We are in a container
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /usr/lmod/lmod/init/bash
+    fi
+    module purge
+
 # TODO: This can likely be made more general once other cloud
 # platforms come online.
 elif [[ ${MACHINE_ID} = "noaacloud" ]]; then

@@ -108,6 +108,9 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_vminmon']:
             configs += ['vminmon']
 
+        if options['do_anlstat']:
+            configs += ['anlstat']
+
         if options['do_tracker']:
             configs += ['tracker']
 
@@ -259,6 +262,9 @@ class GFSCycledAppConfig(AppConfig):
 
                 if options['do_vminmon']:
                     task_names[run] += ['vminmon']
+
+                if options['do_anlstat']:
+                    task_names[run] += ['anlstat']
 
                 # gfs-only verification/tracking
                 if run == 'gfs':

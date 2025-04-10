@@ -4,8 +4,6 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
-source "${USHgfs}/preamble.sh"
-
 cd "${DATA}" || exit 1
 fhr3=$1
 
@@ -47,7 +45,7 @@ pdsext=no
 
 
 GEMGRD="${RUN2}_${PDY}${cyc}f${fhr3}"
-GRIBIN="${COM_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
+GRIBIN="${COMOUT_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
 GRIBIN_chk="${GRIBIN}"
 
 if [[ ! -r "${GRIBIN_chk}" ]]; then
@@ -81,10 +79,10 @@ EOF
 
 export err=$?; err_chk
 
-cpfs "${GEMGRD}" "${COM_ATMOS_GEMPAK_0p25}/${GEMGRD}"
+cpfs "${GEMGRD}" "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 if [[ ${SENDDBN} == "YES" ]] ; then
   "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-    "${COM_ATMOS_GEMPAK_0p25}/${GEMGRD}"
+    "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 fi
 
 "${GEMEXE}/gpend"

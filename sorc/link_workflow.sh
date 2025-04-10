@@ -227,7 +227,7 @@ fi
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/parm/gdas" || exit 1
-  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas" "jcb-algorithms")
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas" "jcb-algorithms" "stat")
   for comp in "${gdasapp_comps[@]}"; do
     if [[ -d "${comp}" ]]; then
         rm -rf "${comp}"

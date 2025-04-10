@@ -17,8 +17,6 @@
 #
 ################################################################################
 
-source "${USHgfs}/preamble.sh"
-
 # Directories.
 pwd=$(pwd)
 
@@ -111,20 +109,20 @@ rc=0
 for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    fhrchar=$(printf %03i $fhr)
 
-   export pgm=$GETSFCENSMEANEXEC
+   export pgm=${GETSFCENSMEANEXEC}
    . prep_step
 
-   $APRUN_EPOS ${DATA}/$(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENS
+   ${APRUN_EPOS} "${DATA}/$(basename ${GETSFCENSMEANEXEC})" ./ "sfcf${fhrchar}.ensmean" "sfcf${fhrchar}" "${NMEM_ENS}" && true
    ra=$?
    rc=$((rc+ra))
 
-   export_pgm=$GETATMENSMEANEXEC
+   export pgm=${GETATMENSMEANEXEC}
    . prep_step
 
    if [ $ENKF_SPREAD = "YES" ]; then
-      $APRUN_EPOS ${DATA}/$(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENS atmf${fhrchar}.ensspread
+      ${APRUN_EPOS} "${DATA}/$(basename ${GETATMENSMEANEXEC})" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" "atmf${fhrchar}.ensspread" && true
    else
-      $APRUN_EPOS ${DATA}/$(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENS
+      ${APRUN_EPOS} "${DATA}/$(basename ${GETATMENSMEANEXEC})" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" && true
    fi
    ra=$?
    rc=$((rc+ra))
@@ -165,4 +163,4 @@ fi
 #  Postprocessing
 cd $pwd
 
-exit $err
+exit "${err}"

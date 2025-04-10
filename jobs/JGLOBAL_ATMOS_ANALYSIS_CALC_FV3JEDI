@@ -4,7 +4,6 @@
 # shellcheck disable=SC2153
 # shellcheck disable=SC2312
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc_fv3jedi" -c "base analcalc_fv3jedi"
 
 ##############################################
