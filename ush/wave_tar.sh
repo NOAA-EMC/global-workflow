@@ -106,7 +106,7 @@
     if [[ "${nf}" -ge "${nbm2}" ]]
     then
 
-      tar -cf "${ID}.${type}.tar" ./*.${filext}
+      tar -cf "${ID}.${type}.tar" ./*."${filext}"
       exit=$?
       filename="${ID}.${type}.tar"
       if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ; then
