@@ -1,1 +1,30 @@
-../gfs/config.fetch
+#! /usr/bin/env bash
+
+########## config.fetch ##########
+
+echo "BEGIN: config.fetch"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" fetch
+
+# # Determine start type
+# if [[ "${EXP_WARM_START}" == ".false." ]]; then
+#    ic_type="cold"
+# else
+#    ic_type="warm"
+# fi
+
+export FETCH_YAML_TMPL="${PARMgfs}/fetch/${NET}_${APP}_gdas-anl.yaml.j2"
+
+# determine HPSS path information
+if [ "${PDY}${cyc}" -ge "2022112900" ]; then
+  gdas_version="v16.3"
+elif [ "${PDY}${cyc}" -ge "2022062700" ]; then
+  gdas_version="v16.2"
+else
+  gdas_version="prod"
+fi
+
+export gdas_version
+
+echo "END: config.fetch"
