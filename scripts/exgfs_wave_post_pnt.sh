@@ -4,25 +4,17 @@
 #
 # UNIX Script Documentation Block
 # Script name:         exgfs_wave_post_pnt.sh
-# Script description:  Creates point output products from binary WW3 data
+# Script description:  Creates point output products from NetCDF WW3 point data
 #
-# Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2019-12-06
 # Abstract: This script is the point postprocessor for the wave component in GFS.
 #           It executes several scripts forpreparing and creating output data
 #           as follows:
 #
 #  wave_tar.sh               : tars the spectral and bulletin multiple files
 #
-# Script history log:
-# 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007
-# 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
-# 2020-07-30  Jessica Meixner: Points only - no gridded data
-# 2020-09-29  Jessica Meixner: optimized by changing loop structures
-# 2025-02-12  Ali Salimi-Tarazou: Changed to be compatible with the new optimized ww3_outp 
-#
 # COM inputs:
 #  - ${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin
-#  - ${COMIN_WAVE_HISTORY}/${RUN}.wave.t${cyc}z.points.f${FH3}.bin
+#  - ${COMIN_WAVE_HISTORY}/${RUN}.wave.t${cyc}z.points.f${FH3}.nc
 #
 # $Id$
 #
@@ -233,7 +225,8 @@
     ymdh=$($NDATE $fhr "${PDY}${cyc}")
     YMD=${ymdh:0:8}
     HMS="${ymdh:8:2}0000"
-    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}.nc"
+    FH3=$(printf %03i ${fhr})
+    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f${FH3}.nc"
     if [[ -f "${pfile}" ]]; then
       ${NLN} "${pfile}" "./${YMD}.${HMS}.out_pnt.ww3.nc"
     else
@@ -266,7 +259,7 @@
         -e "s/ITYPE/0/g" \
         -e "s/FORMAT/F/g" \
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
-    fi
+  fi
 
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
     ${NLN} ./mod_def.${waveuoutpGRD} ./mod_def.ww3
@@ -341,7 +334,7 @@
   set +x
   echo '   Making command file for wave post points '
   set_trace
-  
+
   grep -F -f ibp_tags buoy_log.dat | awk '{ print $2 }' > buoys
   grep -F -f buoys buoy_log.ww3 | awk '{ print $1 }' > points
   points=$(awk '{print $0 "\\n"}' points | tr -d '\n')
@@ -357,9 +350,9 @@
         -e "s/ITYPE/1/g" \
         -e "s/FORMAT/F/g" \
                            ww3_outp_spec.inp.tmpl > ww3_outp.inp
-        
+
     export pgm="${NET,,}_ww3_outp.x"
-    "${EXECgfs}/${pgm}" > ww3_outp_spec.log 2>&1
+    "${EXECgfs}/${pgm}"
   fi
 
   if [ "$DOBLL_WAV" = 'YES' ]; then
@@ -371,7 +364,7 @@
         -e "s/REFT/$truntime/g" \
                            ww3_outp_bull.inp.tmpl > ww3_outp.inp
     export pgm="${NET,,}_ww3_outp.x"
-    "${EXECgfs}/${pgm}" > ww3_outp_bull.log 2>&1
+    "${EXECgfs}/${pgm}"
   fi
 
 # --------------------------------------------------------------------------- #
@@ -391,89 +384,35 @@
 
 # 3.b Execute the taring
 
-  if [ ${USE_CFP:-"NO"} = "YES" ]; then nm=0; fi
-
-  if [ ${USE_CFP:-"NO"} = "YES" ] && [ "$DOBLL_WAV" = "YES" ]; then
-    if [ "$DOBNDPNT_WAV" = YES ]; then
-      if [ "$DOSPC_WAV" = YES ]; then
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
-        nm=$(( nm + 1 ))
-      fi
-      if [ "$DOBLL_WAV" = YES ]; then
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpbull $Nb > ${WAV_MOD_TAG}_ibpbull_tar.out 2>&1 "   >> cmdtarfile
-        nm=$(( nm + 1 ))
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpcbull $Nb > ${WAV_MOD_TAG}_ibpcbull_tar.out 2>&1 "   >> cmdtarfile
-        nm=$(( nm + 1 ))
-      fi
-    else
-      if [ "$DOSPC_WAV" = YES ]; then
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-        nm=$(( nm + 1 ))
-      fi
-      if [ "$DOBLL_WAV" = YES ]; then
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_bull_tar.out 2>&1 "   >> cmdtarfile
-        nm=$(( nm + 1 ))
-        echo "$nm ${USHgfs}/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_cbull_tar.out 2>&1 "   >> cmdtarfile
-        nm=$(( nm + 1 ))
-      fi
+  if [[ "${DOBNDPNT_WAV}" == "YES" ]]; then
+    if [[ "${DOSPC_WAV}" == "YES" ]]; then
+      echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibp ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibp_tar.out" >> cmdtarfile
+    fi
+    if [[ "${DOBLL_WAV}" == "YES" ]]; then
+      echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibpbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibpbull_tar.out" >> cmdtarfile
+      echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibpcbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibpcbull_tar.out" >> cmdtarfile
     fi
   else
-    if [ "$DOBNDPNT_WAV" = YES ]; then
-      if [ "$DOSPC_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
-      fi
-      if [ "$DOBLL_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpbull $Nb > ${WAV_MOD_TAG}_ibpbull_tar.out 2>&1 "   >> cmdtarfile
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG ibpcbull $Nb > ${WAV_MOD_TAG}_ibpcbull_tar.out 2>&1 "   >> cmdtarfile
-      fi
-    else
-      if [ "$DOSPC_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      fi
-      if [ "$DOBLL_WAV" = YES ]; then
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_bull_tar.out 2>&1 "   >> cmdtarfile
-        echo "${USHgfs}/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_cbull_tar.out 2>&1 "   >> cmdtarfile
-      fi
+    if [[ "${DOSPC_WAV}" == "YES" ]]; then
+      echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} spec ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_spec_tar.out" >> cmdtarfile
+    fi
+    if [[ "${DOBLL_WAV}" == "YES" ]]; then
+      echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} bull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_bull_tar.out" >> cmdtarfile
+      echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} cbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_cbull_tar.out" >> cmdtarfile
     fi
   fi
 
-  wavenproc=$(wc -l cmdtarfile | awk '{print $1}')
-  wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
-
-  set +x
-  echo ' '
-  echo "   Executing the wave_tar scripts at : $(date)"
-  echo '   ------------------------------------'
-  echo ' '
-  set_trace
-
-  if [ "$wavenproc" -gt '1' ]
-  then
-    if [ ${USE_CFP:-"NO"} = "YES" ]; then
-      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdtarfile
-    else
-      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
+  # Ensure there are enough processors for MPMD else use serial
+  ncmds=$(wc -l < cmdtarfile)
+  if [[ ${NTASKS} -lt ${ncmds} ]]; then
+    if [[ "${USE_CFP:-}" = "YES" ]]; then
+      echo "WARNING: Not enough processors for MPMD, '${NTASKS} < ${ncmd}', running in serial mode"
+      export USE_CFP="NO"
     fi
-    exit=$?
-  else
-    chmod 744 cmdtarfile
-    ./cmdtarfile
-    exit=$?
   fi
 
-  if [ "$exit" != '0' ]
-  then
-    set +x
-    echo ' '
-    echo '*************************************'
-    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
-    echo '*************************************'
-    echo '     See Details Below '
-    echo ' '
-    set_trace
-    err=10; export err;${errchk}
-  exit $err
-  fi
+  "${USHgfs}/run_mpmd.sh" "${DATA}/cmdtarfile"
+  export err=$?; err_chk
 
 # --------------------------------------------------------------------------- #
 # 4.  Ending output
@@ -481,4 +420,4 @@
 
 exit "${exit_code}"
 
-# End of MWW3 point prostprocessor script ---------------------------------------- #
+# End of WW3 point prostprocessor script ---------------------------------------- #
