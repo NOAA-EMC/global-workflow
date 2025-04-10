@@ -250,7 +250,7 @@
     ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${cyc}")
     YMD=${ymdh:0:8}
     tstart="${ymdh:0:8} ${ymdh:8:2}0000"
-    N=$(( ($FHMAX_WAV_PNT - $FHMIN_WAV) * 3600 / $DTPNT_WAV + 1 ))
+    N=$(( (FHMAX_WAV_PNT - FHMIN_WAV) * 3600 / DTPNT_WAV + 1 ))
     sed -e "s/TIME/${tstart}/g" \
         -e "s/DT/${DTPNT_WAV}/g" \
 	-e "s/999/$N/g" \

@@ -4,7 +4,7 @@ experiment:
 
 arguments:
   pslot: {{ 'pslot' | getenv }}
-  app: S2SWA
+  app: S2SW
   resdetatmos: 1152
   resensatmos: 384
   resdetocean: 0.25
@@ -16,5 +16,5 @@ arguments:
   idate: 2023041506
   edate: 2023041800
   icsdir: /work/noaa/da/gvernier/ensda/HR-test 
-  yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sa_msu.yaml
+  yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sw_msu.yaml
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
