@@ -21,7 +21,10 @@ if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 # Calls an external bash command; do not fail on unassigned/error
 set +eu
 "${SCRgfs}/exgdas_enkf_earc_tars.py"
-export err=$?; err_chk "FATAL ERROR Failed to archive the ensemble COM structure"
+export err=$?
+set +x
+err_chk "FATAL ERROR Failed to archive the ensemble COM structure"
+set_trace
 set_strict
 
 ###############################################################
