@@ -12,10 +12,26 @@ from wxflow import Logger, cast_strdict_as_dtypedict
 from pygfs.task.offline_analysis import OfflineAnalysis
 
 # Initialize root logger
-logger = Logger(level='DEBUG', colored_log=True)
+logger = Logger(
+    level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
 
 
 if __name__ == '__main__':
 
     # Take configuration from environment and cast it as python dictionary
     config = cast_strdict_as_dtypedict(os.environ)
+
+    # Instantiate the offline analysis task
+    offline_anl = OfflineAnalysis(config)
+
+    # Initialize and stage the runtime directory
+    offline_anl.initialize()
+
+    # Interpolate the Gaussian analysis to the background resolution
+    offline_anl.interpolate()
+
+    # Compute the increment between the analysis and background
+    offline_anl.calc_increment()
+
+    # Copy the analysis increment and regridded analysis back to COM
+    offline_anl.finalize()
