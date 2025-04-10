@@ -11,8 +11,11 @@ fhr3=$1
 source "${USHgfs}/product_functions.sh"
 
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
-  cp "${HOMEgfs}/gempak/fix/${table}" "${table}" || \
-    ( echo "FATAL ERROR: ${table} is missing" && exit 2 )
+  source_table="${HOMEgfs}/gempak/fix/${table}"
+  if [[ ! -f "${source_table}" ]]; then
+    err_exit "FATAL ERROR: ${table} is missing"
+  fi
+  cp "${source_table}" "${table}"
 done
 
 NAGRIB_TABLE="${HOMEgfs}/gempak/fix/nagrib.tbl"
@@ -49,9 +52,7 @@ GRIBIN="${COMOUT_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
 GRIBIN_chk="${GRIBIN}"
 
 if [[ ! -r "${GRIBIN_chk}" ]]; then
-  echo "FATAL ERROR: GRIB index file ${GRIBIN_chk} not found!"
-  export err=7 ; err_chk
-  exit "${err}"
+  export err=7 ; err_chk "FATAL ERROR: GRIB index file ${GRIBIN_chk} not found!"
 fi
 
 cp "${GRIBIN}" "grib${fhr3}"
