@@ -41,6 +41,10 @@ variables:
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
   # Controls pipeline behavior: CTests (true) or PR cases (false)
+<<<<<<< HEAD
+=======
+  GITHUB_API_TRIGGER: ${GITHUB_API_TRIGGER:-"false"}
+>>>>>>> origin/develop
   PR_NUMBER: ${PR_NUMBER:-"0"}
 
 # Include specialized pipeline configuration files
@@ -67,6 +71,7 @@ include:
       echo "Using build directory ${GW_HOMEgfs}"
       git submodule status
 
+<<<<<<< HEAD
       if [[ ${CI_PIPELINE_SOURCE} == "trigger" && ${PR_NUMBER} != 0 ]]; then
         echo "Triggering pipeline via GitHub API running CTests on PR_NUMBER=${PR_NUMBER}"
         git remote add github ${GW_REPO_URL}
@@ -74,6 +79,8 @@ include:
         gh pr checkout ${PR_NUMBER}
       fi
 
+=======
+>>>>>>> origin/develop
       dev/ci/scripts/utils/ci_utils.sh build
       build_status=$?
 

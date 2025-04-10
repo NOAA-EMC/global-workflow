@@ -28,6 +28,8 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-v] [gfs] [ge
     Kill all builds if any build fails
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
+  -p:
+    Valid only for WCOSS2; enable parallel restart I/O when compiling the UFS
 
   Specified systems (gfs, gefs, sfs, gsi, gdas) are non-exclusive, so they can be built together.
 EOF
@@ -46,13 +48,15 @@ _quick_kill="NO"
 _ufs_exec="-e gfs_model.x"
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:dfhkv" option; do
+while getopts ":a:dfhkpv" option; do
   case "${option}" in
     a) _build_ufs_opt+="-a ${OPTARG} ";;
     f) _build_ufs_opt+="-f ";;
     d) _build_debug="-d" ;;
     h) _usage;;
     k) _quick_kill="YES" ;;
+    # TODO: Remove this option when UFS#2716 is fixed
+    p) _build_ufs_opt+="-p ";;
     v) _verbose_opt="-v" ;;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
