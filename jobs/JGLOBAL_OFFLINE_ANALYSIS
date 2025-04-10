@@ -1,0 +1,25 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
+
+# Execute generation of increments from offline analysis
+"${SCRgfs}/exglobal_offline_analysis.py" 
+err=$?
+
+###############################################################
+# Check for errors and exit if any of the above failed
+if [[ "${err}" -ne 0 ]]; then
+  echo "FATAL ERROR: Unable to produce increments from offline analysis; ABORT!"
+  exit "${err}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0
