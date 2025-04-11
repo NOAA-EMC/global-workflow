@@ -75,13 +75,13 @@ cd "${HOMEgfs}/sorc" || exit 1
 rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
 echo "Sourcing global-workflow modules ..."
-source "${HOMEgfs}/workflow/gw_setup.sh"
+source "${HOMEgfs}/dev/ush/gw_setup.sh"
 
 yaml="${HOMEgfs}/workflow/build_opts.yaml"
 echo "Generating build.xml for building global-workflow programs on compute nodes ..."
 # Catch errors manually from here out
 set +e
-"${HOMEgfs}/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
+"${HOMEgfs}/dev/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
   msg="FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
@@ -99,7 +99,7 @@ echo "Running builds on compute nodes"
 while [[ "${finished}" == "false" ]]; do
    sleep 1m
    ${runcmd}
-   state="$("${HOMEgfs}/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")"
+   state="$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")"
    if [[ "${verbose_opt}" == "true" ]]; then
       echo "Rocoto is in state ${state}"
    else

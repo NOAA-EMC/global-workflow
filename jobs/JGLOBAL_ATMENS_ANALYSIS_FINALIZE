@@ -23,11 +23,9 @@ mkdir -m 755 -p "${COM_ATMOS_ANALYSIS_ENS}"
 # Run relevant script
 
 EXSCRIPT=${GDASATMENSFINALPY:-${SCRgfs}/exglobal_atmens_analysis_finalize.py}
-${EXSCRIPT}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
@@ -43,7 +41,11 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || ( echo "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"; exit 1 )
+cd "${DATAROOT}" && true
+export err=$?
+set +e
+err_chk "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"
+set_trace
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
