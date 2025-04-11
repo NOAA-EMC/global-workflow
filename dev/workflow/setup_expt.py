@@ -47,64 +47,10 @@ def makedirs_if_missing(dirname):
 # @logit(logger)
 def update_configs(host, inputs):
     """
-<<<<<<< HEAD:workflow/setup_expt.py
-    Method to copy config files from workflow to experiment directory.
-
-    Parameters
-    ----------
-    inputs : argparse.Namespace
-        User inputs to `setup_expt.py` containing configdir and expdir paths
-
-    Returns
-    -------
-    None
-
-    Raises
-    ------
-    IOError
-        If no config files are found in the configdir
-    """
-    configdir = inputs.configdir
-    expdir = os.path.join(inputs.expdir, inputs.pslot)
-
-    configs = glob.glob(f'{configdir}/config.*')
-    if len(configs) == 0:
-        raise IOError(f'no config files found in {configdir}')
-    for config in configs:
-        shutil.copy(config, expdir)
-
-    return
-
-
-def update_configs(host, inputs):
-    """
-    Update configuration files with host-specific and user-provided settings.
-
-    This function processes YAML templates, applies host-specific capabilities,
-    and user inputs to create finalized configuration files.
-
-    Parameters
-    ----------
-    host : Host
-        Host object containing machine-specific information
-    inputs : argparse.Namespace
-        User inputs to `setup_expt.py`
-
-    Returns
-    -------
-    None
-
-    Raises
-    ------
-    FileNotFoundError
-        If the YAML file specified in inputs does not exist
-    """
-=======
     Method to copy config files from workflow to experiment directory and render templates
     INPUTS:
         inputs: user inputs to `setup_expt.py`
     """
->>>>>>> upstream/develop:dev/workflow/setup_expt.py
 
     # @logit(logger)
     def _update_defaults(dict_in: dict) -> dict:
