@@ -117,54 +117,12 @@ def update_configs(host, inputs):
     return
 
 
-<<<<<<< HEAD:workflow/setup_expt.py
-def edit_baseconfig(host, inputs, yaml_dict):
-    """
-    Parse and populate the config.base file with host and user settings.
-
-    Parameters
-    ----------
-    host : Host
-        Host object containing machine-specific information
-    inputs : argparse.Namespace
-        User inputs to `setup_expt.py`
-    yaml_dict : dict
-        Dictionary containing YAML configuration values
-
-    Returns
-    -------
-    None
-
-    Raises
-    ------
-    ValueError
-        If an invalid start type is provided
-    """
-=======
 # @logit(logger)
 def map_inputs_to_configs(inputs):
->>>>>>> upstream/develop:dev/workflow/setup_expt.py
 
     warm_start_map = {'warm': '.true.', 'cold': '.false.'}
 
     # Construct a dictionary from user inputs
-<<<<<<< HEAD:workflow/setup_expt.py
-    extend_dict = {
-        "@PSLOT@": inputs.pslot,
-        "@SDATE@": datetime_to_YMDH(inputs.idate),
-        "@EDATE@": datetime_to_YMDH(inputs.edate),
-        "@CASECTL@": f'C{inputs.resdetatmos}',
-        "@OCNRES@": f"{int(100. * inputs.resdetocean):03d}",
-        "@EXPDIR@": inputs.expdir,
-        "@COMROOT@": inputs.comroot,
-        "@EXP_WARM_START@": is_warm_start,
-        "@MODE@": inputs.mode,
-        "@INTERVAL_GFS@": inputs.interval,
-        "@SDATE_GFS@": datetime_to_YMDH(inputs.sdate_gfs),
-        "@APP@": inputs.app,
-        "@NMEM_ENS@": getattr(inputs, 'nens', 0)
-    }
-=======
     try:
         dict_out = AttrDict({
             "PSLOT": inputs.pslot,
@@ -185,116 +143,14 @@ def map_inputs_to_configs(inputs):
         })
     except Exception as ee:
         raise Exception("Error in constructing dictionary from user inputs, check inputs: ") from ee
->>>>>>> upstream/develop:dev/workflow/setup_expt.py
 
     if dict_out.NMEM_ENS > 0:
         dict_out.CASE_ENS = f'C{inputs.resensatmos}'
 
     if inputs.mode in ['cycled']:
-<<<<<<< HEAD:workflow/setup_expt.py
-        extend_dict["@DOHYBVAR@"] = "YES" if inputs.nens > 0 else "NO"
-        # Set EUPD_CYC based on ensemble members
-        if inputs.nens > 0:
-            extend_dict["@EUPD_CYC@"] = "gdas"  # or "both" or "gfs" as needed
-        else:
-            extend_dict["@EUPD_CYC@"] = ""  # Empty string when no ensemble
-    else:
-        # For forecast-only mode
-        extend_dict["@EUPD_CYC@"] = ""  # No EnKF in forecast-only mode
-
-    # Further extend/redefine base_dict with extend_dict
-    base_dict = dict(base_dict, **extend_dict)
-
-    # Add/override 'base'-specific declarations in base_dict
-    if 'base' in yaml_dict:
-        base_dict = dict(base_dict, **get_template_dict(yaml_dict['base']))
-
-    base_input = f'{inputs.configdir}/config.base'
-    base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
-    edit_config(base_input, base_output, host.info, base_dict)
-
-    return
-
-
-def edit_config(input_config, output_config, host_info, config_dict):
-    """
-    Edit a configuration file by substituting template values.
-
-    Given a templated input_config filename, parse it based on config_dict and
-    host_info and write it out to the output_config filename.
-
-    Parameters
-    ----------
-    input_config : str
-        Path to the input template configuration file
-    output_config : str
-        Path to the output configuration file
-    host_info : dict
-        Dictionary containing host-specific information
-    config_dict : dict
-        Dictionary of template values to substitute
-
-    Returns
-    -------
-    None
-    """
-
-    # Override defaults with machine-specific capabilties
-    # e.g. some machines are not able to run metp jobs
-    host_dict = get_template_dict(host_info)
-    config_dict = dict(config_dict, **host_dict)
-
-    # Read input config
-    with open(input_config, 'rt') as fi:
-        config_str = fi.read()
-
-    # Substitute from config_dict
-    for key, val in config_dict.items():
-        config_str = config_str.replace(key, str(val))
-
-    # Ensure no output_config file exists
-    if os.path.exists(output_config):
-        os.unlink(output_config)
-
-    # Write output config
-    with open(output_config, 'wt') as fo:
-        fo.write(config_str)
-
-    print(f'EDITED:  {output_config} as per user input.')
-
-    return
-
-
-def get_template_dict(input_dict):
-    """
-    Convert a dictionary into a template dictionary by adding @ symbols.
-
-    Parameters
-    ----------
-    input_dict : dict
-        Input dictionary with keys to be templated
-
-    Returns
-    -------
-    dict
-        Dictionary with keys wrapped in @ symbols for template substitution
-    """
-    output_dict = dict()
-
-    for key, value in input_dict.items():
-        # In some cases, the same config may be templated twice
-        # Prevent adding additional "@"s
-        if "@" in key:
-            output_dict[f'{key}'] = value
-        else:
-            output_dict[f'@{key}@'] = value
-
-    return output_dict
-=======
         dict_out.DOHYBVAR = "YES" if dict_out.NMEM_ENS > 0 else "NO"
 
     return dict_out
->>>>>>> upstream/develop:dev/workflow/setup_expt.py
 
 
 # @logit(logger)
