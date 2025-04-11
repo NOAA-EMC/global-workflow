@@ -209,8 +209,8 @@ case ${step} in
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
   # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
-    walltime="03:00:00"
-    ntasks=240
+    walltime="00:30:00"
+    ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
@@ -222,8 +222,8 @@ case ${step} in
     ;;
 
   "wavepostbndpntbll")
-    walltime="01:00:00"
-    ntasks=448
+    walltime="00:10:00"
+    ntasks=2
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
@@ -235,8 +235,8 @@ case ${step} in
     ;;
 
   "wavepostpnt")
-    walltime="04:00:00"
-    ntasks=200
+    walltime="00:35:00"
+    ntasks=3
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
