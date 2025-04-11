@@ -75,6 +75,7 @@ parm/post/gefs
 parm/post/sfs
 parm/post/ocean.csv
 parm/post/ice.csv
+parm/post/ice_gefs.csv
 parm/post/ocnicepost.nml.jinja2
 parm/ufs/noahmptable.tbl
 parm/ufs/model_configure.IN
