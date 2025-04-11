@@ -52,17 +52,9 @@ def main():
 
     archive_dict = AttrDict()
     for key in keys:
-<<<<<<< HEAD
-        try:
-            archive_dict[key] = archive.task_config[key]
-        except KeyError:
-            logger.warning(
-                f"WARNING: key ({key}) not found in archive.task_config!")
-=======
         archive_dict[key] = archive.task_config.get(key)
         if archive_dict[key] is None:
             logger.warning(f"WARNING: key ({key}) not found in task_config!")
->>>>>>> upstream/develop
 
     # Also import all COMIN* and COMOUT* directory and template variables
     for key in archive.task_config.keys():
