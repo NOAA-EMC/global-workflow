@@ -3,6 +3,7 @@ enkf_grp:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_grp{{ ENSGRP }}.tar"
     required:
         {% set head_ocean = "enkfgdas.ocean.t" + cycle_HH + "z." %}
+        {% set head_ice = "enkfgdas.ice.t" + cycle_HH + "z." %}
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
         {% set imem = mem - first_group_mem %}
         # Construct member COM directories
@@ -10,6 +11,7 @@ enkf_grp:
         {% set COMIN_ATMOS_HISTORY_MEM = COMIN_ATMOS_HISTORY_MEM_list[imem] %}
         {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
         {% set COMIN_OCEAN_HISTORY_MEM = COMIN_OCEAN_HISTORY_MEM_list[imem] %}
+        {% set COMIN_ICE_HISTORY_MEM = COMIN_ICE_HISTORY_MEM_list[imem] %}
 
 
         # Forecast data
@@ -17,14 +19,19 @@ enkf_grp:
         {% for fhr in range(3, 10, 3) %}
         - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % fhr }}.nc"
         {% if DOHYBVAR_OCN %}
-        - "{{ COMIN_OCEAN_HISTORY_MEM | relpath(ROTDIR) }}/{{ head_ocean }}inst.{{ "%03d" % fhr }}.nc"
+        - "{{ COMIN_OCEAN_HISTORY_MEM | relpath(ROTDIR) }}/{{ head_ocean }}inst.f{{ "%03d" % fhr }}.nc"
         {% endif %}
         {% endfor %}
+
+        {% if DOHYBVAR_OCN %}
+        {% for body in ["ic", "inst.f006", "inst.f009"] %}
+        - "{{ COMIN_ICE_HISTORY_MEM | relpath(ROTDIR) }}/{{ head_ice }}{{ body }}.nc"
+        {% endfor %}
+        {% endif %}
 
         # Only store the 6-hour surface forecast
         - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf006.nc"
         {% endif %}
-
         # Store the individual member analysis data
         {% if not lobsdiag_forenkf %}
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat"
