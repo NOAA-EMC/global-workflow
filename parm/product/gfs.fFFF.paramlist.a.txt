@@ -175,7 +175,9 @@ HPBL:surface
 ICAHT:max wind
 ICAHT:tropopause
 ICEC:surface
+ICEG:10 m above mean sea level
 ICETK:surface
+ICETMP:surface
 ICSEV:100 mb
 ICSEV:150 mb
 ICSEV:200 mb

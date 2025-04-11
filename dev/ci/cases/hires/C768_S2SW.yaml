@@ -1,0 +1,15 @@
+experiment:
+  system: gfs
+  mode: forecast-only
+
+arguments:
+  account: {{ 'HPC_ACCOUNT' | getenv }}
+  pslot: {{ 'pslot' | getenv }}
+  app: S2SW
+  resdetatmos: 768
+  resdetocean: 0.25
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  idate: 2019120300
+  edate: 2019120300
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
