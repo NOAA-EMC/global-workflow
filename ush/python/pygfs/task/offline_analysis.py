@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 from typing import Dict
 from wxflow import (Task,
                     FileHandler)
@@ -33,16 +34,27 @@ class OfflineAnalysis(Task):
 
         _res = int(self.task_config['CASE'][1:])
 
+        # fix ocnres
+        self.task_config.OCNRES = f"{self.task_config.OCNRES:03d}"
+
+        # Create a local dictionary that is repeatedly used across this class
+        local_dict = AttrDict(
+            {
+                'npz': self.task_config.LEVS - 1,
+            }
+        )
+        # Extend task_config with local_dict
+        self.task_config = AttrDict(**self.task_config, **local_dict)
+
     @logit(logger)
     def initialize(self) -> None:
         """Initialize a global offline atmospheric analysis
 
         This method will initialize a global offline atmospheric analysis.
         This includes:
-        - Creating working directories
         - Staging input files
         - Generating namelists from templates
-        - Creating output directories if necessary
+        - copy executables to $DATA
 
         Parameters
         ----------
@@ -52,6 +64,22 @@ class OfflineAnalysis(Task):
         ----------
         None
         """
+
+        # stage analysis and forecast files
+        logger.info("Copy input files from $COM to $DATA")
+        files_to_copy = []
+        fcst_file_in = os.path.join(self.task_config.COMIN_ATMOS_HISTORY_PREV,
+                                    f"{GPREFIX}atmf006.nc")
+        files_to_copy.append([fcst_file_in, os.path.join(self.task_config.DATA, "atmf006.nc")])
+        anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}atmanl.nc")
+        files_to_copy.append([anl_file_in, os.path.join(self.task_config.DATA, "atmanl.input.nc")])
+        sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}sfcanl.nc")
+        files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
+        FileHandler({'copy': files_to_copy}).sync()
+
+        # generate namelists for the executables
+
+        # copy executables to $DATA
 
     @logit(logger)
     def interpolate_analysis(self) -> None:
