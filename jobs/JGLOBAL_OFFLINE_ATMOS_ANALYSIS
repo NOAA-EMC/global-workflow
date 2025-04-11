@@ -35,7 +35,7 @@ YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 # Execute generation of increments from offline analysis
 err=$?
-EXSCRIPT=${OFFLINEANLPY:-${SCRgfs}/exglobal_offline_analysis.py}
+EXSCRIPT=${OFFLINEANLPY:-${SCRgfs}/exglobal_offline_atmos_analysis.py}
 ${EXSCRIPT}
 status=$?
 if [[ ${status} -ne 0 ]]; then
