@@ -14,8 +14,8 @@ body:
       options:
         - WCOSS2
         - Hera/Ursa
-        - Gaea C5
-        - Gaea C6
+        - Gaea-C5
+        - Gaea-C6
         - Orion/Hercules
       multiple: true
     validations:
