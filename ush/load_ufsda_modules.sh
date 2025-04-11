@@ -88,6 +88,15 @@ else
     exit 1
 fi
 
+###############################################################
+# setup python path for ioda utilities
+# TODO: a better solution should be created for setting paths to package python scripts
+# shellcheck disable=SC2311
+pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
+gdasappPATH="${HOMEgfs}/sorc/gdas.cd/sorc/iodaconv/src:${pyiodaPATH}"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}:${gdasappPATH}"
+export PYTHONPATH
+
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
 unset ulimit_s
