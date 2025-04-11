@@ -12,13 +12,6 @@ export job="prepatmobs"
 export jobid="${job}.$$"
 
 ###############################################################
-# setup python path for ioda utilities
-# shellcheck disable=SC2311
-pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
-PYTHONPATH="${pyiodaPATH}:${PYTHONPATH}"
-export PYTHONPATH
-
-###############################################################
 # Execute the JJOB
 "${HOMEgfs}/jobs/JGLOBAL_ATM_PREP_IODA_OBS"
 status=$?

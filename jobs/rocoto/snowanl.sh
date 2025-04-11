@@ -12,14 +12,6 @@ export job="snowanl"
 export jobid="${job}.$$"
 
 ###############################################################
-# setup python path for ioda utilities
-# shellcheck disable=SC2311
-pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
-gdasappPATH="${HOMEgfs}/sorc/gdas.cd/sorc/iodaconv/src:${pyiodaPATH}"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}:${gdasappPATH}"
-export PYTHONPATH
-
-###############################################################
 # Execute the JJOB
 "${HOMEgfs}/jobs/JGLOBAL_SNOW_ANALYSIS"
 status=$?
