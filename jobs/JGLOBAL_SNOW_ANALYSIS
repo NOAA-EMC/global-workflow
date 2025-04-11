@@ -30,11 +30,9 @@ mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 # Run relevant script
 
 EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snow_analysis.py}
-${EXSCRIPT}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
@@ -50,7 +48,9 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || exit 1
+cd "${DATAROOT}" && true
+export err=$?
+err_chk
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

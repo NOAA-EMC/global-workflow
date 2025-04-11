@@ -20,11 +20,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlvar" -c "base marineanl mari
 # Run relevant script
 
 EXSCRIPT=${GDASMARINERUNSH:-${SCRgfs}/exglobal_marine_analysis_variational.py}
-${EXSCRIPT}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work

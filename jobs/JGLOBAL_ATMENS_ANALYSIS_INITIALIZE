@@ -25,11 +25,9 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 # Run relevant script
 
 EXSCRIPT=${GDASATMENSINITPY:-${SCRgfs}/exglobal_atmens_analysis_initialize.py}
-${EXSCRIPT}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work

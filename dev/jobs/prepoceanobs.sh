@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
 
 export STRICT="NO"
-source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 # Source UFSDA workflow modules
@@ -17,7 +16,7 @@ export jobid="${job}.$$"
 ###############################################################
 # setup python path for class defs and utils
 # shellcheck disable=SC2311
-pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python$(detect_py_ver)/"
+pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
 PYTHONPATH="${pyiodaPATH}:${PYTHONPATH}"
 export PYTHONPATH
 
