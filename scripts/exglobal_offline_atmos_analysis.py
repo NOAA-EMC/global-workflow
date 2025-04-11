@@ -28,7 +28,7 @@ if __name__ == '__main__':
     offline_anl.initialize()
 
     # Interpolate the Gaussian analysis to the background resolution
-    offline_anl.interpolate()
+    offline_anl.interpolate_analysis()
 
     # Compute the increment between the analysis and background
     offline_anl.calc_increment()
