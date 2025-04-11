@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 ###############################################################
 # Source UFSDA workflow modules
 . "${HOMEgfs}/ush/load_ufsda_modules.sh"
@@ -16,7 +14,7 @@ export jobid="${job}.$$"
 ###############################################################
 # setup python path for ioda utilities
 # shellcheck disable=SC2311
-pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python$(detect_py_ver)/"
+pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
 PYTHONPATH="${pyiodaPATH}:${PYTHONPATH}"
 export PYTHONPATH
 

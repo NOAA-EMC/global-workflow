@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
 
 ###############################################################
+if [[ "$-" == *x* ]]; then
+    set_x=YES
+else
+    set_x=NO
+fi
+
 if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     echo "Loading modules quietly..."
     set +x
@@ -57,6 +63,14 @@ case "${MACHINE_ID}" in
 esac
 
 module list
+
+ftype=$(type -t set_trace || echo "")
+if [[ "${ftype}" == "function" ]]; then
+  set_trace
+elif [[ "${set_x}" == "YES" ]]; then
+  set -x
+fi
+
 pip list
 
 # Add wxflow to PYTHONPATH
@@ -64,8 +78,16 @@ wxflowPATH="${HOMEgfs}/ush/python"
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
 export PYTHONPATH
 
+# Detect the Python major.minor version
+_regex="[0-9]+\.[0-9]+"
+# shellcheck disable=SC2312
+if [[ $(python --version) =~ ${_regex} ]]; then
+    export PYTHON_VERSION="${BASH_REMATCH[0]}"
+else
+    echo "FATAL ERROR: Could not detect the python version"
+    exit 1
+fi
+
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
 unset ulimit_s
-
-set_trace

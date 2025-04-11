@@ -4,7 +4,6 @@
 # Caculate the mean, spread, and other probabilistic fields.
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_ensstat" -c "base atmos_ensstat"
 
 

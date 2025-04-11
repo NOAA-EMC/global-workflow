@@ -77,10 +77,11 @@ rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 echo "Sourcing global-workflow modules ..."
 source "${HOMEgfs}/workflow/gw_setup.sh"
 
+yaml="${HOMEgfs}/workflow/build_opts.yaml"
 echo "Generating build.xml for building global-workflow programs on compute nodes ..."
 # Catch errors manually from here out
 set +e
-"${HOMEgfs}/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${HOMEgfs}/workflow/build_opts.yaml" --systems "${systems}"
+"${HOMEgfs}/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
   msg="FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
