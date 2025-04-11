@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_tars" -c "base arch_tars wave"
 source "${USHgfs}/wave_domain_grid.sh"
 
@@ -74,11 +73,13 @@ fi
 # Run archive script
 ###############################################################
 
+set +eu
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_tars.py}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
+export err=$?
+set +x
+err_chk "FATAL ERROR: failed to archive the COM structure"
+set_trace
+set_strict
 
 ##############################################
 # End JOB SPECIFIC work

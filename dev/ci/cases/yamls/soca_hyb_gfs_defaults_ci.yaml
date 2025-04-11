@@ -1,0 +1,8 @@
+defaults:
+  !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
+base:
+  DO_JEDIOCNVAR: "YES"
+  DOHYBVAR_OCN: "YES"
+  DOLETKF_OCN: "YES"
+marineanl:
+  SOCA_NINNER: 1

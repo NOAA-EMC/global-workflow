@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "epos" -c "base epos"
 
 
@@ -22,12 +21,9 @@ export LEVS=$((LEVS-1))
 ###############################################################
 # Run relevant script
 
-${ENKFPOSTSH:-${SCRgfs}/exgdas_enkf_post.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
-
+${ENKFPOSTSH:-${SCRgfs}/exgdas_enkf_post.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work

@@ -1,0 +1,70 @@
+stages:
+  - build
+  - create_experiments
+  - run_tests
+
+# Global variables
+variables:
+  BUILD: 'TODAY'
+  GIT_CLONE_PATH: '${CI_BUILDS_DIR}/${BUILD}/global-workflow'
+  HOMEGFS: ${GIT_CLONE_PATH}
+  RUNTESTS_DIR: ${CI_BUILDS_DIR}/${BUILD}/RUNTESTS
+  GIT_DEPTH: 1
+  RUNNER_SCRIPT_TIMEOUT: 6h
+  RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
+
+
+# Build stage for the global workflow on compute nodes
+build:
+  variables:
+    GIT_STRATEGY: clone
+    GIT_SUBMODULE_STRATEGY: recursive
+  stage: build
+  script:
+    - echo "Using build directory ${HOMEGFS} (dated ${BUILD_DATE})"
+    - dev/ci/scripts/utils/ci_utils_wrapper.sh build_compute
+    - sorc/link_workflow.sh
+    - mkdir -p ${RUNTESTS_DIR}
+  # TODO - Add more machines to the list and make
+  # the setup and run_tests stages 2D matrices
+  parallel:
+    matrix:
+      - MACHINE: ["gaeac6"]
+  tags:
+    - ${MACHINE}
+
+
+# Create experiments stage from a fixed list of cases in $HOMEGFS/dev/ci/cases/pr
+# TODO: Find a way to dynamically generate the list of cases (maybe using Jinja2)
+setup_experiments:
+  variables:
+    GIT_STRATEGY: none
+  stage: create_experiments
+  script:
+    - export RUNTESTS=${RUNTESTS_DIR}
+    - ${HOMEGFS}/dev/ci/scripts/utils/ci_utils_wrapper.sh create_experiment ${HOMEGFS}/dev/ci/cases/pr/${caseName}.yaml
+  parallel:
+    matrix:
+      - caseName: ["C48_ATM", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA"]
+  tags:
+    - gaeac6
+  dependencies:
+    - build
+
+# Running the list of experiments created in the previous stage
+# using the run-check_ci.sh script from $HOMEgfs/dev/ci/scripts directory
+run_tests:
+  variables:
+    GIT_STRATEGY: none
+  stage: run_tests
+  script:
+    - echo "Using build directory ${HOMEGFS} (dated ${BUILD_DATE})"
+    - pslot=$(${HOMEGFS}/dev/ci/scripts/utils/ci_utils_wrapper.sh get_pslot ${RUNTESTS_DIR} ${caseName})
+    - ${HOMEGFS}/dev/ci/scripts/run-check_ci.sh ${CI_BUILDS_DIR}/${BUILD} ${pslot} global-workflow
+  parallel:
+    matrix:
+       - caseName: ["C48_ATM", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C48_S2SWA_gefs", "C48_S2SW", "C96_atm3DVar", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA"]
+  tags:
+    - gaeac6
+  dependencies:
+    - setup_experiments

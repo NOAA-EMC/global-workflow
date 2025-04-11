@@ -5,7 +5,6 @@
 ############################################
 # GFS FBWIND PRODUCT GENERATION
 ############################################
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "fbwind" -c "base fbwind"
 
 ###################################

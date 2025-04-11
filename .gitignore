@@ -10,6 +10,8 @@ __pycache__
 #nohup.out - some users do not want this to be a part of .gitignore.  TODO: review against best practices
 .idea/
 .vscode/
+.venv/
+venv/
 nohup.out
 
 # Ignore editor generated backup files
@@ -50,6 +52,7 @@ parm/gdas/io
 parm/gdas/ioda
 parm/gdas/snow
 parm/gdas/soca
+parm/gdas/stat
 parm/gdas/jcb-gdas
 parm/gdas/jcb-algorithms
 parm/monitor
@@ -166,6 +169,8 @@ ush/imsfv3_scf2ioda.py
 ush/atparse.bash
 ush/run_bufr2ioda.py
 ush/bufr2ioda_insitu*
+# ush log file
+ush/fetch-fix-data.log
 
 # version files
 versions/build.ver

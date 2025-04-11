@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 
 
@@ -33,10 +32,9 @@ mkdir -p "${COMOUT_ATMOS_RESTART}"
 ###############################################################
 # Run relevant script
 
-${SFCANALSH:-${SCRgfs}/exglobal_atmos_sfcanl.sh}
-status=$?
-(( status != 0 )) && exit "${status}"
-
+${SFCANALSH:-${SCRgfs}/exglobal_atmos_sfcanl.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work

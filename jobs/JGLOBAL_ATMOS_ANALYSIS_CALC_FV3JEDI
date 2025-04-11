@@ -4,7 +4,6 @@
 # shellcheck disable=SC2153
 # shellcheck disable=SC2312
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc_fv3jedi" -c "base analcalc_fv3jedi"
 
 ##############################################
@@ -34,11 +33,9 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 ##############################################
 
 EXSCRIPT=${GDASATMRUNPY:-${SCRgfs}/exglobal_atmos_analysis_calc_fv3jedi.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-  exit "${status}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 # Write analysis log file
 echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.loganl.txt"
@@ -59,7 +56,11 @@ fi
 # Remove the Temporary working directory
 ##############################################
 
-cd "${DATAROOT}" || ( echo "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"; exit 1 )
+cd "${DATAROOT}" && true
+export err=$?
+set +x
+err_chk "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"
+set_trace
 if [[ ${KEEPDATA} = "NO" ]]; then
     rm -rf "${DATA}"
 fi

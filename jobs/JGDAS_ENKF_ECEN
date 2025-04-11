@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
 
 
@@ -41,12 +40,9 @@ MEMDIR="ensstat" RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 ###############################################################
 # Run relevant script
 
-${ENKFRECENSH:-${SCRgfs}/exgdas_enkf_ecen.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
-
+${ENKFRECENSH:-${SCRgfs}/exgdas_enkf_ecen.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work

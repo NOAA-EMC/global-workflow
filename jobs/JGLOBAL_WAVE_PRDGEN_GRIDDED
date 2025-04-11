@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsgridded" -c "base wave waveawipsgridded"
 source "${USHgfs}/wave_domain_grid.sh"
 
@@ -34,9 +33,9 @@ fi
 # Execute the Script
 ###################################
 ${SCRgfs}/exgfs_wave_prdgen_gridded.sh
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 ###################################

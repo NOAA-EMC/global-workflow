@@ -56,7 +56,7 @@ else
 fi
 
 # shellcheck disable=SC1091
-COMPILER="intel" source "${HOMEgfs}/sorc/gfs_utils.fd/ush/detect_machine.sh" # (sets MACHINE_ID)
+COMPILER="intel" source "${HOMEgfs}/ush/detect_machine.sh" # (sets MACHINE_ID)
 # shellcheck disable=
 machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 
@@ -72,8 +72,8 @@ ${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/ru
 case "${machine}" in
 "wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
 "hera") FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
-"orion") FIX_DIR="/work/noaa/global/glopara/fix" ;;
-"hercules") FIX_DIR="/work/noaa/global/glopara/fix" ;;
+"orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
+"hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "jet") FIX_DIR="/lfs5/HFIP/hfv3gfs/glopara/FIX/fix" ;;
 "s4") FIX_DIR="/data/prod/glopara/fix" ;;
 "gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
@@ -227,7 +227,7 @@ fi
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/parm/gdas" || exit 1
-  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas" "jcb-algorithms")
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas" "jcb-algorithms" "stat")
   for comp in "${gdasapp_comps[@]}"; do
     if [[ -d "${comp}" ]]; then
         rm -rf "${comp}"

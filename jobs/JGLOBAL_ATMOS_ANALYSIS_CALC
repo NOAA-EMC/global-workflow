@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
 
 
@@ -42,17 +41,14 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
-    echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
-    exit 1
+    export err=1
+    err_chk "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
 fi
 
 # Get LEVS
-export LEVS=$(${NCLEN} ${ATMGES} pfull)
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
-
+export LEVS=$(${NCLEN} ${ATMGES} pfull) && true
+export err=$?
+err_chk
 
 # Generate Gaussian surface analysis  # TODO: Should this be removed now that sfcanl is its own job?
 export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
@@ -61,12 +57,9 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 ###############################################################
 # Run relevant script
 
-${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
-
+${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
