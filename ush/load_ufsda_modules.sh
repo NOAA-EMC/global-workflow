@@ -78,6 +78,16 @@ wxflowPATH="${HOMEgfs}/ush/python"
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
 export PYTHONPATH
 
+# Detect the Python major.minor version
+_regex="[0-9]+\.[0-9]+"
+# shellcheck disable=SC2312
+if [[ $(python --version) =~ ${_regex} ]]; then
+    export PYTHON_VERSION="${BASH_REMATCH[0]}"
+else
+    echo "FATAL ERROR: Could not detect the python version"
+    exit 1
+fi
+
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
 unset ulimit_s
