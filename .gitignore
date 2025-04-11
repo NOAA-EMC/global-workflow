@@ -74,6 +74,7 @@ parm/post/gfs
 parm/post/gefs
 parm/post/sfs
 parm/post/ocean.csv
+parm/post/ocean_gefs.csv
 parm/post/ice.csv
 parm/post/ice_gefs.csv
 parm/post/ocnicepost.nml.jinja2
