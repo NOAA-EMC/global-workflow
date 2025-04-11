@@ -1,0 +1,16 @@
+defaults:
+  !INC {{ HOMEgfs }}/parm/config/gefs/yaml/defaults.yaml
+base:
+  FHMAX_GFS: 384
+  KEEPDATA: "YES"
+  REPLAY_ICS: "YES"
+  ACCOUNT: "drsa-precip3"
+  BASE_CPLIC: "/lfs/h3/emc/gefstemp/Bing.Fu/ep6ic"
+  FCST_BREAKPOINTS: ""
+  DO_EXTRACTVARS: "YES"
+  APP: "S2SW"
+  LOCALARCH: "NO"
+  FHOUT_HF_GFS: 3
+  FHMAX_HF_GFS: 240
+  FHOUT_OCN_GFS: 24
+  FHOUT_ICE_GFS: 24

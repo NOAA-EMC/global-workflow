@@ -3,32 +3,35 @@
 import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
-from wxflow import Template, TemplateConstants, to_timedelta
-from typing import List
+from wxflow import Template, TemplateConstants, to_timedelta, timedelta_to_HMS
+from typing import List, Union
+from bisect import bisect_right
 
 __all__ = ['Tasks']
 
 
 class Tasks:
-    SERVICE_TASKS = ['stage_ic', 'arch', 'earc']
-    VALID_TASKS = ['aerosol_init',
-                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', "cleanup",
+    SERVICE_TASKS = ['earc_vrfy', 'cleanup', 'globus', 'ens_globus']
+    DTN_TASKS = ['arch_tars', 'earc_tars', 'fetch', 'stage_ic', 'arch']
+    VALID_TASKS = ['aerosol_init', 'stage_ic', 'fetch', 'globus', 'ens_globus',
+                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch', 'arch_tars', "cleanup",
+                   'ecen_fv3jedi', 'analcalc_fv3jedi',
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
-                   'prepoceanobs',
-                   'marineanlinit', 'marinebmat', 'marineanlvar', 'ocnanalecen', 'marineanlchkpt', 'marineanlfinal', 'ocnanalvrfy',
-                   'earc', 'ecen', 'echgres', 'ediag', 'efcs',
-                   'eobs', 'eomg', 'epos', 'esfc', 'eupd',
-                   'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
+                   'prep_emissions', 'prepoceanobs',
+                   'marineanlinit', 'marineanlletkf', 'marinebmat', 'marineanlvar', 'ocnanalecen', 'marineanlchkpt', 'marineanlfinal', 'ocnanalvrfy',
+                   'eobs', 'epos', 'esfc', 'eupd',
+                   'earc_vrfy', 'earc_tars', 'ecen', 'echgres', 'ediag', 'efcs',
+                   'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
-                   'prepsnowobs', 'snowanl', 'esnowrecen',
+                   'snowanl', 'esnowanl', 'repair_replay',
                    'fcst',
-                   'atmanlupp', 'atmanlprod', 'atmupp', 'goesupp',
-                   'atmos_prod', 'ocean_prod', 'ice_prod',
+                   'upp', 'atmanlprod', 'atmupp', 'goesupp',
+                   'atmos_products', 'oceanice_products',
                    'verfozn', 'verfrad', 'vminmon',
-                   'metp',
+                   'metp', 'fit2obs', 'extractvars',
                    'tracker', 'genesis', 'genesis_fsu',
-                   'postsnd', 'awips_20km_1p0deg', 'fbwind',
-                   'gempak', 'gempakmeta', 'gempakmetancdc', 'gempakncdcupapgif', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg'
+                   'postsnd', 'awips', 'awips_20km_1p0deg', 'fbwind',
+                   'gempak', 'gempakmeta', 'gempakmetancdc', 'gempakncdcupapgif', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
                    'npoess',
@@ -75,16 +78,50 @@ class Tasks:
                       'COMROOT': self._base.get('COMROOT'),
                       'DATAROOT': dataroot_str}
 
-        self.envars = self._set_envars(envar_dict)
+        self._set_envars(envar_dict)
 
-    @staticmethod
-    def _set_envars(envar_dict) -> list:
+        self._set_system_settings()
+
+    def _set_envars(self, envar_dict) -> None:
 
         envars = []
         for key, value in envar_dict.items():
             envars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        return envars
+        self.envars = envars
+
+    def _set_system_settings(self) -> None:
+
+        def _validate_system_key(input_dict, key):
+            # This helper function returns None if
+            # 1) the value held in 'key' matches '@' + key + '@'
+            # 2) the value is an empty string, or
+            # 3) the key does not exist in the dictionary.
+
+            value = input_dict.get(key, None)
+            value = None if value == '' else value
+            return None if value == f'@{key}@' else value
+
+        # Check the system configuration
+        base = self._base
+        self.clusters_batch = _validate_system_key(base, 'CLUSTERS')
+        self.clusters_service = _validate_system_key(base, 'CLUSTERS_SERVICE')
+        self.clusters_dtn = _validate_system_key(base, 'CLUSTERS_DTN')
+
+        # Reservations are only valid for batch nodes (at least for now)
+        self.reservation_batch = _validate_system_key(base, 'RESERVATION')
+
+        self.partition_batch = _validate_system_key(base, 'PARTITION_BATCH')
+        self.partition_service = _validate_system_key(base, 'PARTITION_SERVICE')
+        self.partition_dtn = _validate_system_key(base, 'PARTITION_DTN')
+
+        self.queue_batch = _validate_system_key(base, 'QUEUE')
+        self.queue_service = _validate_system_key(base, 'QUEUE_SERVICE')
+        self.queue_dtn = _validate_system_key(base, 'QUEUE_DTN')
+
+        self.constraint_batch = _validate_system_key(base, 'CONSTRAINT')
+        self.constraint_service = _validate_system_key(base, 'CONSTRAINT_SERVICE')
+        self.constraint_dtn = _validate_system_key(base, 'CONSTRAINT_DTN')
 
     def _template_to_rocoto_cycstring(self, template: str, subs_dict: dict = {}) -> str:
         '''
@@ -149,6 +186,12 @@ class Tasks:
             local_config['FHOUT_GFS'] = config['FHOUT_ICE_GFS']
             local_config['FHOUT'] = config['FHOUT_ICE']
 
+        if component in ['wave']:
+            local_config['FHOUT_HF_GFS'] = config['FHOUT_HF_WAV']
+            local_config['FHMAX_HF_GFS'] = config['FHMAX_HF_WAV']
+            local_config['FHOUT_GFS'] = config['FHOUT_WAV']
+            local_config['FHOUT'] = config['FHOUT_WAV']
+
         fhmin = local_config['FHMIN']
 
         # Get a list of all forecast hours
@@ -157,15 +200,136 @@ class Tasks:
             fhmax = local_config['FHMAX']
             fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))
-        elif run in ['gfs', 'gefs']:
+        elif run in ['gfs', 'gefs', 'sfs']:
             fhmax = local_config['FHMAX_GFS']
             fhout = local_config['FHOUT_GFS']
-            fhmax_hf = local_config['FHMAX_HF_GFS']
             fhout_hf = local_config['FHOUT_HF_GFS']
+            fhmax_hf = local_config['FHMAX_HF_GFS']
             fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
             fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
         return fhrs
+
+    @staticmethod
+    def get_job_groups(fhrs: List[int], ngroups: int, breakpoints: List[int] = None) -> List[dict]:
+        '''
+        Split forecast hours into a number of groups, obeying a list of pre-set breakpoints.
+
+        Takes a list of forecast hours and splits it into a number of groups while obeying
+        a list of pre-set breakpoints and recording which segment each belongs to.
+
+        Parameters
+        ----------
+        fhrs: List[int]
+                List of forecast hours to break into groups
+        ngroups: int
+                 Number of groups to split the forecast hours into
+        breakpoints: List[int]
+                     List of preset forecast hour break points to use (default: [])
+
+        Returns
+        -------
+        List[dict]: List of dicts, where each dict contains two keys:
+                    'fhrs': the forecast hours for that group
+                    'seg': the forecast segment (from the original breakpoint list)
+                           the group belong to
+        '''
+        if breakpoints is None:
+            breakpoints = []
+
+        num_segs = len(breakpoints) + 1
+        if num_segs > ngroups:
+            raise ValueError(f"Number of segments ({num_segs}) is greater than the number of groups ({ngroups}")
+
+        if ngroups > len(fhrs):
+            ngroups = len(fhrs)
+
+        # First, split at segment boundaries
+        fhrs_segs = [grp.tolist() for grp in np.array_split(fhrs, [bisect_right(fhrs, bpnt) for bpnt in breakpoints if bpnt < max(fhrs)])]
+        seg_lens = [len(seg) for seg in fhrs_segs]
+
+        # Initialize each segment to be split into one job group
+        ngroups_segs = [1 for _ in range(0, len(fhrs_segs))]
+
+        # For remaining job groups, iteratively assign to the segment with the most
+        # hours per group
+        for _ in range(0, ngroups - len(fhrs_segs)):
+            current_lens = [size / weight for size, weight in zip(seg_lens, ngroups_segs)]
+            index_max = max(range(len(current_lens)), key=current_lens.__getitem__)
+            ngroups_segs[index_max] += 1
+
+        # Now that we know how many groups each forecast segment should be split into,
+        # Split them and flatten to a single list.
+        groups = []
+        for seg_num, (fhrs_seg, ngroups_seg) in enumerate(zip(fhrs_segs, ngroups_segs)):
+            [groups.append({'fhrs': grp.tolist(), 'seg': seg_num}) for grp in np.array_split(fhrs_seg, ngroups_seg)]
+
+        return groups
+
+    def get_grouped_fhr_dict(self, fhrs: List[int], ngroups: int) -> dict:
+        '''
+        Prepare a metatask dictionary for forecast hour groups.
+
+        Takes a list of forecast hours and splits it into a number of groups while not
+        crossing forecast segment boundaries. Then use that to prepare a dict with key
+        variable lists for use in a rocoto metatask.
+
+        Parameters
+        ----------
+        fhrs: List[int]
+              List of forecast hours to break into groups
+        ngroups: int
+                 Number of groups to split the forecast hours into
+
+        Returns
+        -------
+        dict: Several variable lists for use in rocoto metatasks:
+              fhr_list: list of comma-separated lists of fhr groups
+              fhr_label: list of labels corresponding to the fhr range
+              fhr3_last: list of the last fhr in each group, formatted to three digits
+              fhr3_next: list of the fhr that would follow each group, formatted to
+                         three digits
+              seg_dep: list of segments each group belongs to
+        '''
+        fhr_breakpoints = self.options['fcst_segments'][1:-1]
+        group_dicts = Tasks.get_job_groups(fhrs=fhrs, ngroups=ngroups, breakpoints=fhr_breakpoints)
+
+        fhrs_group = [dct['fhrs'] for dct in group_dicts]
+        fhrs_first = [grp[0] for grp in fhrs_group]
+        fhrs_last = [grp[-1] for grp in fhrs_group]
+        fhrs_next = fhrs_first[1:] + [fhrs_last[-1] + (fhrs[-1] - fhrs[-2])]
+        grp_str = [f'f{grp[0]:03d}-f{grp[-1]:03d}' if len(grp) > 1 else f'f{grp[0]:03d}' for grp in fhrs_group]
+        seg_deps = [f'seg{dct["seg"]}' for dct in group_dicts]
+
+        fhr_var_dict = {'fhr_list': ' '.join(([','.join(str(fhr) for fhr in grp) for grp in fhrs_group])),
+                        'fhr_label': ' '.join(grp_str),
+                        'seg_dep': ' '.join(seg_deps),
+                        'fhr3_last': ' '.join([f'{fhr:03d}' for fhr in fhrs_last]),
+                        'fhr3_next': ' '.join([f'{fhr:03d}' for fhr in fhrs_next])
+                        }
+
+        return fhr_var_dict
+
+    @staticmethod
+    def multiply_HMS(hms_timedelta: str, multiplier: Union[int, float]) -> str:
+        '''
+        Multiplies an HMS timedelta string
+
+        Parameters
+        ----------
+        hms_timedelta: str
+                       String representing a time delta in HH:MM:SS format
+        multiplier: int | float
+                    Value to multiply the time delta by
+
+        Returns
+        -------
+        str: String representing a time delta in HH:MM:SS format
+
+        '''
+        input_timedelta = to_timedelta(hms_timedelta)
+        output_timedelta = input_timedelta * multiplier
+        return timedelta_to_HMS(output_timedelta)
 
     def get_resource(self, task_name):
         """
@@ -181,50 +345,106 @@ class Tasks:
 
         account = task_config['ACCOUNT']
 
-        walltime = task_config[f'walltime']
-        ntasks = task_config[f'ntasks']
-        ppn = task_config[f'tasks_per_node']
+        walltime = task_config['walltime']
+        ntasks = task_config['ntasks']
+        ppn = task_config['tasks_per_node']
 
         nodes = int(np.ceil(float(ntasks) / float(ppn)))
 
-        threads = task_config[f'threads_per_task']
+        threads = task_config['threads_per_task']
 
         # Memory is not required
-        memory = task_config.get(f'memory', None)
+        memory = task_config.get('memory', None)
 
+        dtn_task = task_name in Tasks.DTN_TASKS
+        service_task = task_name in Tasks.SERVICE_TASKS
+
+        if task_name not in Tasks.VALID_TASKS:
+            raise KeyError(f"ERROR {task_name} is not a valid tasks!")
+
+        # Combine the task configuration with the system configuration
+        if service_task:
+            task_queue = self.queue_service if self.queue_service else self.queue_batch
+            task_partition = self.partition_service if self.partition_service else self.partition_batch
+            task_clusters = self.clusters_service if self.clusters_service else self.clusters_batch
+            task_constraint = self.constraint_service if self.constraint_service else self.constraint_batch
+            task_reservation = None  # Reservations are only for batch nodes
+        elif dtn_task:
+            # First check if there is a DTN queue, partition, or clusters
+            # If not, then try SERVICE queue, partition, clusters
+            if self.queue_dtn:
+                task_queue = self.queue_dtn
+            elif self.queue_service:
+                task_queue = self.queue_service
+            else:
+                task_queue = self.queue_batch
+
+            if self.partition_dtn:
+                task_partition = self.partition_dtn
+            elif self.partition_service:
+                task_partition = self.partition_service
+            else:
+                task_partition = self.partition_batch
+
+            if self.clusters_dtn:
+                task_clusters = self.clusters_dtn
+            elif self.clusters_service:
+                task_clusters = self.clusters_service
+            else:
+                task_clusters = self.clusters_batch
+
+            if self.constraint_dtn:
+                task_constraint = self.constraint_dtn
+            elif self.constraint_service:
+                task_constraint = self.constraint_service
+            else:
+                task_constraint = self.constraint_batch
+
+            task_reservation = None
+
+        else:  # This is a batch task
+            task_partition = self.partition_batch
+            task_queue = self.queue_batch
+            task_clusters = self.clusters_batch
+            task_constraint = self.constraint_batch
+            task_reservation = self.reservation_batch
+
+        # Scheduler-specific configurations
+        native = None
         if scheduler in ['pbspro']:
+
+            # Check memory usage at the end
             if task_config.get('prepost', False):
                 memory += ':prepost=true'
 
-        native = None
-        if scheduler in ['pbspro']:
             # Set place=vscatter by default and debug=true if DEBUG_POSTSCRIPT="YES"
             if self._base['DEBUG_POSTSCRIPT']:
                 native = '-l debug=true,place=vscatter'
             else:
                 native = '-l place=vscatter'
+
             # Set either exclusive or shared - default on WCOSS2 is exclusive when not set
             if task_config.get('is_exclusive', False):
                 native += ':exclhost'
             else:
                 native += ':shared'
+
         elif scheduler in ['slurm']:
             if task_config.get('is_exclusive', False):
                 native = '--exclusive'
             else:
                 native = '--export=NONE'
-            if task_config['RESERVATION'] != "":
-                native += '' if task_name in Tasks.SERVICE_TASKS else ' --reservation=' + task_config['RESERVATION']
-            if task_config.get('CLUSTERS', "") not in ["", '@CLUSTERS@']:
-                native += ' --clusters=' + task_config['CLUSTERS']
 
-        queue = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['QUEUE']
+            if task_reservation:
+                native += ' --reservation=' + task_reservation
 
-        partition = None
-        if scheduler in ['slurm']:
-            partition = task_config['PARTITION_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config[
-                'PARTITION_BATCH']
+            if task_clusters:
+                native += ' --clusters=' + task_clusters
 
+            if task_constraint:
+                native += ' --constraint=' + task_constraint
+
+        # Finally, construct and return the task resource dictionary
         task_resource = {'account': account,
                          'walltime': walltime,
                          'nodes': nodes,
@@ -233,8 +453,8 @@ class Tasks:
                          'threads': threads,
                          'memory': memory,
                          'native': native,
-                         'queue': queue,
-                         'partition': partition}
+                         'queue': task_queue,
+                         'partition': task_partition}
 
         return task_resource
 
@@ -245,6 +465,6 @@ class Tasks:
         try:
             return getattr(self, task_name, *args, **kwargs)()
         except AttributeError:
-            raise AttributeError(f'"{task_name}" is not a valid task.\n' +
-                                 'Valid tasks are:\n' +
+            raise AttributeError(f'"{task_name}" is not a valid task.\n'
+                                 f'Valid tasks are:\n'
                                  f'{", ".join(Tasks.VALID_TASKS)}')
