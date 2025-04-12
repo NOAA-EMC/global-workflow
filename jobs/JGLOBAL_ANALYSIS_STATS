@@ -1,0 +1,44 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "anlstat" -c "base anlstat"
+
+##############################################
+# Set variables used in the script
+##############################################
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL \
+                                           COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+                                           COMIN_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
+                                           COMIN_AERO_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
+                                           COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
+                                           COMOUT_CONF:COM_CONF_TMPL \
+                                           COMOUT_ATMOS_ANLMON:COM_ATMOS_ANLMON_TMPL \
+                                           COMOUT_OCEAN_ANLMON:COM_OCEAN_ANLMON_TMPL \
+                                           COMOUT_AERO_ANLMON:COM_CHEM_ANLMON_TMPL \
+                                           COMOUT_SNOW_ANLMON:COM_SNOW_ANLMON_TMPL
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${ANLSTATSPY:-${SCRgfs}/exglobal_analysis_stats.py}
+${EXSCRIPT}
+export err=$?; err_chk
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+exit 0

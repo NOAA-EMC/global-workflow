@@ -16,11 +16,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlsol" -c "base atmensanl atme
 # Run relevant script
 
 EXSCRIPT=${GDASATMENSSOLSH:-${SCRgfs}/exglobal_atmens_analysis_sol.py}
-${EXSCRIPT}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
