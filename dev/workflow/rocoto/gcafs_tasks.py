@@ -145,7 +145,7 @@ class GCAFSTasks(Tasks):
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
-                     'cycledef': 'gdas' if self.run in ['gdas', 'gcafs'] else self.run,
+                     'cycledef': 'gcafs' if self.run in ['gdas', 'gcafs'] else self.run,
                      'command': f'{self.HOMEgfs}/jobs/rocoto/prep.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -155,7 +155,7 @@ class GCAFSTasks(Tasks):
 
         return task
 
-    def anal(self):
+    def offlineanl(self):
         """
         Create a task for the analysis step.
 
@@ -167,20 +167,20 @@ class GCAFSTasks(Tasks):
         str
             XML representation of the task
         """
-        resources = self.get_resource('anal')
+        resources = self.get_resource('offlineanl')
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        task_name = f'{self.run}_anal'
+        task_name = f'{self.run}_offlineanl'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': 'gdas' if self.run in ['gdas', 'gcafs'] else self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/anal.sh',
+                     'cycledef': 'gcafs',
+                     'command': f'{self.HOMEgfs}/jobs/rocoto/offlineanl.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'

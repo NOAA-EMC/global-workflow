@@ -79,8 +79,8 @@ class OfflineAnalysis(Task):
         files_to_copy.append([fcst_file_in, os.path.join(self.task_config.DATA, "atmges_mem001")])
         anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}atmanl.nc")
         files_to_copy.append([anl_file_in, os.path.join(self.task_config.DATA, "atmanl.input.nc")])
-        #sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}sfcanl.nc")
-        #files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
+        # sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}sfcanl.nc")
+        # files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
         FileHandler({'copy': files_to_copy}).sync()
 
         # generate namelists for the executables
@@ -120,7 +120,6 @@ class OfflineAnalysis(Task):
             executables_to_copy.append([os.path.join(self.EXECgfs, exec_name),
                                         os.path.join(self.task_config.DATA, exec_name)])
         FileHander({'copy': executables_to_copy}).sync()
-
 
     @logit(logger)
     def interpolate_analysis(self) -> None:
