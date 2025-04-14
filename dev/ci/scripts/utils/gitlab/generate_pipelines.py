@@ -16,11 +16,11 @@ from pathlib import Path
 # update sys.path to include libs in the parent directory
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from get_host_case_list import get_host_cases
+from find_homegfs import find_homegfs
 
 # Get the path to the top directory of the repository
 # to place the generated .gitlab-ci.yml file in the default location
-_here = os.path.dirname(os.path.abspath(__file__))
-_top = os.path.abspath(os.path.join(_here, '../../../../..'))
+_homegfs = find_homegfs(os.path.dirname(os.path.abspath(__file__)))
 
 
 def get_case_list_for_machine(machine):
@@ -38,7 +38,7 @@ def get_case_list_for_machine(machine):
         A list of test case names supported on the specified machine.
     """
 
-    cases = get_host_cases(machine, homegfs=_top)
+    cases = get_host_cases(machine, homegfs=_homegfs)
     return cases
 
 
@@ -146,7 +146,7 @@ def generate_pipeline_config(machines, template_file, output_file=None):
         If the template file does not exist.
     """
     # Set default output file path if not specified
-    output_file = output_file or os.path.join(_top, 'dev/ci', '.gitlab-ci.yml')
+    output_file = output_file or os.path.join(_homegfs, 'dev/ci', '.gitlab-ci.yml')
 
     # Initialize with the template content
     if os.path.exists(template_file):

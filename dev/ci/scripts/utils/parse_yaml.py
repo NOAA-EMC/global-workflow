@@ -9,9 +9,7 @@ import sys
 from wxflow import AttrDict, parse_j2yaml
 from argparse import ArgumentParser
 from pathlib import Path
-
-_here = os.path.dirname(__file__)
-_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../../../..'))
+from find_homegfs import find_homegfs
 
 description = """parse yaml file and return value of key"""
 
@@ -43,8 +41,9 @@ def yq(yamlfile, key):
         The value of the specified key in the yaml file.
     """
 
-    data = AttrDict(HOMEgfs=_top)
-    data.update({'HOMEgfs': _top})
+    HOMEgfs = find_homegfs()
+    data = AttrDict(HOMEgfs=HOMEgfs)
+    data.update({'HOMEgfs': HOMEgfs})
     ydict = parse_j2yaml(path=yamlfile, data=data)
     if key == 'all':
         return ydict

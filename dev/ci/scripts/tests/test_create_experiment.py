@@ -2,12 +2,13 @@ import os
 from shutil import rmtree
 
 from wxflow import Executable
+from find_homegfs import find_homegfs
 
-_here = os.path.dirname(__file__)
-
-HOMEgfs = os.path.abspath(os.path.join(os.path.abspath(_here), '../../../..'))
-RUNDIR_FAKE = os.path.join(_here, 'testdata/RUNDIR')
-ICSDIR_FAKE = os.path.join(_here, 'testdata/ICSDIR')
+HOMEgfs = find_homegfs()
+# Get the current directory using the path of this file instead of _here
+current_dir = os.path.dirname(os.path.abspath(__file__))
+RUNDIR_FAKE = os.path.join(current_dir, 'testdata/RUNDIR')
+ICSDIR_FAKE = os.path.join(current_dir, 'testdata/ICSDIR')
 
 
 def test_create_experiment():

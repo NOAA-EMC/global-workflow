@@ -5,9 +5,7 @@ import sys
 import glob
 from wxflow import parse_j2yaml
 from wxflow import AttrDict
-
-_here = os.path.dirname(__file__)
-_top = os.path.abspath(os.path.join(os.path.abspath(_here), '../../../..'))
+from find_homegfs import find_homegfs
 
 
 def get_host_cases(host, homegfs=None):
@@ -21,7 +19,7 @@ def get_host_cases(host, homegfs=None):
     Returns:
         list: List of case names (without extension) supported on the host
     """
-    homegfs = homegfs or _top
+    homegfs = homegfs or find_homegfs()
     case_list = []
 
     # Set up data for template rendering

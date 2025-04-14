@@ -54,33 +54,33 @@ variables:
 
 # The following sections are generated for multiple hosts and dynamic case lists
 
-build-gaeac6:
+build-gaeac:
   extends: .build_template
   variables:
-    MACHINE: gaeac6
-  tags: ["gaeac6"]
+    MACHINE: gaeac
+  tags: ["gaeac"]
 
-setup_experiments-gaeac6:
+setup_experiments-gaeac:
   extends: .setup_template
   variables:
-    MACHINE: gaeac6
-  tags: ["gaeac6"]
+    MACHINE: gaeac
+  tags: ["gaeac"]
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48_S2SW", "C48_ATM", "C48_S2SWA_gefs", "C96_atm3DVar", "C96C48_ufs_hybatmDA", "C48mx500_hybAOWCDA", "C96mx100_S2S", "C48_S2SW_extended", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA", "C96_atm3DVar_extended", "C48mx500_3DVarAOWCDA"]
   dependencies:
-    - build-gaeac6
+    - build-gaeac
 
-run_tests-gaeac6:
+run_tests-gaeac:
   extends: .run_tests_template
   variables:
-    MACHINE: gaeac6
-  tags: ["gaeac6"]
+    MACHINE: gaeac
+  tags: ["gaeac"]
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48_S2SW", "C48_ATM", "C48_S2SWA_gefs", "C96_atm3DVar", "C96C48_ufs_hybatmDA", "C48mx500_hybAOWCDA", "C96mx100_S2S", "C48_S2SW_extended", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA", "C96_atm3DVar_extended", "C48mx500_3DVarAOWCDA"]
   dependencies:
-    - setup_experiments-gaeac6
+    - setup_experiments-gaeac
 
 build-hera:
   extends: .build_template
@@ -95,7 +95,7 @@ setup_experiments-hera:
   tags: ["hera"]
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48_S2SW", "C48_ATM", "C48_S2SWA_gefs", "C96_atm3DVar", "C48mx500_hybAOWCDA", "C96mx100_S2S", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA", "C48mx500_3DVarAOWCDA"]
   dependencies:
     - build-hera
 
@@ -106,7 +106,7 @@ run_tests-hera:
   tags: ["hera"]
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48_S2SW", "C48_ATM", "C48_S2SWA_gefs", "C96_atm3DVar", "C48mx500_hybAOWCDA", "C96mx100_S2S", "C96C48_hybatmDA", "C96C48_hybatmaerosnowDA", "C48mx500_3DVarAOWCDA"]
   dependencies:
     - setup_experiments-hera
 
