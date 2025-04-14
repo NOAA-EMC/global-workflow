@@ -266,7 +266,7 @@ for pr in ${pr_list}; do
     "${ROOT_DIR}/dev/ci/scripts/utils/pr_list_database.py" --remove_pr "${pr}" --dbfile "${pr_list_dbfile}"
 
     if [[ -f "${HOMEgfs}/sorc/logs/error.logs" ]]; then
-      gist_URL=$("${ROOT_DIR}/dev/ci/scripts/utils/ci_utils_wrapper.sh" publish_logs "PR_${pr}" "${HOMEgfs}/sorc"  "${HOMEgfs}/sorc/logs/error.logs")
+      gist_URL=$("${ROOT_DIR}/dev/ci/scripts/utils/ci_utils.sh" publish_logs "PR_${pr}" "${HOMEgfs}/sorc"  "${HOMEgfs}/sorc/logs/error.logs")
       {
         echo -e "\nError logs from build"
         echo "Gist URL: ${gist_URL}"

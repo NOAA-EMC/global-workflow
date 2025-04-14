@@ -1,5 +1,13 @@
 #!/bin/env bash
 
+# Determine HOMEgfs and source machine detection early
+if [[ -z "${HOMEgfs}" ]]; then
+    HOMEgfs="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." >/dev/null 2>&1 && pwd)"
+fi
+source "${HOMEgfs}/ush/detect_machine.sh"
+
+# --- Existing functions ---
+
 function determine_scheduler() {
   if command -v sbatch &> /dev/null; then
     echo "slurm";
@@ -198,3 +206,21 @@ function build_compute () {
   fi
 
 }
+
+# --- Dispatch logic ---
+
+# Check if the script is being executed directly (not sourced)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    # Script is being executed directly
+    utility_function="${1}"
+    shift # Remove the function name from the arguments list
+
+    # Check if the first argument corresponds to a defined function
+    if [[ $(type -t "$utility_function") == "function" ]]; then
+        # Call the function with the remaining arguments
+        "$utility_function" "$@"
+    else
+        echo "ERROR: Utility function '$utility_function' not found or not a function in ${BASH_SOURCE[0]}" >&2
+        exit 1
+    fi
+fi
