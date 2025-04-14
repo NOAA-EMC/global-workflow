@@ -21,8 +21,12 @@ datasets:
     {% set COMIN_ATMOS_ANALYSIS_MEM_list = [] %}
     {% set COMIN_ATMOS_RESTART_MEM_list = [] %}
     {% set COMIN_ATMOS_HISTORY_MEM_list = [] %}
+    {% set COMIN_OCEAN_ANALYSIS_MEM_list = [] %}
+    {% set COMIN_OCEAN_LETKF_MEM_list = [] %}
     {% set COMIN_OCEAN_RESTART_MEM_list = [] %}
     {% set COMIN_OCEAN_HISTORY_MEM_list = [] %}
+    {% set COMIN_ICE_ANALYSIS_MEM_list = [] %}
+    {% set COMIN_ICE_LETKF_MEM_list = [] %}
     {% set COMIN_ICE_RESTART_MEM_list = [] %}
     {% set COMIN_ICE_HISTORY_MEM_list = [] %}
 
@@ -44,8 +48,12 @@ datasets:
         {% set COMIN_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
         {% set COMIN_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
         {% set COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_OCEAN_ANALYSIS_MEM = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_OCEAN_LETKF_MEM = COM_OCEAN_LETKF_TMPL | replace_tmpl(tmpl_dict) %}
         {% set COMIN_OCEAN_HISTORY_MEM = COM_OCEAN_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
         {% set COMIN_OCEAN_RESTART_MEM = COM_OCEAN_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ICE_ANALYSIS_MEM = COM_ICE_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ICE_LETKF_MEM = COM_ICE_LETKF_TMPL | replace_tmpl(tmpl_dict) %}
         {% set COMIN_ICE_HISTORY_MEM = COM_ICE_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
         {% set COMIN_ICE_RESTART_MEM = COM_ICE_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
 
@@ -53,8 +61,12 @@ datasets:
         {% do COMIN_ATMOS_ANALYSIS_MEM_list.append(COMIN_ATMOS_ANALYSIS_MEM)%}
         {% do COMIN_ATMOS_HISTORY_MEM_list.append(COMIN_ATMOS_HISTORY_MEM)%}
         {% do COMIN_ATMOS_RESTART_MEM_list.append(COMIN_ATMOS_RESTART_MEM)%}
+        {% do COMIN_OCEAN_ANALYSIS_MEM_list.append(COMIN_OCEAN_ANALYSIS_MEM)%}
+        {% do COMIN_OCEAN_LETKF_MEM_list.append(COMIN_OCEAN_LETKF_MEM)%}
         {% do COMIN_OCEAN_HISTORY_MEM_list.append(COMIN_OCEAN_HISTORY_MEM)%}
         {% do COMIN_OCEAN_RESTART_MEM_list.append(COMIN_OCEAN_RESTART_MEM)%}
+        {% do COMIN_ICE_ANALYSIS_MEM_list.append(COMIN_ICE_ANALYSIS_MEM)%}
+        {% do COMIN_ICE_LETKF_MEM_list.append(COMIN_ICE_LETKF_MEM)%}
         {% do COMIN_ICE_HISTORY_MEM_list.append(COMIN_ICE_HISTORY_MEM)%}
         {% do COMIN_ICE_RESTART_MEM_list.append(COMIN_ICE_RESTART_MEM)%}
 

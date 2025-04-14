@@ -10,7 +10,11 @@ enkf_grp:
         {% set COMIN_ATMOS_ANALYSIS_MEM = COMIN_ATMOS_ANALYSIS_MEM_list[imem] %}
         {% set COMIN_ATMOS_HISTORY_MEM = COMIN_ATMOS_HISTORY_MEM_list[imem] %}
         {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
+        {% set COMIN_OCEAN_ANALYSIS_MEM = COMIN_OCEAN_ANALYSIS_MEM_list[imem] %}
+        {% set COMIN_OCEAN_LETKF_MEM = COMIN_OCEAN_LETKF_MEM_list[imem] %}
         {% set COMIN_OCEAN_HISTORY_MEM = COMIN_OCEAN_HISTORY_MEM_list[imem] %}
+        {% set COMIN_ICE_ANALYSIS_MEM = COMIN_ICE_ANALYSIS_MEM_list[imem] %}
+        {% set COMIN_ICE_LETKF_MEM = COMIN_ICE_LETKF_MEM_list[imem] %}
         {% set COMIN_ICE_HISTORY_MEM = COMIN_ICE_HISTORY_MEM_list[imem] %}
 
 
@@ -45,6 +49,14 @@ enkf_grp:
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
+        {% endif %}
+        {% if DOHYBVAR_OCN %}
+        {% set anl_delta = "-3H" | to_timedelta %}
+        {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
+        - "{{ COMIN_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ocninc.nc"
+        - "{{ COMIN_OCEAN_LETKF_MEM | relpath(ROTDIR) }}/{{ head_ocean }}analysis.nc"
+        - "{{ COMIN_ICE_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.cice_model_anl.res.nc"
+        - "{{ COMIN_ICE_LETKF_MEM | relpath(ROTDIR) }}/{{ head_ice }}analysis.nc"
         {% endif %}
         {% endif %}
         {% endfor %}  # first_group_mem to last_group_mem
