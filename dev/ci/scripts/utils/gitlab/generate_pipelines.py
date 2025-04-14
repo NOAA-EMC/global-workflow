@@ -22,6 +22,7 @@ from get_host_case_list import get_host_cases
 _here = os.path.dirname(os.path.abspath(__file__))
 _top = os.path.abspath(os.path.join(_here, '../../../../..'))
 
+
 def get_case_list_for_machine(machine):
     """
     Get the list of supported cases for the given machine.
