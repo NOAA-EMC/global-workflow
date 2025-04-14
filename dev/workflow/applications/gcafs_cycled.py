@@ -56,9 +56,9 @@ class GCAFSCycledAppConfig(AppConfig):
         # Now construct self.runs the desired XML order (gcafs, enkfgcafs, gdas, enkfgdas)
         self.runs = []
         self.runs.append('gcafs') if base['INTERVAL_GFS'] > 0 else 0
-        self.runs.append('enkfgcafs') if 'gcafs' in self.ens_runs and 'gcafs' in self.runs else 0
-        self.runs.append('gdas')  # We always have a 'gdas' run
-        self.runs.append('enkfgdas') if 'gdas' in self.ens_runs else 0
+        # self.runs.append('enkfgcafs') if 'gcafs' in self.ens_runs and 'gcafs' in self.runs else 0
+        # self.runs.append('gdas')  # We always have a 'gdas' run
+        # self.runs.append('enkfgdas') if 'gdas' in self.ens_runs else 0
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
         """
@@ -114,10 +114,11 @@ class GCAFSCycledAppConfig(AppConfig):
 
         configs = ['prep']
 
-        if options['do_jediatmvar']:
-            configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
-        else:
-            configs += ['anal', 'analdiag', 'analcalc']
+        # if options['do_jediatmvar']:
+        #     configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
+        # else:
+        #     configs += ['anal', 'analdiag', 'analcalc']
+        configs += ['offlineanl']
 
         if options['do_jediocnvar']:
             configs += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
@@ -269,10 +270,11 @@ class GCAFSCycledAppConfig(AppConfig):
             # Common gdas and gcafs tasks before fcst
             if run in ['gdas', 'gcafs']:
                 task_names[run] += ['prep']
-                if options['do_jediatmvar']:
-                    task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
-                else:
-                    task_names[run] += ['anal', 'analcalc']
+                task_names[run] += ['offlineanl']
+                # if options['do_jediatmvar']:
+                #     task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
+                # else:
+                #     task_names[run] += ['anal', 'analcalc']
 
                 if options['do_jediocnvar']:
                     task_names[run] += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']

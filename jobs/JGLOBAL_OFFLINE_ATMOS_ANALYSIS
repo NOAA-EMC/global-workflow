@@ -18,8 +18,6 @@ export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="${RUN}"
 
-export CASE=${CASE_ENS}
-
 export APREFIX_IN="gdas.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."

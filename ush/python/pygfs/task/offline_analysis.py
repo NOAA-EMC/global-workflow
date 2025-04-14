@@ -3,10 +3,13 @@
 import gsi_utils
 import os
 from collections import OrderedDict
-from typing import Dict
-from wxflow import (Task,
+from logging import getLogger
+from typing import Dict, Any
+from wxflow import (AttrDict,
+                    Task,
                     FileHandler,
                     Executable,
+                    logit,
                     WorkflowException)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -49,6 +52,7 @@ class OfflineAnalysis(Task):
                 'nlat_interp': _res * 2,
             }
         )
+
         # Extend task_config with local_dict
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
@@ -75,9 +79,9 @@ class OfflineAnalysis(Task):
         logger.info("Copy input files from $COM to $DATA")
         files_to_copy = []
         fcst_file_in = os.path.join(self.task_config.COMIN_ATMOS_HISTORY_PREV,
-                                    f"{GPREFIX}atmf006.nc")
+                                    f"{self.task_config.GPREFIX}atmf006.nc")
         files_to_copy.append([fcst_file_in, os.path.join(self.task_config.DATA, "atmges_mem001")])
-        anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}atmanl.nc")
+        anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{self.task_config.APREFIX_IN}atmanl.nc")
         files_to_copy.append([anl_file_in, os.path.join(self.task_config.DATA, "atmanl.input.nc")])
         # sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}sfcanl.nc")
         # files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
@@ -117,9 +121,9 @@ class OfflineAnalysis(Task):
         executables_to_copy = []
         executable_list = ['enkf_chgres_recenter_nc.x', 'calc_increment_ens_ncio.x']
         for exec_name in executable_list:
-            executables_to_copy.append([os.path.join(self.EXECgfs, exec_name),
+            executables_to_copy.append([os.path.join(self.task_config.EXECgfs, exec_name),
                                         os.path.join(self.task_config.DATA, exec_name)])
-        FileHander({'copy': executables_to_copy}).sync()
+        FileHandler({'copy': executables_to_copy}).sync()
 
     @logit(logger)
     def interpolate_analysis(self) -> None:
@@ -186,7 +190,7 @@ class OfflineAnalysis(Task):
         print('hello world, do nothing yet')
         output_files = []
         output_files.append([os.path.join(self.task_config.DATA, 'atmanl_mem001'),
-                             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{APREFIX}atmanl.nc")])
+                             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atmanl.nc")])
         output_files.append([os.path.join(self.task_config.DATA, 'atminc_mem001'),
-                             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{APREFIX}atminc.nc")])
+                             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atminc.nc")])
         FileHandler({'copy': output_files}).sync()
