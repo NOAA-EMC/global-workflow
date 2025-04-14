@@ -4,9 +4,8 @@
 #
 # UNIX Script Documentation Block
 # Script name:         exgfs_wave_post_gridded_sbs.sh
-# Script description:  Creates output products from binary WW3 data
+# Script description:  Creates output products from gridded binary WW3 data
 #
-# Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2019-12-06
 # Abstract: This script is the postprocessor for the wave component in GFS.
 #           This version runs side-by-side with the GFS fcst step.
 #           It executes several scripts forpreparing and creating output data
@@ -14,11 +13,6 @@
 #
 #  wave_grib2_sbs.sh         : generates GRIB2 files.
 #  wave_grid_interp_ush.sh   : interpolates data from new grids to old grids
-#
-# Script history log:
-# 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007
-# 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
-# 2020-07-31  Jessica Meixner: Removing points, now gridded data only
 #
 # COM inputs:
 #
