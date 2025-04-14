@@ -752,6 +752,13 @@ case ${step} in
     export is_exclusive=True
     ;;
 
+  "offlineanl")
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=${max_tasks_per_node}
+    tasks_per_node=1
+    ;;
+
   "ecen_fv3jedi")
     export layout_x=${layout_x_ecen_fv3jedi}
     export layout_y=${layout_y_ecen_fv3jedi}

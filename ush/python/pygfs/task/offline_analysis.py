@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 
+import gsi_utils
 import os
+from collections import OrderedDict
 from typing import Dict
 from wxflow import (Task,
-                    FileHandler)
+                    FileHandler,
+                    Executable,
+                    WorkflowException)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -41,6 +45,8 @@ class OfflineAnalysis(Task):
         local_dict = AttrDict(
             {
                 'npz': self.task_config.LEVS - 1,
+                'nlon_interp': _res * 4,
+                'nlat_interp': _res * 2,
             }
         )
         # Extend task_config with local_dict
@@ -70,16 +76,51 @@ class OfflineAnalysis(Task):
         files_to_copy = []
         fcst_file_in = os.path.join(self.task_config.COMIN_ATMOS_HISTORY_PREV,
                                     f"{GPREFIX}atmf006.nc")
-        files_to_copy.append([fcst_file_in, os.path.join(self.task_config.DATA, "atmf006.nc")])
+        files_to_copy.append([fcst_file_in, os.path.join(self.task_config.DATA, "atmges_mem001")])
         anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}atmanl.nc")
         files_to_copy.append([anl_file_in, os.path.join(self.task_config.DATA, "atmanl.input.nc")])
-        sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}sfcanl.nc")
-        files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
+        #sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}sfcanl.nc")
+        #files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
         FileHandler({'copy': files_to_copy}).sync()
 
         # generate namelists for the executables
+        # set up the namelist for the background interpolation code
+        namelist = OrderedDict()
+        namelist['chgres_setup'] = {
+            "i_output": self.task_config.nlon_interp,
+            "j_output": self.task_config.nlat_interp,
+            "input_file": "atmanl.input.nc",
+            "output_file": "atmanl_mem001",
+            "terrain_file": "atmges_mem001",
+            "ref_file": "atmges_mem001",
+        }
+
+        gsi_utils.write_nml(namelist, os.path.join(self.task_config.DATA, 'chgres_nc_gauss.nml'))
+
+        # set up the namelist for the calc increment code
+        namelist = OrderedDict()
+        namelist["setup"] = {
+            "datapath": "'./'",
+            "analysis_filename": "'atmanl'",
+            "firstguess_filename": "'atmges'",
+            "increment_filename": "'atminc'",
+            "debug": ".false.",
+            "nens": 1,
+            "imp_physics": str(self.task_config.imp_physics)
+        }
+
+        namelist["zeroinc"] = {"incvars_to_zero": self.task_config.INCREMENTS_TO_ZERO}
+
+        gsi_utils.write_nml(namelist, os.path.join(self.task_config.DATA, 'calc_increment.nml'))
 
         # copy executables to $DATA
+        executables_to_copy = []
+        executable_list = ['enkf_chgres_recenter_nc.x', 'calc_increment_ens_ncio.x']
+        for exec_name in executable_list:
+            executables_to_copy.append([os.path.join(self.EXECgfs, exec_name),
+                                        os.path.join(self.task_config.DATA, exec_name)])
+        FileHander({'copy': executables_to_copy}).sync()
+
 
     @logit(logger)
     def interpolate_analysis(self) -> None:
@@ -93,6 +134,20 @@ class OfflineAnalysis(Task):
             Instance of the OfflineAnalysis object
         """
 
+        # set up and run the executable
+        exe = Executable(self.task_config.APRUN_CHGRES)
+        exe.add_default_arg(os.path.join(self.task_config.DATA, 'enkf_chgres_recenter_nc.x'))
+        exe.add_default_arg(os.path.join(self.task_config.DATA, 'chgres_nc_gauss.nml'))
+        try:
+            logger.debug(f"Executing {exe}")
+            exe()
+        except OSError:
+            logger.exception(f"Failed to execute {exe}")
+            raise
+        except Exception as err:
+            logger.exception(f"An error occured during execution of {exe}")
+            raise WorkflowException(f"An error occured during execution of {exe}") from err
+
     @logit(logger)
     def calc_increment(self) -> None:
         """Compute the analysis increment for input to the forecast model
@@ -103,6 +158,19 @@ class OfflineAnalysis(Task):
         self : OfflineAnalysis
             Instance of the OfflineAnalysis object
         """
+
+        # set up and run the executable
+        exe = Executable(self.task_config.APRUN_CALCINC)
+        exe.add_default_arg(os.path.join(self.task_config.DATA, 'calc_increment_ens_ncio.x'))
+        try:
+            logger.debug(f"Executing {exe}")
+            exe()
+        except OSError:
+            logger.exception(f"Failed to execute {exe}")
+            raise
+        except Exception as err:
+            logger.exception(f"An error occured during execution of {exe}")
+            raise WorkflowException(f"An error occured during execution of {exe}") from err
 
     @logit(logger)
     def finalize(self) -> None:
@@ -116,3 +184,10 @@ class OfflineAnalysis(Task):
         self : OfflineAnalysis
             Instance of the OfflineAnalysis object
         """
+        print('hello world, do nothing yet')
+        output_files = []
+        output_files.append([os.path.join(self.task_config.DATA, 'atmanl_mem001'),
+                             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{APREFIX}atmanl.nc")])
+        output_files.append([os.path.join(self.task_config.DATA, 'atminc_mem001'),
+                             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{APREFIX}atminc.nc")])
+        FileHandler({'copy': output_files}).sync()
