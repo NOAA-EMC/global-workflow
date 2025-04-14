@@ -103,10 +103,11 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
 
 elif [[ $MACHINE_ID = container ]] ; then
     # We are in a container
-    if ( ! eval module help > /dev/null 2>&1 ) ; then
+    #if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /usr/lmod/lmod/init/bash
-    fi
+    #fi
     module purge
+    unset MODULEPATH
 
 # TODO: This can likely be made more general once other cloud
 # platforms come online.
