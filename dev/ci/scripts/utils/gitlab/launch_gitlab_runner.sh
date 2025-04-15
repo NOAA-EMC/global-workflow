@@ -19,9 +19,6 @@ HOMEGFS_="$("${SCRIPT_DIR}/../find_homegfs.py")"
 # Get the hostname of the current machine
 host="$(hostname)"
 
-echo $host $HOMEGFS_
-exit
-
 #########################################################################
 #  Set up runtime environment variables for accounts on supported machines
 #########################################################################
