@@ -25,17 +25,16 @@ build:
     - dev/ci/scripts/utils/ci_utils_wrapper.sh build_compute
     - sorc/link_workflow.sh
     - mkdir -p ${RUNTESTS_DIR}
-  # TODO - Add more machines to the list and make
-  # the setup and run_tests stages 2D matrices
-  parallel:
-    matrix:
-      - MACHINE: ["gaeac6"]
+  # TODO - Add more machines to the list and make (next PR)
+  #parallel:
+  #  matrix:
+  #    - MACHINE: ["gaeac6"]
   tags:
-    - ${MACHINE}
+    - gaeac6
 
 
 # Create experiments stage from a fixed list of cases in $HOMEGFS/dev/ci/cases/pr
-# TODO: Find a way to dynamically generate the list of cases (maybe using Jinja2)
+# TODO: Next PR has simi-dynamic caseName lists
 setup_experiments:
   variables:
     GIT_STRATEGY: none
