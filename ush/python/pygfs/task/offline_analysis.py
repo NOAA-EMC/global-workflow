@@ -187,7 +187,6 @@ class OfflineAnalysis(Task):
         self : OfflineAnalysis
             Instance of the OfflineAnalysis object
         """
-        print('hello world, do nothing yet')
         output_files = []
         output_files.append([os.path.join(self.task_config.DATA, 'atmanl_mem001'),
                              os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atmanl.nc")])
