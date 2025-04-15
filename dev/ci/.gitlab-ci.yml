@@ -75,32 +75,32 @@ variables:
 
 # The following sections are generated for multiple hosts and dynamic case lists
 
-build-hera:
+build-EMC:
   extends: .build_template
   variables:
-    MACHINE: hera
-  tags: ["hera"]
+    MACHINE: EMC
+  tags: ["EMC"]
 
-setup_experiments-hera:
+setup_experiments-EMC:
   extends: .setup_template
   variables:
-    MACHINE: hera
-  tags: ["hera"]
+    MACHINE: EMC
+  tags: ["EMC"]
   parallel:
     matrix:
       - caseName: ["C48_S2SW", "C48_ATM"]
   dependencies:
-    - build-hera
+    - build-EMC
 
-run_tests-hera:
+run_tests-EMC:
   extends: .run_tests_template
   variables:
-    MACHINE: hera
-  tags: ["hera"]
+    MACHINE: EMC
+  tags: ["EMC"]
   parallel:
     matrix:
       - caseName: ["C48_S2SW", "C48_ATM"]
   dependencies:
-    - setup_experiments-hera
+    - setup_experiments-EMC
 
 # End of generated sections
