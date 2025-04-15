@@ -1,0 +1,28 @@
+experiment:
+  system: gfs
+  mode: cycled
+
+arguments:
+  account: {{ 'HPC_ACCOUNT' | getenv }}
+  pslot: {{ 'pslot' | getenv }}
+  app: ATM
+  resdetatmos: 96
+  resensatmos: 48
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250327
+  idate: 2024022318
+  edate: 2024022406
+  nens: 2
+  interval: 24
+  start: warm
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/ufs_hybatmDA_defaults.ci.yaml
+
+skip_ci_on_hosts:
+  - gaeac5
+  - gaeac6
+  - orion
+  - hercules
+  - awsepicglobalworkflow
+  - hera
+  - wcoss2

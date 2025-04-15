@@ -43,7 +43,7 @@ source "${USHgfs}/product_functions.sh"
 ###############################################
 sleep_interval=10
 max_tries=180
-idxfile="${COM_ATMOS_GRIB_0p25}/${RUN}.${cycle}.pgrb2b.0p25.f${fcsthrs}.idx"
+idxfile="${COMIN_ATMOS_GRIB_0p25}/${RUN}.${cycle}.pgrb2b.0p25.f${fcsthrs}.idx"
 if ! wait_for_file "${idxfile}" "${sleep_interval}" "${max_tries}"; then
   msg="FATAL ERROR: No GFS pgrb2 file after waiting"
   err_exit "${msg}"
@@ -80,8 +80,8 @@ export opt28=' -new_grid_interpolation budget -fi '
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
 ###############################################################
 
-cp "${COM_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}" "tmpfile2${fcsthrs}"
-cp "${COM_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}" "tmpfile2b${fcsthrs}"
+cp "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}" "tmpfile2${fcsthrs}"
+cp "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}" "tmpfile2b${fcsthrs}"
 cat "tmpfile2${fcsthrs}" "tmpfile2b${fcsthrs}" > "tmpfile${fcsthrs}"
 ${WGRIB2} "tmpfile${fcsthrs}" | grep -F -f "${PARMgfs}/product/gfs_awips_parmlist_g2" | \
    ${WGRIB2} -i -grib masterfile "tmpfile${fcsthrs}"
@@ -179,11 +179,11 @@ for GRID in conus ak prico pac 003; do
       echo "error from tocgrib2=${err}"
 
       ##############################
-      # Post Files to  ${COM_ATMOS_WMO}
+      # Post Files to ${COMOUT_ATMOS_WMO}
       ##############################
 
       mv "grib2.awpgfs${fcsthrs}.${GRID}" \
-         "${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}"
+         "${COMOUT_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}"
 
       ##############################
       # Distribute Data
@@ -191,9 +191,9 @@ for GRID in conus ak prico pac 003; do
 
       if [[ "${SENDDBN}" == 'YES' || "${SENDAWIP}" == 'YES' ]]; then
           "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
-				     "${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}"
+				     "${COMOUT_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID}"
       else
-          echo "File ${COM_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID} not posted to db_net."
+          echo "File ${COMOUT_ATMOS_WMO}/grib2.awpgfs${fcsthrs}.${GRID} not posted to db_net."
       fi
    elif [[ ${GRID} != "003" ]]; then
       export FORT11="awps_file_f${fcsthrs}_${GRID}"
@@ -206,11 +206,11 @@ for GRID in conus ak prico pac 003; do
       export err=$?; err_chk || exit "${err}"
 
       ##############################
-      # Post Files to  ${COM_ATMOS_WMO} 
+      # Post Files to ${COMOUT_ATMOS_WMO}
       ##############################
 
       mv "grib2.awpgfs_20km_${GRID}_f${fcsthrs}" \
-         "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}"
+         "${COMOUT_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}"
 
       ##############################
       # Distribute Data
@@ -218,9 +218,9 @@ for GRID in conus ak prico pac 003; do
 
       if [[ "${SENDDBN}" = 'YES' || "${SENDAWIP}" = 'YES' ]]; then
           "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
-				     "${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}"
+				     "${COMOUT_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}"
       else
-          echo "File ${COM_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs} not posted to db_net."
+          echo "File ${COMOUT_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthrs} not posted to db_net."
       fi
    fi
    echo "Awip Processing ${fcsthrs} hour completed normally"

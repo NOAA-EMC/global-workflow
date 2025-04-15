@@ -30,7 +30,7 @@ cd $DATA/$m
 
     for stn in $(cat $file_list)
     do
-       cp "${COM_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
+       cp "${COMOUT_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
        export pgm=tocsbufr.x
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
@@ -56,9 +56,9 @@ EOF
     done
 
     if [[ ${SENDDBN} == 'YES' ]] ; then
-        cp "${DATA}/${m}/gfs_collective${m}.fil" "${COM_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
+        cp "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
         "${DBNROOT}/bin/dbn_alert" NTC_LOW BUFR "${job}" \
-				   "${COM_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
+				   "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
     fi
-    cp "${DATA}/${m}/gfs_collective${m}.fil" "${COM_ATMOS_BUFR}/."
+    cp "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_BUFR}/."
 
