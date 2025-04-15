@@ -49,10 +49,12 @@ class GCAFSCycledAppConfig(AppConfig):
         if base.get('DOHYBVAR', False):
             self.ens_runs = ['gcafs']
 
-        # Now construct self.runs the desired XML order (gcafs, enkfgcafs, gdas, enkfgdas)
+        # Now construct self.runs the desired XML order (gcafs, enkfgcafs, gcdas, enkfgcdas)
         self.runs = []
-        self.runs.append('gcafs')  # We always have a 'gdas' run
-        self.runs.append('enkfgcafs') if 'gcafs' in self.ens_runs else 0
+        self.runs.append('gcafs') if base['INTERVAL_GFS'] > 0 else 0
+        self.runs.append('enkfgcafs') if 'gcafs' in self.ens_runs and 'gcafs' in self.runs else 0
+        self.runs.append('gcdas')  # We always have a 'gcdas' run
+        self.runs.append('enkfgcdas') if 'gcdas' in self.ens_runs else 0
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
         """
@@ -74,18 +76,12 @@ class GCAFSCycledAppConfig(AppConfig):
             base = conf.parse_config('config.base', RUN=run)
 
             run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
-            run_options[run]['do_hybvar_ocn'] = base.get('DOHYBVAR_OCN', False)
-            run_options[run]['do_letkf_ocn'] = base.get('DOLETKF_OCN', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
             if run_options[run]['do_hybvar']:
                 run_options[run]['lobsdiag_forenkf'] = base.get('lobsdiag_forenkf', False)
 
-            run_options[run]['do_fit2obs'] = base.get('DO_FIT2OBS', True)
             run_options[run]['do_jediatmvar'] = base.get('DO_JEDIATMVAR', False)
             run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
-            run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
-            run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
-            run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
 
         return run_options
@@ -194,26 +190,25 @@ class GCAFSCycledAppConfig(AppConfig):
         for run in self.runs:
             options = self.run_options[run]
 
-            # Common gdas and gcafs tasks before fcst
-            if run in ['gcafs']:
+            # Most tasks are only in the cycling gcdas
+            if run == 'gcdas':
+                task_names[run] += ['stage_ic']
+
                 task_names[run] += ['prep']
                 task_names[run] += ['offlineanl']
                 task_names[run] += ['sfcanl']
-                # gcafs-specific analysis tasks
+                
                 if options['do_aero_anl']:
                     task_names[run] += ['aeroanlgenb']
                     task_names[run] += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
                     if options['do_prep_obs_aero']:
-                        task_names[run] += ['prepobsaero']
+                        task_names[run] += ['prepobsaero']                
+
+            # some are common across both
+            if run in ['gcdas', 'gcafs']:
 
                 if options['do_aero_fcst']:
                     task_names[run] += ['prep_emissions']
-                    # Remove aerosol_init for cycled mode
-                    # aerosol_init is only needed for forecast-only mode
-
-                # Staging is gdas-specific
-                if run == 'gcafs':
-                    task_names[run] += ['stage_ic']
 
                 task_names[run] += ['fcst']
 

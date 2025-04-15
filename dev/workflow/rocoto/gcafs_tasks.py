@@ -51,9 +51,9 @@ class GCAFSTasks(Tasks):
     def fetch(self):
 
         if self.options['do_fetch_hpss'] or self.options['do_fetch_local']:
-            cycledef = 'gcafs_half,gcafs'
+            cycledef = 'gcdas_half,gcdas'
         else:
-            cycledef = 'gcafs'
+            cycledef = 'gcdas'
 
         resources = self.get_resource('fetch')
         task_name = f'{self.run}_fetch'
@@ -92,7 +92,7 @@ class GCAFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
 
-        cycledef = 'gcafs_half' if self.run in ['gcafs', 'enkfgcafs'] else self.run
+        cycledef = 'gcdas_half' if self.run in ['gcdas', 'enkfgcdas'] else self.run
 
         resources = self.get_resource('stage_ic')
         task_name = f'{self.run}_stage_ic'
@@ -167,7 +167,7 @@ class GCAFSTasks(Tasks):
                      'resources': resources,
                      'envars': self.envars,
                      'dependency': dependencies,
-                     'cycledef': 'gcafs' if self.run in ['gdas', 'gcafs'] else self.run,
+                     'cycledef': 'gcdas' if self.run in ['gcdas', 'gcafs'] else self.run,
                      'command': f'{self.HOMEgfs}/dev/jobs/prep.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -201,7 +201,7 @@ class GCAFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': 'gcafs',
+                     'cycledef': 'gcdas',
                      'command': f'{self.HOMEgfs}/dev/jobs/offlineanl.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -215,9 +215,9 @@ class GCAFSTasks(Tasks):
 
         deps = []
         if self.options['do_jediatmvar']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
+            dep_dict = {'type': 'task', 'name': f'gcdas_atmanlfinal'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_offlineanl'}
+            dep_dict = {'type': 'task', 'name': f'gcdas_offlineanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -227,7 +227,7 @@ class GCAFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
+                     'cycledef': 'gcdas',
                      'command': f'{self.HOMEgfs}/dev/jobs/sfcanl.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -241,7 +241,7 @@ class GCAFSTasks(Tasks):
     def prepatmiodaobs(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
+        dep_dict = {'type': 'task', 'name': f'gcdas_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -251,7 +251,7 @@ class GCAFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
+                     'cycledef': 'gcdas',
                      'command': f'{self.HOMEgfs}/dev/jobs/prepatmiodaobs.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
