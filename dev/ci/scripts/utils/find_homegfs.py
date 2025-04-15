@@ -68,6 +68,6 @@ if __name__ == '__main__':
     # Example usage when run as a script
     try:
         homegfs = find_homegfs()
-        print(f"Found HOMEgfs at: {homegfs}")
+        print(homegfs)
     except ValueError as e:
         print(f"Error: {e}")

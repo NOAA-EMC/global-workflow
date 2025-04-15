@@ -14,9 +14,12 @@ set -e
 #########################################################################
 
 # Set the HOMEGFS_ variable to the root directory of the global workflow
-HOMEGFS_="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../../.." >/dev/null 2>&1 && pwd )"
+HOMEGFS_="$(../find_homegfs.py)"
 # Get the hostname of the current machine
 host="$(hostname)"
+
+echo $host $HOMEGFS_
+exit
 
 #########################################################################
 #  Set up runtime environment variables for accounts on supported machines
