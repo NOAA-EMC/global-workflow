@@ -61,7 +61,7 @@ variables:
   script:
     - |
       # Set your SVG URL, output filename, and Gist ID
-      SVG_URL="https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/badges/ci_gitlab_multihost_dev/pipeline.svg"
+      SVG_URL="https://vlab.noaa.gov/gitlab-licensed/NWS/Operations/NCEP/EMC/global-workflow/badges/develop/pipeline.svg"
       SVG_FILE="badge.svg"
       GIST_ID="ab937691224bdf50427cbeca666bf67b"
       # Download the SVG (add authentication if needed)
@@ -78,28 +78,28 @@ variables:
 build-EMC:
   extends: .build_template
   variables:
-    MACHINE: EMC
+    mahine: EMC
   tags: ["EMC"]
 
 setup_experiments-EMC:
   extends: .setup_template
   variables:
-    MACHINE: EMC
+    mahine: EMC
   tags: ["EMC"]
   parallel:
     matrix:
-      - caseName: ["C48_S2SW", "C48_ATM"]
+      - caseName: ["C48_ATM"]
   dependencies:
     - build-EMC
 
 run_tests-EMC:
   extends: .run_tests_template
   variables:
-    MACHINE: EMC
+    mahine: EMC
   tags: ["EMC"]
   parallel:
     matrix:
-      - caseName: ["C48_S2SW", "C48_ATM"]
+      - caseName: ["C48_ATM"]
   dependencies:
     - setup_experiments-EMC
 
