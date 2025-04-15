@@ -49,7 +49,7 @@ variables:
   script:
     - echo "Using build directory $HOMEGFS (dated $BUILD_DATE)"
     - pslot=$(${HOMEGFS}/dev/ci/scripts/utils/ci_utils.sh get_pslot ${RUNTESTS_DIR} ${caseName})
-    - ${HOMEGFS}/dev/ci/scripts/run-check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
+    - ${HOMEGFS}/dev/ci/scripts/run_check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
   dependencies:
     - setup_experiments-${machine}
 

@@ -225,7 +225,7 @@ pipeline {
                                                 try {
                                                     sh(script: """
                                                       source ${HOMEgfs}/workflow/gw_setup.sh
-                                                      ${HOMEgfs}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} 'global-workflow'
+                                                      ${HOMEgfs}/ci/scripts/run_check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} 'global-workflow'
                                                     """)
                                                     sh(script: """
                                                       source ${HOMEgfs}/workflow/gw_setup.sh

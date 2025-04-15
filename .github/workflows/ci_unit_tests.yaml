@@ -60,7 +60,7 @@ jobs:
         cd global-workflow/sorc
         git submodule update --init -j 2 wxflow ufs_model.fd
         ./link_workflow.sh
-        cd ../dev/ci/scripts/tests
+        cd ../dev/ci/scripts/unittests
         pytest -v --junitxml test-results.xml
 
 
@@ -68,6 +68,6 @@ jobs:
       if: always()
       uses: EnricoMi/publish-unit-test-result-action@v2
       with:
-        files: global-workflow/dev/ci/scripts/tests/test-results.xml
+        files: global-workflow/dev/ci/scripts/unittests/test-results.xml
         job_summary: true
         comment_mode: off
