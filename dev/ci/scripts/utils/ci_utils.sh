@@ -3,7 +3,7 @@
 # Determine HOMEGFS_ and source machine detection early
 if [[ -z "${HOMEGFS_}" ]]; then
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    HOMEGFS_="$(${SCRIPT_DIR}/find_homegfs.py)"
+    HOMEGFS_="$("${SCRIPT_DIR}/find_homegfs.py")"
 fi
 source "${HOMEGFS_}/ush/detect_machine.sh"
 
@@ -217,11 +217,11 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     shift # Remove the function name from the arguments list
 
     # Check if the first argument corresponds to a defined function
-    if [[ $(type -t "$utility_function") == "function" ]]; then
+    if [[ $(type -t "${utility_function}") == "function" ]]; then
         # Call the function with the remaining arguments
-        "$utility_function" "$@"
+        "${utility_function}" "$@"
     else
-        echo "ERROR: Utility function '$utility_function' not found or not a function in ${BASH_SOURCE[0]}" >&2
+        echo "ERROR: Utility function ${utility_function} not found or not a function in ${BASH_SOURCE[0]}" >&2
         exit 1
     fi
 fi
