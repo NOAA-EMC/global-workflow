@@ -5,7 +5,6 @@ from wxflow import Executable
 from find_homegfs import find_homegfs
 
 HOMEgfs = find_homegfs()
-# Get the current directory using the path of this file instead of _here
 current_dir = os.path.dirname(os.path.abspath(__file__))
 RUNDIR_FAKE = os.path.join(current_dir, 'testdata/RUNDIR')
 ICSDIR_FAKE = os.path.join(current_dir, 'testdata/ICSDIR')

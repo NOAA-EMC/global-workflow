@@ -6,7 +6,6 @@ from wxflow import Executable, Configuration, ProcessError
 from find_homegfs import find_homegfs
 
 HOMEgfs = find_homegfs()
-# Get the current directory using the path of this file instead of _here
 current_dir = os.path.dirname(os.path.abspath(__file__))
 RUNDIR = os.path.join(current_dir, 'testdata/RUNDIR')
 pslot = "C48_ATM"

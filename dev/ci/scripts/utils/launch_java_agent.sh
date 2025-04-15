@@ -65,7 +65,9 @@ controller_url="https://jenkins.epic.oarcloud.noaa.gov"
 controller_user=${controller_user:-"terry.mcguinness"}
 controller_user_auth_token="jenkins_token"
 
-HOMEGFS_="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../../.." >/dev/null 2>&1 && pwd )"
+# Set the HOMEGFS_ variable to the root directory of the global workflow
+SCRIPT_DIR="$(cd "$(dirname \"${BASH_SOURCE[0]}\")" && pwd)"
+HOMEGFS_="$(${SCRIPT_DIR}/find_homegfs.py)"
 host=$(hostname)
 
 #########################################################################
