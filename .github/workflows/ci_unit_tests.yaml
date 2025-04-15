@@ -1,68 +1,73 @@
 name: CI Unit Tests
 on: [pull_request, push, workflow_dispatch]
 
+env:
+  ROCOTO_VERSION: "1.3.7"
+
 jobs:
 
   ci_pytest:
-      runs-on: ubuntu-22.04
-      name: Run unit tests on CI system
-      permissions:
-        checks: write
+    runs-on: ubuntu-22.04
 
-      steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    steps:
+    - name: Checkout global-workflow
+      uses: actions/checkout@v4
+      with:
+        path: global-workflow
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.11.8
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.11.8
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
-          python -m pip install --upgrade pip
-          pip install pytest
-          pip install wxflow
-          pip install wget
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
+        python -m pip install --upgrade pip
+        python -m pip install -r global-workflow/dev/workflow/requirements.txt
+        pip install pytest
+        pip install wget
 
-      - name: Cache Rocoto Install
-        uses: actions/cache@v4
-        with:
-          path: ~/rocoto
-          key: ${{ runner.os }}-rocoto-${{ hashFiles('**/ci-unit_tests.yaml') }}
+    - name: Cache Rocoto
+      id: cache-rocoto
+      uses: actions/cache@v4
+      with:
+        path: |
+          rocoto-${{ env.ROCOTO_VERSION }}
+        key: ${{ runner.os }}-rocoto-${{ env.ROCOTO_VERSION }}
 
-      - name: Install Rocoto
-        run: |
-          if [ ! -d "$HOME/rocoto/bin" ]; then
-            git clone https://github.com/christopherwharrop/rocoto.git $HOME/rocoto
-            cd $HOME/rocoto
-            ./INSTALL
-          fi
-          echo "$HOME/rocoto/bin" >> $GITHUB_PATH
+    - name: Install Rocoto
+      id: install-rocoto
+      if: steps.cache-rocoto.outputs.cache-hit != 'true'
+      run: |
+        git clone https://github.com/christopherwharrop/rocoto.git rocoto-${{ env.ROCOTO_VERSION }}
+        cd rocoto-${{ env.ROCOTO_VERSION }}
+        git checkout ${{ env.ROCOTO_VERSION }}
+        ./INSTALL
+        echo "export PATH=${PWD}/bin:\$PATH" >> rocoto_path.sh
+        chmod +x rocoto_path.sh
 
-      - name: Run tests
-        shell: bash
-        run: |
-          sudo mkdir -p /scratch1/NCEPDEV
-          sudo mkdir -p /scratch1/NCEPDEV/stmp2
-          sudo mkdir -p /scratch1/NCEPDEV/stmp4
-          sudo mkdir -p /scratch1/NCEPDEV/global
-          sudo chmod -R a+w /scratch1/NCEPDEV
-          cd $GITHUB_WORKSPACE/sorc
-          git submodule update --init -j 9
-          ./link_workflow.sh
-          cd $GITHUB_WORKSPACE/ci/scripts/tests
-          ln -s ../wxflow
+    - name: Run tests
+      shell: bash
+      run: |
+        sudo mkdir -p /scratch1/NCEPDEV
+        sudo mkdir -p /scratch1/NCEPDEV/stmp2
+        sudo mkdir -p /scratch1/NCEPDEV/stmp4
+        sudo mkdir -p /scratch1/NCEPDEV/global
+        sudo chmod -R a+w /scratch1/NCEPDEV
+        source rocoto-${{ env.ROCOTO_VERSION }}/rocoto_path.sh
+        cd global-workflow/sorc
+        git submodule update --init -j 2 wxflow ufs_model.fd
+        ./link_workflow.sh
+        cd ../dev/ci/scripts/tests
+        pytest -v --junitxml test-results.xml
 
-          pytest -v --junitxml $GITHUB_WORKSPACE/ci/scripts/tests/test-results.xml
 
-
-      - name: Publish Test Results
-        if: always()
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        with:
-          files: ci/scripts/tests/test-results.xml
-          job_summary: true
-          comment_mode: off
+    - name: Publish Test Results
+      if: always()
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      with:
+        files: global-workflow/dev/ci/scripts/tests/test-results.xml
+        job_summary: true
+        comment_mode: off
