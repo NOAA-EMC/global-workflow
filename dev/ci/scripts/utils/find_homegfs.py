@@ -12,18 +12,18 @@ def find_homegfs(start_path=None):
     """
     Find the HOMEgfs directory by traversing up the file system until
     finding a directory that contains the .github subdirectory.
-    
+
     Parameters
     ----------
     start_path : str or Path, optional
         The path to start searching from. If not provided, the current
         directory will be used.
-        
+
     Returns
     -------
     Path
         The full path to the HOMEgfs directory.
-        
+
     Raises
     ------
     ValueError
@@ -35,32 +35,32 @@ def find_homegfs(start_path=None):
         import inspect
         frame = inspect.currentframe().f_back
         start_path = os.path.dirname(os.path.abspath(frame.f_code.co_filename))
-    
+
     # Convert to Path object if it's a string
     if isinstance(start_path, str):
         start_path = Path(start_path)
     else:
         start_path = Path(start_path).resolve()
-    
+
     # Start traversing up from the current directory
     current_dir = start_path
-    
+
     # Traverse up until we find .github directory or reach the filesystem root
     while True:
         # Check if .github exists in the current directory
         if (current_dir / '.github').is_dir():
             return current_dir
-        
+
         # Go up one level
         parent_dir = current_dir.parent
-        
+
         # If we've reached the root directory and haven't found .github
         if parent_dir == current_dir:
             raise ValueError(
                 "Could not find HOMEgfs directory. "
                 "Traversed up to the root without finding a .github directory."
             )
-        
+
         current_dir = parent_dir
 
 
