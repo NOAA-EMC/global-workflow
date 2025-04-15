@@ -217,7 +217,8 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     shift # Remove the function name from the arguments list
 
     # Check if the first argument corresponds to a defined function
-    if [[ $(type -t "${utility_function}") == "function" ]]; then
+    type_t="$(type -t "${utility_function}")" || true
+    if [[  "${type_t}" == "function" ]]; then
         # Call the function with the remaining arguments
         "${utility_function}" "$@"
     else
