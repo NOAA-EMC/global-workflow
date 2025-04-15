@@ -57,6 +57,7 @@ import argparse
 from pathlib import Path
 
 # update sys.path to include libs in the parent directory
+# TODO: replace this parent.parent reference with a ci_utils package
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from get_host_case_list import get_host_cases
 from find_homegfs import find_homegfs

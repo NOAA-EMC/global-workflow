@@ -46,7 +46,7 @@ def get_host_cases(host, homegfs=None):
 
 if __name__ == '__main__':
     # When run as a script, maintain the original behavior
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2 or sys.argv[1] in ('-h', '--help'):
         print('Usage: get_host_case_list.py <host_name>')
         sys.exit(1)
 
