@@ -75,32 +75,60 @@ variables:
 
 # The following sections are generated for multiple hosts and dynamic case lists
 
-build-EMC:
+build-hera:
   extends: .build_template
   variables:
-    mahine: EMC
-  tags: ["EMC"]
+    mahine: hera
+  tags: ["hera"]
 
-setup_experiments-EMC:
+setup_experiments-hera:
   extends: .setup_template
   variables:
-    mahine: EMC
-  tags: ["EMC"]
+    mahine: hera
+  tags: ["hera"]
   parallel:
     matrix:
-      - caseName: ["C48_ATM"]
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
   dependencies:
-    - build-EMC
+    - build-hera
 
-run_tests-EMC:
+run_tests-hera:
   extends: .run_tests_template
   variables:
-    mahine: EMC
-  tags: ["EMC"]
+    mahine: hera
+  tags: ["hera"]
   parallel:
     matrix:
-      - caseName: ["C48_ATM"]
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
   dependencies:
-    - setup_experiments-EMC
+    - setup_experiments-hera
+
+build-gaeac6:
+  extends: .build_template
+  variables:
+    mahine: gaeac6
+  tags: ["gaeac6"]
+
+setup_experiments-gaeac6:
+  extends: .setup_template
+  variables:
+    mahine: gaeac6
+  tags: ["gaeac6"]
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+  dependencies:
+    - build-gaeac6
+
+run_tests-gaeac6:
+  extends: .run_tests_template
+  variables:
+    mahine: gaeac6
+  tags: ["gaeac6"]
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+  dependencies:
+    - setup_experiments-gaeac6
 
 # End of generated sections
