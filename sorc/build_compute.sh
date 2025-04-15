@@ -77,7 +77,7 @@ rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 echo "Sourcing global-workflow modules ..."
 source "${HOMEgfs}/dev/ush/gw_setup.sh"
 
-yaml="${HOMEgfs}/workflow/build_opts.yaml"
+yaml="${HOMEgfs}/dev/workflow/build_opts.yaml"
 echo "Generating build.xml for building global-workflow programs on compute nodes ..."
 # Catch errors manually from here out
 set +e
