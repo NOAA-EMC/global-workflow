@@ -25,8 +25,7 @@ base:
   DOLETKF_OCN: "NO"
   DO_TEST_MODE: "NO"
   DO_IAU: "NO"
-  DO_HYBVAR: "NO"
-  DO_HYBVAR_OCN: "NO"
+  DOHYBVAR: "NO"
   DO_LETKF: "NO"
   NMEM_ENS: 0
   l4densvar: ".false."

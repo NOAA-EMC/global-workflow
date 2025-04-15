@@ -50,7 +50,10 @@ class GCAFSTasks(Tasks):
     # Specific Tasks begin here
     def fetch(self):
 
-        cycledef = 'gdas_half' if self.run in ['gdas', 'enkfgdas'] else self.run
+        if self.options['do_fetch_hpss'] or self.options['do_fetch_local']:
+            cycledef = 'gcafs_half,gcafs'
+        else:
+            cycledef = 'gcafs'
 
         resources = self.get_resource('fetch')
         task_name = f'{self.run}_fetch'
@@ -80,40 +83,25 @@ class GCAFSTasks(Tasks):
             XML representation of the task
         """
 
+        dependencies = None
+        if self.options['do_fetch_hpss'] or self.options['do_fetch_local']:
+            deps = []
+            dep_dict = {
+                'type': 'task', 'name': f'{self.run}_fetch',
+            }
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
+
+        cycledef = 'gcafs_half' if self.run in ['gcafs', 'enkfgcafs'] else self.run
+
         resources = self.get_resource('stage_ic')
         task_name = f'{self.run}_stage_ic'
         task_dict = {'task_name': task_name,
                      'resources': resources,
+                     'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': self.run,
+                     'cycledef': cycledef,
                      'command': f'{self.HOMEgfs}/dev/jobs/stage_ic.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-        task = rocoto.create_task(task_dict)
-
-        return task
-
-    def waveinit(self):
-        """
-        Create a task for wave initialization.
-
-        This task initializes the wave component of the model.
-
-        Returns
-        -------
-        str
-            XML representation of the task
-        """
-
-        resources = self.get_resource('waveinit')
-        task_name = f'{self.run}_wave_init'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'envars': self.envars,
-                     'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/dev/jobs/waveinit.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -161,11 +149,24 @@ class GCAFSTasks(Tasks):
         str
             XML representation of the task
         """
+
+        dump_suffix = self._base["DUMP_SUFFIX"]
+        dmpdir = self._base["DMPDIR"]
+        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
+                                                       {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
+
+        deps = []
+        data = f'{dump_path}/gdas.t@Hz.updated.status.tm00.bufr_d'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
         resources = self.get_resource('prep')
         task_name = f'{self.run}_prep'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
+                     'dependency': dependencies,
                      'cycledef': 'gcafs' if self.run in ['gdas', 'gcafs'] else self.run,
                      'command': f'{self.HOMEgfs}/dev/jobs/prep.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -216,18 +217,9 @@ class GCAFSTasks(Tasks):
         if self.options['do_jediatmvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_offlineanl'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_gsisoilda']:
-            dep_dict = {'type': 'task', 'name': 'enkfgdas_eupd'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda'] or self.options['do_gsisoilda']:
-            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        else:
-            dependencies = rocoto.create_dependency(dep=deps)
+        dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('sfcanl')
         task_name = f'{self.run}_sfcanl'
@@ -237,59 +229,6 @@ class GCAFSTasks(Tasks):
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/dev/jobs/sfcanl.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
-    def analcalc(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_hybvar'] and self.run in ['gdas']:
-            dep_dict = {'type': 'task', 'name': 'enkfgdas_echgres', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource('analcalc')
-        task_name = f'{self.run}_analcalc'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/jobs/analcalc.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
-    def analdiag(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource('analdiag')
-        task_name = f'{self.run}_analdiag'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/jobs/analdiag.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -467,7 +406,7 @@ class GCAFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': 'gdas_half,gdas',
+                     'cycledef': 'gcafs_half,gcafs',
                      'command': f'{self.HOMEgfs}/dev/jobs/aeroanlgenb.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -738,12 +677,12 @@ class GCAFSTasks(Tasks):
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
-        if self.run in ['gdas']:
+        if self.run in ['gcafs']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
-        cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
+        cycledef = 'gcafs_half,gcafs' if self.run in ['gcafs'] else self.run
 
         if self.run in ['gcafs']:
             num_fcst_segments = len(self.options['fcst_segments']) - 1
@@ -1180,389 +1119,6 @@ class GCAFSTasks(Tasks):
 
         return task
 
-    def wavepostsbs(self):
-        """
-        Create a task for wave post-processing on a grid.
-
-        This task performs post-processing of wave model output on a spatial grid.
-
-        Returns
-        -------
-        str
-            XML representation of the task
-        """
-
-        wave_grid = self._configs['base']['waveGRD']
-        history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'], {'MEMDIR': 'mem#member#'})
-        history_file = f'/{self.run}wave.out_grd.{wave_grid}.@Y@m@d.@H@M@S'
-
-        deps = []
-        dep_dict = {'type': 'data', 'data': [history_path, history_file], 'offset': [None, '#fhr3_next#:00:00']}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mem#member#_#seg_dep#'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
-
-        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
-
-        # When using replay, output does not start until hour 3
-        is_replay = self._configs['wavepostsbs']['REPLAY_ICS']
-        if is_replay:
-            fhrs = [fhr for fhr in fhrs if fhr not in [0, 1, 2]]
-
-        max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
-        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
-
-        wave_post_envars = self.envars.copy()
-        postenvar_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#',
-                          'FHR_LIST': '#fhr_list#',
-                          }
-        for key, value in postenvar_dict.items():
-            wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        resources = self.get_resource('wavepostsbs')
-
-        # Adjust walltime based on the largest group
-        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
-        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
-
-        task_name = f'{self.run}_wave_post_grid_mem#member#_#fhr_label#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': wave_post_envars,
-                     'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/dev/jobs/wavepostsbs.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        fhr_metatask_dict = {'task_name': f'{self.run}_wave_post_grid_#member#',
-                             'task_dict': task_dict,
-                             'var_dict': fhr_var_dict}
-
-        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': f'{self.run}_wave_post_grid',
-                                'task_dict': fhr_metatask_dict,
-                                'var_dict': member_var_dict}
-
-        task = rocoto.create_task(member_metatask_dict)
-
-        return task
-
-    def wavepostbndpnt(self):
-        """
-        Create a task for wave post-processing at boundary points.
-
-        This task performs post-processing of wave model output at boundary points.
-
-        Returns
-        -------
-        str
-            XML representation of the task
-        """
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mem#member#'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        wave_post_bndpnt_envars = self.envars.copy()
-        postenvar_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#',
-                          }
-        for key, value in postenvar_dict.items():
-            wave_post_bndpnt_envars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        resources = self.get_resource('wavepostbndpnt')
-        task_name = f'{self.run}_wave_post_bndpnt_mem#member#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': wave_post_bndpnt_envars,
-                     'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/dev/jobs/wavepostbndpnt.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': f'{self.run}_wave_post_bndpnt',
-                                'task_dict': task_dict,
-                                'var_dict': member_var_dict
-                                }
-
-        task = rocoto.create_task(member_metatask_dict)
-
-        return task
-
-    def wavepostbndpntbll(self):
-        """
-        Create a task for wave post-processing at boundary points bulletin.
-
-        This task generates bulletin products from wave model output at boundary points.
-
-        Returns
-        -------
-        str
-            XML representation of the task
-        """
-        deps = []
-        atmos_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'MEMDIR': 'mem#member#'})
-
-        # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
-        last_fhr = self._configs['wave']['FHMAX_WAV_IBP']
-
-        data = f'{atmos_hist_path}/{self.run}.t@Hz.atm.logf{last_fhr:03d}.txt'
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mem#member#'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-
-        wave_post_bndpnt_bull_envars = self.envars.copy()
-        postenvar_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#',
-                          }
-        for key, value in postenvar_dict.items():
-            wave_post_bndpnt_bull_envars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        resources = self.get_resource('wavepostbndpntbll')
-        task_name = f'{self.run}_wave_post_bndpnt_bull_mem#member#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': wave_post_bndpnt_bull_envars,
-                     'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/dev/jobs/wavepostbndpntbll.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': f'{self.run}_wave_post_bndpnt_bull',
-                                'task_dict': task_dict,
-                                'var_dict': member_var_dict
-                                }
-
-        task = rocoto.create_task(member_metatask_dict)
-
-        return task
-
-    def wavepostpnt(self):
-        """
-        Create a task for wave post-processing at specific points.
-
-        This task performs post-processing of wave model output at specific points of interest.
-
-        Returns
-        -------
-        str
-            XML representation of the task
-        """
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mem#member#'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_wave_bnd']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_wave_post_bndpnt_bull_mem#member#'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        wave_post_pnt_envars = self.envars.copy()
-        postenvar_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#',
-                          }
-        for key, value in postenvar_dict.items():
-            wave_post_pnt_envars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        resources = self.get_resource('wavepostpnt')
-        task_name = f'{self.run}_wave_post_pnt_mem#member#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': wave_post_pnt_envars,
-                     'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/dev/jobs/wavepostpnt.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': f'{self.run}_wave_post_pnt',
-                                'task_dict': task_dict,
-                                'var_dict': member_var_dict
-                                }
-
-        task = rocoto.create_task(member_metatask_dict)
-
-        return task
-
-    def verfozn(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_analdiag'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('verfozn')
-        task_name = f'{self.run}_verfozn'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/jobs/verfozn.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
-    def verfrad(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_analdiag'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('verfrad')
-        task_name = f'{self.run}_verfrad'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/jobs/verfrad.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
-    def vminmon(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('vminmon')
-        task_name = f'{self.run}_vminmon'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/jobs/vminmon.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
-    def tracker(self):
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('tracker')
-        task_name = f'{self.run}_tracker'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/jobs/tracker.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
-    def genesis(self):
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('genesis')
-        task_name = f'{self.run}_genesis'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/jobs/genesis.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
-    def genesis_fsu(self):
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('genesis_fsu')
-        task_name = f'{self.run}_genesis_fsu'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/jobs/genesis_fsu.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
-    def fit2obs(self):
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('fit2obs')
-        task_name = f'{self.run}_fit2obs'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/jobs/fit2obs.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
     def metp(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
@@ -1742,38 +1298,36 @@ class GCAFSTasks(Tasks):
             XML representation of the task
         """
         deps = []
+        if self.app_config.mode in ['cycled']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_anlstat']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
+                deps.append(rocoto.add_dependency(dep_dict))
+        # Post job dependencies
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+        if self.options['do_metp'] and self.run in ['gfs']:
+            deps2 = []
+            # taskvalid only handles regular tasks, so just check the first metp job exists
+            dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_metpg2g1', 'condition': 'not'}
+            deps2.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_metp'}
+            deps2.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
+
+        dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_ice']:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_ocean']:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_wave']:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_pnt'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            if self.options['do_wave_bnd']:
-                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_bndpnt'}
-                deps.append(rocoto.add_dependency(dep_dict))
-                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_bndpnt_bull'}
-                deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_extractvars']:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_extractvars'}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('arch_tars')
         task_name = f'{self.run}_arch_tars'
         task_dict = {'task_name': task_name,
                      'resources': resources,
-                     'envars': self.envars,
-                     'cycledef': self.run,
                      'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/dev/jobs/arch_tars.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
