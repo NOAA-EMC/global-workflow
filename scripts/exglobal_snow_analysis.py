@@ -9,8 +9,7 @@ from wxflow import Logger, cast_strdict_as_dtypedict
 from pygfs.task.snow_analysis import SnowAnalysis
 
 # Initialize root logger
-logger = Logger(
-    level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
+logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
 
 
 if __name__ == '__main__':

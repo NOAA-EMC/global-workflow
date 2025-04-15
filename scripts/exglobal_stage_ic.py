@@ -6,8 +6,7 @@ from pygfs.task.stage_ic import Stage
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit
 
 # Initialize root logger
-logger = Logger(
-    level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
+logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
 
 
 @logit(logger)
@@ -31,7 +30,7 @@ def main():
     for key in keys:
         # Make sure OCNRES is three digits
         if key == "OCNRES":
-            stage.task_config.OCNRES = f"{stage.task_config.OCNRES:03d}"
+            stage.task_config.OCNRES = f"{stage.task_config.OCNRES :03d}"
         stage_dict[key] = stage.task_config[key]
 
     # Also import all COM* directory and template variables

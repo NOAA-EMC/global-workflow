@@ -6,8 +6,7 @@ from wxflow import AttrDict, Logger, logit, cast_strdict_as_dtypedict
 from pygfs.task.upp import UPP
 
 # initialize root logger
-logger = Logger(
-    level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
+logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
 
 
 @logit(logger)
@@ -20,8 +19,9 @@ def main():
 
     # Pull out all the configuration keys needed to run the rest of UPP steps
     keys = ['HOMEgfs', 'DATA', 'current_cycle', 'RUN', 'NET',
-            'COMIN_ATMOS_ANALYSIS', 'COMIN_ATMOS_HISTORY',
-            'COMOUT_ATMOS_MASTER', 'upp_run', 'APRUN_UPP',
+            'COMIN_ATMOS_ANALYSIS', 'COMIN_ATMOS_HISTORY', 'COMOUT_ATMOS_MASTER',
+            'upp_run',
+            'APRUN_UPP',
             'forecast_hour', 'valid_datetime',
             'atmos_filename', 'flux_filename']
     upp_dict = AttrDict()
