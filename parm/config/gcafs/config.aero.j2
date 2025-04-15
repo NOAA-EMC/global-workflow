@@ -3,37 +3,19 @@
 # UFS-Aerosols settings
 
 # Path to the input data tree
+export AERO_INPUTS_DIR="{{ AERO_INPUTS_DIR }}"
 
-# GOCART Configuration
-#=====================
-# AEROSOL Inputs
-export AERO_INPUTS_DIR=/scratch1/NCEPDEV/global/glopara/data/gocart_emissions
-
-# GOCART diag_table for FV3
 export AERO_DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table.aero"
-
-# GOCART field_table for FV3
 export AERO_FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table.aero"
-
+# Biomass burning emission dataset. Choose from: gbbepx, qfed, none
+export AERO_EMIS_FIRE="qfed"
 # Directory containing GOCART configuration files
 export AERO_CONFIG_DIR="${PARMgfs}/ufs/gocart"
 
-# Fire Emission Section
-#======================
-# Biomass burning emission dataset. Choose from: gbbepx, qfed, none
-export AERO_EMIS_FIRE="qfed"
-export AERO_EMIS_FIRE_VERSION="061" # valid options: qfed = 006 061 | gbbepx v5r0 v4r0
-export qfed_vars="so2 oc bc no"
-export gbbepx_vars=("SO2" "OC" "BC")
-export AERO_EMIS_FIRE_DIR="${AERO_INPUTS_DIR}/nexus/${AERO_EMIS_FIRE^^}"
-
 # Aerosol convective scavenging factors (list of string array elements)
-#======================================================================
 # Element syntax: '<tracer_name>:<factor>'. Use <tracer_name> = * to set default factor for all aerosol tracers
 # Scavenging factors are set to 0 (no scavenging) if unset
 export fscav_aero="'*:0.3','so2:0.0','msa:0.0','dms:0.0','nh3:0.4','nh4:0.6','bc1:0.6','bc2:0.6','oc1:0.4','oc2:0.4','dust1:0.6','dust2:0.6', 'dust3:0.6','dust4:0.6','dust5:0.6','seas1:0.5','seas2:0.5','seas3:0.5','seas4:0.5','seas5:0.5'"
-
-# Number of Diagnostic tracers
-#=============================
+#
 # Number of diagnostic aerosol tracers (default: 0)
 export dnats_aero=2

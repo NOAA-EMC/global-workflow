@@ -1,1 +1,11 @@
-../gfs/config.arch_vrfy
+#! /usr/bin/env bash
+
+########## config.arch_vrfy ##########
+# Archive specific
+
+echo "BEGIN: config.arch_vrfy"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" "arch_vrfy"
+
+echo "END: config.arch_vrfy"

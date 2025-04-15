@@ -6,12 +6,7 @@
 echo "BEGIN: config.fcst"
 
 export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
-if [[ "${DO_CHEM_WARMSTART}" == "YES" ]]; then
-    export COPY_FINAL_RESTARTS="YES" # science configuration requires restarts to be copied
-
-else
-    export COPY_FINAL_RESTARTS="NO"
-fi
+export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE}"
@@ -33,7 +28,7 @@ source "${EXPDIR}/config.ufs" ${string}
 
 # Forecast length for GFS forecast
 case ${RUN} in
-  gfs|gcafs)
+  *gfs)
     # Convert comma-separated string into bash array
     IFS=', ' read -ra segments <<< "${FCST_SEGMENTS}"
     # Determine MIN and MAX based on the forecast segment
@@ -293,7 +288,7 @@ if [[ "${RUN}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
     # Turn on dry mass adjustment in GDAS
     export adjust_dry_mass=".true."
 
-elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]] ; then # GFS or GCAFS cycle specific parameters
+elif [[ "${RUN}" =~ "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
@@ -311,11 +306,7 @@ elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]] ; then # GFS or GCAFS cycle sp
       export io_layout="1,1"
     fi
 
-else
-    echo "FATAL ERROR: Unsupported RUN '${RUN}'"
-    exit 1
 fi
-
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
