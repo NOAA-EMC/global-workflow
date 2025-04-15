@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfinal" -c "base atmanl atmanlfinal"
@@ -34,11 +33,9 @@ mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
 # Run relevant script
 
 EXSCRIPT=${GDASATMFINALPY:-${SCRgfs}/exglobal_atm_analysis_finalize.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
@@ -54,7 +51,11 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || ( echo "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"; exit 1 )
+cd "${DATAROOT}" && true
+export err=$?
+set +x
+err_chk "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"
+set_trace
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

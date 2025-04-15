@@ -3,7 +3,6 @@
 #############################################################
 # Set up environment for GDAS Ozone Monitor job
 #############################################################
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "verfozn" -c "base verfozn"
 
 #############################################
@@ -30,12 +29,9 @@ if [[ ! -d ${TANKverf_ozn} ]]; then mkdir -p ${TANKverf_ozn} ; fi
 #-------------------------------------------------------
 # Execute the script.
 #
-"${SCRgfs}/exgdas_atmos_verfozn.sh"
-err=$?
-if (( err != 0 )); then
-    exit "${err}"
-fi
-
+"${SCRgfs}/exgdas_atmos_verfozn.sh" && true
+export err=$?
+err_chk
 
 ################################
 # Remove the Working Directory

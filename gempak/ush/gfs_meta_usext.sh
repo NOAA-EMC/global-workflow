@@ -16,7 +16,7 @@ cp "${HOMEgfs}/gempak/fix/ak_sfstns.tbl" alaska.tbl
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 device="nc | mrf.meta"
@@ -230,13 +230,13 @@ if (( err != 0 )) || [[ ! -s mrf.meta ]] &> /dev/null; then
     exit $(( err + 100 ))
 fi
 
-mv mrf.meta "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"
+mv mrf.meta "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"
+        "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"
     if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-            "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"
+            "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"
     fi
 fi

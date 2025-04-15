@@ -22,21 +22,6 @@ from wxflow import (AttrDict, FileHandler, Task,
 logger = getLogger(__name__.split('.')[-1])
 
 
-def parse_obs_list_file(obs_list_yaml_path):
-    # Get the list of observation types from the obs_list.yaml
-    obs_types = []
-    with open(obs_list_yaml_path, 'r') as file:
-        for line in file:
-            # Remove leading/trailing whitespace and check if the line is uncommented
-            line = line.strip()
-            if line.startswith('- !INC') and not line.startswith('#'):
-                # Extract the type using regex
-                match = re.search(r'\$\{MARINE_OBS_YAML_DIR\}/(.+)\.yaml', line)
-                if match:
-                    obs_types.append(str(match.group(1)))
-    return obs_types
-
-
 class MarineAnalysis(Task):
     """
     Class for global marine analysis tasks
@@ -77,6 +62,7 @@ class MarineAnalysis(Task):
                 'berror_model': _berror_model,
                 'obs_list': ['adt_rads_all'],
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3)),
+                'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS
             }
         )
 
@@ -193,16 +179,23 @@ class MarineAnalysis(Task):
         """
 
         # get the list of observations
-        obs_list_config = YAMLFile(self.task_config.MARINE_OBS_LIST_YAML)
-        obs_list_config = Template.substitute_structure(obs_list_config, TemplateConstants.DOLLAR_PARENTHESES, self.task_config)
-        obs_list_config = {'observations': obs_list_config}
-        logger.info(f"{obs_list_config}")
+
+        # "observations" is expected by later JCB code to populate it with config info,
+        # but the obs_list as such is needed later
+        self.task_config.observations = parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, self.task_config)['observations']
+        self.task_config.obs_list = self.task_config.observations
+
+        obsconfigfile = os.path.join(self.task_config['PARMgfs'], 'gdas/soca/obs/obs_list_base_yaml.j2')
+        self.task_config.observations = parse_j2yaml(obsconfigfile, self.task_config)
 
         obs_files = []
-        for ob in obs_list_config['observations']['observers']:
-            logger.info(f"******** {self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4")
-            obs_files.append(f"{self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4")
-        obs_list = []
+
+        for observer in self.task_config['observations']['observers']:
+            filename = f"{self.task_config.OPREFIX}{observer['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4"
+            logger.info(f"******** {filename}")
+            obs_files.append(filename)
+
+        obs_files_to_copy = []
 
         # copy obs from COM_OBS to DATA/obs
         for obs_file in obs_files:
@@ -212,11 +205,11 @@ class MarineAnalysis(Task):
             logger.info(f"******* {obs_src}")
             if os.path.exists(obs_src):
                 logger.info(f"******* fetching {obs_file}")
-                obs_list.append([obs_src, obs_dst])
+                obs_files_to_copy.append([obs_src, obs_dst])
             else:
                 logger.info(f"******* {obs_file} is not in the database")
 
-        FileHandler({'copy': obs_list}).sync()
+        FileHandler({'copy': obs_files_to_copy}).sync()
 
     @logit(logger)
     def _prep_scratch_dir(self: Task) -> None:

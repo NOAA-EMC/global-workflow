@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
 if [[ -a mpmd_script ]]; then rm -Rf mpmd_script; fi

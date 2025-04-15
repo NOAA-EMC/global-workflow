@@ -214,6 +214,12 @@ class MarineBMat(Task):
         ----------
         None
         """
+
+        APREFIX = self.task_config.APREFIX
+        window_begin_iso = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y-%m-%dT%H:%M:%SZ')
+        window_middle_iso = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
+        window_end_iso = self.task_config.MARINE_WINDOW_END.strftime('%Y-%m-%dT%H:%M:%SZ')
+
         # Copy the soca grid if it was created
         grid_file = os.path.join(self.task_config.DATA, 'soca_gridspec.nc')
         if os.path.exists(grid_file):
@@ -227,7 +233,7 @@ class MarineBMat(Task):
         for diff_type in ['hz', 'vt']:
             src = os.path.join(self.task_config.DATAstaticb, f"{diff_type}_ocean.nc")
             dest = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
-                                f"{self.task_config.APREFIX}{diff_type}_ocean.nc")
+                                f"{APREFIX}{diff_type}_ocean.nc")
             diffusion_coeff_list.append([src, dest])
 
         FileHandler({'copy': diffusion_coeff_list}).sync()
@@ -235,41 +241,50 @@ class MarineBMat(Task):
         # Copy diag B files to ROTDIR
         logger.info(f"Copying diag B files to the ROTDIR")
         diagb_list = []
-        window_end_iso = self.task_config.MARINE_WINDOW_END.strftime('%Y-%m-%dT%H:%M:%SZ')
 
+        # TODO(AFE) the two renames are to accomodate yaml settings in var task, which should changed
         # ocean diag B
         os.rename(os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.incr.{window_end_iso}.nc"),
                   os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.nc"))
         src = os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.nc")
-        dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
-                           f"{self.task_config.APREFIX}ocean.bkgerr_stddev.nc")
+        dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f"{APREFIX}ocean.bkgerr_ens_stddev.nc")
         diagb_list.append([src, dst])
 
         # ice diag B
         os.rename(os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.incr.{window_end_iso}.nc"),
                   os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc"))
         src = os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc")
-        dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
-                           f"{self.task_config.APREFIX}ice.bkgerr_stddev.nc")
+        dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX, f"{APREFIX}ice.bkgerr_ens_stddev.nc")
         diagb_list.append([src, dst])
+
+        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
+            src = os.path.join(self.task_config.DATAstaticb, f"ocn.ssh_recentering_error.incr.{window_begin_iso}.nc")
+            dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f"{APREFIX}ocean.recentering_error.nc")
+            diagb_list.append([src, dst])
+
+            src = os.path.join(self.task_config.DATAstaticb, f"ice.ssh_recentering_error.incr.{window_begin_iso}.nc")
+            dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX, f"{APREFIX}ice.recentering_error.nc")
+            diagb_list.append([src, dst])
 
         FileHandler({'copy': diagb_list}).sync()
 
         # Copy the ensemble perturbation diagnostics to the ROTDIR
         if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
-            window_middle_iso = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
             weight_list = []
             src = os.path.join(self.task_config.DATA, f"ocn.ens_weights.incr.{window_middle_iso}.nc")
             dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
-                               f"{self.task_config.APREFIX}ocean.ens_weights.nc")
+                               f"{APREFIX}ocean.ens_weights.nc")
             weight_list.append([src, dst])
 
             src = os.path.join(self.task_config.DATA, f"ice.ens_weights.incr.{window_middle_iso}.nc")
             dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
-                               f"{self.task_config.APREFIX}ice.ens_weights.nc")
+                               f"{APREFIX}ice.ens_weights.nc")
             weight_list.append([src, dst])
 
-            # TODO(G): missing ssh_steric_stddev, ssh_unbal_stddev, ssh_total_stddev and steric_explained_variance
+            # Copy the ssh diagnostics
+            for string in ['ssh_steric_stddev', 'ssh_unbal_stddev', 'ssh_total_stddev', 'steric_explained_variance']:
+                weight_list.append([os.path.join(self.task_config.DATA, 'staticb', f'ocn.{string}.incr.{window_begin_iso}.nc'),
+                                    os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f'{APREFIX}ocean.{string}.nc')])
 
             FileHandler({'copy': weight_list}).sync()
 
@@ -278,6 +293,6 @@ class MarineBMat(Task):
         yaml_list = []
         for yaml_file in yamls:
             dest = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
-                                f"{self.task_config.APREFIX}{os.path.basename(yaml_file)}")
+                                f"{APREFIX}{os.path.basename(yaml_file)}")
             yaml_list.append([yaml_file, dest])
         FileHandler({'copy': yaml_list}).sync()

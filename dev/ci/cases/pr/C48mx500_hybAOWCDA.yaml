@@ -1,0 +1,25 @@
+experiment:
+  system: gfs
+  mode: cycled
+
+arguments:
+  account: {{ 'HPC_ACCOUNT' | getenv }}
+  pslot: {{ 'pslot' | getenv }}
+  app: S2S
+  resdetatmos: 48
+  resensatmos: 48
+  resdetocean: 5.0
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20250327
+  idate: 2021032418
+  edate: 2021032500
+  nens: 2
+  interval: 0
+  start: warm
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/soca_hyb_gfs_defaults_ci.yaml
+
+skip_ci_on_hosts:
+  - gaeac5
+  - orion
+  - awsepicglobalworkflow
