@@ -157,6 +157,13 @@ class MarineAnalysis(Task):
 
         # initialize JEDI applications
         self.jedi_dict['var'].initialize(self.task_config)
+
+        # TEST
+        self.task_config.obs_variables = {}
+        for obs_space in self.jedi_dict['var'].jedi_config.input_config['cost function']['observations']['observers']:
+            self.task_config.obs_variables[obs_space['obs space']['name']] = obs_space['obs space']['simulated variables'][0]
+#        print('foo', self.task_config.obs_variables)
+
         self.jedi_dict['socaincr2mom6'].initialize(self.task_config)
         self.jedi_dict['soca_2cice_global'].initialize(self.task_config)
         self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
