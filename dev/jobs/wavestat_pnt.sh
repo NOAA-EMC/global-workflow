@@ -19,7 +19,7 @@ echo
 echo "=============== START TO RUN WAVE PREP ==============="
 # Execute the JJOB
 # Execute the JJOB
-${HOMEgfs}/jobs/JGLOBAL_WAVE_STAT_PNT
+${HOMEgfs}/jobs/JGEFS_WAVE_STAT_PNT
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 
