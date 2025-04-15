@@ -3,9 +3,52 @@
 Script to generate GitLab CI pipeline configuration based on supported test cases
 for each machine.
 
-This script uses get_host_case_list.py to determine which test cases are supported
-on each machine and generates the complete .gitlab-ci.yml configuration by combining
-a template with machine-specific sections.
+Overview
+--------
+This script automates the creation of a `.gitlab-ci.yml` file tailored for the
+current repository and its supported test environments. Its main role is to
+dynamically generate the GitLab CI pipeline configuration, ensuring that the
+pipeline reflects the actual set of supported test cases for each target machine.
+
+Process
+-------
+1. **Discovery of Supported Test Cases**:
+   - The script imports and uses `get_host_case_list.py` (via `get_host_cases`) to
+     determine which test cases are supported on each specified machine.
+   - The list of machines is provided via command-line arguments.
+
+2. **Template-Based Configuration**:
+   - A template YAML file is provided (via `--template` argument) that contains
+     the static, reusable parts of the pipeline configuration.
+   - The script reads this template, extracting the relevant content below a
+     demarcation marker.
+
+3. **Dynamic Section Generation**:
+   - For each machine, the script generates YAML configuration sections for
+     build, setup, and test jobs, using the discovered test cases as a matrix.
+   - These sections are appended to the template content.
+
+4. **Output**:
+   - The final, combined configuration is written to `.gitlab-ci.yml` in the
+     repository's CI directory (or to a user-specified output path).
+   - This output file is what GitLab CI will use to define and run the pipeline.
+
+Role in Workflow
+----------------
+- This script is intended to be run whenever the set of supported test cases or
+  machines changes, or when the pipeline template is updated.
+- It ensures that the CI pipeline is always in sync with the actual capabilities
+  of the codebase and test infrastructure, reducing manual maintenance and errors.
+- The generated `.gitlab-ci.yml` is the authoritative pipeline definition for
+  GitLab CI/CD in this repository.
+
+Usage
+-----
+Run this script with the required arguments:
+    python generate_pipelines.py --machines <machine1,machine2,...> --template <template_path> [--output <output_path>]
+
+This will produce or update the `.gitlab-ci.yml` file for use by GitLab CI.
+
 """
 
 import os
