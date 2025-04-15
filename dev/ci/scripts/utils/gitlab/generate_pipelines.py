@@ -109,13 +109,13 @@ def generate_machine_config(machine, case_list):
 build-{machine}:
   extends: .build_template
   variables:
-    MACHINE: {machine}
+    mahine: {machine}
   tags: ["{machine}"]
 
 setup_experiments-{machine}:
   extends: .setup_template
   variables:
-    MACHINE: {machine}
+    mahine: {machine}
   tags: ["{machine}"]
   parallel:
     matrix:
@@ -126,7 +126,7 @@ setup_experiments-{machine}:
 run_tests-{machine}:
   extends: .run_tests_template
   variables:
-    MACHINE: {machine}
+    mahine: {machine}
   tags: ["{machine}"]
   parallel:
     matrix:
