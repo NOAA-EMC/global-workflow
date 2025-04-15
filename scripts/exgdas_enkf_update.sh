@@ -89,6 +89,7 @@ else
 fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
+hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 
 ################################################################################
 
