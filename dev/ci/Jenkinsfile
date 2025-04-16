@@ -221,7 +221,7 @@ pipeline {
                                                 try {
                                                     sh(script: """
                                                       source ${HOMEgfs_dev}/ush/gw_setup.sh
-                                                      ${HOMEgfs_dev}/ci/scripts/run-check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} 'global-workflow'
+                                                      ${HOMEgfs_dev}/ci/scripts/run_check_ci.sh ${CUSTOM_WORKSPACE} ${pslot} 'global-workflow'
                                                     """)
                                                     sh(script: """
                                                       source ${HOMEgfs_dev}/ush/gw_setup.sh
@@ -300,9 +300,9 @@ pipeline {
                         done
                     """, returnStatus: true)
                     sh(script: """${GH} pr edit ${env.CHANGE_ID} --repo ${repo_url} --add-label "CI-${Machine}-${STATUS}" """, returnStatus: true)
-                    if (fileExists("${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log")) {
-                        sh(script: """echo "**CI ${STATUS}** on ${Machine} in Build# ${env.BUILD_NUMBER}<br>Built and ran in directory \\`${CUSTOM_WORKSPACE}\\`\n\\`\\`\\`\n" | cat - ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log > temp && mv temp ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log""", returnStatus: true)
-                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body-file ${CUSTOM_WORKSPACE}/RUNTESTS/ci-run_check.log  """, returnStatus: true)
+                    if (fileExists("${CUSTOM_WORKSPACE}/RUNTESTS/run_check_ci.log")) {
+                        sh(script: """echo "**CI ${STATUS}** on ${Machine} in Build# ${env.BUILD_NUMBER}<br>Built and ran in directory \\`${CUSTOM_WORKSPACE}\\`\n\\`\\`\\`\n" | cat - ${CUSTOM_WORKSPACE}/RUNTESTS/run_check_ci.log > temp && mv temp ${CUSTOM_WORKSPACE}/RUNTESTS/run_check_ci.log""", returnStatus: true)
+                        sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body-file ${CUSTOM_WORKSPACE}/RUNTESTS/run_check_ci.log  """, returnStatus: true)
                     }
                     if (STATUS == 'Passed') {
                         try {
