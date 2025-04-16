@@ -134,6 +134,15 @@ run_tests-{machine}:
       - caseName: {case_list_yaml}
   dependencies:
     - setup_experiments-{machine}
+
+# CTests job for GitHub API triggered builds
+run_ctests-{machine}:
+  extends: .run_ctests_template
+  variables:
+    machine: {machine}
+  tags: ["{machine}"]
+  dependencies:
+    - build-{machine}
 '''
     return machine_config
 

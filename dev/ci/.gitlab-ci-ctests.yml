@@ -1,0 +1,37 @@
+# CTests jobs for GitHub API triggered builds
+# This file is included by the main .gitlab-ci.yml when GITHUB_API_TRIGGER=true
+
+# For each machine, we'll define CTest jobs that depend on the shared build stage
+# The shared build already does the CMake setup for ctests
+
+# Template for CTest jobs that will be used across machines
+.run_ctests_template:
+  extends: .ctests_template
+  stage: run_tests
+  parallel:
+    matrix:
+      - CTEST: ["C48_ATM_gfs_fcst_seg0", "C48_S2SW_gfs_fcst_seg0", "C48_S2SW_gfs_atmos_prod"]
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
+
+# The machine-specific jobs will be dynamically generated and added to the pipeline
+# by the generate_pipelines.py script. They will follow this pattern:
+
+# run_ctests-hera:
+#   extends: .run_ctests_template
+#   variables:
+#     machine: hera
+#   tags: ["hera"]
+#   dependencies:
+#     - build-hera
+
+# Dummy job to ensure stage exists when no tests are defined
+create_ctests:
+  stage: create_experiments
+  script:
+    - echo "CTests setup already handled during build stage"
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
+  tags:
+    - hera
+
