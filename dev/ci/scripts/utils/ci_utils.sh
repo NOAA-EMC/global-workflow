@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 # Determine HOMEGFS_ and source machine detection early
 if [[ -z "${HOMEGFS_}" ]]; then
