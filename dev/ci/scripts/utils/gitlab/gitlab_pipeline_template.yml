@@ -59,7 +59,7 @@ variables:
   dependencies:
     - setup_experiments-${machine}
 
-.create_gist_from_svg_url:
+create_gist_from_svg_url:
   image: ghcr.io/cli/cli:latest
   stage: finalize
   allow_failure: true
