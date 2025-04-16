@@ -1,8 +1,45 @@
-# CTests jobs for GitHub API triggered builds
-# This file is included by the main .gitlab-ci.yml when GITHUB_API_TRIGGER=true
+# CTests modality configuration for the global-workflow project
+# This file defines jobs specific to the CTests workflow
+# It is included when triggered via GitHub API (GITHUB_API_TRIGGER=true)
 
-# For each machine, we'll define CTest jobs that depend on the shared build stage
-# The shared build already does the CMake setup for ctests
+# Base configuration for ctest jobs
+.base_config:
+  variables:
+    GIT_STRATEGY: none
+
+# Setup job for ctests using CMake
+create_ctests:
+  extends: .base_config
+  stage: create_experiments
+  script:
+    - echo "Setting up for ctests workflow"
+    - mkdir -p ${HOMEGFS}/ctests
+    - cd ${HOMEGFS}/ctests
+    - cmake ../..
+    - echo "CTests have been created and configured successfully"
+  dependencies:
+    - build-${machine}
+  tags:
+    - hera
+
+# Template for CTest execution jobs
+.ctests_template:
+  extends: .base_config
+  stage: run_tests
+  allow_failure: true
+  script:
+    - echo "Running ${CTEST} tests in ${HOMEGFS}/ctests"
+    - if [ "${PR_NUMBER}" != "0" ]; then
+    -   echo "Testing PR #${PR_NUMBER}"
+    - else
+    -   echo "Testing standard branch"
+    - fi
+    - cd ${HOMEGFS}/ctests/build
+    - ctest -R test_${CTEST}_setup
+    - ctest -R test_${CTEST}_stage
+    - ctest -R test_${CTEST}_execute
+  dependencies:
+    - create_ctests
 
 # Template for CTest jobs that will be used across machines
 .run_ctests_template:
@@ -10,28 +47,21 @@
   stage: run_tests
   parallel:
     matrix:
-      - CTEST: ["C48_ATM_gfs_fcst_seg0", "C48_S2SW_gfs_fcst_seg0", "C48_S2SW_gfs_atmos_prod"]
-  rules:
-    - if: $GITHUB_API_TRIGGER == "true"
+      - CTEST: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0', 'C48_S2SW_gfs_atmos_prod']
 
-# The machine-specific jobs will be dynamically generated and added to the pipeline
-# by the generate_pipelines.py script. They will follow this pattern:
 
-# run_ctests-hera:
-#   extends: .run_ctests_template
-#   variables:
-#     machine: hera
-#   tags: ["hera"]
-#   dependencies:
-#     - build-hera
+run_ctests-hera:
+  extends: .run_ctests_template
+  variables:
+    machine: hera
+  tags: ["hera"]
+  dependencies:
+    - create_ctests
 
-# Dummy job to ensure stage exists when no tests are defined
-create_ctests:
-  stage: create_experiments
-  script:
-    - echo "CTests setup already handled during build stage"
-  rules:
-    - if: $GITHUB_API_TRIGGER == "true"
-  tags:
-    - hera
-
+run_ctests-gaeac6:
+  extends: .run_ctests_template
+  variables:
+    machine: gaeac6
+  tags: ["gaeac6"]
+  dependencies:
+    - create_ctests

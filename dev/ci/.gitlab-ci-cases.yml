@@ -1,0 +1,75 @@
+# Standard cases modality configuration for the global-workflow project
+# This file defines jobs specific to the standard test cases workflow
+
+# Base configuration for case jobs
+.base_config:
+  variables:
+    GIT_STRATEGY: none
+
+# Template for experiment setup jobs
+.setup_template:
+  extends: .base_config
+  stage: create_experiments
+  allow_failure: true
+  script:
+    - export RUNTESTS=${RUNTESTS_DIR}
+    - ${HOMEGFS}/dev/ci/scripts/utils/ci_utils.sh create_experiment ${HOMEGFS}/dev/ci/cases/pr/${caseName}.yaml
+  dependencies:
+    - build-${machine}
+
+# Template for test execution jobs
+.run_tests_template:
+  extends: .base_config
+  stage: run_tests
+  allow_failure: true
+  script:
+    - echo "Using build directory $HOMEGFS (dated $BUILD_DATE)"
+    - pslot=$(${HOMEGFS}/dev/ci/scripts/utils/ci_utils.sh get_pslot ${RUNTESTS_DIR} ${caseName})
+    - ${HOMEGFS}/dev/ci/scripts/run_check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
+  dependencies:
+    - setup_experiments-${machine}
+
+
+setup_experiments-hera:
+  extends: .setup_template
+  variables:
+    machine: hera
+  tags: ["hera"]
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+  dependencies:
+    - build-hera
+
+run_tests-hera:
+  extends: .run_tests_template
+  variables:
+    machine: hera
+  tags: ["hera"]
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+  dependencies:
+    - setup_experiments-hera
+
+setup_experiments-gaeac6:
+  extends: .setup_template
+  variables:
+    machine: gaeac6
+  tags: ["gaeac6"]
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+  dependencies:
+    - build-gaeac6
+
+run_tests-gaeac6:
+  extends: .run_tests_template
+  variables:
+    machine: gaeac6
+  tags: ["gaeac6"]
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+  dependencies:
+    - setup_experiments-gaeac6

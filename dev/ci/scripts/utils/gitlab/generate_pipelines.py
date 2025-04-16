@@ -99,24 +99,31 @@ def generate_machine_config(machine, case_list):
 
     Returns
     -------
-    str
-        YAML configuration for the machine's build, setup, and run_tests jobs.
+    tuple
+        A tuple containing (main_config, cases_config, ctests_config) - YAML configurations for:
+        - main_config: build job for the main pipeline
+        - cases_config: setup and run_tests jobs for the cases modality
+        - ctests_config: run_ctests job for the ctests modality
     """
 
     case_str = '", "'.join(case_list)
     case_list_yaml = f'["{case_str}"]'
 
-    machine_config = f'''
+    # Build job for the main pipeline
+    main_config = f'''
 build-{machine}:
   extends: .build_template
   variables:
-    mahine: {machine}
+    machine: {machine}
   tags: ["{machine}"]
+'''
 
+    # Setup and run_tests jobs for the cases modality
+    cases_config = f'''
 setup_experiments-{machine}:
   extends: .setup_template
   variables:
-    mahine: {machine}
+    machine: {machine}
   tags: ["{machine}"]
   parallel:
     matrix:
@@ -127,24 +134,27 @@ setup_experiments-{machine}:
 run_tests-{machine}:
   extends: .run_tests_template
   variables:
-    mahine: {machine}
+    machine: {machine}
   tags: ["{machine}"]
   parallel:
     matrix:
       - caseName: {case_list_yaml}
   dependencies:
     - setup_experiments-{machine}
+'''
 
-# CTests job for GitHub API triggered builds
+    # CTests job for the ctests modality
+    ctests_config = f'''
 run_ctests-{machine}:
   extends: .run_ctests_template
   variables:
     machine: {machine}
   tags: ["{machine}"]
   dependencies:
-    - build-{machine}
+    - create_ctests
 '''
-    return machine_config
+
+    return (main_config, cases_config, ctests_config)
 
 
 def read_template_file(template_path):
@@ -198,18 +208,51 @@ def generate_pipeline_config(machines, template_file, output_file=None):
     ValueError
         If the template file does not exist.
     """
-    # Set default output file path if not specified
-    output_file = output_file or os.path.join(_homegfs, 'dev/ci', '.gitlab-ci.yml')
+    # Set default output file paths if not specified
+    main_output = output_file or os.path.join(_homegfs, 'dev/ci', '.gitlab-ci.yml')
+    cases_output = os.path.join(_homegfs, 'dev/ci', '.gitlab-ci-cases.yml')
+    ctests_output = os.path.join(_homegfs, 'dev/ci', '.gitlab-ci-ctests.yml')
 
-    # Initialize with the template content
-    if os.path.exists(template_file):
-        config_content = read_template_file(template_file)
+    # Read the current contents of the files to preserve header sections
+    if os.path.exists(main_output):
+        with open(main_output, 'r') as f:
+            main_content = f.read()
+            # Extract content before the generated sections
+            main_marker = "# The following sections are generated"
+            main_parts = main_content.split(main_marker)
+            main_header = main_parts[0] if len(main_parts) > 0 else main_content
     else:
-        raise ValueError(f"Template file {template_file} not found")
+        # If file doesn't exist, use template content
+        if os.path.exists(template_file):
+            main_header = read_template_file(template_file)
+        else:
+            raise ValueError(f"Template file {template_file} not found")
+    
+    # Do the same for cases file
+    if os.path.exists(cases_output):
+        with open(cases_output, 'r') as f:
+            cases_content = f.read()
+            cases_marker = "# The machine-specific jobs will be generated"
+            cases_parts = cases_content.split(cases_marker)
+            cases_header = cases_parts[0] if len(cases_parts) > 0 else cases_content
+    else:
+        cases_header = "# Standard cases modality configuration\n\n"
+    
+    # And for ctests file
+    if os.path.exists(ctests_output):
+        with open(ctests_output, 'r') as f:
+            ctests_content = f.read()
+            ctests_marker = "# The machine-specific jobs will be generated"
+            ctests_parts = ctests_content.split(ctests_marker)
+            ctests_header = ctests_parts[0] if len(ctests_parts) > 0 else ctests_content
+    else:
+        ctests_header = "# CTests modality configuration\n\n"
 
-    # Add a comment to indicate the start of generated sections
-    config_content += '\n# The following sections are generated for multiple hosts and dynamic case lists\n'
-
+    # Initialize with the headers
+    main_config = main_header.rstrip() + "\n\n# The following sections are generated for multiple hosts by the generate_pipelines.py script\n"
+    cases_config = cases_header
+    ctests_config = ctests_header
+    
     # Generate machine-specific configurations
     for machine in machines:
         case_list = get_case_list_for_machine(machine)
@@ -217,20 +260,40 @@ def generate_pipeline_config(machines, template_file, output_file=None):
             print(f"Warning: No supported cases found for machine {machine}", file=sys.stderr)
             continue
 
-        machine_config = generate_machine_config(machine, case_list)
-        config_content += machine_config
+        main_part, cases_part, ctests_part = generate_machine_config(machine, case_list)
+        main_config += main_part
+        # Only add cases and ctests parts if they're non-empty
+        if cases_part.strip():
+            cases_config += cases_part
+        if ctests_part.strip():
+            ctests_config += ctests_part
 
-    # Add a comment to indicate the end of generated sections
-    config_content += '\n# End of generated sections\n'
+    # Add comments to indicate the end of generated sections
+    main_config += '\n# End of generated sections\n'
+    
+    # Ensure no blank line at the top of the resulting pipelines
+    main_config = main_config.lstrip()
+    cases_config = cases_config.lstrip()
+    ctests_config = ctests_config.lstrip() 
 
-    # Ensure no blank line at the top of the resulting pipeline
-    config_content = config_content.lstrip()
+    # Write the complete configurations to the output files
+    with open(main_output, 'w') as f:
+        f.write(main_config)
+    
+    # Only write to cases and ctests files if they don't contain markers
+    # This allows us to preserve template sections in these files
+    if "# The machine-specific jobs will be generated" in cases_content:
+        with open(cases_output, 'w') as f:
+            f.write(cases_config)
+            
+    if "# The machine-specific jobs will be generated" in ctests_content:
+        with open(ctests_output, 'w') as f:
+            f.write(ctests_config)
 
-    # Write the complete configuration to the output file
-    with open(output_file, 'w') as f:
-        f.write(config_content)
-
-    print(f"GitLab CI pipeline configuration generated at {output_file}")
+    print(f"GitLab CI pipeline configurations generated:")
+    print(f" - Main pipeline: {main_output}")
+    print(f" - Cases modality: {cases_output}")
+    print(f" - CTests modality: {ctests_output}")
 
 
 def main():
