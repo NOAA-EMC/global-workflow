@@ -181,6 +181,7 @@ class OfflineAnalysis(Task):
         This method:
         - copies the analysis files to the COM/
         - copies the increment files to the COM/
+        - copy some files from GDAS COM/ to GCAFS COM/
 
         Parameters
         ----------
@@ -193,3 +194,12 @@ class OfflineAnalysis(Task):
         output_files.append([os.path.join(self.task_config.DATA, 'atminc_mem001'),
                              os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atminc.nc")])
         FileHandler({'copy': output_files}).sync()
+        # these files are for the surface analysis
+        transfer_files = []
+        transfer_files.append([os.path.join(self.task_config.COMIN_OBS, f"{self.task_config.APREFIX_IN}rtgssthr.grb"),
+                               os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}rtgssthr.grb")])
+        transfer_files.append([os.path.join(self.task_config.COMIN_OBS, f"{self.task_config.APREFIX_IN}rtgssthr.grb"),
+                               os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}rtgssthr.grb")])        
+        transfer_files.append([os.path.join(self.task_config.COMIN_OBS, f"{self.task_config.APREFIX_IN}rtgssthr.grb"),
+                               os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}rtgssthr.grb")])
+        FileHandler({'copy': transfer_files}).sync()

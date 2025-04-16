@@ -183,8 +183,8 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 DO_AERO="NO"
 export DO_PREP_OBS_AERO="NO"
-aero_fcst_runs="gcafs" # When to run aerosol forecast: gdas, gfs, or both
-aero_anl_runs="gdas gcafs" # When to run aerosol analysis: gdas, gfs, or both
+aero_fcst_runs="both" # When to run aerosol forecast: gdas, gfs, or both
+aero_anl_runs="gdas gcdas" # When to run aerosol analysis: gdas, gfs, or both
 export DO_AERO_FCST="YES"
 export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO"
@@ -272,9 +272,7 @@ if [[ "${DO_AERO}" == "YES" ]]; then
   if [[ ${aero_anl_runs} =~ ${RUN} ]]; then
     export DO_AERO_ANL="YES"
   fi
-  if [[ ${aero_fcst_runs} =~ ${RUN} ]]; then
-    export DO_AERO_FCST="YES"
-  fi
+  export DO_AERO_FCST="YES"
 fi
 
 # Surface cycle update frequency
@@ -444,8 +442,8 @@ fi
 export DO_GSISOILDA="{{ DO_GSISOILDA }}"
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
-export DONST="YES"
-if [[ "${DONST}" = "YES" ]]; then export FNTSFA="        "; fi
+export DONST="NO"
+export FNTSFA="        "
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
