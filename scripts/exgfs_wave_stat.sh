@@ -63,6 +63,17 @@
  source "${USHgfs}/wave_domain_grid.sh"
  process_grdID "${wavepostGRD}"
 
+# Script will run only if pre-defined NTASKS
+#     The actual work is distributed over these tasks.
+   if [ -z ${NTASKS} ]
+   then
+	   echo "FATAL ERROR: requires NTASKS to be set "
+	   err=1; export err;${errchk}
+	   exit $err
+   fi
+
+
+
 #
 # 0.c Time management
 #
@@ -106,12 +117,12 @@
       for me in $membn
       do
         ENSTAG=${ftype}${me}
-        cpfile=${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/${grdNAME}/${WAV_MOD_TAG}.${cycle}.${grdNAME}.f${FH3}.grib2
+        cpfile=${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/${grdNAME}/${RUN}.wave.${cycle}.${grdNAME}.f${FH3}.grib2
         if [ -s "${cpfile}" ] ; then 
-          ln -s  "$cpfile"  ./${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${grdNAME}.f${FH3}.grib2
+          ln -s  "$cpfile"  ./${RUN}.wave.${cycle}.${ENSTAG}.${grdNAME}.f${FH3}.grib2
         else
           msg="ABNORMAL EXIT: ERR in coping $cpfile "
-          postmsg "$msg"
+          echo "$msg"
           echo ' '
           echo '******************************************************* '
           echo "*** FATAL ERROR: No $cpfile copied. *** "
@@ -167,14 +178,14 @@
         for me in $membn
           do
            ENSTAG=${ftype}${me}
-           infile=${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${grdNAME}.f${FH3}.grib2
+           infile=${RUN}.wave.${cycle}.${ENSTAG}.${grdNAME}.f${FH3}.grib2
            outfile=${nnip}_${me}.t${cyc}z.${grdNAME}.f${FH3}.grib2
            wgfileout=wgrib_${nnip}_${me}.out
 		   if [ "${npart}" = "0" ]
 		   then 
-			   echo " $WGRIB2 -match ${nip} -match surface ${infile} -grib ${outfile} > ${wgfileout} 2>&1" >> ${fcmdnow}
+			   echo " $WGRIB2 -match ${nip} -match surface ${infile} -grib ${outfile} 2>&1 |tee ${wgfileout}" >> ${fcmdnow}
 		   else
-			   echo " $WGRIB2 -match ${prepar} -match \"${paridx} in sequence\" ${infile} -grib ${outfile} > ${wgfileout} 2>&1" >> ${fcmdnow}
+			   echo " $WGRIB2 -match ${prepar} -match \"${paridx} in sequence\" ${infile} -grib ${outfile} 2>&1 | tee ${wgfileout}" >> ${fcmdnow}
 		   fi
         done    #for members
     fi
@@ -302,7 +313,7 @@
         do
 
           ingrib=${snip}_${stype}.${FH3}.grib2
-          outgrib=${WAV_MOD_TAG}.t${cyc}z.${stype}.${grdNAME}.f${FH3}.grib2 
+          outgrib=${RUN}.wave.t${cyc}z.${stype}.${grdNAME}.f${FH3}.grib2 
           echo "$WGRIB2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} " >> ${stype}.ncmdfile
 
         done
@@ -354,7 +365,7 @@
     echo " ${PARMgfs}/wave/${buoyfile} copied to buoy_file.data."
   else
     msg="ABNORMAL EXIT: ERR in coping ${buoyfile}."
-    postmsg "$msg"
+    echo "$msg"
     set +x
     echo ' '
     echo '******************************************************* '
@@ -365,7 +376,7 @@
     [[ "$LOUD" = YES ]] && set -x
     echo "${PARMgfs}/wave/wave_${NET}_buoy.data  missing." >> $ensemb_log
     msg="ABNORMAL EXIT: NO FILE $buoyfile"
-    postmsg "$msg"
+    echo "$msg"
     export err=1;${errchk};
     exit ${err}
   fi 
@@ -386,7 +397,7 @@
 
 
 
-  cat ${WAV_MOD_TAG}.t${cyc}z.{mean,prob,spread}.${grdNAME}.f${FH3}.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1
+  cat ${RUN}.wave.t${cyc}z.{mean,prob,spread}.${grdNAME}.f${FH3}.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1
 
   if [ -s gribfile ]
   then
@@ -420,8 +431,9 @@
     blat=`echo $bline | awk '{print $2}'`
     blon=`echo $bline | awk '{print $1}'`
     bnom=`echo $bline | awk '{print $3}' | sed "s/'//g"`
+    
 
-    echo "$HOMEgfs/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} ${fhr} > bull_${bnom}.out 2>&1" >> ${fcmdnow}
+    echo "$HOMEgfs/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} ${fhr} 2>&1 | tee  bull_${bnom}.out" >> ${fcmdnow}
 
     ibuoy=`expr ${ibuoy} + 1`
     ifile=`expr ${ifile} + 1`
@@ -437,7 +449,7 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+  if [ ${CFP_MP:-"NO"} = "NO" ]; then
     nfile=0
     ifile=0
     iline=1
@@ -449,9 +461,10 @@
         break
       else
         if [ "$ifirst" = 'yes' ]; then
-          echo "#!/bin/sh" > cmdmfile.$nfile
-          echo "$nfile cmdmfile.$nfile" >> cmdmprog
-          chmod 744 "cmdmfile.$nfile"
+		#: > "${DATA}/output_$YMDHMS/cmdmfile.$nfile"
+		echo "#!/bin/sh" > cmdmfile.$nfile
+		echo " ${DATA}/output_${YMDHMS}/cmdmfile.$nfile" >> cmdmprog
+		chmod 744 "cmdmfile.$nfile"
         fi
         echo $line >> "cmdmfile.$nfile"
         nfile=$(( nfile + 1 ))
@@ -464,8 +477,6 @@
     done
   fi
 
-  wavenproc=$(wc -l ${fcmdnow} | awk '{print $1}')
-  wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
   set +x
   echo ' '
@@ -473,20 +484,15 @@
   echo '   ------------------------------------'
   echo ' '
   
-
-  if [ "$wavenproc" -gt '1' ]
-  then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
-    else
-      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
+  ncmds=$(wc -l < cmdmprog)
+    if [[ ${NTASKS} -lt ${ncmds} ]]; then
+	    if [[ "${USE_CFP:-}" = "YES" ]]; then
+		    echo "WARNING: Not enough processors for MPMD, '${NTASKS} < ${ncmd}', running in serial mode"
+		    export USE_CFP="NO"
+	    fi
     fi
-    exit=$?
-  else
-    chmod 744 ${fcmdnow}
-    ./${fcmdnow}
-    exit=$?
-  fi
+    "${USHgfs}/run_mpmd.sh" "cmdmprog"
+    export err=$?; err_chk
 
   if [ "$exit" != '0' ]
   then
@@ -513,24 +519,24 @@
     blon=`echo $bline | awk '{print $1}'`
     bnom=`echo $bline | awk '{print $3}' | sed "s/'//g"`
 
-    if [ ! -s ${WAV_MOD_TAG}.${bnom}.f${FH3}.bull ]
+    if [ ! -s ${RUN}.wave.${bnom}.f${FH3}.bull ]
     then
      msg="ABNORMAL EXIT: ERR in generating bulettin file"
-     postmsg "$msg"
+     echo "$msg"
      set +x
      echo ' '
      echo '***************************************** '
      echo "***            FATAL ERROR            *** "
-     echo "--- No ${WAV_MOD_TAG}.${bnom}.bull file created --- "
+     echo "--- No ${RUN}.wave.${bnom}.bull file created --- "
      echo '***************************************** '
      echo ' '
      [[ "$LOUD" = YES ]] && set -x
-     echo "No ${WAV_MOD_TAG}.${bnom}.f${FH3}.bull " >> $wavelog
+     echo "No ${WAV_MOD_TAG}.${bnom}.f${FH3}.bull " 
      export err=9;${errchk}
      exit $err
    else
      set +x
-     echo -e "\n Bulletin file ${WAV_MOD_TAG}.${bnom}.${FH3}.bull generated succesfully.\n"
+     echo -e "\n Bulletin file ${RUN}.wave.${bnom}.${FH3}.bull generated succesfully.\n"
      [[ "$LOUD" = YES ]] && set -x
      rm -f bull_${bnom}.out
    fi
@@ -538,10 +544,10 @@
  done
 
 
-   tar cf ${WAV_MOD_TAG}.t${cyc}z.f${FH3}.bull_tar ${WAV_MOD_TAG}.*.f*.bull
-   rm -f ${WAV_MOD_TAG}.*.bull
-   tar cf ${WAV_MOD_TAG}.t${cyc}z.f${FH3}.station_tar ${WAV_MOD_TAG}.*.f*.ts
-   rm -f ${WAV_MOD_TAG}.*.ts
+   tar cf ${RUN}.wave.t${cyc}z.f${FH3}.bull_tar ${RUN}.wave.*.f*.bull
+   rm -f ${RUN}.wave.*.bull
+   tar cf ${RUN}.wave.t${cyc}z.f${FH3}.station_tar ${RUN}.wave.*.f*.ts
+   rm -f ${RUN}.wave.*.ts
 
 # 4.a Output all grib2 parameter files to COMOUT
 
@@ -551,7 +557,7 @@
 
     for stype in mean spread prob
     do
-      fcopy=${WAV_MOD_TAG}.t${cyc}z.${stype}.${grdNAME}.f${FH3}.grib2
+      fcopy=${RUN}.wave.t${cyc}z.${stype}.${grdNAME}.f${FH3}.grib2
       if [ -s ${fcopy} ]
       then
         set +x
@@ -584,8 +590,8 @@
 
     # 4.b Output all station and bull tars to COMOUT (TO DO: this should go somewhere else)
     #
-      bcopy_station=${WAV_MOD_TAG}.t${cyc}z.f${FH3}.station_tar
-      bcopy_bull=${WAV_MOD_TAG}.t${cyc}z.f${FH3}.bull_tar
+      bcopy_station=${RUN}.wave.t${cyc}z.f${FH3}.station_tar
+      bcopy_bull=${RUN}.wave.t${cyc}z.f${FH3}.bull_tar
       if [ -s "$bcopy_station" ] && [ -s "$bcopy_bull" ]; then
         set +x
         echo "   Copying tar files to ensstat"
@@ -608,7 +614,7 @@
       fi
 
   msg="$job completed normally"
-  postmsg "$msg"
+  echo "$msg"
 #
   echo "Ending at : `date`"
 #

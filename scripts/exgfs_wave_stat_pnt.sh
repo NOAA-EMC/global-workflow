@@ -59,8 +59,8 @@
   mkdir output_$YMDHMS
   cd output_$YMDHMS
 
-  STATION_TAR="./${WAV_MOD_TAG}.t${cyc}z.station_tar"
-  BULL_TAR="./${WAV_MOD_TAG}.t${cyc}z.bull_tar"
+  STATION_TAR="./${RUN}.wave.t${cyc}z.station_tar"
+  BULL_TAR="./${RUN}.wave.t${cyc}z.bull_tar"
 
 
 
@@ -78,12 +78,12 @@
         exit 2
        fi
     # Use ls to safely check for matching files
-    for file in "${dir_var}/${WAV_MOD_TAG}.t${cyc}z.f"???.*_tar; do
+    for file in "${dir_var}/${RUN}.wave.t${cyc}z.f"???.*_tar; do
       if [[ -f "$file" ]]; then  # Ensure it's a file before linking
 	      cp -rp "$file" .
         else
               msg="ABNORMAL EXIT: Error in copying $cpfile"
-              postmsg "$msg"
+              echo "$msg"
               echo ' '
               echo '******************************************************* '
               echo "*** FATAL ERROR: No $cpfile copied. *** "
@@ -100,32 +100,32 @@
 
 # Extract all .bull_tar files
  echo "Extracting all bull_tar files..."
- for tarfile in ./${WAV_MOD_TAG}.t*z.f*.bull_tar; do
+ for tarfile in ./${RUN}.wave.t*z.f*.bull_tar; do
 	 tar -xf "$tarfile"  
  done
 
- for tarfile in ./${WAV_MOD_TAG}.t*z.f*.station_tar; do
+ for tarfile in ./${RUN}.wave.t*z.f*.station_tar; do
 	 tar -xf "$tarfile" 
  done
 
 
      # Get unique buoy numbers from extracted files
-     BUOY_LIST=$(ls "${WAV_MOD_TAG}".*.*.bull | cut -d'.' -f2 | sort -u)
+     BUOY_LIST=$(ls gefs.wave.*.*.bull | cut -d'.' -f3 | sort -u)
 
      # Merge files for each buoy
      for buoy in $BUOY_LIST; do
-         cat "${WAV_MOD_TAG}"."$buoy".f*.bull > "${WAV_MOD_TAG}.${buoy}.bull"
-	 cat "${WAV_MOD_TAG}"."$buoy".f*.ts > "${WAV_MOD_TAG}.${buoy}.ts"
-	 rm  "${WAV_MOD_TAG}"."$buoy".f*.ts "${WAV_MOD_TAG}"."$buoy".f*.bull
+         cat "${RUN}.wave.$buoy".f*.bull > "${RUN}.wave.${buoy}.bull"
+	 cat "${RUN}.wave.$buoy".f*.ts > "${RUN}.wave.${buoy}.ts"
+	 rm  "${RUN}.wave.$buoy".f*.ts "${RUN}.wave.$buoy".f*.bull
      done
 
          # Step 3: Archive the processed buoy files
          echo "Creating final tar archive..."
-         tar -cf "$BULL_TAR" "${WAV_MOD_TAG}".*.bull
-	 tar -cf "$STATION_TAR" "${WAV_MOD_TAG}".*.ts
+         tar -cf "$BULL_TAR" "${RUN}.wave".*.bull
+	 tar -cf "$STATION_TAR" "${RUN}.wave".*.ts
 
 
-         echo "Processing complete. Final tar: $FINAL_TAR"
+         echo "Processing complete. Final tar:"
 
 
   MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_GRIB_ENS:COM_WAVE_GRIB_GRID_TMPL
@@ -136,12 +136,12 @@
   echo '---------------------'
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -s ${WAV_MOD_TAG}.t${cyc}z.bull_tar ]
+  if [ -s ${RUN}.wave.t${cyc}z.bull_tar ]
   then
     set +x
-    echo "   Copying ${WAV_MOD_TAG}.t${cyc}z.bull_tar  to COMOUT_WAVE_GRIB_ENS"
+    echo "   Copying ${RUN}.wave.t${cyc}z.bull_tar  to COMOUT_WAVE_GRIB_ENS"
     [[ "$LOUD" = YES ]] && set -x
-    cp -f ${WAV_MOD_TAG}.t${cyc}z.bull_tar ${COMOUT_WAVE_GRIB_ENS}
+    cp -f ${RUN}.wave.t${cyc}z.bull_tar ${COMOUT_WAVE_GRIB_ENS}
    else
      set +x
      echo ' '
@@ -158,12 +158,12 @@
 
 
 # 4.b Compress time series into tar file and copy to COMOUT
-  if [ -s ${WAV_MOD_TAG}.t${cyc}z.station_tar ]
+  if [ -s ${RUN}.wave.t${cyc}z.station_tar ]
   then
     set +x
-    echo "   Copying ${WAV_MOD_TAG}.t${cyc}z.bull_tar  to ${COMOUT_WAVE_GRIB_ENS}"
+    echo "   Copying ${RUN}.wave.t${cyc}z.bull_tar  to ${COMOUT_WAVE_GRIB_ENS}"
     [[ "$LOUD" = YES ]] && set -x
-    cp -f ${WAV_MOD_TAG}.t${cyc}z.station_tar ${COMOUT_WAVE_GRIB_ENS}
+    cp -f ${RUN}.wave.t${cyc}z.station_tar ${COMOUT_WAVE_GRIB_ENS}
    else
      set +x
      echo ' '
@@ -184,22 +184,22 @@
   if [ "$SENDDBN" = 'YES' ]
   then
        MODCOM=$(echo ${NET}_${COMPONENT} | tr '[a-z]' '[A-Z]')
-       $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job ${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/station/${WAV_MOD_TAG}.t${cyc}z.bull_tar
-       $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job ${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/station/${WAV_MOD_TAG}.t${cyc}z.station_tar
+       $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job ${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/station/${RUN}.wave.t${cyc}z.bull_tar
+       $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job ${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/station/${RUN}.wave.t${cyc}z.station_tar
   fi
 #
   if [ "$exit_code" -ne '0' ]
   then
      echo "FATAL ERROR: Problem in WAVE POINT STAT"
      msg="ABNORMAL EXIT: Problem in WAVE POINT STAT"
-     postmsg "$msg"
+     echo "$msg"
      echo $msg
      export err=12;${errchk}
      exit $err
   fi
 
   msg="$job completed normally"
-  postmsg "$msg"
+  echo "$msg"
 #
   echo "Ending at : `date`"
 #

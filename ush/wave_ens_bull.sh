@@ -14,16 +14,8 @@
 # Script history log:
 # 2019-05-06  J-Henrique Alves First Version.
 # 2019-11-02  J-Henrique Alves Ported to global-workflow.
+# 2025-03-01  S-Banihashemi modified script to be used in gefsv13 implementation
 #
-# $Id$
-#
-# Attributes:
-#   Language: Bourne-again (BASH) shell
-#   Machine: WCOSS-DELL-P3
-#
-# Requirements:                                                             
-# - wgrib2 with IPOLATES library                                            
-#                                                                           
 ################################################################################
 #
 # 0.  Preparations
@@ -71,7 +63,7 @@
     echo '******************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "FATAL ERROR in ${scripname}: Could not create temp directory"
+    echo "FATAL ERROR in ${scripname}: Could not create temp directory"
     exit 1
   fi
 
@@ -81,8 +73,8 @@
 #
 
   FH3=$(printf "%03d" $bfhr)
-  bfil="${WAV_MOD_TAG}.${bnom}.f${FH3}.bull"
-  tfil="${WAV_MOD_TAG}.${bnom}.f${FH3}.ts"
+  bfil="${RUN}.wave.${bnom}.f${FH3}.bull"
+  tfil="${RUN}.wave.${bnom}.f${FH3}.ts"
 #
 # 1. Prepare input data
 #
@@ -92,7 +84,7 @@
   $WGRIB2 ../gribfile -new_grid_winds earth \
                      -new_grid_interpolation bilinear -new_grid latlon \
                      ${blon}:2:.01 ${blat}:2:.01 grbint.${bnom} \
-                     1> buoy_interp.out 2>&1
+                     2>&1 | tee  buoy_interp.out
 #
   if ! [ -f grbint.${bnom} ]
   then
@@ -103,7 +95,7 @@
     echo '******************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "FATAL ERROR creating grbint.${bnom} in ${scripname}"
+    echo "FATAL ERROR creating grbint.${bnom} in ${scripname}"
     exit 2
   fi
 #   
@@ -157,7 +149,7 @@
     echo '******************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "FATAL ERROR reading parameters from grbint.${bnom} in ${scripname}"
+    echo "FATAL ERROR reading parameters from grbint.${bnom} in ${scripname}"
     exit 3
   fi
 #
@@ -175,11 +167,9 @@
     echo '******************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "WARNING: parameter is UNDEFINED in grbint.${bnom} in ${scripname}"
+    echo "WARNING: parameter is UNDEFINED in grbint.${bnom} in ${scripname}"
   fi
 
-# testing purposes
-  FHMIN_WAV=005
 #
 # 2. Generate bulletin
 #
@@ -195,23 +185,33 @@
     fi
     for (( it=1; it<=$tlen; it++ ))
     do
-      tdum=`expr ${valt[$it-1]} / 1`
-      ddum=`expr ${vald[$it-1]} / 1`
-      printf '| %2.2i %2.2i' $ddum $tdum >> $bfil
-      printf ' | %5.2f ' \
-           ${hsb[$it-1]:0:4} \
-           ${hspb[$it-1]:0:4} \
-           ${tpb[$it-1]:0:4} \
-           ${tspb[$it-1]:0:4} \
-           ${ub[$it-1]:0:4} \
-           ${usb[$it-1]:0:4} \
-           ${p1b[$it-1]:0:4} \
-           ${p2b[$it-1]:0:4} \
-           ${p3b[$it-1]:0:4} \
-           ${p4b[$it-1]:0:4} \
-           ${p5b[$it-1]:0:4} \
-           ${p6b[$it-1]:0:4} >> $bfil
-      printf ' |\n' >> $bfil
+	    #val=${valt[$it-1]}
+	    #if [[ "$val" =~ ^[0-9]+$ ]]; then
+		#    tdum=$(printf "%02d" "$val")
+	    #else
+		#    echo "WARNING: Invalid hour in valt[$it-1]: '$val'" >&2
+		#    tdum="00"  # default to midnight
+	    #fi
+	    #val=${valt[$it-1]}
+	    #tdum=$(printf "%02d" $((10#$val)))
+	    #ddum=`expr ${vald[$it-1]} / 1`
+	    tdum=$(printf "%d" $((10#${valt[$it-1]})))
+	    ddum=$(printf "%d" $((10#${vald[$it-1]})))
+	    printf '| %02d %02d' "$ddum" "$tdum" >> $bfil
+	    #printf '|  %02d %02d' $ddum $tdum >> $bfil
+	    printf ' | %5.2f ' \
+	   $(echo "${hsb[$it-1]:0:4}" | awk '{printf "%.5f", $1}')\
+	   $(echo "${tpb[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
+	   $(echo "${tspb[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
+	   $(echo "${ub[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
+	   $(echo "${usb[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
+           $(echo "${p1b[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
+	   $(echo "${p2b[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
+	   $(echo "${p3b[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
+	   $(echo "${p4b[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
+	   $(echo "${p5b[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
+	   $(echo "${p6b[$it-1]:0:4}" | awk '{printf "%.5f", $1}') >> $bfil
+           printf ' |\n' >> $bfil
     done
 
     if [ "$bfhr" -eq "${FHMAX_WAV}" ]
@@ -236,16 +236,25 @@
     fi 
   for (( it=1; it<=$tlen; it++ ))
   do
-    tdum=`expr ${valt[$it-1]} / 1`
-    printf ' %8.8i %2.2i' ${valpdy[$it-1]} $tdum >> $tfil
-    printf ' %5.2f ' \
-         ${hsb[$it-1]:0:4} \
-         ${hspb[$it-1]:0:4} \
-         ${tpb[$it-1]:0:4} \
-         ${tspb[$it-1]:0:4} \
-         ${ub[$it-1]:0:4} \
-         ${usb[$it-1]:0:4} >> $tfil
-    printf '\n' >> $tfil
+	  #val=${valt[$it-1]}
+          #if [[ "$val" =~ ^[0-9]+$ ]]; then
+		#  tdum=$(printf "%02d" "$val")
+	  #else
+		#  echo "WARNING: Invalid hour in valt[$it-1]: '$val'" >&2
+		#  tdum="00"  # default to midnight
+	  #fi
+	  #val=${valt[$it-1]}
+	  #tdum=$(printf "%02d" $((10#$val)))
+	  tdum=$(printf "%d" $((10#${valt[$it-1]})))
+         printf ' %8.8i %02d' ${valpdy[$it-1]} "$tdum" >> $tfil
+         printf ' %5.2f ' \
+         $(echo "${hsb[$it-1]:0:4}" | awk '{printf "%.5f", $1}')\
+	 $(echo "${hspb[$it-1]:0:4}" | awk '{printf "%.5f", $1}')\
+         $(echo "${tpb[$it-1]:0:4}" | awk '{printf "%.5f", $1}')\
+         $(echo "${tspb[$it-1]:0:4}" | awk '{printf "%.5f", $1}')\
+         $(echo "${ub[$it-1]:0:4}" | awk '{printf "%.5f", $1}')\
+         $(echo "${usb[$it-1]:0:4}" | awk '{printf "%.5f", $1}') >> $tfil
+          printf '\n' >> $tfil
   done
 #
 # 2.c Check for errors in creating bulletin file
@@ -261,7 +270,7 @@
     echo '******************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "FATAL ERROR : BULL/TS FILES NOT FOUND"
+    echo "FATAL ERROR : BULL/TS FILES NOT FOUND"
     exit 4
   fi
 #

@@ -14,15 +14,7 @@
 # Script history log:
 # 2014-01-16  J-Henrique Alves First Version.
 # 2019-11-02  J-Henrique Alves Ported to global-workflow.
-#
-# $Id$
-#
-# Attributes:
-#   Language: Bourne-again (BASH) shell
-#   Machine: WCOSS-DELL-P3
-#
-# Requirements:                                                             
-# - wgrib2 with IPOLATES library                                            
+# 2025-03-01  S-Banihashemi modified script to be used in gefsv13 implementation
 #                                                                           
 ################################################################################
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --+ + + ++
@@ -199,7 +191,7 @@
    if [ ! -f mean_out ]
    then
      msg="ABNORMAL EXIT: ERR mean_out not gerenerated for ${nnip} $FH3."
-     postmsg "$msg"
+     echo "$msg"
      set +x
      echo "--- mean_out not gerenerated for ${nnip} $FH3 --- "
      [[ "$LOUD" = YES ]] && set -x
@@ -211,7 +203,7 @@
    if [ ! -f spread_out ]
    then
      msg="ABNORMAL EXIT: ERR spread_out not gerenerated for ${nnip} $FH3."
-     postmsg "$msg"
+     echo "$msg"
      set +x
      echo "--- spread_out not gerenerated for ${nnip} $FH3 --- "
      [[ "$LOUD" = YES ]] && set -x
@@ -227,7 +219,7 @@
      if [ ! -f prob_out ]
      then
        msg="ABNORMAL EXIT: ERR prob_out not gerenerated for ${nnip} $FH3."
-       postmsg "$msg"
+       echo "$msg"
        set +x
        echo "--- prob_out not gerenerated for ${nnip} $FH3 --- "
        [[ "$LOUD" = YES ]] && set -x
