@@ -10,11 +10,6 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-###############################################################
-# setup python path for workflow utilities and tasks
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
-export PYTHONPATH
-
 export job="arch_vrfy"
 export jobid="${job}.$$"
 

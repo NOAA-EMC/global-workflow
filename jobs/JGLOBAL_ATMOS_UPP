@@ -21,11 +21,9 @@ if [[ ! -d ${COMOUT_ATMOS_MASTER} ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
 ###############################################################
 # Run relevant exglobal script
 
-"${SCRgfs}/exglobal_atmos_upp.py"
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+"${SCRgfs}/exglobal_atmos_upp.py" && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
