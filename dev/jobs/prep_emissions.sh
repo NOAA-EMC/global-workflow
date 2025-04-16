@@ -12,11 +12,6 @@ export job="prep_emissions"
 export jobid="${job}.$$"
 
 ###############################################################
-# setup python path for workflow utilities and tasks
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
-export PYTHONPATH
-
-###############################################################
 # Execute the JJOB
 "${HOMEgfs}/jobs/JGLOBAL_PREP_EMISSIONS"
 status=$?

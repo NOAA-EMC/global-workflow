@@ -14,13 +14,6 @@ export job="prepoceanobs"
 export jobid="${job}.$$"
 
 ###############################################################
-# setup python path for class defs and utils
-# shellcheck disable=SC2311
-pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
-PYTHONPATH="${pyiodaPATH}:${PYTHONPATH}"
-export PYTHONPATH
-
-###############################################################
 # Execute the JJOB
 "${HOMEgfs}"/jobs/JGLOBAL_PREP_OCEAN_OBS
 status=$?
