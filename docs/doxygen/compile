@@ -9,8 +9,6 @@ if [ $machine = "HERA" ]; then
     doxygen=/usr/bin/doxygen
 elif [ $machine = "ORION" ]; then
     doxygen=/bin/doxygen
-elif [ $machine = "JET" ]; then
-    doxygen=/contrib/doxygen/1.8.10/bin/doxygen
 else
     echo "machine $machine is unrecognized!"
     echo "trying system doxygen"
