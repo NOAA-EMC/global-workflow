@@ -102,7 +102,7 @@ class GCAFSCycledAppConfig(AppConfig):
         """
         options = self.run_options[run]
 
-        configs = ['prep']
+        configs = ['fetch']
 
         configs += ['offlineanl']
 
@@ -135,8 +135,7 @@ class GCAFSCycledAppConfig(AppConfig):
 
         if options['do_aero_anl']:
             configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-            if options['do_prep_obs_aero']:
-                configs += ['prepobsaero']
+            configs += ['prepobsaero']
 
         if options['do_globusarch']:
             configs += ['globus']
@@ -194,15 +193,14 @@ class GCAFSCycledAppConfig(AppConfig):
             if run == 'gcdas':
                 task_names[run] += ['stage_ic']
 
-                task_names[run] += ['prep']
+                task_names[run] += ['fetch']
                 task_names[run] += ['offlineanl']
                 task_names[run] += ['sfcanl']
                 
                 if options['do_aero_anl']:
                     task_names[run] += ['aeroanlgenb']
                     task_names[run] += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-                    if options['do_prep_obs_aero']:
-                        task_names[run] += ['prepobsaero']                
+                    task_names[run] += ['prepobsaero']                
 
             # some are common across both
             if run in ['gcdas', 'gcafs']:

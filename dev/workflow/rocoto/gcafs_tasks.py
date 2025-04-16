@@ -137,46 +137,6 @@ class GCAFSTasks(Tasks):
 
         return task
 
-    def prep(self):
-        """
-        Create a task for preparing data for analysis.
-
-        This task prepares the necessary data files for the analysis stage,
-        including the observation data and background fields.
-
-        Returns
-        -------
-        str
-            XML representation of the task
-        """
-
-        dump_suffix = self._base["DUMP_SUFFIX"]
-        dmpdir = self._base["DMPDIR"]
-        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
-                                                       {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
-
-        deps = []
-        data = f'{dump_path}/gdas.t@Hz.updated.status.tm00.bufr_d'
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('prep')
-        task_name = f'{self.run}_prep'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'envars': self.envars,
-                     'dependency': dependencies,
-                     'cycledef': 'gcdas' if self.run in ['gcdas', 'gcafs'] else self.run,
-                     'command': f'{self.HOMEgfs}/dev/jobs/prep.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-        task = rocoto.create_task(task_dict)
-
-        return task
-
     def offlineanl(self):
         """
         Create a task for the analysis step.
@@ -371,10 +331,17 @@ class GCAFSTasks(Tasks):
         return task
 
     def prepobsaero(self):
+
+        dump_suffix = self._base["DUMP_SUFFIX"]
+        dmpdir = self._base["DMPDIR"]
+        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
+                                                       {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix, 'DUMP': 'gdas'})
+
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
+        data = f'{dump_path}/gdas.t@Hz.updated.status.tm00.bufr_d'
+        dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('prepobsaero')
         task_name = f'{self.run}_prepobsaero'

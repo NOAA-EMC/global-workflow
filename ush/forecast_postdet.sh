@@ -326,7 +326,7 @@ FV3_out() {
   restart_dates=()
 
   case ${RUN} in
-    gdas|enkfgdas|enkfgfs|enkfgcafs) # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
+    gdas|enkfgdas|enkfgfs|enkfgcafs|gcdas) # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
       restart_date="${model_start_date_next_cycle}"
       while (( restart_date <= forecast_end_cycle )); do
         restart_dates+=("${restart_date:0:8}.${restart_date:8:2}0000")
