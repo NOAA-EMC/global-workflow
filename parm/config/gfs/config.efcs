@@ -46,6 +46,12 @@ fi
 export OUTPUT_FILETYPE_ATM="netcdf"
 export OUTPUT_FILETYPE_SFC="netcdf"
 
+# Turn on cubed_sphere_grid output for JEDI atmospheric DA
+if [[ "${DO_JEDIATMVAR}" = "YES" ||  "${DO_JEDIATMENS}" = "YES" ]]; then
+    OUTPUT_FILETYPE_ATM="netcdf_parallel"
+    OUTPUT_FILETYPE_SFC="netcdf_parallel"
+fi
+
 # Turn off inline UPP for EnKF forecast
 export WRITE_DOPOST=".false."
 

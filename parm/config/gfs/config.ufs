@@ -368,6 +368,13 @@ case ${fv3_res} in
     exit 15
     ;;
 esac
+
+# Turn on cubed_sphere_grid output for JEDI atmospheric DA
+if [[ "${DO_JEDIATMVAR}" = "YES" ||  "${DO_JEDIATMENS}" = "YES" ]]; then
+    OUTPUT_FILETYPE_ATM="netcdf_parallel"
+    OUTPUT_FILETYPE_SFC="netcdf_parallel"
+fi
+    
 export zstandard_level ideflate quantize_nsd
 export OUTPUT_FILETYPE_ATM OUTPUT_FILETYPE_SFC
 
