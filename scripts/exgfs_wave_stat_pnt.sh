@@ -70,7 +70,6 @@
 
     # Correct indirect variable expansion
        dir_var="${COMOUT_WAVE_GRIB_ENS}"
-#       cpdir="${!dir_var}"
 
     # Ensure directory exists before proceeding
        if  [ ! -d "$dir_var" ]; then
@@ -81,6 +80,9 @@
     for file in "${dir_var}/${RUN}.wave.t${cyc}z.f"???.*_tar; do
       if [[ -f "$file" ]]; then  # Ensure it's a file before linking
 	      cp -rp "$file" .
+	      #this line needs to be figured out when we decide where these temp files are saved, 
+	      #right now I delete it from COM once they are copied to $DATA here 
+	      rm ${dir_var}/${RUN}.wave.t${cyc}z.f"???.*_tar
         else
               msg="ABNORMAL EXIT: Error in copying $cpfile"
               echo "$msg"

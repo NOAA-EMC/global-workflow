@@ -185,20 +185,9 @@
     fi
     for (( it=1; it<=$tlen; it++ ))
     do
-	    #val=${valt[$it-1]}
-	    #if [[ "$val" =~ ^[0-9]+$ ]]; then
-		#    tdum=$(printf "%02d" "$val")
-	    #else
-		#    echo "WARNING: Invalid hour in valt[$it-1]: '$val'" >&2
-		#    tdum="00"  # default to midnight
-	    #fi
-	    #val=${valt[$it-1]}
-	    #tdum=$(printf "%02d" $((10#$val)))
-	    #ddum=`expr ${vald[$it-1]} / 1`
 	    tdum=$(printf "%d" $((10#${valt[$it-1]})))
 	    ddum=$(printf "%d" $((10#${vald[$it-1]})))
 	    printf '| %02d %02d' "$ddum" "$tdum" >> $bfil
-	    #printf '|  %02d %02d' $ddum $tdum >> $bfil
 	    printf ' | %5.2f ' \
 	   $(echo "${hsb[$it-1]:0:4}" | awk '{printf "%.5f", $1}')\
 	   $(echo "${tpb[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
@@ -236,16 +225,7 @@
     fi 
   for (( it=1; it<=$tlen; it++ ))
   do
-	  #val=${valt[$it-1]}
-          #if [[ "$val" =~ ^[0-9]+$ ]]; then
-		#  tdum=$(printf "%02d" "$val")
-	  #else
-		#  echo "WARNING: Invalid hour in valt[$it-1]: '$val'" >&2
-		#  tdum="00"  # default to midnight
-	  #fi
-	  #val=${valt[$it-1]}
-	  #tdum=$(printf "%02d" $((10#$val)))
-	  tdum=$(printf "%d" $((10#${valt[$it-1]})))
+	 tdum=$(printf "%d" $((10#${valt[$it-1]})))
          printf ' %8.8i %02d' ${valpdy[$it-1]} "$tdum" >> $tfil
          printf ' %5.2f ' \
          $(echo "${hsb[$it-1]:0:4}" | awk '{printf "%.5f", $1}')\

@@ -18,7 +18,6 @@ export jobid="${job}.$$"
 echo
 echo "=============== START TO RUN WAVE PREP ==============="
 # Execute the JJOB
-# Execute the JJOB
 ${HOMEgfs}/jobs/JGEFS_WAVE_STAT_PNT
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
