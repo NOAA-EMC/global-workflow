@@ -511,7 +511,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': wavestat_envars,
                      'cycledef': 'gefs',
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavestat.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/wavestat.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -545,7 +545,7 @@ class GEFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': wavestat_pnt_envars,
                      'cycledef': 'gefs',
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/wavestat_pnt.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/wavestat_pnt.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -737,12 +737,13 @@ class GEFSTasks(Tasks):
         if self.options['do_wave']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_pnt'}
-            deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_wave_bnd']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_bndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_bndpnt_bull'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_wavestat']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavestat'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_extractvars']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_extractvars'}
@@ -781,7 +782,7 @@ class GEFSTasks(Tasks):
         if self.options['do_wave']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_pnt'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_wavestat_pnt'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_wave_bnd']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_bndpnt'}
