@@ -278,8 +278,8 @@ class GCAFSTasks(Tasks):
         gfs_enkf = True if self.options['do_hybvar'] and 'gfs' in self.app_config.ens_runs else False
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and interval_gfs != 6:
-            cycledef = 'gdas'
+        if self.run in ['gcafs'] and gfs_enkf and interval_gfs != 6:
+            cycledef = 'gcdas'
 
         resources = self.get_resource('atmanlinit')
         task_name = f'{self.run}_atmanlinit'
@@ -650,7 +650,8 @@ class GCAFSTasks(Tasks):
 
     def _fcst_cycled(self):
 
-        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
+        anldep = 'gcdas'
+        dep_dict = {'type': 'task', 'name': f'{anldep}_sfcanl'}
         dep = rocoto.add_dependency(dep_dict)
         dependencies = rocoto.create_dependency(dep=dep)
 
@@ -658,31 +659,18 @@ class GCAFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_wave']:
-            wave_job = 'waveprep' if self.options['app'] in ['ATMW'] else 'waveinit'
-            dep_dict = {'type': 'task', 'name': f'{self.run}_{wave_job}'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-
-        if self.options['do_jediocnvar']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-
         if self.options['do_aero_anl']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-
-        if self.options['do_jedisnowda']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
+            dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
-        if self.run in ['gcafs']:
+        if self.run in ['gcdas']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
-        cycledef = 'gcafs_half,gcafs' if self.run in ['gcafs'] else self.run
+        cycledef = 'gcdas_half,gcdas' if self.run in ['gcdas'] else self.run
 
         if self.run in ['gcafs']:
             num_fcst_segments = len(self.options['fcst_segments']) - 1
@@ -921,9 +909,6 @@ class GCAFSTasks(Tasks):
         task = rocoto.create_task(metatask_dict)
 
         return task
-
-    def atmos_prod(self):
-        return self._atmosoceaniceprod('atmos')
 
     def atmos_prod(self):
         """
@@ -1301,13 +1286,13 @@ class GCAFSTasks(Tasks):
         if self.app_config.mode in ['cycled']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.options['do_anlstat']:
+            if self.options['do_anlstat'] and self.run in ['gcdas']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                 deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_metp'] and self.run in ['gfs']:
+        if self.options['do_metp'] and self.run in ['gcafs']:
             deps2 = []
             # taskvalid only handles regular tasks, so just check the first metp job exists
             dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_metpg2g1', 'condition': 'not'}
@@ -1391,8 +1376,6 @@ class GCAFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
 
-        dep_dict = {'type': 'task', 'name': 'gefs_arch_vrfy'}
-        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         resources = self.get_resource('cleanup')

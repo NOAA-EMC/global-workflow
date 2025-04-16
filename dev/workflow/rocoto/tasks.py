@@ -201,7 +201,7 @@ class Tasks:
 
         # Get a list of all forecast hours
         fhrs = []
-        if run in ['gdas']:
+        if run in ['gdas', 'gcdas']:
             fhmax = local_config['FHMAX']
             fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))

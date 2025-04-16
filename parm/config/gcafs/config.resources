@@ -16,7 +16,9 @@ if (( $# != 1 )); then
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
+    echo "prep_emissions"
     echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
+    echo "offlineanl"
     echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
@@ -704,6 +706,14 @@ case ${step} in
     memory="24GB"
     ;;
 
+  "offlineanl")
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=${max_tasks_per_node}
+    tasks_per_node=1
+    ;;
+
+
   "anal")
     if [[ "${RUN}" = *gdas ]]; then
       walltime="01:20:00"
@@ -815,6 +825,13 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
+    ;;
+
+  "prep_emissions")
+    export walltime="00:10:00"
+    export ntasks=1
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "fcst" | "efcs")
@@ -954,7 +971,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
 
     # TODO: make walltimes APP dependent
-    if [[ "${RUN}" == gdas ]]; then
+    if [[ "${RUN}" == gdas || "${RUN}" == gcdas ]]; then
       case "${CASE}" in
         "C48" | "C96" | "C192")
           declare -x "walltime"="00:20:00"
@@ -984,7 +1001,7 @@ case ${step} in
           exit 4
           ;;
       esac
-    elif [[ "${RUN}" == gfs ]]; then
+    elif [[ "${RUN}" == gfs || "${RUN}" == gcafs ]]; then
       case "${CASE}" in
         "C48" | "C96" | "C192")
           declare -x "walltime"="03:00:00"
@@ -1115,7 +1132,7 @@ case ${step} in
     threads_per_task=1
     if [[ "${RUN}" = *gdas ]]; then
       walltime="03:00:00"
-    elif [[ "${RUN}" = *gfs ]]; then
+    elif [[ "${RUN}" = *gfs || "${RUN}" = *gcafs ]]; then
       walltime="06:00:00"
     fi
     ntasks=1
