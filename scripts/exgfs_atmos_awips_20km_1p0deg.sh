@@ -23,7 +23,7 @@
 fcsthrs="$1"
 num=$#
 
-if (( num != 1 )); then
+if [[ ${num} -ne 1 ]]; then
    echo ""
    echo " FATAL ERROR: Incorrect number of arguments "
    echo ""
@@ -47,7 +47,6 @@ idxfile="${COMIN_ATMOS_GRIB_0p25}/${RUN}.${cycle}.pgrb2b.0p25.f${fcsthrs}.idx"
 if ! wait_for_file "${idxfile}" "${sleep_interval}" "${max_tries}"; then
   msg="FATAL ERROR: No GFS pgrb2 file after waiting"
   err_exit "${msg}"
-  exit 5
 fi
 
 ########################################
@@ -84,11 +83,10 @@ cp "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}" "tmpfile2${fcs
 cp "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}" "tmpfile2b${fcsthrs}"
 cat "tmpfile2${fcsthrs}" "tmpfile2b${fcsthrs}" > "tmpfile${fcsthrs}"
 ${WGRIB2} "tmpfile${fcsthrs}" | grep -F -f "${PARMgfs}/product/gfs_awips_parmlist_g2" | \
-   ${WGRIB2} -i -grib masterfile "tmpfile${fcsthrs}"
+   ${WGRIB2} -i -grib masterfile "tmpfile${fcsthrs}" && true
 export err=$?
-if [[ $err -ne 0 ]]; then
-   echo " FATAL ERROR: masterfile does not exist."
-   exit $err
+if [[ ${err} -ne 0 ]]; then
+   err_chk "FATAL ERROR: masterfile does not exist."
 fi
 
 ${WGRIB2} masterfile -match ":PWAT:entire atmosphere" -grib gfs_pwat.grb
@@ -97,7 +95,7 @@ ${WGRIB2} masterfile | grep -v ":PWAT:entire atmosphere" | ${WGRIB2} -i -grib te
 #  Process to change PWAT from level 200 to 10 (Entire Atmosphere)
 #  in production defintion template (PDT) 4.0
 ##################################################################
-${WGRIB2} gfs_pwat.grb -set_byte 4 23 10 -grib gfs_pwat_levels_10.grb
+${WGRIB2} gfs_pwat.grb -set_byte 4 23 10 -grib gfs_pwat_levels_10.grb && true
 export err=$?; err_chk
 
 cat temp_gfs   gfs_pwat_levels_10.grb > tmp_masterfile
@@ -138,8 +136,8 @@ for GRID in conus ak prico pac 003; do
             ${opt27} ${opt28} -new_grid ${grid003} "awps_file_f${fcsthrs}_${GRID}"
          ;;
       *)
-         echo "FATAL ERROR: Unknown output grid ${GRID}"
-         exit 2
+         export err=2
+         err_chk "FATAL ERROR: Unknown output grid ${GRID}"
          ;;
    esac
    trim_rh "awps_file_f${fcsthrs}_${GRID}"
@@ -155,9 +153,9 @@ for GRID in conus ak prico pac 003; do
    numparm=247
    numrec=$( ${WGRIB2} "awps_file_f${fcsthrs}_${GRID}" | wc -l )
 
-   if (( numrec < numparm )); then
+   if [[ ${numrec} -lt ${numparm} ]]; then
        msg="FATAL ERROR: awps_file_f${fcsthrs}_${GRID} file is missing fields for AWIPS !"
-       err_exit "${msg}" || exit 10
+       err_exit "${msg}"
    fi
 
    # Processing AWIPS GRIB2 grids with WMO headers
@@ -173,10 +171,8 @@ for GRID in conus ak prico pac 003; do
 
       cp "${PARMgfs}/wmo/grib2_awpgfs${fcsthrs}.${GRID}" "parm_list"
 
-      ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile
+      ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
       export err=$?; err_chk
-      # TODO: Should this be fatal?
-      echo "error from tocgrib2=${err}"
 
       ##############################
       # Post Files to ${COMOUT_ATMOS_WMO}
@@ -202,8 +198,8 @@ for GRID in conus ak prico pac 003; do
 
       cp "${PARMgfs}/wmo/grib2_awpgfs_20km_${GRID}f${fcsthrs}" "parm_list"
 
-      ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile
-      export err=$?; err_chk || exit "${err}"
+      ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
+      export err=$?; err_chk
 
       ##############################
       # Post Files to ${COMOUT_ATMOS_WMO}
