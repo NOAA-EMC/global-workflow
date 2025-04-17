@@ -65,6 +65,8 @@ if [[ ${CDATE} -gt ${SDATE} ]]; then
   # RUN FIT2OBS VERIFICATION
   ##############################################
 
+  # Un-export SHELLOPTS before going into the Fit2Obs package (let that package handle logging/errors)
+  export -n SHELLOPTS
   "${SCRIPTSfit2obs}/excfs_gdas_vrfyfits.sh"
   err=$?
   if [[ ${err} -ne 0 ]]; then
