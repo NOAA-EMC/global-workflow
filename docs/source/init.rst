@@ -111,7 +111,6 @@ Warm-start cycled w/ coupled (S2S) model C48 atmosphere C48 enkf (80 members) 5 
    Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48C48mx500
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C48C48mx500
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48C48mx500
-   Jet: /lfs5/HFIP/hfv3gfs/glopara/data/ICSDIR/C48C48mx500
    AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C48C48mx500
 
 Start date = 2021032312
@@ -227,8 +226,6 @@ Forecast-only P8 prototype initial conditions are made available to users on sup
     WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED
     HERA: /scratch1/NCEPDEV/climate/role.ufscpara/IC
     ORION/Hercules: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
-    JET: /mnt/lfs5/HFIP/hfv3gfs/glopara/data/ICSDIR/prototype_ICs
-    S4: /data/prod/glopara/coupled_ICs
 
 These locations are known within the workflow via paths set in ``parm/config/config.coupled_ic``.
 
@@ -255,7 +252,7 @@ Not yet supported. See the UFS_UTILS documentation on the gdas_init utility to g
 ---------------------
 Forecast-only coupled
 ---------------------
-Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Sample copies of initial conditions from the prototype runs are currently maintained on Hera, Orion/Hercules, Jet, and WCOSS2. The locations used are determined by ``parm/config/config.stage_ic``.
+Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Sample copies of initial conditions from the prototype runs are currently maintained on Hera, Orion/Hercules, and WCOSS2. The locations used are determined by ``parm/config/config.stage_ic``.
 Note however, that due to the rapid changes in the model configuration, some staged initial conditions may not work.
 
 .. _forecastonly-atmonly:
@@ -313,9 +310,6 @@ For HPSS path, see retrospective table in :ref:`pre-production parallel section 
 *****************
 Manual Generation
 *****************
-
-.. note::
-   Initial conditions cannot be generated on S4. These must be generated on another supported platform then pushed to S4. If you do not have access to a supported system or need assistance, please contact Innocent Souopgui (innocent.souopgui@noaa.gov).
 
 .. _coldstarts:
 

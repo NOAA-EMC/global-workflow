@@ -60,7 +60,7 @@ fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_atmos_gempak_meta.sh"
+"${SCRgfs}/exgfs_atmos_gempak_meta.sh" && true
 export err=$?; err_chk
 ########################################################
 
