@@ -529,10 +529,9 @@ class GEFSTasks(Tasks):
     def wavestat_pnt(self):
 
         deps = []
-        for member in range(0, self.nmem + 1):
-            task = f'gefs_wavestat_#fhr_label#'
-            dep_dict = {'type': 'task', 'name': task}
-            deps.append(rocoto.add_dependency(dep_dict))
+        metatask = f'{self.run}_wavestat'
+        dep_dict = {'type': 'metatask', 'name': metatask}
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
 

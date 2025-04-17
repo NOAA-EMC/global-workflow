@@ -82,7 +82,7 @@
 	      cp -rp "$file" .
 	      #this line needs to be figured out when we decide where these temp files are saved, 
 	      #right now I delete it from COM once they are copied to $DATA here 
-	      rm ${dir_var}/${RUN}.wave.t${cyc}z.f"???.*_tar
+	      rm "$file"
         else
               msg="ABNORMAL EXIT: Error in copying $cpfile"
               echo "$msg"
@@ -116,9 +116,9 @@
 
      # Merge files for each buoy
      for buoy in $BUOY_LIST; do
-         cat "${RUN}.wave.$buoy".f*.bull > "${RUN}.wave.${buoy}.bull"
-	 cat "${RUN}.wave.$buoy".f*.ts > "${RUN}.wave.${buoy}.ts"
-	 rm  "${RUN}.wave.$buoy".f*.ts "${RUN}.wave.$buoy".f*.bull
+	     cat "${RUN}.wave.$buoy".f*.bull > "${RUN}.wave.${buoy}.bull"
+	     cat "${RUN}.wave.$buoy".f*.ts > "${RUN}.wave.${buoy}.ts"
+	     rm  "${RUN}.wave.$buoy".f*.ts "${RUN}.wave.$buoy".f*.bull
      done
 
          # Step 3: Archive the processed buoy files

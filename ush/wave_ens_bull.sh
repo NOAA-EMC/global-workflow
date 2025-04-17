@@ -190,6 +190,7 @@
 	    printf '| %02d %02d' "$ddum" "$tdum" >> $bfil
 	    printf ' | %5.2f ' \
 	   $(echo "${hsb[$it-1]:0:4}" | awk '{printf "%.5f", $1}')\
+	   $(echo "${hspb[$it-1]:0:4}" | awk '{printf "%.5f", $1}')\
 	   $(echo "${tpb[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
 	   $(echo "${tspb[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
 	   $(echo "${ub[$it-1]:0:4}" | awk '{printf "%.5f", $1}') \
