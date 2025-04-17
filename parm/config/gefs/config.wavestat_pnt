@@ -6,7 +6,7 @@
 echo "BEGIN: config.wavestat_pnt"
 
 # Get task specific resources
-. $EXPDIR/config.resources wavestat_pnt
+source "${EXPDIR}/config.resources" wavestat_pnt
 
 # Step label
 export DO_WAVESTAT='YES'

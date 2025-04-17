@@ -43,13 +43,14 @@ export WAV_MOD_TAG=${RUN}wave${waveMEMB}
 export CFP_VERBOSE=1
 
 # Execute the Script
-${SCRgfs}/exgfs_wave_stat.sh
+"${SCRgfs}/exgfs_wave_stat.sh"
 
 ##########################################
-# Remove the Temporary working directory
-##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
-
+## Remove the Temporary working directory
+###########################################
+cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
  
 exit 0

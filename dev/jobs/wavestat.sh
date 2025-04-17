@@ -6,10 +6,12 @@ source "${HOMEgfs}/ush/preamble.sh"
 echo
 echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 #. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
-. ${HOMEgfs}/ush/load_ufswm_modules.sh
+source "${HOMEgfs}/ush/load_ufswm_modules.sh"
 
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+err=$?
+if [[ "${err}" -ne 0 ]]; then
+	    exit "${err}"
+fi
 
 export job="wavestat"
 export jobid="${job}.$$"
@@ -26,8 +28,10 @@ for FORECAST_HOUR in "${fhr_list[@]}"; do
         jobid="${job}_f${FHR3}.$$"
         # Execute the JJOB
         "${HOMEgfs}/jobs/JGEFS_WAVE_STAT"
-        status=$?
-        [[ ${status} -ne 0 ]] && exit "${status}"
+	err=$?
+	if [[ "${err}" -ne 0 ]]; then
+		exit "${err}"
+	fi
 done
 
 exit 0
