@@ -159,7 +159,6 @@ class Jedi:
         # Fill JCB base YAML template and build JCB config dictionary
         if self.jedi_config.jcb_base_yaml is not None:
             jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
-            print('foo', jcb_config['obs_variables'])
         else:
             logger.error(f"FATAL ERROR: JCB base YAML must be specified in order  to render YAML using JCB")
             raise KeyError(f"FATAL ERROR: JCB base YAML must be specified in order to render YAML using JCB")

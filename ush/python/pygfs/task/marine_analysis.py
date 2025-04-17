@@ -60,7 +60,6 @@ class MarineAnalysis(Task):
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'berror_model': _berror_model,
-                'obs_list': ['adt_rads_all'],
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3)),
                 'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS
             }
@@ -138,17 +137,20 @@ class MarineAnalysis(Task):
         FileHandler({'copy': [[ice_rst, ice_rst_ana]]}).sync()
 
         # Write obs_list_short
-        save_as_yaml(parse_obs_list_file(self.task_config.MARINE_OBS_LIST_YAML), 'obs_list_short.yaml')
+        save_as_yaml(self.task_config['obs_list'], 'obs_list_short.yaml')
         os.environ['OBS_LIST_SHORT'] = 'obs_list_short.yaml'
 
         # initialize JEDI applications
         self.jedi_dict['var'].initialize(self.task_config)
 
         # TEST
+        self.task_config.cleaned_observations = []
         self.task_config.obs_variables = {}
         for obs_space in self.jedi_dict['var'].jedi_config.input_config['cost function']['observations']['observers']:
+            self.task_config.cleaned_observations.append(obs_space['obs space']['name'])
             self.task_config.obs_variables[obs_space['obs space']['name']] = obs_space['obs space']['simulated variables'][0]
-#        print('foo', self.task_config.obs_variables)
+        print('foo', self.task_config.obs_variables)
+        print('bar', self.task_config.cleaned_observations)
 
         self.jedi_dict['socaincr2mom6'].initialize(self.task_config)
         self.jedi_dict['soca_2cice_global'].initialize(self.task_config)
