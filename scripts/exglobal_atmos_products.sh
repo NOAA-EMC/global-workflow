@@ -45,12 +45,12 @@ MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.grb2${fhr3}"
 # Get inventory from ${MASTER_FILE} that matches patterns from ${paramlista}
 # Extract this inventory from ${MASTER_FILE} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
 # shellcheck disable=SC2312
-${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlista}" | ${WGRIB2} -i -grib "tmpfile_${fhr3}" "${MASTER_FILE}"
+${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlista}" | ${WGRIB2} -i -grib "tmpfile_${fhr3}" "${MASTER_FILE}" && true
 export err=$?; err_chk
 # Do the same as above for ${paramlistb}
-if (( downset == 2 )); then
+if [[ ${downset} -eq 2 ]]; then
   # shellcheck disable=SC2312
-  ${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlistb}" | ${WGRIB2} -i -grib "tmpfileb_${fhr3}" "${MASTER_FILE}"
+  ${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlistb}" | ${WGRIB2} -i -grib "tmpfileb_${fhr3}" "${MASTER_FILE}" && true
   export err=$?; err_chk
 fi
 
@@ -113,7 +113,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     fi
 
     # Break tmpfile into processor specific chunks in preparation for MPMD
-    ${WGRIB2} "${tmpfile}" -for "${first}":"${last}" -grib "${tmpfile}_${iproc}"
+    ${WGRIB2} "${tmpfile}" -for "${first}":"${last}" -grib "${tmpfile}_${iproc}" && true
     export err=$?; err_chk
     input_file="${tmpfile}_${iproc}"
     output_file_prefix="pgb2${grp}file_${fhr3}_${iproc}"
@@ -130,7 +130,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   done  # for (( iproc = 1 ; iproc <= nproc ; iproc++ )); do
 
   # Run with MPMD or serial
-  "${USHgfs}/run_mpmd.sh" "${DATA}/poescript"
+  "${USHgfs}/run_mpmd.sh" "${DATA}/poescript" && true
   export err=$?; err_chk
 
   # We are in a loop over downset, save output from mpmd into nset specific output
@@ -176,7 +176,7 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
   input_file="${FLUX_FILE}"
   output_file_prefix="sflux_${fhr3}"
   grid_string="1p00"
-  "${INTERP_ATMOS_SFLUXSH}" "${input_file}" "${output_file_prefix}" "${grid_string}"
+  "${INTERP_ATMOS_SFLUXSH}" "${input_file}" "${output_file_prefix}" "${grid_string}" && true
   export err=$?; err_chk
 
   # Move to COM and index the product sflux file

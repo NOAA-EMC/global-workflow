@@ -8,11 +8,6 @@ set -x
 status=$?
 if [[ ${status} -ne 0 ]]; then exit "${status}"; fi
 
-###############################################################
-# setup python path for workflow utilities and tasks
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
-export PYTHONPATH
-
 export job="globus_earc"
 export jobid="${job}.$$"
 

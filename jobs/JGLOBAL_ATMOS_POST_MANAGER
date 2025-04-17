@@ -20,6 +20,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY
 
 ########################################################
 # Execute the script.
-${SCRgfs}/exglobal_atmos_pmgr.sh
+${SCRgfs}/exglobal_atmos_pmgr.sh && true
+export err=$?; err_chk
 ########################################################
 
