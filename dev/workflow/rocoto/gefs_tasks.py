@@ -476,7 +476,6 @@ class GEFSTasks(Tasks):
         return task
 
     def wavestat(self):
-        
         deps = []
         for member in range(0, self.nmem + 1):
             task = f'gefs_wave_post_grid_mem{member:03d}_#fhr_label#'
@@ -522,7 +521,7 @@ class GEFSTasks(Tasks):
                              'var_dict': fhr_var_dict}
 
 
-        task = rocoto.create_task(fhr_metatask_dict) 
+        task = rocoto.create_task(fhr_metatask_dict)
 
         return task
     
@@ -553,9 +552,6 @@ class GEFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
 
         return task
-
-
-
 
     def wavepostbndpnt(self):
         deps = []
