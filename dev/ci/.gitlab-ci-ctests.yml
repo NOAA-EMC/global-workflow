@@ -8,9 +8,9 @@
   stage: create_experiments
   script:
     - echo "Setting up for ctests workflow"
-    - mkdir -p ${HOMEGFS}/ctests
-    - cd ${HOMEGFS}/ctests
-    - cmake ../..
+    - cd ${HOMEGFS}/dev/ctests
+    - mkdir -p build
+    - cmake ../../..
     - echo "CTests have been created and configured successfully"
   dependencies:
     - build-${machine}
