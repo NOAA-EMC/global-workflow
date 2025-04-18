@@ -6,7 +6,7 @@
 echo "BEGIN: config.wavestat"
 
 # Get task specific resources
-. $EXPDIR/config.resources wavestat
+source "${EXPDIR}/config.resources" wavestat
 
 # Step label
 export sigMODE=${sigMODE:-prep}

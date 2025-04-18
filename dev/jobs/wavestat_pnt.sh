@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 ###############################################################
 echo
 echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
@@ -10,7 +8,7 @@ source "${HOMEgfs}/ush/load_ufswm_modules.sh"
 
 err=$?
 if [[ "${err}" -ne 0 ]]; then
-	            exit "${err}"
+	exit "${err}"
 fi
 
 export job="wavestat_pnt"

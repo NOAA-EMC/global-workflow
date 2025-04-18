@@ -60,7 +60,7 @@ case ${step} in
     export memory="2GB"
     ;;
 
-    "wavestat_pnt")
+  "wavestat_pnt")
     export walltime="00:15:00"
     export ntasks=12
     export threads_per_task=1

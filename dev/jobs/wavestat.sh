@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 echo
@@ -10,7 +9,7 @@ source "${HOMEgfs}/ush/load_ufswm_modules.sh"
 
 err=$?
 if [[ "${err}" -ne 0 ]]; then
-	    exit "${err}"
+	exit "${err}"
 fi
 
 export job="wavestat"
