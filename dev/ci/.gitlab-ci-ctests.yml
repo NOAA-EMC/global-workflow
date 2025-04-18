@@ -10,6 +10,7 @@
     - echo "Setting up for ctests workflow"
     - cd ${HOMEGFS}/dev/ctests
     - mkdir -p build
+    - cd build
     - cmake ../../..
     - echo "CTests have been created and configured successfully"
   dependencies:
