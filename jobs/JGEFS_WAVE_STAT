@@ -23,7 +23,7 @@ done
 for grid in ${wavepostGRD}; do
   process_grdID "${grid}"
   prod_dir_grid="COMOUT_WAVE_GRID_${grid}"
-  prod_dir_station"COMOUT_WAVE_STATION_ENS"
+  prod_dir_station="COMOUT_WAVE_STATION_ENS"
   MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir_grid}:COM_WAVE_GRID_TMPL"
   MEMDIR="ensstat"  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir_station}:COM_WAVE_STATION_TMPL"
   if [[ ! -d "${!prod_dir_grid}" ]]; then mkdir -m 775 -p "${!prod_dir_grid}"; fi
