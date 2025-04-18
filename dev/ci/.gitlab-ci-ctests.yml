@@ -12,13 +12,10 @@
     - mkdir -p build
     - cd build
     - cmake ../../..
+    - ctest -N
+    - num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
+    - '[ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }'
     - echo "CTests have been created and configured successfully"
-  dependencies:
-    - build-${machine}
-  tags:
-    - ${machine}
-  rules:
-    - if: $GITHUB_API_TRIGGER == "true"
 
 # Main template for CTest execution jobs
 .run_ctests_template:
@@ -26,17 +23,9 @@
   stage: run_tests
   allow_failure: true
   script:
-    - echo "Running ${CTEST} tests in ${HOMEGFS}/ctests"
-    - if [ "${PR_NUMBER}" != "0" ]; then
-    -   echo "Testing PR #${PR_NUMBER}"
-    - else
-    -   echo "Testing standard branch"
-    - fi
-    - cd ${HOMEGFS}/ctests/build
+    - echo "Running ${CTEST} tests in ${HOMEGFS}/dev/ctests"
+    - cd ${HOMEGFS}/dev/ctests/build
     - ctest -R test_${CTEST}_setup
     - ctest -R test_${CTEST}_stage
     - ctest -R test_${CTEST}_execute
-  dependencies:
-    - create_ctests
-  rules:
-    - if: $GITHUB_API_TRIGGER == "true"
+    - ctest -R test_${CTEST}_validate
