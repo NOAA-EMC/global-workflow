@@ -22,9 +22,12 @@ done
 
 for grid in ${wavepostGRD}; do
   process_grdID "${grid}"
-  prod_dir="COMOUT_WAVE_GRIB_${grid}"
-  MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_WAVE_GRIB_GRID_TMPL"
-  if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
+  prod_dir_grid="COMOUT_WAVE_GRID_${grid}"
+  prod_dir_station"COMOUT_WAVE_STATION_ENS"
+  MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir_grid}:COM_WAVE_GRID_TMPL"
+  MEMDIR="ensstat"  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir_station}:COM_WAVE_STATION_TMPL"
+  if [[ ! -d "${!prod_dir_grid}" ]]; then mkdir -m 775 -p "${!prod_dir_grid}"; fi
+  if [[ ! -d "${!prod_dir_station}" ]]; then mkdir -m 775 -p "${!prod_dir_station}"; fi
 done
 
 export MP_PULSE=0

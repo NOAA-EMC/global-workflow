@@ -508,6 +508,8 @@
     exit "$err"
   fi
 
+  #Assign COMOUT_STATION
+  MEMDIR="ensstat"  YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_STATION_ENS:COM_WAVE_STATION_TMPL
 
   ibuoy=1
 # 3.f Check for errors
@@ -552,7 +554,7 @@
 # 4.a Output all grib2 parameter files to COMOUT
 
     FH3=$(printf "%03d" $fhr)
-    MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_GRIB_ENS:COM_WAVE_GRIB_GRID_TMPL
+    MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_GRID_ENS:COM_WAVE_GRID_TMPL
 
 
     for stype in mean spread prob
@@ -564,7 +566,7 @@
         echo "   Copying ${fcopy} to ensstat and ALERT if SENDDBN=YES"
         [[ "$LOUD" = YES ]] && set -x
         #if [ $SENDCOM = "YES" ] ; then
-          cp -f ${fcopy}  "${COMOUT_WAVE_GRIB_ENS}"
+          cp -f ${fcopy}  "${COMOUT_WAVE_GRID_ENS}"
 # 2.g Alert DBN
           if [ "$SENDDBN" = 'YES' ]
           then
@@ -597,8 +599,8 @@
         echo "   Copying tar files to ensstat"
         [[ "$LOUD" = YES ]] && set -x
         #if [ $SENDCOM = "YES" ] ; then
-          cp -f ${bcopy_station}  "${COMOUT_WAVE_GRIB_ENS}"
-          cp -f ${bcopy_bull}  "${COMOUT_WAVE_GRIB_ENS}"
+          cp -f ${bcopy_station}  "${COMOUT_WAVE_GRID_ENS}"
+          cp -f ${bcopy_bull}  "${COMOUT_WAVE_STATION_ENS}"
       else
         set +x
         echo ' '

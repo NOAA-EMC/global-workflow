@@ -43,7 +43,7 @@
   source "${USHgfs}/wave_domain_grid.sh"
   process_grdID "${wavepostGRD}"
 
-  MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_GRIB_ENS:COM_WAVE_GRIB_GRID_TMPL
+  MEMDIR="ensstat"  YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_STATION_ENS:COM_WAVE_STATION_TMPL
 
 #
 #
@@ -69,7 +69,7 @@
 # 2. link station files
 
     # Correct indirect variable expansion
-       dir_var="${COMOUT_WAVE_GRIB_ENS}"
+       dir_var="${COMOUT_WAVE_STATION_ENS}"
 
     # Ensure directory exists before proceeding
        if  [ ! -d "$dir_var" ]; then
@@ -129,9 +129,6 @@
 
          echo "Processing complete. Final tar:"
 
-
-  MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_GRIB_ENS:COM_WAVE_GRIB_GRID_TMPL
-
   set +x
   echo ' '
   echo 'Saving output files :'
@@ -141,9 +138,9 @@
   if [ -s ${RUN}.wave.t${cyc}z.bull_tar ]
   then
     set +x
-    echo "   Copying ${RUN}.wave.t${cyc}z.bull_tar  to COMOUT_WAVE_GRIB_ENS"
+    echo "   Copying ${RUN}.wave.t${cyc}z.bull_tar  to COMOUT_WAVE_STATION_ENS"
     [[ "$LOUD" = YES ]] && set -x
-    cp -f ${RUN}.wave.t${cyc}z.bull_tar ${COMOUT_WAVE_GRIB_ENS}
+    cp -f ${RUN}.wave.t${cyc}z.bull_tar ${COMOUT_WAVE_STATION_ENS}
    else
      set +x
      echo ' '
