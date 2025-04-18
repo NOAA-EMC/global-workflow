@@ -36,10 +36,6 @@ export io_layout_y="{{ IO_LAYOUT_Y }}"
 
 export JEDIEXE="${EXECgfs}/gdas.x"
 
-if [[ "${DOIAU}" == "YES" ]]; then
-  export aero_bkg_times="3,6,9"
-else
-  export aero_bkg_times="6," # Trailing comma is necessary so this is treated as a list
-fi
+export aero_bkg_times="3,6,9"
 
 echo "END: config.aeroanl"

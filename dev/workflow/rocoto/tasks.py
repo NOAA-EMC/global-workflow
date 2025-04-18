@@ -22,7 +22,7 @@ class Tasks:
                    'eobs', 'epos', 'esfc', 'eupd',
                    'earc_vrfy', 'earc_tars', 'ecen', 'echgres', 'ediag', 'efcs',
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
-                   'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
+                   'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb', 'prepobsaero',
                    'snowanl', 'esnowanl',
                    'offlineanl',
                    'fcst',

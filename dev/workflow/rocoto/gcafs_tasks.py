@@ -152,7 +152,7 @@ class GCAFSTasks(Tasks):
         resources = self.get_resource('offlineanl')
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_fetch'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -373,7 +373,7 @@ class GCAFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': 'gcafs_half,gcafs',
+                     'cycledef': 'gcdas_half,gcdas',
                      'command': f'{self.HOMEgfs}/dev/jobs/aeroanlgenb.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -387,7 +387,7 @@ class GCAFSTasks(Tasks):
     def aeroanlinit(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': 'gdas_aeroanlgenb', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        dep_dict = {'type': 'task', 'name': 'gcdas_aeroanlgenb', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -418,7 +418,7 @@ class GCAFSTasks(Tasks):
 
         deps = []
         dep_dict = {
-            'type': 'task', 'name': 'gdas_aeroanlgenb',
+            'type': 'task', 'name': 'gcdas_aeroanlgenb',
             'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}",
         }
         deps.append(rocoto.add_dependency(dep_dict))
@@ -626,9 +626,8 @@ class GCAFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_aero_anl']:
-            dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
+        dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 

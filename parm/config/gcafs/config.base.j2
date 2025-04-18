@@ -433,17 +433,13 @@ fi
 
 export restart_interval_enkfgfs=${restart_interval_enkfgdas}
 
-if [[ "${DOIAU}" == "YES" ]]; then
-  export restart_interval_gdas="3"
-else
-  export restart_interval_gdas="6"
-fi
+export restart_interval_gdas="3"
 
 export DO_GSISOILDA="{{ DO_GSISOILDA }}"
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
-export DONST="NO"
-export FNTSFA="        "
+export DONST="YES"
+if [[ "${DONST}" = "YES" ]]; then export FNTSFA="        "; fi
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.

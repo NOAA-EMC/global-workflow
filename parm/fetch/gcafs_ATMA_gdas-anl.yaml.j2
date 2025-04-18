@@ -8,7 +8,7 @@ target:
     on_hpss: True
     contents:
         # Atmospheric analysis
-        - ./gdas.{{ cycle_YMDH }}/{{ cycle_HH }}/atmos/gdas.t{{ cycle_HH }}z.atmanl.nc
-        # Surface analysis
-        - ./gdas.{{ cycle_YMDH }}/{{ cycle_HH }}/atmos/gdas.t{{ cycle_HH }}z.sfcanl.nc
-    destination: "{{ DATAROOT }}"
+        - ./gdas.{{ cycle_YMD }}/{{ cycle_HH }}/atmos/gdas.t{{ cycle_HH }}z.atmanl.nc
+        # NSST analysis
+        - ./gdas.{{ cycle_YMD }}/{{ cycle_HH }}/atmos/gdas.t{{ cycle_HH }}z.dtfanl.nc
+    destination: "{{ ROTDIR }}"
