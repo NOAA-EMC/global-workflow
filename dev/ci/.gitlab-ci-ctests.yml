@@ -8,6 +8,7 @@
   stage: create_experiments
   script:
     - echo "Setting up for ctests workflow"
+    - source ci/platfroms/config.${machine}
     - cd ${HOMEGFS}/dev/ctests
     - mkdir -p build
     - cd build
@@ -21,11 +22,10 @@
 .run_ctests_template:
   extends: .base_config
   stage: run_tests
-  allow_failure: true
   script:
     - echo "Running ${CTEST} tests in ${HOMEGFS}/dev/ctests"
     - cd ${HOMEGFS}/dev/ctests/build
-    - ctest -R test_${CTEST}_setup
-    - ctest -R test_${CTEST}_stage
-    - ctest -R test_${CTEST}_execute
-    - ctest -R test_${CTEST}_validate
+    - ctest -V -R test_${CTEST}_setup
+    - ctest -V -R test_${CTEST}_stage
+    - ctest -V -R test_${CTEST}_execute
+    - ctest -V -R test_${CTEST}_validate

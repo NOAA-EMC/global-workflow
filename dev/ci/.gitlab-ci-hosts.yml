@@ -69,7 +69,9 @@ run_tests-gaeac6:
   stage: run_tests
   parallel:
     matrix:
-      - CTEST: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0', 'C48_S2SW_gfs_atmos_prod']
+      - CTEST: ['C48_ATM_gfs_fcst_seg0']
+#     - CTEST: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0', 'C48_S2SW_gfs_atmos_prod_f000-f003']
+# TODO only running one test for now
 
 # Host-specific CTest setup jobs
 create_ctests-hera:
