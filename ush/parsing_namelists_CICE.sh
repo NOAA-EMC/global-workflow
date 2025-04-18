@@ -71,7 +71,7 @@ local CICE_DUMPFREQ="y"  # "h","d","m" or "y" for restarts at intervals of "hour
 local CICE_DUMPFREQ_N=10000  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
 local CICE_DIAGFREQ=$(( 86400 / DT_CICE ))  # frequency of diagnostic output in timesteps, recommended for 1x per day
 if [[ "${RUN}" == "gefs" ]]; then
-  local CICE_DIAGFREQ1=$((( FHOUT_ICE * 3600 )/ DT_CICE ))
+  local CICE_DIAGFREQ1=$((( FHOUT_ICE * 3600 )/ DT_CICE )) # Number of timesteps within FHOUT_ICE
   local CICE_HISTFREQ_N="0, 0, 0, ${CICE_DIAGFREQ1}, 1"
 else
   local CICE_HISTFREQ_N="0, 0, ${FHOUT_ICE}, 0, 1"
