@@ -154,7 +154,9 @@ class GCAFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_fetch'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': 'gcdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         task_name = f'{self.run}_offlineanl'
         task_dict = {'task_name': task_name,
