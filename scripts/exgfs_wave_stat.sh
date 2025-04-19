@@ -599,7 +599,7 @@
         echo "   Copying tar files to ensstat"
         [[ "$LOUD" = YES ]] && set -x
         #if [ $SENDCOM = "YES" ] ; then
-          cp -f ${bcopy_station}  "${COMOUT_WAVE_GRID_ENS}"
+          cp -f ${bcopy_station}  "${COMOUT_WAVE_STATION_ENS}"
           cp -f ${bcopy_bull}  "${COMOUT_WAVE_STATION_ENS}"
       else
         set +x

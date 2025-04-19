@@ -160,9 +160,9 @@
   if [ -s ${RUN}.wave.t${cyc}z.station_tar ]
   then
     set +x
-    echo "   Copying ${RUN}.wave.t${cyc}z.bull_tar  to ${COMOUT_WAVE_GRIB_ENS}"
+    echo "   Copying ${RUN}.wave.t${cyc}z.bull_tar  to ${COMOUT_WAVE_STATION_ENS}"
     [[ "$LOUD" = YES ]] && set -x
-    cp -f ${RUN}.wave.t${cyc}z.station_tar ${COMOUT_WAVE_GRIB_ENS}
+    cp -f ${RUN}.wave.t${cyc}z.station_tar ${COMOUT_WAVE_STATION_ENS}
    else
      set +x
      echo ' '
