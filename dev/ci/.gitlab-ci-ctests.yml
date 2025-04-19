@@ -17,7 +17,7 @@
     - num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
     - '[ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }'
     - echo "CTests have been created and configured successfully"
-  dependencies:
+  needs:
     - build-${machine}
 
 # Main template for CTest execution jobs
@@ -31,5 +31,5 @@
     - ctest -V -R test_${CTEST}_stage
     - ctest -V -R test_${CTEST}_execute
     - ctest -V -R test_${CTEST}_validate
-  dependencies:
+  needs:
     - create_ctests-${machine}

@@ -12,7 +12,7 @@ setup_experiments-hera:
   parallel:
     matrix:
       - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
-  dependencies:
+  needs:
     - build-hera
   rules:
     - if: $GITHUB_API_TRIGGER != "true"
@@ -26,7 +26,7 @@ run_tests-hera:
   parallel:
     matrix:
       - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
-  dependencies:
+  needs:
     - setup_experiments-hera
   rules:
     - if: $GITHUB_API_TRIGGER != "true"
@@ -41,7 +41,7 @@ setup_experiments-gaeac6:
   parallel:
     matrix:
       - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
-  dependencies:
+  needs:
     - build-gaeac6
   rules:
     - if: $GITHUB_API_TRIGGER != "true"
@@ -55,7 +55,7 @@ run_tests-gaeac6:
   parallel:
     matrix:
       - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
-  dependencies:
+  needs:
     - setup_experiments-gaeac6
   rules:
     - if: $GITHUB_API_TRIGGER != "true"
@@ -81,7 +81,7 @@ create_ctests-hera:
     - hera
   variables:
     machine: hera
-  dependencies:
+  needs:
     - build-hera
   rules:
     - if: $GITHUB_API_TRIGGER == "true"
@@ -93,7 +93,7 @@ create_ctests-gaeac6:
     - gaeac6
   variables:
     machine: gaeac6
-  dependencies:
+  needs:
     - build-gaeac6
   rules:
     - if: $GITHUB_API_TRIGGER == "true"
@@ -103,7 +103,7 @@ run_ctests-hera:
   extends: .ctests_cases_template
   tags:
     - hera
-  dependencies:
+  needs:
     - create_ctests-hera
   rules:
     - if: $GITHUB_API_TRIGGER == "true"
@@ -113,7 +113,7 @@ run_ctests-gaeac6:
   extends: .ctests_cases_template
   tags:
     - gaeac6
-  dependencies:
+  needs:
     - create_ctests-gaeac6
   rules:
     - if: $GITHUB_API_TRIGGER == "true"
