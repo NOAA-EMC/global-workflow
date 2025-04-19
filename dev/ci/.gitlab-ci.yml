@@ -36,7 +36,6 @@ include:
   stage: build
   script:
     - echo "Using build directory ${HOMEGFS}"
-    #- dev/ci/scripts/utils/ci_utils.sh build_compute
-    - echo "Skipping build_compute step"
+    - dev/ci/scripts/utils/ci_utils.sh build_compute
     - sorc/link_workflow.sh
     - mkdir -p ${RUNTESTS_DIR}
