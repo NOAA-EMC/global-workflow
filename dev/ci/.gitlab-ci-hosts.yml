@@ -118,8 +118,6 @@ run_ctests-gaeac6:
   rules:
     - if: $GITHUB_API_TRIGGER == "true"
 
-
-
 # =======================================
 # Common build configurations by host
 # These will always be included, regardless of modality

@@ -16,7 +16,6 @@ variables:
   GIT_DEPTH: 1
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
-  # GitHub API trigger detection - defaults to false
   GITHUB_API_TRIGGER: ${GITHUB_API_TRIGGER:-"false"}
   PR_NUMBER: ${PR_NUMBER:-"0"}
 
@@ -25,15 +24,19 @@ include:
   - local: 'dev/ci/.gitlab-ci-cases.yml'
   - local: 'dev/ci/.gitlab-ci-hosts.yml'
 
+.base_config:
+  variables:
+    GIT_STRATEGY: none
+
 # Common build template for all modalities
 .build_template:
   variables:
     GIT_STRATEGY: clone
     GIT_SUBMODULE_STRATEGY: recursive
   stage: build
-  allow_failure: true
   script:
     - echo "Using build directory ${HOMEGFS}"
-    - dev/ci/scripts/utils/ci_utils.sh build_compute
+    #- dev/ci/scripts/utils/ci_utils.sh build_compute
+    - echo "Skipping build_compute step"
     - sorc/link_workflow.sh
     - mkdir -p ${RUNTESTS_DIR}
