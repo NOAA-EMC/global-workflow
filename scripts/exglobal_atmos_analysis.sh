@@ -60,7 +60,7 @@ lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
     
 # IAU
 DOIAU=${DOIAU:-"NO"}
-export IAUFHRS=${IAUFHRS:-"6"}
+export IAUFHRS=${IAUFHRS:-"6,"}
 
 # Dependent Scripts and Executables
 GSIEXEC=${GSIEXEC:-${EXECgfs}/gsi.x}
