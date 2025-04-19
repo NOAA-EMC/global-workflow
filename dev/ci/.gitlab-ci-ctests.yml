@@ -8,7 +8,7 @@
   stage: create_experiments
   script:
     - echo "Setting up for ctests workflow"
-    - source dev/ci/platfroms/config.${machine}
+    - source ${HOMEGFS}/dev/ci/platfroms/config.${machine}
     - cd ${HOMEGFS}/dev/ctests
     - mkdir -p build
     - cd build
