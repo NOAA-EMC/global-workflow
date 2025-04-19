@@ -19,6 +19,8 @@
 
 #  Set environment.
 
+source "${USHgfs}/preamble.sh"
+
 #  Directories.
 pwd=$(pwd)
 
@@ -54,10 +56,10 @@ cao_check=${cao_check:-".true."}
 ta2tb=${ta2tb:-".true."}
 
 # Diagnostic files options
+lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 binary_diag=${binary_diag:-".false."}
-lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
-    
+
 # IAU
 DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6"}
@@ -81,6 +83,8 @@ CALCINCPY=${CALCINCPY:-${USHgfs}/calcinc_gfs.py}
 RUN=${RUN:-""}
 SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
+RUN_GETGES=${RUN_GETGES:-"NO"}
+GETGESSH=${GETGESSH:-"getges.sh"}
 export gesenvir=${gesenvir:-${envir}}
  
 export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
@@ -299,6 +303,7 @@ AEROINFO=${AEROINFO:-${FIXgfs}/gsi/global_aeroinfo.txt}
 SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
 HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
 OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
+BLACKLST=${BLACKLST:-${FIXgfs}/gsi/blacklist_tq_soilda.txt}
 
 # GSI namelist
 SETUP=${SETUP:-""}
@@ -372,6 +377,7 @@ ${NLN} ${AEROINFO}     aeroinfo
 ${NLN} ${SCANINFO}     scaninfo
 ${NLN} ${HYBENSINFO}   hybens_info
 ${NLN} ${OBERROR}      errtable
+${NLN} ${BLACKLST}     blacklist
 
 ${NLN} ${FIXgfs}/gsi/AIRS_CLDDET.NL   AIRS_CLDDET.NL
 ${NLN} ${FIXgfs}/gsi/CRIS_CLDDET.NL   CRIS_CLDDET.NL
@@ -496,9 +502,7 @@ ${NLN} ${ABIBF}            abibufr
 ${NLN} ${HDOB}             hdobbufr
 ${NLN} ${SSTVIIRS}         sstviirs
 
-if [[ "${DONST}" == "YES" ]]; then
-    ${NLN} "${NSSTBF}" nsstbufr
-fi
+[[ ${DONST} = "YES" ]] && ${NLN} ${NSSTBF} nsstbufr
 
 ##############################################################
 # Required bias guess files
@@ -517,41 +521,23 @@ ${NLN} ${SFCG03} sfcf03
 ${NLN} ${SFCGES} sfcf06
 ${NLN} ${SFCG09} sfcf09
 
-if [[ -f "${ATMG04}" ]]; then
-    ${NLN} "${ATMG04}" sigf04
-fi
-if [[ -f "${ATMG05}" ]]; then
-    ${NLN} "${ATMG05}" sigf05
-fi
-if [[ -f "${ATMG07}" ]]; then
-    ${NLN} "${ATMG07}" sigf07
-fi
-if [[ -f "${ATMG08}" ]]; then
-    ${NLN} "${ATMG08}" sigf08
-fi
+[[ -f ${ATMG04} ]] && ${NLN} ${ATMG04} sigf04
+[[ -f ${ATMG05} ]] && ${NLN} ${ATMG05} sigf05
+[[ -f ${ATMG07} ]] && ${NLN} ${ATMG07} sigf07
+[[ -f ${ATMG08} ]] && ${NLN} ${ATMG08} sigf08
 
-if [[ -f "${SFCG04}" ]]; then
-    ${NLN} "${SFCG04}" sfcf04
-fi
-if [[ -f "${SFCG05}" ]]; then
-    ${NLN} "${SFCG05}" sfcf05
-fi
-if [[ -f "${SFCG07}" ]]; then
-    ${NLN} "${SFCG07}" sfcf07
-fi
-if [[ -f "${SFCG08}" ]]; then
-    ${NLN} "${SFCG08}" sfcf08
-fi
+[[ -f ${SFCG04} ]] && ${NLN} ${SFCG04} sfcf04
+[[ -f ${SFCG05} ]] && ${NLN} ${SFCG05} sfcf05
+[[ -f ${SFCG07} ]] && ${NLN} ${SFCG07} sfcf07
+[[ -f ${SFCG08} ]] && ${NLN} ${SFCG08} sfcf08
 
-if [ "${DOHYBVAR}" == "YES" ]; then
+if [ ${DOHYBVAR} = "YES" ]; then
 
    # Link ensemble members
    mkdir -p ensemble_data
 
    ENKF_SUFFIX="s"
-   if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
-       ENKF_SUFFIX=""
-   fi
+   [[ ${SMOOTH_ENKF} = "NO" ]] && ENKF_SUFFIX=""
 
    fhrs="06"
    if [ ${l4densvar} = ".true." ]; then
@@ -654,15 +640,11 @@ fi
 
 ##############################################################
 # If requested, copy and de-tar guess radstat file
-if [[ "${USE_RADSTAT}" == "YES" ]]; then
-   if [[ "${USE_CFP}" == "YES" ]]; then
-     if [[ -f "${DATA}/unzip.sh" ]]; then
-         rm "${DATA}/unzip.sh"
-     fi
-     if [[ -f "${DATA}/mp_unzip.sh" ]]; then
-         rm "${DATA}/mp_unzip.sh"
-     fi
-     cat > "${DATA}/unzip.sh" << EOFunzip
+if [ ${USE_RADSTAT} = "YES" ]; then
+   if [ ${USE_CFP} = "YES" ]; then
+     [[ -f ${DATA}/unzip.sh ]] && rm ${DATA}/unzip.sh
+     [[ -f ${DATA}/mp_unzip.sh ]] && rm ${DATA}/mp_unzip.sh
+     cat > ${DATA}/unzip.sh << EOFunzip
 #!/bin/sh
    diag_file=\$1
    diag_suffix=\$2
@@ -784,7 +766,7 @@ cat > gsiparm.anl << EOF
   use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.false.,nvqc=.true.,
   aircraft_t_bc=.true.,biaspredt=1.0e5,upd_aircraft=.true.,cleanup_tail=.true.,
   tcp_width=70.0,tcp_ermax=7.35,airs_cads=${AIRS_CADS},cris_cads=${CRIS_CADS},
-  iasi_cads=${IASI_CADS},
+  iasi_cads=${IASI_CADS},blacklst=.true.,
   ${OBSQC}
 /
 &OBS_INPUT
@@ -980,9 +962,7 @@ cat fort.2* > ${GSISTAT}
 # If requested, create obsinput tarball from obs_input.* files
 if [ ${RUN_SELECT} = "YES" ]; then
   echo $(date) START tar obs_input >&2
-  if [[ -s obsinput.tar ]]; then
-      rm obsinput.tar
-  fi
+  [[ -s obsinput.tar ]] && rm obsinput.tar
   ${NLN} ${SELECT_OBS} obsinput.tar
   ${CHGRP_CMD} obs_input.*
   tar -cvf obsinput.tar obs_input.*
@@ -1003,9 +983,7 @@ fi
 ################################################################################
 # Postprocessing
 cd ${pwd}
-if [[ "${mkdata}" == "YES" ]]; then
-    rm -rf ${DATA}
-fi
+[[ ${mkdata} = "YES" ]] && rm -rf ${DATA}
 
 ##############################################################
 # Add this statement to release the forecast job once the
