@@ -27,9 +27,6 @@
   script:
     - echo "Running ${CTEST} tests in ${HOMEGFS}/dev/ctests"
     - cd ${HOMEGFS}/dev/ctests/build
-    - ctest -V -R test_${CTEST}_setup
-    - ctest -V -R test_${CTEST}_stage
-    - ctest -V -R test_${CTEST}_execute
-    - ctest -V -R test_${CTEST}_validate
+    - ctest -L ${CTEST}
   needs:
     - create_ctests-${machine}
