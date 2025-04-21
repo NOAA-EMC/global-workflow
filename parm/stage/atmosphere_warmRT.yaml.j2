@@ -1,0 +1,28 @@
+atmosphere_warmRT:
+    mkdir:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set COMOUT_ATMOS_RESTART_PREV_MEM = COMOUT_ATMOS_RESTART_PREV_MEM_list[mem] %}
+        - "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"
+        {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[mem] %}
+        - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
+        {% endfor %} # mem loop
+    copy:
+        {% set cyc_ranges = ({ 0: [(range(1, 31), 0)],
+                               6: [(range(21, 51), 20)],
+                               12: [(range(41, 71), 40)],
+                               18: [(range(61, 81), 60), (range(1, 11), -20)]}) %}
+
+        {% if current_cycle_HH in cyc_ranges %}
+        {% for mem_data in cyc_ranges[current_cycle_HH] %}
+        {% set offset = mem_data[1] %}
+        {% set mem_range = mem_data[0] %}
+        {% for mem in mem_range %}
+        {% set imem = mem - offset %}
+        {% set path_mem = ICSDIR ~ '/enkfgdas.20230401/' ~ "18" ~ "/" ~ 'mem%03d' | format(mem)  ~ "/atmos/INPUT/gfs_ctrl.nc" %}
+        {% set destination_file = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
+        {% if path_exists(path_mem) %}
+        - ["{{ path_mem }}", "{{ destination_file }}"]
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+        {% endif %}
