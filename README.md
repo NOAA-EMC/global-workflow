@@ -31,8 +31,6 @@ The Global Workflow currently supports the following machines at the indicated t
 | Orion<br>MSU                            | 2    | The GSI runs very slowly on Orion and the TC tracker is not supported.     |
 | Gaea C5/C6<br>RDHPCS                    | 3    | Currently non-operational following an OS upgrade.<br>Supported by EPIC.   |
 | AWS, GCP, Azure <br>NOAA Parallel Works | 3    | Supported by EPIC.                                                         |
-| Jet<br>RDHPCS                           | 3    | Supported by NESDIS.                                                       |
-| S4<br>SSEC                              | 3    | Currently non-operational following an OS upgrade.<br>Supported by NESDIS. |
 
 <ins>**Tier Definitions**</ins>
 
