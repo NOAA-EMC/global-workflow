@@ -12,6 +12,7 @@ atmosphere_warmRT:
                                12: [(range(41, 71), 40)],
                                18: [(range(61, 81), 60), (range(1, 11), -20)]}) %}
 
+        {% set current_cycle_HH = 12 %}
         {% if current_cycle_HH in cyc_ranges %}
         {% for mem_data in cyc_ranges[current_cycle_HH] %}
         {% set offset = mem_data[1] %}
