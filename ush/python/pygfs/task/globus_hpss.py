@@ -50,11 +50,6 @@ class GlobusHpss(Task):
         except CommandNotFoundError:
             raise FileNotFoundError("FATAL ERROR Could not find the globus command!")
 
-        try:
-            self.ssh = which("ssh", required=True)
-        except CommandNotFoundError:
-            raise FileNotFoundError("FATAL ERROR Could not find the ssh command!")
-
         self.wd = os.getcwd()
 
         # Prep some globus commands
@@ -73,31 +68,10 @@ class GlobusHpss(Task):
         self.globus_wait.add_default_arg(["task", "wait", "--jmespath", "status",
                                           "--format=UNIX", "--timeout", "120"])
 
-        # Get the user's server username from their ~/.ssh/config file
-        self.server_name = self.task_config.SERVER_NAME
-        try:
-            ssh_output = self.ssh("-G", f"{self.server_name}", output=str)
-        except ProcessError as pe:
-            raise ProcessError(
-                f"FATAL ERROR No host information on {self.server_name}!"
-                "\n"
-                f"Please add an entry for {self.server_name} into ~/.ssh/config!"
-            ) from pe
-
         self.CLIENT_GLOBUS_UUID = self.task_config.CLIENT_GLOBUS_UUID
         self.SERVER_GLOBUS_UUID = self.task_config.SERVER_GLOBUS_UUID
-        # Parse the ssh output to find the user's Mercury username
-        ssh_output = ssh_output.split("\n")
-        for line in ssh_output:
-            if line.startswith("user "):
-                server_username = line.split()[1]
-
-        # Update the home directory on the server with the username
-        self.server_home = self.task_config.SERVER_HOME.replace(
-            "{{SERVER_USERNAME}}", server_username
-        )
-
-        logger.debug(f"Server username detected as {server_username}")
+        self.server_home = self.task_config.SERVER_HOME
+        self.server_name = self.task_config.SERVER_NAME
 
         local_dict = AttrDict({
             'sven_dropbox': (f"{self.task_config.SVEN_DROPBOX_ROOT}"),
