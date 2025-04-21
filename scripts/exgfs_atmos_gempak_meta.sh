@@ -32,8 +32,7 @@ while (( fhr <= fhend )); do
 
   gempak_file="${COMIN_ATMOS_GEMPAK_1p00}/${GEMGRD1}${fhr3}"
   if ! wait_for_file "${gempak_file}" "${sleep_interval}" "${max_tries}"; then
-    echo "FATAL ERROR: gempak grid file ${gempak_file} not available after maximum wait time."
-    exit 7
+    err_exit "FATAL ERROR: gempak grid file ${gempak_file} not available after maximum wait time."
   fi
 
   export fhr
@@ -76,7 +75,7 @@ while (( fhr <= fhend )); do
 
   cat poescript
 
-  "${HOMEgfs}/ush/run_mpmd.sh" poescript
+  "${HOMEgfs}/ush/run_mpmd.sh" poescript && true
   export err=$?; err_chk
 
   if (( fhr == 126 )) ; then

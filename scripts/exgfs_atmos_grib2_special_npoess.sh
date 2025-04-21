@@ -99,9 +99,8 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    export pgm="postcheck"
    grib_file="${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}.idx"
    if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
-      echo "FATAL ERROR: 0p50 grib file not available after max sleep time"
       export err=9
-      err_chk || exit "${err}"
+      err_chk "FATAL ERROR: 0p50 grib file not available after max sleep time"
    fi
 
    ######################################################################
@@ -112,7 +111,7 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    cp "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}" tmpfile2b
    cat tmpfile2 tmpfile2b > tmpfile
    # shellcheck disable=SC2312
-   ${WGRIB2} tmpfile | grep -F -f "${paramlist}" | ${WGRIB2} -i -grib  pgb2file tmpfile
+   ${WGRIB2} tmpfile | grep -F -f "${paramlist}" | ${WGRIB2} -i -grib  pgb2file tmpfile && true
    export err=$?; err_chk
 
    cp pgb2file "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
@@ -151,9 +150,8 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    # grib_file="${COMIN_ATMOS_MASTER}/${RUN}.t${cyc}z.goesmasterf${fhr3}.grb2"
    grib_file="${COMIN_ATMOS_MASTER}/${RUN}.t${cyc}z.special.grb2f${fhr3}"
    if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
-      echo "FATAL ERROR: GOES master grib file ${grib_file} not available after max sleep time"
       export err=9
-      err_chk || exit "${err}"
+      err_chk "FATAL ERROR: GOES master grib file ${grib_file} not available after max sleep time"
    fi
    ###############################
    # Put restart files into /nwges 
