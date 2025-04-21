@@ -299,7 +299,7 @@ AEROINFO=${AEROINFO:-${FIXgfs}/gsi/global_aeroinfo.txt}
 SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
 HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
 OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
-BLACKLST=${BLACKLST:-${FIXgfs}/gsi/blacklist_global.txt}
+BLACKLST=${BLACKLST:-${FIXgfs}/gsi/rejectlist_global.txt}
 
 # GSI namelist
 SETUP=${SETUP:-""}
