@@ -39,12 +39,8 @@ fi
 
 ########################################################
 # Execute the script.
-${SCRgfs}/exgfs_atmos_postsnd.sh
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
-
+${SCRgfs}/exgfs_atmos_postsnd.sh && true
+export err=$?; err_chk
 
 ##############################################
 # End JOB SPECIFIC work

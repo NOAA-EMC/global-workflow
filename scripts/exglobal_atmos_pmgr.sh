@@ -60,7 +60,7 @@ while [ $icnt -lt 1000 ]; do
 
   sleep 10
   icnt=$((icnt + 1))
-  if [ $icnt -ge 1080 ]; then
+  if [[ ${icnt} -ge 1080 ]]; then
     msg="ABORTING after 3 hours of waiting for ${RUN} FCST hours $postjobs."
     err_exit $msg
   fi
