@@ -857,23 +857,6 @@ class GFSTasks(Tasks):
 
         return task
 
-    def prep_emissions(self):
-
-        resources = self.get_resource('prep_emissions')
-        task_name = f'{self.run}_prep_emissions'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'envars': self.envars,
-                     'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/jobs/rocoto/prep_emissions.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-        task = rocoto.create_task(task_dict)
-
-        return task
-
     def fcst(self):
 
         fcst_map = {'forecast-only': self._fcst_forecast_only,
@@ -911,8 +894,6 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_aerosol_init'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies.append(rocoto.create_dependency(dep_condition='or', dep=deps))
 

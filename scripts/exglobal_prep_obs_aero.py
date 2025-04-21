@@ -18,10 +18,6 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     AeroObs = AerosolObsPrep(config)
-    if config.DO_PREP_OBS_AERO:
-        AeroObs.initialize()
-        AeroObs.runConverter()
-        AeroObs.finalize()
-    else:
-        # just sync files from DMPDIR
-        AeroObs.syncObs()
+    AeroObs.initialize()
+    AeroObs.runConverter()
+    AeroObs.finalize()

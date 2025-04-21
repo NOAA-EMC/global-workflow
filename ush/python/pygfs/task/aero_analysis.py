@@ -64,7 +64,7 @@ class AerosolAnalysis(Task):
                 'aero_bkg_fhr': self.task_config['aero_bkg_times'],
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gcdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'aero_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'aero_obsdataout_path': f"{self.task_config.DATA}/diags/",
                 'BKG_TSTEP': "PT3H"  # FGAT

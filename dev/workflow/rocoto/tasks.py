@@ -24,7 +24,6 @@ class Tasks:
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb', 'prepobsaero',
                    'snowanl', 'esnowanl',
-                   'offlineanl',
                    'fcst',
                    'upp', 'atmanlprod', 'atmupp', 'goesupp',
                    'atmos_products', 'oceanice_products',
@@ -201,7 +200,7 @@ class Tasks:
 
         # Get a list of all forecast hours
         fhrs = []
-        if run in ['gdas', 'gcdas']:
+        if run in ['gdas']:
             fhmax = local_config['FHMAX']
             fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))

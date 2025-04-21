@@ -419,10 +419,9 @@ def input_args(*argv):
 
     gcafsmodeparser = gcafs.add_subparsers(dest='mode')
     gcafsforecasts = gcafsmodeparser.add_parser('forecast-only', help='arguments for forecast-only mode')
-    gcafscycled = gcafsmodeparser.add_parser('cycled', help='arguments for cycled mode')
 
     # Common arguments across all modes
-    for subp in [gfscycled, gfsforecasts, gefsforecasts, sfsforecasts, gcafsforecasts, gcafscycled]:
+    for subp in [gfscycled, gfsforecasts, gefsforecasts, sfsforecasts, gcafsforecasts]:
         subp = _common_args(subp)
 
     # GFS-only arguments
@@ -430,7 +429,7 @@ def input_args(*argv):
         subp = _gfs_args(subp)
 
     # ensemble-only arguments
-    for subp in [gfscycled, gefsforecasts, sfsforecasts, gcafscycled]:
+    for subp in [gfscycled, gefsforecasts, sfsforecasts]:
         subp = _any_ensemble_args(subp)
 
     # GFS/GEFS forecast-only additional arguments
@@ -438,7 +437,7 @@ def input_args(*argv):
         subp = _any_forecast_args(subp)
 
     # cycled mode additional arguments
-    for subp in [gfscycled, gcafscycled]:
+    for subp in [gfscycled]:
         subp = _gfs_cycled_args(subp)
 
     # GEFS forecast-only arguments
@@ -450,7 +449,7 @@ def input_args(*argv):
         subp = _sfs_args(subp)
 
     # GCAFS arguments
-    for subp in [gcafsforecasts, gcafscycled]:
+    for subp in [gcafsforecasts]:
         subp = _gcafs_args(subp)
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)

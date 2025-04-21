@@ -4,7 +4,7 @@ import os
 from logging import getLogger
 from typing import Any, Dict
 
-from wxflow import (Task, htar,
+from wxflow import (Hsi, Task, htar,
                     logit, parse_j2yaml, chdir)
 # import tarfile
 
@@ -47,6 +47,7 @@ class Fetch(Task):
         parsed_fetch: Dict[str, Any]
            Dictionary derived from the yaml file with necessary HPSS info.
         """
+        self.hsi = Hsi()
 
         fetch_yaml = fetch_dict.FETCH_YAML_TMPL
         fetch_parm = os.path.join(fetch_dict.PARMgfs, "fetch")
@@ -75,7 +76,7 @@ class Fetch(Task):
 
         on_hpss = fetchdir_set.target.on_hpss
         dest = fetchdir_set.target.destination
-        tarball = fetchdir_set.target.tarball
+        tarball = fetchdir_set.targettarball
 
         # Select action whether no_hpss is True or not, and pull these
         #    data from tape or locally and place where it needs to go
