@@ -14,6 +14,7 @@ arguments:
   start: cold
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C384C192
   idate: 2021032312
   edate: 2021032312
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
