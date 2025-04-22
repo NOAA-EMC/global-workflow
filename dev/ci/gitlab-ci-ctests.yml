@@ -25,17 +25,18 @@
 .create_ctests:
   extends: .base_config
   stage: create_experiments
-  script:
-    - echo "Setting up for ctests workflow"
-    - source ${HOMEGFS}/dev/ci/platforms/config.${machine}
-    - cd ${HOMEGFS}/dev/ctests
-    - mkdir -p build
-    - cd build
-    - cmake -S ${HOMEGFS}
-    - ctest -N
-    - num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
-    - '[ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }'
-    - echo "CTests have been created and configured successfully"
+  script: |
+    set -e  # Fail the job if any command fails
+    echo "Setting up for ctests workflow"
+    source ${HOMEGFS}/dev/ci/platforms/config.${machine}
+    cd ${HOMEGFS}/dev/ctests
+    mkdir -p build
+    cd build
+    cmake -S ${HOMEGFS}
+    ctest -N
+    num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
+    [ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }
+    echo "CTests have been created and configured successfully"
   needs:
     - build-${machine}
 
@@ -43,9 +44,10 @@
 .run_ctests_template:
   extends: .base_config
   stage: run_tests
-  script:
-    - echo "Running ${CTEST} tests in ${HOMEGFS}/dev/ctests"
-    - cd ${HOMEGFS}/dev/ctests/build
-    - ctest -L ${CTEST}
+  script: |
+    set -e  # Fail the job if any command fails
+    echo "Running ${CTEST} tests in ${HOMEGFS}/dev/ctests"
+    cd ${HOMEGFS}/dev/ctests/build
+    ctest -L ${CTEST} --output-on-failure
   needs:
     - create_ctests-${machine}
