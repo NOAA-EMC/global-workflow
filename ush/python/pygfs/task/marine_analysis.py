@@ -45,6 +45,14 @@ class MarineAnalysis(Task):
         else:
             _berror_model = 'marine_background_error_static_diffusion'
 
+        # Set the restart date, dependent on the cycling type
+        if self.task_config.DOIAU:
+            # forecast initialized at the begining of the DA window
+            _rst_date = _window_begin.strftime('%Y%m%d.%H%M%S')
+        else:
+            # forecast initialized at the middle of the DA window
+            _rst_date = self.task_config.current_cycle.strftime('%Y%m%d.%H%M%S')
+
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
@@ -61,7 +69,9 @@ class MarineAnalysis(Task):
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'berror_model': _berror_model,
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3)),
-                'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS
+                'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS,
+                'rst_date': _rst_date,
+                'observations': parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, self.task_config)['observations']
             }
         )
 
@@ -85,12 +95,22 @@ class MarineAnalysis(Task):
         - creating output directories
         """
 
+        # stage fix files
+        logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
+        soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
+        FileHandler(soca_fix_list).sync()
+
         # prepare the directory structure to run SOCA
         self._prep_scratch_dir()
 
         # fetch observations from COMROOT
         # TODO(G.V. or A.E.): Keep a copy of the obs in the scratch fs after the obs prep job
         self._fetch_observations()
+
+        # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
+        logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
+        soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
+        FileHandler(soca_utility_list).sync()
 
         # stage the ocean and ice backgrounds for FGAT
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
@@ -118,29 +138,16 @@ class MarineAnalysis(Task):
                                    os.path.join(self.task_config.DATA,
                                                 'ice.ens_weights.nc')]]}).sync()
 
+        # make a copy of the CICE6 restart
+        ice_rst = os.path.join(self.task_config.COMIN_ICE_RESTART_PREV, f'{self.task_config.rst_date}.cice_model.res.nc')
+        ice_rst_ana = os.path.join(self.task_config.DATA, 'Data', self.task_config.rst_date + '.cice_model.res.nc')
+        FileHandler({'copy': [[ice_rst, ice_rst_ana]]}).sync()
+
         # Generate background list
         self.task_config.marine_pseudo_model_states = mdau.gen_bkg_list(bkg_path='./bkg',
                                                                         window_begin=self.task_config.MARINE_WINDOW_BEGIN)
 
-        # make a copy of the CICE6 restart
-        # set the restart date, dependent on the cycling type
-        if self.task_config.DOIAU:
-            # forecast initialized at the begining of the DA window
-            fcst_begin = self.task_config.MARINE_WINDOW_BEGIN_ISO
-            rst_date = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y%m%d.%H%M%S')
-        else:
-            # forecast initialized at the middle of the DA window
-            fcst_begin = self.task_config.MARINE_WINDOW_MIDDLE_ISO
-            rst_date = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y%m%d.%H%M%S')
-        ice_rst = os.path.join(self.task_config.COMIN_ICE_RESTART_PREV, f'{rst_date}.cice_model.res.nc')
-        ice_rst_ana = os.path.join(self.task_config.DATA, 'Data', rst_date + '.cice_model.res.nc')
-        FileHandler({'copy': [[ice_rst, ice_rst_ana]]}).sync()
-
-        # Write obs_list_short
-        save_as_yaml(self.task_config['obs_list'], 'obs_list_short.yaml')
-        os.environ['OBS_LIST_SHORT'] = 'obs_list_short.yaml'
-
-        # initialize JEDI applications
+        # Initialize JEDI variational application
         self.jedi_dict['var'].initialize(self.task_config)
 
         # TEST
@@ -149,9 +156,8 @@ class MarineAnalysis(Task):
         for obs_space in self.jedi_dict['var'].jedi_config.input_config['cost function']['observations']['observers']:
             self.task_config.cleaned_observations.append(obs_space['obs space']['name'])
             self.task_config.obs_variables[obs_space['obs space']['name']] = obs_space['obs space']['simulated variables'][0]
-        print('foo', self.task_config.obs_variables)
-        print('bar', self.task_config.cleaned_observations)
 
+        # Initialize remaining JEDI applications
         self.jedi_dict['socaincr2mom6'].initialize(self.task_config)
         self.jedi_dict['soca_2cice_global'].initialize(self.task_config)
         self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
@@ -180,19 +186,17 @@ class MarineAnalysis(Task):
         list against what is available for the cycle.
         """
 
-        # get the list of observations
+        obsconfigfile = os.path.join(self.task_config['PARMgfs'],
+                                     'gdas/soca/obs/obs_list_base_yaml.j2')
+        observers = parse_j2yaml(obsconfigfile, self.task_config)['observers']
 
-        # "observations" is expected by later JCB code to populate it with config info,
-        # but the obs_list as such is needed later
-        self.task_config.observations = parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, self.task_config)['observations']
-        self.task_config.obs_list = self.task_config.observations
-
-        obsconfigfile = os.path.join(self.task_config['PARMgfs'], 'gdas/soca/obs/obs_list_base_yaml.j2')
-        self.task_config.observations = parse_j2yaml(obsconfigfile, self.task_config)
+        # Write obs_list_short
+        save_as_yaml(observers, 'obs_list_short.yaml')
+        os.environ['OBS_LIST_SHORT'] = 'obs_list_short.yaml'
 
         obs_files = []
 
-        for observer in self.task_config['observations']['observers']:
+        for observer in observers:
             filename = f"{self.task_config.OPREFIX}{observer['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4"
             logger.info(f"******** {filename}")
             obs_files.append(filename)
@@ -228,22 +232,12 @@ class MarineAnalysis(Task):
         anl_out = os.path.join(anl_dir, 'Data')           # output dir for soca DA
         FileHandler({'mkdir': [diags, obs_in, anl_out]}).sync()
 
-        # stage fix files
-        logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
-        soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
-        FileHandler(soca_fix_list).sync()
-
         # prepare the deterministic MOM6 input.nml
         mdau.prep_input_nml(self.task_config)
 
         # prepare the input.nml for the analysis geometry
         mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml",
                             simple_geom=True, mom_input="./anl_geom/MOM_input")
-
-        # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
-        logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
-        soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
-        FileHandler(soca_utility_list).sync()
 
     @logit(logger)
     def finalize(self: Task) -> None:
@@ -352,69 +346,3 @@ class MarineAnalysis(Task):
         fh_list = list_all_files(os.path.join(self.task_config.DATA),
                                  os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS), wc='*stats.csv', fh_list=fh_list)
         FileHandler({'copy': fh_list}).sync()
-
-    @logit(logger)
-    def obs_space_stats(self: Task) -> None:
-        """Observation space statistics
-           This method computes a few basic statistics on the observation spaces
-        """
-
-        # obs space statistics
-        logger.info(f"---------------- Compute basic stats")
-        diags_list = glob.glob(os.path.join(os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS, 'diags', '*.nc4')))
-        obsstats_j2yaml = str(os.path.join(self.task_config.PARMgfs, 'gdas', 'soca', 'obs', 'obs_stats.yaml.j2'))
-
-        # function to create a minimalist ioda obs sapce
-        def create_obs_space(data):
-            os_dict = {"obs space": {
-                       "name": data["obs_space"],
-                       "obsdatain": {
-                           "engine": {"type": "H5File", "obsfile": data["obsfile"]}
-                       },
-                       "simulated variables": [data["variable"]]
-                       },
-                       "variable": data["variable"],
-                       "experiment identifier": data["pslot"],
-                       "csv output": data["csv_output"]
-                       }
-            return os_dict
-
-        # get the experiment id
-        pslot = self.task_config.PSLOT
-
-        # iterate through the obs spaces and generate the yaml for gdassoca_obsstats.x
-        obs_spaces = []
-        for obsfile in diags_list:
-
-            # define an obs space name
-            obs_space = re.sub(r'\.\d{10}\.nc4$', '', os.path.basename(obsfile))
-
-            # get the variable name, assume 1 variable per file
-            nc = netCDF4.Dataset(obsfile, 'r')
-            variable = next(iter(nc.groups["ombg"].variables))
-            nc.close()
-
-            # filling values for the templated yaml
-            data = {'obs_space': os.path.basename(obsfile),
-                    'obsfile': obsfile,
-                    'pslot': pslot,
-                    'variable': variable,
-                    'csv_output': os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS,
-                                               f"{self.task_config.OPREFIX}ocn.{obs_space}.stats.csv")}
-            obs_spaces.append(create_obs_space(data))
-
-        # create the yaml
-        data = {'obs_spaces': obs_spaces}
-        conf = parse_j2yaml(path=obsstats_j2yaml, data=data)
-        stats_yaml = 'diag_stats.yaml'
-        conf.save(stats_yaml)
-
-        # run the application
-        mdau.link_executable(self.task_config, 'gdassoca_obsstats.x')
-        command = f"{os.getenv('launcher')} -n 1"
-        exec_cmd = Executable(command)
-        exec_name = os.path.join(self.task_config.DATA, 'gdassoca_obsstats.x')
-        exec_cmd.add_default_arg(exec_name)
-        exec_cmd.add_default_arg(stats_yaml)
-
-        mdau.run(exec_cmd)
