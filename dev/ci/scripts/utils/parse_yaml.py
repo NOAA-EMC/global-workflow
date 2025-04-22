@@ -42,7 +42,6 @@ def yq(yamlfile, key):
     """
 
     HOMEgfs = find_homegfs()
-    data = AttrDict(HOMEgfs=HOMEgfs)
     data.update({'HOMEgfs': HOMEgfs})
     ydict = parse_j2yaml(path=yamlfile, data=data)
     if key == 'all':

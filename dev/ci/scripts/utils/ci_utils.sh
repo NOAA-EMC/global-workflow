@@ -196,7 +196,7 @@ function cleanup_experiment() {
     rm -Rf "${STMP}/RUNDIRS/${pslot:?}"
 }
 
-function build_compute () {
+function build () {
 
   source "${HOMEGFS_}/dev/ci/platforms/config.${MACHINE_ID}"
   # TODO: when it's safe to build on C6 compute nodes again, do so

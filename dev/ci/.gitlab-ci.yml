@@ -43,9 +43,9 @@ variables:
 
 # Include specialized pipeline configuration files
 include:
-  - local: 'dev/ci/.gitlab-ci-ctests.yml'  # CTest framework configuration
-  - local: 'dev/ci/.gitlab-ci-cases.yml'   # Standard test case templates
-  - local: 'dev/ci/.gitlab-ci-hosts.yml'   # Host-specific configurations
+  - local: 'dev/ci/gitlab-ci-ctests.yml'  # CTest framework configuration
+  - local: 'dev/ci/gitlab-ci-cases.yml'   # Standard test case templates
+  - local: 'dev/ci/gitlab-ci-hosts.yml'   # Host-specific configurations
 
 .base_config:
   variables:
@@ -60,6 +60,6 @@ include:
   script:
     - |
       echo "Using build directory ${HOMEGFS}"
-      dev/ci/scripts/utils/ci_utils.sh build_compute
+      dev/ci/scripts/utils/ci_utils.sh build
       sorc/link_workflow.sh
       mkdir -p ${RUNTESTS_DIR}
