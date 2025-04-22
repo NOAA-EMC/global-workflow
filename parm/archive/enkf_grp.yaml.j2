@@ -2,8 +2,6 @@ enkf_grp:
     name: "ENKF_GRP"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_grp{{ ENSGRP }}.tar"
     required:
-        {% set head_ocean = "enkfgdas.ocean.t" + cycle_HH + "z." %}
-        {% set head_ice = "enkfgdas.ice.t" + cycle_HH + "z." %}
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
         {% set imem = mem - first_group_mem %}
         # Construct member COM directories
