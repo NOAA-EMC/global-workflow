@@ -3,6 +3,8 @@
 source "${HOMEgfs}/ush/jjob_header.sh" -e "fetch" -c "base fetch"
 
 # Execute fetching
+# Do not export shell opts to the bash scripts in the htar/hsi wrappers
+export -n SHELLOPTS
 "${SCRgfs}/exglobal_fetch.py" 
 err=$?
 
