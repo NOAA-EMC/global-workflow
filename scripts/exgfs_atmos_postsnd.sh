@@ -117,7 +117,11 @@ for fhr in "${hour_list[@]}"; do
 done
 
 # Run with MPMD 
-"${USHgfs}/run_mpmd.sh" "${DATA}/poescript_bufr"
+"${USHgfs}/run_mpmd.sh" "${DATA}/poescript_bufr" && true
+export err=$?
+set +x
+err_chk "FATAL ERROR: One or more BUFR MPMD tasks failed!"
+set_trace
 
 cd "${DATA}" || exit 2
 
