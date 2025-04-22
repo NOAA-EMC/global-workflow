@@ -17,7 +17,7 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 device="nc | gfs.meta"
@@ -159,18 +159,18 @@ if (( err != 0 )) || [[ ! -s gfs.meta ]] &> /dev/null; then
     exit $(( err + 100 ))
 fi
 
-mv gfs.meta "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
+mv gfs.meta "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
+        "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
     if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-            "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
+            "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
     fi
     if (( fhr == 216 )) ; then
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_METAFILE_LAST "${job}" \
-            "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
+            "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
     fi
 fi
 

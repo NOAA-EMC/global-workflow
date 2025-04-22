@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "fit2obs" -c "base fit2obs"
 
 
@@ -66,10 +65,12 @@ if [[ ${CDATE} -gt ${SDATE} ]]; then
   # RUN FIT2OBS VERIFICATION
   ##############################################
 
+  # Un-export SHELLOPTS before going into the Fit2Obs package (let that package handle logging/errors)
+  export -n SHELLOPTS
   "${SCRIPTSfit2obs}/excfs_gdas_vrfyfits.sh"
-  status=$?
-  if [[ ${status} -ne 0 ]]; then
-      exit "${status}"
+  err=$?
+  if [[ ${err} -ne 0 ]]; then
+      exit "${err}"
   fi
 
   ##############################################

@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlgenb" -c "base aeroanl aeroanlgenb"
 
 ##############################################
@@ -22,11 +21,9 @@ mkdir -p "${COMOUT_CHEM_BMAT}"
 # Run relevant script
 
 EXSCRIPT=${GDASAEROBMATPY:-${SCRgfs}/exgdas_aero_analysis_generate_bmatrix.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
@@ -42,7 +39,9 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || exit 1
+cd "${DATAROOT}" && true
+export err=$?
+err_chk
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

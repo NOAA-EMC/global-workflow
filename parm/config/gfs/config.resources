@@ -17,7 +17,7 @@ if (( $# != 1 )); then
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
     echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
-    echo "anal sfcanl analcalc analdiag fcst echgres"
+    echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
@@ -66,49 +66,6 @@ case ${machine} in
               max_tasks_per_node=80
               # shellcheck disable=SC2034
               mem_node_max="500GB"
-    ;;
-  "JET")
-    case ${PARTITION_BATCH} in
-      "xjet")
-              max_tasks_per_node=24
-              # shellcheck disable=SC2034
-              mem_node_max="61GB"
-        ;;
-      "vjet")
-              max_tasks_per_node=16
-              # shellcheck disable=SC2034
-              mem_node_max="61GB"
-        ;;
-      "sjet")
-              max_tasks_per_node=16
-              # shellcheck disable=SC2034
-              mem_node_max="29GB"
-        ;;
-      "kjet")
-              max_tasks_per_node=40
-              # shellcheck disable=SC2034
-              mem_node_max="88GB"
-        ;;
-      *)
-        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
-        exit 3
-    esac
-    ;;
-  "S4")
-    case ${PARTITION_BATCH} in
-      "s4")   max_tasks_per_node=32
-              # shellcheck disable=SC2034
-              mem_node_max="168GB"
-        ;;
-      "ivy")
-              max_tasks_per_node=20
-              # shellcheck disable=SC2034
-              mem_node_max="128GB"
-        ;;
-      *)
-        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
-        exit 3
-    esac
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
@@ -209,8 +166,8 @@ case ${step} in
   # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
   # Limit the number of tasks/node to 40.
   "wavepostbndpnt")
-    walltime="03:00:00"
-    ntasks=240
+    walltime="00:30:00"
+    ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
@@ -222,8 +179,8 @@ case ${step} in
     ;;
 
   "wavepostbndpntbll")
-    walltime="01:00:00"
-    ntasks=448
+    walltime="00:10:00"
+    ntasks=2
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
@@ -235,8 +192,8 @@ case ${step} in
     ;;
 
   "wavepostpnt")
-    walltime="04:00:00"
-    ntasks=200
+    walltime="00:35:00"
+    ntasks=3
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
@@ -248,7 +205,7 @@ case ${step} in
     ;;
 
   "wavegempak")
-    walltime="02:00:00"
+    walltime="00:10:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -801,6 +758,14 @@ case ${step} in
     memory="48GB"
     ;;
 
+  "anlstat")
+    walltime="00:30:00"
+    ntasks=20
+    threads_per_task=1
+    tasks_per_node=20
+    memory="90GB"
+    ;;
+
   "sfcanl")
     walltime="00:20:00"
     ntasks=${ntiles:-6}
@@ -1331,6 +1296,7 @@ case ${step} in
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="${mem_node_max}"
     export is_exclusive=True
     ;;
 

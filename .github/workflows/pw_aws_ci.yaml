@@ -88,7 +88,7 @@ jobs:
 
   checkout:
     needs: fetch-branch
-    runs-on: 
+    runs-on:
       - self-hosted
       - aws
       - parallelworks
@@ -103,9 +103,9 @@ jobs:
         repository: ${{ needs.fetch-branch.outputs.repo }}
         ref: ${{ needs.fetch-branch.outputs.branch }}
 
-  build-link:      
+  build-link:
     needs: checkout
-    runs-on: 
+    runs-on:
       - self-hosted
       - aws
       - parallelworks
@@ -123,7 +123,7 @@ jobs:
 
   create-experiments:
     needs: build-link
-    runs-on: 
+    runs-on:
       - self-hosted
       - aws
       - parallelworks
@@ -139,13 +139,13 @@ jobs:
         run: |
           mkdir -p ${{ env.RUNTESTS }}
           cd ${{ env.TEST_DIR }}/HOMEgfs
-          source workflow/gw_setup.sh
-          source ci/platforms/config.noaacloud
-          ./workflow/create_experiment.py --yaml ci/cases/pr/${{ matrix.case }}.yaml --overwrite
+          source dev/ush/gw_setup.sh
+          source dev/ci/platforms/config.noaacloud
+          ./dev/workflow/create_experiment.py --yaml dev/ci/cases/pr/${{ matrix.case }}.yaml --overwrite
 
   run-experiments:
     needs: create-experiments
-    runs-on: 
+    runs-on:
       - self-hosted
       - aws
       - parallelworks
@@ -157,11 +157,11 @@ jobs:
       - name: Run Experiment ${{ matrix.case }}
         run: |
           cd ${{ env.TEST_DIR }}/HOMEgfs
-          ./ci/scripts/run-check_ci.sh ${{ env.TEST_DIR }} ${{ matrix.case }}.${{ github.run_id }} HOMEgfs
+          ./dev/ci/scripts/run-check_ci.sh ${{ env.TEST_DIR }} ${{ matrix.case }}.${{ github.run_id }} HOMEgfs
 
   clean-up:
     needs: run-experiments
-    runs-on: 
+    runs-on:
       - self-hosted
       - aws
       - parallelworks

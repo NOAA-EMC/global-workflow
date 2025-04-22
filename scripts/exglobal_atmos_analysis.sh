@@ -19,8 +19,6 @@
 
 #  Set environment.
 
-source "${USHgfs}/preamble.sh"
-
 #  Directories.
 pwd=$(pwd)
 

@@ -54,6 +54,11 @@ class MarineLETKF(Analysis):
         self.task_config.mom_input_nml = os.path.join(self.task_config.DATA, 'mom_input.nml')
         self.task_config.obs_dir = os.path.join(self.task_config.DATA, 'obs')
         self.task_config.ENSPERT_RELPATH = _enspert_relpath
+        self.task_config.PARMsoca = os.path.join(self.task_config.PARMgfs, 'gdas', 'soca')
+        self.task_config.cyc = os.getenv('cyc')
+        self.task_config.PDY = os.getenv('PDY')
+        self.task_config.app_path_observations = self.task_config.MARINE_JCB_GDAS_OBS
+        self.task_config.letkf_app = "true"
 
     @logit(logger)
     def initialize(self):
@@ -71,8 +76,11 @@ class MarineLETKF(Analysis):
         # make directories and stage ensemble background files
         soca_fix_stage_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_stage_list).sync()
-        stageconf = AttrDict()
-        keys = ['current_cycle',
+        stageconfig = AttrDict()
+        keys = ['app_path_observations',
+                'cyc',
+                'current_cycle',
+                'letkf_app',
                 'previous_cycle',
                 'COM_ICE_LETKF_TMPL',
                 'COM_OCEAN_LETKF_TMPL',
@@ -83,37 +91,48 @@ class MarineLETKF(Analysis):
                 'COMOUT_ICE_LETKF',
                 'COMOUT_OCEAN_LETKF',
                 'DATA',
+                'DIST_HALO_SIZE',
                 'ENSPERT_RELPATH',
                 'GDUMP_ENS',
                 'NMEM_ENS',
                 'OPREFIX',
                 'PARMgfs',
+                'PDY',
                 'ROTDIR',
                 'RUN',
                 'WINDOW_BEGIN',
                 'WINDOW_MIDDLE']
         for key in keys:
-            stageconf[key] = self.task_config[key]
+            stageconfig[key] = self.task_config[key]
 
-        # stage ensemble background files
-        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, stageconf)
-        FileHandler(soca_ens_bkg_stage_list).sync()
+        jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-base.yaml')
+        jcb_base_config = parse_j2yaml(path=jcb_base_yaml, data=stageconfig)
+
+        jcb_config = {**jcb_base_config, **stageconfig}
 
         # stage letkf-specific files
-        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, stageconf)
+        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, jcb_config)
         FileHandler(letkf_stage_list).sync()
 
-        obs_list = parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, self.task_config)
+        # stage ensemble background files
+        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, stageconfig)
+        FileHandler(soca_ens_bkg_stage_list).sync()
 
-        # get the list of observations
+        # "observations" is expected by later JCB code to populate it with config info,
+        jcb_config['observations'] = parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, jcb_config)['observations']
+
+        obsconfigfile = os.path.join(self.task_config['PARMgfs'], 'gdas/soca/obs/obs_list_base_yaml.j2')
+        jcb_config['observations'] = parse_j2yaml(obsconfigfile, jcb_config)
+
+        # get the list of expected observation files
         obs_files = []
-        for ob in obs_list['observers']:
-            obs_name = ob['obs space']['name'].lower()
+        for observer in jcb_config['observations']['observers']:
+            obs_name = observer['obs space']['name'].lower()
             # TODO(AFE) - this should be removed when the obs config yamls are jinjafied
-            if 'distribution' not in ob['obs space']:
-                ob['obs space']['distribution'] = {'name': 'Halo', 'halo size': self.task_config['DIST_HALO_SIZE']}
+            if 'distribution' not in observer['obs space']:
+                observer['obs space']['distribution'] = {'name': 'Halo', 'halo size': self.task_config['DIST_HALO_SIZE']}
             obs_filename = f"{self.task_config.OPREFIX}{obs_name}.{to_YMDH(self.task_config.current_cycle)}.nc4"
-            obs_files.append((obs_filename, ob))
+            obs_files.append((obs_filename, observer))
 
         obs_files_to_copy = []
         obs_to_use = []
@@ -131,10 +150,12 @@ class MarineLETKF(Analysis):
         FileHandler({'copy': obs_files_to_copy}).sync()
 
         # make the letkf.yaml
-        letkf_yaml = parse_j2yaml(self.task_config.MARINE_LETKF_YAML_TMPL, stageconf)
+        # TODO (AFE) switch to fully JCB version
+        letkf_yaml = parse_j2yaml(self.task_config.MARINE_LETKF_YAML_TMPL, jcb_config)
         letkf_yaml.observations.observers = obs_to_use
         letkf_yaml.save(self.task_config.letkf_yaml_file)
 
+        # TODO(AFE) get rid of this, I think
         # swap date and stack size in mom_input.nml
         domain_stack_size = self.task_config.DOMAIN_STACK_SIZE
         ymdhms = [int(s) for s in self.task_config.WINDOW_BEGIN.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
@@ -190,19 +211,18 @@ class MarineLETKF(Analysis):
         for key in keys:
             letkfsaveconf[key] = self.task_config[key]
 
-        # get the list of obs output files
-        obs_list = parse_j2yaml(letkfsaveconf.MARINE_OBS_LIST_YAML, self.task_config)
+        # get the list of obs output file - letkf yaml is already complete
+        letkf_config = parse_j2yaml(self.task_config.letkf_yaml_file, AttrDict())
         obs_files = []
-        for ob in obs_list['observers']:
-            obs_files.append(ob['obs space']['obsdataout']['engine']['obsfile'])
+        for observer in letkf_config['observations']['observers']:
+            obs_files.append(observer['obs space']['obsdataout']['engine']['obsfile'])
         obs_files_to_copy = []
-        # copy obs from diags to COMOUT
+        # copy files from diags to COMOUT
         for obs_src in obs_files:
             obs_dst = os.path.join(letkfsaveconf.COMOUT_OCEAN_LETKF, 'diags',
                                    os.path.basename(obs_src))
             if os.path.exists(obs_src):
                 obs_files_to_copy.append([obs_src, obs_dst])
-        # stage the desired diag files
         FileHandler({'mkdir': [os.path.join(letkfsaveconf.COMOUT_OCEAN_LETKF, 'diags')]}).sync()
         FileHandler({'copy': obs_files_to_copy}).sync()
         letkf_save_list = parse_j2yaml(self.task_config.MARINE_LETKF_SAVE_YAML_TMPL, letkfsaveconf)

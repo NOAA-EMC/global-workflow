@@ -1,5 +1,4 @@
 #!/bin/bash
-source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
 export DATAens="${DATAjob}/ensdata"
@@ -31,16 +30,17 @@ mkdir -p "${COMOUT_ICE_RESTART}"
 ###############################################################
 
 EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_finalize.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || exit 1
+cd "${DATAROOT}" && true
+export err=$?
+err_chk
+
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

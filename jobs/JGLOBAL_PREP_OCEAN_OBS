@@ -1,6 +1,5 @@
 #!/bin/bash
-source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base prepoceanobs"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base marineanl prepoceanobs"
 
 
 ##############################################
@@ -19,9 +18,9 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 
 EXSCRIPT=${GDASPREPOCNOBSPY:-${SCRgfs}/exglobal_prep_ocean_obs.py}
 ${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
 fi
 
 

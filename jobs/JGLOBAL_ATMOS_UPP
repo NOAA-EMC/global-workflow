@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "upp" -c "base upp"
 
 ##############################################
@@ -22,9 +21,9 @@ if [[ ! -d ${COMOUT_ATMOS_MASTER} ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
 ###############################################################
 # Run relevant exglobal script
 
-"${SCRgfs}/exglobal_atmos_upp.py"
-status=$?
-(( status != 0 )) && exit "${status}"
+"${SCRgfs}/exglobal_atmos_upp.py" && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work

@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${USHgfs}/preamble.sh"
-
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -20,6 +18,9 @@ source "${USHgfs}/preamble.sh"
 ################################################################################
 
 data_available=0
+
+# Do not exit on errors so that restricted data can be protected
+set +eu
 
 if [[ -s ${radstat} && -s ${biascr} ]]; then
    data_available=1
@@ -138,18 +139,12 @@ fi
 #####################################################################
 # Postprocessing
 
-err=0
+export err=0
 if [[ ${data_available} -ne 1 ]]; then
-   err=1
-elif [[ ${rc_angle} -ne 0 ]]; then
-   err=${rc_angle}
-elif [[ ${rc_bcoef} -ne 0 ]]; then
-   err=${rc_bcoef}
-elif [[ ${rc_bcor} -ne 0 ]]; then
-   err=${rc_bcor}
-elif [[ ${rc_time} -ne 0 ]]; then
-   err=${rc_time}
+   export err=1
 fi
+
+export err=$((err + rc_angle + rc_bcoef + rc_bcor + rc_time))
 
 #####################################################################
 # Restrict select sensors and satellites
@@ -161,5 +156,6 @@ for rtype in ${rlist}; do
   fi
 done
 
-exit ${err}
+err_chk
+exit "${err}"
 
