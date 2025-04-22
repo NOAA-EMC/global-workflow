@@ -7,6 +7,7 @@ atmosphere_warmRT:
         - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
         {% endfor %} # mem loop
     copy:
+        #select restart members files (80) specific to the cycle
         {% set cyc_ranges = ({ 0: [(range(1, 31), 0)],
                                6: [(range(21, 51), 20)],
                                12: [(range(41, 71), 40)],
@@ -19,10 +20,10 @@ atmosphere_warmRT:
         {% set mem_range = mem_data[0] %}
         {% for mem in mem_range %}
         {% set imem = mem - offset %}
-        {% set path_mem = ICSDIR ~ '/enkfgdas.20230401/' ~ "18" ~ "/" ~ 'mem%03d' | format(mem)  ~ "/atmos/INPUT/gfs_ctrl.nc" %}
-        {% set destination_file = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
-        {% if path_exists(path_mem) %}
-        - ["{{ path_mem }}", "{{ destination_file }}"]
+        {% set mem_file = ICSDIR ~ '/enkfgdas.20230401/' ~ "18" ~ "/" ~ 'mem%03d' | format(mem)  ~ "/atmos/INPUT/gfs_ctrl.nc" %}
+        {% set destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
+        {% if path_exists(mem_file) %}
+        - ["{{ mem_file }}", "{{ destination_path }}"]
         {% endif %}
         {% endfor %}
         {% endfor %}
