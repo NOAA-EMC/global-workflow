@@ -31,7 +31,7 @@
     - cd ${HOMEGFS}/dev/ctests
     - mkdir -p build
     - cd build
-    - cmake ../../..
+    - cmake -S ${HOMEGFS}
     - ctest -N
     - num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
     - '[ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }'
