@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# Determine HOMEGFS_ and source machine detection early
-if [[ -z "${HOMEGFS_}" ]]; then
+# Determine HOMEgfs_ and source machine detection early
+if [[ -z "${HOMEgfs_}" ]]; then
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    HOMEGFS_="$("${SCRIPT_DIR}/find_homegfs.py")"
+    HOMEgfs_="$("${SCRIPT_DIR}/find_homegfs.py")"
 fi
-source "${HOMEGFS_}/ush/detect_machine.sh"
+source "${HOMEgfs_}/ush/detect_machine.sh"
 
 # --- Existing functions ---
 
@@ -70,7 +70,7 @@ function get_pr_case_list () {
     # loop over every yaml file in the PR's ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    for yaml_config in "${HOMEGFS_}/dev/ci/cases/pr/"*.yaml; do
+    for yaml_config in "${HOMEgfs_}/dev/ci/cases/pr/"*.yaml; do
       case=$(basename "${yaml_config}" .yaml) || true
       echo "${case}"
     done
@@ -123,29 +123,29 @@ function cancel_all_batch_jobs () {
 function create_experiment () {
 
   local yaml_config="${1}"
-  cd "${HOMEGFS_}" || exit 1
+  cd "${HOMEgfs_}" || exit 1
   pr_sha=$(git rev-parse --short HEAD)
   case=$(basename "${yaml_config}" .yaml) || true
   export pslot=${case}_${pr_sha}
 
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-      source "${HOMEGFS_}/dev/ci/platforms/config.${PW_CSP}"
+      source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
   else
-      source "${HOMEGFS_}/dev/ci/platforms/config.${MACHINE_ID}"
+      source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
   fi
 
-  source "${HOMEGFS_}/dev/ush/gw_setup.sh"
+  source "${HOMEgfs_}/dev/ush/gw_setup.sh"
 
   # Remove RUNDIRS dir incase this is a retry (STMP now in host file)
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-      STMP=$("${HOMEGFS_}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEGFS_}/dev/workflow/hosts/${PW_CSP}pw.yaml" -k STMP -s)
+      STMP=$("${HOMEgfs_}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs_}/dev/workflow/hosts/${PW_CSP}pw.yaml" -k STMP -s)
   else
-      STMP=$("${HOMEGFS_}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEGFS_}/dev/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
+      STMP=$("${HOMEgfs_}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs_}/dev/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
   fi
   echo "Removing ${STMP}/RUNDIRS/${pslot} directory incase this is a retry"
   rm -Rf "${STMP}/RUNDIRS/${pslot}"
 
-  "${HOMEGFS_}/${system}/dev/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
+  "${HOMEgfs_}/${system}/dev/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
 
 }
 
@@ -169,8 +169,8 @@ function publish_logs() {
 
     if [[ -n "${full_paths}" ]]; then
         # shellcheck disable=SC2027,SC2086
-        ${HOMEGFS_}/dev/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo ${PR_header} > /dev/null
-        URL="$("${HOMEGFS_}/dev/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
+        ${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo ${PR_header} > /dev/null
+        URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
     fi
     echo "${URL}"
 }
@@ -187,7 +187,7 @@ function cleanup_experiment() {
     pslot=$(basename "${EXPDIR}")
 
     # Use the Python utility to get the required variables
-    read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEGFS_}/dev/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
+    read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEgfs_}/dev/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
 
     rm -Rf "${ARCDIR:?}"
     rm -Rf "${ATARDIR:?}"
@@ -198,12 +198,12 @@ function cleanup_experiment() {
 
 function build () {
 
-  source "${HOMEGFS_}/dev/ci/platforms/config.${MACHINE_ID}"
+  source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
   # TODO: when it's safe to build on C6 compute nodes again, do so
   if [[ "${MACHINE_ID}" == "gaeac6" ]]; then
-    "${HOMEGFS_}/sorc/build_all.sh" -v -k all
+    "${HOMEgfs_}/sorc/build_all.sh" -v -k all
   else
-    "${HOMEGFS_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
+    "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
   fi
 
 }
