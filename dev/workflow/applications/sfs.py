@@ -1,5 +1,5 @@
 """
-Sea Forecast System (SFS) application configuration module.
+Seasonal Forecast System (SFS) application configuration module.
 
 This module defines the SFS application configuration classes used for
 configuring and running the Sea Forecast System.
