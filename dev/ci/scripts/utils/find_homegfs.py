@@ -32,9 +32,7 @@ def find_homegfs(start_path=None):
     # If start_path is not provided, use the directory of the calling script
     if start_path is None:
         # Get the path of the calling script
-        import inspect
-        frame = inspect.currentframe().f_back
-        start_path = os.path.dirname(os.path.abspath(frame.f_code.co_filename))
+        start_path = os.getcwd()
 
     # Convert to Path object if it's a string
     if isinstance(start_path, str):
