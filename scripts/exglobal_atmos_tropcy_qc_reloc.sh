@@ -56,7 +56,7 @@ if [ "$PROCESS_TROPCY" = 'YES' ]; then
    fi
    
 
-   cd "${COMIN_OBS}" || exit 1
+   cd "${COMOUT_OBS}" || exit 1
    pwd
    ls -ltr *syndata*
    cd $ARCHSYND
