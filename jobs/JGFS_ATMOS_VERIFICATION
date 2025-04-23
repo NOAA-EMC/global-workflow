@@ -21,7 +21,7 @@ export VDATE=${VDATE:0:8}
 # Since this is currently a one-element list, shellcheck things we would rather run this as a command
 # shellcheck disable=SC2041
 for grid in '1p00'; do
-  prod_dir="COMIN_ATMOS_GRIB_${grid}"
+  prod_dir="COM_ATMOS_GRIB_${grid}"
   GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
