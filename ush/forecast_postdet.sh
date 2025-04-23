@@ -75,7 +75,7 @@ FV3_postdet() {
         local nn
         local use_anl_aero="YES"
         for (( nn = 1; nn <= ntiles; nn++ )); do
-          test_tracer_file="${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc"
+          test_tracer_file="${COMIN_TRACER_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc"
           if [[ ! -f  "${test_tracer_file}" ]]; then
             use_anl_aero="NO"
             echo "WARNING: File ${test_tracer_file} does not exist, will not replace any files from the aerosol analysis"
@@ -85,7 +85,7 @@ FV3_postdet() {
         if [[ ${use_anl_aero} == "YES" ]]; then
           for (( nn = 1; nn <= ntiles; nn++ )); do
             rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
-            ${NCP} "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
+            ${NCP} "${COMIN_TRACER_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
                    "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
           done
         fi # if [[ ${use_anl_aero} == "YES" ]]; then
@@ -212,7 +212,11 @@ EOF
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
           increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
         else
-          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          if [[ "${RUN}" == "gcafs" ]]; then
+            increment_file="${COMIN_ATMOS_OFFLINE_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          else
+            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          fi
         fi
         cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
       done

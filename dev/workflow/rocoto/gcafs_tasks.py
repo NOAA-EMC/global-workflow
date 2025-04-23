@@ -154,7 +154,7 @@ class GCAFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_fetch'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': 'gcdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'gcdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -391,12 +391,8 @@ class GCAFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': 'gcdas_aeroanlgenb', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
+        dep_dict = {'type': 'task', 'name': 'gcdas_prepobsaero'}
         deps.append(rocoto.add_dependency(dep_dict))
-
-        if self.options['do_prep_obs_aero']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_prepobsaero'}
-            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('aeroanlinit')
@@ -420,15 +416,10 @@ class GCAFSTasks(Tasks):
 
         deps = []
         dep_dict = {
-            'type': 'task', 'name': 'gcdas_aeroanlgenb',
-            'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}",
-        }
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {
             'type': 'task', 'name': f'{self.run}_aeroanlinit',
         }
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('aeroanlvar')
         task_name = f'{self.run}_aeroanlvar'
@@ -452,7 +443,7 @@ class GCAFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('aeroanlfinal')
         task_name = f'{self.run}_aeroanlfinal'
@@ -971,44 +962,39 @@ class GCAFSTasks(Tasks):
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
         resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
 
-        history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHR_LIST': '#fhr_list#', 'COMPONENT': component}
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl])
         deps = []
         data = f'{history_path}/{history_file_tmpl}'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mem#member#_#seg_dep#'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
-        postenvars = self.envars.copy()
-        postenvar_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#',
-                          'FHR_LIST': '#fhr_list#',
-                          'COMPONENT': component}
-        for key, value in postenvar_dict.items():
-            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+        cycledef = 'gcdas_half,gcdas' if self.run in ['gcdas'] else self.run
 
-        task_name = f'{self.run}_{component}_prod_mem#member#_#fhr_label#'
+        task_name = f'{self.run}_{component}_prod_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': postenvars,
-                     'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/dev/jobs/{config}.sh',
+                     'cycledef': cycledef,
+                     'command': f"{self.HOMEgfs}/dev/jobs/{config}.sh",
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'}
+                     'maxtries': '&MAXTRIES;'
+                     }
 
-        fhr_metatask_dict = {'task_name': f'{self.run}_{component}_prod_#member#',
-                             'task_dict': task_dict,
-                             'var_dict': fhr_var_dict}
+        metatask_dict = {'task_name': f'{self.run}_{component}_prod',
+                         'task_dict': task_dict,
+                         'var_dict': fhr_var_dict}
 
-        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': f'{self.run}_{component}_prod',
-                                'task_dict': fhr_metatask_dict,
-                                'var_dict': member_var_dict}
-
-        task = rocoto.create_task(member_metatask_dict)
+        task = rocoto.create_task(metatask_dict)
 
         return task
 
