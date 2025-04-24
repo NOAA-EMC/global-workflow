@@ -13,7 +13,6 @@ atmosphere_warmRT:
                                12: [(range(41, 71), 40)],
                                18: [(range(61, 81), 60), (range(1, 11), -20)]}) %}
 
-        {% set current_cycle_HH = 18 %}
         {% if current_cycle_HH in cyc_ranges %}
         {% for mem_data in cyc_ranges[current_cycle_HH] %}
         {% set offset = mem_data[1] %}
@@ -21,7 +20,7 @@ atmosphere_warmRT:
         {% for mem in mem_range %}
         {% set imem = mem - offset %}
         {% set retro_path = '/lfs/h2/emc/ptmp/emc.global/RETRO_GFSv17/comroot/retrotestgfs05'%}
-        {% set mem_file = retro_path ~ '/enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.210000.fv_core.res.nc' %}
+        {% set mem_file = retro_path ~ '/enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) ~ previous_cycle_YMD ~ '.210000.fv_core.res.nc' %}
         {% set destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
         {% if path_exists(mem_file) %}
         - ["{{ mem_file }}", "{{ destination_path }}"]
