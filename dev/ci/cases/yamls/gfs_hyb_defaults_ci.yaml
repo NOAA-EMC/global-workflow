@@ -2,4 +2,5 @@ defaults:
   !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
 base:
   DO_GSISOILDA: "YES"
-  DO_TEST_MODE: "NO"
+  DO_TEST_MODE: "YES"
+  FETCHDIR: "/NCEPDEV/emc-global/1year/David.Grumm/test_data"

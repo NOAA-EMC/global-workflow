@@ -30,14 +30,10 @@ class Tasks:
                    'verfozn', 'verfrad', 'vminmon', 'anlstat',
                    'metp', 'fit2obs', 'extractvars',
                    'tracker', 'genesis', 'genesis_fsu',
-                   'postsnd', 'awips', 'awips_20km_1p0deg', 'fbwind',
+                   'postsnd', 'awips', 'awips_20km_1p0deg', 'fbwind', 'npoess',
                    'gempak', 'gempakmeta', 'gempakmetancdc', 'gempakncdcupapgif', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
-                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep',
-                   'npoess',
-                   'mos_stn_prep', 'mos_grd_prep', 'mos_ext_stn_prep', 'mos_ext_grd_prep',
-                   'mos_stn_fcst', 'mos_grd_fcst', 'mos_ext_stn_fcst', 'mos_ext_grd_fcst',
-                   'mos_stn_prdgen', 'mos_grd_prdgen', 'mos_ext_stn_prdgen', 'mos_ext_grd_prdgen', 'mos_wx_prdgen', 'mos_wx_ext_prdgen']
+                   'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostsbs', 'waveprep']
 
     def __init__(self, app_config: AppConfig, run: str) -> None:
 
