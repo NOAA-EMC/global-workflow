@@ -66,12 +66,6 @@ for (( current_date=first_date; current_date <= last_date; \
             if [[ -d "${rtofs_dir}" ]] && (( current_date < last_rtofs )); then rm -rf "${rtofs_dir}" ; fi
         fi
     fi
-
-    # Remove mdl gfsmos directory
-    if [[ "${RUN}" == "gfs" ]]; then
-        mos_dir="${ROTDIR}/gfsmos.${current_PDY}"
-        if [[ -d "${mos_dir}" ]] && (( current_date < CDATE_MOS )); then rm -rf "${mos_dir}" ; fi
-    fi
 done
 
 # Remove archived gaussian files used for Fit2Obs in $VFYARC that are
