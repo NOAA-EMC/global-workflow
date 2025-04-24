@@ -1,7 +1,7 @@
 # Paths
-DMPDIR: '' # TODO: This does not yet exist.
-BASE_GIT: '' #TODO: This does not yet exist.
-BASE_DATA: '/bucket/global-workflow-shared-data'
+DMPDIR: '${DATAMOUNT:-/bucket}/dump' # TODO: Seek approval. 
+BASE_GIT: '/contrib/git' #TODO: Seek approval.
+BASE_DATA: 'contrib/global-workflow-shared-data'
 BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
 AERO_INPUTS_DIR: /contrib/global-workflow-shared-data/data/GEFS_ExtData/20250310
 PACKAGEROOT: '' #TODO: This does not yet exist.
