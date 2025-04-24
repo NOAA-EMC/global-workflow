@@ -61,12 +61,6 @@ export DO_BUFRSND="{{ DO_BUFRSND }}"     # BUFR sounding products
 export DO_GEMPAK="{{ DO_GEMPAK }}"       # GEMPAK products
 export DO_AWIPS="{{ DO_AWIPS }}"         # AWIPS products
 
-# NO for retrospective parallel; YES for real-time parallel
-#  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
-#  if want MOS written to HPSS.   Should update arch.sh to
-#  use RUNMOS flag
-export REALTIME="YES"
-
 # Experiment mode (cycled or forecast-only)
 export MODE="{{ MODE }}" # cycled/forecast-only
 export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for automated testing
