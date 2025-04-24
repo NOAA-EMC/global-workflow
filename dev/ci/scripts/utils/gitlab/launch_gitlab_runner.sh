@@ -92,7 +92,7 @@ if [[ "${1}" == "register" ]]; then
   # --builds-dir: Directory where builds will be stored (from config.MACHINE_ID)
   # --custom_build_dir-enabled: Enable custom build directories
   # --request-concurrency: Number of concurrent requests that can be handled
-  ./gitlab-runner register -n -t "${GITLAB_RUNNER_TOKEN}" --url "${GITLAB_URL}" --executor shell --shell bash --builds-dir "${GITLAB_CI_BUILDS_DIR}" --custom_build_dir-enabled true --request-concurrency 24
+  ./gitlab-runner register -n -t "${GITLAB_RUNNER_TOKEN}" --url "${GITLAB_URL}" --executor shell --shell bash --builds-dir "${GW_BUILDS_DIR}" --custom_build_dir-enabled true --request-concurrency 24
 
   # Set the concurrent job limit in the GitLab runner config file
   sed -i 's/concurrent.*/concurrent = 24/' ~/.gitlab-runner/config.toml
@@ -105,8 +105,8 @@ fi
 
 if [[ "${1}" == "run" ]]; then
   # --working-directory: Directory where the runner is launched and keeps its working files (from config.$MACHINE_ID)
-  # do not confuse this with GitLabs CI_BUILDS_DIR which is designate by GFS_CI_BUILDS_DIR and is where the builds are stored
-  COMMAND="nohup ./gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}"
+  # do not confuse this with GitLab's CI_BUILDS_DIR which is designated by GW_BUILDS_DIR and is where the builds are stored
+  COMMAND="nohup ./gitlab-runner run --working-directory ${GW_RUNNER_DIR}"
   echo -e "Running gitlab-runner with the command:\n${COMMAND}\nsee log ${GITLAB_LOG}"
   echo -e "Running gitlab-runner with the command:${COMMAND}" >& "${GITLAB_LOG}"
   ${COMMAND} >> "${GITLAB_LOG}" 2>&1 &

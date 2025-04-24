@@ -30,13 +30,17 @@ stages:
 
 variables:
   BUILD: ''
-  CI_RUN_PATH: ${CI_BUILDS_DIR}/${BUILD}/${CI_COMMIT_SHORT_SHA}
-  GIT_CLONE_PATH: '${CI_RUN_PATH}/global-workflow'
+  # Using GW prefix to avoid confusion with GitLab predefined variables
+  GW_RUN_PATH: ${CI_BUILDS_DIR}/${BUILD}/${CI_COMMIT_SHORT_SHA}
+  # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the exact location
+  # where the repository should be cloned. This works with custom_build_dir-enabled in the runner config.
+  GIT_CLONE_PATH: '${GW_RUN_PATH}/global-workflow'
   HOMEGFS: ${GIT_CLONE_PATH}
-  RUNTESTS_DIR: ${CI_RUN_PATH}/RUNTESTS
-  GIT_DEPTH: 1
-  RUNNER_SCRIPT_TIMEOUT: 6h
-  RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
+  RUNTESTS_DIR: ${GW_RUN_PATH}/RUNTESTS
+  GIT_DEPTH: 1  # GitLab predefined variable that limits git history to improve clone performance
+  # Using GW prefix to avoid confusion with GitLab runner variables
+  GW_SCRIPT_TIMEOUT: 6h
+  GW_AFTER_SCRIPT_TIMEOUT: 6h
   # Controls pipeline behavior: CTests (true) or PR cases (false)
   GITHUB_API_TRIGGER: ${GITHUB_API_TRIGGER:-"false"}
   PR_NUMBER: ${PR_NUMBER:-"0"}

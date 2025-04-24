@@ -8,7 +8,7 @@
 #########################################################################
 
 # Main CI root directory - Base directory for all CI/CD operations
-export GFS_CI_ROOT=/scratch1/NCEPDEV/global/glopara/GFS_CI_CD
+export GW_CI_ROOT=/scratch1/NCEPDEV/global/glopara/GFS_CI_CD
 
 # ICSDIR root directory - Contains initial condition data
 # Used by create_experiment.py for setting up test cases
@@ -20,11 +20,11 @@ export ICSDIR_ROOT=/scratch1/NCEPDEV/global/glopara/data/ICSDIR
 #########################################################################
 
 # JENKINS launch directory for agent - Where Jenkins agents are launched from
-export JENKINS_AGENT_LAUNCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+export JENKINS_AGENT_LAUNCH_DIR=${GW_CI_ROOT}/Jenkins/agent
 
 # JENKINS internal working directories for CI jobs (not for users use)
 # Where Jenkins stores temporary files during CI job execution
-export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
+export JENKINS_WORK_DIR=${GW_CI_ROOT}/Jenkins/workspace
 
 # NOTE: JENKINS custom_workspace directory where CI jobs are run
 # and is defined in $HOMEgfs/dev/ci/Jenkinsfile as custom_workspace
@@ -41,19 +41,22 @@ export GITLAB_URL=https://vlab.noaa.gov/gitlab-licensed
 export GITLAB_RUNNER_NAME="RDHPCS Hera"
 
 # Directory for GitLab builds
-# Used in launch_gitlab_runner.sh for location of builds
-export GITLAB_CI_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
+# Used in launch_gitlab_runner.sh for the --builds-dir parameter
+# This works with --custom_build_dir-enabled=true to allow GIT_CLONE_PATH override
+# from .gitlab-ci.yml to specify exact clone locations within this directory
+export GW_BUILDS_DIR=${GW_CI_ROOT}/BUILDS/GITLAB
 # Directory for GitLab runner used by launch_gitlab_runner.sh
-export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
+# This is where runner state/config files are stored (--working-directory parameter)
+export GW_RUNNER_DIR="${GW_CI_ROOT}/GitLab/Runner"
 
 
 # CTest functional test directories for pre stagged input data
-export STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
+export STAGED_TESTS_DIR=${GW_CI_ROOT}/STAGED_TESTS_DIR
 
 #########################################################################
 # CI CRON system configuration
 #########################################################################
-export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
+export GW_BASH_CI_ROOT=${GW_CI_ROOT}/GFS_BASH_CI
 export max_concurrent_cases=5
 export max_concurrent_pr=4
 
