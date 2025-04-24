@@ -22,7 +22,7 @@
   stage: create_experiments
   script:
     - export RUNTESTS=${RUNTESTS_DIR}
-    - ${HOMEGFS}/dev/ci/scripts/utils/ci_utils.sh create_experiment ${HOMEGFS}/dev/ci/cases/pr/${caseName}.yaml
+    - ${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh create_experiment ${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml
   needs:
     - build-${machine}
 
@@ -31,8 +31,8 @@
   extends: .base_config
   stage: run_tests
   script:
-    - echo "Using build directory $HOMEGFS (dated $BUILD_DATE)"
-    - pslot=$(${HOMEGFS}/dev/ci/scripts/utils/ci_utils.sh get_pslot ${RUNTESTS_DIR} ${caseName})
-    - ${HOMEGFS}/dev/ci/scripts/run_check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
+    - echo "Using build directory $GW_HOMEgfs (dated $BUILD_DATE)"
+    - pslot=$(${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh get_pslot ${RUNTESTS_DIR} ${caseName})
+    - ${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh ${CI_RUN_PATH} ${pslot} global-workflow
   needs:
     - setup_experiments-${machine}
