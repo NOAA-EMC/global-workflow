@@ -38,9 +38,8 @@ variables:
   GW_HOMEgfs: ${GIT_CLONE_PATH}
   RUNTESTS_DIR: ${GW_RUN_PATH}/RUNTESTS
   GIT_DEPTH: 1  # GitLab predefined variable that limits git history to improve clone performance
-  # Using GW prefix to avoid confusion with GitLab runner variables
-  GW_SCRIPT_TIMEOUT: 6h
-  GW_AFTER_SCRIPT_TIMEOUT: 6h
+  RUNNER_SCRIPT_TIMEOUT: 6h
+  RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
   # Controls pipeline behavior: CTests (true) or PR cases (false)
   GITHUB_API_TRIGGER: ${GITHUB_API_TRIGGER:-"false"}
   PR_NUMBER: ${PR_NUMBER:-"0"}
