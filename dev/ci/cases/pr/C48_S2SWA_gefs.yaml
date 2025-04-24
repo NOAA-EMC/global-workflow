@@ -14,9 +14,8 @@ arguments:
   start: cold
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C384C192
-  idate: 2021032312
-  edate: 2021032312
+  idate: 2024111712
+  edate: 2024111712
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
 
 skip_ci_on_hosts:
