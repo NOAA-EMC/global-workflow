@@ -20,7 +20,8 @@ atmosphere_warmRT:
         {% set mem_range = mem_data[0] %}
         {% for mem in mem_range %}
         {% set imem = mem - offset %}
-        {% set mem_file = ICSDIR ~ '/enkfgdas.20230401/' ~ "18" ~ "/" ~ 'mem%03d' | format(mem)  ~ "/atmos/INPUT/gfs_ctrl.nc" %}
+        {% set retro_path = '/lfs/h2/emc/ptmp/emc.global/RETRO_GFSv17/comroot/retrotestgfs05/'%}
+        {% set mem_file = retro_path ~ '/enkfgdas.20241117/' ~ "18" ~ "/" ~ 'mem%03d' | format(mem)  ~ "/model/atmos/restart/20241118.030000.fv_core.res.nc" %}
         {% set destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
         {% if path_exists(mem_file) %}
         - ["{{ mem_file }}", "{{ destination_path }}"]
