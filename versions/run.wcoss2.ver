@@ -50,5 +50,3 @@ export prepobs_run_ver=1.1.0
 
 export ens_tracker_ver=v1.2.0
 export fit2obs_ver=1.1.5
-export mos_ver=5.4.3
-export mos_shared_ver=2.7.2
