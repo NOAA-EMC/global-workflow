@@ -336,7 +336,7 @@ if [[ -s "upp.x" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/exec/upp.x" .
 
-for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid; do
+for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid regridStates.x; do
   if [[ -s "${ufs_utilsexe}" ]]; then
       rm -f "${ufs_utilsexe}"
   fi
@@ -397,8 +397,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     "gdasapp_land_ensrecenter.x"
     "bufr2ioda.x"
     "calcfIMS.exe"
-    "apply_incr.exe"
-    "regridStates.x")
+    "apply_incr.exe")
   for gdasexe in "${JEDI_EXE[@]}"; do
     if [[ -s "${gdasexe}" ]]; then
         rm -f "${gdasexe}"
