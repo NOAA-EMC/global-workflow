@@ -196,11 +196,11 @@ class GCAFSCycledAppConfig(AppConfig):
                 task_names[run] += ['fetch']
                 task_names[run] += ['offlineanl']
                 task_names[run] += ['sfcanl']
-                
+
                 if options['do_aero_anl']:
                     task_names[run] += ['aeroanlgenb']
                     task_names[run] += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-                    task_names[run] += ['prepobsaero']                
+                    task_names[run] += ['prepobsaero']          
 
             # some are common across both
             if run in ['gcdas', 'gcafs']:
