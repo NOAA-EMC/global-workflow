@@ -1238,8 +1238,6 @@ class GCAFSTasks(Tasks):
         """
         deps = []
         if self.app_config.mode in ['cycled']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
-            deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_anlstat'] and self.run in ['gcdas']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                 deps.append(rocoto.add_dependency(dep_dict))
