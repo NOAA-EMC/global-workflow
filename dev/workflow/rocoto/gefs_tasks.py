@@ -520,7 +520,6 @@ class GEFSTasks(Tasks):
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 
-
         task = rocoto.create_task(fhr_metatask_dict)
 
         return task
