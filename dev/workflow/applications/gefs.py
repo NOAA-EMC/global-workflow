@@ -111,6 +111,8 @@ class GEFSAppConfig(AppConfig):
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             if options['do_wave_stat']:
                 tasks += ['wave_stat', 'wave_stat_pnt']
+            else: 
+                tasks += ['wavepostpnt']
 
         if options['do_extractvars']:
             tasks += ['extractvars']

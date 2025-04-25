@@ -740,6 +740,9 @@ class GEFSTasks(Tasks):
             if self.options['do_wave_stat']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_stat'}
                 deps.append(rocoto.add_dependency(dep_dict))
+            if not self.options['do_wave_stat']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_pnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_extractvars']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_extractvars'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -784,6 +787,9 @@ class GEFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_wave_stat']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_stat_pnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            if not self.options['do_wave_stat']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_pnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_extractvars']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_extractvars'}

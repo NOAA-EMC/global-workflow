@@ -8,7 +8,6 @@ from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit
 # Initialize root logger
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
 
-
 @logit(logger)
 def main():
 
@@ -40,7 +39,6 @@ def main():
 
     # Stage ICs
     stage.execute_stage(stage_dict)
-
 
 if __name__ == '__main__':
     main()
