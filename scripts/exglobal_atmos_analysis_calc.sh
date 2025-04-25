@@ -114,17 +114,6 @@ if [ $DOHYBVAR = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; th
 fi
 
 ################################################################################
-################################################################################
-#  Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
-
-cd $DATA || exit 99
-
-################################################################################
 # Clean the run-directory
 rm -rf dir.*
 
@@ -191,11 +180,6 @@ echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMO
 
 ################################################################################
 # Postprocessing
-cd $pwd
-if [[ "${mkdata}" == "YES" ]]; then
-    rm -rf "${DATA}"
-fi
+cd "${pwd}" || exit 1
 
-
-exit $err
-
+exit "${err}"

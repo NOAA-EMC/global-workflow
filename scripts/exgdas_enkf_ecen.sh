@@ -92,12 +92,6 @@ NTHREADS_CALCINC=${NTHREADS_CALCINC:-${NTHREADS:-1}}
 
 ################################################################################
 # Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
-cd $DATA || exit 99
 
 ENKF_SUFFIX="s"
 if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
@@ -370,10 +364,6 @@ done # loop over analysis times in window
 
 ################################################################################
 # Postprocessing
-cd $pwd
-if [[ "${mkdata}" == "YES" ]]; then
-    rm -rf "${DATA}"
-fi
+cd "${pwd}" || exit 1
 
-
-exit 0
+exit "${err}"

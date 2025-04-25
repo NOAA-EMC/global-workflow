@@ -44,15 +44,6 @@ RAPIDREFRESH_CLDSURF_INVOBS=${RAPIDREFRESH_CLDSURF_INVOBS:-""}
 CHEM_INVOBS=${CHEM_INVOBS:-""}
 
 ################################################################################
-#  Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
-cd $DATA || exit 8
-
-################################################################################
 # ObsInput file from ensemble mean
 rm -f obs*input*
 $NLN $SELECT_OBS obsinput.tar
@@ -96,15 +87,11 @@ export CHEM="$CHEM_INVOBS"
 ################################################################################
 # Execute GSI as a forward operator
 
-$ANALYSISSH
+"${ANALYSISSH}"
 export err=$?; err_chk
 
 ################################################################################
 # Postprocessing
-cd $pwd
-if [[ "${mkdata}" == "YES" ]]; then
-    rm -rf "${DATA}"
-fi
+cd ${pwd} || exit 1
 
-
-exit $err
+exit ${err}

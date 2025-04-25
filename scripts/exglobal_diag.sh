@@ -282,11 +282,4 @@ if [[ "$REMOVE_DIAG_DIR" = "YES" && "$err" = "0" ]]; then
     rm -rf $DIAG_DIR
 fi
 
-cd $pwd
-if [[ "${mkdata:-YES}" == "YES" ]]; then
-    rm -rf "${DATA}"
-fi
-
-
 exit $err
-

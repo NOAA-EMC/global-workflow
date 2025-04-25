@@ -122,15 +122,6 @@ if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
 fi
 
 ################################################################################
-# Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
-cd $DATA || exit 99
-
-################################################################################
 # Fixed files
 $NLN $SATANGL    satbias_angle
 $NLN $SATINFO    satinfo
@@ -415,10 +406,6 @@ cat stdout stderr > "${COMOUT_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
 
 ################################################################################
 #  Postprocessing
-cd "$pwd"
-if [[ "${mkdata}" == "YES" ]]; then
-    rm -rf "${DATA}"
-fi
-
+cd "${pwd}" || exit 1
 
 exit "${err}"
