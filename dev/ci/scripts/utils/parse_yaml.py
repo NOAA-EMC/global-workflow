@@ -26,6 +26,8 @@ def parse_args():
     parser.add_argument('-y', '--yaml', help='full path to yaml file to parse', type=Path, required=True)
     parser.add_argument('-k', '--key', help='key to return value of', type=str, required=True)
     parser.add_argument('-s', '--string', help='output results as strings', action="store_true", required=False)
+    parser.add_argument('-d', '--default', help='default value to return if key is not found', type=str, required=False)
+    parser.add_argument('-f', '--fail-on-missing', help='exit with code 1 if key is not found', action="store_true", required=False)
     return parser.parse_args()
 
 
@@ -42,8 +44,7 @@ def yq(yamlfile, key):
     """
 
     HOMEgfs = find_homegfs()
-    data.update({'HOMEgfs': HOMEgfs})
-    ydict = parse_j2yaml(path=yamlfile, data=data)
+    ydict = parse_j2yaml(path=yamlfile, data={'HOMEgfs': HOMEgfs})
     if key == 'all':
         return ydict
     list_keys = key.split('.')
@@ -61,6 +62,19 @@ if __name__ == '__main__':
 
     args = parse_args()
     values = yq(args.yaml, args.key)
+    
+    # Handle missing values
+    if values is None:
+        if hasattr(args, 'fail_on_missing') and args.fail_on_missing:
+            print(f"Error: Key '{args.key}' not found in {args.yaml}", file=sys.stderr)
+            sys.exit(1)
+        elif hasattr(args, 'default') and args.default is not None:
+            values = args.default
+        else:
+            # For shell script usage, an empty output is often more useful than "None"
+            sys.exit(0)
+    
+    # Output formatting
     if args.string and isinstance(values, list):
         for value in values:
             print(value)
