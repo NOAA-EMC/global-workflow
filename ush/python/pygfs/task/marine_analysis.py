@@ -71,13 +71,13 @@ class MarineAnalysis(Task):
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3)),
                 'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS,
                 'rst_date': _rst_date,
-                'observations': parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, self.task_config)['observations']
             }
         )
 
         # Extend task_config with local_dict
         self.task_config.update(local_dict)
 
+        # Construct dictionary of JEDI objects, one for each JEDI application need for the analysis
         expected_keys = ['var', 'socaincr2mom6', 'soca_2cice_global', 'soca_diag_stats']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML_ANALYSIS, self.task_config, expected_keys)
 
@@ -100,12 +100,20 @@ class MarineAnalysis(Task):
         soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
-        # prepare the directory structure to run SOCA
-        self._prep_scratch_dir()
+        # prepare the deterministic MOM6 input.nml
+        logger.info(f"Preparing deterministic MOM6 input namelist")
+        mdau.prep_input_nml(self.task_config)
+
+        # prepare the input.nml for the analysis geometry
+        logger.info(f"Preparing analysis geometry input namelist")
+        mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml",
+                            simple_geom=True, mom_input="./anl_geom/MOM_input")
 
         # fetch observations from COMROOT
         # TODO(G.V. or A.E.): Keep a copy of the obs in the scratch fs after the obs prep job
-        self._fetch_observations()
+        logger.info(f"Staging observations from {self.task_config.COM_OBS}")
+        obs_list = self.jedi_dict['var'].render_jcb(self.task_config, 'soca_obs_staging')
+        FileHandler(obs_list).sync()
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
@@ -113,41 +121,20 @@ class MarineAnalysis(Task):
         FileHandler(soca_utility_list).sync()
 
         # stage the ocean and ice backgrounds for FGAT
+        logger.info(f"Staging files needed for deterministic analysis from COM")
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
-        # stage the soca grid
-        FileHandler({'copy': [[os.path.join(self.task_config.COMIN_OCEAN_BMATRIX,
-                                            'soca_gridspec.nc'),
-                               os.path.join(self.task_config.DATA,
-                                            'soca_gridspec.nc')]]}).sync()
+        #
+        logger.info(f"Staging files needed for deterministic analysis from COM")
+        soca_files_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_FILES_YAML_TMPL, self.task_config)
+        FileHandler(soca_files_list).sync()
 
-        # link the flow dependent static B resources from the B-matrix task of the same cycle
-        os.symlink('../staticb', 'staticb')
-
-        # hybrid EnVAR case
-        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
-            # stage the ensemble weights
-            logger.debug(f"Stage ensemble weights for the hybrid background error")
-            FileHandler({'copy': [[os.path.join(self.task_config.COMIN_OCEAN_BMATRIX,
-                                                f'{self.task_config.APREFIX}ocean.ens_weights.nc'),
-                                   os.path.join(self.task_config.DATA,
-                                                'ocean.ens_weights.nc')],
-                                  [os.path.join(self.task_config.COMIN_ICE_BMATRIX,
-                                                f'{self.task_config.APREFIX}ice.ens_weights.nc'),
-                                   os.path.join(self.task_config.DATA,
-                                                'ice.ens_weights.nc')]]}).sync()
-
-        # make a copy of the CICE6 restart
-        ice_rst = os.path.join(self.task_config.COMIN_ICE_RESTART_PREV, f'{self.task_config.rst_date}.cice_model.res.nc')
-        ice_rst_ana = os.path.join(self.task_config.DATA, 'Data', self.task_config.rst_date + '.cice_model.res.nc')
-        FileHandler({'copy': [[ice_rst, ice_rst_ana]]}).sync()
-
-        # Generate background list
+        # generate background list
         self.task_config.marine_pseudo_model_states = mdau.gen_bkg_list(bkg_path='./bkg',
                                                                         window_begin=self.task_config.MARINE_WINDOW_BEGIN)
 
-        # Initialize JEDI variational application
+        # initialize JEDI variational application
         self.jedi_dict['var'].initialize(self.task_config)
 
         # TEST
@@ -157,7 +144,7 @@ class MarineAnalysis(Task):
             self.task_config.cleaned_observations.append(obs_space['obs space']['name'])
             self.task_config.obs_variables[obs_space['obs space']['name']] = obs_space['obs space']['simulated variables'][0]
 
-        # Initialize remaining JEDI applications
+        # initialize remaining JEDI applications
         self.jedi_dict['socaincr2mom6'].initialize(self.task_config)
         self.jedi_dict['soca_2cice_global'].initialize(self.task_config)
         self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
@@ -179,170 +166,16 @@ class MarineAnalysis(Task):
         self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
-    def _fetch_observations(self: Task) -> None:
-        """Fetch observations from COMIN_OBS
-
-        This method will fetch the observations for the cycle and check the
-        list against what is available for the cycle.
-        """
-
-        obsconfigfile = os.path.join(self.task_config['PARMgfs'],
-                                     'gdas/soca/obs/obs_list_base_yaml.j2')
-        observers = parse_j2yaml(obsconfigfile, self.task_config)['observers']
-
-        # Write obs_list_short
-        save_as_yaml(observers, 'obs_list_short.yaml')
-        os.environ['OBS_LIST_SHORT'] = 'obs_list_short.yaml'
-
-        obs_files = []
-
-        for observer in observers:
-            filename = f"{self.task_config.OPREFIX}{observer['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4"
-            logger.info(f"******** {filename}")
-            obs_files.append(filename)
-
-        obs_files_to_copy = []
-
-        # copy obs from COM_OBS to DATA/obs
-        for obs_file in obs_files:
-            logger.info(f"******* {obs_file}")
-            obs_src = os.path.join(self.task_config.COM_OBS, obs_file)
-            obs_dst = os.path.join(self.task_config.DATA, 'obs', obs_file)
-            logger.info(f"******* {obs_src}")
-            if os.path.exists(obs_src):
-                logger.info(f"******* fetching {obs_file}")
-                obs_files_to_copy.append([obs_src, obs_dst])
-            else:
-                logger.info(f"******* {obs_file} is not in the database")
-
-        FileHandler({'copy': obs_files_to_copy}).sync()
-
-    @logit(logger)
-    def _prep_scratch_dir(self: Task) -> None:
-        """Create and stage all the resources needed to run SOCA/JEDI, including the necesssary
-           directory structure to run the SOCA variational application
-        """
-        logger.info(f"---------------- Setup runtime environement")
-
-        anl_dir = self.task_config.DATA
-
-        # create analysis directories
-        diags = os.path.join(anl_dir, 'diags')            # output dir for soca DA obs space
-        obs_in = os.path.join(anl_dir, 'obs')             # input      "           "
-        anl_out = os.path.join(anl_dir, 'Data')           # output dir for soca DA
-        FileHandler({'mkdir': [diags, obs_in, anl_out]}).sync()
-
-        # prepare the deterministic MOM6 input.nml
-        mdau.prep_input_nml(self.task_config)
-
-        # prepare the input.nml for the analysis geometry
-        mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml",
-                            simple_geom=True, mom_input="./anl_geom/MOM_input")
-
-    @logit(logger)
     def finalize(self: Task) -> None:
         """Finalize the marine analysis job
            This method saves the results of the deterministic variational analysis to the COMROOT
         """
 
-        def list_all_files(dir_in, dir_out, wc='*', fh_list=[]):
-            files = glob.glob(os.path.join(dir_in, wc))
-            for file_src in files:
-                file_dst = os.path.join(dir_out, os.path.basename(file_src))
-                fh_list.append([file_src, file_dst])
-            return fh_list
+        # Save output files to COM
+        logger.info(f"Copy files from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
+        soca_finalize_list = parse_j2yaml(self.task_config.MARINE_DET_FINALIZE_YAML_TMPL, self.task_config)
+        FileHandler(soca_finalize_list).sync()
 
-        # variables of convenience
-        bcyc = str(self.task_config.MARINE_WINDOW_BEGIN.hour).zfill(2)
-
-        logger.info(f"---------------- Copy from RUNDIR to COMOUT")
-
-        post_file_list = []
-
-        # Make a copy the IAU increment
-        post_file_list.append([os.path.join(self.task_config.DATA,
-                                            'ocn.inc.nc'),
-                               os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS,
-                                            f'{self.task_config.APREFIX}ocninc.nc')])
-
-        domains = ['ocn', 'ice']
-        for domain in domains:
-            '''
-            # Copy of the diagonal of the background error for the cycle
-            post_file_list.append([os.path.join(self.task_config.DATA,
-                                                f'{domain}.bkgerr_stddev.incr.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc'),
-                                   os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS,
-                                                f'{self.task_config.APREFIX}{domain}.bkgerr_stddev.nc')])
-
-            # Copy the recentering error
-            if self.task_config.NMEM_ENS > 2:
-                post_file_list.append([os.path.join(self.task_config.DATA, 'static_ens',
-                                                    f'{domain}.ssh_recentering_error.incr.{self.task_config.MARINE_WINDOW_BEGIN_ISO}.nc'),
-                                       os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS,
-                                                    f'{self.task_config.APREFIX}{domain}.recentering_error.nc')])
-            '''
-
-            # Copy the ice and ocean increments
-            post_file_list.append([os.path.join(self.task_config.DATA, 'Data',
-                                                f'{domain}.3dvarfgat_pseudo.incr.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc'),
-                                   os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS,
-                                                f'{self.task_config.APREFIX}{domain}.incr.nc')])
-
-            # Copy the analysis at the start of the window
-            post_file_list.append([os.path.join(self.task_config.DATA, 'Data',
-                                                f'{domain}.3dvarfgat_pseudo.an.{self.task_config.MARINE_WINDOW_MIDDLE_ISO}.nc'),
-                                   os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS,
-                                                f'{self.task_config.APREFIX}{domain}ana.nc')])
-
-        # Copy soca2cice ice increment
-        post_file_list.append([os.path.join(self.task_config.DATA, 'Data',
-                                            f'ice.soca2cice.incr.{self.task_config.MARINE_WINDOW_BEGIN_ISO}.nc'),
-                              os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS,
-                                           f'{self.task_config.APREFIX}ice.incr.postproc.nc')])
-
-        # Copy of the ssh diagnostics
-        if self.task_config.NMEM_ENS > 2:
-            for string in ['ssh_steric_stddev', 'ssh_unbal_stddev', 'ssh_total_stddev', 'steric_explained_variance']:
-                post_file_list.append([os.path.join(self.task_config.DATA, 'staticb',
-                                                    f'ocn.{string}.incr.{self.task_config.MARINE_WINDOW_BEGIN_ISO}.nc'),
-                                       os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS,
-                                                    f'{self.task_config.APREFIX}ocn.{string}.nc')])
-
-        # Copy DA grid (computed for the start of the window)
-        post_file_list.append([os.path.join(self.task_config.DATA,
-                                            'soca_gridspec.nc'),
-                               os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS,
-                                            f'{self.task_config.RUN}.t{bcyc}z.ocngrid.nc')])
-
-        # Copy the CICE analysis restart
-        if os.getenv('DOIAU') == "YES":
-            cice_rst_date = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y%m%d.%H%M%S')
-        else:
-            cice_rst_date = self.task_config.CDATE.strftime('%Y%m%d.%H%M%S')
-
-        post_file_list.append([os.path.join(self.task_config.DATA, 'Data',
-                                            f'{cice_rst_date}.cice_model.res.nc'),
-                               os.path.join(self.task_config.COMOUT_ICE_ANALYSIS,
-                                            f'{cice_rst_date}.cice_model_anl.res.nc')])
-
-        FileHandler({'copy': post_file_list}).sync()
-
-        # create COM sub-directories
-        FileHandler({'mkdir': [os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS, 'diags'),
-                               os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS, 'bump'),
-                               os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS, 'yaml')]}).sync()
-
-        # ioda output files
-        fh_list = list_all_files(os.path.join(self.task_config.DATA, 'diags'),
-                                 os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS, 'diags'))
-
-        # yaml configurations
-        fh_list = list_all_files(os.path.join(self.task_config.DATA),
-                                 os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS, 'yaml'), wc='*.yaml', fh_list=fh_list)
-
-        FileHandler({'copy': fh_list}).sync()
-
-        # obs space statistics
-        fh_list = list_all_files(os.path.join(self.task_config.DATA),
-                                 os.path.join(self.task_config.COMOUT_OCEAN_ANALYSIS), wc='*stats.csv', fh_list=fh_list)
-        FileHandler({'copy': fh_list}).sync()
+        # Save obs diag statistics to COM
+        diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
+        FileHandler(diags_list).sync()
