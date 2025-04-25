@@ -5,11 +5,11 @@ source "${USHgfs}/wave_domain_grid.sh"
 
 # Set COM Paths and GETGES environment
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
-    COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
+  COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
+  COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
 
 for out_dir in  "${COMOUT_WAVE_GRID}"; do
-    if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
+  if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
 done
 
 for grid in ${wavepostGRD}; do
@@ -27,7 +27,7 @@ done
 ###########################################
 cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" != "YES" ]]; then
-    rm -rf "${DATA}"
+  rm -rf "${DATA}"
 fi
 
 exit 0

@@ -633,6 +633,7 @@ class GEFSTasks(Tasks):
         task = rocoto.create_task(member_metatask_dict)
 
         return task
+
     def wavepostpnt(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mem#member#'}
