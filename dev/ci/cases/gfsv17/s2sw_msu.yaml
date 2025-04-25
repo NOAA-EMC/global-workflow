@@ -18,12 +18,11 @@ base:
   DO_VERFRAD: "YES"
   EUPD_CYC: "both"
   INTERVAL_GFS: 6
-  SDATE_GFS: 2023041512
+  SDATE_GFS: 2024111506
   FHMAX_GFS: 240
 
 prepoceanobs:
   use_exp_obs: "YES"
-  dmpdir_exp: /work/noaa/da/marineda/gfs-marine/data/obs 
 
 marineanl:
   SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca            
