@@ -3,14 +3,7 @@
 source "${HOMEgfs}/ush/jjob_header.sh" -e "wave_stat" -c "base wave wave_stat wave_stat_pnt"
 source "${USHgfs}/wave_domain_grid.sh"
 
-# Set COM Paths and GETGES environment
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
-  COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
-
-for out_dir in  "${COMOUT_WAVE_GRID}"; do
-  if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
-done
+# Set COM Paths
 
 for grid in ${wavepostGRD}; do
   process_grdID "${grid}"

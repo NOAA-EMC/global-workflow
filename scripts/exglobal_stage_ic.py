@@ -8,6 +8,7 @@ from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit
 # Initialize root logger
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
 
+
 @logit(logger)
 def main():
 
@@ -24,7 +25,6 @@ def main():
             'DO_JEDIOCNVAR', 'DO_STARTMEM_FROM_JEDIICE',
             'REPLAY_ICS', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA',
             'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES']
-
 
     stage_dict = AttrDict()
     for key in keys:
