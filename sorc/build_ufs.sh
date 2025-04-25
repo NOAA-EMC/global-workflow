@@ -9,6 +9,9 @@ CCPP_SUITES="FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1,FV3_global_nest
 PDLIB="ON"
 HYDRO="OFF"
 EXEC_NAME="gfs_model.x"
+# Valid only for WCOSS2; enable parallel restart I/O
+# TODO: Remove this option when ufs-weather-model#2716 is fixed
+PARALLEL_RESTART="NO"
 
 while getopts ":da:fj:e:vwy" option; do
   case "${option}" in
@@ -19,6 +22,7 @@ while getopts ":da:fj:e:vwy" option; do
     v) export BUILD_VERBOSE="YES";;
     w) PDLIB="OFF";;
     y) HYDRO="ON";;
+    p) PARALLEL_RESTART="YES";;
     e) EXEC_NAME="${OPTARG}";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -59,7 +63,7 @@ CLEAN_AFTER=NO
 
 # The test/compile.sh script adds " -DENABLE_PARALLELRESTART=ON" when compiling on WCOSS2, which is causing issues
 # TODO: when ufs-weather-model#2716 is fixed, return to using tests/compile.sh
-if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+if [[ "${MACHINE_ID}" == "wcoss2" && "${PARALLEL_RESTART}" == "NO" ]]; then
    set +x
    module use modulefiles
    module load "ufs_wcoss2.intel"
@@ -80,9 +84,10 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
       rm -rf "${BUILD_DIR}"
    fi
 
-   BUILD_NAME=${BUILD_NAME} BUILD_DIR=${BUILD_DIR} BUILD_VERBOSE=1 BUILD_JOBS=${BUILD_JOBS:-8} CMAKE_FLAGS="${MAKE_OPT}" ./build.sh
+   BUILD_DIR=${BUILD_DIR} BUILD_VERBOSE=1 BUILD_JOBS=${BUILD_JOBS:-8} CMAKE_FLAGS="${MAKE_OPT}" ./build.sh
 
    mv "${BUILD_DIR}/ufs_model" "tests/${BUILD_NAME}.exe"
+   cp modulefiles/ufs_wcoss2.intel.lua "tests/modules.${BUILD_NAME}.lua"
    if [[ "${CLEAN_AFTER}" == "YES" ]]; then
       rm -rf "${BUILD_DIR}"
    fi
