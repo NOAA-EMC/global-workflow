@@ -13,7 +13,7 @@ EXEC_NAME="gfs_model.x"
 # TODO: Remove this option when ufs-weather-model#2716 is fixed
 PARALLEL_RESTART="NO"
 
-while getopts ":da:fj:e:vwy" option; do
+while getopts ":da:fj:e:pvwy" option; do
   case "${option}" in
     d) BUILD_TYPE="DEBUG";;
     a) APP="${OPTARG}";;
