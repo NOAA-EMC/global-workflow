@@ -4,7 +4,6 @@ experiment:
 
 arguments:
   account: {{ 'HPC_ACCOUNT' | getenv }}
-  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: ATM
   resdetatmos: 96
@@ -18,7 +17,7 @@ arguments:
   nens: 2
   interval: 24
   start: cold
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_hyb_defaults_ci.yaml
 
 skip_ci_on_hosts:
   - awsepicglobalworkflow

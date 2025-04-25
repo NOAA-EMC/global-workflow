@@ -6,10 +6,6 @@
 # Clara Draper, Dec 2024
 #-------------------------------------------------------------------------------------------------
 
-# temporary files on hera, until g-w issue 3392 is resolved.
-TMP_FIX_FILES=/scratch2/BMC/gsienkf/Clara.Draper/gw_new_fix_files/
-
-
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export REDOUT=${REDOUT:-'1>'}
@@ -71,7 +67,7 @@ cat << EOF > regrid.nml
 EOF
 
 # input, fixed files
-${NCP} "${TMP_FIX_FILES}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
+${NCP} "${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
         "${DATA}/gaussian_scrip.nc"
 
 # output, fixed files
