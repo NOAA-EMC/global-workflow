@@ -30,7 +30,7 @@ mkdir -m 775 -p "${COMOUT_ATMOS_GOES}"
 
 #############################################################
 # Execute the script
-"${SCRgfs}/exgfs_atmos_grib2_special_npoess.sh"
+"${SCRgfs}/exgfs_atmos_grib2_special_npoess.sh" && true
 export err=$?;err_chk
 #############################################################
 

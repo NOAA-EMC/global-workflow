@@ -42,8 +42,11 @@ mkdir -p "lock.${fhr3}"
 cd "lock.${fhr3}" || exit 1
 
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
-  cp "${HOMEgfs}/gempak/fix/${table}" "${table}" || \
-     ( echo "FATAL ERROR: ${table} is missing" && exit 2 )
+  source_table="${HOMEgfs}/gempak/fix/${table}"
+  if [[ ! -f "${source_table}" ]]; then
+    err_exit "FATAL ERROR: ${table} is missing"
+  fi
+  cp "${source_table}" "${table}"
 done
 
 GEMGRD="${RUN}_${grid}_${PDY}${cyc}f${fhr3}"
@@ -71,9 +74,7 @@ export GRIBIN="${!source_var}/${model}.${cycle}.pgrb2.${grid_in}.f${fhr3}"
 GRIBIN_chk="${!source_var}/${model}.${cycle}.pgrb2.${grid_in}.f${fhr3}.idx"
 
 if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
-  echo "FATAL ERROR: after 1 hour of waiting for ${GRIBIN_chk} file at F${fhr3} to end."
-  export err=7 ; err_chk
-  exit "${err}"
+  export err=7 ; err_chk "FATAL ERROR: after 1 hour of waiting for ${GRIBIN_chk} file at F${fhr3} to end."
 fi
 
 case "${grid}" in

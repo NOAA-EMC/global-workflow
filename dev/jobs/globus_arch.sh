@@ -8,11 +8,6 @@ set -x
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-###############################################################
-# setup python path for workflow utilities and tasks
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
-export PYTHONPATH
-
 export job="globus_arch"
 export jobid="${job}.$$"
 

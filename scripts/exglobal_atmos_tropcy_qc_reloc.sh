@@ -56,7 +56,7 @@ if [ "$PROCESS_TROPCY" = 'YES' ]; then
    fi
    
 
-   cd "${COM_OBS}" || exit 1
+   cd "${COMOUT_OBS}" || exit 1
    pwd
    ls -ltr *syndata*
    cd $ARCHSYND
@@ -75,10 +75,10 @@ else
 #         don't want to wipe out these files)
 #         
 
-   [ ! -s "${COM_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}" ]  &&  \
-    cp "/dev/null" "${COM_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}"
-   [ ! -s "${COM_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}" ]  &&  \
-    cp "/dev/null" "${COM_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}"
+   [ ! -s "${COMOUT_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}" ]  &&  \
+    cp "/dev/null" "${COMOUT_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}"
+   [ ! -s "${COMOUT_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}" ]  &&  \
+    cp "/dev/null" "${COMOUT_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}"
 
 #  endif loop $PROCESS_TROPCY
 fi
@@ -106,25 +106,25 @@ if [ "$DO_RELOCATE" = 'YES' ]; then
    [ $RUN = gfs -o $RUN = gdas -o $NET = cfs ]  &&  qual_last=""
 
    if [ $BKGFREQ -eq 1 ]; then
-      if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COM_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
-      if [[ -s sgm2prep ]]; then cp "sgm2prep" "${COM_OBS}/${RUN}.t${cyc}z.sgm2prep${qual_last}"; fi
-      if [[ -s sgm1prep ]]; then cp "sgm1prep" "${COM_OBS}/${RUN}.t${cyc}z.sgm1prep${qual_last}"; fi
-      if [[ -s sgesprep ]]; then cp "sgesprep" "${COM_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
-      if [[ -s sgp1prep ]]; then cp "sgp1prep" "${COM_OBS}/${RUN}.t${cyc}z.sgp1prep${qual_last}"; fi
-      if [[ -s sgp2prep ]]; then cp "sgp2prep" "${COM_OBS}/${RUN}.t${cyc}z.sgp2prep${qual_last}"; fi
-      if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COM_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
+      if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
+      if [[ -s sgm2prep ]]; then cp "sgm2prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm2prep${qual_last}"; fi
+      if [[ -s sgm1prep ]]; then cp "sgm1prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm1prep${qual_last}"; fi
+      if [[ -s sgesprep ]]; then cp "sgesprep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
+      if [[ -s sgp1prep ]]; then cp "sgp1prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp1prep${qual_last}"; fi
+      if [[ -s sgp2prep ]]; then cp "sgp2prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp2prep${qual_last}"; fi
+      if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
    elif [ $BKGFREQ -eq 3 ]; then
-      if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COM_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
-      if [[ -s sgesprep ]]; then cp "sgesprep" "${COM_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
-      if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COM_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
+      if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
+      if [[ -s sgesprep ]]; then cp "sgesprep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
+      if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
    fi
 
-# The existence of ${COM_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.$tmmark file will tell the
+# The existence of ${COMOUT_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.$tmmark file will tell the
 #  subsequent PREP processing that RELOCATION processing occurred, if this file
 #  does not already exist at this point, echo "RECORDS PROCESSED" into it to
 #  further tell PREP processing that records were processed by relocation and
 #  the global sigma guess was modified by tropical cyclone relocation
-#  Note: If ${COM_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.$tmmark already exists at this
+#  Note: If ${COMOUT_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.$tmmark already exists at this
 #        point it means that it contains the string "NO RECORDS to process"
 #        and was created by the child script tropcy_relocate.sh because records
 #        were not processed by relocation and the global sigma guess was NOT
@@ -132,8 +132,8 @@ if [ "$DO_RELOCATE" = 'YES' ]; then
 #        were found in the relocation step)
 # ----------------------------------------------------------------------------
 
-   if [[ ! -s "${COM_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.${tmmark}" ]]; then
-      echo "RECORDS PROCESSED" > "${COM_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.${tmmark}"
+   if [[ ! -s "${COMOUT_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.${tmmark}" ]]; then
+      echo "RECORDS PROCESSED" > "${COMOUT_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.${tmmark}"
    fi
 
 #  endif loop $DO_RELOCATE
