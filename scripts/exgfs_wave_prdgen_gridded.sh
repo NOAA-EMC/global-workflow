@@ -24,12 +24,11 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${USHgfs}/preamble.sh"
 source "${USHgfs}/wave_domain_grid.sh"
 
 # 0.a Basic modes of operation
 
- export RUNwave=${RUNwave:-${RUN}wave}
+ export RUNwave=${RUNwave:-${RUN}.wave}
  export envir=${envir:-ops}
  export fstart=${fstart:-0}
  export FHMAX_WAV=${FHMAX_WAV_WMO:-180}      #180 Total of hours to process
@@ -96,7 +95,7 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
  while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
    fhr=$(printf "%03d" "${fhcnt}")
    for grdOut in ${grids}; do
-     process_grdID "${grdout}"
+     process_grdID "${grdOut}"
      grdIDin=${grdNAME}
      com_varname="${COMIN_WAVE_GRID}_${GRDREGION}_${GRDRES}"
      com_dir="${!com_varname}"

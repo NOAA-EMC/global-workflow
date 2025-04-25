@@ -6,7 +6,6 @@
 # Script name:         exwave_prep.sh
 # Script description:  Creates output products from binary WW3 data
 #
-# Author:   Hendrik Tolman      Org: NCEP/EMC      Date: 2007-03-01
 # Abstract: This is the preprocessor for the wave component in GFS.
 #           It executes several scripts for preparing and creating input data
 #           as follows:
@@ -28,17 +27,6 @@
 #                                                                             #
 # - Origination:                                               01-Mar-2007    #
 #                                                                             #
-# Update log                                                                  #
-# Mar2007 HTolman - Added NCO note on resources on mist/dew                   #
-# Apr2007 HTolman - Renaming mod_def files in ${FIXgfs}/wave.                 #
-# Mar2011 AChawla - Migrating to a vertical structure                         #
-# Nov2012 JHAlves - Transitioning to WCOSS                                    #
-# Apr2019 JHAlves - Transitioning to GEFS workflow                            #
-# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
-# Jun2020 JHAlves - Porting to R&D machine Hera                               #
-# Oct2020 JMeixner - Updating RTOFS dates for processing minimal amount       #
-# May2022 JMeixner - Clean up and moving input to other routine               #
-#                                                                             #
 #   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                     # 
 #   is used for ensemble-specific I/O. For deterministic                      #
 #   WAV_MOD_ID=WAV_MOD_TAG                                                    # 
@@ -46,8 +34,6 @@
 ###############################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
-
-source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 

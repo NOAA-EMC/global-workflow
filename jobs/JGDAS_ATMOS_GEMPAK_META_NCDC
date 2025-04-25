@@ -4,7 +4,6 @@
 # GDAS GEMPAK META NCDC PRODUCT GENERATION
 ############################################
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 
 # Now set up GEMPAK/NTRANS environment
@@ -55,14 +54,17 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-"${HOMEgfs}/gempak/ush/gdas_meta_na.sh"
+"${HOMEgfs}/gempak/ush/gdas_meta_na.sh" && true
 export err=$?; err_chk
-"${HOMEgfs}/gempak/ush/gdas_meta_loop.sh"
+
+"${HOMEgfs}/gempak/ush/gdas_meta_loop.sh" && true
 export err=$?; err_chk
+
 if [[ "${cyc}" == '06' ]]; then
-  "${HOMEgfs}/gempak/ush/gdas_ecmwf_meta_ver.sh"
+  "${HOMEgfs}/gempak/ush/gdas_ecmwf_meta_ver.sh" && true
   export err=$?; err_chk
-  "${HOMEgfs}/gempak/ush/gdas_ukmet_meta_ver.sh"
+
+  "${HOMEgfs}/gempak/ush/gdas_ukmet_meta_ver.sh" && true
   export err=$?; err_chk
 fi
 ########################################################
@@ -74,7 +76,7 @@ fi
 ########################################################
 # Execute the script.
 if (( cyc%12 == 0 )); then
-  "${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh"
+  "${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh" && true
 fi
 export err=$?; err_chk
 ########################################################
@@ -92,4 +94,3 @@ fi
 if [[ "${KEEPDATA}" != "YES" ]] ; then
   rm -rf "${DATA}"
 fi
-

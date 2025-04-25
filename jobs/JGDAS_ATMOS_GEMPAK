@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
 ############################################
@@ -18,12 +17,12 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 # Define COM directories
 ##############################################
 for grid in 0p25 1p00; do
-  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COM_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
 for grid in 0p25 1p00; do
-  prod_dir="COM_ATMOS_GEMPAK_${grid}"
-  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COM_ATMOS_GEMPAK_${grid}:COM_ATMOS_GEMPAK_TMPL"
+  prod_dir="COMOUT_ATMOS_GEMPAK_${grid}"
+  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_${grid}:COM_ATMOS_GEMPAK_TMPL"
 
   if [[ ! -d "${!prod_dir}" ]] ; then
     mkdir -m 775 -p "${!prod_dir}"
@@ -34,13 +33,15 @@ done
 # Execute the script for one degree grib
 ########################################################
 
-"${SCRgfs}/exgdas_atmos_nawips.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COM_ATMOS_GEMPAK_1p00}"
+"${SCRgfs}/exgdas_atmos_nawips.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
+
+export err=$?; err_chk
 
 ########################################################
 # Execute the script for quater-degree grib
 ########################################################
 
-"${SCRgfs}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COM_ATMOS_GEMPAK_0p25}"
+"${SCRgfs}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
 
 export err=$?; err_chk
 

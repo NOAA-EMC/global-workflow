@@ -17,8 +17,6 @@
 #
 ################################################################################
 
-source "${USHgfs}/preamble.sh"
-
 # Directories.
 pwd=$(pwd)
 
@@ -224,8 +222,13 @@ else
    LEVS_ENKF=${LEVS_ENKF:-$($NCLEN atminc_ensmean lev)} # get LEVS
 fi
 JCAP_ENKF=${JCAP_ENKF:--9999} # there is no jcap in these files
-[ $JCAP_ENKF -eq -9999 -a $LATB_ENKF -ne -9999 ] && JCAP_ENKF=$((LATB_ENKF-2))
-[ $LONB_ENKF -eq -9999 -o $LATB_ENKF -eq -9999 -o $LEVS_ENKF -eq -9999 -o $JCAP_ENKF -eq -9999 ] && exit -9999
+if [[ ${JCAP_ENKF} -eq -9999 && ${LATB_ENKF} -ne -9999 ]]; then
+   JCAP_ENKF=$((LATB_ENKF-2))
+fi
+if [[ ${LONB_ENKF} -eq -9999 || ${LATB_ENKF} -eq -9999 || ${LEVS_ENKF} -eq -9999 || ${JCAP_ENKF} -eq -9999 ]]; then
+   export err=9
+   err_chk
+fi
 
 ################################################################################
 # This is to give the user the option to recenter, default is YES

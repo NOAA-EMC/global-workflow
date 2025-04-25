@@ -1,0 +1,39 @@
+#! /usr/bin/env bash
+
+########## config.stage_ic ##########
+
+echo "BEGIN: config.stage_ic"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" stage_ic
+
+export ICSDIR="{{ ICSDIR }}" # User provided ICSDIR; blank if not provided
+export BASE_IC="{{ BASE_IC }}" # Platform home for staged ICs
+
+export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gefs.yaml.j2"
+
+source "${HOMEgfs}/versions/ic.ver"
+
+if [[ ${EXP_WARM_START} = ".false." ]] ; then
+  export DOIAU="NO"        # Turn off for staging
+fi
+
+# Set ICSDIR (if not defined)
+if [[ -z "${ICSDIR}" ]] ; then
+
+  if (( NMEM_ENS > 0 )) ; then
+    ensic="${CASE_ENS}"
+  fi
+
+  if [[ "${DO_OCN:-NO}" == "YES" ]] ; then
+    ocnic="mx${OCNRES}"
+  fi
+
+  dir_name="${CASE}${ensic:-}${ocnic:-}"
+  ic_ver="${ic_versions[${dir_name}]}"
+
+  export ICSDIR="${BASE_IC}/${dir_name}/${ic_ver}"
+
+fi
+
+echo "END: config.stage_ic"

@@ -23,8 +23,6 @@
 #                          it requires 7 nodes & allocate 21 processes per node(num_ppn=21)
 ################################################################
 
-source "${USHgfs}/preamble.sh"
-
 runscript=${USHgfs}/gfs_bufr.sh 
 
 cd "${DATA}" || exit 2
@@ -47,11 +45,8 @@ export NINT1=${FHOUT_HF_GFS:-1}
 export NEND1=${FHMAX_HF_GFS:-120}
 export NINT3=${FHOUT_GFS:-3}
 
-rm -f -r "${COM_ATMOS_BUFR}"
-mkdir -p "${COM_ATMOS_BUFR}"
-
 GETDIM="${USHgfs}/getncdimlen"
-LEVS=$(${GETDIM} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf000.${atmfm}" pfull)
+LEVS=$(${GETDIM} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atmf000.${atmfm}" pfull)
 declare -x LEVS
 
 # Initialize an empty list to store the hours
@@ -112,7 +107,7 @@ for fhr in "${hour_list[@]}"; do
   # Format fhr_p with leading zeros
   fhr_p="$(printf "%03d" "$fhr_p")" 
 
-  filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
+  filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
   if [[ -z ${filename} ]]; then
     echo "File ${filename} is required but not found."
     err_exit "FATAL ERROR: logf${fhr} not found."
@@ -122,7 +117,11 @@ for fhr in "${hour_list[@]}"; do
 done
 
 # Run with MPMD 
-"${USHgfs}/run_mpmd.sh" "${DATA}/poescript_bufr"
+"${USHgfs}/run_mpmd.sh" "${DATA}/poescript_bufr" && true
+export err=$?
+set +x
+err_chk "FATAL ERROR: One or more BUFR MPMD tasks failed!"
+set_trace
 
 cd "${DATA}" || exit 2
 
@@ -155,7 +154,7 @@ ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}"
 ##############################################################
 # Tar and gzip the individual bufr files and send them to /com
 ##############################################################
-cd "${COM_ATMOS_BUFR}" || exit 2
+cd "${COMOUT_ATMOS_BUFR}" || exit 2
 tar -cf - . | /usr/bin/gzip > "${RUN}.${cycle}.bufrsnd.tar.gz"
 cd "${DATA}" || exit 2
 
@@ -164,7 +163,7 @@ cd "${DATA}" || exit 2
 ########################################
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL GFS_BUFRSND_TAR "${job}" \
-        "${COM_ATMOS_BUFR}/${RUN}.${cycle}.bufrsnd.tar.gz"
+        "${COMOUT_ATMOS_BUFR}/${RUN}.${cycle}.bufrsnd.tar.gz"
 fi
 
 ########################################

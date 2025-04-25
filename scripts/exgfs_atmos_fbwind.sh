@@ -14,8 +14,6 @@
 # echo "         Nov 2019 - B Vuong  Removed WINTEMV bulletin (retired)"
 #####################################################################
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 cd "${DATA}" || exit 2
 
 ######################
@@ -65,7 +63,7 @@ export FORT51="tran.fbwnd_pacific"
 
 cp "${PARMgfs}/product/fbwnd_pacific.stnlist" fbwnd_pacific.stnlist
 
-"${EXECgfs}/fbwndgfs.x" < fbwnd_pacific.stnlist >> "${pgmout}" 2> errfile
+"${EXECgfs}/fbwndgfs.x" < fbwnd_pacific.stnlist >> "${pgmout}" 2> errfile && true
 export err=$?; err_chk
 
 "${USHgfs}/make_ntc_bull.pl" WMOBH NONE KWNO NONE tran.fbwnd_pacific "${outfile_name}"

@@ -3,7 +3,6 @@
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen_fv3jedi" -c "base ecen_fv3jedi"
 
 ##############################################
@@ -37,11 +36,9 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 ##############################################
 
 EXSCRIPT=${GDASATMRUNPY:-${SCRgfs}/exgdas_enkf_ecen_fv3jedi.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-  exit "${status}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
@@ -59,8 +56,12 @@ fi
 # Remove the Temporary working directory
 ##############################################
 
-cd "${DATAROOT}" || ( echo "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"; exit 1 )
-if [[ ${KEEPDATA} = "NO" ]]; then
+cd "${DATAROOT}" && true
+export err=$?
+set +x
+err_chk "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"
+set_trace
+if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
 

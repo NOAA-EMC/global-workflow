@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlinit" -c "base aeroanl aeroanlinit"
 
@@ -31,11 +30,9 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 # Run relevant script
 
 EXSCRIPT=${GDASAEROINITPY:-${SCRgfs}/exglobal_aero_analysis_initialize.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work

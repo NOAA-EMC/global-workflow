@@ -2,7 +2,7 @@
 
 import os
 from logging import getLogger
-from typing import List, Dict, Any
+from typing import Dict, Any
 from pprint import pformat
 import xarray as xr
 
@@ -14,7 +14,7 @@ from wxflow import (AttrDict,
                     Task,
                     add_to_datetime, to_timedelta,
                     WorkflowException,
-                    Executable)
+                    Executable, which)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -173,14 +173,14 @@ class OceanIceProducts(Task):
         # Run the ocnicepost.x executable
         OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
 
-        # Convert interpolated netCDF file to grib2
-        OceanIceProducts.netCDF_to_grib2(config, product_grid)
+        # Index the interpolated grib2 file
+        OceanIceProducts.index(config, product_grid)
 
     @staticmethod
     @logit(logger)
     def interp(workdir: str, aprun_cmd: str, exec_name: str = "ocnicepost.x") -> None:
         """
-        Run the interpolation executable to generate rectilinear netCDF file
+        Run the interpolation executable to generate interpolated file
 
         Parameters
         ----------
@@ -202,13 +202,17 @@ class OceanIceProducts(Task):
 
         exec_cmd = Executable(aprun_cmd)
         exec_cmd.add_default_arg(os.path.join(workdir, exec_name))
-
-        OceanIceProducts._call_executable(exec_cmd)
+        try:
+            exec_cmd()
+        except Exception:
+            logger.exception(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
+            raise WorkflowException(f"{exec_cmd}")
 
     @staticmethod
     @logit(logger)
-    def netCDF_to_grib2(config: Dict, grid: str) -> None:
-        """Convert interpolated netCDF file to grib2
+    def index(config: Dict, grid: str) -> None:
+        """
+        Index the grib2 file
 
         Parameters
         ----------
@@ -217,25 +221,34 @@ class OceanIceProducts(Task):
         grid : str
             Target product grid to process
 
+        Environment Parameters
+        ----------------------
+        WGRIB2: str (optional)
+            path to executable "wgrib2"
+            Typically set in the modulefile
+
         Returns
-        ------
+        -------
         None
         """
 
         os.chdir(config.DATA)
+        logger.info("Generate index file")
 
-        exec_cmd = Executable(config.oceanice_yaml.nc2grib2.script)
-        arguments = [config.component, grid, config.current_cycle.strftime("%Y%m%d%H"), config.avg_period]
-        if config.component == 'ocean':
-            levs = config.oceanice_yaml.ocean.namelist.ocean_levels
-            arguments.append(':'.join(map(str, levs)))
+        wgrib2_cmd = os.environ.get("WGRIB2", None)
 
-        logger.info(f"Executing {exec_cmd} with arguments {arguments}")
+        grbfile = f"{config.component}.{grid}.grib2"
+        grbfidx = f"{grbfile}.idx"
+
+        if not os.path.exists(grbfile):
+            logger.warning(f"WARNING: No {grbfile} to index!")
+            return
+
+        logger.info(f"Creating index file for {grbfile}")
+        exec_cmd = which("wgrib2") if wgrib2_cmd is None else Executable(wgrib2_cmd)
+        exec_cmd.add_default_arg("-s")
         try:
-            exec_cmd(*arguments)
-        except OSError:
-            logger.exception(f"FATAL ERROR: Failed to execute {exec_cmd}")
-            raise OSError(f"{exec_cmd}")
+            exec_cmd(grbfile, output=grbfidx)
         except Exception:
             logger.exception(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
             raise WorkflowException(f"{exec_cmd}")
@@ -249,7 +262,7 @@ class OceanIceProducts(Task):
 
         Parameters
         ----------
-        config : Dict
+        config: Dict
             Configuration dictionary for the task
 
         Returns
@@ -294,34 +307,6 @@ class OceanIceProducts(Task):
             # close the netcdf files
             ds.close()
             ds_subset.close()
-
-    @staticmethod
-    @logit(logger)
-    def _call_executable(exec_cmd: Executable) -> None:
-        """Internal method to call executable
-
-        Parameters
-        ----------
-        exec_cmd : Executable
-            Executable to run
-
-        Raises
-        ------
-        OSError
-            Failure due to OS issues
-        WorkflowException
-            All other exceptions
-        """
-
-        logger.info(f"Executing {exec_cmd}")
-        try:
-            exec_cmd()
-        except OSError:
-            logger.exception(f"FATAL ERROR: Failed to execute {exec_cmd}")
-            raise OSError(f"{exec_cmd}")
-        except Exception:
-            logger.exception(f"FATAL ERROR: Error occurred during execution of {exec_cmd}")
-            raise WorkflowException(f"{exec_cmd}")
 
     @staticmethod
     @logit(logger)

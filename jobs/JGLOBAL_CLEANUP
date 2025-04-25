@@ -1,11 +1,10 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
 
-"${SCRgfs}/exglobal_cleanup.sh"
-status=$?
-(( status != 0 )) && exit "${status}"
+"${SCRgfs}/exglobal_cleanup.sh" && true
+export err=$?
+err_chk
 
 ##########################################
 # Remove the Temporary working directory

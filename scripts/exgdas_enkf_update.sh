@@ -17,8 +17,6 @@
 #
 ################################################################################
 
-source "${USHgfs}/preamble.sh"
-
 # Directories.
 pwd=$(pwd)
 
@@ -91,6 +89,7 @@ else
 fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
+hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 
 ################################################################################
 
@@ -206,7 +205,7 @@ for imem in $(seq 1 $NMEM_ENS); do
    for FHR in $nfhrs; do
       ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
-      if [[ "${DO_GSISOILDA}" = "YES" ]]; then
+      if [[ "${hofx_2m_sfcfile}" = ".true." ]]; then
          ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
              "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
@@ -261,7 +260,7 @@ if [[ $USE_CFP = "YES" ]]; then
    if [[ $ncmd -gt 0 ]]; then
       ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
       APRUNCFP=$(eval echo $APRUNCFP)
-      $APRUNCFP $DATA/mp_untar.sh
+      ${APRUNCFP} "${DATA}/mp_untar.sh" && true
       export err=$?; err_chk
    fi
 fi
@@ -407,8 +406,9 @@ export pgm=$ENKFEXEC
 . prep_step
 
 $NCP $ENKFEXEC $DATA
-$APRUN_ENKF ${DATA}/$(basename $ENKFEXEC) 1>stdout 2>stderr
-export err=$?; err_chk
+$APRUN_ENKF "${DATA}/$(basename $ENKFEXEC)" 1>stdout 2>stderr && true
+export err=$?
+err_chk
 
 # Cat runtime output files.
 cat stdout stderr > "${COMOUT_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
@@ -421,4 +421,4 @@ if [[ "${mkdata}" == "YES" ]]; then
 fi
 
 
-exit ${err}
+exit "${err}"

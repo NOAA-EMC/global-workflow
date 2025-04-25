@@ -1,0 +1,28 @@
+# Paths
+DMPDIR: '/home/${USER}'
+BASE_GIT: ''
+PACKAGEROOT: ''
+HOMEDIR: '/home/${USER}'
+STMP: '/home/${USER}'
+PTMP: '/home/${USER}'
+NOSCRUB: '${HOMEDIR}'
+COMINsyn: ''
+# BQS properties
+SCHEDULER: 'none'
+QUEUE: ''
+QUEUE_SERVICE: ''
+PARTITION_BATCH: ''
+PARTITION_SERVICE: ''
+RESERVATION: ''
+CLUSTERS: ''
+# HPSS properties
+HPSS_PROJECT: emc-global
+ARCHCOM_TO: 'local'
+ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+CHGRP_RSTPROD: 'YES'
+CHGRP_CMD: 'chgrp rstprod'
+# Features
+SUPPORTED_RESOLUTIONS: ['C96', 'C48']
+DO_ARCHCOM: 'NO'
+MAKE_NSSTBUFR: 'NO'
+MAKE_ACFTBUFR: 'NO'

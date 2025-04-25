@@ -4,8 +4,6 @@
 # Generate 0.25 / 0.5 / 1 degree interpolated grib2 files for each input grib2 file
 # trim's RH and tweaks sea-ice cover
 
-source "${USHgfs}/preamble.sh"
-
 input_file=${1:-"pgb2file_in"}  # Input pressure grib2 file
 output_file_prefix=${2:-"pgb2file_out"}  # Prefix for output grib2 file; the prefix is appended by resolution e.g. _0p25
 grid_string=${3:-"0p25"}  # Target grids; e.g. "0p25" or "0p25:0p50"; If multiple, they need to be ":" seperated

@@ -18,14 +18,12 @@
 # Origination: Hendrik Tolman                                March 13, 2007   #
 # Update log                                                                  #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
-# 2020-06-10  J-Henrique Alves Ported R&D machine Hera   
+# 2020-06-10  J-Henrique Alves Ported R&D machine Hera
 #                                                                             #
 ###############################################################################
 #
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
-
-source "${USHgfs}/preamble.sh"
 
 # 0.a Basic modes of operation
 
@@ -69,14 +67,14 @@ source "${USHgfs}/preamble.sh"
   if [[ "$type" = "ibpcbull" ]]; then filext='cbull'; fi
 
 
-  rm -rf TAR_${filext}_$ID 
+  rm -rf TAR_${filext}_$ID
   mkdir  TAR_${filext}_$ID
 # this directory is used only for error capturing
 
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [[ -z "${cycle}" ]] || [[ -z "${COMOUT_WAVE_STATION}" ]] || [[ -z "${WAV_MOD_TAG}" ]] ||  \
+  if [[ -z "${COMOUT_WAVE_STATION}" ]] || \
      [[ -z "${SENDDBN}" ]] || [[ -z "${STA_DIR}" ]]; then
     set +x
     echo ' '
@@ -87,8 +85,6 @@ source "${USHgfs}/preamble.sh"
     set_trace
     exit 2
   fi
-
-  cd "${STA_DIR}/${filext}"
 
 # --------------------------------------------------------------------------- #
 # 2.  Generate tar file (spectral files are compressed)
@@ -101,18 +97,18 @@ source "${USHgfs}/preamble.sh"
   countMAX=5
   tardone='no'
   sleep_interval=10
-  
+
   while [[ "${tardone}" = "no" ]]
   do
-    
-    nf=$(ls | awk '/'$ID.*.$filext'/ {a++} END {print a}')
+
+    nf=$(find . -maxdepth 1 -type f -name "*.$filext" | wc -l)
     nbm2=$(( $nb - 2 ))
     if [[ "${nf}" -ge "${nbm2}" ]]
     then
 
-      tar -cf "${ID}.${cycle}.${type}_tar" ./${ID}.*.${filext}
+      tar -cf "${ID}.${type}.tar" ./*."${filext}"
       exit=$?
-      filename="${ID}.${cycle}.${type}_tar" 
+      filename="${ID}.${type}.tar"
       if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ; then
         echo "FATAL ERROR: File ${filename} not found after waiting $(( sleep_interval * (countMAX + 1) )) secs"
         exit 3
@@ -129,8 +125,8 @@ source "${USHgfs}/preamble.sh"
         set_trace
         exit 3
       fi
-      
-      if [[ -f "${ID}.${cycle}.${type}_tar" ]]
+
+      if [[ -f "${ID}.${type}.tar" ]]
       then
         tardone='yes'
       fi
@@ -152,10 +148,10 @@ source "${USHgfs}/preamble.sh"
 
   if [[ "${type}" = 'spec' ]]
   then
-    if [[ -s "${ID}.${cycle}.${type}_tar" ]]
+    if [[ -s "${ID}.${type}.tar" ]]
     then
-      file_name="${ID}.${cycle}.${type}_tar.gz"
-      /usr/bin/gzip -c "${ID}.${cycle}.${type}_tar" > "${file_name}"
+      file_name="${ID}.${type}.tar.gz"
+      /usr/bin/gzip -c "${ID}.${type}.tar" > "${file_name}"
       exit=$?
 
       if  [[ "${exit}" != '0' ]]
@@ -171,7 +167,7 @@ source "${USHgfs}/preamble.sh"
       fi
     fi
   else
-    file_name="${ID}.${cycle}.${type}_tar"
+    file_name="${ID}.${type}.tar"
   fi
 
 # --------------------------------------------------------------------------- #

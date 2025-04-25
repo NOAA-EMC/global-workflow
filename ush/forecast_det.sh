@@ -8,7 +8,7 @@ UFS_det(){
   # Determine if the current cycle is a warm start (based on the availability of restarts)
   if [[ -f "${COMIN_ATMOS_RESTART_PREV}/${model_start_date_current_cycle:0:8}.${model_start_date_current_cycle:8:2}0000.coupler.res" ]]; then
     warm_start=".true."
-  fi 
+  fi
 
   # If restarts were not available, this is likely a cold start
   if [[ "${warm_start}" == ".false." ]]; then
@@ -98,7 +98,7 @@ UFS_det(){
 
     # Check for WW3 restart availability
     if [[ "${cplwav}" == ".true." ]]; then
-      if [[ ! -f "${DATArestart}/WW3_RESTART/${rdate:0:8}.${rdate:8:2}0000.restart.ww3" ]]; then
+      if [[ ! -f "${DATArestart}/WW3_RESTART/${rdate:0:8}.${rdate:8:2}0000.restart.ww3.nc" ]]; then
         ww3_rst_ok="NO"
       fi
     fi

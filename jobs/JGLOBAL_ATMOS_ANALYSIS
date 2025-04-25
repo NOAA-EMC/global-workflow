@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
 
 
@@ -46,23 +45,20 @@ mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
 export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
-    echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
-    exit 1
+    export err=1
+    err_chk "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
 fi
 
 # Get LEVS
-export LEVS=$(${NCLEN} ${ATMGES} pfull)
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
-
+export LEVS=$(${NCLEN} ${ATMGES} pfull) && true
+export err=$?
+err_chk
 
 if [ ${DOHYBVAR} = "YES" ]; then
     export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc"
     if [ ! -f ${ATMGES_ENSMEAN} ]; then
-        echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
-        exit 2
+        export err=2
+        err_chk "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
     fi
 fi
 
@@ -90,12 +86,9 @@ fi
 ###############################################################
 # Run relevant script
 
-${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
-
+${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # Send Alerts
