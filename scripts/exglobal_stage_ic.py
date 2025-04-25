@@ -25,6 +25,7 @@ def main():
             'REPLAY_ICS', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA',
             'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES']
 
+
     stage_dict = AttrDict()
     for key in keys:
         # Make sure OCNRES is three digits
@@ -39,6 +40,7 @@ def main():
 
     # Stage ICs
     stage.execute_stage(stage_dict)
+
 
 if __name__ == '__main__':
     main()
