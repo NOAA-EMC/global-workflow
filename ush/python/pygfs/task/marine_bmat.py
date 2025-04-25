@@ -216,6 +216,7 @@ class MarineBMat(Task):
         """
 
         APREFIX = self.task_config.APREFIX
+
         window_begin_iso = self.task_config.MARINE_WINDOW_BEGIN.strftime('%Y-%m-%dT%H:%M:%SZ')
         window_middle_iso = self.task_config.MARINE_WINDOW_MIDDLE.strftime('%Y-%m-%dT%H:%M:%SZ')
         window_end_iso = self.task_config.MARINE_WINDOW_END.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -234,6 +235,8 @@ class MarineBMat(Task):
             src = os.path.join(self.task_config.DATAstaticb, f"{diff_type}_ocean.nc")
             dest = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
                                 f"{APREFIX}{diff_type}_ocean.nc")
+            dest = rename_file( dest )  # correct the file name
+            
             diffusion_coeff_list.append([src, dest])
 
         FileHandler({'copy': diffusion_coeff_list}).sync()
@@ -243,29 +246,37 @@ class MarineBMat(Task):
         diagb_list = []
 
         # TODO(AFE) the two renames are to accomodate yaml settings in var task, which should changed
-        # ocean diag B
         os.rename(os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.incr.{window_end_iso}.nc"),
                   os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.nc"))
         src = os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.nc")
-        dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f"{APREFIX}ocean.bkgerr_ens_stddev.nc")
+        
+        dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f"{APREFIX}ocean.bkgerr_ens_stddev.nc")  
+        dst = rename_file( dst )  # correct the file name
+        
         diagb_list.append([src, dst])
 
-        # ice diag B
         os.rename(os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.incr.{window_end_iso}.nc"),
                   os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc"))
+                               
         src = os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc")
         dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX, f"{APREFIX}ice.bkgerr_ens_stddev.nc")
+        dst = rename_file( dst ) # correct the file name
+
         diagb_list.append([src, dst])
 
         if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
-            src = os.path.join(self.task_config.DATAstaticb, f"ocn.ssh_recentering_error.incr.{window_begin_iso}.nc")
+            src = os.path.join(self.task_config.DATAstaticb, f"ocn.ssh_recentering_error.incr.{window_begin_iso}.nc") 
             dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f"{APREFIX}ocean.recentering_error.nc")
-            diagb_list.append([src, dst])
+            dst = rename_file( dst )  # correct the file name
 
+            diagb_list.append([src, dst])
+            
             src = os.path.join(self.task_config.DATAstaticb, f"ice.ssh_recentering_error.incr.{window_begin_iso}.nc")
             dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX, f"{APREFIX}ice.recentering_error.nc")
+            dst = rename_file( dst )  # correct the file name
+            
             diagb_list.append([src, dst])
-
+            
         FileHandler({'copy': diagb_list}).sync()
 
         # Copy the ensemble perturbation diagnostics to the ROTDIR
@@ -274,15 +285,18 @@ class MarineBMat(Task):
             src = os.path.join(self.task_config.DATA, f"ocn.ens_weights.incr.{window_middle_iso}.nc")
             dst = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
                                f"{APREFIX}ocean.ens_weights.nc")
+            dst = rename_file( dst )  # correct the file name
+
             weight_list.append([src, dst])
 
-            src = os.path.join(self.task_config.DATA, f"ice.ens_weights.incr.{window_middle_iso}.nc")
+            src = os.path.join(self.task_config.DATA, f"ice.ens_weights.incr.{window_middle_iso}.nc") 
             dst = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
                                f"{APREFIX}ice.ens_weights.nc")
+
             weight_list.append([src, dst])
 
             # Copy the ssh diagnostics
-            for string in ['ssh_steric_stddev', 'ssh_unbal_stddev', 'ssh_total_stddev', 'steric_explained_variance']:
+            for string in ['ssh_steric_stddev', 'ssh_unbal_stddev', 'ssh_total_stddev', 'steric_explained_variance']: 
                 weight_list.append([os.path.join(self.task_config.DATA, 'staticb', f'ocn.{string}.incr.{window_begin_iso}.nc'),
                                     os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f'{APREFIX}ocean.{string}.nc')])
 
@@ -296,3 +310,23 @@ class MarineBMat(Task):
                                 f"{APREFIX}{os.path.basename(yaml_file)}")
             yaml_list.append([yaml_file, dest])
         FileHandler({'copy': yaml_list}).sync()
+
+
+def rename_file(dst):
+    # Correct the name of the output file 
+
+    dst_path_file = dst.rpartition("/")  # gives path+file    
+    fname = dst_path_file[-1]
+    the_path = dst_path_file[0]
+    
+    delimiter = "."  # fix quotes
+    parts = fname.split(delimiter)
+
+    if 1 < len(parts) and 0 <= 2 < len(parts):
+        parts[1], parts[2] = parts[2], parts[1]
+        new_fname = delimiter.join(parts)
+        new_dst = the_path + "/" + new_fname
+
+        return new_dst
+    else:
+        return "Incorrect file name specification"
