@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     args = parse_args()
     values = yq(args.yaml, args.key)
-    
+
     # Handle missing values
     if values is None:
         if hasattr(args, 'fail_on_missing') and args.fail_on_missing:
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         else:
             # For shell script usage, an empty output is often more useful than "None"
             sys.exit(0)
-    
+
     # Output formatting
     if args.string and isinstance(values, list):
         for value in values:
