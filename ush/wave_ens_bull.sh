@@ -176,7 +176,7 @@
     if [ "$bfhr" -eq "${FHMIN_WAV}" ]
     then
     	printf "\n Location : "$bnom"      ("$blat"N  "$blon"W)\n" > $bfil
-    	printf " Model    : NCEP Global Wave Ensemble System (${WAV_MOD_TAG})\n" >> $bfil
+    	printf " Model    : NCEP Global Wave Ensemble System \n" >> $bfil
     	printf " Cycle    : "$PDY" "$cycle" UTC\n" >> $bfil
     	printf "\n+-------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+\n" >> $bfil
     	printf   "| day   | Hs avg | Hs spr | Tp avg | Tp spr | U10avg | U10spr | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) |\n" >> $bfil
@@ -242,7 +242,7 @@
 #
   if [ -f ${bfil} ] && [ -f ${tfil} ]
   then
-    echo -e "\n ${WAV_MOD_TAG} bulletin and ts-file created for location ${bnom}.\n"
+    echo -e "\n  bulletin and ts-file created for location ${bnom}.\n"
   else
     set +x
     echo ' '

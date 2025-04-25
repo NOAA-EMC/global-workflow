@@ -51,7 +51,7 @@ case ${step} in
     export memory="4096M"
     ;;
 
-  "wavestat")
+  "wave_stat")
     export walltime="00:15:00"
     export ntasks=12
     export threads_per_task=1
@@ -59,16 +59,6 @@ case ${step} in
     export NTASKS=${ntasks}
     export memory="2GB"
     ;;
-
-  "wavestat_pnt")
-    export walltime="00:15:00"
-    export ntasks=12
-    export threads_per_task=1
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export NTASKS=${ntasks}
-    export memory="2GB"
-    ;;
-
 
   "waveinit")
     export walltime="00:10:00"

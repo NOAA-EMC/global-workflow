@@ -1,19 +1,19 @@
 #! /usr/bin/env bash
 
-########## config.wavestat_pnt ##########
+########## config.wave_stat ##########
 # Wave steps specific
 
-echo "BEGIN: config.wavestat_pnt"
+echo "BEGIN: config.wave_stat"
 
 # Get task specific resources
-source "${EXPDIR}/config.resources" wavestat_pnt
+source "${EXPDIR}/config.resources" wave_stat
 
 # Step label
-export DO_WAVESTAT='YES'
+export DO_WAVE_STAT='YES'
 # Intake currents settings
 
 # Location of CDO module
 export CDO_ROOT=${CDO_ROOT:-/usrx/local/dev/packages/cdo/1.9.8}
 
 
-echo "END: config.wavestat_pnt"
+echo "END: config.wave_stat"

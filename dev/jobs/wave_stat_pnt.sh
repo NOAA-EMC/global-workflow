@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-
 ###############################################################
 echo
 echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
@@ -12,26 +11,18 @@ if [[ "${err}" -ne 0 ]]; then
 	exit "${err}"
 fi
 
-export job="wavestat"
+export job="wave_stat_pnt"
 export jobid="${job}.$$"
 
 ###############################################################
 echo
 echo "=============== START TO RUN WAVE PREP ==============="
 # Execute the JJOB
-IFS=', ' read -r -a fhr_list <<< "${FHR_LIST}"
-
-export FHR3 jobid
-for FORECAST_HOUR in "${fhr_list[@]}"; do
-        FHR3=$(printf '%03d' "${FORECAST_HOUR}")
-        jobid="${job}_f${FHR3}.$$"
-        # Execute the JJOB
-        "${HOMEgfs}/jobs/JGEFS_WAVE_STAT"
-	err=$?
-	if [[ "${err}" -ne 0 ]]; then
-		exit "${err}"
-	fi
-done
+"${HOMEgfs}/jobs/JGEFS_WAVE_STAT_PNT"
+err=$?
+if [[ "${err}" -ne 0 ]]; then
+	exit "${err}"
+fi
 
 exit 0
 
