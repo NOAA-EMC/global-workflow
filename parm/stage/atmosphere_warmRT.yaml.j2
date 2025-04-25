@@ -24,7 +24,7 @@ atmosphere_warmRT:
         {% set destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
         {% if path_exists(mem_path) %}
         {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "coupler.res", "phy_data", "sfc_data"] %}
-        {% mem_files = mem_path ~ ftype ~ '*' %}
+        {% set mem_files = mem_path ~ ftype ~ '*' %}
         {% for file in glob(mem_files) %}
         - ["{{ file }}", "{{ destination_path }}"]
         {% endfor %}
