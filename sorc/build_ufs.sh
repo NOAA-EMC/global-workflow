@@ -80,7 +80,7 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
       rm -rf "${BUILD_DIR}"
    fi
 
-   BUILD_DIR=${BUILD_DIR} BUILD_VERBOSE=1 BUILD_JOBS=${BUILD_JOBS:-8} CMAKE_FLAGS="${MAKE_OPT}" ./build.sh
+   BUILD_NAME=${BUILD_NAME} BUILD_DIR=${BUILD_DIR} BUILD_VERBOSE=1 BUILD_JOBS=${BUILD_JOBS:-8} CMAKE_FLAGS="${MAKE_OPT}" ./build.sh
 
    mv "${BUILD_DIR}/ufs_model" "tests/${BUILD_NAME}.exe"
    if [[ "${CLEAN_AFTER}" == "YES" ]]; then
