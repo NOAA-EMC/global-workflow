@@ -533,7 +533,6 @@ class GEFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-
         wave_stat_pnt_envars = self.envars.copy()
         resources = self.get_resource('wave_stat')
 
