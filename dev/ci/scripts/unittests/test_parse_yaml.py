@@ -24,7 +24,6 @@ class TestParseYAML(unittest.TestCase):
     def setUpClass(cls):
         # Ensure test_data directory exists
         os.makedirs(TEST_DATA_DIR, exist_ok=True)
-        
         # Create test yaml file if it doesn't exist
         if not os.path.exists(TEST_CONFIG):
             with open(TEST_CONFIG, 'w') as f:
@@ -67,7 +66,7 @@ template_value: "/path/to/homegfs/some/path"''')
     def test_cli_default_value(self):
         """Test the --default option"""
         # Test default value for non-existent key
-        cmd = [sys.executable, SCRIPT_PATH, '-y', TEST_CONFIG, '-k', 'missing.key', 
+        cmd = [sys.executable, SCRIPT_PATH, '-y', TEST_CONFIG, '-k', 'missing.key',
                '-d', 'default_value']
         result = subprocess.run(cmd, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, f"Command failed: {result.stderr}")
@@ -76,7 +75,7 @@ template_value: "/path/to/homegfs/some/path"''')
     def test_cli_fail_on_missing(self):
         """Test the --fail-on-missing option"""
         # Test that non-existent key with --fail-on-missing fails
-        cmd = [sys.executable, SCRIPT_PATH, '-y', TEST_CONFIG, '-k', 'missing.key', 
+        cmd = [sys.executable, SCRIPT_PATH, '-y', TEST_CONFIG, '-k', 'missing.key',
                '--fail-on-missing']
         result = subprocess.run(cmd, capture_output=True, text=True)
         self.assertEqual(result.returncode, 1, "Expected command to fail with code 1")
@@ -87,11 +86,10 @@ template_value: "/path/to/homegfs/some/path"''')
     def test_cli_string_option(self):
         """Test the --string option for list output"""
         # Test string output for a list
-        cmd = [sys.executable, SCRIPT_PATH, '-y', TEST_CONFIG, '-k', 'list_data', 
+        cmd = [sys.executable, SCRIPT_PATH, '-y', TEST_CONFIG, '-k', 'list_data',
                '--string']
         result = subprocess.run(cmd, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, f"Command failed: {result.stderr}")
-        
         # Each list item should be on a separate line
         lines = result.stdout.strip().split('\n')
         self.assertEqual(lines, ['item1', 'item2', 'item3'])
