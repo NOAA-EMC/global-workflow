@@ -22,7 +22,7 @@ atmosphere_warmRT:
         {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/'%}
         {% set mem_path = retro_path ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.210000.' %}
         {% set destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
-        {% if path_exists(mem_path) %}
+        {% if path_exists(retro_path) %}
         {% set ftype = "fv_core.res" %}
         {% set file = mem_path ~ ftype %}
         - ["{{ file }}", "{{ destination_path }}"]
