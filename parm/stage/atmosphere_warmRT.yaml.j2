@@ -19,16 +19,13 @@ atmosphere_warmRT:
         {% set mem_range = mem_data[0] %}
         {% for mem in mem_range %}
         {% set imem = mem - offset %}
-        {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando'%}
-        {% set mem_path = retro_path ~ '/enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.210000.' %}
+        {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/'%}
+        {% set mem_path = retro_path ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.210000.' %}
         {% set destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
         {% if path_exists(mem_path) %}
-        {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "coupler.res", "phy_data", "sfc_data"] %}
-        {% set mem_files = mem_path ~ ftype ~ '*' %}
-        {% for file in glob(mem_files) %}
+        {% set ftype = "fv_core.res" %}
+        {% set file = mem_path ~ ftype %}
         - ["{{ file }}", "{{ destination_path }}"]
-        {% endfor %}
-        {% endfor%}
         {% endif %}
         {% endfor %}
         {% endfor %}
