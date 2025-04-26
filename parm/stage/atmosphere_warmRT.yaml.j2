@@ -8,10 +8,10 @@ atmosphere_warmRT:
         {% endfor %} # mem loop
     copy:
         #select restart members files (80) specific to the cycle
-        {% set cyc_ranges = ({ 0: [(range(1, 31), 0)],
-                               6: [(range(21, 51), 20)],
-                               12: [(range(41, 71), 40)],
-                               18: [(range(61, 81), 60), (range(1, 11), -20)]}) %}
+        {% set cyc_ranges = ({ "00": [(range(1, 31), 0)],
+                               "06": [(range(21, 51), 20)],
+                               "12": [(range(41, 71), 40)],
+                               "18": [(range(61, 81), 60), (range(1, 11), -20)]}) %}
 
         {% if current_cycle_HH in cyc_ranges %}
         {% for mem_data in cyc_ranges[current_cycle_HH] %}
@@ -19,7 +19,7 @@ atmosphere_warmRT:
         {% set mem_range = mem_data[0] %}
         {% for mem in mem_range %}
         {% set imem = mem - offset %}
-        {% set retro_path = '/lfs/h2/emc/ptmp/emc.global/RETRO_GFSv17/comroot/retrotestgfs05'%}
+        {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando'%}
         {% set mem_path = retro_path ~ '/enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.210000.' %}
         {% set destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
         {% if path_exists(mem_path) %}
