@@ -33,7 +33,7 @@ setup_experiments-hera:
   needs:
     - build-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE != "trigger"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 run_tests-hera:
   extends: .run_tests_template
@@ -47,7 +47,7 @@ run_tests-hera:
   needs:
     - setup_experiments-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE != "trigger"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 # Host: GAEAC6 - Standard Cases
 setup_experiments-gaeac6:
@@ -62,7 +62,7 @@ setup_experiments-gaeac6:
   needs:
     - build-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE != "trigger"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 run_tests-gaeac6:
   extends: .run_tests_template
@@ -76,7 +76,7 @@ run_tests-gaeac6:
   needs:
     - setup_experiments-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE != "trigger"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 # =======================================
 # CTests configurations by host
