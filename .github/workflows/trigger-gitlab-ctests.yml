@@ -33,7 +33,7 @@ jobs:
           curl --request POST \
                --form token=${{ secrets.GITLAB_TRIGGER_TOKEN }} \
                --form ref=ci_gitlab_pipelines_dev \
-            "${{ secrets.GITLAB_TRIGGER_URL }}"
+            "https://https://vlab.noaa.gov/gitlab-licensed/api/v4/projects/185/trigger/pipeline"
         env:
           GITLAB_WEBHOOK_TOKEN: ${{ secrets.GITLAB_WEBHOOK_TOKEN }}
           GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
