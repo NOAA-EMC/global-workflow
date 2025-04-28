@@ -1017,7 +1017,7 @@ fi
 if [ ${SENDECF} = "YES" -a "${RUN}" != "enkf" ]; then
    ecflow_client --event release_fcst
 fi
-echo "${rCDUMP} ${CDATE} atminc done at $(date)" > ${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt
+echo "${rCDUMP} ${CDATE} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt"
 
 ################################################################################
 
