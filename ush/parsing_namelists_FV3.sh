@@ -154,6 +154,7 @@ local NO_DYCORE=${no_dycore}
 local AGRID_VEL_RST=${agrid_vel_rst:-".true."}
 local READ_INCREMENT=${read_increment}
 local RES_LATLON_DYNAMICS=${res_latlon_dynamics}
+local ATM_IGNORE_RST_CKSUM=.false.
 local INCREMENT_FILE_ON_NATIVE_GRID=.false.
 
 local FILTERED_TERRAIN=${filtered_terrain}
@@ -333,7 +334,13 @@ local PERT_CLDS=${PERT_CLDS:-".false."}
 if [[ ${DO_SPPT} = ".true." ]]; then
   local PERT_CLDS=".true."
 fi
-  
+
+if [[ "${DOIAU}" = "YES" ]]; then
+  local HIDE_AIAU=" "
+else
+  local HIDE_AIAU="!"
+fi
+
 #GWP options  
 if [[ ${knob_ugwp_version} -eq 0 ]]; then
   local HIDE_UGWPV0=" "
@@ -345,6 +352,7 @@ else
   local HIDE_UGWPV0="!"
   local HIDE_UGWPV1="!"
 fi
+
 # Common GWP options
 local KNOB_UGWP_SOLVER=${knob_ugwp_solver:-2}
 local KNOB_UGWP_SOURCE=${knob_ugwp_source:-1,1,0,0}
@@ -466,6 +474,13 @@ local MOM6_RESTART_SETTING=${MOM6_RESTART_SETTING:-'n'}
 local MOM6_RESTART_DIR=MOM6_RESTART/
 
 # Land IAU defaults
+local DO_LANDIAU=${do_landiau:".false."}
+if [[ "${DO_LANDIAU}" = ".true." ]]; then
+  local HIDE_LIAU=" "
+else
+  local HIDE_LIAU="!"
+fi
+
 local DO_LAND_IAU=.false.
 local LAND_IAU_FHRS=3,6,9
 local LAND_IAU_DELHRS=6
