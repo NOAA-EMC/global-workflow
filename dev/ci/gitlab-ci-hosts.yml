@@ -146,6 +146,8 @@ build-hera:
     machine: hera
   tags:
     - hera
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule"
 
 build-gaeac6:
   extends: .build_template
@@ -153,3 +155,5 @@ build-gaeac6:
     machine: gaeac6
   tags:
     - gaeac6
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule"
