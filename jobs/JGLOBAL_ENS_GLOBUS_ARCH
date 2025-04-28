@@ -14,6 +14,7 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 # Run globus script
 ###############################################################
 
+export -n SHELLOPTS
 ${GLOBALGLOBUSARCHSH:-${SCRgfs}/exglobal_globus_earc.py}
 err=$?
 if [[ ${err} -ne 0 ]]; then
