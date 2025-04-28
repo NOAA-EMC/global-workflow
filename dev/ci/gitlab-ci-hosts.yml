@@ -101,7 +101,7 @@ create_ctests-hera:
   needs:
     - build-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_PIPELINE_SOURCE == "api"
 
 create_ctests-gaeac6:
   extends: .create_ctests
@@ -113,7 +113,7 @@ create_ctests-gaeac6:
   needs:
     - build-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_PIPELINE_SOURCE == "api"
 
 # Host: Hera - CTests
 run_ctests-hera:
@@ -123,7 +123,7 @@ run_ctests-hera:
   needs:
     - create_ctests-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_PIPELINE_SOURCE == "api"
 
 # Host: GAEAC6 - CTests
 run_ctests-gaeac6:
@@ -133,7 +133,7 @@ run_ctests-gaeac6:
   needs:
     - create_ctests-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_PIPELINE_SOURCE == "api"
 
 # =======================================
 # Common build configurations by host
@@ -147,7 +147,7 @@ build-hera:
   tags:
     - hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "schedule"
 
 build-gaeac6:
   extends: .build_template
@@ -156,4 +156,4 @@ build-gaeac6:
   tags:
     - gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "schedule"
