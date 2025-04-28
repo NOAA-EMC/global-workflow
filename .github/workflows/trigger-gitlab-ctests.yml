@@ -31,17 +31,8 @@ jobs:
       - name: Trigger GitLab Pipeline
         run: |
           curl --request POST \
-            -- "Content-Type: application/json" \
-            --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
-            --header "X-Gitlab-Token: ${{ secrets.GITLAB_WEBHOOK_TOKEN }}" \
-            --form token=${{ secrets.GITLAB_TRIGGER_TOKEN }} \
-            --form ref=ci_gitlab_pipelines_dev \
-            --data '{
-              "variables": {
-                "PR_NUMBER": "${{ env.PR_NUM }}",
-                "GITHUB_REPO_URL": "https://github.com/NOAA-EMC/global-workflow"
-              }
-            }' \
+               --form token=${{ secrets.GITLAB_TRIGGER_TOKEN }} \
+               --form ref=ci_gitlab_pipelines_dev \
             "${{ secrets.GITLAB_TRIGGER_URL }}"
         env:
           GITLAB_WEBHOOK_TOKEN: ${{ secrets.GITLAB_WEBHOOK_TOKEN }}
