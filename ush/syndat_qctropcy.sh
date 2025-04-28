@@ -98,17 +98,17 @@ positional parameter 1"
    set_trace
    echo $msg >> $pgmout
 
-# Copy null files into "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.$tmmark" and
-#  "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.$tmmark" so later ftp attempts will find and
+# Copy null files into "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.$tmmark" and
+#  "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.$tmmark" so later ftp attempts will find and
 #  copy the zero-length file and avoid wasting time with multiple attempts
 #  to remote machine(s)
 #  (Note: Only do so if files don't already exist)
 
-   if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
-       cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+   if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
+       cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
    fi
-   if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}" ]]; then
-       cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+   if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}" ]]; then
+       cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
    fi
 
    exit
@@ -271,16 +271,16 @@ if [ "$errqct" -gt '0' ];then
    echo $msg >> $pgmout
 
 # In the event of a ERROR in PROGRAM SYNDAT_QCTROPCY, copy null files into
-#  "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.$tmmark" and "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.$tmmark"
+#  "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.$tmmark" and "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.$tmmark"
 #  so later ftp attempts will find and copy the zero-length file and avoid
 #  wasting time with multiple attempts to remote machine(s)
 #  (Note: Only do so if files don't already exist)
 
-   if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
-       cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+   if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
+       cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
    fi
-   if [[ ! -s ${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark} ]]; then
-       cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+   if [[ ! -s ${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark} ]]; then
+       cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
    fi
 
    exit
@@ -354,15 +354,15 @@ fi
 
 
 #  This is the file that connects to the later RELOCATE and/or PREP scripts
-cp current "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+cp current "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
 
 #  Create the DBNet alert 
 if [ $SENDDBN = "YES" ]
 then
-   "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS_TCVITALS" "${job}" "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+   "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS_TCVITALS" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
 fi
     
 #  Write JTWC/FNOC Tcvitals to /com path since not saved anywhere else
-cp fnoc "${COM_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+cp fnoc "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
 
 exit

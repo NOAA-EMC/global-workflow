@@ -391,22 +391,22 @@ to center relocation date/time;"
       fi
 
 #  For center time sigma guess file obtained via getges, store pathname from
-#   getges into ${COM_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.$tmmark and, for now,
-#   also in ${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark - if relocation processing stops
+#   getges into ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.$tmmark and, for now,
+#   also in ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark - if relocation processing stops
 #   due to an error or due to no input tcvitals records found, then the center
 #   time sigma guess will not be modified and this getges file will be read in
 #   subsequent PREP processing; if relocation processing continues and the
-#   center sigma guess is modified, then ${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark will
+#   center sigma guess is modified, then ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark will
 #   be removed later in this script {the subsequent PREP step will correctly
-#   update ${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark to point to the sgesprep file
+#   update ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark to point to the sgesprep file
 #   updated here by the relocation}
 #  ----------------------------------------------------------------------------
 
       if [ $fhr = "0"  ]; then
          "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${CDATE10}" \
-          -t "${stype}" > "${COM_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
-         cp "${COM_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
-          "${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
+          -t "${stype}" > "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
+         cp "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
+          "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
       fi
       set +x
       echo
@@ -454,7 +454,7 @@ done
 if [ -f ${tstsp}syndata.tcvitals.$tmmark ]; then
    cp ${tstsp}syndata.tcvitals.$tmmark tcvitals.now
 else
-   cp "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" "tcvitals.now"
+   cp "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" "tcvitals.now"
 fi
 
 
@@ -478,7 +478,7 @@ if [ $errgrep -ne 0 ] ; then
    echo "NO TCVITAL RECORDS FOUND FOR $CDATE10 - EXIT TROPICAL CYCLONE \
 RELOCATION PROCESSING"
 
-# The existence of ${COM_OBS}/${RUN}.${cycle}.tropcy_relocation_status.$tmmark file will tell the
+# The existence of ${COMOUT_OBS}/${RUN}.${cycle}.tropcy_relocation_status.$tmmark file will tell the
 #  subsequent PREP processing that RELOCATION processing occurred, echo
 #  "NO RECORDS to process" into it to further tell PREP processing that records
 #   were not processed by relocation and the global sigma guess was NOT
@@ -486,14 +486,14 @@ RELOCATION PROCESSING"
 #   found)
 #   Note:  When tropical cyclone relocation does run to completion and the
 #          global sigma guess is modified, the parent script to this will echo
-#          "RECORDS PROCESSED" into ${COM_OBS}/${RUN}.${cycle}.tropcy_relocation_status.$tmmark
+#          "RECORDS PROCESSED" into ${COMOUT_OBS}/${RUN}.${cycle}.tropcy_relocation_status.$tmmark
 #          assuming it doesn't already exist (meaning "NO RECORDS to process"
 #          was NOT echoed into it here)
 # ----------------------------------------------------------------------------
 
-   echo "NO RECORDS to process" > "${COM_OBS}/${RUN}.${cycle}.tropcy_relocation_status.${tmmark}"
-   if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}" ]]; then
-      cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+   echo "NO RECORDS to process" > "${COMOUT_OBS}/${RUN}.${cycle}.tropcy_relocation_status.${tmmark}"
+   if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}" ]]; then
+      cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
    fi
 else
 
@@ -649,31 +649,31 @@ else
    rm -f RELOCATE_GES cmd
 
 
-   cp "rel_inform1" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-   cp "tcvitals" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+   cp "rel_inform1" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+   cp "tcvitals" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
    if [ "$SENDDBN" = "YES" ]; then
        if test "$RUN" = "gdas1"
        then
-           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
        fi
        if test "$RUN" = "gfs"
        then
-           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
        fi
    fi
 
 #  --------------------------------------------------------------------------
 #   Since relocation processing has ended sucessfully (and the center sigma
-#   guess has been modified), remove ${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark (which
+#   guess has been modified), remove ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark (which
 #   had earlier had getges center sigma guess pathname written into it - in
 #   case of error or no input tcvitals records found) - the subsequent PREP
-#   step will correctly update ${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark to point to
+#   step will correctly update ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark to point to
 #   the sgesprep file updated here by the relocation
 #  --------------------------------------------------------------------------
 
-   rm "${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
+   rm "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
 
    echo "TROPICAL CYCLONE RELOCATION PROCESSING SUCCESSFULLY COMPLETED FOR \
 $CDATE10"
