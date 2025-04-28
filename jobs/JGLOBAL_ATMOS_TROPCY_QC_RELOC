@@ -32,7 +32,7 @@ if [[ ! -d "${COMOUT_OBS}" ]]; then
   mkdir -p "${COMOUT_OBS}"
 fi
 
-export CRES=$(echo ${CASE} | cut -c2-)
+export CRES=$(echo ${CASE_HIST} | cut -c2-)
 export LATB=$((CRES*2))
 export LONB=$((CRES*4))
 export BKGFREQ=1                                # for hourly relocation

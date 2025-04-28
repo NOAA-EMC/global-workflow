@@ -253,7 +253,7 @@ else
 fi
 
 # Get dimension information based on CASE
-res=$(echo ${CASE} | cut -c2-)
+res=$(echo ${CASE_HIST} | cut -c2-)
 JCAP_CASE=$((res*2-2))
 LATB_CASE=$((res*2))
 LONB_CASE=$((res*4))

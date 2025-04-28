@@ -5,7 +5,7 @@
 # shellcheck disable=SC2034
 FV3_model_configure(){
 
-local restile=${CASE:1}
+local restile=${CASE_HIST:1}
 
 # Prepare local variables for use in model_configure.IN from UFSWM
 # The ones already defined are left commented as a reminder

@@ -19,7 +19,7 @@ export JEDI_CONFIG_YAML="${PARMgfs}/gdas/analcalc_jedi_config.yaml.j2"
 if [[ ${DOHYBVAR} = "YES" ]]; then
     export CASE_ANL=${CASE_ENS}
 else
-    export CASE_ANL=${CASE}
+    export CASE_ANL=${CASE_HIST}
 fi
 
 export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
