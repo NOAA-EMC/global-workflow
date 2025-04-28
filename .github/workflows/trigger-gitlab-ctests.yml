@@ -34,9 +34,9 @@ jobs:
           # created via Settings > CI/CD > Pipeline triggers in your GitLab project
           curl --verbose --request POST \
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=ci_ctests_trigger" \
+            --form "ref=develop" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
-            --form "variables[GITHUB_REPO_URL]=${{ secrets.GITHUB_REPO_URL }}" \
-            secrets.${{ secrets.GITLAB_TRIGGER_URL }}
+            --form "variables[GITHUB_REPO_URL]=https://github.com/NOAA-EMC/global-workflow" \
+            secrets.${{ secrets.GITLAB_TRIGGER_URL}}
         env:
           GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
