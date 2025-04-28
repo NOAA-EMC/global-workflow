@@ -35,9 +35,8 @@ jobs:
           curl --verbose --request POST \
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             --form "ref=develop" \
-            --form "variables[WEBHOOK_TRIGGER]=ctests" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
-            --form "variables[GITHUB_REPO_URL]=https://github.com/NOAA-EMC/global-workflow" \
-            "https://vlab.noaa.gov/gitlab-licensed/api/v4/projects/185/trigger/pipeline"
+            --form "variables[GITHUB_REPO_URL]=${GITHUB_REPO_URL}" \
+            secrets.${{ secrets.GITLAB_TRIGGER_URL}}
         env:
           GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
