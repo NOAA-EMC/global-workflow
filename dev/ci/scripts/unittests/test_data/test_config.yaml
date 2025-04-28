@@ -1,0 +1,21 @@
+# Test configuration file for parse_yaml.py unit tests
+top_level: simple_value
+nested:
+  key1: value1
+  key2: value2
+  deeper:
+    key3: value3
+numbers:
+  integer: 42
+  float: 3.14
+list_data:
+  - item1
+  - item2
+  - item3
+complex:
+  nested_list:
+    - name: first
+      value: 1
+    - name: second
+      value: 2
+template_value: "{{ HOMEgfs }}/some/path"
