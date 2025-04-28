@@ -1,0 +1,49 @@
+name: Trigger GitLab CTests Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to test (required for workflow_dispatch)'
+        required: true
+        type: string
+
+jobs:
+  trigger-gitlab-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PR number
+        id: pr-number
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "PR_NUM=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> $GITHUB_ENV
+          else
+            echo "PR_NUM=0" >> $GITHUB_ENV
+          fi
+          
+      - name: Trigger GitLab Pipeline
+        run: |
+          curl --request POST \
+            --token "${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
+            --header "Content-Type: application/json" \
+            --header "X-Gitlab-Token: ${{ secrets.GITLAB_WEBHOOK_TOKEN }}" \
+            --data '{
+              "trigger_token": "${{ secrets.GITLAB_TRIGGER_TOKEN }}",
+              "ref": "main", 
+              "variables": {
+                "WEBHOOK_TRIGGER": "ctests",
+                "PR_NUMBER": "${{ env.PR_NUM }}",
+                "GITHUB_REPO_URL": "https://github.com/NOAA-EMC/global-workflow"
+              }
+            }' \
+            "${{ secrets.GITLAB_TRIGGER_URL }}"
+        env:
+          GITLAB_WEBHOOK_TOKEN: ${{ secrets.GITLAB_WEBHOOK_TOKEN }}
+          GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
