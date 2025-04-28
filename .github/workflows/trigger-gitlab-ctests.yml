@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 'PR number to test (required for workflow_dispatch)'
+        description: 'PR number to test (use 0 for develop branch)'
         required: true
         type: string
 
@@ -31,11 +31,10 @@ jobs:
       - name: Trigger GitLab Pipeline
         run: |
           curl --request POST \
-            --token "${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             --header "Content-Type: application/json" \
+            --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             --header "X-Gitlab-Token: ${{ secrets.GITLAB_WEBHOOK_TOKEN }}" \
             --data '{
-              "trigger_token": "${{ secrets.GITLAB_TRIGGER_TOKEN }}",
               "ref": "main", 
               "variables": {
                 "WEBHOOK_TRIGGER": "ctests",
