@@ -13,3 +13,13 @@ arguments:
   idate: 2016070100
   edate: 2016070100
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
+
+# ICs are not currently available for this test.
+skip_ci_on_hosts:
+  - gaeac6
+  - gaeac5
+  - hercules
+  - wcoss2
+  - hera
+  - orion
+  - awsepicglobalworkflow

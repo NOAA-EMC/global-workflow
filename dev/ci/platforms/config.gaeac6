@@ -41,7 +41,7 @@ export GITLAB_RUNNER_NAME="RDHPCS Gaea C6"
 
 # Directory for GitLab builds
 # Used in launch_gitlab_runner.sh for location of builds
-export GITLAB_CI_BUILDS_DIR=/gpfs/f6/drsa-precip3/world-shared/global/CI/GITLAB
+export GITLAB_BUILDS_DIR=/gpfs/f6/drsa-precip3/world-shared/global/CI/GITLAB
 
 # Directory for GitLab runner used by launch_gitlab_runner.sh
 export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"

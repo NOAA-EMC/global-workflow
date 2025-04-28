@@ -1,0 +1,80 @@
+# ==========================================================================
+# Main GitLab CI Configuration for the global-workflow Project
+# ==========================================================================
+#
+# This is the primary CI/CD configuration file that orchestrates the GitLab CI
+# testing framework for the global-workflow project. It defines pipeline stages
+# and includes specialized configuration files for different testing aspects.
+#
+# The pipeline architecture supports:
+#   1. Multiple host environments (hera, gaeac6, etc.)
+#   2. Two primary testing modes:
+#      - PR validation via standard test cases
+#      - CTest-based tests triggered via GitHub API
+#
+# Included files:
+#   - .gitlab-ci-ctests.yml: Handles CMake/CTest-based testing framework
+#   - .gitlab-ci-cases.yml: Defines templates for standard experiment cases
+#   - .gitlab-ci-hosts.yml: Contains host-specific configurations and test matrices
+#                          that can be extended to support additional hosts
+#
+# The host configuration in .gitlab-ci-hosts.yml is designed to be easily 
+# extended with new computing platforms and allows per-host specification 
+# of which test cases to run.
+
+stages:
+  - build
+  - create_experiments
+  - run_tests
+  - finalize
+
+variables:
+  BUILD: '' # Placeholder for control over build directory path
+  # Using GW prefix to avoid confusion with GitLab predefined variables
+  GW_RUN_PATH: ${CI_BUILDS_DIR}/${BUILD}/${CI_COMMIT_SHORT_SHA}
+  # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the exact location
+  # where the repository should be cloned. This works with custom_build_dir-enabled in the runner config.
+  GIT_CLONE_PATH: '${GW_RUN_PATH}/global-workflow'
+  GW_HOMEgfs: ${GIT_CLONE_PATH}
+  RUNTESTS_DIR: ${GW_RUN_PATH}/RUNTESTS
+  GIT_DEPTH: 10
+  RUNNER_SCRIPT_TIMEOUT: 6h
+  RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
+  # Controls pipeline behavior: CTests (true) or PR cases (false)
+  GITHUB_API_TRIGGER: ${GITHUB_API_TRIGGER:-"false"}
+  PR_NUMBER: ${PR_NUMBER:-"0"}
+
+# Include specialized pipeline configuration files
+include:
+  - local: 'dev/ci/gitlab-ci-ctests.yml'  # CTest framework configuration
+  - local: 'dev/ci/gitlab-ci-cases.yml'   # Standard test case templates
+  - local: 'dev/ci/gitlab-ci-hosts.yml'   # Host-specific configurations
+
+.base_config:
+  variables:
+    GIT_STRATEGY: none
+
+# Common build template for all modalities
+.build_template:
+  variables:
+    GIT_STRATEGY: clone
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SSL_NO_VERIFY: "true"  # Address potential certificate verification issues
+  stage: build
+  script:
+    - |
+      set -e  # Fail the job if any command fails
+      echo "Setting up build environment for ${machine}"
+      echo "Using build directory ${GW_HOMEgfs}"
+      git submodule status
+
+      dev/ci/scripts/utils/ci_utils.sh build
+      build_status=$?
+
+      if [ $build_status -ne 0 ]; then
+        echo "Build failed with exit code $build_status"
+        exit $build_status
+      fi
+
+      sorc/link_workflow.sh
+      mkdir -p ${RUNTESTS_DIR}
