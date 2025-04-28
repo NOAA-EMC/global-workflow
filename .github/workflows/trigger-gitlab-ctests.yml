@@ -37,6 +37,6 @@ jobs:
             --form "ref=ci_ctests_trigger" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
             --form "variables[GITHUB_REPO_URL]=${GITHUB_REPO_URL}" \
-            secrets.${{ secrets.GITLAB_TRIGGER_URL}}
+            secrets.${{ secrets.GITLAB_TRIGGER_URL }}
         env:
           GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
