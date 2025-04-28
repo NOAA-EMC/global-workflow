@@ -12,8 +12,9 @@
 # - Host-specific tags and variables for job routing to the correct runners
 # - Conditional rules based on trigger type (PR vs API)
 #
-# The GITHUB_API_TRIGGER variable (set in the main .gitlab-ci.yml) controls
-# whether to run CTests (true) or standard cases (false).
+# The CI_PIPELINE_SOURCE variable (set by GitLab) is when the pipeline is triggered
+# by a GitHub action. This is used to determine whether to run CTests (trigger) or
+# standard cases (!trigger).
 
 # =======================================
 # Standard Cases configurations by host
@@ -32,7 +33,7 @@ setup_experiments-hera:
   needs:
     - build-hera
   rules:
-    - if: $GITHUB_API_TRIGGER != "true"
+    - if: $CI_PIPELINE_SOURCE != "trigger"
 
 run_tests-hera:
   extends: .run_tests_template
@@ -46,7 +47,7 @@ run_tests-hera:
   needs:
     - setup_experiments-hera
   rules:
-    - if: $GITHUB_API_TRIGGER != "true"
+    - if: $CI_PIPELINE_SOURCE != "trigger"
 
 # Host: GAEAC6 - Standard Cases
 setup_experiments-gaeac6:
@@ -61,7 +62,7 @@ setup_experiments-gaeac6:
   needs:
     - build-gaeac6
   rules:
-    - if: $GITHUB_API_TRIGGER != "true"
+    - if: $CI_PIPELINE_SOURCE != "trigger"
 
 run_tests-gaeac6:
   extends: .run_tests_template
@@ -75,7 +76,7 @@ run_tests-gaeac6:
   needs:
     - setup_experiments-gaeac6
   rules:
-    - if: $GITHUB_API_TRIGGER != "true"
+    - if: $CI_PIPELINE_SOURCE != "trigger"
 
 # =======================================
 # CTests configurations by host
@@ -100,7 +101,7 @@ create_ctests-hera:
   needs:
     - build-hera
   rules:
-    - if: $GITHUB_API_TRIGGER == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
 
 create_ctests-gaeac6:
   extends: .create_ctests
@@ -112,7 +113,7 @@ create_ctests-gaeac6:
   needs:
     - build-gaeac6
   rules:
-    - if: $GITHUB_API_TRIGGER == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
 
 # Host: Hera - CTests
 run_ctests-hera:
@@ -122,7 +123,7 @@ run_ctests-hera:
   needs:
     - create_ctests-hera
   rules:
-    - if: $GITHUB_API_TRIGGER == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
 
 # Host: GAEAC6 - CTests
 run_ctests-gaeac6:
@@ -132,7 +133,7 @@ run_ctests-gaeac6:
   needs:
     - create_ctests-gaeac6
   rules:
-    - if: $GITHUB_API_TRIGGER == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
 
 # =======================================
 # Common build configurations by host
