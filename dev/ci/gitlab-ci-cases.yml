@@ -1,0 +1,42 @@
+# ==========================================================================
+# Templates for Standard Test Cases
+# ==========================================================================
+#
+# This file defines templates for setting up and running standard experiment 
+# test cases for the global-workflow project. These cases represent more 
+# comprehensive, end-to-end testing scenarios than the CTesting framework.
+#
+# These templates are used primarily for PR testing when GITHUB_API_TRIGGER=false.
+# The actual test case matrix for each host is defined in .gitlab-ci-hosts.yml.
+#
+# Key templates:
+# - .setup_template: Creates experiment directories based on case YAML files
+# - .run_tests_template: Executes and validates the experiment workflows
+#
+# Test cases are defined as YAML files in the dev/ci/cases/pr directory and
+# are referenced by name in the host configuration file's test matrix.
+
+# Template for experiment setup jobs
+.setup_template:
+  extends: .base_config
+  stage: create_experiments
+  script:
+    - |
+      export RUNTESTS=${RUNTESTS_DIR}
+      ${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh create_experiment ${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml
+      exit $?
+  needs:
+    - build-${machine}
+
+# Template for test execution jobs
+.run_tests_template:
+  extends: .base_config
+  stage: run_tests
+  script:
+    - |
+      echo "Using build directory $GW_HOMEgfs (dated $BUILD_DATE)"
+      pslot=$(${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh get_pslot ${RUNTESTS_DIR} ${caseName})
+      ${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh ${GW_RUN_PATH} ${pslot} global-workflow
+      exit $?
+  needs:
+    - setup_experiments-${machine}

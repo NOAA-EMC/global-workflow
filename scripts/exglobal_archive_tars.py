@@ -27,8 +27,8 @@ def main():
     # Pull out all the configuration keys needed to run the rest of archive steps
     keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
             'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_PREP_OBS_AERO',
-            'PARMgfs', 'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'PSLOT', 'DO_MOS',
-            'DO_JEDISNOWDA', 'DO_ARCHCOM', 'ARCHCOM_TO', 'REALTIME', 'ROTDIR', 'ARCH_WARMICFREQ',
+            'PARMgfs', 'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'PSLOT',
+            'DO_JEDISNOWDA', 'DO_ARCHCOM', 'ARCHCOM_TO', 'ROTDIR', 'ARCH_WARMICFREQ',
             'ARCH_FCSTICFREQ', 'ARCH_CYC', 'assim_freq', 'ARCDIR', 'SDATE',
             'FHMIN_GFS', 'FHMAX_GFS', 'FHOUT_GFS', 'ARCH_GAUSSIAN', 'MODE',
             'FHOUT_OCN', 'FHOUT_ICE', 'FHOUT_OCN_GFS', 'FHOUT_ICE_GFS', 'DO_BUFRSND', 'DOHYBVAR',

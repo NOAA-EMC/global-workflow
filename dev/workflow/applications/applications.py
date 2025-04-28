@@ -95,7 +95,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_metp'] = run_base.get('DO_METP', False)
             run_options[run]['do_upp'] = not run_base.get('WRITE_DOPOST', True)
             run_options[run]['do_goes'] = run_base.get('DO_GOES', False)
-            run_options[run]['do_mos'] = run_base.get('DO_MOS', False)
             run_options[run]['do_extractvars'] = run_base.get('DO_EXTRACTVARS', False)
             run_options[run]['do_archcom'] = run_base.get('DO_ARCHCOM', False)
 
