@@ -37,6 +37,6 @@ jobs:
             --form "ref=develop" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
             --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
-            secrets.${{ vars.GITLAB_TRIGGER_URL }}
+            ${{ vars.GITLAB_TRIGGER_URL }}
         env:
           GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
