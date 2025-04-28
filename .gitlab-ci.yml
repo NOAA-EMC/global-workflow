@@ -69,7 +69,7 @@ include:
 
       if [[ ${CI_PIPELINE_SOURCE} == "trigger" && ${PR_NUMBER} != 0 ]]; then
         echo "Triggering pipeline via GitHub API running CTests on PR_NUMBER=${PR_NUMBER}"
-        git remote add github ${GITHUB_REPO_URL}
+        git remote add github ${GW_REPO_URL}
         git featch github
         gh pr checkout ${PR_NUMBER}
       fi
