@@ -31,13 +31,13 @@ jobs:
       - name: Trigger GitLab Pipeline
         run: |
           curl --request POST \
-            --header "Content-Type: application/json" \
+            -- "Content-Type: application/json" \
             --header "PRIVATE-TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             --header "X-Gitlab-Token: ${{ secrets.GITLAB_WEBHOOK_TOKEN }}" \
+            --form token=${{ secrets.GITLAB_TRIGGER_TOKEN }} \
+            --form ref=ci_gitlab_pipelines_dev \
             --data '{
-              "ref": "main", 
               "variables": {
-                "WEBHOOK_TRIGGER": "ctests",
                 "PR_NUMBER": "${{ env.PR_NUM }}",
                 "GITHUB_REPO_URL": "https://github.com/NOAA-EMC/global-workflow"
               }
