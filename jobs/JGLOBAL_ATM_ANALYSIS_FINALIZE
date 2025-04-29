@@ -1,3 +1,4 @@
+
 #! /usr/bin/env bash
 
 export WIPE_DATA="NO"
@@ -19,14 +20,10 @@ GDUMP="gdas"
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
-    COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL \
-    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
-
-mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
+mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 
 
 ###############################################################
