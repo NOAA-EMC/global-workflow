@@ -20,13 +20,32 @@ atmosphere_warmRT:
         {% for mem in mem_range %}
         {% set imem = mem - offset %}
         {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/'%}
-        {% set mem_path = retro_path ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.210000.' %}
-        {% set destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
+        {% set restart_mem_path = retro_path ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.210000.' %}
+        {% set increment_mem_path = retro_path ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/atmos/enkfgfs.t' ~ current_cycle_HH ~ 'z.' %}
+        {% set restart_destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
+        {% set increment_destination_path = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
+
+        # Include increment files
+        {% for ftype in ["ratmi003.nc", "ratmi009.nc", "ratminc.nc"] %}
+        {% set file = increment_mem_path ~ ftype %}
+        - ["{{ file }}", "{{ increment_destination_path }}"]
+        {% endfor %}
+
         {% if path_exists(retro_path) %}
-        {% set ftype = "fv_core.res" %}
-        {% set file = mem_path ~ ftype %}
-        - ["{{ file }}", "{{ destination_path }}"]
+        {% set ntiles = 6 %}
+        {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "phy_data", "sfc_data", "coupler.res"] %}
+        # Include base file for restart files
+        {% set file = restart_mem_path ~ ftype %}
+        - ["{{ file }}", "{{ restart_destination_path }}"]
+
+        # Include tile files (e.g., .tile1 to .tile7)
+        {% for tile in range(1, ntiles + 1) %}
+        {% set file = restart_mem_path ~ ftype ~ '.tile' ~ tile %}
+        - ["{{ file }}", "{{ restart_destination_path }}"]
+        {% endfor %}
+        {% endfor %}
         {% endif %}
+
         {% endfor %}
         {% endfor %}
         {% endif %}
