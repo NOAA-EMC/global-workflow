@@ -51,19 +51,31 @@ jobs:
           # Set PR number
           echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> $GITHUB_ENV
           
+          # Get all input parameters
+          INPUTS=$(jq -r 'to_entries[] | select(.key | startswith("run_on_")) | "\(.key)=\(.value)"' <<< '${{ toJson(github.event.inputs) }}')
+          
           # Build RUN_ON_MACHINES based on checkboxes
           MACHINES=""
-          if [[ "${{ github.event.inputs.run_on_hera }}" == "true" ]]; then
-            MACHINES="hera"
-          fi
-          
-          if [[ "${{ github.event.inputs.run_on_gaeac6 }}" == "true" ]]; then
-            if [[ -n "$MACHINES" ]]; then
-              MACHINES="$MACHINES gaeac6"
-            else
-              MACHINES="gaeac6"
+          while read -r input; do
+            # Skip empty lines
+            [[ -z "$input" ]] && continue
+            
+            # Extract machine name and value
+            KEY=$(echo "$input" | cut -d= -f1)
+            VALUE=$(echo "$input" | cut -d= -f2)
+            
+            # Extract machine name from input name (remove "run_on_" prefix)
+            MACHINE=${KEY#run_on_}
+            
+            # Add machine to list if checkbox is true
+            if [[ "$VALUE" == "true" ]]; then
+              if [[ -n "$MACHINES" ]]; then
+                MACHINES="$MACHINES $MACHINE"
+              else
+                MACHINES="$MACHINE"
+              fi
             fi
-          fi
+          done <<< "$INPUTS"
           
           # If no machines selected, default to "all"
           if [[ -z "$MACHINES" ]]; then
