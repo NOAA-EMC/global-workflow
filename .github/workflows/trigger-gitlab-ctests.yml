@@ -8,6 +8,13 @@ on:
         description: 'PR number to test (use 0 for develop branch)'
         required: true
         type: string
+      machine:
+        description: 'HPC machine to run tests on'
+        required: true
+        type: choice
+        options:
+          - hera
+          - gaeac6
 
 jobs:
   check-permissions:
@@ -50,6 +57,7 @@ jobs:
             --form "ref=ci_ctests_trigger" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
             --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
+            --form "variables[RUN_ON_MACHINES]=${{ github.event.inputs.machine }}" \
             ${{ vars.GITLAB_TRIGGER_URL }}
         env:
           GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
