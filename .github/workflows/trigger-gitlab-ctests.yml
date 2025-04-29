@@ -9,12 +9,12 @@ on:
         required: true
         type: string
       run_on_hera:
-        description: 'Run tests on Hera'
+        description: 'Hera'
         required: true
         type: boolean
         default: true
       run_on_gaeac6:
-        description: 'Run tests on GAEA C6'
+        description: 'GAEA C6'
         required: true
         type: boolean
         default: false
