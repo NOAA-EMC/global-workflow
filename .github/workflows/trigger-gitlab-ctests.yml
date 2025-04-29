@@ -8,13 +8,16 @@ on:
         description: 'PR number to test (use 0 for develop branch)'
         required: true
         type: string
-      machine:
-        description: 'HPC machine to run tests on'
+      run_on_hera:
+        description: 'Run tests on Hera'
         required: true
-        type: choice
-        options:
-          - hera
-          - gaeac6
+        type: boolean
+        default: true
+      run_on_gaeac6:
+        description: 'Run tests on GAEA C6'
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   check-permissions:
@@ -42,11 +45,34 @@ jobs:
     runs-on: ubuntu-latest
     environment: gitlab-trigger-environment
     steps:
-      - name: Get PR number
-        id: pr-number
+      - name: Set up parameters
+        id: setup
         run: |
-          # We're only using workflow_dispatch now
+          # Set PR number
           echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> $GITHUB_ENV
+          
+          # Build RUN_ON_MACHINES based on checkboxes
+          MACHINES=""
+          if [[ "${{ github.event.inputs.run_on_hera }}" == "true" ]]; then
+            MACHINES="hera"
+          fi
+          
+          if [[ "${{ github.event.inputs.run_on_gaeac6 }}" == "true" ]]; then
+            if [[ -n "$MACHINES" ]]; then
+              MACHINES="$MACHINES gaeac6"
+            else
+              MACHINES="gaeac6"
+            fi
+          fi
+          
+          # If no machines selected, default to "all"
+          if [[ -z "$MACHINES" ]]; then
+            MACHINES="all"
+            echo "No specific machines selected, defaulting to 'all'"
+          fi
+          
+          echo "Selected machines: $MACHINES"
+          echo "MACHINES=$MACHINES" >> $GITHUB_ENV
           
       - name: Trigger GitLab Pipeline
         run: |
@@ -57,7 +83,7 @@ jobs:
             --form "ref=ci_ctests_trigger" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
             --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
-            --form "variables[RUN_ON_MACHINES]=${{ github.event.inputs.machine }}" \
+            --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
             ${{ vars.GITLAB_TRIGGER_URL }}
         env:
           GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
