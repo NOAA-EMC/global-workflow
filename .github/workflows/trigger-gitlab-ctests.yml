@@ -1,11 +1,7 @@
 name: Trigger GitLab CTests Pipeline
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  # Allow manual triggering
+  # Only allow manual triggering by admins/maintainers
   workflow_dispatch:
     inputs:
       pr_number:
@@ -14,19 +10,36 @@ on:
         type: string
 
 jobs:
-  trigger-gitlab-pipeline:
+  check-permissions:
     runs-on: ubuntu-latest
+    steps:
+      - name: Check if user has permissions
+        id: check
+        run: |
+          # Get authorized users from GitHub variables
+          AUTHORIZED_USERS="${{ vars.AUTHORIZED_GITLAB_TRIGGER_USERS }}"
+          
+          # Check if current user is in the authorized list
+          if [[ "$AUTHORIZED_USERS" == *"${{ github.actor }}"* ]]; then
+            echo "User ${{ github.actor }} is authorized to run this workflow"
+            echo "authorized=true" >> $GITHUB_OUTPUT
+          else
+            echo "User ${{ github.actor }} is not authorized to run this workflow"
+            echo "authorized=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+    # For teams, you would need to use the GitHub GraphQL API with a token that has read:org scope
+
+  trigger-gitlab-pipeline:
+    needs: check-permissions
+    runs-on: ubuntu-latest
+    environment: gitlab-trigger-environment
     steps:
       - name: Get PR number
         id: pr-number
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "PR_NUM=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> $GITHUB_ENV
-          else
-            echo "PR_NUM=0" >> $GITHUB_ENV
-          fi
+          # We're only using workflow_dispatch now
+          echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> $GITHUB_ENV
           
       - name: Trigger GitLab Pipeline
         run: |
