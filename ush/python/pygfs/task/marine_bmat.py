@@ -64,7 +64,6 @@ class MarineBMat(Task):
                 'MARINE_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX_OCEAN': f"{self.task_config.RUN}.ocean.t{self.task_config.cyc:02d}z.",
                 'APREFIX_ICE': f"{self.task_config.RUN}.ice.t{self.task_config.cyc:02d}z.",
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES))
@@ -217,7 +216,6 @@ class MarineBMat(Task):
         None
         """
 
-        APREFIX = self.task_config.APREFIX
         APREFIX_OCEAN = self.task_config.APREFIX_OCEAN
         APREFIX_ICE = self.task_config.APREFIX_ICE
 
@@ -298,7 +296,7 @@ class MarineBMat(Task):
             # Copy the ssh diagnostics
             for string in ['ssh_steric_stddev', 'ssh_unbal_stddev', 'ssh_total_stddev', 'steric_explained_variance']:
                 weight_list.append([os.path.join(self.task_config.DATA, 'staticb', f'ocn.{string}.incr.{window_begin_iso}.nc'),
-                                    os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f'{APREFIX}ocean.{string}.nc')])
+                                    os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX, f'{APREFIX_OCEAN}{string}.nc')])
 
             FileHandler({'copy': weight_list}).sync()
 
@@ -307,6 +305,6 @@ class MarineBMat(Task):
         yaml_list = []
         for yaml_file in yamls:
             dest = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
-                                f"{APREFIX}{os.path.basename(yaml_file)}")
+                                f"{APREFIX_OCEAN}{os.path.basename(yaml_file)}")
             yaml_list.append([yaml_file, dest])
         FileHandler({'copy': yaml_list}).sync()
