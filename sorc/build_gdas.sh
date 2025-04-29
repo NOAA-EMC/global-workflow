@@ -23,8 +23,8 @@ shift $((OPTIND-1))
 # double quoting opts will not work since it is a string of options
 # shellcheck disable=SC2086
 BUILD_JOBS="${BUILD_JOBS:-8}" \
-WORKFLOW_BUILD="ON" \
-WORKFLOW_TESTS="OFF" \
+WORKFLOW_BUILD="${WORKFLOW_BUILD:-"ON"}" \
+WORKFLOW_TESTS="${WORKFLOW_TESTS:-"OFF"}" \
 ./gdas.cd/build.sh ${_opts} -f
 
 exit

@@ -1,4 +1,13 @@
-#!/bin/env bash
+#!/usr/bin/env bash
+
+# Determine HOMEgfs_ and source machine detection early
+if [[ -z "${HOMEgfs_}" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    HOMEgfs_="$("${SCRIPT_DIR}/find_homegfs.py")"
+fi
+source "${HOMEgfs_}/ush/detect_machine.sh"
+
+# --- Existing functions ---
 
 function determine_scheduler() {
   if command -v sbatch &> /dev/null; then
@@ -61,7 +70,7 @@ function get_pr_case_list () {
     # loop over every yaml file in the PR's ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    for yaml_config in "${HOMEgfs}/dev/ci/cases/pr/"*.yaml; do
+    for yaml_config in "${HOMEgfs_}/dev/ci/cases/pr/"*.yaml; do
       case=$(basename "${yaml_config}" .yaml) || true
       echo "${case}"
     done
@@ -114,29 +123,29 @@ function cancel_all_batch_jobs () {
 function create_experiment () {
 
   local yaml_config="${1}"
-  cd "${HOMEgfs}" || exit 1
+  cd "${HOMEgfs_}" || exit 1
   pr_sha=$(git rev-parse --short HEAD)
   case=$(basename "${yaml_config}" .yaml) || true
   export pslot=${case}_${pr_sha}
 
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-      source "${HOMEgfs}/dev/ci/platforms/config.${PW_CSP}"
+      source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
   else
-      source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
+      source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
   fi
 
-  source "${HOMEgfs}/dev/ush/gw_setup.sh"
+  source "${HOMEgfs_}/dev/ush/gw_setup.sh"
 
   # Remove RUNDIRS dir incase this is a retry (STMP now in host file)
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-      STMP=$("${HOMEgfs}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs}/dev/workflow/hosts/${PW_CSP}pw.yaml" -k STMP -s)
+      STMP=$("${HOMEgfs_}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs_}/dev/workflow/hosts/${PW_CSP}pw.yaml" -k STMP -s)
   else
-      STMP=$("${HOMEgfs}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs}/dev/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
+      STMP=$("${HOMEgfs_}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs_}/dev/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
   fi
   echo "Removing ${STMP}/RUNDIRS/${pslot} directory incase this is a retry"
   rm -Rf "${STMP}/RUNDIRS/${pslot}"
 
-  "${HOMEgfs}/${system}/dev/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
+  "${HOMEgfs_}/${system}/dev/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
 
 }
 
@@ -160,8 +169,8 @@ function publish_logs() {
 
     if [[ -n "${full_paths}" ]]; then
         # shellcheck disable=SC2027,SC2086
-        ${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo ${PR_header} > /dev/null
-        URL="$("${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
+        ${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo ${PR_header} > /dev/null
+        URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
     fi
     echo "${URL}"
 }
@@ -178,7 +187,7 @@ function cleanup_experiment() {
     pslot=$(basename "${EXPDIR}")
 
     # Use the Python utility to get the required variables
-    read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEgfs}/dev/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
+    read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEgfs_}/dev/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
 
     rm -Rf "${ARCDIR:?}"
     rm -Rf "${ATARDIR:?}"
@@ -187,14 +196,33 @@ function cleanup_experiment() {
     rm -Rf "${STMP}/RUNDIRS/${pslot:?}"
 }
 
-function build_compute () {
+function build () {
 
-  source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
+  source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
   # TODO: when it's safe to build on C6 compute nodes again, do so
   if [[ "${MACHINE_ID}" == "gaeac6" ]]; then
-    "${HOMEgfs}/sorc/build_all.sh" -v -k all
+    "${HOMEgfs_}/sorc/build_all.sh" -v -k all
   else
-    "${HOMEgfs}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
+    "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
   fi
 
 }
+
+# --- Dispatch logic ---
+
+# Check if the script is being executed directly (not sourced)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    # Script is being executed directly
+    utility_function="${1}"
+    shift # Remove the function name from the arguments list
+
+    # Check if the first argument corresponds to a defined function
+    type_t="$(type -t "${utility_function}")" || true
+    if [[  "${type_t}" == "function" ]]; then
+        # Call the function with the remaining arguments
+        "${utility_function}" "$@"
+    else
+        echo "ERROR: Utility function ${utility_function} not found or not a function in ${BASH_SOURCE[0]}" >&2
+        exit 1
+    fi
+fi
