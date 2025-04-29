@@ -13,8 +13,9 @@ set -e
 # Usage: ./launch_gitlab_runner.sh [register|run|unregister] [token]
 #########################################################################
 
-# Set the HOMEGFS_ variable to the root directory of the global workflow
-HOMEGFS_="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../../.." >/dev/null 2>&1 && pwd )"
+# Set the HOMEgfs_ variable to the root directory of the global workflow
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HOMEgfs_="$("${SCRIPT_DIR}/../find_homegfs.py")"
 # Get the hostname of the current machine
 host="$(hostname)"
 
@@ -23,7 +24,7 @@ host="$(hostname)"
 #########################################################################
 
 # Source the detect_machine.sh script to determine the MACHINE_ID
-source "${HOMEGFS_}/ush/detect_machine.sh"
+source "${HOMEgfs_}/ush/detect_machine.sh"
 # Check the MACHINE_ID and set up the environment accordingly
 case "${MACHINE_ID}" in
   hera | orion | hercules | wcoss2 | gaeac5 | gaeac6 )
@@ -38,7 +39,7 @@ esac
 # Source the platform-specific configuration file
 # This file contains platform-specific variables such as GITLAB_URL, GITLAB_CI_BUILDS_DIR,
 # and GITLAB_RUNNER_DIR which are required for runner registration and execution
-source "${HOMEGFS_}/dev/ci/platforms/config.${MACHINE_ID}"
+source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
 
 # Change to the GitLab runner directory defined in the platform config
 cd "${GITLAB_RUNNER_DIR}" || exit 1
@@ -91,7 +92,7 @@ if [[ "${1}" == "register" ]]; then
   # --builds-dir: Directory where builds will be stored (from config.MACHINE_ID)
   # --custom_build_dir-enabled: Enable custom build directories
   # --request-concurrency: Number of concurrent requests that can be handled
-  ./gitlab-runner register -n -t "${GITLAB_RUNNER_TOKEN}" --url "${GITLAB_URL}" --executor shell --shell bash --builds-dir "${GITLAB_CI_BUILDS_DIR}" --custom_build_dir-enabled true --request-concurrency 24
+  ./gitlab-runner register -n -t "${GITLAB_RUNNER_TOKEN}" --url "${GITLAB_URL}" --executor shell --shell bash --builds-dir "${GITLAB_BUILDS_DIR}" --custom_build_dir-enabled true --request-concurrency 24
 
   # Set the concurrent job limit in the GitLab runner config file
   sed -i 's/concurrent.*/concurrent = 24/' ~/.gitlab-runner/config.toml
@@ -104,7 +105,7 @@ fi
 
 if [[ "${1}" == "run" ]]; then
   # --working-directory: Directory where the runner is launched and keeps its working files (from config.$MACHINE_ID)
-  # do not confuse this with GitLabs CI_BUILDS_DIR which is designate by GFS_CI_BUILDS_DIR and is where the builds are stored
+  # do not confuse this with GitLab's CI_BUILDS_DIR which is designated by GW_BUILDS_DIR and is where the builds are stored
   COMMAND="nohup ./gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}"
   echo -e "Running gitlab-runner with the command:\n${COMMAND}\nsee log ${GITLAB_LOG}"
   echo -e "Running gitlab-runner with the command:${COMMAND}" >& "${GITLAB_LOG}"
