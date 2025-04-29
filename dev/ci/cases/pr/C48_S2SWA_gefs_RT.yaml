@@ -14,8 +14,8 @@ arguments:
   start: cold
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  idate: 2024111712
-  edate: 2024111712
+  idate: 2024111618
+  edate: 2024111618
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
 
 skip_ci_on_hosts:
