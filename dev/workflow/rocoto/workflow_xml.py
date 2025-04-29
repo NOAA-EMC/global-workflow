@@ -233,7 +233,7 @@ class RocotoXML(ABC):
 
         expdir = globus_conf["EXPDIR"]
         pslot = globus_conf["PSLOT"]
-        server = globus_conf.get.get("SERVER_NAME", None)
+        server = globus_conf.get("SERVER_NAME", None)
         server_home = globus_conf.get("SERVER_HOME", None)
         server_username = globus_conf.get("SERVER_USERNAME", None)
 
