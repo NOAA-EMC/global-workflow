@@ -18,7 +18,7 @@ base:
   DO_VERFRAD: "YES"
   EUPD_CYC: "both"
   INTERVAL_GFS: 6
-  SDATE_GFS: 2024111506
+  SDATE_GFS: 2024111512
   FHMAX_GFS: 240
 
 prepoceanobs:
