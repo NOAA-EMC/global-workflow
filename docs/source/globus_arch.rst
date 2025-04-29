@@ -34,4 +34,14 @@ If the above snippet is successful, then you are good to go.  It's possible that
 Common Globus Issues
 ^^^^^^^^^^^^^^^^^^^^
 
-Note that the globus connection stays active for 7 days.  If your experiment fails in a globus* job, then this may be the culprit.  Try running the following from either an MSU or Mercury terminal: ``globus session update``.  You will be prompted to enter a link into a browser and respond with the corresponding confirmation code.  Once this is complete, try rebooting the failing job(s).
+Note that the globus connection stays active for 7 days.  If your experiment fails in a globus* job, then this may be the culprit.  Try running the following from either an MSU or Mercury terminal: ``globus session update --all``.  You will be prompted to enter a link into a browser and respond with the corresponding confirmation code.  Once this is complete, try rebooting the failing job(s).
+
+For some users, the new system, Mercury, occassionally fails to add all necessary permissions necessary to run globus transfers.  If you receive an error about needing to add ``data_access`` in the logs, then login to Mercury and execute
+
+.. code-block::
+    module load globus-cli
+    globus session update --all
+    # Get the host UUID
+    globus endpoint search hercules  # Replace Hercules with the system you are running the global workflow on
+    # Below, replace <hercules UUID> with the UUID found in the above command
+    globus session consent 'urn:globus:auth:scope:transfer.api.globus.org:all[*https://auth.globus.org/scopes/<hercules UUID>/data_access]'
