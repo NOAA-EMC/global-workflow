@@ -474,12 +474,6 @@ local MOM6_RESTART_SETTING=${MOM6_RESTART_SETTING:-'n'}
 local MOM6_RESTART_DIR=MOM6_RESTART/
 
 # Land IAU defaults
-local DO_LANDIAU=${do_landiau:".false."}
-if [[ "${DO_LANDIAU}" = ".true." ]]; then
-  local HIDE_LIAU=" "
-else
-  local HIDE_LIAU="!"
-fi
 
 local DO_LAND_IAU=.false.
 local LAND_IAU_FHRS=3,6,9
@@ -491,6 +485,14 @@ local LAND_IAU_UPD_STC=.true.
 local LAND_IAU_UPD_SLC=.true.
 local LAND_IAU_DP_STCSMC_ADJ=.true.
 local LAND_IAU_MIN_T_INC=0.0001
+
+# Check will need to be modified in the future
+# once GW is ready to add in land IAU
+if [[ "${DO_LAND_IAU}" = ".true." ]]; then
+  local HIDE_LIAU=" "
+else
+  local HIDE_LIAU="!"
+fi
 
 local global_template="${HOMEgfs}/parm/ufs/fv3/global_control.nml.IN"
 atparse < "${global_template}" >> "input.nml"
