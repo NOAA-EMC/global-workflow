@@ -668,6 +668,7 @@ case ${step} in
         "C1152" | "C768")
           ntasks=780
           threads_per_task=5
+	  walltime="01:40:00"
           ;;
         "C384" | "C192")
           ntasks=160
@@ -1058,7 +1059,7 @@ case ${step} in
     ;;
 
   "fit2obs")
-    walltime="01:20:00"
+    walltime="00:20:00"
     ntasks=3
     threads_per_task=1
     tasks_per_node=1
@@ -1068,7 +1069,7 @@ case ${step} in
 	;;
       "C1152")
         memory="400GB"
-	walltime="00:40:00"
+	walltime="01:20:00"
 	;;
       *)
         memory="20GB"
