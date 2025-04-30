@@ -19,7 +19,7 @@ pslot="${TEST_NAME}" \
 RUNTESTS="${RUNTESTS}" \
 ICSDIR_ROOT="${ICSDIR_ROOT}" \
 HPC_ACCOUNT="${HPC_ACCOUNT}" \
-"${HOMEgfs}/workflow/create_experiment.py" --yaml "${YAML_FILE}" --overwrite
+"${HOMEgfs}/dev/workflow/create_experiment.py" --yaml "${YAML_FILE}" --overwrite
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     set +x
