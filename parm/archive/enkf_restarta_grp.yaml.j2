@@ -8,6 +8,8 @@ enkf_restarta_grp:
         {% set COMIN_ATMOS_ANALYSIS_MEM = COMIN_ATMOS_ANALYSIS_MEM_list[imem] %}
         {% set COMIN_ATMOS_HISTORY_MEM = COMIN_ATMOS_HISTORY_MEM_list[imem] %}
         {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
+        {% set COMIN_OCEAN_RESTART_MEM = COMIN_OCEAN_RESTART_MEM_list[imem] %}
+        {% set COMIN_ICE_RESTART_MEM = COMIN_ICE_RESTART_MEM_list[imem] %}
 
         # Store bias data
         {% if not lobsdiag_forenkf %}
@@ -54,6 +56,13 @@ enkf_restarta_grp:
         # Conventional data
         {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}cnvstat"
+        {% endif %}
+
+        {% if DOHYBVAR_OCN %}
+        {% set rst_delta = "+3H" | to_timedelta %}
+        {% set rst_time = current_cycle | add_to_datetime(rst_delta) %}
+        - "{{ COMIN_OCEAN_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.MOM.res.nc"
+        - "{{ COMIN_ICE_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.cice_model.res.nc"
         {% endif %}
 
         {% endfor %}  # first_group_mem to last_group_mem
