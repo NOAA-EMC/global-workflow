@@ -1,0 +1,53 @@
+# ==========================================================================
+# Templates and Configuration for CTest-Based Testing
+# ==========================================================================
+#
+# This file defines jobs and templates for running CMake/CTest-based fuctional
+# tests in the global-workflow project.  The CTests are designed to
+# test specific Rocoto Jobs singluarly with predefined input data.
+#
+# CTests are primarily triggered via GitHub API for quick validation of PRs,
+# whereas the full experiment cases are used for more extensive testing.
+#
+# Key components:
+# - .create_ctests: Template for setting up the CMake/CTest environment
+# - .run_ctests_template: Template for executing specific CTest labels
+#
+# CTests are defined in the dev/ctests directory and are categorized by labels,
+# which are referenced in the hosts file to determine which tests to run on
+# which platforms.
+
+# =======================================
+# Templates for CTests
+# =======================================
+
+# Setup job for ctests using CMake
+.create_ctests:
+  extends: .base_config
+  stage: create_experiments
+  script: |
+    set -e  # Fail the job if any command fails
+    echo "Setting up for ctests workflow"
+    source ${GW_HOMEgfs}/dev/ci/platforms/config.${machine}
+    cd ${GW_HOMEgfs}/dev/ctests
+    mkdir -p build
+    cd build
+    cmake -S ${GW_HOMEgfs}
+    ctest -N
+    num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
+    [ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }
+    echo "CTests have been created and configured successfully"
+  needs:
+    - build-${machine}
+
+# Main template for CTest execution jobs
+.run_ctests_template:
+  extends: .base_config
+  stage: run_tests
+  script: |
+    set -e  # Fail the job if any command fails
+    echo "Running ${CTEST} tests in ${GW_HOMEgfs}/dev/ctests"
+    cd ${GW_HOMEgfs}/dev/ctests/build
+    ctest -L ${CTEST} --output-on-failure
+  needs:
+    - create_ctests-${machine}
