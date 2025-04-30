@@ -101,15 +101,17 @@
 ################################################################################
 
 CASE=${CASE:-C768}
-res=$(echo $CASE | cut -c2-)
-LONB_CASE=$((res*4))
-LATB_CASE=$((res*2))
+CASE_HIST=${CASE_HIST:-C768}
+resh=$(echo $CASE_HIST | cut -c2-)
+LONB_CASE=$((resh*4))
+LATB_CASE=$((resh*2))
 LONB_SFC=${LONB_SFC:-$LONB_CASE}
 LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
 LEVS=${LEVS:-64}
 LEVSP1=$(($LEVS+1))
-FIXWGTS=${FIXWGTS:-${FIXorog}/${CASE}/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
+FIXWGTS=/lfs/h2/emc/da/noscrub/catherine.thomas/fix/diffres/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc
+#FIXWGTS=${FIXWGTS:-${FIXorog}/${CASE}/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
 DATA=${DATA:-$(pwd)}
 
 #  Filenames.
