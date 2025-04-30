@@ -16,5 +16,8 @@ arguments:
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2024111506
   edate: 2024111600
+  #gaea
   icsdir: /gpfs/f6/drsa-precip3/world-shared/role.glopara/data/ICSDIR/retro_ICs 
-  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw_msu.yaml
+  #msu
+  #icsdir: /work2/noaa/global/role-global/data/ICSDIR/retro_ICs
+  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw.yaml
