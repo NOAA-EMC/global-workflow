@@ -28,7 +28,7 @@ lack_of_job_count=0
 LACK_OF_JOB_LIMIT=5
 
 while true; do
-    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1) || true
+    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1 | tr -cd '[:alpha:]' | xargs) || true
     if [[ -n "${job_status}" ]]; then
         echo "Job ${job_id} found in sacct."
         break
@@ -46,8 +46,7 @@ done
 timeout=0
 TIMEOUT=60
 while true; do
-    # Trim trailing spaces from job_status
-    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1 | xargs) || true
+    job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1 | tr -cd '[:alpha:]' | xargs) || true
     if [[ "${job_status}" == "COMPLETED" ]]; then
         echo "Job ${job_id} completed successfully."
         break
