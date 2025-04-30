@@ -4,7 +4,7 @@ var:
   mpi_cmd: '{{ APRUN_MARINEANLVAR }}'
   jedi_args: ['soca', 'variational']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/marine-jcb-base.yaml'
-  jcb_algo: 3dfgat
+  jcb_algo_yaml: '{{ JCB_ALGO_YAML_VAR }}'
 socaincr2mom6:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/gdas_incr_handler.x'
