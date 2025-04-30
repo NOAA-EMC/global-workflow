@@ -2,8 +2,8 @@
 {% if DO_JEDIOCNVAR == True and RUN == 'gdas' %}
     {% set START_ICE_FROM_ANA = True %}
 {% endif %}
-{% if DO_STARTMEM_FROM_JEDIICE == False and RUN == 'enkfgdas' %}
-    {% set START_ICE_FROM_ANA = False %}
+{% if DO_STARTMEM_FROM_JEDIICE == True and RUN == 'enkfgdas' %}
+    {% set START_ICE_FROM_ANA = True %}
 {% endif %}
 ice:
     {% if START_ICE_FROM_ANA == True %}
