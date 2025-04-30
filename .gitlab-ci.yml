@@ -41,10 +41,6 @@ variables:
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
   # Controls pipeline behavior: CTests (true) or PR cases (false)
-<<<<<<< HEAD
-=======
-  GITHUB_API_TRIGGER: ${GITHUB_API_TRIGGER:-"false"}
->>>>>>> origin/develop
   PR_NUMBER: ${PR_NUMBER:-"0"}
 
 # Include specialized pipeline configuration files
