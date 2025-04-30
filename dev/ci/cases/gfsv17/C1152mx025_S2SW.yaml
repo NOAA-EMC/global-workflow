@@ -3,6 +3,7 @@ experiment:
   mode: cycled
 
 arguments:
+  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: S2SW
   resdetatmos: 1152
@@ -17,4 +18,3 @@ arguments:
   edate: 2023061600
   icsdir: /lfs/h2/emc/da/noscrub/catherine.thomas/ICS/C1152C384/2023041506
   yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sw.yaml
-  account: {{ 'HPC_ACCOUNT' | getenv }}

@@ -41,8 +41,6 @@ fi
 
 local WRITE_ENDOFRUN_RESTART=.false.
 
-local MAPUV3D="true"
-
 if [[ "${cplflx}" = ".true." ]]; then
 
   local use_coldstart=${use_coldstart:-".false."}
