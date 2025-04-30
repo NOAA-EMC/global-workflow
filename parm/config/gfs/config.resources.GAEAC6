@@ -27,15 +27,16 @@ case ${step} in
       "C768")
         export ntasks=80
         export threads_per_task=20
+	export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
         ;;
       "C1152")
-        export ntasks=80
-        export threads_per_task=20
+        export ntasks=480
+        export threads_per_task=6
+	export tasks_per_node=8
         ;;	
       *)
         ;;
     esac
-  export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
   ;;
 
   "anal")
@@ -73,7 +74,8 @@ case ${step} in
   "ocnanalecen")
     case ${OCNRES} in
       "025")
-        tasks_per_node=$(( max_tasks_per_node / 8 )) 
+	ntasks=288
+        tasks_per_node=12
         ;;
       *)
 	;;
