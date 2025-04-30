@@ -3,10 +3,11 @@ import pytest
 from shutil import rmtree
 
 from wxflow import Executable, Configuration, ProcessError
+from find_homegfs import find_homegfs
 
-_here = os.path.dirname(__file__)
-HOMEgfs = os.path.abspath(os.path.join(os.path.abspath(_here), '../../../..'))
-RUNDIR = os.path.join(_here, 'testdata/RUNDIR')
+HOMEgfs = find_homegfs()
+current_dir = os.path.dirname(os.path.abspath(__file__))
+RUNDIR = os.path.join(current_dir, 'testdata/RUNDIR')
 pslot = "C48_ATM"
 account = "fv3-cpu"
 foobar = "foobar"
