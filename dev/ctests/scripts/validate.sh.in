@@ -5,7 +5,7 @@ TEST_NAME=${1:?"Name of the test is required"}
 TEST_DATE=${2:?"idate of the test is required"}
 
 # CMake to fill these variables
-STAGED_TESTS_DIR="@STAGED_TESTS_DIR@"
+CTESTS_STAGED_TESTS_DIR="@CTESTS_STAGED_TESTS_DIR@"
 RUNTESTS="@RUNTESTS@"
 HOMEgfs="@PROJECT_SOURCE_DIR@"
 
@@ -25,7 +25,7 @@ echo "validating '${TEST_NAME}' with yaml file '${YAML_FILE}'"
 
 TEST_NAME="${TEST_NAME}" \
 RUNTESTS="${RUNTESTS}" \
-STAGED_TESTS_DIR="${STAGED_TESTS_DIR}" \
+CTESTS_STAGED_TESTS_DIR="${CTESTS_STAGED_TESTS_DIR}" \
 "${HOMEgfs}/dev/ctests/scripts/validate.py" --yaml "${YAML_FILE}"  --test_date "${TEST_DATE}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
