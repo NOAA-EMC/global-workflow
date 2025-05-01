@@ -26,8 +26,7 @@ jobs:
         sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
         python -m pip install --upgrade pip
         python -m pip install -r global-workflow/dev/workflow/requirements.txt
-        pip install pytest
-        pip install wget
+        pip install pytest pytest-cov pyyaml jinja2 wget
 
     - name: Cache Rocoto
       id: cache-rocoto
@@ -60,7 +59,12 @@ jobs:
         cd global-workflow/sorc
         git submodule update --init -j 2 wxflow ufs_model.fd
         ./link_workflow.sh
-        cd ../dev/ci/scripts/tests
+
+        # Create test data directory for unit tests
+        mkdir -p ../dev/ci/scripts/unittests/test_data
+        echo "Creating test directories and files for CI tests"
+
+        cd ../dev/ci/scripts/unittests
         pytest -v --junitxml test-results.xml
 
 
@@ -68,6 +72,6 @@ jobs:
       if: always()
       uses: EnricoMi/publish-unit-test-result-action@v2
       with:
-        files: global-workflow/dev/ci/scripts/tests/test-results.xml
+        files: global-workflow/dev/ci/scripts/unittests/test-results.xml
         job_summary: true
         comment_mode: off

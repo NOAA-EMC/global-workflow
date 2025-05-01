@@ -27,8 +27,10 @@ export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}}   # path to tropical cyclone reco
 ##############################################
 # Define COM directories
 ##############################################
-declare_from_tmpl COM_OBS
-if [[ ! -d "${COM_OBS}" ]]; then mkdir -p "${COM_OBS}"; fi
+declare_from_tmpl COMOUT_OBS:COM_OBS_TMPL
+if [[ ! -d "${COMOUT_OBS}" ]]; then
+  mkdir -p "${COMOUT_OBS}"
+fi
 
 export CRES=$(echo ${CASE} | cut -c2-)
 export LATB=$((CRES*2))
