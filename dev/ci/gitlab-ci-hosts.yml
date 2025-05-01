@@ -1,0 +1,154 @@
+# ==========================================================================
+# Host-Specific Configurations for the global-workflow CI Pipeline
+# ==========================================================================
+#
+# This file defines host-specific job configurations for different computing
+# platforms supported by the global-workflow testing pipeline. It's designed
+# to be easily extendable with new computing platforms.
+#
+# Key features:
+# - Per-host test case matrices that define which tests run on which hosts
+# - Includes two sections supporting the standard PR Cases and CTests
+# - Host-specific tags and variables for job routing to the correct runners
+# - Conditional rules based on trigger type (PR vs API)
+#
+# The GITHUB_API_TRIGGER variable (set in the main .gitlab-ci.yml) controls
+# whether to run CTests (true) or standard cases (false).
+
+# =======================================
+# Standard Cases configurations by host
+# =======================================
+
+# Host: Hera - Standard Cases
+setup_experiments-hera:
+  extends: .setup_template
+  variables:
+    machine: hera
+  tags:
+      - hera
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+  needs:
+    - build-hera
+  rules:
+    - if: $GITHUB_API_TRIGGER != "true"
+
+run_tests-hera:
+  extends: .run_tests_template
+  variables:
+    machine: hera
+  tags:
+    - hera
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+  needs:
+    - setup_experiments-hera
+  rules:
+    - if: $GITHUB_API_TRIGGER != "true"
+
+# Host: GAEAC6 - Standard Cases
+setup_experiments-gaeac6:
+  extends: .setup_template
+  variables:
+    machine: gaeac6
+  tags:
+    - gaeac6
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+  needs:
+    - build-gaeac6
+  rules:
+    - if: $GITHUB_API_TRIGGER != "true"
+
+run_tests-gaeac6:
+  extends: .run_tests_template
+  variables:
+    machine: gaeac6
+  tags:
+    - gaeac6
+  parallel:
+    matrix:
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+  needs:
+    - setup_experiments-gaeac6
+  rules:
+    - if: $GITHUB_API_TRIGGER != "true"
+
+# =======================================
+# CTests configurations by host
+# =======================================
+
+# Template for CTest jobs that will be used across machines
+.ctests_cases_template:
+  extends: .run_ctests_template
+  stage: run_tests
+  parallel:
+    matrix:
+      - CTEST: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0', 'C48_S2SW_gfs_atmos_prod_f000-f003']
+
+# Host-specific CTest setup jobs
+create_ctests-hera:
+  extends: .create_ctests
+  stage: create_experiments
+  tags:
+    - hera
+  variables:
+    machine: hera
+  needs:
+    - build-hera
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
+
+create_ctests-gaeac6:
+  extends: .create_ctests
+  stage: create_experiments
+  tags:
+    - gaeac6
+  variables:
+    machine: gaeac6
+  needs:
+    - build-gaeac6
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
+
+# Host: Hera - CTests
+run_ctests-hera:
+  extends: .ctests_cases_template
+  tags:
+    - hera
+  needs:
+    - create_ctests-hera
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
+
+# Host: GAEAC6 - CTests
+run_ctests-gaeac6:
+  extends: .ctests_cases_template
+  tags:
+    - gaeac6
+  needs:
+    - create_ctests-gaeac6
+  rules:
+    - if: $GITHUB_API_TRIGGER == "true"
+
+# =======================================
+# Common build configurations by host
+# These will always be included, regardless of modality
+# =======================================
+
+build-hera:
+  extends: .build_template
+  variables:
+    machine: hera
+  tags:
+    - hera
+
+build-gaeac6:
+  extends: .build_template
+  variables:
+    machine: gaeac6
+  tags:
+    - gaeac6
