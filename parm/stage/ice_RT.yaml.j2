@@ -1,0 +1,30 @@
+ice_RT:
+    mkdir:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set COMOUT_ICE_ANALYSIS_MEM = COMOUT_ICE_ANALYSIS_MEM_list[imem] %}
+        - "{{ COMOUT_ICE_ANALYSIS_MEM }}"
+        {% endfor %} # mem loop
+    copy:
+        #select restart members files (80) specific to the cycle
+        {% set cyc_ranges = ({ "00": [(range(1, 31), 0)],
+                               "06": [(range(21, 51), 20)],
+                               "12": [(range(41, 71), 40)],
+                               "18": [(range(61, 81), 60), (range(1, 11), -20)]}) %}
+
+        {% if current_cycle_HH in cyc_ranges %}
+        {% for mem_data in cyc_ranges[current_cycle_HH] %}
+        {% set offset = mem_data[1] %}
+        {% set mem_range = mem_data[0] %}
+        {% for mem in mem_range %}
+        {% set imem = mem - offset %}
+        {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/'%}
+        {% set increment_mem_path = retro_path ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/ice/' ~ m_prefix ~ '.30000.cice_model.anl.res.nc' %}
+        {% set increment_destination_path = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
+
+        # Include increment files
+        {% set file = increment_mem_path %}
+        - ["{{ file }}", "{{ increment_destination_path }}"]
+
+        {% endfor %}
+        {% endfor %}
+        {% endif %}
