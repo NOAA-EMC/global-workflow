@@ -13,8 +13,6 @@
 # Make sure we are in the $DATA directory
 cd $DATA
 
-cat break > $pgmout
-
 tmhr=$(echo $tmmark|cut -c3-4)
 cdate10=$( ${NDATE:?} -$tmhr $PDY$cyc)
 
@@ -138,12 +136,6 @@ if [ "$DO_RELOCATE" = 'YES' ]; then
 
 #  endif loop $DO_RELOCATE
 fi
-
-
-########################################################
-
-# save standard output
-cat break $pgmout break
 
 
 ################## END OF SCRIPT #######################
