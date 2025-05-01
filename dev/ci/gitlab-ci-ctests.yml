@@ -49,20 +49,44 @@
     echo "Running ${CTEST} tests in ${GW_HOMEgfs}/dev/ctests"
     cd ${GW_HOMEgfs}/dev/ctests/build
 
-    # Run CTest and capture the exit code
-    ctest -L ${CTEST} --output-on-failure
+    # Run CTest and generate the JUnit XML output
+    ctest -L ${CTEST} --output-junit result.xml --output-on-failure
     ctest_status=$?
 
-    # Display a summary of the test results
-    if [ $ctest_status -ne 0 ]; then
-      echo "==========================================================="
-      echo "ERROR: One or more CTests failed with exit code $ctest_status"
-      echo "==========================================================="
-      exit $ctest_status  # Explicitly exit with the ctest error code
+    # Check the JUnit XML file for failures explicitly
+    if [ -f result.xml ]; then
+      # Count failures in the JUnit XML
+      failures=$(grep -c "failures=\"[1-9][0-9]*\"" result.xml || true)
+      errors=$(grep -c "errors=\"[1-9][0-9]*\"" result.xml || true)
+
+      # If there are failures or errors in the JUnit report, fail the job
+      if [ "$failures" -gt 0 ] || [ "$errors" -gt 0 ] || [ $ctest_status -ne 0 ]; then
+        echo "==========================================================="
+        echo "ERROR: Test failures detected in JUnit report or CTest exit code: $ctest_status"
+        echo "Failures: $failures, Errors: $errors"
+        echo "==========================================================="
+        exit 1  # Force exit code 1 for GitLab to recognize the failure
+      else
+        echo "==========================================================="
+        echo "SUCCESS: All CTests passed"
+        echo "==========================================================="
+      fi
     else
-      echo "==========================================================="
-      echo "SUCCESS: All CTests passed"
-      echo "==========================================================="
+      echo "ERROR: JUnit result file not found. Checking CTest exit code only."
+      # Fall back to just checking the ctest exit code if XML not found
+      if [ $ctest_status -ne 0 ]; then
+        echo "==========================================================="
+        echo "ERROR: One or more CTests failed with exit code $ctest_status"
+        echo "==========================================================="
+        exit 1  # Force exit code 1 for GitLab
+      fi
     fi
+  artifacts:
+    when: always
+    paths:
+      - ${GW_HOMEgfs}/dev/ctests/build/result.xml
+      - ${GW_HOMEgfs}/dev/ctests/build/Testing/Temporary/LastTest.log
+    reports:
+      junit: ${GW_HOMEgfs}/dev/ctests/build/result.xml
   needs:
     - create_ctests-${machine}
