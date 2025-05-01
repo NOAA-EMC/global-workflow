@@ -48,6 +48,21 @@
     set -e  # Fail the job if any command fails
     echo "Running ${CTEST} tests in ${GW_HOMEgfs}/dev/ctests"
     cd ${GW_HOMEgfs}/dev/ctests/build
+
+    # Run CTest and capture the exit code
     ctest -L ${CTEST} --output-on-failure
+    ctest_status=$?
+
+    # Display a summary of the test results
+    if [ $ctest_status -ne 0 ]; then
+      echo "==========================================================="
+      echo "ERROR: One or more CTests failed with exit code $ctest_status"
+      echo "==========================================================="
+      exit $ctest_status  # Explicitly exit with the ctest error code
+    else
+      echo "==========================================================="
+      echo "SUCCESS: All CTests passed"
+      echo "==========================================================="
+    fi
   needs:
     - create_ctests-${machine}
