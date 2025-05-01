@@ -33,7 +33,7 @@ ocean_RT:
         {% for ftype in ["res.nc", "res_1.nc", "res_2.nc", "res_3.nc"] %}
         # Include base file for restart files
         {% set file = restart_mem_path ~ ftype %}
-        - ["{{ file }}", "{{ restart_destination_path }}"]
+
         {% endfor %}
         {% endif %}
 
