@@ -10,7 +10,7 @@ ocnicepost:
     copy:
       - ["{{ EXECgfs }}/ocnicepost.x", "{{ DATA }}/"]
       - ["{{ PARMgfs }}/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
-      - ["{{ PARMgfs }}/post/{{ component }}.csv", "{{ DATA }}/"]
+      - ["{{ PARMgfs }}/post/{{ component }}_gfs.csv", "{{ DATA }}/{{ component }}.csv"]
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
