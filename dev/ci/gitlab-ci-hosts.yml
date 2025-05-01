@@ -149,6 +149,7 @@ build-hera:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "trigger" && $RUN_ON_MACHINES =~ /\bhera\b|^all$/i
+    - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
 
 build-gaeac6:
   extends: .build_template
@@ -159,3 +160,4 @@ build-gaeac6:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "trigger" && $RUN_ON_MACHINES =~ /\bgaeac6\b|^all$/i
+    - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
