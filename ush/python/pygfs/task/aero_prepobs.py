@@ -188,7 +188,7 @@ class AerosolObsPrep(Task):
     @logit(logger)
     def finalize(self) -> None:
         """
-        Copy the output viirs files to COMIN_OBS.
+        Copy the output viirs files to COMOUT_OBS.
         Tar and archive the output files.
         Tar and archive the raw obs files.
         """
