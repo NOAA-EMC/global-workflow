@@ -1,23 +1,15 @@
 #!/usr/bin/env python3
 
-import copy
-import os
+from datetime import datetime
 from logging import getLogger
+import os
 import pygfs.utils.marine_da_utils as mdau
-import glob
-import re
-import netCDF4
-from multiprocessing import Process
-import subprocess
-import yaml
-from jcb import render
 from pygfs.jedi import Jedi
 
 from wxflow import (AttrDict, FileHandler, Task,
-                    add_to_datetime, to_fv3time, to_isotime, to_timedelta, to_YMD,
-                    parse_j2yaml, parse_yaml, save_as_yaml,
-                    logit,
-                    Template, TemplateConstants, YAMLFile)
+                    add_to_datetime, to_isotime, to_timedelta, to_YMD,
+                    parse_j2yaml,
+                    logit)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -28,6 +20,23 @@ class MarineAnalysis(Task):
     """
     @logit(logger, name="MarineAnalysis")
     def __init__(self, config):
+        """Constructor for global marine analysis
+
+        This method will construct a marine analysis task
+        This includes:
+        - extending the task_config attribute AttrDict to include parameters required for this task
+        - instantiate the dictionary of Jedi objects for each JEDI application
+
+        Parameters
+        ----------
+        config: Dict
+            dictionary object containing task configuration
+
+        Returns
+        ----------
+        None
+        """
+
         super().__init__(config)
         _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'soca', 'calc_scales.py')
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
@@ -62,6 +71,8 @@ class MarineAnalysis(Task):
                 'berror_model': _berror_model,
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3)),
                 'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS,
+                'marine_pseudo_model_states': mdau.gen_bkg_list(bkg_path='./bkg',
+                                                                window_begin=_window_begin)
             }
         )
 
@@ -74,16 +85,26 @@ class MarineAnalysis(Task):
 
     @logit(logger)
     def initialize(self: Task) -> None:
-        """Initialize the marine analysis
+        """Initialize the marine analysis task
 
         This method will initialize the marine analysis.
         This includes:
-        - staging the deterministic backgrounds (middle of window)
         - staging SOCA fix files
-        - staging static ensemble members (optional)
-        - staging ensemble members (optional)
-        - generating the YAML files for the JEDI and GDASApp executables
-        - creating output directories
+        - preparing the namelists for deterministic MOM6 and analysis geometry
+        - staging observations
+        - staging input YAMLs for SOCA utilities
+        - staging the deterministic backgrounds (middle of window)
+        - staging files and link directories from B-matrix job needed for deterministic analysis
+        - generating list of model pseudo states
+        - initializing all the JEDI applications required for the marine analysis
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
         """
 
         # stage fix files
@@ -116,14 +137,16 @@ class MarineAnalysis(Task):
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
-        # state files and link directories from B-matrix job needed for deterministic analysis
+        # stage files and link directories from B-matrix job needed for deterministic analysis
         logger.info(f"Staging files needed for deterministic analysis from COM")
         soca_files_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_FILES_YAML_TMPL, self.task_config)
         FileHandler(soca_files_list).sync()
 
-        # generate background list (needed for variational yaml)
-        self.task_config.marine_pseudo_model_states = mdau.gen_bkg_list(bkg_path='./bkg',
-                                                                        window_begin=self.task_config.MARINE_WINDOW_BEGIN)
+        # assert that dates of the history files are correct
+        mdau.test_hist_date('./INPUT/MOM.res.nc', self.task_config.MARINE_WINDOW_BEGIN)
+        for state in self.task_config.marine_pseudo_model_states:
+            mdau.test_hist_date(state['basename']+state['ocn_filename'],
+                                datetime.strptime(state['date'], '%Y-%m-%dT%H:%M:%SZ'))
 
         # initialize JEDI variational application
         self.jedi_dict['var'].initialize(self.task_config)
@@ -149,8 +172,20 @@ class MarineAnalysis(Task):
 
     @logit(logger)
     def finalize(self: Task) -> None:
-        """Finalize the marine analysis job
-           This method saves the results of the deterministic variational analysis to the COMROOT
+        """Finalize a global marine analysis
+
+        This method will finalize a global marine analysis.
+        This includes:
+        - Saving output files to COM
+        - Saving observation statistics to COM
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
         """
 
         # Save output files to COM

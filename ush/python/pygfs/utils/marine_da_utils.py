@@ -109,8 +109,6 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', ice_rst=False) -> None:
     bkg_date = window_begin
 
     # Construct list of background file names
-    cyc = str(os.getenv('cyc')).zfill(2)
-    gcyc = str((int(cyc) - 6) % 24).zfill(2)  # previous cycle
     fcst_hrs = list(range(6, 10, dt_pseudo))
     files = []
     for fcst_hr in fcst_hrs:
@@ -118,15 +116,13 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', ice_rst=False) -> None:
 
     # Identify the ocean background that will be used for the  vertical coordinate remapping
     ocn_filename_ic = './INPUT/MOM.res.nc'
-    test_hist_date(ocn_filename_ic, bkg_date)  # assert date of the history file is correct
 
     # Copy/process backgrounds and generate background yaml list
     bkg_list = []
     for bkg in files:
         logger.info(f"****************** bkg: {bkg}")
-        # assert validity of the ocean bkg date, remove basename
+        # remove basename of ocean bkg
         bkg_date = bkg_date + timedelta(hours=dt_pseudo)
-        test_hist_date(bkg, bkg_date)
         ocn_filename = os.path.splitext(os.path.basename(bkg))[0] + '.nc'
 
         # prepare the seaice background, aggregate if the backgrounds are CICE restarts
