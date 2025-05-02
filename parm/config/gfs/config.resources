@@ -310,10 +310,12 @@ case ${step} in
 
   "esnowanl")
     # below lines are for creating JEDI YAML
+    walltime="00:30:00"
     case "${CASE}" in
       "C1152" | "C768")
         layout_x=6
         layout_y=6
+        walltime="00:50:00"
         ;;
       "C384")
         layout_x=5
@@ -331,7 +333,6 @@ case ${step} in
     export layout_x
     export layout_y
 
-    walltime="00:50:00"
     ntasks=$(( layout_x * layout_y * 6 ))
     threads_per_task=2
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -390,7 +391,7 @@ case ${step} in
       "C1152" | "C768")
         layout_x=8
         layout_y=8
-        walltime="01:45:00"
+        walltime="00:45:00"
         tasks_per_node=24
         ;;
       "C384")
@@ -516,7 +517,7 @@ case ${step} in
       "025")
         ntasks=480
         memory="256GB"
-	;;
+        ;;
       "050")  ntasks=16;;
       "100")  ntasks=16;;
       "500")  ntasks=16;;
@@ -595,8 +596,8 @@ case ${step} in
     ntasks=16
     case ${OCNRES} in
       "025")
-        ntasks=800
-        memory="500GB"
+        ntasks=480
+        memory="256GB"
         ;;
       "050")
         ntasks=16
@@ -668,7 +669,7 @@ case ${step} in
         "C1152" | "C768")
           ntasks=780
           threads_per_task=5
-	  walltime="01:40:00"
+          walltime="01:40:00"
           ;;
         "C384" | "C192")
           ntasks=160
@@ -1066,11 +1067,11 @@ case ${step} in
     case "${CASE}" in
       "C768")
         memory="80GB"
-	;;
+        ;;
       "C1152")
         memory="400GB"
-	walltime="01:20:00"
-	;;
+        walltime="01:20:00"
+        ;;
       *)
         memory="20GB"
         ;;
@@ -1143,7 +1144,7 @@ case ${step} in
     ;;
 
   "stage_ic")
-    walltime="00:30:00"
+    walltime="00:15:00"
     ntasks=1
     tasks_per_node=1
     threads_per_task=1
