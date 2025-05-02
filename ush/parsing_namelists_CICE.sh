@@ -70,7 +70,12 @@ local CICE_RESTART_FORMAT="pnetcdf2"
 local CICE_DUMPFREQ="y"  # "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 local CICE_DUMPFREQ_N=10000  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
 local CICE_DIAGFREQ=$(( 86400 / DT_CICE ))  # frequency of diagnostic output in timesteps, recommended for 1x per day
-local CICE_HISTFREQ_N="0, 0, ${FHOUT_ICE}, 0, 1"
+if [[ "${RUN}" == "gefs" ]]; then
+  local CICE_DIAGFREQ1=$((( FHOUT_ICE * 3600 )/ DT_CICE )) # Number of timesteps within FHOUT_ICE
+  local CICE_HISTFREQ_N="0, 0, 0, ${CICE_DIAGFREQ1}, 1"
+else
+  local CICE_HISTFREQ_N="0, 0, ${FHOUT_ICE}, 0, 1"
+fi
 local CICE_hist_suffix="'x','x','x','x','x'"
 if [[ "${RUN}" =~ "gdas" ]]; then
   local CICE_HIST_AVG=".false., .false., .false., .false., .false."   # DA needs instantaneous
