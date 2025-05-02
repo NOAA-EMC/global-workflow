@@ -25,7 +25,7 @@
 # 0.a Basic modes of operation
 
 # PATH for working and home directories
- export RUNwave=${RUNwave:-${RUN}wave}
+ export RUNwave=${RUNwave:-${RUN}.wave}
  export envir=${envir:-ops}
  export cyc=${cyc:-00}
  export cycle=${cycle:-t${cyc}z}
@@ -58,7 +58,7 @@
  set_trace
 
 # 1.a Link the input file and untar it
- BullIn="${COMIN_WAVE_STATION}/${RUNwave}.${cycle}.cbull_tar"
+ BullIn="${COMIN_WAVE_STATION}/${RUNwave}.${cycle}.cbull.tar"
  if [ -f $BullIn ]; then
    cp $BullIn cbull.tar
  else
@@ -69,9 +69,9 @@
    echo '*** ERROR : NO BULLETIN TAR FILE *** '
    echo '************************************ '
    echo ' '
-   echo $msg
    set_trace
    msg="FATAL ERROR ${RUNwave} prdgen $date $cycle : bulletin tar missing."
+   echo $msg
    echo $msg >> $wavelog
    export err=1; ${errchk}
    exit $err
@@ -96,7 +96,6 @@
    echo '*** ERROR : ERROR IN BULLETIN TAR FILE *** '
    echo '****************************************** '
    echo ' '
-   echo $msg
    set_trace
    echo "${RUNwave} prdgen $date $cycle : bulletin untar error." >> $wavelog
    err=2;export err;err_chk

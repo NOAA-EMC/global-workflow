@@ -54,7 +54,7 @@ case "${MACHINE_ID}" in
     NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
     export NETCDF
     ;;
-  ("jet" | "s4" | "acorn")
+  ("acorn")
     echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
     ;;  
   *)
@@ -76,6 +76,24 @@ pip list
 # Add wxflow to PYTHONPATH
 wxflowPATH="${HOMEgfs}/ush/python"
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
+export PYTHONPATH
+
+# Detect the Python major.minor version
+_regex="[0-9]+\.[0-9]+"
+# shellcheck disable=SC2312
+if [[ $(python --version) =~ ${_regex} ]]; then
+    export PYTHON_VERSION="${BASH_REMATCH[0]}"
+else
+    echo "FATAL ERROR: Could not detect the python version"
+    exit 1
+fi
+
+###############################################################
+# setup python path for ioda utilities
+# TODO: a better solution should be created for setting paths to package python scripts
+# shellcheck disable=SC2311
+pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}:${pyiodaPATH}"
 export PYTHONPATH
 
 # Restore stack soft limit:

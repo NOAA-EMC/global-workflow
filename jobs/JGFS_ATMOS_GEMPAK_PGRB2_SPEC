@@ -47,7 +47,7 @@ export RUN2=gfs_goessim221
 export GRIB=goessimpgrb2f
 export EXT=".grd221"
 
-"${SCRgfs}/exgfs_atmos_goes_nawips.sh" "${FHR3}"
+"${SCRgfs}/exgfs_atmos_goes_nawips.sh" "${FHR3}" && true
 
 export err=$?; err_chk
 
