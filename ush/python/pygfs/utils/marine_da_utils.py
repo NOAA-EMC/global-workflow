@@ -100,7 +100,7 @@ def test_hist_date(histfile: str, ref_date: datetime) -> None:
 @logit(logger)
 def gen_bkg_list(bkg_path: str, window_begin=' ', ice_rst=False) -> None:
     """
-    Generate a YAML of the list of backgrounds for the pseudo model
+    Generate a list of backgrounds for the pseudo model
     """
 
     # Pseudo model parameters (time step, start date)
@@ -138,6 +138,7 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', ice_rst=False) -> None:
         bkg_list.append(bkg_dict)
 
     return bkg_list
+
 
 @logit(logger)
 def clean_empty_obsspaces(config, target, app='var'):

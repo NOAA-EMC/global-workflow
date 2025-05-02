@@ -145,7 +145,7 @@ class MarineAnalysis(Task):
         # assert that dates of the history files are correct
         mdau.test_hist_date('./INPUT/MOM.res.nc', self.task_config.MARINE_WINDOW_BEGIN)
         for state in self.task_config.marine_pseudo_model_states:
-            mdau.test_hist_date(state['basename']+state['ocn_filename'],
+            mdau.test_hist_date(state['basename'] + state['ocn_filename'],
                                 datetime.strptime(state['date'], '%Y-%m-%dT%H:%M:%SZ'))
 
         # initialize JEDI variational application

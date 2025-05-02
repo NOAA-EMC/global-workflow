@@ -388,6 +388,7 @@ def extract_tar(tar_file: str) -> None:
         logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
         raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
 
+
 @logit(logger)
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """
