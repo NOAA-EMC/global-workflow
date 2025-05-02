@@ -8,8 +8,8 @@ ocean_control_RT:
         {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/'%}
         {% set restart_path = retro_path ~ 'gdas.' ~ previous_cycle_YMD ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.210000.' %}
         {% set increment_file = retro_path ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/ocean/gfs.t' ~ current_cycle_HH ~ 'z.ocninc.nc' %}
-        {% set restart_destination_path = COMOUT_OCEAN_RESTART_PREV_MEM_list[imem] %}
-        {% set increment_destination_path = COMOUT_OCEAN_ANALYSIS_MEM_list[imem] %}
+        {% set restart_destination_path = COMOUT_OCEAN_RESTART_PREV_MEM_list[0] %}
+        {% set increment_destination_path = COMOUT_OCEAN_ANALYSIS_MEM_list[0] %}
 
         # Restart increment files
         {% for ftype in ["MOM.res.nc", "MOM.res_1.nc", "MOM.res_2.nc", "MOM.res_3.nc"] %}
