@@ -62,8 +62,6 @@ case ${step} in
       "025")
         tasks_per_node=$(( max_tasks_per_node / 4 )) 
         ;;
-      *)
-        ;;
     esac
     ;;
 
@@ -76,6 +74,4 @@ case ${step} in
     esac
     ;;
 
-  *)
-  ;;
 esac
