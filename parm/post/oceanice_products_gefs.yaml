@@ -10,7 +10,7 @@ ocnicepost:
     copy:
       - ["{{ EXECgfs }}/ocnicepost.x", "{{ DATA }}/"]
       - ["{{ PARMgfs }}/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
-      - ["{{ PARMgfs }}/post/{{ component }}.csv", "{{ DATA }}/"]
+      - ["{{ PARMgfs }}/post/{{ component }}_gefs.csv", "{{ DATA }}/{{ component }}.csv"]
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
@@ -57,7 +57,7 @@ ice:
     sinvar: ""
     cosvar: ""
     angvar: "ANGLET"
-  subset: ['hi_h', 'hs_h', 'aice_h', 'Tsfc_h', 'uvel_h', 'vvel_h', 'frzmlt_h', 'albsni_h', 'mlt_onset_h', 'frz_onset_h']
+  subset: ['hi_1', 'hs_1', 'aice_1', 'Tsfc_1', 'uvel_1', 'vvel_1', 'frzmlt_1', 'albsni_1', 'mlt_onset_1', 'frz_onset_1']
   data_in:
     copy:
       - ["{{ COMIN_ICE_HISTORY }}/{{ RUN }}.ice.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
