@@ -50,7 +50,7 @@
     cd ${GW_HOMEgfs}/dev/ctests/build
 
     # Run CTest and generate the JUnit XML output
-    ctest -L ${CTEST} --output-junit result.xml --output-on-failure
+    ctest -L ${CTEST} --output-junit result.xml --stop-on-failure --output-on-failure
     ctest_status=$?
 
     # Check the JUnit XML file for failures explicitly

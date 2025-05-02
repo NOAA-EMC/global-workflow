@@ -79,7 +79,7 @@ include:
 
       if [ $build_status -ne 0 ]; then
         echo "Build failed with exit code $build_status"
-        exit $build_status
+        exit 1
       fi
 
       sorc/link_workflow.sh
