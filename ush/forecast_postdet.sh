@@ -719,8 +719,12 @@ CICE_postdet() {
         source_file="iceh_inst.${vdatestr}.nc"
         dest_file="${RUN}.ice.t${cyc}z.inst.f${fhr3}.nc"
         ;;
-      gfs|enkfgfs|gefs|sfs)
+      gfs|enkfgfs|sfs)
         source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
+        dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+        ;;
+      gefs)
+        source_file="iceh.${vdatestr}.nc"
         dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
         ;;
       *)
