@@ -29,19 +29,19 @@ stages:
   - finalize
 
 variables:
-  BUILD: 'develop' # Placeholder for control over build directory path
-  # Using GW prefix to avoid confusion with GitLab predefined variables
-  DATE: $(date +%m%d)
-  GW_RUN_PATH: ${CI_BUILDS_DIR}/${BUILD}_${CI_COMMIT_SHORT_SHA}
-  # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the exact location
-  # where the repository should be cloned. This works with custom_build_dir-enabled in the runner config.
+  BUILDTYPE: 'develop'
+  DATE: ${CI_PIPELINE_CREATED_AT%T*}
+  WORKSPACE_NAME: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}
+  GW_RUN_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_NAME}
+  # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the
+  # exact directory where the repository should be cloned, built, and ran.
+  # This works with custom_build_dir-enabled in the runner config.
   GIT_CLONE_PATH: '${GW_RUN_PATH}/global-workflow'
   GW_HOMEgfs: ${GIT_CLONE_PATH}
   RUNTESTS_DIR: ${GW_RUN_PATH}/RUNTESTS
   GIT_DEPTH: 10
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
-  # Controls pipeline behavior: CTests (true) or PR cases (false)
   PR_NUMBER: ${PR_NUMBER:-"0"}
 
 # Include specialized pipeline configuration files

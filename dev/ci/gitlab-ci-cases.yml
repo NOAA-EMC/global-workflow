@@ -40,12 +40,14 @@
       error=$?
       if [ $error -ne 0 ]; then
         echo "================================================================================"
-        echo "ERROR: Test case ${caseName} failed on ${machine} in ${RUNTESTS_DIR} at $(date)
+        echo "ERROR: Test case ${caseName} failed on ${machine} in ${RUNTESTS_DIR} at $(date)"
         echo "================================================================================"
         exit 1  # Force exit code 1 for GitLab to recognize the failure
       else
-        echo "Test case ${caseName} PASSED on ${machine} in ${RUNTESTS_DIR} at $(date)"
-        ln -sf ${CI_BUILDS_DIR}/stable ${GW_RUN_PATH}
+        echo "================================================================================"
+        echo "SUCCESS: Test case ${caseName} passed on ${machine} in ${RUNTESTS_DIR} at $(date)"
+        echo "================================================================================"
+      fi
   needs:
     - setup_experiments-${machine}
 
@@ -55,7 +57,7 @@
   script:
     - |
       echo "Finalizing PR test cases on ${machine} using ${GW_HOMEgfs}"
-      echo "Setting soflink to ${GW_RUN_PATH} as ${CI_BUILDS_DIR}/stable"
+      echo "Setting softlink to ${GW_RUN_PATH} as ${CI_BUILDS_DIR}/stable"
       ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
 
   needs:
