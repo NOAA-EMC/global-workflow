@@ -45,14 +45,6 @@ class MarineAnalysis(Task):
         else:
             _berror_model = 'marine_background_error_static_diffusion'
 
-        # Set the restart date, dependent on the cycling type
-        if self.task_config.DOIAU:
-            # forecast initialized at the begining of the DA window
-            _rst_date = _window_begin.strftime('%Y%m%d.%H%M%S')
-        else:
-            # forecast initialized at the middle of the DA window
-            _rst_date = self.task_config.current_cycle.strftime('%Y%m%d.%H%M%S')
-
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
@@ -70,7 +62,6 @@ class MarineAnalysis(Task):
                 'berror_model': _berror_model,
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3)),
                 'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS,
-                'rst_date': _rst_date,
             }
         )
 
@@ -125,26 +116,17 @@ class MarineAnalysis(Task):
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
-        #
+        # state files and link directories from B-matrix job needed for deterministic analysis
         logger.info(f"Staging files needed for deterministic analysis from COM")
         soca_files_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_FILES_YAML_TMPL, self.task_config)
         FileHandler(soca_files_list).sync()
 
-        # generate background list
+        # generate background list (needed for variational yaml)
         self.task_config.marine_pseudo_model_states = mdau.gen_bkg_list(bkg_path='./bkg',
                                                                         window_begin=self.task_config.MARINE_WINDOW_BEGIN)
 
         # initialize JEDI variational application
         self.jedi_dict['var'].initialize(self.task_config)
-
-        # TEST
-        self.task_config.cleaned_observations = []
-        self.task_config.obs_variables = {}
-        for obs_space in self.jedi_dict['var'].jedi_config.input_config['cost function']['observations']['observers']:
-            self.task_config.cleaned_observations.append(obs_space['obs space']['name'])
-            self.task_config.obs_variables[obs_space['obs space']['name']] = obs_space['obs space']['simulated variables'][0]
-
-        # initialize remaining JEDI applications
         self.jedi_dict['socaincr2mom6'].initialize(self.task_config)
         self.jedi_dict['soca_2cice_global'].initialize(self.task_config)
         self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
