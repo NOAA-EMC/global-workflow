@@ -1,0 +1,20 @@
+ocean_control_RT:
+    mkdir:
+        {% set COMOUT_OCEAN_RESTART_PREV_MEM = COMOUT_OCEAN_RESTART_PREV_MEM_list[0] %}
+        - "{{ COMOUT_OCEAN_RESTART_PREV_MEM }}"
+        {% set COMOUT_OCEAN_ANALYSIS_MEM = COMOUT_OCEAN_ANALYSIS_MEM_list[0] %}
+        - "{{ COMOUT_OCEAN_ANALYSIS_MEM }}"
+    copy:
+        {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/'%}
+        {% set restart_path = retro_path ~ 'gdas.' ~ previous_cycle_YMD ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.210000.' %}
+        {% set increment_file = retro_path ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/ocean/gfs.t' ~ current_cycle_HH ~ 'z.ocninc.nc' %}
+        {% set restart_destination_path = COMOUT_OCEAN_RESTART_PREV_MEM_list[imem] %}
+        {% set increment_destination_path = COMOUT_OCEAN_ANALYSIS_MEM_list[imem] %}
+
+        # Restart increment files
+        {% for ftype in ["MOM.res.nc", "MOM.res_1.nc", "MOM.res_2.nc", "MOM.res_3.nc"] %}
+        {% set file = restart_path ~ ftype %}
+        - ["{{ file }}", "{{ restart_destination_path }}"]
+        {% endfor %}
+        # Include increment files
+        - ["{{ increment_file }}", "{{ increment_destination_path }}"]
