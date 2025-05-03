@@ -57,10 +57,10 @@ include:
 
       # Create a date-based directory name for successful runs
       export DATE="$(date +'%m%d%y')"
-      export WORKAPCE_DATE="${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
+      export WORKSPACE_DATE="${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
 
       echo "WORKSPACE_ID: ${WORKSPACE_ID}"
-      echo "WORKAPCE_DATE: ${WORKAPCE_DATE}"
+      echo "WORKSPACE_DATE: ${WORKSPACE_DATE}"
       echo "GW_RUN_PATH: ${GW_RUN_PATH}"
       echo "GIT_CLONE_PATH: ${GIT_CLONE_PATH}"
       echo "GW_HOMEgfs: ${GW_HOMEgfs}"
