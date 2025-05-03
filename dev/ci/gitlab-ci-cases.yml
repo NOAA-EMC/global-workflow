@@ -57,26 +57,25 @@
   script:
     - |
       echo "Finalizing PR test cases on ${machine} using ${GW_HOMEgfs}"
-      echo "Creating date-based directory: ${WORKSPACE_NAME}"
-      if [ "${WORKSPACE_BASE}" != "${WORKSPACE_NAME}" ]; then
-        # Rename the WORKSPACE_BASE directory to include the date
-        if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_BASE}" ]; then
-          echo "Moving ${CI_BUILDS_DIR}/${WORKSPACE_BASE} to ${WORKSPACE_NAME
-          cd "${CI_BUILDS_DIR}"
-          mv "${WORKSPACE_BASE}" "${WORKSPACE_NAME}"
+      echo "Creating date-based directory: ${WORKAPCE_DATE}"
+      cd "${CI_BUILDS_DIR}"
+      if [ "${WORKSPACE_ID}" != "${WORKAPCE_DATE}" ]; then
+        # Rename the WORKSPACE_ID directory to include the date
+        if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]; then
+          echo "Moving ${WORKSPACE_ID} to ${WORKAPCE_DATE}"
+          mv "${WORKSPACE_ID}" "${WORKAPCE_DATE}"
           # Create a stable symlink for future reference
-          echo "Setting softlink to ${WORKSPACE_NAME} as ${CI_BUILDS_DIR}/stable"
-          ln -sf ${WORKSPACE_NAME} stable
+          echo "Setting softlink to ${WORKAPCE_DATE} as ${CI_BUILDS_DIR}/stable"
+          ln -sf ${WORKAPCE_DATE} stable
           echo "Successfully created date-based directory and stable symlink"
         else
-          echo "WARNING: Source directory ${CI_BUILDS_DIR}/${WORKSPACE_BASE} not found"
+          echo "WARNING: Source directory ${CI_BUILDS_DIR}/${WORKSPACE_ID} not found"
           # Create the symlink anyway from original path
           ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
         fi
       else
-        echo "WORKSPACE_BASE already includes the date, creating stable symlink"
-        cd "${CI_BUILDS_DIR}"
-        ln -sf ${WORKSPACE_NAME} stable
+        echo "WORKSPACE_ID already includes the date, creating stable symlink"
+        ln -sf ${WORKAPCE_DATE} stable
       fi
 
   needs:

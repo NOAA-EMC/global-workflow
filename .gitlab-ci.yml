@@ -31,9 +31,9 @@ stages:
 variables:
   BUILDTYPE: 'nightly'
   # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
-  WORKSPACE_BASE: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
+  WORKSPACE_ID: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
   # Define a base path that will be used for initial cloning
-  GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_BASE}/global-workflow
+  GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_ID}/global-workflow
   GIT_DEPTH: 10
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
@@ -50,17 +50,17 @@ include:
     GIT_STRATEGY: none
   before_script:
     - |
-      # Use CI_BUILDS_DIR and WORKSPACE_BASE for all paths - no date in paths during pipeline execution
-      export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_BASE}"
+      # Use CI_BUILDS_DIR and WORKSPACE_ID for all paths - no date in paths during pipeline execution
+      export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_ID}"
       export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone, we keep it
       export RUNTESTS_DIR="${GW_RUN_PATH}/RUNTESTS"
 
       # Create a date-based directory name for successful runs
       export DATE="$(date +'%m%d%y')"
-      export WORKSPACE_NAME="${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
+      export WORKAPCE_DATE="${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
 
-      echo "WORKSPACE_BASE: ${WORKSPACE_BASE}"
-      echo "WORKSPACE_NAME: ${WORKSPACE_NAME}"
+      echo "WORKSPACE_ID: ${WORKSPACE_ID}"
+      echo "WORKAPCE_DATE: ${WORKAPCE_DATE}"
       echo "GW_RUN_PATH: ${GW_RUN_PATH}"
       echo "GIT_CLONE_PATH: ${GIT_CLONE_PATH}"
       echo "GW_HOMEgfs: ${GW_HOMEgfs}"
