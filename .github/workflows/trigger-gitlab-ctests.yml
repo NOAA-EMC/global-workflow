@@ -51,7 +51,16 @@ jobs:
           # Set PR number
           echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> $GITHUB_ENV
           
-          # Get all input parameters
+          # ---------------------------------------------------------------
+          # Machine Selection Logic
+          # ---------------------------------------------------------------
+          # This section processes the selected machine checkboxes from the
+          # workflow UI and creates a space-separated list of machine names
+          # to be passed to the GitLab pipeline via its trigger REST API
+          # NOTE: When adding new machines no need to modify the code below
+          # ---------------------------------------------------------------
+
+          # Extract all inputs that start with "run_on_" and their values
           INPUTS=$(jq -r 'to_entries[] | select(.key | startswith("run_on_")) | "\(.key)=\(.value)"' <<< '${{ toJson(github.event.inputs) }}')
           
           # Build RUN_ON_MACHINES based on checkboxes
@@ -65,14 +74,15 @@ jobs:
             VALUE=$(echo "$input" | cut -d= -f2)
             
             # Extract machine name from input name (remove "run_on_" prefix)
+            # For example: "run_on_hera" becomes "hera"
             MACHINE=${KEY#run_on_}
             
             # Add machine to list if checkbox is true
             if [[ "$VALUE" == "true" ]]; then
               if [[ -n "$MACHINES" ]]; then
-                MACHINES="$MACHINES $MACHINE"
+                MACHINES="$MACHINES $MACHINE"  # Append with space if list already has entries
               else
-                MACHINES="$MACHINE"
+                MACHINES="$MACHINE"  # First entry in the list
               fi
             fi
           done <<< "$INPUTS"
