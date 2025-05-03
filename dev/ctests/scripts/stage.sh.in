@@ -32,11 +32,11 @@ fi
 
 # First try to find directories matching the date pattern CASE_NAME_MMDDYY
 # find uses glob patterns, not regex, so we need to use [0-9][0-9][0-9][0-9][0-9][0-9]
-PSLOT_DIR=$(find "${CTESTS_STAGED_TESTS_DIR}/EXPDIR" -maxdepth 1 -type d -name "${CASE_NAME}_[0-9][0-9][0-9][0-9][0-9][0-9]" -printf "%T@ %p\n" 2>/dev/null | sort -nr | head -n1 | cut -d' ' -f2-)
+PSLOT_DIR=$(find "${CTESTS_STAGED_TESTS_DIR}/EXPDIR" -maxdepth 1 -type d -name "${CASE_NAME}_[0-9][0-9][0-9][0-9][0-9][0-9]" -printf "%T@ %p\n" 2>/dev/null | sort -nr | head -n1 | cut -d' ' -f2- || true)
 
 # If no date pattern match, try any suffix
 if [[ -z "${PSLOT_DIR}" ]]; then
-  PSLOT_DIR=$(find "${CTESTS_STAGED_TESTS_DIR}/EXPDIR" -maxdepth 1 -type d -name "${CASE_NAME}_*" -printf "%T@ %p\n" 2>/dev/null | sort -nr | head -n1 | cut -d' ' -f2-)
+  PSLOT_DIR=$(find "${CTESTS_STAGED_TESTS_DIR}/EXPDIR" -maxdepth 1 -type d -name "${CASE_NAME}_*" -printf "%T@ %p\n" 2>/dev/null | sort -nr | head -n1 | cut -d' ' -f2- || true)
 fi
 
 if [[ -z "${PSLOT_DIR}" ]]; then
