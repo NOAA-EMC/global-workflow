@@ -57,7 +57,7 @@
   script:
     - |
       echo "Finalizing PR test cases on ${machine} using ${GW_HOMEgfs}"
-      echo "Creating date-based directory: ${W
+      echo "Creating date-based directory: ${WORKSPACE_NAME}"
       if [ "${WORKSPACE_BASE}" != "${WORKSPACE_NAME}" ]; then
         # Rename the WORKSPACE_BASE directory to include the date
         if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_BASE}" ]; then
