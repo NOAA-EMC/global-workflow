@@ -24,7 +24,7 @@ export PYTHONPATH
 YAML_FILE="${HOMEgfs}/dev/ctests/cases/${TEST_NAME}.yaml"
 
 # Find pslot with pattern CASE_NAME_<suffix> where suffix is typically a hash
-PSLOT=$(${HOMEgfs}/ci/scripts/utils/ci_utils.sh get_pslot ${CTESTS_STAGED_TESTS_DIR} ${CASE_NAME})
+PSLOT=$("${HOMEgfs}"/ci/scripts/utils/ci_utils.sh get_pslot "${CTESTS_STAGED_TESTS_DIR}" "${CASE_NAME}")
 
 PSLOT="${PSLOT}" \
 RUNTESTS="${RUNTESTS}" \
@@ -34,7 +34,7 @@ CTESTS_STAGED_TESTS_DIR="${CTESTS_STAGED_TESTS_DIR}" \
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     set +x
-    echo "Failed to stage inputs for '${TEST_NAME}' with '${INPUTS_YAML}'"
+    echo "Failed to stage inputs for '${TEST_NAME}' with '${YAML_FILE}'"
     set -x
     exit "${rc}"
 fi
