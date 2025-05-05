@@ -5,9 +5,6 @@
 # This script is the product generator ("graphics job")  for the              #
 #  WW3 wave model.                                                            #
 #                                                                             #
-# Remarks :                                                                   #
-# - Supplemental error output is witten to the gfswave_prdgbulls.log file.    #
-#                                                                             #
 # COM inputs:                                                                 #
 #  - ${COMIN_WAVE_STATION}/${RUN}.wave.${cycle}.cbull_tar                     #
 # COM outputs:                                                                #

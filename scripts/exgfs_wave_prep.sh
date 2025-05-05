@@ -13,9 +13,6 @@
 #  wave_prnc_ice.sh     : preprocess ice fields.                              #
 #  wave_prnc_cur.sh     : preprocess current fields.                          #
 #                                                                             #
-# Remarks :                                                                   #
-# - For non-fatal errors output is witten to the wave.log file.               #
-#                                                                             #
 # COM inputs:                                                                 #
 #  - ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID}                          #
 #  - ${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f#HHH_prog.nc                 #

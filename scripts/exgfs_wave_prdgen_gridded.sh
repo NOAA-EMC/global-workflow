@@ -5,9 +5,6 @@
 # This script is the product generator ("graphics job")  for the              #
 # GFSv16-wave output for gridded wave fields                                  #
 #                                                                             #
-# Remarks :                                                                   #
-# - Supplemental error output is witten to the wave.log file.                 #
-#                                                                             #
 # COM inputs:                                                                 #
 #  - ${COMIN_WAVE_GRID}/${RUN}.wave.${cycle}.${grdIDin}.f${fhr}.grib2          #
 #                                                                             #
