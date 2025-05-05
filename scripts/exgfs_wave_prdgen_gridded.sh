@@ -84,16 +84,16 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
  # Get input grid
  # TODO flesh this out with additional input grids if needed
  process_grdID "${grid_in}"
- grdIDin=${grdNAME}
+ grdIDin="${grdNAME}"
 
- fhcnt=${fstart}
+ fhcnt="${fstart}"
  while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
    fhr=$(printf "%03d" "${fhcnt}")
    for grdOut in ${grids}; do
      process_grdID "${grdOut}"
-     grdIDin=${grdNAME}
+     grdIDin="${grdNAME}"
      com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
-     com_dir=${!com_varname}
+     com_dir="${!com_varname}"
 
      GRIBIN="${com_dir}/${RUN}.wave.${cycle}.${grdIDin}.f${fhr}.grib2"
      GRIBIN_chk="${GRIBIN}.idx"
