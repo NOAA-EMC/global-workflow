@@ -94,7 +94,7 @@ export pgm=${pgm:-}
 # Run setpdy and initialize PDY variables
 ##############################################
 export cycle="t${cyc}z"
-${HOMEgfs}/setpdy.sh || true
+setpdy.sh || true
 source ./PDY || true
 
 
