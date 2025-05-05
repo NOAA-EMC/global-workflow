@@ -86,7 +86,7 @@ export ISOL=2
 export ICO2=2
 export dspheat=".true."
 export shal_cnv=".true."
-export FHZER=6
+export FHZERO=6
 
 # Set PREFIX_ATMINC to r when recentering on
 if [[ ${RECENTER_ENKF:-"YES"} == "YES" ]]; then
