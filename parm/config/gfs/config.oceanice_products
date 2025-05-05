@@ -10,7 +10,7 @@ source "${EXPDIR}/config.resources" oceanice_products
 # Maximum number of rocoto tasks per member
 export MAX_TASKS=25
 
-export OCEANICEPRODUCTS_CONFIG="${PARMgfs}/post/oceanice_products.yaml"
+export OCEANICEPRODUCTS_CONFIG="${PARMgfs}/post/oceanice_products_gfs.yaml"
 
 # No. of forecast hours to process in a single job
 export NFHRS_PER_GROUP=3

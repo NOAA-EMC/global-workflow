@@ -19,12 +19,9 @@ YMD=${PDY} HH=${cyc} DUMP='gdas' declare_from_tmpl -rx COMIN_OBSDMP:COM_OBSDMP_T
 # Run relevant script
 
 EXSCRIPT=${GDASPREPAEROOBSPY:-${SCRgfs}/exglobal_prep_obs_aero.py}
-${EXSCRIPT}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
-
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
