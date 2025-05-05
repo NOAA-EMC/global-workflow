@@ -24,7 +24,7 @@ base:
   DO_TEST_MODE: "NO"
 fcst:
   reforecast: "NO"
-  FHZER: 6
+  FHZERO: 6
   TYPE: "nh"
   MONO: "non-mono"
 ocn:
