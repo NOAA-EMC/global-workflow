@@ -17,11 +17,11 @@
 # - For non-fatal errors output is witten to the wave.log file.               #
 #                                                                             #
 # COM inputs:                                                                 #
-#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}                           #
-#  - ${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f#HHH_prog.nc        #
+#  - ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID}                          #
+#  - ${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f#HHH_prog.nc                 #
 #                                                                             #
 # COM outputs:                                                                #
-#  - ${COMOUT_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.$cycle.cur                 #
+#  - ${COMOUT_WAVE_PREP}/${RUN}.wave.${WAVECUR_FID}.$cycle.cur                #
 #                                                                             #
 #  Update record :                                                            #
 #                                                                             #
@@ -39,7 +39,7 @@
 
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
-  export WAV_MOD_TAG=${RUN}wave${waveMEMB}
+  export WAV_MOD_TAG="${RUN}wave${waveMEMB}"
 
   cd $DATA
   mkdir outtmp
@@ -155,12 +155,12 @@
 
   for grdID in $grdINP $waveGRD
   do
-    if [ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]
+    if [ -f "${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
-      cp ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID} mod_def.$grdID
+      cp ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID} mod_def.$grdID
 
     else
       set +x
@@ -452,13 +452,13 @@
 
       rm -f cur.${WAVECUR_FID}
 
-      for file in $files
+      for file in ${files}
       do
-        echo $file
-        cat $file >> cur.${WAVECUR_FID}
+        echo ${file}
+        cat ${file} >> cur.${WAVECUR_FID}
       done
 
-      cp -f cur.${WAVECUR_FID} ${COMOUT_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.$cycle.cur 
+      cp -f cur.${WAVECUR_FID} ${COMOUT_WAVE_PREP}/${RUN}.wave.${WAVECUR_FID}.${cycle}.cur
 
     else
       echo ' '
