@@ -86,8 +86,6 @@
     exit 2
   fi
 
-  cd "${STA_DIR}/${filext}"
-
 # --------------------------------------------------------------------------- #
 # 2.  Generate tar file (spectral files are compressed)
 
@@ -103,12 +101,12 @@
   while [[ "${tardone}" = "no" ]]
   do
 
-    nf=$(ls | awk '/'$ID.*.$filext'/ {a++} END {print a}')
+    nf=$(find . -maxdepth 1 -type f -name "*.$filext" | wc -l)
     nbm2=$(( $nb - 2 ))
     if [[ "${nf}" -ge "${nbm2}" ]]
     then
 
-      tar -cf "${ID}.${type}.tar" ./${ID}.*.${filext}
+      tar -cf "${ID}.${type}.tar" ./*."${filext}"
       exit=$?
       filename="${ID}.${type}.tar"
       if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ; then

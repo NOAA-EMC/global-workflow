@@ -98,7 +98,7 @@ UFS_det(){
 
     # Check for WW3 restart availability
     if [[ "${cplwav}" == ".true." ]]; then
-      if [[ ! -f "${DATArestart}/WW3_RESTART/${rdate:0:8}.${rdate:8:2}0000.restart.ww3" ]]; then
+      if [[ ! -f "${DATArestart}/WW3_RESTART/${rdate:0:8}.${rdate:8:2}0000.restart.ww3.nc" ]]; then
         ww3_rst_ok="NO"
       fi
     fi

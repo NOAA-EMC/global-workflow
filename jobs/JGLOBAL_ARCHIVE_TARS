@@ -74,6 +74,8 @@ fi
 ###############################################################
 
 set +eu
+# Do not export shell opts to the bash scripts in the htar/hsi wrappers
+export -n SHELLOPTS
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_tars.py}
 export err=$?
 set +x

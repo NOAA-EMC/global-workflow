@@ -7,6 +7,9 @@ function declare_from_tmpl() {
     # Each template must already be defined. Any variables in the template are replaced
     #   with their values. Undefined variables are just removed WITHOUT raising an error.
     #
+    # Template can be used implicitly, however, all declared COM variables must be
+    #   defined as either COMIN or COMOUT, therefore the template should be explicit
+    #
     # Accepts as options `-r` and `-x`, which do the same thing as the same options in
     #   `declare`. Variables are automatically marked as `-g` so the variable is visible
     #   in the calling script.
@@ -27,10 +30,11 @@ function declare_from_tmpl() {
     #
     #       # Previous cycle and gdas using an explicit template
     #       RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    #           COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+    #           COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
     #
-    #       # Current cycle and COM for first member
-    #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY
+    #       # Current cycle and COM for first member using an explicit template
+    #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    #           COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
     #
     if [[ ${DEBUG_WORKFLOW:-"NO"} == "NO" ]]; then set +x; fi
     local opts="-g"
@@ -106,21 +110,7 @@ function wait_for_file() {
     return 1
 }
 
-function detect_py_ver() {
-    # 
-    # Returns the major.minor version of the currently active python executable
-    #
-    regex="[0-9]+\.[0-9]+"
-    # shellcheck disable=SC2312
-    if [[ $(python --version) =~ ${regex} ]]; then
-	    echo "${BASH_REMATCH[0]}"
-    else
-	    echo "FATAL ERROR: Could not detect the python version"
-	    exit 1
-    fi
-}
 # shellcheck disable=
 
 declare -xf declare_from_tmpl
 declare -xf wait_for_file
-declare -xf detect_py_ver

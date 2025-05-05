@@ -20,6 +20,7 @@ if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 
 # Calls an external bash command; do not fail on unassigned/error
 set +eu
+export -n SHELLOPTS
 "${SCRgfs}/exgdas_enkf_earc_tars.py"
 export err=$?
 set +x
