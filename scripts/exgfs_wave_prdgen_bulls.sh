@@ -58,7 +58,7 @@
  set_trace
 
 # 1.a Link the input file and untar it
- BullIn="${COMIN_WAVE_STATION}/${RUNwave}.${cycle}.cbull.tar"
+ BullIn="${COMIN_WAVE_STATION}/${RUN}.wave.${cycle}.cbull.tar"
  if [ -f $BullIn ]; then
    cp $BullIn cbull.tar
  else

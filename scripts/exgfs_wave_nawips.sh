@@ -21,6 +21,7 @@ cd "${DATA}" || exit 99
 cpreq "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" "${DATA}/"
 
 grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  # Native grids
+grids="aoc_9km gnh_10m gsh_15m"
 
 # Create a template for the GEMPAK control file
 rm -f "${DATA}/gempak.parm.tmpl"
@@ -46,7 +47,7 @@ EOF
 # Loop over the grids
 for grid in ${grids}; do
   case ${grid} in
-    ao_9km)
+    aoc_9km)
       grdIDout='gfswavearc'
     ;;
     at_10m)
@@ -61,10 +62,10 @@ for grid in ${grids}; do
     glo_30m)
       grdIDout='gfswavegl30m'
     ;;
-    glo_10m)
+    gnh_10m)
       grdIDout='gfswavenh'
     ;;
-    gso_15m)
+    gsh_15m)
       grdIDout='gfswavesh'
     ;;
     glo_200)
