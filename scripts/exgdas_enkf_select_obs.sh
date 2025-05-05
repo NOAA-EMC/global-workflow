@@ -49,10 +49,10 @@ rm -f obs*input*
 ${NLN} ${SELECT_OBS} obsinput.tar
 
 # Whether to save or skip obs
-if [[ ${RUN_SELECT} = "YES" -a ${USE_SELECT} = "NO" ]]; then
+if [[ ${RUN_SELECT} = "YES" && ${USE_SELECT} = "NO" ]]; then
    lread_obs_save=".true."
    lread_obs_skip=".false."
-elif [[ ${RUN_SELECT} = "NO" -a ${USE_SELECT} = "YES" ]]; then
+elif [[ ${RUN_SELECT} = "NO" && ${USE_SELECT} = "YES" ]]; then
    lread_obs_save=".false."
    lread_obs_skip=".true."
 fi
