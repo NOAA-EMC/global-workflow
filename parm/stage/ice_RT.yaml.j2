@@ -18,7 +18,7 @@ ice_RT:
         {% for mem in mem_range %}
         {% set imem = mem - offset %}
         {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/dummy/'%}
-        {% set mid_cyc = (previous_cycle_HH | int + half_window) | strftime("%H0000") %}
+        {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
         {% set increment_mem_path = retro_path ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/ice/' ~ current_cycle_YMD ~ '.' ~ mid_cyc ~ '.cice_model_anl.res.nc' %}
         {% set increment_destination_path = COMOUT_ICE_ANALYSIS_MEM_list[imem] %}
 

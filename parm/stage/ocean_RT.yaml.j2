@@ -20,7 +20,7 @@ ocean_RT:
         {% for mem in mem_range %}
         {% set imem = mem - offset %}
         {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/dummy/'%}
-        {% set mid_cyc = (previous_cycle_HH | int + half_window) | strftime("%H0000") %}
+        {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
         {% set restart_mem_path = retro_path ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.MOM.' %}
         {% set increment_mem_path = retro_path ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/ocean/enkfgfs.t' ~ current_cycle_HH ~ 'z.ocninc.nc' %}
         {% set restart_destination_path = COMOUT_OCEAN_RESTART_PREV_MEM_list[imem] %}
