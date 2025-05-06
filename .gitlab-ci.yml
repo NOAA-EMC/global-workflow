@@ -31,7 +31,7 @@ stages:
 variables:
   BUILD: 'develop' # Placeholder for control over build directory path
   # Using GW prefix to avoid confusion with GitLab predefined variables
-  DATE: $(date +%m-%d-%Y)
+  DATE: $(date +%m%d)
   GW_RUN_PATH: ${CI_BUILDS_DIR}/${BUILD}_${CI_COMMIT_SHORT_SHA}_${DATE}
   # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the exact location
   # where the repository should be cloned. This works with custom_build_dir-enabled in the runner config.
