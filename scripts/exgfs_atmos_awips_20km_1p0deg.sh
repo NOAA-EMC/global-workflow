@@ -196,7 +196,7 @@ for GRID in conus ak prico pac 003; do
       export FORT31="awps_file_fi${fcsthr}_${GRID}"
       export FORT51="grib2.awpgfs_20km_${GRID}_f${fcsthr}"
 
-      cp "${PARMgfs}/wmo/grib2_awpgfs_20km_${GRID}f${fcsthr}" "parm_list"
+      cpreq "${PARMgfs}/wmo/grib2_awpgfs_20km_${GRID}f${fcsthr}" "parm_list"
 
       ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
       export err=$?; err_chk
@@ -214,7 +214,7 @@ for GRID in conus ak prico pac 003; do
 
       if [[ "${SENDDBN}" = 'YES' || "${SENDAWIP}" = 'YES' ]]; then
           "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
-				     "${COMOUT_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthr}"
+          "${COMOUT_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthr}"
       else
           echo "File ${COMOUT_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthr} not posted to db_net."
       fi
