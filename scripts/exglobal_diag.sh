@@ -20,6 +20,7 @@
 #  Set environment.
 
 # Base variables
+CDATE="${PDY}${cyc}"
 GDUMP=${GDUMP:-"gdas"}
 
 # Utilities
