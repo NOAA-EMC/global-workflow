@@ -49,7 +49,8 @@
   needs:
     - setup_experiments-${machine}
 
-finalize:
+.finalize_template:
+  extends: .base_config
   stage: finalize
   script:
     - |
@@ -59,8 +60,3 @@ finalize:
 
   needs:
     - run_tests-${machine}
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: always
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: never
