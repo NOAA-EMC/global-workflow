@@ -28,7 +28,9 @@ enkf_marine_grp:
         {% set anl_delta = "-3H" | to_timedelta %}
         {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
         - "{{ COMIN_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ocninc.nc"
-        - "{{ COMIN_OCEAN_LETKF_MEM | relpath(ROTDIR) }}/{{ head_ocean }}analysis.nc"
         - "{{ COMIN_ICE_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.cice_model_anl.res.nc"
+        {% if DOLETKF_OCN %}
+        - "{{ COMIN_OCEAN_LETKF_MEM | relpath(ROTDIR) }}/{{ head_ocean }}analysis.nc"
         - "{{ COMIN_ICE_LETKF_MEM | relpath(ROTDIR) }}/{{ head_ice }}analysis.nc"
+        {% endif %}
         {% endfor %}  # first_group_mem to last_group_mem

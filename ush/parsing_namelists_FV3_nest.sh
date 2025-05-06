@@ -239,7 +239,7 @@ cat >> "${nml_file}" <<EOF
 /
 
 &gfs_physics_nml
-  fhzero       = ${FHZER}
+  fhzero       = ${FHZERO}
   h2o_phys     = ${h2o_phys:-".true."}
   ldiag3d      = ${ldiag3d:-".false."}
   qdiag3d      = ${qdiag3d:-".false."}
