@@ -7,7 +7,7 @@ ocean_control_RT:
     copy:
         {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/dummy/'%}
         {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
-        {% set restart_path = retro_path ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.' %}
+        {% set restart_path = retro_path ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.' %}
         {% set increment_file = retro_path ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/ocean/gfs.t' ~ current_cycle_HH ~ 'z.ocninc.nc' %}
         {% set restart_destination_path = COMOUT_OCEAN_RESTART_PREV_MEM_list[0] %}
         {% set increment_destination_path = COMOUT_OCEAN_ANALYSIS_MEM_list[0] %}
