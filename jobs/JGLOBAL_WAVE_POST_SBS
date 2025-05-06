@@ -25,11 +25,10 @@ else
 fi
 
 # Execute the Script
-"${SCRgfs}/exgfs_wave_post_gridded_sbs.sh"
-err=$?
-if [[ "${err}" -ne 0 ]]; then
-  echo "FATAL ERROR: ex-script of gridded wave post failed!"
-  exit "${err}"
+"${SCRgfs}/exgfs_wave_post_gridded_sbs.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+  err_chk "FATAL ERROR: ex-script of gridded wave post failed!"
 fi
 
 ##########################################

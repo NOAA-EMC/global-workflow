@@ -112,8 +112,8 @@
       echo '************************************************************************** '
       echo ' '
       set_trace
-      err=2; export err;${errchk}
-      exit $err
+      export err=2
+      err_chk
     fi
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
@@ -136,8 +136,8 @@
     echo '*************************************************** '
     echo ' '
     set_trace
-    err=2; export err;${errchk}
-    exit $err
+    export err=2
+    err_chk
   fi
 
 # End of ww3_outp_cat.sh ---------------------------------------------------- #

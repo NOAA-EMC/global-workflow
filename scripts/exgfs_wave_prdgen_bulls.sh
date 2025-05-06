@@ -32,20 +32,20 @@
  export pgmout=OUTPUT.$$
  export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
 
- mkdir -p $DATA
- cd $DATA
+ mkdir -p ${DATA}
+ cd ${DATA}
  export wavelog=${DATA}/${RUNwave}_prdgbulls.log
  
- touch $wavelog
+ touch ${wavelog}
 # 0.b Date and time stuff
- export date=$PDY
+ export date=${PDY}
  export YMDH=${PDY}${cyc}
  set +x
  echo ' '
  echo '                  **************************************'
  echo '                  *** MWW3 BULLETINS PRODUCTS SCRIPT ***'
  echo '                  **************************************'
- echo "                                         $date $cycle"
+ echo "                                         ${date} ${cycle}"
  echo ' '
  echo "Starting at : $(date)"
  echo ' '
@@ -59,8 +59,8 @@
 
 # 1.a Link the input file and untar it
  BullIn="${COMIN_WAVE_STATION}/${RUNwave}.${cycle}.cbull.tar"
- if [ -f $BullIn ]; then
-   cp $BullIn cbull.tar
+ if [[ -f ${BullIn} ]]; then
+   cp ${BullIn} cbull.tar
  else
    echo "ABNORMAL EXIT: NO BULLETIN TAR FILE"
    set +x
@@ -70,11 +70,11 @@
    echo '************************************ '
    echo ' '
    set_trace
-   msg="FATAL ERROR ${RUNwave} prdgen $date $cycle : bulletin tar missing."
-   echo $msg
-   echo $msg >> $wavelog
-   export err=1; ${errchk}
-   exit $err
+   msg="FATAL ERROR ${RUNwave} prdgen ${date} ${cycle} : bulletin tar missing."
+   echo ${msg}
+   echo ${msg} >> ${wavelog}
+   export err=1
+   err_chk
  fi
 
  set +x
@@ -83,7 +83,7 @@
  tar -xf cbull.tar
  OK=$?
 
- if [ "$OK" = '0' ]; then
+ if [[ ${OK} -eq 0 ]]; then
    set +x
    echo "      Unpacking successfull ..."
    set_trace
@@ -97,9 +97,9 @@
    echo '****************************************** '
    echo ' '
    set_trace
-   echo "${RUNwave} prdgen $date $cycle : bulletin untar error." >> $wavelog
-   err=2;export err;err_chk
-   exit $err
+   echo "${RUNwave} prdgen ${date} ${cycle} : bulletin untar error." >> ${wavelog}
+   export err=2
+   err_chk
  fi
 
 # 1.b Output locations from bulletin files
@@ -108,11 +108,11 @@
  Nb=$(ls -1 *.cbull | wc -l)
  set_trace
   echo ' '
-  echo "   Number of bulletin files :   $Nb"
+  echo "   Number of bulletin files :   ${Nb}"
   echo '   --------------------------'
   echo ' '
 # 1.c Get the datat cards
- if [ -f ${PARMgfs}/wave/bull_awips_gfswave ]; then
+ if [[ -f ${PARMgfs}/wave/bull_awips_gfswave ]]; then
    cp ${PARMgfs}/wave/bull_awips_gfswave awipsbull.data
  else
    msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
@@ -122,11 +122,11 @@
    echo '*** ERROR : NO AWIPS BULLETIN DATA FILE *** '
    echo '******************************************* '
    echo ' '
-   echo $msg
+   echo ${msg}
    set_trace
-   echo "${RUNwave} prdgen $date $cycle : Bulletin header data file  missing." >> $wavelog
-   err=3;export err;err_chk
-   exit $err
+   echo "${RUNwave} prdgen ${date} ${cycle} : Bulletin header data file  missing." >> ${wavelog}
+   export err=3
+   err_chk
  fi
 
 # 2. AWIPS bulletins for output points
@@ -146,11 +146,11 @@
 # 2.d Looping over buoys running formbul
  echo '   Looping over buoys ... \n'
 
- for bull in $bulls; do
+ for bull in ${bulls}; do
    fname="${RUNwave}.${bull}.cbull"
-   oname="awipsbull.$bull.$cycle.${RUNwave}"
+   oname="awipsbull.${bull}.${cycle}.${RUNwave}"
    headr=$(grep "b${bull}=" awipsbull.data | sed 's/=/ /g' |  awk '{ print $3}')  
-   echo "      Processing $bull ($headr $oname) ..." 
+   echo "      Processing ${bull} (${headr} ${oname}) ..." 
  
    if [[ -z "${headr}" ]] || [[ ! -s "${fname}" ]]; then
      set_trace
@@ -161,11 +161,11 @@
      echo '*** FATAL ERROR : MISSING BULLETIN INFO *** '
      echo '******************************************** '
      echo ' '
-     echo $msg
+     echo ${msg}
      set_trace
-     echo "${RUNwave} prdgen $date $cycle : Missing bulletin data." >> $wavelog
-     err=4;export err;err_chk
-     exit $err
+     echo "${RUNwave} prdgen ${date} ${cycle} : Missing bulletin data." >> ${wavelog}
+     export err=4
+     err_chk
    fi
   
    set_trace
@@ -184,25 +184,25 @@
      echo '*** FATAL ERROR : ERROR IN formbul *** '
      echo '************************************** '
      echo ' '
-     echo $msg
+     echo ${msg}
      set_trace
-     echo "${RUNwave} prdgen $date $cycle : error in formbul." >> $wavelog
-     err=5;export err;err_chk
-     exit $err
+     echo "${RUNwave} prdgen ${date} ${cycle} : error in formbul." >> ${wavelog}
+     export err=5
+     err_chk
    fi
    
-   cat "${oname}" >> "awipsbull.$cycle.${RUNwave}"
+   cat "${oname}" >> "awipsbull.${cycle}.${RUNwave}"
 
  done
 
 # 3. Send output files to the proper destination
 set_trace
 cp "awipsbull.${cycle}.${RUNwave}" "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
-if [ "$SENDDBN_NTC" = YES ]; then
+if [[ "${SENDDBN_NTC}" == YES ]]; then
     make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" "${DATA}/awipsbull.${cycle}.${RUNwave}" \
 		     "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
 else
-    if [ "${envir}" = "para" ] || [ "${envir}" = "test" ] || [ "${envir}" = "dev" ]; then
+    if [[ "${envir}" == "para" || "${envir}" == "test" || "${envir}" == "dev" ]]; then
 	echo "Making NTC bulletin for parallel environment, but do not alert."
 	(export SENDDBN=NO; make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
 					     "${DATA}/awipsbull.${cycle}.${RUNwave}" "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}")

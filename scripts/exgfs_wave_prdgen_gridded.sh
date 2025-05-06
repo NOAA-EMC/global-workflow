@@ -107,12 +107,13 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
      if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
        echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
        echo "${RUNwave} ${grdIDin} ${fhr} prdgen ${date} ${cycle} : GRIB file missing." >> "${wavelog}"
-       err=1;export err;${errchk} || exit "${err}"
+       export err=1
+       err_chk
      fi
      GRIBOUT="${RUNwave}.${cycle}.${grdID}.f${fhr}.clipped.grib2"
 
      iparam=1
-     while [[ "${iparam}" -le "${nparam}" ]]; do
+     while [[ ${iparam} -le ${nparam} ]]; do
        nip=${arrpar[${iparam}-1]}
        prepar=${nip::-1} # Part prefix (assumes 1 digit index)
        paridx="${nip:0-1}"
@@ -125,7 +126,7 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
        esac
        echo "${nip} ${prepar} ${paridx} ${npart}"
        rm -f temp.grib2 
-       if [[ "${npart}" -eq 0 ]]; then 
+       if [[ ${npart} -eq 0 ]]; then 
          #shellcheck disable=SC2312
          ${WGRIB2} "${GRIBIN}" -s | grep ":${nip}" | "${WGRIB2}" -i "${GRIBIN}" -grib temp.grib2 > wgrib.out 2>&1 
          #shellcheck disable=SC2312
@@ -151,7 +152,8 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
      else
        echo "FATAL ERROR: NO template  grib2_${RUNwave}.${grdID}.f${fhr}"
        echo "${RUNwave} ${grdID} ${fhr} prdgen ${date} ${cycle} : GRIB template file missing." >> "${wavelog}"
-       err=3;export err;${errchk} || exit "${err}"
+       export err=3
+       err_chk
      fi
      #
 # 2.  AWIPS product generation
@@ -182,7 +184,8 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
        echo "${msg}"
        #set_trace
        echo "${RUNwave} ${grdID} prdgen ${date} ${cycle} : error in grbindex." >> "${wavelog}"
-       err=4;export err;err_chk
+       export err=4
+       err_chk
      fi
 
 # 2.a.3 Run AWIPS GRIB packing program tocgrib2
@@ -211,7 +214,8 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
        echo "${msg}"
        #set_trace
        echo "${RUNwave} prdgen ${date} ${cycle} : error in tocgrib2." >> "${wavelog}"
-       err=5;export err;err_chk
+       export err=5
+       err_chk
      else
        echo '*** tocgrib2 ran succesfully *** '
      fi

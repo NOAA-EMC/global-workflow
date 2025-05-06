@@ -87,10 +87,9 @@ for grid in ${grids}; do
     nagrib_file="${RUN}.wave.${cycle}.global.${gridIDout}.${fhr3}.grib2"
     ${WGRIB2} -lola 0:720:0.5 -90:361:0.5 "${nagrib_file}" grib "${GRIBIN}"
     export err=$?
-    if [[ "${err}" -ne 0 ]]; then
-      echo "FATAL ERROR: wgrib2 failed to interpolate"
+    if [[ ${err} -ne 0 ]]; then
       export pgm="${WGRIB2}"
-      err_chk
+      err_chk "FATAL ERROR: wgrib2 failed to interpolate"
     fi
   fi
 
@@ -115,12 +114,12 @@ for grid in ${grids}; do
   ls -l "${GEMGRD}"
   export err=$?; export pgm="GEMPAK CHECK FILE"; err_chk
 
-  if [[ "${NAGRIB}" = "nagrib2" ]]; then gpend; fi
+  if [[ "${NAGRIB}" == "nagrib2" ]]; then gpend; fi
 
   # Copy output to COMOUT
   cpfs "${GEMGRD}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
 
-  if [[ "${SENDDBN}" = "YES" ]] ; then
+  if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
   fi
 
