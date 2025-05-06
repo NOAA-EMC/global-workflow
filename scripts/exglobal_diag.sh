@@ -218,7 +218,7 @@ EOFdiag
 
    if [[ "${USE_CFP}" = "YES" ]] ; then
       chmod 755 "${DATA}/mp_diag.sh"
-      ncmd=$(cat "${DATA}/mp_diag.sh" | wc -l)
+      ncmd=$(wc -l < "${DATA}/mp_diag.sh")
       if [[ "${ncmd}" -gt 0 ]]; then
          ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
          APRUNCFP_DIAG=$(eval echo "${APRUNCFP}")
@@ -260,7 +260,7 @@ EOFdiag
       chmod 750 "${RADSTAT}"
       ${CHGRP_CMD} "${RADSTAT}"
 
-      echo $(date) END tar diagnostic files >&2
+      echo "$(date) END tar diagnostic files" >&2
    fi
 fi # End diagnostic file generation block - if [ $GENDIAG = "YES" ]
 
@@ -271,4 +271,4 @@ if [[ "${REMOVE_DIAG_DIR}" = "YES" && "${err}" = "0" ]]; then
     rm -rf "${DIAG_DIR}"
 fi
 
-exit ${err}
+exit "${err}"
