@@ -79,8 +79,8 @@ run_tests-gaeac6:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
 # Host: Hera - Finalize 
-finalize:
-  extends: .finalize
+finalize-hera:
+  extends: .finalize_tempate
   variables:
     machine: hera
   tags:
@@ -95,7 +95,7 @@ finalize:
 
 # Host: Gaea C6 - Finalize
 finalize-gaeac6:
-  extends: .finalize
+  extends: .finalize_template
   variables:
     machine: gaeac6
   tags:
