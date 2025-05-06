@@ -37,6 +37,31 @@
       echo "Using build directory $GW_HOMEgfs (dated $BUILD_DATE)"
       pslot=$(${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh get_pslot ${RUNTESTS_DIR} ${caseName})
       ${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh ${GW_RUN_PATH} ${pslot} global-workflow
-      exit $?
+      error=$?
+      if [ $error -ne 0 ]; then
+        echo "================================================================================"
+        echo "ERROR: Test case ${caseName} failed on ${machine} in ${RUNTESTS_DIR} at $(date)
+        echo "================================================================================"
+        exit 1  # Force exit code 1 for GitLab to recognize the failure
+      else
+        echo "Test case ${caseName} PASSED on ${machine} in ${RUNTESTS_DIR} at $(date)"
+        ln -sf ${CI_BUILDS_DIR}/stable ${GW_RUN_PATH}
   needs:
     - setup_experiments-${machine}
+
+  finalize:
+    stage: finalize
+    script:
+      - |
+        echo "Finalizing PR test cases on ${machine} using ${GW_HOMEgfs}"
+        echo "Setting soflink to ${GW_RUN_PATH} as ${CI_BUILDS_DIR}/stable"
+        ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
+
+    needs:
+      - run_tests-${machine}
+    rules:
+      - if: $CI_PIPELINE_SOURCE == "schedule"
+        when: always
+        across:
+          - $CI_PIPELINE_SOURCE == "trigger"
+            when: never

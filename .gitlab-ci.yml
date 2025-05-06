@@ -29,9 +29,10 @@ stages:
   - finalize
 
 variables:
-  BUILD: '' # Placeholder for control over build directory path
+  BUILD: 'develop' # Placeholder for control over build directory path
   # Using GW prefix to avoid confusion with GitLab predefined variables
-  GW_RUN_PATH: ${CI_BUILDS_DIR}/${BUILD}/${CI_COMMIT_SHORT_SHA}
+  DATE: $(date +%m-%d-%Y)
+  GW_RUN_PATH: ${CI_BUILDS_DIR}/${BUILD}_${CI_COMMIT_SHORT_SHA}_${DATE}
   # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the exact location
   # where the repository should be cloned. This works with custom_build_dir-enabled in the runner config.
   GIT_CLONE_PATH: '${GW_RUN_PATH}/global-workflow'
@@ -62,7 +63,6 @@ include:
   stage: build
   script:
     - |
-      set -e  # Fail the job if any command fails
       echo "Setting up build environment for ${machine}"
       echo "Using build directory ${GW_HOMEgfs}"
       git submodule status
@@ -74,7 +74,7 @@ include:
         gh pr checkout ${PR_NUMBER}
       fi
 
-      #dev/ci/scripts/utils/ci_utils.sh build
+      dev/ci/scripts/utils/ci_utils.sh build
       build_status=0
 
       if [ $build_status -ne 0 ]; then
