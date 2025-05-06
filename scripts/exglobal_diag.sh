@@ -171,7 +171,7 @@ EOFdiag
          03) string=anl;;
           *) string=${loop};;
       esac
-      echo $(date) START loop "${string}" >&2
+      echo "$(date) START loop ${string}" >&2
       n=-1
       while [[ $((n+=1)) -le ${ntype} ]] ;do
          for type in $(echo "${diagtype[n]}"); do

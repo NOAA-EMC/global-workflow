@@ -98,7 +98,7 @@ else
 fi
 
 # Set 4D-EnVar specific variables
-if [ "${DOHYBVAR}" = "YES" -a "${l4densvar}" = ".true." -a "${lwrite4danl}" = ".true." ]; then
+if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
    ATMA03=${ATMA03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma003.nc}
    ATMI03=${ATMI03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi003.nc}
    ATMA04=${ATMA04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma004.nc}
@@ -156,7 +156,7 @@ if [ "${DO_CALC_ANALYSIS}" == "YES" ]; then
    fi
 
    # Link hourly backgrounds (if present)
-   if [ -f "${ATMG04}" -a -f "${ATMG05}" -a -f "${ATMG07}" -a -f "${ATMG08}" ]; then
+   if [[ -f "${ATMG04}" && -f "${ATMG05}" && -f "${ATMG07}" && -f "${ATMG08}" ]]; then
       nhr_obsbin=1
    fi
 

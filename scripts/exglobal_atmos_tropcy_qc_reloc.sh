@@ -48,7 +48,7 @@ if [[ "${PROCESS_TROPCY}" = 'YES' ]]; then
 
    "${USHgfs}/syndat_qctropcy.sh" "${cdate10}"
    errsc=$?
-   if [[ "${errsc}" -ne '0' ]]; then
+   if [[ ${errsc} -ne 0 ]]; then
     echo "syndat_qctropcy.sh failed. exit"
     exit ${errsc}
    fi
@@ -101,7 +101,9 @@ if [[ "${DO_RELOCATE}" = 'YES' ]]; then
 #  relocation processing in COMSP path
    qual_last=".${tmmark}"  # need this because gfs and gdas don't add $tmmark
                          #  qualifer to end of output sigma guess files
-   [ "${RUN}" = gfs -o "${RUN}" = gdas -o "${NET}" = cfs ]  &&  qual_last=""
+   if [[ "${RUN}" == gfs || "${RUN}" == gdas || "${NET}" == cfs ]]; then
+      qual_last=""
+   fi
 
    if [[ "${BKGFREQ}" -eq 1 ]]; then
       if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
