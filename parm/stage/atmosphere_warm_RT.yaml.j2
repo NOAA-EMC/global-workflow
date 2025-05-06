@@ -20,7 +20,8 @@ atmosphere_warm_RT:
         {% for mem in mem_range %}
         {% set imem = mem - offset %}
         {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/'%}
-        {% set restart_mem_path = retro_path ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.210000.' %}
+        {% set mid_cyc = (previous_cycle_HH | int + half_window) | strftime("%H0000") %}
+        {% set restart_mem_path = retro_path ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.' %}
         {% set increment_mem_path = retro_path ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/atmos/enkfgfs.t' ~ current_cycle_HH ~ 'z.' %}
         {% set restart_destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
         {% set increment_destination_path = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}

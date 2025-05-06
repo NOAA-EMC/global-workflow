@@ -4,6 +4,7 @@ ice_control_RT:
         - "{{ COMOUT_ICE_ANALYSIS_MEM }}"
     copy:
         {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/'%}
-        {% set increment_file = retro_path ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ '/analysis/ice/' ~ current_cycle_YMD ~ '.210000.cice_model_anl.res.nc' %}
+        {% set mid_cyc = (previous_cycle_HH | int + half_window) | strftime("%H0000") %}
+        {% set increment_file = retro_path ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/ice/' ~ current_cycle_YMD ~ '.' ~ mid_cyc ~ '.cice_model_anl.res.nc' %}
         {% set increment_destination_path = COMOUT_ICE_ANALYSIS_MEM_list[0] %}
         - ["{{ increment_file }}", "{{ increment_destination_path }}"]
