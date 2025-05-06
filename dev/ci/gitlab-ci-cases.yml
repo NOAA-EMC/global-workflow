@@ -62,6 +62,5 @@
     rules:
       - if: $CI_PIPELINE_SOURCE == "schedule"
         when: always
-        across:
-          - $CI_PIPELINE_SOURCE == "trigger"
-            when: never
+      - if: $CI_PIPELINE_SOURCE == "trigger"
+        when: never
