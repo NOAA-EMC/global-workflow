@@ -220,7 +220,11 @@ EOFdiag
       chmod 755 "${DATA}/mp_diag.sh"
       ncmd=$(wc -l < "${DATA}/mp_diag.sh")
       if [[ ${ncmd} -gt 0 ]]; then
-         ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
+         if [[ ${ncmd} -lt ${max_tasks_per_node} ]]; then
+            ncmd_max=${ncmd}
+         else
+            ncmd_max=${max_tasks_per_node}
+         fi
          APRUNCFP_DIAG=$(eval echo "${APRUNCFP}")
          ${APRUNCFP_DIAG} "${DATA}/mp_diag.sh"
          export err=$?; err_chk
