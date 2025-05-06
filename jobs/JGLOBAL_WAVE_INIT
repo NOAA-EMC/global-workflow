@@ -15,7 +15,7 @@ export wavempexec=${wavempexec:-"mpirun -n"}
 export wave_mpmd=${wave_mpmd:-"cfp"}
 
 # Execute the Script
-${SCRgfs}/exgfs_wave_init.sh && true
+"${SCRgfs}/exgfs_wave_init.sh" && true
 export err=$?
 err_chk
 
