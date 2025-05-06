@@ -78,6 +78,36 @@ run_tests-gaeac6:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
+# Host: Hera - Finalize 
+finalize:
+  extends: .finalize
+  variables:
+    machine: hera
+  tags:
+    - hera
+  needs:
+    - run_tests-hera
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: never
+
+# Host: Gaea C6 - Finalize
+finalize-gaeac6:
+  extends: .finalize
+  variables:
+    machine: gaeac6
+  tags:
+    - gaeac6
+  needs:
+    - run_tests-gaeac6
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: never
+
 # =======================================
 # CTests configurations by host
 # =======================================
