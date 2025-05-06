@@ -13,15 +13,12 @@
 #  wave_prnc_ice.sh     : preprocess ice fields.                              #
 #  wave_prnc_cur.sh     : preprocess current fields.                          #
 #                                                                             #
-# Remarks :                                                                   #
-# - For non-fatal errors output is witten to the wave.log file.               #
-#                                                                             #
 # COM inputs:                                                                 #
-#  - ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}                           #
-#  - ${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f#HHH_prog.nc        #
+#  - ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID}                          #
+#  - ${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f#HHH_prog.nc                 #
 #                                                                             #
 # COM outputs:                                                                #
-#  - ${COMOUT_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.${cycle}.cur                 #
+#  - ${COMOUT_WAVE_PREP}/${RUN}.wave.${WAVECUR_FID}.${cycle}.cur              #
 #                                                                             #
 #  Update record :                                                            #
 #                                                                             #
@@ -39,7 +36,7 @@
 
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
-  export WAV_MOD_TAG=${RUN}wave${waveMEMB}
+  export WAV_MOD_TAG="${RUN}wave${waveMEMB}"
 
   cd ${DATA}
   mkdir outtmp
@@ -161,12 +158,12 @@
 
   for grdID in ${grdINP} ${waveGRD}
   do
-    if [[ -f "${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID}" ]]
+    if [[ -f "${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID}" ]]
     then
       set +x
       echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
       set_trace
-      cp ${COMIN_WAVE_PREP}/${RUN}wave.mod_def.${grdID} mod_def.${grdID}
+      cp ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID} mod_def.${grdID}
 
     else
       set +x
@@ -174,7 +171,7 @@
       echo '*********************************************************** '
       echo '*** FATAL ERROR : NOT FOUND WAVE  MODEL DEFINITION FILE *** '
       echo '*********************************************************** '
-      echo "                                grdID == ${grdID}"
+      echo "                                grdID = ${grdID}"
       echo ' '
       set_trace
       export err=2
@@ -201,10 +198,10 @@
          grdID=${WAVEWND_FID}
        ;;
        ice )
-         grdID=${WAVEICE_FID} 
+         grdID=${WAVEICE_FID}
        ;;
        cur )
-         grdID=${WAVECUR_FID} 
+         grdID=${WAVECUR_FID}
        ;;
        * )
          export err=3
@@ -325,7 +322,7 @@
       chmod 744 cmdfile
 
       ymdh_rtofs=${RPDY}00 # RTOFS runs once daily use ${PDY}00
-      if [[ "${ymdh_beg}" -lt "${ymdh_rtofs}" ]];then 
+      if [[ ${ymdh_beg} -lt ${ymdh_rtofs} ]]; then 
          #If the start time is before the first hour of RTOFS, use the previous cycle
          export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
       fi 
@@ -354,7 +351,7 @@
       fi
 
       ymdh_end_rtofs=$(${NDATE} ${FHMAX_WAV_CUR} ${RPDY}00)
-      if [[ "${ymdh_end}" -lt "${ymdh_end_rtofs}" ]]; then 
+      if [[ ${ymdh_end} -lt ${ymdh_end_rtofs} ]]; then 
          ymdh_end_rtofs=${ymdh_end}
       fi
 
@@ -479,7 +476,7 @@
         cat ${file} >> cur.${WAVECUR_FID}
       done
 
-      cp -f cur.${WAVECUR_FID} ${COMOUT_WAVE_PREP}/${RUN}wave.${WAVECUR_FID}.${cycle}.cur 
+      cp -f cur.${WAVECUR_FID} ${COMOUT_WAVE_PREP}/${RUN}.wave.${WAVECUR_FID}.${cycle}.cur
 
     else
       echo ' '
