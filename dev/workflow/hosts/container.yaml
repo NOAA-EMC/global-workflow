@@ -20,7 +20,7 @@ CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 # HPSS properties
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
 ARCHCOM_TO: 'local'
-ATARDIR: '' # TODO: This will not yet work from AWS.
+ATARDIR: '' # TODO: This will not yet work from CONTAINER.
 CHGRP_RSTPROD: 'YES'
 CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 # Features
