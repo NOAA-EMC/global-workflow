@@ -105,7 +105,7 @@ if [[ "${DO_RELOCATE}" = 'YES' ]]; then
       qual_last=""
    fi
 
-   if [[ "${BKGFREQ}" -eq 1 ]]; then
+   if [[ ${BKGFREQ} -eq 1 ]]; then
       if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
       if [[ -s sgm2prep ]]; then cp "sgm2prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm2prep${qual_last}"; fi
       if [[ -s sgm1prep ]]; then cp "sgm1prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm1prep${qual_last}"; fi
@@ -113,7 +113,7 @@ if [[ "${DO_RELOCATE}" = 'YES' ]]; then
       if [[ -s sgp1prep ]]; then cp "sgp1prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp1prep${qual_last}"; fi
       if [[ -s sgp2prep ]]; then cp "sgp2prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp2prep${qual_last}"; fi
       if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
-   elif [[ "${BKGFREQ}" -eq 3 ]]; then
+   elif [[ ${BKGFREQ} -eq 3 ]]; then
       if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
       if [[ -s sgesprep ]]; then cp "sgesprep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
       if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
