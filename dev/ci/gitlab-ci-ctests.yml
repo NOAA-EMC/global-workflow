@@ -26,14 +26,25 @@
   extends: .base_config
   stage: create_experiments
   script: |
-    set -e  # Fail the job if any command fails
     echo "Setting up for ctests workflow"
+    echo "Using build directory ${GW_HOMEgfs}"
+    source ${GW_HOMEgfs}/dev/ush/gw_setup.sh
+    module load cmake
+    CTEST="$(command -v ctest 2>/dev/null)"
+    echo "CTEST command found at: $CTEST"
     source ${GW_HOMEgfs}/dev/ci/platforms/config.${machine}
     cd ${GW_HOMEgfs}/dev/ctests
     mkdir -p build
     cd build
     cmake -S ${GW_HOMEgfs}
     ctest -N
+    ctest_status=$?
+    if [ $ctest_status -ne 0 ]; then
+      echo "==========================================================="
+      echo "ERROR: CMake configuration failed with exit code $ctest_status"
+      echo "==========================================================="
+      exit 1  # Force exit code 1 for GitLab to recognize the failure
+    fi
     num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
     [ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }
     echo "CTests have been created and configured successfully"
@@ -46,6 +57,8 @@
   stage: run_tests
   script: |
     echo "Running ${CTEST} tests in ${GW_HOMEgfs}/dev/ctests"
+    CTEST="$(command -v ctest 2>/dev/null)"
+    echo "CTEST command found at: $CTEST"
     cd ${GW_HOMEgfs}/dev/ctests/build
 
     # Run CTest and generate the JUnit XML output
