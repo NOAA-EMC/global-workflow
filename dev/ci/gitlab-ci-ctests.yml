@@ -30,8 +30,8 @@
     echo "Using build directory ${GW_HOMEgfs}"
     source ${GW_HOMEgfs}/dev/ush/gw_setup.sh
     module load cmake
-    CTEST="$(command -v ctest 2>/dev/null)"
-    echo "CTEST command found at: $CTEST"
+    CTEST_EXE="$(command -v ctest 2>/dev/null)"
+    echo "ctest command found at: ${CTEST_EXE}"
     source ${GW_HOMEgfs}/dev/ci/platforms/config.${machine}
     cd ${GW_HOMEgfs}/dev/ctests
     mkdir -p build
@@ -59,10 +59,10 @@
     echo "Using build directory ${GW_HOMEgfs}"
     source ${GW_HOMEgfs}/dev/ush/gw_setup.sh
     module load cmake
-    CTEST="$(command -v ctest 2>/dev/null)"
-    echo "CTEST command found at: $CTEST"
     cd ${GW_HOMEgfs}/dev/ctests/build
     echo "Running CTests with label: ${CTEST} in ${PWD}"
+    num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
+    [ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }
     ctest -L ${CTEST} --output-junit result.xml --stop-on-failure --output-on-failure
     ctest_status=$?
 
