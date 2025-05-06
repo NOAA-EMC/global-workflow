@@ -49,18 +49,18 @@
   needs:
     - setup_experiments-${machine}
 
-  finalize:
-    stage: finalize
-    script:
-      - |
-        echo "Finalizing PR test cases on ${machine} using ${GW_HOMEgfs}"
-        echo "Setting soflink to ${GW_RUN_PATH} as ${CI_BUILDS_DIR}/stable"
-        ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
+finalize:
+  stage: finalize
+  script:
+    - |
+      echo "Finalizing PR test cases on ${machine} using ${GW_HOMEgfs}"
+      echo "Setting soflink to ${GW_RUN_PATH} as ${CI_BUILDS_DIR}/stable"
+      ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
 
-    needs:
-      - run_tests-${machine}
-    rules:
-      - if: $CI_PIPELINE_SOURCE == "schedule"
-        when: always
-      - if: $CI_PIPELINE_SOURCE == "trigger"
-        when: never
+  needs:
+    - run_tests-${machine}
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: never
