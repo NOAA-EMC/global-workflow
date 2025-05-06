@@ -191,7 +191,7 @@ EOFdiag
                fi
                echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
                numfile[n]=$(expr ${numfile[n]} + 1)
-            elif [[ "${count}" -eq 1 ]]; then
+            elif [[ ${count} -eq 1 ]]; then
                 cat "${prefix}${type}_${loop}"* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
                 if [[ "${DIAG_COMPRESS}" = "YES" ]]; then
                    ${COMPRESS} "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
@@ -213,13 +213,13 @@ EOFdiag
       for file in $(ls diag_*"${CDATE}${DIAG_SUFFIX}"); do
          ${COMPRESS} "${file}"
       done
-      echo $(date) END "${COMPRESS}" diagnostic files >&2
+      echo "$(date) END ${COMPRESS} diagnostic files" >&2
    fi
 
    if [[ "${USE_CFP}" = "YES" ]] ; then
       chmod 755 "${DATA}/mp_diag.sh"
       ncmd=$(wc -l < "${DATA}/mp_diag.sh")
-      if [[ "${ncmd}" -gt 0 ]]; then
+      if [[ ${ncmd} -gt 0 ]]; then
          ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
          APRUNCFP_DIAG=$(eval echo "${APRUNCFP}")
          ${APRUNCFP_DIAG} "${DATA}/mp_diag.sh"
@@ -241,12 +241,12 @@ EOFdiag
    if [[ ${DIAG_TARBALL} = "YES" ]]; then
       echo $(date) START tar diagnostic files >&2
       n=-1
-      while [ $((n+=1)) -le ${ntype} ] ;do
+      while [[ $((n+=1)) -le ${ntype} ]] ;do
          TAROPTS="-uvf"
-         if [ ! -s "${diagfile[n]}" ]; then
+         if [[ ! -s "${diagfile[n]}" ]]; then
             TAROPTS="-cvf"
          fi
-         if [ "${numfile[n]}" -gt 0 ]; then
+         if [[ ${numfile[n]} -gt 0 ]]; then
             tar ${TAROPTS} "${diagfile[n]}" $(cat ${diaglist[n]})
             export err=$?; err_chk
          fi
