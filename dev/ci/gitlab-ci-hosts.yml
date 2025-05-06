@@ -80,7 +80,7 @@ run_tests-gaeac6:
 
 # Host: Hera - Finalize 
 finalize-hera:
-  extends: .finalize_tempate
+  extends: .finalize_template
   variables:
     machine: hera
   tags:
