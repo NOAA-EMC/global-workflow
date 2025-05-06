@@ -45,7 +45,6 @@
   extends: .base_config
   stage: run_tests
   script: |
-    set -e  # Fail the job if any command fails
     echo "Running ${CTEST} tests in ${GW_HOMEgfs}/dev/ctests"
     cd ${GW_HOMEgfs}/dev/ctests/build
 
