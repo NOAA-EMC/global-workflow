@@ -260,7 +260,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             if "rdhpcs" in domain:
                 rdhpcs_uid_found = True
 
-        if globus_conf.get("SERVER_USERNAME", "UNDEFINED") == "UNDEFINED":
+        if globus_conf.get("SERVER_USERNAME", "") == "":
             logger.error(f"ERROR the username for {globus_conf.SERVER_NAME} was not provided.  "
                          f"Please provide your username to {globus_conf.EXPDIR}/config.globus as SERVER_USERNAME.")
 

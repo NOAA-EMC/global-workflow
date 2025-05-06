@@ -249,7 +249,7 @@ class GlobusHpss(Task):
                 sven_output = self.forsven(output=str)
                 logger.debug(sven_output)
             except ProcessError as pe:
-                raise ProcessError("FATAL ERROR Sven failed to package the request"
+                raise ProcessError("FATAL ERROR Sven failed to package the request "
                                    f"for {location}") from pe
 
             # Parse Sven's output to get the name of the return status file
