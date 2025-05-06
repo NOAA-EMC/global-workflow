@@ -29,7 +29,7 @@ stages:
   - finalize
 
 variables:
-  BUILD: 'ab5ee1aa' # Placeholder for control over build directory path
+  BUILD: '' # Placeholder for control over build directory path
   # Using GW prefix to avoid confusion with GitLab predefined variables
   GW_RUN_PATH: ${CI_BUILDS_DIR}/${BUILD}/${CI_COMMIT_SHORT_SHA}
   # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the exact location

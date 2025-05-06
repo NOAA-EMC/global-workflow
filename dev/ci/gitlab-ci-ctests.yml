@@ -56,12 +56,13 @@
   extends: .base_config
   stage: run_tests
   script: |
-    echo "Running ${CTEST} tests in ${GW_HOMEgfs}/dev/ctests"
+    echo "Using build directory ${GW_HOMEgfs}"
+    source ${GW_HOMEgfs}/dev/ush/gw_setup.sh
+    module load cmake
     CTEST="$(command -v ctest 2>/dev/null)"
     echo "CTEST command found at: $CTEST"
     cd ${GW_HOMEgfs}/dev/ctests/build
-
-    # Run CTest and generate the JUnit XML output
+    echo "Running CTests with label: ${CTEST} in ${PWD}"
     ctest -L ${CTEST} --output-junit result.xml --stop-on-failure --output-on-failure
     ctest_status=$?
 
