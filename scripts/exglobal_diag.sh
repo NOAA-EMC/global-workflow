@@ -176,7 +176,7 @@ EOFdiag
       n=-1
       while [[ $((n+=1)) -le ${ntype} ]] ;do
          for type in $(echo "${diagtype[n]}"); do
-            count=$(ls "${prefix}${type}_${loop}"* 2>/dev/null | wc -l)
+            count=$(ls ${prefix}${type}_${loop}* 2>/dev/null | wc -l)
             if [[ "${count}" -gt 1 ]]; then
                if [[ "${USE_CFP}" = "YES" ]]; then
                   echo "${nm} ${DATA}/diag.sh ${lrun_subdirs} ${binary_diag} ${type} ${loop} ${string} ${CDATE} ${DIAG_COMPRESS} ${DIAG_SUFFIX}" | tee -a "${DATA}/mp_diag.sh"
@@ -185,7 +185,7 @@ EOFdiag
                   fi
                else
                   if [[ "${binary_diag}" = ".true." ]]; then
-                     cat "${prefix}${type}_${loop}"* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
+                     cat ${prefix}${type}_${loop}* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
                   else
                      ${CATEXEC} -o "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}" "${prefix}${type}_${loop}"*
                   fi
@@ -193,11 +193,11 @@ EOFdiag
                echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
                numfile[n]=$(expr ${numfile[n]} + 1)
             elif [[ ${count} -eq 1 ]]; then
-                cat "${prefix}${type}_${loop}"* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
+                cat ${prefix}${type}_${loop}* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
                 if [[ "${DIAG_COMPRESS}" = "YES" ]]; then
                    ${COMPRESS} "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
                 fi
-                echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
+                echo diag_${type}_${string}.${CDATE}* >> ${diaglist[n]}
                 numfile[n]=$(expr "${numfile[n]}" + 1)
             fi
          done
@@ -211,7 +211,7 @@ EOFdiag
    # If requested, compress diagnostic files
    if [[ "${DIAG_COMPRESS}" = "YES" && "${USE_CFP}" = "NO" ]]; then
       echo $(date) START "${COMPRESS}" diagnostic files >&2
-      for file in $(ls diag_*"${CDATE}${DIAG_SUFFIX}"); do
+      for file in $(ls diag_*${CDATE}${DIAG_SUFFIX}); do
          ${COMPRESS} "${file}"
       done
       echo "$(date) END ${COMPRESS} diagnostic files" >&2
