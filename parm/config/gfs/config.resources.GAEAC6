@@ -34,6 +34,8 @@ case ${step} in
         export threads_per_task=6
         export tasks_per_node=8
         ;;
+      *)
+        ;;
     esac
   ;;
 
@@ -44,6 +46,8 @@ case ${step} in
         ;;
       "C1152")
         export threads_per_task=16
+        ;;
+      *) 
         ;;
     esac
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
@@ -62,6 +66,8 @@ case ${step} in
       "025")
         tasks_per_node=$(( max_tasks_per_node / 4 )) 
         ;;
+      *)
+        ;;
     esac
     ;;
 
@@ -71,7 +77,10 @@ case ${step} in
         ntasks=288
         tasks_per_node=12
         ;;
+      *)
+        ;;
     esac
     ;;
-
+  *) 
+    ;;
 esac
