@@ -178,7 +178,7 @@ for GRID in conus ak prico pac 003; do
       # Post Files to ${COMOUT_ATMOS_WMO}
       ##############################
 
-      mv "grib2.awpgfs${fcsthr}.${GRID}" \
+      cpfs "grib2.awpgfs${fcsthr}.${GRID}" \
          "${COMOUT_ATMOS_WMO}/grib2.awpgfs${fcsthr}.${GRID}"
 
       ##############################
@@ -205,7 +205,7 @@ for GRID in conus ak prico pac 003; do
       # Post Files to ${COMOUT_ATMOS_WMO}
       ##############################
 
-      mv "grib2.awpgfs_20km_${GRID}_f${fcsthr}" \
+      cpfs "grib2.awpgfs_20km_${GRID}_f${fcsthr}" \
          "${COMOUT_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthr}"
 
       ##############################
