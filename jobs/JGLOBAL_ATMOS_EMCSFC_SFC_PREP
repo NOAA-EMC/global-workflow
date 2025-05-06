@@ -34,10 +34,8 @@ export BLENDED_ICE_FILE_m6hrs=${BLENDED_ICE_FILE_m6hrs:-${COMIN_m6hrs}/${RUN}.${
 ###############################################################
 
 ${EMCSFCPREPSH:-${SCRgfs}/exemcsfc_global_sfc_prep.sh}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work
