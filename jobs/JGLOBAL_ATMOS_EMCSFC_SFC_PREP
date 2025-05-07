@@ -1,33 +1,32 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "sfc_prep" -c "base"
-
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "sfc_prep" -c "base sfcprep"
 
 ##############################################
-# Set CDATE
+# Set date and cycle
 ##############################################
 
-CDATE=${CDATE:-${PDY}${cyc}}
-GDATE=$(${NDATE} -06 ${CDATE})
-PDY_m6hrs=$(echo ${GDATE} | cut -c1-8)
-cyc_m6hrs=$(echo ${GDATE} | cut -c9-10)
-export cycle_m6hrs=t${cyc_m6hrs}z
+GDATE=$(${NDATE} -06 ${PDY}${cyc})
+gPDY=$(echo ${GDATE} | cut -c1-8)
+gcyc=$(echo ${GDATE} | cut -c9-10)
+gcycle="t${gcyc}z"
 
-export COMPONENT="atmos"
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_OBSPROC:COM_OBSPROC_TMPL
+YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+    COMIN_OBSPROC_PREV:COM_OBSPROC_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMOUT_OBS:COM_OBS_TMPL
 
-export COMINobsproc=${COMINobsproc:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMIN_m6hrs=${COMIN_m6hrs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY_m6hrs}/${cyc_m6hrs}/${COMPONENT}}
+export IMS_FILE=${COMIN_OBSPROC}/${RUN}.${cycle}.imssnow96.grib2
+export FIVE_MIN_ICE_FILE=${COMIN_OBSPROC}/${RUN}.${cycle}.seaice.5min.grib2
+export AFWA_NH_FILE=${COMIN_OBSPROC}/${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb
+export AFWA_SH_FILE=${COMIN_OBSPROC}/${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb
+export AFWA_GLOBAL_FILE=${COMIN_OBSPROC}/${RUN}.${cycle}.snow.usaf.grib2
 
-export IMS_FILE=${COMINobsproc}/${RUN}.${cycle}.imssnow96.grib2
-export FIVE_MIN_ICE_FILE=${COMINobsproc}/${RUN}.${cycle}.seaice.5min.grib2
-export AFWA_NH_FILE=${COMINobsproc}/${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb
-export AFWA_SH_FILE=${COMINobsproc}/${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb
-
-export BLENDED_ICE_FILE=${BLENDED_ICE_FILE:-${RUN}.${cycle}.seaice.5min.blend.grb}
-export BLENDED_ICE_FILE_m6hrs=${BLENDED_ICE_FILE_m6hrs:-${COMIN_m6hrs}/${RUN}.${cycle_m6hrs}.seaice.5min.blend.grb}
+export BLENDED_ICE_FILE=${RUN}.${cycle}.seaice.5min.blend.grb
+export BLENDED_ICE_FILE_m6hrs=${COMIN_OBSPROC_PREV}/${RUN}.${gcycle}.seaice.5min.blend.grb
 
 ###############################################################
 # Run relevant script

@@ -66,17 +66,49 @@ class GFSTasks(Tasks):
 
         return task
 
+    def sfcprep(self):
+
+        dependencies = None
+        if self.options['do_sfcprep']:
+            deps = []
+            dep_dict = {'type': 'metatask', 'name': 'gdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+            deps.append(rocoto.add_dependency(dep_dict))
+            data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
+            dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+            cycledef = self.run
+
+            resources = self.get_resource('sfcprep')
+            task_name = f'{self.run}_sfcprep'
+            task_dict = {'task_name': task_name,
+                         'resources': resources,
+                         'dependency': dependencies,
+                         'envars': self.envars,
+                         'cycledef': cycledef,
+                         'command': f'{self.HOMEgfs}/dev/jobs/sfcprep.sh',
+                         'job_name': f'{self.pslot}_{task_name}_@H',
+                         'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                         'maxtries': '&MAXTRIES;'
+                         }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def prep(self):
 
         dump_suffix = self._base["DUMP_SUFFIX"]
         dmpdir = self._base["DMPDIR"]
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
-        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
+        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSPROC_TMPL"],
                                                        {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
 
         gfs_enkf = True if self.options['do_hybvar'] and 'gfs' in self.app_config.ens_runs else False
 
         deps = []
+
         dep_dict = {'type': 'metatask', 'name': 'gdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
@@ -85,6 +117,9 @@ class GFSTasks(Tasks):
         data = f'{dump_path}/{self.run}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_sfcprep']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_sfcprep'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = self.run

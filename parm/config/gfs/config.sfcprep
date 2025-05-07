@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.sfcprep ##########
+# Sfc prep specific
+
+echo "BEGIN: config.sfcprep"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" sfcprep
+
+echo "END: config.sfcprep"
