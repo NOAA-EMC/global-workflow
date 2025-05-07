@@ -6,7 +6,7 @@
 echo "BEGIN: config.arch_tars"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" "arch_tars"
+source "${EXPDIR}/config.resources" arch_tars
 
 export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
