@@ -5,11 +5,8 @@
 # This script is the product generator ("graphics job")  for the              #
 # GFSv16-wave output for gridded wave fields                                  #
 #                                                                             #
-# Remarks :                                                                   #
-# - Supplemental error output is witten to the wave.log file.                 #
-#                                                                             #
 # COM inputs:                                                                 #
-#  - ${COMIN_WAVE_GRID}/${RUNwave}.${cycle}.${grdOut}.f${fhr}.grib2           #
+#  - ${COMIN_WAVE_GRID}/${RUN}.wave.${cycle}.${grdOut}.f${fhr}.grib2          #
 #                                                                             #
 # COM outputs:                                                                #
 #  - ${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}             #
@@ -28,7 +25,6 @@ source "${USHgfs}/wave_domain_grid.sh"
 
 # 0.a Basic modes of operation
 
- export RUNwave=${RUNwave:-${RUN}.wave}
  export envir=${envir:-ops}
  export fstart=${fstart:-0}
  export FHMAX_WAV=${FHMAX_WAV_WMO:-180}      #180 Total of hours to process
@@ -42,7 +38,6 @@ source "${USHgfs}/wave_domain_grid.sh"
  export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
  mkdir -p "${DATA}"
  cd "${DATA}" || exit 1
- export wavelog=${DATA}/${RUNwave}_prdggridded.log
  
  echo "Starting MWW3 GRIDDED PRODUCTS SCRIPT"
 # Output grids
@@ -87,7 +82,7 @@ grids='aoc_9km at_10m ep_10m wc_10m glo_30m'
 # 1.a Grib file (AWIPS and FAX charts)
  # Get input grid
 
- fhcnt=${fstart}
+ fhcnt="${fstart}"
  while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
    fhr=$(printf "%03d" "${fhcnt}")
    for grdOut in ${grids}; do
@@ -103,10 +98,10 @@ grids='aoc_9km at_10m ep_10m wc_10m glo_30m'
      max_tries=1000
      if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
        echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
-       echo "${RUNwave} ${GRDREGION}.${GRDRES} ${fhr} prdgen ${date} ${cycle} : GRIB file missing." >> "${wavelog}"
+       echo "${RUN} wave ${GRDREGION}.${GRDRES} ${fhr} prdgen ${date} ${cycle} : GRIB file missing."
        err=1;export err;${errchk} || exit "${err}"
      fi
-     GRIBOUT="${RUNwave}.${cycle}.${grdID}.f${fhr}.clipped.grib2"
+     GRIBOUT="${RUN}.wave.${cycle}.${grdID}.f${fhr}.clipped.grib2"
 
      iparam=1
      while [[ "${iparam}" -le "${nparam}" ]]; do
@@ -136,18 +131,18 @@ grids='aoc_9km at_10m ep_10m wc_10m glo_30m'
        iparam=$(( iparam + 1 ))
      done #end wave param loop
 #======================================================================
-     GRIBIN="${RUNwave}.${cycle}.${grdID}.f${fhr}.clipped.grib2"
+     GRIBIN="${RUN}.wave.${cycle}.${grdID}.f${fhr}.clipped.grib2"
 
      ${NLN} "${GRIBIN}" "gribfile.${grdID}.f${fhr}"
 
      #
 # 1.d Input template files
-     parmfile="${PARMgfs}/wave/grib2_${RUNwave}.${grdOut}.f${fhr}"
+     parmfile="${PARMgfs}/wave/grib2_${RUN}wave.${grdOut}.f${fhr}"
      if [[ -f "${parmfile}" ]]; then
        ${NLN} "${parmfile}" "awipsgrb.${grdID}.f${fhr}"
      else
-       echo "FATAL ERROR: NO template  grib2_${RUNwave}.${grdID}.f${fhr}"
-       echo "${RUNwave} ${grdID} ${fhr} prdgen ${date} ${cycle} : GRIB template file missing." >> "${wavelog}"
+       echo "FATAL ERROR: NO template  grib2_${RUN}wave.${grdID}.f${fhr}"
+       echo "${RUN} wave ${grdID} ${fhr} prdgen ${date} ${cycle} : GRIB template file missing."
        err=3;export err;${errchk} || exit "${err}"
      fi
      #
@@ -178,7 +173,7 @@ grids='aoc_9km at_10m ep_10m wc_10m glo_30m'
        echo ' '
        echo "${msg}"
        #set_trace
-       echo "${RUNwave} ${grdID} prdgen ${date} ${cycle} : error in grbindex." >> "${wavelog}"
+       echo "${RUN} wave ${grdID} prdgen ${date} ${cycle} : error in grbindex."
        err=4;export err;err_chk
      fi
 
@@ -207,7 +202,7 @@ grids='aoc_9km at_10m ep_10m wc_10m glo_30m'
        echo ' '
        echo "${msg}"
        #set_trace
-       echo "${RUNwave} prdgen ${date} ${cycle} : error in tocgrib2." >> "${wavelog}"
+       echo "${RUN} wave prdgen ${date} ${cycle} : error in tocgrib2."
        err=5;export err;err_chk
      else
        echo '*** tocgrib2 ran succesfully *** '
