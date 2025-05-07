@@ -6,9 +6,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "sfc_prep" -c "base sfcprep"
 # Set date and cycle
 ##############################################
 
-GDATE=$(${NDATE} -06 ${PDY}${cyc})
-gPDY=$(echo ${GDATE} | cut -c1-8)
-gcyc=$(echo ${GDATE} | cut -c9-10)
+GDATE=$(${NDATE} -06 "${PDY}${cyc}")
+gPDY=$(echo "${GDATE}" | cut -c1-8)
+gcyc=$(echo "${GDATE}" | cut -c9-10)
 gcycle="t${gcyc}z"
 
 # Generate COM variables from templates
@@ -43,8 +43,8 @@ err_chk
 ##############################################
 # Final processing
 ##############################################
-if [ -e ${pgmout} ]; then
-  cat ${pgmout}
+if [ -e "${pgmout}" ]; then
+  cat "${pgmout}"
 fi
 
 ##########################################
