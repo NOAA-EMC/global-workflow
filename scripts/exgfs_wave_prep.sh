@@ -9,7 +9,7 @@
 # Abstract: This is the preprocessor for the wave component in GFS.
 #           It executes several scripts for preparing and creating input data
 #           as follows:
-#                                                                             
+#                                                                             #
 #  wave_prnc_ice.sh     : preprocess ice fields.                              #
 #  wave_prnc_cur.sh     : preprocess current fields.                          #
 #                                                                             #
@@ -24,9 +24,9 @@
 #                                                                             #
 # - Origination:                                               01-Mar-2007    #
 #                                                                             #
-#   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                     # 
+#   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                     #
 #   is used for ensemble-specific I/O. For deterministic                      #
-#   WAV_MOD_ID=WAV_MOD_TAG                                                    # 
+#   WAV_MOD_ID=WAV_MOD_TAG                                                    #
 #                                                                             #
 ###############################################################################
 # --------------------------------------------------------------------------- #
@@ -68,7 +68,7 @@
     WAVHINDH=$(( WAVHINDH + IAU_FHROT ))
   fi
   # Set time stamps for model start and output
-  # For special case when IAU is on but this is an initial half cycle 
+  # For special case when IAU is on but this is an initial half cycle
   if [[ ${IAU_OFFSET} -eq 0 ]]; then
     ymdh_beg=${YMDH}
   else
@@ -80,7 +80,7 @@
   ymdh_beg_out=${YMDH}
   time_beg_out="$(echo ${ymdh_beg_out} | cut -c1-8) $(echo ${ymdh_beg_out} | cut -c9-10)0000"
 
-  # Restart file times (already has IAU_FHROT in WAVHINDH) 
+  # Restart file times (already has IAU_FHROT in WAVHINDH)
   RSTOFFSET=$(( ${WAVHCYC} - ${WAVHINDH} ))
   # Update restart time is added offset relative to model start
   RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF_WAV} ))
@@ -123,7 +123,7 @@
 
   # Script will run only if pre-defined NTASKS
   #     The actual work is distributed over these tasks.
-  if [[ -z ${NTASKS} ]]        
+  if [[ -z ${NTASKS} ]]
   then
     export err=1
     err_chk "FATAL ERROR: Requires NTASKS to be set "
@@ -182,13 +182,13 @@
   # 1.b Netcdf Preprocessor template files
    if [[ "${WW3ATMINP}" == 'YES' ]]; then
       itype="${itype:-} wind"
-   fi 
+   fi
    if [[ "${WW3ICEINP}" == 'YES' ]]; then
       itype="${itype:-} ice"
-   fi 
+   fi
    if [[ "${WW3CURINP}" == 'YES' ]]; then
       itype="${itype:-} cur"
-   fi 
+   fi
 
    for type in ${itype}
    do
@@ -207,7 +207,7 @@
          export err=3
          err_chk 'Input type not yet implemented'
        ;;
-     esac 
+     esac
 
      if [[ -f ${PARMgfs}/wave/ww3_prnc.${type}.${grdID}.inp.tmpl ]]
      then
@@ -243,7 +243,7 @@
   if [[ "${WW3ICEINP}" == 'YES' ]]; then
 
 # --------------------------------------------------------------------------- #
-# 2. Ice pre - processing 
+# 2. Ice pre - processing
 
 # 2.a Check if ice input is perturbed (number of inputs equal to number of wave
 #     ensemble members
@@ -252,7 +252,7 @@
 
       ${USHgfs}/wave_prnc_ice.sh > wave_prnc_ice.out
       ERR=$?
-    
+
       if [[ -d ice ]]
       then
         set +x
@@ -280,7 +280,7 @@
       echo ' '
       echo "WARNING: Ice input is not perturbed, single ice file generated, skipping ${WAV_MOD_TAG}"
       echo ' '
-    fi 
+    fi
   else
       echo ' '
       echo 'WARNING: No input ice file generated, this run did not request pre-processed ice data '
@@ -288,7 +288,7 @@
   fi
 
 # --------------------------------------------------------------------------- #
-# WIND processing 
+# WIND processing
   if [[ "${WW3ATMINP}" == 'YES' ]]; then
 
     echo ' '
@@ -306,7 +306,7 @@
 
   if [[ "${WW3CURINP}" == 'YES' ]]; then
 
-# Get into single file 
+# Get into single file
     if [[ "${RUNMEM}" == "-1" || "${WW3CURIENS}" == "T" || "${waveMEMB}" == "00" ]]
     then
 
@@ -322,21 +322,21 @@
       chmod 744 cmdfile
 
       ymdh_rtofs=${RPDY}00 # RTOFS runs once daily use ${PDY}00
-      if [[ ${ymdh_beg} -lt ${ymdh_rtofs} ]]; then 
+      if [[ ${ymdh_beg} -lt ${ymdh_rtofs} ]]; then
          #If the start time is before the first hour of RTOFS, use the previous cycle
          export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
-      fi 
+      fi
       #Set the first time for RTOFS files to be the beginning time of simulation
       ymdh_rtofs=${ymdh_beg}
 
-      if [[ ${FHMAX_WAV_CUR} -le 72 ]]; then 
+      if [[ ${FHMAX_WAV_CUR} -le 72 ]]; then
         rtofsfile1="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f024_prog.nc"
         rtofsfile2="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f048_prog.nc"
         rtofsfile3="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f072_prog.nc"
-        if [[ ! -f ${rtofsfile1} || ! -f ${rtofsfile2} || ! -f ${rtofsfile3} ]]; then 
-           #Needed current files are not available, so use RTOFS from previous day 
+        if [[ ! -f ${rtofsfile1} || ! -f ${rtofsfile2} || ! -f ${rtofsfile3} ]]; then
+           #Needed current files are not available, so use RTOFS from previous day
            export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
-        fi 
+        fi
       else
         rtofsfile1="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f096_prog.nc"
         rtofsfile2="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f120_prog.nc"
@@ -345,13 +345,13 @@
         rtofsfile5="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f192_prog.nc"
         if [[ ! -f ${rtofsfile1} || ! -f ${rtofsfile2} || ! -f ${rtofsfile3} ||
               ! -f ${rtofsfile4} || ! -f ${rtofsfile5} ]]; then
-            #Needed current files are not available, so use RTOFS from previous day 
+            #Needed current files are not available, so use RTOFS from previous day
             export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
         fi
       fi
 
       ymdh_end_rtofs=$(${NDATE} ${FHMAX_WAV_CUR} ${RPDY}00)
-      if [[ ${ymdh_end} -lt ${ymdh_end_rtofs} ]]; then 
+      if [[ ${ymdh_end} -lt ${ymdh_end_rtofs} ]]; then
          ymdh_end_rtofs=${ymdh_end}
       fi
 
@@ -359,7 +359,7 @@
       FLGHF='T'
       FLGFIRST='T'
       fext='f'
-  
+
       if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
          # Counter for MP CFP
          nm=0
@@ -367,7 +367,7 @@
       while [[ ${ymdh_rtofs} -le ${ymdh_end_rtofs} ]]
       do
         # Timing has to be made relative to the single 00z RTOFS cycle for RTOFS PDY (RPDY)
-        # Start at first fhr for 
+        # Start at first fhr for
         fhr_rtofs=$(${NHOUR} ${ymdh_rtofs} ${RPDY}00)
         fh3_rtofs=$(printf "%03d" "${fhr_rtofs#0}")
 
@@ -383,7 +383,7 @@
           echo ' '
           if [[ "${FLGHF}" == "T" ]] ; then
              curfile=${curfile1h}
-          else 
+          else
              curfile=${curfile3h}
           fi
           set -x
@@ -406,7 +406,7 @@
 
         if [[ "${FLGFIRST}" == "T" ]] ; then
             FLGFIRST='F'
-        fi 
+        fi
 
         if [[ ${fhr_rtofs} -ge ${WAV_CUR_HF_FH} ]] ; then
           NDATE_DT=${WAV_CUR_DT}
@@ -485,7 +485,7 @@
     fi
 
   else
-  
+
       echo ' '
       echo ' Current inputs not generated, this run did not request pre-processed currents '
       echo ' '

@@ -6,15 +6,15 @@
 # GFSv16-wave output for gridded wave fields                                  #
 #                                                                             #
 # COM inputs:                                                                 #
-#  - ${COMIN_WAVE_GRID}/${RUN}.wave.${cycle}.${grdIDin}.f${fhr}.grib2          #
+#  - ${COMIN_WAVE_GRID}/${RUN}.wave.${cycle}.${grdIDin}.f${fhr}.grib2         #
 #                                                                             #
 # COM outputs:                                                                #
 #  - ${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}             #
 #                                                                             #
 # Origination  : 05/02/2007                                                   #
-# Last update  : 10/08/2020                                                   # 
+# Last update  : 10/08/2020                                                   #
 #                                                                             #
-# Oct, 2020  Roberto.Padilla@noaa.gov, Henrique.HAlves@noaa.gov                # 
+# Oct, 2020  Roberto.Padilla@noaa.gov, Henrique.HAlves@noaa.gov               #
 #         - Merging wave scripts to GFSv16 global workflow                    #
 #                                                                             #
 ###############################################################################
@@ -38,7 +38,7 @@ source "${USHgfs}/wave_domain_grid.sh"
  export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
  mkdir -p "${DATA}"
  cd "${DATA}" || exit 1
- 
+
  echo "Starting MWW3 GRIDDED PRODUCTS SCRIPT"
 # Input grid
 grid_in="${waveinterpGRD:-glo_15mxt}"
@@ -70,10 +70,10 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
  echo '-----------------------'
  set_trace
 #=======================================================================
- 
+
  ASWELL=(SWELL1 SWELL2) # Indices of HS from partitions
- ASWPER=(SWPER1 SWPER2) # Indices of PERIODS from partitions 
- ASWDIR=(SWDIR1 SWDIR2) # Indices of DIRECTIONS from partitions 
+ ASWPER=(SWPER1 SWPER2) # Indices of PERIODS from partitions
+ ASWDIR=(SWDIR1 SWDIR2) # Indices of DIRECTIONS from partitions
                                 #  (should be same as ASWELL)
  #export arrpar=(WIND UGRD VGRD HTSGW PERPW DIRPW WVHGT WVPER WVDIR WDIR ${ASWELL[@]} ${ASWDIR[@]} ${ASWPER[@]})
  export arrpar=(WIND WDIR UGRD VGRD HTSGW PERPW DIRPW WVHGT "${ASWELL[@]}" WVPER "${ASWPER[@]}" WVDIR "${ASWDIR[@]}" )
@@ -112,7 +112,7 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
        nip=${arrpar[${iparam}-1]}
        prepar=${nip::-1} # Part prefix (assumes 1 digit index)
        paridx="${nip:0-1}"
-       npart=0   
+       npart=0
        case ${prepar} in
          SWELL)  npart=1 ;;
          SWDIR)  npart=1 ;;
@@ -120,16 +120,16 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
          *)     npart=0 ;;
        esac
        echo "${nip} ${prepar} ${paridx} ${npart}"
-       rm -f temp.grib2 
-       if [[ ${npart} -eq 0 ]]; then 
+       rm -f temp.grib2
+       if [[ ${npart} -eq 0 ]]; then
          #shellcheck disable=SC2312
-         ${WGRIB2} "${GRIBIN}" -s | grep ":${nip}" | "${WGRIB2}" -i "${GRIBIN}" -grib temp.grib2 > wgrib.out 2>&1 
+         ${WGRIB2} "${GRIBIN}" -s | grep ":${nip}" | "${WGRIB2}" -i "${GRIBIN}" -grib temp.grib2 > wgrib.out 2>&1
          #shellcheck disable=SC2312
          ${WGRIB2} temp.grib2 -append -grib "${GRIBOUT}"
        else
          #shellcheck disable=SC2312
          ${WGRIB2} "${GRIBIN}" -s | grep ":${prepar}" |  grep "${paridx} in sequence" | \
-                 ${WGRIB2} -i "${GRIBIN}" -grib temp.grib2  > wgrib.out 2>&1 
+                 ${WGRIB2} -i "${GRIBIN}" -grib temp.grib2  > wgrib.out 2>&1
          ${WGRIB2} temp.grib2 -append -grib "${GRIBOUT}"
        fi
        iparam=$(( iparam + 1 ))

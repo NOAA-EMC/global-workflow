@@ -11,7 +11,7 @@
 #  - ${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave                        #
 #                                                                             #
 # Origination  : 05/02/2007                                                   #
-# Last update  : 08/20/2020                                                   # 
+# Last update  : 08/20/2020                                                   #
 #                                                                             #
 # Aug/2020 RPadilla & JHAlves - Merging wave scripts to GFSv16 global workflow#
 #                                                                             #
@@ -63,8 +63,13 @@
    set_trace
    msg="FATAL ERROR ${RUN} wave prdgen ${date} ${cycle} : bulletin tar missing."
    echo "${msg}"
+<<<<<<< HEAD
    export err=1
    err_chk
+=======
+   export err=1; ${errchk}
+   exit ${err}
+>>>>>>> origin/develop
  fi
 
  set +x
@@ -73,7 +78,11 @@
  tar -xf cbull.tar
  OK=$?
 
+<<<<<<< HEAD
  if [[ ${OK} -eq 0 ]]; then
+=======
+ if [ "${OK}" = '0' ]; then
+>>>>>>> origin/develop
    set +x
    echo "      Unpacking successfull ..."
    set_trace
@@ -88,8 +97,13 @@
    echo ' '
    set_trace
    echo "${RUN} wave prdgen ${date} ${cycle} : bulletin untar error."
+<<<<<<< HEAD
    export err=2
    err_chk
+=======
+   err=2;export err;err_chk
+   exit ${err}
+>>>>>>> origin/develop
  fi
 
 # 1.b Output locations from bulletin files
@@ -103,7 +117,11 @@
   echo ' '
 # 1.c Get the datat cards
  if [ -f "${PARMgfs}/wave/bull_awips_gfswave" ]; then
+<<<<<<< HEAD
    cpreq "${PARMgfs}/wave/bull_awips_gfswave" "awipsbull.data"
+=======
+   cp "${PARMgfs}/wave/bull_awips_gfswave" "awipsbull.data"
+>>>>>>> origin/develop
  else
    msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
    set +x
@@ -115,8 +133,13 @@
    echo "${msg}"
    set_trace
    echo "${RUN} wave prdgen ${date} ${cycle} : Bulletin header data file missing."
+<<<<<<< HEAD
    export err=3
    err_chk
+=======
+   err=3;export err;err_chk
+   exit ${err}
+>>>>>>> origin/develop
  fi
 
 # 2. AWIPS bulletins for output points
@@ -132,16 +155,16 @@
 # 2.c Generate list of bulletins to process
  echo '   Generating buoy list ...'
  bulls=$(sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{print $1}')
-  
+
 # 2.d Looping over buoys running formbul
  echo '   Looping over buoys ... \n'
 
  for bull in ${bulls}; do
    fname="${RUN}.wave.${bull}.cbull"
    oname="awipsbull.${bull}.${cycle}.${RUN}.wave"
-   headr=$(grep "b${bull}=" awipsbull.data | sed 's/=/ /g' |  awk '{ print $3}')  
+   headr=$(grep "b${bull}=" awipsbull.data | sed 's/=/ /g' |  awk '{ print $3}')
    echo "Processing ${bull} (${headr} ${oname}) ..."
- 
+
    if [[ -z "${headr}" ]] || [[ ! -s "${fname}" ]]; then
      set_trace
      msg="ABNORMAL EXIT: MISSING BULLETIN INFO"
@@ -154,12 +177,17 @@
      echo "${msg}"
      set_trace
      echo "${RUN} wave prdgen ${date} ${cycle} : Missing bulletin data."
+<<<<<<< HEAD
      export err=4
      err_chk
+=======
+     err=4;export err;err_chk
+     exit ${err}
+>>>>>>> origin/develop
    fi
-  
+
    set_trace
-   
+
    formbul.pl -d "${headr}" -f "${fname}" -j "${job}" -m "${RUN}.wave" \
               -p "${COMOUT_WAVE_WMO}" -s "NO" -o "${oname}" > formbul.out 2>&1
    OK=$?
@@ -180,7 +208,7 @@
      export err=5
      err_chk
    fi
-   
+
    cat "${oname}" >> "awipsbull.${cycle}.${RUN}.wave"
 
  done
@@ -190,12 +218,12 @@ set_trace
 cpfs "awipsbull.${cycle}.${RUN}.wave" "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave"
 if [[ "${SENDDBN_NTC}" == YES ]]; then
     make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" "${DATA}/awipsbull.${cycle}.${RUN}.wave" \
-		     "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave"
+                     "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave"
 else
     if [[ "${envir}" == "para" || "${envir}" == "test" || "${envir}" == "dev" ]]; then
-	echo "Making NTC bulletin for parallel environment, but do not alert."
-	(export SENDDBN=NO; make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
-					     "${DATA}/awipsbull.${cycle}.${RUN}.wave" "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave")
+        echo "Making NTC bulletin for parallel environment, but do not alert."
+        (export SENDDBN=NO; make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
+         "${DATA}/awipsbull.${cycle}.${RUN}.wave" "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave")
     fi
 fi
 
