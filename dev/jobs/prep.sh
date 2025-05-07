@@ -34,14 +34,11 @@ YMD=${PDY} HH=${cyc} DUMP=${RUN_local} declare_from_tmpl -rx \
     COMIN_OBSPROC:COM_OBSPROC_TMPL
 
 RUN=${GDUMP} DUMP=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OBS_PREV:COM_OBS_TMPL \
+    COMOUT_OBS_PREV:COM_OBS_TMPL \
     COMIN_OBSPROC_PREV:COM_OBSPROC_TMPL
 
-if [[ ! -d ${COMIN_SYNDAT} ]]; then
-   declare_from_tmpl -rx COMIN_SYNDAT:COM_SYNDAT_TMPL
-fi
+declare_from_tmpl -rx COMIN_SYNDAT:COM_SYNDAT_TMPL
 
-export MAKE_PREPBUFR=${MAKE_PREPBUFR:-"YES"}
 if [[ ! -d "${COMOUT_OBS}" ]]; then
    mkdir -p "${COMOUT_OBS}"
 fi
@@ -56,8 +53,8 @@ if [[ ${ROTDIR_DUMP} = "YES" ]]; then
    fi
 
    #  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
-   if [[ ! -s "${COMIN_OBS_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" ]]; then
-     "${HOMEgfs}/ush/getdump.sh" "${GDATE}" "${GDUMP}" "${COMIN_OBSPROC_PREV}" "${COMIN_OBS_PREV}"
+   if [[ ! -s "${COMIN_OBSPROC_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" ]]; then
+     "${HOMEgfs}/ush/getdump.sh" "${GDATE}" "${GDUMP}" "${COMIN_OBSPROC_PREV}" "${COMOUT_OBS_PREV}"
      status=$?
      if [[ ${status} -ne 0 ]]; then
          exit "${status}"
@@ -69,7 +66,7 @@ if [[ ${ROTDIR_DUMP} = "YES" ]]; then
        exit 9
    fi
    # shellcheck disable=SC2312
-   if [[ $(find "${COMIN_OBS_PREV}" -xtype l | wc -l) -ge 1 ]]; then
+   if [[ $(find "${COMIN_OBSPROC_PREV}" -xtype l | wc -l) -ge 1 ]]; then
        exit 9
    fi
 fi
@@ -113,8 +110,8 @@ fi
 
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
-if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
-    if [[ ${ROTDIR_DUMP} = "YES" ]]; then
+if [[ ${MAKE_PREPBUFR:-"YES"} = "YES" ]]; then
+    if [[ ${ROTDIR_DUMP:-"YES"} = "YES" ]]; then
         rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr"
         rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
         rm -f "${COMOUT_OBS}/${OPREFIX}nsstbufr"
