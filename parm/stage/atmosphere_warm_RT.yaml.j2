@@ -35,7 +35,7 @@ atmosphere_warm_RT:
         {% set ntiles = 6 %}
         {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "phy_data", "sfc_data"] %}
         # Include base file for restart files
-        {% set file = restart_mem_path ~ 'coupler.res.nc' %}
+        {% set file = restart_mem_path ~ 'coupler.res' %}
         - ["{{ file }}", "{{ restart_destination_path }}"]
 
         # Include restart tile files (e.g., .tile1 to .tile6)
