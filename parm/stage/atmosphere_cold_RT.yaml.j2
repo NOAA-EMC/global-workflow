@@ -5,10 +5,9 @@ atmosphere_cold_RT:
         {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[0] %}
         - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
     copy:
-        {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/dummy/'%}
-        {% set DIAU_previous_file = retro_path ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/analysis/atmos/gdas.t' ~ previous_cycle_HH ~ 'z.atma003.ensres.nc' %}
-        {% set DIAU_current_file = retro_path ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atminc.nc' %}
-        {% set DIAUNO_current_file= retro_path ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atminc.nc' %}
+        {% set DIAU_previous_file = ICSDIR ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/analysis/atmos/gdas.t' ~ previous_cycle_HH ~ 'z.atma003.ensres.nc' %}
+        {% set DIAU_current_file = ICSDIR ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atminc.nc' %}
+        {% set DIAUNO_current_file= ICSDIR ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atminc.nc' %}
         {% set current_path = COMOUT_ATMOS_ANALYSIS_MEM_list[0] %}
         {% set previous_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[0] %}
         - ["{{ DIAU_previous_file }}", "{{ previous_path}}"]

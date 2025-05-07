@@ -19,10 +19,9 @@ atmosphere_warm_RT:
         {% set mem_range = mem_data[0] %}
         {% for mem in mem_range %}
         {% set imem = mem - offset %}
-        {% set retro_path = '/lfs/h2/emc/global/noscrub/anton.fernando/dummy/'%}
         {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
-        {% set restart_mem_path = retro_path ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.' %}
-        {% set increment_mem_path = retro_path ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/atmos/enkfgfs.t' ~ current_cycle_HH ~ 'z.' %}
+        {% set restart_mem_path = ICSDIR ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.' %}
+        {% set increment_mem_path = ICSDIR ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/atmos/enkfgfs.t' ~ current_cycle_HH ~ 'z.' %}
         {% set restart_destination_path = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
         {% set increment_destination_path = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
 
@@ -32,7 +31,7 @@ atmosphere_warm_RT:
         - ["{{ file }}", "{{ increment_destination_path }}"]
         {% endfor %}
 
-        {% if path_exists(retro_path) %}
+        {% if path_exists(ICSDIR) %}
         {% set ntiles = 6 %}
         {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "phy_data", "sfc_data", "coupler.res"] %}
         # Include base file for restart files

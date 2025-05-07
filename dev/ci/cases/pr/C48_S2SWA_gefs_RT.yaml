@@ -14,6 +14,7 @@ arguments:
   start: cold
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: /lfs/h2/emc/global/noscrub/anton.fernando/dummy/
   idate: 2024111618
   edate: 2024111618
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
