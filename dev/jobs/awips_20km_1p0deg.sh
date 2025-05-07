@@ -17,51 +17,38 @@ set -x
 # Source FV3GFS workflow modules
 source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?
-(( status != 0 )) && exit "${status}"
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
 export job="awips_20km_1p0deg"
 export jobid="${job}.$$"
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
+###############################################################
+
+echo
+echo "=============== BEGIN AWIPS ==============="
 
 # shellcheck disable=SC2153
 fhrlst=$(echo "${FHRLST}" | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
-###############################################################
-
-################################################################################
-echo
-echo "=============== BEGIN AWIPS ==============="
-
 for fhr3 in ${fhrlst}; do
     fhr=$(( 10#${fhr3} ))
-    if (( fhr > FHMAX_GFS )); then
-        echo "Nothing to process for FHR = ${fhr3}, cycle"
-        continue
-    fi
-
-    fhmin=0
-    fhmax=84
-    if (( fhr >= fhmin && fhr <= fhmax )); then
-        if ((fhr % 3 == 0)); then
-            export fcsthrs="${fhr3}"
-            "${HOMEgfs}/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
-        fi
-    fi
-
-    fhmin=90
-    fhmax=240
-    if (( fhr >= fhmin && fhr <= fhmax )); then
-        if ((fhr % 6 == 0)); then
-            export fcsthrs="${fhr3}"
-            "${HOMEgfs}/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
-        fi
+    # Process every 3 hrs from hour 0 up to hour 84
+    if [[ ${fhr} -ge 0 ]] && [[ ${fhr} -le 84 ]] ; then
+      if (( fhr % 3 == 0 )) ; then
+        export fcsthr="${fhr3}"
+        export DATA="${DATAROOT}/${jobid}.${fcsthr}"
+        "${HOMEgfs}/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
+      fi
+    # Process every 6 hrs from hour 90 up to hour 240
+    elif [[ ${fhr} -ge 90 ]] && [[ ${fhr} -le 240 ]] ; then
+      if (( fhr % 6 == 0 )) ; then
+        export fcsthr="${fhr3}"
+        export DATA="${DATAROOT}/${jobid}.${fcsthr}"
+        "${HOMEgfs}/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
+      fi
     fi
 done
-
-
-###############################################################
-# Force Exit out cleanly
-if [[ ${KEEPDATA:-"NO"} == "NO" ]] ; then rm -rf "${DATA}" ; fi
 
 exit 0
