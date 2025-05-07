@@ -108,7 +108,7 @@ export err=$?
 if ((err != 0)); then
   if [ -s "${BLENDED_ICE_FILE_PREV}" ]; then
     echo "Copy old ice blend file to current directory"
-    cp "${BLENDED_ICE_FILE_PREV}" "${COMOUT_OBS}/${BLENDED_ICE_FILE}"
+    cpfs "${BLENDED_ICE_FILE_PREV}" "${COMOUT_OBS}/${BLENDED_ICE_FILE}"
   else
     err_exit "FATAL ERROR: CURRENT ICE FILE AND 6-HR OLD ICE FILE MISSING"
   fi
@@ -146,7 +146,7 @@ export err=$?
 if ((err != 0)); then
   if [ -s "${MODEL_SNOW_FILE_PREV}" ]; then
     echo "COPY OLD ${JCAP} SNOW FILE TO CURRENT DIRECTORY"
-    cp "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
+    cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
   else
     err_chk "FATAL ERROR: CURRENT AND 6-HR OLD ${JCAP} SNOW MISSING"
   fi  # check of missing 6-hr snow file
@@ -181,7 +181,7 @@ export err=$?
 if ((err != 0)); then
   if [ -s "${MODEL_SNOW_FILE_PREV}" ]; then
     echo "COPY OLD ENKF SNOW FILE TO CURRENT DIRECTORY"
-    cp "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
+    cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
   else
     err_chk "FATAL ERROR: CURRENT AND 6-HR OLD ENKF SNOW MISSING"
   fi  # check of missing 6-hr snow file

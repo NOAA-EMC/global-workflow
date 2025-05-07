@@ -28,12 +28,13 @@ GDUMP="gdas"
 
 export OPREFIX="${RUN_local}.t${cyc}z."
 
-YMD=${PDY} HH=${cyc} DUMP=${RUN_local} declare_from_tmpl -rx \
+RUN=${RUN_local} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_OBS:COM_OBS_TMPL \
     COMOUT_OBS:COM_OBS_TMPL \
-    COMIN_OBSPROC:COM_OBSPROC_TMPL
+    COMIN_OBSPROC:COM_OBSPROC_TMPL \
+    COMIN_TCVITAL:COM_TCVITAL_TMPL
 
-RUN=${GDUMP} DUMP=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMOUT_OBS_PREV:COM_OBS_TMPL \
     COMIN_OBSPROC_PREV:COM_OBSPROC_TMPL
 
@@ -117,11 +118,18 @@ if [[ ${MAKE_PREPBUFR:-"YES"} = "YES" ]]; then
         rm -f "${COMOUT_OBS}/${OPREFIX}nsstbufr"
     fi
 
+    RUN="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GDAS:COM_ATMOS_HISTORY_TMPL
+    RUN="gfs" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GFS:COM_ATMOS_HISTORY_TMPL
+
     export job="j${RUN_local}_prep_${cyc}"
+
+    #TODO: Update external packages (obsproc/prepobs) to use COMIN[OUT]_*
+    export COMINtcvital=${COMIN_TCVITAL}
     export COMIN=${COMIN_OBS}
     export COMOUT=${COMOUT_OBS}
-    RUN="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMINgdas:COM_ATMOS_HISTORY_TMPL
-    RUN="gfs" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMINgfs:COM_ATMOS_HISTORY_TMPL
+    export COMINgdas=${COMIN_ATMOS_HISTORY_GDAS}
+    export COMINgfs=${COMIN_ATMOS_HISTORY_GFS}
+
     if [[ ${ROTDIR_DUMP} = "NO" ]]; then
         export COMSP=${COMSP:-"${COMIN_OBSPROC}/${RUN_local}.t${cyc}z."}
     else
@@ -138,10 +146,8 @@ if [[ ${MAKE_PREPBUFR:-"YES"} = "YES" ]]; then
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
     err=$?
     if [[ ${err} -ne 0 ]]; then
-       echo "FATAL ERROR: Global prep job failed!"
-       exit ${err}
+       err_chk "FATAL ERROR: Global prep job failed!"
     fi
-    set_strict
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then

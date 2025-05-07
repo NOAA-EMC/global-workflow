@@ -15,25 +15,22 @@ export cdate10=${PDY}${cyc}
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 export TROPCYQCRELOSH="${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh"
 
-export COMINtcvital=${COMINtcvital:-${DMPDIR}/${RUN}.${PDY}/${cyc}/atmos}
-
 # Adjust observation error for GFS v16 parallels
 #
 #   NOTE:  Remember to set OBERROR in config.anal as PRVT is set below
 #
 # Set default prepobs_errtable.global
-export PRVT=${FIXgfs}/gsi/prepobs_errtable.global
-
+export PRVT="${FIXgfs}/gsi/prepobs_errtable.global"
 
 # Set prepobs.errtable.global for GFS v16 retrospective parallels
 if [[ $RUN_ENVIR == "emc" ]]; then
   if [[ "${PDY}${cyc}" -ge "2019021900" && "${PDY}${cyc}" -lt "2019110706" ]]; then
-    export PRVT=${FIXgfs}/gsi/gfsv16_historical/prepobs_errtable.global.2019021900
+    export PRVT="${FIXgfs}/gsi/gfsv16_historical/prepobs_errtable.global.2019021900"
   fi
 
 #   Place GOES-15 AMVs in monitor, assimilate GOES-17 AMVs, assimilate KOMPSAT-5 gps
   if [[ "${PDY}${cyc}" -ge "2019110706" && "${PDY}${cyc}" -lt "2020040718" ]]; then
-    export PRVT=${FIXgfs}/gsi/gfsv16_historical/prepobs_errtable.global.2019110706
+    export PRVT="${FIXgfs}/gsi/gfsv16_historical/prepobs_errtable.global.2019110706"
   fi
 
 #   NOTE:
