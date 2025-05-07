@@ -19,7 +19,7 @@
 
 data_available=0
 
-if [[ -s ${gsistat} ]]; then
+if [[ -s "${gsistat}" ]]; then
 
    data_available=1
 
@@ -70,5 +70,6 @@ elif [[ ${rc_reduct} -ne 0 ]]; then
    err=${rc_reduct}
 fi
 
-exit "${err}"
+export err
 
+err_chk
