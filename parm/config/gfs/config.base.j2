@@ -435,6 +435,25 @@ fi
 
 export DO_GSISOILDA="{{ DO_GSISOILDA }}"
 
+# Land IAU for soil
+export DO_LAND_IAU="@DO_LAND_IAU@"
+export ONLY_LAND_IAU_INC="NO"  #turn-off non-land_iau soil update
+export LAND_IAU_FHRS="3,6,9"
+export LAND_IAU_DELTHRS=6
+export LAND_IAU_INC_FILES='sfc_inc',''
+export LSOIL_INCR=3
+export LAND_IAU_FILTER_INCREMENTS=.false.
+export LAND_IAU_UPD_STC=.true.
+export LAND_IAU_UPD_SLC=.true.
+export LAND_IAU_DO_STCSMC_ADJUSTMENT=.true.
+export LAND_IAU_MIN_T_INCREMENT=0.0001
+#export LAND_IAU_MIN_SLC_INCREMENT=0.000001
+
+# no land iau if cycle is cold start/ forecast only
+if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
+  export DO_LAND_IAU="NO"   #TODO: turning off Land IAU
+fi
+
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
 if [[ "${DONST}" = "YES" ]]; then export FNTSFA="        "; fi

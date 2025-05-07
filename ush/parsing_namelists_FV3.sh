@@ -475,20 +475,25 @@ local MOM6_RESTART_DIR=MOM6_RESTART/
 
 # Land IAU defaults
 
-local DO_LAND_IAU=.false.
-local LAND_IAU_FHRS=3,6,9
-local LAND_IAU_DELHRS=6
-local LAND_IAU_INC_FILES="'sfc_inc',''"
-local LSOIL_INCR=3
-local LAND_IAU_FILTER_INC=.false.
-local LAND_IAU_UPD_STC=.true.
-local LAND_IAU_UPD_SLC=.true.
-local LAND_IAU_DP_STCSMC_ADJ=.true.
-local LAND_IAU_MIN_T_INC=0.0001
+local LOG_DO_LAND_IAU
+if [[ ${DO_LAND_IAU} = "YES" ]]; then
+  LOG_DO_LAND_IAU=.true.
+else
+  LOG_DO_LAND_IAU=.false.
+fi
+local LAND_IAU_FHRS=${LAND_IAU_FHRS}
+local LAND_IAU_DELHRS=${LAND_IAU_DELTHRS}
+local LAND_IAU_INC_FILES=${LAND_IAU_INC_FILES:-"'sfc_inc',''"}
+local LSOIL_INCR=${LSOIL_INCR}
+local LAND_IAU_FILTER_INC=${LAND_IAU_FILTER_INCREMENTS:-".false."}
+local LAND_IAU_UPD_STC=${LAND_IAU_UPD_STC}
+local LAND_IAU_UPD_SLC=${LAND_IAU_UPD_SLC}
+local LAND_IAU_DP_STCSMC_ADJ=${LAND_IAU_DO_STCSMC_ADJUSTMENT}
+local LAND_IAU_MIN_T_INC=${LAND_IAU_MIN_T_INCREMENT}
 
 # Check will need to be modified in the future
 # once GW is ready to add in land IAU
-if [[ "${DO_LAND_IAU}" = ".true." ]]; then
+if [[ "${LOG_DO_LAND_IAU}" = ".true." ]]; then
   local HIDE_LIAU=" "
 else
   local HIDE_LIAU="!"
