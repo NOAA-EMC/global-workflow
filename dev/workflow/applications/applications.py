@@ -261,8 +261,8 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 rdhpcs_uid_found = True
 
         if globus_conf.get("SERVER_USERNAME", "") == "":
-            logger.error(f"ERROR the username for {globus_conf.SERVER_NAME} was not provided.  "
-                         f"Please provide your username to {globus_conf.EXPDIR}/config.globus as SERVER_USERNAME.")
+            raise ValueError(f"The username for {globus_conf.SERVER_NAME} was not provided.  "
+                             f"Please provide your username in {globus_conf.EXPDIR}/config.globus as SERVER_USERNAME.")
 
         if not local_uid_found or not rdhpcs_uid_found:
             logger.error(f"ERROR a globus session is not yet established on {globus_conf.SERVER_NAME}.  "
