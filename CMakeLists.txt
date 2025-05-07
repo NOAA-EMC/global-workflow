@@ -24,4 +24,4 @@ endif()
 # add_subdirectory(sorc)
 
 # Setup tests
-add_subdirectory(ctests)
+add_subdirectory(dev/ctests)
