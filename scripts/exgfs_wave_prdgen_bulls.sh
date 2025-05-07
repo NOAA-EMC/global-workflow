@@ -112,8 +112,8 @@
   echo '   --------------------------'
   echo ' '
 # 1.c Get the datat cards
- if [ -f ${PARMgfs}/wave/bull_awips_gfswave ]; then
-   cp ${PARMgfs}/wave/bull_awips_gfswave awipsbull.data
+ if [ -f ${PARMgfs}/wave/bull_awips_gfswave.${waveGRD} ]; then
+   cp ${PARMgfs}/wave/bull_awips_gfswave.${waveGRD} awipsbull.data
  else
    msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
    set +x
