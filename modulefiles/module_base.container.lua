@@ -2,20 +2,21 @@ help([[
 Load environment to run GFS in container
 ]])
 
-local spack_mod_path=(os.getenv("spack_mod_path") or "None")
-prepend_path("MODULEPATH", spack_mod_path)
+prepend_path("MODULEPATH", "/opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/intel-oneapi-mpi/2021.9.0/intel/2021.10.0")
+prepend_path("MODULEPATH", "/opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/opt/spack-stack/spack-stack-1.6.0/envs/fms-2024.01/install/modulefiles/Core")
 
 load("gnu")
 load(pathJoin("stack-intel", (os.getenv("stack_intel_ver") or "None")))
 load(pathJoin("stack-intel-oneapi-mpi", (os.getenv("stack_impi_ver") or "None")))
 unload("gnu")
 
-load(pathJoin("python", (os.getenv("python_ver") or "None")))
+-- load(pathJoin("python", (os.getenv("python_ver") or "None")))
 
 load(pathJoin("jasper", (os.getenv("jasper_ver") or "None")))
 load(pathJoin("libpng", (os.getenv("libpng_ver") or "None")))
-load(pathJoin("cdo", (os.getenv("cdo_ver") or "None")))
---load(pathJoin("R", (os.getenv("R_ver") or "None")))
+-- load(pathJoin("cdo", (os.getenv("cdo_ver") or "None")))
+-- load(pathJoin("R", (os.getenv("R_ver") or "None")))
 
 load(pathJoin("hdf5", (os.getenv("hdf5_ver") or "None")))
 load(pathJoin("netcdf-c", (os.getenv("netcdf_c_ver") or "None")))
@@ -25,7 +26,7 @@ load(pathJoin("nco", (os.getenv("nco_ver") or "None")))
 load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
 load(pathJoin("grib-util", (os.getenv("grib_util_ver") or "None")))
 load(pathJoin("g2tmpl", (os.getenv("g2tmpl_ver") or "None")))
-load(pathJoin("gsi-ncdiag", (os.getenv("gsi_ncdiag_ver") or "None")))
+-- load(pathJoin("gsi-ncdiag", (os.getenv("gsi_ncdiag_ver") or "None")))
 load(pathJoin("crtm", (os.getenv("crtm_ver") or "None")))
 load(pathJoin("bufr", (os.getenv("bufr_ver") or "None")))
 load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))

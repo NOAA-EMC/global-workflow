@@ -11,6 +11,8 @@ if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     echo "Loading modules quietly..."
     set +x
 fi
+set -x
+export HOMEgfs=/opt/global-workflow-cloud
 
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
