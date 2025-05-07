@@ -134,11 +134,6 @@ For specific files or directories:
     pycodestyle -v --config ./.pycodestyle path/to/specific/file.py
     pycodestyle -v --config ./.pycodestyle path/to/directory/
 
-You can install PyCodeStyle using pip:
-
-::
-
-    pip install pycodestyle
 
 .. _commit-standards:
 
