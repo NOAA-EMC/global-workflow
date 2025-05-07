@@ -48,9 +48,7 @@ pipeline {
                             if (label.matches("CI-(.*?)-Ready")) {
                                 echo "Found Ready Label: ${label}"
                                 def machine_name = label.split('-')[1].toString().toLowerCase()
-                                print machine_name
                                 jenkins.model.Jenkins.get().computers.each { c ->
-                                    print c.node.selfLabel.name
                                     if (c.node.selfLabel.name == NodeName[machine_name]) {
                                         run_nodes.add(c.node.selfLabel.name)
                                         machine_names.add(machine_name)  // record machine name alongside node
@@ -87,8 +85,6 @@ pipeline {
                     // Capitalize the first letter of the machine name and use if for labels
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                     echo "Getting Common Workspace for ${Machine}"
-                    echo "Common Workspace for ${Machine} is ${custom_workspace[machine]}/${env.CHANGE_ID}"
-                    echo "WORKSPACE: {WORKSPACE}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'Hercules-EMC', 'Hera-EMC', 'Orion-EMC', 'GaeaC5', 'GaeaC6-EMC', 'Awsepicglobalworkflow'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
@@ -136,7 +132,6 @@ pipeline {
                             def gist_url = ""
                             def error_logs = ""
                             def error_logs_message = ""
-                            HOMEgfs = "${CUSTOM_WORKSPACE}/${aws_gw_name}/${aws_gw_name}"
                             dir("${HOMEgfs}/sorc") {
                                 try {
                                     // sh(script: "${HOMEgfs}/ci/scripts/utils/ci_utils.sh build") // build the global-workflow executables

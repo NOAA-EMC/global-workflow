@@ -11,6 +11,8 @@ if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     echo "Loading modules quietly..."
     set +x
 fi
+set -x
+export HOMEgfs=/opt/global-workflow-cloud
 
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
@@ -26,7 +28,7 @@ source "${HOMEgfs}/versions/run.ver"
 module use "${HOMEgfs}/modulefiles"
 
 case "${MACHINE_ID}" in
-  "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
+  "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "jet" | "s4" | "noaacloud" | "container")
     module load "module_base.${MACHINE_ID}"
     ;;
   *)

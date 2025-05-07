@@ -1,28 +1,33 @@
 # Paths
-DMPDIR: '/home/${USER}'
-BASE_GIT: ''
-PACKAGEROOT: ''
-HOMEDIR: '/home/${USER}'
-STMP: '/home/${USER}'
-PTMP: '/home/${USER}'
+DMPDIR: '' # TODO: This does not yet exist.
+BASE_GIT: '' #TODO: This does not yet exist.
+BASE_DATA: '/bucket/global-workflow-shared-data'
+BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
+AERO_INPUTS_DIR: /contrib/global-workflow-shared-data/data/GEFS_ExtData/20250310
+PACKAGEROOT: '' #TODO: This does not yet exist.
+HOMEDIR: '/contrib/${USER}'
+STMP: '/lustre/${USER}/stmp/'
+PTMP: '/lustre/${USER}/ptmp/'
 NOSCRUB: '${HOMEDIR}'
-COMINsyn: ''
+COMINsyn: '' #TODO: This does not yet exist.
 # BQS properties
-SCHEDULER: 'none'
-QUEUE: ''
-QUEUE_SERVICE: ''
-PARTITION_BATCH: ''
-PARTITION_SERVICE: ''
-RESERVATION: ''
-CLUSTERS: ''
-# HPSS properties
-HPSS_PROJECT: emc-global
-ARCHCOM_TO: 'local'
-ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+SCHEDULER: slurm
+QUEUE: batch
+PARTITION_BATCH: compute
+PARTITION_SERVICE: process
 CHGRP_RSTPROD: 'YES'
-CHGRP_CMD: 'chgrp rstprod'
+CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
+# HPSS properties
+HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
+ARCHCOM_TO: 'local'
+ATARDIR: '' # TODO: This will not yet work from CONTAINER.
+CHGRP_RSTPROD: 'YES'
+CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 # Features
-SUPPORTED_RESOLUTIONS: ['C96', 'C48']
+SUPPORTED_RESOLUTIONS: ['C48', 'C96', 'C192', 'C384', 'C768'] # TODO: Test and support all cubed-sphere resolutions.
 DO_ARCHCOM: 'NO'
+DO_TRACKER: 'NO'
+DO_GENESIS: 'NO'
+DO_METP: 'NO'
 MAKE_NSSTBUFR: 'NO'
 MAKE_ACFTBUFR: 'NO'
