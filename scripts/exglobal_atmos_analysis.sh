@@ -19,8 +19,6 @@
 
 #  Set environment.
 
-source "${USHgfs}/preamble.sh"
-
 #  Directories.
 pwd=$(pwd)
 
@@ -56,10 +54,10 @@ cao_check=${cao_check:-".true."}
 ta2tb=${ta2tb:-".true."}
 
 # Diagnostic files options
-lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 binary_diag=${binary_diag:-".false."}
-
+lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
+    
 # IAU
 DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6"}
@@ -83,8 +81,6 @@ CALCINCPY=${CALCINCPY:-${USHgfs}/calcinc_gfs.py}
 RUN=${RUN:-""}
 SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
-RUN_GETGES=${RUN_GETGES:-"NO"}
-GETGESSH=${GETGESSH:-"getges.sh"}
 export gesenvir=${gesenvir:-${envir}}
  
 export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
@@ -303,6 +299,7 @@ AEROINFO=${AEROINFO:-${FIXgfs}/gsi/global_aeroinfo.txt}
 SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
 HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
 OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
+BLACKLST=${BLACKLST:-${FIXgfs}/gsi/rejectlist_global.txt}
 
 # GSI namelist
 SETUP=${SETUP:-""}
@@ -376,6 +373,7 @@ ${NLN} ${AEROINFO}     aeroinfo
 ${NLN} ${SCANINFO}     scaninfo
 ${NLN} ${HYBENSINFO}   hybens_info
 ${NLN} ${OBERROR}      errtable
+${NLN} ${BLACKLST}     blacklist
 
 ${NLN} ${FIXgfs}/gsi/AIRS_CLDDET.NL   AIRS_CLDDET.NL
 ${NLN} ${FIXgfs}/gsi/CRIS_CLDDET.NL   CRIS_CLDDET.NL
@@ -788,7 +786,7 @@ cat > gsiparm.anl << EOF
   use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.false.,nvqc=.true.,
   aircraft_t_bc=.true.,biaspredt=1.0e5,upd_aircraft=.true.,cleanup_tail=.true.,
   tcp_width=70.0,tcp_ermax=7.35,airs_cads=${AIRS_CADS},cris_cads=${CRIS_CADS},
-  iasi_cads=${IASI_CADS},
+  iasi_cads=${IASI_CADS},blacklst=.true.,
   ${OBSQC}
 /
 &OBS_INPUT
@@ -1019,7 +1017,7 @@ fi
 if [ ${SENDECF} = "YES" -a "${RUN}" != "enkf" ]; then
    ecflow_client --event release_fcst
 fi
-echo "${rCDUMP} ${CDATE} atminc done at $(date)" > ${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt
+echo "${rCDUMP} ${CDATE} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt"
 
 ################################################################################
 

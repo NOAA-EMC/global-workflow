@@ -7,8 +7,6 @@
 # echo "-----------------------------------------------------"
 #####################################################################
 
-source "${USHgfs}/preamble.sh"
-
 cd "${DATA}" || exit 2
 
 ############################################################
@@ -59,8 +57,8 @@ SLEEP_LOOP_MAX=$(( SLEEP_TIME / SLEEP_INT ))
 ####################################
 # Check if this is a restart
 ####################################
-if [[ -f "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb2" ]]; then
-   modelrecvy=$(cat < "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb")
+if [[ -f "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb2" ]]; then
+   modelrecvy=$(cat < "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb")
    recvy_cyc="${modelrecvy:8:2}"
    recvy_shour="${modelrecvy:10:13}"
 
@@ -99,33 +97,32 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    # existence of the restart files
    ###############################
    export pgm="postcheck"
-   grib_file="${COM_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}.idx"
+   grib_file="${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}.idx"
    if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
-      echo "FATAL ERROR: 0p50 grib file not available after max sleep time"
       export err=9
-      err_chk || exit "${err}"
+      err_chk "FATAL ERROR: 0p50 grib file not available after max sleep time"
    fi
 
    ######################################################################
    # Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
    ######################################################################
    paramlist="${PARMgfs}/product/global_npoess_paramlist_g2"
-   cp "${COM_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2.0p50.f${fhr3}" tmpfile2
-   cp "${COM_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}" tmpfile2b
+   cp "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2.0p50.f${fhr3}" tmpfile2
+   cp "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}" tmpfile2b
    cat tmpfile2 tmpfile2b > tmpfile
    # shellcheck disable=SC2312
-   ${WGRIB2} tmpfile | grep -F -f "${paramlist}" | ${WGRIB2} -i -grib  pgb2file tmpfile
+   ${WGRIB2} tmpfile | grep -F -f "${paramlist}" | ${WGRIB2} -i -grib  pgb2file tmpfile && true
    export err=$?; err_chk
 
-   cp pgb2file "${COM_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
+   cp pgb2file "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
 
    if [[ ${SENDDBN} == "YES" ]]; then
        "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGBNPOESS "${job}" \
-				  "${COM_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
+				  "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.pgrb2f${fhr3}.npoess"
    else
        echo "File ${RUN}.${cycle}.pgrb2f${fhr3}.npoess not posted to db_net."
    fi
-   echo "${PDY}${cyc}${fhr3}" > "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.halfdeg.npoess"
+   echo "${PDY}${cyc}${fhr3}" > "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.halfdeg.npoess"
    rm tmpfile pgb2file
 
 done
@@ -150,12 +147,11 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    # existence of the restart files
    ###############################
    export pgm="postcheck"
-   # grib_file="${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.goesmasterf${fhr3}.grb2"
-   grib_file="${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.special.grb2f${fhr3}"
+   # grib_file="${COMIN_ATMOS_MASTER}/${RUN}.t${cyc}z.goesmasterf${fhr3}.grb2"
+   grib_file="${COMIN_ATMOS_MASTER}/${RUN}.t${cyc}z.special.grb2f${fhr3}"
    if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
-      echo "FATAL ERROR: GOES master grib file ${grib_file} not available after max sleep time"
       export err=9
-      err_chk || exit "${err}"
+      err_chk "FATAL ERROR: GOES master grib file ${grib_file} not available after max sleep time"
    fi
    ###############################
    # Put restart files into /nwges 
@@ -174,20 +170,20 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
 
    ${WGRIB2} pgb2file -s > pgb2ifile
 
-   cp pgb2file "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}"
-   cp pgb2ifile "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}.idx"
-   cp pgb2file2 "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr3}.grd221"
+   cp pgb2file "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}"
+   cp pgb2ifile "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}.idx"
+   cp pgb2file2 "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr3}.grd221"
 
    if [[ ${SENDDBN} == "YES" ]]; then
        "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMPGB2_0P25 "${job}" \
-				  "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}"
+				  "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}"
        "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMPGB2_0P25_WIDX "${job}" \
-				  "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx"
+				  "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx"
        "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMGRD221_PGB2 "${job}" \
-				  "${COM_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221"
+				  "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221"
    fi
 
-   echo "${PDY}${cyc}${fhr}" > "${COM_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb"
+   echo "${PDY}${cyc}${fhr}" > "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb"
    rm pgb2file2 pgb2ifile
 
    if [[ ${SENDECF} == "YES" ]]; then

@@ -13,7 +13,7 @@ case ${step} in
         export tasks_per_node=144
         ;;
       "C1152")
-        #TODO set tasks_per_node after investigating a safe threshold
+        export tasks_per_node=144
         ;;
       *)
         # Nothing to do for other resolutions
@@ -33,6 +33,20 @@ case ${step} in
     esac
   export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
   ;;
+
+  "anal")
+    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
+        export threads_per_task=8
+        # Make ntasks a multiple of 16
+        if [[ "${RUN}" == "gdas" ]]; then
+            export ntasks=784
+        elif [[ "${RUN}" == "gfs" ]]; then
+            export ntasks=832
+        fi
+        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    fi
+    ;;
   *)
+
   ;;
 esac

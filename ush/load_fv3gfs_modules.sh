@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
 
 ###############################################################
+if [[ "$-" == *x* ]]; then
+    set_x=YES
+else
+    set_x=NO
+fi
+
 if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     echo "Loading modules quietly..."
     set +x
@@ -20,7 +26,7 @@ source "${HOMEgfs}/versions/run.ver"
 module use "${HOMEgfs}/modulefiles"
 
 case "${MACHINE_ID}" in
-  "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "jet" | "s4" | "noaacloud")
+  "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
     module load "module_base.${MACHINE_ID}"
     ;;
   *)
@@ -30,6 +36,14 @@ esac
 
 module list
 
+# If this function exists in the environment, run it; else set -x if it was set on entering this script
+ftype=$(type -t set_trace || echo "")
+if [[ "${ftype}" == "function" ]]; then
+  set_trace
+elif [[ "${set_x}" == "YES" ]]; then
+  set -x
+fi
+
 # Add wxflow to PYTHONPATH
 wxflowPATH="${HOMEgfs}/ush/python"
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
@@ -38,9 +52,3 @@ export PYTHONPATH
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
 unset ulimit_s
-
-# If this function exists in the environment, run it; else do not
-ftype=$(type -t set_trace || echo "")
-if [[ "${ftype}" == "function" ]]; then
-  set_trace
-fi

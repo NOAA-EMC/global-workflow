@@ -2,7 +2,6 @@
 
 # TODO (#1227) This job is not used in the rocoto suite
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
 
 
@@ -17,10 +16,11 @@ export RUN=${RUN:-gfs}
 ###########################
 export EXT_FCST=NO
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
 ########################################################
 # Execute the script.
-${SCRgfs}/exglobal_atmos_pmgr.sh
+${SCRgfs}/exglobal_atmos_pmgr.sh && true
+export err=$?; err_chk
 ########################################################
 

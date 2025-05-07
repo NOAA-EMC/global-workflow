@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "waveprep" -c "base wave waveprep"
 
 # Add default errchk = err_chk
@@ -14,7 +13,7 @@ export MP_PULSE=0
 # CDO required for processing RTOFS currents
 export CDO=${CDO_ROOT}/bin/cdo
 
-# Set COM Paths and GETGES environment
+# Set COM Paths
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 	COMIN_OBS:COM_OBS_TMPL \
 	COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \

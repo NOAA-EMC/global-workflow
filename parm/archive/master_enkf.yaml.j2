@@ -3,6 +3,8 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = RUN + ".t" + cycle_HH + "z." %}
+{% set head_ocean = "enkfgdas.ocean.t" + cycle_HH + "z." %}
+{% set head_ice = "enkfgdas.ice.t" + cycle_HH + "z." %}
 
 # Determine which data to archive
 datasets:
@@ -21,6 +23,14 @@ datasets:
     {% set COMIN_ATMOS_ANALYSIS_MEM_list = [] %}
     {% set COMIN_ATMOS_RESTART_MEM_list = [] %}
     {% set COMIN_ATMOS_HISTORY_MEM_list = [] %}
+    {% set COMIN_OCEAN_ANALYSIS_MEM_list = [] %}
+    {% set COMIN_OCEAN_LETKF_MEM_list = [] %}
+    {% set COMIN_OCEAN_RESTART_MEM_list = [] %}
+    {% set COMIN_OCEAN_HISTORY_MEM_list = [] %}
+    {% set COMIN_ICE_ANALYSIS_MEM_list = [] %}
+    {% set COMIN_ICE_LETKF_MEM_list = [] %}
+    {% set COMIN_ICE_RESTART_MEM_list = [] %}
+    {% set COMIN_ICE_HISTORY_MEM_list = [] %}
 
     # Determine which ensemble members belong to this group
     {% set first_group_mem = (ENSGRP - 1) * NMEM_EARCGRP + 1 %}
@@ -40,11 +50,27 @@ datasets:
         {% set COMIN_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
         {% set COMIN_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
         {% set COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_OCEAN_ANALYSIS_MEM = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_OCEAN_LETKF_MEM = COM_OCEAN_LETKF_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_OCEAN_HISTORY_MEM = COM_OCEAN_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_OCEAN_RESTART_MEM = COM_OCEAN_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ICE_ANALYSIS_MEM = COM_ICE_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ICE_LETKF_MEM = COM_ICE_LETKF_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ICE_HISTORY_MEM = COM_ICE_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ICE_RESTART_MEM = COM_ICE_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
 
         # Append the member COM directories
         {% do COMIN_ATMOS_ANALYSIS_MEM_list.append(COMIN_ATMOS_ANALYSIS_MEM)%}
         {% do COMIN_ATMOS_HISTORY_MEM_list.append(COMIN_ATMOS_HISTORY_MEM)%}
         {% do COMIN_ATMOS_RESTART_MEM_list.append(COMIN_ATMOS_RESTART_MEM)%}
+        {% do COMIN_OCEAN_ANALYSIS_MEM_list.append(COMIN_OCEAN_ANALYSIS_MEM)%}
+        {% do COMIN_OCEAN_LETKF_MEM_list.append(COMIN_OCEAN_LETKF_MEM)%}
+        {% do COMIN_OCEAN_HISTORY_MEM_list.append(COMIN_OCEAN_HISTORY_MEM)%}
+        {% do COMIN_OCEAN_RESTART_MEM_list.append(COMIN_OCEAN_RESTART_MEM)%}
+        {% do COMIN_ICE_ANALYSIS_MEM_list.append(COMIN_ICE_ANALYSIS_MEM)%}
+        {% do COMIN_ICE_LETKF_MEM_list.append(COMIN_ICE_LETKF_MEM)%}
+        {% do COMIN_ICE_HISTORY_MEM_list.append(COMIN_ICE_HISTORY_MEM)%}
+        {% do COMIN_ICE_RESTART_MEM_list.append(COMIN_ICE_RESTART_MEM)%}
 
     {% endfor %}
 
@@ -52,6 +78,13 @@ datasets:
     {% filter indent(width=4) %}
 {% include "enkf_grp.yaml.j2" %}
     {% endfilter %}
+
+    # Archive marine member data
+    {% if DOHYBVAR_OCN %}
+        {% filter indent(width=4) %}
+{% include "enkf_marine_grp.yaml.j2" %}
+        {% endfilter %}
+    {% endif %}
 
     # Determine if restarts should be saved
     {% set save_warm_start_forecast, save_warm_start_cycled = ( False, False ) %}

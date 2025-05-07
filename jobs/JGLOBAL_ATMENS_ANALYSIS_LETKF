@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlletkf" -c "base atmensanl atmensanlletkf"
@@ -17,11 +16,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlletkf" -c "base atmensanl at
 # Run relevant script
 
 EXSCRIPT=${GDASATMENSRUNSH:-${SCRgfs}/exglobal_atmens_analysis_letkf.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work

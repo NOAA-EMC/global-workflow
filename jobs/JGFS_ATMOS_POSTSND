@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
 
 
@@ -21,28 +20,27 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ##############################
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_HISTORY COM_ATMOS_BUFR \
-  COM_ATMOS_WMO COM_ATMOS_GEMPAK
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
+  COMOUT_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
+  COMOUT_ATMOS_WMO:COM_ATMOS_WMO_TMPL \
+  COMOUT_ATMOS_GEMPAK:COM_ATMOS_GEMPAK_TMPL
 
-if [[ ! -d "${COM_ATMOS_BUFR}" ]]; then
-    mkdir -p "${COM_ATMOS_BUFR}"
+if [[ ! -d "${COMOUT_ATMOS_BUFR}" ]]; then
+    mkdir -p "${COMOUT_ATMOS_BUFR}"
 fi
-if [[ ! -d "${COM_ATMOS_GEMPAK}" ]]; then
-    mkdir -p "${COM_ATMOS_GEMPAK}"
+if [[ ! -d "${COMOUT_ATMOS_GEMPAK}" ]]; then
+    mkdir -p "${COMOUT_ATMOS_GEMPAK}"
 fi
-if [[ ! -d "${COM_ATMOS_WMO}" ]]; then
-    mkdir -p "${COM_ATMOS_WMO}"
+if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then
+    mkdir -p "${COMOUT_ATMOS_WMO}"
 fi
 
 
 ########################################################
 # Execute the script.
-${SCRgfs}/exgfs_atmos_postsnd.sh
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
-
+${SCRgfs}/exgfs_atmos_postsnd.sh && true
+export err=$?; err_chk
 
 ##############################################
 # End JOB SPECIFIC work

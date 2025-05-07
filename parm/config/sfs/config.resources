@@ -20,25 +20,6 @@ case ${machine} in
   "HERA")     max_tasks_per_node=40;;
   "ORION")    max_tasks_per_node=40;;
   "HERCULES") max_tasks_per_node=80;;
-  "JET")
-    case ${PARTITION_BATCH} in
-      "xjet")          max_tasks_per_node=24;;
-      "vjet" | "sjet") max_tasks_per_node=16;;
-      "kjet")          max_tasks_per_node=40;;
-      *)
-        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
-        exit 3
-    esac
-    ;;
-  "S4")
-    case ${PARTITION_BATCH} in
-      "s4")  max_tasks_per_node=32;;
-      "ivy") max_tasks_per_node=20;;
-      *)
-        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
-        exit 3
-    esac
-    ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
     max_tasks_per_node=48
@@ -87,15 +68,6 @@ case ${step} in
 
   "fcst" | "efcs")
     export is_exclusive=True
-
-    export layout_x=${layout_x_gfs}
-    export layout_y=${layout_y_gfs}
-    export WRITE_GROUP=${WRITE_GROUP_GFS}
-    export WRTTASK_PER_GROUP_PER_THREAD=${WRTTASK_PER_GROUP_PER_THREAD_GFS}
-    ntasks_fv3=${ntasks_fv3_gfs}
-    ntasks_quilt=${ntasks_quilt_gfs}
-    nthreads_fv3=${nthreads_fv3_gfs}
-    nthreads_ufs=${nthreads_ufs_gfs}
 
     # Determine if using ESMF-managed threading or traditional threading
     # If using traditional threading, set them to 1
@@ -322,10 +294,6 @@ case ${step} in
     export ntasks=1
     export threads_per_task=1
     export tasks_per_node="${ntasks}"
-    export walltime_gfs="${walltime}"
-    export ntasks_gfs="${ntasks}"
-    export threads_per_tasks_gfs="${threads_per_task}"
-    export tasks_per_node_gfs="${tasks_per_node}"
     export is_exclusive=False
     ;;
 

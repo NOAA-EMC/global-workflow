@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 
 
@@ -37,12 +36,9 @@ MEMDIR="ensstat" RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 ###############################################################
 # Run relevant script
 
-${ENKFUPDSH:-${SCRgfs}/exgdas_enkf_update.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
-
+${ENKFUPDSH:-${SCRgfs}/exgdas_enkf_update.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # Send Alerts

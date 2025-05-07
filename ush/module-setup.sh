@@ -3,15 +3,7 @@ set -u
 
 source "${HOMEgfs}/ush/detect_machine.sh"
 
-if [[ ${MACHINE_ID} = jet* ]] ; then
-    # We are on NOAA Jet
-    if ( ! eval module help > /dev/null 2>&1 ) ; then
-        source /apps/lmod/lmod/init/bash
-    fi
-    export LMOD_SYSTEM_DEFAULT_MODULES=contrib
-    module reset
-
-elif [[ ${MACHINE_ID} = hera* ]] ; then
+if [[ ${MACHINE_ID} = hera* ]] ; then
     # We are on NOAA Hera
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/lmod/init/bash
@@ -41,13 +33,6 @@ elif [[ ${MACHINE_ID} = orion* ]] ; then
     module purge # reset causes issues on Orion sometimes.
     #set -u
 
-elif [[ ${MACHINE_ID} = s4* ]] ; then
-    # We are on SSEC Wisconsin S4
-    if ( ! eval module help > /dev/null 2>&1 ) ; then
-        source /usr/share/lmod/lmod/init/bash
-    fi
-    export LMOD_SYSTEM_DEFAULT_MODULES=license_intel
-    module reset
 
 elif [[ ${MACHINE_ID} = wcoss2 ]]; then
     # We are on WCOSS2
@@ -69,11 +54,21 @@ elif [[ ${MACHINE_ID} = stampede* ]] ; then
     fi
     module purge
 
-elif [[ ${MACHINE_ID} = gaea* ]] ; then
-    # We are on GAEA.
+elif [[ ${MACHINE_ID} = gaeac5 ]] ; then
+    # We are on GAEA C5.
     if ( ! eval module help > /dev/null 2>&1 ) ; then
-        source /usr/share/lmod/lmod/init/bash
+        # We cannot simply load the module command.  The GAEA
+        # /etc/profile modifies a number of module-related variables
+        # before loading the module command.  Without those variables,
+        # the module command fails.  Hence we actually have to source
+        # /etc/profile here.
         source /etc/profile
+    fi
+    module reset
+elif [[ ${MACHINE_ID} = gaeac6 ]]; then
+    # We are on GAEA C6.
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /opt/cray/pe/lmod/lmod/init/bash
     fi
     module reset
 

@@ -1,5 +1,4 @@
 #!/bin/bash
-source "${HOMEgfs}/ush/preamble.sh"
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
 export DATAens="${DATAjob}/ensdata"
@@ -19,11 +18,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlchkpt" -c "base marineanl ma
 # Run relevant script
 
 EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_checkpoint.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
+${EXSCRIPT} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work

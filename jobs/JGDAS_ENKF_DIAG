@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs analdiag ediag"
 
 
@@ -45,8 +44,8 @@ MEMDIR="ensstat" RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.ensmean.nc"
 if [ ! -f ${ATMGES_ENSMEAN} ]; then
-    echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
-    exit 1
+    export err=1
+    err_chk "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
 fi
 
 # Link observational data
@@ -100,12 +99,9 @@ done
 ###############################################################
 # Run relevant script
 
-${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
-
+${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # End JOB SPECIFIC work

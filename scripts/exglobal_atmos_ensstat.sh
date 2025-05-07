@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
 if [[ -a mpmd_script ]]; then rm -Rf mpmd_script; fi
@@ -14,6 +12,5 @@ if [[ -a mpmd_script ]]; then rm -Rf mpmd_script; fi
 } > mpmd_script
 
 "${USHgfs}/run_mpmd.sh" mpmd_script
-err=$?
-
-exit "${err}"
+export err=$?
+err_chk

@@ -20,7 +20,7 @@ device="nc | gfs.meta.ak"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 fend=F216
@@ -219,20 +219,20 @@ if (( err != 0 )) || [[ ! -s gfs.meta.ak ]]; then
   exit "${err}"
 fi
 
-mv gfs.meta.ak "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
+mv gfs.meta.ak "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
 export err=$?
 if (( err != 0 )) ; then
-    echo "FATAL ERROR: Failed to move meta file to ${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
+    echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
     exit $(( err + 100 ))
 fi
 
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
+        "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
     if [[ ${DBN_ALERT_TYPE} = "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-            "${COM_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
+            "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
     fi
 fi
 

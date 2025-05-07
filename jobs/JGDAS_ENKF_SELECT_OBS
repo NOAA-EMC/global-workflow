@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs"
 
 
@@ -52,18 +51,14 @@ mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006${GSUFFIX}"
 if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
-    echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
-    exit 1
+    export err=1
+    err_chk "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
 fi
 
-# Ignore masking of chained commands and possible misspelling warning
-# shellcheck disable=SC2153,SC2312
-LEVS=$(${NCDUMP} -h "${ATMGES_ENSMEAN}" | grep -i "pfull" | head -1 | awk -F" = " '{print $2}' | awk -F" " '{print $1}') # get LEVS
-# shellcheck disable=
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
+LEVS=$(${NCLEN} ${ATMGES} pfull) && true
+export err=$?
+set_strict
+
 export LEVS
 
 # Link observational data
@@ -122,12 +117,9 @@ done
 ###############################################################
 # Run relevant script
 
-${INVOBSSH:-${SCRgfs}/exgdas_enkf_select_obs.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
-fi
-
+${INVOBSSH:-${SCRgfs}/exgdas_enkf_select_obs.sh} && true
+export err=$?
+err_chk
 
 ##############################################
 # Send Alerts
@@ -145,7 +137,7 @@ fi
 # Final processing
 ##############################################
 if [[ -e "${pgmout}" ]] ; then
-  cat ${pgmout}
+  cat "${pgmout}"
 fi
 
 ##########################################

@@ -1,0 +1,20 @@
+#!/bin/bash
+# Jinja-templated variables
+# For now, there is no easy way to determine which log file belongs to which
+# tarball.  So, the verify script simply checks all log files for "SUCCESS".
+# TODO when the Doorman is capable of providing the xfer ID, use that instead
+# globus_xfer_id=""
+log_directory="{{server_home}}/doorman/{{jobid}}/logs/"
+
+hpss_stat=""
+for log in "${log_directory}"/*.log; do
+    hpss_stat_tmp=$(tail -n1 "${log}")
+    if [[ "${hpss_stat_tmp}" == "SUCCESS" ]]; then
+        hpss_stat="SUCCESS"
+    else
+        hpss_stat="FAILURE"
+        break
+    fi
+done
+
+echo "${hpss_stat}"
