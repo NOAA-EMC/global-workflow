@@ -44,24 +44,15 @@ RAPIDREFRESH_CLDSURF_INVOBS=${RAPIDREFRESH_CLDSURF_INVOBS:-""}
 CHEM_INVOBS=${CHEM_INVOBS:-""}
 
 ################################################################################
-#  Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
-cd $DATA || exit 8
-
-################################################################################
 # ObsInput file from ensemble mean
 rm -f obs*input*
-$NLN $SELECT_OBS obsinput.tar
+${NLN} ${SELECT_OBS} obsinput.tar
 
 # Whether to save or skip obs
-if [ $RUN_SELECT = "YES" -a $USE_SELECT = "NO" ]; then
+if [[ ${RUN_SELECT} = "YES" && ${USE_SELECT} = "NO" ]]; then
    lread_obs_save=".true."
    lread_obs_skip=".false."
-elif [ $RUN_SELECT = "NO" -a $USE_SELECT = "YES" ]; then
+elif [[ ${RUN_SELECT} = "NO" && ${USE_SELECT} = "YES" ]]; then
    lread_obs_save=".false."
    lread_obs_skip=".true."
 fi
@@ -78,33 +69,29 @@ export USE_CORRELATED_OBERRS="NO"
 export write_fv3_increment=".false."
 
 # GSI Namelist options for observation operator only
-export SETUP="miter=0,niter=1,lread_obs_save=$lread_obs_save,lread_obs_skip=$lread_obs_skip,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,$SETUP_INVOBS"
-export GRIDOPTS="$GRIDOPTS_INVOBS"
-export BKGVERR="bkgv_flowdep=.false.,$BKGVERR_INVOBS"
-export ANBKGERR="$ANBKGERR_INVOBS"
-export JCOPTS="$JCOPTS_INVOBS"
-export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,$STRONGOPTS_INVOBS"
-export OBSQC="$OBSQC_INVOBS"
-export OBSINPUT="$OBSINPUT_INVOBS"
-export SUPERRAD="$SUPERRAD_INVOBS"
-export SINGLEOB="$SINGLEOB_INVOBS"
-export LAGDATA="$LAGDATA_INVOBS"
+export SETUP="miter=0,niter=1,lread_obs_save=${lread_obs_save},lread_obs_skip=${lread_obs_skip},lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,${SETUP_INVOBS}"
+export GRIDOPTS="${GRIDOPTS_INVOBS}"
+export BKGVERR="bkgv_flowdep=.false.,${BKGVERR_INVOBS}"
+export ANBKGERR="${ANBKGERR_INVOBS}"
+export JCOPTS="${JCOPTS_INVOBS}"
+export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,${STRONGOPTS_INVOBS}"
+export OBSQC="${OBSQC_INVOBS}"
+export OBSINPUT="${OBSINPUT_INVOBS}"
+export SUPERRAD="${SUPERRAD_INVOBS}"
+export SINGLEOB="${SINGLEOB_INVOBS}"
+export LAGDATA="${LAGDATA_INVOBS}"
 export HYBRID_ENSEMBLE=""
-export RAPIDREFRESH_CLDSURF="$RAPIDREFRESH_CLDSURF_INVOBS"
-export CHEM="$CHEM_INVOBS"
+export RAPIDREFRESH_CLDSURF="${RAPIDREFRESH_CLDSURF_INVOBS}"
+export CHEM="${CHEM_INVOBS}"
 
 ################################################################################
 # Execute GSI as a forward operator
 
-$ANALYSISSH
+"${ANALYSISSH}"
 export err=$?; err_chk
 
 ################################################################################
 # Postprocessing
-cd $pwd
-if [[ "${mkdata}" == "YES" ]]; then
-    rm -rf "${DATA}"
-fi
+cd ${pwd} || exit 1
 
-
-exit $err
+exit ${err}

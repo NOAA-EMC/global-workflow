@@ -25,6 +25,6 @@ fcst:
   TYPE: "hydro"
   MONO: "mono"
   reforecast: "YES"
-  FHZER: 24
+  FHZERO: 24
 ocn:
   MOM6_INTERP_ICS: "YES"

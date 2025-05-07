@@ -112,6 +112,7 @@
 :ICAHT:max wind:
 :ICAHT:tropopause:
 :ICEC:surface:
+:ICEG:10 m above mean sea level:
 :ICIP:300 mb:
 :ICIP:400 mb:
 :ICIP:500 mb:
