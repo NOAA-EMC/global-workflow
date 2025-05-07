@@ -63,13 +63,8 @@
    set_trace
    msg="FATAL ERROR ${RUN} wave prdgen ${date} ${cycle} : bulletin tar missing."
    echo "${msg}"
-<<<<<<< HEAD
    export err=1
    err_chk
-=======
-   export err=1; ${errchk}
-   exit ${err}
->>>>>>> origin/develop
  fi
 
  set +x
@@ -78,11 +73,7 @@
  tar -xf cbull.tar
  OK=$?
 
-<<<<<<< HEAD
  if [[ ${OK} -eq 0 ]]; then
-=======
- if [ "${OK}" = '0' ]; then
->>>>>>> origin/develop
    set +x
    echo "      Unpacking successfull ..."
    set_trace
@@ -97,13 +88,8 @@
    echo ' '
    set_trace
    echo "${RUN} wave prdgen ${date} ${cycle} : bulletin untar error."
-<<<<<<< HEAD
    export err=2
    err_chk
-=======
-   err=2;export err;err_chk
-   exit ${err}
->>>>>>> origin/develop
  fi
 
 # 1.b Output locations from bulletin files
@@ -117,11 +103,7 @@
   echo ' '
 # 1.c Get the datat cards
  if [ -f "${PARMgfs}/wave/bull_awips_gfswave" ]; then
-<<<<<<< HEAD
    cpreq "${PARMgfs}/wave/bull_awips_gfswave" "awipsbull.data"
-=======
-   cp "${PARMgfs}/wave/bull_awips_gfswave" "awipsbull.data"
->>>>>>> origin/develop
  else
    msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
    set +x
@@ -133,13 +115,8 @@
    echo "${msg}"
    set_trace
    echo "${RUN} wave prdgen ${date} ${cycle} : Bulletin header data file missing."
-<<<<<<< HEAD
    export err=3
    err_chk
-=======
-   err=3;export err;err_chk
-   exit ${err}
->>>>>>> origin/develop
  fi
 
 # 2. AWIPS bulletins for output points
@@ -177,13 +154,8 @@
      echo "${msg}"
      set_trace
      echo "${RUN} wave prdgen ${date} ${cycle} : Missing bulletin data."
-<<<<<<< HEAD
      export err=4
      err_chk
-=======
-     err=4;export err;err_chk
-     exit ${err}
->>>>>>> origin/develop
    fi
 
    set_trace
