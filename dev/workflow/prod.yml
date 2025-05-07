@@ -44,7 +44,7 @@ suites:
                   - 'jtwc_bull_email'
             prep:
               tasks:
-                jgfs_atmos_emcsfc_sfc_prep:
+                jgfs_atmos_prep_sfc:
                   triggers:
                   - task: jobsproc_gfs_atmos_dump
                     event: release_sfcprep
@@ -53,7 +53,7 @@ suites:
               jgfs_atmos_analysis:
                 triggers:
                 - task: jobsproc_gfs_atmos_prep
-                - task: jgfs_atmos_emcsfc_sfc_prep
+                - task: jgfs_atmos_prep_sfc
                 events:
                 - "release_fcst"
               jgfs_atmos_analysis_calc:
@@ -199,7 +199,7 @@ suites:
                 jgdas_atmos_tropcy_qc_reloc:
             prep:
               tasks:
-                jgdas_atmos_emcsfc_sfc_prep:
+                jgdas_atmos_prep_sfc:
                   triggers:
                   - task: jobsproc_gdas_atmos_dump
                     event: release_sfcprep
@@ -208,7 +208,7 @@ suites:
               jgdas_atmos_analysis:
                 triggers:
                 - task: jobsproc_gdas_atmos_prep
-                - task: jgdas_atmos_emcsfc_sfc_prep
+                - task: jgdas_atmos_prep_sfc
                 events:
                 - "release_fcst"
               jgdas_atmos_analysis_calc:

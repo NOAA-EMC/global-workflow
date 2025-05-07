@@ -2,7 +2,7 @@
 
 ####  UNIX Script Documentation Block ###################################
 #
-# Script name:  emcsfc_ice_blend.sh
+# Script name:  prep_sfc_ice_blend.sh
 # RFC Contact:  George Gayno
 # Abstract:  This script calls the emcsfc_ice_blend program to create
 #    a global ice concentation from a blend of National Ice Center IMS data

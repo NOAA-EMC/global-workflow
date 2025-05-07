@@ -2,7 +2,7 @@
 
 ####  UNIX Script Documentation Block ###################################
 #                      .                                             .
-# Script name:  exemcsfc_global_sfc_prep.sh
+# Script name:  exglobal_prep_sfc.sh
 # RFC Contact:  George Gayno
 # Abstract:  This script calls two utility scripts to prepare a global
 #    blended ice analysis and global snow analyses for use by GFS/GDAS.
@@ -22,8 +22,8 @@
 # Usage:
 #  Parameters:    < no arguments >
 #  Modules:
-#    /nwprod/gfs.vX.Y.Z/ush/emcsfc_ice_blend.sh (create global ice blend)
-#    /nwprod/gfs.vX.Y.Z/ush/emcsfc_snow.sh (create model snow analysis)
+#    ush/prep_sfc_ice_blend.sh (create global ice blend)
+#    ush/prep_sfc_snow.sh (create model snow analysis)
 #  Input Files:
 #    $AFWA_GLOBAL_FILE       - afwa snow data (grib 2)
 #    $IMS_FILE               - nh ims snow cover and ice data (grib 2)
@@ -46,7 +46,7 @@
 #
 # Condition codes:
 #  0       - normal termination
-#  non-0   - problem in the emcsfc_ice_blend.sh or emcsfc_snow.sh
+#  non-0   - problem in the prep_sfc_ice_blend.sh or prep_sfc_snow.sh
 #            script and the backup ice or snow data is missing.
 #            fatal error.
 #
@@ -91,7 +91,7 @@ export pgmout=${pgmout:-OUTPUT}
 #-----------------------------------------------------------------------
 
 echo "Create blended ice data."
-"${USHgfs}/emcsfc_ice_blend.sh"
+"${USHgfs}/prep_sfc_ice_blend.sh"
 export err=$?
 
 #-----------------------------------------------------------------------
@@ -129,16 +129,16 @@ export MODEL_SNOW_FILE=${FNSNOAJCAP:-${RUN}.${cycle}.snogrb_t${JCAP}.${LONB}.${L
 export MODEL_SNOW_FILE_PREV=${FNSNOGJCAP:-${COMIN_OBSPROC_PREV}/${RUN}.${gcycle}.snogrb_t${JCAP}.${LONB}.${LATB}}
 
 echo "Create ${JCAP} snow data."
-"${USHgfs}/emcsfc_snow.sh"
+"${USHgfs}/prep_sfc_snow.sh"
 export err=$?
 
 #----------------------------------------------------------------------
-# If there was a failure in the emcsfc_snow script, copy the 6-hr old
+# If there was a failure in the prep_sfc_snow script, copy the 6-hr old
 # snow file to the current file.  The gfs/gdas can run with old snow data
 # for a day or two at most.   So while not fatal, any errors must be
 # investigated
 #
-# If there is a failure in the emcsfc_snow script AND the 6-hour old
+# If there is a failure in the prep_sfc_snow script AND the 6-hour old
 # snow file is not available as a backup, abort the script.  The
 # global cycling can't run without an snow analysis.
 #-----------------------------------------------------------------------
@@ -170,7 +170,7 @@ export MODEL_SNOW_FILE=${FNSNOAJCAP_ENKF:-${RUN}.${cycle}.snogrb_t${JCAP_ENKF}.$
 export MODEL_SNOW_FILE_PREV=${FNSNOGJCAP_ENKF:-${COMIN_OBSPROC_PREV}/${RUN}.${gcycle}.snogrb_t${JCAP_ENKF}.${LONB_ENKF}.${LATB_ENKF}}
 
 echo "Create enkf snow data."
-"${USHgfs}/emcsfc_snow.sh"
+"${USHgfs}/prep_sfc_snow.sh"
 export err=$?
 
 #-----------------------------------------------------------------------

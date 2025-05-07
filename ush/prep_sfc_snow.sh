@@ -2,7 +2,7 @@
 
 ####  UNIX Script Documentation Block ###################################
 #                      .                                             .
-# Script name:  emcsfc_snow.sh
+# Script name:  prep_sfc_snow.sh
 # RFC Contact:  George Gayno
 # Abstract:  This script calls the emcsfc_snow2mdl program to create a
 #    model snow analysis from IMS snow cover and AFWA snow depth data.
