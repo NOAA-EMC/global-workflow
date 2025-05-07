@@ -18,12 +18,12 @@ source "${HOMEgfs}/ush/preamble.sh"
 export pgm=gdplot2_nc;. prep_step
 
 device="nc | ukmetver_12.meta"
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
 export COMIN="gdas.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COMINT_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 vergrid="F-GDAS | ${PDY:2}/0600"
 fcsthr="0600f006"
@@ -54,7 +54,7 @@ for area in ${areas}; do
         cyclenum=${stime:6}
 
         if [[ ! -L "ukmet.20${sdatenum}" ]]; then
-            ${NLN} "${COMINukmet}/ukmet.20${sdatenum}/gempak" "ukmet.20${sdatenum}"
+            ${NLN} "${COMIN_UKMET}/ukmet.20${sdatenum}/gempak" "ukmet.20${sdatenum}"
         fi
         gdfile="ukmet.20${sdatenum}/ukmet_20${sdatenum}${cyclenum}${dgdattim}"
 

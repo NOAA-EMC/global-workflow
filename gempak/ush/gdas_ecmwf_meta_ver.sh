@@ -49,7 +49,7 @@ for area in ${areas}; do
         sdatenum=$(date --utc +%y%m%d -d "${PDY} ${cyc2} - ${fhr} hours")
 
         if [[ ! -L "ecmwf.20${sdatenum}" ]]; then
-            ${NLN} "${COMINecmwf}/ecmwf.20${sdatenum}/gempak" "ecmwf.20${sdatenum}"
+            ${NLN} "${COMIN_ECMWF}/ecmwf.20${sdatenum}/gempak" "ecmwf.20${sdatenum}"
         fi
         gdfile="ecmwf.20${sdatenum}/ecmwf_glob_20${sdatenum}12"
 

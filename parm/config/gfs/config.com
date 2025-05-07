@@ -35,14 +35,22 @@ echo "BEGIN: config.com"
 #   must correspondingly be updated to match.
 #
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
-    COM_OBS_TMPL=$(compath.py "${envir}/obsproc/${obsproc_ver}")'/${RUN}.${YMD}/${HH}/atmos'
+    COM_OBSPROC_TMPL=$(compath.py "${envir}/obsproc/${obsproc_ver}")'/${RUN}.${YMD}/${HH}/atmos'
     COM_RTOFS_TMPL=$(compath.py "${envir}/rtofs/${rtofs_ver}")
+    COM_SYNDAT_TMPL=$(compath.py "${envir}/com/gfs/${gfs_ver}")'/syndat'
+    COM_ECMWF=$(compath.py "${envir}/ecmwf/${ecmwf_ver}")'/ecmwf'
+    COM_NAM=$(compath.py "${envir}/nam/${nam_ver}")'/nam'
+    COM_UKMET=$(compath.py "${envir}/ukmet/${ukmet_ver}")'/ukmet'
 else
-    COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
+    COM_OBSPROC_TMPL='${DMPDIR}/${DUMP}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
     COM_RTOFS_TMPL='${DMPDIR}'
+    COM_SYNDAT='${COM_SYNDAT}'
+    COM_ECMWF='${COM_ECMWF}'
+    COM_NAM='${COM_NAM}'
+    COM_UKMET='${COM_UKMET}'
 fi
-declare -rx COM_OBS_TMPL COM_RTOFS_TMPL
-declare -rx COM_OBSDMP_TMPL='${DMPDIR}/${DUMP}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
+declare -rx COM_OBSPROC_TMPL COM_RTOFS_TMPL
+declare -rx COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
 
 COM_BASE='${ROTDIR}/${RUN}.${YMD}/${HH}/${MEMDIR}'
 

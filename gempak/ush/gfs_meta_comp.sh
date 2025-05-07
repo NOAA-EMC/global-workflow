@@ -36,7 +36,7 @@ done
 
 export HPCNAM="nam.${PDY}"
 if [[ ! -L ${HPCNAM} ]]; then
-    ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
+    ${NLN} "${COMIN_NAM}/nam.${PDY}/gempak" "${HPCNAM}"
 fi
 
 #
@@ -230,7 +230,7 @@ EOF
         ukmet_cyc=${ukmet_date:8:2}
         export HPCUKMET=ukmet.${ukmet_PDY}
         if [[ ! -L "${HPCUKMET}" ]]; then
-            ${NLN} "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
+            ${NLN} "${COMIN_UKMET}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
         fi
         grid2="F-UKMETHPC | ${ukmet_PDY:2}/${ukmet_date}"
 
@@ -316,7 +316,7 @@ EOF
         ecmwf_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${offset} hours")
         ecmwf_PDY=${ecmwf_date:0:8}
         # ecmwf_cyc=${ecmwf_date:8:2}
-        grid2=${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak/ecmwf_glob_${ecmwf_date}
+        grid2=${COMIN_ECMWF}/ecmwf.${ecmwf_PDY}/gempak/ecmwf_glob_${ecmwf_date}
 
         for fhr in $(seq -s ' ' $(( offset%24 )) 24 120 ); do
             gfsfhr=F$(printf "%02g" "${fhr}")

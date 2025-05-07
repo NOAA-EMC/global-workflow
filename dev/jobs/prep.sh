@@ -31,19 +31,25 @@ export OPREFIX="${RUN_local}.t${cyc}z."
 YMD=${PDY} HH=${cyc} DUMP=${RUN_local} declare_from_tmpl -rx \
     COMIN_OBS:COM_OBS_TMPL \
     COMOUT_OBS:COM_OBS_TMPL \
-    COMIN_OBSDMP:COM_OBSDMP_TMPL
+    COMIN_OBSPROC:COM_OBSPROC_TMPL
 
 RUN=${GDUMP} DUMP=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_OBS_PREV:COM_OBS_TMPL \
-    COMIN_OBSDMP_PREV:COM_OBSDMP_TMPL
+    COMIN_OBSPROC_PREV:COM_OBSPROC_TMPL
+
+if [[ ! -d ${COMIN_SYNDAT} ]]; then
+   declare_from_tmpl -rx COMIN_SYNDAT:COM_SYNDAT_TMPL
+fi
 
 export MAKE_PREPBUFR=${MAKE_PREPBUFR:-"YES"}
-if [[ ! -d "${COMOUT_OBS}" ]]; then mkdir -p "${COMOUT_OBS}"; fi
+if [[ ! -d "${COMOUT_OBS}" ]]; then
+   mkdir -p "${COMOUT_OBS}"
+fi
 
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir
 if [[ ${ROTDIR_DUMP} = "YES" ]]; then
-   "${HOMEgfs}/ush/getdump.sh" "${PDY}${cyc}" "${RUN_local}" "${COMIN_OBSDMP}" "${COMOUT_OBS}"
+   "${HOMEgfs}/ush/getdump.sh" "${PDY}${cyc}" "${RUN_local}" "${COMIN_OBSPROC}" "${COMOUT_OBS}"
    status=$?
    if [[ ${status} -ne 0 ]]; then
        exit "${status}"
@@ -51,7 +57,7 @@ if [[ ${ROTDIR_DUMP} = "YES" ]]; then
 
    #  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
    if [[ ! -s "${COMIN_OBS_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" ]]; then
-     "${HOMEgfs}/ush/getdump.sh" "${GDATE}" "${GDUMP}" "${COMIN_OBSDMP_PREV}" "${COMIN_OBS_PREV}"
+     "${HOMEgfs}/ush/getdump.sh" "${GDATE}" "${GDUMP}" "${COMIN_OBSPROC_PREV}" "${COMIN_OBS_PREV}"
      status=$?
      if [[ ${status} -ne 0 ]]; then
          exit "${status}"
@@ -78,16 +84,19 @@ fi
 
 if [[ ${PROCESS_TROPCY} = "YES" ]]; then
 
-    export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
     export ARCHSYND=${ROTDIR}/syndat
-    if [[ ! -d ${ARCHSYND} ]]; then mkdir -p "${ARCHSYND}"; fi
+    if [[ ! -d ${ARCHSYND} ]]; then
+       mkdir -p "${ARCHSYND}"
+    fi
     if [[ ! -s ${ARCHSYND}/syndat_akavit ]]; then
         for file in syndat_akavit syndat_dateck syndat_stmcat.scr syndat_stmcat syndat_sthisto syndat_sthista ; do
-            cp "${COMINsyn}/${file}" "${ARCHSYND}"/.
+            cpreq "${COMIN_SYNDAT}/${file}" "${ARCHSYND}"/.
         done
     fi
 
-    if [[ ${ROTDIR_DUMP} = "YES" ]]; then rm "${COMOUT_OBS}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00"; fi
+    if [[ ${ROTDIR_DUMP} = "YES" ]]; then
+       rm -f "${COMOUT_OBS}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00"
+    fi
 
     "${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
     status=$?
@@ -96,7 +105,9 @@ if [[ ${PROCESS_TROPCY} = "YES" ]]; then
     fi
 
 else
-    if [[ ${ROTDIR_DUMP} = "NO" ]]; then cp "${COMIN_OBSDMP}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00" "${COMOUT_OBS}/"; fi
+    if [[ ${ROTDIR_DUMP} = "NO" ]]; then
+       cpfs "${COMIN_OBSPROC}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00" "${COMOUT_OBS}/"
+    fi
 fi
 
 
@@ -115,11 +126,10 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
     RUN="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMINgdas:COM_ATMOS_HISTORY_TMPL
     RUN="gfs" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMINgfs:COM_ATMOS_HISTORY_TMPL
     if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-        export COMSP=${COMSP:-"${COMIN_OBSDMP}/${RUN_local}.t${cyc}z."}
+        export COMSP=${COMSP:-"${COMIN_OBSPROC}/${RUN_local}.t${cyc}z."}
     else
         export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
     fi
-    export COMSP=${COMSP:-${COMIN_OBS}/${RUN_local}.t${cyc}z.}
 
     # Disable creating NSSTBUFR if desired, copy from DMPDIR instead
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
@@ -132,20 +142,24 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
     err=$?
     if [[ ${err} -ne 0 ]]; then
        echo "FATAL ERROR: Global prep job failed!"
-       exit 1
+       exit ${err}
     fi
     set_strict
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
-        if [[ ${DONST} = "YES" ]]; then ${NCP} "${COMIN_OBSDMP}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"; fi
+        if [[ ${DONST} = "YES" ]]; then
+           ${NCP} "${COMIN_OBSPROC}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
+        fi
     fi
 
 else
     if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-        ${NCP} "${COMIN_OBSDMP}/${OPREFIX}prepbufr"               "${COMOUT_OBS}/${OPREFIX}prepbufr"
-        ${NCP} "${COMIN_OBSDMP}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
-        if [[ ${DONST} = "YES" ]]; then ${NCP} "${COMIN_OBSDMP}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"; fi
+        ${NCP} "${COMIN_OBSPROC}/${OPREFIX}prepbufr" "${COMOUT_OBS}/${OPREFIX}prepbufr"
+        ${NCP} "${COMIN_OBSPROC}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
+        if [[ ${DONST} = "YES" ]]; then
+           ${NCP} "${COMIN_OBSPROC}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
+        fi
     fi
 fi
 
