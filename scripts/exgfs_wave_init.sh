@@ -92,7 +92,7 @@ if [[ "${NET}" == "gefs" && ${NMEM_ENS} -gt 0 ]]; then
     MEMDIR="mem${mem}" YMD="${PDY}" HH="${cyc}" declare_from_tmpl COMOUT_WAVE_PREP_MEM:COM_WAVE_PREP_TMPL
     mkdir -p "${COMOUT_WAVE_PREP_MEM}"
     for grdID in "${grdALL[@]}"; do
-      cpreq "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "${COMOUT_WAVE_PREP_MEM}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin"
+      cpfs "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "${COMOUT_WAVE_PREP_MEM}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin"
     done
   done
 fi
