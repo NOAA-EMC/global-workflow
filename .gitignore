@@ -89,7 +89,6 @@ parm/ufs/ice_in.IN
 parm/ufs/ufs.configure.*.IN
 parm/ufs/post_itag_gfs
 parm/ufs/ww3_shel.nml.IN
-parm/ufs/fv3/global_control.nml.IN
 
 # Ignore sorc and logs folders from externals
 #--------------------------------------------
