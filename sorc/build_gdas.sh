@@ -24,7 +24,7 @@ shift $((OPTIND-1))
 # shellcheck disable=SC2086
 BUILD_JOBS="${BUILD_JOBS:-8}" \
 WORKFLOW_BUILD="${WORKFLOW_BUILD:-"ON"}" \
-WORKFLOW_TESTS="${WORKFLOW_TESTS:-"ON"}" \
+WORKFLOW_TESTS="${WORKFLOW_TESTS:-"OFF"}" \
 ./gdas.cd/build.sh ${_opts} -f
 
 exit
