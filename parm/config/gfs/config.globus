@@ -22,7 +22,7 @@ export SERVER_USERNAME=""
 export SERVER_HOME="/collab2/data/${SERVER_USERNAME}"
 
 # Location of the doorman package on Mercury
-export DOORMAN_ROOT="/home/Gyorgy.Fekete/doorman"
+export DOORMAN_ROOT="/home/David.Huber/doorman"
 
 # Server globus UUID
 # niagara_UUID="1bfd8a79-52b2-4589-88b2-0648e0c0b35d"
