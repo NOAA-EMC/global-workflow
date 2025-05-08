@@ -363,7 +363,7 @@ EOF
       done
 
 # Set number of processes for mpmd
-      wavenproc=$(wc -l cmdfile | awk '{print ${1}}')
+      wavenproc=$(wc -l < cmdfile)
       wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
       printf "\n   Executing the curr prnc cmdfile at : %s\n   ------------------------------------\n" "$(date)"
