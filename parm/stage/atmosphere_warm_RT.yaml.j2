@@ -32,12 +32,10 @@ atmosphere_warm_RT:
         {% endfor %}
 
         {% if path_exists(ICSDIR) %}
-        {% set ntiles = 6 %}
-        {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "phy_data", "sfc_data"] %}
-        # Include base file for restart files
         {% set file = restart_mem_path ~ 'coupler.res' %}
         - ["{{ file }}", "{{ restart_destination_path }}"]
-
+        {% set ntiles = 6 %}
+        {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "phy_data", "sfc_data"] %}
         # Include restart tile files (e.g., .tile1 to .tile6)
         {% for tile in range(1, ntiles + 1) %}
         {% set file = restart_mem_path ~ ftype ~ '.tile' ~ tile ~ '.nc' %}
