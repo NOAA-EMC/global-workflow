@@ -138,10 +138,8 @@ EOF
      if [[ -f "${parmfile}" ]]; then
        ${NLN} "${parmfile}" "awipsgrb.${grdID}.f${fhr}"
      else
-       echo "FATAL ERROR: NO template  grib2_${RUN}wave.${grdID}.f${fhr}"
-       echo "${RUN} wave ${grdID} ${fhr} prdgen ${date} ${cycle} : GRIB template file missing."
        export err=3
-       err_chk
+       err_chk "FATAL ERROR: NO template  grib2_${RUN}wave.${grdID}.f${fhr}"
      fi
      #
 # 2.  AWIPS product generation
