@@ -14,7 +14,7 @@ enkf_marine_grp:
 
 
         # Forecast data
-        {% if RUN == 'enkfgdas' %}
+        {% if is_gdas %}
         {% for fhr in range(3, 10, 3) %}
         - "{{ COMIN_OCEAN_HISTORY_MEM | relpath(ROTDIR) }}/{{ head_ocean }}inst.f{{ "%03d" % fhr }}.nc"
         {% endfor %}
