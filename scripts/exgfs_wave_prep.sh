@@ -38,7 +38,6 @@
   # if ensemble; waveMEMB var empty in deterministic
   export WAV_MOD_TAG="${RUN}wave${waveMEMB}"
 
-  cd ${DATA}
   mkdir outtmp
 
 cat << EOF

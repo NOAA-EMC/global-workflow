@@ -17,7 +17,6 @@ source "${USHgfs}/atparse.bash"
 NAGRIB="nagrib2"
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
-cd "${DATA}" || exit 99
 cpreq "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" "${DATA}/"
 
 grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  # Native grids

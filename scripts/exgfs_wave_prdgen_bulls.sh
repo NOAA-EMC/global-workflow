@@ -26,7 +26,6 @@
  export cyc=${cyc:-00}
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
- export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
  export pgm="wave prdgen"
 
 # 0.b Date and time stuff

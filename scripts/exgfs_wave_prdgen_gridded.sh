@@ -35,9 +35,6 @@ source "${USHgfs}/wave_domain_grid.sh"
  export cyc=${cyc:-00}
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
- export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
- mkdir -p "${DATA}"
- cd "${DATA}" || exit 1
 
  echo "Starting MWW3 GRIDDED PRODUCTS SCRIPT"
 # Input grid

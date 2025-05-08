@@ -40,8 +40,6 @@ EOF
 fhr3=$(printf %03i ${FORECAST_HOUR})
 valid_time=$(date -u -d "${PDY} ${cyc} + ${FORECAST_HOUR} hours" "+%Y%m%d%H")
 
-cd "${DATA}" || exit 99
-
 # Copy model definition files
 for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
   cpreq "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
