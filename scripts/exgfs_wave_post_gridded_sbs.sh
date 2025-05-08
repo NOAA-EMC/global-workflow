@@ -66,8 +66,8 @@ fi
 if [[ "${DOGRB_WAV}" == "YES" ]]; then
   for grbGRD in ${waveinterpGRD} ${wavepostGRD}; do
     if [[ ! -f "${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl" ]]; then
-      echo "FATAL ERROR: No template for grib generation"
-      DOGRB_WAV="NO"
+      export err=1
+      err_chk "FATAL ERROR: No template for grib generation"
     fi
   done
 fi
