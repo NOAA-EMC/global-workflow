@@ -225,7 +225,7 @@ EOF
         cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
       done
 
-      # TZG: Land IAU increments: sfc_inc in FV3 grid, all timesteps in one file per tile 
+      # Land IAU increments: sfc_inc in FV3 grid, all timesteps in one file per tile 
       if [[ ${DO_LAND_IAU} == "YES" ]]; then
         local TN sfc_increment_file
         for TN in $(seq 1 $ntiles); do
