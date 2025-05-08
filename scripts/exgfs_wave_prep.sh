@@ -189,7 +189,7 @@ EOF
        ;;
        * )
          export err=3
-         err_chk 'Input type not yet implemented'
+         err_chk 'FATAL ERROR: Input type not yet implemented'
        ;;
      esac
 
