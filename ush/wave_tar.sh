@@ -98,7 +98,7 @@ EOF
       tar -cf "${ID}.${type}.tar" ./*."${filext}"
       err=$?
 
-      if  [[ ${exit} -ne 0 ]]
+      if  [[ ${err} -ne 0 ]]
       then
         echo 'ERROR: TAR CREATION FAILED *** '
         exit 3
@@ -130,9 +130,9 @@ EOF
     then
       file_name="${ID}.${type}.tar.gz"
       /usr/bin/gzip -c "${ID}.${type}.tar" > "${file_name}"
-      exit=$?
+      err=$?
 
-      if  [[ ${exit} -ne 0 ]]
+      if  [[ ${err} -ne 0 ]]
       then
         echo 'ERROR: SPECTRAL TAR COMPRESSION FAILED *** '
         exit 4
@@ -149,9 +149,9 @@ EOF
 
   cp "${file_name}" "${COMOUT_WAVE_STATION}/."
 
-  exit=$?
+  err=$?
 
-  if  [[ "${exit}" != '0' ]]
+  if  [[ ${err} -ne 0 ]]
   then
     echo 'ERROR: TAR COPY FAILED *** '
     exit 4
