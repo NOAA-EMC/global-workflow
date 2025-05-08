@@ -140,12 +140,12 @@ EOF
     echo "   ww3_outp_spec.inp.tmpl copied. Syncing to all grids ..."
   else
     export err=3
-    err_chk 'FATAL ERROR: NO TEMPLATE FOR SPEC INPUT FILE'
+    err_chk "FATAL ERROR: NO TEMPLATE FOR SPEC INPUT FILE"
   fi
 
   if [[ -f "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ]]
   then
-    cp -f "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ww3_outp_bull.inp.tmpl
+    cpreq "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ww3_outp_bull.inp.tmpl
   fi
 
   if [[ -f ww3_outp_bull.inp.tmpl ]]
@@ -153,7 +153,7 @@ EOF
     echo "   ww3_outp_bull.inp.tmpl copied. Syncing to all nodes ..."
   else
     export err=4
-    err_chk 'FATAL ERROR: NO TEMPLATE FOR BULLETIN INPUT FILE'
+    err_chk "FATAL ERROR: NO TEMPLATE FOR BULLETIN INPUT FILE"
   fi
 
 # 1.d Linking the output files
@@ -229,7 +229,7 @@ EOF
       echo 'Buoy log file created. Syncing to all nodes ...'
     else
       export err=6
-      err_chk 'FATAL ERROR: NO BUOY LOG FILE CREATED'
+      err_chk "FATAL ERROR: NO BUOY LOG FILE CREATED"
     fi
 
 # 1.f Data summary

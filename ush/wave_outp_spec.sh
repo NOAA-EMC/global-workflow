@@ -175,7 +175,7 @@ EOF
      fi
    fi
   else
-    echo "ERROR: OUTPUT DATA FILE FOR BOUY ${bouy} NOT FOUND"
+    echo "ERROR: OUTPUT DATA FILE FOR BOUY ${buoy} NOT FOUND"
     exit 5
   fi
 

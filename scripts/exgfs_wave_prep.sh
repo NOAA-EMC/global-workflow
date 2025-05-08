@@ -232,7 +232,7 @@ EOF
         else
            export err=5
         fi
-        err_chk 'FATAL ERROR: ice field not generated'
+        err_chk "FATAL ERROR: ice field not generated"
       else
         mv -f wave_prnc_ice.out ${DATA}/outtmp
         printf "\n      Ice field unpacking successful.\n"
@@ -248,7 +248,7 @@ EOF
     fi
   else
       echo ' '
-      echo 'WARNING: No input ice file generated, this run did not request pre-processed ice data '
+      echo "WARNING: No input ice file generated, this run did not request pre-processed ice data"
       echo ' '
   fi
 
@@ -257,7 +257,7 @@ EOF
   if [[ "${WW3ATMINP}" == 'YES' ]]; then
 
     export err=6
-    err_chk 'FATAL ERROR : Not set-up to preprocess wind'
+    err_chk "FATAL ERROR : Not set-up to preprocess wind"
   fi
 
 #-------------------------------------------------------------------

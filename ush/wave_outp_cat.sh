@@ -91,8 +91,7 @@
         #rm $outfilefhr
       fi
     else
-      echo "*** ERROR: OUTPUT DATA FILE FOR BOUY $bouy at ${ymdh} NOT FOUND *** "
-      exit 2
+      err_chk "FATAL ERROR: OUTPUT DATA FILE FOR BUOY $buoy at ${ymdh} NOT FOUND"
     fi
 
     FHINCP=$(( DTPNT_WAV / 3600 ))

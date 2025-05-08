@@ -178,7 +178,7 @@ EOF
      export err=$?
      if [[ ${err} -ne 0 ]]; then
        cat tocgrib2.out
-       err_chk 'FATAL ERROR: ERROR IN tocgrib2'
+       err_chk "FATAL ERROR: ERROR IN tocgrib2"
      else
        echo '*** tocgrib2 ran succesfully *** '
      fi
