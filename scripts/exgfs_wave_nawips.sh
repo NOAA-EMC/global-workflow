@@ -20,8 +20,7 @@ fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 cd "${DATA}" || exit 99
 cpreq "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" "${DATA}/"
 
-grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  # Native grids
-grids="aoc_9km gnh_10m gsh_15m"
+grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'aoc_9km gnh_10m gsh_15m'}} 
 
 # Create a template for the GEMPAK control file
 rm -f "${DATA}/gempak.parm.tmpl"

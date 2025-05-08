@@ -9,7 +9,6 @@ echo "BEGIN: config.waveawipsgridded"
 . $EXPDIR/config.resources waveawipsgridded
 
 export GEMPAK_GRIDS=${GEMPAK_GRIDS:-aoc_9km at_10m ep_10m wc_10m glo_30m}
-# export GEMPAK_GRIDS=${GEMPAK_GRIDS:-ao_9km at_10m ep_10m wc_10m glo_30m}
 # AWIPS output frequency
 export FHMAX_HF_WAV_WMO=72
 export FHMAX_WAV_WMO=180
