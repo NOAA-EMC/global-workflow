@@ -95,10 +95,8 @@ EOF
      sleep_interval=5
      max_tries=1000
      if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
-       echo "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
-       echo "${RUN} wave ${grdIDin} ${fhr} prdgen ${date} ${cycle} : GRIB file missing."
        export err=1
-       err_chk
+       err_chk "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
      fi
      GRIBOUT="${RUN}.wave.${cycle}.${grdID}.f${fhr}.clipped.grib2"
 
