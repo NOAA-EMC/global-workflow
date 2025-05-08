@@ -104,13 +104,3 @@ if [[ -d ${deletion_target} ]]; then rm -rf "${deletion_target}"; fi
 
 # sync and wait to avoid filesystem synchronization issues
 sync && sleep 1
-
-# Finally, delete DATAROOT.
-# This will also delete the working directory, so save it until the end.
-# In XML, DATAROOT is defined as:
-#DATAROOT="${STMP}/RUNDIRS/${PSLOT}/${RUN}.${PDY}${cyc}"
-# cleanup is only executed after the entire cycle is successfully completed.
-# removing DATAROOT should be possible if that is the case.
-rm -rf "${DATAROOT}"
-
-echo "Cleanup ${DATAROOT} completed!"
