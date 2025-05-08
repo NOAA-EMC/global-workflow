@@ -732,35 +732,6 @@ CMEPS_predet(){
 
   if [[ ! -d "${DATArestart}/CMEPS_RESTART" ]]; then mkdir -p "${DATArestart}/CMEPS_RESTART"; fi
   ${NLN} "${DATArestart}/CMEPS_RESTART" "${DATA}/CMEPS_RESTART"
-
-  # For CMEPS, CICE, MOM6 and WW3 determine restart writes
-  # Note FV3 has its own restart intervals
-  cmeps_restart_interval=${restart_interval:-${FHMAX}}
-  # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
-  # Convert restart interval into an explicit list for FV3
-  if (( cmeps_restart_interval == 0 )); then
-    if [[ "${DOIAU:-NO}" == "YES" ]]; then
-      CMEPS_RESTART_FH=$(( FHMAX + half_window ))
-    else
-      CMEPS_RESTART_FH=("${FHMAX}")
-    fi
-  else
-    if [[ "${DOIAU:-NO}" == "YES" ]]; then
-      if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
-         local restart_interval_start=${cmeps_restart_interval}
-         local restart_interval_end=${FHMAX}
-      else
-         local restart_interval_start=$(( cmeps_restart_interval + half_window ))
-         local restart_interval_end=$(( FHMAX + half_window ))
-      fi
-    else
-      local restart_interval_start=${cmeps_restart_interval}
-      local restart_interval_end=${FHMAX}
-    fi
-    CMEPS_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${cmeps_restart_interval}" "${restart_interval_end}")"
-  fi
-  export CMEPS_RESTART_FH
-  # TODO: For GEFS, once cycling waves "self-cycles" and therefore needs to have a restart at 6 hour
 }
 
 # shellcheck disable=SC2034
