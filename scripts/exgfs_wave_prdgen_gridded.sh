@@ -41,9 +41,7 @@ source "${USHgfs}/wave_domain_grid.sh"
  
  echo "Starting MWW3 GRIDDED PRODUCTS SCRIPT"
 # Output grids
-#grids=${GEMPAK_GRIDS:-
-grids='aoc_9km at_10m ep_10m wc_10m glo_30m' 
-# export grids=${wavepostGRD}
+grids=${GEMPAK_GRIDS:-'aoc_9km at_10m ep_10m wc_10m glo_30m'}
  maxtries=${maxtries:-720}
 # 0.b Date and time stuff
  start_time=$(date)
