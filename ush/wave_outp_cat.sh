@@ -30,13 +30,7 @@
 
   if [ "$#" -lt '1' ]
   then
-    set +x
-    echo ' '
-    echo '***********************************************'
-    echo '*** LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
-    echo '***********************************************'
-    echo ' '
-    set_trace
+    echo '*** ERROR: LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
     exit 1
   else
     buoy=$bloc
@@ -48,13 +42,7 @@
   if [ -z "$DTPNT_WAV" ] || [ -z "$FHMIN_WAV" ] || \
      [ -z "$WAV_MOD_TAG" ] || [ -z "${STA_DIR}" ]
   then
-    set +x
-    echo ' '
-    echo '******************************************************'
-    echo '*** EXPORTED VARIABLES IN ww3_outp_cat.sh NOT SET ***'
-    echo '******************************************************'
-    echo ' '
-    set_trace
+    echo '*** ERROR: EXPORTED VARIABLES IN ww3_outp_cat.sh NOT SET ***'
     exit 3
   fi
 
@@ -62,9 +50,7 @@
 # --------------------------------------------------------------------------- #
 # 1. Cat for a buoy all fhr into one file
 
-  set +x
   echo "   Generate input file for ww3_outp."
-  set_trace
 
   if [ "$specdir" = "bull" ]
   then
@@ -77,7 +63,7 @@
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
     if [[ -f ${outfile} ]]; then
       rm ${outfile}
-    fi    
+    fi
   fi
 
   fhr=$FHMIN_WAV
@@ -105,15 +91,8 @@
         #rm $outfilefhr
       fi
     else
-      set +x
-      echo ' '
-      echo '************************************************************************** '
-      echo "*** FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy at ${ymdh} NOT FOUND *** "
-      echo '************************************************************************** '
-      echo ' '
-      set_trace
-      export err=2
-      err_chk
+      echo "*** ERROR: OUTPUT DATA FILE FOR BOUY $bouy at ${ymdh} NOT FOUND *** "
+      exit 2
     fi
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
@@ -129,15 +108,8 @@
 
   if [ ! -f ${outfile} ]
   then
-    set +x
-    echo ' '
-    echo '*************************************************** '
-    echo " FATAL ERROR : OUTPUTFILE ${outfile} not created    "
-    echo '*************************************************** '
-    echo ' '
-    set_trace
-    export err=2
-    err_chk
+    echo "ERROR: OUTPUTFILE ${outfile} not created    "
+    exit 2
   fi
 
 # End of ww3_outp_cat.sh ---------------------------------------------------- #

@@ -220,7 +220,7 @@ EOF
     if [[ "${RUNMEM}" == "-1" || "${WW3ICEIENS}" == "T" || "${waveMEMB}" == "00" ]]
     then
 
-      ${USHgfs}/wave_prnc_ice.sh > wave_prnc_ice.out
+      ${USHgfs}/wave_prnc_ice.sh > wave_prnc_ice.out && true
       ERR=$?
 
       if [[ -d ice || ${ERR} -ne 0 ]]
