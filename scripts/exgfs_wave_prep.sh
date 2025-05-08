@@ -366,7 +366,7 @@ EOF
       wavenproc=$(wc -l cmdfile | awk '{print ${1}}')
       wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
-      printf "\n   Executing the curr prnc cmdfile at : $(date)\n   ------------------------------------\n"
+      printf "\n   Executing the curr prnc cmdfile at : %s\n   ------------------------------------\n" "$(date)"
 
       if [[ ${wavenproc} -gt 1 ]]
       then
