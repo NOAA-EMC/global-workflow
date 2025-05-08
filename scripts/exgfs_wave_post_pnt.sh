@@ -28,8 +28,6 @@
 
 # 0.a Basic modes of operation
 
-  cd ${DATA}
-
   export WAV_MOD_TAG="${RUN}.wave.t${cyc}z"
 
   echo "HAS BEGUN on $(hostname)"
@@ -71,7 +69,7 @@ EOF
   mkdir -p ${STA_DIR}/bull
   mkdir -p ${STA_DIR}/cbull
 
-  printf "\n   Grid information  :\n   ------------------\n     Output points : ${waveuoutpGRD}\n"
+  printf "\n   Grid information  :\n   ------------------\n     Output points : %s\n" "${waveuoutpGRD}"
 
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
