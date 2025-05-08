@@ -1271,8 +1271,6 @@ class GFSTasks(Tasks):
     def wavepostbndpntbll(self):
 
         # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
-        last_fhr = self._configs['wavepostbndpntbll']['FHMAX_WAV_IBP']
-
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpnt'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2918,10 +2916,14 @@ class GFSTasks(Tasks):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:  # early cycle enkf run (enkfgfs)
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
+            deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_jediocnvar']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps)
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_ocnanalecen'}
+                deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep=deps)
 
         earcenvars = self.envars.copy()
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
