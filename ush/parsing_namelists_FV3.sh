@@ -474,13 +474,7 @@ local MOM6_RESTART_SETTING=${MOM6_RESTART_SETTING:-'n'}
 local MOM6_RESTART_DIR=MOM6_RESTART/
 
 # Land IAU defaults
-
-local LOG_DO_LAND_IAU
-if [[ ${DO_LAND_IAU} = "YES" ]]; then
-  LOG_DO_LAND_IAU=.true.
-else
-  LOG_DO_LAND_IAU=.false.
-fi
+local DO_LAND_IAU=${DO_LAND_IAU:-".false."}
 local LAND_IAU_FHRS=${LAND_IAU_FHRS}
 local LAND_IAU_DELHRS=${LAND_IAU_DELTHRS}
 local LAND_IAU_INC_FILES=${LAND_IAU_INC_FILES:-"'sfc_inc',''"}
@@ -493,7 +487,7 @@ local LAND_IAU_MIN_T_INC=${LAND_IAU_MIN_T_INCREMENT}
 
 # Check will need to be modified in the future
 # once GW is ready to add in land IAU
-if [[ "${LOG_DO_LAND_IAU}" = ".true." ]]; then
+if [[ "${DO_LAND_IAU}" = ".true." ]]; then
   local HIDE_LIAU=" "
 else
   local HIDE_LIAU="!"

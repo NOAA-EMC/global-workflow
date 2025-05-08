@@ -40,11 +40,11 @@ done
 
 n_tims=0
 ifhrs=()
-if [[ $DO_LAND_IAU == "YES" ]]; then
+if [[ $DO_LAND_IAU = ".true." ]]; then
     IFS=',' read -ra landifhrs <<< "${LAND_IAU_FHRS}"  #$(echo $LAND_IAU_FHRS | sed 's/,/ /g')
     for ihr in "${landifhrs[@]}"; do
         hrstr="$(printf "%02d" $ihr)";
-        ifhrs+=("\"${hrstr}\",")
+        ifhrs+=("\"${hrstr}\",");
         n_tims=$((n_tims+1))
     done
 fi
@@ -132,7 +132,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         done
     done
 
-    if [[ $DO_LAND_IAU == "YES" ]]; then 
+    if [[ $DO_LAND_IAU = ".true." ]]; then 
 
         for FHR in "${ifhrs[@]}"; do
             ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHR}.nc" \

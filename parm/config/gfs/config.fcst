@@ -307,7 +307,7 @@ elif [[ "${RUN}" =~ "gfs" ]] ; then # GFS cycle specific parameters
     fi
 
     # Turn off Land IAU for GFS
-    export DO_LAND_IAU="NO"
+    export DO_LAND_IAU=".false."
 
 fi
 
