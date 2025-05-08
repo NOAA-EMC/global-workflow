@@ -41,20 +41,19 @@
   cd ${DATA}
   mkdir outtmp
 
-  echo "HAS BEGUN on $(hostname)"
-  echo "Starting MWW3 PREPROCESSOR SCRIPT for ${WAV_MOD_TAG}"
+cat << EOF
+HAS BEGUN on $(hostname)
+Starting MWW3 PREPROCESSOR SCRIPT for ${WAV_MOD_TAG}
 
-  set +x
-  echo ' '
-  echo '                      ********************************'
-  echo '                      *** WW3 PREPROCESSOR SCRIPT  ***'
-  echo '                      ********************************'
-  echo '                          PREP for wave component of NCEP coupled system'
-  echo "                          Wave component identifier : ${WAV_MOD_TAG} "
-  echo ' '
-  echo "Starting at : $(date)"
-  echo ' '
-  set_trace
+                      ********************************
+                      *** WW3 PREPROCESSOR SCRIPT  ***
+                      ********************************
+                          PREP for wave component of NCEP coupled system
+                          Wave component identifier : ${WAV_MOD_TAG}
+
+Starting at : $(date)
+
+EOF
 
   # 0.b Date and time stuff
 
@@ -111,32 +110,28 @@
     time_rst2_end=
     DT_2_RST_WAV=
   fi
-  set +x
-  echo ' '
-  echo 'Times in wave model format :'
-  echo '----------------------------'
-  echo "   date / cycle  : ${date} ${cycle}"
-  echo "   starting time : ${time_beg}"
-  echo "   ending time   : ${time_end}"
-  echo ' '
-  set_trace
+  cat << EOF
+
+Times in wave model format :
+----------------------------
+   date / cycle  : ${date} ${cycle}
+   starting time : ${time_beg}
+   ending time   : ${time_end}
+
+EOF
 
   # Script will run only if pre-defined NTASKS
   #     The actual work is distributed over these tasks.
   if [[ -z ${NTASKS} ]]
   then
     export err=1
-    err_chk "FATAL ERROR: Requires NTASKS to be set "
+    err_chk "FATAL ERROR: Requires NTASKS to be set"
   fi
 
   # --------------------------------------------------------------------------- #
   # 1.  Get files that are used by most child scripts
 
-  set +x
-  echo 'Preparing input files :'
-  echo '-----------------------'
-  echo ' '
-  set_trace
+  printf "Preparing input files :\n-----------------------\n"
 
   # 1.a Model definition files
 
@@ -160,20 +155,10 @@
   do
     if [[ -f "${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID}" ]]
     then
-      set +x
       echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
-      set_trace
       cp ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID} mod_def.${grdID}
 
     else
-      set +x
-      echo ' '
-      echo '*********************************************************** '
-      echo '*** FATAL ERROR : NOT FOUND WAVE  MODEL DEFINITION FILE *** '
-      echo '*********************************************************** '
-      echo "                                grdID = ${grdID}"
-      echo ' '
-      set_trace
       export err=2
       err_chk "FATAL ERROR: NO MODEL DEFINITION FILE"
     fi
@@ -216,24 +201,10 @@
 
      if [[ -f ww3_prnc.${type}.${grdID}.inp.tmpl ]]
      then
-       set +x
-       echo ' '
-       echo "   ww3_prnc.${type}.${grdID}.inp.tmpl copied (${PARMgfs}/wave)."
-       echo ' '
-       set_trace
+       printf"\n   ww3_prnc.${type}.${grdID}.inp.tmpl copied (${PARMgfs}/wave).\n"
      else
-       set +x
-       echo ' '
-       echo '************************************** '
-       echo '*** FATAL ERROR : NO TEMPLATE FILE *** '
-       echo '************************************** '
-       echo "             ww3_prnc.${type}.${grdID}.inp.tmpl"
-       echo ' '
-       echo "ABNORMAL EXIT: NO FILE ${file}"
-       echo ' '
-       set_trace
        export err=4
-       err_chk
+       err_chk "FATAL ERROR: NO TEMPLATE FILE ww3_prnc.${type}.${grdID}.inp.tmpl"
      fi
    done
 
@@ -253,24 +224,19 @@
       ${USHgfs}/wave_prnc_ice.sh > wave_prnc_ice.out
       ERR=$?
 
-      if [[ -d ice ]]
+      if [[ -d ice || ${ERR} -ne 0 ]]
       then
-        set +x
-        echo ' '
-        echo '      FATAL ERROR: ice field not generated '
-        echo ' '
         sed "s/^/wave_prnc_ice.out : /g" wave_prnc_ice.out
         echo ' '
-        set_trace
-        export err=5
-        err_chk
+        if [[ ${ERR} -ne 0 ]]; then
+           export err=${ERR}
+        else
+           export err=5
+        fi
+        err_chk 'FATAL ERROR: ice field not generated'
       else
         mv -f wave_prnc_ice.out ${DATA}/outtmp
-        set +x
-        echo ' '
-        echo '      Ice field unpacking successful.'
-        echo ' '
-        set_trace
+        printf "\n      Ice field unpacking successful.\n"
       fi
 
       # Check the error code from wave_prnc_ice.sh
@@ -291,14 +257,8 @@
 # WIND processing
   if [[ "${WW3ATMINP}" == 'YES' ]]; then
 
-    echo ' '
-    echo '*************************************************** '
-    echo '*** FATAL ERROR : Not set-up to preprocess wind *** '
-    echo '*************************************************** '
-    echo ' '
-    set_trace
     export err=6
-    err_chk
+    err_chk 'FATAL ERROR : Not set-up to preprocess wind'
   fi
 
 #-------------------------------------------------------------------
@@ -310,11 +270,7 @@
     if [[ "${RUNMEM}" == "-1" || "${WW3CURIENS}" == "T" || "${waveMEMB}" == "00" ]]
     then
 
-      set +x
-      echo ' '
-      echo '   Concatenate binary current fields ...'
-      echo ' '
-      set_trace
+      printf "\n   Concatenate binary current fields ...\n"
 
 # Prepare files for cfp process
       rm -f cmdfile
@@ -386,15 +342,8 @@
           else
              curfile=${curfile3h}
           fi
-          set -x
-          echo ' '
-          echo '************************************** '
-          echo "*** FATAL ERROR: NO CUR FILE ${curfile} ***  "
-          echo '************************************** '
-          echo ' '
-          set_trace
           export err=11
-          err_chk "FATAL ERROR - NO CURRENT FILE (RTOFS)"
+          err_chk "FATAL ERROR - NO CURRENT FILE (RTOFS): ${curfile}"
         fi
 
         if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
@@ -418,12 +367,7 @@
       wavenproc=$(wc -l cmdfile | awk '{print ${1}}')
       wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
-      set +x
-      echo ' '
-      echo "   Executing the curr prnc cmdfile at : $(date)"
-      echo '   ------------------------------------'
-      echo ' '
-      set_trace
+      printf "\n   Executing the curr prnc cmdfile at : $(date)\n   ------------------------------------\n"
 
       if [[ ${wavenproc} -gt 1 ]]
       then
@@ -457,13 +401,6 @@
 
       if [[ -z "${files}" ]]
       then
-        set +x
-        echo ' '
-        echo '******************************************** '
-        echo '*** FATAL ERROR : CANNOT FIND CURR FILES *** '
-        echo '******************************************** '
-        echo ' '
-        set_trace
         export err=11
         err_chk "FATAL ERROR: NO ${WAVECUR_FID}.* FILES FOUND"
       fi

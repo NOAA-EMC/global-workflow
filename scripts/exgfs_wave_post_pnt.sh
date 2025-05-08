@@ -35,16 +35,16 @@
   echo "HAS BEGUN on $(hostname)"
   echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for ${WAV_MOD_TAG}"
 
-  set +x
-  echo ' '
-  echo '                     *************************************'
-  echo '                     *** WAVE PNT POSTPROCESSOR SCRIPT ***'
-  echo '                     *************************************'
-  echo ' '
-  echo "Starting at : $(date)"
-  echo '-------------'
-  echo ' '
-  set_trace
+  cat << EOF
+
+                     *************************************
+                     *** WAVE PNT POSTPROCESSOR SCRIPT ***
+                     *************************************
+
+Starting at : $(date)
+-------------
+
+EOF
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
@@ -71,24 +71,12 @@
   mkdir -p ${STA_DIR}/bull
   mkdir -p ${STA_DIR}/cbull
 
-  set +x
-  echo ' '
-  echo 'Grid information  :'
-  echo '-------------------'
-  echo "   Output points : ${waveuoutpGRD}"
-  echo ' '
-  set_trace
+  printf "\n   Grid information  :\n   ------------------\n     Output points : ${waveuoutpGRD}\n"
 
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
-  exit_code=0
-
-  set +x
-  echo ' '
-  echo 'Preparing input files :'
-  echo '-----------------------'
-  set_trace
+  printf "\nPreparing input files :\n-------------------------\n"
 
 # 1.a Model definition files and output files (set up using poe)
 
@@ -96,9 +84,7 @@
   iloop=0
   for grdID in ${waveuoutpGRD}; do
     if [[ -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" ]]; then
-      set +x
       echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
-      set_trace
 
       cp -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
       iloop=$((iloop + 1))
@@ -109,19 +95,10 @@
   do
     if [[ ! -f "mod_def.${grdID}" ]]
     then
-      set +x
-      echo ' '
-      echo '*************************************************** '
-      echo " FATAL ERROR : NO MOD_DEF FILE mod_def.${grdID} "
-      echo '*************************************************** '
-      echo ' '
-      set_trace
       export err=2
-      err_chk
+      err_chk "FATAL ERROR: NO MOD_DEF FILE mod_def.${grdID}"
     else
-      set +x
       echo "File mod_def.${grdID} found. Syncing to all nodes ..."
-      set_trace
     fi
   done
 
@@ -147,19 +124,10 @@
 
   if [[ -s buoy.loc ]]
   then
-    set +x
     echo "   buoy.loc and buoy.ibp copied and processed (${PARMgfs}/wave/wave_${NET}.buoys)."
-    set_trace
   else
-    set +x
-    echo ' '
-    echo '************************************* '
-    echo ' FATAL ERROR : NO BUOY LOCATION FILE  '
-    echo '************************************* '
-    echo ' '
-    set_trace
     export err=3
-    err_chk
+    err_chk 'FATAL ERROR: NO BUOY LOCATION FILE'
   fi
 
 # 1.c Input template files
@@ -171,20 +139,10 @@
 
   if [[ -f ww3_outp_spec.inp.tmpl ]]
   then
-    set +x
     echo "   ww3_outp_spec.inp.tmpl copied. Syncing to all grids ..."
-    set_trace
   else
-    set +x
-    echo ' '
-    echo '*********************************************** '
-    echo '*** ERROR : NO TEMPLATE FOR SPEC INPUT FILE *** '
-    echo '*********************************************** '
-    echo ' '
-    set_trace
-    exit_code=3
-    DOSPC_WAV='NO'
-    DOBLL_WAV='NO'
+    export err=3
+    err_chk 'FATAL ERROR: NO TEMPLATE FOR SPEC INPUT FILE'
   fi
 
   if [[ -f "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ]]
@@ -194,19 +152,10 @@
 
   if [[ -f ww3_outp_bull.inp.tmpl ]]
   then
-    set +x
     echo "   ww3_outp_bull.inp.tmpl copied. Syncing to all nodes ..."
-    set_trace
   else
-    set +x
-    echo ' '
-    echo '*************************************************** '
-    echo '*** ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE *** '
-    echo '*************************************************** '
-    echo ' '
-    set_trace
-    exit_code=4
-    DOBLL_WAV='NO'
+    export err=4
+    err_chk 'FATAL ERROR: NO TEMPLATE FOR BULLETIN INPUT FILE'
   fi
 
 # 1.d Linking the output files
@@ -227,12 +176,8 @@
     if [[ -f "${pfile}" ]]; then
       ${NLN} "${pfile}" "./${YMD}.${HMS}.out_pnt.ww3.nc"
     else
-      echo '*************************************************** '
-      echo "  FATAL ERROR : NO RAW POINT OUTPUT FILE ${YMD}.${HMS}.out_pnt.ww3.nc "
-      echo '*************************************************** '
-      set_trace
       export err=7
-      err_chk
+      err_chk "FATAL ERROR: NO RAW POINT OUTPUT FILE ${YMD}.${HMS}.out_pnt.ww3.nc"
     fi
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
@@ -268,17 +213,9 @@
     export err=$?
     if [[ ${err} -ne 0 && ! -f buoy_log.ww3 ]]
     then
-      set +x
-      echo ' '
-      echo '******************************************** '
-      echo "*** FATAL ERROR : ERROR IN ${pgm} *** "
-      echo '******************************************** '
-      echo ' '
-      cat buoy_tmp.loc
-      echo "${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
-      set_trace
+      cat buoy_tmp.loc || true
       export err=5
-      err_chk
+      err_chk "FATAL ERROR: ${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
     fi
 
 # Create new buoy_log.ww3
@@ -291,43 +228,32 @@
 
     if [[ -s buoy_log.dat ]]
     then
-      set +x
       echo 'Buoy log file created. Syncing to all nodes ...'
-      set_trace
     else
-      set +x
-      echo ' '
-      echo '**************************************** '
-      echo '*** ERROR : NO BUOY LOG FILE CREATED *** '
-      echo '**************************************** '
-      echo ' '
-      set_trace
       export err=6
-      err_chk
+      err_chk 'FATAL ERROR: NO BUOY LOG FILE CREATED'
     fi
 
 # 1.f Data summary
 
-  set +x
-  echo ' '
-  echo "   Input files read and processed at : $(date)"
-  echo ' '
-  echo '   Data summary : '
-  echo '   ---------------------------------------------'
-  echo "      Sufficient data for spectral files        : ${DOSPC_WAV} (${Nb} points)"
-  echo "      Sufficient data for bulletins             : ${DOBLL_WAV} (${Nb} points)"
-  echo "      Boundary points                           : ${DOBNDPNT_WAV}"
-  echo ' '
-  set_trace
+  cat << EOF
+
+   Input files read and processed at : $(date)
+
+   Data summary :
+   ---------------------------------------------
+      Sufficient data for spectral files        : ${DOSPC_WAV} (${Nb} points)
+      Sufficient data for bulletins             : ${DOBLL_WAV} (${Nb} points)
+      Boundary points                           : ${DOBNDPNT_WAV}
+
+EOF
 
 # --------------------------------------------------------------------------- #
 # 2. Make files for processing boundary points
 #
 # 2.a Creating ww3_outp.inp for each job and execute ww3_outp
 
-  set +x
   echo '   Making command file for wave post points '
-  set_trace
 
   grep -F -f ibp_tags buoy_log.dat | awk '{ print $2 }' > buoys
   grep -F -f buoys buoy_log.ww3 | awk '{ print $1 }' > points
@@ -370,11 +296,7 @@
   touch cmdtarfile
   chmod 744 cmdtarfile
 
-  set +x
-  echo ' '
-  echo '   Making command file for taring all point output files.'
-
-  set_trace
+  printf "\n   Making command file for taring all point output files."
 
 # 3.b Execute the taring
 
@@ -407,12 +329,9 @@
 
   "${USHgfs}/run_mpmd.sh" "${DATA}/cmdtarfile" && true
   export err=$?
-  err_chk
-
-# --------------------------------------------------------------------------- #
-# 4.  Ending output
-
-export err=${exit_code}
-err_chk
+  if [[ ${err} -ne 0 ]]; then
+     export pgm="run_mpmd.sh"
+     err_chk "FATAL ERROR: run_mpmd failed while tarring point outputs."
+  fi
 
 # End of WW3 point prostprocessor script ---------------------------------------- #

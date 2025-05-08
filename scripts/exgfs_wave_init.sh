@@ -80,9 +80,8 @@ for grdID in "${grdALL[@]}"; do
   if [[ -f "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" ]]; then
     echo "INFO: mod_def.${grdID} succesfully created/copied"
   else
-    echo "FATAL ERROR: No model definition file for grid ${grdID}"
     export err=3
-    err_chk
+    err_chk "FATAL ERROR: No model definition file for grid ${grdID}"
   fi
 done
 

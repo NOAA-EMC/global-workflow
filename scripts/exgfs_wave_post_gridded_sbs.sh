@@ -82,10 +82,8 @@ cat << EOF
 EOF
 
 if [[ "${DOGRB_WAV}" == "NO" ]]; then
-  echo "FATAL ERROR: DOGRB_WAV = NO"
-  echo "FATAL ERROR: No grib2 products will be created, ABORT!"
   export err=1
-  err_chk
+  err_chk "FATAL ERROR: DOGRB_WAV = NO; No grib2 products will be created, ABORT!"
 fi
 
 # 2.a Command file set-up

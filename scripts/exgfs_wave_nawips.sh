@@ -104,15 +104,23 @@ for grid in ${grids}; do
 
   startmsg
   export pgm="${NAGRIB}"
-  ${pgm} < "${DATA}/gempak.parm.${grid}"
-  export err=$?; err_chk
+  ${pgm} < "${DATA}/gempak.parm.${grid}" && true
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+     err_chk "FATAL ERROR: ${pgm} failed during the generation of ${GEMGRD}"
+  fi
   #####################################################
   # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
   # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
   # FOR THIS CASE HERE.
   #####################################################
-  ls -l "${GEMGRD}"
-  export err=$?; export pgm="GEMPAK CHECK FILE"; err_chk
+  if [[ -f "${GEMGRD}" ]]; then
+     ls -l "${GEMGRD}"
+  else
+     export err=1
+     export pgm="GEMPAK CHECK FILE"
+     err_chk "FATAL ERROR: Gempak failed to generate the desired grid ${GEMGRD}"
+  fi
 
   if [[ "${NAGRIB}" == "nagrib2" ]]; then gpend; fi
 

@@ -50,25 +50,23 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
  start_time=$(date)
  export date=${PDY}
  export YMDH=${PDY}${cyc}
- echo ' '
- echo '                         ****************************'
- echo '                         *** MWW3 PRODUCTS SCRIPT ***'
- echo '                         ****************************'
- echo "                                       ${date} ${cycle}"
- echo ' '
- echo "Starting at : ${start_time}"
- echo ' '
- echo "   AWIPS grib fields"
- echo "   Wave  Grids       : ${grids}"
- echo ' '
- set_trace
+ cat << EOF
+
+                         ****************************
+                         *** MWW3 PRODUCTS SCRIPT ***
+                         ****************************
+                                    ${date} ${cycle}
+
+Starting at : ${start_time}
+
+   AWIPS grib fields
+   Wave  Grids       : ${grids}
+EOF
 
 # --------------------------------------------------------------------------- #
 # 1.  Get necessary files
- echo ' '
- echo 'Preparing input files :'
- echo '-----------------------'
- set_trace
+ printf "\nPreparing input files\n-----------------------"
+
 #=======================================================================
 
  ASWELL=(SWELL1 SWELL2) # Indices of HS from partitions
@@ -159,72 +157,43 @@ grids=${GEMPAK_GRIDS:-ak_10m at_10m ep_10m wc_10m glo_30m}
 
 # 2.a.1 Set up for tocgrib2
      echo "   Do set up for tocgrib2."
-     set_trace
      AWIPSGRB=awipsgrib
 # 2.a.2 Make GRIB index
      echo "   Make GRIB index for tocgrib2."
-     set_trace
      ${GRB2INDEX} "gribfile.${grdID}.f${fhr}" "gribindex.${grdID}.f${fhr}"
      OK=$?
 
      if [[ ${OK} -ne 0 ]]
      then
-       msg="ABNORMAL EXIT: ERROR IN grb2index MWW3 for grid ${grdID}"
-       #set +x
-       echo ' '
-       echo '******************************************** '
-       echo '*** FATAL ERROR : ERROR IN grb2index MWW3 *** '
-       echo '******************************************** '
-       echo ' '
-       echo "${msg}"
-       #set_trace
-       echo "${RUN} wave ${grdID} prdgen ${date} ${cycle} : error in grbindex."
        export err=4
-       err_chk
+       export pgm="grb2index"
+       err_chk "FATAL ERROR: ERROR IN grb2index MWW3 for grid ${grdID}"
      fi
 
 # 2.a.3 Run AWIPS GRIB packing program tocgrib2
 
      echo "   Run tocgrib2"
-     set_trace
      export pgm=tocgrib2
      export pgmout=tocgrib2.out
-     . prep_step
+     source prep_step
 
      export FORT11="gribfile.${grdID}.f${fhr}"
      export FORT31="gribindex.${grdID}.f${fhr}"
      export FORT51="${AWIPSGRB}.${grdID}.f${fhr}"
 
      ${TOCGRIB2} < "awipsgrb.${grdID}.f${fhr}" > tocgrib2.out 2>&1
-     OK=$?
-     if [[ ${OK} -ne 0 ]]; then
+     export err=$?
+     if [[ ${err} -ne 0 ]]; then
        cat tocgrib2.out
-       msg="ABNORMAL EXIT: ERROR IN tocgrib2"
-       #set +x
-       echo ' '
-       echo '*************************************** '
-       echo '*** FATAL ERROR : ERROR IN tocgrib2 *** '
-       echo '*************************************** '
-       echo ' '
-       echo "${msg}"
-       #set_trace
-       echo "${RUN} wave prdgen ${date} ${cycle} : error in tocgrib2."
-       export err=5
-       err_chk
+       err_chk 'FATAL ERROR: ERROR IN tocgrib2'
      else
        echo '*** tocgrib2 ran succesfully *** '
      fi
 # 2.a.7 Get the AWIPS grib bulletin out ...
-     #set +x
      echo "   Get awips GRIB bulletins out ..."
-     #set_trace
-     #set +x
      echo "      Saving ${AWIPSGRB}.${grdOut}.f${fhr} as grib2.${cycle}.awipsww3_${grdID}.f${fhr}"
      echo "          in ${COMOUT_WAVE_WMO}"
-     #set_trace
-     cp "${AWIPSGRB}.${grdID}.f${fhr}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
-     #set +x
-
+     cpfs "${AWIPSGRB}.${grdID}.f${fhr}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
 
      if [[ "${SENDDBN}" != 'YES' ]]
      then
