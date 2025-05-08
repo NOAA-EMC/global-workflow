@@ -24,7 +24,7 @@ export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
 export NMEM_ENS_MAX=${NMEM_ENS}
-if [[ "${RUN}" == "gfs" ]]; then
+if [[ "${RUN}" == "gfs"  && "${DOHYBVAR_OCN}" == "YES" ]]; then
    NMEM_ENS=${NMEM_ENS_GFS}
    export mem_offset=$((NMEM_ENS_GFS_OFFSET * cyc/6))
 else
