@@ -45,7 +45,7 @@
   echo '!         Make ice fields        |'
   echo '+--------------------------------+'
   echo "   Model TAG       : $WAV_MOD_TAG"
-  echo "   Model ID        : ${RUN}wave"
+  echo "   Model ID        : ${RUN}.wave"
   echo "   Ice grid ID     : $WAVEICE_FID"
   echo "   Ice file        : $WAVICEFILE"
   echo ' '
@@ -172,7 +172,7 @@
     icefile=${WAV_MOD_TAG}.${WAVEICE_FID}.$cycle.ice
   elif [ "${WW3ATMIENS}" = "F" ]
   then
-    icefile=${RUN}wave.${WAVEICE_FID}.$cycle.ice
+    icefile=${RUN}.wave.${WAVEICE_FID}.$cycle.ice
   fi
 
   set +x

@@ -19,9 +19,6 @@
 
 #  Set environment.
 
-#  Directories.
-pwd=$(pwd)
-
 # Base variables
 CDATE="${PDY}${cyc}"
 GDUMP=${GDUMP:-"gdas"}
@@ -37,13 +34,6 @@ APRUNCFP=${APRUNCFP:-""}
 # Diagnostic files options
 netcdf_diag=${netcdf_diag:-".true."}
 binary_diag=${binary_diag:-".false."}
-
-# OPS flags
-RUN=${RUN:-""}
-SENDECF=${SENDECF:-"NO"}
-SENDDBN=${SENDDBN:-"NO"}
-
-# Guess files
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
@@ -69,7 +59,7 @@ fi
 # Obs diag
 GENDIAG=${GENDIAG:-"YES"}
 DIAG_SUFFIX=${DIAG_SUFFIX:-""}
-if [ $netcdf_diag = ".true." ] ; then
+if [[ "${netcdf_diag}" = ".true." ]] ; then
    DIAG_SUFFIX="${DIAG_SUFFIX}.nc4"
 fi
 DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
@@ -77,7 +67,7 @@ DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
 nm=""
-if [ $CFP_MP = "YES" ]; then
+if [[ "${CFP_MP}" = "YES" ]]; then
     nm=0
 fi
 DIAG_DIR=${DIAG_DIR:-${COMOUT_ATMOS_ANALYSIS}/gsidiags}
@@ -89,11 +79,11 @@ lrun_subdirs=${lrun_subdirs:-".true."}
 
 ################################################################################
 # If requested, generate diagnostic files
-if [ $GENDIAG = "YES" ] ; then
-   if [ $lrun_subdirs = ".true." ] ; then
-      for pe in $DIAG_DIR/dir.*; do
-         pedir="$(basename -- $pe)"
-         $NLN $pe $DATA/$pedir
+if [[ "${GENDIAG}" = "YES" ]] ; then
+   if [[ "${lrun_subdirs}" = ".true." ]] ; then
+      for pe in ${DIAG_DIR}/dir.*; do
+         pedir="$(basename -- "${pe}")"
+         ${NLN} "${pe}" "${DATA}/${pedir}"
       done
    else
       err_exit "***FATAL ERROR*** lrun_subdirs must be true.  Abort job"
@@ -112,10 +102,10 @@ if [ $GENDIAG = "YES" ] ; then
    diaglist[2]=listozn
    diaglist[3]=listrad
 
-   diagfile[0]=$CNVSTAT
-   diagfile[1]=$PCPSTAT
-   diagfile[2]=$OZNSTAT
-   diagfile[3]=$RADSTAT
+   diagfile[0]=${CNVSTAT}
+   diagfile[1]=${PCPSTAT}
+   diagfile[2]=${OZNSTAT}
+   diagfile[3]=${RADSTAT}
 
    numfile[0]=0
    numfile[1]=0
@@ -123,13 +113,13 @@ if [ $GENDIAG = "YES" ] ; then
    numfile[3]=0
 
    # Set diagnostic file prefix based on lrun_subdirs variable
-   if [ $lrun_subdirs = ".true." ]; then
+   if [[ "${lrun_subdirs}" = ".true." ]]; then
       prefix=" dir.*/"
    else
       prefix="pe*"
    fi
 
-   if [ $USE_CFP = "YES" ]; then
+   if [[ "${USE_CFP}" = "YES" ]]; then
       if [[ -f "${DATA}/diag.sh" ]]; then
           rm "${DATA}/diag.sh"
       fi
@@ -155,13 +145,13 @@ file=diag_\${type}_\${string}.\${CDATE}\${DIAG_SUFFIX}
 if [ \$binary_diag = ".true." ]; then
    cat \${prefix}\${type}_\${loop}* > \$file
 else
-   $CATEXEC -o \$file \${prefix}\${type}_\${loop}*
+   ${CATEXEC} -o \$file \${prefix}\${type}_\${loop}*
 fi
 if [ \$DIAG_COMPRESS = "YES" ]; then
-   $COMPRESS \$file
+   ${COMPRESS} \$file
 fi
 EOFdiag
-      chmod 755 $DATA/diag.sh
+      chmod 755 "${DATA}/diag.sh"
    fi
 
    # Collect diagnostic files as a function of loop and type.
@@ -176,72 +166,76 @@ EOFdiag
    #        innovation files.
 
    loops="01 03"
-   for loop in $loops; do
-      case $loop in
+   for loop in ${loops}; do
+      case ${loop} in
          01) string=ges;;
          03) string=anl;;
-          *) string=$loop;;
+          *) string=${loop};;
       esac
-      echo $(date) START loop $string >&2
+      echo "$(date) START loop ${string}" >&2
       n=-1
-      while [ $((n+=1)) -le $ntype ] ;do
-         for type in $(echo ${diagtype[n]}); do
+      while [[ $((n+=1)) -le ${ntype} ]] ;do
+         for type in $(echo "${diagtype[n]}"); do
             count=$(ls ${prefix}${type}_${loop}* 2>/dev/null | wc -l)
-            if [ $count -gt 1 ]; then
-               if [ $USE_CFP = "YES" ]; then
-                  echo "$nm $DATA/diag.sh $lrun_subdirs $binary_diag $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
-                  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+            if [[ "${count}" -gt 1 ]]; then
+               if [[ "${USE_CFP}" = "YES" ]]; then
+                  echo "${nm} ${DATA}/diag.sh ${lrun_subdirs} ${binary_diag} ${type} ${loop} ${string} ${CDATE} ${DIAG_COMPRESS} ${DIAG_SUFFIX}" | tee -a "${DATA}/mp_diag.sh"
+                  if [[ "${CFP_MP:-"NO"}" = "YES" ]]; then
                      nm=$((nm+1))
                   fi
                else
-                  if [ $binary_diag = ".true." ]; then
-                     cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+                  if [[ "${binary_diag}" = ".true." ]]; then
+                     cat ${prefix}${type}_${loop}* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
                   else
-                     $CATEXEC -o diag_${type}_${string}.${CDATE}${DIAG_SUFFIX} ${prefix}${type}_${loop}*
+                     ${CATEXEC} -o "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}" "${prefix}${type}_${loop}"*
                   fi
                fi
                echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
                numfile[n]=$(expr ${numfile[n]} + 1)
-            elif [ $count -eq 1 ]; then
-                cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
-                if [ $DIAG_COMPRESS = "YES" ]; then
-                   $COMPRESS diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+            elif [[ ${count} -eq 1 ]]; then
+                cat ${prefix}${type}_${loop}* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
+                if [[ "${DIAG_COMPRESS}" = "YES" ]]; then
+                   ${COMPRESS} "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
                 fi
-                echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
-                numfile[n]=$(expr ${numfile[n]} + 1)
+                echo diag_${type}_${string}.${CDATE}* >> ${diaglist[n]}
+                numfile[n]=$(expr "${numfile[n]}" + 1)
             fi
          done
       done
-      echo $(date) END loop $string >&2
+      echo $(date) END loop "${string}" >&2
    done
 
    # We should already be in $DATA, but extra cd to be sure.
-   cd $DATA
+   cd "${DATA}" || exit
 
    # If requested, compress diagnostic files
-   if [ $DIAG_COMPRESS = "YES" -a $USE_CFP = "NO" ]; then
-      echo $(date) START $COMPRESS diagnostic files >&2
+   if [[ "${DIAG_COMPRESS}" = "YES" && "${USE_CFP}" = "NO" ]]; then
+      echo $(date) START "${COMPRESS}" diagnostic files >&2
       for file in $(ls diag_*${CDATE}${DIAG_SUFFIX}); do
-         $COMPRESS $file
+         ${COMPRESS} "${file}"
       done
-      echo $(date) END $COMPRESS diagnostic files >&2
+      echo "$(date) END ${COMPRESS} diagnostic files" >&2
    fi
 
-   if [ $USE_CFP = "YES" ] ; then
-      chmod 755 $DATA/mp_diag.sh
-      ncmd=$(cat $DATA/mp_diag.sh | wc -l)
-      if [ $ncmd -gt 0 ]; then
-         ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
-         APRUNCFP_DIAG=$(eval echo $APRUNCFP)
-         $APRUNCFP_DIAG $DATA/mp_diag.sh
+   if [[ "${USE_CFP}" = "YES" ]] ; then
+      chmod 755 "${DATA}/mp_diag.sh"
+      ncmd=$(wc -l < "${DATA}/mp_diag.sh")
+      if [[ ${ncmd} -gt 0 ]]; then
+         if [[ ${ncmd} -lt ${max_tasks_per_node} ]]; then
+            ncmd_max=${ncmd}
+         else
+            ncmd_max=${max_tasks_per_node}
+         fi
+         APRUNCFP_DIAG=$(eval echo "${APRUNCFP}")
+         ${APRUNCFP_DIAG} "${DATA}/mp_diag.sh"
          export err=$?; err_chk
       fi
    fi
 
    # Restrict diagnostic files containing rstprod data
    rlist="conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_uv saphir"
-   for rtype in $rlist; do
-      for rfile in *"${rtype}"*; do 
+   for rtype in ${rlist}; do
+      for rfile in *"${rtype}"*; do
          if [[ -s "${rfile}" ]]; then
             ${CHGRP_CMD} "${rfile}"
          fi
@@ -249,44 +243,37 @@ EOFdiag
    done
 
    # If requested, create diagnostic file tarballs
-   if [ $DIAG_TARBALL = "YES" ]; then
+   if [[ ${DIAG_TARBALL} = "YES" ]]; then
       echo $(date) START tar diagnostic files >&2
       n=-1
-      while [ $((n+=1)) -le $ntype ] ;do
+      while [[ $((n+=1)) -le ${ntype} ]] ;do
          TAROPTS="-uvf"
-         if [ ! -s ${diagfile[n]} ]; then
+         if [[ ! -s "${diagfile[n]}" ]]; then
             TAROPTS="-cvf"
          fi
-         if [ ${numfile[n]} -gt 0 ]; then
-            tar $TAROPTS ${diagfile[n]} $(cat ${diaglist[n]})
+         if [[ ${numfile[n]} -gt 0 ]]; then
+            tar ${TAROPTS} "${diagfile[n]}" $(cat ${diaglist[n]})
             export err=$?; err_chk
          fi
       done
 
       # Restrict CNVSTAT
-      chmod 750 $CNVSTAT
-      ${CHGRP_CMD} $CNVSTAT
+      chmod 750 "${CNVSTAT}"
+      ${CHGRP_CMD} "${CNVSTAT}"
 
       # Restrict RADSTAT
-      chmod 750 $RADSTAT
-      ${CHGRP_CMD} $RADSTAT
+      chmod 750 "${RADSTAT}"
+      ${CHGRP_CMD} "${RADSTAT}"
 
-      echo $(date) END tar diagnostic files >&2
+      echo "$(date) END tar diagnostic files" >&2
    fi
 fi # End diagnostic file generation block - if [ $GENDIAG = "YES" ]
 
 ################################################################################
 # Postprocessing
 # If no processing error, remove $DIAG_DIR
-if [[ "$REMOVE_DIAG_DIR" = "YES" && "$err" = "0" ]]; then
-    rm -rf $DIAG_DIR
+if [[ "${REMOVE_DIAG_DIR}" = "YES" && "${err}" = "0" ]]; then
+    rm -rf "${DIAG_DIR}"
 fi
 
-cd $pwd
-if [[ "${mkdata:-YES}" == "YES" ]]; then
-    rm -rf "${DATA}"
-fi
-
-
-exit $err
-
+exit "${err}"
