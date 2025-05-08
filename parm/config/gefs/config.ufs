@@ -71,8 +71,11 @@ fi
 # (Standard) Model resolution dependent variables
 case "${fv3_res}" in
     "C48")
-        export DELTIM=1200
-        export layout_x=1
+        # TODO: change this back to 1200 when "SKEBINT" can be set
+        #       currently, the value is fixed to 1800 by the WM and must be a multiple of DELTIM
+        #       when running stochastic physics
+        export DELTIM=900
+        export layout_x=2
         export layout_y=1
         export nthreads_fv3=1
         export nthreads_ufs=1

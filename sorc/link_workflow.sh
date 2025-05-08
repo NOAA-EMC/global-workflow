@@ -154,7 +154,7 @@ for dir in gfs gefs sfs
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
 done
-for file in ice.csv ocean.csv ocnicepost.nml.jinja2; do
+for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
 done
 
@@ -194,6 +194,11 @@ for file in "${ufs_templates[@]}"; do
   fi
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
 done
+
+# Link global_control.nml.IN template to parm/fv3
+cd "${HOMEgfs}/parm/ufs/fv3" || exit 1
+[[ -s "global_control.nml.IN" ]] && rm -f "global_control.nml.IN"
+${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/global_control.nml.IN" .
 
 # Link the script from ufs-weather-model that parses the templates
 cd "${HOMEgfs}/ush" || exit 1
@@ -336,7 +341,7 @@ if [[ -s "upp.x" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/exec/upp.x" .
 
-for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid; do
+for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid regridStates.x; do
   if [[ -s "${ufs_utilsexe}" ]]; then
       rm -f "${ufs_utilsexe}"
   fi
@@ -397,8 +402,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     "gdasapp_land_ensrecenter.x"
     "bufr2ioda.x"
     "calcfIMS.exe"
-    "apply_incr.exe"
-    "regridStates.x")
+    "apply_incr.exe")
   for gdasexe in "${JEDI_EXE[@]}"; do
     if [[ -s "${gdasexe}" ]]; then
         rm -f "${gdasexe}"

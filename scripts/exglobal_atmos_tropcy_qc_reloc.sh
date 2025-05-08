@@ -11,34 +11,32 @@
 ############################################################################
 
 # Make sure we are in the $DATA directory
-cd $DATA
+cd "${DATA}"
 
-cat break > $pgmout
+tmhr=$(echo "${tmmark}"|cut -c3-4)
+cdate10=$( ${NDATE:?} -"${tmhr}" "${PDY}""${cyc}")
 
-tmhr=$(echo $tmmark|cut -c3-4)
-cdate10=$( ${NDATE:?} -$tmhr $PDY$cyc)
-
-NET_uc=$(echo $RUN | tr [a-z] [A-Z])
-tmmark_uc=$(echo $tmmark | tr [a-z] [A-Z])
+NET_uc=$(echo "${RUN}" | tr [a-z] [A-Z])
+tmmark_uc=$(echo "${tmmark}" | tr [a-z] [A-Z])
 
 iflag=0
-if [ $RUN = ndas ]; then
-   if [ $DO_RELOCATE = NO ]; then
-      echo "CENTER PROCESSING TIME FOR NDAS TROPICAL CYCLONE QC IS $cdate10"
+if [[ "${RUN}" = ndas ]]; then
+   if [[ "${DO_RELOCATE}" = NO ]]; then
+      echo "CENTER PROCESSING TIME FOR NDAS TROPICAL CYCLONE QC IS ${cdate10}"
       echo "Output tcvitals files will be copied forward in time to proper \
 output file directory path locations"
       iflag=1
    else
-      echo "CENTER PROCESSING TIME FOR $tmmark_uc NDAS TROPICAL CYCLONE \
-RELOCATION IS $cdate10"
+      echo "CENTER PROCESSING TIME FOR ${tmmark_uc} NDAS TROPICAL CYCLONE \
+RELOCATION IS ${cdate10}"
    fi
 else
-   echo "CENTER PROCESSING TIME FOR $tmmark_uc $NET_uc TROPICAL CYCLONE QC/\
-RELOCATION IS $cdate10"
+   echo "CENTER PROCESSING TIME FOR ${tmmark_uc} ${NET_uc} TROPICAL CYCLONE QC/\
+RELOCATION IS ${cdate10}"
 fi
 
 
-if [ "$PROCESS_TROPCY" = 'YES' ]; then
+if [[ "${PROCESS_TROPCY}" = 'YES' ]]; then
 
 ####################################
 ####################################
@@ -48,23 +46,23 @@ if [ "$PROCESS_TROPCY" = 'YES' ]; then
 
 #echo $PDY
 
-   ${USHgfs}/syndat_qctropcy.sh $cdate10
+   "${USHgfs}/syndat_qctropcy.sh" "${cdate10}"
    errsc=$?
-   if [ "$errsc" -ne '0' ]; then
+   if [[ ${errsc} -ne 0 ]]; then
     echo "syndat_qctropcy.sh failed. exit"
-    exit $errsc
+    exit ${errsc}
    fi
    
 
-   cd "${COM_OBS}" || exit 1
+   cd "${COMOUT_OBS}" || exit 1
    pwd
    ls -ltr *syndata*
-   cd $ARCHSYND
+   cd "${ARCHSYND}"
    pwd;ls -ltr
    cat syndat_dateck
-   cd $HOMENHC
+   cd "${HOMENHC}"
    pwd;ls -ltr
-   cd $DATA
+   cd "${DATA}"
 
 else
 
@@ -75,16 +73,16 @@ else
 #         don't want to wipe out these files)
 #         
 
-   [ ! -s "${COM_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}" ]  &&  \
-    cp "/dev/null" "${COM_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}"
-   [ ! -s "${COM_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}" ]  &&  \
-    cp "/dev/null" "${COM_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}"
+   [[ ! -s "${COMOUT_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}" ]]  &&  \
+    cp "/dev/null" "${COMOUT_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}"
+   [[ ! -s "${COMOUT_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}" ]]  &&  \
+    cp "/dev/null" "${COMOUT_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}"
 
 #  endif loop $PROCESS_TROPCY
 fi
 
 
-if [ "$DO_RELOCATE" = 'YES' ]; then
+if [[ "${DO_RELOCATE}" = 'YES' ]]; then
 
 ###################################################
 ###################################################
@@ -93,38 +91,40 @@ if [ "$DO_RELOCATE" = 'YES' ]; then
 ###################################################
 
    export MP_LABELIO=${MP_LABELIO:-yes}
-   ${USHgfs}/tropcy_relocate.sh $cdate10
+   "${USHgfs}/tropcy_relocate.sh" "${cdate10}"
    errsc=$?
 
-   [ "$errsc" -ne '0' ]  &&  exit $errsc
+   [[ "${errsc}" -ne '0' ]]  &&  exit ${errsc}
 
 
 # save global sigma guess file(s) possibly updated by tropical cyclone
 #  relocation processing in COMSP path
-   qual_last=".$tmmark"  # need this because gfs and gdas don't add $tmmark
+   qual_last=".${tmmark}"  # need this because gfs and gdas don't add $tmmark
                          #  qualifer to end of output sigma guess files
-   [ $RUN = gfs -o $RUN = gdas -o $NET = cfs ]  &&  qual_last=""
-
-   if [ $BKGFREQ -eq 1 ]; then
-      if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COM_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
-      if [[ -s sgm2prep ]]; then cp "sgm2prep" "${COM_OBS}/${RUN}.t${cyc}z.sgm2prep${qual_last}"; fi
-      if [[ -s sgm1prep ]]; then cp "sgm1prep" "${COM_OBS}/${RUN}.t${cyc}z.sgm1prep${qual_last}"; fi
-      if [[ -s sgesprep ]]; then cp "sgesprep" "${COM_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
-      if [[ -s sgp1prep ]]; then cp "sgp1prep" "${COM_OBS}/${RUN}.t${cyc}z.sgp1prep${qual_last}"; fi
-      if [[ -s sgp2prep ]]; then cp "sgp2prep" "${COM_OBS}/${RUN}.t${cyc}z.sgp2prep${qual_last}"; fi
-      if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COM_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
-   elif [ $BKGFREQ -eq 3 ]; then
-      if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COM_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
-      if [[ -s sgesprep ]]; then cp "sgesprep" "${COM_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
-      if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COM_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
+   if [[ "${RUN}" == gfs || "${RUN}" == gdas || "${NET}" == cfs ]]; then
+      qual_last=""
    fi
 
-# The existence of ${COM_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.$tmmark file will tell the
+   if [[ ${BKGFREQ} -eq 1 ]]; then
+      if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
+      if [[ -s sgm2prep ]]; then cp "sgm2prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm2prep${qual_last}"; fi
+      if [[ -s sgm1prep ]]; then cp "sgm1prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm1prep${qual_last}"; fi
+      if [[ -s sgesprep ]]; then cp "sgesprep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
+      if [[ -s sgp1prep ]]; then cp "sgp1prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp1prep${qual_last}"; fi
+      if [[ -s sgp2prep ]]; then cp "sgp2prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp2prep${qual_last}"; fi
+      if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
+   elif [[ ${BKGFREQ} -eq 3 ]]; then
+      if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
+      if [[ -s sgesprep ]]; then cp "sgesprep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
+      if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
+   fi
+
+# The existence of ${COMOUT_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.$tmmark file will tell the
 #  subsequent PREP processing that RELOCATION processing occurred, if this file
 #  does not already exist at this point, echo "RECORDS PROCESSED" into it to
 #  further tell PREP processing that records were processed by relocation and
 #  the global sigma guess was modified by tropical cyclone relocation
-#  Note: If ${COM_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.$tmmark already exists at this
+#  Note: If ${COMOUT_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.$tmmark already exists at this
 #        point it means that it contains the string "NO RECORDS to process"
 #        and was created by the child script tropcy_relocate.sh because records
 #        were not processed by relocation and the global sigma guess was NOT
@@ -132,18 +132,12 @@ if [ "$DO_RELOCATE" = 'YES' ]; then
 #        were found in the relocation step)
 # ----------------------------------------------------------------------------
 
-   if [[ ! -s "${COM_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.${tmmark}" ]]; then
-      echo "RECORDS PROCESSED" > "${COM_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.${tmmark}"
+   if [[ ! -s "${COMOUT_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.${tmmark}" ]]; then
+      echo "RECORDS PROCESSED" > "${COMOUT_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.${tmmark}"
    fi
 
 #  endif loop $DO_RELOCATE
 fi
-
-
-########################################################
-
-# save standard output
-cat break $pgmout break
 
 
 ################## END OF SCRIPT #######################
