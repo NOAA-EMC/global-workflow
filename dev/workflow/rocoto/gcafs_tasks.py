@@ -1320,6 +1320,10 @@ class GCAFSTasks(Tasks):
             XML representation of the task
         """
         deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
+        deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_archcom']:
             if self.options['do_globusarch']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
