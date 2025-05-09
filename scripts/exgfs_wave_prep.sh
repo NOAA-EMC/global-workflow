@@ -155,7 +155,7 @@ EOF
     if [[ -f "${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID}" ]]
     then
       echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
-      cp ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID} mod_def.${grdID}
+      cpreq ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID} mod_def.${grdID}
 
     else
       export err=2
