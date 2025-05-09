@@ -38,12 +38,15 @@ for vi in $( seq 1 "${LSOIL_INCR}" ); do
     soil_incr_vars=${soil_incr_vars}'"slc'${vi}'_inc"',
 done
 
-n_tims=0
-ifhrs=()
+n_tims=1
 if [[ $DO_LAND_IAU = ".true." ]]; then
-    IFS=',' read -ra landifhrs <<< "${LAND_IAU_FHRS}"  #$(echo $LAND_IAU_FHRS | sed 's/,/ /g')
+    n_tims=0
+    ifhrs=()
+    ifhrsi=()
+    IFS=',' read -ra landifhrs <<< "${LAND_IAU_FHRS}"  
     for ihr in "${landifhrs[@]}"; do
         hrstr="$(printf "%02d" $ihr)";
+	ifhrsi+=("${hrstr}");
         ifhrs+=("\"${hrstr}\",");
         n_tims=$((n_tims+1))
     done
@@ -52,15 +55,14 @@ fi
 time_list="${ifhrs[@]}"
 in_fname="enkfgdas.sfci.nc"
 out_fname="sfci"
-#if [[ $DO_LAND_IAU == "YES" ]]; then out_fname="sfc_inc"; fi
 
-cat << EOF > regrid.nml
+cat << EOF > regrid.nml_tmpl
  &config
   n_vars=${n_vars},
   variable_list=${soil_incr_vars}
   missing_value=0.,
-  n_tims=${n_tims},
-  time_list=${time_list},
+! n_tims=${n_tims},
+! time_list=${time_list}
  /
  &input
   gridtype="gau_inc",
@@ -121,6 +123,9 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
             COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
     fi
     
+    rm -f "regrid.nml"
+    ${NCP} "regrid.nml_tmpl" "regrid.nml"
+
     for FHR in "${soilinc_fhrs[@]}"; do
         ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
                "${DATA}/enkfgdas.sfci.nc"
@@ -128,21 +133,23 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
         for n in $(seq 1 "${ntiles}"); do
-            mv "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
+            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
         done
     done
 
     if [[ $DO_LAND_IAU = ".true." ]]; then 
+        
+        sed -i -e 's/!/ /g' "regrid.nml"
 
-        for FHR in "${ifhrs[@]}"; do
+        for FHR in "${ifhrsi[@]}"; do
             ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHR}.nc" \
-                   "${DATA}/${in_fname}${FHR}"
+                   "${DATA}/${in_fname}.${FHR}"
         done
         
 	${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
     
         for n in $(seq 1 "${ntiles}"); do
-            mv "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
+            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
         done
         
     fi
