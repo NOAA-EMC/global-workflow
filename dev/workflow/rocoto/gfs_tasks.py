@@ -1938,7 +1938,10 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
                     deps2.append(rocoto.add_dependency(dep_dict))
 
-                offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback}H'))
+                edate_gfs = self._base['EDATE']
+                edate_metp = edate_gfs.replace(hour=18)
+                edate_metp_diff = edate_metp - edate_gfs
+                offset = timedelta_to_HMS(-to_timedelta(f'{edate_metp_diff}H'))
                 dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy', 'offset': offset}
                 deps2.append(rocoto.add_dependency(dep_dict))
                 deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
@@ -2915,6 +2918,8 @@ class GFSTasks(Tasks):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:  # early cycle enkf run (enkfgfs)
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
+            if self.options['do_jediocnvar']:
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
 

@@ -154,7 +154,7 @@ for dir in gfs gefs sfs
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
 done
-for file in ice.csv ocean.csv ocnicepost.nml.jinja2; do
+for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
 done
 
@@ -187,7 +187,8 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
   "ufs.configure.s2swa.IN"
   "ufs.configure.leapfrog_atm_wav.IN"
   "ww3_shel.nml.IN"
-  "post_itag_gfs")
+  "post_itag_gfs"
+  "global_control.nml.IN")
 for file in "${ufs_templates[@]}"; do
   if [[ -s "${file}" ]]; then
       rm -f "${file}"

@@ -254,7 +254,7 @@
     sed -e "s/TIME/${tstart}/g" \
         -e "s/DT/${DTPNT_WAV}/g" \
 	-e "s/999/$N/g" \
-	-e "s/PREFIX/${RUN}wave/g" \
+	-e "s/PREFIX/${RUN}.wave/g" \
 	-e "s/^.*POINT.*/\$ &/g" \
         -e "s/ITYPE/0/g" \
         -e "s/FORMAT/F/g" \
@@ -345,7 +345,7 @@
     sed -e "s/TIME/${tstart}/g" \
         -e "s/DT/${DTPNT_WAV}/g" \
         -e "s/999/$N/g" \
-	-e "s/PREFIX/${RUN}wave/g" \
+	-e "s/PREFIX/${RUN}.wave/g" \
         -e "s|POINT|$points|g" \
         -e "s/ITYPE/1/g" \
         -e "s/FORMAT/F/g" \
@@ -359,7 +359,7 @@
     sed -e "s/TIME/${tstart}/g" \
         -e "s/DT/${DTPNT_WAV}/g" \
         -e "s/999/$N/g" \
-	-e "s/PREFIX/${RUN}wave/g" \
+	-e "s/PREFIX/${RUN}.wave/g" \
         -e "s|POINT|$points|g" \
         -e "s/REFT/$truntime/g" \
                            ww3_outp_bull.inp.tmpl > ww3_outp.inp

@@ -43,11 +43,8 @@ export BKGFREQ=1                                # for hourly relocation
 ##############################################
 
 ${TROPCYQCRELOSH:-${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh}
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
-
+export err=$?
+err_chk
 
 ##############################################
 # Final processing
