@@ -843,6 +843,7 @@ GOCART_out() {
   done
 }
 
+# shellcheck disable=SC2178
 CMEPS_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking output data for CMEPS mediator"
 
@@ -905,7 +906,6 @@ CMEPS_postdet() {
       local restart_interval_start=${cmeps_restart_interval}
       local restart_interval_end=${FHMAX}
     fi
-    #TO DO: does this need a "fhrot" variable here... for start time???? 
     CMEPS_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${cmeps_restart_interval}" "${restart_interval_end}")"
   fi
   export CMEPS_RESTART_FH
