@@ -24,8 +24,10 @@ class Host:
             raise NotImplementedError(f'{host} is not a supported host.\n' +
                                       'Currently supported hosts are:\n' +
                                       f'{" | ".join(Host.SUPPORTED_HOSTS)}')
+        # If Host is instantiated with "host", use it
         elif host is not None:
             self.machine = host
+        # Otherwise, detect the host.
         else:
             # Detect the host if not provided
             self.detect() if host is None else host
