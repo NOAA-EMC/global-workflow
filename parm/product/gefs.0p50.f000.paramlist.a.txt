@@ -18,6 +18,7 @@
 :HGT:850 mb:
 :HGT:925 mb:
 :HGT:cloud ceiling:
+:HGT:surface:
 :HLCY:3000-0 m above ground:
 :ICEG:10 m above mean sea level:
 :ICETK:surface:
@@ -25,6 +26,7 @@
 :PEVPR:surface:
 :PRES:surface:
 :PRMSL:mean sea level:
+:PWAT:entire atmosphere (considered as a single layer):
 :RH:10 mb:
 :RH:100 mb:
 :RH:1000 mb:
@@ -65,6 +67,9 @@
 :UGRD:700 mb:
 :UGRD:850 mb:
 :UGRD:925 mb:
+:ULWRF:surface:
+:ULWRF:top of atmosphere:
+:USWRF:surface:
 :VGRD:10 m above ground:
 :VGRD:10 mb:
 :VGRD:100 mb:
