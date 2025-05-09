@@ -56,7 +56,7 @@ def update_configs(host, inputs):
     # Combine host.info and inputs_dict into a single dict, add some additional keys
     host_plus_inputs_dict = AttrDict(host.info, **inputs_dict_remapped)
     host_plus_inputs_dict.HOMEgfs = _top
-    host_plus_inputs_dict.MACHINE = host
+    host_plus_inputs_dict.MACHINE = str(host).upper()
 
     # Read in the YAML file
     yaml_path = inputs.yaml
