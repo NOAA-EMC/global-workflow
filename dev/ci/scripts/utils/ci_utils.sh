@@ -2,8 +2,7 @@
 
 # Determine HOMEgfs_ and source machine detection early
 if [[ -z "${HOMEgfs_}" ]]; then
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    HOMEgfs_="$("${SCRIPT_DIR}/find_homegfs.py")"
+  HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 fi
 source "${HOMEgfs_}/ush/detect_machine.sh"
 
