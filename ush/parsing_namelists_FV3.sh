@@ -251,7 +251,7 @@ local IOPT_BTR=${iopt_btr:-"1"}
 local IOPT_RUN=${iopt_run:-"1"}
 local IOPT_SFC=${iopt_sfc:-"1"}
 local IOPT_TRS=${iopt_trs:-"2"}
-local IOPT_DIAG=${iopt_diag:-"2"} 
+local IOPT_DIAG=${iopt_diag:-"2"}
 local IOPT_FRZ=${iopt_frz:-"1"}
 local IOPT_INF=${iopt_inf:-"1"}
 local IOPT_RAD=${iopt_rad:-"1"}
@@ -341,7 +341,7 @@ else
   local HIDE_AIAU="!"
 fi
 
-#GWP options  
+#GWP options
 if [[ ${knob_ugwp_version} -eq 0 ]]; then
   local HIDE_UGWPV0=" "
   local HIDE_UGWPV1="!"
@@ -380,7 +380,7 @@ local KNOB_UGWP_TAUMIN=${knob_ugwp_taumin:-0.25e-3}
 local KNOB_UGWP_TAUAMP=${knob_ugwp_tauamp:-3.0e-3}
 local KNOB_UGWP_LHMET=${knob_ugwp_lhmet:-200.0e3}
 local KNOB_UGWP_OROSOLV=${knob_ugwp_orosolv:-\'pss-1986\'}
- 
+
 # gfdl_cloud_microphysics options
 local REIFLAG=${reiflag:-"2"}
 
@@ -494,7 +494,7 @@ else
   local HIDE_LIAU="!"
 fi
 
-local global_template="${HOMEgfs}/parm/ufs/fv3/global_control.nml.IN"
+local global_template="${HOMEgfs}/parm/ufs/global_control.nml.IN"
 atparse < "${global_template}" >> "input.nml"
 
 }

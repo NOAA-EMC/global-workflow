@@ -3,31 +3,29 @@ import os
 from os.path import basename, splitext
 import sys
 import glob
-from wxflow import parse_j2yaml
-from wxflow import AttrDict
-from find_homegfs import find_homegfs
+from wxflow import AttrDict, parse_j2yaml, find_upward
 
 
-def get_host_cases(host, homegfs=None):
+def get_host_cases(host, HOMEgfs=None):
     """
     Get list of test cases supported on a host
 
     Args:
         host (str): Host name to check
-        homegfs (str, optional): Path to the global-workflow repository root directory
+        HOMEgfs (str, optional): Path to the global-workflow repository root directory
 
     Returns:
         list: List of case names (without extension) supported on the host
     """
-    homegfs = homegfs or find_homegfs()
+    HOMEgfs = HOMEgfs or find_upward('.github')
     case_list = []
 
     # Set up data for template rendering
-    data = AttrDict(HOMEgfs=homegfs)
+    data = AttrDict(HOMEgfs=HOMEgfs)
     data.update(os.environ)
 
     # Get all case files
-    case_files = glob.glob(f'{homegfs}/dev/ci/cases/pr/*.yaml')
+    case_files = glob.glob(f'{HOMEgfs}/dev/ci/cases/pr/*.yaml')
 
     for case_yaml in case_files:
         # Parse the case configuration

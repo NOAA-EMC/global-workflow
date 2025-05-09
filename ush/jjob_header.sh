@@ -80,14 +80,6 @@ fi
 
 
 ##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh || true
-source ./PDY || true
-
-
-##############################################
 # Determine Job Output Name on System
 ##############################################
 export pid="${pid:-$$}"
@@ -96,6 +88,14 @@ export pgmerr=errfile
 # TODO: remove this when going to production
 # Needs to be set for err_chk/err_exit
 export pgm=${pgm:-}
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh || true
+source ./PDY || true
 
 
 #############################

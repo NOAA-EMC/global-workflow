@@ -6,10 +6,9 @@ This script parses a yaml file and returns the value of a specified key.
 
 import os
 import sys
-from wxflow import AttrDict, parse_j2yaml
+from wxflow import AttrDict, parse_j2yaml, find_upward
 from argparse import ArgumentParser
 from pathlib import Path
-from find_homegfs import find_homegfs
 
 description = """parse yaml file and return value of key"""
 
@@ -43,7 +42,7 @@ def yq(yamlfile, key):
         The value of the specified key in the yaml file.
     """
 
-    HOMEgfs = find_homegfs()
+    HOMEgfs = find_upward('.github')
     ydict = parse_j2yaml(path=yamlfile, data={'HOMEgfs': HOMEgfs})
     if key == 'all':
         return ydict
