@@ -2,10 +2,9 @@ import os
 import pytest
 from shutil import rmtree
 
-from wxflow import Executable, Configuration, ProcessError
-from find_homegfs import find_homegfs
+from wxflow import Executable, Configuration, ProcessError, find_upward
 
-HOMEgfs = find_homegfs()
+HOMEgfs = find_upward('.github')
 current_dir = os.path.dirname(os.path.abspath(__file__))
 RUNDIR = os.path.join(current_dir, 'testdata/RUNDIR')
 pslot = "C48_ATM"

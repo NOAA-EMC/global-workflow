@@ -66,8 +66,7 @@ controller_user=${controller_user:-"terry.mcguinness"}
 controller_user_auth_token="jenkins_token"
 
 # Set the HOMEgfs_ variable to the root directory of the global workflow
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HOMEgfs_="$("${SCRIPT_DIR}/find_homegfs.py")"
+HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 host=$(hostname)
 
 #########################################################################
