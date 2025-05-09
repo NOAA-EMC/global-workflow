@@ -3,6 +3,7 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = RUN + ".t" + cycle_HH + "z." %}
+# TODO Should enkfgdas be replaced with RUN?
 {% set head_ocean = "enkfgdas.ocean.t" + cycle_HH + "z." %}
 {% set head_ice = "enkfgdas.ice.t" + cycle_HH + "z." %}
 
@@ -91,7 +92,8 @@ datasets:
 
     # Save the increments and restarts every ARCH_WARMICFREQ days
     # The ensemble increments (group a) should be saved on the ARCH_CYC
-    {% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
+    # The forecasts are only run for enkfgdas RUNs, so skip for enkfgfs
+    {% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 and is_gdas %}
         {% if ARCH_CYC == cycle_HH | int %}
             {% filter indent(width=4) %}
 {% include "enkf_restarta_grp.yaml.j2" %}
@@ -101,7 +103,7 @@ datasets:
 
     # The ensemble ICs (group b) are restarts and always lag increments by assim_freq
     {% set ics_offset = (assim_freq | string + "H") | to_timedelta %}
-    {% if (current_cycle | add_to_datetime(ics_offset) - SDATE).days % ARCH_WARMICFREQ == 0 %}
+    {% if (current_cycle | add_to_datetime(ics_offset) - SDATE).days % ARCH_WARMICFREQ == 0 and is_gdas %}
         {% if (ARCH_CYC - assim_freq) % 24 == cycle_HH | int %}
             {% filter indent(width=4) %}
 {% include "enkf_restartb_grp.yaml.j2" %}

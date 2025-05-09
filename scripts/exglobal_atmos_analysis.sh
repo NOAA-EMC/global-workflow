@@ -346,16 +346,6 @@ if [ ${DOHYBVAR} = "YES" -a ${l4densvar} = ".true." -a ${lwrite4danl} = ".true."
    ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi009.nc}
 fi
 
-################################################################################
-#  Preprocessing
-mkdata=NO
-if [ ! -d ${DATA} ]; then
-   mkdata=YES
-   mkdir -p ${DATA}
-fi
-
-cd ${DATA} || exit 99
-
 ##############################################################
 # Fixed files
 ${NLN} ${BERROR}       berror_stats
@@ -1004,10 +994,7 @@ fi
 
 ################################################################################
 # Postprocessing
-cd ${pwd}
-if [[ "${mkdata}" == "YES" ]]; then
-    rm -rf ${DATA}
-fi
+cd "${pwd}" || exit 1
 
 ##############################################################
 # Add this statement to release the forecast job once the
@@ -1021,6 +1008,4 @@ echo "${rCDUMP} ${CDATE} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${A
 
 ################################################################################
 
-exit ${err}
-
-################################################################################
+exit "${err}"
