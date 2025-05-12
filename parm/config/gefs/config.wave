@@ -9,9 +9,6 @@ echo "BEGIN: config.wave"
 # This config contains variables/parameters used in the fcst step
 # Some others are also used across the workflow in wave component scripts
 
-# General runtime labels
-export RUNwave="${RUN}wave"
-
 # In GFS/GDAS, restart files are generated/read from gdas runs
 export RUNRSTwave="gdas"
 

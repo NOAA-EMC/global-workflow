@@ -6,11 +6,15 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
 export err=$?
 err_chk
 
-##########################################
-# Remove the Temporary working directory
-##########################################
+#################################################
+# Remove the Temporary working directory DATAROOT
+# In XML, DATAROOT is defined as:
 # DATAROOT="${STMP}/RUNDIRS/${PSLOT}/${RUN}.${PDY}${cyc}"
-# is removed in exglobal_cleanup.sh, nothing to do here.
+# cleanup is only executed after the entire cycle is successfully completed.
+# Removing DATAROOT should be possible if that is the case.
+
+rm -rf "${DATAROOT}"
+echo "Cleanup ${DATAROOT} completed!"
 
 exit 0
 
