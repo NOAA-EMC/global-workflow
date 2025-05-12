@@ -106,7 +106,7 @@ if [[ ${err} -ne 0 ]]; then
   echo "WARNING: ${pgm} detects corrupt ims data. Will not run."
   exit 9
 else
-  tempdate=$(${WGRIB2} -t "${IMS_FILE}" | head -1)
+  tempdate=$(${WGRIB2} -t "${IMS_FILE}" | head -1) || true
   IMSDATE=${tempdate#*d=}
 fi
 IMSDATE10=$(echo "${IMSDATE}" | cut -c1-10)
@@ -127,7 +127,7 @@ else
   err=$?
   if [[ ${err} -ne 0 ]]; then
     echo "WARNING: ${pgm} detects corrupt afwa data. Will not run."
-    exit ${err}
+    exit "${err}"
   else
     tempdate=$(${WGRIB2} -d 1 -t "${AFWA_GLOBAL_FILE}")
     AFWADATE=${tempdate#*d=}
@@ -186,7 +186,7 @@ err=$?
 
 if [[ ${err} -ne 0 ]]; then
   echo "WARNING: ${pgm} completed abnormally."
-  exit ${err}
+  exit "${err}"
 else
   echo "${pgm} completed normally."
   cpfs "${MODEL_SNOW_FILE}" "${COMOUT_OBS}"

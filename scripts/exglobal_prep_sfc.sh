@@ -106,7 +106,7 @@ export err=$?
 #-----------------------------------------------------------------------
 
 if ((err != 0)); then
-  if [ -s "${BLENDED_ICE_FILE_PREV}" ]; then
+  if [[ -s "${BLENDED_ICE_FILE_PREV}" ]]; then
     echo "Copy old ice blend file to current directory"
     cpfs "${BLENDED_ICE_FILE_PREV}" "${COMOUT_OBS}/${BLENDED_ICE_FILE}"
   else
@@ -121,7 +121,7 @@ fi
 
 export SNOW2MDLEXEC="${EXECgfs}/emcsfc_snow2mdl"
 
-CRES=$(echo ${CASE} | cut -c2-)
+CRES=$(echo "${CASE}" | cut -c2-)
 LONB_CRES=$((4*CRES))
 LATB_CRES=$((2*CRES))
 
@@ -148,7 +148,7 @@ export err=$?
 #-----------------------------------------------------------------------
 
 if ((err != 0)); then
-  if [ -s "${MODEL_SNOW_FILE_PREV}" ]; then
+  if [[ -s "${MODEL_SNOW_FILE_PREV}" ]]; then
     echo "COPY OLD ${CASE} SNOW FILE TO CURRENT DIRECTORY"
     cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
   else
@@ -166,7 +166,7 @@ then
   exit 0
 fi
 
-CRES_ENS=$(echo ${CASE_ENS} | cut -c2-)
+CRES_ENS=$(echo "${CASE_ENS}" | cut -c2-)
 LONB_CRES_ENS=$((4*CRES))
 LATB_CRES_ENS=$((2*CRES))
 
@@ -187,7 +187,7 @@ export err=$?
 #-----------------------------------------------------------------------
 
 if ((err != 0)); then
-  if [ -s "${MODEL_SNOW_FILE_PREV}" ]; then
+  if [[ -s "${MODEL_SNOW_FILE_PREV}" ]]; then
     echo "COPY OLD ENKF SNOW FILE TO CURRENT DIRECTORY"
     cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
   else

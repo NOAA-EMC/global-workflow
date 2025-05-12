@@ -66,7 +66,7 @@ pgmout=${pgmout:-"OUTPUT"}
 #------------------------------------------------------------------------
 
 if [[ -f "${IMS_FILE}" ]]; then
-  cpfs ${IMS_FILE} ./ims.grib2
+  cpfs "${IMS_FILE}" ./ims.grib2
   ${WGRIB2} ims.grib2 -match "ICEC" -grib ims.icec.grib2
   grid173="0 0 0 0 0 0 0 0 4320 2160 0 0 89958000 42000 48 -89958000 359958000 83000 83000 0"
   ${COPYGB2} -x -i3 -g "${grid173}" ims.icec.grib2 ims.icec.5min.grib2
@@ -80,7 +80,7 @@ fi
 # Copy old blended data to current directory.
 #------------------------------------------------------------------------
 
-if [ ! -f ${FIVE_MIN_ICE_FILE} ]
+if [[ ! -f "${FIVE_MIN_ICE_FILE}" ]]
 then
   echo "WARNING: ${FIVE_MIN_ICE_FILE} data missing. Can not run program ${pgm}."
   exit 5
@@ -100,7 +100,7 @@ export FORT15="${FIVE_MIN_ICE_FILE}"
 # This is the output blended file
 export FORT51="${BLENDED_ICE_FILE}"
 
-${BLENDICEEXEC} >> ${pgmout} 2> errfile
+${BLENDICEEXEC} >> "${pgmout}" 2> errfile
 export err=$?
 
 #------------------------------------------------------------------------
@@ -121,12 +121,12 @@ if [[ "${err}" -ne 0 ]]; then
   echo "WARNING: ${pgm} completed abnormally. The old ice blend file will be used."
   exit ${err}
 else
-  ${WGRIB2} -set_int 3 51 42000 ${BLENDED_ICE_FILE} -grib ${BLENDED_ICE_FILE}.corner
-  ${CNVGRIB} -g21 ${BLENDED_ICE_FILE}.corner ${BLENDED_ICE_FILE}.bitmap
-  rm -f ${BLENDED_ICE_FILE}
-  ${COPYGB} -M "#1.57" -x ${BLENDED_ICE_FILE}.bitmap ${BLENDED_ICE_FILE}
-  cpfs ${BLENDED_ICE_FILE} ${COMOUT_OBS}
-  rm -f ${BLENDED_ICE_FILE}.corner ${BLENDED_ICE_FILE}.bitmap
+  ${WGRIB2} -set_int 3 51 42000 "${BLENDED_ICE_FILE}" -grib "${BLENDED_ICE_FILE}.corner"
+  ${CNVGRIB} -g21 "${BLENDED_ICE_FILE}.corner" "${BLENDED_ICE_FILE}.bitmap"
+  rm -f "${BLENDED_ICE_FILE}"
+  ${COPYGB} -M "#1.57" -x "${BLENDED_ICE_FILE}.bitmap" "${BLENDED_ICE_FILE}"
+  cpfs "${BLENDED_ICE_FILE}" "${COMOUT_OBS}"
+  rm -f "${BLENDED_ICE_FILE}.corner" "${BLENDED_ICE_FILE}.bitmap"
 fi
 
 exit 0

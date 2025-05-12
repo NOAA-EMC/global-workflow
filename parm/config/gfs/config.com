@@ -34,6 +34,7 @@ echo "BEGIN: config.com"
 # If any restart, input, or analysis template is updated, `setup_expt.py.fill_ROTDIR_cycled()`
 #   must correspondingly be updated to match.
 #
+# shellcheck disable=SC2034
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
     COM_OBSPROC_TMPL=$(compath.py "${envir}/obsproc/${obsproc_ver}")'/${RUN}.${YMD}/${HH}/atmos'
     COM_RTOFS_TMPL=$(compath.py "${envir}/rtofs/${rtofs_ver}")

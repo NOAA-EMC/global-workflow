@@ -6,6 +6,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prep_sfc" -c "base prepsfc"
 # Set date and cycle
 ##############################################
 
+# shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
@@ -38,7 +39,7 @@ err_chk
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ]; then
+if [[ -e "${pgmout}" ]]; then
   cat "${pgmout}"
 fi
 
