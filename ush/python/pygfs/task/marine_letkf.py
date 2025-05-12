@@ -105,7 +105,7 @@ class MarineLETKF(Analysis):
         for key in keys:
             stageconfig[key] = self.task_config[key]
 
-        jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-base.yaml')
+        jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'jcb-base.yaml.j2')
         jcb_base_config = parse_j2yaml(path=jcb_base_yaml, data=stageconfig)
 
         jcb_config = {**jcb_base_config, **stageconfig}
