@@ -31,7 +31,9 @@ if [[ ! -d ${TANKverf_ozn} ]]; then mkdir -p ${TANKverf_ozn} ; fi
 #
 "${SCRgfs}/exgdas_atmos_verfozn.sh" && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ################################
 # Remove the Working Directory

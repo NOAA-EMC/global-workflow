@@ -85,7 +85,10 @@ fi
 # Run relevant exglobal script
 ###############################################################
 "${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}" && true  # The && true prevents the shell from exiting when set -e
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 # Send DBN alerts for EnKF
 # TODO: Should these be in post manager instead?

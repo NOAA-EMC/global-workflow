@@ -22,7 +22,9 @@ if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
 ${SCRgfs}/exgfs_wave_prep.sh && true
 
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##########################################
 # Remove the Temporary working directory
