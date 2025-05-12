@@ -187,7 +187,8 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
   "ufs.configure.s2swa.IN"
   "ufs.configure.leapfrog_atm_wav.IN"
   "ww3_shel.nml.IN"
-  "post_itag_gfs")
+  "post_itag_gfs"
+  "global_control.nml.IN")
 for file in "${ufs_templates[@]}"; do
   if [[ -s "${file}" ]]; then
       rm -f "${file}"
