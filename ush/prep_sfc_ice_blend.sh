@@ -119,7 +119,7 @@ export err=$?
 
 if [[ "${err}" -ne 0 ]]; then
   echo "WARNING: ${pgm} completed abnormally. The old ice blend file will be used."
-  exit ${err}
+  exit "${err}"
 else
   ${WGRIB2} -set_int 3 51 42000 "${BLENDED_ICE_FILE}" -grib "${BLENDED_ICE_FILE}.corner"
   ${CNVGRIB} -g21 "${BLENDED_ICE_FILE}.corner" "${BLENDED_ICE_FILE}.bitmap"
