@@ -51,7 +51,6 @@
 :SNOD:surface:
 :SOILW:0-0.1 m below ground:
 :TCDC:entire atmosphere (considered as a single layer):
-:TCDC:entire atmosphere (considered as a single layer):
 :TMAX:2 m above ground:
 :TMIN:2 m above ground:
 :TMP:10 mb:
