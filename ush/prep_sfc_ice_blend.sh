@@ -66,13 +66,7 @@ pgmout=${pgmout:-"OUTPUT"}
 #------------------------------------------------------------------------
 
 if [[ -f "${IMS_FILE}" ]]; then
-  ${WGRIB2} -Sec0 ${IMS_FILE} 2>&1 | grep "grib1 message"
-  export err=$?
-  if [[ "${err}" -ne 0 ]]; then
-    cpfs ${IMS_FILE} ./ims.grib2
-  else
-    ${CNVGRIB} -g12 -p40 ${IMS_FILE} ./ims.grib2
-  fi
+  cpfs ${IMS_FILE} ./ims.grib2
   ${WGRIB2} ims.grib2 -match "ICEC" -grib ims.icec.grib2
   grid173="0 0 0 0 0 0 0 0 4320 2160 0 0 89958000 42000 48 -89958000 359958000 83000 83000 0"
   ${COPYGB2} -x -i3 -g "${grid173}" ims.icec.grib2 ims.icec.5min.grib2
@@ -124,7 +118,6 @@ export err=$?
 #------------------------------------------------------------------------
 
 if [[ "${err}" -ne 0 ]]; then
-then
   echo "WARNING: ${pgm} completed abnormally. The old ice blend file will be used."
   exit ${err}
 else

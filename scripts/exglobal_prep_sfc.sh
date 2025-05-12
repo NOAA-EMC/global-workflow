@@ -121,14 +121,18 @@ fi
 
 export SNOW2MDLEXEC="${EXECgfs}/emcsfc_snow2mdl"
 
-export MODEL_SLMASK_FILE=${SLMASK:-${FIXgfs}/am/global_slmask.t${JCAP}.${LONB}.${LATB}.grb}
-export MODEL_LATITUDE_FILE=${MDL_LATS:-${FIXgfs}/am/global_latitudes.t${JCAP}.${LONB}.${LATB}.grb}
-export MODEL_LONGITUDE_FILE=${MDL_LONS:-${FIXgfs}/am/global_longitudes.t${JCAP}.${LONB}.${LATB}.grb}
-export GFS_LONSPERLAT_FILE=${LONSPERLAT:-${FIXgfs}/am/global_lonsperlat.t${JCAP}.${LONB}.${LATB}.txt}
-export MODEL_SNOW_FILE=${FNSNOAJCAP:-${RUN}.${cycle}.snogrb_t${JCAP}.${LONB}.${LATB}}
-export MODEL_SNOW_FILE_PREV=${FNSNOGJCAP:-${COMIN_OBSPROC_PREV}/${RUN}.${gcycle}.snogrb_t${JCAP}.${LONB}.${LATB}}
+CRES=$(echo ${CASE} | cut -c2-)
+LONB_CRES=$((4*CRES))
+LATB_CRES=$((2*CRES))
 
-echo "Create ${JCAP} snow data."
+export MODEL_SLMASK_FILE=${SLMASK:-${FIXgfs}/am/global_slmask.t${CRES}.${LONB_CRES}.${LATB_CRES}.grb}
+export MODEL_LATITUDE_FILE=${MDL_LATS:-${FIXgfs}/am/global_latitudes.t${CRES}.${LONB_CRES}.${LATB_CRES}.grb}
+export MODEL_LONGITUDE_FILE=${MDL_LONS:-${FIXgfs}/am/global_longitudes.t${CRES}.${LONB_CRES}.${LATB_CRES}.grb}
+export GFS_LONSPERLAT_FILE=${LONSPERLAT:-${FIXgfs}/am/global_lonsperlat.t${CRES}.${LONB_CRES}.${LATB_CRES}.txt}
+export MODEL_SNOW_FILE=${RUN}.${cycle}.snogrb_t${CRES}.${LONB_CRES}.${LATB_CRES}
+export MODEL_SNOW_FILE_PREV=${COMIN_OBSPROC_PREV}/${RUN}.${gcycle}.snogrb_t${CRES}.${LONB_CRES}.${LATB_CRES}
+
+echo "Create ${CASE} snow data."
 "${USHgfs}/prep_sfc_snow.sh"
 export err=$?
 
@@ -145,10 +149,10 @@ export err=$?
 
 if ((err != 0)); then
   if [ -s "${MODEL_SNOW_FILE_PREV}" ]; then
-    echo "COPY OLD ${JCAP} SNOW FILE TO CURRENT DIRECTORY"
+    echo "COPY OLD ${CASE} SNOW FILE TO CURRENT DIRECTORY"
     cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
   else
-    err_chk "FATAL ERROR: CURRENT AND 6-HR OLD ${JCAP} SNOW MISSING"
+    err_chk "FATAL ERROR: CURRENT AND 6-HR OLD ${CASE} SNOW MISSING"
   fi  # check of missing 6-hr snow file
 fi  # return code check
 
@@ -162,12 +166,16 @@ then
   exit 0
 fi
 
-export MODEL_SLMASK_FILE=${SLMASK_ENKF:-${FIXgfs}/am/global_slmask.t${JCAP_ENKF}.${LONB_ENKF}.${LATB_ENKF}.grb}
-export MODEL_LATITUDE_FILE=${MDL_LATS_ENKF:-${FIXgfs}/am/global_latitudes.t${JCAP_ENKF}.${LONB_ENKF}.${LATB_ENKF}.grb}
-export MODEL_LONGITUDE_FILE=${MDL_LONS_ENKF:-${FIXgfs}/am/global_longitudes.t${JCAP_ENKF}.${LONB_ENKF}.${LATB_ENKF}.grb}
-export GFS_LONSPERLAT_FILE=${LONSPERLAT_ENKF:-${FIXgfs}/am/global_lonsperlat.t${JCAP_ENKF}.${LONB_ENKF}.${LATB_ENKF}.txt}
-export MODEL_SNOW_FILE=${FNSNOAJCAP_ENKF:-${RUN}.${cycle}.snogrb_t${JCAP_ENKF}.${LONB_ENKF}.${LATB_ENKF}}
-export MODEL_SNOW_FILE_PREV=${FNSNOGJCAP_ENKF:-${COMIN_OBSPROC_PREV}/${RUN}.${gcycle}.snogrb_t${JCAP_ENKF}.${LONB_ENKF}.${LATB_ENKF}}
+CRES_ENS=$(echo ${CASE_ENS} | cut -c2-)
+LONB_CRES_ENS=$((4*CRES))
+LATB_CRES_ENS=$((2*CRES))
+
+export MODEL_SLMASK_FILE=${SLMASK_ENKF:-${FIXgfs}/am/global_slmask.t${CRES_ENS}.${LONB_CRES_ENS}.${LATB_CRES_ENS}.grb}
+export MODEL_LATITUDE_FILE=${MDL_LATS_ENKF:-${FIXgfs}/am/global_latitudes.t${CRES_ENS}.${LONB_CRES_ENS}.${LATB_CRES_ENS}.grb}
+export MODEL_LONGITUDE_FILE=${MDL_LONS_ENKF:-${FIXgfs}/am/global_longitudes.t${CRES_ENS}.${LONB_CRES_ENS}.${LATB_CRES_ENS}.grb}
+export GFS_LONSPERLAT_FILE=${LONSPERLAT_ENKF:-${FIXgfs}/am/global_lonsperlat.t${CRES_ENS}.${LONB_CRES_ENS}.${LATB_CRES_ENS}.txt}
+export MODEL_SNOW_FILE=${RUN}.${cycle}.snogrb_t${CRES_ENS}.${LONB_CRES_ENS}.${LATB_CRES_ENS}
+export MODEL_SNOW_FILE_PREV=${COMIN_OBSPROC_PREV}/${RUN}.${gcycle}.snogrb_t${CRES_ENS}.${LONB_CRES_ENS}.${LATB_CRES_ENS}
 
 echo "Create enkf snow data."
 "${USHgfs}/prep_sfc_snow.sh"
