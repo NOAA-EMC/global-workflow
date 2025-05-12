@@ -70,7 +70,7 @@ export FIVE_MIN_ICE_FILE="${COMIN_OBSPROC}/${RUN}.${cycle}.seaice.5min.grib2"
 export FIVE_MIN_ICE_MASK_FILE="${FIXgfs}/am/emcsfc_gland5min.grib2"
 
 # afwa snow depth data
-export AFWA_GLOBAL_FILE="${COMINobsproc}/${RUN}.${cycle}.snow.usaf.grib2"
+export AFWA_GLOBAL_FILE="${COMIN_OBSPROC}/${RUN}.${cycle}.snow.usaf.grib2"
 export AFWA_NH_FILE="${COMIN_OBSPROC}/${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb"
 export AFWA_SH_FILE="${COMIN_OBSPROC}/${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb"
 

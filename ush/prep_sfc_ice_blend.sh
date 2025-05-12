@@ -96,7 +96,7 @@ fi
 # Run program to blend data.
 #------------------------------------------------------------------------
 
-. prep_step
+source prep_step
 
 # These are input files.
 export FORT17="${FIVE_MIN_ICE_MASK_FILE}"

@@ -141,7 +141,7 @@ fi
 
 pgmout=${pgmout:-"OUTPUT"}
 
-. prep_step
+source prep_step
 
 rm -f ./fort.41
 cat > ./fort.41 << !
