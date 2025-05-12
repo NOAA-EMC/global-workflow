@@ -35,6 +35,9 @@ local med_model="cmeps"
 local med_petlist_bounds="0 $(( MEDPETS-1 ))"
 local med_omp_num_threads="${MEDTHREADS}"
 
+# vector remapping
+local MAPUV3D=true
+
 if [[ "${cpl}" = ".true." ]]; then
   local coupling_interval_slow_sec="${CPL_SLOW}"
 fi
