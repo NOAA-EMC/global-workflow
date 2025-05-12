@@ -14,7 +14,7 @@ class Tasks:
     SERVICE_TASKS = ['arch_vrfy', 'earc_vrfy', 'stage_ic', 'cleanup', 'globus', 'ens_globus']
     DTN_TASKS = ['arch_tars', 'earc_tars', 'fetch']
     VALID_TASKS = ['aerosol_init', 'stage_ic', 'fetch', 'globus', 'ens_globus',
-                   'sfcprep', 'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars', 'cleanup',
+                   'prepsfc', 'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars', 'cleanup',
                    'ecen_fv3jedi', 'analcalc_fv3jedi',
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
                    'prep_emissions', 'prepoceanobs',

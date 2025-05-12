@@ -10,12 +10,12 @@ if [[ "${status}" -ne 0 ]]; then
     exit "${status}"
 fi
 
-export job="sfcprep"
+export job="prepsfc"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_ATMOS_EMCSFC_SFC_PREP"
+"${HOMEgfs}/jobs/JGLOBAL_ATMOS_PREP_SFC"
 status=$?
 
 exit "${status}"

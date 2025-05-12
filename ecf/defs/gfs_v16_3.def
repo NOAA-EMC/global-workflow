@@ -26,7 +26,7 @@ suite gfs_v16_3
                 endfamily
                 family prep
                   task jgfs_atmos_prep_sfc
-                    trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
+                    trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_prepsfc
                 endfamily
               endfamily
               family analysis
@@ -2159,7 +2159,7 @@ suite gfs_v16_3
                 endfamily
                 family prep
                   task jgdas_atmos_prep_sfc
-                    trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
+                    trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_prepsfc
                 endfamily
               endfamily
               family init
@@ -2534,7 +2534,7 @@ suite gfs_v16_3
             family atmos
               family dump
                 task jobsproc_gfs_atmos_dump
-                  event release_sfcprep
+                  event release_prepsfc
               endfamily
               family prep
                 edit RUN 'gfs'
@@ -2547,7 +2547,7 @@ suite gfs_v16_3
               family dump
                 defstatus complete
                 task jobsproc_gdas_atmos_dump
-                  event release_sfcprep
+                  event release_prepsfc
               endfamily
               family prep
                 edit RUN 'gdas'
@@ -2576,7 +2576,7 @@ suite gfs_v16_3
                 endfamily
                 family prep
                   task jgfs_atmos_prep_sfc
-                    trigger /gfs_v16_3/primary/06/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
+                    trigger /gfs_v16_3/primary/06/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_prepsfc
                 endfamily
               endfamily
               family analysis
@@ -4709,7 +4709,7 @@ suite gfs_v16_3
                 endfamily
                 family prep
                   task jgdas_atmos_prep_sfc
-                    trigger /gfs_v16_3/primary/06/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
+                    trigger /gfs_v16_3/primary/06/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_prepsfc
                 endfamily
               endfamily
               family init
@@ -5084,7 +5084,7 @@ suite gfs_v16_3
             family atmos
               family dump
                 task jobsproc_gfs_atmos_dump
-                  event release_sfcprep
+                  event release_prepsfc
               endfamily
               family prep
                 edit RUN 'gfs'
@@ -5096,7 +5096,7 @@ suite gfs_v16_3
             family atmos
               family dump
                 task jobsproc_gdas_atmos_dump
-                  event release_sfcprep
+                  event release_prepsfc
               endfamily
               family prep
                 edit RUN 'gdas'
@@ -5125,7 +5125,7 @@ suite gfs_v16_3
                 endfamily
                 family prep
                   task jgfs_atmos_prep_sfc
-                    trigger /gfs_v16_3/primary/12/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
+                    trigger /gfs_v16_3/primary/12/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_prepsfc
                 endfamily
               endfamily
               family analysis
@@ -7259,7 +7259,7 @@ suite gfs_v16_3
                 endfamily
                 family prep
                   task jgdas_atmos_prep_sfc
-                    trigger /gfs_v16_3/primary/12/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
+                    trigger /gfs_v16_3/primary/12/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_prepsfc
                 endfamily
               endfamily
               family init
@@ -7634,7 +7634,7 @@ suite gfs_v16_3
             family atmos
               family dump
                 task jobsproc_gfs_atmos_dump
-                  event release_sfcprep
+                  event release_prepsfc
               endfamily
               family prep
                 edit RUN 'gfs'
@@ -7646,7 +7646,7 @@ suite gfs_v16_3
             family atmos      
               family dump
                 task jobsproc_gdas_atmos_dump
-                  event release_sfcprep
+                  event release_prepsfc
               endfamily
               family prep
                 edit RUN 'gdas'
@@ -7676,7 +7676,7 @@ suite gfs_v16_3
                 endfamily
                 family prep
                   task jgfs_atmos_prep_sfc
-                    trigger /gfs_v16_3/primary/18/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
+                    trigger /gfs_v16_3/primary/18/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_prepsfc
                 endfamily
               endfamily
               family analysis
@@ -9809,7 +9809,7 @@ suite gfs_v16_3
                 endfamily
                 family prep
                   task jgdas_atmos_prep_sfc
-                    trigger /gfs_v16_3/primary/18/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
+                    trigger /gfs_v16_3/primary/18/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_prepsfc
                 endfamily
               endfamily
               family init
@@ -10184,7 +10184,7 @@ suite gfs_v16_3
             family atmos
               family dump
                 task jobsproc_gfs_atmos_dump
-                  event release_sfcprep
+                  event release_prepsfc
               endfamily
               family prep
                 edit RUN 'gfs'
@@ -10196,7 +10196,7 @@ suite gfs_v16_3
             family atmos      
               family dump
                 task jobsproc_gdas_atmos_dump
-                  event release_sfcprep
+                  event release_prepsfc
               endfamily
               family prep
                 edit RUN 'gdas'
