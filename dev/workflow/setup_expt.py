@@ -174,9 +174,10 @@ def input_args(*argv):
         parser.add_argument('--run', help='RUN to start the experiment',
                             type=str, required=False, default='gdas')
         # --configdir is hidden from help
-        parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False, default=os.path.join(_top, 'parm/config/gfs'))
-        parser.add_argument('--yaml', help='Defaults to substitute from', type=str,
-                            required=False, default=os.path.join(_top, 'parm/config/gfs/yaml/defaults.yaml'))
+        parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
+                            default=os.path.join(_top, 'dev/parm/config/gfs'))
+        parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
+                            default=os.path.join(_top, 'dev/parm/config/gfs/yaml/defaults.yaml'))
         return parser
 
     def _gfs_cycled_args(parser):
@@ -200,19 +201,21 @@ def input_args(*argv):
     def _gefs_args(parser):
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
+        # --configdir is hidden from help
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/gefs'))
+                            default=os.path.join(_top, 'dev/parm/config/gefs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/gefs/yaml/defaults.yaml'))
+                            default=os.path.join(_top, 'dev/parm/config/gefs/yaml/defaults.yaml'))
         return parser
 
     def _sfs_args(parser):
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
+        # --configdir is hidden from help
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/sfs'))
+                            default=os.path.join(_top, 'dev/parm/config/sfs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/sfs/yaml/defaults.yaml'))
+                            default=os.path.join(_top, 'dev/parm/config/sfs/yaml/defaults.yaml'))
         return parser
 
     description = """
