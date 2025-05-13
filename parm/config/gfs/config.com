@@ -40,7 +40,6 @@ if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
     COM_RTOFS_TMPL=$(compath.py "${envir}/rtofs/${rtofs_ver}")
     COM_SYNDAT_TMPL='${ROTDIR}/syndat'
     COM_TCVITAL_TMPL=$(compath.py "${envir}/gfs/${gfs_ver}")'/${RUN}.${YMD}/${HH}/atmos'
-    COMnam_TMPL=$(compath.py "${envir}/nam/${nam_ver}")'/nam'
 else
     COM_OBSPROC_TMPL='${DMPDIR}/${RUN}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
     COM_RTOFS_TMPL='${DMPDIR}'

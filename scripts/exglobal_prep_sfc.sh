@@ -61,24 +61,24 @@
 ##############################################################
 
 # ims snow cover and ice cover data (grib 1 or grib 2)
-export IMS_FILE="${COMIN_OBSPROC}/${RUN}.${cycle}.imssnow96.grib2"
+export IMS_FILE="${COMINobsproc}/${RUN}.${cycle}.imssnow96.grib2"
 
 # global 5-minute ice concentration file (grib 2)
-export FIVE_MIN_ICE_FILE="${COMIN_OBSPROC}/${RUN}.${cycle}.seaice.5min.grib2"
+export FIVE_MIN_ICE_FILE="${COMINobsproc}/${RUN}.${cycle}.seaice.5min.grib2"
 
 # landmask file for global 5-minute data (grib 2)
 export FIVE_MIN_ICE_MASK_FILE="${FIXgfs}/am/emcsfc_gland5min.grib2"
 
 # afwa snow depth data
-export AFWA_GLOBAL_FILE="${COMIN_OBSPROC}/${RUN}.${cycle}.snow.usaf.grib2"
-export AFWA_NH_FILE="${COMIN_OBSPROC}/${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb"
-export AFWA_SH_FILE="${COMIN_OBSPROC}/${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb"
+export AFWA_GLOBAL_FILE="${COMINobsproc}/${RUN}.${cycle}.snow.usaf.grib2"
+export AFWA_NH_FILE="${COMINobsproc}/${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb"
+export AFWA_SH_FILE="${COMINobsproc}/${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb"
 
 # the output ice blend data (grib)
 export BLENDED_ICE_FILE="${RUN}.${cycle}.seaice.5min.blend.grb"
 
 # the 6-hour old output ice blend data.
-export BLENDED_ICE_FILE_PREV="${COMIN_OBSPROC_PREV}/${RUN}.${gcycle}.seaice.5min.blend.grb"
+export BLENDED_ICE_FILE_PREV="${COMINobsproc_PREV}/${RUN}.${gcycle}.seaice.5min.blend.grb"
 
 # the emcsfc_ice_blend executable
 export BLENDICEEXEC=${BLENDICEEXEC:-${EXECgfs}/emcsfc_ice_blend}
@@ -129,7 +129,7 @@ export MODEL_LATITUDE_FILE=${MDL_LATS:-${FIXgfs}/am/global_latitudes.t${CASE:1}.
 export MODEL_LONGITUDE_FILE=${MDL_LONS:-${FIXgfs}/am/global_longitudes.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
 export GFS_LONSPERLAT_FILE=${LONSPERLAT:-${FIXgfs}/am/global_lonsperlat.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.txt}
 export MODEL_SNOW_FILE=${RUN}.${cycle}.snogrb_t${CASE:1}.${LONB_CASE}.${LATB_CASE}
-export MODEL_SNOW_FILE_PREV=${COMIN_OBSPROC_PREV}/${RUN}.${gcycle}.snogrb_t${CASE:1}.${LONB_CASE}.${LATB_CASE}
+export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.${gcycle}.snogrb_t${CASE:1}.${LONB_CASE}.${LATB_CASE}
 
 echo "Create ${CASE} snow data."
 "${USHgfs}/prep_sfc_snow.sh"
@@ -173,7 +173,7 @@ export MODEL_LATITUDE_FILE=${MDL_LATS_ENKF:-${FIXgfs}/am/global_latitudes.t${CAS
 export MODEL_LONGITUDE_FILE=${MDL_LONS_ENKF:-${FIXgfs}/am/global_longitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
 export GFS_LONSPERLAT_FILE=${LONSPERLAT_ENKF:-${FIXgfs}/am/global_lonsperlat.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.txt}
 export MODEL_SNOW_FILE=${RUN}.${cycle}.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
-export MODEL_SNOW_FILE_PREV=${COMIN_OBSPROC_PREV}/${RUN}.${gcycle}.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
+export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.${gcycle}.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
 
 echo "Create enkf snow data."
 "${USHgfs}/prep_sfc_snow.sh"

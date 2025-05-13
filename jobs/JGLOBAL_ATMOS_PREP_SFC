@@ -14,9 +14,9 @@ export gcycle="t${gcyc}z"
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBSPROC:COM_OBSPROC_TMPL
+    COMINobsproc:COM_OBSPROC_TMPL
 YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OBSPROC_PREV:COM_OBSPROC_TMPL
+    COMINobsproc_PREV:COM_OBSPROC_TMPL
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_OBS:COM_OBS_TMPL
 
