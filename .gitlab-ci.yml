@@ -30,8 +30,7 @@ stages:
 
 variables:
   BUILDTYPE: 'develop'
-  DATE: $(date -d "$CI_PIPELINE_CREATED_AT" +"%m%d%Y")
-  WORKSPACE_NAME: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}
+  WORKSPACE_NAME: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}
   GW_RUN_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_NAME}
   # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the
   # exact directory where the repository should be cloned, built, and ran.
