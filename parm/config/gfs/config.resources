@@ -593,7 +593,6 @@ case ${step} in
         exit 4
     esac
 
-    walltime="01:30:00"
     export is_exclusive=True
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / 2 ))
