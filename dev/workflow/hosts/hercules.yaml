@@ -10,9 +10,9 @@ STMP: '/work2/noaa/stmp/${USER}/${machine^^}'
 PTMP: '/work2/noaa/stmp/${USER}/${machine^^}'
 NOSCRUB: '${HOMEDIR}'
 COM_SYNDAT: '/work2/noaa/global/role-global/com/gfs/prod/syndat'
-COM_ECMWF: '/work2/noaa/global/role-global/data/external_gempak/ecmwf'
-COM_NAM: '/work2/noaa/global/role-global/data/external_gempak/nam'
-COM_UKMET: '/work2/noaa/global/role-global/data/external_gempak/ukmet'
+COMINecmwf: '/work2/noaa/global/role-global/data/external_gempak/ecmwf'
+COMINnam: '/work2/noaa/global/role-global/data/external_gempak/nam'
+COMINukmet: '/work2/noaa/global/role-global/data/external_gempak/ukmet'
 # BQS properties
 SCHEDULER: slurm
 QUEUE: batch

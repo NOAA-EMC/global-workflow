@@ -10,9 +10,9 @@ STMP: '/scratch1/NCEPDEV/stmp2/${USER}'
 PTMP: '/scratch1/NCEPDEV/stmp4/${USER}'
 NOSCRUB: '${HOMEDIR}'
 COM_SYNDAT: '/scratch1/NCEPDEV/global/glopara/com/gfs/prod/syndat'
-COM_ECMWF: '/scratch1/NCEPDEV/global/glopara/data/external_gempak/ecmwf'
-COM_NAM: '/scratch1/NCEPDEV/global/glopara/data/external_gempak/nam'
-COM_UKMET: '/scratch1/NCEPDEV/global/glopara/data/external_gempak/ukmet'
+COMINecmwf: '/scratch1/NCEPDEV/global/glopara/data/external_gempak/ecmwf'
+COMINnam: '/scratch1/NCEPDEV/global/glopara/data/external_gempak/nam'
+COMINukmet: '/scratch1/NCEPDEV/global/glopara/data/external_gempak/ukmet'
 # BQS properties
 SCHEDULER: slurm
 QUEUE: batch
