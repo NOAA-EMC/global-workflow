@@ -25,6 +25,7 @@ YAML_FILE="${HOMEgfs}/dev/ctests/cases/${TEST_NAME}.yaml"
 PSLOT="$("${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${CTESTS_STAGED_TESTS_DIR}" "${CASE_NAME}")"
 echo "validating '${TEST_NAME}' with yaml file '${YAML_FILE}'"
 
+PSLOT="${PSLOT}" \
 TEST_NAME="${TEST_NAME}" \
 RUNTESTS="${RUNTESTS}" \
 CTESTS_STAGED_TESTS_DIR="${CTESTS_STAGED_TESTS_DIR}" \
