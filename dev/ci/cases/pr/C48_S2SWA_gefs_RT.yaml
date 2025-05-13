@@ -20,4 +20,10 @@ arguments:
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
 
 skip_ci_on_hosts:
-  - None
+  - hera
+  - gaeac5
+  - gaeac6
+  - orion
+  - hercules
+  - awsepicglobalworkflow
+  - wcoss2  # TODO run on WCOSS2 once the gfs_waveawipsbulls job is fixed
