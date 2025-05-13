@@ -184,7 +184,7 @@ export err=$?
 # as backup.  If old data not available, abort.
 #-----------------------------------------------------------------------
 
-if ((err != 0)); then
+if [[ ${err} -ne 0 ]]; then
   if [[ -s "${MODEL_SNOW_FILE_PREV}" ]]; then
     echo "COPY OLD ENKF SNOW FILE TO CURRENT DIRECTORY"
     cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
