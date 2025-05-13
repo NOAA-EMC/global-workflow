@@ -22,7 +22,7 @@ PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH
 
 YAML_FILE="${HOMEgfs}/dev/ctests/cases/${TEST_NAME}.yaml"
-PSLOT="$(${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh get_pslot ${CTESTS_STAGED_TESTS_DIR} ${CASE_NAME})"
+PSLOT="$("${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${CTESTS_STAGED_TESTS_DIR}" "${CASE_NAME}")"
 
 PSLOT="${PSLOT}" \
 RUNTESTS="${RUNTESTS}" \
