@@ -66,10 +66,10 @@ class GFSTasks(Tasks):
 
         return task
 
-    def prepsfc(self):
+    def prep_sfc(self):
 
         dependencies = None
-        if self.options['do_prepsfc']:
+        if self.options['do_prep_sfc']:
             deps = []
             dep_dict = {'type': 'metatask', 'name': 'gdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -81,14 +81,14 @@ class GFSTasks(Tasks):
 
             cycledef = self.run
 
-            resources = self.get_resource('prepsfc')
-            task_name = f'{self.run}_prepsfc'
+            resources = self.get_resource('prep_sfc')
+            task_name = f'{self.run}_prep_sfc'
             task_dict = {'task_name': task_name,
                          'resources': resources,
                          'dependency': dependencies,
                          'envars': self.envars,
                          'cycledef': cycledef,
-                         'command': f'{self.HOMEgfs}/dev/jobs/prepsfc.sh',
+                         'command': f'{self.HOMEgfs}/dev/jobs/prep_sfc.sh',
                          'job_name': f'{self.pslot}_{task_name}_@H',
                          'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                          'maxtries': '&MAXTRIES;'
@@ -118,8 +118,8 @@ class GFSTasks(Tasks):
         data = f'{dump_path}/{self.run}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_prepsfc']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_prepsfc'}
+        if self.options['do_prep_sfc']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_prep_sfc'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

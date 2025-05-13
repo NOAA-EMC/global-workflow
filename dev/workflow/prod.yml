@@ -47,7 +47,7 @@ suites:
                 jgfs_atmos_prep_sfc:
                   triggers:
                   - task: jobsproc_gfs_atmos_dump
-                    event: release_prepsfc
+                    event: release_prep_sfc
           analysis:
             tasks:
               jgfs_atmos_analysis:
@@ -202,7 +202,7 @@ suites:
                 jgdas_atmos_prep_sfc:
                   triggers:
                   - task: jobsproc_gdas_atmos_dump
-                    event: release_prepsfc
+                    event: release_prep_sfc
           analysis:
             tasks:
               jgdas_atmos_analysis:
@@ -349,7 +349,7 @@ suites:
                   jobsproc_gfs_atmos_dump:
                     template: skip
                     events:
-                    - "release_prepsfc"
+                    - "release_prep_sfc"
               prep:
                 tasks:
                   jobsproc_gfs_atmos_prep:
@@ -361,7 +361,7 @@ suites:
                   jobsproc_gdas_atmos_dump:
                     template: skip
                     events:
-                    - "release_prepsfc"
+                    - "release_prep_sfc"
               prep:
                 tasks:
                   jobsproc_gdas_atmos_prep:
