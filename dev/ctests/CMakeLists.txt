@@ -26,7 +26,7 @@ endif()
 set_from_env_or_default(RUNTESTS RUNTESTS "${CMAKE_CURRENT_BINARY_DIR}/RUNTESTS")
 
 # Set HPC_ACCOUNT
-set_from_env_or_default(HPC_ACCOUNT HPC_ACCOUNT " ")
+set_from_env_or_default(HPC_ACCOUNT HPC_ACCOUNT "")
 if (NOT DEFINED HPC_ACCOUNT)
   message(WARNING "HPC_ACCOUNT must be set. CTests will not be created.")
   return()
