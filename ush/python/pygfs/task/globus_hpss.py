@@ -55,6 +55,7 @@ class GlobusHpss(Task):
         # Prep some globus commands
         self.globus_rm = copy.deepcopy(self.globus)
         self.globus_xfr = copy.deepcopy(self.globus)
+        self.globus_mkdir = copy.deepcopy(self.globus)
         self.globus_wait = copy.deepcopy(self.globus)
 
         # Recursively remove the target, notify on failure, and ignore missing files
@@ -64,6 +65,10 @@ class GlobusHpss(Task):
         self.globus_xfr.add_default_arg(["transfer", "--notify", "failed",
                                          "--preserve-mtime", "--sync-level", "mtime",
                                          "--jmespath", "task_id", "--format=UNIX"])
+
+        # Make a directory on a target system via globus
+        self.globus_mkdir.add_default_arg(["mkdir", "--format=UNIX"])
+
         # Wait on a task ID to finish and output the status of the transfer when complete
         self.globus_wait.add_default_arg(["task", "wait", "--jmespath", "status",
                                           "--format=UNIX", "--timeout", "120"])
@@ -385,6 +390,14 @@ class GlobusHpss(Task):
             raise ProcessError("FATAL ERROR Failed to request a mkdir on the server!")
 
         try:
+            self._wait_on_task_id(self.globus_mkdir(
+                f"{self.CLIENT_GLOBUS_UUID}:{self.wd}", suppress_errors=True
+            ))
+        except ProcessError:
+            logger.info("Globus reported that it could not create the directory.  This is likely because it already exists.  Continuing.")
+
+        try:
+            # If globus was unable to mkdir for another reason, this will fail.
             self._wait_on_task_id(self.globus_xfr(
                 f"{self.CLIENT_GLOBUS_UUID}:{self.wd}/init_xfer.sh",
                 f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/init_xfer_{pslot}.sh",
@@ -425,13 +438,13 @@ class GlobusHpss(Task):
         logger.info("Server initialized successfully!")
 
     @logit(logger)
-    def _wait_on_task_id(self, task_id):
+    def _wait_on_task_id(self, task_id, suppress_errors=False):
 
         # The task_id usually has a newline character at the end.  Strip that to begin.
         task_id = task_id.strip()
 
         status = self.globus_wait(task_id, output=str).strip()
-        if status != "SUCCEEDED":
+        if status != "SUCCEEDED" and not suppress_errors:
             raise ConnectionError(f"Globus failed on task ID {task_id}")
 
     @logit(logger)
