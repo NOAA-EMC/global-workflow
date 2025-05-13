@@ -568,7 +568,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
 	ntasks=256
-	if [ "${NMEM_ENS}" -gt 30 ]; then
+	if [[ "${NMEM_ENS}" -gt 30 ]]; then
           memory="500GB"
 	  walltime="01:30:00"
         else
