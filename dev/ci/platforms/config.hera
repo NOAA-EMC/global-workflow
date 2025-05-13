@@ -52,7 +52,7 @@ export GITLAB_BUILDS_DIR=${TMCG_GFS_CI_ROOT}/BUILDS/GITLAB
 export GITLAB_RUNNER_DIR="${TMCG_GFS_CI_ROOT}/GitLab/Runner"
 
 # CTest functional test directories for pre stagged input data
-export CTESTS_STAGED_TESTS_DIR=${TMCG_GFS_CI_ROOT}/CTESTS_STAGED_TESTS_DIR
+export CTESTS_STAGED_TESTS_DIR=${GITLAB_BUILDS_DIR}/stable/RUNTESTS/COMROOT
 
 #########################################################################
 # CI CRON system configuration

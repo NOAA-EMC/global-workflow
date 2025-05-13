@@ -2,9 +2,9 @@
 
 set -ux
 
-TEST_NAME=${1:?"Name of the test is required"}
-TEST_DATE=${2:?"idate of the test is required"}
-
+CASE_NAME=${1:?"Name of the case is required"}
+TEST_NAME=${2:?"Name of the test is required"}
+TEST_DATE=${3:?"Date of the test is required"}
 # CMake to fill these variables
 CTESTS_STAGED_TESTS_DIR="@CTESTS_STAGED_TESTS_DIR@"
 RUNTESTS="@RUNTESTS@"
@@ -22,8 +22,10 @@ PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH
 
 YAML_FILE="${HOMEgfs}/dev/ctests/cases/${TEST_NAME}.yaml"
+$CTESTS_STAGED_TESTS_DIR/RUNTESTS C48_ATM
+PSLOT="$(${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh get_pslot ${CTESTS_STAGED_TESTS_DIR}/RUNTESTS ${CASE_NAME})"
 
-TEST_NAME="${TEST_NAME}" \
+PSLOT="${PSLOT}" \
 RUNTESTS="${RUNTESTS}" \
 CTESTS_STAGED_TESTS_DIR="${CTESTS_STAGED_TESTS_DIR}" \
 "${HOMEgfs}/dev/ctests/scripts/stage.py" --yaml "${YAML_FILE}" --test_date "${TEST_DATE}"

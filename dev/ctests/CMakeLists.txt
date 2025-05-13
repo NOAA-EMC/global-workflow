@@ -83,7 +83,7 @@ function(AddJJOBTest)
   set_tests_properties(test_${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE}_${ARG_JOB}")
 
   add_test(NAME test_${TEST_NAME}_stage
-      COMMAND ./stage.sh ${TEST_NAME} ${ARG_TEST_DATE}
+      COMMAND ./stage.sh ${ARG_CASE} ${TEST_NAME} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
   set_tests_properties(test_${TEST_NAME}_stage PROPERTIES DEPENDS test_${TEST_NAME}_setup LABELS "${ARG_CASE}_${ARG_JOB}")
 
