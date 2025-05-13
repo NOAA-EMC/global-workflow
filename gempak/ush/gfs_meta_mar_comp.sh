@@ -31,7 +31,7 @@ done
 #
 export HPCNAM="nam.${PDY}"
 if [[ ! -L ${HPCNAM} ]]; then
-    ${NLN} "${COMIN_NAM}/nam.${PDY}/gempak" "${HPCNAM}"
+    ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 fi
 
 mdl=gfs
@@ -222,7 +222,7 @@ EOF
 
         export HPCUKMET="ukmet.${ukmet_PDY}"
         if [[ ! -L "${HPCUKMET}" ]]; then
-            ${NLN} "${COMIN_UKMET}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
+            ${NLN} "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
         fi
         grid2="F-UKMETHPC | ${ukmet_PDY:2}/${ukmet_date}"
 
@@ -310,7 +310,7 @@ EOF
 
         HPCECMWF=ecmwf.${PDY}
         if [[ ! -L "${HPCECMWF}" ]]; then
-            ${NLN} "${COMIN_ECMWF}/ecmwf.${ecmwf_PDY}/gempak" "${HPCECMWF}"
+            ${NLN} "${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak" "${HPCECMWF}"
         fi
         grid2="${HPCECMWF}/ecmwf_glob_${ecmwf_date}"
 

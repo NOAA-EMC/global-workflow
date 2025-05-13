@@ -144,9 +144,9 @@ if [[ ${MAKE_PREPBUFR:-"YES"} = "YES" ]]; then
     # Do not fail on external errors
     set +eu
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
-    err=$?
+    export err=$?
     if [[ ${err} -ne 0 ]]; then
-       err_chk "FATAL ERROR: Global prep job failed!"
+       err_exit "JOBSPROC_GLOBAL_PREP job failed!"
     fi
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
