@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -ux
 
-TEST_NAME=${1:?"Name of the test is required"}
-TEST_DATE=${2:?"idate of the test is required"}
+CASE_NAME=${1:?"Name of the case is required"}
+TEST_NAME=${2:?"Name of the test is required"}
+TEST_DATE=${3:?"idate of the test is required"}
 
 # CMake to fill these variables
 CTESTS_STAGED_TESTS_DIR="@CTESTS_STAGED_TESTS_DIR@"
@@ -21,6 +22,7 @@ PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH
 
 YAML_FILE="${HOMEgfs}/dev/ctests/cases/${TEST_NAME}.yaml"
+PSLOT="$("${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${CTESTS_STAGED_TESTS_DIR}" "${CASE_NAME}")"
 echo "validating '${TEST_NAME}' with yaml file '${YAML_FILE}'"
 
 TEST_NAME="${TEST_NAME}" \
