@@ -138,10 +138,10 @@ class MarineAnalysis(Task):
 
         obs_files_to_copy = []
 
-        # copy obs from COM_OBS to DATA/obs
+        # copy obs from COMIN_OBS to DATA/obs
         for obs_file in obs_files:
             logger.info(f"******* {obs_file}")
-            obs_src = os.path.join(self.task_config.COM_OBS, obs_file)
+            obs_src = os.path.join(self.task_config.COMIN_OBS, obs_file)
             obs_dst = os.path.join(self.task_config.DATA, 'obs', obs_file)
             logger.info(f"******* {obs_src}")
             if os.path.exists(obs_src):
