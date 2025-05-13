@@ -6,6 +6,6 @@
 echo "BEGIN: config.prepsfc"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" prepsfc
+source "${EXPDIR}/config.resources" prepsfc
 
 echo "END: config.prepsfc"

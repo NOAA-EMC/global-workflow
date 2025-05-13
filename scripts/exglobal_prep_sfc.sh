@@ -105,7 +105,7 @@ export err=$?
 # code can't run without an ice analysis.
 #-----------------------------------------------------------------------
 
-if ((err != 0)); then
+if [[ ${err} -ne 0 ]]; then
   if [[ -s "${BLENDED_ICE_FILE_PREV}" ]]; then
     echo "Copy old ice blend file to current directory"
     cpfs "${BLENDED_ICE_FILE_PREV}" "${COMOUT_OBS}/${BLENDED_ICE_FILE}"
@@ -152,7 +152,7 @@ if ((err != 0)); then
     echo "COPY OLD ${CASE} SNOW FILE TO CURRENT DIRECTORY"
     cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
   else
-    err_chk "FATAL ERROR: CURRENT AND 6-HR OLD ${CASE} SNOW MISSING"
+    err_exit "CURRENT AND 6-HR OLD ${CASE} SNOW MISSING, ABORT!"
   fi  # check of missing 6-hr snow file
 fi  # return code check
 
