@@ -564,11 +564,18 @@ case ${step} in
 
   "ocnanalecen")
     ntasks=16
+    walltime="00:10:00"
     case ${OCNRES} in
       "025")
-        ntasks=256
-        memory="500GB"
-        ;;
+	ntasks=256
+	if [ NMEM_ENS > 30 ]; then
+          memory="500GB"
+	  walltime="01:30:00"
+        else
+           ntasks=40
+  ￼        memory="256GB"
+        fi
+	;;
       "050")
         ntasks=16
         memory="96GB"
