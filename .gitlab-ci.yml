@@ -30,7 +30,7 @@ stages:
 
 variables:
   BUILDTYPE: 'develop'
-  DATE: ${CI_PIPELINE_CREATED_AT%T*}
+  DATE="$(date -d "$CI_PIPELINE_CREATED_AT" +"%m%d%Y")"
   WORKSPACE_NAME: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}
   GW_RUN_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_NAME}
   # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the
