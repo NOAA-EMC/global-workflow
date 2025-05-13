@@ -89,7 +89,7 @@ finalize-hera:
     - run_tests-hera
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: always
+      when: on_success  # Explicitly set to run only if all upstream jobs succeed
     - if: $CI_PIPELINE_SOURCE == "trigger"
       when: never
 
@@ -104,7 +104,7 @@ finalize-gaeac6:
     - run_tests-gaeac6
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: always
+      when: on_success  # Explicitly set to run only if all upstream jobs succeed
     - if: $CI_PIPELINE_SOURCE == "trigger"
       when: never
 
