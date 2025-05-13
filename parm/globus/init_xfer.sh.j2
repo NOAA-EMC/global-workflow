@@ -19,9 +19,7 @@ do
     rm -f "${mkdir_req_fl}"
 done < <(find "{{server_home}}" -maxdepth 1 -name "req_mkdir.*" || true)
 
-# Look for scripts and run one and only one of them.
-# Subsequent cron calls will run other scripts, preventing running the same script multiple times.
-ran_a_script=NO
+# Look for scripts and run them.
 while IFS= read -r dir
 do
    echo "${run_time}" > "${runtime_log}"
@@ -31,16 +29,10 @@ do
       # Check if the corresponding log has already been written
       log="${script/.sh/.log}"
       if [[ ! -f "${log}" ]]; then
-         ran_a_script=YES
+         touch "${log}"
          "${script}"
       fi
-      if [[ "${ran_a_script}" == "YES" ]]; then
-         break
-      fi
    done < <(find "${dir}" -name "run_doorman.sh" || true)
-   if [[ "${ran_a_script}" == "YES" ]]; then
-      break
-   fi
 done < <(find "{{server_home}}/doorman" -maxdepth 1 -type d -name "globus_*.*" || true)
 
 # Look for rmdir requests
