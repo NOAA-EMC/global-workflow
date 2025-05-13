@@ -6,7 +6,7 @@
 echo "BEGIN: config.waveinit"
 
 # Get task specific resources
-. $EXPDIR/config.resources waveinit
+source "${EXPDIR}/config.resources" waveinit
 
 # Step label
 export sigMODE=${sigMODE:-init}
