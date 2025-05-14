@@ -8,7 +8,6 @@ echo "BEGIN: config.prep"
 # Get task specific resources
 source "${EXPDIR}/config.resources" prep
 
-export MAKE_PREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
 export cdate10=${PDY}${cyc}
 
 # Relocation and syndata QC

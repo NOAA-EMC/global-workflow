@@ -108,59 +108,56 @@ fi
 
 
 ###############################################################
-# Generate prepbufr files from dumps or copy from OPS
-if [[ ${MAKE_PREPBUFR:-"YES"} = "YES" ]]; then
-    if [[ ${ROTDIR_DUMP:-"YES"} = "YES" ]]; then
-        rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr"
-        rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
-        rm -f "${COMOUT_OBS}/${OPREFIX}nsstbufr"
-    fi
+# Generate prepbufr files from dumps and prior gdas guess
+if [[ ${ROTDIR_DUMP:-"YES"} = "YES" ]]; then
+    rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr"
+    rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
+    rm -f "${COMOUT_OBS}/${OPREFIX}nsstbufr"
+fi
 
-    RUN="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GDAS:COM_ATMOS_HISTORY_TMPL
-    RUN="gfs" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GFS:COM_ATMOS_HISTORY_TMPL
+RUN="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GDAS:COM_ATMOS_HISTORY_TMPL
+RUN="gfs" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GFS:COM_ATMOS_HISTORY_TMPL
 
-    export job="j${RUN_local}_prep_${cyc}"
+export job="j${RUN_local}_prep_${cyc}"
 
-    #TODO: Update external packages (obsproc/prepobs) to use COMIN[OUT]_*
-    export COMINtcvital=${COMIN_TCVITAL}
-    export COMIN=${COMIN_OBS}
-    export COMOUT=${COMOUT_OBS}
-    export COMINgdas=${COMIN_ATMOS_HISTORY_GDAS}
-    export COMINgfs=${COMIN_ATMOS_HISTORY_GFS}
+#TODO: Update external packages (obsproc/prepobs) to use COMIN[OUT]_*
+export COMINtcvital=${COMIN_TCVITAL}
+export COMIN=${COMIN_OBS}
+export COMOUT=${COMOUT_OBS}
+export COMINgdas=${COMIN_ATMOS_HISTORY_GDAS}
+export COMINgfs=${COMIN_ATMOS_HISTORY_GFS}
 
-    if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-        export COMSP=${COMSP:-"${COMINobsproc}/${RUN_local}.t${cyc}z."}
-    else
-        export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
-    fi
-
-    # Disable creating NSSTBUFR if desired, copy from DMPDIR instead
-    if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
-        export MAKE_NSSTBUFR="NO"
-    fi
-
-    # Do not fail on external errors
-    set +eu
-    "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-       err_exit "JOBSPROC_GLOBAL_PREP job failed!"
-    fi
-
-    # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
-    if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
-        if [[ ${DONST} = "YES" ]]; then
-           cpfs "${COMINobsproc}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
-        fi
-    fi
-
+if [[ ${ROTDIR_DUMP} = "NO" ]]; then
+    export COMSP=${COMSP:-"${COMINobsproc}/${RUN_local}.t${cyc}z."}
 else
-    if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-        cpfs "${COMINobsproc}/${OPREFIX}prepbufr" "${COMOUT_OBS}/${OPREFIX}prepbufr"
-        cpfs "${COMINobsproc}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
-        if [[ ${DONST} = "YES" ]]; then
-           cpfs "${COMINobsproc}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
-        fi
+    export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
+fi
+
+# Disable creating NSSTBUFR if desired, copy from DMPDIR instead
+if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
+    export MAKE_NSSTBUFR="NO"
+fi
+
+# Do not fail on external errors
+set +eu
+"${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "JOBSPROC_GLOBAL_PREP job failed!"
+fi
+
+# If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
+if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
+    if [[ ${DONST} = "YES" ]]; then
+       cpfs "${COMINobsproc}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
+    fi
+fi
+
+if [[ ${ROTDIR_DUMP} = "NO" ]]; then
+    cpfs "${COMINobsproc}/${OPREFIX}prepbufr" "${COMOUT_OBS}/${OPREFIX}prepbufr"
+    cpfs "${COMINobsproc}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
+    if [[ ${DONST} = "YES" ]]; then
+       cpfs "${COMINobsproc}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
     fi
 fi
 
