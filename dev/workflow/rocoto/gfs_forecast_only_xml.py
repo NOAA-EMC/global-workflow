@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+"""
+GFS forecast-only XML generator module.
+
+This module provides functionality to generate Rocoto XML workflow configurations
+for GFS forecast-only runs. It handles cycle definitions and specific task configurations
+needed for the GFS workflow.
+"""
+
 from rocoto.workflow_xml import RocotoXML
 from applications.applications import AppConfig
 from wxflow import to_timedelta, timedelta_to_HMS
@@ -7,11 +15,45 @@ from typing import Dict
 
 
 class GFSForecastOnlyRocotoXML(RocotoXML):
+    """
+    Rocoto XML generator for GFS forecast-only workflows.
+
+    This class handles the generation of Rocoto XML configuration for GFS
+    forecast-only mode, including cycle definitions and workflow scheduling.
+
+    Parameters
+    ----------
+    app_config : AppConfig
+        Application configuration object containing GFS settings
+    rocoto_config : Dict
+        Dictionary containing Rocoto-specific configuration
+    """
 
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
+        """
+        Initialize GFS forecast-only Rocoto XML generator.
+
+        Parameters
+        ----------
+        app_config : AppConfig
+            Application configuration object containing GFS settings
+        rocoto_config : Dict
+            Dictionary containing Rocoto-specific configuration
+        """
         super().__init__(app_config, rocoto_config)
 
     def get_cycledefs(self):
+        """
+        Generate cycle definition strings for Rocoto XML.
+
+        This method creates the cycle definitions for GFS forecasts and verification
+        cycles based on the configured start dates, end dates, and intervals.
+
+        Returns
+        -------
+        str
+            Concatenated cycle definition strings formatted for Rocoto XML
+        """
         sdate_gfs = self._base['SDATE_GFS']
         edate_gfs = self._base['EDATE']
         interval_gfs = self._base['interval_gfs']
