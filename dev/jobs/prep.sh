@@ -86,7 +86,7 @@ if [[ ${PROCESS_TROPCY} = "YES" ]]; then
     fi
     if [[ ! -s ${ARCHSYND}/syndat_akavit ]]; then
         for file in syndat_akavit syndat_dateck syndat_stmcat.scr syndat_stmcat syndat_sthisto syndat_sthista ; do
-            cpreq "${COMINsyndat}/${file}" "${ARCHSYND}"/.
+            cpreq "${COMINsyn}/${file}" "${ARCHSYND}"/.
         done
     fi
 

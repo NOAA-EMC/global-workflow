@@ -45,7 +45,7 @@ export COMIN=${COMIN_ATMOS_GRIB_0p25}
 export gfsdir=${COMIN_ATMOS_GRIB_0p25}
 export COMINgfs=${COMIN_ATMOS_GRIB_0p25}
 export COMOUT=${COMOUT_ATMOS_GENESIS}
-export COMINsyn=${COMINsyndat:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
+export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
 ##############################################
 # Run relevant script

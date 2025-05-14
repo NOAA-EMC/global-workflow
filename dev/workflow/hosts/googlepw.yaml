@@ -9,7 +9,7 @@ HOMEDIR: '/contrib/${USER}'
 STMP: '/lustre/${USER}/stmp/'
 PTMP: '/lustre/${USER}/ptmp/'
 NOSCRUB: '${HOMEDIR}'
-COMINsyndat: '' #TODO: This does not yet exist.
+COMINsyn: '' #TODO: This does not yet exist.
 # BQS properties
 SCHEDULER: slurm
 QUEUE: batch

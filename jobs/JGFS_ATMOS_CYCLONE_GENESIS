@@ -38,7 +38,7 @@ export COMINgenvit=${COMOUT_ATMOS_GENESIS}
 export COMOUTgenvit=${COMOUT_ATMOS_GENESIS}
 export COMOUT=${COMOUT_ATMOS_GENESIS}
 
-export COMINsyn=${COMINsyndat:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
+export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
 mkdir -m 775 -p "${COMOUTgenvit}"
 

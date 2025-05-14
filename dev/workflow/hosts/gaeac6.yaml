@@ -9,7 +9,7 @@ HOMEDIR: '/gpfs/f6/${ACCOUNT}/scratch/${USER}'
 STMP: '/gpfs/f6/${ACCOUNT}/scratch/${USER}'
 PTMP: '/gpfs/f6/${ACCOUNT}/scratch/${USER}'
 NOSCRUB: '${HOMEDIR}'
-COMINsyndat: '/gpfs/f6/drsa-precip3/world-shared/role.glopara/com/syndat'
+COMINsyn: '/gpfs/f6/drsa-precip3/world-shared/role.glopara/com/syndat'
 # BQS properties
 SCHEDULER: slurm
 QUEUE: normal
