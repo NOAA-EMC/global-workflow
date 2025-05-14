@@ -204,7 +204,7 @@ class AtmAnalysis(Task):
 
         # ---- tar up diags
         # path of output tar statfile
-        atmstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atmstat")
+        atmstat = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atmstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
@@ -231,7 +231,7 @@ class AtmAnalysis(Task):
         for src in yamls:
             yaml_base = os.path.splitext(os.path.basename(src))[0]
             dest_yaml_name = f"{self.task_config.APREFIX}{yaml_base}.yaml"
-            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, dest_yaml_name)
+            dest = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
                 'copy': [[src, dest]]
@@ -240,7 +240,7 @@ class AtmAnalysis(Task):
 
         # path of output radiance bias correction tarfile
         bfile = f"{self.task_config.APREFIX}rad_varbc_params.tar"
-        radtar = os.path.join(self.task_config.COM_ATMOS_ANALYSIS, bfile)
+        radtar = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, bfile)
 
         # rename and copy tlapse radiance bias correction files from obs to bc
         tlapobs = glob.glob(os.path.join(self.task_config.DATA, 'obs', '*tlapse.txt'))
@@ -273,7 +273,7 @@ class AtmAnalysis(Task):
         for itile in range(6):
             src = os.path.join(self.task_config.DATA, "anl",
                                f"{self.task_config.APREFIX}cubed_sphere_grid_atminc.tile{itile+1}.nc")
-            dest = self.task_config.COM_ATMOS_ANALYSIS
+            dest = self.task_config.COMOUT_ATMOS_ANALYSIS
             inc_copy['copy'].append([src, dest])
 
         # copy increments

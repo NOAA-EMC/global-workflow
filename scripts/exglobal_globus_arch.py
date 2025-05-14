@@ -32,7 +32,7 @@ def main():
     # Determine which tarballs to send
     transfer_sets = globus.configure(globus_dict)
 
-    # Send the tarballs to HPSS via Niagara.  Start with non-rstprod (standard) data
+    # Send the tarballs to HPSS via Mercury.  Start with non-rstprod (standard) data
     for transfer_set in ["standard", "rstprod"]:
         has_rstprod = transfer_set == "rstprod"
         globus.execute_transfer_data(transfer_sets[transfer_set], has_rstprod)
