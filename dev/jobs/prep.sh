@@ -45,7 +45,7 @@ fi
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir
 if [[ ${ROTDIR_DUMP} = "YES" ]]; then
-   "${HOMEgfs}/ush/getdump.sh" "${PDY}${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
+   "${HOMEgfs}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
    status=$?
    if [[ ${status} -ne 0 ]]; then
        exit "${status}"
@@ -53,7 +53,7 @@ if [[ ${ROTDIR_DUMP} = "YES" ]]; then
 
    #  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
    if [[ ! -s "${COMINobsproc_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" ]]; then
-     "${HOMEgfs}/ush/getdump.sh" "${GDATE}" "${GDUMP}" "${COMINobsproc_PREV}" "${COMOUT_OBS_PREV}"
+     "${HOMEgfs}/ush/getdump.sh" "${gPDY}" "${gcyc}" "${GDUMP}" "${COMINobsproc_PREV}" "${COMOUT_OBS_PREV}"
      status=$?
      if [[ ${status} -ne 0 ]]; then
          exit "${status}"
