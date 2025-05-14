@@ -326,14 +326,14 @@ FV3_out() {
   restart_dates=()
 
   case ${RUN} in
-    gdas|enkfgdas|enkfgfs) # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
+    gdas|enkfgdas|enkfgfs|enkfgcafs|gcdas) # Copy restarts in the assimilation window for RUN=gdas|enkfgdas|enkfgfs
       restart_date="${model_start_date_next_cycle}"
       while (( restart_date <= forecast_end_cycle )); do
         restart_dates+=("${restart_date:0:8}.${restart_date:8:2}0000")
         restart_date=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
       done
       ;;
-    gfs|gefs|sfs) # Copy restarts at the end of the forecast segment for RUN=gfs|gefs|sfs
+    gfs|gefs|sfs|gcafs) # Copy restarts at the end of the forecast segment for RUN=gfs|gefs|sfs|gcafs
       if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
         restart_dates+=("${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000")
       fi
@@ -476,7 +476,7 @@ WW3_out() {
   # Copy WW3 restarts at the end of the forecast segment to COM for RUN=gfs|gefs
   if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
     local restart_file
-    if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" ]]; then
+    if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" || "${RUN}" == "gcafs" ]]; then
       echo "Copying WW3 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
       restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.restart.ww3.nc"
       ${NCP} "${DATArestart}/WW3_RESTART/${restart_file}" \
@@ -554,7 +554,7 @@ MOM6_postdet() {
 
   # Link output files
   case ${RUN} in
-    gfs|enkfgfs|gefs|sfs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
+    gfs|enkfgfs|gefs|sfs|gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
       # Looping over MOM6 output hours
       local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
       for fhr in ${MOM6_OUTPUT_FH}; do
@@ -647,7 +647,7 @@ MOM6_out() {
                "${COMOUT_OCEAN_RESTART}/${restart_file}"
       done
       ;;
-    gfs|gefs|sfs) # Copy MOM6 restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
+    gfs|gefs|sfs|gcafs) # Copy MOM6 restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
       if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
         local restart_file
         echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
@@ -719,7 +719,7 @@ CICE_postdet() {
         source_file="iceh_inst.${vdatestr}.nc"
         dest_file="${RUN}.ice.t${cyc}z.inst.f${fhr3}.nc"
         ;;
-      gfs|enkfgfs|sfs)
+      gfs|enkfgfs|sfs|gcafs)
         source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
         dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
         ;;
@@ -762,7 +762,7 @@ CICE_out() {
       ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
              "${COMOUT_ICE_RESTART}/${target_file}"
       ;;
-    gfs|gefs|sfs) # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
+    gfs|gefs|gcafs) # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs|gcafs
       if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
         local seconds source_file target_file
         echo "Copying CICE restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
@@ -806,9 +806,14 @@ GOCART_postdet() {
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
 
     # Temporarily delete existing files due to noclobber in GOCART
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
+    local file_types=("inst_aod" "inst_du_ss" "inst_ca" "inst_ni" "inst_su" \
+                      "inst_du_bin" "inst_ss_bin" "inst_ca_bin" "inst_ni_bin" "inst_su_bin" \
+                      "inst_2d" "inst_3d" "tavg_du_ss" "tavg_du_bin" "tavg_2d_rad" "tavg_3d_rad")
+    for file_type in "${file_types[@]}"; do
+      if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
+        rm -f "${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4"
+      fi
+    done
 
     #TODO: Temporarily removing this as this will crash gocart, adding copy statement at the end
     #${NLN} "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
@@ -836,10 +841,18 @@ GOCART_out() {
   local fhr
   local vdate
 
+  local file_types=("inst_aod" "inst_du_ss" "inst_ca" "inst_ni" "inst_su" \
+                    "inst_du_bin" "inst_ss_bin" "inst_ca_bin" "inst_ni_bin" "inst_su_bin" \
+                    "inst_2d" "inst_3d" "tavg_du_ss" "tavg_du_bin" "tavg_2d_rad" "tavg_3d_rad")
+
   for fhr in $(GOCART_output_fh); do
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-    ${NCP} "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-      "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
+    for file_type in "${file_types[@]}"; do
+      if [[ -e "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
+        ${NCP} "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" \
+               "${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4"
+      fi
+    done
   done
 }
 
@@ -899,7 +912,7 @@ CMEPS_out() {
         echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
       fi
       ;;
-    gfs|gefs|sfs) # Copy mediator restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
+    gfs|gefs|sfs|gcafs) # Copy mediator restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
       if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
         echo "Copying mediator restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
         local seconds source_file target_file
