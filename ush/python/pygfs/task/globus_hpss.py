@@ -50,16 +50,12 @@ class GlobusHpss(Task):
         except CommandNotFoundError:
             raise FileNotFoundError("FATAL ERROR Could not find the globus command!")
 
-        try:
-            self.ssh = which("ssh", required=True)
-        except CommandNotFoundError:
-            raise FileNotFoundError("FATAL ERROR Could not find the ssh command!")
-
         self.wd = os.getcwd()
 
         # Prep some globus commands
         self.globus_rm = copy.deepcopy(self.globus)
         self.globus_xfr = copy.deepcopy(self.globus)
+        self.globus_mkdir = copy.deepcopy(self.globus)
         self.globus_wait = copy.deepcopy(self.globus)
 
         # Recursively remove the target, notify on failure, and ignore missing files
@@ -69,35 +65,18 @@ class GlobusHpss(Task):
         self.globus_xfr.add_default_arg(["transfer", "--notify", "failed",
                                          "--preserve-mtime", "--sync-level", "mtime",
                                          "--jmespath", "task_id", "--format=UNIX"])
+
+        # Make a directory on a target system via globus
+        self.globus_mkdir.add_default_arg(["mkdir", "--format=UNIX"])
+
         # Wait on a task ID to finish and output the status of the transfer when complete
         self.globus_wait.add_default_arg(["task", "wait", "--jmespath", "status",
                                           "--format=UNIX", "--timeout", "120"])
 
-        # Get the user's server username from their ~/.ssh/config file
-        self.server_name = self.task_config.SERVER_NAME
-        try:
-            ssh_output = self.ssh("-G", f"{self.server_name}", output=str)
-        except ProcessError as pe:
-            raise ProcessError(
-                f"FATAL ERROR No host information on {self.server_name}!"
-                "\n"
-                f"Please add an entry for {self.server_name} into ~/.ssh/config!"
-            ) from pe
-
         self.CLIENT_GLOBUS_UUID = self.task_config.CLIENT_GLOBUS_UUID
         self.SERVER_GLOBUS_UUID = self.task_config.SERVER_GLOBUS_UUID
-        # Parse the ssh output to find the user's Niagara username
-        ssh_output = ssh_output.split("\n")
-        for line in ssh_output:
-            if line.startswith("user "):
-                server_username = line.split()[1]
-
-        # Update the home directory on the server with the username
-        self.server_home = self.task_config.SERVER_HOME.replace(
-            "{{SERVER_USERNAME}}", server_username
-        )
-
-        logger.debug(f"Server username detected as {server_username}")
+        self.server_home = self.task_config.SERVER_HOME
+        self.server_name = self.task_config.SERVER_NAME
 
         local_dict = AttrDict({
             'sven_dropbox': (f"{self.task_config.SVEN_DROPBOX_ROOT}"),
@@ -113,7 +92,7 @@ class GlobusHpss(Task):
         send them to HPSS via Globus and verify success.
 
         There are two services running that handle passing and running scripts.
-        On the client (e.g. Hercules), there is Sven.  On the server (i.e. Niagara), there is
+        On the client (e.g. Hercules), there is Sven.  On the server (i.e. Mercury), there is
         the Doorman.  Sven packages up the file list and scripts that need to run on the server
         and the Doorman executes the scripts on each of the files.  The six files involved are
 
@@ -232,7 +211,7 @@ class GlobusHpss(Task):
 
     @logit(logger)
     def execute_transfer_data(self, transfer_set: Dict[str, Any], has_rstprod: bool) -> None:
-        """Interface function with Sven to send tarballs to HPSS via Niagara.
+        """Interface function with Sven to send tarballs to HPSS via Mercury.
 
         Parameters
         ----------
@@ -275,7 +254,7 @@ class GlobusHpss(Task):
                 sven_output = self.forsven(output=str)
                 logger.debug(sven_output)
             except ProcessError as pe:
-                raise ProcessError("FATAL ERROR Sven failed to package the request"
+                raise ProcessError("FATAL ERROR Sven failed to package the request "
                                    f"for {location}") from pe
 
             # Parse Sven's output to get the name of the return status file
@@ -288,7 +267,7 @@ class GlobusHpss(Task):
             transfer_set["completed"].append(False)
             transfer_set["successes"].append(False)
 
-        # Transfer the doorman script to Niagara.
+        # Transfer the doorman script to Mercury.
         # Note, this assumes we have unattended transfer capability.
         try:
             # Now transfer and rename the script
@@ -302,9 +281,9 @@ class GlobusHpss(Task):
 
             logger.debug("Successfully transferred the doorman script")
         except (ProcessError, ConnectionError) as pe:
-            raise ProcessError("FATAL ERROR Failed to send doorman run script to Niagara") from pe
+            raise ProcessError("FATAL ERROR Failed to send doorman run script to Mercury") from pe
 
-        # Now wait for the doorman script to run via cron on Niagara.
+        # Now wait for the doorman script to run via cron on Mercury.
         # Once complete, Sven's dropbox should fill up with status files.
         wait_count = 0
         sleep_time = 60  # s
@@ -411,6 +390,14 @@ class GlobusHpss(Task):
             raise ProcessError("FATAL ERROR Failed to request a mkdir on the server!")
 
         try:
+            self._wait_on_task_id(self.globus_mkdir(
+                f"{self.CLIENT_GLOBUS_UUID}:{self.wd}", suppress_errors=True
+            ))
+        except ProcessError:
+            logger.info("Globus reported that it could not create the directory.  This is likely because it already exists.  Continuing.")
+
+        try:
+            # If globus was unable to mkdir for another reason, this will fail.
             self._wait_on_task_id(self.globus_xfr(
                 f"{self.CLIENT_GLOBUS_UUID}:{self.wd}/init_xfer.sh",
                 f"{self.SERVER_GLOBUS_UUID}:{self.server_home}/init_xfer_{pslot}.sh",
@@ -451,13 +438,13 @@ class GlobusHpss(Task):
         logger.info("Server initialized successfully!")
 
     @logit(logger)
-    def _wait_on_task_id(self, task_id):
+    def _wait_on_task_id(self, task_id, suppress_errors=False):
 
         # The task_id usually has a newline character at the end.  Strip that to begin.
         task_id = task_id.strip()
 
         status = self.globus_wait(task_id, output=str).strip()
-        if status != "SUCCEEDED":
+        if status != "SUCCEEDED" and not suppress_errors:
             raise ConnectionError(f"Globus failed on task ID {task_id}")
 
     @logit(logger)
@@ -466,7 +453,7 @@ class GlobusHpss(Task):
         Remove the temporary directories/files created by the GlobusHpss task.
         """
 
-        # Write requests to delete the working directories on Niagara
+        # Write requests to delete the working directories on Mercury
         req_file = f"req_rmdir.{self.task_config.jobid}"
         for job_dir in self._server_job_dirs:
             with open(req_file, "w") as rmdir_f:
