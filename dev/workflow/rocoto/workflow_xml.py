@@ -8,7 +8,7 @@ from collections import OrderedDict
 from typing import Dict
 from applications.applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
-from wxflow import to_timedelta, which, ProcessError, mkdir
+from wxflow import to_timedelta, which, mkdir
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
 from hosts import Host
@@ -233,40 +233,17 @@ class RocotoXML(ABC):
 
         expdir = globus_conf["EXPDIR"]
         pslot = globus_conf["PSLOT"]
-        server = globus_conf["SERVER_NAME"]
-        server_home = globus_conf["SERVER_HOME"]
+        server = globus_conf.get("SERVER_NAME", None)
+        server_home = globus_conf.get("SERVER_HOME", None)
+        server_username = globus_conf.get("SERVER_USERNAME", None)
 
-        # Get the server username from ~/.ssh/config
-        # TODO move this to an earlier point and actually amend config.globus with the username
-        ssh = which("ssh")
-        if ssh is None:
-            raise ProcessError("Failed to locate the ssh command!")
+        if not (server and server_home and server_username):
+            raise ValueError(
+                "ERROR: At least one server variable is missing!\n"
+                f"Check that SERVER_NAME, SERVER_HOME, and SERVER_USERNAME are defined in {expdir}/config.globus"
+            )
 
-        try:
-            ssh_output = ssh("-G", server, output=str).split("\n")
-        except ProcessError:
-            logger.warning(f"Failed to automatically determine the username for {server}.")
-            ssh_output = ""
-
-        server_username = None
-        for line in ssh_output:
-            if line.startswith("user "):
-                server_username = line.split()[1]
-
-        # If ssh -G failed or the username could not be determined, ask for it
-        if not server_username:
-            server_username = input(f"Please provide your username for {server} (this is required to use globus): ")
-            if server_username == "":
-                raise ValueError("A valid username must be provided!")
-
-        server_home = server_home.replace(
-            "{{SERVER_USERNAME}}", server_username
-        )
-
-        try:
-            replyto = os.environ['REPLYTO']
-        except KeyError:
-            replyto = ''
+        replyto = os.environ.get('REPLYTO', "")
 
         crontab_file = os.path.join(expdir, f"{pslot}.{server}.crontab")
 

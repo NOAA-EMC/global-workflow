@@ -12,20 +12,24 @@ echo "BEGIN: config.globus"
 export STAGE_DIR="${DATAROOT}/archive_rotdir/${PSLOT}"
 
 # Set variables used by the Sven and Doorman services
-# General delivery location on Niagara (staging area for data)
-export SERVER_HOME='/collab1/data/{{SERVER_USERNAME}}'
 
-# Sven's dropbox
-export SVEN_DROPBOX_ROOT="${DATA}/SVEN_DROPBOX"
+# Server name where the doorman will run
+export SERVER_NAME="mercury"
 
-# Location of the doorman package on Niagara
+# Username on the server
+export SERVER_USERNAME=""
+# General delivery location on Mercury (staging area for data on server)
+export SERVER_HOME="/collab2/data/${SERVER_USERNAME}/${PSLOT}"
+
+# Location of the doorman package on Mercury
 export DOORMAN_ROOT="/home/David.Huber/doorman"
 
-# Server name (should match ~/.ssh/config)
-export SERVER_NAME="niagara"
-
 # Server globus UUID
-niagara_UUID="1bfd8a79-52b2-4589-88b2-0648e0c0b35d"
-export SERVER_GLOBUS_UUID="${niagara_UUID}"
+# niagara_UUID="1bfd8a79-52b2-4589-88b2-0648e0c0b35d"
+mercury_UUID="e24545db-4d02-4b80-8aa0-fda791ddc604"
+export SERVER_GLOBUS_UUID="${mercury_UUID}"
+
+# Sven's dropbox (temporary local directory)
+export SVEN_DROPBOX_ROOT="${DATA}/SVEN_DROPBOX"
 
 echo "END: config.globus"
