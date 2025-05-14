@@ -19,7 +19,7 @@ do
     rm -f "${mkdir_req_fl}"
 done < <(find "{{server_home}}" -maxdepth 1 -name "req_mkdir.*" || true)
 
-# Look for scripts
+# Look for scripts and run them.
 while IFS= read -r dir
 do
    echo "${run_time}" > "${runtime_log}"
@@ -29,6 +29,7 @@ do
       # Check if the corresponding log has already been written
       log="${script/.sh/.log}"
       if [[ ! -f "${log}" ]]; then
+         touch "${log}"
          "${script}"
       fi
    done < <(find "${dir}" -name "run_doorman.sh" || true)
