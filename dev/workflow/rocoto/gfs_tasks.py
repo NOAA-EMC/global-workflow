@@ -69,30 +69,29 @@ class GFSTasks(Tasks):
     def prep_sfc(self):
 
         dependencies = None
-        if self.options['do_prep_sfc']:
-            deps = []
-            dep_dict = {'type': 'metatask', 'name': 'gdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
-            deps.append(rocoto.add_dependency(dep_dict))
-            atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
-            data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
-            dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': 'gdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
+        data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
+        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-            cycledef = self.run
+        cycledef = self.run
 
-            resources = self.get_resource('prep_sfc')
-            task_name = f'{self.run}_prep_sfc'
-            task_dict = {'task_name': task_name,
-                         'resources': resources,
-                         'dependency': dependencies,
-                         'envars': self.envars,
-                         'cycledef': cycledef,
-                         'command': f'{self.HOMEgfs}/dev/jobs/prep_sfc.sh',
-                         'job_name': f'{self.pslot}_{task_name}_@H',
-                         'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                         'maxtries': '&MAXTRIES;'
-                         }
+        resources = self.get_resource('prep_sfc')
+        task_name = f'{self.run}_prep_sfc'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/dev/jobs/prep_sfc.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                    }
 
         task = rocoto.create_task(task_dict)
 
