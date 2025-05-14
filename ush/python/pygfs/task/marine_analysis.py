@@ -148,10 +148,17 @@ class MarineAnalysis(Task):
             mdau.test_hist_date(state['basename'] + state['ocn_filename'],
                                 datetime.strptime(state['date'], '%Y-%m-%dT%H:%M:%SZ'))
 
-        # initialize JEDI variational application
+        # initialize JEDI applications
+        logger.info(f"Initializing SOCA variational application")
         self.jedi_dict['var'].initialize(self.task_config)
+
+        logger.info(f"Initializing SOCA increment handler")
         self.jedi_dict['socaincr2mom6'].initialize(self.task_config)
+
+        logger.info(f"Initializing SOCA convertstate application")
         self.jedi_dict['soca_2cice_global'].initialize(self.task_config)
+
+        logger.info(f"Initializing SOCA observation statistics application")
         self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
 
     @logit(logger)

@@ -288,7 +288,7 @@ class Jedi:
                 if os.path.isfile(fname):
                     cleaned_observers.append(obs_space)
                 else:
-                    logger.info(f"WARNING: {fname} does not exist, removing obs space")
+                    logger.warning(f"WARNING: {fname} does not exist, removing obs space")
 
             # Clear observers list in dictionary and replace with new list
             observers.clear()
@@ -386,7 +386,7 @@ def extract_tar(tar_file: str) -> None:
             raise tarfile.ReadError(f"FATAL ERROR: {tar_file} is not a tar archive")
     except tarfile.ExtractError as err:
         logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
-        raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
+        raise tarfile.ExtractError(f"FATAL ERROR: unable to extract from {tar_file}")
 
 
 @logit(logger)
