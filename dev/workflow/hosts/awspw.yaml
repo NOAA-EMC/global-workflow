@@ -1,6 +1,6 @@
 # Paths
-DMPDIR: '' # TODO: This does not yet exist.
-BASE_GIT: '' #TODO: This does not yet exist.
+DMPDIR: '${DATA_MOUNT:-/bucket}/dump'
+BASE_GIT: '/contrib/git'
 BASE_DATA: '/bucket/global-workflow-shared-data'
 BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
 AERO_INPUTS_DIR: /contrib/global-workflow-shared-data/data/GEFS_ExtData/20250310
@@ -15,13 +15,11 @@ SCHEDULER: slurm
 QUEUE: batch
 PARTITION_BATCH: compute
 PARTITION_SERVICE: process
-CHGRP_RSTPROD: 'YES'
-CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 # HPSS properties
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
 ARCHCOM_TO: 'local'
 ATARDIR: '' # TODO: This will not yet work from AWS.
-CHGRP_RSTPROD: 'YES'
+CHGRP_RSTPROD: 'NO' #TODO: rstprod group not yet supported.
 CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 # Features
 SUPPORTED_RESOLUTIONS: ['C48', 'C96', 'C192', 'C384', 'C768'] # TODO: Test and support all cubed-sphere resolutions.
@@ -29,5 +27,5 @@ DO_ARCHCOM: 'NO'
 DO_TRACKER: 'NO'
 DO_GENESIS: 'NO'
 DO_METP: 'NO'
-MAKE_NSSTBUFR: 'NO'
+MAKE_NSSTBUFR: 'YES'
 MAKE_ACFTBUFR: 'NO'

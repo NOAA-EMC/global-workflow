@@ -22,7 +22,7 @@ class Tasks:
                    'eobs', 'epos', 'esfc', 'eupd',
                    'earc_vrfy', 'earc_tars', 'ecen', 'echgres', 'ediag', 'efcs',
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
-                   'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
+                   'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb', 'prepobsaero',
                    'snowanl', 'esnowanl',
                    'fcst',
                    'upp', 'atmanlprod', 'atmupp', 'goesupp',
@@ -200,7 +200,7 @@ class Tasks:
             fhmax = local_config['FHMAX']
             fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))
-        elif run in ['gfs', 'gefs', 'sfs']:
+        elif run in ['gfs', 'gefs', 'sfs', 'gcafs']:
             fhmax = local_config['FHMAX_GFS']
             fhout = local_config['FHOUT_GFS']
             fhout_hf = local_config['FHOUT_HF_GFS']
