@@ -6,7 +6,7 @@
 echo "BEGIN: config.esfc"
 
 # Get task specific resources
-. $EXPDIR/config.resources esfc
+source "${EXPDIR}/config.resources" esfc
 
 # With IAU only need surface analysis at start of IAU window.
 # Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at 

@@ -6,6 +6,6 @@
 echo "BEGIN: config.echgres"
 
 # Get task specific resources
-. $EXPDIR/config.resources echgres
+source "${EXPDIR}/config.resources" echgres
 
 echo "END: config.echgres"
