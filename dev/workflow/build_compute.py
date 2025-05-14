@@ -166,7 +166,7 @@ def get_host_specs(host: Dict) -> Dict:
     specs.queue = host.info.QUEUE
     specs.partition = partition
     specs.native = native
-    specs.machine = str(host)
+    specs.machine = host
 
     return specs
 

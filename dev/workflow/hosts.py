@@ -37,7 +37,7 @@ class Host:
 
     def __str__(self) -> str:
         # The string representation of the Host object is the name of the machine
-        return self.machine
+        return f"{self.machine}"
 
     def detect(self) -> None:
         # Detect the machine name and store in self.machine
