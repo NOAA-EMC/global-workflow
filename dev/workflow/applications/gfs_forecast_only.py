@@ -1,12 +1,34 @@
+"""
+GFS forecast-only application configuration module.
+
+This module defines the configuration for running the Global Forecast System (GFS)
+in forecast-only mode (without data assimilation cycling).
+"""
+
 from applications.applications import AppConfig
 from wxflow import Configuration
 from typing import Dict, Any
 
 
 class GFSForecastOnlyAppConfig(AppConfig):
-    '''
-    Class to define GFS forecast-only configurations
-    '''
+    """
+    Class to define GFS forecast-only configurations.
+
+    This class handles the configuration specific to running GFS in forecast-only mode,
+    including task scheduling and application settings.
+
+    Parameters
+    ----------
+    conf : Configuration
+        The configuration object containing all settings
+
+    Attributes
+    ----------
+    run : str
+        The name of the current run
+    runs : list
+        List of all available runs
+    """
 
     def __init__(self, conf: Configuration):
         super().__init__(conf)
@@ -16,7 +38,19 @@ class GFSForecastOnlyAppConfig(AppConfig):
         self.runs = [self.run]
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
+        """
+        Get run-specific options for GFS forecast-only mode.
 
+        Parameters
+        ----------
+        conf : Configuration
+            Configuration object containing run settings
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary containing run options
+        """
         run_options = super()._get_run_options(conf)
 
         run_options[self.run]['exp_warm_start'] = conf.parse_config('config.base').get('EXP_WARM_START', False)
@@ -25,9 +59,18 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
     def _get_app_configs(self, run):
         """
-        Returns the config_files that are involved in the forecast-only app
-        """
+        Returns the config files that are involved in the forecast-only app.
 
+        Parameters
+        ----------
+        run : str
+            Name of the run configuration to process
+
+        Returns
+        -------
+        list
+            List of configuration file names needed for the GFS forecast-only run
+        """
         configs = []
         options = self.run_options[run]
 
@@ -89,7 +132,19 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
     @staticmethod
     def _update_base(base_in):
+        """
+        Update base configuration with GFS-specific settings.
 
+        Parameters
+        ----------
+        base_in : dict
+            Input base configuration dictionary
+
+        Returns
+        -------
+        dict
+            Updated base configuration with GFS settings
+        """
         base_out = base_in.copy()
         base_out['RUN'] = 'gfs'
 
@@ -97,11 +152,17 @@ class GFSForecastOnlyAppConfig(AppConfig):
 
     def get_task_names(self):
         """
-        Get the task names for all the tasks in the forecast-only application.
-        Note that the order of the task names matters in the XML.
-        This is the place where that order is set.
-        """
+        Get ordered list of tasks for GFS forecast-only workflow.
 
+        This method determines which tasks should be run based on the
+        configuration options. The order of tasks is important for the XML
+        configuration generation.
+
+        Returns
+        -------
+        dict
+            Dictionary with run name as key and ordered list of task names as value
+        """
         options = self.run_options[self.run]
 
         tasks = []
