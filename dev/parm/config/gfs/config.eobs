@@ -6,7 +6,7 @@
 echo "BEGIN: config.eobs"
 
 # Get task specific resources
-. $EXPDIR/config.resources eobs
+source "${EXPDIR}/config.resources" eobs
 
 
 # GSI namelist options related to observer for EnKF

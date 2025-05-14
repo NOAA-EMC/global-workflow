@@ -6,7 +6,7 @@
 echo "BEGIN: config.eupd"
 
 # Get task specific resources
-. $EXPDIR/config.resources eupd
+source "${EXPDIR}/config.resources" eupd
 
 export ntasks_enkf=${ntasks}
 
