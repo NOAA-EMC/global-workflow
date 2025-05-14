@@ -6,6 +6,6 @@
 echo "BEGIN: config.analdiag"
 
 # Get task specific resources
-. $EXPDIR/config.resources analdiag
+source "${EXPDIR}/config.resources" analdiag
 
 echo "END: config.analdiag"
