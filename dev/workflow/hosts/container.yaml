@@ -6,7 +6,7 @@ HOMEDIR: '/home/${USER}'
 STMP: '/home/${USER}'
 PTMP: '/home/${USER}'
 NOSCRUB: '${HOMEDIR}'
-COM_SYNDAT: ''
+COMINsyn: ''
 # BQS properties
 SCHEDULER: 'none'
 QUEUE: ''

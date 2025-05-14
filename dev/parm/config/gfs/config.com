@@ -38,16 +38,14 @@ echo "BEGIN: config.com"
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
     COM_OBSPROC_TMPL=$(compath.py "${envir}/obsproc/${obsproc_ver}")'/${RUN}.${YMD}/${HH}/atmos'
     COM_RTOFS_TMPL=$(compath.py "${envir}/rtofs/${rtofs_ver}")
-    COM_SYNDAT_TMPL='${ROTDIR}/syndat'
     COM_TCVITAL_TMPL=$(compath.py "${envir}/gfs/${gfs_ver}")'/${RUN}.${YMD}/${HH}/atmos'
 else
     COM_OBSPROC_TMPL='${DMPDIR}/${RUN}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
     COM_RTOFS_TMPL='${DMPDIR}'
-    COM_SYNDAT_TMPL='${COM_SYNDAT}'
     COM_TCVITAL_TMPL='${DMPDIR}/${RUN}.${YMD}/${HH}/atmos'
 fi
 declare -rx COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
-declare -rx COM_OBSPROC_TMPL COM_RTOFS_TMPL COM_SYNDAT_TMPL
+declare -rx COM_OBSPROC_TMPL COM_RTOFS_TMPL
 
 COM_BASE='${ROTDIR}/${RUN}.${YMD}/${HH}/${MEMDIR}'
 

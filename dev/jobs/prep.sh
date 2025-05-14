@@ -38,8 +38,6 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMOUT_OBS_PREV:COM_OBS_TMPL \
     COMINobsproc_PREV:COM_OBSPROC_TMPL
 
-declare_from_tmpl -rx COMIN_SYNDAT:COM_SYNDAT_TMPL
-
 if [[ ! -d "${COMOUT_OBS}" ]]; then
    mkdir -p "${COMOUT_OBS}"
 fi
@@ -88,7 +86,7 @@ if [[ ${PROCESS_TROPCY} = "YES" ]]; then
     fi
     if [[ ! -s ${ARCHSYND}/syndat_akavit ]]; then
         for file in syndat_akavit syndat_dateck syndat_stmcat.scr syndat_stmcat syndat_sthisto syndat_sthista ; do
-            cpreq "${COMIN_SYNDAT}/${file}" "${ARCHSYND}"/.
+            cpreq "${COMINsyndat}/${file}" "${ARCHSYND}"/.
         done
     fi
 
