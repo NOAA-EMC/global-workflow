@@ -109,6 +109,7 @@ if [[ ${err} -ne 0 ]]; then
   if [[ -s "${BLENDED_ICE_FILE_PREV}" ]]; then
     echo "Copy old ice blend file to current directory"
     cpfs "${BLENDED_ICE_FILE_PREV}" "${COMOUT_OBS}/${BLENDED_ICE_FILE}"
+    export err=0
   else
     err_exit "FATAL ERROR: CURRENT ICE FILE AND 6-HR OLD ICE FILE MISSING"
   fi
@@ -150,6 +151,7 @@ if [[ ${err} -ne 0 ]]; then
   if [[ -s "${MODEL_SNOW_FILE_PREV}" ]]; then
     echo "COPY OLD ${CASE} SNOW FILE TO CURRENT DIRECTORY"
     cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
+    export err=0
   else
     err_exit "CURRENT AND 6-HR OLD ${CASE} SNOW MISSING, ABORT!"
   fi  # check of missing 6-hr snow file
