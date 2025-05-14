@@ -1271,8 +1271,6 @@ class GFSTasks(Tasks):
     def wavepostbndpntbll(self):
 
         # The wavepostbndpntbll job runs on forecast hours up to FHMAX_WAV_IBP
-        last_fhr = self._configs['wavepostbndpntbll']['FHMAX_WAV_IBP']
-
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpnt'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -2218,10 +2216,10 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_archcom']:
                 if self.options['do_globusarch']:
-                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_globus_arch'}
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_globus_earc'}
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
-                    deps.append(rocoto.add_dependency(dep_dict))
+                deps.append(rocoto.add_dependency(dep_dict))
 
         else:
             if self.app_config.mode in ['cycled']:
@@ -2918,10 +2916,15 @@ class GFSTasks(Tasks):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:  # early cycle enkf run (enkfgfs)
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
-            if self.options['do_jediocnvar']:
-                dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps)
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            if self._base.get('DOHYBVAR_OCN', True):
+                dep_dict = {'type': 'task', 'name': f'gfs_ocnanalecen'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'gfs_marineanlfinal'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         earcenvars = self.envars.copy()
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
