@@ -6,10 +6,10 @@
 echo "BEGIN: config.anal"
 
 # Get task specific resources
-. ${EXPDIR}/config.resources anal
+source "${EXPDIR}/config.resources" anal
 
 if [[ ${DONST} = "YES" ]]; then
-  . ${EXPDIR}/config.nsst
+  source "${EXPDIR}/config.nsst"
 fi
 
 if [[ "${RUN}" == "gfs" ]] ; then
