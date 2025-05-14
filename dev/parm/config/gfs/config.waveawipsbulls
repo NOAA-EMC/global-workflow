@@ -6,6 +6,6 @@
 echo "BEGIN: config.waveawipsbulls"
 
 # Get task specific resources
-. $EXPDIR/config.resources waveawipsbulls
+source "${EXPDIR}/config.resources" waveawipsbulls
 
 echo "END: config.waveawipsbulls"
