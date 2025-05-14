@@ -6,7 +6,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepobsaero" -c "base prepobsaero"
 # Set variables used in the script
 ##############################################
 
-export COMIN_OBS="${DATA}"
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 
 ##############################################

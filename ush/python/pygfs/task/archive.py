@@ -638,6 +638,8 @@ class Archive(Task):
                 output_yaml[dataset.name] = {"target": dataset.target,
                                              "has_rstprod": dataset.has_rstprod}
 
+        logger.debug(f"Writing the dataset YAML to {yaml_filename}")
+        logger.debug("YAML contents: \n" + f"{output_yaml}")
         save_as_yaml(output_yaml, yaml_filename)
 
     @logit(logger)

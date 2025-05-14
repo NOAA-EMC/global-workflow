@@ -1,12 +1,34 @@
+"""
+GFS cycled application configuration module.
+
+This module defines the configuration for running the Global Forecast System (GFS)
+in cycled mode with data assimilation.
+"""
+
 from applications.applications import AppConfig
 from typing import Dict, Any
 from wxflow import Configuration
 
 
 class GFSCycledAppConfig(AppConfig):
-    '''
-    Class to define GFS cycled configurations
-    '''
+    """
+    Class to define GFS cycled configurations.
+
+    This class handles the configuration specific to running GFS in cycled mode
+    with data assimilation, including ensemble configurations.
+
+    Parameters
+    ----------
+    conf : Configuration
+        The configuration object containing all settings
+
+    Attributes
+    ----------
+    runs : list
+        List of all available runs (gfs, enkfgfs, gdas, enkfgdas)
+    ens_runs : list
+        List of runs that include ensemble configurations
+    """
 
     def __init__(self, conf: Configuration):
         super().__init__(conf)
@@ -31,7 +53,19 @@ class GFSCycledAppConfig(AppConfig):
         self.runs.append('enkfgdas') if 'gdas' in self.ens_runs else 0
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
+        """
+        Get run-specific options for GFS cycled mode.
 
+        Parameters
+        ----------
+        conf : Configuration
+            Configuration object containing run settings
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary containing run options for each configured run
+        """
         run_options = super()._get_run_options(conf)
 
         for run in self.runs:
@@ -56,7 +90,17 @@ class GFSCycledAppConfig(AppConfig):
 
     def _get_app_configs(self, run):
         """
-        Returns the config files that are involved in the cycled app
+        Returns the config files that are involved in the cycled app.
+
+        Parameters
+        ----------
+        run : str
+            Name of the run configuration to process
+
+        Returns
+        -------
+        list
+            List of configuration file names needed for the specified run
         """
         options = self.run_options[run]
 
@@ -160,16 +204,37 @@ class GFSCycledAppConfig(AppConfig):
 
     @staticmethod
     def _update_base(base_in):
+        """
+        Update base configuration for cycled mode.
 
+        Parameters
+        ----------
+        base_in : dict
+            Input base configuration dictionary
+
+        Returns
+        -------
+        dict
+            Updated base configuration
+        """
         return base_in
 
     def get_task_names(self):
         """
         Get the task names for each valid run in this cycled configuration.
-        NOTE: The order of the task names matters in the XML.
-              This is the place where that order is set.
-        """
 
+        This method determines which tasks should be run for each configured run.
+        The order of the tasks is important for XML configuration generation.
+
+        Returns
+        -------
+        dict
+            Dictionary with run names as keys and ordered lists of task names as values
+
+        Notes
+        -----
+        The order of the task names matters in the XML generation.
+        """
         # Start with a dictionary of empty task lists for each valid run
         task_names = {run: [] for run in self.runs}
 
