@@ -55,7 +55,7 @@ where:
    * ``$IDATE`` is the initial start date of your run (first cycle CDATE, YYYYMMDDCC)
    * ``$EDATE`` is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete [default: $IDATE]
    * ``$PSLOT`` is the name of your experiment [default: test]
-   * ``$CONFIGDIR`` is the path to the ``/config`` folder under the copy of the system you're using [default: $TOP_OF_CLONE/parm/config/]
+   * ``$CONFIGDIR`` is the path to the ``/config`` folder under the copy of the system you're using [default: $TOP_OF_CLONE/dev/parm/config/]
    * ``$RESDETATMOS`` is the resolution of the atmosphere component of the system (i.e. 768 for C768) [default: 384]
    * ``$RESDETOCEAN`` is the resolution of the ocean component of the system (i.e. 0.25 for 1/4 degree) [default: 0.; determined based on atmosphere resolution]
    * ``$INTERVAL_GFS`` is the forecast interval in hours [default: 6]
@@ -177,7 +177,7 @@ where:
    * ``$NENS`` is the number of ensemble members [default: 20]
    * ``$RUN`` is the starting phase [default: gdas]
    * ``$PSLOT`` is the name of your experiment [default: test]
-   * ``$CONFIGDIR`` is the path to the config folder under the copy of the system you're using [default: $TOP_OF_CLONE/parm/config/]
+   * ``$CONFIGDIR`` is the path to the config folder under the copy of the system you're using [default: $TOP_OF_CLONE/dev/parm/config/]
    * ``$COMROOT`` is the path to your experiment output directory. Your ``ROTDIR`` (rotating com directory) will be created using ``COMROOT`` and ``PSLOT``. [default: $HOME]
    * ``$EXPDIR`` is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you. [default: $HOME]
    * ``$ICSDIR`` is the path to the ICs for your run if generated separately. [default: None]
@@ -187,7 +187,7 @@ Example:
 ::
 
    cd dev/workflow
-   ./setup_expt.py gfs cycled --pslot test --configdir /home/Joe.Schmo/git/global-workflow/parm/config --idate 2020010100 --edate 2020010118 --comroot /some_large_disk_area/Joe.Schmo/comroot --expdir /some_safe_disk_area/Joe.Schmo/expdir --resdetatmos 384 --resensatmos 192 --nens 80 --interval 6
+   ./setup_expt.py gfs cycled --pslot test --configdir /home/Joe.Schmo/git/global-workflow/dev/parm/config --idate 2020010100 --edate 2020010118 --comroot /some_large_disk_area/Joe.Schmo/comroot --expdir /some_safe_disk_area/Joe.Schmo/expdir --resdetatmos 384 --resensatmos 192 --nens 80 --interval 6
 
 Example ``setup_expt.py`` on Orion:
 

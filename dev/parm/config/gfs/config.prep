@@ -6,7 +6,7 @@
 echo "BEGIN: config.prep"
 
 # Get task specific resources
-. $EXPDIR/config.resources prep
+source "${EXPDIR}/config.resources" prep
 
 export MAKE_PREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
 export cdate10=${PDY}${cyc}
@@ -16,7 +16,7 @@ export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 export TROPCYQCRELOSH="${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh"
 
 export COMINtcvital=${COMINtcvital:-${DMPDIR}/${RUN}.${PDY}/${cyc}/atmos}
-export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
+export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
 # Adjust observation error for GFS v16 parallels
 #
@@ -27,7 +27,7 @@ export PRVT=${FIXgfs}/gsi/prepobs_errtable.global
 
 
 # Set prepobs.errtable.global for GFS v16 retrospective parallels
-if [[ $RUN_ENVIR == "emc" ]]; then
+if [[ ${RUN_ENVIR} == "emc" ]]; then
   if [[ "${PDY}${cyc}" -ge "2019021900" && "${PDY}${cyc}" -lt "2019110706" ]]; then
     export PRVT=${FIXgfs}/gsi/gfsv16_historical/prepobs_errtable.global.2019021900
   fi
