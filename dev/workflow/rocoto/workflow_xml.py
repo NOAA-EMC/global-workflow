@@ -238,8 +238,10 @@ class RocotoXML(ABC):
         server_username = globus_conf.get("SERVER_USERNAME", None)
 
         if not (server and server_home and server_username):
-            logger.error("ERROR at least one server variable is missing!\n"
-                         f"Check that SERVER_NAME, SERVER_HOME, and SERVER_USERNAME are defined in {expdir}/config.globus")
+            raise ValueError(
+                "ERROR: At least one server variable is missing!\n"
+                f"Check that SERVER_NAME, SERVER_HOME, and SERVER_USERNAME are defined in {expdir}/config.globus"
+            )
 
         replyto = os.environ.get('REPLYTO', "")
 
