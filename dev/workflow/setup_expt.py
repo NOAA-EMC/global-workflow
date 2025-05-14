@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
 """
-Entry point for setting up an experiment in the global-workflow
+Entry point for setting up an experiment in the global-workflow.
+
+This script handles the creation of experiment directories and configuration files
+for various forecast systems (GFS, GEFS, SFS, GCAFS) in the Unified Forecast System.
+It processes command-line arguments, creates the necessary directory structure,
+and configures the experiment based on user inputs and host capabilities.
 """
 
 import os
@@ -24,7 +29,16 @@ logger = getLogger(__name__)
 # @logit(logger)
 def makedirs_if_missing(dirname):
     """
-    Creates a directory if not already present
+    Creates a directory if not already present.
+
+    Parameters
+    ----------
+    dirname : str
+        Path to directory to create
+
+    Returns
+    -------
+    None
     """
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -40,10 +54,24 @@ def update_configs(host, inputs):
 
     # @logit(logger)
     def _update_defaults(dict_in: dict) -> dict:
-        # Given an input dict_in of the form
-        # {defaults: {config_name: {var1: value1, ...}, }, config_name: {var1: value1, ...}}
-        # Replace values in ['defaults']['config_name']['var1'] with ['config_name']['var1']
-        # and return the ['defaults'] subdictionary as its own new dictionary.
+        """
+        Process nested dictionaries by replacing defaults with overrides.
+
+        Given an input dict_in of the form:
+        {defaults: {config_name: {var1: value1, ...}}, config_name: {var1: value1, ...}}
+        Replace values in ['defaults']['config_name']['var1'] with ['config_name']['var1']
+        and return the ['defaults'] subdictionary as its own new dictionary.
+
+        Parameters
+        ----------
+        dict_in : dict
+            Input dictionary with defaults and overrides
+
+        Returns
+        -------
+        dict
+            Updated dictionary with defaults replaced by overrides
+        """
         defaults = dict_in.pop('defaults', AttrDict())
         if 'defaults' in defaults:
             _update_defaults(defaults)
@@ -128,12 +156,47 @@ def map_inputs_to_configs(inputs):
 # @logit(logger)
 def input_args(*argv):
     """
-    Method to collect user arguments for `setup_expt.py`
+    Process command-line arguments for experiment setup.
+
+    Parameters
+    ----------
+    *argv : list, optional
+        Command line arguments
+
+    Returns
+    -------
+    argparse.Namespace
+        Parsed command-line arguments
+
+    Raises
+    ------
+    ArgumentTypeError
+        If interval is not a multiple of 6, or if dates are invalid
+    ValueError
+        If start type is invalid
     """
 
     ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW', 'S2SWA']
 
     def _validate_interval(interval_str):
+        """
+        Validate that interval is a non-negative integer multiple of 6.
+
+        Parameters
+        ----------
+        interval_str : str
+            String representation of interval value
+
+        Returns
+        -------
+        int
+            Validated interval value
+
+        Raises
+        ------
+        ArgumentTypeError
+            If interval is not a valid non-negative integer multiple of 6
+        """
         err_msg = f'must be a non-negative integer multiple of 6 ({interval_str} given)'
         try:
             interval = int(interval_str)
@@ -147,6 +210,19 @@ def input_args(*argv):
         return interval
 
     def _common_args(parser):
+        """
+        Add common arguments to all subparsers.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
         parser.add_argument('--pslot', help='parallel experiment name',
                             type=str, required=False, default='test')
         parser.add_argument('--resdetatmos', help='atmosphere resolution of the deterministic model forecast',
@@ -169,6 +245,19 @@ def input_args(*argv):
         return parser
 
     def _gfs_args(parser):
+        """
+        Add GFS-specific arguments to parser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
         parser.add_argument('--run', help='RUN to start the experiment',
@@ -181,12 +270,38 @@ def input_args(*argv):
         return parser
 
     def _gfs_cycled_args(parser):
+        """
+        Add GFS cycled mode-specific arguments to parser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
         parser.add_argument('--app', help='UFS application', type=str,
                             choices=ufs_apps, required=False, default='ATM')
         parser.add_argument('--sdate_gfs', help='date to start GFS', type=lambda dd: to_datetime(dd), required=False, default=None)
         return parser
 
     def _any_ensemble_args(parser):
+        """
+        Add ensemble-specific arguments to parser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
         parser.add_argument('--resensatmos', help='atmosphere resolution of the ensemble model forecast',
                             type=int, required=False, default=192)
         parser.add_argument('--nens', help='number of ensemble members',
@@ -194,11 +309,37 @@ def input_args(*argv):
         return parser
 
     def _any_forecast_args(parser):
+        """
+        Add forecast-specific arguments to parser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
         parser.add_argument('--app', help='UFS application', type=str,
                             choices=ufs_apps, required=False, default='ATM')
         return parser
 
     def _gefs_args(parser):
+        """
+        Add GEFS-specific arguments to parser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
         # --configdir is hidden from help
@@ -209,6 +350,19 @@ def input_args(*argv):
         return parser
 
     def _sfs_args(parser):
+        """
+        Add SFS-specific arguments to parser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
         # --configdir is hidden from help
@@ -216,6 +370,29 @@ def input_args(*argv):
                             default=os.path.join(_top, 'dev/parm/config/sfs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
                             default=os.path.join(_top, 'dev/parm/config/sfs/yaml/defaults.yaml'))
+        return parser
+
+    # GCAFS forecast-only arguments
+    def _gcafs_args(parser):
+        """
+        Add GCAFS-specific arguments to parser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
+        parser.add_argument('--start', help='restart mode: warm or cold', type=str,
+                            choices=['warm', 'cold'], required=False, default='cold')
+        parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
+                            default=os.path.join(_top, 'parm/config/gcafs'))
+        parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
+                            default=os.path.join(_top, 'parm/config/gcafs/yaml/defaults.yaml'))
         return parser
 
     description = """
@@ -232,6 +409,7 @@ def input_args(*argv):
     gfs = sysparser.add_parser('gfs', help='arguments for GFS')
     gefs = sysparser.add_parser('gefs', help='arguments for GEFS')
     sfs = sysparser.add_parser('sfs', help='arguments for SFS')
+    gcafs = sysparser.add_parser('gcafs', help='arguments for GCAFS')
 
     gfsmodeparser = gfs.add_subparsers(dest='mode')
     gfscycled = gfsmodeparser.add_parser('cycled', help='arguments for cycled mode')
@@ -243,8 +421,11 @@ def input_args(*argv):
     sfsmodeparser = sfs.add_subparsers(dest='mode')
     sfsforecasts = sfsmodeparser.add_parser('forecast-only', help='arguments for forecast-only mode')
 
+    gcafsmodeparser = gcafs.add_subparsers(dest='mode')
+    gcafsforecasts = gcafsmodeparser.add_parser('forecast-only', help='arguments for forecast-only mode')
+
     # Common arguments across all modes
-    for subp in [gfscycled, gfsforecasts, gefsforecasts, sfsforecasts]:
+    for subp in [gfscycled, gfsforecasts, gefsforecasts, sfsforecasts, gcafsforecasts]:
         subp = _common_args(subp)
 
     # GFS-only arguments
@@ -256,7 +437,7 @@ def input_args(*argv):
         subp = _any_ensemble_args(subp)
 
     # GFS/GEFS forecast-only additional arguments
-    for subp in [gfsforecasts, gefsforecasts, sfsforecasts]:
+    for subp in [gfsforecasts, gefsforecasts, sfsforecasts, gcafsforecasts]:
         subp = _any_forecast_args(subp)
 
     # cycled mode additional arguments
@@ -270,6 +451,10 @@ def input_args(*argv):
     # SFS arguments
     for subp in [sfsforecasts]:
         subp = _sfs_args(subp)
+
+    # GCAFS arguments
+    for subp in [gcafsforecasts]:
+        subp = _gcafs_args(subp)
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)
 
@@ -298,7 +483,19 @@ def input_args(*argv):
 # @logit(logger)
 def query_and_clean(dirname, force_clean=False):
     """
-    Method to query if a directory exists and gather user input for further action
+    Query if a directory exists and gather user input for further action.
+
+    Parameters
+    ----------
+    dirname : str
+        Directory to check and potentially clean
+    force_clean : bool, optional
+        Whether to force cleaning without prompting, by default False
+
+    Returns
+    -------
+    bool
+        Whether the directory should be created
     """
 
     create_dir = True
@@ -321,6 +518,25 @@ def query_and_clean(dirname, force_clean=False):
 
 # @logit(logger)
 def validate_user_request(host, inputs):
+    """
+    Validate that the requested resolution is supported on the host machine.
+
+    Parameters
+    ----------
+    host : Host
+        Host object containing machine-specific information
+    inputs : argparse.Namespace
+        User inputs to `setup_expt.py`
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    NotImplementedError
+        If the requested resolution is not supported on the host machine
+    """
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
     machine = host
     for attr in ['resdetatmos', 'resensatmos']:
@@ -335,8 +551,22 @@ def validate_user_request(host, inputs):
 # @logit(logger)
 def get_ocean_resolution(resdetatmos):
     """
-    Method to determine the ocean resolution based on the atmosphere resolution
-    Limited options are going to be available
+    Determine the ocean resolution based on the atmosphere resolution.
+
+    Parameters
+    ----------
+    resdetatmos : int
+        Atmosphere resolution
+
+    Returns
+    -------
+    float
+        Corresponding ocean resolution
+
+    Raises
+    ------
+    KeyError
+        If ocean resolution for the given atmosphere resolution is not defined
     """
     atmos_to_ocean_map = {
         1152: 0.25, 768: 0.25, 384: 0.25,
@@ -350,6 +580,18 @@ def get_ocean_resolution(resdetatmos):
 
 @logit(logger, name='setup_expt.main')
 def main(*argv):
+    """
+    Main function to set up experiment directories and configuration.
+
+    Parameters
+    ----------
+    *argv : list, optional
+        Command line arguments
+
+    Returns
+    -------
+    None
+    """
 
     user_inputs = input_args(*argv)
     host = Host()

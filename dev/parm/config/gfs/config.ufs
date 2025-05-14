@@ -113,12 +113,13 @@ case "${fv3_res}" in
           if [[ "${RUN}" = *gdas ]]; then
             export WRITE_GROUP=2
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=2
-          elif [[ "${RUN}" = *gfs ]]; then
+          elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
             export layout_x=4
             export layout_y=4
             export WRITE_GROUP=2
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=2
           fi
+
           export DELTIM=450
           export layout_x_nest=12
           export layout_y_nest=10
@@ -156,7 +157,7 @@ case "${fv3_res}" in
           if [[ "${RUN}" = *gdas ]]; then
             export WRITE_GROUP=2
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=15
-          elif [[ "${RUN}" = *gfs ]]; then
+          elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
             export layout_x=5
             export layout_y=6
             export WRITE_GROUP=2
@@ -180,7 +181,7 @@ case "${fv3_res}" in
             export nthreads_ufs=1
             export WRITE_GROUP=1
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-          elif [[ "${RUN}" = *gfs ]]; then
+          elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
             export nthreads_fv3=2
             export nthreads_ufs=2
             export WRITE_GROUP=2
@@ -208,7 +209,7 @@ case "${fv3_res}" in
           if [[ "${RUN}" = *gdas ]]; then
             export nthreads_fv3=1
             export nthreads_ufs=1
-          elif [[ "${RUN}" = *gfs ]]; then
+          elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
             export nthreads_fv3=2
             export nthreads_ufs=2
           fi
@@ -268,7 +269,7 @@ case "${fv3_res}" in
             export layout_y=12
             export WRITE_GROUP=2
             export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=15 #Note this should be 10 for WCOSS2
-          elif [[ "${RUN}" = *gfs ]]; then
+          elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
             export layout_x=12
             export layout_y=16
             export WRITE_GROUP=4
@@ -296,6 +297,9 @@ case "${fv3_res}" in
           export layout_x=8
           export layout_y=16
         elif [[ "${RUN}" = *gfs ]]; then
+          export layout_x=16
+          export layout_y=24
+        elif [[ "${RUN}" = *gcafs ]]; then
           export layout_x=16
           export layout_y=24
         fi
@@ -414,7 +418,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING='r'
       MOM6_RIVER_RUNOFF='False'
       case ${RUN} in
-        gfs|gefs|sfs)
+        gfs|gefs|sfs|gcafs)
           MOM6_DIAG_MISVAL="-1e34";;
         gdas|enkfgdas|enkfgfs)
           MOM6_DIAG_MISVAL="0.0";;
@@ -442,7 +446,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       eps_imesh="2.5e-1"
       TOPOEDITS="ufs.topo_edits_011818.nc"
       case ${RUN} in
-        gfs|gefs|sfs)
+        gfs|gefs|sfs|gcafs)
           MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
           MOM6_DIAG_MISVAL="-1e34"
           ;;
@@ -470,7 +474,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='True'
       eps_imesh="1.0e-1"
       case ${RUN} in
-        gfs|gefs|sfs)
+        gfs|gefs|sfs|gcafs)
           MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
           MOM6_DIAG_MISVAL="-1e34"
           ;;
@@ -499,7 +503,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING="r"
       eps_imesh="1.0e-1"
       case ${RUN} in
-        gfs|gefs|sfs)
+        gfs|gefs|sfs|gcafs)
           MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
           MOM6_DIAG_MISVAL="-1e34"
           ;;

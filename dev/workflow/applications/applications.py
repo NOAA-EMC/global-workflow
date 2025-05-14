@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+"""
+Base application configuration module.
+
+This module provides the abstract base class for all application configurations
+used in the workflow system. It defines common functionality and interfaces that
+all application configurations must implement.
+"""
+
 from typing import Dict, List, Any
 from hosts import Host
 from wxflow import Configuration, which
@@ -14,25 +22,84 @@ logger = getLogger(__name__.split('.')[-1])
 
 
 class AppConfigInit(ABCMeta):
+    """
+    Metaclass for AppConfig initialization.
+
+    This metaclass customizes the initialization process for AppConfig classes,
+    allowing child classes to define additional settings before completing the
+    initialization process.
+    """
+
     def __call__(cls, *args, **kwargs):
-        '''
-        We want the child classes to be able to define additional settings
-          before we source the configs and complete the rest of the process,
-          so break init up into two methods, one to run first (both in the
-          base class and the child class) and one to finalize the initiali-
-          zation after both have completed.
-        '''
+        """
+        Custom initialization process for AppConfig classes.
+
+        Parameters
+        ----------
+        *args
+            Variable length argument list
+        **kwargs
+            Arbitrary keyword arguments
+
+        Returns
+        -------
+        object
+            Initialized instance of the class
+        """
         obj = type.__call__(cls, *args, **kwargs)
         obj._init_finalize(*args, **kwargs)
         return obj
 
 
 class AppConfig(ABC, metaclass=AppConfigInit):
+    """
+    Abstract base class for application configurations.
+
+    This class defines the interface and common functionality for all
+    application configurations. It handles configuration sourcing, run options,
+    and task management.
+
+    Parameters
+    ----------
+    conf : Configuration
+        The configuration object containing all settings
+
+    Attributes
+    ----------
+    VALID_MODES : list
+        List of valid application modes
+    scheduler : object
+        Host scheduler object
+    mode : str
+        Current application mode (cycled or forecast-only)
+    net : str
+        Network identifier for the application
+    runs : list
+        List of runs for this application
+    run_options : dict
+        Dictionary of options for each run
+    task_names : dict
+        Dictionary of task names for each run
+    configs : dict
+        Dictionary of configurations for each run
+    """
 
     VALID_MODES = ['cycled', 'forecast-only']
 
     def __init__(self, conf: Configuration) -> None:
+        """
+        Initialize the application configuration.
 
+        Parameters
+        ----------
+        conf : Configuration
+            Configuration object containing application settings
+
+        Raises
+        ------
+        NotImplementedError
+            If the specified mode is not valid
+        """
         self.scheduler = Host().scheduler
 
         # Get the most basic settings from config.base to determine
@@ -49,10 +116,14 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         logger.info(f"Generating the XML for a {self.mode}_{self.net} case")
 
     def _init_finalize(self, conf: Configuration):
-        '''
-        Finalize object initialization calling subclass methods
-        '''
+        """
+        Finalize object initialization calling subclass methods.
 
+        Parameters
+        ----------
+        conf : Configuration
+            Configuration object containing application settings
+        """
         # Get run-, net-, and mode-based options
         self.run_options = self._get_run_options(conf)
 
@@ -67,13 +138,29 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             self.configs[run] = self._source_configs(conf, run=run, log=False)
 
     def _get_run_options(self, conf: Configuration) -> Dict[str, Any]:
-        '''
-        Determine the do_* and APP options for each RUN by sourcing config.base
-        for each RUN and collecting the flags into self.run_options.  Note that
-        this method is overloaded so additional NET- and MODE-dependent flags
-        can be set.
-        '''
+        """
+        Determine the do_* and APP options for each RUN.
 
+        Gets configuration options for each run by sourcing config.base.
+        This method can be overridden to set additional NET- and MODE-dependent flags.
+
+        Parameters
+        ----------
+        conf : Configuration
+            Configuration object containing run settings
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary containing run options for each configured run
+
+        Raises
+        ------
+        ValueError
+            If forecast segments are not monotonically increasing
+        ConnectionError
+            If globus session is not configured properly
+        """
         run_options = {run: {} for run in dict.fromkeys(self.runs)}
         globus_checked = False
         for run in self.runs:
@@ -128,42 +215,65 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
     @abstractmethod
     def _get_app_configs(self):
+        """
+        Get the configuration files needed for this application.
+
+        This abstract method must be implemented by subclasses to specify
+        which configuration files are needed for the application.
+
+        Returns
+        -------
+        list
+            List of configuration file names needed for the application
+        """
         pass
 
     @staticmethod
     @abstractmethod
     def _update_base(base_in: Dict[str, Any]) -> Dict[str, Any]:
-        '''
-        Make final updates to base and return an updated copy
+        """
+        Make final updates to base configuration.
+
+        This abstract method must be implemented by subclasses to make
+        application-specific modifications to the base configuration.
 
         Parameters
         ----------
-        base_in: Dict
-                 Beginning base settings
+        base_in : Dict[str, Any]
+            Beginning base settings
 
         Returns
         -------
-        Dict: A copy of base_in with possible modifications based on the
-              net and mode.
-
-        '''
+        Dict[str, Any]
+            Updated base configuration with application-specific modifications
+        """
         pass
 
     def _source_configs(self, conf: Configuration, run: str = "gfs", log: bool = True) -> Dict[str, Any]:
         """
-        Given the configuration object used to initialize this application,
-        source the configurations for each config and return a dictionary
-        Every config depends on "config.base"
-        """
+        Source configuration files for the application.
 
-        # Include config.base by its lonesome and update it
+        Given the configuration object, this method sources all required
+        configuration files for each component of the application.
+
+        Parameters
+        ----------
+        conf : Configuration
+            Configuration object containing all settings
+        run : str, default="gfs"
+            The run name to use for sourcing configs
+        log : bool, default=True
+            Whether to log sourcing information
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary of configurations for each component
+        """
         configs = {'base': conf.parse_config('config.base', RUN=run)}
         configs['base'] = self._update_base(configs['base'])
 
-        # Source the list of all config_files involved in the application
         for config in self._get_app_configs(run):
-
-            # All must source config.base first
             files = ['config.base']
 
             if config in ['eobs']:
@@ -188,37 +298,36 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
     @abstractmethod
     def get_task_names(self, run: str) -> Dict[str, List[str]]:
-        '''
-        Create a list of valid RUNs and a dict of task names for each RUN valid for the configuation.
+        """
+        Create lists of task names for each valid run.
 
-        Parameters
-        ----------
-        None
+        This abstract method must be implemented by subclasses to specify
+        the tasks for each configured run.
 
         Returns
         -------
-        Dict[str, List[str]]: Lists of all tasks for each RUN.
-
-        '''
+        Dict[str, List[str]]
+            Dictionary with run names as keys and lists of task names as values
+        """
         pass
 
     @staticmethod
     def is_monotonic(test_list: List, check_decreasing: bool = False) -> bool:
         """
-        Determine if an array is monotonically increasing or decreasing
+        Determine if an array is monotonically increasing or decreasing.
 
-        TODO: Move this into wxflow somewhere
-
-        Inputs
-          test_list: List
+        Parameters
+        ----------
+        test_list : List
             A list of comparable values to check
-          check_decreasing: bool [default: False]
+        check_decreasing : bool, default=False
             Check whether list is monotonically decreasing
 
         Returns
-          bool: Whether the list is monotonically increasing (if check_decreasing
-                if False) or decreasing (if check_decreasing is True)
-
+        -------
+        bool
+            Whether the list is monotonically increasing (if check_decreasing
+            is False) or decreasing (if check_decreasing is True)
         """
         if check_decreasing:
             return all(x > y for x, y in zip(test_list, test_list[1:]))
@@ -226,30 +335,41 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             return all(x < y for x, y in zip(test_list, test_list[1:]))
 
     def _check_globus(self, conf):
-        # This method checks that globus can be used on this platform
-        # and is configured properly.
+        """
+        Check that globus can be used on this platform.
 
-        # Test that globus can be imported
+        Verifies that the globus CLI is available and properly configured.
+
+        Parameters
+        ----------
+        conf : Configuration
+            Configuration object containing globus settings
+
+        Raises
+        ------
+        ImportError
+            If globus-cli module is not found
+        FileNotFoundError
+            If globus command is not found
+        ConnectionError
+            If globus session is not configured properly
+        """
         spec = importlib.util.find_spec("globus_cli")
         if spec is None:
             raise ImportError("Globus-cli module not found!  Check that the module is loaded!")
 
         globus_conf = conf.parse_config(['config.base', 'config.globus'])
 
-        # Initialize globus
         globus = which("globus")
 
         if globus is None:
             raise FileNotFoundError("Could not find the globus command!")
 
-        # Check that a globus connection to the server is open
         globus_output = globus("session", "show", output=str).splitlines()[2:]
 
         local_uid_found = False
         rdhpcs_uid_found = False
 
-        # There should be two sessions (MSU and RDHPCS), but if someone is running
-        # this elsewhere (e.g. NOAA cloud), it may be just one (RDHPCS).
         local_uid = os.environ['LOGNAME'].lower()
         for line in globus_output:
             uid = line.split("|")[0].split("@")[0].lower()
