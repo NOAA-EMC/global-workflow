@@ -324,18 +324,18 @@ FV3_predet(){
     IEMS=${IEMS:-1}
   fi
 
-  if [[ "${TYPE}" == "nh" ]]; then  # non-hydrostatic options
+ #if [[ "${TYPE}" == "nh" ]]; then  # non-hydrostatic options
     hydrostatic=".false."
     phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
     use_hydro_pressure=".false."   # use hydrostatic pressure for physics
     make_nh=".true."               # running in non-hydrostatic mode
     pass_full_omega_to_physics_in_non_hydrostatic_mode=".true."
-  else  # hydrostatic options
-    hydrostatic=".true."
-    phys_hydrostatic=".false."     # ignored when hydrostatic = T
-    use_hydro_pressure=".false."   # ignored when hydrostatic = T
-    make_nh=".false."              # running in hydrostatic mode
-  fi
+ #else  # hydrostatic options
+ #  hydrostatic=".true."
+ #  phys_hydrostatic=".false."     # ignored when hydrostatic = T
+ #  use_hydro_pressure=".false."   # ignored when hydrostatic = T
+ #  make_nh=".false."              # running in hydrostatic mode
+ #fi
 
   # Conserve total energy as heat globally
   consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
@@ -354,38 +354,38 @@ FV3_predet(){
   if [[ "${MONO:0:4}" == "mono" ]]; then  # monotonic options
     d_con=${d_con_mono:-"0."}
     do_vort_damp=".false."
-    if [[ "${TYPE}" == "nh" ]]; then  # monotonic and non-hydrostatic
+   #if [[ "${TYPE}" == "nh" ]]; then  # monotonic and non-hydrostatic
       hord_mt=${hord_mt_nh_mono:-"10"}
       hord_xx=${hord_xx_nh_mono:-"10"}
       hord_dp=${hord_xx_nh_mono:-"10"}
-    else  # monotonic and hydrostatic
-      hord_mt=${hord_mt_hydro_mono:-"10"}
-      hord_xx=${hord_xx_hydro_mono:-"10"}
-      hord_dp=${hord_xx_hydro_mono:-"10"}
-      kord_tm=${kord_tm_hydro_mono:-"-12"}
-      kord_mt=${kord_mt_hydro_mono:-"12"}
-      kord_wz=${kord_wz_hydro_mono:-"12"}
-      kord_tr=${kord_tr_hydro_mono:-"12"}
-    fi
+   #else  # monotonic and hydrostatic
+   #  hord_mt=${hord_mt_hydro_mono:-"10"}
+   #  hord_xx=${hord_xx_hydro_mono:-"10"}
+   #  hord_dp=${hord_xx_hydro_mono:-"10"}
+   #  kord_tm=${kord_tm_hydro_mono:-"-12"}
+   #  kord_mt=${kord_mt_hydro_mono:-"12"}
+   #  kord_wz=${kord_wz_hydro_mono:-"12"}
+   #  kord_tr=${kord_tr_hydro_mono:-"12"}
+   #fi
   else  # non-monotonic options
     d_con=${d_con_nonmono:-"1."}
     do_vort_damp=".true."
-    if [[ "${TYPE}" == "nh" ]]; then  # non-monotonic and non-hydrostatic
+   #if [[ "${TYPE}" == "nh" ]]; then  # non-monotonic and non-hydrostatic
       hord_mt=${hord_mt_nh_nonmono:-"5"}
       hord_xx=${hord_xx_nh_nonmono:-"5"}
       hord_dp=${hord_dp_nh_nonmono:-"-5"}
-    else # non-monotonic and hydrostatic
-      hord_mt=${hord_mt_hydro_nonmono:-"10"}
-      hord_xx=${hord_xx_hydro_nonmono:-"10"}
-      hord_dp=${hord_xx_hydro_nonmono:-"10"}
-    fi
+   #else # non-monotonic and hydrostatic
+   #  hord_mt=${hord_mt_hydro_nonmono:-"10"}
+   #  hord_xx=${hord_xx_hydro_nonmono:-"10"}
+   #  hord_dp=${hord_xx_hydro_nonmono:-"10"}
+   #fi
   fi
 
-  if [[ "${MONO:0:4}" != "mono" && "${TYPE}" == "nh" ]]; then
+ #if [[ "${MONO:0:4}" != "mono" && "${TYPE}" == "nh" ]]; then
     vtdm4=${vtdm4_nh_nonmono:-"0.06"}
-  else
-    vtdm4=${vtdm4:-"0.05"}
-  fi
+ #else
+ #  vtdm4=${vtdm4:-"0.05"}
+ #fi
 
   # Initial conditions are chgres-ed from GFS analysis file
   nggps_ic=${nggps_ic:-".true."}

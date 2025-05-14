@@ -176,8 +176,17 @@ else
 fi
 
 ${NCP} "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
+module reset
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
+source "${USHgfs}/forecast_predet.sh" 	# include functions for variable definition
+source "${USHgfs}/forecast_det.sh"  # include functions for run type determination
+source "${USHgfs}/forecast_postdet.sh"	# include functions for variables after run type determination
+source "${USHgfs}/parsing_ufs_configure.sh"	 # include functions for ufs_configure processing
+source "${USHgfs}/atparse.bash"  # include function atparse for parsing @[XYZ] templated files
+
+#source "${USHgfs}/load_fv3gfs_modules.sh"
+
 err_chk
 
 FV3_out

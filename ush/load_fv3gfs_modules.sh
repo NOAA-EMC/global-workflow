@@ -12,7 +12,6 @@ if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     set +x
 fi
 set -x
-export HOMEgfs=/opt/global-workflow-cloud
 
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
