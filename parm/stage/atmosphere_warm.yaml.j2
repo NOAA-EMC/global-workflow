@@ -7,7 +7,7 @@ atmosphere_warm:
         {% set COMOUT_ATMOS_RESTART_MEM = COMOUT_ATMOS_RESTART_MEM_list[imem] %}
         - "{{ COMOUT_ATMOS_RESTART_MEM }}"
         {% endfor %} # mem loop
-    link:
+    link_req:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ATMOS_RESTART_PREV_MEM = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
