@@ -186,8 +186,9 @@ if [[ "${EUPD_CYC}" = "${RUN}" ]] || [[ "${EUPD_CYC^^}" = "BOTH" ]]; then
     if [[ -s "${MODEL_SNOW_FILE_PREV}" ]]; then
       echo "COPY OLD ENKF SNOW FILE TO CURRENT DIRECTORY"
       cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
+      export err=0
     else
-      err_chk "FATAL ERROR: CURRENT AND 6-HR OLD ENKF SNOW MISSING"
+      err_exit "CURRENT AND 6-HR OLD ENKF SNOW MISSING"
     fi  # check of missing 6-hr snow file
   fi  # return code check
 
