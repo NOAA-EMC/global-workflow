@@ -38,7 +38,6 @@ export PYTHONPATH=${USHens_tracker}/FSUgenesisPY:${PYTHONPATH}
 ##############################################
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL
 YMD=${PDY} HH=${cyc} GRID="0p25" declare_from_tmpl -rx COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
-declare_from_tmpl -rx COMIN_SYNDAT:COM_SYNDAT_TMPL
 
 # The following variables are used by the tracker scripts which are outside
 #   of global-workflow and therefore can't be standardized at this time
@@ -46,7 +45,7 @@ export COMIN=${COMIN_ATMOS_GRIB_0p25}
 export gfsdir=${COMIN_ATMOS_GRIB_0p25}
 export COMINgfs=${COMIN_ATMOS_GRIB_0p25}
 export COMOUT=${COMOUT_ATMOS_GENESIS}
-export COMINsyn=${COMIN_SYNDAT}
+export COMINsyn=${COMINsyndat:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
 ##############################################
 # Run relevant script

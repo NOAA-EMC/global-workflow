@@ -144,7 +144,7 @@ pgmout=${pgmout:-"OUTPUT"}
 source prep_step
 
 rm -f ./fort.41
-cat > ./fort.41 << !
+cat > ./fort.41 << EOF
  &source_data
   autosnow_file=""
   nesdis_snow_file="${IMS_FILE}"
@@ -179,7 +179,7 @@ cat > ./fort.41 << !
   min_snow_depth=0.05
   snow_cvr_threshold=50.0
  /
-!
+EOF
 
 eval "${SNOW2MDLEXEC}" >> "${pgmout}" 2> errfile
 err=$?
