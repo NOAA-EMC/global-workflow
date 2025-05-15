@@ -44,13 +44,14 @@
 #
 #########################################################################
 
-export pgm=emcsfc_snow2mdl
+source "${USHgfs}/atparse.bash"  # include function atparse for parsing @[XYZ] templated files
 
 #------------------------------------------------------------------------
-# The snow2mdl executable
+# The snow2mdl executable and namelist
 #------------------------------------------------------------------------
 
 SNOW2MDLEXEC=${SNOW2MDLEXEC:-"${EXECgfs}/emcsfc_snow2mdl"}
+SNOW2MDLNMLTMPL=${SNOW2MDLNMLTMPL:-"${PARMgfs}/prep_sfc/snow2mdl.nml.tmpl"}
 
 #------------------------------------------------------------------------
 # Fixed files that describe the model grid: landmask, latitudes/longitudes.
@@ -91,7 +92,7 @@ OUTPUT_GRIB2=${OUTPUT_GRIB2:-".false."}  # grib 1 when false.
 #------------------------------------------------------------------------
 
 if [[ ! -f ${IMS_FILE} ]]; then
-  echo "WARNING: ${pgm} detects missing ims data. Will not run."
+  echo "WARNING: Missing IMS data. Will not run ${SNOW2MDLEXEC}."
   exit 7
 fi
 
@@ -103,83 +104,57 @@ fi
 ${WGRIB2} -d 1 "${IMS_FILE}"
 err=$?
 if [[ ${err} -ne 0 ]]; then
-  echo "WARNING: ${pgm} detects corrupt ims data. Will not run."
+  echo "WARNING: Corrupt IMS data. Will not run ${SNOW2MDLEXEC}."
   exit 9
 else
   tempdate=$(${WGRIB2} -t "${IMS_FILE}" | head -1) || true
   IMSDATE=${tempdate#*d=}
 fi
-IMSDATE10=$(echo "${IMSDATE}" | cut -c1-10)
-IMSYEAR=$(echo "${IMSDATE10}" | cut -c1-4)
-IMSMONTH=$(echo "${IMSDATE10}" | cut -c5-6)
-IMSDAY=$(echo "${IMSDATE10}" | cut -c7-8)
-IMSHOUR=0   # emc convention is to use 00Z.
 
 #------------------------------------------------------------------------
 # Ensure AFWA data exists and is not too old.
 #------------------------------------------------------------------------
 
 if [[ ! -f ${AFWA_GLOBAL_FILE} ]]; then
-  echo "WARNING: ${pgm} detects missing afwa data. Will not run."
+  echo "WARNING: Missing AFWS data. Will not run ${SNOW2MDLEXEC}."
   exit 3
 else
   ${WGRIB2} -d 1 "${AFWA_GLOBAL_FILE}"
   err=$?
   if [[ ${err} -ne 0 ]]; then
-    echo "WARNING: ${pgm} detects corrupt afwa data. Will not run."
+    echo "WARNING: Corrupt AFWS data. Will not run ${SNOW2MDLEXEC}."
     exit "${err}"
   else
     tempdate=$(${WGRIB2} -d 1 -t "${AFWA_GLOBAL_FILE}")
     AFWADATE=${tempdate#*d=}
-    two_days_ago=$(${NDATE} -48 "${IMSDATE10}")
+    two_days_ago=$(date --utc -d "${IMSDATE:0:8} ${IMSDATE:8:2} - 48 hours" +%Y%m%d%H)
     if [[ ${AFWADATE} -lt ${two_days_ago} ]]; then
-      echo "WARNING: ${pgm} detects old afwa data. Will not run."
+      echo "WARNING: Found old AFWA data. Will not run ${SNOW2MDLEXEC}."
       exit 4
     fi
   fi
 fi
 
+# Additional variables used in the namelist for &output_grib_time
+IMSYEAR=${IMSDATE:0:4}
+IMSMONTH=${IMSDATE:4:2}
+IMSDAY=${IMSDATE:6:2}
+IMSHOUR=0   # emc convention is to use 00Z.
+
+# Render the namelist template
+if [[ ! -f "${SNOW2MDLNMLTMPL}" ]]; then
+  echo "FATAL ERROR: template '${SNOW2MDLNMLTMPL}' does not exist, ABORT!"
+  exit 1
+fi
+rm -f ./fort.41
+atparse < "${SNOW2MDLNMLTMPL}" >> "./fort.41"
+echo "Rendered fort.41"
+cat "./fort.41"
+
+export pgm="emcsfc_snow2mdl"
 pgmout=${pgmout:-"OUTPUT"}
 
 source prep_step
-
-rm -f ./fort.41
-cat > ./fort.41 << EOF
- &source_data
-  autosnow_file=""
-  nesdis_snow_file="${IMS_FILE}"
-  nesdis_lsmask_file=""
-  afwa_snow_global_file="${AFWA_GLOBAL_FILE}"
-  afwa_snow_nh_file=""
-  afwa_snow_sh_file=""
-  afwa_lsmask_nh_file=""
-  afwa_lsmask_sh_file=""
- /
- &qc
-  climo_qc_file="${CLIMO_QC}"
- /
- &model_specs
-  model_lat_file="${MODEL_LATITUDE_FILE}"
-  model_lon_file="${MODEL_LONGITUDE_FILE}"
-  model_lsmask_file="${MODEL_SLMASK_FILE}"
-  gfs_lpl_file="${GFS_LONSPERLAT_FILE}"
-  /
- &output_data
-  model_snow_file="./${MODEL_SNOW_FILE}"
-  output_grib2=${OUTPUT_GRIB2}
- /
- &output_grib_time
-  grib_year=${IMSYEAR}
-  grib_month=${IMSMONTH}
-  grib_day=${IMSDAY}
-  grib_hour=${IMSHOUR}
- /
- &parameters
-  lat_threshold=55.0
-  min_snow_depth=0.05
-  snow_cvr_threshold=50.0
- /
-EOF
 
 "${SNOW2MDLEXEC}" >> "${pgmout}" 2> errfile
 err=$?
