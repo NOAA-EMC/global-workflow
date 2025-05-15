@@ -57,12 +57,12 @@
                                 '${RUN}':RUN,
                                 '${YMD}':current_cycle_YMD,
                                 '${HH}':current_cycle_HH,
-                                '${MEMDIR}': 'mem%03d' | format(member) }) %}
+                                '${MEMDIR}': 'mem%03d' | format(ENSMEM) }) %}
 {% set previous_cycle_dict = ({ '${ROTDIR}':ROTDIR,
                                 '${RUN}':RUN,
                                 '${YMD}':previous_cycle_YMD,
                                 '${HH}':previous_cycle_HH,
-                                '${MEMDIR}': 'mem%03d' | format(member) }) %}
+                                '${MEMDIR}': 'mem%03d' | format(ENSMEM) }) %}
 
 
 {% set COMOUT_ATMOS_INPUT_MEM = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_cycle_dict) %}
@@ -79,6 +79,6 @@
 # Initial condition to stage - include components based on switches
 ###################################################################
 
-{% if member == 0 %}
+{% if ENSMEM == "000" %}
 {% include "atmosphere_cold_RT.yaml.j2" %}
 {% endif %}
