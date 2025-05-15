@@ -39,9 +39,15 @@ if [[ -z "${PSLOT_DIR}" ]]; then
   PSLOT_DIR=$(find "${CTESTS_STAGED_TESTS_DIR}/EXPDIR" -maxdepth 1 -type d -name "${CASE_NAME}_*" -printf "%T@ %p\n" 2>/dev/null | sort -nr | head -n1 | cut -d' ' -f2-)
 fi
 
-# If still no match, list available directories to help with debugging
 if [[ -z "${PSLOT_DIR}" ]]; then
-  echo "ERROR: Could not find any directory matching pattern ${CASE_NAME}_* in ${CTESTS_STAGED_TESTS_DIR}" "${CASE_NAME}")"
+  echo "ERROR: Could not find any directory matching pattern ${CASE_NAME}_* in ${CTESTS_STAGED_TESTS_DIR}"
+  echo "Valid directories are:"
+  find "${CTESTS_STAGED_TESTS_DIR}/EXPDIR" -maxdepth 1 -type d -name "${CASE_NAME}_*"
+  exit 1
+fi
+
+PSLOT="${PSLOT_DIR##*/}"
+
 echo "validating '${TEST_NAME}' with yaml file '${YAML_FILE}'"
 
 PSLOT="${PSLOT}" \
