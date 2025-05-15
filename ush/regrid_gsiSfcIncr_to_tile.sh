@@ -46,16 +46,16 @@ if [[ $DO_LAND_IAU = ".true." ]]; then
     ifhrsf=()
     IFS=',' read -ra landifhrs <<< "${LAND_IAU_FHRS}"  
     for ihr in "${landifhrs[@]}"; do
-        hrstr="$(printf "%02d" $ihr)";
+        hrstr="$(printf "%02d" "$ihr")";
 	ifhrsi+=("${hrstr}");
         ifhrs+=("\"${hrstr}\",");
         n_tims=$((n_tims+1));
-	hrsf="$(printf "%.1f" $ihr)";
+	hrsf="$(printf "%.1f" "$ihr")";
 	ifhrsf+=("${hrsf}");        
     done
 fi
 
-time_list="${ifhrs[@]}"
+#time_list="${ifhrs[@]}"
 in_fname="enkfgdas.sfci.nc"
 out_fname="sfci"
 
@@ -65,7 +65,7 @@ cat << EOF > regrid.nml_tmpl
   variable_list=${soil_incr_vars}
   missing_value=0.,
 ! n_tims=${n_tims},
-! time_list=${time_list}
+! time_list=${ifhrs[@]} 
  /
  &input
   gridtype="gau_inc",
@@ -158,11 +158,11 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 	${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
    
         #TODO: fix until reg code time dim issues are sorted out
-	if [[ ${n_tims} -eq 1 ]]; then 
+	if [[ "${n_tims}" -eq 1 ]]; then 
             for n in $(seq 1 "$ntiles"); do
-                ncecat -O -u Time sfci.tile${n}.nc sfci.tile${n}.nc   
-                ncap2 -A -s @all="{${ifhrsf[@]}}" sfci.tile${n}.nc sfci.tile${n}.nc
-                ncap2 -O -s'Time[Time]=@all' sfci.tile${n}.nc sfci.tile${n}.nc
+                ncecat -O -u Time "sfci.tile${n}.nc" "sfci.tile${n}.nc"   
+                ncap2 -A -s @all="{${ifhrsf[@]}}" "sfci.tile${n}.nc" "sfci.tile${n}.nc"
+                ncap2 -O -s'Time[Time]=@all' "sfci.tile${n}.nc" "sfci.tile${n}.nc"
             done	
         fi
 
