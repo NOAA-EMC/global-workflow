@@ -136,6 +136,7 @@ else
 fi
 
 # Additional variables used in the namelist for &output_grib_time
+#shellcheck disable=SC2034
 IMSYEAR=${IMSDATE:0:4}
 IMSMONTH=${IMSDATE:4:2}
 IMSDAY=${IMSDATE:6:2}
