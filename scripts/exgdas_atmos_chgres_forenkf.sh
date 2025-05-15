@@ -164,7 +164,7 @@ EOF
 
    if [[ ${USE_CFP} == "YES" ]]; then
       chmod 755 ${DATA}/mp_chgres.sh
-      ncmd=$(cat "${DATA}/mp_chgres.sh" | wc -l)
+      ncmd=$(wc -l < "${DATA}/mp_chgres.sh")
       if [[ ${ncmd} -gt 0 ]]; then
          ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
          APRUNCFP_CHGRES=$(eval echo "${APRUNCFP}")
