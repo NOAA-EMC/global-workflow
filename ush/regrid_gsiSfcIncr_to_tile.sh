@@ -39,7 +39,7 @@ for vi in $( seq 1 "${LSOIL_INCR}" ); do
 done
 
 n_tims=1
-if [[ $DO_LAND_IAU = ".true." ]]; then
+if [[ ${DO_LAND_IAU} = ".true." ]]; then
     n_tims=0
     ifhrs=()
     ifhrsi=()
@@ -140,12 +140,12 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         done
     done
 
-    if [[ $DO_LAND_IAU = ".true." ]]; then 
+    if [[ ${DO_LAND_IAU} = ".true." ]]; then 
         
         sed -i -e 's/!/ /g' "regrid.nml"
         
 	#TODO: fix until reg code time dim issues are sorted out
-        if [[ ${n_tims} -eq 1 ]]; then
+        if [[ "${n_tims}" -eq 1 ]]; then
             for FHR in "${ifhrsi[@]}"; do
                 ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHR}.nc" \
                        "${DATA}/${in_fname}"
@@ -159,7 +159,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
    
         #TODO: fix until reg code time dim issues are sorted out
 	if [[ "${n_tims}" -eq 1 ]]; then 
-            for n in $(seq 1 "$ntiles"); do
+            for n in $(seq 1 "${ntiles}"); do
                 ncecat -O -u Time "sfci.tile${n}.nc" "sfci.tile${n}.nc"   
                 ncap2 -A -s @all="{${ifhrsf[@]}}" "sfci.tile${n}.nc" "sfci.tile${n}.nc"
                 ncap2 -O -s'Time[Time]=@all' "sfci.tile${n}.nc" "sfci.tile${n}.nc"
