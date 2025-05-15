@@ -54,12 +54,19 @@ include:
       export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_BASE}"
       export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone, we keep it
       export RUNTESTS_DIR="${GW_RUN_PATH}/RUNTESTS"
-      
+
+      # Create a date-based directory name for successful runs
+      export DATE="$(date +'%m%d%y')"
+      export WORKSPACE_NAME="${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
+      export DATED_PATH="${CI_BUILDS_DIR}/${WORKSPACE_NAME}"
+
       echo "WORKSPACE_BASE: ${WORKSPACE_BASE}"
+      echo "WORKSPACE_NAME: ${WORKSPACE_NAME}"
       echo "GW_RUN_PATH: ${GW_RUN_PATH}"
       echo "GIT_CLONE_PATH: ${GIT_CLONE_PATH}"
       echo "GW_HOMEgfs: ${GW_HOMEgfs}"
-      
+      echo "DATED_PATH: ${DATED_PATH}"
+
       # Make sure GW_HOMEgfs is properly set and the directory exists
       if [ ! -d "${GW_HOMEgfs}" ]; then
         echo "ERROR: GW_HOMEgfs directory does not exist: ${GW_HOMEgfs}"

@@ -22,7 +22,26 @@ PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH
 
 YAML_FILE="${HOMEgfs}/dev/ctests/cases/${TEST_NAME}.yaml"
-PSLOT="$("${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${CTESTS_STAGED_TESTS_DIR}" "${CASE_NAME}")"
+
+# Find pslot with pattern CASE_NAME_<suffix> where suffix could be a date or anything else
+# We don't use ci_utils.sh at all to reduce dependencies
+if [[ ! -d "${CTESTS_STAGED_TESTS_DIR}/EXPDIR" ]]; then
+  echo "ERROR: ${CTESTS_STAGED_TESTS_DIR}/EXPDIR directory not found"
+  exit 1
+fi
+
+# First try to find directories matching the date pattern CASE_NAME_MMDDYY
+# find uses glob patterns, not regex, so we need to use [0-9][0-9][0-9][0-9][0-9][0-9]
+PSLOT_DIR=$(find "${CTESTS_STAGED_TESTS_DIR}/EXPDIR" -maxdepth 1 -type d -name "${CASE_NAME}_[0-9][0-9][0-9][0-9][0-9][0-9]" -printf "%T@ %p\n" 2>/dev/null | sort -nr | head -n1 | cut -d' ' -f2-)
+
+# If no date pattern match, try any suffix
+if [[ -z "${PSLOT_DIR}" ]]; then
+  PSLOT_DIR=$(find "${CTESTS_STAGED_TESTS_DIR}/EXPDIR" -maxdepth 1 -type d -name "${CASE_NAME}_*" -printf "%T@ %p\n" 2>/dev/null | sort -nr | head -n1 | cut -d' ' -f2-)
+fi
+
+# If still no match, list available directories to help with debugging
+if [[ -z "${PSLOT_DIR}" ]]; then
+  echo "ERROR: Could not find any directory matching pattern ${CASE_NAME}_* in ${CTESTS_STAGED_TESTS_DIR}" "${CASE_NAME}")"
 echo "validating '${TEST_NAME}' with yaml file '${YAML_FILE}'"
 
 PSLOT="${PSLOT}" \
