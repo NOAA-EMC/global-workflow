@@ -762,7 +762,7 @@ CICE_out() {
       ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
              "${COMOUT_ICE_RESTART}/${target_file}"
       ;;
-    gfs|gefs|gcafs) # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs|gcafs
+    gfs|gefs|sfs|gcafs) # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs|gcafs
       if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
         local seconds source_file target_file
         echo "Copying CICE restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
