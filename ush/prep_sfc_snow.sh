@@ -136,11 +136,10 @@ else
 fi
 
 # Additional variables used in the namelist for &output_grib_time
-#shellcheck disable=SC2034
-IMSYEAR=${IMSDATE:0:4}
-IMSMONTH=${IMSDATE:4:2}
-IMSDAY=${IMSDATE:6:2}
-IMSHOUR=0   # emc convention is to use 00Z.
+export IMSYEAR=${IMSDATE:0:4}
+export IMSMONTH=${IMSDATE:4:2}
+export IMSDAY=${IMSDATE:6:2}
+export IMSHOUR=0   # emc convention is to use 00Z.
 
 # Render the namelist template
 if [[ ! -f "${SNOW2MDLNMLTMPL}" ]]; then
