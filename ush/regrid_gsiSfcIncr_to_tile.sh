@@ -146,13 +146,15 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         
 	#TODO: fix until reg code time dim issues are sorted out
         if [[ "${n_tims}" -eq 1 ]]; then
-            for FHR in "${ifhrsi[@]}"; do
-                ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHR}.nc" \
+            for FHI in "${ifhrsi[@]}"; do
+                ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
                        "${DATA}/${in_fname}"
             done
         else
-	    ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHR}.nc" \
-                   "${DATA}/${in_fname}.${FHR}"
+            for FHI in "${ifhrsi[@]}"; do
+	        ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
+                       "${DATA}/${in_fname}.${FHI}"
+            done
 	fi
         
 	${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
