@@ -9,7 +9,7 @@ arguments:
   resdetatmos: 48
   resdetocean: 5.0
   resensatmos: 48
-  nens: 2
+  nens: 30
   interval: 24
   start: cold
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
@@ -19,6 +19,7 @@ arguments:
   edate: 2024112500
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
 
+ # TODO run on supported platforms once the gefs forecast and subsequent tasks can succeed with RETRO ICs
 skip_ci_on_hosts:
   - hera
   - gaeac5
