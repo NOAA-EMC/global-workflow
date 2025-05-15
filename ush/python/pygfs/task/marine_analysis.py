@@ -123,7 +123,7 @@ class MarineAnalysis(Task):
 
         # fetch observations from COMROOT
         # TODO(G.V. or A.E.): Keep a copy of the obs in the scratch fs after the obs prep job
-        logger.info(f"Staging observations from {self.task_config.COM_OBS}")
+        logger.info(f"Staging observations from {self.task_config.COMIN_OBS}")
         obs_list = self.jedi_dict['var'].render_jcb(self.task_config, 'soca_obs_staging')
         FileHandler(obs_list).sync()
 
