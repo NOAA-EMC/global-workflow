@@ -1,4 +1,3 @@
-
 ###############
 Global Workflow
 ###############
@@ -17,7 +16,6 @@ Code managers
 =============
 
 * Kate Friedman - @KateFriedman-NOAA / kate.friedman@noaa.gov
-* Walter Kolczynski - @WalterKolczynski-NOAA / walter.kolczynski@noaa.gov
 * David Huber - @DavidHuber-NOAA / david.huber@noaa.gov
 
 =============
@@ -46,3 +44,5 @@ Table of Contents
    noaa_csp.rst
    errors_faq.rst
    globus_arch.rst
+   configure.rst
+   gcafs.rst
