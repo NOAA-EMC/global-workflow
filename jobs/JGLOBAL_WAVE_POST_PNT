@@ -2,9 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostpnt" -c "base wave wavepostsbs wavepostpnt"
 
-# Add default errchk = err_chk
-export errchk=${errchk:-err_chk}
-
 export MP_PULSE=0
 
 # Set COM Paths
@@ -24,11 +21,10 @@ export DOBNDPNT_WAV='NO'  #not boundary points
 
 
 # Execute the Script
-${SCRgfs}/exgfs_wave_post_pnt.sh
-err=$?
-if [ ${err} -ne 0 ]; then
-  echo "FATAL ERROR: ex-script of GWES_POST failed!"
-  exir ${err}
+${SCRgfs}/exgfs_wave_post_pnt.sh && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+  err_chk "FATAL ERROR: ex-script of JGLOBAL_WAVE_POST_PNT failed!"
 fi
 
 ##########################################
