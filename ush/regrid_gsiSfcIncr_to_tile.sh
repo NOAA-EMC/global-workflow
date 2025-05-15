@@ -46,11 +46,11 @@ if [[ $DO_LAND_IAU = ".true." ]]; then
     ifhrsf=()
     IFS=',' read -ra landifhrs <<< "${LAND_IAU_FHRS}"  
     for ihr in "${landifhrs[@]}"; do
-        hrstr="$(printf "%02d" "$ihr")";
+        hrstr="$(printf "%02d" "${ihr}")";
 	ifhrsi+=("${hrstr}");
         ifhrs+=("\"${hrstr}\",");
         n_tims=$((n_tims+1));
-	hrsf="$(printf "%.1f" "$ihr")";
+	hrsf="$(printf "%.1f" "${ihr}")";
 	ifhrsf+=("${hrsf}");        
     done
 fi
