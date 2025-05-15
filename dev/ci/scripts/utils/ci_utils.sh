@@ -122,10 +122,19 @@ function cancel_all_batch_jobs () {
 function create_experiment () {
 
   local yaml_config="${1}"
+  local TAG="${2}"
   cd "${HOMEgfs_}" || exit 1
   pr_sha=$(git rev-parse --short HEAD)
   case=$(basename "${yaml_config}" .yaml) || true
-  export pslot=${case}_${pr_sha}
+  
+  # Use TAG if provided as second argument, otherwise use pr_sha
+  if [[ -n "${TAG}" ]]; then
+    echo "Using provided TAG: ${TAG} for pslot"
+    export pslot=${case}_${TAG}
+  else
+    echo "No TAG provided, using commit SHA: ${pr_sha} for pslot"
+    export pslot=${case}_${pr_sha}
+  fi
 
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
       source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"

@@ -29,15 +29,11 @@ stages:
   - finalize
 
 variables:
-  BUILDTYPE: 'develop'
-  WORKSPACE_NAME: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}
-  GW_RUN_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_NAME}
-  # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the
-  # exact directory where the repository should be cloned, built, and ran.
-  # This works with custom_build_dir-enabled in the runner config.
-  GIT_CLONE_PATH: '${GW_RUN_PATH}/global-workflow'
-  GW_HOMEgfs: ${GIT_CLONE_PATH}
-  RUNTESTS_DIR: ${GW_RUN_PATH}/RUNTESTS
+  BUILDTYPE: 'nightly'
+  # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
+  WORKSPACE_BASE: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
+  # Define a base path that will be used for initial cloning
+  GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_BASE}/global-workflow
   GIT_DEPTH: 10
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
@@ -52,9 +48,27 @@ include:
 .base_config:
   variables:
     GIT_STRATEGY: none
+  before_script:
+    - |
+      # Use CI_BUILDS_DIR and WORKSPACE_BASE for all paths - no date in paths during pipeline execution
+      export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_BASE}"
+      export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone, we keep it
+      export RUNTESTS_DIR="${GW_RUN_PATH}/RUNTESTS"
+      
+      echo "WORKSPACE_BASE: ${WORKSPACE_BASE}"
+      echo "GW_RUN_PATH: ${GW_RUN_PATH}"
+      echo "GIT_CLONE_PATH: ${GIT_CLONE_PATH}"
+      echo "GW_HOMEgfs: ${GW_HOMEgfs}"
+      
+      # Make sure GW_HOMEgfs is properly set and the directory exists
+      if [ ! -d "${GW_HOMEgfs}" ]; then
+        echo "ERROR: GW_HOMEgfs directory does not exist: ${GW_HOMEgfs}"
+        exit 1
+      fi
 
 # Common build template for all modalities
 .build_template:
+  extends: .base_config
   variables:
     GIT_STRATEGY: clone
     GIT_SUBMODULE_STRATEGY: recursive

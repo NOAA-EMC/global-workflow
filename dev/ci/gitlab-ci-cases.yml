@@ -23,7 +23,7 @@
   script:
     - |
       export RUNTESTS=${RUNTESTS_DIR}
-      ${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh create_experiment ${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml
+      ${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh create_experiment ${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml ${DATE}
       exit $?
   needs:
     - build-${machine}
@@ -57,8 +57,27 @@
   script:
     - |
       echo "Finalizing PR test cases on ${machine} using ${GW_HOMEgfs}"
-      echo "Setting softlink to ${GW_RUN_PATH} as ${CI_BUILDS_DIR}/stable"
-      ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
+      echo "Creating date-based directory: ${DATED_PATH}"
+      if [ "${WORKSPACE_BASE}" != "${WORKSPACE_NAME}" ]; then
+        # Rename the WORKSPACE_BASE directory to include the date
+        if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_BASE}" ]; then
+          echo "Moving ${CI_BUILDS_DIR}/${WORKSPACE_BASE} to ${DATED_PATH}"
+          mkdir -p $(dirname "${DATED_PATH}")
+          mv "${CI_BUILDS_DIR}/${WORKSPACE_BASE}" "${DATED_PATH}"
+          
+          # Create a stable symlink for future reference
+          echo "Setting softlink to ${DATED_PATH} as ${CI_BUILDS_DIR}/stable"
+          ln -sf "${DATED_PATH}" "${CI_BUILDS_DIR}/stable"
+          echo "Successfully created date-based directory and stable symlink"
+        else
+          echo "WARNING: Source directory ${CI_BUILDS_DIR}/${WORKSPACE_BASE} not found"
+          # Create the symlink anyway from original path
+          ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
+        fi
+      else
+        echo "WORKSPACE_BASE already includes the date, creating stable symlink"
+        ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
+      fi
 
   needs:
     - run_tests-${machine}
