@@ -161,7 +161,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 	if [[ "${n_tims}" -eq 1 ]]; then 
             for n in $(seq 1 "${ntiles}"); do
                 ncecat -O -u Time "sfci.tile${n}.nc" "sfci.tile${n}.nc"   
-                ncap2 -A -s @all="{${ifhrsf[@]}}" "sfci.tile${n}.nc" "sfci.tile${n}.nc"
+                ncap2 -A -s @all="{${ifhrsf[*]}}" "sfci.tile${n}.nc" "sfci.tile${n}.nc"
                 ncap2 -O -s'Time[Time]=@all' "sfci.tile${n}.nc" "sfci.tile${n}.nc"
             done	
         fi

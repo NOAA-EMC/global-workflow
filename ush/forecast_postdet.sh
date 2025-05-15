@@ -228,7 +228,7 @@ EOF
       # Land IAU increments: sfc_inc in FV3 grid, all timesteps in one file per tile 
       if [[ ${DO_LAND_IAU} = ".true." ]]; then
         local TN sfc_increment_file
-        for TN in $(seq 1 $ntiles); do
+        for TN in $(seq 1 "${ntiles}"); do
           sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/sfc_inc.tile${TN}.nc"
           if [[ ! -f ${sfc_increment_file} ]]; then
             echo "ERROR: DO_LAND_IAU=${DO_LAND_IAU}, but missing increment file ${sfc_increment_file}"
