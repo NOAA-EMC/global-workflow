@@ -13,7 +13,7 @@ class GEFSTasks(Tasks):
         resources = self.get_resource('stage_ic')
         stage_ic_envars = self.envars.copy()
         stage_ic_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#'}
+                         'MEMDIR': 'mem#member#'}
 
         for key, value in stage_ic_dict.items():
             stage_ic_envars.append(rocoto.create_envar(name=key, value=str(value)))
