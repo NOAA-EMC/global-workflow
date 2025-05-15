@@ -18,13 +18,3 @@ arguments:
   idate: 2024112500
   edate: 2024112500
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
-
- # TODO run on supported platforms once the gefs forecast and subsequent tasks can succeed with RETRO ICs
-skip_ci_on_hosts:
-  - hera
-  - gaeac5
-  - gaeac6
-  - orion
-  - hercules
-  - awsepicglobalworkflow
-#  - wcoss2
