@@ -181,7 +181,7 @@ cat > ./fort.41 << EOF
  /
 EOF
 
-eval "${SNOW2MDLEXEC}" >> "${pgmout}" 2> errfile
+"${SNOW2MDLEXEC}" >> "${pgmout}" 2> errfile
 err=$?
 
 if [[ ${err} -ne 0 ]]; then
