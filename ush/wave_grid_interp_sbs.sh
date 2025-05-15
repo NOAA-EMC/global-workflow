@@ -47,7 +47,7 @@ done
 # Check if there is an interpolation weights file available, and copy it if so
 if [[ -f "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}" ]]; then
   echo "INFO: Interpolation weights found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}'"
-  cp "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}" "./WHTGRIDINT.bin"
+  cpreq "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}" "./WHTGRIDINT.bin"
   weights_found=1
 else
   echo "WARNING: No weights file found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${grdID}'"
@@ -68,14 +68,13 @@ export pgm="${NET,,}_ww3_gint.x"
 source prep_step
 echo "INFO: Executing '${pgm}'"
 "${EXECgfs}/${pgm}" > grid_interp.${grdID}.out 2>&1
-export err=$?; err_chk
 cat "grid_interp.${grdID}.out"
-if [[ "${err}" -ne 0 ]]; then
+if [[ ${err} -ne 0 ]]; then
   echo "FATAL ERROR: '${pgm}' failed!"
   exit 3
 fi
 
-if [[ "${weights_found}" -eq 0 ]]; then
+if [[ ${weights_found} -eq 0 ]]; then
   echo "INFO: Interpolation created a new weights file at: '${interp_DATA}/WHTGRIDINT.bin'"
 fi
 

@@ -164,9 +164,10 @@ EOF
    
             startmsg
             ./${bcor_exec} < input >> "${pgmout}" 2>>errfile
-            export err=$?; err_chk
-            if [[ $? -ne 0 ]]; then
-               fail=$(( fail + 1 ))
+            export err=$?
+            if [[ ${err} -ne 0 ]]; then
+               echo "FATAL ERROR: ${bcor_exec} failed!"
+               exit "${err}"
             fi
  
 

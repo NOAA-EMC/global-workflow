@@ -176,9 +176,10 @@ EOF
 
 	 startmsg
          ./${angle_exec} < input >> "${pgmout}" 2>>errfile
-         export err=$?; err_chk
+         export err=$?
          if [[ ${err} -ne 0 ]]; then
-             fail=$(( fail + 1 ))
+             echo "FATAL ERROR: ${angle_exec} failed!"
+             exit "${err}"
          fi
 
          if [[ -s ${angl_file} ]]; then

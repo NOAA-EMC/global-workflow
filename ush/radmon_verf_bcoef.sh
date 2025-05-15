@@ -167,9 +167,10 @@ cat << EOF > input
 EOF
          startmsg
          ./${bcoef_exec} < input >>"${pgmout}" 2>>errfile
-         export err=$?; err_chk
+         export err=$?
          if [[ ${err} -ne 0 ]]; then
-            fail=$(( fail + 1 ))
+            echo "FATAL ERROR: ${bcoef_exec} failed!"
+            exit "${err}"
          fi
 
 
