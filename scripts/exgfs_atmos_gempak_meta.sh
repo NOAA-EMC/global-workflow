@@ -76,7 +76,10 @@ while [[ ${fhr} -le ${fhend} ]]; do
   cat poescript
 
   "${HOMEgfs}/ush/run_mpmd.sh" poescript && true
-  export err=$?; err_chk
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+     err_exit "Failed to generate one or more gempak meta plots!"
+  fi
 
   if [[ ${fhr} -eq 126 ]] ; then
     fhr=$((fhr + 6))

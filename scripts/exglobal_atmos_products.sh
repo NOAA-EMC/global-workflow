@@ -143,7 +143,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
   # Run with MPMD or serial
   "${USHgfs}/run_mpmd.sh" "${DATA}/poescript" && true
-  export err=$?; err_chk
+  export err=$?
   if [[ ${err} -ne 0 ]]; then
      err_exit "Some or all interpolations of the master grib file failed during MPMD execution!"
   fi

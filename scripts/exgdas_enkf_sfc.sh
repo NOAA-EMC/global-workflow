@@ -208,7 +208,10 @@ if [[ "$DOIAU" == "YES" ]]; then
         done # ensembles
 
         CDATE="${PDY}${cyc}" "${CYCLESH}" && true
-        export err=$?; err_chk
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+           err_exit "Failed to update IAU surface increment from!"
+        fi
 
         # Copy outputs from DATA to COMOUT
         for imem in $(seq 1 $NMEM_ENS); do
@@ -279,7 +282,10 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
         done
 
         CDATE="${PDY}${cyc}" "${CYCLESH}" && true
-        export err=$?; err_chk
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+           err_exit "Failed to update surface increment!"
+        fi
 
         # Copy outputs from DATA to COMOUT
         for imem in $(seq 1 "${NMEM_ENS}"); do
