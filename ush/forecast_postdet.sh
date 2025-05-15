@@ -139,7 +139,7 @@ FV3_postdet() {
       if [[ ${DO_LAND_IAU} = ".true." ]]; then
         DO_LAND_IAU=".false."
         LAND_IAU_FHRS=-1
-        LAND_IAU_DELTHRS=0
+        LAND_IAU_DELHRS=0
         LAND_IAU_INC_FILES="''"
       fi
     #--------------------------------------------------------------------------
