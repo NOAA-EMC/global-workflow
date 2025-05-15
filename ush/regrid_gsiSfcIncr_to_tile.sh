@@ -144,7 +144,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         
         sed -i -e 's/!/ /g' "regrid.nml"
         
-	#TODO: fix until reg code time dim issues are sorted out
+	      #TODO: fix until reg code time dim issues are sorted out
         if [[ "${n_tims}" -eq 1 ]]; then
             for FHI in "${ifhrsi[@]}"; do
                 ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
@@ -152,15 +152,15 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
             done
         else
             for FHI in "${ifhrsi[@]}"; do
-	        ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
+	              ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
                        "${DATA}/${in_fname}.${FHI}"
             done
-	fi
+	      fi
         
-	${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+	      ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
    
         #TODO: fix until reg code time dim issues are sorted out
-	if [[ "${n_tims}" -eq 1 ]]; then 
+	      if [[ "${n_tims}" -eq 1 ]]; then 
             for n in $(seq 1 "${ntiles}"); do
                 ncecat -O -u Time "sfci.tile${n}.nc" "sfci.tile${n}.nc"   
                 ncap2 -A -s @all="{${ifhrsf[*]}}" "sfci.tile${n}.nc" "sfci.tile${n}.nc"
