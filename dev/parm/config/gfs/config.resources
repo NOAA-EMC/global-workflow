@@ -572,8 +572,8 @@ case ${step} in
           memory="500GB"
           walltime="01:30:00"
         else
-           ntasks=40
-  ￼        memory="256GB"
+          ntasks=40
+  ￼       memory="256GB"
         fi
         ;;
       "050")
