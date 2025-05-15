@@ -40,7 +40,6 @@ class GEFSTasks(Tasks):
 
         return task
 
-
     def waveinit(self):
 
         resources = self.get_resource('waveinit')
