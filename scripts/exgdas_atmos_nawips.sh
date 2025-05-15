@@ -20,7 +20,7 @@ source "${USHgfs}/product_functions.sh"
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
   source_table="${HOMEgfs}/gempak/fix/${table}"
   if [[ ! -f "${source_table}" ]]; then
-    err_exit "FATAL ERROR: ${table} is missing"
+    err_exit "${table} is missing"
   fi
   cp "${source_table}" "${table}"
 done
@@ -45,8 +45,7 @@ export GRIBIN="${!source_dirvar}/${model}.${cycle}.pgrb2.${grid}.f${fhr3}"
 GRIBIN_chk="${GRIBIN}.idx"
 
 if [[ ! -r "${GRIBIN_chk}" ]]; then
-  export err=7
-  err_chk "FATAL ERROR: GRIB index file ${GRIBIN_chk} not found!"
+  err_exit "GRIB index file ${GRIBIN_chk} not found!"
 fi
 
 cp "${GRIBIN}" "grib${fhr3}"
@@ -73,7 +72,9 @@ r
 EOF
 
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+  err_exit "${NAGRIB} failed to create ${GEMGRD}!"
+fi
 
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
 if [[ ${SENDDBN} = "YES" ]] ; then

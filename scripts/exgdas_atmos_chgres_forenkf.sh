@@ -156,7 +156,9 @@ EOF
 
          ${APRUN_CHGRES} "${CHGRESNCEXEC}" "chgres_nc_gauss0${FHR}.nml" && true
          export err=$?
-         err_chk
+         if [[ ${err} -ne 0 ]];
+           err_exit
+         fi
      fi
    done
 
@@ -172,7 +174,9 @@ EOF
 
          ${APRUNCFP_CHGRES} "${DATA}/mp_chgres.sh" && true
          export err=$?
-         err_chk
+         if [[ ${err} -ne 0 ]];
+           err_exit
+         fi
       fi
    fi
 

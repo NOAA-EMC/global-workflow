@@ -109,8 +109,7 @@ for fhr in "${hour_list[@]}"; do
 
   filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
   if [[ -z ${filename} ]]; then
-    echo "File ${filename} is required but not found."
-    err_exit "FATAL ERROR: logf${fhr} not found."
+    err_exit "File ${filename} not found."
   else
     echo "${runscript} ${fhr} ${fhr_p} ${FINT} ${F00FLAG} ${DATA}/${fhr}" >> "${DATA}/poescript_bufr"
   fi
@@ -119,9 +118,9 @@ done
 # Run with MPMD 
 "${USHgfs}/run_mpmd.sh" "${DATA}/poescript_bufr" && true
 export err=$?
-set +x
-err_chk "FATAL ERROR: One or more BUFR MPMD tasks failed!"
-set_trace
+if [[ ${err} -ne 0 ]]; then
+   err_exit "One or more BUFR MPMD tasks failed!"
+fi
 
 cd "${DATA}" || exit 2
 
@@ -172,7 +171,7 @@ fi
 ########################################
 rm -rf poe_col
 for (( m = 1; m <= NUM_SND_COLLECTIVES; m++ )); do
-    echo "sh ${USHgfs}/gfs_sndp.sh ${m} " >> poe_col
+    echo "${USHgfs}/gfs_sndp.sh ${m} " >> poe_col
 done
 
 if [[ "${CFP_MP:-"NO"}" == "YES" ]]; then

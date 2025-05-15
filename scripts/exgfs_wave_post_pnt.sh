@@ -49,7 +49,7 @@ EOF
   if [[ -z "${NTASKS}" ]]
   then
     export err=1
-    err_chk "FATAL ERROR: requires NTASKS to be set "
+    err_exit "Requires NTASKS to be set"
   fi
 
 # 0.c Defining model grids
@@ -94,7 +94,7 @@ EOF
     if [[ ! -f "mod_def.${grdID}" ]]
     then
       export err=2
-      err_chk "FATAL ERROR: NO MOD_DEF FILE mod_def.${grdID}"
+      err_exit "NO MOD_DEF FILE mod_def.${grdID}"
     else
       echo "File mod_def.${grdID} found. Syncing to all nodes ..."
     fi
@@ -125,7 +125,7 @@ EOF
     echo "   buoy.loc and buoy.ibp copied and processed (${PARMgfs}/wave/wave_${NET}.buoys)."
   else
     export err=3
-    err_chk 'FATAL ERROR: NO BUOY LOCATION FILE'
+    err_exit 'NO BUOY LOCATION FILE'
   fi
 
 # 1.c Input template files
@@ -140,7 +140,7 @@ EOF
     echo "   ww3_outp_spec.inp.tmpl copied. Syncing to all grids ..."
   else
     export err=3
-    err_chk "FATAL ERROR: NO TEMPLATE FOR SPEC INPUT FILE"
+    err_exit "NO TEMPLATE FOR SPEC INPUT FILE"
   fi
 
   if [[ -f "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ]]
@@ -153,7 +153,7 @@ EOF
     echo "   ww3_outp_bull.inp.tmpl copied. Syncing to all nodes ..."
   else
     export err=4
-    err_chk "FATAL ERROR: NO TEMPLATE FOR BULLETIN INPUT FILE"
+    err_exit "NO TEMPLATE FOR BULLETIN INPUT FILE"
   fi
 
 # 1.d Linking the output files
@@ -175,7 +175,7 @@ EOF
       ${NLN} "${pfile}" "./${YMD}.${HMS}.out_pnt.ww3.nc"
     else
       export err=7
-      err_chk "FATAL ERROR: NO RAW POINT OUTPUT FILE ${YMD}.${HMS}.out_pnt.ww3.nc"
+      err_exit "NO RAW POINT OUTPUT FILE ${YMD}.${HMS}.out_pnt.ww3.nc"
     fi
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
@@ -213,7 +213,7 @@ EOF
     then
       cat buoy_tmp.loc || true
       export err=5
-      err_chk "FATAL ERROR: ${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
+      err_exit "${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
     fi
 
 # Create new buoy_log.ww3
@@ -229,7 +229,7 @@ EOF
       echo 'Buoy log file created. Syncing to all nodes ...'
     else
       export err=6
-      err_chk "FATAL ERROR: NO BUOY LOG FILE CREATED"
+      err_exit "NO BUOY LOG FILE CREATED"
     fi
 
 # 1.f Data summary
@@ -329,7 +329,7 @@ EOF
   export err=$?
   if [[ ${err} -ne 0 ]]; then
      export pgm="run_mpmd.sh"
-     err_chk "FATAL ERROR: run_mpmd failed while tarring point outputs."
+     err_exit "run_mpmd failed while tarring point outputs."
   fi
 
 # End of WW3 point prostprocessor script ---------------------------------------- #

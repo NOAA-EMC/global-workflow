@@ -86,7 +86,7 @@ ${WGRIB2} "tmpfile${fcsthr}" | grep -F -f "${PARMgfs}/product/gfs_awips_parmlist
    ${WGRIB2} -i -grib masterfile "tmpfile${fcsthr}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-   err_chk "FATAL ERROR: masterfile does not exist."
+   err_exit "masterfile does not exist."
 fi
 
 ${WGRIB2} masterfile -match ":PWAT:entire atmosphere" -grib gfs_pwat.grb
@@ -96,7 +96,10 @@ ${WGRIB2} masterfile | grep -v ":PWAT:entire atmosphere" | ${WGRIB2} -i -grib te
 #  in production defintion template (PDT) 4.0
 ##################################################################
 ${WGRIB2} gfs_pwat.grb -set_byte 4 23 10 -grib gfs_pwat_levels_10.grb && true
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "Failed to redefine PWAT for the entire atmosphere!"
+fi
 
 cat temp_gfs   gfs_pwat_levels_10.grb > tmp_masterfile
 
@@ -137,7 +140,7 @@ for GRID in conus ak prico pac 003; do
          ;;
       *)
          export err=2
-         err_chk "FATAL ERROR: Unknown output grid ${GRID}"
+         err_exit "Unknown output grid ${GRID}"
          ;;
    esac
    trim_rh "awps_file_f${fcsthr}_${GRID}"
@@ -154,7 +157,8 @@ for GRID in conus ak prico pac 003; do
    numrec=$( ${WGRIB2} "awps_file_f${fcsthr}_${GRID}" | wc -l )
 
    if [[ ${numrec} -lt ${numparm} ]]; then
-       msg="FATAL ERROR: awps_file_f${fcsthr}_${GRID} file is missing fields for AWIPS !"
+       export err=1
+       msg="awps_file_f${fcsthr}_${GRID} file is missing fields for AWIPS !"
        err_exit "${msg}"
    fi
 
@@ -172,7 +176,10 @@ for GRID in conus ak prico pac 003; do
       cp "${PARMgfs}/wmo/grib2_awpgfs${fcsthr}.${GRID}" "parm_list"
 
       ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
-      export err=$?; err_chk
+      export err=$?
+      if [[ ${err} -ne 0 ]]; then
+         err_exit "Faile to generate the awips Grib2 file!"
+      fi
 
       ##############################
       # Post Files to ${COMOUT_ATMOS_WMO}
@@ -199,7 +206,10 @@ for GRID in conus ak prico pac 003; do
       cpreq "${PARMgfs}/wmo/grib2_awpgfs_20km_${GRID}f${fcsthr}" "parm_list"
 
       ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
-      export err=$?; err_chk
+      export err=$?
+      if [[ ${err} -ne 0 ]]; then
+         err_exit "Failed to write the AWIPS grib2 file"
+      fi
 
       ##############################
       # Post Files to ${COMOUT_ATMOS_WMO}

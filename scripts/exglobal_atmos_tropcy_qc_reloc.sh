@@ -92,9 +92,11 @@ if [[ "${DO_RELOCATE}" = 'YES' ]]; then
 
    export MP_LABELIO=${MP_LABELIO:-yes}
    "${USHgfs}/tropcy_relocate.sh" "${cdate10}"
-   errsc=$?
+   export err=$?
 
-   [[ "${errsc}" -ne '0' ]]  &&  exit ${errsc}
+   if [[ ${err} -ne 0 ]]; then
+      err_exit "Failed while updating tropical cyclone data!"
+   fi
 
 
 # save global sigma guess file(s) possibly updated by tropical cyclone

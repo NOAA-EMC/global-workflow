@@ -162,11 +162,14 @@ if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
 
    export OMP_NUM_THREADS=${NTHREADS_ECEN}
    export pgm=${GETATMENSMEANEXEC}
-   . prep_step
+   source prep_step
 
    ${NCP} ${GETATMENSMEANEXEC} ${DATA}
    ${APRUN_ECEN} ${DATA}/$(basename ${GETATMENSMEANEXEC}) ${DATAPATH} ${ATMANLMEANNAME} ${ATMANLNAME} ${NMEM_ENS}
-   export err=$?; err_chk
+   export err=$?
+   if [[ ${err} -ne 0 ]]; then
+      err_exit "Failed to recenter the ensemble analyses!"
+   fi
 else
    # Link ensemble mean increment
    if [[ ${FHR} -eq 6 ]]; then
@@ -182,11 +185,14 @@ else
 
    export OMP_NUM_THREADS=${NTHREADS_ECEN}
    export pgm=${GETATMENSMEANEXEC}
-   . prep_step
+   source prep_step
 
    ${NCP} ${GETATMENSMEANEXEC} ${DATA}
    ${APRUN_ECEN} ${DATA}/$(basename ${GETATMENSMEANEXEC}) ${DATAPATH} ${ATMINCMEANNAME} ${ATMINCNAME} ${NMEM_ENS}
-   export err=$?; err_chk
+   export err=$?
+   if [[ ${err} -ne 0 ]]; then
+      err_exit "Failed to recenter the ensemble increments!"
+   fi
 
    # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
    if [[ -s "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}atmf00${FHR}.ensmean.nc" ]]; then
@@ -198,11 +204,14 @@ else
 
        export OMP_NUM_THREADS=${NTHREADS_ECEN}
        export pgm=${GETATMENSMEANEXEC}
-       . prep_step
+       source prep_step
 
        ${NCP} ${GETATMENSMEANEXEC} ${DATA}
        ${APRUN_ECEN} ${DATA}/$(basename ${GETATMENSMEANEXEC}) ${DATAPATH} ${ATMGESMEANNAME} ${ATMGESNAME} ${NMEM_ENS}
-       export err=$?; err_chk
+       export err=$?
+       if [[ ${err} -ne 0 ]]; then
+          err_exit "Failed to recenter the ensemble mean guess!"
+       fi
    fi
 fi
 
@@ -221,7 +230,7 @@ if [[ ${JCAP_ENKF} -eq -9999 && ${LATB_ENKF} -ne -9999 ]]; then
 fi
 if [[ ${LONB_ENKF} -eq -9999 || ${LATB_ENKF} -eq -9999 || ${LEVS_ENKF} -eq -9999 || ${JCAP_ENKF} -eq -9999 ]]; then
    export err=9
-   err_chk
+   err_exit "One or more EnKF corners are undefined!"
 fi
 
 ################################################################################
@@ -268,7 +277,10 @@ if [[ ${RECENTER_ENKF} = "YES" ]]; then
 EOF
       cat ${chgresnml}
       ${APRUN_CHGRES} ./chgres.x
-      export err=$?; err_chk
+      export err=$?
+      if [[ ${err} -ne 0 ]]; then
+         err_exit "Faile to change the resolution of the mean ensemble analysis!"
+      fi
    fi
 
    if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
@@ -282,11 +294,14 @@ EOF
 
       export OMP_NUM_THREADS=${NTHREADS_ECEN}
       export pgm=${RECENATMEXEC}
-      . prep_step
+      source prep_step
 
       ${NCP} ${RECENATMEXEC} ${DATA}
       ${APRUN_ECEN} ${DATA}/$(basename ${RECENATMEXEC}) ${FILENAMEIN} ${FILENAME_MEANIN} ${FILENAME_MEANOUT} ${FILENAMEOUT} ${NMEM_ENS}
-      export err=$?; err_chk
+      export err=$?
+      if [[ ${err} -ne 0 ]]; then
+         err_exit "Failed to recenter the ensemble resolution mean analysis"
+      fi
    else
       ################################################################################
       # Recenter ensemble member atmospheric increments about hires analysis
@@ -312,11 +327,14 @@ EOF
 cat recenter.nml
 
       export pgm=${RECENATMEXEC}
-      . prep_step
+      source prep_step
 
       ${NCP} ${RECENATMEXEC} ${DATA}
       ${APRUN_ECEN} ${DATA}/$(basename ${RECENATMEXEC}) ${FILENAMEIN} ${FILENAME_INCMEANIN} ${FILENAME_GSIDET} ${FILENAMEOUT} ${NMEM_ENS} ${FILENAME_GESMEANIN}
-      export err=$?; err_chk
+      export err=$?
+      if [[ ${err} -ne 0 ]]; then
+         err_exit "Failed to recenter the mean ensemble resolution increments!"
+      fi
    fi
 fi
 
@@ -333,7 +351,7 @@ if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
    CALCINCEXEC=${CALCINCNCEXEC}
 
    export pgm=${CALCINCEXEC}
-   . prep_step
+   source prep_step
 
    ${NCP} ${CALCINCEXEC} ${DATA}
    if [[ -f calc_increment.nml ]]; then
@@ -356,7 +374,10 @@ EOF
 cat calc_increment.nml
 
    ${APRUN_CALCINC} ${DATA}/$(basename ${CALCINCEXEC})
-   export err=$?; err_chk
+   export err=$?
+   if [[ ${err} -ne 0 ]]; then
+      err_exit "Failed to calculate teh increment from the ensemble guess!"
+   fi
 fi
 done # loop over analysis times in window
 

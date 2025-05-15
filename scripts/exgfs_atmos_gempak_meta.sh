@@ -18,15 +18,15 @@ first_time=0
 do_all=0
 
 #loop through and process needed forecast hours
-while (( fhr <= fhend )); do
+while [[ ${fhr} -le ${fhend} ]]; do
   #
   # First check to see if this is a rerun.  If so make all Meta files
-  if (( fhr > 126 )) && (( first_time == 0 )); then
+  if [[ ${fhr} -gt 126 && ${first_time} -eq 0 ]]; then
     do_all=1
   fi
   first_time=1
 
-  if (( fhr == 120 )); then
+  if [[ ${fhr} -eq 120 ]]; then
     fhr=126
   fi
 
@@ -49,7 +49,7 @@ while (( fhr <= fhend )); do
 
   fhr3=$(printf "%03d" "${fhr}")
 
-  if (( do_all == 1 )) ; then
+  if [[ ${do_all} -eq 1 ]] ; then
     do_all=0
     # shellcheck disable=SC2312
     awk '{print $1}' "${HOMEgfs}/gempak/fix/gfs_meta" | envsubst > "poescript"
@@ -58,7 +58,7 @@ while (( fhr <= fhend )); do
     #    Do not try to grep out 12, it will grab the 12 from 126.
     #    This will work as long as we don't need 12 fhr metafiles
     #
-    if (( fhr != 12 )) ; then
+    if [[ ${fhr} -ne 12 ]] ; then
       # shellcheck disable=SC2312
       grep "${fhr}" "${HOMEgfs}/gempak/fix/gfs_meta" | awk -F" [0-9]" '{print $1}' | envsubst > "poescript"
     fi
@@ -67,7 +67,7 @@ while (( fhr <= fhend )); do
   #  If this is the final fcst hour, alert the
   #  file to all centers.
   #
-  if (( fhr >= fhend )) ; then
+  if [[ ${fhr} -ge ${fhend} ]] ; then
     export DBN_ALERT_TYPE=GFS_METAFILE_LAST
   fi
 
@@ -78,7 +78,7 @@ while (( fhr <= fhend )); do
   "${HOMEgfs}/ush/run_mpmd.sh" poescript && true
   export err=$?; err_chk
 
-  if (( fhr == 126 )) ; then
+  if [[ ${fhr} -eq 126 ]] ; then
     fhr=$((fhr + 6))
   else
     fhr=$((fhr + fhinc))

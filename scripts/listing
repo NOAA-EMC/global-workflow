@@ -1,0 +1,8 @@
+vim exglobal_atmos_analysis_calc.sh
+vim exglobal_atmos_analysis.sh
+vim exglobal_atmos_ensstat.sh
+vim exglobal_atmos_products.sh
+vim exglobal_atmos_sfcanl.sh
+vim exglobal_atmos_vminmon.sh
+vim exglobal_diag.sh
+vim exglobal_forecast.sh

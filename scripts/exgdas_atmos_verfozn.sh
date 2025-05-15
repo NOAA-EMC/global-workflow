@@ -38,11 +38,13 @@ if [[ -s ${oznstat} ]]; then
 
    "${USHgfs}/ozn_xtrct.sh" && true
    export err=$?
+   if [[ ${err} -ne 0 ]]; then
+     err_exit "ozn_xtrct.sh failed!"
+   fi
 
 else
    # oznstat file not found
    export err=1
+   err_exit "${oznstat} does not exist!"
 fi
-
-err_chk
 exit 0
