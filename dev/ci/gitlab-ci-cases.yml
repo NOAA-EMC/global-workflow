@@ -57,15 +57,15 @@
   script:
     - |
       echo "Finalizing PR test cases on ${machine} using ${GW_HOMEgfs}"
-      echo "Creating date-based directory: ${DATED_PATH}"
+      echo "Creating date-based directory: ${W
       if [ "${WORKSPACE_BASE}" != "${WORKSPACE_NAME}" ]; then
         # Rename the WORKSPACE_BASE directory to include the date
         if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_BASE}" ]; then
-          echo "Moving ${CI_BUILDS_DIR}/${WORKSPACE_BASE} to ${DATED_PATH}"
+          echo "Moving ${CI_BUILDS_DIR}/${WORKSPACE_BASE} to ${WORKSPACE_NAME
           cd "${CI_BUILDS_DIR}"
           mv "${WORKSPACE_BASE}" "${WORKSPACE_NAME}"
           # Create a stable symlink for future reference
-          echo "Setting softlink to ${DATED_PATH} as ${CI_BUILDS_DIR}/stable"
+          echo "Setting softlink to ${WORKSPACE_NAME} as ${CI_BUILDS_DIR}/stable"
           ln -sf ${WORKSPACE_NAME} stable
           echo "Successfully created date-based directory and stable symlink"
         else
