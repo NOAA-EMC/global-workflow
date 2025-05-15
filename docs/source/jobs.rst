@@ -47,7 +47,7 @@ Jobs in the GFS Configuration
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | earcN/eamn        | Archival script for EnKF that write selected EnKF output to HPSS or locally                                           |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------|
-| globus_earcN      | Additional archival script that pushes data to HPSS via Niagara.                                                      |
+| globus_earcN      | Additional archival script that pushes data to HPSS via Mercury.                                                      |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | ecenN/ecmn        | Recenter ensemble members around hi-res deterministic analysis.  GFS v16 recenters ensemble member analysis.          |
 |                   | increments.                                                                                                           |

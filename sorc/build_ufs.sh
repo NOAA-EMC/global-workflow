@@ -56,6 +56,7 @@ case "${EXEC_NAME}" in
   "gfs_model.x") COMPILE_ID=1 ;;
   "gefs_model.x") COMPILE_ID=2 ;;
   "sfs_model.x") COMPILE_ID=3 ;;
+  "gcafs_model.x") COMPILE_ID=4 ;;
   *) echo "Unsupported executable name: ${EXEC_NAME}"; exit 1 ;;
 esac
 CLEAN_BEFORE=YES

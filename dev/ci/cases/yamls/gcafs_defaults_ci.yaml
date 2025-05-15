@@ -1,0 +1,4 @@
+defaults:
+  !INC {{ HOMEgfs }}/parm/config/gcafs/yaml/defaults.yaml
+base:
+  DO_TEST_MODE: "NO"
