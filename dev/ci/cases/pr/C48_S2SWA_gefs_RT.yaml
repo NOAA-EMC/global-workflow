@@ -9,7 +9,6 @@ arguments:
   resdetatmos: 48
   resdetocean: 5.0
   resensatmos: 48
-  nens: 30
   interval: 24
   start: cold
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT

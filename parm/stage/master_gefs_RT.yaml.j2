@@ -51,18 +51,6 @@
 {% set p_prefix = previous_cycle | strftime("%Y%m%d.%H0000") %}
 {% set m_prefix = model_start_date_current_cycle | strftime("%Y%m%d.%H0000") %}
 
-# Declare to-be-filled lists of member COM directories
-# ----------------------------------------------------
-{% set COMOUT_ATMOS_INPUT_MEM_list = [] %}
-{% set COMOUT_ATMOS_RESTART_PREV_MEM_list = [] %}
-{% set COMOUT_ATMOS_ANALYSIS_MEM_list = [] %}
-{% set COMOUT_ICE_ANALYSIS_MEM_list = [] %}
-{% set COMOUT_ICE_RESTART_PREV_MEM_list = [] %}
-{% set COMOUT_OCEAN_RESTART_PREV_MEM_list = [] %}
-{% set COMOUT_OCEAN_ANALYSIS_MEM_list = [] %}
-{% set COMOUT_MED_RESTART_PREV_MEM_list = [] %}
-{% set COMOUT_WAVE_RESTART_PREV_MEM_list = [] %}
-
 # Construct member COM directory lists
 # ------------------------------------
 {% set current_cycle_dict = ({ '${ROTDIR}':ROTDIR,
