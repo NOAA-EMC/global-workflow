@@ -63,7 +63,7 @@ export filesize=$( ls -l rdbfmsua.out | awk '{print $5}' )
 #   only run script if rdbfmsua.out contained upper air data.
 ################################################################
 
-if [[ ${filesize} > 40 ]]; then
+if [[ ${filesize} -gt 40 ]]; then
     cpfs rdbfmsua.out "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperair"
     cpfs sonde.idsms.tbl "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperairtble"
     if [[ ${SENDDBN} = "YES" ]]; then

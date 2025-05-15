@@ -90,7 +90,7 @@ source prep_step
 export err=$?
 if [[ ${err} -ne 0 ]]; then
    echo "FATAL ERROR: ${pgm} returned non-zero status: ${err}; exiting!"
-   exit ${err}
+   exit "${err}"
 fi
 cat "grib2_${grid_region}_${FH3}.out"
 

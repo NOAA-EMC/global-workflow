@@ -117,7 +117,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     if [[ ${rc} == 0 ]]; then  # Matched the grep
       last=$(( last + 1 ))
     fi
-    if [[ ${iproc} == ${nproc} ]]; then
+    if [[ ${iproc} -eq ${nproc} ]]; then
       last=${ncount}
     fi
 
@@ -133,7 +133,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
     # if at final record and have not reached the final processor then write echo's to
     # poescript for remaining processors
-    if [[ ${last} == ${ncount} ]]; then
+    if [[ ${last} -eq ${ncount} ]]; then
       for (( pproc = iproc+1 ; pproc < nproc ; pproc++ )); do
         echo "/bin/echo ${pproc}" >> "${DATA}/poescript"
       done
@@ -264,7 +264,7 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
     elif [[ "${RUN}" == "gfs" ]]; then
 
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm${fhr3}.nc"
-      if [[ ${fhr} -gt 0 && fhr -le 84 || ${fhr} == 120 ]]; then
+      if [[ ${fhr} -gt 0 && ${fhr} -le 84 || ${fhr} -eq 120 ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc${fhr3}.nc"
       fi
 

@@ -17,8 +17,6 @@
 #
 ################################################################################
 
-data_available=0
-
 # Do not exit on errors so that restricted data can be protected
 set +eu
 
@@ -26,8 +24,6 @@ if [[ ! -s ${radstat} || ! -s ${biascr} ]]; then
    export err=1
    err_exit "Reqired data files ${radstat} and/or ${biascr} are missing!!"
 fi
-
-data_available=1
 
 #------------------------------------------------------------------
 #  Copy data files file to local data directory.
@@ -132,28 +128,28 @@ rc_angle=$?
 # Allow all scripts to run.  Call err_exit at the end, after files are restricted.
 if [[ ${rc_angle} -ne 0 ]]; then
    echo "FATAL ERROR: radmon_verf_angle.sh failed!"
-else
+fi
 
 "${USHgfs}/radmon_verf_bcoef.sh" && true
 rc_bcoef=$?
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
    echo "FATAL ERROR: radmon_verf_bcoef.sh failed!"
-else
+fi
 
 "${USHgfs}/radmon_verf_bcor.sh" && true
 rc_bcor=$?
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
    echo "FATAL ERROR: radmon_verf_bcor.sh failed!"
-else
+fi
 
 "${USHgfs}/radmon_verf_time.sh" && true
 rc_time=$?
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
    echo "FATAL ERROR: radmon_verf_time.sh failed!"
-else
+fi
 
 #####################################################################
 # Restrict select sensors and satellites

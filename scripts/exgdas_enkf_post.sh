@@ -107,7 +107,6 @@ if [[ "${SMOOTH_ENKF}" == "YES" ]]; then
     cpreq "${HYBENSMOOTH}" ./hybens_smoothinfo
 fi
 
-rc=0
 for fhr in $(seq ${FHMIN} ${FHOUT} ${FHMAX}); do
    fhrchar=$(printf %03i ${fhr})
 

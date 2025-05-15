@@ -15,6 +15,6 @@ fi
 
 "${USHgfs}/run_mpmd.sh" mpmd_script
 export err=$?
-if ${err} -ne 0 ]]; then
+if [[ ${err} -ne 0 ]]; then
    err_exit "One ore more MPMD jobs failed to calculate ensemble statistics!"
 fi

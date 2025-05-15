@@ -579,7 +579,7 @@ fi
 # Handle inconsistent surface mask between background, ensemble and analysis grids
 # This needs re-visiting in the context of NSST; especially references to JCAP*
 if [[ ${JCAP} -ne ${JCAP_A} ]]; then
-   if [[ ${DOHYBVAR} == "YES" && ${JCAP_A} == ${JCAP_ENKF} ]]; then
+   if [[ ${DOHYBVAR} == "YES" && ${JCAP_A} == "${JCAP_ENKF}" ]]; then
       if [[ -e ${SFCGES_ENSMEAN} ]]; then
          USE_READIN_ANL_SFCMASK=.true.
          ${NLN} ${SFCGES_ENSMEAN} sfcf06_anlgrid

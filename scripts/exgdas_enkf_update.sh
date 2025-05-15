@@ -247,7 +247,7 @@ done
 
 if [[ "${USE_CFP}" == "YES" ]]; then
    chmod 755 "${DATA}/mp_untar.sh"
-   ncmd=$(cat "${DATA}/mp_untar.sh" | wc -l)
+   ncmd=$(wc -l < "${DATA}/mp_untar.sh")
    if [[ ${ncmd} -gt 0 ]]; then
       ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
       APRUNCFP=$(eval echo "${APRUNCFP}")
