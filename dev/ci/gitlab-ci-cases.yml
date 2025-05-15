@@ -62,12 +62,11 @@
         # Rename the WORKSPACE_BASE directory to include the date
         if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_BASE}" ]; then
           echo "Moving ${CI_BUILDS_DIR}/${WORKSPACE_BASE} to ${DATED_PATH}"
-          mkdir -p $(dirname "${DATED_PATH}")
-          mv "${CI_BUILDS_DIR}/${WORKSPACE_BASE}" "${DATED_PATH}"
-          
+          cd "${CI_BUILDS_DIR}"
+          mv "${WORKSPACE_BASE}" "${WORKSPACE_NAME}"
           # Create a stable symlink for future reference
           echo "Setting softlink to ${DATED_PATH} as ${CI_BUILDS_DIR}/stable"
-          ln -sf "${DATED_PATH}" "${CI_BUILDS_DIR}/stable"
+          ln -sf ${WORKSPACE_NAME} stable
           echo "Successfully created date-based directory and stable symlink"
         else
           echo "WARNING: Source directory ${CI_BUILDS_DIR}/${WORKSPACE_BASE} not found"
@@ -76,7 +75,8 @@
         fi
       else
         echo "WORKSPACE_BASE already includes the date, creating stable symlink"
-        ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
+        cd "${CI_BUILDS_DIR}"
+        ln -sf ${WORKSPACE_NAME} stable
       fi
 
   needs:
