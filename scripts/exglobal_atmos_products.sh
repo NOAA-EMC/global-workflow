@@ -157,10 +157,10 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   for (( iproc = 1 ; iproc <= nproc ; iproc++ )); do
     for grid in "${grids[@]}"; do
       cat "pgb2${grp}file_${fhr3}_${iproc}_${grid}" >> "pgb2${grp}file_${fhr3}_${grid}"
-      rm  "pgb2${grp}file_${fhr3}_${iproc}_${grid}"
+      rm  -f "pgb2${grp}file_${fhr3}_${iproc}_${grid}"
     done
     # There is no further use of the processor specific tmpfile; delete it
-    rm "${tmpfile}_${iproc}"
+    rm -f "${tmpfile}_${iproc}"
   done
 
   # Move to COM and index the product grib files

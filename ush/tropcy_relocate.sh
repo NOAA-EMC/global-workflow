@@ -493,9 +493,7 @@ else
 #  relocate model tropical cyclone vortices in ges sigma files
 #  -----------------------------------------------------------
 
-   if [ -s fort.*  ]; then
-     rm fort.*
-   fi
+   rm -f fort.*
 
    ${NLN} $DATA/tcvitals.now1      fort.11
    ${NLN} $DATA/model_track.all    fort.30
@@ -628,7 +626,7 @@ else
 #   the sgesprep file updated here by the relocation
 #  --------------------------------------------------------------------------
 
-   rm "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
+   rm -f "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
 
    echo "TROPICAL CYCLONE RELOCATION PROCESSING SUCCESSFULLY COMPLETED FOR \
 $CDATE10"

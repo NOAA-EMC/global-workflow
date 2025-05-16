@@ -262,9 +262,7 @@ if [[ ${RECENTER_ENKF} = "YES" ]]; then
 
       export OMP_NUM_THREADS=${NTHREADS_CHGRES}
 
-      if [[ -f "${chgresnml}" ]]; then
-          rm -f "${chgresnml}"
-      fi
+      rm -f "${chgresnml}"
       cat > "${chgresnml}" << EOF
 &${nmltitle}_setup
   i_output=${LONB_ENKF}
@@ -316,9 +314,7 @@ EOF
 
       # make the small namelist file for incvars_to_zero
 
-      if [[ -f recenter.nml ]]; then
-          rm recenter.nml
-      fi
+      rm -f recenter.nml
       cat > recenter.nml << EOF
 &recenter
   incvars_to_zero = ${INCREMENTS_TO_ZERO}
@@ -353,10 +349,9 @@ if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
    export pgm=${CALCINCEXEC}
    source prep_step
 
-   ${NCP} ${CALCINCEXEC} ${DATA}
-   if [[ -f calc_increment.nml ]]; then
-       rm calc_increment.nml
-   fi
+   cpreq "${CALCINCEXEC}" "${DATA}"
+   rm -f calc_increment.nml
+
    cat > calc_increment.nml << EOF
 &setup
   datapath = './'

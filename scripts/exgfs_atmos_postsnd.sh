@@ -76,9 +76,7 @@ echo "Total number of hours: $ntasks"
 #export tasks_per_node=21
 #export APRUN="mpiexec -np ${ntasks} -ppn ${tasks_per_node} --cpu-bind core cfp "
 
-if [ -s "${DATA}/poescript_bufr" ]; then
-  rm ${DATA}/poescript_bufr
-fi
+rm -f ${DATA}/poescript_bufr
 
 for fhr in "${hour_list[@]}"; do
 

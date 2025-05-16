@@ -51,20 +51,16 @@
 
   echo "   Generate input file for ww3_outp."
 
-  if [[ "$specdir" == "bull" ]]
+  if [[ "${specdir}" == "bull" ]]
   then
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
     coutfile=${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
     for f in outfile coutfile; do
-      if [[ -f "${f}" ]]; then
-         rm "${f}"
-      fi
+      rm -f "${f}"
     done
   else
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
-    if [[ -f ${outfile} ]]; then
-      rm ${outfile}
-    fi
+    rm -f "${outfile}"
   fi
 
   fhr=$FHMIN_WAV
@@ -86,10 +82,10 @@
       then
         cat "${outfilefhr}" >> "${STA_DIR}/${specdir}/${WAV_MOD_TAG}.${buoy}.bull"
         cat "${coutfilefhr}" >> "${STA_DIR}/c${specdir}/${WAV_MOD_TAG}.${buoy}.cbull"
-        rm "${outfilefhr}" "${coutfilefhr}"
+        rm -f "${outfilefhr}" "${coutfilefhr}"
       else
         cat "${outfilefhr}" >> "${STA_DIR}/${specdir}/${WAV_MOD_TAG}.${buoy}.spec"
-        #rm $outfilefhr
+        #rm -f $outfilefhr
       fi
     else
       echo "FATAL ERROR: OUTPUT DATA FILE FOR BUOY ${buoy} at ${ymdh} NOT FOUND"

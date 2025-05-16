@@ -138,12 +138,7 @@ ${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"
 ################################################################################
 
 if [[ "${USE_CFP}" == "YES" ]]; then
-   if [[ -f "${DATA}/untar.sh" ]]; then
-       rm "${DATA}/untar.sh"
-   fi
-   if [[ -f "${DATA}/mp_untar.sh" ]]; then
-       rm "${DATA}/mp_untar.sh"
-   fi
+   rm -f "${DATA}/untar.sh" "${DATA}/mp_untar.sh"
    cat > "${DATA}/untar.sh" << EOFuntar
 #!/bin/sh
 memchar=\$1

@@ -126,7 +126,7 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
        echo "File ${RUN}.${cycle}.pgrb2f${fhr3}.npoess not posted to db_net."
    fi
    echo "${PDY}${cyc}${fhr3}" > "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.halfdeg.npoess"
-   rm tmpfile pgb2file
+   rm -f tmpfile pgb2file
 
 done
 
@@ -187,7 +187,7 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    fi
 
    echo "${PDY}${cyc}${fhr}" > "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb"
-   rm pgb2file2 pgb2ifile
+   rm -f pgb2file2 pgb2ifile
 
    if [[ ${SENDECF} == "YES" ]]; then
       # TODO Does this even do anything?

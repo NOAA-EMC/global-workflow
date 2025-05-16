@@ -43,18 +43,7 @@ CNVSTAT=${CNVSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat}
 OZNSTAT=${OZNSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat}
 
 # Remove stat file if file already exists
-if [[ -s "${RADSTAT}" ]]; then
-    rm -f "${RADSTAT}"
-fi
-if [[ -s "${PCPSTAT}" ]]; then
-    rm -f "${PCPSTAT}"
-fi
-if [[ -s "${CNVSTAT}" ]]; then
-    rm -f "${CNVSTAT}"
-fi
-if [[ -s "${OZNSTAT}" ]]; then
-    rm -f "${OZNSTAT}"
-fi
+rm -f "${RADSTAT}" "${PCPSTAT}" "${CNVSTAT}" "${OZNSTAT}"
 
 # Obs diag
 GENDIAG=${GENDIAG:-"YES"}
@@ -120,12 +109,7 @@ if [[ "${GENDIAG}" == "YES" ]] ; then
    fi
 
    if [[ "${USE_CFP}" == "YES" ]]; then
-      if [[ -f "${DATA}/diag.sh" ]]; then
-          rm "${DATA}/diag.sh"
-      fi
-      if [[ -f "${DATA}/mp_diag.sh" ]]; then
-          rm "${DATA}/mp_diag.sh"
-      fi
+      rm -f "${DATA}/diag.sh" "${DATA}/mp_diag.sh"
       cat > "${DATA}/diag.sh" << EOFdiag
 #!/bin/sh
 lrun_subdirs=\$1

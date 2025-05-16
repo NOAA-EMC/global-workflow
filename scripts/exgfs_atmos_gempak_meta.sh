@@ -43,9 +43,7 @@ while [[ ${fhr} -le ${fhend} ]]; do
   #  Note:  The number of scripts to be run MUST match the number
   #  of total_tasks set in the ecf script, or the job will fail.
   #
-  if [[ -f poescript ]]; then
-    rm poescript
-  fi
+  rm -f poescript
 
   fhr3=$(printf "%03d" "${fhr}")
 

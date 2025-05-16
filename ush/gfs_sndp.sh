@@ -49,9 +49,8 @@ EOF
           exit "${err}"
        fi
 
-       cat $DATA/${m}/bufrout >> $DATA/${m}/gfs_collective$m.fil
-       rm $DATA/${m}/bufrin
-       rm $DATA/${m}/bufrout
+       cat "${DATA}/${m}/bufrout" >> "${DATA}/${m}/gfs_collective${m}.fil"
+       rm -f "${DATA}/${m}/bufrin" "${DATA}/${m}/bufrout"
     done
 
     if [[ ${SENDDBN} == 'YES' ]] ; then

@@ -22,7 +22,7 @@ if [[ -s ${oznstat} ]]; then
    ${NCP} "${oznstat}" "./oznstat.${PDY}${cyc}"
 
    tar -xvf "oznstat.${PDY}${cyc}"
-   rm "oznstat.${PDY}${cyc}"
+   rm -f "oznstat.${PDY}${cyc}"
 
    netcdf=0
    count=$(ls diag* | grep ".nc4" | wc -l)

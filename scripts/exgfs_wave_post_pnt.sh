@@ -60,10 +60,7 @@ EOF
 #       and flush it
 
   export STA_DIR=${DATA}/station_ascii_files
-  if [[ -d ${STA_DIR} ]]
-  then
-    rm -rf ${STA_DIR}
-  fi
+  rm -rf "${STA_DIR}"
   mkdir -p ${STA_DIR}
   mkdir -p ${STA_DIR}/spec
   mkdir -p ${STA_DIR}/bull
@@ -256,7 +253,7 @@ EOF
   grep -F -f ibp_tags buoy_log.dat | awk '{ print $2 }' > buoys
   grep -F -f buoys buoy_log.ww3 | awk '{ print $1 }' > points
   points=$(awk '{print $0 "\\n"}' points | tr -d '\n')
-  rm buoys
+  rm -f buoys
 
   # Generate the ww3_outp.inp file from the template
   if [[ "${DOSPC_WAV}" == 'YES' ]]; then
