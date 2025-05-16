@@ -2,9 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "waveinit" -c "base wave waveinit"
 
-# Add default errchk = err_chk
-export errchk=${errchk:-err_chk}
-
 export MP_PULSE=0
 
 # Set COM Paths
@@ -18,9 +15,9 @@ export wavempexec=${wavempexec:-"mpirun -n"}
 export wave_mpmd=${wave_mpmd:-"cfp"}
 
 # Execute the Script
-"${SCRgfs}/exgfs_wave_init.sh"
-err=$?
-if [[ "${err}" -ne 0 ]]; then exit "${err}"; fi
+"${SCRgfs}/exgfs_wave_init.sh" && true
+export err=$?
+err_chk
 
 ##########################################
 # Remove the Temporary working directory
