@@ -376,7 +376,7 @@ cat calc_increment.nml
    ${APRUN_CALCINC} ${DATA}/$(basename ${CALCINCEXEC})
    export err=$?
    if [[ ${err} -ne 0 ]]; then
-      err_exit "Failed to calculate teh increment from the ensemble guess!"
+      err_exit "Failed to calculate the increment from the ensemble guess!"
    fi
 fi
 done # loop over analysis times in window
