@@ -78,7 +78,7 @@ class AtmEnsAnalysis(Task):
 
         This method will initialize a global atmens analysis.
         This includes:
-        - initialize JEDI applications
+        - initialize JEDI LETKF observer and FV3 increment converter applications
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -141,13 +141,27 @@ class AtmEnsAnalysis(Task):
         logger.info(f"Initializing JEDI LETKF observer application")
         self.jedi_dict['atmensanlobs'].initialize(self.task_config)
 
-        # initialize JEDI LETKF solver application
-        logger.info(f"Initializing JEDI LETKF solver application")
-        self.jedi_dict['atmensanlsol'].initialize(self.task_config)
-
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")
         self.jedi_dict['atmensanlfv3inc'].initialize(self.task_config)
+
+    @logit(logger)
+    def initialize_letkf_solver(self) -> None:
+        """Initialize JEDI LETKF solver application
+
+        This method will initialize a JEDI LETKF solver application.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+        # initialize JEDI LETKF solver application
+        logger.info(f"Initializing JEDI LETKF solver application")
+        self.jedi_dict['atmensanlsol'].initialize(self.task_config)
 
     @logit(logger)
     def initialize_letkf(self) -> None:
