@@ -38,7 +38,7 @@
   err=$?
   if [[ ${err} -ne 0 ]]
   then
-    echo 'ERROR: COULD NOT CREATE TEMP DIRECTORY *** '
+    echo 'FATAL ERROR: COULD NOT CREATE TEMP DIRECTORY *** '
     exit 1
   fi
 
@@ -56,14 +56,14 @@ EOF
 
   if [[ $# -lt 1 ]]
   then
-    echo 'ERROR: LOCATION ID IN ww3_outp_spec.sh NOT SET'
+    echo 'FATAL ERROR: LOCATION ID IN ww3_outp_spec.sh NOT SET'
     exit 1
   else
     buoy=${bloc}
     point=$(awk "{if (\$2 == \"${buoy}\"){print \$1; exit} }" "${DATA}/buoy_log.ww3")
     if [[ -z "${point}" ]]
     then
-      echo 'ERROR: LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED'
+      echo 'FATAL ERROR: LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED'
       exit 2
     else
       printf "\n              Location ID/#   : %s (%s) ${buoy} (${point})\n   Spectral output start time : %s" "${buoy}" "${point}" "${ymdh}"
@@ -76,7 +76,7 @@ EOF
 
   if [[ -z "${CDATE+0}" || -z "${dtspec+0}" || -z "${EXECgfs+0}" || -z "${WAV_MOD_TAG+0}" || -z "${STA_DIR+0}" ]]
   then
-    echo 'ERROR: EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET'
+    echo 'FATAL ERROR: EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET'
     exit 3
   fi
 
@@ -136,7 +136,7 @@ EOF
   export err=$?
   if [[ ${err} -ne 0 ]]
   then
-    echo "ERROR : ERROR IN ${pgm} *** "
+    echo "FATAL ERROR : ERROR IN ${pgm} *** "
     exit 4
   fi
 
@@ -174,7 +174,7 @@ EOF
      fi
    fi
   else
-    echo "ERROR: OUTPUT DATA FILE FOR BUOY ${buoy} NOT FOUND"
+    echo "FATAL ERROR: OUTPUT DATA FILE FOR BUOY ${buoy} NOT FOUND"
     exit 5
   fi
 
