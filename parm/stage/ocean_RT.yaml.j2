@@ -41,8 +41,8 @@ ocean_RT:
             {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
             {% set restart_mem_path = ICSDIR ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.MOM.' %}
             {% set increment_mem_path = ICSDIR ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/ocean/enkfgfs.t' ~ current_cycle_HH ~ 'z.ocninc.nc' %}
-            {% set restart_destination_path = COMOUT_OCEAN_RESTART_PREV_MEM_list[imem] %}
-            {% set increment_destination_path = COMOUT_OCEAN_ANALYSIS_MEM_list[imem] %}
+            {% set restart_destination_path = COMOUT_OCEAN_RESTART_PREV_MEM %}
+            {% set increment_destination_path = COMOUT_OCEAN_ANALYSIS_MEM %}
 
         # Include increment files
             {% set file = increment_mem_path %}
