@@ -40,8 +40,6 @@ EOF
 fhr3=$(printf %03i ${FORECAST_HOUR})
 valid_time=$(date -u -d "${PDY} ${cyc} + ${FORECAST_HOUR} hours" "+%Y%m%d%H")
 
-cd "${DATA}" || exit 99
-
 # Copy model definition files
 for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
   cpreq "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
@@ -51,7 +49,7 @@ done
 cpreq "${COMIN_WAVE_HISTORY}/${RUN}.wave.t${cyc}z.${waveGRD}.f${fhr3}.bin" "./out_grd.${waveGRD}"
 
 # Check for input templates for interpolation (copying will be done in the interpolation script)
-if [[ "${DOGRI_WAV}" = "YES" ]]; then
+if [[ "${DOGRI_WAV}" == "YES" ]]; then
   for intGRD in ${waveinterpGRD}; do
     if [[ ! -f "${PARMgfs}/wave/${intGRD}_interp.inp.tmpl" ]]; then
       echo "WARNING: No template for grid interpolation"
@@ -63,11 +61,11 @@ if [[ "${DOGRI_WAV}" = "YES" ]]; then
 fi
 
 # Check for input templates for grib2 products (copying will be done in the grib2 script)
-if [[ "${DOGRB_WAV}" = "YES" ]]; then
+if [[ "${DOGRB_WAV}" == "YES" ]]; then
   for grbGRD in ${waveinterpGRD} ${wavepostGRD}; do
     if [[ ! -f "${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl" ]]; then
-      echo "FATAL ERROR: No template for grib generation"
-      DOGRB_WAV="NO"
+      export err=1
+      err_chk "FATAL ERROR: No template for grib generation"
     fi
   done
 fi
@@ -81,10 +79,9 @@ cat << EOF
   INFO:     OUTPARS_WAV="${OUTPARS_WAV}"
 EOF
 
-if [[ "${DOGRB_WAV}" = "NO" ]]; then
-  echo "FATAL ERROR: DOGRB_WAV = NO"
-  echo "FATAL ERROR: No grib2 products will be created, ABORT!"
-  exit 1
+if [[ "${DOGRB_WAV}" == "NO" ]]; then
+  export err=1
+  err_chk "FATAL ERROR: DOGRB_WAV = NO; No grib2 products will be created, ABORT!"
 fi
 
 # 2.a Command file set-up
@@ -92,7 +89,7 @@ rm -f cmdfile.* cmdfile
 count=0  # Counter for command files
 
 # Products on the interpolation grid "waveinterpGRD"
-if [[ "${DOGRI_WAV}" = "YES" ]]; then
+if [[ "${DOGRI_WAV}" == "YES" ]]; then
   dt_int=3600.
   n_int=9999
   ymdh_int=$(date -u -d "${valid_time:0:8} ${valid_time:8:2} - ${WAVHINDH} hours" "+%Y%m%d%H")
@@ -101,7 +98,7 @@ if [[ "${DOGRI_WAV}" = "YES" ]]; then
     echo "#!/bin/bash" > "cmdfile.${count}"
     echo "${USHgfs}/wave_grid_interp_sbs.sh ${grdID} ${ymdh_int} ${dt_int} ${n_int} > ${DATA}/grid_interp_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
     echo "cat ${DATA}/grid_interp_${grdID}.out" >> "cmdfile.${count}"
-    if [[ "${DOGRB_WAV}" = "YES" ]]; then
+    if [[ "${DOGRB_WAV}" == "YES" ]]; then
       process_grdID "${grdID}"
       echo "${USHgfs}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > ${DATA}/grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
       echo "cat ${DATA}/grib2_${grdID}.out" >> "${DATA}/cmdfile.${count}"
@@ -112,7 +109,7 @@ if [[ "${DOGRI_WAV}" = "YES" ]]; then
 fi
 
 # Products on the post-processing grid "wavepostGRD"
-if [[ "${DOGRB_WAV}" = "YES" ]]; then
+if [[ "${DOGRB_WAV}" == "YES" ]]; then
   for grdID in ${wavepostGRD}; do # First concatenate grib files for sbs grids
     count=$(( count+1 ))
     process_grdID "${grdID}"
@@ -125,8 +122,8 @@ if [[ "${DOGRB_WAV}" = "YES" ]]; then
 fi
 
 # Ensure there are enough processors for MPMD else use serial
-if [[ "${ntasks}" -lt "${count}" ]]; then
-  if [[ "${USE_CFP:-}" = "YES" ]]; then
+if [[ ${ntasks} -lt ${count} ]]; then
+  if [[ "${USE_CFP:-}" == "YES" ]]; then
     echo "WARNING: Not enough processors for MPMD, '${ntasks} < ${count}', running in serial mode"
     export USE_CFP="NO"
   fi
@@ -134,11 +131,10 @@ fi
 
 # Execute command file
 echo "INFO: Running MPMD job with ${count} commands"
-"${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile"
-err=$?
+"${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
+export err=$?
 if [[ ${err} -ne 0 ]]; then
-  echo "FATAL ERROR: run_mpmd.sh failed!"
-  exit "${err}"
+  err_chk "FATAL ERROR: run_mpmd.sh failed!"
 fi
 
 # Check if grib2 file created
@@ -147,8 +143,8 @@ com_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
 com_dir=${!com_varname}
 gribchk="${RUN}.wave.t${cyc}z.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
 if [[ ! -s "${com_dir}/${gribchk}" ]]; then
-  echo "FATAL ERROR: '${gribchk}' not generated in this job"
-  exit 2
+  export err=2
+  err_chk "FATAL ERROR: '${gribchk}' not generated in this job"
 fi
 
 exit 0
