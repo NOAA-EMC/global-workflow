@@ -230,7 +230,7 @@ if [[ ${JCAP_ENKF} -eq -9999 && ${LATB_ENKF} -ne -9999 ]]; then
 fi
 if [[ ${LONB_ENKF} -eq -9999 || ${LATB_ENKF} -eq -9999 || ${LEVS_ENKF} -eq -9999 || ${JCAP_ENKF} -eq -9999 ]]; then
    export err=9
-   err_exit "One or more EnKF corners are undefined!"
+   err_exit "One or more EnKF background parameters are undefined!"
 fi
 
 ################################################################################
@@ -279,7 +279,7 @@ EOF
       ${APRUN_CHGRES} ./chgres.x
       export err=$?
       if [[ ${err} -ne 0 ]]; then
-         err_exit "Failed to change the resolution of the mean ensemble analysis!"
+         err_exit "Failed to change the resolution of the deterministic analysis to the ensemble resolution!"
       fi
    fi
 
