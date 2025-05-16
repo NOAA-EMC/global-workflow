@@ -55,9 +55,7 @@
   then
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
     coutfile=${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
-    for f in outfile coutfile; do
-      rm -f "${f}"
-    done
+    rm -f "${outfile}" "${coutfile}"
   else
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
     rm -f "${outfile}"
@@ -85,7 +83,7 @@
         rm -f "${outfilefhr}" "${coutfilefhr}"
       else
         cat "${outfilefhr}" >> "${STA_DIR}/${specdir}/${WAV_MOD_TAG}.${buoy}.spec"
-        #rm -f $outfilefhr
+        #rm -f "${outfilefhr}"
       fi
     else
       echo "FATAL ERROR: OUTPUT DATA FILE FOR BUOY ${buoy} at ${ymdh} NOT FOUND"
