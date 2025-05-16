@@ -2,9 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawipsbulls"
 
-# Add default errchk = err_chk
-export errchk=${errchk:-err_chk}
-
 ###################################
 # Set COM Paths
 ###################################
@@ -21,11 +18,9 @@ if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi
 ###################################
 # Execute the Script
 
-${SCRgfs}/exgfs_wave_prdgen_bulls.sh
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+${SCRgfs}/exgfs_wave_prdgen_bulls.sh && true
+export err=$?
+err_chk
 
 ###################################
 # Remove temp directories

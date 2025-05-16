@@ -9,7 +9,7 @@
 # Abstract: This is the preprocessor for the wave component in GFS.
 #           It executes several scripts for preparing and creating input data
 #           as follows:
-#                                                                             
+#                                                                             #
 #  wave_prnc_ice.sh     : preprocess ice fields.                              #
 #  wave_prnc_cur.sh     : preprocess current fields.                          #
 #                                                                             #
@@ -24,9 +24,9 @@
 #                                                                             #
 # - Origination:                                               01-Mar-2007    #
 #                                                                             #
-#   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                     # 
+#   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                     #
 #   is used for ensemble-specific I/O. For deterministic                      #
-#   WAV_MOD_ID=WAV_MOD_TAG                                                    # 
+#   WAV_MOD_ID=WAV_MOD_TAG                                                    #
 #                                                                             #
 ###############################################################################
 # --------------------------------------------------------------------------- #
@@ -38,37 +38,35 @@
   # if ensemble; waveMEMB var empty in deterministic
   export WAV_MOD_TAG="${RUN}wave${waveMEMB}"
 
-  cd ${DATA}
   mkdir outtmp
 
-  echo "HAS BEGUN on $(hostname)"
-  echo "Starting MWW3 PREPROCESSOR SCRIPT for ${WAV_MOD_TAG}"
+cat << EOF
+HAS BEGUN on $(hostname)
+Starting MWW3 PREPROCESSOR SCRIPT for ${WAV_MOD_TAG}
 
-  set +x
-  echo ' '
-  echo '                      ********************************'
-  echo '                      *** WW3 PREPROCESSOR SCRIPT  ***'
-  echo '                      ********************************'
-  echo '                          PREP for wave component of NCEP coupled system'
-  echo "                          Wave component identifier : ${WAV_MOD_TAG} "
-  echo ' '
-  echo "Starting at : $(date)"
-  echo ' '
-  set_trace
+                      ********************************
+                      *** WW3 PREPROCESSOR SCRIPT  ***
+                      ********************************
+                          PREP for wave component of NCEP coupled system
+                          Wave component identifier : ${WAV_MOD_TAG}
+
+Starting at : $(date)
+
+EOF
 
   # 0.b Date and time stuff
 
   # Beginning time for outpupt may differ from SDATE if DOIAU=YES
   export date=${PDY}
   export YMDH=${PDY}${cyc}
-  # Roll back $IAU_FHROT hours of DOIAU=YES
+  # Roll back ${IAU_FHROT} hours of DOIAU=YES
   IAU_FHROT=3
-  if [[ "${DOIAU}" = "YES" ]]
+  if [[ "${DOIAU}" == "YES" ]]
   then
     WAVHINDH=$(( WAVHINDH + IAU_FHROT ))
   fi
   # Set time stamps for model start and output
-  # For special case when IAU is on but this is an initial half cycle 
+  # For special case when IAU is on but this is an initial half cycle
   if [[ ${IAU_OFFSET} -eq 0 ]]; then
     ymdh_beg=${YMDH}
   else
@@ -80,7 +78,7 @@
   ymdh_beg_out=${YMDH}
   time_beg_out="$(echo ${ymdh_beg_out} | cut -c1-8) $(echo ${ymdh_beg_out} | cut -c9-10)0000"
 
-  # Restart file times (already has IAU_FHROT in WAVHINDH) 
+  # Restart file times (already has IAU_FHROT in WAVHINDH)
   RSTOFFSET=$(( ${WAVHCYC} - ${WAVHINDH} ))
   # Update restart time is added offset relative to model start
   RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF_WAV} ))
@@ -89,7 +87,7 @@
   ymdh_rst2_ini=$(${NDATE} ${RST2OFFSET} ${YMDH}) # DT2 relative to first-first-cycle restart file
   # First restart file for cycling
   time_rst_ini="$(echo ${ymdh_rst_ini} | cut -c1-8) $(echo ${ymdh_rst_ini} | cut -c9-10)0000"
-  if [[ ${DT_1_RST_WAV} = 1 ]]; then
+  if [[ ${DT_1_RST_WAV} -eq 1 ]]; then
     time_rst1_end=${time_rst_ini}
   else
     RST1OFFSET=$(( DT_1_RST_WAV / 3600 ))
@@ -97,7 +95,7 @@
     time_rst1_end="$(echo ${ymdh_rst1_end} | cut -c1-8) $(echo ${ymdh_rst1_end} | cut -c9-10)0000"
   fi
   # Second restart file for checkpointing
-  if [[ "${RSTTYPE_WAV}" = "T" ]]; then
+  if [[ "${RSTTYPE_WAV}" == "T" ]]; then
     time_rst2_ini="$(echo ${ymdh_rst2_ini} | cut -c1-8) $(echo ${ymdh_rst2_ini} | cut -c9-10)0000"
     time_rst2_end=${time_end}
   # Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
@@ -111,32 +109,28 @@
     time_rst2_end=
     DT_2_RST_WAV=
   fi
-  set +x
-  echo ' '
-  echo 'Times in wave model format :'
-  echo '----------------------------'
-  echo "   date / cycle  : ${date} ${cycle}"
-  echo "   starting time : ${time_beg}"
-  echo "   ending time   : ${time_end}"
-  echo ' '
-  set_trace
+  cat << EOF
+
+Times in wave model format :
+----------------------------
+   date / cycle  : ${date} ${cycle}
+   starting time : ${time_beg}
+   ending time   : ${time_end}
+
+EOF
 
   # Script will run only if pre-defined NTASKS
   #     The actual work is distributed over these tasks.
   if [[ -z ${NTASKS} ]]
   then
-    echo "FATAL ERROR: Requires NTASKS to be set "
-    err=1; export err;${errchk}
+    export err=1
+    err_chk "FATAL ERROR: Requires NTASKS to be set"
   fi
 
   # --------------------------------------------------------------------------- #
   # 1.  Get files that are used by most child scripts
 
-  set +x
-  echo 'Preparing input files :'
-  echo '-----------------------'
-  echo ' '
-  set_trace
+  printf "Preparing input files :\n-----------------------\n"
 
   # 1.a Model definition files
 
@@ -144,9 +138,15 @@
   touch cmdfile
 
   grdINP=''
-  if [[ "${WW3ATMINP}" = 'YES' ]]; then grdINP="${grdINP} ${WAVEWND_FID}" ; fi
-  if [[ "${WW3ICEINP}" = 'YES' ]]; then grdINP="${grdINP} ${WAVEICE_FID}" ; fi
-  if [[ "${WW3CURINP}" = 'YES' ]]; then grdINP="${grdINP} ${WAVECUR_FID}" ; fi
+  if [[ "${WW3ATMINP}" == 'YES' ]]; then
+     grdINP="${grdINP} ${WAVEWND_FID}"
+  fi
+  if [[ "${WW3ICEINP}" == 'YES' ]]; then
+     grdINP="${grdINP} ${WAVEICE_FID}"
+  fi
+  if [[ "${WW3CURINP}" == 'YES' ]]; then
+     grdINP="${grdINP} ${WAVECUR_FID}"
+  fi
 
   ifile=1
 
@@ -154,29 +154,25 @@
   do
     if [[ -f "${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID}" ]]
     then
-      set +x
       echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
-      set_trace
-      cp ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID} mod_def.${grdID}
+      cpreq ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID} mod_def.${grdID}
 
     else
-      set +x
-      echo ' '
-      echo '*********************************************************** '
-      echo '*** FATAL ERROR : NOT FOUND WAVE  MODEL DEFINITION FILE *** '
-      echo '*********************************************************** '
-      echo "                                grdID = ${grdID}"
-      echo ' '
-      echo "FATAL ERROR: NO MODEL DEFINITION FILE"
-      set_trace
-      err=2;export err;${errchk}
+      export err=2
+      err_chk "FATAL ERROR: NO MODEL DEFINITION FILE"
     fi
   done
 
   # 1.b Netcdf Preprocessor template files
-   if [[ "${WW3ATMINP}" == 'YES' ]]; then itype="${itype:-} wind" ; fi 
-   if [[ "${WW3ICEINP}" == 'YES' ]]; then itype="${itype:-} ice" ; fi 
-   if [[ "${WW3CURINP}" == 'YES' ]]; then itype="${itype:-} cur" ; fi 
+   if [[ "${WW3ATMINP}" == 'YES' ]]; then
+      itype="${itype:-} wind"
+   fi
+   if [[ "${WW3ICEINP}" == 'YES' ]]; then
+      itype="${itype:-} ice"
+   fi
+   if [[ "${WW3CURINP}" == 'YES' ]]; then
+      itype="${itype:-} cur"
+   fi
 
    for type in ${itype}
    do
@@ -192,10 +188,10 @@
          grdID=${WAVECUR_FID}
        ;;
        * )
-              echo 'Input type not yet implemented' 	    
-              err=3; export err;${errchk}
-              ;;
-     esac 
+         export err=3
+         err_chk 'FATAL ERROR: Input type not yet implemented'
+       ;;
+     esac
 
      if [[ -f ${PARMgfs}/wave/ww3_prnc.${type}.${grdID}.inp.tmpl ]]
      then
@@ -204,98 +200,76 @@
 
      if [[ -f ww3_prnc.${type}.${grdID}.inp.tmpl ]]
      then
-       set +x
-       echo ' '
-       echo "   ww3_prnc.${type}.${grdID}.inp.tmpl copied (${PARMgfs}/wave)."
-       echo ' '
-       set_trace
+       printf"\n   ww3_prnc.${type}.${grdID}.inp.tmpl copied (${PARMgfs}/wave).\n"
      else
-       set +x
-       echo ' '
-       echo '************************************** '
-       echo '*** FATAL ERROR : NO TEMPLATE FILE *** '
-       echo '************************************** '
-       echo "             ww3_prnc.${type}.${grdID}.inp.tmpl"
-       echo ' '
-       echo "ABNORMAL EXIT: NO FILE ${file}"
-       echo ' '
-       set_trace
-       err=4;export err;${errchk}
+       export err=4
+       err_chk "FATAL ERROR: NO TEMPLATE FILE ww3_prnc.${type}.${grdID}.inp.tmpl"
      fi
    done
 
 # --------------------------------------------------------------------------- #
 # ICEC processing
 
-  if [[ "${WW3ICEINP}" = 'YES' ]]; then
+  if [[ "${WW3ICEINP}" == 'YES' ]]; then
 
 # --------------------------------------------------------------------------- #
-# 2. Ice pre - processing 
+# 2. Ice pre - processing
 
 # 2.a Check if ice input is perturbed (number of inputs equal to number of wave
 #     ensemble members
-    if [[ "${RUNMEM}" = "-1" ]] || [[ "${WW3ICEIENS}" = "T" ]] || [[ "${waveMEMB}" = "00" ]]
+    if [[ "${RUNMEM}" == "-1" || "${WW3ICEIENS}" == "T" || "${waveMEMB}" == "00" ]]
     then
 
-      ${USHgfs}/wave_prnc_ice.sh > wave_prnc_ice.out
+      ${USHgfs}/wave_prnc_ice.sh > wave_prnc_ice.out && true
       ERR=$?
-    
-      if [[ -d ice ]]
+
+      if [[ -d ice || ${ERR} -ne 0 ]]
       then
-        set +x
-        echo ' '
-        echo '      FATAL ERROR: ice field not generated '
-        echo ' '
         sed "s/^/wave_prnc_ice.out : /g" wave_prnc_ice.out
         echo ' '
-        set_trace
-        err=5;export err;${errchk}
+        if [[ ${ERR} -ne 0 ]]; then
+           export err=${ERR}
+        else
+           export err=5
+        fi
+        err_chk "FATAL ERROR: ice field not generated"
       else
         mv -f wave_prnc_ice.out ${DATA}/outtmp
-        set +x
-        echo ' '
-        echo '      Ice field unpacking successful.'
-        echo ' '
-        set_trace
+        printf "\n      Ice field unpacking successful.\n"
       fi
+
+      # Check the error code from wave_prnc_ice.sh
+      export err=${ERR}
+      err_chk
     else
       echo ' '
       echo "WARNING: Ice input is not perturbed, single ice file generated, skipping ${WAV_MOD_TAG}"
       echo ' '
-    fi 
+    fi
   else
       echo ' '
-      echo 'WARNING: No input ice file generated, this run did not request pre-processed ice data '
+      echo "WARNING: No input ice file generated, this run did not request pre-processed ice data"
       echo ' '
   fi
 
 # --------------------------------------------------------------------------- #
-# WIND processing 
-  if [[ "${WW3ATMINP}" = 'YES' ]]; then
+# WIND processing
+  if [[ "${WW3ATMINP}" == 'YES' ]]; then
 
-    echo ' '
-    echo '*************************************************** '
-    echo '*** FATAL ERROR : Not set-up to preprocess wind *** '
-    echo '*************************************************** '
-    echo ' '
-    set_trace
-    err=6;export err;${errchk} 
-
+    export err=6
+    err_chk "FATAL ERROR : Not set-up to preprocess wind"
   fi
 
 #-------------------------------------------------------------------
 # 3.  Process current fields
 
-  if [[ "${WW3CURINP}" = 'YES' ]]; then
+  if [[ "${WW3CURINP}" == 'YES' ]]; then
 
-# Get into single file 
-    if [[ "${RUNMEM}" = "-1" ]] || [[ "${WW3CURIENS}" = "T" ]] || [[ "${waveMEMB}" = "00" ]]; then
+# Get into single file
+    if [[ "${RUNMEM}" == "-1" || "${WW3CURIENS}" == "T" || "${waveMEMB}" == "00" ]]
+    then
 
-      set +x
-      echo ' '
-      echo '   Concatenate binary current fields ...'
-      echo ' '
-      set_trace
+      printf "\n   Concatenate binary current fields ...\n"
 
 # Prepare files for cfp process
       rm -f cmdfile
@@ -303,36 +277,36 @@
       chmod 744 cmdfile
 
       ymdh_rtofs=${RPDY}00 # RTOFS runs once daily use ${PDY}00
-      if [[ "${ymdh_beg}" -lt "${ymdh_rtofs}" ]]; then
+      if [[ ${ymdh_beg} -lt ${ymdh_rtofs} ]]; then
          #If the start time is before the first hour of RTOFS, use the previous cycle
          export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
-      fi 
+      fi
       #Set the first time for RTOFS files to be the beginning time of simulation
       ymdh_rtofs=${ymdh_beg}
 
-      if [[  "${FHMAX_WAV_CUR}" -le 72 ]]; then
+      if [[ ${FHMAX_WAV_CUR} -le 72 ]]; then
         rtofsfile1="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f024_prog.nc"
         rtofsfile2="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f048_prog.nc"
         rtofsfile3="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f072_prog.nc"
-        if [[ ! -f ${rtofsfile1} ]] || [[ ! -f ${rtofsfile2} ]] || [[ ! -f ${rtofsfile3} ]]; then
-           #Needed current files are not available, so use RTOFS from previous day 
+        if [[ ! -f ${rtofsfile1} || ! -f ${rtofsfile2} || ! -f ${rtofsfile3} ]]; then
+           #Needed current files are not available, so use RTOFS from previous day
            export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
-        fi 
+        fi
       else
         rtofsfile1="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f096_prog.nc"
         rtofsfile2="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f120_prog.nc"
         rtofsfile3="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f144_prog.nc"
         rtofsfile4="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f168_prog.nc"
         rtofsfile5="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f192_prog.nc"
-        if [[ ! -f ${rtofsfile1} ]] || [[ ! -f ${rtofsfile2} ]] || [[ ! -f ${rtofsfile3} ]] ||
-            [[ ! -f ${rtofsfile4} ]] || [[ ! -f ${rtofsfile5} ]]; then
-            #Needed current files are not available, so use RTOFS from previous day 
+        if [[ ! -f ${rtofsfile1} || ! -f ${rtofsfile2} || ! -f ${rtofsfile3} ||
+              ! -f ${rtofsfile4} || ! -f ${rtofsfile5} ]]; then
+            #Needed current files are not available, so use RTOFS from previous day
             export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
         fi
       fi
 
       ymdh_end_rtofs=$(${NDATE} ${FHMAX_WAV_CUR} ${RPDY}00)
-      if [[ "${ymdh_end}" -lt "${ymdh_end_rtofs}" ]]; then
+      if [[ ${ymdh_end} -lt ${ymdh_end_rtofs} ]]; then
          ymdh_end_rtofs=${ymdh_end}
       fi
 
@@ -340,53 +314,47 @@
       FLGHF='T'
       FLGFIRST='T'
       fext='f'
-  
-      if [[ ${CFP_MP:-"NO"} = "YES" ]]; then nm=0 ; fi # Counter for MP CFP
-      while [[ "${ymdh_rtofs}" -le "${ymdh_end_rtofs}" ]]
+
+      if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
+         # Counter for MP CFP
+         nm=0
+      fi
+      while [[ ${ymdh_rtofs} -le ${ymdh_end_rtofs} ]]
       do
         # Timing has to be made relative to the single 00z RTOFS cycle for RTOFS PDY (RPDY)
-        # Start at first fhr for 
+        # Start at first fhr for
         fhr_rtofs=$(${NHOUR} ${ymdh_rtofs} ${RPDY}00)
         fh3_rtofs=$(printf "%03d" "${fhr_rtofs#0}")
 
         curfile1h=${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
         curfile3h=${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
 
-        if [[ -s ${curfile1h} ]]  && [[ "${FLGHF}" = "T" ]] ; then
+        if [[ -s ${curfile1h} && "${FLGHF}" == "T" ]] ; then
           curfile=${curfile1h}
         elif [[ -s ${curfile3h} ]]; then
           curfile=${curfile3h}
           FLGHF='F'
         else
           echo ' '
-          if [[ "${FLGHF}" = "T" ]] ; then
+          if [[ "${FLGHF}" == "T" ]] ; then
              curfile=${curfile1h}
-          else 
+          else
              curfile=${curfile3h}
           fi
-          set -x
-          echo ' '
-          echo '************************************** '
-          echo "*** FATAL ERROR: NO CUR FILE ${curfile} ***  "
-          echo '************************************** '
-          echo ' '
-          set_trace
-          echo "FATAL ERROR - NO CURRENT FILE (RTOFS)"
-          err=11;export err;${errchk}
-          exit ${err}
-          echo ' '
+          export err=11
+          err_chk "FATAL ERROR - NO CURRENT FILE (RTOFS): ${curfile}"
         fi
 
-        if [[ ${CFP_MP:-"NO"} = "YES" ]]; then
+        if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
           echo "${nm} ${USHgfs}/wave_prnc_cur.sh ${ymdh_rtofs} ${curfile} ${fhr_rtofs} ${FLGFIRST} > cur_${ymdh_rtofs}.out 2>&1" >> cmdfile
           nm=$(expr ${nm} + 1)
         else
           echo "${USHgfs}/wave_prnc_cur.sh ${ymdh_rtofs} ${curfile} ${fhr_rtofs} ${FLGFIRST} > cur_${ymdh_rtofs}.out 2>&1" >> cmdfile
         fi
 
-        if [[ "${FLGFIRST}" = "T" ]] ; then
+        if [[ "${FLGFIRST}" == "T" ]] ; then
             FLGFIRST='F'
-        fi 
+        fi
 
         if [[ ${fhr_rtofs} -ge ${WAV_CUR_HF_FH} ]] ; then
           NDATE_DT=${WAV_CUR_DT}
@@ -395,31 +363,26 @@
       done
 
 # Set number of processes for mpmd
-      wavenproc=$(wc -l cmdfile | awk '{print $1}')
+      wavenproc=$(wc -l < cmdfile)
       wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
-      set +x
-      echo ' '
-      echo "   Executing the curr prnc cmdfile at : $(date)"
-      echo '   ------------------------------------'
-      echo ' '
-      set_trace
+      printf "\n   Executing the curr prnc cmdfile at : %s\n   ------------------------------------\n" "$(date)"
 
-      if [[ ${wavenproc} -gt '1' ]]
+      if [[ ${wavenproc} -gt 1 ]]
       then
-        if [[ ${CFP_MP:-"NO"} = "YES" ]]; then
-          ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile
+        if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
+          ${wavempexec} -n "${wavenproc}" "${wave_mpmd}" cmdfile && true
         else
-          ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+          ${wavempexec} "${wavenproc}" "${wave_mpmd}" cmdfile && true
         fi
-        exit=$?
+        export stat=$?
       else
         chmod 744 ./cmdfile
         ./cmdfile
-        exit=$?
+        export stat=$?
       fi
 
-      if [[ "${exit}" != '0' ]]
+      if [[ ${stat} -ne 0 ]]
       then
         set +x
         echo ' '
@@ -427,7 +390,9 @@
         echo '*** CMDFILE FAILED IN CUR GENERATION   ***'
         echo '********************************************'
         echo '     See Details Below '
+        # TODO: What details should be expected?
         echo ' '
+        # TODO: Should this raise a fatal error whether or not rtofs files are found?
         set_trace
       fi
 
@@ -435,15 +400,8 @@
 
       if [[ -z "${files}" ]]
       then
-        set +x
-        echo ' '
-        echo '******************************************** '
-        echo '*** FATAL ERROR : CANNOT FIND CURR FILES *** '
-        echo '******************************************** '
-        echo ' '
-        echo "ABNORMAL EXIT: NO ${WAVECUR_FID}.* FILES FOUND"
-        set_trace
-        err=11;export err;${errchk}
+        export err=11
+        err_chk "FATAL ERROR: NO ${WAVECUR_FID}.* FILES FOUND"
       fi
 
       rm -f cur.${WAVECUR_FID}
@@ -463,7 +421,7 @@
     fi
 
   else
-  
+
       echo ' '
       echo ' Current inputs not generated, this run did not request pre-processed currents '
       echo ' '

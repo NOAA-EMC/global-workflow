@@ -3,9 +3,6 @@
 source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsgridded" -c "base wave waveawipsgridded"
 source "${USHgfs}/wave_domain_grid.sh"
 
-# Add default errchk = err_chk
-export errchk=${errchk:-err_chk}
-
 ###################################
 # Set COM Paths
 ###################################
@@ -32,11 +29,9 @@ fi
 ###################################
 # Execute the Script
 ###################################
-${SCRgfs}/exgfs_wave_prdgen_gridded.sh
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+${SCRgfs}/exgfs_wave_prdgen_gridded.sh && true
+export err=$?
+err_chk
 
 ###################################
 # Remove temp directories
