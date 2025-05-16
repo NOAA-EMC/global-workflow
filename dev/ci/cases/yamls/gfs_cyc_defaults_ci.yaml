@@ -1,5 +1,5 @@
 defaults:
-  !INC {{ HOMEgfs }}/parm/config/gfs/yaml/defaults.yaml
+  !INC {{ HOMEgfs }}/dev/parm/config/gfs/yaml/defaults.yaml
 base:
   DOIAU: "YES"
   DO_JEDIATMVAR: "NO"
@@ -18,11 +18,11 @@ base:
   EUPD_CYC: "both"
   INTERVAL_GFS: 6
   SDATE_GFS: 2021122018
-  NMEM_ENS_GFS: 2 
-  NMEM_ENS_GFS_OFFSET: 0 
+  NMEM_ENS_GFS: 2
+  NMEM_ENS_GFS_OFFSET: 0
   DO_TEST_MODE: "NO"
 
 marineanl:
   SOCA_NINNER: 1
 
-  
+

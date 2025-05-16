@@ -188,18 +188,14 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
   "ufs.configure.s2swa.IN"
   "ufs.configure.leapfrog_atm_wav.IN"
   "ww3_shel.nml.IN"
-  "post_itag_gfs")
+  "post_itag_gfs"
+  "global_control.nml.IN")
 for file in "${ufs_templates[@]}"; do
   if [[ -s "${file}" ]]; then
       rm -f "${file}"
   fi
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
 done
-
-# Link global_control.nml.IN template to parm/fv3
-cd "${HOMEgfs}/parm/ufs/fv3" || exit 1
-[[ -s "global_control.nml.IN" ]] && rm -f "global_control.nml.IN"
-${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/global_control.nml.IN" .
 
 # Link the script from ufs-weather-model that parses the templates
 cd "${HOMEgfs}/ush" || exit 1
@@ -305,7 +301,7 @@ for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
 done
 
-declare -a model_systems=("gfs" "gefs" "sfs")
+declare -a model_systems=("gfs" "gefs" "sfs" "gcafs")
 for sys in "${model_systems[@]}"; do
   model_exe="${sys}_model.x"
   if [[ -s "${model_exe}" ]]; then

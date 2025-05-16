@@ -1,13 +1,9 @@
 import os
 from shutil import rmtree
 from pathlib import Path
-import sys
-from wxflow import Executable
-# update sys.path to include the utils directory for find_homegfs
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "utils"))
-from find_homegfs import find_homegfs
+from wxflow import Executable, find_upward
 
-HOMEgfs = find_homegfs()
+HOMEgfs = find_upward('.github')
 current_dir = os.path.dirname(os.path.abspath(__file__))
 RUNDIR_FAKE = os.path.join(current_dir, 'testdata/RUNDIR')
 ICSDIR_FAKE = os.path.join(current_dir, 'testdata/ICSDIR')
@@ -27,6 +23,7 @@ def test_create_experiment():
         if case.endswith('.yaml'):
             env['pslot'] = os.path.splitext(case)[0]
             cmd_args = ['-y', f'{yaml_dir}/{case}']
+            print(f"Running create_experiment.py for {case}")
             create_experiment(*cmd_args, env=env)
             if create_experiment.returncode:
                 print(f"FATAL ERROR: Failed to create experiment for {case}")
