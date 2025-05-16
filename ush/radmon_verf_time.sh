@@ -237,10 +237,10 @@ if compgen -G "time*.ieee_d*" > /dev/null || compgen -G "time*.ctl*" > /dev/null
 
   if [[ ${RAD_AREA} = "rgn" ]]; then
      cwd=$(pwd)
-     cd "${TANKverf_rad}"
+     cd "${TANKverf_rad}" || exit 1
      tar -xf "${tar_file}.${Z}"
      rm -f "${tar_file}.${Z}"
-     cd "${cwd}"
+     cd "${cwd}" || exit 1
   fi
 fi
 
