@@ -1,9 +1,6 @@
 ice_RT:
     mkdir:
-        {% for mem in range(first_mem, last_mem + 1) %}
-        {% set COMOUT_ICE_ANALYSIS_MEM = COMOUT_ICE_ANALYSIS_MEM_list[mem] %}
         - "{{ COMOUT_ICE_ANALYSIS_MEM }}"
-        {% endfor %} # mem loop
     copy:
         {% set cyc_ranges = {
             "00": range(1, 31),
