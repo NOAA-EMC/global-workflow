@@ -85,6 +85,9 @@ for type in ${radstat_satype}; do
    fi
 done
 
+if [[ ${satype_changes} -eq 1 ]]; then
+   SATYPE=${new_satype}
+fi
 
 #------------------------------------------------------------------
 # Rename the diag files and uncompress
