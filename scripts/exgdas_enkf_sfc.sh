@@ -210,7 +210,7 @@ if [[ "$DOIAU" == "YES" ]]; then
         CDATE="${PDY}${cyc}" "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-           err_exit "Failed to update IAU surface increment from!"
+           err_exit "Failed to update surface fields!"
         fi
 
         # Copy outputs from DATA to COMOUT
