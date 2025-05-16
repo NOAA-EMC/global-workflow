@@ -97,9 +97,9 @@
   artifacts:
     when: always
     paths:
-      - ${GW_HOMEgfs}/dev/ctests/build/result.xml
-      - ${GW_HOMEgfs}/dev/ctests/build/Testing/Temporary/LastTest.log
+      - ${GIT_CLONE_PATH}/dev/ctests/build/result.xml
+      - ${GIT_CLONE_PATH}/dev/ctests/build/Testing/Temporary/LastTest.log
     reports:
-      junit: ${GW_HOMEgfs}/dev/ctests/build/result.xml
+      junit: ${GIT_CLONE_PATH}/dev/ctests/build/result.xml
   needs:
     - create_ctests-${machine}
