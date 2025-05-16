@@ -18,3 +18,12 @@ arguments:
   idate: 2024112500
   edate: 2024112500
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
+
+skip_ci_on_hosts:
+  - gaeac6
+  - gaeac5
+  - hercules
+  - wcoss2
+  - hera
+  - orion
+  - awsepicglobalworkflow
