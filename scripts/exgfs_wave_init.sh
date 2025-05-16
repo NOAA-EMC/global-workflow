@@ -18,13 +18,6 @@
 ###############################################################################
 #
 # --------------------------------------------------------------------------- #
-# 0.  Preparations
-
-# 0.a Basic modes of operation
-
-cd "${DATA}" || exit 1
-
-# --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
 cat << EOF
@@ -47,23 +40,20 @@ done
 for grdID in "${grdALL[@]}"; do
   if [[ -f "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" ]]; then
     echo "INFO: Mod def file for ${grdID} found in ${COMOUT_WAVE_PREP}. copying ...."
-    cp "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
+    cpreq "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
 
   else
     echo "INFO: Mod def file for ${grdID} not found in ${COMOUT_WAVE_PREP}. Setting up to generate ..."
     if [[ -f "${FIXgfs}/wave/ww3_grid.inp.${grdID}" ]]; then
-      cp "${FIXgfs}/wave/ww3_grid.inp.${grdID}" "ww3_grid.inp.${grdID}"
-    fi
-
-    if [[ -f "ww3_grid.inp.${grdID}" ]]; then
+      cpreq "${FIXgfs}/wave/ww3_grid.inp.${grdID}" "ww3_grid.inp.${grdID}"
       echo "INFO: ww3_grid.inp.${grdID} copied (${FIXgfs}/wave/ww3_grid.inp.${grdID})."
     else
-      echo "FATAL ERROR: No inp file for model definition file for grid ${grdID}"
-      err=2; export err; ${errchk}
+      export err=2
+      err_chk "FATAL ERROR: No inp file for model definition file for grid ${grdID}"
     fi
 
     if [[ -f "${FIXgfs}/wave/${grdID}.msh" ]]; then
-      cp "${FIXgfs}/wave/${grdID}.msh" "${grdID}.msh"
+      cpreq "${FIXgfs}/wave/${grdID}.msh" "${grdID}.msh"
     fi
     #TODO: how do we say "it's unstructured, and therefore need to have error check here"
 
@@ -72,11 +62,10 @@ for grdID in "${grdALL[@]}"; do
 done
 
 # 1.a.1 Execute MPMD or process serially
-"${USHgfs}/run_mpmd.sh" "${DATA}/mpmd_script"
+"${USHgfs}/run_mpmd.sh" "${DATA}/mpmd_script" && true
 export err=$?
-if [[ "${err}" -ne 0 ]]; then
-  echo "FATAL ERROR: run_mpmd.sh failed!"
-  exit "${err}"
+if [[ ${err} -ne 0 ]]; then
+  err_chk "FATAL ERROR: run_mpmd.sh failed!"
 fi
 
 # 1.a.3 File check
@@ -84,8 +73,8 @@ for grdID in "${grdALL[@]}"; do
   if [[ -f "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" ]]; then
     echo "INFO: mod_def.${grdID} succesfully created/copied"
   else
-    echo "FATAL ERROR: No model definition file for grid ${grdID}"
-    err=3; export err; ${errchk}
+    export err=3
+    err_chk "FATAL ERROR: No model definition file for grid ${grdID}"
   fi
 done
 

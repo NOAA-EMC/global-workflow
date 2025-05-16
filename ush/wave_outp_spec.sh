@@ -38,55 +38,35 @@
   err=$?
   if [ "$err" != '0' ]
   then
-    set +x
-    echo ' '
-    echo '****************************************************************************** '
-    echo '*** FATAL ERROR : ERROR IN ww3_outp_spec (COULD NOT CREATE TEMP DIRECTORY) *** '
-    echo '****************************************************************************** '
-    echo ' '
-    set_trace
+    echo 'ERROR: COULD NOT CREATE TEMP DIRECTORY *** '
     exit 1
   fi
 
   cd ${specdir}_${bloc}
 
-  set +x
-  echo ' '
-  echo '+--------------------------------+'
-  echo '!       Make spectral file       |'
-  echo '+--------------------------------+'
-  echo "   Model ID        : $WAV_MOD_TAG"
-  set_trace
+  cat << EOF
+
++--------------------------------+
+!       Make spectral file       |
++--------------------------------+
+   Model ID        : ${WAV_MOD_TAG}
+EOF
 
 # 0.b Check if buoy location set
 
   if [ "$#" -lt '1' ]
   then
-    set +x
-    echo ' '
-    echo '***********************************************'
-    echo '*** LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
-    echo '***********************************************'
-    echo ' '
-    set_trace
+    echo 'ERROR: LOCATION ID IN ww3_outp_spec.sh NOT SET'
     exit 1
   else
     buoy=$bloc
     point=$(awk "{if (\$2 == \"${buoy}\"){print \$1; exit} }" "${DATA}/buoy_log.ww3")
     if [ -z "$point" ]
     then
-      set +x
-      echo '******************************************************'
-      echo '*** LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED ***'
-      echo '******************************************************'
-      echo ' '
-      set_trace
+      echo 'ERROR: LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED'
       exit 2
     else
-      set +x
-      echo "              Location ID/#   : $buoy (${point})"
-      echo "   Spectral output start time : $ymdh "
-      echo ' '
+      printf "\n              Location ID/#   : %s (%s) $buoy (${point})\n   Spectral output start time : %s" "${buoy}" "${point}" "${ymdh}"
     fi
   fi
 
@@ -97,13 +77,7 @@
   if [ -z "$CDATE" ] || [ -z "$dtspec" ] || [ -z "${EXECgfs}" ] || \
      [ -z "$WAV_MOD_TAG" ] || [ -z "${STA_DIR}" ]
   then
-    set +x
-    echo ' '
-    echo '******************************************************'
-    echo '*** EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET ***'
-    echo '******************************************************'
-    echo ' '
-    set_trace
+    echo 'ERROR: EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET'
     exit 3
   fi
 
@@ -112,10 +86,7 @@
   tstart="$(echo $ymdh | cut -c1-8) $(echo $ymdh | cut -c9-10)0000"
   YMD="$(echo $ymdh | cut -c1-8)"
   HMS="$(echo $ymdh | cut -c9-10)0000"
-  set +x
-  echo "   Output starts at $tstart."
-  echo ' '
-  set_trace
+  printf "   Output starts at %s.\n" "${tstart}"
 
 # 0.e sync important files
 
@@ -132,9 +103,7 @@
 # 2.  Generate spectral data file
 # 2.a Input file for postprocessor
 
-  set +x
   echo "   Generate input file for ww3_outp."
-  set_trace
 
   if [ "$specdir" = "bull" ]
   then
@@ -162,21 +131,13 @@
   export pgm="${NET,,}_ww3_outp.x"
   source prep_step
 
-  set +x
   echo "   Executing ${EXECgfs}/${pgm}"
-  set_trace
 
   "${EXECgfs}/${pgm}" 1> outp_${specdir}_${buoy}.out 2>&1
   export err=$?;err_chk
   if [ "$err" != '0' ]
   then
-    set +x
-    echo ' '
-    echo '******************************************** '
-    echo '*** FATAL ERROR : ERROR IN ${pgm} *** '
-    echo '******************************************** '
-    echo ' '
-    set_trace
+    echo "ERROR : ERROR IN ${pgm} *** "
     exit 4
   fi
 
@@ -214,13 +175,7 @@
      fi
    fi
   else
-    set +x
-    echo ' '
-    echo '***************************************************************** '
-    echo "*** FATAL ERROR : OUTPUT DATA FILE FOR BOUY ${bouy} NOT FOUND *** "
-    echo '***************************************************************** '
-    echo ' '
-    set_trace
+    echo "ERROR: OUTPUT DATA FILE FOR BUOY ${buoy} NOT FOUND"
     exit 5
   fi
 
