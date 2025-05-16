@@ -21,12 +21,12 @@ atmosphere_warm_RT:
             {% set ranges = cyc_ranges[current_cycle_HH] %}
             {% set offsets = cyc_offsets[current_cycle_HH] %}
 
-            # Determine the correct range and offset based on ENSEM
+            # Determine the correct range and offset based on ENSMEM
             {% if current_cycle_HH == "18" %}
-                {% if ENSEM in ranges[0] %}
+                {% if ENSMEM in ranges[0] %}
                     {% set mem_range = ranges[0] %}
                     {% set offset = offsets[0] %}
-                {% elif ENSEM in ranges[1] %}
+                {% elif ENSMEM in ranges[1] %}
                     {% set mem_range = ranges[1] %}
                     {% set offset = offsets[1] %}
                 {% endif %}
@@ -36,8 +36,8 @@ atmosphere_warm_RT:
             {% endif %}
 
             # Calculate mem and imem
-            {% set mem = ENSEM + offset %}
-            {% set imem = ENSEM %}
+            {% set mem = ENSMEM + offset %}
+            {% set imem = ENSMEM %}
 
             # Generate paths
             {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}

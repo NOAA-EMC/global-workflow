@@ -21,12 +21,12 @@ ocean_RT:
             {% set ranges = cyc_ranges[current_cycle_HH] %}
             {% set offsets = cyc_offsets[current_cycle_HH] %}
 
-            # Determine the correct range and offset based on ENSEM
+            # Determine the correct range and offset based on ENSMEM
             {% if current_cycle_HH == "18" %}
-                {% if ENSEM in ranges[0] %}
+                {% if ENSMEM in ranges[0] %}
                     {% set mem_range = ranges[0] %}
                     {% set offset = offsets[0] %}
-                {% elif ENSEM in ranges[1] %}
+                {% elif ENSMEM in ranges[1] %}
                     {% set mem_range = ranges[1] %}
                     {% set offset = offsets[1] %}
                 {% endif %}
@@ -36,8 +36,8 @@ ocean_RT:
             {% endif %}
 
             # Calculate mem and imem
-            {% set mem = ENSEM + offset %}
-            {% set imem = ENSEM %}
+            {% set mem = ENSMEM + offset %}
+            {% set imem = ENSMEM %}
             {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
             {% set restart_mem_path = ICSDIR ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.MOM.' %}
             {% set increment_mem_path = ICSDIR ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/ocean/enkfgfs.t' ~ current_cycle_HH ~ 'z.ocninc.nc' %}
