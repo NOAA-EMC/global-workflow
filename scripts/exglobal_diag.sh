@@ -136,19 +136,19 @@ string=\$5
 CDATE=\$6
 DIAG_COMPRESS=\$7
 DIAG_SUFFIX=\$8
-if [ \$lrun_subdirs == ".true." ]; then
+if [[ "\${lrun_subdirs}" == ".true." ]]; then
    prefix=" dir.*/"
 else
    prefix="pe*"
 fi
 file=diag_\${type}_\${string}.\${CDATE}\${DIAG_SUFFIX}
-if [ \$binary_diag == ".true." ]; then
+if [[ "\${binary_diag}" == ".true." ]]; then
    cat \${prefix}\${type}_\${loop}* > \$file
 else
    ${CATEXEC} -o \$file \${prefix}\${type}_\${loop}*
 fi
-if [ \$DIAG_COMPRESS == "YES" ]; then
-   ${COMPRESS} \$file
+if [[ "\${DIAG_COMPRESS}" == "YES" ]]; then
+   ${COMPRESS} "\${file}"
 fi
 EOFdiag
       chmod 755 "${DATA}/diag.sh"
@@ -275,7 +275,7 @@ EOFdiag
 
       echo "$(date) END tar diagnostic files" >&2
    fi
-fi # End diagnostic file generation block - if [ $GENDIAG == "YES" ]
+fi # End diagnostic file generation block - if [[ "${GENDIAG}" == "YES" ]]
 
 ################################################################################
 # Postprocessing
