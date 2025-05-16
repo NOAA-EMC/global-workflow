@@ -84,7 +84,7 @@ EOF
     if [[ -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" ]]; then
       echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
 
-      cp -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
+      cpreq -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
       iloop=$((iloop + 1))
     fi
   done
@@ -106,7 +106,7 @@ EOF
 
   if [[ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]]
   then
-    cp -f "${PARMgfs}/wave/wave_${NET}.buoys" buoy.loc.temp
+    cpreq -f "${PARMgfs}/wave/wave_${NET}.buoys" buoy.loc.temp
     if [[ "${DOBNDPNT_WAV}" == "YES" ]]; then
       #only do boundary points
       sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.loc || {
@@ -132,7 +132,7 @@ EOF
 
   if [[ -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ]]
   then
-    cp -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ww3_outp_spec.inp.tmpl
+    cpreq -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ww3_outp_spec.inp.tmpl
   fi
 
   if [[ -f ww3_outp_spec.inp.tmpl ]]
