@@ -164,7 +164,7 @@ if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
    export pgm=${GETATMENSMEANEXEC}
    source prep_step
 
-   ${NCP} ${GETATMENSMEANEXEC} ${DATA}
+   cpreq ${GETATMENSMEANEXEC} ${DATA}
    ${APRUN_ECEN} ${DATA}/$(basename ${GETATMENSMEANEXEC}) ${DATAPATH} ${ATMANLMEANNAME} ${ATMANLNAME} ${NMEM_ENS}
    export err=$?
    if [[ ${err} -ne 0 ]]; then
@@ -187,7 +187,7 @@ else
    export pgm=${GETATMENSMEANEXEC}
    source prep_step
 
-   ${NCP} ${GETATMENSMEANEXEC} ${DATA}
+   cpreq ${GETATMENSMEANEXEC} ${DATA}
    ${APRUN_ECEN} ${DATA}/$(basename ${GETATMENSMEANEXEC}) ${DATAPATH} ${ATMINCMEANNAME} ${ATMINCNAME} ${NMEM_ENS}
    export err=$?
    if [[ ${err} -ne 0 ]]; then
@@ -206,7 +206,7 @@ else
        export pgm=${GETATMENSMEANEXEC}
        source prep_step
 
-       ${NCP} ${GETATMENSMEANEXEC} ${DATA}
+       cpreq ${GETATMENSMEANEXEC} ${DATA}
        ${APRUN_ECEN} ${DATA}/$(basename ${GETATMENSMEANEXEC}) ${DATAPATH} ${ATMGESMEANNAME} ${ATMGESNAME} ${NMEM_ENS}
        export err=$?
        if [[ ${err} -ne 0 ]]; then
@@ -294,7 +294,7 @@ EOF
       export pgm=${RECENATMEXEC}
       source prep_step
 
-      ${NCP} ${RECENATMEXEC} ${DATA}
+      cpreq ${RECENATMEXEC} ${DATA}
       ${APRUN_ECEN} ${DATA}/$(basename ${RECENATMEXEC}) ${FILENAMEIN} ${FILENAME_MEANIN} ${FILENAME_MEANOUT} ${FILENAMEOUT} ${NMEM_ENS}
       export err=$?
       if [[ ${err} -ne 0 ]]; then
@@ -325,7 +325,7 @@ cat recenter.nml
       export pgm=${RECENATMEXEC}
       source prep_step
 
-      ${NCP} ${RECENATMEXEC} ${DATA}
+      cpreq ${RECENATMEXEC} ${DATA}
       ${APRUN_ECEN} ${DATA}/$(basename ${RECENATMEXEC}) ${FILENAMEIN} ${FILENAME_INCMEANIN} ${FILENAME_GSIDET} ${FILENAMEOUT} ${NMEM_ENS} ${FILENAME_GESMEANIN}
       export err=$?
       if [[ ${err} -ne 0 ]]; then

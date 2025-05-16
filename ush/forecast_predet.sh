@@ -466,21 +466,21 @@ FV3_predet(){
 
   # Grid and orography data
   if [[ "${cplflx}" == ".false." ]] ; then
-    ${NCP} "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
+    cpreq "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
   else
-    ${NCP} "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
+    cpreq "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
   fi
 
   # Files for GWD
-  ${NCP} "${FIXugwd}/ugwp_limb_tau.nc" "${DATA}/ugwp_limb_tau.nc"
+  cpreq "${FIXugwd}/ugwp_limb_tau.nc" "${DATA}/ugwp_limb_tau.nc"
 
   # Files for orography, GWD tiles
   local tt
   for (( tt = 1; tt <= ntiles; tt++ )); do
-    ${NCP} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${tt}.nc" "${DATA}/INPUT/oro_data.tile${tt}.nc"
-    ${NCP} "${FIXorog}/${CASE}/${CASE}_grid.tile${tt}.nc"                 "${DATA}/INPUT/${CASE}_grid.tile${tt}.nc"
-    ${NCP} "${FIXugwd}/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
-    ${NCP} "${FIXugwd}/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
+    cpreq "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${tt}.nc" "${DATA}/INPUT/oro_data.tile${tt}.nc"
+    cpreq "${FIXorog}/${CASE}/${CASE}_grid.tile${tt}.nc"                 "${DATA}/INPUT/${CASE}_grid.tile${tt}.nc"
+    cpreq "${FIXugwd}/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
+    cpreq "${FIXugwd}/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc"          "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
   done
   if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
     ${NLN} "${DATA}/INPUT/oro_data.tile7.nc" "${DATA}/INPUT/oro_data.nest02.tile7.nc"
@@ -496,10 +496,10 @@ FV3_predet(){
 
   #  Thompson microphysics fix files
   if (( imp_physics == 8 )); then
-    ${NCP} "${FIXgfs}/am/CCN_ACTIVATE.BIN" "${DATA}/CCN_ACTIVATE.BIN"
-    ${NCP} "${FIXgfs}/am/freezeH2O.dat"    "${DATA}/freezeH2O.dat"
-    ${NCP} "${FIXgfs}/am/qr_acr_qgV2.dat"  "${DATA}/qr_acr_qgV2.dat"
-    ${NCP} "${FIXgfs}/am/qr_acr_qsV2.dat"  "${DATA}/qr_acr_qsV2.dat"
+    cpreq "${FIXgfs}/am/CCN_ACTIVATE.BIN" "${DATA}/CCN_ACTIVATE.BIN"
+    cpreq "${FIXgfs}/am/freezeH2O.dat"    "${DATA}/freezeH2O.dat"
+    cpreq "${FIXgfs}/am/qr_acr_qgV2.dat"  "${DATA}/qr_acr_qgV2.dat"
+    cpreq "${FIXgfs}/am/qr_acr_qsV2.dat"  "${DATA}/qr_acr_qsV2.dat"
   fi
 
   if [[ "${new_o3forc:-YES}" == "YES" ]]; then
@@ -512,15 +512,15 @@ FV3_predet(){
     O3FORC="global_o3prdlos.f77"
   fi
   H2OFORC=${H2OFORC:-"global_h2o_pltc.f77"}
-  ${NCP} "${FIXgfs}/am/${O3FORC}"  "${DATA}/global_o3prdlos.f77"
-  ${NCP} "${FIXgfs}/am/${H2OFORC}" "${DATA}/global_h2oprdlos.f77"
+  cpreq "${FIXgfs}/am/${O3FORC}"  "${DATA}/global_o3prdlos.f77"
+  cpreq "${FIXgfs}/am/${H2OFORC}" "${DATA}/global_h2oprdlos.f77"
 
   # GFS standard input data
 
   ISOL=${ISOL:-2}
 
-  ${NCP} "${FIXgfs}/am/global_solarconstant_noaa_an.txt" "${DATA}/solarconstant_noaa_an.txt"
-  ${NCP} "${FIXgfs}/am/global_sfc_emissivity_idx.txt"    "${DATA}/sfc_emissivity_idx.txt"
+  cpreq "${FIXgfs}/am/global_solarconstant_noaa_an.txt" "${DATA}/solarconstant_noaa_an.txt"
+  cpreq "${FIXgfs}/am/global_sfc_emissivity_idx.txt"    "${DATA}/sfc_emissivity_idx.txt"
 
   # Aerosol options
   IAER=${IAER:-1011}
@@ -530,29 +530,29 @@ FV3_predet(){
     local month mm
     for (( month = 1; month <=12; month++ )); do
       mm=$(printf %02d "${month}")
-      ${NCP} "${FIXgfs}/aer/merra2.aerclim.2014-2023.m${mm}.nc" "aeroclim.m${mm}.nc"
+      cpreq "${FIXgfs}/aer/merra2.aerclim.2014-2023.m${mm}.nc" "aeroclim.m${mm}.nc"
     done
   fi
 
-  ${NCP} "${FIXgfs}/am/global_climaeropac_global.txt" "${DATA}/aerosol.dat"
+  cpreq "${FIXgfs}/am/global_climaeropac_global.txt" "${DATA}/aerosol.dat"
   if (( IAER > 0 )) ; then
     local file
     for file in "${FIXgfs}/am/global_volcanic_aerosols"* ; do
-      ${NCP} "${file}" "${DATA}/$(basename "${file//global_}")"
+      cpreq "${file}" "${DATA}/$(basename "${file//global_}")"
     done
   fi
 
-  ${NCP} "${FIXgfs}/lut/optics_BC.v1_3.dat"  "${DATA}/optics_BC.dat"
-  ${NCP} "${FIXgfs}/lut/optics_OC.v1_3.dat"  "${DATA}/optics_OC.dat"
-  ${NCP} "${FIXgfs}/lut/optics_DU.v15_3.dat" "${DATA}/optics_DU.dat"
-  ${NCP} "${FIXgfs}/lut/optics_SS.v3_3.dat"  "${DATA}/optics_SS.dat"
-  ${NCP} "${FIXgfs}/lut/optics_SU.v1_3.dat"  "${DATA}/optics_SU.dat"
+  cpreq "${FIXgfs}/lut/optics_BC.v1_3.dat"  "${DATA}/optics_BC.dat"
+  cpreq "${FIXgfs}/lut/optics_OC.v1_3.dat"  "${DATA}/optics_OC.dat"
+  cpreq "${FIXgfs}/lut/optics_DU.v15_3.dat" "${DATA}/optics_DU.dat"
+  cpreq "${FIXgfs}/lut/optics_SS.v3_3.dat"  "${DATA}/optics_SS.dat"
+  cpreq "${FIXgfs}/lut/optics_SU.v1_3.dat"  "${DATA}/optics_SU.dat"
 
   # CO2 options
   ICO2=${ICO2:-2}
 
-  ${NCP} "${FIXgfs}/am/global_co2historicaldata_glob.txt" "${DATA}/co2historicaldata_glob.txt"
-  ${NCP} "${FIXgfs}/am/co2monthlycyc.txt"                 "${DATA}/co2monthlycyc.txt"
+  cpreq "${FIXgfs}/am/global_co2historicaldata_glob.txt" "${DATA}/co2historicaldata_glob.txt"
+  cpreq "${FIXgfs}/am/co2monthlycyc.txt"                 "${DATA}/co2monthlycyc.txt"
   # Set historical CO2 values based on whether this is a reforecast run or not
   # Ref. issue 2403
   local co2dir
@@ -563,23 +563,23 @@ FV3_predet(){
   if (( ICO2 > 0 )); then
     local file
     for file in "${FIXgfs}/am/${co2dir}/global_co2historicaldata"* ; do
-      ${NCP} "${file}" "${DATA}/$(basename "${file//global_}")"
+      cpreq "${file}" "${DATA}/$(basename "${file//global_}")"
     done
   fi
 
   # Inline UPP fix files
   if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
-    ${NCP} "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}" "${DATA}/params_grib2_tbl_new"
-    ${NCP} "${PARMgfs}/ufs/post_itag_gfs"                         "${DATA}/itag"  # TODO: Need a GEFS version when available in the UFS-weather-model
+    cpreq "${POSTGRB2TBL:-${PARMgfs}/post/params_grib2_tbl_new}" "${DATA}/params_grib2_tbl_new"
+    cpreq "${PARMgfs}/ufs/post_itag_gfs"                         "${DATA}/itag"  # TODO: Need a GEFS version when available in the UFS-weather-model
     # TODO: These should be replaced with ones from the ufs-weather-model when available there
     case ${NET} in
       gfs|gcafs)
-        ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt"     "${DATA}/postxconfig-NT.txt"
-        ${NCP} "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
+        cpreq "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt"     "${DATA}/postxconfig-NT.txt"
+        cpreq "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
         ;;
       gefs)
-        ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt"       "${DATA}/postxconfig-NT.txt"
-        ${NCP} "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
+        cpreq "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt"       "${DATA}/postxconfig-NT.txt"
+        cpreq "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt"   "${DATA}/postxconfig-NT_FH00.txt"
         # Provide ensemble header information for GEFS
         if [[ "${ENSMEM}" == "000" ]]; then
           export e1=1
@@ -590,8 +590,8 @@ FV3_predet(){
         export e3="${NMEM_ENS}"
         ;;
       sfs)
-        ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
-        ${NCP} "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
+        cpreq "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT.txt"
+        cpreq "${PARMgfs}/post/sfs/postxconfig-NT-sfs.txt"       "${DATA}/postxconfig-NT_FH00.txt"
         # Provide ensemble header information for SFS
         if [[ "${ENSMEM}" == "000" ]]; then
           export e1=1
@@ -649,7 +649,7 @@ WW3_predet(){
     echo "Wave is on the same mesh as ocean"
   else
     echo "Wave is NOT on the same mesh as ocean"
-    ${NCP} "${FIXgfs}/wave/${MESH_WAV}" "${DATA}/"
+    cpreq "${FIXgfs}/wave/${MESH_WAV}" "${DATA}/"
   fi
 
   WAV_MOD_TAG="${RUN}.wave"
@@ -673,9 +673,9 @@ CICE_predet(){
   mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || exit 10
 
   # Fix files
-  ${NCP} "${FIXgfs}/cice/${ICERES}/${CICE_GRID}" "${DATA}/"
-  ${NCP} "${FIXgfs}/cice/${ICERES}/${CICE_MASK}" "${DATA}/"
-  ${NCP} "${FIXgfs}/cice/${ICERES}/${MESH_ICE}"  "${DATA}/"
+  cpreq "${FIXgfs}/cice/${ICERES}/${CICE_GRID}" "${DATA}/"
+  cpreq "${FIXgfs}/cice/${ICERES}/${CICE_MASK}" "${DATA}/"
+  cpreq "${FIXgfs}/cice/${ICERES}/${MESH_ICE}"  "${DATA}/"
 
 }
 
@@ -709,7 +709,7 @@ MOM6_predet(){
   fi
 
   # Fix files
-  ${NCP} "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
+  cpreq "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
 
   # Copy coupled grid_spec
   local spec_file

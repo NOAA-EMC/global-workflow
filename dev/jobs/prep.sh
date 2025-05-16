@@ -138,14 +138,18 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
-        if [[ ${DONST} = "YES" ]]; then ${NCP} "${COMIN_OBSDMP}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"; fi
+        if [[ ${DONST} = "YES" ]]; then
+           cpreq "${COMIN_OBSDMP}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
+        fi
     fi
 
 else
     if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-        ${NCP} "${COMIN_OBSDMP}/${OPREFIX}prepbufr"               "${COMOUT_OBS}/${OPREFIX}prepbufr"
-        ${NCP} "${COMIN_OBSDMP}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
-        if [[ ${DONST} = "YES" ]]; then ${NCP} "${COMIN_OBSDMP}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"; fi
+        cpfs "${COMIN_OBSDMP}/${OPREFIX}prepbufr"               "${COMOUT_OBS}/${OPREFIX}prepbufr"
+        cpfs "${COMIN_OBSDMP}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
+        if [[ ${DONST} = "YES" ]]; then
+           cpfs "${COMIN_OBSDMP}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
+        fi
     fi
 fi
 

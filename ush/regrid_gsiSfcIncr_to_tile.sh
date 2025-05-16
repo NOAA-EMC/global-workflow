@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
 #-------------------------------------------------------------------------------------------------
-# Script to regrid surface increment from GSI grid 
-# to fv3 tiles. 
+# Script to regrid surface increment from GSI grid
+# to fv3 tiles.
 # Clara Draper, Dec 2024
 #-------------------------------------------------------------------------------------------------
 
@@ -60,57 +60,57 @@ cat << EOF > regrid.nml
   jres=${CASE_OUT:1},
   fname="sfci",
   dir="./",
-  fname_mask="vegetation_type" 
+  fname_mask="vegetation_type"
   dir_mask="./"
   dir_coord="./",
  /
 EOF
 
 # input, fixed files
-${NCP} "${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
-        "${DATA}/gaussian_scrip.nc"
+cpreq "${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
+      "${DATA}/gaussian_scrip.nc"
 
 # output, fixed files
-${NCP} "${FIXorog}/${CASE_OUT}/${CASE_OUT}_mosaic.nc" \
-        "${DATA}/${CASE_OUT}_mosaic.nc"
+cpreq "${FIXorog}/${CASE_OUT}/${CASE_OUT}_mosaic.nc" \
+      "${DATA}/${CASE_OUT}_mosaic.nc"
 
 for n in $(seq 1 "${ntiles}"); do
-    ${NCP} "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc" \
-            "${DATA}/vegetation_type.tile${n}.nc"
-    ${NCP} "${FIXorog}/${CASE_OUT}/${CASE_OUT}_grid.tile${n}.nc" \
-            "${DATA}/${CASE_OUT}_grid.tile${n}.nc"
+    cpreq "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc" \
+          "${DATA}/vegetation_type.tile${n}.nc"
+    cpreq "${FIXorog}/${CASE_OUT}/${CASE_OUT}_grid.tile${n}.nc" \
+          "${DATA}/${CASE_OUT}_grid.tile${n}.nc"
 done
 
-if (( LFHR >= 0 )); then 
+if (( LFHR >= 0 )); then
     soilinc_fhrs=("${LFHR}")
 else # construct restart times for deterministic member
-    soilinc_fhrs=("${assim_freq}") # increment file at middle of window 
+    soilinc_fhrs=("${assim_freq}") # increment file at middle of window
     if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
         half_window=$(( assim_freq / 2 ))
         soilinc_fhrs+=("${half_window}")
     fi
-fi 
+fi
 
 for imem in $(seq 1 "${NMEM_REGRID}"); do
     if (( NMEM_REGRID > 1 )); then
         cmem=$(printf %03i "${imem}")
         memchar="mem${cmem}"
-     
+
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
             COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
             COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
     fi
- 
+
     for FHR in "${soilinc_fhrs[@]}"; do
-        ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-               "${DATA}/enkfgdas.sfci.nc"
+        cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+              "${DATA}/enkfgdas.sfci.nc"
 
         ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" 
+            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
         done
     done
 done

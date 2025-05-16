@@ -166,7 +166,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   # Move to COM and index the product grib files
   for grid in "${grids[@]}"; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    ${NCP} "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}"
+    cpfs "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}"
     ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx"
   done
 
@@ -201,7 +201,7 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
   IFS=':' read -ra grids <<< "${grid_string}"
   for grid in "${grids[@]}"; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    ${NCP} "sflux_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}"
+    cpfs "sflux_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}"
     ${WGRIB2} -s "sflux_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.idx"
   done
 fi

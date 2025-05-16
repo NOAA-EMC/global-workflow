@@ -394,7 +394,7 @@ export OMP_NUM_THREADS=${NTHREADS_ENKF}
 export pgm=${ENKFEXEC}
 source prep_step
 
-${NCP} "${ENKFEXEC}" "${DATA}"
+cpreq "${ENKFEXEC}" "${DATA}"
 ${APRUN_ENKF} "${DATA}/$(basename ${ENKFEXEC})" 1>stdout 2>stderr && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

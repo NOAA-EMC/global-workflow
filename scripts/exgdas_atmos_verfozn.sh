@@ -19,7 +19,7 @@ if [[ -s ${oznstat} ]]; then
    #  Untar oznstat file.
    #------------------------------------------------------------------
 
-   ${NCP} "${oznstat}" "./oznstat.${PDY}${cyc}"
+   cpreq "${oznstat}" "./oznstat.${PDY}${cyc}"
 
    tar -xvf "oznstat.${PDY}${cyc}"
    rm -f "oznstat.${PDY}${cyc}"
