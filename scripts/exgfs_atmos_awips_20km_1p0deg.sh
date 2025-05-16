@@ -178,7 +178,7 @@ for GRID in conus ak prico pac 003; do
       ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
       export err=$?
       if [[ ${err} -ne 0 ]]; then
-         err_exit "Faile to generate the awips Grib2 file!"
+         err_exit "Failed to generate the awips Grib2 file!"
       fi
 
       ##############################
