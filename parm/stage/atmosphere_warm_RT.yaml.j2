@@ -54,7 +54,7 @@ atmosphere_warm_RT:
 
             {% if path_exists(ICSDIR) %}
                 {% set file = restart_mem_path ~ 'coupler.res' %}
-                - ["{{ file }}", "{{ restart_destination_path }}"]
+        - ["{{ file }}", "{{ restart_destination_path }}"]
                 {% set file = restart_mem_path ~ 'fv_core.res.nc' %}
         - ["{{ file }}", "{{ restart_destination_path }}"]
                 {% set ntiles = 6 %}
