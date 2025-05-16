@@ -76,7 +76,7 @@ class GEFSTasks(Tasks):
 
     def fcst(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
@@ -122,7 +122,7 @@ class GEFSTasks(Tasks):
 
     def efcs(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
