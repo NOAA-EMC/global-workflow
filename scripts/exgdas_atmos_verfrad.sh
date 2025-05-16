@@ -127,6 +127,7 @@ export RADMON_NETCDF=${netcdf}
 
 "${USHgfs}/radmon_verf_angle.sh" && true
 rc_angle=$?
+"${USHgfs}/rstprod.sh"
 
 # Allow all scripts to run.  Call err_exit at the end, after files are restricted.
 if [[ ${rc_angle} -ne 0 ]]; then
@@ -135,6 +136,7 @@ fi
 
 "${USHgfs}/radmon_verf_bcoef.sh" && true
 rc_bcoef=$?
+"${USHgfs}/rstprod.sh"
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
    echo "FATAL ERROR: radmon_verf_bcoef.sh failed!"
@@ -142,6 +144,7 @@ fi
 
 "${USHgfs}/radmon_verf_bcor.sh" && true
 rc_bcor=$?
+"${USHgfs}/rstprod.sh"
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
    echo "FATAL ERROR: radmon_verf_bcor.sh failed!"
@@ -149,20 +152,11 @@ fi
 
 "${USHgfs}/radmon_verf_time.sh" && true
 rc_time=$?
+"${USHgfs}/rstprod.sh"
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
    echo "FATAL ERROR: radmon_verf_time.sh failed!"
 fi
-
-#####################################################################
-# Restrict select sensors and satellites
-export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-rlist="saphir"
-for rtype in ${rlist}; do
-  if compgen -G "${TANKverf_rad}/"*"${rtype}"* > /dev/null; then
-     ${CHGRP_CMD} "${TANKverf_rad}/"*"${rtype}"*
-  fi
-done
 
 #####################################################################
 # Error handling
