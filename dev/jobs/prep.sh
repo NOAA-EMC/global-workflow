@@ -87,7 +87,9 @@ if [[ ${PROCESS_TROPCY} == "YES" ]]; then
         done
     fi
 
-    if [[ ${ROTDIR_DUMP} == "YES" ]]; then rm "${COMOUT_OBS}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00"; fi
+    if [[ ${ROTDIR_DUMP} == "YES" ]]; then
+       rm -f "${COMOUT_OBS}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00"
+    fi
 
     "${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
     status=$?
