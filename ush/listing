@@ -1,7 +1,0 @@
-vim extractvars_tools.sh
-vim gfs_bufr.sh
-vim gfs_sndp.sh
-vim interp_atmos_master.sh
-vim interp_atmos_sflux.sh
-vim jjob_header.sh
-vim preamble.sh
