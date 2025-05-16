@@ -55,7 +55,6 @@ if [[ ${DO_LAND_IAU} = ".true." ]]; then
     done
 fi
 
-#time_list="${ifhrs[@]}"
 in_fname="enkfgdas.sfci.nc"
 out_fname="sfci"
 
@@ -144,7 +143,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         
         sed -i -e 's/!/ /g' "regrid.nml"
         
-	      #TODO: fix until reg code time dim issues are sorted out
+	#fix until reg code time dim issues are sorted out. TODO: time dim in regr/ufs code
         if [[ "${n_tims}" -eq 1 ]]; then
             for FHI in "${ifhrsi[@]}"; do
                 ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
@@ -152,14 +151,14 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
             done
         else
             for FHI in "${ifhrsi[@]}"; do
-	              ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
+	        ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
                        "${DATA}/${in_fname}.${FHI}"
             done
         fi
         
 	${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
    
-        #TODO: fix until reg code time dim issues are sorted out
+        #fix until reg code time dim issues are sorted out. TODO: time var in regr/ufs code
 	if [[ "${n_tims}" -eq 1 ]]; then 
             for n in $(seq 1 "${ntiles}"); do
                 ncecat -O -u Time "sfci.tile${n}.nc" "sfci.tile${n}.nc"   
