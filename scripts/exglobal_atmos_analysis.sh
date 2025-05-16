@@ -638,13 +638,13 @@ fi
 
 # If requested, link (and if tarred, de-tar obsinput.tar) into obs_input.* files
 if [[ ${USE_SELECT} == "YES" ]]; then
-   rm obs_input.*
+   rm -f obs_input.*
    nl=$(file ${SELECT_OBS} | cut -d: -f2 | grep tar | wc -l)
    if [[ ${nl} -eq 1 ]]; then
-      rm obsinput.tar
+      rm -f obsinput.tar
       ${NLN} ${SELECT_OBS} obsinput.tar
       tar -xvf obsinput.tar
-      rm obsinput.tar
+      rm -f obsinput.tar
    else
       for filetop in $(ls ${SELECT_OBS}/obs_input.*); do
          fileloc=$(basename ${filetop})
@@ -658,10 +658,10 @@ fi
 if [[ "${USE_RADSTAT}" == "YES" ]]; then
    if [[ "${USE_CFP}" == "YES" ]]; then
      if [[ -f "${DATA}/unzip.sh" ]]; then
-         rm "${DATA}/unzip.sh"
+         rm -f "${DATA}/unzip.sh"
      fi
      if [[ -f "${DATA}/mp_unzip.sh" ]]; then
-         rm "${DATA}/mp_unzip.sh"
+         rm -f "${DATA}/mp_unzip.sh"
      fi
      cat > "${DATA}/unzip.sh" << EOFunzip
 #!/bin/sh
@@ -995,14 +995,14 @@ cat fort.2* > ${GSISTAT}
 if [[ ${RUN_SELECT} == "YES" ]]; then
   echo $(date) START tar obs_input >&2
   if [[ -s obsinput.tar ]]; then
-      rm obsinput.tar
+      rm -f obsinput.tar
   fi
   ${NLN} ${SELECT_OBS} obsinput.tar
   ${CHGRP_CMD} obs_input.*
   tar -cvf obsinput.tar obs_input.*
   chmod 750 ${SELECT_OBS}
   ${CHGRP_CMD} ${SELECT_OBS}
-  rm obsinput.tar
+  rm -f obsinput.tar
   echo $(date) END tar obs_input >&2
 fi
 
