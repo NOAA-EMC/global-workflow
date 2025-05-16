@@ -32,7 +32,7 @@ atmosphere_warm_RT:
                 {% endif %}
             {% else %}
                 {% set mem_range = ranges %}
-                {% set offset = offsets %}
+                {% set offset = offsets[0] %}
             {% endif %}
 
             # Calculate mem and imem
