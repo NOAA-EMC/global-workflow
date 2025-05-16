@@ -30,7 +30,7 @@
 
   if [[ $# -lt 1 ]]
   then
-    echo '*** ERROR: LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
+    echo 'FATAL ERROR: LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
     exit 1
   else
     buoy=${bloc}
@@ -41,7 +41,7 @@
 
   if [[ -z "${DTPNT_WAV+0}" || -z "${FHMIN_WAV+0}" || -z "${WAV_MOD_TAG+0}" || -z "${STA_DIR+0}" ]]
   then
-    echo '*** ERROR: EXPORTED VARIABLES IN ww3_outp_cat.sh NOT SET ***'
+    echo 'FATAL ERROR: EXPORTED VARIABLES IN ww3_outp_cat.sh NOT SET ***'
     exit 3
   fi
 
@@ -109,7 +109,7 @@
 
   if [[ ! -f "${outfile}" ]]
   then
-    echo "ERROR: OUTPUTFILE ${outfile} not created    "
+    echo "FATAL ERROR: OUTPUTFILE ${outfile} not created    "
     exit 2
   fi
 
