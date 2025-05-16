@@ -3,7 +3,7 @@ atmosphere_warm_RT:
         - "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"
         - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
     copy:
-        # Define cycle ranges and offsets separately
+    # select restart members files (80) specific to the cycle
         {% set cyc_ranges = {
             "00": range(1, 31),
             "06": range(21, 51),

@@ -3,7 +3,7 @@ ocean_RT:
         - "{{ COMOUT_OCEAN_RESTART_PREV_MEM }}"
         - "{{ COMOUT_OCEAN_ANALYSIS_MEM }}"
     copy:
-        #select restart members files (80) specific to the cycle
+    # select restart members files (80) specific to the cycle
         {% set cyc_ranges = {
             "00": range(1, 31),
             "06": range(21, 51),
