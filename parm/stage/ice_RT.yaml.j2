@@ -5,26 +5,46 @@ ice_RT:
         - "{{ COMOUT_ICE_ANALYSIS_MEM }}"
         {% endfor %} # mem loop
     copy:
-        #select restart members files (80) specific to the cycle
-        {% set cyc_ranges = ({ "00": [(range(1, 31), 0)],
-                               "06": [(range(21, 51), 20)],
-                               "12": [(range(41, 71), 40)],
-                               "18": [(range(61, 81), 60), (range(1, 11), -20)]}) %}
+        {% set cyc_ranges = {
+            "00": range(1, 31),
+            "06": range(21, 51),
+            "12": range(41, 71),
+            "18": [range(61, 81), range(1, 11)]
+        } %}
+        {% set cyc_offsets = {
+            "00": [0],
+            "06": [20],
+            "12": [40],
+            "18": [60, -20]
+        } %}
 
         {% if current_cycle_HH in cyc_ranges %}
-        {% for mem_data in cyc_ranges[current_cycle_HH] %}
-        {% set offset = mem_data[1] %}
-        {% set mem_range = mem_data[0] %}
-        {% for mem in mem_range %}
-        {% set imem = mem - offset %}
-        {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
-        {% set increment_mem_path = ICSDIR ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/ice/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.cice_model_anl.res.nc' %}
-        {% set increment_destination_path = COMOUT_ICE_ANALYSIS_MEM_list[imem] %}
+            {% set ranges = cyc_ranges[current_cycle_HH] %}
+            {% set offsets = cyc_offsets[current_cycle_HH] %}
+
+            # Determine the correct range and offset based on ENSEM
+            {% if current_cycle_HH == "18" %}
+                {% if ENSEM in ranges[0] %}
+                    {% set mem_range = ranges[0] %}
+                    {% set offset = offsets[0] %}
+                {% elif ENSEM in ranges[1] %}
+                    {% set mem_range = ranges[1] %}
+                    {% set offset = offsets[1] %}
+                {% endif %}
+            {% else %}
+                {% set mem_range = ranges %}
+                {% set offset = offsets %}
+            {% endif %}
+
+            # Calculate mem and imem
+            {% set mem = ENSEM + offset %}
+            {% set imem = ENSEM %}
+            {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
+            {% set increment_mem_path = ICSDIR ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/ice/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.cice_model_anl.res.nc' %}
+            {% set increment_destination_path = COMOUT_ICE_ANALYSIS_MEM_list[imem] %}
 
         # Include increment files
-        {% set file = increment_mem_path %}
+            {% set file = increment_mem_path %}
         - ["{{ file }}", "{{ increment_destination_path }}"]
 
-        {% endfor %}
-        {% endfor %}
         {% endif %}
