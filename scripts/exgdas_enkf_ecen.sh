@@ -279,7 +279,7 @@ EOF
       ${APRUN_CHGRES} ./chgres.x
       export err=$?
       if [[ ${err} -ne 0 ]]; then
-         err_exit "Faile to change the resolution of the mean ensemble analysis!"
+         err_exit "Failed to change the resolution of the mean ensemble analysis!"
       fi
    fi
 
