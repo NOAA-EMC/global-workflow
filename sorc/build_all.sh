@@ -15,9 +15,9 @@ function _usage() {
   cat << EOF
 Builds all of the global-workflow components by calling the individual build scripts in parallel.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-v] [gfs] [gefs] [sfs] [gsi] [gdas] [all]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-v] [gfs] [gefs] [sfs] [gcafs] [gsi] [gdas] [all]
   -a UFS_app:
-    Build a specific UFS app instead of the default.  This will be applied to all UFS (GFS, GEFS, SFS) builds.
+    Build a specific UFS app instead of the default.  This will be applied to all UFS (GFS, GEFS, SFS, GCAFS) builds.
   -d:
     Build in debug mode
   -f:
@@ -31,7 +31,7 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-v] [gfs] [ge
   -p:
     Valid only for WCOSS2; enable parallel restart I/O when compiling the UFS
 
-  Specified systems (gfs, gefs, sfs, gsi, gdas) are non-exclusive, so they can be built together.
+  Specified systems (gfs, gefs, sfs, gcafs, gsi, gdas) are non-exclusive, so they can be built together.
 EOF
   exit 1
 }
@@ -77,13 +77,14 @@ else
    selected_systems="$*"
 fi
 
-supported_systems=("gfs" "gefs" "sfs" "gsi" "gdas" "all")
+supported_systems=("gfs" "gefs" "sfs" "gcafs" "gsi" "gdas" "all")
 
 declare -A system_builds
 system_builds=(
    ["gfs"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs"
    ["gefs"]="ufs_gefs gfs_utils ufs_utils upp ww3_gefs"
    ["sfs"]="ufs_sfs gfs_utils ufs_utils upp ww3_gefs"
+   ["gcafs"]="ufs_gcafs gfs_utils ufs_utils upp"
    ["gsi"]="gsi_enkf gsi_monitor gsi_utils"
    ["gdas"]="gdas gsi_monitor gsi_utils"
    ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils"
@@ -98,7 +99,7 @@ fi
 # Jobs per build ("min max")
 declare -A build_jobs build_opts build_scripts
 build_jobs=(
-    ["ufs_gfs"]=8 ["ufs_gefs"]=8 ["ufs_sfs"]=8 ["gdas"]=8 ["gsi_enkf"]=2 ["gfs_utils"]=1 ["ufs_utils"]=1
+    ["ufs_gfs"]=8 ["ufs_gefs"]=8 ["ufs_sfs"]=8 ["ufs_gcafs"]=8 ["gdas"]=8 ["gsi_enkf"]=2 ["gfs_utils"]=1 ["ufs_utils"]=1
     ["ww3_gfs"]=1 ["ww3_gefs"]=1 ["gsi_utils"]=1 ["gsi_monitor"]=1 ["gfs_utils"]=1 ["upp"]=1
 )
 
@@ -106,10 +107,12 @@ build_jobs=(
 _gfs_exec="gfs_model.x"
 _gefs_exec="gefs_model.x"
 _sfs_exec="sfs_model.x"
+_gcafs_exec="gcafs_model.x"
 build_opts=(
     ["ufs_gfs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gfs_exec}"
     ["ufs_gefs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -w -e ${_gefs_exec}"
     ["ufs_sfs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -y -e ${_sfs_exec}"
+    ["ufs_gcafs"]="${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gcafs_exec}"
     ["upp"]="${_build_debug}"
     ["ww3_gfs"]="${_verbose_opt} ${_build_debug}"
     ["ww3_gefs"]="-w ${_verbose_opt} ${_build_debug}"
@@ -126,6 +129,7 @@ build_scripts=(
     ["ufs_gfs"]="build_ufs.sh"
     ["ufs_gefs"]="build_ufs.sh"
     ["ufs_sfs"]="build_ufs.sh"
+    ["ufs_gcafs"]="build_ufs.sh"
     ["gdas"]="build_gdas.sh"
     ["gsi_enkf"]="build_gsi_enkf.sh"
     ["gfs_utils"]="build_gfs_utils.sh"
