@@ -54,7 +54,8 @@ class Jedi:
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
             {
-                'exe': os.path.join(config.rundir, os.path.basename(config.exe_src)),
+#                'exe': os.path.join(config.rundir, os.path.basename(config.exe_src)),
+                'exe': config.exe_src,
                 'yaml': os.path.join(config.rundir, config.yaml_name + '.yaml'),
                 'input_config': None
             }
@@ -99,8 +100,8 @@ class Jedi:
         save_as_yaml(self.jedi_config.input_config, self.jedi_config.yaml)
 
         # Link JEDI executable to run directory
-        logger.info(f"Linking JEDI executable {self.jedi_config.exe_src} to {self.jedi_config.exe}")
-        self.link_exe()
+#        logger.info(f"Linking JEDI executable {self.jedi_config.exe_src} to {self.jedi_config.exe}")
+#        self.link_exe()
 
     @logit(logger)
     def execute(self) -> None:
