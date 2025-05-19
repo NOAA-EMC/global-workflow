@@ -1,7 +1,6 @@
 name: Static Data Update
 description: Request static data be added or updated
 labels: ["Static Data Mgmt"]
-type: "task"
 projects: ["NOAA-EMC/41"]
 assignees:
   - KateFriedman-NOAA
@@ -32,9 +31,13 @@ body:
         - "Fix: cice"
         - "Fix: cpl"
         - "Fix: datm"
+        - "Fix: gdas/aero"
         - "Fix: gdas/crtm"
         - "Fix: gdas/fv3jedi"
         - "Fix: gdas/gsibec"
+        - "Fix: gdas/obs"
+        - "Fix: gdas/snow"
+        - "Fix: gdas/soca"
         - "Fix: gldas"
         - "Fix: glwu"
         - "Fix: gsi"
@@ -56,6 +59,7 @@ body:
         - "ICs: C768 mx025"
         - "ICs: C1152 mx025"
         - "ICs: *NEW RESOLUTION*"
+        - "Exp Data: Experimental obs"
         - "Exp Data: GOCART emissions"
         - "Exp Data: JEDI obs"
         - "Exp Data: *NEW*"
@@ -130,7 +134,7 @@ body:
       value: |
         # Tasks
         - [ ] Discuss needs with global-workflow developer assigned to request
-        - [ ] Stage a CLEAN copy of data on Hera or WCOSS in the location provided above
+        - [ ] Stage a CLEAN copy of data on Hera or WCOSS2 in the location provided above
         - [ ] [global-workflow CM] Update data in "glopara"-managed space on supported platforms
         - [ ] [Fix only] Update "Fix File Management" [spreadsheet](https://docs.google.com/spreadsheets/d/1BeIvcz6TO3If4YCqkUK-oz_kGS9q2wTjwLS-BBemSEY/edit?usp=sharing)
         - [ ] Make related workflow/component updates (if any)
