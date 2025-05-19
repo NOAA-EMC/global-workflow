@@ -18,8 +18,8 @@ base:
   FHMAX_GFS: 120
   FHMAX_HF_GFS: 0
   FCST_BREAKPOINTS: ""
-  DO_GSISOILDA: "YES"
-  DO_LAND_IAU: ".true."
+  DO_GSISOILDA: "NO"
+  DO_LAND_IAU: ".false."
   EUPD_CYC: "gdas"
   FHMAX_ENKF_GFS: 12
   DOHYBVAR_OCN: "NO"
