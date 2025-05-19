@@ -32,7 +32,7 @@ if [[ ${DO_GSISOILDA} == "YES" ]]; then
         export GCYCLE_DO_SOILINCR=".false."
     else
         export GCYCLE_DO_SOILINCR=".true."
-	export LSOIL_INCR=2
+	      export LSOIL_INCR=2
     fi
     export GCYCLE_INTERP_LANDINCR=".false."
     export REGRID_EXEC="${HOMEgfs}/exec/regridStates.x"
