@@ -230,7 +230,7 @@ EOF
             echo "FATAL ERROR: DO_LAND_IAU=${DO_LAND_IAU}, but missing increment file ${sfc_increment_file}, ABORT!"
             exit 1
           fi
-          ${NCP} "${sfc_increment_file}" "${DATA}/INPUT/sfc_inc.tile${TN}.nc"
+          cpreq "${sfc_increment_file}" "${DATA}/INPUT/sfc_inc.tile${TN}.nc"
         done
         LAND_IAU_INC_FILES=${LAND_IAU_INC_FILES:-'sfc_inc'}
 
