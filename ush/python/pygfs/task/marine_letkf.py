@@ -55,8 +55,6 @@ class MarineLETKF(Analysis):
         self.task_config.obs_dir = os.path.join(self.task_config.DATA, 'obs')
         self.task_config.ENSPERT_RELPATH = _enspert_relpath
         self.task_config.PARMsoca = os.path.join(self.task_config.PARMgfs, 'gdas', 'soca')
-        self.task_config.cyc = os.getenv('cyc')
-        self.task_config.PDY = os.getenv('PDY')
         self.task_config.app_path_observations = self.task_config.MARINE_JCB_GDAS_OBS
         self.task_config.letkf_app = "true"
 
