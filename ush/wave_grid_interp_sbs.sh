@@ -47,7 +47,7 @@ done
 # Check if there is an interpolation weights file available, and copy it if so
 if [[ -f "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}" ]]; then
   echo "INFO: Interpolation weights found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}'"
-  cp "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}" "./WHTGRIDINT.bin"
+  cpreq "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}" "./WHTGRIDINT.bin"
   weights_found=1
 else
   echo "WARNING: No weights file found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}'"
