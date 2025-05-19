@@ -1,0 +1,23 @@
+experiment:
+  system: gfs
+  mode: cycled
+
+arguments:
+  account: {{ 'HPC_ACCOUNT' | getenv }}
+  pslot: {{ 'pslot' | getenv }}
+  app: S2SW
+  resdetatmos: 1152
+  resensatmos: 384
+  resdetocean: 0.25
+  nens: 80
+  interval: 0
+  start: warm
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  idate: 2024111506
+  edate: 2024111600
+  #gaea
+  icsdir: /gpfs/f6/drsa-precip3/world-shared/role.glopara/data/ICSDIR/retro_ICs 
+  #msu
+  #icsdir: /work2/noaa/global/role-global/data/ICSDIR/retro_ICs
+  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw.yaml
