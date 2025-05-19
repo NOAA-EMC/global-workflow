@@ -132,11 +132,11 @@ body:
     attributes:
       label: Tasks for issue assignee
       options:
-        - label: [Providing user] Discuss needs with global-workflow developer assigned to request
-        - label: [Providing user] Stage a CLEAN copy of data on Hera or WCOSS2 in the location provided above
-        - label: [Global Workflow CM] Update data in "glopara"-managed space on supported platforms (see checklist below)
-        - label: [Global Workflow CM - Fix only] Update "Fix File Management" [spreadsheet](https://docs.google.com/spreadsheets/d/1BeIvcz6TO3If4YCqkUK-oz_kGS9q2wTjwLS-BBemSEY/edit?usp=sharing)
-        - label: [Developer] Make related workflow/component updates (if any)
+        - label: (Providing user) Discuss needs with global-workflow developer assigned to request
+        - label: (Providing user) Stage a CLEAN copy of data on Hera or WCOSS2 in the location provided above
+        - label: (Global Workflow CM) Update data in "glopara"-managed space on supported platforms (see checklist below)
+        - label: (Global Workflow CM - Fix only) Update "Fix File Management" [spreadsheet](https://docs.google.com/spreadsheets/d/1BeIvcz6TO3If4YCqkUK-oz_kGS9q2wTjwLS-BBemSEY/edit?usp=sharing)
+        - label: (Developer) Make related workflow/component updates (if any)
 
   - type: checkboxes
     attributes:
