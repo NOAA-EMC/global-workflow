@@ -254,7 +254,19 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2.idx"
       fi
-    fi  # end if RUN=gfs
+    elif [[ "${RUN}" == "gcafs" ]]; then
+
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF" "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}atm${fhr3}.nc"
+      if (( fhr > 0 && fhr <= 84 )) || (( fhr == 120 )); then
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}sfc${fhr3}.nc"
+      fi
+
+      if [[ -s "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr3}.grib2" ]]; then
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2.idx"
+      fi
+    fi
+
 
   fi  # end if fhr3=anl
 

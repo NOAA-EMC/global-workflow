@@ -2,7 +2,7 @@
 Contributing to the Global Workflow
 ###################################
 
-This section is devoted to developers who wish to contribute to the Global Workflow repository. 
+This section is devoted to developers who wish to contribute to the Global Workflow repository.
 
 .. _managers:
 
@@ -48,7 +48,7 @@ These protected branches require the following to accept changes:
 
 Other authoritative repository branches may also be protected at the request of members of the global-workflow-developers team.
 
-.. _howto: 
+.. _howto:
 
 =============================================
 How to get changes into develop (HEAD) branch
@@ -79,7 +79,7 @@ Continuous Integration (CI)
 
 The global workflow comes fitted with a suite of system tests that run various types of workflow.  These tests are commonly run for pull requests before they may be merged into the develop branch.  At a minimum, developers are expected to run the CI test(s) that will be impacted by their changes on at least one platform.
 
-The commonly run tests are written in YAML format and can be found in the ``ci/cases/pr`` directory.  The ``workflow/generate_workflows.sh`` tool is available to aid running these cases.  See the help documentation by running ``./generate_workflows.sh -h``.  The script has the capability to prepare the EXPDIR and COMROOT directories for a specified or implied suite of CI tests (see :doc:`setup` for details on these directories).  The script also has options to automatically build and run all tests for a given system (i.e. GFS, GEFS or SFS).  For instance, to build the workflow and run all of the GFS tests, one would execute
+The commonly run tests are written in YAML format and can be found in the ``dev/ci/cases/pr`` directory.  The ``dev/workflow/generate_workflows.sh`` tool is available to aid running these cases.  See the help documentation by running ``./generate_workflows.sh -h``.  The script has the capability to prepare the EXPDIR and COMROOT directories for a specified or implied suite of CI tests (see :doc:`setup` for details on these directories).  The script also has options to automatically build and run all tests for a given system (i.e. GFS, GEFS or SFS).  For instance, to build the workflow and run all of the GFS tests, one would execute
 
 ::
 
@@ -113,6 +113,28 @@ We have adopted the `Google style guide <https://google.github.io/styleguide/she
 
 All new code after 2022 Sep 1 will be required to meet these standards. We will slowly be updating existing scripts to comply with the standards. We are also in the process of adding GitHub actions to automatically lint code submitted for PRs.
 
+------------------
+Using PyCodeStyle
+------------------
+
+To ensure your Python code meets PEP-8 standards, you can use the ``pycodestyle`` tool to check for compliance before submitting your code. The repository contains a ``.pycodestyle`` configuration file with project-specific settings.
+
+To check your code:
+
+::
+
+    pycodestyle -v --config ./.pycodestyle ./
+
+This command will recursively check all Python files in the current directory against our style configuration and provide verbose output about any issues found. You should resolve these issues before submitting a pull request.
+
+For specific files or directories:
+
+::
+
+    pycodestyle -v --config ./.pycodestyle path/to/specific/file.py
+    pycodestyle -v --config ./.pycodestyle path/to/directory/
+
+
 .. _commit-standards:
 
 ======================
@@ -133,7 +155,7 @@ This list is a modified version of the one provided at https://chris.beams.io/po
 Here is the example commit message from the article linked above; it includes descriptions of what would be in each part of the commit message for guidance:
 
 ::
- 
+
    Summarize changes in around 50 characters or less
 
    More detailed explanatory text, if necessary. Wrap it to about 72
@@ -204,7 +226,7 @@ Later on you can update your fork remote information by doing the following comm
 
    git merge upstream/feature/other_new_thing
 
-5. Resolve any conflicts and perform any needed "add"s or "commit"s for conflict resolution. 
+5. Resolve any conflicts and perform any needed "add"s or "commit"s for conflict resolution.
 
 6. Push the merged copy back up to your fork (origin):
 

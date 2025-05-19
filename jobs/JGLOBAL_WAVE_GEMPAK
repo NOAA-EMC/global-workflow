@@ -3,9 +3,6 @@
 source "${HOMEgfs}/ush/jjob_header.sh" -e "wavegempak" -c "base wave wavegempak"
 source "${USHgfs}/wave_domain_grid.sh"
 
-# Add default errchk = err_chk
-export errchk=${errchk:-err_chk}
-
 ###################################
 # Set COM Paths
 ###################################
@@ -30,11 +27,9 @@ if [[ ! -d ${COMOUT_WAVE_GEMPAK} ]]; then mkdir -p "${COMOUT_WAVE_GEMPAK}"; fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_wave_nawips.sh"
-err=$?
-if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
-fi
+"${SCRgfs}/exgfs_wave_nawips.sh" && true
+export err=$?
+err_chk
 ###################################
 
 # Remove temp directories
