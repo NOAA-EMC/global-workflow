@@ -415,6 +415,9 @@ class SnowEnsAnalysis(Task):
                     'OCNRES': self.task_config.OCNRES,
                     'MYMEM': f"{mem:03d}",
                     'CASE_ENS': self.task_config.CASE_ENS,
+                    'ntiles': self.task_config.ntiles,
+                    'noincr_threshold': self.task_config.noincr_threshold,
+                    'print_debug': self.task_config.print_debug
                 }
                 nml_data = Jinja(nml_template, nml_config).render
                 logger.debug(f"apply_incr_nml:\n{nml_data}")
