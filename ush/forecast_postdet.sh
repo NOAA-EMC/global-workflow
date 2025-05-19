@@ -232,7 +232,7 @@ EOF
           fi
           cpreq "${sfc_increment_file}" "${DATA}/INPUT/sfc_inc.tile${TN}.nc"
         done
-        LAND_IAU_INC_FILES='sfc_inc'
+        LAND_IAU_INC_FILES=${LAND_IAU_INC_FILES:-'sfc_inc'}
 
       fi
 
