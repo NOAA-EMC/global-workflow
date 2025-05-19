@@ -47,11 +47,11 @@ if [[ ${DO_LAND_IAU} = ".true." ]]; then
     IFS=',' read -ra landifhrs <<< "${LAND_IAU_FHRS}"  
     for ihr in "${landifhrs[@]}"; do
         hrstr="$(printf "%02d" "${ihr}")";
-	ifhrsi+=("${hrstr}");
+	      ifhrsi+=("${hrstr}");
         ifhrs+=("\"${hrstr}\",");
         n_tims=$((n_tims+1));
-	hrsf="$(printf "%.1f" "${ihr}")";
-	ifhrsf+=("${hrsf}");        
+	      hrsf="$(printf "%.1f" "${ihr}")";
+	      ifhrsf+=("${hrsf}");        
     done
 fi
 
@@ -143,7 +143,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         
         sed -i -e 's/!/ /g' "regrid.nml"
         
-	#fix until reg code time dim issues are sorted out. TODO: time dim in regr/ufs code
+	      #fix until reg code time dim issues are sorted out. TODO: time dim in regr/ufs code
         if [[ "${n_tims}" -eq 1 ]]; then
             for FHI in "${ifhrsi[@]}"; do
                 ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
@@ -151,15 +151,15 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
             done
         else
             for FHI in "${ifhrsi[@]}"; do
-	        ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
+	              ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
                        "${DATA}/${in_fname}.${FHI}"
             done
         fi
         
-	${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+	      ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
    
         #fix until reg code time dim issues are sorted out. TODO: time var in regr/ufs code
-	if [[ "${n_tims}" -eq 1 ]]; then 
+	      if [[ "${n_tims}" -eq 1 ]]; then 
             for n in $(seq 1 "${ntiles}"); do
                 ncecat -O -u Time "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"   
                 ncap2 -A -s @all="{${ifhrsf[*]}}" "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"
