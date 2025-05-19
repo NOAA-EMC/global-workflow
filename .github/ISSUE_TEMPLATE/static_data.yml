@@ -120,26 +120,25 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    attributes:
-      label: Sync to supported platforms (for issue assignee)
-      options:
-        - "WCOSS2"
-        - "Hera"
-        - "Ursa"
-        - "MSU"
-        - "Gaea C6"
-        - "AWS"
-        - "HPSS"
-      multiple: true
-    validations:
-      required: false
-
   - type: textarea
     attributes:
       label: Additional information
       description: |
         Please provide any additional information needed for this request. If this is a new directory, please provide a short description and a point of contact.
+    validations:
+      required: false
+
+  - type: checkboxes
+    attributes:
+      label: Sync to supported platforms (for issue assignee)
+      options:
+        - label: WCOSS2
+        - label: Gaea C6
+        - label: Hera
+        - label: Ursa
+        - label: MSU
+        - label: AWS
+        - label: HPSS
     validations:
       required: false
 
