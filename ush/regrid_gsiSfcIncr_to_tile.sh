@@ -135,7 +135,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
+            cpfs "${DATA}/${out_fname}.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/${out_fname}00${FHR}.tile${n}.nc"
         done
     done
 
@@ -161,14 +161,14 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         #fix until reg code time dim issues are sorted out. TODO: time var in regr/ufs code
 	if [[ "${n_tims}" -eq 1 ]]; then 
             for n in $(seq 1 "${ntiles}"); do
-                ncecat -O -u Time "sfci.tile${n}.nc" "sfci.tile${n}.nc"   
-                ncap2 -A -s @all="{${ifhrsf[*]}}" "sfci.tile${n}.nc" "sfci.tile${n}.nc"
-                ncap2 -O -s'Time[Time]=@all' "sfci.tile${n}.nc" "sfci.tile${n}.nc"
+                ncecat -O -u Time "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"   
+                ncap2 -A -s @all="{${ifhrsf[*]}}" "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"
+                ncap2 -O -s'Time[Time]=@all' "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"
             done	
         fi
 
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
+            cpfs "${DATA}/${out_fname}.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
         done
         
     fi
