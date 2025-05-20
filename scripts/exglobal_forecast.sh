@@ -185,7 +185,7 @@ source "${USHgfs}/forecast_postdet.sh"	# include functions for variables after r
 source "${USHgfs}/parsing_ufs_configure.sh"	 # include functions for ufs_configure processing
 source "${USHgfs}/atparse.bash"  # include function atparse for parsing @[XYZ] templated files
 
-#source "${USHgfs}/load_fv3gfs_modules.sh"
+source "${USHgfs}/load_fv3gfs_modules.sh"
 
 err_chk
 

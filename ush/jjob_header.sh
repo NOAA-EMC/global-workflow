@@ -42,6 +42,9 @@
 
 _calling_script="${BASH_SOURCE[1]}"
 source "${HOMEgfs}/ush/preamble.sh"
+module reset
+module use ${HOMEgfs}/modulefiles
+module load module_run.hera
 
 OPTIND=1
 while getopts "c:e:" option; do

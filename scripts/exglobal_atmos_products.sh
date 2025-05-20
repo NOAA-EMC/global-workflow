@@ -1,7 +1,11 @@
 #! /usr/bin/env bash
 
+source "${USHgfs}/load_fv3gfs_modules.sh"
+module load wgrib2/2.0.8
+
 # Programs used
-export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
+#export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
+export WGRIB2="${HOMEgfs}/bin/run_wgrib2.sh"
 
 # Scripts used
 INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/interp_atmos_master.sh"}
@@ -45,12 +49,16 @@ MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.grb2${fhr3}"
 # Get inventory from ${MASTER_FILE} that matches patterns from ${paramlista}
 # Extract this inventory from ${MASTER_FILE} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
 # shellcheck disable=SC2312
-${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlista}" | ${WGRIB2} -i -grib "tmpfile_${fhr3}" "${MASTER_FILE}" && true
+${WGRIB2} "${MASTER_FILE}" > wgrib2.log
+grep -F -f "${paramlista}" wgrib2.log > grep.res
+${WGRIB2} -i -grib "tmpfile_${fhr3}" "${MASTER_FILE}" < grep.res
 export err=$?; err_chk
 # Do the same as above for ${paramlistb}
 if [[ ${downset} -eq 2 ]]; then
   # shellcheck disable=SC2312
-  ${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlistb}" | ${WGRIB2} -i -grib "tmpfileb_${fhr3}" "${MASTER_FILE}" && true
+  ${WGRIB2} "${MASTER_FILE}" > wgrib2.log
+  grep -F -f "${paramlistb}" wgrib2.log > grep.res
+  ${WGRIB2} -i -grib "tmpfileb_${fhr3}" "${MASTER_FILE}" < grep.res
   export err=$?; err_chk
 fi
 
@@ -83,7 +91,9 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   tmpfile="tmpfile${grp}_${fhr3}"
 
   # shellcheck disable=SC2312
-  ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
+ #ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
+  ${WGRIB2} "${tmpfile}" > wgrib2.log
+  ncount=$(cat wgrib2.log | wc -l)
   if (( nproc > ncount )); then
     echo "WARNING: Total no. of available processors '${nproc}' exceeds no. of records '${ncount}' in ${tmpfile}"
     echo "Reduce nproc to ${ncount} (or less) to not waste resources"
@@ -102,7 +112,8 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     # grep returns 1 if no match is found, so temporarily turn off exit on non-zero rc
     set +e
     # shellcheck disable=SC2312
-    ${WGRIB2} -d "${last}" "${tmpfile}" | grep -E -i "ugrd|ustm|uflx|u-gwd|land|maxuw"
+    ${WGRIB2} -d "${last}" "${tmpfile}" > wgrib2.log
+    grep -E -i "ugrd|ustm|uflx|u-gwd|land|maxuw" wgrib2.log
     rc=$?
     set_strict
     if (( rc == 0 )); then  # Matched the grep
