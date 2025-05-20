@@ -62,7 +62,7 @@ ires=${LONB_CASE_IN},
 jres=${LATB_CASE_IN},
 ireso=${CASE_OUT:1},
 jreso=${CASE_OUT:1},
-regrid_nml_tmpl="${HOMEgfs}/parm/gdas/snow/regrid.nml_tmpl"
+regrid_nml_tmpl="${HOMEgfs}/parm/gdas/soil/regrid.nml_tmpl"
 
 # input, fixed files
 ${NCP} "${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \

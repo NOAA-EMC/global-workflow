@@ -1,0 +1,26 @@
+&config
+  n_vars=@[n_vars],
+  variable_list=@[soil_incr_vars]
+  missing_value=0.,
+@[HIDE_LIAU] n_tims=@[n_tims],
+@[HIDE_LIAU] time_list=@[time_list]  
+/
+&input
+  gridtype="gau_inc",
+  ires=@[ires],
+  jres=@[jres],
+  fname=@[in_fname], 
+  dir="./",
+  fname_coord="gaussian_scrip.nc",
+  dir_coord="./"
+/
+&output
+  gridtype="fv3_rst",
+  ires=@[ireso],
+  jres=@[jreso],
+  fname=@[out_fname],
+  dir="./",
+  fname_mask="vegetation_type" 
+  dir_mask="./"
+  dir_coord="./"
+ /
