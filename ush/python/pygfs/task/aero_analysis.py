@@ -17,6 +17,7 @@ from wxflow import (AttrDict,
                     YAMLFile, parse_j2yaml,
                     logit)
 from pygfs.jedi import Jedi
+import numpy as np
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -238,6 +239,8 @@ class AerosolAnalysis(Task):
             with Dataset(inc_path, mode='r') as incfile, Dataset(bkg_path, mode='a') as rstfile:
                 for vname in incvars:
                     increment = incfile.variables[vname][:]
+                    # round to 7th decimal due to JEDI reproducibility issues when changing PE count
+                    increment = np.round(increment, 7)
                     bkg = rstfile.variables[vname][:]
                     anl = bkg + increment
                     rstfile.variables[vname][:] = anl[:]
