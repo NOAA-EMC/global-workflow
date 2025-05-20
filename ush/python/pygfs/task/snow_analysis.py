@@ -395,6 +395,7 @@ class SnowAnalysis(Task):
                 'DATA': self.task_config.DATA,
                 'HOMEgfs': self.task_config.HOMEgfs,
                 'OCNRES': self.task_config.OCNRES,
+                'ens_size': self.task_config.ens_size,
                 'ntiles': self.task_config.ntiles,
                 'noincr_threshold': self.task_config.noincr_threshold,
                 'print_debug': self.task_config.print_debug
