@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck disable=SC2034
 
 #-------------------------------------------------------------------------------------------------
 # Script to regrid surface increment from GSI grid 
