@@ -882,32 +882,6 @@ class GCAFSTasks(Tasks):
         """
         return self._atmosoceaniceprod('atmos')
 
-    def ocean_prod(self):
-        """
-        Create a task for ocean product generation.
-
-        This task generates products from the ocean component output.
-
-        Returns
-        -------
-        str
-            XML representation of the task
-        """
-        return self._atmosoceaniceprod('ocean')
-
-    def ice_prod(self):
-        """
-        Create a task for ice product generation.
-
-        This task generates products from the ice component output.
-
-        Returns
-        -------
-        str
-            XML representation of the task
-        """
-        return self._atmosoceaniceprod('ice')
-
     def _atmosoceaniceprod(self, component: str):
         """
         Create a task for atmospheric, oceanic, or ice product generation.

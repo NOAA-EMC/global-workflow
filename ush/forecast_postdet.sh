@@ -766,7 +766,7 @@ CICE_out() {
       ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
              "${COMOUT_ICE_RESTART}/${target_file}"
       ;;
-    gfs|gefs|gcafs) # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs|gcafs
+    gfs|gefs|sfs|gcafs) # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs|gcafs
       if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
         local seconds source_file target_file
         echo "Copying CICE restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
@@ -810,9 +810,14 @@ GOCART_postdet() {
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
 
     # Temporarily delete existing files due to noclobber in GOCART
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
+    local file_types=("inst_aod" "inst_du_ss" "inst_ca" "inst_ni" "inst_su" \
+                      "inst_du_bin" "inst_ss_bin" "inst_ca_bin" "inst_ni_bin" "inst_su_bin" \
+                      "inst_2d" "inst_3d" "tavg_du_ss" "tavg_du_bin" "tavg_2d_rad" "tavg_3d_rad")
+    for file_type in "${file_types[@]}"; do
+      if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
+        rm -f "${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4"
+      fi
+    done
 
     if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
       rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4"
@@ -900,87 +905,18 @@ GOCART_out() {
   local fhr
   local vdate
 
+  local file_types=("inst_aod" "inst_du_ss" "inst_ca" "inst_ni" "inst_su" \
+                    "inst_du_bin" "inst_ss_bin" "inst_ca_bin" "inst_ni_bin" "inst_su_bin" \
+                    "inst_2d" "inst_3d" "tavg_du_ss" "tavg_du_bin" "tavg_2d_rad" "tavg_3d_rad")
+
   for fhr in $(GOCART_output_fh); do
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-    if [[ -e "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-	      "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_ca.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_ca.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_ca.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_ni.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_ni.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_ni.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_su.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_su.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_su.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_du_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_du_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_du_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_ss_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_ss_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_ss_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_ca_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_ca_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_ca_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_ni_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_ni_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_ni_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_su_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_su_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_su_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_2d.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_2d.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_2d.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.inst_3d.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.inst_3d.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.inst_3d.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.tavg_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.tavg_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.tavg_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.tavg_du_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.tavg_du_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.tavg_du_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.tavg_2d_rad.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.tavg_2d_rad.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.tavg_2d_rad.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${DATA}/gocart.tavg_3d_rad.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      ${NCP} "${DATA}/gocart.tavg_3d_rad.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        "${COMOUT_CHEM_HISTORY}/gocart.tavg_3d_rad.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
+    for file_type in "${file_types[@]}"; do
+      if [[ -e "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
+        ${NCP} "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" \
+               "${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4"
+      fi
+    done
   done
 }
 

@@ -29,8 +29,6 @@
 
 # 0.a Basic modes of operation
 
-  cd $DATA
-
   rm -rf ice
   mkdir ice
   cd ice
@@ -40,31 +38,25 @@
 #     The tested variables should be exported by the postprocessor script.
 
   set +x
-  echo ' '
-  echo '+--------------------------------+'
-  echo '!         Make ice fields        |'
-  echo '+--------------------------------+'
-  echo "   Model TAG       : $WAV_MOD_TAG"
-  echo "   Model ID        : ${RUN}.wave"
-  echo "   Ice grid ID     : $WAVEICE_FID"
-  echo "   Ice file        : $WAVICEFILE"
-  echo ' '
-  set_trace
-  echo "Making ice fields."
+  cat << EOF
+
++--------------------------------+
+!         Make ice fields        |
++--------------------------------+
+   Model TAG       : $WAV_MOD_TAG
+   Model ID        : ${RUN}.wave
+   Ice grid ID     : $WAVEICE_FID
+   Ice file        : $WAVICEFILE
+
+Making ice fields.
+EOF
 
   if [[ -z "${YMDH}" ]] || [[ -z "${cycle}" ]] || \
      [[ -z "${COMOUT_WAVE_PREP}" ]] || [[ -z "${FIXgfs}" ]] || [[ -z "${EXECgfs}" ]] || \
      [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${WAVEICE_FID}" ]] || [[ -z "${COMIN_OBS}" ]]; then
 
-    set +x
-    echo ' '
-    echo '**************************************************'
-    echo '*** EXPORTED VARIABLES IN preprocessor NOT SET ***'
-    echo '**************************************************'
-    echo ' '
+    echo 'ERROR: EXPORTED VARIABLES IN preprocessor NOT SET ***'
     exit 1
-    set_trace
-    echo "NON-FATAL ERROR - EXPORTED VARIABLES IN preprocessor NOT SET"
   fi
 
 # 0.c Links to working directory
@@ -84,18 +76,9 @@
 
   if [ -f ice.grib ]
   then
-    set +x
     echo "   ice.grib copied ($file)."
-    set_trace
   else
-    set +x
-    echo ' '
-    echo '************************************** '
-    echo "*** FATAL ERROR: NO ICE FILE $file ***  "
-    echo '************************************** '
-    echo ' '
-    set_trace
-    echo "FATAL ERROR - NO ICE FILE (GFS GRIB)"
+    echo "ERROR: NO ICE FILE $file"
     exit 2
   fi
 
@@ -103,26 +86,16 @@
 # 2.  Process the GRIB packed ice file
 # 2.a Unpack data
 
-  set +x
   echo '   Extracting data from ice.grib ...'
-  set_trace
 
   $WGRIB2 ice.grib -netcdf icean_5m.nc 2>&1 > wgrib.out
-
 
   err=$?
 
   if [ "$err" != '0' ]
   then
     cat wgrib.out
-    set +x
-    echo ' '
-    echo '**************************************** '
-    echo '*** ERROR IN UNPACKING GRIB ICE FILE *** '
-    echo '**************************************** '
-    echo ' '
-    set_trace
-    echo "ERROR IN UNPACKING GRIB ICE FILE."
+    echo 'ERROR: FAILURE WHILE UNPACKING GRIB ICE FILE *** '
     exit 3
   fi
 
@@ -133,10 +106,7 @@
 
 # 2.d Run through preprocessor wave_prep
 
-  set +x
-  echo '   Run through preprocessor ...'
-  echo ' '
-  set_trace
+  printf "   Run through preprocessor ...\n"
 
   cp -f ${DATA}/ww3_prnc.ice.$WAVEICE_FID.inp.tmpl ww3_prnc.inp
 
@@ -144,18 +114,11 @@
   source prep_step
 
   "${EXECgfs}/${pgm}" 1> prnc_${WAVEICE_FID}_${cycle}.out 2>&1
-  export err=$?; err_chk
-  if [ "$err" != '0' ]
+  export err=$?
+  if [[ ${err} -ne 0 ]]
   then
     cat prnc_${WAVEICE_FID}_${cycle}.out
-    set +x
-    echo ' '
-    echo '******************************************** '
-    echo '*** WARNING: NON-FATAL ERROR IN ww3_prnc *** '
-    echo '******************************************** '
-    echo ' '
-    set_trace
-    echo "WARNING: NON-FATAL ERROR IN ww3_prnc."
+    echo "ERROR: failure in ${pgm}"
     exit 4
   fi
 
@@ -175,9 +138,7 @@
     icefile=${RUN}.wave.${WAVEICE_FID}.$cycle.ice
   fi
 
-  set +x
   echo "   Saving ice.ww3 as ${COMOUT_WAVE_PREP}/${icefile}"
-  set_trace
   cp ice.ww3 "${COMOUT_WAVE_PREP}/${icefile}"
   rm -f ice.ww3
 

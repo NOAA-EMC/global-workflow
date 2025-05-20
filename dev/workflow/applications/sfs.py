@@ -1,5 +1,5 @@
 """
-Sea Forecast System (SFS) application configuration module.
+Seasonal Forecast System (SFS) application configuration module.
 
 This module defines the SFS application configuration classes used for
 configuring and running the Sea Forecast System.
@@ -12,7 +12,7 @@ from wxflow import Configuration
 
 class SFSAppConfig(AppConfig):
     """
-    Class to define Sea Forecast System (SFS) configurations.
+    Class to define Seasonal Forecast System (SFS) configurations.
 
     This class handles the SFS-specific application settings and workflows,
     including task management and configuration options.

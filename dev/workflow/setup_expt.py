@@ -84,7 +84,7 @@ def update_configs(host, inputs):
     # Combine host.info and inputs_dict into a single dict, add some additional keys
     host_plus_inputs_dict = AttrDict(host.info, **inputs_dict_remapped)
     host_plus_inputs_dict.HOMEgfs = _top
-    host_plus_inputs_dict.MACHINE = host.machine.upper()
+    host_plus_inputs_dict.MACHINE = str(host).upper()
 
     # Read in the YAML file
     yaml_path = inputs.yaml
@@ -263,9 +263,10 @@ def input_args(*argv):
         parser.add_argument('--run', help='RUN to start the experiment',
                             type=str, required=False, default='gdas')
         # --configdir is hidden from help
-        parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False, default=os.path.join(_top, 'parm/config/gfs'))
-        parser.add_argument('--yaml', help='Defaults to substitute from', type=str,
-                            required=False, default=os.path.join(_top, 'parm/config/gfs/yaml/defaults.yaml'))
+        parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
+                            default=os.path.join(_top, 'dev/parm/config/gfs'))
+        parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
+                            default=os.path.join(_top, 'dev/parm/config/gfs/yaml/defaults.yaml'))
         return parser
 
     def _gfs_cycled_args(parser):
@@ -341,10 +342,11 @@ def input_args(*argv):
         """
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
+        # --configdir is hidden from help
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/gefs'))
+                            default=os.path.join(_top, 'dev/parm/config/gefs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/gefs/yaml/defaults.yaml'))
+                            default=os.path.join(_top, 'dev/parm/config/gefs/yaml/defaults.yaml'))
         return parser
 
     def _sfs_args(parser):
@@ -363,10 +365,34 @@ def input_args(*argv):
         """
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
+        # --configdir is hidden from help
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/sfs'))
+                            default=os.path.join(_top, 'dev/parm/config/sfs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/sfs/yaml/defaults.yaml'))
+                            default=os.path.join(_top, 'dev/parm/config/sfs/yaml/defaults.yaml'))
+        return parser
+
+    # GCAFS forecast-only arguments
+    def _gcafs_args(parser):
+        """
+        Add GCAFS-specific arguments to parser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
+        parser.add_argument('--start', help='restart mode: warm or cold', type=str,
+                            choices=['warm', 'cold'], required=False, default='cold')
+        parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
+                            default=os.path.join(_top, 'parm/config/gcafs'))
+        parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
+                            default=os.path.join(_top, 'parm/config/gcafs/yaml/defaults.yaml'))
         return parser
 
     # GCAFS forecast-only arguments
@@ -498,11 +524,11 @@ def query_and_clean(dirname, force_clean=False):
 
     create_dir = True
     if os.path.exists(dirname):
-        logger.warning(f'directory already exists in:')
+        logger.warning('directory already exists in:')
         logger.warning(f'  {dirname}')
         if force_clean:
             overwrite = "YES"
-            logger.warning(f'removing directory ...')
+            logger.warning('removing directory ...')
             logger.warning(f'  {dirname}')
         else:
             overwrite = input('Do you wish to over-write [y/N]: ')
@@ -536,7 +562,7 @@ def validate_user_request(host, inputs):
         If the requested resolution is not supported on the host machine
     """
     supp_res = host.info['SUPPORTED_RESOLUTIONS']
-    machine = host.machine
+    machine = host
     for attr in ['resdetatmos', 'resensatmos']:
         try:
             expt_res = f'C{getattr(inputs, attr)}'
@@ -618,10 +644,10 @@ def main(*argv):
         update_configs(host, user_inputs)
 
     max_len = max(len(expdir), len(rotdir)) + 8
-    logger.info(f"*" * max_len)
+    logger.info("*" * max_len)
     logger.info(f'EXPDIR: {expdir}')
     logger.info(f'ROTDIR: {rotdir}')
-    logger.info(f"*" * max_len)
+    logger.info("*" * max_len)
 
 
 if __name__ == '__main__':
