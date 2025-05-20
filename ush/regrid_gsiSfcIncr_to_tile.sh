@@ -57,7 +57,7 @@ fi
 
 in_fname="enkfgdas.sfci.nc"
 out_fname="sfci"
-time_list=${ifhrs[@]}
+time_list=${ifhrs[*]}
 ires=${LONB_CASE_IN},
 jres=${LATB_CASE_IN},
 ireso=${CASE_OUT:1},
