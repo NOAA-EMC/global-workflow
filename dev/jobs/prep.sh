@@ -38,9 +38,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMOUT_OBS_PREV:COM_OBS_TMPL \
     COMINobsproc_PREV:COM_OBSPROC_TMPL
 
-if [[ ! -d "${COMOUT_OBS}" ]]; then
-   mkdir -p "${COMOUT_OBS}"
-fi
+mkdir -p "${COMOUT_OBS}"
 
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir
@@ -81,9 +79,7 @@ fi
 if [[ ${PROCESS_TROPCY} = "YES" ]]; then
 
     export ARCHSYND=${ROTDIR}/syndat
-    if [[ ! -d ${ARCHSYND} ]]; then
-       mkdir -p "${ARCHSYND}"
-    fi
+    mkdir -p "${ARCHSYND}"
     if [[ ! -s ${ARCHSYND}/syndat_akavit ]]; then
         for file in syndat_akavit syndat_dateck syndat_stmcat.scr syndat_stmcat syndat_sthisto syndat_sthista ; do
             cpreq "${COMINsyn}/${file}" "${ARCHSYND}"/.
