@@ -22,7 +22,7 @@ for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
   if [[ ! -f "${source_table}" ]]; then
     err_exit "${table} is missing"
   fi
-  cp "${source_table}" "${table}"
+  cpreq "${source_table}" "${table}"
 done
 
 NAGRIB="${GEMEXE}/nagrib2"
@@ -48,7 +48,7 @@ if [[ ! -r "${GRIBIN_chk}" ]]; then
   err_exit "GRIB index file ${GRIBIN_chk} not found!"
 fi
 
-cp "${GRIBIN}" "grib${fhr3}"
+cpreq "${GRIBIN}" "grib${fhr3}"
 
 export pgm="nagrib2 F${fhr3}"
 startmsg

@@ -147,7 +147,7 @@ EOF
 
   echo "   Moving tar file ${file_name} to ${COMOUT_WAVE_STATION} ..."
 
-  cp "${file_name}" "${COMOUT_WAVE_STATION}/."
+  cpfs "${file_name}" "${COMOUT_WAVE_STATION}/."
 
   err=$?
 

@@ -9,7 +9,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 # Now set up GEMPAK/NTRANS environment
 
 # datatype.tbl specifies the paths and filenames of files
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 ###################################
 # Specify NET and RUN Name and model

@@ -79,8 +79,8 @@ export opt28=' -new_grid_interpolation budget -fi '
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
 ###############################################################
 
-cp "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2.0p25.f${fcsthr}" "tmpfile2${fcsthr}"
-cp "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthr}" "tmpfile2b${fcsthr}"
+cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2.0p25.f${fcsthr}" "tmpfile2${fcsthr}"
+cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthr}" "tmpfile2b${fcsthr}"
 cat "tmpfile2${fcsthr}" "tmpfile2b${fcsthr}" > "tmpfile${fcsthr}"
 ${WGRIB2} "tmpfile${fcsthr}" | grep -F -f "${PARMgfs}/product/gfs_awips_parmlist_g2" | \
    ${WGRIB2} -i -grib masterfile "tmpfile${fcsthr}" && true
@@ -173,7 +173,7 @@ for GRID in conus ak prico pac 003; do
       export FORT31="awps_file_fi${fcsthr}_${GRID}"
       export FORT51="grib2.awpgfs${fcsthr}.${GRID}"
 
-      cp "${PARMgfs}/wmo/grib2_awpgfs${fcsthr}.${GRID}" "parm_list"
+      cpreq "${PARMgfs}/wmo/grib2_awpgfs${fcsthr}.${GRID}" "parm_list"
 
       ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
       export err=$?

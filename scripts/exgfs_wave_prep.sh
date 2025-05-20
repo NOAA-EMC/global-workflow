@@ -195,7 +195,7 @@ EOF
 
      if [[ -f ${PARMgfs}/wave/ww3_prnc.${type}.${grdID}.inp.tmpl ]]
      then
-       cp ${PARMgfs}/wave/ww3_prnc.${type}.${grdID}.inp.tmpl .
+       cpreq ${PARMgfs}/wave/ww3_prnc.${type}.${grdID}.inp.tmpl .
      fi
 
      if [[ -f ww3_prnc.${type}.${grdID}.inp.tmpl ]]
@@ -409,7 +409,7 @@ EOF
         cat ${file} >> cur.${WAVECUR_FID}
       done
 
-      cp -f cur.${WAVECUR_FID} ${COMOUT_WAVE_PREP}/${RUN}.wave.${WAVECUR_FID}.${cycle}.cur
+      cpfs cur.${WAVECUR_FID} ${COMOUT_WAVE_PREP}/${RUN}.wave.${WAVECUR_FID}.${cycle}.cur
 
     else
       echo ' '

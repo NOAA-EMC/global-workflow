@@ -49,7 +49,7 @@ EOF
 # 1.a Link the input file and untar it
  BullIn="${COMIN_WAVE_STATION}/${RUN}.wave.${cycle}.cbull.tar"
  if [[ -f "${BullIn}" ]]; then
-   cp "${BullIn}" "cbull.tar"
+   cpreq "${BullIn}" "cbull.tar"
  else
    export err=1
    err_exit "${RUN} wave prdgen ${date} ${cycle} : bulletin tar file missing."

@@ -32,7 +32,7 @@ if [[ ${MODEL} == GDAS ]]; then
             fi
         fi
 
-        cp "${gempak_file}" "gem_grids${fhr3}.gem"
+        cpreq "${gempak_file}" "gem_grids${fhr3}.gem"
 
         "${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr3}_gif.sh" && true
         export err=$?
