@@ -354,7 +354,7 @@ FV3_out() {
     for restart_date in "${restart_dates[@]}"; do
       echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
       for fv3_file in ${file_list}; do
-        cpreq "${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file}" \
+        cpfs "${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file}" \
               "${COMOUT_ATMOS_RESTART}/${restart_date}.${fv3_file}"
       done
     done
