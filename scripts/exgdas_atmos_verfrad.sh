@@ -22,7 +22,7 @@ set +eu
 
 if [[ ! -s ${radstat} || ! -s ${biascr} ]]; then
    export err=1
-   err_exit "Reqired data files ${radstat} and/or ${biascr} are missing!!"
+   err_exit "Required data files ${radstat} and/or ${biascr} are missing!!"
 fi
 
 #------------------------------------------------------------------
