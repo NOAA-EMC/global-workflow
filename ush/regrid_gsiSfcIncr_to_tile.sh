@@ -55,6 +55,7 @@ if [[ ${DO_LAND_IAU} = ".true." ]]; then
     done
 fi
 
+# shellcheck disable=SC2034  # verified all vars here are used
 in_fname="enkfgdas.sfci.nc"
 out_fname="sfci"
 time_list=${ifhrs[*]}
