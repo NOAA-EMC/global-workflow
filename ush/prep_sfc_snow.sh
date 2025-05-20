@@ -71,7 +71,7 @@ GFS_LONSPERLAT_FILE=${GFS_LONSPERLAT_FILE:-"global_lonsperlat.t1534.3072.1536.tx
 #------------------------------------------------------------------------
 
 AFWA_GLOBAL_FILE=${AFWA_GLOBAL_FILE:-"snow.usaf.grib2"}
-IMS_FILE=${IMS_FILE:-"imssnow96.grb.grib2"}
+IMS_FILE=${IMS_FILE:-"imssnow96.grib2"}
 
 #------------------------------------------------------------------------
 # File of snow cover climo used to qc the input snow data
@@ -87,11 +87,13 @@ MODEL_SNOW_FILE=${MODEL_SNOW_FILE:-"snogrb_model"}
 OUTPUT_GRIB2=${OUTPUT_GRIB2:-".false."}  # grib 1 when false.
 
 #------------------------------------------------------------------------
-# Do a quick check of the ims data to ensure it exists and is
-# not corrupt.
+# Do a quick check of the ims data to ensure it exists and is not corrupt.
+# If available, copy to DATA.
 #------------------------------------------------------------------------
 
-if [[ ! -f ${IMS_FILE} ]]; then
+if [[ -f ${IMS_FILE} ]]; then
+  cpreq "${IMS_FILE}" "${DATA}/imssnow96.grib2"
+else
   echo "WARNING: Missing IMS data. Will not run ${SNOW2MDLEXEC}."
   exit 7
 fi
@@ -101,31 +103,33 @@ fi
 # ims data has highest priority of all input data.
 #------------------------------------------------------------------------
 
-${WGRIB2} -d 1 "${IMS_FILE}"
+${WGRIB2} -d 1 "imssnow96.grib2"
 err=$?
 if [[ ${err} -ne 0 ]]; then
   echo "WARNING: Corrupt IMS data. Will not run ${SNOW2MDLEXEC}."
   exit 9
 else
-  tempdate=$(${WGRIB2} -t "${IMS_FILE}" | head -1) || true
+  tempdate=$(${WGRIB2} -t "imssnow96.grib2" | head -1) || true
   IMSDATE=${tempdate#*d=}
 fi
 
 #------------------------------------------------------------------------
 # Ensure AFWA data exists and is not too old.
+# If available, copy to DATA.
 #------------------------------------------------------------------------
 
 if [[ ! -f ${AFWA_GLOBAL_FILE} ]]; then
   echo "WARNING: Missing AFWS data. Will not run ${SNOW2MDLEXEC}."
   exit 3
 else
-  ${WGRIB2} -d 1 "${AFWA_GLOBAL_FILE}"
+  cpreq "${AFWA_GLOBAL_FILE}" "${DATA}/snow.usaf.grib2"
+  ${WGRIB2} -d 1 "snow.usaf.grib2"
   err=$?
   if [[ ${err} -ne 0 ]]; then
     echo "WARNING: Corrupt AFWS data. Will not run ${SNOW2MDLEXEC}."
     exit "${err}"
   else
-    tempdate=$(${WGRIB2} -d 1 -t "${AFWA_GLOBAL_FILE}")
+    tempdate=$(${WGRIB2} -d 1 -t "snow.usaf.grib2")
     AFWADATE=${tempdate#*d=}
     two_days_ago=$(date --utc -d "${IMSDATE:0:8} ${IMSDATE:8:2} - 48 hours" +%Y%m%d%H)
     if [[ ${AFWADATE} -lt ${two_days_ago} ]]; then
@@ -135,7 +139,9 @@ else
   fi
 fi
 
+#------------------------------------------------------------------------
 # Additional variables used in the namelist for &output_grib_time
+#------------------------------------------------------------------------
 export IMSYEAR=${IMSDATE:0:4}
 export IMSMONTH=${IMSDATE:4:2}
 export IMSDAY=${IMSDATE:6:2}
