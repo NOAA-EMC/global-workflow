@@ -57,36 +57,12 @@ fi
 
 in_fname="enkfgdas.sfci.nc"
 out_fname="sfci"
-
-cat << EOF > regrid.nml_tmpl
- &config
-  n_vars=${n_vars},
-  variable_list=${soil_incr_vars}
-  missing_value=0.,
-! n_tims=${n_tims},
-! time_list=${ifhrs[@]} 
- /
- &input
-  gridtype="gau_inc",
-  ires=${LONB_CASE_IN},
-  jres=${LATB_CASE_IN},
-  fname=${in_fname}, 
-  dir="./",
-  fname_coord="gaussian_scrip.nc",
-  dir_coord="./"
-/
-
- &output
-  gridtype="fv3_rst",
-  ires=${CASE_OUT:1},
-  jres=${CASE_OUT:1},
-  fname=${out_fname},
-  dir="./",
-  fname_mask="vegetation_type" 
-  dir_mask="./"
-  dir_coord="./",
- /
-EOF
+time_list=${ifhrs[@]}
+ires=${LONB_CASE_IN},
+jres=${LATB_CASE_IN},
+ireso=${CASE_OUT:1},
+jreso=${CASE_OUT:1},
+regrid_nml_tmpl="${HOMEgfs}/parm/gdas/snow/regrid.nml_tmpl"
 
 # input, fixed files
 ${NCP} "${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
@@ -125,8 +101,9 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
             COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
     fi
     
+    HIDE_LIAU="!"
     rm -f "regrid.nml"
-    ${NCP} "regrid.nml_tmpl" "regrid.nml"
+    atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
     for FHR in "${soilinc_fhrs[@]}"; do
         ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
@@ -141,7 +118,9 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 
     if [[ ${DO_LAND_IAU} = ".true." ]]; then 
         
-        sed -i -e 's/!/ /g' "regrid.nml"
+        HIDE_LIAU=" "
+        rm -f "regrid.nml"
+        atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
         
 	      #fix until reg code time dim issues are sorted out. TODO: time dim in regr/ufs code
         if [[ "${n_tims}" -eq 1 ]]; then
