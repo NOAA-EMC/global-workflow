@@ -208,6 +208,10 @@ FV3_predet(){
     # are identical when REPLAY_ICS is set to NO
     FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH}"
   fi
+  # If, FHOUT_HF == FHOUT, the FV3_OUTPUT_FH_NML can be cast as:
+  if [[ ${FHOUT_HF} -eq ${FHOUT} ]]; then
+    FV3_OUTPUT_FH_NML="${FHOUT} -1"
+  fi
 
   # Other options
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
