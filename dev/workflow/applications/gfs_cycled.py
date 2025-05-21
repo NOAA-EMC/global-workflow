@@ -106,6 +106,9 @@ class GFSCycledAppConfig(AppConfig):
 
         configs = ['prep']
 
+        if options['do_prep_sfc']:
+            configs += ['prep_sfc']
+
         if options['do_jediatmvar']:
             configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
         else:
@@ -244,6 +247,8 @@ class GFSCycledAppConfig(AppConfig):
             # Common gdas and gfs tasks before fcst
             if run in ['gdas', 'gfs']:
                 task_names[run] += ['prep']
+                if options['do_prep_sfc']:
+                    task_names[run] += ['prep_sfc']
                 if options['do_jediatmvar']:
                     task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
                 else:
