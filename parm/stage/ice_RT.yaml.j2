@@ -38,7 +38,7 @@ ice_RT:
             {% set mem = ENSMEM + offset %}
             {% set imem = ENSMEM %}
             {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
-            {% set increment_mem_path = ICSDIR ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/ice/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.cice_model_anl.res.nc' %}
+            {% set increment_mem_path = ICSDIR ~ '/' ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem)  ~ '/analysis/ice/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.cice_model_anl.res.nc' %}
             {% set increment_destination_path = COMOUT_ICE_ANALYSIS_MEM %}
 
         # Include increment files
