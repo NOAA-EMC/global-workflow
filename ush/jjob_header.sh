@@ -40,12 +40,16 @@
 #   - $pid          : Override the default process id
 #                     [default: $$]
 
+echo "jjob_header.sh part 1"
 _calling_script="${BASH_SOURCE[1]}"
 source "${HOMEgfs}/ush/preamble.sh"
-module reset
+
+echo "jjob_header.sh part 2"
+module purge
 module use ${HOMEgfs}/modulefiles
 module load module_run.hera
 
+echo "jjob_header.sh part 3"
 OPTIND=1
 while getopts "c:e:" option; do
     case "${option}" in
@@ -68,6 +72,7 @@ if [[ -z ${env_job} ]]; then
     err_chk "FATAL ERROR: [${BASH_SOURCE[0]}]: Must specify a job name with -e"
 fi
 
+echo "jjob_header.sh part 4"
 ##############################################
 # make temp directory
 ##############################################
@@ -93,6 +98,7 @@ export pgmerr=errfile
 export pgm=${pgm:-}
 
 
+echo "jjob_header.sh part 5"
 ##############################################
 # Run setpdy and initialize PDY variables
 ##############################################
@@ -114,6 +120,7 @@ for config in "${configs[@]:-''}"; do
 done
 
 
+echo "jjob_header.sh part 6"
 ##########################################
 # Source machine runtime environment
 ##########################################
