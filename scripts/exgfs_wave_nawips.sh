@@ -17,10 +17,9 @@ source "${USHgfs}/atparse.bash"
 NAGRIB="nagrib2"
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
-cd "${DATA}" || exit 99
 cpreq "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" "${DATA}/"
 
-grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  # Native grids
+grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'aoc_9km gnh_10m gsh_15m'}} 
 
 # Create a template for the GEMPAK control file
 rm -f "${DATA}/gempak.parm.tmpl"
@@ -46,7 +45,7 @@ EOF
 # Loop over the grids
 for grid in ${grids}; do
   case ${grid} in
-    ao_9km)
+    aoc_9km)
       grdIDout='gfswavearc'
     ;;
     at_10m)
@@ -61,10 +60,10 @@ for grid in ${grids}; do
     glo_30m)
       grdIDout='gfswavegl30m'
     ;;
-    glo_10m)
+    gnh_10m)
       grdIDout='gfswavenh'
     ;;
-    gso_15m)
+    gsh_15m)
       grdIDout='gfswavesh'
     ;;
     glo_200)
@@ -87,10 +86,9 @@ for grid in ${grids}; do
     nagrib_file="${RUN}.wave.${cycle}.global.${gridIDout}.${fhr3}.grib2"
     ${WGRIB2} -lola 0:720:0.5 -90:361:0.5 "${nagrib_file}" grib "${GRIBIN}"
     export err=$?
-    if [[ "${err}" -ne 0 ]]; then
-      echo "FATAL ERROR: wgrib2 failed to interpolate"
+    if [[ ${err} -ne 0 ]]; then
       export pgm="${WGRIB2}"
-      err_chk
+      err_chk "FATAL ERROR: wgrib2 failed to interpolate"
     fi
   fi
 
@@ -105,22 +103,30 @@ for grid in ${grids}; do
 
   startmsg
   export pgm="${NAGRIB}"
-  ${pgm} < "${DATA}/gempak.parm.${grid}"
-  export err=$?; err_chk
+  ${pgm} < "${DATA}/gempak.parm.${grid}" && true
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+     err_chk "FATAL ERROR: ${pgm} failed during the generation of ${GEMGRD}"
+  fi
   #####################################################
   # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
   # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
   # FOR THIS CASE HERE.
   #####################################################
-  ls -l "${GEMGRD}"
-  export err=$?; export pgm="GEMPAK CHECK FILE"; err_chk
+  if [[ -f "${GEMGRD}" ]]; then
+     ls -l "${GEMGRD}"
+  else
+     export err=1
+     export pgm="GEMPAK CHECK FILE"
+     err_chk "FATAL ERROR: Gempak failed to generate the desired grid ${GEMGRD}"
+  fi
 
-  if [[ "${NAGRIB}" = "nagrib2" ]]; then gpend; fi
+  if [[ "${NAGRIB}" == "nagrib2" ]]; then gpend; fi
 
   # Copy output to COMOUT
   cpfs "${GEMGRD}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
 
-  if [[ "${SENDDBN}" = "YES" ]] ; then
+  if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
   fi
 

@@ -27,16 +27,30 @@ case ${step} in
       "C768")
         export ntasks=80
         export threads_per_task=20
+        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+        ;;
+      "C1152")
+        export ntasks=480
+        export threads_per_task=6
+        export tasks_per_node=8
         ;;
       *)
         ;;
     esac
-  export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
   ;;
 
   "anal")
-    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
+    case ${CASE} in
+      "C768")
         export threads_per_task=8
+        ;;
+      "C1152")
+        export threads_per_task=16
+        ;;
+      *) 
+        ;;
+    esac
+    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
         # Make ntasks a multiple of 16
         if [[ "${RUN}" == "gdas" ]]; then
             export ntasks=784
@@ -46,7 +60,27 @@ case ${step} in
         export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
-  *)
 
-  ;;
+  "marinebmat")
+    case ${OCNRES} in
+      "025")
+        tasks_per_node=$(( max_tasks_per_node / 4 )) 
+        ;;
+      *)
+        ;;
+    esac
+    ;;
+
+  "ocnanalecen")
+    case ${OCNRES} in
+      "025")
+        ntasks=288
+        tasks_per_node=12
+        ;;
+      *)
+        ;;
+    esac
+    ;;
+  *) 
+    ;;
 esac
