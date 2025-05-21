@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 # shellcheck disable=SC2034
 
-. ${HOMEgfs}/ush/atparse.bash
+. "${HOMEgfs}/ush/atparse.bash"
 
 #-------------------------------------------------------------------------------------------------
 # Script to regrid surface increment from GSI grid 
