@@ -27,7 +27,7 @@ mkdir -p "${COMOUT_OBS}"
 
 "${SCRgfs}/exglobal_prep_sfc.sh"
 export err=$?
-if [[ $err -ne 0 ]]; then
+if [[ ${err} -ne 0 ]]; then
    err_exit "Surface observation preperation failed!"
 fi
 
