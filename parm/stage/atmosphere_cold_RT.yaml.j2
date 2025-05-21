@@ -1,0 +1,13 @@
+atmosphere_cold_RT:
+    mkdir:
+        - "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"
+        - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
+    copy:
+        {% set DIAU_previous_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/analysis/atmos/gdas.t' ~ previous_cycle_HH ~ 'z.atma003.ensres.nc' %}
+        {% set DIAU_current_file = ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atminc.nc' %}
+        {% set DIAUNO_current_file= ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atminc.nc' %}
+        {% set current_path = COMOUT_ATMOS_ANALYSIS_MEM %}
+        {% set previous_path = COMOUT_ATMOS_RESTART_PREV_MEM %}
+        - ["{{ DIAU_previous_file }}", "{{ previous_path}}"]
+        - ["{{ DIAU_current_file }}", "{{ current_path }}"]
+        - ["{{ DIAUNO_current_file }}", "{{ current_path }}"]

@@ -1,0 +1,69 @@
+atmosphere_warm_RT:
+    mkdir:
+        - "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"
+        - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
+    copy:
+    # select restart members files (80) specific to the cycle
+        {% set cyc_ranges = {
+            "00": range(1, 31),
+            "06": range(21, 51),
+            "12": range(41, 71),
+            "18": [range(61, 81), range(1, 11)]
+        } %}
+        {% set cyc_offsets = {
+            "00": [0],
+            "06": [20],
+            "12": [40],
+            "18": [60, -20]
+        } %}
+
+        {% if current_cycle_HH in cyc_ranges %}
+            {% set ranges = cyc_ranges[current_cycle_HH] %}
+            {% set offsets = cyc_offsets[current_cycle_HH] %}
+
+            # Determine the correct range and offset based on ENSMEM
+            {% if current_cycle_HH == "18" %}
+                {% if ENSMEM in ranges[0] %}
+                    {% set mem_range = ranges[0] %}
+                    {% set offset = offsets[0] %}
+                {% elif ENSMEM in ranges[1] %}
+                    {% set mem_range = ranges[1] %}
+                    {% set offset = offsets[1] %}
+                {% endif %}
+            {% else %}
+                {% set mem_range = ranges %}
+                {% set offset = offsets[0] %}
+            {% endif %}
+
+            # Calculate mem and imem
+            {% set mem = ENSMEM + offset %}
+            {% set imem = ENSMEM %}
+
+            # Generate paths
+            {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
+            {% set restart_mem_path = ICSDIR ~ '/' ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(mem) ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.' %}
+            {% set increment_mem_path = ICSDIR ~ '/' ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(mem) ~ '/analysis/atmos/enkfgfs.t' ~ current_cycle_HH ~ 'z.' %}
+            {% set restart_destination_path = COMOUT_ATMOS_RESTART_PREV_MEM %}
+            {% set increment_destination_path = COMOUT_ATMOS_ANALYSIS_MEM %}
+
+            # Include increment files
+            {% for ftype in ["ratmi003.nc", "ratmi009.nc", "ratminc.nc"] %}
+                {% set file = increment_mem_path ~ ftype %}
+        - ["{{ file }}", "{{ increment_destination_path }}"]
+            {% endfor %}
+
+            {% if path_exists(ICSDIR) %}
+                {% set file = restart_mem_path ~ 'coupler.res' %}
+        - ["{{ file }}", "{{ restart_destination_path }}"]
+                {% set file = restart_mem_path ~ 'fv_core.res.nc' %}
+        - ["{{ file }}", "{{ restart_destination_path }}"]
+                {% set ntiles = 6 %}
+                {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "phy_data", "sfc_data"] %}
+                    # Include restart tile files (e.g., .tile1 to .tile6)
+                    {% for tile in range(1, ntiles + 1) %}
+                        {% set file = restart_mem_path ~ ftype ~ '.tile' ~ tile ~ '.nc' %}
+        - ["{{ file }}", "{{ restart_destination_path }}"]
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
