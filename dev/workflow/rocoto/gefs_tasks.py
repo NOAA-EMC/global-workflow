@@ -97,6 +97,8 @@ class GEFSTasks(Tasks):
         dependencies = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
         dependencies.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_gen_control_ic'}
+        dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
