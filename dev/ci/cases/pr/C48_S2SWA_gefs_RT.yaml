@@ -14,7 +14,7 @@ arguments:
   start: cold
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: /lfs/h2/emc/ens/noscrub/eric.sinsky/RETRO_ICS/
+  icsdir: /lfs/h2/emc/ens/noscrub/eric.sinsky/RETRO_ICS
   idate: 2024112500
   edate: 2024112500
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
