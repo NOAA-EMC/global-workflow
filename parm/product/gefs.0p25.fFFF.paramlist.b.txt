@@ -517,3 +517,13 @@
 :VWSH:tropopause:
 :WATR:surface:
 :WILT:surface:
+:DPT:300 mb:
+:DPT:500 mb:
+:DPT:700 mb:
+:DPT:850 mb:
+:HGT:275 mb:
+:HGT:cloud top:
+:REFC:entire atmosphere (considered as a single layer):
+:RETOP:entire atmosphere (considered as a single layer):
+:UGRD:275 mb:
+:VGRD:275 mb:
