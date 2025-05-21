@@ -24,7 +24,6 @@ skip_ci_on_hosts:
   - gaeac6
   - gaeac5
   - hercules
-#  - wcoss2
   - hera
   - orion
   - awsepicglobalworkflow
