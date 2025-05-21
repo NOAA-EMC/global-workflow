@@ -63,6 +63,10 @@
 :CWAT:entire atmosphere (considered as a single layer):
 :CWORK:entire atmosphere (considered as a single layer):
 :DPT:30-0 mb above ground:
+:DPT:300 mb:
+:DPT:500 mb:
+:DPT:700 mb:
+:DPT:850 mb:
 :DUVB:surface:
 :FLDCP:surface:
 :FRICV:surface:
@@ -78,6 +82,7 @@
 :HGT:2 mb:
 :HGT:20 mb:
 :HGT:225 mb:
+:HGT:275 mb:
 :HGT:3 hybrid level:
 :HGT:3 mb:
 :HGT:30 mb:
@@ -99,6 +104,7 @@
 :HGT:900 mb:
 :HGT:950 mb:
 :HGT:975 mb:
+:HGT:cloud top:
 :HGT:highest tropospheric freezing level:
 :HGT:max wind:
 :HGT:PV=-1.5e-06 (Km^2/kg/s) surface:
@@ -174,6 +180,8 @@
 :PVORT:550 K isentropic level:
 :PVORT:650 K isentropic level:
 :PWAT:30-0 mb above ground:
+:REFC:entire atmosphere (considered as a single layer):
+:RETOP:entire atmosphere (considered as a single layer):
 :RH:0.33-1 sigma layer:
 :RH:0.44-0.72 sigma layer:
 :RH:0.44-1 sigma layer:
@@ -356,6 +364,7 @@
 :UGRD:2 mb:
 :UGRD:20 mb:
 :UGRD:225 mb:
+:UGRD:275 mb:
 :UGRD:2743 m above mean sea level:
 :UGRD:3 hybrid level:
 :UGRD:3 mb:
@@ -421,6 +430,7 @@
 :VGRD:2 mb:
 :VGRD:20 mb:
 :VGRD:225 mb:
+:VGRD:275 mb:
 :VGRD:2743 m above mean sea level:
 :VGRD:3 hybrid level:
 :VGRD:3 mb:
@@ -517,13 +527,3 @@
 :VWSH:tropopause:
 :WATR:surface:
 :WILT:surface:
-:DPT:300 mb:
-:DPT:500 mb:
-:DPT:700 mb:
-:DPT:850 mb:
-:HGT:275 mb:
-:HGT:cloud top:
-:REFC:entire atmosphere (considered as a single layer):
-:RETOP:entire atmosphere (considered as a single layer):
-:UGRD:275 mb:
-:VGRD:275 mb:
