@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 # shellcheck disable=SC2034
 
+. ${HOMEgfs}/ush/atparse.bash
+
 #-------------------------------------------------------------------------------------------------
 # Script to regrid surface increment from GSI grid 
 # to fv3 tiles. 
@@ -59,10 +61,10 @@ fi
 in_fname="enkfgdas.sfci.nc"
 out_fname="sfci"
 time_list=${ifhrs[*]}
-ires=${LONB_CASE_IN},
-jres=${LATB_CASE_IN},
-ireso=${CASE_OUT:1},
-jreso=${CASE_OUT:1},
+ires=${LONB_CASE_IN}
+jres=${LATB_CASE_IN}
+ireso=${CASE_OUT:1}
+jreso=${CASE_OUT:1}
 regrid_nml_tmpl="${HOMEgfs}/parm/gdas/soil/regrid.nml_tmpl"
 
 # input, fixed files
