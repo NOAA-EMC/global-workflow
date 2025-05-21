@@ -3,16 +3,16 @@ DMPDIR: '/lfs/h2/emc/dump/noscrub/dump'
 BASE_GIT: '/lfs/h2/emc/global/save/emc.global/git'
 BASE_DATA: '/lfs/h2/emc/global/noscrub/emc.global/data'
 BASE_IC: '/lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR'
-AERO_INPUTS_DIR: /lfs/h2/emc/global/noscrub/emc.global/data/GEFS_ExtData/20250310
+AERO_INPUTS_DIR: '/lfs/h2/emc/global/noscrub/emc.global/data/GEFS_ExtData/20250310'
 PACKAGEROOT: '${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}'
 HOMEDIR: '/lfs/h2/emc/global/noscrub/${USER}'
 STMP: '/lfs/h2/emc/stmp/${USER}'
 PTMP: '/lfs/h2/emc/ptmp/${USER}'
 NOSCRUB: '${HOMEDIR}'
 COMINsyn: '/lfs/h1/ops/prod/com/gfs/v16.3/syndat'
-COMINecmwf: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ecmwf
-COMINnam: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam
-COMINukmet: /lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ukmet
+COMINecmwf: '/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ecmwf'
+COMINnam: '/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam'
+COMINukmet: '/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ukmet'
 # BQS properties
 SCHEDULER: pbspro
 QUEUE: 'dev'
