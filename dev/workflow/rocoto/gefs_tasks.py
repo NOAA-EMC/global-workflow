@@ -25,6 +25,25 @@ class GEFSTasks(Tasks):
 
         return task
 
+    def gen_control_ic(self):
+        dependencies = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
+        dependencies.append(rocoto.add_dependency(dep_dict))
+        resources = self.get_resource('gen_control_ic')
+        task_name = f'{self.run}_gen_control_ic'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEgfs}/dev/jobs/gen_control_ic.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def waveinit(self):
 
         resources = self.get_resource('waveinit')
