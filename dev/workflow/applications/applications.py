@@ -169,6 +169,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
             run_options[run]['app'] = run_base.get('APP', 'ATM')
             run_options[run]['do_wave_bnd'] = run_base.get('DOBNDPNT_WAVE', False)
+            run_options[run]['do_prep_sfc'] = run_base.get('DO_PREP_SFC', False)
             run_options[run]['do_bufrsnd'] = run_base.get('DO_BUFRSND', False)
             run_options[run]['do_gempak'] = run_base.get('DO_GEMPAK', False)
             run_options[run]['do_awips'] = run_base.get('DO_AWIPS', False)

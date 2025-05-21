@@ -74,8 +74,8 @@ EOF
  echo '   --------------------------'
  echo ' '
 # 1.c Get the datat cards
- if [ -f "${PARMgfs}/wave/bull_awips_gfswave" ]; then
-   cpreq "${PARMgfs}/wave/bull_awips_gfswave" "awipsbull.data"
+ if [ -f "${PARMgfs}/wave/bull_awips_gfswave.${waveGRD}" ]; then
+   cpreq "${PARMgfs}/wave/bull_awips_gfswave.${waveGRD}" "awipsbull.data"
  else
    export err=3
    err_chk "FATAL ERROR: Bulletin header data file missing."

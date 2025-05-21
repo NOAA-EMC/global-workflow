@@ -234,7 +234,7 @@ pgm=$(basename ${EXECgfs}/syndat_qctropcy.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
-   . prep_step
+   source prep_step
    set -u
 else
    [ -f errfile ] && rm errfile

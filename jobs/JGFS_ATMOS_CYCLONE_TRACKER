@@ -44,8 +44,7 @@ export gfsdir=${COMIN_ATMOS_GRIB_0p25}
 export COMINgdas=${COMIN_ATMOS_GRIB_0p25}
 export gdasdir=${COMIN_ATMOS_GRIB_0p25}
 export COMOUT=${COMOUT_ATMOS_TRACK}
-export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
-
+export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 export COMINgenvit=${COMIN_ATMOS_GENESIS}
 
 if [ ${RUN_ENVIR} = "nco" ]; then
