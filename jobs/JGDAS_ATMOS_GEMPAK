@@ -10,9 +10,6 @@ export GRIB=${GRIB:-pgrb2f}
 export EXT=""
 export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GDAS_GEMPAK}
 
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
-
 ##############################################
 # Define COM directories
 ##############################################

@@ -44,9 +44,7 @@ YMD=${PDY} HH=${cyc} GRID="0p25" declare_from_tmpl -rx COMIN_ATMOS_GRIB_0p25:COM
 export COMIN=${COMIN_ATMOS_GRIB_0p25}
 export gfsdir=${COMIN_ATMOS_GRIB_0p25}
 export COMINgfs=${COMIN_ATMOS_GRIB_0p25}
-
 export COMOUT=${COMOUT_ATMOS_GENESIS}
-
 export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
 ##############################################
