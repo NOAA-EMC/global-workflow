@@ -59,7 +59,7 @@ jobs/JGLOBAL_*ARCH* @DavidHuber-NOAA
 jobs/JGLOBAL_ATMENS_ANALYSIS_* @RussTreadon-NOAA @CoryMartin-NOAA @DavidNew-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS @RussTreadon-NOAA @CatherineThomas-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS_CALC @RussTreadon-NOAA @CatherineThomas-NOAA @CoryMartin-NOAA
-jobs/JGLOBAL_ATMOS_EMCSFC_SFC_PREP @GeorgeGayno-NOAA
+jobs/JGLOBAL_ATMOS_PREP_SFC @GeorgeGayno-NOAA @KateFriedman-NOAA 
 jobs/JGLOBAL_ATMOS_ENSSTAT
 jobs/JGLOBAL_ATMOS_POST_MANAGER
 jobs/JGLOBAL_ATMOS_PRODUCTS @WenMeng-NOAA
@@ -131,6 +131,7 @@ scripts/exglobal_marinebmat.py @guillaumevernieres @AndrewEichmann-NOAA
 scripts/exglobal_oceanice_products.py @GwenChen-NOAA @AminIlia-NOAA @ChristopherHill-NOAA
 scripts/exglobal_prep_emissions.py @bbakernoaa
 scripts/exglobal_prep_obs_aero.py @CoryMartin-NOAA
+scripts/exglobal_prep_sfc.sh @GeorgeGayno-NOAA @KateFriedman-NOAA 
 scripts/exglobal_prep_snow_obs.py @jiaruidong2017
 scripts/exglobal_snow_analysis.py @jiaruidong2017
 scripts/exglobal_stage_ic.py @KateFriedman-NOAA
@@ -182,6 +183,8 @@ ush/parsing_namelists_MOM6.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa @j
 ush/parsing_namelists_WW3.sh @WalterKolczynski-NOAA @aerorahul @JessicaMeixner-NOAA @sbanihash
 ush/parsing_ufs_configure.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa
 ush/preamble.sh @WalterKolczynski-NOAA
+ush/prep_sfc_ice_blend.sh @GeorgeGayno-NOAA @KateFriedman-NOAA 
+ush/prep_sfc_snow.sh @GeorgeGayno-NOAA @KateFriedman-NOAA 
 ush/product_functions.sh @WalterKolczynski-NOAA @aerorahul
 ush/radmon_*.sh @EdwardSafford-NOAA
 ush/rstprod.sh @WalterKolczynski-NOAA @DavidHuber-NOAA
