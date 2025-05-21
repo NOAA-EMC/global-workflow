@@ -27,9 +27,6 @@ export fstart=00
 
 export DBN_ALERT_TYPE=GDAS_METAFILE
 
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
-
 ##############################################
 # Define COM directories
 ##############################################
@@ -47,8 +44,8 @@ if (( cyc%12 == 0 )); then
   fi
 fi
 
-export COMINukmet="${COMINukmet:-$(compath.py "${envir}/ukmet/${ukmet_ver}")/ukmet}"
 export COMINecmwf="${COMINecmwf:-$(compath.py "${envir}/ecmwf/${ecmwf_ver}")/ecmwf}"
+export COMINukmet="${COMINukmet:-$(compath.py "${envir}/ukmet/${ukmet_ver}")/ukmet}"
 
 export pgmout=OUTPUT.$$
 
