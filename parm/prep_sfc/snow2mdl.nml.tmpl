@@ -1,0 +1,34 @@
+&source_data
+  autosnow_file=""
+  nesdis_snow_file="./imssnow96.grib2"
+  nesdis_lsmask_file=""
+  afwa_snow_global_file="./snow.usaf.grib2"
+  afwa_snow_nh_file=""
+  afwa_snow_sh_file=""
+  afwa_lsmask_nh_file=""
+  afwa_lsmask_sh_file=""
+/
+&qc
+  climo_qc_file="@[CLIMO_QC]"
+/
+&model_specs
+  model_lat_file="@[MODEL_LATITUDE_FILE]"
+  model_lon_file="@[MODEL_LONGITUDE_FILE]"
+  model_lsmask_file="@[MODEL_SLMASK_FILE]"
+  gfs_lpl_file="@[GFS_LONSPERLAT_FILE]"
+/
+&output_data
+  model_snow_file="./@[MODEL_SNOW_FILE]"
+  output_grib2=@[OUTPUT_GRIB2]
+/
+&output_grib_time
+  grib_year=@[IMSYEAR]
+  grib_month=@[IMSMONTH]
+  grib_day=@[IMSDAY]
+  grib_hour=@[IMSHOUR]
+/
+&parameters
+  lat_threshold=55.0
+  min_snow_depth=0.05
+  snow_cvr_threshold=50.0
+/

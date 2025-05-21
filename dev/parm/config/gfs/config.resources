@@ -12,7 +12,7 @@ if (( $# != 1 )); then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init fetch"
-    echo "prep prepatmiodaobs"
+    echo "prep prep_sfc prepatmiodaobs"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
@@ -106,6 +106,14 @@ esac
 export max_tasks_per_node
 
 case ${step} in
+  "prep_sfc")
+    walltime='00:08:00'
+    ntasks=1
+    tasks_per_node=1
+    threads_per_task=1
+    memory="10GB"
+    ;;
+
   "prep")
     walltime='00:30:00'
     ntasks=14

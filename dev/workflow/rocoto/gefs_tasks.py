@@ -11,17 +11,32 @@ class GEFSTasks(Tasks):
     def stage_ic(self):
 
         resources = self.get_resource('stage_ic')
-        task_name = f'{self.run}_stage_ic'
+        stage_ic_envars = self.envars.copy()
+        stage_ic_dict = {'ENSMEM': '#member#',
+                         'MEMDIR': 'mem#member#'}
+
+        for key, value in stage_ic_dict.items():
+            stage_ic_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        resources = self.get_resource('stage_ic')
+        task_name = f'{self.run}_stage_ic_mem#member#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
-                     'envars': self.envars,
+                     'envars': stage_ic_envars,
                      'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/dev/jobs/stage_ic.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
-        task = rocoto.create_task(task_dict)
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_stage_ic',
+                                'task_dict': task_dict,
+                                'var_dict': member_var_dict
+                                }
+
+        task = rocoto.create_task(member_metatask_dict)
 
         return task
 
@@ -61,7 +76,7 @@ class GEFSTasks(Tasks):
 
     def fcst(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
@@ -107,7 +122,7 @@ class GEFSTasks(Tasks):
 
     def efcs(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:

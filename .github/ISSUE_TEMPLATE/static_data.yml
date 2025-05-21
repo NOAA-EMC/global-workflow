@@ -120,21 +120,6 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    attributes:
-      label: Sync to supported platforms (for issue assignee)
-      options:
-        - "WCOSS2"
-        - "Hera"
-        - "Ursa"
-        - "MSU"
-        - "Gaea C6"
-        - "AWS"
-        - "HPSS"
-      multiple: true
-    validations:
-      required: false
-
   - type: textarea
     attributes:
       label: Additional information
@@ -143,12 +128,24 @@ body:
     validations:
       required: false
 
-  - type: markdown
+  - type: checkboxes
     attributes:
-      value: |
-        # Tasks
-        - [ ] Discuss needs with global-workflow developer assigned to request
-        - [ ] Stage a CLEAN copy of data on Hera or WCOSS2 in the location provided above
-        - [ ] [global-workflow CM] Update data in "glopara"-managed space on supported platforms
-        - [ ] [Fix only] Update "Fix File Management" [spreadsheet](https://docs.google.com/spreadsheets/d/1BeIvcz6TO3If4YCqkUK-oz_kGS9q2wTjwLS-BBemSEY/edit?usp=sharing)
-        - [ ] Make related workflow/component updates (if any)
+      label: Tasks for issue assignee
+      options:
+        - label: (Providing user) Discuss needs with global-workflow developer assigned to request
+        - label: (Providing user) Stage a CLEAN copy of data on Hera or WCOSS2 in the location provided above
+        - label: (Global Workflow CM) Update data in "glopara"-managed space on supported platforms (see checklist below)
+        - label: (Global Workflow CM - Fix only) Update "Fix File Management" [spreadsheet](https://docs.google.com/spreadsheets/d/1BeIvcz6TO3If4YCqkUK-oz_kGS9q2wTjwLS-BBemSEY/edit?usp=sharing)
+        - label: (Developer) Make related workflow/component updates (if any)
+
+  - type: checkboxes
+    attributes:
+      label: Sync to supported platforms (for issue assignee)
+      options:
+        - label: WCOSS2
+        - label: Gaea C6
+        - label: Hera
+        - label: Ursa
+        - label: MSU
+        - label: AWS
+        - label: HPSS
