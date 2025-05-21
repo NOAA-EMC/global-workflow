@@ -47,6 +47,9 @@ class Stage(Task):
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
 
+        # Add the os.path.exists function to the dict for yaml parsing
+        stage_dict['path_exists'] = os.path.exists
+
         # Parse staging yaml to get list of files to stage
         stage_set = parse_j2yaml(self.task_config.STAGE_IC_YAML_TMPL, stage_dict, allow_missing=False)
 
