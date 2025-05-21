@@ -161,7 +161,7 @@ class AtmAnalysis(Task):
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['atmanlvar'].initialize(self.task_config)
+        self.jedi_dict['atmanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
 
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")

@@ -133,7 +133,7 @@ class AerosolAnalysis(Task):
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['aeroanlvar'].initialize(self.task_config)
+        self.jedi_dict['aeroanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:

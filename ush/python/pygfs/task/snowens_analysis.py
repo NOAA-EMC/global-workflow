@@ -160,7 +160,7 @@ class SnowEnsAnalysis(Task):
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['snowanlvar'].initialize(self.task_config)
+        self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
 
         # initialize ensemble mean computation
         logger.info(f"Initializing JEDI ensemble mean application")

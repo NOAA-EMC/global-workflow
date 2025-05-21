@@ -70,7 +70,7 @@ class Jedi:
         self._jedi_config = self.jedi_config.deepcopy()
 
     @logit(logger)
-    def initialize(self, task_config: AttrDict) -> None:
+    def initialize(self, task_config: AttrDict, clean_empty_obsspaces=False) -> None:
         """Initialize JEDI application
 
         This method will initialize a JEDI application.
@@ -83,6 +83,9 @@ class Jedi:
         ----------
         task_config: AttrDict
             Attribute-dictionary of all configuration variables associated with a GDAS task.
+        clean_empty_obsspaces: bool
+            Flag to clean empty observation spaces from JEDI input configuration dictionary.
+            Default is False.
 
         Returns
         ----------
@@ -95,8 +98,9 @@ class Jedi:
         logger.debug(f"JEDI config:\n{pformat(self.jedi_config.input_config)}")
 
         # Remove obs spaces from JEDI config dictionary with missing obs files
-        logger.info(f"Clean empty obs spaces from JEDI YAML config: {self.jedi_config.yaml}")
-        self.clean_empty_obsspaces()
+        if clean_empty_obsspaces:
+            logger.info(f"Clean empty obs spaces from JEDI YAML config: {self.jedi_config.yaml}")
+            self.clean_empty_obsspaces()
 
         # Save JEDI config dictionary to YAML in run directory
         logger.debug(f"Writing JEDI YAML config to: {self.jedi_config.yaml}")
@@ -293,6 +297,11 @@ class Jedi:
             # Clear observers list in dictionary and replace with new list
             observers.clear()
             observers.extend(cleaned_observers)
+
+            # If no observers left in list, raise error
+            if observers == []:
+                logger.error(f"FATAL ERROR: No observers found in JEDI input config")
+                raise Exception(f"FATAL ERROR: No observers found in JEDI input config")
 
     @staticmethod
     @logit(logger)

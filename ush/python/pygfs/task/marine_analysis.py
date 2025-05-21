@@ -150,7 +150,7 @@ class MarineAnalysis(Task):
 
         # initialize JEDI applications
         logger.info(f"Initializing SOCA variational application")
-        self.jedi_dict['var'].initialize(self.task_config)
+        self.jedi_dict['var'].initialize(self.task_config, clean_empty_obsspaces=True)
 
         logger.info(f"Initializing SOCA increment handler")
         self.jedi_dict['socaincr2mom6'].initialize(self.task_config)
@@ -158,8 +158,9 @@ class MarineAnalysis(Task):
         logger.info(f"Initializing SOCA convertstate application")
         self.jedi_dict['soca_2cice_global'].initialize(self.task_config)
 
-        logger.info(f"Initializing SOCA observation statistics application")
-        self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
+        # This method is a bit of a hack that will be removed in the future when the anlstat
+        # job fully replaces the SOCA obs_diag_stats application
+        self.initialize_obs_stats()
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -203,3 +204,38 @@ class MarineAnalysis(Task):
         # Save obs diag statistics to COM
         diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
         FileHandler(diags_list).sync()
+
+    @logit(logger)
+    def initialize_obs_stats(self) -> None:
+        """Initialize the observation statistics
+
+        This method will initialize the observation statistics
+        This includes:
+        - ...
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        #
+        cleaned_observations = []
+        obs_variables = {}
+        for obs_space in self.jedi_dict['var'].jedi_config.input_config['cost function']['observations']['observers']:
+            name = obs_space['obs space']['name']
+            variable = obs_space['obs space']['simulated variables'][0]
+
+            cleaned_observations.append(name)
+            obs_variables[name] = variable
+
+        # Update the task_config with the observation variables
+        self.task_config['cleaned_observations'] = cleaned_observations
+        self.task_config['obs_variables'] = obs_variables
+
+        # Initialize the observation statistics
+        logger.info(f"Initializing JEDI SOCA observation statistics application")
+        self.jedi_dict['soca_diag_stats'].initialize(self.task_config)

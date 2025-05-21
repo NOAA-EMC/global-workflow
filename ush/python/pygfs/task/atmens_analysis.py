@@ -139,29 +139,15 @@ class AtmEnsAnalysis(Task):
 
         # initialize JEDI LETKF observer application
         logger.info(f"Initializing JEDI LETKF observer application")
-        self.jedi_dict['atmensanlobs'].initialize(self.task_config)
+        self.jedi_dict['atmensanlobs'].initialize(self.task_config, clean_empty_obsspaces=True)
+
+        # initialize JEDI LETKF solver application
+        logger.info(f"Initializing JEDI LETKF solver application")
+        self.jedi_dict['atmensanlsol'].initialize(self.task_config)
 
         # initialize JEDI FV3 increment conversion application
         logger.info(f"Initializing JEDI FV3 increment conversion application")
         self.jedi_dict['atmensanlfv3inc'].initialize(self.task_config)
-
-    @logit(logger)
-    def initialize_letkf_solver(self) -> None:
-        """Initialize JEDI LETKF solver application
-
-        This method will initialize a JEDI LETKF solver application.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-        # initialize JEDI LETKF solver application
-        logger.info(f"Initializing JEDI LETKF solver application")
-        self.jedi_dict['atmensanlsol'].initialize(self.task_config)
 
     @logit(logger)
     def initialize_letkf(self) -> None:

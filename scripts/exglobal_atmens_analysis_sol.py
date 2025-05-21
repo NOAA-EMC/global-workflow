@@ -20,8 +20,5 @@ if __name__ == '__main__':
     # Instantiate the atmens analysis task
     AtmEnsAnl = AtmEnsAnalysis(config)
 
-    # Initialize JEDI ensemble DA analysis for solver mode
-    AtmEnsAnl.initialize_letkf_solver()
-
     # Execute JEDI ensemble DA analysis in solver mode
     AtmEnsAnl.execute('atmensanlsol')
