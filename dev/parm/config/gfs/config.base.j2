@@ -70,6 +70,9 @@ export BASE_GIT="{{ BASE_GIT }}"
 # Base directory for staged data
 export BASE_DATA="{{ BASE_DATA }}"
 
+# Toggle to turn on/off EMCSFC_SFC_PREP job
+export DO_PREP_SFC="NO"    # SNOGRB dump file production
+
 # Toggle to turn on/off GFS downstream processing.
 export DO_GOES="{{ DO_GOES }}"               # GOES products
 export DO_BUFRSND="{{ DO_BUFRSND }}"         # BUFR sounding products
@@ -180,7 +183,7 @@ aero_fcst_runs="gdas" # When to run aerosol forecast: gdas, gfs, or both
 aero_anl_runs="gdas gfs" # When to run aerosol analysis: gdas, gfs, or both
 export DO_AERO_FCST="NO"
 export DO_AERO_ANL="NO"
-export DOBNDPNT_WAVE="NO"
+export DOBNDPNT_WAVE="YES"
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
