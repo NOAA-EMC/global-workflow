@@ -46,7 +46,7 @@ for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
   if [[ ! -f "${source_table}" ]]; then
     err_exit "FATAL ERROR: ${table} is missing"
   fi
-  cp "${source_table}" "${table}"
+  cpreq "${source_table}" "${table}"
 done
 
 GEMGRD="${RUN}_${grid}_${PDY}${cyc}f${fhr3}"
@@ -74,7 +74,8 @@ export GRIBIN="${!source_var}/${model}.${cycle}.pgrb2.${grid_in}.f${fhr3}"
 GRIBIN_chk="${!source_var}/${model}.${cycle}.pgrb2.${grid_in}.f${fhr3}.idx"
 
 if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
-  export err=7 ; err_chk "FATAL ERROR: after 1 hour of waiting for ${GRIBIN_chk} file at F${fhr3} to end."
+  export err=7
+  err_exit "After 1 hour of waiting for ${GRIBIN_chk} file at F${fhr3} to end."
 fi
 
 case "${grid}" in
@@ -89,7 +90,7 @@ if [[ "${grid_spec}" != "" ]]; then
   "${WGRIB2}" "${GRIBIN}" ${opt1uv} ${opt21} ${opt22} ${opt23} ${opt24} ${opt25} ${opt26} ${opt27} ${opt28} -new_grid ${grid_spec} "grib${fhr3}"
   trim_rh "grib${fhr3}"
 else
-  cp "${GRIBIN}" "grib${fhr3}"
+  cpreq "${GRIBIN}" "grib${fhr3}"
 fi
 
 export pgm="nagrib2 F${fhr3}"
@@ -113,7 +114,10 @@ l
 r
 EOF
 
-export err=$?;err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit
+fi
 
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
 if [[ ${SENDDBN} == "YES" ]] ; then
