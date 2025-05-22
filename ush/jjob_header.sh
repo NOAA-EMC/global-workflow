@@ -40,16 +40,12 @@
 #   - $pid          : Override the default process id
 #                     [default: $$]
 
-echo "jjob_header.sh part 1"
 _calling_script="${BASH_SOURCE[1]}"
 source "${HOMEgfs}/ush/preamble.sh"
 
-echo "jjob_header.sh part 2"
-module purge
-module use ${HOMEgfs}/modulefiles
-module load module_run.hera
+export PATH=/home/Wei.Huang/prod-util-2.1.1/bin:$PATH
+export LD_LIBRARY_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2023.2.0-uov33rpz3lplh3hh3v5c6vssbc7ndxuk/lib
 
-echo "jjob_header.sh part 3"
 OPTIND=1
 while getopts "c:e:" option; do
     case "${option}" in
@@ -72,7 +68,6 @@ if [[ -z ${env_job} ]]; then
     err_chk "FATAL ERROR: [${BASH_SOURCE[0]}]: Must specify a job name with -e"
 fi
 
-echo "jjob_header.sh part 4"
 ##############################################
 # make temp directory
 ##############################################
@@ -98,7 +93,6 @@ export pgmerr=errfile
 export pgm=${pgm:-}
 
 
-echo "jjob_header.sh part 5"
 ##############################################
 # Run setpdy and initialize PDY variables
 ##############################################
@@ -120,7 +114,6 @@ for config in "${configs[@]:-''}"; do
 done
 
 
-echo "jjob_header.sh part 6"
 ##########################################
 # Source machine runtime environment
 ##########################################

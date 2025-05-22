@@ -34,7 +34,8 @@ class RocotoXML(ABC):
         self.use_scrontab = self.host_info.get("USE_SCRONTAB", False)
         # Add ACCOUNT to host_info, with that from config.base
         self.host_info.ACCOUNT = self._base['ACCOUNT']
-        self.HOMEgfs = self._base['HOMEgfs']
+       #self.HOMEgfs = self._base['HOMEgfs']
+        self.HOMEgfs = '/scratch4/NAGAPE/epic/Wei.Huang/src/global-workflow-cloud'
         self.expdir = self._base['EXPDIR']
         self.pslot = self._base['PSLOT']
 
@@ -157,7 +158,8 @@ class RocotoXML(ABC):
         """
 
         # No point creating a crontab if rocotorun is not available.
-        rocotoruncmd = find_executable('rocotorun')
+       #rocotoruncmd = find_executable('rocotorun')
+        rocotoruncmd = '/apps/rocoto/1.3.7/bin/rocotorun'
         if rocotoruncmd is None:
             print('Failed to find rocotorun, crontab will not be created')
             return

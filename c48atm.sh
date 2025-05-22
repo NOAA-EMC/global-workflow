@@ -11,6 +11,7 @@
  HPC_ACCOUNT=epic \
         pslot=c48atm \
         RUNTESTS=${rundir} \
-        dev/workflow/create_experiment.py \
+        RUNDIR=/scratch4/NAGAPE/epic/Wei.Huang \
+        bin/run_python.sh dev/workflow/create_experiment.py \
         --yaml dev/ci/cases/pr/C48_ATM.yaml
 

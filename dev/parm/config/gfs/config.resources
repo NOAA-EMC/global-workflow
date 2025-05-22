@@ -47,6 +47,12 @@ case ${machine} in
               # shellcheck disable=SC2034
               mem_node_max="96GB"
     ;;
+  "URSA")
+              export PARTITION_BATCH="u1-compute"
+              max_tasks_per_node=96
+              # shellcheck disable=SC2034
+              mem_node_max="96GB"
+    ;;
   "GAEAC5")
               max_tasks_per_node=128
               # shellcheck disable=SC2034
