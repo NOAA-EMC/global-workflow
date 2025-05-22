@@ -79,7 +79,7 @@ jobs:
             MACHINE=${KEY#run_on_}
             
             # Add machine to list if checkbox is true
-            if [[ "$VALUE" == "true" ]]; then
+            if [[ "${VALUE}" == "true" ]]; then
               if [[ -n "${MACHINES}" ]]; then
                 MACHINES="${MACHINES} ${MACHINE}"  # Append with space if list already has entries
               else
