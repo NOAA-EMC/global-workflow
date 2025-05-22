@@ -272,7 +272,7 @@ EOF
       touch cmdfile
       chmod 744 cmdfile
 
-      BDATE=$(date --utc +%Y%m%d%H -d "${RPDY}00 -24 hours")
+      BDATE=$(date --utc +%Y%m%d%H -d "${RPDY}00 - 24 hours")
       bPDY=${BDATE:0:8}
 
       ymdh_rtofs=${RPDY}00 # RTOFS runs once daily use ${PDY}00
