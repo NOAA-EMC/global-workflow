@@ -95,8 +95,8 @@ include:
       dev/ci/scripts/utils/ci_utils.sh build
       build_status=$?
 
-      if [ $build_status -ne 0 ]; then
-        echo "Build failed with exit code $build_status"
+      if [[ ${build_status} -ne 0 ]]; then
+        echo "Build failed with exit code ${build_status}"
         exit 1
       fi
 
