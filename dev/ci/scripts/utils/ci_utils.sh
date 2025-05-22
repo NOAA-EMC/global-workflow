@@ -125,17 +125,10 @@ function create_experiment () {
   pr_sha=$(git rev-parse --short HEAD)
   local TAG="${2:-${pr_sha}}"
   cd "${HOMEgfs_}" || exit 1
-  pr_sha=$(git rev-parse --short HEAD)
   case=$(basename "${yaml_config}" .yaml) || true
   
   # Use TAG if provided as second argument, otherwise use pr_sha
-  if [[ -n "${TAG}" ]]; then
-    echo "Using provided TAG: ${TAG} for pslot"
-    export pslot=${case}_${TAG}
-  else
-    echo "No TAG provided, using commit SHA: ${pr_sha} for pslot"
-    export pslot=${case}_${pr_sha}
-  fi
+    export pslot="${case}_${TAG}"
 
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
       source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
