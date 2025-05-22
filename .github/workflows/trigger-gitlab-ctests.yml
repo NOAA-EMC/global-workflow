@@ -49,7 +49,7 @@ jobs:
         id: setup
         run: |
           # Set PR number
-          echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> $GITHUB_ENV
+          echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> ${GITHUB_ENV}
           
           # ---------------------------------------------------------------
           # Machine Selection Logic
