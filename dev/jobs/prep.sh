@@ -41,31 +41,29 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 mkdir -p "${COMOUT_OBS}"
 
 ###############################################################
-# If ROTDIR_DUMP=YES, copy dump files to rotdir
-if [[ ${ROTDIR_DUMP} = "YES" ]]; then
-   "${HOMEgfs}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
-   status=$?
-   if [[ ${status} -ne 0 ]]; then
-       exit "${status}"
-   fi
+# Copy dump files to ROTDIR
+"${HOMEgfs}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
+status=$?
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
 
-   #  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
-   if [[ ! -s "${COMINobsproc_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" ]]; then
-     "${HOMEgfs}/ush/getdump.sh" "${gPDY}" "${gcyc}" "${GDUMP}" "${COMINobsproc_PREV}" "${COMOUT_OBS_PREV}"
-     status=$?
-     if [[ ${status} -ne 0 ]]; then
-         exit "${status}"
-     fi
-   fi
-   # exception handling to ensure no dead link
-   # shellcheck disable=SC2312
-   if [[ $(find "${COMOUT_OBS}" -xtype l | wc -l) -ge 1 ]]; then
-       exit 9
-   fi
-   # shellcheck disable=SC2312
-   if [[ $(find "${COMINobsproc_PREV}" -xtype l | wc -l) -ge 1 ]]; then
-       exit 9
-   fi
+#  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
+if [[ ! -s "${COMINobsproc_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" ]]; then
+  "${HOMEgfs}/ush/getdump.sh" "${gPDY}" "${gcyc}" "${GDUMP}" "${COMINobsproc_PREV}" "${COMOUT_OBS_PREV}"
+  status=$?
+  if [[ ${status} -ne 0 ]]; then
+      exit "${status}"
+  fi
+fi
+# exception handling to ensure no dead link
+# shellcheck disable=SC2312
+if [[ $(find "${COMOUT_OBS}" -xtype l | wc -l) -ge 1 ]]; then
+    exit 9
+fi
+# shellcheck disable=SC2312
+if [[ $(find "${COMINobsproc_PREV}" -xtype l | wc -l) -ge 1 ]]; then
+    exit 9
 fi
 
 
@@ -86,9 +84,7 @@ if [[ ${PROCESS_TROPCY} == "YES" ]]; then
         done
     fi
 
-    if [[ ${ROTDIR_DUMP} = "YES" ]]; then
-       rm -f "${COMOUT_OBS}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00"
-    fi
+    rm -f "${COMOUT_OBS}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00"
 
     "${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
     status=$?
@@ -97,19 +93,15 @@ if [[ ${PROCESS_TROPCY} == "YES" ]]; then
     fi
 
 else
-    if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-       cpfs "${COMINobsproc}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00" "${COMOUT_OBS}/"
-    fi
+    cpfs "${COMINobsproc}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00" "${COMOUT_OBS}/"
 fi
 
 
 ###############################################################
 # Generate prepbufr files from dumps and prior gdas guess
-if [[ ${ROTDIR_DUMP:-"YES"} = "YES" ]]; then
-    rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr"
-    rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
-    rm -f "${COMOUT_OBS}/${OPREFIX}nsstbufr"
-fi
+rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr"
+rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
+rm -f "${COMOUT_OBS}/${OPREFIX}nsstbufr"
 
 RUN="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GDAS:COM_ATMOS_HISTORY_TMPL
 RUN="gfs" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GFS:COM_ATMOS_HISTORY_TMPL
@@ -123,11 +115,7 @@ export COMOUT=${COMOUT_OBS}
 export COMINgdas=${COMIN_ATMOS_HISTORY_GDAS}
 export COMINgfs=${COMIN_ATMOS_HISTORY_GFS}
 
-if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-    export COMSP=${COMSP:-"${COMINobsproc}/${RUN_local}.t${cyc}z."}
-else
-    export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
-fi
+export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
 
 # Disable creating NSSTBUFR if desired, copy from DMPDIR instead
 if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
@@ -149,16 +137,7 @@ if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
     fi
 fi
 
-if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-    cpfs "${COMINobsproc}/${OPREFIX}prepbufr" "${COMOUT_OBS}/${OPREFIX}prepbufr"
-    cpfs "${COMINobsproc}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
-    if [[ ${DONST} = "YES" ]]; then
-       cpfs "${COMINobsproc}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
-    fi
-fi
-
 ################################################################################
 # Exit out cleanly
-
 
 exit 0
