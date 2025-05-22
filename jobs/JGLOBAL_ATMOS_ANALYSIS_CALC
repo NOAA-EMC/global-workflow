@@ -42,13 +42,15 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
     export err=1
-    err_chk "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
+    err_exit "FILE MISSING: ATMGES = ${ATMGES}"
 fi
 
 # Get LEVS
 export LEVS=$(${NCLEN} ${ATMGES} pfull) && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 # Generate Gaussian surface analysis  # TODO: Should this be removed now that sfcanl is its own job?
 export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
@@ -59,7 +61,9 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 
 ${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

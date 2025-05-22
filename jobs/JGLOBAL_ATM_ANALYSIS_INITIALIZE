@@ -32,7 +32,9 @@ mkdir -m 775 -p "${COMIN_ATMOS_ANALYSIS_PREV}"
 EXSCRIPT=${GDASATMINITPY:-${SCRgfs}/exglobal_atm_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

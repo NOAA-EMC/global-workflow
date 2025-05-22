@@ -37,7 +37,7 @@
 
   if [[ "$#" -lt '3' ]]
   then
-    echo 'ERROR: VARIABLES IN ww3_tar.sh NOT SET'
+    echo 'FATAL ERROR: VARIABLES IN ww3_tar.sh NOT SET'
     exit 1
   else
     ID=$1
@@ -74,7 +74,7 @@ EOF
 #     The tested variables should be exported by the postprocessor script.
 
   if [[ -z "${COMOUT_WAVE_STATION+x}" || -z "${SENDDBN+x}" || -z "${STA_DIR+x}" ]]; then
-    echo 'ERROR: EXPORTED VARIABLES IN ww3_tar.sh NOT SET'
+    echo 'FATAL ERROR: EXPORTED VARIABLES IN ww3_tar.sh NOT SET'
     exit 2
   fi
 
@@ -100,13 +100,13 @@ EOF
 
       if  [[ ${err} -ne 0 ]]
       then
-        echo 'ERROR: TAR CREATION FAILED *** '
+        echo 'FATAL ERROR: TAR CREATION FAILED *** '
         exit 3
       fi
 
       filename="${ID}.${type}.tar"
       if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ; then
-        echo "ERROR: File ${filename} not found after waiting $(( sleep_interval * (countMAX + 1) )) secs"
+        echo "FATAL ERROR: File ${filename} not found after waiting $(( sleep_interval * (countMAX + 1) )) secs"
         exit 3
       fi
 
@@ -120,7 +120,7 @@ EOF
 
   if [[ "${tardone}" == 'no' ]]
   then
-    echo 'ERROR: TAR CREATION FAILED *** '
+    echo 'FATAL ERROR: TAR CREATION FAILED *** '
     exit 3
   fi
 
@@ -134,7 +134,7 @@ EOF
 
       if  [[ ${err} -ne 0 ]]
       then
-        echo 'ERROR: SPECTRAL TAR COMPRESSION FAILED *** '
+        echo 'FATAL ERROR: SPECTRAL TAR COMPRESSION FAILED *** '
         exit 4
       fi
     fi
@@ -147,13 +147,13 @@ EOF
 
   echo "   Moving tar file ${file_name} to ${COMOUT_WAVE_STATION} ..."
 
-  cp "${file_name}" "${COMOUT_WAVE_STATION}/."
+  cpfs "${file_name}" "${COMOUT_WAVE_STATION}/."
 
   err=$?
 
   if  [[ ${err} -ne 0 ]]
   then
-    echo 'ERROR: TAR COPY FAILED *** '
+    echo 'FATAL ERROR: TAR COPY FAILED *** '
     exit 4
   fi
 

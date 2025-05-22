@@ -13,7 +13,7 @@ LATVAL="1/1/1/1/5;5"
 LATSOUTH="1/1/1/1;4/5;5"
 pixels="1728;1472"
 
-cp "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
+cpreq "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
 
 #################################################################
 #              NORTHERN HEMISPHERE ANALYSIS CHARTS              #
@@ -274,13 +274,13 @@ EOF
 
 # Copy the GIF images into my area
 
-cp "${hgttmp850dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cp "${hgttmp700dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cp "${hgttmp500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cp "${hgtiso300dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cp "${hgtiso250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cp "${hgtiso200dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cp "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgttmp850dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgttmp700dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgttmp500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgtiso300dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgtiso250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgtiso200dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}/."
 
 # Send the GIF images onto the NCDC area on the public ftp server
 
@@ -443,10 +443,10 @@ EOF
 
 
 # Copy the GIF images into my area
-cp "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cp "${hgttmp500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cp "${hgtiso300dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cp "${hgtiso250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgttmp500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgtiso300dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgtiso250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
 
 # Copy the GIF images onto the NCDC area on the public ftp server
 
