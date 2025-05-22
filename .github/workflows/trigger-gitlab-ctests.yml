@@ -8,16 +8,15 @@ on:
         description: 'PR number to test (use 0 for develop branch)'
         required: true
         type: string
-      run_on_hera:
+      hera:
         description: 'Hera'
-        required: true
         type: boolean
         default: true
-      run_on_gaeac6:
+      gaeac6:
         description: 'Gaea C6'
-        required: true
         type: boolean
         default: false
+      # Add more machines by directly using their names as input IDs
 
 jobs:
   check-permissions:
@@ -53,37 +52,30 @@ jobs:
           
           # ---------------------------------------------------------------
           # Machine Selection Logic
+          # This section builds the machine list based on user inputs
+          # The list is then passed to the GitLab pipeline to RUN_ON_MACHINES
           # ---------------------------------------------------------------
-          # This section processes the selected machine checkboxes from the
-          # workflow UI and creates a space-separated list of machine names
-          # to be passed to the GitLab pipeline via its trigger REST API
-          # NOTE: When adding new machines no need to modify the code below
-          # ---------------------------------------------------------------
-
-          # Extract all inputs that start with "run_on_" and their values
-          INPUTS=$(jq -r 'to_entries[] | select(.key | startswith("run_on_")) | "\(.key)=\(.value)"' <<< '${{ toJson(github.event.inputs) }}')
           
-          # Build RUN_ON_MACHINES based on checkboxes
+          # Build machine list from inputs that are set to 'true'
           MACHINES=""
+          INPUTS=$(jq -r 'to_entries[] | select(.key != "pr_number") | "\(.key)=\(.value)"' <<< '${{ toJson(github.event.inputs) }}')
+
           while read -r input; do
             # Skip empty lines
             if [[ -z "$input" ]]; then
               continue
             fi
-            # Extract machine name and value
-            KEY=$(echo "${input}" | cut -d= -f1)
-            VALUE=$(echo "${input}" | cut -d= -f2)
 
-            # Extract machine name from input name (remove "run_on_" prefix)
-            # For example: "run_on_hera" becomes "hera"
-            MACHINE=${KEY#run_on_}
+            # Extract machine name and boolean value
+            MACHINE=$(echo "${input}" | cut -d= -f1)
+            VALUE=$(echo "${input}" | cut -d= -f2)
             
             # Add machine to list if checkbox is true
             if [[ "${VALUE}" == "true" ]]; then
               if [[ -n "${MACHINES}" ]]; then
-                MACHINES="${MACHINES} ${MACHINE}"  # Append with space if list already has entries
+                MACHINES="${MACHINES} ${MACHINE}"
               else
-                MACHINES="${MACHINE}"  # First entry in the list
+                MACHINES="${MACHINE}"
               fi
             fi
           done <<< "${INPUTS}"
