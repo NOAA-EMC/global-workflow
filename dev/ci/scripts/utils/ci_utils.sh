@@ -122,7 +122,7 @@ function cancel_all_batch_jobs () {
 function create_experiment () {
 
   local yaml_config="${1}"
-  local TAG="${2}"
+  local TAG="${2:-}"
   cd "${HOMEgfs_}" || exit 1
   pr_sha=$(git rev-parse --short HEAD)
   case=$(basename "${yaml_config}" .yaml) || true
