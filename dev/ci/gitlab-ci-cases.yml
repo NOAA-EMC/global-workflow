@@ -22,8 +22,8 @@
   stage: create_experiments
   script:
     - |
-      export RUNTESTS=${RUNTESTS_DIR}
-      ${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh create_experiment ${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml ${DATE}
+      export RUNTESTS="${RUNTESTS_DIR}"
+      "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${DATE}"
       exit $?
   needs:
     - build-${machine}
@@ -35,8 +35,8 @@
   script:
     - |
       echo "Using build directory $GW_HOMEgfs (dated $BUILD_DATE)"
-      pslot=$(${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh get_pslot ${RUNTESTS_DIR} ${caseName})
-      ${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh ${GW_RUN_PATH} ${pslot} global-workflow
+      pslot=$("${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS_DIR}" "${caseName}")
+      "${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       error=$?
       if [ $error -ne 0 ]; then
         echo "================================================================================"

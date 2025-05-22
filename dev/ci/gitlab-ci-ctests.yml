@@ -28,12 +28,12 @@
   script: |
     echo "Setting up for ctests workflow"
     echo "Using build directory ${GW_HOMEgfs}"
-    source ${GW_HOMEgfs}/dev/ush/gw_setup.sh
-    source ${GW_HOMEgfs}/dev/ci/platforms/config.${machine}
-    cd ${GW_HOMEgfs}/dev/ctests
+    source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
+    source "${GW_HOMEgfs}/dev/ci/platforms/config.${machine}"
+    cd "${GW_HOMEgfs}/dev/ctests" || exit 1
     mkdir -p build
-    cd build
-    cmake -S ${GW_HOMEgfs}
+    cd build || exit 1
+    cmake -S "${GW_HOMEgfs}"
     ctest -N
     ctest_status=$?
     if [ $ctest_status -ne 0 ]; then
@@ -54,12 +54,12 @@
   stage: run_tests
   script: |
     echo "Using build directory ${GW_HOMEgfs}"
-    source ${GW_HOMEgfs}/dev/ush/gw_setup.sh
-    cd ${GW_HOMEgfs}/dev/ctests/build
+    source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
+    cd "${GW_HOMEgfs}/dev/ctests/build" || exit 1
     echo "Running CTests with label: ${CTEST_NAME} in ${PWD}"
     num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
     [ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }
-    ctest -L ${CTEST_NAME} --output-junit result.xml --stop-on-failure --output-on-failure
+    ctest -L "${CTEST_NAME}" --output-junit result.xml --stop-on-failure --output-on-failure
     ctest_status=$?
 
     # Check the JUnit XML file for failures explicitly
