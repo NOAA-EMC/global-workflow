@@ -32,10 +32,10 @@ jobs:
           # Check if current user is in the authorized list
           if [[ "$AUTHORIZED_USERS" == *"${{ github.actor }}"* ]]; then
             echo "User ${{ github.actor }} is authorized to run this workflow"
-            echo "authorized=true" >> $GITHUB_OUTPUT
+            echo "authorized=true" >> ${GITHUB_OUTPUT}
           else
             echo "User ${{ github.actor }} is not authorized to run this workflow"
-            echo "authorized=false" >> $GITHUB_OUTPUT
+            echo "authorized=false" >> ${GITHUB_OUTPUT}
             exit 1
           fi
     # For teams, you would need to use the GitHub GraphQL API with a token that has read:org scope
