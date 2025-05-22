@@ -9,7 +9,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 # Now set up GEMPAK/NTRANS environment
 
 # datatype.tbl specifies the paths and filenames of files
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 ###################################
 # Specify NET and RUN Name and model
@@ -52,17 +52,29 @@ export pgmout=OUTPUT.$$
 ########################################################
 # Execute the script.
 "${HOMEgfs}/gempak/ush/gdas_meta_na.sh" && true
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+  err_exit
+fi
 
 "${HOMEgfs}/gempak/ush/gdas_meta_loop.sh" && true
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+  err_exit
+fi
 
 if [[ "${cyc}" == '06' ]]; then
   "${HOMEgfs}/gempak/ush/gdas_ecmwf_meta_ver.sh" && true
-  export err=$?; err_chk
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+    err_exit
+  fi
 
   "${HOMEgfs}/gempak/ush/gdas_ukmet_meta_ver.sh" && true
-  export err=$?; err_chk
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+    err_exit
+  fi
 fi
 ########################################################
 
@@ -75,7 +87,10 @@ fi
 if (( cyc%12 == 0 )); then
   "${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh" && true
 fi
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+  err_exit
+fi
 ########################################################
 
 ############################################

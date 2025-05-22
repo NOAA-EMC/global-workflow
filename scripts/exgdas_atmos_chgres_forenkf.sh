@@ -125,9 +125,7 @@ if [ $DO_CALC_ANALYSIS == "YES" ]; then
    SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS_ENKF}.txt}
 
    if [[ "${USE_CFP}" == "YES" ]]; then
-      if [[ -f "${DATA}/mp_chgres.sh" ]]; then
-          rm "${DATA}/mp_chgres.sh"
-      fi
+       rm -f "${DATA}/mp_chgres.sh"
    fi
 
    nfhrs=$(echo "${IAUFHRS_ENKF}" | sed 's/,/ /g')
@@ -144,9 +142,9 @@ terrain_file="atmens_fcst"
 ref_file="atmens_fcst"
 /
 EOF
-     if [ $USE_CFP = "YES" ]; then
+     if [[ $USE_CFP == "YES" ]]; then
           echo "$nm $APRUN_CHGRES $CHGRESNCEXEC chgres_nc_gauss0$FHR.nml" | tee -a $DATA/mp_chgres.sh
-          if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          if [[ ${CFP_MP:-"NO"} = "YES" ]]; then
               nm=$((nm+1))
           fi
      else
@@ -156,23 +154,27 @@ EOF
 
          ${APRUN_CHGRES} "${CHGRESNCEXEC}" "chgres_nc_gauss0${FHR}.nml" && true
          export err=$?
-         err_chk
+         if [[ ${err} -ne 0 ]]; then
+            err_exit
+         fi
      fi
    done
 
-   if [ $USE_CFP = "YES" ]; then
-      chmod 755 $DATA/mp_chgres.sh
-      ncmd=$(cat $DATA/mp_chgres.sh | wc -l)
-      if [ $ncmd -gt 0 ]; then
+   if [[ ${USE_CFP} == "YES" ]]; then
+      chmod 755 ${DATA}/mp_chgres.sh
+      ncmd=$(wc -l < "${DATA}/mp_chgres.sh")
+      if [[ ${ncmd} -gt 0 ]]; then
          ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
-         APRUNCFP_CHGRES=$(eval echo $APRUNCFP)
+         APRUNCFP_CHGRES=$(eval echo "${APRUNCFP}")
 
-         export pgm=$CHGRESNCEXEC
-         . prep_step
+         export pgm=${CHGRESNCEXEC}
+         source prep_step
 
          ${APRUNCFP_CHGRES} "${DATA}/mp_chgres.sh" && true
          export err=$?
-         err_chk
+         if [[ ${err} -ne 0 ]]; then
+           err_exit
+         fi
       fi
    fi
 

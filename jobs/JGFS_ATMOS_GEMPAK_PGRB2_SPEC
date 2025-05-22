@@ -49,7 +49,10 @@ export EXT=".grd221"
 
 "${SCRgfs}/exgfs_atmos_goes_nawips.sh" "${FHR3}" && true
 
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 cd "${DATA}" || exit 1
 
