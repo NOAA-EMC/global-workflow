@@ -24,6 +24,7 @@ pwd=$(pwd)
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables
+# shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 3 hours")
 bPDY=${BDATE:0:8}
