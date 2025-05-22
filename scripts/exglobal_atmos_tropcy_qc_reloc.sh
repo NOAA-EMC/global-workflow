@@ -13,8 +13,8 @@
 # Make sure we are in the $DATA directory
 cd "${DATA}"
 
-tmhr=$(echo "${tmmark}"|cut -c3-4)
-cdate10=$( ${NDATE:?} -"${tmhr}" "${PDY}""${cyc}")
+tmhr=${tmmark:3:4}
+cdate10=$(date --utc +%Y%m%d%H -d "${PDY}${cyc} - ${tmhr} hours")
 
 NET_uc=$(echo "${RUN}" | tr [a-z] [A-Z])
 tmmark_uc=$(echo "${tmmark}" | tr [a-z] [A-Z])

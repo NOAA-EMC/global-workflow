@@ -489,19 +489,19 @@ mv ${vdir}/tempvit.nonameless ${vdir}/vitals.${symd}${dishh}
 # tracking program.
 #--------------------------------------------------------------#
 
-ymdh6ago=$( ${NDATE:?} -6 ${CENT}${symd}${dishh})
-syy6=$(echo ${ymdh6ago} | cut -c3-4)
-smm6=$(echo ${ymdh6ago} | cut -c5-6)
-sdd6=$(echo ${ymdh6ago} | cut -c7-8)
-shh6=$(echo ${ymdh6ago} | cut -c9-10)
-symd6=${syy6}${smm6}${sdd6}
+ymdh6ago=$(date --utc +%Y%m%d%H -d "${CENT}${symd}${dishh} - 6 hours")
+syy6=${ymdh6ago:3:4}
+smm6=${ymdh6ago:5:6}
+sdd6=${ymdh6ago:7:8}
+shh6=${ymdh6ago:9:10}
+symd6=${ymdh6ago:3:8}
 
-ymdh6ahead=$( ${NDATE:?} 6 ${CENT}${symd}${dishh})
-syyp6=$(echo ${ymdh6ahead} | cut -c3-4)
-smmp6=$(echo ${ymdh6ahead} | cut -c5-6)
-sddp6=$(echo ${ymdh6ahead} | cut -c7-8)
-shhp6=$(echo ${ymdh6ahead} | cut -c9-10)
-symdp6=${syyp6}${smmp6}${sddp6}
+ymdh6ahead=$(date --utc +%Y%m%d%H -d "${CENT}${symd}${dishh} + 6 hours")
+syyp6=${ymdh6ahead:3:4}
+smmp6=${ymdh6ahead:5:6}
+sddp6=${ymdh6ahead:7:8}
+shhp6=${ymdh6ahead:9:10}
+symdp6=${ymdh6ahead:3:8}
 
 vit_incr=6
 
