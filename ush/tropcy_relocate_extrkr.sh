@@ -630,16 +630,9 @@ else
   echo " "
   set_trace
 fi
-if [ -s $DATA/err_chk ]; then
-   $DATA/err_chk
-else
-   if test "$err" -gt '0'
-   then
-######kill -9 ${qid}
-      exit 555
-   fi
+if [[ ${err} -gt 0 ]]; then
+   exit 9
 fi
-[ "$err" -gt '0' ]  &&  exit 9
 
 
 #------------------------------------------------------------------#
@@ -1561,23 +1554,15 @@ echo 'The foreground exit status for GETTRK is ' $err
 echo
 set_trace
 
-if [ -s $DATA/err_chk ]; then
-   $DATA/err_chk
-else
-   if test "$err" -gt '0'
-   then
-######kill -9 ${qid}
-      exit 555
-   fi
+if [[ ${err} -gt 0 ]]; then
+   exit 9
 fi
-[ "$err" -gt '0' ]  &&  exit 9
 
 if [ -s fort.*  ]; then
   rm fort.*
 fi
 
-cp ${vdir}/trak.${cmodel}.all.${symdh}   ${DATA}/model_track.all
+cpreq "${vdir}/trak.${cmodel}.all.${symdh}" "${DATA}/model_track.all"
 
 
 exit 0
-

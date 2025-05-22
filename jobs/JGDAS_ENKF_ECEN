@@ -42,7 +42,9 @@ MEMDIR="ensstat" RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 ${ENKFRECENSH:-${SCRgfs}/exgdas_enkf_ecen.sh} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work
