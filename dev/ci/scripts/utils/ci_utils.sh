@@ -128,7 +128,7 @@ function create_experiment () {
   case=$(basename "${yaml_config}" .yaml) || true
   
   # Use TAG if provided as second argument, otherwise use pr_sha
-    export pslot="${case}_${TAG}"
+  export pslot="${case}_${TAG}"
 
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
       source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
