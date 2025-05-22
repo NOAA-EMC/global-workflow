@@ -74,24 +74,24 @@
       errors=$(grep -c "errors=\"[1-9][0-9]*\"" result.xml || true)
 
       # If there are failures or errors in the JUnit report, fail the job
-      if [ "$failures" -gt 0 ] || [ "$errors" -gt 0 ] || [ "${ctest_status}" -ne 0 ]; then
-        echo "==========================================================="
+      if [ "${failures}" -gt 0 ] || [ "${errors}" -gt 0 ] || [ "${ctest_status}" -ne 0 ]; then
+        echo "========================================="
         echo "ERROR: Test failures detected in JUnit report or CTest exit code: ${ctest_status}"
-        echo "Failures: $failures, Errors: $errors"
-        echo "==========================================================="
+        echo "Failures: ${failures}, Errors: ${errors}"
+        echo "========================================="
         exit 1  # Force exit code 1 for GitLab to recognize the failure
       else
-        echo "==========================================================="
+        echo "========================================="
         echo "SUCCESS: All CTests passed"
-        echo "==========================================================="
+        echo "========================================="
       fi
     else
       echo "ERROR: JUnit result file not found. Checking CTest exit code only."
       # Fall back to just checking the ctest exit code if XML not found
       if [ "${ctest_status}" -ne 0 ]; then
-        echo "==========================================================="
+        echo "========================================="
         echo "ERROR: One or more CTests failed with exit code ${ctest_status}"
-        echo "==========================================================="
+        echo "========================================="
         exit 1  # Force exit code 1 for GitLab
       fi
     fi
