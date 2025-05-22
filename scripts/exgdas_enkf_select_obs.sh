@@ -46,13 +46,13 @@ CHEM_INVOBS=${CHEM_INVOBS:-""}
 ################################################################################
 # ObsInput file from ensemble mean
 rm -f obs*input*
-${NLN} ${SELECT_OBS} obsinput.tar
+${NLN} "${SELECT_OBS}" obsinput.tar
 
 # Whether to save or skip obs
-if [[ ${RUN_SELECT} = "YES" && ${USE_SELECT} = "NO" ]]; then
+if [[ "${RUN_SELECT}" == "YES" && "${USE_SELECT}" == "NO" ]]; then
    lread_obs_save=".true."
    lread_obs_skip=".false."
-elif [[ ${RUN_SELECT} = "NO" && ${USE_SELECT} = "YES" ]]; then
+elif [[ "${RUN_SELECT}" == "NO" && "${USE_SELECT}" == "YES" ]]; then
    lread_obs_save=".false."
    lread_obs_skip=".true."
 fi
@@ -87,11 +87,14 @@ export CHEM="${CHEM_INVOBS}"
 ################################################################################
 # Execute GSI as a forward operator
 
-"${ANALYSISSH}"
-export err=$?; err_chk
+"${ANALYSISSH}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "Failed to run the GSI!"
+fi
 
 ################################################################################
 # Postprocessing
-cd ${pwd} || exit 1
+cd "${pwd}" || exit 1
 
 exit ${err}

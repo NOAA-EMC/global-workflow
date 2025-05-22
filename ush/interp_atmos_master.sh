@@ -46,15 +46,29 @@ ${WGRIB2} "${input_file}" ${defaults} \
                           ${interp_budget} \
                           ${increased_bits} \
                           ${output_grids}
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   echo "FATAL ERROR: WGRIB2 failed to generate interpolated grib2 file!"
+   exit "${err}"
+fi
 
 # trim and mask for all grids
 for grid in "${grids[@]}"; do
-  trim_rh "${output_file_prefix}_${grid}"; export err=$?; err_chk
+  trim_rh "${output_file_prefix}_${grid}"
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+     echo "FATAL ERROR: Failed during the execution of trim_rh"
+     exit "${err}"
+  fi
   # shellcheck disable=SC2312
   var_count=$(${WGRIB2} "${output_file_prefix}_${grid}" -match "LAND|ICEC" |wc -l)
   if [[ "${var_count}" -eq 2 ]]; then
-    mod_icec "${output_file_prefix}_${grid}"; export err=$?; err_chk
+    mod_icec "${output_file_prefix}_${grid}"
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+       echo "FATAL ERROR: Failed during execution of mod_icec"
+       exit "${err}"
+    fi
   fi
 done
 

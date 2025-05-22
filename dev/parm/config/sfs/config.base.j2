@@ -75,7 +75,6 @@ export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for au
 export HOMEpost="${HOMEgfs}"
 
 # CONVENIENT utility scripts and other environment parameters
-export NCP="/bin/cp -p"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
@@ -109,10 +108,7 @@ export RUN="sfs"  # RUN is defined in the job-card (ecf)
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
 
-# shellcheck disable=SC2016
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
-#export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
 export REDOUT="1>"
 export REDERR="2>"

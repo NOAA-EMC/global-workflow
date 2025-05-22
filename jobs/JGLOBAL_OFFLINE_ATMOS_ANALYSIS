@@ -41,7 +41,9 @@ EXSCRIPT=${OFFLINEANLPY:-${SCRgfs}/exglobal_offline_atmos_analysis.py}
 ${EXSCRIPT}
 
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+   err_exit "${EXSCRIPT} returned a non-zero status!"
+fi
 
 ##########################################
 # Remove the Temporary working directory

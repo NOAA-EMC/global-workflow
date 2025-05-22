@@ -53,7 +53,7 @@ if [[ "${DOGRB_WAV}" == "YES" ]]; then
   for grbGRD in ${waveinterpGRD} ${wavepostGRD}; do
     if [[ ! -f "${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl" ]]; then
       export err=1
-      err_chk "FATAL ERROR: No template for grib generation"
+      err_exit "No template for grib generation"
     fi
   done
 fi
@@ -69,7 +69,7 @@ EOF
 
 if [[ "${DOGRB_WAV}" == "NO" ]]; then
   export err=1
-  err_chk "FATAL ERROR: DOGRB_WAV = NO; No grib2 products will be created, ABORT!"
+  err_exit "DOGRB_WAV = NO; No grib2 products will be created, ABORT!"
 fi
 
 # 2.a Command file set-up
@@ -122,7 +122,7 @@ echo "INFO: Running MPMD job with ${count} commands"
 "${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-  err_chk "FATAL ERROR: run_mpmd.sh failed!"
+  err_exit "run_mpmd.sh failed!"
 fi
 
 # Check if grib2 file created
@@ -132,7 +132,7 @@ com_dir=${!com_varname}
 gribchk="${RUN}.wave.t${cyc}z.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
 if [[ ! -s "${com_dir}/${gribchk}" ]]; then
   export err=2
-  err_chk "FATAL ERROR: '${gribchk}' not generated in this job"
+  err_exit "'${gribchk}' not generated in this job"
 fi
 
 exit 0

@@ -31,9 +31,9 @@ if [[ "${MODEL}" == GDAS ]] || [[ "${MODEL}" == GFS ]]; then
             exit 10
         fi
 
-        cp "${GRIBFILE}" "gem_grids${fhr3}.gem"
+        cpreq "${GRIBFILE}" "gem_grids${fhr3}.gem"
         export fhr3
-        if (( fhr == 0 )); then
+        if [[ ${fhr} -eq 0 ]]; then
             "${HOMEgfs}/gempak/ush/gempak_${RUN}_f000_gif.sh"
         else
             "${HOMEgfs}/gempak/ush/gempak_${RUN}_fhhh_gif.sh"
@@ -45,18 +45,16 @@ cd "${DATA}" || exit 1
 
 export RSHPDY="${PDY:4:}${PDY:2:2}"
 
-cp "${HOMEgfs}/gempak/dictionaries/sonde.land.tbl" sonde.land.tbl
-cp "${HOMEgfs}/gempak/dictionaries/metar.tbl" metar.tbl
+cpreq "${HOMEgfs}/gempak/dictionaries/sonde.land.tbl" sonde.land.tbl
+cpreq "${HOMEgfs}/gempak/dictionaries/metar.tbl" metar.tbl
 sort -k 2n,2 metar.tbl > metar_stnm.tbl
-cp "${COMIN_OBS}/${model}.${cycle}.adpupa.tm00.bufr_d" fort.40
-err=$?
-if (( err != 0 )) ; then
-   echo "FATAL ERROR: File ${model}.${cycle}.adpupa.tm00.bufr_d could not be copied (does it exist?)."
-   exit "${err}"
-fi
+cpreq "${COMIN_OBS}/${model}.${cycle}.adpupa.tm00.bufr_d" fort.40
 
 "${HOMEgfs}/exec/rdbfmsua.x" >> "${pgmout}" 2> errfile
-err=$?;export err ;err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "Failed to run rdbfmsua!"
+fi
 
 # shellcheck disable=SC2012,SC2155
 export filesize=$( ls -l rdbfmsua.out | awk '{print $5}' )
@@ -65,9 +63,9 @@ export filesize=$( ls -l rdbfmsua.out | awk '{print $5}' )
 #   only run script if rdbfmsua.out contained upper air data.
 ################################################################
 
-if (( filesize > 40 )); then
-    cp rdbfmsua.out "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperair"
-    cp sonde.idsms.tbl "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperairtble"
+if [[ ${filesize} -gt 40 ]]; then
+    cpfs rdbfmsua.out "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperair"
+    cpfs sonde.idsms.tbl "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperairtble"
     if [[ ${SENDDBN} = "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" DATA MSUPPER_AIR "${job}" "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperair"
         "${DBNROOT}/bin/dbn_alert" DATA MSUPPER_AIRTBL "${job}" "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperairtble"

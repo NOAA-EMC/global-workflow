@@ -46,19 +46,21 @@ mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
     export err=1
-    err_chk "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
+    err_exit "FILE MISSING: ATMGES = ${ATMGES}"
 fi
 
 # Get LEVS
 export LEVS=$(${NCLEN} ${ATMGES} pfull) && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 if [ ${DOHYBVAR} = "YES" ]; then
     export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc"
     if [ ! -f ${ATMGES_ENSMEAN} ]; then
         export err=2
-        err_chk "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
+        err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
     fi
 fi
 
@@ -79,7 +81,7 @@ export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 # Copy fix file for obsproc  # TODO: Why is this necessary?
 if [[ ${RUN} = "gfs" ]]; then
     mkdir -p ${ROTDIR}/fix
-    cp ${FIXgfs}/gsi/prepobs_errtable.global ${ROTDIR}/fix/
+    cpreq ${FIXgfs}/gsi/prepobs_errtable.global ${ROTDIR}/fix/
 fi
 
 
@@ -88,7 +90,9 @@ fi
 
 ${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # Send Alerts

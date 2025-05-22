@@ -10,7 +10,7 @@ cd "${DATA}" || exit 2
 rm -rf "${DATA}/ak"
 mkdir -p -m 775 "${DATA}/ak"
 cd "${DATA}/ak" || exit 2
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 device="nc | gfs.meta.ak"
 
