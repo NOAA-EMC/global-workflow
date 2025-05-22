@@ -14,7 +14,7 @@ on:
         type: boolean
         default: true
       run_on_gaeac6:
-        description: 'GAEA C6'
+        description: 'Gaea C6'
         required: true
         type: boolean
         default: false
