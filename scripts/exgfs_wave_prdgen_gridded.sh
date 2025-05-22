@@ -91,7 +91,7 @@ EOF
      max_tries=1000
      if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
        export err=1
-       err_chk "FATAL ERROR: ${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
+       err_exit "${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
      fi
      GRIBOUT="${RUN}.wave.${cycle}.${grdID}.f${fhr}.clipped.grib2"
 
@@ -134,7 +134,7 @@ EOF
        ${NLN} "${parmfile}" "awipsgrb.${grdID}.f${fhr}"
      else
        export err=3
-       err_chk "FATAL ERROR: NO template  grib2_${RUN}wave.${grdID}.f${fhr}"
+       err_exit "NO template  grib2_${RUN}wave.${grdID}.f${fhr}"
      fi
      #
 # 2.  AWIPS product generation
@@ -155,7 +155,7 @@ EOF
      then
        export err=4
        export pgm="grb2index"
-       err_chk "FATAL ERROR: ERROR IN grb2index MWW3 for grid ${grdID}"
+       err_exit "ERROR IN grb2index MWW3 for grid ${grdID}"
      fi
 
 # 2.a.3 Run AWIPS GRIB packing program tocgrib2
@@ -173,7 +173,7 @@ EOF
      export err=$?
      if [[ ${err} -ne 0 ]]; then
        cat tocgrib2.out
-       err_chk "FATAL ERROR: ERROR IN tocgrib2"
+       err_exit "ERROR IN tocgrib2"
      else
        echo '*** tocgrib2 ran succesfully *** '
      fi

@@ -60,12 +60,12 @@ FV3_postdet() {
       # Replace sfc_data with sfcanl_data restart files from current cycle (if found)
       local nn
       for (( nn = 1; nn <= ntiles; nn++ )); do
-        if [[ -f "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.sfcanl_data.tile${nn}.nc" ]]; then
+        if [[ -f "${COMIN_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.sfcanl_data.tile${nn}.nc" ]]; then
           rm -f "${DATA}/INPUT/sfc_data.tile${nn}.nc"
-          ${NCP} "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.sfcanl_data.tile${nn}.nc" \
-                 "${DATA}/INPUT/sfc_data.tile${nn}.nc"
+          cpreq "${COMIN_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.sfcanl_data.tile${nn}.nc" \
+                "${DATA}/INPUT/sfc_data.tile${nn}.nc"
         else
-          echo "'sfcanl_data.tile1.nc' not found in '${COMOUT_ATMOS_RESTART}', using 'sfc_data.tile1.nc'"
+          echo "'sfcanl_data.tile1.nc' not found in '${COMIN_ATMOS_RESTART}', using 'sfc_data.tile1.nc'"
           break
         fi
       done
@@ -85,8 +85,8 @@ FV3_postdet() {
         if [[ ${use_anl_aero} == "YES" ]]; then
           for (( nn = 1; nn <= ntiles; nn++ )); do
             rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
-            ${NCP} "${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
-                   "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
+            cpreq "${COMIN_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
+                  "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
           done
         fi # if [[ ${use_anl_aero} == "YES" ]]; then
 
@@ -315,10 +315,10 @@ FV3_out() {
   echo "SUB ${FUNCNAME[0]}: copying output data for FV3"
 
   # Copy configuration files
-  ${NCP} "${DATA}/input.nml" "${COMOUT_CONF}/ufs.input.nml"
-  ${NCP} "${DATA}/model_configure" "${COMOUT_CONF}/ufs.model_configure"
-  ${NCP} "${DATA}/ufs.configure" "${COMOUT_CONF}/ufs.ufs.configure"
-  ${NCP} "${DATA}/diag_table" "${COMOUT_CONF}/ufs.diag_table"
+  cpfs "${DATA}/input.nml" "${COMOUT_CONF}/ufs.input.nml"
+  cpfs "${DATA}/model_configure" "${COMOUT_CONF}/ufs.model_configure"
+  cpfs "${DATA}/ufs.configure" "${COMOUT_CONF}/ufs.ufs.configure"
+  cpfs "${DATA}/diag_table" "${COMOUT_CONF}/ufs.diag_table"
 
 
   # Determine the dates for restart files to be copied to COM
@@ -354,8 +354,8 @@ FV3_out() {
     for restart_date in "${restart_dates[@]}"; do
       echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
       for fv3_file in ${file_list}; do
-        ${NCP} "${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file}" \
-               "${COMOUT_ATMOS_RESTART}/${restart_date}.${fv3_file}"
+        cpfs "${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file}" \
+              "${COMOUT_ATMOS_RESTART}/${restart_date}.${fv3_file}"
       done
     done
 
@@ -471,7 +471,7 @@ WW3_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for WW3"
 
   # Copy wave namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
-  ${NCP} "${DATA}/ww3_shel.nml" "${COMOUT_CONF}/ufs.ww3_shel.nml"
+  cpfs "${DATA}/ww3_shel.nml" "${COMOUT_CONF}/ufs.ww3_shel.nml"
 
   # Copy WW3 restarts at the end of the forecast segment to COM for RUN=gfs|gefs
   if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
@@ -479,8 +479,8 @@ WW3_out() {
     if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" || "${RUN}" == "gcafs" ]]; then
       echo "Copying WW3 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
       restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.restart.ww3.nc"
-      ${NCP} "${DATArestart}/WW3_RESTART/${restart_file}" \
-             "${COMOUT_WAVE_RESTART}/${restart_file}"
+      cpfs "${DATArestart}/WW3_RESTART/${restart_file}" \
+           "${COMOUT_WAVE_RESTART}/${restart_file}"
     fi
   fi
 
@@ -491,8 +491,8 @@ WW3_out() {
     restart_date="${model_start_date_next_cycle}"
     echo "Copying WW3 restarts for 'RUN=${RUN}' at ${restart_date}"
     restart_file="${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
-    ${NCP} "${DATArestart}/WW3_RESTART/${restart_file}" \
-           "${COMOUT_WAVE_RESTART}/${restart_file}"
+    cpfs "${DATArestart}/WW3_RESTART/${restart_file}" \
+         "${COMOUT_WAVE_RESTART}/${restart_file}"
   fi
 
   # Copy restarts for downstream usage in HAFS
@@ -501,8 +501,8 @@ WW3_out() {
     restart_date="${next_cycle}"
     echo "Copying WW3 restarts for 'RUN=${RUN}' at ${restart_date}"
     restart_file="${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
-    ${NCP} "${DATArestart}/WW3_RESTART/${restart_file}" \
-           "${COMOUT_WAVE_RESTART}/${restart_file}"
+    cpfs "${DATArestart}/WW3_RESTART/${restart_file}" \
+         "${COMOUT_WAVE_RESTART}/${restart_file}"
   fi
 
 }
@@ -511,7 +511,7 @@ WW3_out() {
 CPL_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for general cpl fields"
   if [[ "${esmf_profile:-.false.}" == ".true." ]]; then
-    ${NCP} "${DATA}/ESMF_Profile.summary" "${COMOUT_ATMOS_HISTORY}/ESMF_Profile.summary"
+    cpfs "${DATA}/ESMF_Profile.summary" "${COMOUT_ATMOS_HISTORY}/ESMF_Profile.summary"
   fi
 }
 
@@ -619,7 +619,7 @@ MOM6_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
 
   # Copy MOM_input from DATA to COMOUT_CONF after the forecast is run (and successfull)
-  ${NCP} "${DATA}/INPUT/MOM_input" "${COMOUT_CONF}/ufs.MOM_input"
+  cpfs "${DATA}/INPUT/MOM_input" "${COMOUT_CONF}/ufs.MOM_input"
 
   # Create a list of MOM6 restart files
   # Coarser than 1/2 degree has a single MOM restart
@@ -643,8 +643,8 @@ MOM6_out() {
       echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
       for mom6_restart_file in "${mom6_restart_files[@]}"; do
         restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${mom6_restart_file}"
-        ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
-               "${COMOUT_OCEAN_RESTART}/${restart_file}"
+        cpfs "${DATArestart}/MOM6_RESTART/${restart_file}" \
+             "${COMOUT_OCEAN_RESTART}/${restart_file}"
       done
       ;;
     gfs|gefs|sfs|gcafs) # Copy MOM6 restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
@@ -653,8 +653,8 @@ MOM6_out() {
         echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
         for mom6_restart_file in "${mom6_restart_files[@]}"; do
           restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${mom6_restart_file}"
-          ${NCP} "${DATArestart}/MOM6_RESTART/${restart_file}" \
-                 "${COMOUT_OCEAN_RESTART}/${restart_file}"
+          cpfs "${DATArestart}/MOM6_RESTART/${restart_file}" \
+               "${COMOUT_OCEAN_RESTART}/${restart_file}"
         done
       fi
       ;;
@@ -749,7 +749,7 @@ CICE_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
 
   # Copy ice_in namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
-  ${NCP} "${DATA}/ice_in" "${COMOUT_CONF}/ufs.ice_in"
+  cpfs "${DATA}/ice_in" "${COMOUT_CONF}/ufs.ice_in"
 
   case ${RUN} in
     gdas|enkfgdas|enkfgfs) # Copy restarts for next cycle for RUN=gdas|enkfgdas|enkfgfs
@@ -759,8 +759,8 @@ CICE_out() {
       seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
       source_file="cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
       target_file="${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
-      ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
-             "${COMOUT_ICE_RESTART}/${target_file}"
+      cpfs "${DATArestart}/CICE_RESTART/${source_file}" \
+           "${COMOUT_ICE_RESTART}/${target_file}"
       ;;
     gfs|gefs|sfs|gcafs) # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs|gcafs
       if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
@@ -769,8 +769,8 @@ CICE_out() {
         seconds=$(to_seconds "${forecast_end_cycle:8:2}0000")  # convert HHMMSS to seconds
         source_file="cice_model.res.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
         target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.cice_model.res.nc"
-        ${NCP} "${DATArestart}/CICE_RESTART/${source_file}" \
-               "${COMOUT_ICE_RESTART}/${target_file}"
+        cpfs "${DATArestart}/CICE_RESTART/${source_file}" \
+             "${COMOUT_ICE_RESTART}/${target_file}"
       fi
       ;;
     *)
@@ -849,8 +849,8 @@ GOCART_out() {
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
     for file_type in "${file_types[@]}"; do
       if [[ -e "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-        ${NCP} "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-               "${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4"
+        cpfs "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" \
+             "${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4"
       fi
     done
   done
@@ -938,8 +938,8 @@ CMEPS_out() {
       source_file="ufs.cpld.cpl.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
       target_file="${restart_date:0:8}.${restart_date:8:2}0000.ufs.cpld.cpl.r.nc"
       if [[ -f "${DATArestart}/CMEPS_RESTART/${source_file}" ]]; then
-        ${NCP} "${DATArestart}/CMEPS_RESTART/${source_file}" \
-               "${COMOUT_MED_RESTART}/${target_file}"
+        cpfs "${DATArestart}/CMEPS_RESTART/${source_file}" \
+             "${COMOUT_MED_RESTART}/${target_file}"
       else
         echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
       fi
@@ -952,8 +952,8 @@ CMEPS_out() {
         source_file="ufs.cpld.cpl.r.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
         target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.ufs.cpld.cpl.r.nc"
         if [[ -f "${DATArestart}/CMEPS_RESTART/${source_file}" ]]; then
-          ${NCP} "${DATArestart}/CMEPS_RESTART/${source_file}" \
-                 "${COMOUT_MED_RESTART}/${target_file}"
+          cpfs "${DATArestart}/CMEPS_RESTART/${source_file}" \
+               "${COMOUT_MED_RESTART}/${target_file}"
         else
           echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
         fi
