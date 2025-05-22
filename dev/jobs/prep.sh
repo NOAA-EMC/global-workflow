@@ -76,7 +76,7 @@ fi
 # copy files from operational syndata directory to a local directory.
 # Otherwise, copy existing tcvital data from globaldump.
 
-if [[ ${PROCESS_TROPCY} = "YES" ]]; then
+if [[ ${PROCESS_TROPCY} == "YES" ]]; then
 
     export ARCHSYND=${ROTDIR}/syndat
     mkdir -p "${ARCHSYND}"

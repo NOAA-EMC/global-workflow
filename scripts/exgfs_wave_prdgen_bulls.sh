@@ -49,10 +49,10 @@ EOF
 # 1.a Link the input file and untar it
  BullIn="${COMIN_WAVE_STATION}/${RUN}.wave.${cycle}.cbull.tar"
  if [[ -f "${BullIn}" ]]; then
-   cp "${BullIn}" "cbull.tar"
+   cpreq "${BullIn}" "cbull.tar"
  else
    export err=1
-   err_chk "FATAL ERROR ${RUN} wave prdgen ${date} ${cycle} : bulletin tar file missing."
+   err_exit "${RUN} wave prdgen ${date} ${cycle} : bulletin tar file missing."
  fi
 
  echo "   Untarring bulletins ..."
@@ -64,7 +64,7 @@ EOF
    rm -f cbull.tar
  else
    export err=2
-   err_chk "FATAL ERROR: ERROR IN BULLETIN TAR FILE"
+   err_exit "ERROR IN BULLETIN TAR FILE"
  fi
 
 # 1.b Output locations from bulletin files
@@ -78,7 +78,7 @@ EOF
    cpreq "${PARMgfs}/wave/bull_awips_gfswave.${waveGRD}" "awipsbull.data"
  else
    export err=3
-   err_chk "FATAL ERROR: Bulletin header data file missing."
+   err_exit "Bulletin header data file missing."
  fi
 
 # 2. AWIPS bulletins for output points
@@ -102,7 +102,7 @@ EOF
 
    if [[ -z "${headr}" ]] || [[ ! -s "${fname}" ]]; then
      export err=4
-     err_chk "FATAL ERROR: MISSING BULLETIN INFO"
+     err_exit "MISSING BULLETIN INFO"
    fi
 
    formbul.pl -d "${headr}" -f "${fname}" -j "${job}" -m "${RUN}.wave" \
@@ -113,7 +113,7 @@ EOF
      cat formbul.out
      export err=5
      export pgm="formbul"
-     err_chk "FATAL ERROR: error in formbul.pl failed for bulletin ${bull}"
+     err_exit "error in formbul.pl failed for bulletin ${bull}"
    fi
 
    cat "${oname}" >> "awipsbull.${cycle}.${RUN}.wave"

@@ -103,7 +103,6 @@ export HOMEpost="${HOMEgfs}"
 export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 
 # CONVENIENT utility scripts and other environment parameters
-export NCP="/bin/cp -p"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
@@ -142,10 +141,7 @@ export RUN=${RUN:-"gfs"}  # RUN is defined in the job-card (ecf)
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
 
-# shellcheck disable=SC2016
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
-#export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
 export REDOUT="1>"
 export REDERR="2>"

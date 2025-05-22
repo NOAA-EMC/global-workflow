@@ -88,7 +88,7 @@ for grid in ${grids}; do
     export err=$?
     if [[ ${err} -ne 0 ]]; then
       export pgm="${WGRIB2}"
-      err_chk "FATAL ERROR: wgrib2 failed to interpolate"
+      err_exit "wgrib2 failed to interpolate"
     fi
   fi
 
@@ -106,7 +106,7 @@ for grid in ${grids}; do
   ${pgm} < "${DATA}/gempak.parm.${grid}" && true
   export err=$?
   if [[ ${err} -ne 0 ]]; then
-     err_chk "FATAL ERROR: ${pgm} failed during the generation of ${GEMGRD}"
+     err_exit "${pgm} failed during the generation of ${GEMGRD}"
   fi
   #####################################################
   # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
@@ -118,7 +118,7 @@ for grid in ${grids}; do
   else
      export err=1
      export pgm="GEMPAK CHECK FILE"
-     err_chk "FATAL ERROR: Gempak failed to generate the desired grid ${GEMGRD}"
+     err_exit "Gempak failed to generate the desired grid ${GEMGRD}"
   fi
 
   if [[ "${NAGRIB}" == "nagrib2" ]]; then gpend; fi
