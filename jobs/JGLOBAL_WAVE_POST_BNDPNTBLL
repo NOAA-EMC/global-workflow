@@ -26,7 +26,9 @@ export DOBNDPNT_WAV='YES'  # Boundary points
 # Execute the Script
 ${SCRgfs}/exgfs_wave_post_pnt.sh && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##########################################
 # Remove the Temporary working directory

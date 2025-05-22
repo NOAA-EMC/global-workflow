@@ -19,9 +19,7 @@ YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_OBS:COM_OBS_TMPL
 
-if [[ ! -d ${COMOUT_OBS} ]]; then
-  mkdir -p "${COMOUT_OBS}"
-fi
+mkdir -p "${COMOUT_OBS}"
 
 ###############################################################
 # Run relevant script
@@ -29,7 +27,9 @@ fi
 
 "${SCRgfs}/exglobal_prep_sfc.sh"
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+   err_exit "Surface observation preparation failed!"
+fi
 
 ##############################################
 # End JOB SPECIFIC work
