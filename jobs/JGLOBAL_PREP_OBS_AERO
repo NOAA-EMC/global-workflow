@@ -18,7 +18,9 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 EXSCRIPT=${GDASPREPAEROOBSPY:-${SCRgfs}/exglobal_prep_obs_aero.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

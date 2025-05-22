@@ -17,42 +17,41 @@
 #
 #            This script is a child script of exgdas_vrfyrad.sh.sms.  The parent
 #            script opens and uncompresses the radiance diagnostic file and copies
-#            other supporting files into a temporary working directory. 
+#            other supporting files into a temporary working directory.
 #
 #
 # Usage:  radmon_verf_time.sh ${PDY}${cyc}
 #
 #   Input script positional parameters:
-#     PDYcyc		processing date
-#  			yyyymmddcc format; required 
+#     PDYcyc   processing date
+#              yyyymmddcc format; required
 #
 #   Imported Shell Variables:
-#     DO_DATA_RPT	switch to build the data report
+#     DO_DATA_RPT       switch to build the data report
 #                       defaults to 1 (on)
-#     RADMON_SUFFIX	data source suffix
+#     RADMON_SUFFIX     data source suffix
 #                       defauls to opr
 #     RAD_AREA          global or regional flag
 #                       defaults to global
-#     TANKverf_rad	data repository
-#     SATYPE		list of satellite/instrument sources
-#        		defaults to none
+#     TANKverf_rad      data repository
+#     SATYPE            list of satellite/instrument sources
+#                       defaults to none
 #     VERBOSE           Verbose flag (YES or NO)
 #                       defaults to NO
 #     LITTLE_ENDIAN     flag for little endian machine
 #                       defaults to 0 (big endian)
-#     USE_ANL		use analysis files as inputs in addition to 
-#                         the ges files.  Default is 0 (ges only)
+#     USE_ANL           use analysis files as inputs in addition to
+#                       the ges files.  Default is 0 (ges only)
 #
 #   Modules and files referenced:
-#     scripts    : 
+#     scripts    :
 #
-#     programs   : $NCP
-#                  $time_exec
+#     programs   : $time_exec
 #
 #     fixed data : gdas_radmon_base.tar
 #
 #     input data : $data_file
-#                  
+#
 #     output data: $time_file
 #                  $time_ctl
 #                  $pgmout
@@ -60,7 +59,7 @@
 #                  $bad_chan
 #                  $report
 #                  $diag_report
-#                   
+#
 #
 # Remarks:
 #
@@ -108,7 +107,6 @@ LITTLE_ENDIAN=${LITTLE_ENDIAN:-0}
 
 time_exec=radmon_time.x
 USE_ANL=${USE_ANL:-0}
-err=0 
 
 if [[ ${USE_ANL} -eq 1 ]]; then
    gesanl="ges anl"
@@ -120,10 +118,7 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program and base files to working directory
 #-------------------------------------------------------------------
-${NCP} "${EXECgfs}/${time_exec}" ./
-if [[ ! -s ./${time_exec} ]]; then
-   err=8
-fi
+cpreq "${EXECgfs}/${time_exec}" ./
 
 iyy="${PDY:0:4}"
 imm="${PDY:4:2}"
@@ -134,10 +129,10 @@ local_base="local_base"
 if [[ ${DO_DATA_RPT} -eq 1 ]]; then
 
    if [[ -e ${base_file}.${Z} ]]; then
-      ${NCP} "${base_file}.${Z}" "./${local_base}.${Z}"
+      cpreq "${base_file}.${Z}" "./${local_base}.${Z}"
       ${UNCOMPRESS} "${local_base}.${Z}"
    else
-      ${NCP} "${base_file}" ./${local_base}
+      cpreq "${base_file}" ./${local_base}
    fi
 
    if [[ ! -s ./${local_base} ]]; then
@@ -149,48 +144,47 @@ if [[ ${DO_DATA_RPT} -eq 1 ]]; then
    fi
 fi
 
-if [[ ${err} -eq 0 ]]; then
-   ctr=0
-   fail=0
-
-   export pgm=${time_exec}
+export pgm=${time_exec}
 #--------------------------------------------------------------------
 #   Loop over each entry in SATYPE
 #--------------------------------------------------------------------
-   for type in ${SATYPE}; do
+for type in ${SATYPE}; do
 
-      if [[ ! -s ${type} ]]; then
-         echo "ZERO SIZED:  ${type}"
-         continue
+   if [[ ! -s ${type} ]]; then
+      echo "ZERO SIZED:  ${type}"
+      continue
+   fi
+
+   source prep_step
+
+   for dtype in ${gesanl}; do
+
+      if [[ -f input ]]
+      then
+         rm -f input
       fi
 
-      ctr=$(( ctr + 1 ))
+      if [[ ${dtype} == "anl" ]]; then
+         data_file="${type}_anl.${PDY}${cyc}.ieee_d"
+         ctl_file=${type}_anl.ctl
+         time_ctl=time.${ctl_file}
+      else
+         data_file="${type}.${PDY}${cyc}.ieee_d"
+         ctl_file=${type}.ctl
+         time_ctl=time.${ctl_file}
+      fi
 
-      for dtype in ${gesanl}; do
-
-         if [[ -f input ]]; then rm input; fi
-
-         if [[ ${dtype} == "anl" ]]; then
-            data_file="${type}_anl.${PDY}${cyc}.ieee_d"
-            ctl_file=${type}_anl.ctl
-            time_ctl=time.${ctl_file}
-         else
-            data_file="${type}.${PDY}${cyc}.ieee_d"
-            ctl_file=${type}.ctl
-            time_ctl=time.${ctl_file}
-         fi
-
-         if [[ ${REGIONAL_RR} -eq 1 ]]; then
-            time_file=${rgnHH}.time.${data_file}.${rgnTM}
-         else
-            time_file=time.${data_file}
-         fi
+      if [[ ${REGIONAL_RR} -eq 1 ]]; then
+         time_file=${rgnHH}.time.${data_file}.${rgnTM}
+      else
+         time_file=time.${data_file}
+      fi
 
 #--------------------------------------------------------------------
 #   Run program for given satellite/instrument
 #--------------------------------------------------------------------
-         nchanl=-999
-cat << EOF > input
+      nchanl=-999
+      cat << EOF > input
  &INPUT
   satname='${type}',
   iyy=${iyy},
@@ -208,51 +202,46 @@ cat << EOF > input
  /
 EOF
 
-         ./${time_exec} < input >> stdout."${type}" 2>>errfile
-         
-         if [[ ${err} -ne 0 ]]; then
-            fail=$(( fail + 1 ))
-         fi
+      ./${time_exec} < input >> stdout."${type}" 2>>errfile
+      export err=$?
+
+      if [[ ${err} -ne 0 ]]; then
+         echo "FATAL ERROR: failed to calculate radiance time statistics for instrument ${type} and datatype ${dtype}!"
+         exit "${err}"
+      fi
 
 #-------------------------------------------------------------------
 #  move data, control, and stdout files to $TANKverf_rad and compress
 #-------------------------------------------------------------------
-         cat "stdout.${type}" >> stdout.time
+      cat "stdout.${type}" >> stdout.time
 
-         if [[ -s ${time_file} ]]; then
-            ${COMPRESS} "${time_file}"
-         fi
+      if [[ -s ${time_file} ]]; then
+         ${COMPRESS} "${time_file}"
+      fi
 
-         if [[ -s ${time_ctl} ]]; then
-            ${COMPRESS} "${time_ctl}"
-         fi
-         
-      done
+      if [[ -s ${time_ctl} ]]; then
+         ${COMPRESS} "${time_ctl}"
+      fi
+
    done
+done
 
 
-   "${USHgfs}/rstprod.sh"
+"${USHgfs}/rstprod.sh"
 
-   if compgen -G "time*.ieee_d*" > /dev/null || compgen -G "time*.ctl*" > /dev/null; then
-     tar_file=radmon_time.tar
-     tar -cf "${tar_file}" time*.ieee_d* time*.ctl*
-     ${COMPRESS} ${tar_file}
-     mv "${tar_file}.${Z}" "${TANKverf_rad}/."
+if compgen -G "time*.ieee_d*" > /dev/null || compgen -G "time*.ctl*" > /dev/null; then
+  tar_file=radmon_time.tar
+  tar -cf "${tar_file}" time*.ieee_d* time*.ctl*
+  ${COMPRESS} ${tar_file}
+  mv "${tar_file}.${Z}" "${TANKverf_rad}/."
 
-     if [[ ${RAD_AREA} = "rgn" ]]; then
-        cwd=$(pwd)
-        cd "${TANKverf_rad}"
-        tar -xf "${tar_file}.${Z}"
-        rm "${tar_file}.${Z}"
-        cd "${cwd}"
-     fi
-   fi
-
-   if [[ ${ctr} -gt 0 && ${fail} -eq ${ctr} || ${fail} -gt ${ctr}  ]]; then
-      echo "fail, ctr = ${fail}, ${ctr}"
-      err=10
-   fi
-
+  if [[ ${RAD_AREA} = "rgn" ]]; then
+     cwd=$(pwd)
+     cd "${TANKverf_rad}" || exit 1
+     tar -xf "${tar_file}.${Z}"
+     rm -f "${tar_file}.${Z}"
+     cd "${cwd}" || exit 1
+  fi
 fi
 
 
@@ -266,7 +255,7 @@ fi
 if [[ ${DO_DATA_RPT} -eq 1 ]]; then
 
 #---------------------------
-#  build report disclaimer 
+#  build report disclaimer
 #
    cat << EOF > ${disclaimer}
 
@@ -279,7 +268,7 @@ EOF
 
 
 #-------------------------------------------------------------------
-#  Check for missing diag files 
+#  Check for missing diag files
 #
    tmp_satype="./tmp_satype.txt"
    echo "${SATYPE}" > ${tmp_satype}
@@ -289,7 +278,7 @@ EOF
       cat << EOF > ${diag_hdr}
 
   Problem Reading Diagnostic File
-   
+
 
   Problems were encountered reading the diagnostic file for
   the following sources:
@@ -301,8 +290,8 @@ EOF
 
       echo >> ${diag_report}
 
-      rm ${diag_hdr}
-   fi 
+      rm -f "${diag_hdr}"
+   fi
 
 #-------------------------------------------------------------------
 #  move warning notification to TANKverf
@@ -310,19 +299,19 @@ EOF
    if [[ -s ${diag} ]]; then
       lines=$(wc -l <${diag})
       echo "lines in diag = ${lines}"
-   
+
       if [[ ${lines} -gt 0 ]]; then
-         cat ${diag_report}
-         cp ${diag} "${TANKverf_rad}/bad_diag.${PDY}${cyc}"
+         cat "${diag_report}"
+         cpfs "${diag}" "${TANKverf_rad}/bad_diag.${PDY}${cyc}"
       else
-         rm ${diag_report}
+         rm -f "${diag_report}"
       fi
    fi
 
 
 
    #----------------------------------------------------------------
-   #  Identify bad_pen and bad_chan files for this cycle and 
+   #  Identify bad_pen and bad_chan files for this cycle and
    #   previous cycle
 
    bad_pen=bad_pen.${PDY}${cyc}
@@ -331,7 +320,7 @@ EOF
 
    qdate=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
    pday="${qdate:0:8}"
-   
+
    prev_bad_pen=bad_pen.${qdate}
    prev_bad_chan=bad_chan.${qdate}
    prev_low_count=low_count.${qdate}
@@ -355,10 +344,10 @@ EOF
    fi
    if [[ -s ${low_count} ]]; then
       echo "low_count = ${low_count}"
-   fi 
+   fi
    if [[ -s ${prev_low_count} ]]; then
       echo "prev_low_count = ${prev_low_count}"
-   fi 
+   fi
 
    do_pen=0
    do_chan=0
@@ -372,7 +361,7 @@ EOF
       do_cnt=1
    fi
 
-   #--------------------------------------------------------------------  
+   #--------------------------------------------------------------------
    # avoid doing the bad_chan report for REGIONAL_RR sources -- because
    # they run hourly they often have 0 count channels for off-hour runs.
    #
@@ -400,21 +389,21 @@ EOF
 
          echo "calling radmon_err_rpt for pen"
          ${radmon_err_rpt} "${prev_bad_pen}" "${bad_pen}" pen "${qdate}" \
-		"${PDY}${cyc}" ${diag_report} ${pen_err}
+            "${PDY}${cyc}" ${diag_report} ${pen_err}
       fi
 
       if [[ ${do_chan} -eq 1 ]]; then
 
          echo "calling radmon_err_rpt for chan"
          ${radmon_err_rpt} "${prev_bad_chan}" "${bad_chan}" chan "${qdate}" \
-		"${PDY}${cyc}" ${diag_report} ${chan_err}
+            "${PDY}${cyc}" ${diag_report} ${chan_err}
       fi
 
       if [[ ${do_cnt} -eq 1 ]]; then
 
          echo "calling radmon_err_rpt for cnt"
          ${radmon_err_rpt} "${prev_low_count}" "${low_count}" cnt "${qdate}" \
-		"${PDY}${cyc}" ${diag_report} ${count_err}
+            "${PDY}${cyc}" ${diag_report} ${count_err}
       fi
 
       #-------------------------------------------------------------------
@@ -428,7 +417,7 @@ EOF
 
          cat << EOF > ${report}
 Radiance Monitor warning report
- 
+
   Net:   ${RADMON_SUFFIX}
   Run:   ${RUN}
   Cycle: ${PDY}${cyc}
@@ -445,9 +434,9 @@ EOF
             echo OUTPUTING CHAN_ERR
 
             cat << EOF > ${chan_hdr}
-         
+
   The following channels report 0 observational counts over the past two cycles:
-   
+
   Satellite/Instrument    Channel
   ====================    =======
 
@@ -455,7 +444,7 @@ EOF
 
             cat ${chan_hdr} >> ${report}
             cat ${chan_err} >> ${report}
- 
+
          fi
 
          if [[ -s ${count_err} ]]; then
@@ -463,14 +452,14 @@ EOF
             cat << EOF > ${count_hdr}
 
 
-         
+
   The following channels report abnormally low observational counts in the latest 2 cycles:
-   
+
 Satellite/Instrument              Obs Count          Avg Count
 ====================              =========          =========
 
 EOF
-              
+
             cat ${count_hdr} >> ${report}
             cat ${count_err} >> ${report}
          fi
@@ -478,21 +467,21 @@ EOF
 
          if [[ -s ${pen_err} ]]; then
 
-            cat << EOF > ${pen_hdr} 
+            cat << EOF > ${pen_hdr}
 
 
   Penalty values outside of the established normal range were found
-  for these sensor/channel/regions in the past two cycles: 
+  for these sensor/channel/regions in the past two cycles:
 
-  Questionable Penalty Values 
+  Questionable Penalty Values
   ============ ======= ======      Cycle                 Penalty          Bound
                                    -----                 -------          -----
 EOF
-            cat ${pen_hdr} >> ${report}
-            cat ${pen_err} >> ${report}
-            rm -f ${pen_hdr} 
-            rm -f ${pen_err}
-         fi 
+            cat "${pen_hdr}" >> "${report}"
+            cat "${pen_err}" >> "${report}"
+            rm -f "${pen_hdr}"
+            rm -f "${pen_err}"
+         fi
 
          echo  >> ${report}
          cat ${disclaimer} >> ${report}
@@ -507,16 +496,15 @@ EOF
          if [[ ${lines} -gt 2 ]]; then
             cat ${report}
 
-            ${NCP} ${report} "${TANKverf_rad}/warning.${PDY}${cyc}"
+            cpfs ${report} "${TANKverf_rad}/warning.${PDY}${cyc}"
          fi
       fi
-
 
    fi
 
    #-------------------------------------------------------------------
    #  copy new bad_pen, bad_chan, and low_count files to $TANKverf_rad
-   #   
+   #
    if [[ -s ${bad_chan} ]]; then
       mv "${bad_chan}" "${TANKverf_rad}/."
    fi
@@ -528,7 +516,6 @@ EOF
    if [[ -s ${low_count} ]]; then
       mv "${low_count}" "${TANKverf_rad}/."
    fi
-
 
 fi
 
@@ -545,4 +532,4 @@ fi
 ################################################################################
 #  Post processing
 
-exit ${err}
+exit 0

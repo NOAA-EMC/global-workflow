@@ -48,10 +48,8 @@ date
 
 snd=${outfilbase}.snd
 sfc=${outfilbase}.sfc
-cp "${snd}" "${COMOUT_ATMOS_GEMPAK}/.${snd}"
-cp "${sfc}" "${COMOUT_ATMOS_GEMPAK}/.${sfc}"
-mv "${COMOUT_ATMOS_GEMPAK}/.${snd}" "${COMOUT_ATMOS_GEMPAK}/${snd}"
-mv "${COMOUT_ATMOS_GEMPAK}/.${sfc}" "${COMOUT_ATMOS_GEMPAK}/${sfc}"
+cpfs "${snd}" "${COMOUT_ATMOS_GEMPAK}/${snd}"
+cpfs "${sfc}" "${COMOUT_ATMOS_GEMPAK}/${sfc}"
 
 if [[ ${SENDDBN} == "YES" ]]; then
    "${DBNROOT}/bin/dbn_alert" MODEL GFS_PTYP_SFC "${job}" "${COMOUT_ATMOS_GEMPAK}/${sfc}"

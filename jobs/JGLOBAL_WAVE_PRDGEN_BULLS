@@ -20,7 +20,9 @@ if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi
 
 ${SCRgfs}/exgfs_wave_prdgen_bulls.sh && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ###################################
 # Remove temp directories

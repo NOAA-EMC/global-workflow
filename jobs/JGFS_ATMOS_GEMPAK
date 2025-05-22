@@ -46,7 +46,10 @@ fhmax=240
 if (( fhr >= fhmin && fhr <= fhmax )); then
   if ((fhr % 3 == 0)); then
     "${SCRgfs}/exgfs_atmos_nawips.sh" "1p00" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
   fi
 fi
 
@@ -55,7 +58,10 @@ fhmax=384
 if (( fhr >= fhmin && fhr <= fhmax )); then
   if ((fhr % 12 == 0)); then
     "${SCRgfs}/exgfs_atmos_nawips.sh" "1p00" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
   fi
 fi
 
@@ -67,7 +73,10 @@ fhmax=240
 if (( fhr >= fhmin && fhr <= fhmax )); then
   if ((fhr % 3 == 0)); then
     "${SCRgfs}/exgfs_atmos_nawips.sh" "0p50" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p50}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
   fi
 fi
 
@@ -76,7 +85,10 @@ fhmax=276
 if (( fhr >= fhmin && fhr <= fhmax )); then
   if ((fhr % 6 == 0)); then
     "${SCRgfs}/exgfs_atmos_nawips.sh" "0p50" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p50}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
   fi
 fi
 
@@ -85,7 +97,10 @@ fhmax=384
 if (( fhr >= fhmin && fhr <= fhmax )); then
   if ((fhr % 12 == 0)); then
     "${SCRgfs}/exgfs_atmos_nawips.sh" "0p50" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p50}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
   fi
 fi
 
@@ -97,7 +112,10 @@ fhmax=120
 if (( fhr >= fhmin && fhr <= fhmax )); then
   if ((fhr % 1 == 0)); then
     "${SCRgfs}/exgfs_atmos_nawips.sh" "0p25" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
   fi
 fi
 
@@ -106,7 +124,10 @@ fhmax=240
 if (( fhr >= fhmin && fhr <= fhmax )); then
   if ((fhr % 3 == 0)); then
     "${SCRgfs}/exgfs_atmos_nawips.sh" "0p25" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
   fi
 fi
 
@@ -115,7 +136,10 @@ fhmax=384
 if (( fhr >= fhmin && fhr <= fhmax )); then
   if ((fhr % 12 == 0)); then
     "${SCRgfs}/exgfs_atmos_nawips.sh" "0p25" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
   fi
 fi
 
@@ -127,13 +151,22 @@ fhmax="${ocean_domain_max}"
 if (( fhr >= fhmin && fhr <= fhmax )); then
   if ((fhr % 3 == 0)); then
     "${SCRgfs}/exgfs_atmos_nawips.sh" "35km_pac" "${FHR3}" "GFS_GEMPAK_WWB" "${COMOUT_ATMOS_GEMPAK_35km_pac}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
 
     "${SCRgfs}/exgfs_atmos_nawips.sh" "35km_atl" "${FHR3}" "GFS_GEMPAK_WWB" "${COMOUT_ATMOS_GEMPAK_35km_atl}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
 
     "${SCRgfs}/exgfs_atmos_nawips.sh" "40km" "${FHR3}" "GFS_GEMPAK_WWB" "${COMOUT_ATMOS_GEMPAK_40km}" && true
-    export err=$?; err_chk
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      err_exit
+    fi
   fi
 fi
 
