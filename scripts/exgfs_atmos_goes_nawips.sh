@@ -15,7 +15,7 @@ for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
   if [[ ! -f "${source_table}" ]]; then
     err_exit "FATAL ERROR: ${table} is missing"
   fi
-  cp "${source_table}" "${table}"
+  cpreq "${source_table}" "${table}"
 done
 
 NAGRIB_TABLE="${HOMEgfs}/gempak/fix/nagrib.tbl"
@@ -42,7 +42,7 @@ else
   grdarea=
   proj=
   output=T
-fi  
+fi
 pdsext=no
 
 
@@ -52,10 +52,11 @@ GRIBIN="${COMOUT_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
 GRIBIN_chk="${GRIBIN}"
 
 if [[ ! -r "${GRIBIN_chk}" ]]; then
-  export err=7 ; err_chk "FATAL ERROR: GRIB index file ${GRIBIN_chk} not found!"
+  export err=7
+  err_exit "GRIB index file ${GRIBIN_chk} not found!"
 fi
 
-cp "${GRIBIN}" "grib${fhr3}"
+cpreq "${GRIBIN}" "grib${fhr3}"
 
 export pgm="nagrib_nc F${fhr3}"
 startmsg
@@ -78,7 +79,10 @@ l
 r
 EOF
 
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "Failed to run ${NAGRIB}!"
+fi
 
 cpfs "${GEMGRD}" "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 if [[ ${SENDDBN} == "YES" ]] ; then

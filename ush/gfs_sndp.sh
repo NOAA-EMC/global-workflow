@@ -14,7 +14,7 @@
 export m=$1
 mkdir $DATA/$m
 cd $DATA/$m
-  cp ${FIXgfs}/product/gfs_collective${m}.list $DATA/$m/.
+  cpreq ${FIXgfs}/product/gfs_collective${m}.list $DATA/$m/.
   CCCC=KWBC
     file_list=gfs_collective${m}.list
 
@@ -30,7 +30,7 @@ cd $DATA/$m
 
     for stn in $(cat $file_list)
     do
-       cp "${COMOUT_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
+       cpreq "${COMOUT_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
        export pgm=tocsbufr.x
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
@@ -44,21 +44,19 @@ cd $DATA/$m
  /
 EOF
        export err=$?;
-       if (( err != 0 )); then
-          echo "FATAL ERROR in ${pgm}"
-          err_chk
-          exit 3
+       if [[ ${err} -ne 0 ]]; then
+          echo "FATAL ERROR Failed during execution of ${pgm}"
+          exit "${err}"
        fi
 
-       cat $DATA/${m}/bufrout >> $DATA/${m}/gfs_collective$m.fil
-       rm $DATA/${m}/bufrin
-       rm $DATA/${m}/bufrout
+       cat "${DATA}/${m}/bufrout" >> "${DATA}/${m}/gfs_collective${m}.fil"
+       rm -f "${DATA}/${m}/bufrin" "${DATA}/${m}/bufrout"
     done
 
     if [[ ${SENDDBN} == 'YES' ]] ; then
-        cp "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
+        cpfs "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
         "${DBNROOT}/bin/dbn_alert" NTC_LOW BUFR "${job}" \
 				   "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
     fi
-    cp "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_BUFR}/."
+    cpfs "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_BUFR}/."
 

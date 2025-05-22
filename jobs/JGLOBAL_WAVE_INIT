@@ -17,7 +17,9 @@ export wave_mpmd=${wave_mpmd:-"cfp"}
 # Execute the Script
 "${SCRgfs}/exgfs_wave_init.sh" && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##########################################
 # Remove the Temporary working directory

@@ -79,7 +79,9 @@ export -n SHELLOPTS
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_tars.py}
 export err=$?
 set +x
-err_chk "FATAL ERROR: failed to archive the COM structure"
+if [[ ${err} -ne 0 ]]; then
+    err_exit "failed to archive the COM structure"
+fi
 set_trace
 set_strict
 

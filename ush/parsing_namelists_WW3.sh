@@ -11,7 +11,7 @@ WW3_namelists(){
 
   if [ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]
   then
-    ${NCP} "${PARMgfs}/wave/wave_${NET}.buoys" "${DATA}/ww3_points.list"
+    cpreq "${PARMgfs}/wave/wave_${NET}.buoys" "${DATA}/ww3_points.list"
   fi
 
   if [ -f "${DATA}/ww3_points.list" ]
@@ -21,7 +21,7 @@ WW3_namelists(){
     set_trace
   else
     echo "FATAL ERROR : ww3_points.list (${PARMgfs}/wave/wave_${NET}.buoys) NOT FOUND"
-    exit 12 
+    exit 12
   fi
 
   #set coupling to ice/current
@@ -42,7 +42,7 @@ WW3_namelists(){
       WW3_CUR="C";;
   esac
 
-  # Variables used in atparse of shel template 
+  # Variables used in atparse of shel template
   export WW3_IC1="F"
   export WW3_IC5="F"
   export WW3_WLEV="F"

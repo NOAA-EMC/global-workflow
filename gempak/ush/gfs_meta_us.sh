@@ -9,7 +9,7 @@ cd "${DATA}" || exit 2
 rm -rf "${DATA}/us"
 mkdir -p -m 775 "${DATA}/us"
 cd "${DATA}/us" || exit 2
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits
