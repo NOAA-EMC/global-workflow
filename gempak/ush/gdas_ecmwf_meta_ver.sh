@@ -15,12 +15,7 @@ device="nc | ecmwfver.meta"
 # Copy in datatype table to define gdfile type
 #
 
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
-export err=$?
-if (( err != 0 )) ; then
-   echo "FATAL ERROR: File datatype.tbl does not exist."
-   exit "${err}"
-fi
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 export COMIN="gdas.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
