@@ -43,7 +43,10 @@
       exit 1  # Force exit code 1 for GitLab to recognize the failure
     fi
     num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
-    [ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }
+    if [[ ${num} -le 0 ]; then
+      echo "No tests found"
+      exit 1
+    fi
     echo "CTests have been created and configured successfully"
   needs:
     - build-${machine}
