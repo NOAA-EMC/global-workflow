@@ -28,7 +28,7 @@ fi
 "${SCRgfs}/exgfs_wave_post_gridded_sbs.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-  err_chk "FATAL ERROR: ex-script of gridded wave post failed!"
+  err_exit "ex-script of gridded wave post failed!"
 fi
 
 ##########################################

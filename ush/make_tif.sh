@@ -21,7 +21,7 @@ if [[ "${HEADER}" == "YES" ]]; then
 #
 #  Send the graphic to TOC
 
-cp "${OUTPATH}" "${COMOUT_ATMOS_WMO}/gfs_500_hgt_tmp_nh_anl_${cyc}.tif"
+   cpfs "${OUTPATH}" "${COMOUT_ATMOS_WMO}/gfs_500_hgt_tmp_nh_anl_${cyc}.tif"
    if [[ "${SENDDBN}" == "YES" ]]; then
 
       "${DBNROOT}/bin/dbn_alert" GRIB_LOW "${NET}" "${job}" "${COMOUT_ATMOS_WMO}/gfs_500_hgt_tmp_nh_anl_${cyc}.tif"

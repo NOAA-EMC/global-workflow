@@ -73,10 +73,12 @@ else
 #         don't want to wipe out these files)
 #         
 
-   [[ ! -s "${COMOUT_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}" ]]  &&  \
-    cp "/dev/null" "${COMOUT_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}"
-   [[ ! -s "${COMOUT_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}" ]]  &&  \
-    cp "/dev/null" "${COMOUT_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}"
+   if [[ ! -s "${COMOUT_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}" ]]; then
+      cpfs "/dev/null" "${COMOUT_OBS}/${RUN}.t${cyc}z.syndata.tcvitals.${tmmark}"
+   fi
+   if [[ ! -s "${COMOUT_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}" ]]; then
+      cpfs "/dev/null" "${COMOUT_OBS}/${RUN}.t${cyc}z.jtwc-fnoc.tcvitals.${tmmark}"
+   fi
 
 #  endif loop $PROCESS_TROPCY
 fi
@@ -92,9 +94,11 @@ if [[ "${DO_RELOCATE}" = 'YES' ]]; then
 
    export MP_LABELIO=${MP_LABELIO:-yes}
    "${USHgfs}/tropcy_relocate.sh" "${cdate10}"
-   errsc=$?
+   export err=$?
 
-   [[ "${errsc}" -ne '0' ]]  &&  exit ${errsc}
+   if [[ ${err} -ne 0 ]]; then
+      err_exit "Failed while updating tropical cyclone data!"
+   fi
 
 
 # save global sigma guess file(s) possibly updated by tropical cyclone
@@ -106,17 +110,37 @@ if [[ "${DO_RELOCATE}" = 'YES' ]]; then
    fi
 
    if [[ ${BKGFREQ} -eq 1 ]]; then
-      if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
-      if [[ -s sgm2prep ]]; then cp "sgm2prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm2prep${qual_last}"; fi
-      if [[ -s sgm1prep ]]; then cp "sgm1prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm1prep${qual_last}"; fi
-      if [[ -s sgesprep ]]; then cp "sgesprep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
-      if [[ -s sgp1prep ]]; then cp "sgp1prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp1prep${qual_last}"; fi
-      if [[ -s sgp2prep ]]; then cp "sgp2prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp2prep${qual_last}"; fi
-      if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
+      if [[ -s sgm3prep ]]; then
+         cpfs "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"
+      fi
+      if [[ -s sgm2prep ]]; then
+         cpfs "sgm2prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm2prep${qual_last}"
+      fi
+      if [[ -s sgm1prep ]]; then
+         cpfs "sgm1prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm1prep${qual_last}"
+      fi
+      if [[ -s sgesprep ]]; then
+         cpfs "sgesprep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"
+      fi
+      if [[ -s sgp1prep ]]; then
+         cpfs "sgp1prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp1prep${qual_last}"
+      fi
+      if [[ -s sgp2prep ]]; then
+         cpfs "sgp2prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp2prep${qual_last}"
+      fi
+      if [[ -s sgp3prep ]]; then
+         cpfs "sgp3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"
+      fi
    elif [[ ${BKGFREQ} -eq 3 ]]; then
-      if [[ -s sgm3prep ]]; then cp "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"; fi
-      if [[ -s sgesprep ]]; then cp "sgesprep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"; fi
-      if [[ -s sgp3prep ]]; then cp "sgp3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"; fi
+      if [[ -s sgm3prep ]]; then
+         cpfs "sgm3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgm3prep${qual_last}"
+      fi
+      if [[ -s sgesprep ]]; then
+         cpfs "sgesprep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgesprep${qual_last}"
+      fi
+      if [[ -s sgp3prep ]]; then
+         cpfs "sgp3prep" "${COMOUT_OBS}/${RUN}.t${cyc}z.sgp3prep${qual_last}"
+      fi
    fi
 
 # The existence of ${COMOUT_OBS}/${RUN}.t${cyc}z.tropcy_relocation_status.$tmmark file will tell the

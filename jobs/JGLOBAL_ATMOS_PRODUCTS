@@ -26,7 +26,9 @@ export PREFIX="${RUN}.t${cyc}z."
 # Run exglobal script
 "${SCRgfs}/exglobal_atmos_products.sh" && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work
