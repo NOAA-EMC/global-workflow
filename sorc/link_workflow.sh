@@ -378,34 +378,34 @@ if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd/install" ]]; then
 fi
 
 # GDASApp
-if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
-  declare -a JEDI_EXE=("gdas.x"
-    "gdas_soca_gridgen.x"
-    "gdas_soca_error_covariance_toolbox.x"
-    "gdas_fv3jedi_error_covariance_toolbox.x"
-    "gdas_soca_setcorscales.x"
-    "gdas_soca_diagb.x"
-    "fv3jedi_plot_field.x"
-    "gdasapp_chem_diagb.x"
-    "fv3jedi_fv3inc.x"
-    "fv3jedi_correction_increment.x"
-    "fv3jedi_ensemble_add_increment.x"
-    "gdas_ens_handler.x"
-    "gdas_incr_handler.x"
-    "gdas_obsprovider2ioda.x"
-    "gdas_socahybridweights.x"
-    "gdassoca_obsstats.x"
-    "gdasapp_land_ensrecenter.x"
-    "bufr2ioda.x"
-    "calcfIMS.exe"
-    "apply_incr.exe")
-  for gdasexe in "${JEDI_EXE[@]}"; do
-    if [[ -s "${gdasexe}" ]]; then
-        rm -f "${gdasexe}"
-    fi
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/${gdasexe}" .
-  done
-fi
+# if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
+#   declare -a JEDI_EXE=("gdas.x"
+#     "gdas_soca_gridgen.x"
+#     "gdas_soca_error_covariance_toolbox.x"
+#     "gdas_fv3jedi_error_covariance_toolbox.x"
+#     "gdas_soca_setcorscales.x"
+#     "gdas_soca_diagb.x"
+#     "fv3jedi_plot_field.x"
+#     "gdasapp_chem_diagb.x"
+#     "fv3jedi_fv3inc.x"
+#     "fv3jedi_correction_increment.x"
+#     "fv3jedi_ensemble_add_increment.x"
+#     "gdas_ens_handler.x"
+#     "gdas_incr_handler.x"
+#     "gdas_obsprovider2ioda.x"
+#     "gdas_socahybridweights.x"
+#     "gdassoca_obsstats.x"
+#     "gdasapp_land_ensrecenter.x"
+#     "bufr2ioda.x"
+#     "calcfIMS.exe"
+#     "apply_incr.exe")
+#   for gdasexe in "${JEDI_EXE[@]}"; do
+#     if [[ -s "${gdasexe}" ]]; then
+#         rm -f "${gdasexe}"
+#     fi
+#     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/${gdasexe}" .
+#   done
+# fi
 
 #------------------------------
 #--link source code directories
