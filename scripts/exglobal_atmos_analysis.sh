@@ -805,8 +805,8 @@ cat > gsiparm.anl << EOF
   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
   use_poq7=.true.,qc_noirjaco3_pole=.false.,vqc=.false.,nvqc=.true.,
   aircraft_t_bc=.true.,biaspredt=1.0e5,upd_aircraft=.true.,cleanup_tail=.true.,
-  tcp_width=70.0,tcp_ermax=7.35,airs_cads=.true.,cris_cads=.true.,
-  iasi_cads=.true.,
+  tcp_width=70.0,tcp_ermax=7.35,airs_cads=.false.,cris_cads=.false.,
+  iasi_cads=.false.,
   $OBSQC
 /
 &OBS_INPUT
