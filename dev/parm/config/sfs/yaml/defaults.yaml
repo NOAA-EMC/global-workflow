@@ -23,10 +23,10 @@ base:
   USE_ATM_ENS_PERTURB_FILES: "NO"
   DO_TEST_MODE: "NO"
 fcst:
-  reforecast: "NO"
-  FHZERO: 6
-  TYPE: "nh"
-  MONO: "non-mono"
+  reforecast: "YES"
+  FHZERO: 24
+  TYPE: "hydro"
+  MONO: "mono"
 ocn:
   MOM6_INTERP_ICS: "NO"
 # config.aero has just a system-specific path to add.

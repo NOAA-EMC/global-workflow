@@ -326,7 +326,6 @@ export DO_METP="NO"         # Run METPLUS jobs - set METPLUS settings in config.
 export DO_FIT2OBS="NO"      # Run fit to observations package
 
 # Archiving options
-export VRFYARCH="{{ VRFYARCH }}"        # save verification data locally
 export HPSSARCH="{{ HPSSARCH }}"        # save data to HPSS archive
 export LOCALARCH="{{ LOCALARCH }}"        # save data to local archive
 if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
