@@ -49,7 +49,7 @@ EOF
   if [[ -z "${NTASKS}" ]]
   then
     export err=1
-    err_chk "FATAL ERROR: requires NTASKS to be set "
+    err_exit "Requires NTASKS to be set"
   fi
 
 # 0.c Defining model grids
@@ -60,10 +60,7 @@ EOF
 #       and flush it
 
   export STA_DIR=${DATA}/station_ascii_files
-  if [[ -d ${STA_DIR} ]]
-  then
-    rm -rf ${STA_DIR}
-  fi
+  rm -rf "${STA_DIR}"
   mkdir -p ${STA_DIR}
   mkdir -p ${STA_DIR}/spec
   mkdir -p ${STA_DIR}/bull
@@ -84,7 +81,7 @@ EOF
     if [[ -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" ]]; then
       echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
 
-      cp -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
+      cpreq -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
       iloop=$((iloop + 1))
     fi
   done
@@ -94,7 +91,7 @@ EOF
     if [[ ! -f "mod_def.${grdID}" ]]
     then
       export err=2
-      err_chk "FATAL ERROR: NO MOD_DEF FILE mod_def.${grdID}"
+      err_exit "NO MOD_DEF FILE mod_def.${grdID}"
     else
       echo "File mod_def.${grdID} found. Syncing to all nodes ..."
     fi
@@ -106,7 +103,7 @@ EOF
 
   if [[ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]]
   then
-    cp -f "${PARMgfs}/wave/wave_${NET}.buoys" buoy.loc.temp
+    cpreq -f "${PARMgfs}/wave/wave_${NET}.buoys" buoy.loc.temp
     if [[ "${DOBNDPNT_WAV}" == "YES" ]]; then
       #only do boundary points
       sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.loc || {
@@ -125,14 +122,14 @@ EOF
     echo "   buoy.loc and buoy.ibp copied and processed (${PARMgfs}/wave/wave_${NET}.buoys)."
   else
     export err=3
-    err_chk 'FATAL ERROR: NO BUOY LOCATION FILE'
+    err_exit 'NO BUOY LOCATION FILE'
   fi
 
 # 1.c Input template files
 
   if [[ -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ]]
   then
-    cp -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ww3_outp_spec.inp.tmpl
+    cpreq -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ww3_outp_spec.inp.tmpl
   fi
 
   if [[ -f ww3_outp_spec.inp.tmpl ]]
@@ -140,7 +137,7 @@ EOF
     echo "   ww3_outp_spec.inp.tmpl copied. Syncing to all grids ..."
   else
     export err=3
-    err_chk "FATAL ERROR: NO TEMPLATE FOR SPEC INPUT FILE"
+    err_exit "NO TEMPLATE FOR SPEC INPUT FILE"
   fi
 
   if [[ -f "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ]]
@@ -153,7 +150,7 @@ EOF
     echo "   ww3_outp_bull.inp.tmpl copied. Syncing to all nodes ..."
   else
     export err=4
-    err_chk "FATAL ERROR: NO TEMPLATE FOR BULLETIN INPUT FILE"
+    err_exit "NO TEMPLATE FOR BULLETIN INPUT FILE"
   fi
 
 # 1.d Linking the output files
@@ -175,7 +172,7 @@ EOF
       ${NLN} "${pfile}" "./${YMD}.${HMS}.out_pnt.ww3.nc"
     else
       export err=7
-      err_chk "FATAL ERROR: NO RAW POINT OUTPUT FILE ${YMD}.${HMS}.out_pnt.ww3.nc"
+      err_exit "NO RAW POINT OUTPUT FILE ${YMD}.${HMS}.out_pnt.ww3.nc"
     fi
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
@@ -213,7 +210,7 @@ EOF
     then
       cat buoy_tmp.loc || true
       export err=5
-      err_chk "FATAL ERROR: ${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
+      err_exit "${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
     fi
 
 # Create new buoy_log.ww3
@@ -229,7 +226,7 @@ EOF
       echo 'Buoy log file created. Syncing to all nodes ...'
     else
       export err=6
-      err_chk "FATAL ERROR: NO BUOY LOG FILE CREATED"
+      err_exit "NO BUOY LOG FILE CREATED"
     fi
 
 # 1.f Data summary
@@ -256,7 +253,7 @@ EOF
   grep -F -f ibp_tags buoy_log.dat | awk '{ print $2 }' > buoys
   grep -F -f buoys buoy_log.ww3 | awk '{ print $1 }' > points
   points=$(awk '{print $0 "\\n"}' points | tr -d '\n')
-  rm buoys
+  rm -f buoys
 
   # Generate the ww3_outp.inp file from the template
   if [[ "${DOSPC_WAV}" == 'YES' ]]; then
@@ -329,7 +326,7 @@ EOF
   export err=$?
   if [[ ${err} -ne 0 ]]; then
      export pgm="run_mpmd.sh"
-     err_chk "FATAL ERROR: run_mpmd failed while tarring point outputs."
+     err_exit "run_mpmd failed while tarring point outputs."
   fi
 
 # End of WW3 point prostprocessor script ---------------------------------------- #

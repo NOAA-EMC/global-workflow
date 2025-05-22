@@ -663,7 +663,7 @@ suites:
                   jobsproc_gfs_atmos_dump:
                     template: skip
                     events:
-                    - "release_sfcprep"
+                    - "release_prep_sfc"
 ```
 
 * Result
@@ -683,7 +683,7 @@ suite prod00
         family atmos
           family dump
             task jobsproc_gfs_atmos_dump
-              event release_sfcprep
+              event release_prep_sfc
           endfamily
         endfamily
       endfamily

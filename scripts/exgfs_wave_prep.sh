@@ -15,7 +15,7 @@
 #                                                                             #
 # COM inputs:                                                                 #
 #  - ${COMIN_WAVE_PREP}/${RUN}.wave.mod_def.${grdID}                          #
-#  - ${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f#HHH_prog.nc                 #
+#  - ${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f#HHH_prog.nc                 #
 #                                                                             #
 # COM outputs:                                                                #
 #  - ${COMOUT_WAVE_PREP}/${RUN}.wave.${WAVECUR_FID}.${cycle}.cur              #
@@ -124,7 +124,7 @@ EOF
   if [[ -z ${NTASKS} ]]
   then
     export err=1
-    err_chk "FATAL ERROR: Requires NTASKS to be set"
+    err_exit "Requires NTASKS to be set"
   fi
 
   # --------------------------------------------------------------------------- #
@@ -159,7 +159,7 @@ EOF
 
     else
       export err=2
-      err_chk "FATAL ERROR: NO MODEL DEFINITION FILE"
+      err_exit "NO MODEL DEFINITION FILE"
     fi
   done
 
@@ -189,13 +189,13 @@ EOF
        ;;
        * )
          export err=3
-         err_chk 'FATAL ERROR: Input type not yet implemented'
+         err_exit 'Input type not yet implemented'
        ;;
      esac
 
      if [[ -f ${PARMgfs}/wave/ww3_prnc.${type}.${grdID}.inp.tmpl ]]
      then
-       cp ${PARMgfs}/wave/ww3_prnc.${type}.${grdID}.inp.tmpl .
+       cpreq ${PARMgfs}/wave/ww3_prnc.${type}.${grdID}.inp.tmpl .
      fi
 
      if [[ -f ww3_prnc.${type}.${grdID}.inp.tmpl ]]
@@ -203,7 +203,7 @@ EOF
        printf"\n   ww3_prnc.${type}.${grdID}.inp.tmpl copied (${PARMgfs}/wave).\n"
      else
        export err=4
-       err_chk "FATAL ERROR: NO TEMPLATE FILE ww3_prnc.${type}.${grdID}.inp.tmpl"
+       err_exit "NO TEMPLATE FILE ww3_prnc.${type}.${grdID}.inp.tmpl"
      fi
    done
 
@@ -232,15 +232,12 @@ EOF
         else
            export err=5
         fi
-        err_chk "FATAL ERROR: ice field not generated"
+        err_exit "ice field not generated"
       else
         mv -f wave_prnc_ice.out ${DATA}/outtmp
         printf "\n      Ice field unpacking successful.\n"
       fi
 
-      # Check the error code from wave_prnc_ice.sh
-      export err=${ERR}
-      err_chk
     else
       echo ' '
       echo "WARNING: Ice input is not perturbed, single ice file generated, skipping ${WAV_MOD_TAG}"
@@ -257,7 +254,7 @@ EOF
   if [[ "${WW3ATMINP}" == 'YES' ]]; then
 
     export err=6
-    err_chk "FATAL ERROR : Not set-up to preprocess wind"
+    err_exit "Not set-up to preprocess wind"
   fi
 
 #-------------------------------------------------------------------
@@ -284,23 +281,23 @@ EOF
       #Set the first time for RTOFS files to be the beginning time of simulation
       ymdh_rtofs=${ymdh_beg}
 
-      if [[ ${FHMAX_WAV_CUR} -le 72 ]]; then
-        rtofsfile1="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f024_prog.nc"
-        rtofsfile2="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f048_prog.nc"
-        rtofsfile3="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f072_prog.nc"
-        if [[ ! -f ${rtofsfile1} || ! -f ${rtofsfile2} || ! -f ${rtofsfile3} ]]; then
-           #Needed current files are not available, so use RTOFS from previous day
+      if [[  "${FHMAX_WAV_CUR}" -le 72 ]]; then
+        rtofsfile1="${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f024_prog.nc"
+        rtofsfile2="${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f048_prog.nc"
+        rtofsfile3="${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f072_prog.nc"
+        if [[ ! -f ${rtofsfile1} ]] || [[ ! -f ${rtofsfile2} ]] || [[ ! -f ${rtofsfile3} ]]; then
+           #Needed current files are not available, so use RTOFS from previous day 
            export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
         fi
       else
-        rtofsfile1="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f096_prog.nc"
-        rtofsfile2="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f120_prog.nc"
-        rtofsfile3="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f144_prog.nc"
-        rtofsfile4="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f168_prog.nc"
-        rtofsfile5="${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_f192_prog.nc"
-        if [[ ! -f ${rtofsfile1} || ! -f ${rtofsfile2} || ! -f ${rtofsfile3} ||
-              ! -f ${rtofsfile4} || ! -f ${rtofsfile5} ]]; then
-            #Needed current files are not available, so use RTOFS from previous day
+        rtofsfile1="${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f096_prog.nc"
+        rtofsfile2="${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f120_prog.nc"
+        rtofsfile3="${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f144_prog.nc"
+        rtofsfile4="${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f168_prog.nc"
+        rtofsfile5="${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f192_prog.nc"
+        if [[ ! -f ${rtofsfile1} ]] || [[ ! -f ${rtofsfile2} ]] || [[ ! -f ${rtofsfile3} ]] ||
+            [[ ! -f ${rtofsfile4} ]] || [[ ! -f ${rtofsfile5} ]]; then
+            #Needed current files are not available, so use RTOFS from previous day 
             export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
         fi
       fi
@@ -326,8 +323,8 @@ EOF
         fhr_rtofs=$(${NHOUR} ${ymdh_rtofs} ${RPDY}00)
         fh3_rtofs=$(printf "%03d" "${fhr_rtofs#0}")
 
-        curfile1h=${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
-        curfile3h=${COMIN_RTOFS}/rtofs.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
+        curfile1h=${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
+        curfile3h=${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
 
         if [[ -s ${curfile1h} && "${FLGHF}" == "T" ]] ; then
           curfile=${curfile1h}
@@ -342,7 +339,7 @@ EOF
              curfile=${curfile3h}
           fi
           export err=11
-          err_chk "FATAL ERROR - NO CURRENT FILE (RTOFS): ${curfile}"
+          err_exit "NO CURRENT FILE (RTOFS): ${curfile}"
         fi
 
         if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
@@ -401,7 +398,7 @@ EOF
       if [[ -z "${files}" ]]
       then
         export err=11
-        err_chk "FATAL ERROR: NO ${WAVECUR_FID}.* FILES FOUND"
+        err_exit "NO ${WAVECUR_FID}.* FILES FOUND"
       fi
 
       rm -f cur.${WAVECUR_FID}
@@ -412,7 +409,7 @@ EOF
         cat ${file} >> cur.${WAVECUR_FID}
       done
 
-      cp -f cur.${WAVECUR_FID} ${COMOUT_WAVE_PREP}/${RUN}.wave.${WAVECUR_FID}.${cycle}.cur
+      cpfs cur.${WAVECUR_FID} ${COMOUT_WAVE_PREP}/${RUN}.wave.${WAVECUR_FID}.${cycle}.cur
 
     else
       echo ' '

@@ -32,14 +32,18 @@ mkdir -p "${COMOUT_ICE_RESTART}"
 EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
