@@ -87,7 +87,7 @@ jobs:
           fi
           
           echo "Selected machines: ${MACHINES}"
-          echo "MACHINES=${MACHINES}" >> $GITHUB_ENV
+          echo "MACHINES=${MACHINES}" >> "${GITHUB_ENV}"
           
       - name: Trigger GitLab Pipeline
         run: |
