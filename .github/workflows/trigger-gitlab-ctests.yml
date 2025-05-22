@@ -67,34 +67,35 @@ jobs:
           MACHINES=""
           while read -r input; do
             # Skip empty lines
-            [[ -z "$input" ]] && continue
-            
+            if [[ -z "$input" ]]; then
+              continue
+            fi
             # Extract machine name and value
-            KEY=$(echo "$input" | cut -d= -f1)
-            VALUE=$(echo "$input" | cut -d= -f2)
-            
+            KEY=$(echo "${input}" | cut -d= -f1)
+            VALUE=$(echo "${input}" | cut -d= -f2)
+
             # Extract machine name from input name (remove "run_on_" prefix)
             # For example: "run_on_hera" becomes "hera"
             MACHINE=${KEY#run_on_}
             
             # Add machine to list if checkbox is true
             if [[ "$VALUE" == "true" ]]; then
-              if [[ -n "$MACHINES" ]]; then
-                MACHINES="$MACHINES $MACHINE"  # Append with space if list already has entries
+              if [[ -n "${MACHINES}" ]]; then
+                MACHINES="${MACHINES} ${MACHINE}"  # Append with space if list already has entries
               else
-                MACHINES="$MACHINE"  # First entry in the list
+                MACHINES="${MACHINE}"  # First entry in the list
               fi
             fi
-          done <<< "$INPUTS"
+          done <<< "${INPUTS}"
           
           # If no machines selected, default to "all"
-          if [[ -z "$MACHINES" ]]; then
+          if [[ -z "${MACHINES}" ]]; then
             MACHINES="all"
             echo "No specific machines selected, defaulting to 'all'"
           fi
           
-          echo "Selected machines: $MACHINES"
-          echo "MACHINES=$MACHINES" >> $GITHUB_ENV
+          echo "Selected machines: ${MACHINES}"
+          echo "MACHINES=${MACHINES}" >> $GITHUB_ENV
           
       - name: Trigger GitLab Pipeline
         run: |
