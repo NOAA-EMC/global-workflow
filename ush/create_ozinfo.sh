@@ -6,7 +6,7 @@ echo '! For mls data, pressure and obs errors are pulled from bufr, so not liste
 echo '! sens/instr/sat lev  use pressure gross   obs    b_oz  pg_oz'
 echo '!                                  error  error variational qc'
 # loop over satellites
-cd "${FIXgfs}/gsi/build_gsinfo/ozinfo" || exit 1
+cd "${BUILD_GSINFO_DIR}/ozinfo" || exit 1
 grep -v '^ *#' satellites | while IFS= read -r sat 
 do
     # find matching date
@@ -14,7 +14,7 @@ do
     for f in "${sat}"/*; do
         if [[ ${f} != "${sat}/readme" ]]; then # skip readme file
            datex=$(basename "${f}")
-	   if [[ ${date} -ge ${datex} ]]; then
+           if [[ ${date} -ge ${datex} ]]; then
               usedate=${datex}
            fi
         fi
@@ -24,6 +24,6 @@ do
         cat "${sat}/${usedate}" || exit 1
     else
         echo "date not found for ${sat}"
-	exit 1
+        exit 1
     fi
 done

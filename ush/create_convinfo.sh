@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 # create global_convinfo file for a given date
 #date=$1
-cd "${FIXgfs}/gsi/build_gsinfo/convinfo" || exit
+cd "${BUILD_GSINFO_DIR}/convinfo" || exit
 # currently using a single convinfo
 cat merged_convinfo.txt
 #usedate=""
