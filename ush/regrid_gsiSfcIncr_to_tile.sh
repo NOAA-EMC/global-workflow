@@ -143,9 +143,12 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         #fix until reg code time dim issues are sorted out. TODO: time var in regr/ufs code
 	      if [[ "${n_tims}" -eq 1 ]]; then 
             for n in $(seq 1 "${ntiles}"); do
-                ncecat -O -u Time "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"   
+                ncecat -O -u Time "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"
+                export err=$?; err_chk
                 ncap2 -A -s @all="{${ifhrsf[*]}}" "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"
+                export err=$?; err_chk
                 ncap2 -O -s'Time[Time]=@all' "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"
+                export err=$?; err_chk
             done	
         fi
 
