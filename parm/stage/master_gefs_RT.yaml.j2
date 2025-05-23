@@ -68,7 +68,7 @@
 ###################################################################
 # Initial condition to stage - include components based on switches
 ###################################################################
-{% set m_index = int(current_cycle_HH)/6 %}
+{% set m_index = (current_cycle_HH | int) // 6 %}
 
 {% if ENSMEM != 0 %}
 # GFS members (80)
