@@ -58,7 +58,7 @@ atparse < "${template}" >> "diag_table"
 
 
 # copy data table
-${NCP} "${DATA_TABLE}" data_table
+cpreq "${DATA_TABLE}" data_table
 
 # build field_table
 if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
@@ -77,7 +77,7 @@ if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
   # add non-prognostic tracers from additional table
   dnats=$(( dnats + dnats_aero ))
 else
-  ${NCP} "${FIELD_TABLE}" field_table
+  cpreq "${FIELD_TABLE}" field_table
 fi
 
 # Set variables for global_control.nml template

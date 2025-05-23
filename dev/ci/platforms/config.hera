@@ -44,14 +44,15 @@ export GITLAB_RUNNER_NAME="RDHPCS Hera"
 # Used in launch_gitlab_runner.sh for the --builds-dir parameter
 # This works with --custom_build_dir-enabled=true to allow GIT_CLONE_PATH override
 # from .gitlab-ci.yml to specify exact clone locations within this directory
-export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
+# Temp directory for GitLab builds until role account fixes login bash issue
+export TMCG_GFS_CI_ROOT=/scratch1/NCEPDEV/global/Terry.McGuinness/DEVELOP/GFS_CI_ROOT
+export GITLAB_BUILDS_DIR=${TMCG_GFS_CI_ROOT}/BUILDS/GITLAB
 # Directory for GitLab runner used by launch_gitlab_runner.sh
 # This is where runner state/config files are stored (--working-directory parameter)
-export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
-
+export GITLAB_RUNNER_DIR="${TMCG_GFS_CI_ROOT}/GitLab/Runner"
 
 # CTest functional test directories for pre stagged input data
-export CTESTS_STAGED_TESTS_DIR=${GFS_CI_ROOT}/STAGED_TESTS_DIR
+export CTESTS_STAGED_TESTS_DIR=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
 
 #########################################################################
 # CI CRON system configuration

@@ -4,7 +4,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
 
 "${SCRgfs}/exglobal_cleanup.sh" && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 #################################################
 # Remove the Temporary working directory DATAROOT

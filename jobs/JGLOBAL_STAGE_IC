@@ -9,7 +9,7 @@ err=$?
 ###############################################################
 # Check for errors and exit if any of the above failed
 if [[ "${err}" -ne 0 ]]; then
-  echo "FATAL ERROR: Unable to stage ICs to ${ROTDIR}; ABORT!"
+  echo "Unable to stage ICs to ${ROTDIR}; ABORT!"
   exit "${err}"
 fi
 

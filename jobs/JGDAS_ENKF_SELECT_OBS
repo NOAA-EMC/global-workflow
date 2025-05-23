@@ -52,7 +52,7 @@ mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006${GSUFFIX}"
 if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     export err=1
-    err_chk "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
+    err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
 fi
 
 LEVS=$(${NCLEN} ${ATMGES} pfull) && true
@@ -119,7 +119,9 @@ done
 
 ${INVOBSSH:-${SCRgfs}/exgdas_enkf_select_obs.sh} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # Send Alerts

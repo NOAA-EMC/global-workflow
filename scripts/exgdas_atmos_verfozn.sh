@@ -19,10 +19,10 @@ if [[ -s ${oznstat} ]]; then
    #  Untar oznstat file.
    #------------------------------------------------------------------
 
-   ${NCP} "${oznstat}" "./oznstat.${PDY}${cyc}"
+   cpreq "${oznstat}" "./oznstat.${PDY}${cyc}"
 
    tar -xvf "oznstat.${PDY}${cyc}"
-   rm "oznstat.${PDY}${cyc}"
+   rm -f "oznstat.${PDY}${cyc}"
 
    netcdf=0
    count=$(ls diag* | grep ".nc4" | wc -l)
@@ -38,11 +38,13 @@ if [[ -s ${oznstat} ]]; then
 
    "${USHgfs}/ozn_xtrct.sh" && true
    export err=$?
+   if [[ ${err} -ne 0 ]]; then
+     err_exit "ozn_xtrct.sh failed!"
+   fi
 
 else
    # oznstat file not found
    export err=1
+   err_exit "${oznstat} does not exist!"
 fi
-
-err_chk
 exit 0
