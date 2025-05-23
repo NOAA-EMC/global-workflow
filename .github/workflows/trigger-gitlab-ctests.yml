@@ -1,0 +1,105 @@
+name: Trigger GitLab CTests Pipeline
+
+on:
+  # Only allow manual triggering by admins/maintainers
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to test (use 0 for develop branch)'
+        required: true
+        type: string
+      hera:
+        description: 'Hera'
+        type: boolean
+        default: true
+      gaeac6:
+        description: 'Gaea C6'
+        type: boolean
+        default: false
+      # Add more machines by directly using their names as input IDs
+
+jobs:
+  check-permissions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if user has permissions
+        id: check
+        run: |
+          # Get authorized users from GitHub variables
+          AUTHORIZED_USERS="${{ vars.AUTHORIZED_GITLAB_TRIGGER_USERS }}"
+          
+          # Check if current user is in the authorized list
+          if [[ "$AUTHORIZED_USERS" == *"${{ github.actor }}"* ]]; then
+            echo "User ${{ github.actor }} is authorized to run this workflow"
+            echo "authorized=true" >> ${GITHUB_OUTPUT}
+          else
+            echo "User ${{ github.actor }} is not authorized to run this workflow"
+            echo "authorized=false" >> ${GITHUB_OUTPUT}
+            exit 1
+          fi
+    # For teams, you would need to use the GitHub GraphQL API with a token that has read:org scope
+
+  trigger-gitlab-pipeline:
+    needs: check-permissions
+    runs-on: ubuntu-latest
+    environment: gitlab-trigger-environment
+    steps:
+      - name: Set up parameters
+        id: setup
+        run: |
+          # Set PR number
+          echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> ${GITHUB_ENV}
+          
+          # ---------------------------------------------------------------
+          # Machine Selection Logic
+          # This section builds the machine list based on user inputs
+          # The list is then passed to the GitLab pipeline to RUN_ON_MACHINES
+          # ---------------------------------------------------------------
+          
+          # Build machine list from inputs that are set to 'true'
+          MACHINES=""
+          INPUTS=$(jq -r 'to_entries[] | select(.key != "pr_number") | "\(.key)=\(.value)"' <<< '${{ toJson(github.event.inputs) }}')
+
+          while read -r input; do
+            # Skip empty lines
+            if [[ -z "$input" ]]; then
+              continue
+            fi
+
+            # Extract machine name and boolean value
+            MACHINE=$(echo "${input}" | cut -d= -f1)
+            VALUE=$(echo "${input}" | cut -d= -f2)
+            
+            # Add machine to list if checkbox is true
+            if [[ "${VALUE}" == "true" ]]; then
+              if [[ -n "${MACHINES}" ]]; then
+                MACHINES="${MACHINES} ${MACHINE}"
+              else
+                MACHINES="${MACHINE}"
+              fi
+            fi
+          done <<< "${INPUTS}"
+          
+          # If no machines selected, default to "all"
+          if [[ -z "${MACHINES}" ]]; then
+            MACHINES="all"
+            echo "No specific machines selected, defaulting to 'all'"
+          fi
+          
+          echo "Selected machines: ${MACHINES}"
+          echo "MACHINES=${MACHINES}" >> "${GITHUB_ENV}"
+          
+      - name: Trigger GitLab Pipeline
+        run: |
+          # Important note: This token should be a proper GitLab Pipeline Trigger token
+          # created via Settings > CI/CD > Pipeline triggers in your GitLab project
+          curl --verbose --request POST \
+            --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
+            --form "ref=ci_ctests_finalize" \
+            --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
+            --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
+            --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
+            --form "variables[BUILDTYPE]=ctests" \
+            ${{ vars.GITLAB_TRIGGER_URL }}
+        env:
+          GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}

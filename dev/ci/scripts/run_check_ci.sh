@@ -52,7 +52,7 @@ rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
 sleep 10
 if [[ ! -f "${db}" ]]; then
   echo "FATAL ERROR: Rocoto database file ${db} not found, experiment ${pslot} failed, ABORT!"
-  exit 2
+  exit 1
 fi
 
 # Experiment launched
