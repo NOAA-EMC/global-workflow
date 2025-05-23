@@ -9,7 +9,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 mkdir -p -m 775 "${DATA}/precip"
 cd "${DATA}/precip" || exit 2
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits

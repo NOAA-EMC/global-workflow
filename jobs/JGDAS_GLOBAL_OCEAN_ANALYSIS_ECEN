@@ -40,7 +40,9 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 EXSCRIPT=${GDASOCNCENPY:-${HOMEgfs}/scripts/exgdas_global_marine_analysis_ecen.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work
@@ -58,7 +60,9 @@ fi
 ##########################################
 cd "${DATAROOT}" && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"

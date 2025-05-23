@@ -6,7 +6,7 @@
 #  This script performs the data extraction from the oznstat
 #  diagnostic files.  The resulting data (*.ieee_d) files, GrADS
 #  control files and stdout files will be moved to the 
-#  $TANKverf_ozn.  
+#  $TANKverf_ozn.
 #
 #  Calling scripts must define: 
 #       $TANKverf_ozn
@@ -14,14 +14,14 @@
 #       $cyc
 #
 #  Return values are 
-#	0 = normal 
-#	2 = unable to generate satype list; may indicate no diag
-#		files found in oznstat file
+#    0 = normal 
+#    2 = unable to generate satype list; may indicate no diag
+#        files found in oznstat file
 #------------------------------------------------------------------
 
 #--------------------------------------------------
 #  check_diag_files
-#  
+#
 #  Compare $satype (which contains the contents of 
 #  gdas_oznmon_satype.txt to $avail_satype which is
 #  determined by the contents of the oznstat file.
@@ -35,7 +35,7 @@ check_diag_files() {
 
    out_file="bad_diag.${pdate}"
 
-   echo ""; echo ""; echo "--> check_diag_files"
+   printf "\n\n--> check_diag_files\n"
 
    for type in ${found_satype}; do
       len_check=$(echo "${avail_satype}" | grep "${type}" | wc -c)
@@ -50,7 +50,6 @@ check_diag_files() {
 
 
 iret=0
-export NCP=${NCP:-/bin/cp}
 VALIDATE_DATA=${VALIDATE_DATA:-0}
 nregion=${nregion:-6}
 DO_DATA_RPT=${DO_DATA_RPT:-0}
@@ -78,7 +77,7 @@ if [[ ${VALIDATE_DATA} -eq 1 ]]; then
    else
       validate=".TRUE."
       val_file=$(basename "${ozn_val_file}")
-      ${NCP} "${ozn_val_file}" "${val_file}"
+      cpreq "${ozn_val_file}" "${val_file}"
       tar -xvf "${val_file}"
    fi
 fi
@@ -88,7 +87,7 @@ echo "VALIDATE_DATA, validate = ${VALIDATE_DATA}, ${validate} "
 
 #------------------------------------------------------------------
 # ozn_ptype here is the processing type which is intended to be "ges" 
-# or "anl".  Default is "ges".  
+# or "anl".  Default is "ges".
 #
 ozn_ptype=${ozn_ptype:-"ges anl"}
 
@@ -130,17 +129,8 @@ else
    #--------------------------------------------------------------------
    #   Copy extraction programs to working directory
    #
-   ${NCP} "${EXECgfs}/oznmon_time.x" ./oznmon_time.x
-   if [[ ! -e oznmon_time.x ]]; then
-      iret=2
-      exit ${iret}
-   fi
-   ${NCP} "${EXECgfs}/oznmon_horiz.x" ./oznmon_horiz.x
-   if [[ ! -e oznmon_horiz.x ]]; then
-      iret=3
-      exit ${iret}
-   fi
-
+   cpreq "${EXECgfs}/oznmon_time.x" ./oznmon_time.x
+   cpreq "${EXECgfs}/oznmon_horiz.x" ./oznmon_horiz.x
 
    #---------------------------------------------------------------------------
    #  Outer loop over $ozn_ptype (default values 'ges', 'anl')
@@ -185,7 +175,7 @@ EOF
 
 
             echo "oznmon_time.x HAS STARTED ${type}"
-   
+ 
             ./oznmon_time.x < input > "stdout.time.${type}.${ptype}"
 
             echo "oznmon_time.x HAS ENDED ${type}"
@@ -193,11 +183,15 @@ EOF
             if [[ ! -d ${TANKverf_ozn}/time ]]; then
                mkdir -p "${TANKverf_ozn}/time"
             fi
-            ${NCP} "${type}.${ptype}.ctl"                  "${TANKverf_ozn}/time/"
-            ${NCP} "${type}.${ptype}.${PDY}${cyc}.ieee_d"  "${TANKverf_ozn}/time/"
-   
-            ${NCP} bad* "${TANKverf_ozn}/time/"
-   
+            cpfs "${type}.${ptype}.ctl"                  "${TANKverf_ozn}/time/"
+            cpfs "${type}.${ptype}.${PDY}${cyc}.ieee_d"  "${TANKverf_ozn}/time/"
+ 
+            if compgen -G "bad*" > /dev/null; then
+               for bad_file in bad*; do
+                  cpfs "${bad_file}" "${TANKverf_ozn}/time/"
+               done
+            fi
+ 
             rm -f input
 
 cat << EOF > input
@@ -216,7 +210,7 @@ cat << EOF > input
 EOF
 
             echo "oznmon_horiz.x HAS STARTED ${type}"
-   
+ 
             ./oznmon_horiz.x < input > "stdout.horiz.${type}.${ptype}"
 
             echo "oznmon_horiz.x HAS ENDED ${type}"
@@ -224,11 +218,11 @@ EOF
             if [[ ! -d ${TANKverf_ozn}/horiz ]]; then
                mkdir -p "${TANKverf_ozn}/horiz"
             fi
-            ${NCP} "${type}.${ptype}.ctl"                   "${TANKverf_ozn}/horiz/"
+            cpfs "${type}.${ptype}.ctl"                   "${TANKverf_ozn}/horiz/"
 
             ${COMPRESS} "${type}.${ptype}.${PDY}${cyc}.ieee_d"
-            ${NCP} "${type}.${ptype}.${PDY}${cyc}.ieee_d.${Z}" "${TANKverf_ozn}/horiz/"
-      
+            cpfs "${type}.${ptype}.${PDY}${cyc}.ieee_d.${Z}" "${TANKverf_ozn}/horiz/"
+
 
             echo "finished processing ptype, type:  ${ptype}, ${type}"
 
@@ -238,15 +232,15 @@ EOF
 
       done  # type in satype
 
-   done	 # ptype in $ozn_ptype
+   done # ptype in $ozn_ptype
 
    tar -cvf stdout.horiz.tar stdout.horiz*
    ${COMPRESS} stdout.horiz.tar
-   ${NCP} "stdout.horiz.tar.${Z}" "${TANKverf_ozn}/horiz/"
+   cpfs "stdout.horiz.tar.${Z}" "${TANKverf_ozn}/horiz/"
 
    tar -cvf stdout.time.tar stdout.time*
    ${COMPRESS} stdout.time.tar
-   ${NCP} "stdout.time.tar.${Z}" "${TANKverf_ozn}/time/"
+   cpfs "stdout.time.tar.${Z}" "${TANKverf_ozn}/time/"
 fi
 
 exit ${iret}

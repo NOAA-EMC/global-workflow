@@ -20,7 +20,9 @@ EXSCRIPT=${BUFR2IODASH:-${USHgfs}/run_bufr2ioda.py}
 ${EXSCRIPT} "${PDY}${cyc}" "${RUN}" "${DMPDIR}" "${PARMgfs}/gdas/ioda/bufr2ioda" "${COMOUT_OBS}/" && true
 export err=$?
 set +x
-err_chk "FATAL ERROR: Error executing ${EXSCRIPT}"
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Error executing ${EXSCRIPT}"
+fi
 set_trace
 
 ##############################################

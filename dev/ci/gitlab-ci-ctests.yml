@@ -26,16 +26,27 @@
   extends: .base_config
   stage: create_experiments
   script: |
-    set -e  # Fail the job if any command fails
     echo "Setting up for ctests workflow"
-    source ${GW_HOMEgfs}/dev/ci/platforms/config.${machine}
-    cd ${GW_HOMEgfs}/dev/ctests
+    echo "Using build directory ${GW_HOMEgfs}"
+    source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
+    source "${GW_HOMEgfs}/dev/ci/platforms/config.${machine}"
+    cd "${GW_HOMEgfs}/dev/ctests" || exit 1
     mkdir -p build
-    cd build
-    cmake -S ${GW_HOMEgfs}
+    cd build || exit 1
+    cmake -S "${GW_HOMEgfs}"
     ctest -N
+    ctest_status=$?
+    if [[ ${ctest_status} -ne 0 ]]; then
+      echo "==========================================================="
+      echo "ERROR: CMake configuration failed with exit code ${ctest_status}"
+      echo "==========================================================="
+      exit 1  # Force exit code 1 for GitLab to recognize the failure
+    fi
     num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
-    [ "$num" -gt 0 ] || { echo "No tests found"; exit 1; }
+    if [[ ${num} -le 0 ]]; then
+      echo "No tests found"
+      exit 1
+    fi
     echo "CTests have been created and configured successfully"
   needs:
     - build-${machine}
@@ -45,9 +56,54 @@
   extends: .base_config
   stage: run_tests
   script: |
-    set -e  # Fail the job if any command fails
-    echo "Running ${CTEST} tests in ${GW_HOMEgfs}/dev/ctests"
-    cd ${GW_HOMEgfs}/dev/ctests/build
-    ctest -L ${CTEST} --output-on-failure
+    echo "Using build directory ${GW_HOMEgfs}"
+    source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
+    cd "${GW_HOMEgfs}/dev/ctests/build" || exit 1
+    echo "Running CTests with label: ${CTEST_NAME} in ${PWD}"
+    num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
+    if [[ "${num}" -gt 0 ]]; then
+      echo "CTests found: ${num}"
+    else
+      echo "No tests found"
+      exit 1
+    fi
+    ctest -L "${CTEST_NAME}" --output-junit result.xml --stop-on-failure --output-on-failure
+    ctest_status=$?
+
+    # Check the JUnit XML file for failures explicitly
+    if [[ -f result.xml ]]; then
+      # Count failures in the JUnit XML
+      failures=$(grep -c "failures=\"[1-9][0-9]*\"" result.xml || true)
+      errors=$(grep -c "errors=\"[1-9][0-9]*\"" result.xml || true)
+
+      # If there are failures or errors in the JUnit report, fail the job
+      if [[ ${failures} -gt 0 || ${errors} -gt 0 || ${ctest_status} -ne 0 ]]; then
+        echo "========================================="
+        echo "ERROR: Test failures detected in JUnit report or CTest exit code: ${ctest_status}"
+        echo "Failures: ${failures}, Errors: ${errors}"
+        echo "========================================="
+        exit 1  # Force exit code 1 for GitLab to recognize the failure
+      else
+        echo "========================================="
+        echo "SUCCESS: All CTests passed"
+        echo "========================================="
+      fi
+    else
+      echo "ERROR: JUnit result file not found. Checking CTest exit code only."
+      # Fall back to just checking the ctest exit code if XML not found
+      if [[ "${ctest_status}" -ne 0 ]]; then
+        echo "========================================="
+        echo "ERROR: One or more CTests failed with exit code ${ctest_status}"
+        echo "========================================="
+        exit 1  # Force exit code 1 for GitLab
+      fi
+    fi
+  artifacts:
+    when: always
+    paths:
+      - ${GIT_CLONE_PATH}/dev/ctests/build/result.xml
+      - ${GIT_CLONE_PATH}/dev/ctests/build/Testing/Temporary/LastTest.log
+    reports:
+      junit: ${GIT_CLONE_PATH}/dev/ctests/build/result.xml
   needs:
     - create_ctests-${machine}
