@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# This script runs on Niagara to interact with the Doorman service
+# This script runs on Mercury to interact with the Doorman service
 # Redirect all output to a local file -- it cannot be sent back directly with tty/pty
 script_relpath="$(dirname "${BASH_SOURCE[0]}")"
 log_file="${script_relpath}/run_doorman.log"
 cd "${script_relpath}" || exit 1
 
-# Initialize the shell (hpss, modules, etc) (this is a Niagara-specific path; parameterize if needed)
+# Initialize the shell (hpss, modules, etc) (this is a Mercury-specific path; parameterize if needed)
 if [[ -f /etc/bashrc ]]; then
     source /etc/bashrc
 fi
@@ -19,7 +19,7 @@ rm -f FLIST
 general_delivery_root="{{run_directory}}/GENERAL_DELIVERY"
 rm -rf "${general_delivery_root}"
 
-# Tell the doorman where the general delivery space is on Niagara (unique for each RUN/cycle)
+# Tell the doorman where the general delivery space is on Mercury (unique for each RUN/cycle)
 {
     # This is where tarballs will be received and confirmations are written and sent.
     echo "export GENDEL=${general_delivery_root}"

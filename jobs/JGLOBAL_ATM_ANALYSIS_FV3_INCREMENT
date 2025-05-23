@@ -20,7 +20,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfv3inc" -c "base atmanl atmanlf
 EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atm_analysis_fv3_increment.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

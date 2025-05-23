@@ -60,7 +60,7 @@ lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
     
 # IAU
 DOIAU=${DOIAU:-"NO"}
-export IAUFHRS=${IAUFHRS:-"6"}
+export IAUFHRS=${IAUFHRS:-"6,"}
 
 # Dependent Scripts and Executables
 GSIEXEC=${GSIEXEC:-${EXECgfs}/gsi.x}
@@ -203,7 +203,7 @@ USE_RADSTAT=${USE_RADSTAT:-"YES"}
 SELECT_OBS=${SELECT_OBS:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}obsinput}
 GENDIAG=${GENDIAG:-"YES"}
 DIAG_SUFFIX=${DIAG_SUFFIX:-""}
-if [ ${netcdf_diag} = ".true." ] ; then
+if [[ ${netcdf_diag} == ".true." ]] ; then
    DIAG_SUFFIX="${DIAG_SUFFIX}.nc4"
 fi
 DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
@@ -211,7 +211,7 @@ DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
 nm=""
-if [ ${CFP_MP} = "YES" ]; then
+if [[ ${CFP_MP} == "YES" ]]; then
     nm=0
 fi
 DIAG_DIR=${DIAG_DIR:-${COMOUT_ATMOS_ANALYSIS}/gsidiags}
@@ -240,11 +240,16 @@ LONB=${LONB:-$(${NCLEN} ${ATMGES} grid_xt)} # get LONB
 LATB=${LATB:-$(${NCLEN} ${ATMGES} grid_yt)} # get LATB
 LEVS=${LEVS:-$(${NCLEN} ${ATMGES} pfull)} # get LEVS
 JCAP=${JCAP:--9999} # there is no jcap in these files
-[ ${JCAP} -eq -9999 -a ${LATB} -ne -9999 ] && JCAP=$((LATB-2))
-[ ${LONB} -eq -9999 -o ${LATB} -eq -9999 -o ${LEVS} -eq -9999 -o ${JCAP} -eq -9999 ] && exit -9999
+if [[ ${JCAP} -eq -9999 && ${LATB} -ne -9999 ]]; then
+   JCAP=$((LATB-2))
+fi
+
+if [[ ${LONB} -eq -9999 || ${LATB} -eq -9999 || ${LEVS} -eq -9999 || ${JCAP} -eq -9999 ]]; then
+   exit 9
+fi
 
 # Get header information from Ensemble Guess files
-if [ ${DOHYBVAR} = "YES" ]; then
+if [[ ${DOHYBVAR} == "YES" ]]; then
    SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}sfcf006.ensmean.nc}
    export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc}
    LONB_ENKF=${LONB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_xt)} # get LONB_ENKF
@@ -253,8 +258,12 @@ if [ ${DOHYBVAR} = "YES" ]; then
    JCAP_ENKF=${JCAP_ENKF:--9999} # again, no jcap in the netcdf files
    NLON_ENKF=${NLON_ENKF:-${LONB_ENKF}}
    NLAT_ENKF=${NLAT_ENKF:-$((${LATB_ENKF}+2))}
-   [ ${JCAP_ENKF} -eq -9999 -a ${LATB_ENKF} -ne -9999 ] && JCAP_ENKF=$((LATB_ENKF-2))
-   [ ${LONB_ENKF} -eq -9999 -o ${LATB_ENKF} -eq -9999 -o ${LEVS_ENKF} -eq -9999 -o ${JCAP_ENKF} -eq -9999 ] && exit -9999
+   if [[ ${JCAP_ENKF} -eq -9999 && ${LATB_ENKF} -ne -9999 ]]; then
+      JCAP_ENKF=$((LATB_ENKF-2))
+   fi
+   if [[ ${LONB_ENKF} -eq -9999 || ${LATB_ENKF} -eq -9999 || ${LEVS_ENKF} -eq -9999 || ${JCAP_ENKF} -eq -9999 ]]; then
+      exit 9
+   fi
 else
    LONB_ENKF=0 # just for if statement later
 fi
@@ -266,7 +275,7 @@ LATB_CASE=$((res*2))
 LONB_CASE=$((res*4))
 
 # Set analysis resolution information
-if [ ${DOHYBVAR} = "YES" ]; then
+if [[ ${DOHYBVAR} == "YES" ]]; then
    JCAP_A=${JCAP_A:-${JCAP_ENKF:-${JCAP}}}
    LONA=${LONA:-${LONB_ENKF:-${LONB}}}
    LATA=${LATA:-${LATB_ENKF:-${LATB}}}
@@ -281,7 +290,7 @@ NLAT_A=${NLAT_A:-$((${LATA}+2))}
 DELTIM=${DELTIM:-$((3600/(${JCAP_A}/20)))}
 
 # determine if writing or calculating increment
-if [ ${DO_CALC_INCREMENT} = "YES" ]; then
+if [[ ${DO_CALC_INCREMENT} == "YES" ]]; then
   write_fv3_increment=".false."
 else
   write_fv3_increment=".true."
@@ -308,6 +317,7 @@ HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
 OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
 OBS_INPUT=${OBS_INPUT:-${BUILD_GSINFO_DIR}/obs_input/obs_input_ops.txt}
 HIRS_FIX=${HIRS_FIX:-${CRTM_FIX}}
+BLACKLST=${BLACKLST:-${FIXgfs}/gsi/rejectlist_global.txt}
 
 # GSI namelist
 SETUP=${SETUP:-""}
@@ -328,7 +338,7 @@ NST=${NST:-""}
 
 #uGSI Namelist parameters
 lrun_subdirs=${lrun_subdirs:-".true."}
-if [ ${DOHYBVAR} = "YES" ]; then
+if [[ ${DOHYBVAR} == "YES" ]]; then
    l_hyb_ens=.true.
    export l4densvar=${l4densvar:-".false."}
    export lwrite4danl=${lwrite4danl:-".false."}
@@ -339,7 +349,7 @@ else
 fi
 
 # Set 4D-EnVar specific variables
-if [ ${DOHYBVAR} = "YES" -a ${l4densvar} = ".true." -a ${lwrite4danl} = ".true." ]; then
+if [[ ${DOHYBVAR} == "YES" && ${l4densvar} == ".true." && ${lwrite4danl} == ".true." ]]; then
    ATMA03=${ATMA03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma003.nc}
    ATMI03=${ATMI03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi003.nc}
    ATMA04=${ATMA04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma004.nc}
@@ -353,16 +363,6 @@ if [ ${DOHYBVAR} = "YES" -a ${l4densvar} = ".true." -a ${lwrite4danl} = ".true."
    ATMA09=${ATMA09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma009.nc}
    ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi009.nc}
 fi
-
-################################################################################
-#  Preprocessing
-mkdata=NO
-if [ ! -d ${DATA} ]; then
-   mkdata=YES
-   mkdir -p ${DATA}
-fi
-
-cd ${DATA} || exit 99
 
 ##############################################################
 # Fixed files
@@ -393,13 +393,14 @@ ${NLN} ${AEROINFO}     aeroinfo
 ${NLN} ${SCANINFO}     scaninfo
 ${NLN} ${HYBENSINFO}   hybens_info
 ${NLN} ${OBERROR}      errtable
+${NLN} ${BLACKLST}     blacklist
 
 ${NLN} ${FIXgfs}/gsi/AIRS_CLDDET.NL   AIRS_CLDDET.NL
 ${NLN} ${FIXgfs}/gsi/CRIS_CLDDET.NL   CRIS_CLDDET.NL
 ${NLN} ${FIXgfs}/gsi/IASI_CLDDET.NL   IASI_CLDDET.NL
 
 #If using correlated error, link to the covariance files
-if [ ${USE_CORRELATED_OBERRS} == "YES" ];  then
+if [[ ${USE_CORRELATED_OBERRS} == "YES" ]];  then
   if grep -q "Rcov" ${ANAVINFO} ;  then
      # shellcheck disable=SC2312
      mapfile -t covfile_array < <(find "${FIXgfs}/gsi/" -name "Rcov*")
@@ -459,9 +460,9 @@ elif (( imp_physics == 11 )); then
    echo "using CRTM GFDL cloud optical table"
    ${NLN} "${CRTM_FIX}/CloudCoeff.GFDLFV3.-109z-1.bin" ./crtm_coeffs/CloudCoeff.bin
 else
-   echo "INVALID imp_physics = ${imp_physics}"
-   echo "FATAL ERROR: No valid CRTM cloud optical table found for imp_physics =  ${imp_physics}"
-   exit 1
+   echo "FATAL ERROR: INVALID imp_physics = ${imp_physics}"
+   export err=1
+   err_exit "No valid CRTM cloud optical table found for imp_physics =  ${imp_physics}"
 fi
 
 
@@ -581,7 +582,7 @@ if [[ -f "${SFCG08}" ]]; then
     ${NLN} "${SFCG08}" sfcf08
 fi
 
-if [ "${DOHYBVAR}" == "YES" ]; then
+if [[ "${DOHYBVAR}" == "YES" ]]; then
 
    # Link ensemble members
    mkdir -p ensemble_data
@@ -592,7 +593,7 @@ if [ "${DOHYBVAR}" == "YES" ]; then
    fi
 
    fhrs="06"
-   if [ ${l4densvar} = ".true." ]; then
+   if [[ ${l4densvar} == ".true." ]]; then
       fhrs="03 04 05 06 07 08 09"
       nhr_obsbin=1
    fi
@@ -604,7 +605,7 @@ if [ "${DOHYBVAR}" == "YES" ]; then
 
       for fhr in ${fhrs}; do
          ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}atmf0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
-         if [ ${cnvw_option} = ".true." ]; then
+         if [[ ${cnvw_option} == ".true." ]]; then
             ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}sfcf0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${memchar}
          fi
       done
@@ -615,9 +616,9 @@ fi
 ##############################################################
 # Handle inconsistent surface mask between background, ensemble and analysis grids
 # This needs re-visiting in the context of NSST; especially references to JCAP*
-if [ ${JCAP} -ne ${JCAP_A} ]; then
-   if [ ${DOHYBVAR} = "YES" -a ${JCAP_A} = ${JCAP_ENKF} ]; then
-      if [ -e ${SFCGES_ENSMEAN} ]; then
+if [[ ${JCAP} -ne ${JCAP_A} ]]; then
+   if [[ ${DOHYBVAR} == "YES" && ${JCAP_A} == "${JCAP_ENKF}" ]]; then
+      if [[ -e ${SFCGES_ENSMEAN} ]]; then
          USE_READIN_ANL_SFCMASK=.true.
          ${NLN} ${SFCGES_ENSMEAN} sfcf06_anlgrid
       else
@@ -631,9 +632,9 @@ fi
 ##############################################################
 # Diagnostic files
 # if requested, link GSI diagnostic file directories for use later
-if [ ${GENDIAG} = "YES" ] ; then
-   if [ ${lrun_subdirs} = ".true." ] ; then
-      if [ -d ${DIAG_DIR} ]; then
+if [[ ${GENDIAG} == "YES" ]] ; then
+   if [[ ${lrun_subdirs} == ".true." ]] ; then
+      if [[ -d ${DIAG_DIR} ]]; then
          rm -rf ${DIAG_DIR}
       fi
       ntasks_m1="$((ntasks-1))"
@@ -643,7 +644,7 @@ if [ ${GENDIAG} = "YES" ] ; then
         ${NLN} ${DIAG_DIR}/${pedir} ${pedir}
       done
    else
-      err_exit "FATAL ERROR: lrun_subdirs must be true. lrun_subdirs=${lrun_subdirs}"
+      err_exit "lrun_subdirs must be true. lrun_subdirs=${lrun_subdirs}"
    fi
 fi
 
@@ -651,7 +652,7 @@ fi
 # Output files
 ${NLN} ${ATMANL} siganl
 ${NLN} ${ATMINC} siginc.nc
-if [ ${DOHYBVAR} = "YES" -a ${l4densvar} = ".true." -a ${lwrite4danl} = ".true." ]; then
+if [[ ${DOHYBVAR} == "YES" && ${l4densvar} == ".true." && ${lwrite4danl} == ".true." ]]; then
    ${NLN} ${ATMA03}   siga03
    ${NLN} ${ATMI03}   sigi03.nc
    ${NLN} ${ATMA04}   siga04
@@ -669,19 +670,19 @@ ${NLN} ${ABIAS}    satbias_out
 ${NLN} ${ABIASPC}  satbias_pc.out
 ${NLN} ${ABIASAIR} aircftbias_out
 
-if [ ${DONST} = "YES" ]; then
+if [[ ${DONST} == "YES" ]]; then
    ${NLN} ${DTFANL} dtfanl
 fi
 
 # If requested, link (and if tarred, de-tar obsinput.tar) into obs_input.* files
-if [ ${USE_SELECT} = "YES" ]; then
-   rm obs_input.*
+if [[ ${USE_SELECT} == "YES" ]]; then
+   rm -f obs_input.*
    nl=$(file ${SELECT_OBS} | cut -d: -f2 | grep tar | wc -l)
-   if [ ${nl} -eq 1 ]; then
-      rm obsinput.tar
+   if [[ ${nl} -eq 1 ]]; then
+      rm -f obsinput.tar
       ${NLN} ${SELECT_OBS} obsinput.tar
       tar -xvf obsinput.tar
-      rm obsinput.tar
+      rm -f obsinput.tar
    else
       for filetop in $(ls ${SELECT_OBS}/obs_input.*); do
          fileloc=$(basename ${filetop})
@@ -695,10 +696,10 @@ fi
 if [[ "${USE_RADSTAT}" == "YES" ]]; then
    if [[ "${USE_CFP}" == "YES" ]]; then
      if [[ -f "${DATA}/unzip.sh" ]]; then
-         rm "${DATA}/unzip.sh"
+         rm -f "${DATA}/unzip.sh"
      fi
      if [[ -f "${DATA}/mp_unzip.sh" ]]; then
-         rm "${DATA}/mp_unzip.sh"
+         rm -f "${DATA}/mp_unzip.sh"
      fi
      cat > "${DATA}/unzip.sh" << EOFunzip
 #!/bin/sh
@@ -716,9 +717,9 @@ EOFunzip
    listdiag=$(tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges)
    for type in ${listdiag}; do
       diag_file=$(echo ${type} | cut -d',' -f1)
-      if [ ${USE_CFP} = "YES" ] ; then
+      if [[ ${USE_CFP} == "YES" ]] ; then
          echo "${nm} ${DATA}/unzip.sh ${diag_file} ${DIAG_SUFFIX}" | tee -a ${DATA}/mp_unzip.sh
-         if [ ${CFP_MP:-"NO"} = "YES" ]; then
+         if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
            nm=$((nm+1))
          fi
       else
@@ -730,23 +731,30 @@ EOFunzip
       fi
    done
 
-   if [ ${USE_CFP} = "YES" ] ; then
+   if [[ "${USE_CFP}" == "YES" ]] ; then
       chmod 755 ${DATA}/mp_unzip.sh
       ncmd=$(cat ${DATA}/mp_unzip.sh | wc -l)
-      if [ ${ncmd} -gt 0 ]; then
-         ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
+      if [[ ${ncmd} -gt 0 ]]; then
+         if [[ ${ncmd} -lt ${max_tasks_per_node} ]]; then
+            ncmd_max=${ncmd}
+         else
+            ncmd_max=${max_tasks_per_node}
+         fi
          APRUNCFP_UNZIP=$(eval echo ${APRUNCFP})
-         ${APRUNCFP_UNZIP} ${DATA}/mp_unzip.sh
-         export err=$?; err_chk
+         ${APRUNCFP_UNZIP} "${DATA}/mp_unzip.sh"
+         export err=$?
+         if [[ ${err} -ne 0 ]]; then
+            err_exit "Failed to unzip input data files!"
+         fi
       fi
    fi
-fi # if [ $USE_RADSTAT = "YES" ]
+fi # if [[ $USE_RADSTAT == "YES" ]
 
 ##############################################################
 # GSI Namelist options
-if [ ${DOHYBVAR} = "YES" ]; then
+if [[ ${DOHYBVAR} == "YES" ]]; then
    HYBRID_ENSEMBLE="n_ens=${NMEM_ENS},jcap_ens=${JCAP_ENKF},nlat_ens=${NLAT_ENKF},nlon_ens=${NLON_ENKF},jcap_ens_test=${JCAP_ENKF},${HYBRID_ENSEMBLE}"
-   if [ ${l4densvar} = ".true." ]; then
+   if [[ ${l4densvar} == ".true." ]]; then
       SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=${l4densvar},lwrite4danl=${lwrite4danl},${SETUP}"
       JCOPTS="ljc4tlevs=.true.,${JCOPTS}"
       STRONGOPTS="tlnmc_option=3,${STRONGOPTS}"
@@ -754,7 +762,7 @@ if [ ${DOHYBVAR} = "YES" ]; then
    fi
 fi
 
-if [ ${DONST} = "YES" ]; then
+if [[ ${DONST} == "YES" ]]; then
    NST="nstinfo=${NSTINFO},fac_dtl=${FAC_DTL},fac_tsl=${FAC_TSL},zsea1=${ZSEA1},zsea2=${ZSEA2},${NST}"
 fi
 
@@ -824,7 +832,7 @@ cat > gsiparm.anl << EOF
   use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.false.,nvqc=.true.,
   aircraft_t_bc=.true.,biaspredt=1.0e5,upd_aircraft=.true.,cleanup_tail=.true.,
   tcp_width=70.0,tcp_ermax=7.35,airs_cads=${AIRS_CADS},cris_cads=${CRIS_CADS},
-  iasi_cads=${IASI_CADS},
+  iasi_cads=${IASI_CADS},blacklst=.true.,
   ${OBSQC}
 /
 &OBS_INPUT
@@ -880,73 +888,74 @@ export OMP_NUM_THREADS=${NTHREADS_GSI}
 export pgm=${GSIEXEC}
 . prep_step
 
-${NCP} ${GSIEXEC} ${DATA}
+cpreq ${GSIEXEC} ${DATA}
 ${APRUN_GSI} ${DATA}/$(basename ${GSIEXEC}) 1>&1 2>&2
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "Failed to run the GSI analysis!"
+fi
 
 
 ##############################################################
 # If full analysis field written, calculate analysis increment
 # here before releasing FV3 forecast
-if [ ${DO_CALC_INCREMENT} = "YES" ]; then
+if [[ ${DO_CALC_INCREMENT} == "YES" ]]; then
   ${CALCINCPY}
-  export err=$?; err_chk
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+     err_exit "Failed to calculate the analysis increment!"
+  fi
 fi
 
 
 ##############################################################
 # For eupd
-if [ -s satbias_out.int ]; then
-   ${NCP} satbias_out.int ${ABIASe}
+if [[ -s satbias_out.int ]]; then
+   cpfs satbias_out.int ${ABIASe}
 else
-   ${NCP} satbias_in ${ABIASe}
+   cpfs satbias_in ${ABIASe}
 fi
 
 # Cat runtime output files.
 cat fort.2* > ${GSISTAT}
 
 # If requested, create obsinput tarball from obs_input.* files
-if [ ${RUN_SELECT} = "YES" ]; then
+if [[ ${RUN_SELECT} == "YES" ]]; then
   echo $(date) START tar obs_input >&2
   if [[ -s obsinput.tar ]]; then
-      rm obsinput.tar
+      rm -f obsinput.tar
   fi
   ${NLN} ${SELECT_OBS} obsinput.tar
   ${CHGRP_CMD} obs_input.*
   tar -cvf obsinput.tar obs_input.*
   chmod 750 ${SELECT_OBS}
   ${CHGRP_CMD} ${SELECT_OBS}
-  rm obsinput.tar
+  rm -f obsinput.tar
   echo $(date) END tar obs_input >&2
 fi
 
 ################################################################################
 # Send alerts
-if [ ${SENDDBN} = "YES" ]; then
-    if [ ${RUN} = "gfs" ]; then
+if [[ ${SENDDBN} == "YES" ]]; then
+    if [[ ${RUN} == "gfs" ]]; then
        ${DBNROOT}/bin/dbn_alert MODEL GFS_abias ${job} ${ABIAS}
     fi
 fi
 
 ################################################################################
 # Postprocessing
-cd ${pwd}
-if [[ "${mkdata}" == "YES" ]]; then
-    rm -rf ${DATA}
-fi
+cd "${pwd}" || exit 1
 
 ##############################################################
 # Add this statement to release the forecast job once the
 # atmopsheric analysis and updated surface RESTARTS are
 # available.  Do not release forecast when RUN=enkf
 ##############################################################
-if [ ${SENDECF} = "YES" -a "${RUN}" != "enkf" ]; then
+if [[ ${SENDECF} == "YES" && "${RUN}" != "enkf" ]]; then
    ecflow_client --event release_fcst
 fi
-echo "${rCDUMP} ${CDATE} atminc done at $(date)" > ${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt
+echo "${rCDUMP} ${CDATE} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt"
 
 ################################################################################
 
-exit ${err}
-
-################################################################################
+exit "${err}"

@@ -42,6 +42,10 @@ ${WGRIB2} "${input_file}" ${defaults} \
                           ${interp_budget} \
                           ${increased_bits} \
                           ${output_grids}
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   echo "FATAL ERROR: WGRIB2 failed to interpolate surface flux parameters to a new grib2 file"
+   exit "${err}"
+fi
 
 exit 0

@@ -19,7 +19,7 @@ GDUMP="gdas"
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COM_OBS:COM_OBS_TMPL \
+    COMIN_OBS:COM_OBS_TMPL \
     COMOUT_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
@@ -32,7 +32,9 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 EXSCRIPT=${GDASAEROINITPY:-${SCRgfs}/exglobal_aero_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

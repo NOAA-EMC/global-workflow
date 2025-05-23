@@ -65,14 +65,15 @@ controller_url="https://jenkins.epic.oarcloud.noaa.gov"
 controller_user=${controller_user:-"terry.mcguinness"}
 controller_user_auth_token="jenkins_token"
 
-HOMEGFS_="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../../.." >/dev/null 2>&1 && pwd )"
+# Set the HOMEgfs_ variable to the root directory of the global workflow
+HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 host=$(hostname)
 
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
 
-source "${HOMEGFS_}/ush/detect_machine.sh"
+source "${HOMEgfs_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion | hercules | wcoss2 | gaeac5 | gaeac6 )
     echo "Launch Jenkins Java Controler on ${MACHINE_ID}";;
@@ -86,14 +87,14 @@ esac
 LOG=launched_agent-$(date +%Y%m%d%M).log
 rm -f "${LOG}"
 
-HOMEgfs="${HOMEGFS_}" source "${HOMEGFS_}/ush/module-setup.sh"
-module use "${HOMEGFS_}/modulefiles"
+HOMEgfs="${HOMEgfs_}" source "${HOMEgfs_}/ush/module-setup.sh"
+module use "${HOMEgfs_}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 
 if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-  source "${HOMEGFS_}/dev/ci/platforms/config.${PW_CSP}"
+  source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
 else
-  source "${HOMEGFS_}/dev/ci/platforms/config.${MACHINE_ID}"
+  source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
 fi
 
 JAVA_HOME="${JENKINS_AGENT_LAUNCH_DIR}/JAVA/jdk-17.0.10"

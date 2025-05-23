@@ -37,8 +37,11 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_atmos_awips_20km_1p0deg.sh" "${fcsthrs}" && true
-export err=$?; err_chk
+"${SCRgfs}/exgfs_atmos_awips_20km_1p0deg.sh" "${fcsthr}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 ########################################################
 
 ############################################

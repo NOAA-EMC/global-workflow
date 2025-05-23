@@ -17,7 +17,7 @@ export MP_LABELIO=yes
 export MP_PULSE=0
 export MP_DEBUG_NOTIMEOUT=yes
 
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 #############################################
 #set the fcst hrs for all the cycles
@@ -48,9 +48,6 @@ export COMINukmet=${COMINukmet:-$(compath.py "${envir}/ukmet/${ukmet_ver}")/ukme
 export COMINecmwf=${COMINecmwf:-$(compath.py "${envir}/ecmwf/${ecmwf_ver}")/ecmwf}
 export COMINnam=${COMINnam:-$(compath.py "${envir}/nam/${nam_ver}")/nam}
 
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
-
 GRID=1p00 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMIN_ATMOS_GEMPAK_1p00:COM_ATMOS_GEMPAK_TMPL"
 
 GRID="meta" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_META:COM_ATMOS_GEMPAK_TMPL"
@@ -61,7 +58,10 @@ fi
 ########################################################
 # Execute the script.
 "${SCRgfs}/exgfs_atmos_gempak_meta.sh" && true
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 ########################################################
 
 ############################################

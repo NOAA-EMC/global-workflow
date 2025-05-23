@@ -154,12 +154,11 @@ for dir in gfs gefs sfs
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
 done
-for file in ice.csv ocean.csv ocnicepost.nml.jinja2; do
+for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
 done
 
 cd "${HOMEgfs}/scripts" || exit 8
-${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   declare -a gdas_scripts=(exglobal_prep_ocean_obs.py
     exgdas_global_marine_analysis_ecen.py
@@ -169,7 +168,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   done
 fi
 cd "${HOMEgfs}/ush" || exit 8
-for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
+for file in global_cycle_driver.sh global_cycle.sh; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
 done
 
@@ -187,7 +186,8 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
   "ufs.configure.s2swa.IN"
   "ufs.configure.leapfrog_atm_wav.IN"
   "ww3_shel.nml.IN"
-  "post_itag_gfs")
+  "post_itag_gfs"
+  "global_control.nml.IN")
 for file in "${ufs_templates[@]}"; do
   if [[ -s "${file}" ]]; then
       rm -f "${file}"
@@ -299,7 +299,7 @@ for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
 done
 
-declare -a model_systems=("gfs" "gefs" "sfs")
+declare -a model_systems=("gfs" "gefs" "sfs" "gcafs")
 for sys in "${model_systems[@]}"; do
   model_exe="${sys}_model.x"
   if [[ -s "${model_exe}" ]]; then
@@ -336,7 +336,7 @@ if [[ -s "upp.x" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/exec/upp.x" .
 
-for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid; do
+for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid regridStates.x; do
   if [[ -s "${ufs_utilsexe}" ]]; then
       rm -f "${ufs_utilsexe}"
   fi
@@ -397,8 +397,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     "gdasapp_land_ensrecenter.x"
     "bufr2ioda.x"
     "calcfIMS.exe"
-    "apply_incr.exe"
-    "regridStates.x")
+    "apply_incr.exe")
   for gdasexe in "${JEDI_EXE[@]}"; do
     if [[ -s "${gdasexe}" ]]; then
         rm -f "${gdasexe}"

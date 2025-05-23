@@ -61,7 +61,7 @@ atparse < "${template}" >> "diag_table"
 
 
 # copy data table
-${NCP} "${DATA_TABLE}" data_table
+cpreq "${DATA_TABLE}" data_table
 
 # build field_table
 if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
@@ -80,7 +80,7 @@ if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
   # add non-prognostic tracers from additional table
   dnats=$(( dnats + dnats_aero ))
 else
-  ${NCP} "${FIELD_TABLE}" field_table
+  cpreq "${FIELD_TABLE}" field_table
 fi
 fi # only_input_nml
 
@@ -239,7 +239,7 @@ cat >> "${nml_file}" <<EOF
 /
 
 &gfs_physics_nml
-  fhzero       = ${FHZER}
+  fhzero       = ${FHZERO}
   h2o_phys     = ${h2o_phys:-".true."}
   ldiag3d      = ${ldiag3d:-".false."}
   qdiag3d      = ${qdiag3d:-".false."}
