@@ -43,7 +43,7 @@
       exit 1  # Force exit code 1 for GitLab to recognize the failure
     fi
     num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
-    if [[ ${num} -le 0 ]; then
+    if [[ ${num} -le 0 ]]; then
       echo "No tests found"
       exit 1
     fi
