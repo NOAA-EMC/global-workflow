@@ -50,7 +50,6 @@ Starting MWW3 PREPROCESSOR SCRIPT for ${WAV_MOD_TAG}
                           PREP for wave component of NCEP coupled system
                           Wave component identifier : ${WAV_MOD_TAG}
 
-Starting at : $(PDY)
 
 EOF
 
