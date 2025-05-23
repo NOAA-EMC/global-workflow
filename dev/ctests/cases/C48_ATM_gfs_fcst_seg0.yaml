@@ -14,8 +14,8 @@ input_files:
     mkdir:
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input
     copy:
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc,
-           {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc]
+        - ['{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc',
+           '{{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc']
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile1.nc,
            {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile1.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile2.nc,
