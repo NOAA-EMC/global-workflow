@@ -15,7 +15,8 @@ rm -f ./*.db
 rm -f ./jobcard                                                                             
 
 yes | "${rocotoboot_dryrun}" -d "${TEST_NAME}.db" -w "${TEST_NAME}.xml" -v 10 -c "${idate}00" -t "${JOB}" 2> jobcard || true
-sed '/^{{\|^}}/d' < jobcard | sed '1d'  > "${TEST_NAME}.sub" || true
+# Rocoto outputs the job card inside of {{}}.  Strip all other output to get just the job card.
+sed -n '/^{{/,/^}}/p' < jobcard | sed '1d;$d'  > "${TEST_NAME}.sub" || true
 
 #TODO - Generalize for batch system (hard coded to slurm)
 

@@ -2,17 +2,9 @@ defaults:
   !INC {{ HOMEgfs }}/dev/parm/config/sfs/yaml/defaults.yaml
 base:
   FHMAX_GFS: 2976
-  FHOUT_GFS: 24
-  FHOUT_OCN_GFS: 24
-  FHOUT_ICE_GFS: 24
   FCST_BREAKPOINTS: ""
   REPLAY_ICS: "NO"
   USE_OCN_ENS_PERTURB_FILES: "YES"
   USE_ATM_ENS_PERTURB_FILES: "YES"
-fcst:
-  TYPE: "hydro"
-  MONO: "mono"
-  reforecast: "YES"
-  FHZERO: 24
 ocn:
   MOM6_INTERP_ICS: "YES"
