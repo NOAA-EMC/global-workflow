@@ -19,7 +19,7 @@ fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
 cpreq "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" "${DATA}/"
 
-grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'glo_30m'}}  # Native grids
+grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'aoc_9km gnh_10m gsh_15m'}} 
 
 # Create a template for the GEMPAK control file
 rm -f "${DATA}/gempak.parm.tmpl"
@@ -45,7 +45,7 @@ EOF
 # Loop over the grids
 for grid in ${grids}; do
   case ${grid} in
-    ao_9km)
+    aoc_9km)
       grdIDout='gfswavearc'
     ;;
     at_10m)
@@ -60,10 +60,10 @@ for grid in ${grids}; do
     glo_30m)
       grdIDout='gfswavegl30m'
     ;;
-    glo_10m)
+    gnh_10m)
       grdIDout='gfswavenh'
     ;;
-    gso_15m)
+    gsh_15m)
       grdIDout='gfswavesh'
     ;;
     glo_200)
@@ -88,7 +88,7 @@ for grid in ${grids}; do
     export err=$?
     if [[ ${err} -ne 0 ]]; then
       export pgm="${WGRIB2}"
-      err_chk "FATAL ERROR: wgrib2 failed to interpolate"
+      err_exit "wgrib2 failed to interpolate"
     fi
   fi
 
@@ -106,7 +106,7 @@ for grid in ${grids}; do
   ${pgm} < "${DATA}/gempak.parm.${grid}" && true
   export err=$?
   if [[ ${err} -ne 0 ]]; then
-     err_chk "FATAL ERROR: ${pgm} failed during the generation of ${GEMGRD}"
+     err_exit "${pgm} failed during the generation of ${GEMGRD}"
   fi
   #####################################################
   # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
@@ -118,7 +118,7 @@ for grid in ${grids}; do
   else
      export err=1
      export pgm="GEMPAK CHECK FILE"
-     err_chk "FATAL ERROR: Gempak failed to generate the desired grid ${GEMGRD}"
+     err_exit "Gempak failed to generate the desired grid ${GEMGRD}"
   fi
 
   if [[ "${NAGRIB}" == "nagrib2" ]]; then gpend; fi

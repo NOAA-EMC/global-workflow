@@ -20,7 +20,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlchkpt" -c "base marineanl ma
 EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_checkpoint.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

@@ -22,6 +22,3 @@ if __name__ == '__main__':
 
     # Make a copy of the analysis output to the COMROOT
     MarineAnl.finalize()
-
-    # Compute the observation space statistics
-    MarineAnl.obs_space_stats()

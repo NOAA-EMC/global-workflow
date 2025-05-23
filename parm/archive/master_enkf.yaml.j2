@@ -3,9 +3,8 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = RUN + ".t" + cycle_HH + "z." %}
-# TODO Should enkfgdas be replaced with RUN?
-{% set head_ocean = "enkfgdas.ocean.t" + cycle_HH + "z." %}
-{% set head_ice = "enkfgdas.ice.t" + cycle_HH + "z." %}
+{% set head_ocean = RUN ~ ".ocean.t" ~ cycle_HH ~ "z." %}
+{% set head_ice = RUN ~ ".ice.t" ~ cycle_HH ~ "z." %}
 
 # Determine which data to archive
 datasets:

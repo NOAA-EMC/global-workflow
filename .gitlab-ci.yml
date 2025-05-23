@@ -29,19 +29,14 @@ stages:
   - finalize
 
 variables:
-  BUILD: '' # Placeholder for control over build directory path
-  # Using GW prefix to avoid confusion with GitLab predefined variables
-  GW_RUN_PATH: ${CI_BUILDS_DIR}/${BUILD}/${CI_COMMIT_SHORT_SHA}
-  # Overriding GitLab's predefined GIT_CLONE_PATH variable to specify the exact location
-  # where the repository should be cloned. This works with custom_build_dir-enabled in the runner config.
-  GIT_CLONE_PATH: '${GW_RUN_PATH}/global-workflow'
-  GW_HOMEgfs: ${GIT_CLONE_PATH}
-  RUNTESTS_DIR: ${GW_RUN_PATH}/RUNTESTS
+  BUILDTYPE: 'nightly'
+  # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
+  WORKSPACE_ID: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
+  # Define a base path that will be used for initial cloning
+  GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_ID}/global-workflow
   GIT_DEPTH: 10
   RUNNER_SCRIPT_TIMEOUT: 6h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
-  # Controls pipeline behavior: CTests (true) or PR cases (false)
-  GITHUB_API_TRIGGER: ${GITHUB_API_TRIGGER:-"false"}
   PR_NUMBER: ${PR_NUMBER:-"0"}
 
 # Include specialized pipeline configuration files
@@ -53,9 +48,32 @@ include:
 .base_config:
   variables:
     GIT_STRATEGY: none
+  before_script:
+    - |
+      # Use CI_BUILDS_DIR and WORKSPACE_ID for all paths - no date in paths during pipeline execution
+      export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_ID}"
+      export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone, we keep it
+      export RUNTESTS_DIR="${GW_RUN_PATH}/RUNTESTS"
+
+      # Create a date-based directory name for successful runs
+      export DATE="$(date +'%m%d%y')"
+      export WORKSPACE_DATE="${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
+
+      echo "WORKSPACE_ID: ${WORKSPACE_ID}"
+      echo "WORKSPACE_DATE: ${WORKSPACE_DATE}"
+      echo "GW_RUN_PATH: ${GW_RUN_PATH}"
+      echo "GIT_CLONE_PATH: ${GIT_CLONE_PATH}"
+      echo "GW_HOMEgfs: ${GW_HOMEgfs}"
+
+      # Make sure GW_HOMEgfs is properly set and the directory exists
+      if [ ! -d "${GW_HOMEgfs}" ]; then
+        echo "ERROR: GW_HOMEgfs directory does not exist: ${GW_HOMEgfs}"
+        exit 1
+      fi
 
 # Common build template for all modalities
 .build_template:
+  extends: .base_config
   variables:
     GIT_STRATEGY: clone
     GIT_SUBMODULE_STRATEGY: recursive
@@ -63,17 +81,23 @@ include:
   stage: build
   script:
     - |
-      set -e  # Fail the job if any command fails
       echo "Setting up build environment for ${machine}"
       echo "Using build directory ${GW_HOMEgfs}"
       git submodule status
 
+      if [[ ${CI_PIPELINE_SOURCE} == "trigger" && ${PR_NUMBER} != 0 ]]; then
+        echo "Triggering pipeline via GitHub API running CTests on PR_NUMBER=${PR_NUMBER}"
+        git remote add github "${GW_REPO_URL}"
+        git fetch github
+        gh pr checkout "${PR_NUMBER}"
+      fi
+
       dev/ci/scripts/utils/ci_utils.sh build
       build_status=$?
 
-      if [ $build_status -ne 0 ]; then
-        echo "Build failed with exit code $build_status"
-        exit $build_status
+      if [[ ${build_status} -ne 0 ]]; then
+        echo "Build failed with exit code ${build_status}"
+        exit 1
       fi
 
       sorc/link_workflow.sh

@@ -49,7 +49,7 @@ for grdID in "${grdALL[@]}"; do
       echo "INFO: ww3_grid.inp.${grdID} copied (${FIXgfs}/wave/ww3_grid.inp.${grdID})."
     else
       export err=2
-      err_chk "FATAL ERROR: No inp file for model definition file for grid ${grdID}"
+      err_exit "No inp file for model definition file for grid ${grdID}"
     fi
 
     if [[ -f "${FIXgfs}/wave/${grdID}.msh" ]]; then
@@ -65,7 +65,7 @@ done
 "${USHgfs}/run_mpmd.sh" "${DATA}/mpmd_script" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-  err_chk "FATAL ERROR: run_mpmd.sh failed!"
+  err_exit "run_mpmd.sh failed!"
 fi
 
 # 1.a.3 File check
@@ -74,7 +74,7 @@ for grdID in "${grdALL[@]}"; do
     echo "INFO: mod_def.${grdID} succesfully created/copied"
   else
     export err=3
-    err_chk "FATAL ERROR: No model definition file for grid ${grdID}"
+    err_exit "No model definition file for grid ${grdID}"
   fi
 done
 

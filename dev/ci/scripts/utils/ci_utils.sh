@@ -122,10 +122,13 @@ function cancel_all_batch_jobs () {
 function create_experiment () {
 
   local yaml_config="${1}"
-  cd "${HOMEgfs_}" || exit 1
   pr_sha=$(git rev-parse --short HEAD)
+  local TAG="${2:-${pr_sha}}"
+  cd "${HOMEgfs_}" || exit 1
   case=$(basename "${yaml_config}" .yaml) || true
-  export pslot=${case}_${pr_sha}
+  
+  echo "Using provided TAG: ${TAG} for pslot"
+  export pslot=${case}_${TAG}
 
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
       source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
@@ -200,9 +203,9 @@ function build () {
   source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
   # TODO: when it's safe to build on C6 compute nodes again, do so
   if [[ "${MACHINE_ID}" == "gaeac6" ]]; then
-    "${HOMEgfs_}/sorc/build_all.sh" -v -k all
+    "${HOMEgfs_}/sorc/build_all.sh" -k all
   else
-    "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
+    "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" all
   fi
 
 }
