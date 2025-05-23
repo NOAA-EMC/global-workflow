@@ -9,24 +9,24 @@ base:
   DO_AWIPS: "NO"
   KEEPDATA: "NO"
   DO_EXTRACTVARS: "NO"
-  FHMAX_GFS: 120
-  FHMAX_HF_GFS: 0
-  FHOUT_HF_GFS: 1
   FCST_BREAKPOINTS: "48"
   REPLAY_ICS: "NO"
-  FHOUT_GFS: 6
-  FHOUT_OCN_GFS: 6
-  FHOUT_ICE_GFS: 6
+  FHMAX_HF_GFS: 0
+  FHOUT_HF_GFS: 24
+  FHMAX_GFS: 120
+  FHOUT_GFS: 24
+  FHOUT_OCN_GFS: 24
+  FHOUT_ICE_GFS: 24
   HPSSARCH: "NO"
   LOCALARCH: "NO"
   USE_OCN_ENS_PERTURB_FILES: "NO"
   USE_ATM_ENS_PERTURB_FILES: "NO"
   DO_TEST_MODE: "NO"
 fcst:
-  reforecast: "NO"
-  FHZERO: 6
-  TYPE: "nh"
-  MONO: "non-mono"
+  reforecast: "YES"
+  FHZERO: 24
+  TYPE: "hydro"
+  MONO: "mono"
 ocn:
   MOM6_INTERP_ICS: "NO"
 # config.aero has just a system-specific path to add.

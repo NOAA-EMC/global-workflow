@@ -24,3 +24,9 @@ snow:
   - name: ims_snow
     input file: "diag_ims_snow_{{ current_cycle | to_YMDH }}.nc"
     output file: "ims_snow_{{ current_cycle | to_YMDH }}_output_snow.nc"
+  - name: sfcsno
+    input file: "diag_sfcsno_{{ current_cycle | to_YMDH }}.nc"
+    output file: "sfcsno_{{ current_cycle | to_YMDH }}_output_snow.nc"
+  - name: snocvr
+    input file: "diag_snocvr_{{ current_cycle | to_YMDH }}.nc"
+    output file: "snocvr_{{ current_cycle | to_YMDH }}_output_snow.nc"
