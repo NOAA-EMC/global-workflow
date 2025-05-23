@@ -14,7 +14,7 @@
 cd "${DATA}"
 
 tmhr=${tmmark:2:2}
-cdate10=$(date --utc +%Y%m%d%H -d "${PDY}${cyc} - ${tmhr} hours")
+cdate10=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${tmhr} hours")
 
 NET_uc=${RUN^^}
 tmmark_uc=${tmmark^^}

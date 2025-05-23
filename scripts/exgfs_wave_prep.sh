@@ -69,7 +69,7 @@ EOF
   else
     ymdh_beg=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${WAVHINDH} hours")
   fi
-  time_beg="$(echo ${ymdh_beg} | cut -c1-8) $(echo ${ymdh_beg} | cut -c9-10)0000"
+  time_beg=$(date --utc -d "${ymdh_beg:0:8} ${ymdh_beg:8:2}" +"%Y%m%d %H0000")
   ymdh_end=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} + ${FHMAX_WAV} hours")
   time_end="$(echo ${ymdh_end} | cut -c1-8) $(echo ${ymdh_end} | cut -c9-10)0000"
   ymdh_beg_out=${PDY}${cyc}

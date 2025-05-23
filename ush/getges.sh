@@ -1370,7 +1370,7 @@ while [[ $fh -le $fhend ]];do
  ghp1=$fhp1;[[ $ghp1 -lt 100 ]]&&ghp1=0$ghp1
  ghp2=$fhp2;[[ $ghp2 -lt 100 ]]&&ghp2=0$ghp2
  ghp3=$fhp3;[[ $ghp3 -lt 100 ]]&&ghp3=0$ghp3
- id=$(date --utc +%Y%m%d%H -d "${valid} - ${fh} hours")
+ id=$(date --utc +%Y%m%d%H -d "${valid:0:8} ${valid:8:2} - ${fh} hours")
 
  day=$(echo $id | xargs | cut -c8)
  cyc=$(echo $id | xargs | rev | cut -c1-2 | rev)

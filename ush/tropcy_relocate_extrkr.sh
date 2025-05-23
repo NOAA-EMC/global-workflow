@@ -216,7 +216,7 @@ smm=${symdh:4:2}
 sdd=${symdh:6:2}
 shh=${symdh:8:2}
 dishh=${shh}
-symd=${syy}${smm}${sdd}
+symd=${symdh:0:8}
 
 case ${shh} in
  0|00) dishh="00";;
@@ -489,7 +489,7 @@ mv ${vdir}/tempvit.nonameless ${vdir}/vitals.${symd}${dishh}
 # tracking program.
 #--------------------------------------------------------------#
 
-ymdh6ago=$(date --utc +%Y%m%d%H -d "${CENT}${symd}${dishh} - 6 hours")
+ymdh6ago=$(date --utc +%Y%m%d%H -d "${CENT}${symd} ${dishh} - 6 hours")
 syy6=${ymdh6ago:2:2}
 smm6=${ymdh6ago:4:2}
 sdd6=${ymdh6ago:6:2}
