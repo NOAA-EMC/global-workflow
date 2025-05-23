@@ -94,10 +94,6 @@ class AerosolAnalysis(Task):
         - creating output directories
         """
 
-        # initialize JEDI variational application
-        logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['aeroanlvar'].initialize(self.task_config)
-
         # stage observations
         logger.info(f"Staging list of observation files generated from JEDI config")
         obs_dict = self.jedi_dict['aeroanlvar'].render_jcb(self.task_config, 'aero_obs_staging')
@@ -134,6 +130,10 @@ class AerosolAnalysis(Task):
         aero_var_stage_dict = parse_j2yaml(self.task_config.AERO_STAGE_VARIATIONAL_TMPL, self.task_config)
         FileHandler(aero_var_stage_dict).sync()
         logger.debug(f"Staging from COM:\n{pformat(aero_var_stage_dict)}")
+
+        # initialize JEDI variational application
+        logger.info(f"Initializing JEDI variational DA application")
+        self.jedi_dict['aeroanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:

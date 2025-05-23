@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 
-import glob
 import os
 from logging import getLogger
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from wxflow import (AttrDict, FileHandler, Task, cast_strdict_as_dtypedict,
-                    logit, parse_j2yaml, strftime, to_YMD,
-                    add_to_datetime, to_timedelta, Template, TemplateConstants)
+from wxflow import FileHandler, Task, logit, parse_j2yaml
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -52,9 +49,6 @@ class Stage(Task):
 
         # Add the os.path.exists function to the dict for yaml parsing
         stage_dict['path_exists'] = os.path.exists
-
-        # Add the glob.glob function for capturing filenames
-        stage_dict['glob'] = glob.glob
 
         # Parse staging yaml to get list of files to stage
         stage_set = parse_j2yaml(self.task_config.STAGE_IC_YAML_TMPL, stage_dict, allow_missing=False)
