@@ -121,8 +121,6 @@ class GEFSTasks(Tasks):
 
     def efcs(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
-        dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
@@ -144,6 +142,8 @@ class GEFSTasks(Tasks):
         #
         tasks = []
         for member in [f"{mem:03d}" for mem in range(1, self.nmem + 1)]:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem{member}'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
 
             efcsenvars = self.envars.copy()
             efcsenvars_dict = {'ENSMEM': f'{member}',
