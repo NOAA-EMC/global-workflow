@@ -130,8 +130,6 @@ class GEFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
-
         num_fcst_segments = len(self.options['fcst_segments']) - 1
         resources = self.get_resource('efcs')
 
@@ -144,6 +142,8 @@ class GEFSTasks(Tasks):
         for member in [f"{mem:03d}" for mem in range(1, self.nmem + 1)]:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem{member}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
+
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
             efcsenvars = self.envars.copy()
             efcsenvars_dict = {'ENSMEM': f'{member}',
