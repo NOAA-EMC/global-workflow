@@ -56,6 +56,9 @@ def main():
     args = parse_args()
 
     data = {}
+    data['CTESTS_STAGED_TESTS_DIR'] = os.environ.get('CTESTS_STAGED_TESTS_DIR')
+    data['RUNTESTS'] = os.environ.get('RUNTESTS')
+    data['TEST_NAME'] = os.environ.get('TEST_NAME')
     if args.test_date:
         # Parse test date from string to datetime object
         data['TEST_DATE'] = to_datetime(args.test_date)
