@@ -128,7 +128,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 	      #fix until reg code time dim issues are sorted out. TODO: time dim in regr/ufs code
         if [[ "${n_tims}" -eq 1 ]]; then
             for FHI in "${ifhrsi[@]}"; do
-                ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
+                cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
                        "${DATA}/${in_fname}"
             done
         else
