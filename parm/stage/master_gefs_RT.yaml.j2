@@ -33,10 +33,7 @@
 {% set half_window = assim_freq // 2 %}
 {% set half_window_begin = (-half_window | string + "H") | to_timedelta %}
 {% set half_window_end = (half_window | string + "H") | to_timedelta %}
-{% if DOIAU and MODE == "cycled" %}
-    {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_begin) %}
-{% endif %}
-
+{% set model_start_date_current_cycle = current_cycle %}
 {% set current_cycle_YMD = current_cycle | to_YMD %}
 {% set current_cycle_HH = current_cycle | strftime("%H") %}
 {% set previous_cycle_YMD = previous_cycle | to_YMD %}
