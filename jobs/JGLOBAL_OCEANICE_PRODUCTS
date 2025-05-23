@@ -16,7 +16,9 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMOUT_${COMPONENT^^}_NETCDF":"C
 # Run exglobal script
 "${SCRgfs}/exglobal_oceanice_products.py" && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

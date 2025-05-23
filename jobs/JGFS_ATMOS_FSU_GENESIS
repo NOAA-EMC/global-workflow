@@ -54,7 +54,10 @@ export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 #############################################################
 # Execute the script
 ${SCRIPTens_tracker}/exgfs_fsu_genesis.sh
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # Final processing

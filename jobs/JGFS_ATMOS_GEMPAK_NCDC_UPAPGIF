@@ -50,7 +50,10 @@ export pgmout=OUTPUT.$$
 ########################################################
 # Execute the script.
 "${SCRgfs}/exgfs_atmos_gempak_gif_ncdc_skew_t.sh"
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 ########################################################
 
 ############################################

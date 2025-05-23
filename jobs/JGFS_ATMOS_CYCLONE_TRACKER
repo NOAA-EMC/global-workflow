@@ -70,12 +70,18 @@ export loopnum=1
 
 #-----------input data checking -----------------
 ${USHens_tracker}/data_check_gfs.sh
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 #------------------------------------------------
 
 machine=${machine:-$(echo ${SITE})}
 ${USHens_tracker}/extrkr_gfs.sh "${loopnum}" "${cmodel}" "${CDATE}" "${pert}" "${DATA}"
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 
 #  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \

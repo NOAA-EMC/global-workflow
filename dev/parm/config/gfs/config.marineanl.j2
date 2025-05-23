@@ -5,7 +5,8 @@
 
 echo "BEGIN: config.marineanl"
 
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/soca_bmat_jedi_config.yaml.j2"
+export JEDI_CONFIG_YAML_BMAT="${PARMgfs}/gdas/soca_bmat_jedi_config.yaml.j2"
+export JEDI_CONFIG_YAML_ANALYSIS="${PARMgfs}/gdas/soca_analysis_jedi_config.yaml.j2"
 export JCB_ALGO_YAML_VAR="{{ JCB_ALGO_YAML_VAR }}"
 
 export MARINE_OBS_YAML_DIR="${PARMgfs}/gdas/soca/obs/config"
@@ -19,6 +20,8 @@ export SOCA_FIX_YAML_TMPL="${PARMgfs}/gdas/soca/soca_fix_stage_${OCNRES}.yaml.j2
 export MARINE_UTILITY_YAML_TMPL="${PARMgfs}/gdas/soca/soca_utils_stage.yaml.j2"
 export MARINE_ENSDA_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/ensda/stage_ens_mem.yaml.j2"
 export MARINE_DET_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_bkg_stage.yaml.j2"
+export MARINE_DET_STAGE_FILES_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_files_stage.yaml.j2"
+export MARINE_DET_FINALIZE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_finalize.yaml.j2"
 export MARINE_JCB_GDAS_ALGO="${PARMgfs}/gdas/jcb-gdas/algorithm/marine"
 export MARINE_JCB_GDAS_OBS="${PARMgfs}/gdas/jcb-gdas/observations/marine"
 

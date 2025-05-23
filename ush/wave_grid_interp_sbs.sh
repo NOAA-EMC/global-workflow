@@ -70,14 +70,13 @@ export pgm="${NET,,}_ww3_gint.x"
 source prep_step
 echo "INFO: Executing '${pgm}'"
 "${EXECgfs}/${pgm}" > grid_interp.${grdID}.out 2>&1
-export err=$?; err_chk
 cat "grid_interp.${grdID}.out"
-if [[ "${err}" -ne 0 ]]; then
+if [[ ${err} -ne 0 ]]; then
   echo "FATAL ERROR: '${pgm}' failed!"
   exit 3
 fi
 
-if [[ "${weights_found}" -eq 0 ]]; then
+if [[ ${weights_found} -eq 0 ]]; then
   echo "INFO: Interpolation created a new weights file at: '${interp_DATA}/WHTGRIDINT.bin'"
 fi
 
