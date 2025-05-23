@@ -98,14 +98,6 @@ class AtmAnalysis(Task):
         None
         """
 
-        # initialize JEDI variational application
-        logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['atmanlvar'].initialize(self.task_config)
-
-        # initialize JEDI FV3 increment conversion application
-        logger.info(f"Initializing JEDI FV3 increment conversion application")
-        self.jedi_dict['atmanlfv3inc'].initialize(self.task_config)
-
         # stage observations
         logger.info(f"Staging list of observation files")
         obs_dict = self.jedi_dict['atmanlvar'].render_jcb(self.task_config, 'atm_obs_staging')
@@ -166,6 +158,14 @@ class AtmAnalysis(Task):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
+
+        # initialize JEDI variational application
+        logger.info(f"Initializing JEDI variational DA application")
+        self.jedi_dict['atmanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
+
+        # initialize JEDI FV3 increment conversion application
+        logger.info(f"Initializing JEDI FV3 increment conversion application")
+        self.jedi_dict['atmanlfv3inc'].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
