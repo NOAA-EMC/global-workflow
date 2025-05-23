@@ -86,7 +86,6 @@ class GEFSTasks(Tasks):
         if self.options['do_aero_fcst']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
-
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         num_fcst_segments = len(self.options['fcst_segments']) - 1

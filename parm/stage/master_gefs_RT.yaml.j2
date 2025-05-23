@@ -74,7 +74,7 @@
 {% set m_index = int(current_cycle_HH)/6 %}
 
 {% if ENSMEM != 0 %}
-# GFS output restart members (80)
+# GFS members (80)
 {% set cyc_ranges = [(range(1, 31) + range(21, 51) + range(41, 71) + range(61, 81) + range(1, 11))] %}
 # select the relevant starting member from GFS outputs
 {% set gfs_offset = [0, 20, 40, 60] %}
