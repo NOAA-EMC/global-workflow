@@ -305,7 +305,7 @@ AEROINFO=${AEROINFO:-${FIXgfs}/gsi/global_aeroinfo.txt}
 SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
 HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
 OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
-OBS_INPUT=${OBS_INPUT:-${FIXgfs}/gsi/build_gsinfo/obs_input_ops.txt}
+OBS_INPUT=${OBS_INPUT:-${BUILD_GSINFO_DIR}/obs_input/obs_input_ops.txt}
 HIRS_FIX=${HIRS_FIX:-${CRTM_FIX}}
 
 # GSI namelist
@@ -368,7 +368,7 @@ cd ${DATA} || exit 99
 ${NLN} ${BERROR}       berror_stats
 ${NLN} ${SATANGL}      satbias_angle
 if [[ ${SATINFO} == "generate" ]]; then
-   sh ${USHgfs}/create_satinfo.sh  ${PDY}${cyc} > satinfo
+   ${USHgfs}/create_satinfo.sh  ${PDY}${cyc} > satinfo
 else
    ${NLN} ${SATINFO}      satinfo
 fi
@@ -376,14 +376,14 @@ ${NLN} ${RADCLOUDINFO} cloudy_radiance_info.txt
 ${NLN} ${ATMSFILTER}   atms_beamwidth.txt
 ${NLN} ${ANAVINFO}     anavinfo
 if [[ ${CONVINFO} == "generate" ]]; then
-   sh ${USHgfs}/create_convinfo.sh  ${PDY}${cyc} > convinfo
+   ${USHgfs}/create_convinfo.sh  ${PDY}${cyc} > convinfo
 else
    ${NLN} ${CONVINFO}     convinfo
 fi
 ${NLN} ${vqcdat}       vqctp001.dat
 ${NLN} ${INSITUINFO}   insituinfo
 if [[ ${OZINFO} == "generate" ]]; then
-   sh ${USHgfs}/create_ozinfo.sh  ${PDY}${cyc} > ozinfo
+   ${USHgfs}/create_ozinfo.sh  ${PDY}${cyc} > ozinfo
 else
    ${NLN} ${OZINFO}       ozinfo
 fi
