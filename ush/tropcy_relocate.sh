@@ -429,7 +429,7 @@ fi
 
 MP_PULSE=0
 MP_TIMEOUT=600
-GDATE10=$(date --utc +%Y%m%d%H -d "${CDATE10} - 06 hours")
+GDATE10=$(date --utc +%Y%m%d%H -d "${CDATE10:0:8} ${CDATE10:8:2} - 6 hours")
 
 #  make unique combined tcvitals file for t-12, t-6 and t+0 -- 
 #  if tcvitals does not contains record from current time, skip relocation
