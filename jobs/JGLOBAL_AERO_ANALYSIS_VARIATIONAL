@@ -18,7 +18,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlvar" -c "base aeroanl aeroanlv
 EXSCRIPT=${GDASAEROVARSH:-${SCRgfs}/exglobal_aero_analysis_variational.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

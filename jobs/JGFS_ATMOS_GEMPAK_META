@@ -17,7 +17,7 @@ export MP_LABELIO=yes
 export MP_PULSE=0
 export MP_DEBUG_NOTIMEOUT=yes
 
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 #############################################
 #set the fcst hrs for all the cycles
@@ -58,7 +58,10 @@ fi
 ########################################################
 # Execute the script.
 "${SCRgfs}/exgfs_atmos_gempak_meta.sh" && true
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 ########################################################
 
 ############################################
