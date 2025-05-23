@@ -35,14 +35,7 @@
 {% set half_window_end = (half_window | string + "H") | to_timedelta %}
 {% if DOIAU and MODE == "cycled" %}
     {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_begin) %}
-{% else %}
-    {% if REPLAY_ICS %}
-        {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_end) %}
-    {% else %}
-        {% set model_start_date_current_cycle = current_cycle %}
-    {% endif %}
 {% endif %}
-
 
 {% set current_cycle_YMD = current_cycle | to_YMD %}
 {% set current_cycle_HH = current_cycle | strftime("%H") %}
@@ -78,6 +71,16 @@
 ###################################################################
 # Initial condition to stage - include components based on switches
 ###################################################################
+{% set m_index = int(current_cycle_HH)/6 %}
+
+{% if ENSMEM != 0 %}
+# GFS output restart members (80)
+{% set cyc_ranges = [(range(1, 31) + range(21, 51) + range(41, 71) + range(61, 81) + range(1, 11))] %}
+# select the relevant starting member from GFS outputs
+{% set gfs_offset = [0, 20, 40, 60] %}
+# select the relevant member for each GEFS member from GFS outputs
+{% set gfs_member = ENSMEM + cyc_ranges[gfs_offset[m_index]] - 1 %}
+{% endif %}
 
 {% if ENSMEM == 0 %}
 {% include "atmosphere_cold_RT.yaml.j2" %}
