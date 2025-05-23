@@ -209,12 +209,12 @@ export maxtime=22    # Max number of forecast time levels
 if [ ! -d ${vdir} ];   then mkdir -p ${vdir};   fi
 if [ ! -d ${TMPDIR} ]; then mkdir -p ${TMPDIR}; fi
 
-CENT=$(echo ${symdh} | cut -c1-2)
-scc=$(echo ${symdh} | cut -c1-2)
-syy=$(echo ${symdh} | cut -c3-4)
-smm=$(echo ${symdh} | cut -c5-6)
-sdd=$(echo ${symdh} | cut -c7-8)
-shh=$(echo ${symdh} | cut -c9-10)
+CENT=${symdh:0:2}
+scc=${symdh:0:2}
+syy=${symdh:2:2}
+smm=${symdh:4:2}
+sdd=${symdh:6:2}
+shh=${symdh:8:2}
 dishh=${shh}
 symd=${syy}${smm}${sdd}
 
@@ -490,18 +490,18 @@ mv ${vdir}/tempvit.nonameless ${vdir}/vitals.${symd}${dishh}
 #--------------------------------------------------------------#
 
 ymdh6ago=$(date --utc +%Y%m%d%H -d "${CENT}${symd}${dishh} - 6 hours")
-syy6=${ymdh6ago:3:4}
-smm6=${ymdh6ago:5:6}
-sdd6=${ymdh6ago:7:8}
-shh6=${ymdh6ago:9:10}
-symd6=${ymdh6ago:3:8}
+syy6=${ymdh6ago:2:2}
+smm6=${ymdh6ago:4:2}
+sdd6=${ymdh6ago:6:2}
+shh6=${ymdh6ago:8:2}
+symd6=${ymdh6ago:2:6}
 
 ymdh6ahead=$(date --utc +%Y%m%d%H -d "${CENT}${symd}${dishh} + 6 hours")
-syyp6=${ymdh6ahead:3:4}
-smmp6=${ymdh6ahead:5:6}
-sddp6=${ymdh6ahead:7:8}
-shhp6=${ymdh6ahead:9:10}
-symdp6=${ymdh6ahead:3:8}
+syyp6=${ymdh6ahead:2:2}
+smmp6=${ymdh6ahead:4:2}
+sddp6=${ymdh6ahead:6:2}
+shhp6=${ymdh6ahead:8:2}
+symdp6=${ymdh6ahead:2:6}
 
 vit_incr=6
 
