@@ -153,12 +153,12 @@ if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
    export SATINFO="generate"
    export CONVINFO="generate"
    export OZINFO="generate"
-   export OBS_INPUT=${FIXgfs}/gsi/build_gsinfo/obs_input/obs_input_reanl_nasa_ozone.txt
+   export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_reanl_nasa_ozone.txt"
 else
-   export OBS_INPUT=${FIXgfs}/gsi/build_gsinfo/obs_input/obs_input_ops.txt
+   export OBS_INPUT="${BUILD_GSINFO_DIR}obs_input/obs_input_ops.txt"
 fi
 # path to "fixed" crtm coefficient files (needed for crtm < 3)
-export HIRS_FIX=${FIXgfs}/gsi/build_gsinfo/hirs_fix
+export HIRS_FIX="${BUILD_GSINFO_DIR}/hirs_fix"
 
 # Flag to turn on (.true.) or off (.false.) the infrared cloud and aerosol detection software
 # for AIRS, CrIS, and IASI.  Default is .false.
