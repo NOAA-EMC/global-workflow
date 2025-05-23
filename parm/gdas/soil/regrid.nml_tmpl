@@ -2,8 +2,8 @@
   n_vars=@[n_vars],
   variable_list=@[soil_incr_vars]
   missing_value=0.,
-@[HIDE_LIAU] n_tims=@[n_tims],
-@[HIDE_LIAU] time_list=@[time_list]  
+  n_tims=@[n_tims],
+  time_list=@[time_list]  
 /
 &input
   gridtype="gau_inc",
