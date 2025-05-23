@@ -42,6 +42,7 @@ for vi in $( seq 1 "${LSOIL_INCR}" ); do
 done
 
 n_tims=1
+time_list="06"
 if [[ ${DO_LAND_IAU} = ".true." ]]; then
     n_tims=0
     ifhrs=()
@@ -56,11 +57,11 @@ if [[ ${DO_LAND_IAU} = ".true." ]]; then
 	      hrsf="$(printf "%.1f" "${ihr}")";
 	      ifhrsf+=("${hrsf}");        
     done
+    time_list=${ifhrs[*]}
 fi
 
 in_fname="enkfgdas.sfci.nc"
 out_fname="sfci"
-time_list=${ifhrs[*]}
 ires=${LONB_CASE_IN}
 jres=${LATB_CASE_IN}
 ireso=${CASE_OUT:1}
@@ -104,7 +105,6 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
             COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
     fi
     
-    HIDE_LIAU="!"
     rm -f "regrid.nml"
     atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
@@ -120,10 +120,6 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     done
 
     if [[ ${DO_LAND_IAU} = ".true." ]]; then 
-        
-        HIDE_LIAU=" "
-        rm -f "regrid.nml"
-        atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
         
 	      #fix until reg code time dim issues are sorted out. TODO: time dim in regr/ufs code
         if [[ "${n_tims}" -eq 1 ]]; then
