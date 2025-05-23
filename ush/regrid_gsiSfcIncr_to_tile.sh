@@ -138,7 +138,12 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
             done
         fi
         
+        export pgm="${REGRID_EXEC}"
 	      ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+	      export err=$?
+	      if [[ ${err} -ne 0 ]]; then
+	          err_exit "${pgm} failled, ABORT!"
+	      fi
    
         #fix until reg code time dim issues are sorted out. TODO: time var in regr/ufs code
 	      if [[ "${n_tims}" -eq 1 ]]; then 
