@@ -819,66 +819,6 @@ GOCART_postdet() {
       fi
     done
 
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_ca.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_ca.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_ni.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_ni.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_su.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_su.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_du_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_du_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_ss_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_ss_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_ca_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_ca_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_ni_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_ni_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-     if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_su_bin.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_su_bin.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_2d.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_2d.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.inst_3d.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.inst_3d.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.tavg_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.tavg_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.tavg_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.tavg_du_ss.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.tavg_2d_rad.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.tavg_2d_rad.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
-    if [[ -e "${COMOUT_CHEM_HISTORY}/gocart.tavg_3d_rad.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-      rm -f "${COMOUT_CHEM_HISTORY}/gocart.tavg_3d_rad.${vdate:0:8}_${vdate:8:2}00z.nc4"
-    fi
-
     #TODO: Temporarily removing this as this will crash gocart, adding copy statement at the end
     #${NLN} "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
     #       "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
