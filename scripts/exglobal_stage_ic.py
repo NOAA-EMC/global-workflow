@@ -43,5 +43,6 @@ def main():
     # Stage ICs
     stage.execute_stage(stage_dict)
 
+
 if __name__ == '__main__':
     main()
