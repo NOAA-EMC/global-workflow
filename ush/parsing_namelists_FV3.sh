@@ -475,15 +475,15 @@ local MOM6_RESTART_DIR=MOM6_RESTART/
 
 # Land IAU defaults
 local DO_LAND_IAU=${DO_LAND_IAU:-".false."}
-local LAND_IAU_FHRS=${LAND_IAU_FHRS}
-local LAND_IAU_DELHRS=${LAND_IAU_DELHRS}
-local LAND_IAU_INC_FILES=${LAND_IAU_INC_FILES:-"'sfc_inc',''"}
+local LAND_IAU_FHRS=${IAUFHRS}
+local LAND_IAU_DELHRS=${IAU_DELTHRS}
+local LAND_IAU_INC_FILES="'sfc_inc',''"
 local LSOIL_INCR=${LSOIL_INCR}
-local LAND_IAU_FILTER_INC=${LAND_IAU_FILTER_INCREMENTS:-".false."}
-local LAND_IAU_UPD_STC=${LAND_IAU_UPD_STC}
-local LAND_IAU_UPD_SLC=${LAND_IAU_UPD_SLC}
-local LAND_IAU_DP_STCSMC_ADJ=${LAND_IAU_DO_STCSMC_ADJUSTMENT}
-local LAND_IAU_MIN_T_INC=${LAND_IAU_MIN_T_INCREMENT}
+local LAND_IAU_FILTER_INC=".false."
+local LAND_IAU_UPD_STC=".true."
+local LAND_IAU_UPD_SLC=".true."
+local LAND_IAU_DP_STCSMC_ADJ=".true."
+local LAND_IAU_MIN_T_INC=0.0001
 
 # Check will need to be modified in the future
 # once GW is ready to add in land IAU

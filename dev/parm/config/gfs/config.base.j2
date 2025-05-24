@@ -435,10 +435,7 @@ export DO_GSISOILDA="{{ DO_GSISOILDA }}"
 
 # Land IAU for soil
 export DO_LAND_IAU="{{ DO_LAND_IAU }}"
-export LAND_IAU_FHRS="3,6,9"
-export LAND_IAU_DELHRS=6
-export LAND_IAU_INC_FILES='sfc_inc',''
-export LSOIL_INCR=3
+export LSOIL_INCR=2
 
 # no land iau for cold start sdate/forecast only warm start
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then

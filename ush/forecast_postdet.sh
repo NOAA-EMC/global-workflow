@@ -134,9 +134,6 @@ FV3_postdet() {
         IAU_INC_FILES="''"
       fi
       DO_LAND_IAU=".false."
-      LAND_IAU_FHRS=-1
-      LAND_IAU_DELHRS=0
-      LAND_IAU_INC_FILES="''"
     #--------------------------------------------------------------------------
     else  # "${RERUN}" == "NO"
 
@@ -231,7 +228,6 @@ EOF
           fi
           cpreq "${sfc_increment_file}" "${DATA}/INPUT/sfc_inc.tile${TN}.nc"
         done
-        LAND_IAU_INC_FILES=${LAND_IAU_INC_FILES:-'sfc_inc'}
 
       fi
 

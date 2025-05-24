@@ -48,7 +48,7 @@ if [[ ${DO_LAND_IAU} = ".true." ]]; then
     ifhrs=()
     ifhrsi=()
     ifhrsf=()
-    IFS=',' read -ra landifhrs <<< "${LAND_IAU_FHRS}"  
+    IFS=',' read -ra landifhrs <<< "${IAUFHRS}"  
     for ihr in "${landifhrs[@]}"; do
         hrstr="$(printf "%02d" "${ihr}")";
 	      ifhrsi+=("${hrstr}");

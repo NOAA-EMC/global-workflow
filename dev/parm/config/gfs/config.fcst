@@ -311,14 +311,6 @@ elif [[ "${RUN}" =~ "gfs" ]] ; then # GFS cycle specific parameters
 
 fi
 
-# Land IAU 
-export LAND_IAU_FILTER_INCREMENTS=".false."
-export LAND_IAU_UPD_STC=".true."
-export LAND_IAU_UPD_SLC=".true."
-export LAND_IAU_DO_STCSMC_ADJUSTMENT=".true."
-export LAND_IAU_MIN_T_INCREMENT="0.0001"
-#export LAND_IAU_MIN_SLC_INCREMENT="0.000001"
-
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst
