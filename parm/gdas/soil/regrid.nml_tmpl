@@ -2,8 +2,8 @@
   n_vars=@[n_vars],
   variable_list=@[soil_incr_vars]
   missing_value=0.,
-  n_tims=@[n_tims],
-  time_list=@[time_list]  
+  time_list=@[time_list],
+  add_time_dim=@[add_time_dim], 
 /
 &input
   gridtype="gau_inc",
@@ -12,7 +12,9 @@
   fname=@[in_fname], 
   dir="./",
   fname_coord="gaussian_scrip.nc",
-  dir_coord="./"
+  dir_coord="./",
+  fname_mask=@[fname_mask_in],
+  dir_mask=@[dir_mask_in]
 /
 &output
   gridtype="fv3_rst",

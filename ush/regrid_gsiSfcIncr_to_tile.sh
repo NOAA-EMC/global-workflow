@@ -41,27 +41,12 @@ for vi in $( seq 1 "${LSOIL_INCR}" ); do
     soil_incr_vars=${soil_incr_vars}'"slc'${vi}'_inc"',
 done
 
-n_tims=1
-time_list="06"
 if [[ ${DO_LAND_IAU} = ".true." ]]; then
-    n_tims=0
-    ifhrs=()
-    ifhrsi=()
-    ifhrsf=()
-    IFS=',' read -ra landifhrs <<< "${IAUFHRS}"  
-    for ihr in "${landifhrs[@]}"; do
-        hrstr="$(printf "%02d" "${ihr}")";
-	      ifhrsi+=("${hrstr}");
-        ifhrs+=("\"${hrstr}\",");
-        n_tims=$((n_tims+1));
-	      hrsf="$(printf "%.1f" "${ihr}")";
-	      ifhrsf+=("${hrsf}");        
-    done
-    time_list=${ifhrs[*]}
+    IFS=',' read -ra landifhrs <<< "${IAUFHRS}"
 fi
-
-in_fname="enkfgdas.sfci.nc"
-out_fname="sfci"
+in_fname="'enkfgdas.sfci'"
+out_fname="'sfci'"
+dir_mask_in="'./'"
 ires=${LONB_CASE_IN}
 jres=${LATB_CASE_IN}
 ireso=${CASE_OUT:1}
@@ -105,34 +90,38 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
             COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
     fi
     
-    rm -f "regrid.nml"
-    atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
-
     for FHR in "${soilinc_fhrs[@]}"; do
-        ${NCP} "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-               "${DATA}/${in_fname}"
+        
+	add_time_dim=".false."
+        time_list="${FHR}"
+	fname_mask_in="'enkfgdas.sfci00${FHR}.nc'"
+
+        rm -f "regrid.nml"
+        atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
+
+        cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+               "${DATA}/enkfgdas.sfci00${FHR}.nc"
 
         ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${DATA}/${out_fname}.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/${out_fname}00${FHR}.tile${n}.nc"
+            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
         done
-    done
+    done 
 
     if [[ ${DO_LAND_IAU} = ".true." ]]; then 
-        
-	      #fix until reg code time dim issues are sorted out. TODO: time dim in regr/ufs code
-        if [[ "${n_tims}" -eq 1 ]]; then
-            for FHI in "${ifhrsi[@]}"; do
-                cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
-                       "${DATA}/${in_fname}"
-            done
-        else
-            for FHI in "${ifhrsi[@]}"; do
-	              cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci0${FHI}.nc" \
-                       "${DATA}/${in_fname}.${FHI}"
-            done
-        fi
+
+        add_time_dim=".true."
+	time_list="${IAUFHRS}"
+	fname_mask_in="'enkfgdas.sfci00${landifhrs[0]}.nc'" #TODO(after testing): add separate mask for each increment file
+
+	rm -f "regrid.nml"
+        atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
+
+        for FHI in "${landifhrs[@]}"; do
+                  cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHI}.nc" \
+                   "${DATA}/enkfgdas.sfci00${FHI}.nc"
+        done
         
         export pgm="${REGRID_EXEC}"
 	      ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
@@ -140,23 +129,11 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 	      if [[ ${err} -ne 0 ]]; then
 	          err_exit "${pgm} failled, ABORT!"
 	      fi
-   
-        #fix until reg code time dim issues are sorted out. TODO: time var in regr/ufs code
-	      if [[ "${n_tims}" -eq 1 ]]; then 
-            for n in $(seq 1 "${ntiles}"); do
-                ncecat -O -u Time "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"
-                export err=$?; err_chk
-                ncap2 -A -s @all="{${ifhrsf[*]}}" "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"
-                export err=$?; err_chk
-                ncap2 -O -s'Time[Time]=@all' "${out_fname}.tile${n}.nc" "${out_fname}.tile${n}.nc"
-                export err=$?; err_chk
-            done	
-        fi
 
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${DATA}/${out_fname}.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
+            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
         done
-        
+	    
     fi
 
 done
