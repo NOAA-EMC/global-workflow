@@ -202,6 +202,15 @@ if [[ -s "atparse.bash" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
 
+# add ufs_utils parm dir 
+if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
+  cd "${HOMEgfs}/parm" || exit 1
+  if [[ -d ufs_utils ]]; then
+      rm -rf ufs_utils
+  fi
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/parm" ufs_utils
+fi
+
 #------------------------------
 #--add GDASApp fix directory
 #------------------------------

@@ -47,11 +47,12 @@ fi
 in_fname="'enkfgdas.sfci'"
 out_fname="'sfci'"
 dir_mask_in="'./'"
+fname_mask_in="'NULL'"
 ires=${LONB_CASE_IN}
 jres=${LATB_CASE_IN}
 ireso=${CASE_OUT:1}
 jreso=${CASE_OUT:1}
-regrid_nml_tmpl="${HOMEgfs}/parm/gdas/soil/regrid.nml_tmpl"
+regrid_nml_tmpl="${HOMEgfs}/parm/ufs_utils/regrid_sfc/regrid.nml_tmpl" 
 
 # input, fixed files
 cpreq "${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
@@ -94,7 +95,6 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         
 	add_time_dim=".false."
         time_list="${FHR}"
-	fname_mask_in="'enkfgdas.sfci00${FHR}.nc'"
 
         rm -f "regrid.nml"
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
@@ -112,8 +112,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     if [[ ${DO_LAND_IAU} = ".true." ]]; then 
 
         add_time_dim=".true."
-	time_list="${IAUFHRS}"
-	fname_mask_in="'enkfgdas.sfci00${landifhrs[0]}.nc'" #TODO(after testing): add separate mask for each increment file
+	time_list="${IAUFHRS}"	
 
 	rm -f "regrid.nml"
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
