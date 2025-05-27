@@ -107,12 +107,15 @@ class AerosolAnalysis(Task):
         if bias_dict['copy'] is None:
             logger.info(f"No bias correction files to stage")
         else:
-            bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
-            FileHandler(bias_dict).sync()
-            logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+            try:
+                bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
+                FileHandler(bias_dict).sync()
+                logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
 
-            # extract bias corrections
-            Jedi.extract_tar_from_filehandler_dict(bias_dict)
+                # extract bias corrections
+                Jedi.extract_tar_from_filehandler_dict(bias_dict)
+            except:
+                logger.debug(f"Bias correction files do not exist:\n{pformat(bias_dict)}")
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
