@@ -114,8 +114,8 @@ class AerosolAnalysis(Task):
 
                 # extract bias corrections
                 Jedi.extract_tar_from_filehandler_dict(bias_dict)
-            except:
-                logger.debug(f"Bias correction files do not exist:\n{pformat(bias_dict)}")
+            except FileNotFoundError:
+                logger.error(f"Bias correction files or directories do not exist:\n{pformat(bias_dict)}")
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
