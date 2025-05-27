@@ -2,7 +2,9 @@
 
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
-if [[ -a mpmd_script ]]; then rm -Rf mpmd_script; fi
+if [[ -a mpmd_script ]]; then
+   rm -Rf mpmd_script
+fi
 
 {
     for grid in '0p25' '0p50' '1p00'; do
@@ -13,4 +15,6 @@ if [[ -a mpmd_script ]]; then rm -Rf mpmd_script; fi
 
 "${USHgfs}/run_mpmd.sh" mpmd_script
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+   err_exit "One ore more MPMD jobs failed to calculate ensemble statistics!"
+fi

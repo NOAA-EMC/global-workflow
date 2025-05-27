@@ -30,7 +30,10 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ########################################################
 # Execute the script.
 "${SCRgfs}/exgfs_atmos_fbwind.sh" && true
-export err=$?;err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+  err_exit
+fi
 ########################################################
 
 ############################################

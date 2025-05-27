@@ -23,7 +23,9 @@ export LEVS=$((LEVS-1))
 
 ${ENKFPOSTSH:-${SCRgfs}/exgdas_enkf_post.sh} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

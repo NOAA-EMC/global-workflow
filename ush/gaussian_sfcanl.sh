@@ -35,8 +35,6 @@
 #                   Defaults to $EXECgfs/gaussian_sfcanl.x
 #     INISCRIPT     Preprocessing script.  Defaults to none.
 #     LOGSCRIPT     Log posting script.  Defaults to none.
-#     ERRSCRIPT     Error processing script
-#                   defaults to 'eval [[ $err = 0 ]]'
 #     ENDSCRIPT     Postprocessing script
 #                   defaults to none
 #     CDATE         Output analysis date in yyyymmddhh format. Required.
@@ -68,7 +66,6 @@
 #   Modules and files referenced:
 #     scripts    : $INISCRIPT
 #                  $LOGSCRIPT
-#                  $ERRSCRIPT
 #                  $ENDSCRIPT
 #
 #     programs   : $GAUSFCANLEXE
@@ -188,14 +185,16 @@ cat <<EOF > fort.41
  /
 EOF
 
-$APRUNSFC $GAUSFCANLEXE
+${APRUNSFC} "${GAUSFCANLEXE}"
 
-export ERR=$?
-export err=$ERR
-$ERRSCRIPT||exit 2
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status!"
+   exit "${err}"
+fi
 
 ################################################################################
 #  Postprocessing
-cd $pwd
+cd "${pwd}"
 
-exit ${err}
+exit 0
