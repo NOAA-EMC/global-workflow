@@ -19,6 +19,7 @@ arguments:
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
 
 # TODO run on supported platforms once the gefs forecast and subsequent tasks can succeed with RETRO ICs
+# Add this to run the stage ic job 'icsdir: /lfs/h2/emc/ens/noscrub/eric.sinsky/RETRO_ICS'
 skip_ci_on_hosts:
   - gaeac6
   - gaeac5
