@@ -10,10 +10,11 @@
 # - Per-host test case matrices that define which tests run on which hosts
 # - Includes two sections supporting the standard PR Cases and CTests
 # - Host-specific tags and variables for job routing to the correct runners
-# - Conditional rules based on trigger type (PR vs API)
+# - Conditional rules based on trigger type (PR vs trigger)
 #
-# The GITHUB_API_TRIGGER variable (set in the main .gitlab-ci.yml) controls
-# whether to run CTests (true) or standard cases (false).
+# The CI_PIPELINE_SOURCE variable (set by GitLab) is when the pipeline is triggered
+# by a GitHub action. This is used to determine whether to run CTests (trigger) or
+# standard cases (!trigger).
 
 # =======================================
 # Standard Cases configurations by host
@@ -32,7 +33,7 @@ setup_experiments-hera:
   needs:
     - build-hera
   rules:
-    - if: $GITHUB_API_TRIGGER != "true"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 run_tests-hera:
   extends: .run_tests_template
@@ -46,7 +47,7 @@ run_tests-hera:
   needs:
     - setup_experiments-hera
   rules:
-    - if: $GITHUB_API_TRIGGER != "true"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 # Host: GAEAC6 - Standard Cases
 setup_experiments-gaeac6:
@@ -61,7 +62,7 @@ setup_experiments-gaeac6:
   needs:
     - build-gaeac6
   rules:
-    - if: $GITHUB_API_TRIGGER != "true"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 run_tests-gaeac6:
   extends: .run_tests_template
@@ -75,7 +76,37 @@ run_tests-gaeac6:
   needs:
     - setup_experiments-gaeac6
   rules:
-    - if: $GITHUB_API_TRIGGER != "true"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+# Host: Hera - Finalize 
+finalize-hera:
+  extends: .finalize_template
+  variables:
+    machine: hera
+  tags:
+    - hera
+  needs:
+    - run_tests-hera
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: on_success  # Explicitly set to run only if all upstream jobs succeed
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: never
+
+# Host: Gaea C6 - Finalize
+finalize-gaeac6:
+  extends: .finalize_template
+  variables:
+    machine: gaeac6
+  tags:
+    - gaeac6
+  needs:
+    - run_tests-gaeac6
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: on_success  # Explicitly set to run only if all upstream jobs succeed
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: never
 
 # =======================================
 # CTests configurations by host
@@ -87,7 +118,7 @@ run_tests-gaeac6:
   stage: run_tests
   parallel:
     matrix:
-      - CTEST: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0', 'C48_S2SW_gfs_atmos_prod_f000-f003']
+      - CTEST_NAME: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0', 'C48_S2SW_gfs_atmos_prod_f000-f003']
 
 # Host-specific CTest setup jobs
 create_ctests-hera:
@@ -100,7 +131,7 @@ create_ctests-hera:
   needs:
     - build-hera
   rules:
-    - if: $GITHUB_API_TRIGGER == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
 create_ctests-gaeac6:
   extends: .create_ctests
@@ -112,7 +143,7 @@ create_ctests-gaeac6:
   needs:
     - build-gaeac6
   rules:
-    - if: $GITHUB_API_TRIGGER == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 # Host: Hera - CTests
 run_ctests-hera:
@@ -122,7 +153,7 @@ run_ctests-hera:
   needs:
     - create_ctests-hera
   rules:
-    - if: $GITHUB_API_TRIGGER == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
 # Host: GAEAC6 - CTests
 run_ctests-gaeac6:
@@ -132,7 +163,7 @@ run_ctests-gaeac6:
   needs:
     - create_ctests-gaeac6
   rules:
-    - if: $GITHUB_API_TRIGGER == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 # =======================================
 # Common build configurations by host
@@ -145,6 +176,10 @@ build-hera:
     machine: hera
   tags:
     - hera
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $RUN_ON_MACHINES =~ /\bhera\b|^all$/i
+    - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
 
 build-gaeac6:
   extends: .build_template
@@ -152,3 +187,7 @@ build-gaeac6:
     machine: gaeac6
   tags:
     - gaeac6
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $RUN_ON_MACHINES =~ /\bgaeac6\b|^all$/i
+    - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)

@@ -19,6 +19,5 @@ arguments:
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/sfs_defaults.yaml
 
 skip_ci_on_hosts:
-  - gaeac6
   - gaeac5
   - awsepicglobalworkflow
