@@ -1,0 +1,7 @@
+defaults:
+  !INC {{ HOMEgfs }}/dev/parm/config/sfs/yaml/defaults.yaml
+base:
+  FHMAX_GFS: 120
+  FCST_BREAKPOINTS: ""
+ocn:
+  MOM6_INTERP_ICS: "NO"
