@@ -34,7 +34,9 @@ mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 # Run relevant script
 ${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

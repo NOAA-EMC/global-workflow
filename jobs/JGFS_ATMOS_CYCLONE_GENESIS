@@ -51,7 +51,10 @@ export JYYYY=${PDY:0:4}
 # Do not fail on errors or unassigned variables in external code
 set +eu
 ${SCRIPTens_tracker}/exgfs_tc_genesis.sh && true
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 set_strict
 
