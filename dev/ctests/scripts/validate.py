@@ -109,7 +109,7 @@ def main():
 
     data['STAGED_CTESTS'] = os.environ.get('STAGED_CTESTS')
     data['TEST_NAME'] = os.environ.get('TEST_NAME')
-    data['RUNTESTS'] = os.environ.get('RUNTEST')
+    data['RUNTESTS'] = os.environ.get('RUNTESTS')
     data['PSLOT'] = os.environ.get('PSLOT')
 
     files = parse_j2yaml(path=args.yaml, data=data)
