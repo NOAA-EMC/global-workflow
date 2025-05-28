@@ -29,8 +29,7 @@ setup_experiments-hera:
       - hera
   parallel:
     matrix:
-      - caseName: ["C48_ATM"]
-      #- caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
   needs:
     - build-hera
   rules:
