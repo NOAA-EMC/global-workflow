@@ -67,6 +67,7 @@ update_status_badges:
         "message": "$status",
         "color": "$color"
       }
+      EOF
       }
       
       # Function to update host badge
