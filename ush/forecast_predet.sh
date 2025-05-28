@@ -531,10 +531,20 @@ FV3_predet(){
 
   ## merra2 aerosol climo
   if (( IAER == 1011 )); then
-    local month mm
+    year=${current_cycle:0:4}
+    for i in {1980..2300..5}
+    do
+      if [ $year -le $i ]
+      then
+        Eyear=$(printf %04d "${i}")
+        Syear=$(($i-5))
+        break
+      fi
+    done
+#   local month mm
     for (( month = 1; month <=12; month++ )); do
       mm=$(printf %02d "${month}")
-      cpreq "${FIXgfs}/aer/merra2.aerclim.2014-2023.m${mm}.nc" "aeroclim.m${mm}.nc"
+      ${NCP} "/lfs/h2/emc/physics/noscrub/anning.cheng/MERRA2_6ym/y${Syear}-${Eyear}/merra2_${Syear}-${Eyear}_${mm}.nc" "aeroclim.m${mm}.nc"
     done
   fi
 
