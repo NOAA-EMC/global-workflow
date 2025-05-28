@@ -2,16 +2,17 @@
 
  set -x
 
- rundir=/scratch4/NAGAPE/epic/Wei.Huang/run
+ rundir=/gpfs/f6/scratch/Wei.Huang/run
  mkdir -p ${rundir}
 
  source ~/.bashrc
  source dev/ush/gw_setup.sh
+ source ~/prod_util.env
 
- HPC_ACCOUNT=epic \
+ HPC_ACCOUNT=bil-fire8 \
         pslot=c48atm \
         RUNTESTS=${rundir} \
-        RUNDIR=/scratch4/NAGAPE/epic/Wei.Huang \
+        RUNDIR=/gpfs/f6/scratch/Wei.Huang/run \
         bin/run_python.sh dev/workflow/create_experiment.py \
         --yaml dev/ci/cases/pr/C48_ATM.yaml
 
