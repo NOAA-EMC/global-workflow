@@ -56,6 +56,7 @@ def main():
     args = parse_args()
 
     data = {}
+    data['STAGED_CTESTS'] = os.environ.get('STAGED_CTESTS')
     data['RUNTESTS'] = os.environ.get('RUNTESTS')
     data['TEST_NAME'] = os.environ.get('TEST_NAME')
     data['PSLOT'] = os.environ.get('PSLOT')

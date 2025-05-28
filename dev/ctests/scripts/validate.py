@@ -18,6 +18,7 @@ Parameters
 """
 
 import sys
+import os
 import argparse
 from pathlib import Path
 import hashlib
@@ -105,6 +106,11 @@ def main():
     if args.test_date:
         # Parse test date from string to datetime object
         data['TEST_DATE'] = to_datetime(args.test_date)
+
+    data['STAGED_CTESTS'] = os.environ.get('STAGED_CTESTS')
+    data['TEST_NAME'] = os.environ.get('TEST_NAME')
+    data['RUNTESTS'] = os.environ.get('RUNTEST')
+    data['PSLOT'] = os.environ.get('PSLOT')
 
     files = parse_j2yaml(path=args.yaml, data=data)
     if 'output_files' not in files:
