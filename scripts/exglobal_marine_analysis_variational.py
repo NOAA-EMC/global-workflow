@@ -21,4 +21,4 @@ if __name__ == '__main__':
     MarineAnl = MarineAnalysis(config)
 
     # Run the variational application
-    MarineAnl.variational()
+    MarineAnl.execute('var')

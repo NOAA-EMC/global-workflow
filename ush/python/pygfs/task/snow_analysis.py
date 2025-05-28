@@ -102,9 +102,6 @@ class SnowAnalysis(Task):
         ----------
         None
         """
-        # initialize JEDI variational application
-        logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['snowanlvar'].initialize(self.task_config)
 
         # stage backgrounds
         logger.info(f"Staging background files from {self.task_config.VAR_BKG_STAGING_YAML}")
@@ -142,6 +139,10 @@ class SnowAnalysis(Task):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
+
+        # initialize JEDI variational application
+        logger.info(f"Initializing JEDI variational DA application")
+        self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
 
     @logit(logger)
     def prepare_IMS(self) -> None:
