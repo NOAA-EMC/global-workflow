@@ -7,6 +7,7 @@
 
 {% set PDY = TEST_DATE | to_YMD %}
 {% set PDY_offset = TEST_DATE_offset | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
 {% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
 
 input_files:
