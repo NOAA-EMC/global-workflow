@@ -32,6 +32,13 @@ if (NOT DEFINED HPC_ACCOUNT)
   return()
 endif()
 
+# Set STAGED_CTESTS
+set_from_env_or_default(STAGED_CTESTS STAGED_CTESTS "")
+if (NOT DEFINED STAGED_CTESTS)
+  message(WARNING "STAGED_CTESTS must be set. CTests will not be created.")
+  return()
+endif()
+
 # Set ICSDIR_ROOT
 set_from_env_or_default(ICSDIR_ROOT ICSDIR_ROOT "")
 if (NOT DEFINED ICSDIR_ROOT)
