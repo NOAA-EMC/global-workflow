@@ -37,13 +37,13 @@ soca_parameters_diffusion_hz:
   jcb_algo: soca_parameters_diffusion_hz
 soca_ensb:
   rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/gdas_ens_handler.x'
+  exe_src: '{{ EXECgfs }}/gdas_soca_ens_handler.x'
   mpi_cmd: '{{ APRUN_MARINEBMAT }}'
   jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/jcb-base.yaml.j2'
   jcb_algo: soca_ensb
 soca_ensweights:
   rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/gdas_socahybridweights.x'
+  exe_src: '{{ EXECgfs }}/gdas_soca_hybridweights.x'
   mpi_cmd: '{{ APRUN_MARINEBMAT }}'
   jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/jcb-base.yaml.j2'
   jcb_algo: soca_ensweights
