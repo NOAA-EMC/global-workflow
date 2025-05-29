@@ -3,6 +3,7 @@ gdasocean_analysis:
     name: "GDASOCEAN_ANALYSIS"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_analysis.tar"
     required:
+        # TODO(AFE) cice_model_anl not tested with DOIAU="NO"
         {% set anl_delta = "-3H" | to_timedelta %}
         {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
         # analysis and analysis increments
