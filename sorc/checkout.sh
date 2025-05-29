@@ -55,7 +55,6 @@ if [[ ! -d gsi_monitor.fd ]] ; then
     rm -f ${topdir}/checkout-gsi_monitor.log
     # Check out a version before changes for the new directory structure were introduced.
     git clone --branch gsimon_v16.3.25 https://github.com/NOAA-EMC/GSI-Monitor.git gsi_monitor.fd >> ${topdir}/checkout-gsi_monitor.log 2>&1
-    cd gsi_monitor.fd
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi_monitor.fd already exists.'
