@@ -336,8 +336,8 @@ class GCAFSTasks(Tasks):
 
         dump_suffix = self._base["DUMP_SUFFIX"]
         dmpdir = self._base["DMPDIR"]
-        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
-                                                       {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix, 'DUMP': 'gdas'})
+        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSPROC_TMPL"],
+                                                       {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix, 'RUN': 'gdas'})
 
         deps = []
         data = f'{dump_path}/gdas.t@Hz.updated.status.tm00.bufr_d'

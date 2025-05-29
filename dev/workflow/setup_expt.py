@@ -390,13 +390,13 @@ def input_args(*argv):
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/gcafs'))
+                            default=os.path.join(_top, 'dev/parm/config/gcafs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/gcafs/yaml/defaults.yaml'))
+                            default=os.path.join(_top, 'dev/parm/config/gcafs/yaml/defaults.yaml'))
         return parser
 
-    # GCAFS forecast-only arguments
-    def _gcafs_args(parser):
+    # GCAFS cycled arguments
+    def _gcafs_cycled_args(parser):
         """
         Add GCAFS-specific arguments to parser.
 
@@ -413,9 +413,9 @@ def input_args(*argv):
         parser.add_argument('--start', help='restart mode: warm or cold', type=str,
                             choices=['warm', 'cold'], required=False, default='cold')
         parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/gcafs'))
+                            default=os.path.join(_top, 'dev/parm/config/gcafs'))
         parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
-                            default=os.path.join(_top, 'parm/config/gcafs/yaml/defaults.yaml'))
+                            default=os.path.join(_top, 'dev/parm/config/gcafs/yaml/defaults.yaml'))
         return parser
 
     description = """
