@@ -137,6 +137,9 @@ class GCAFSCycledAppConfig(AppConfig):
             configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
             configs += ['prepobsaero']
 
+        if options['do_anlstat']:
+            configs += ['anlstat']
+
         if options['do_globusarch']:
             configs += ['globus']
             # TODO Enable when the globus archiving feature is available for ensembles
@@ -201,6 +204,9 @@ class GCAFSCycledAppConfig(AppConfig):
                     task_names[run] += ['aeroanlgenb']
                     task_names[run] += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
                     task_names[run] += ['prepobsaero']
+                
+                if options['do_anlstat']:
+                    task_names[run] += ['anlstat']
 
             # some are common across both
             if run in ['gcdas', 'gcafs']:
