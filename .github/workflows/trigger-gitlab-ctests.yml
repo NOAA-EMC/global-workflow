@@ -95,7 +95,7 @@ jobs:
           # created via Settings > CI/CD > Pipeline triggers in your GitLab project
           curl --verbose --request POST \
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=ci_ctests_finalize" \
+            --form "ref=develop" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
             --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
             --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
