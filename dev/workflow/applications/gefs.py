@@ -87,6 +87,8 @@ class GEFSAppConfig(AppConfig):
             configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
             if options['do_wave_bnd']:
                 configs += ['wavepostbndpnt', 'wavepostbndpntbll']
+            if options['do_gempak']:
+                configs += ['wavegempak']
 
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
@@ -174,6 +176,8 @@ class GEFSAppConfig(AppConfig):
             if options['do_wave_bnd']:
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostpnt']
+            if options['do_gempak']:
+                tasks += ['wavegempak']
 
         if options['do_extractvars']:
             tasks += ['extractvars']
