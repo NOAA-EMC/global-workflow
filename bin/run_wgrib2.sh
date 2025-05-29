@@ -6,6 +6,7 @@
  arg="$@"
  echo "running: singularity exec ${img} $cmd $arg"
  singularity exec \
-        -B /scratch4 \
+        -B /contrib \
+        -B /lustre \
         ${img} $cmd $arg
 

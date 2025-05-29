@@ -6,6 +6,7 @@
  arg="$@"
  echo "running: singularity exec ${img} $cmd $arg"
  singularity exec \
-        -B /gpfs/f6/scratch/Wei.Huang \
+        -B /contrib \
+        -B /lustre \
         ${img} $cmd $arg
 
