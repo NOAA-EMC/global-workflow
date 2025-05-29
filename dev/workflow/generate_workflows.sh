@@ -110,7 +110,7 @@ _auto_del=false
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-   while getopts ":H:bDuy:Y:GESA:ce:t:vVdh" option; do
+   while getopts ":H:bDuy:Y:GESCA:ce:t:vVdh" option; do
       case "${option}" in
         H)
            HOMEgfs="${OPTARG}"
