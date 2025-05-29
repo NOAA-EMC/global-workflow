@@ -395,8 +395,8 @@ def input_args(*argv):
                             default=os.path.join(_top, 'dev/parm/config/gcafs/yaml/defaults.yaml'))
         return parser
 
-    # GCAFS forecast-only arguments
-    def _gcafs_args(parser):
+    # GCAFS cycled arguments
+    def _gcafs_cycled_args(parser):
         """
         Add GCAFS-specific arguments to parser.
 
