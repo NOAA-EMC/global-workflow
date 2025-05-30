@@ -107,6 +107,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         base = conf.parse_config('config.base')
 
         self.mode = base['MODE']
+        self.type = "real-time"
         if self.mode not in self.VALID_MODES:
             raise NotImplementedError(f'{self.mode} is not a valid application mode.\n'
                                       f'Valid application modes are:\n'
