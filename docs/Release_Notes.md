@@ -15,9 +15,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-mkdir gfs.v16.4.0
-cd gfs.v16.4.0
-git clone -b EMC-v16.4.0 https://github.com/NOAA-EMC/global-workflow.git .
+MKDIR GFS.V16.3.25
+cd gfs.v16.3.25
+git clone -b EMC-v16.3.25 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -51,17 +51,43 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.4.0` and `gfs_ver=v16.4.0`
+* `versions/run.ver` - change `version=v16.3.25` and `gfs_ver=v16.3.25`
 
 SORC CHANGES
 ------------
 
-* New MODEL tag: `GFS.v16.4.0`
+* New GSI tag: `GFS.v16.4.0`
+* New EMC_verif-global tag: `verif_global_v2.10.0.1` (Gulf of America changes)
+
+The GSI has been updated from an older release branch (gfsda.v16.3.20) to one much closer to the develop 
+branch (gfsda.v16.3.25) with a large number of changes to the code that do not affect results.   
+Between these versions there has been a reorganisation of the repositories 
+resulting in some functionality moving from GSI to new repositories.  
+Therefore the following new repositories are checked out:
+
+GSI:  gfsda.v16.3.25
+GSI-Utils:  gsiutil.v16.3.25
+GSI-Monitor: gsimon_v16.3.25 
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.24
+* The jobs/ directory of GSI have been moved to global-workflow:
+jobs/JGDAS_ATMOS_ANALYSIS_DIAG
+jobs/JGDAS_ATMOS_CHGRES_FORENKF
+jobs/JGDAS_ATMOS_VERFOZN
+jobs/JGDAS_ATMOS_VERFRAD
+jobs/JGDAS_ATMOS_VMINMON
+jobs/JGDAS_ENKF_DIAG
+jobs/JGDAS_ENKF_ECEN
+jobs/JGDAS_ENKF_FCST
+jobs/JGDAS_ENKF_POST
+jobs/JGDAS_ENKF_SELECT_OBS
+jobs/JGDAS_ENKF_SFC
+jobs/JGDAS_ENKF_UPDATE
+jobs/JGFS_ATMOS_VMINMON
+jobs/JGLOBAL_ATMOS_ANALYSIS
+jobs/JGLOBAL_ATMOS_ANALYSIS_CALC
 
 PARM/CONFIG CHANGES
 -------------------
@@ -73,10 +99,34 @@ SCRIPT CHANGES
 
 * WW3-related changes to `scripts/exgfs_wave_post_gridded_sbs.sh` and `scripts/exglobal_forecast.sh`. Grid loop and counter updates. Log files are now checked for completion instead of the associated gridded output.
 
+* The scripts/ directory of GSI have been moved to global-workflow:
+scripts/exgdas_atmos_chgres_forenkf.sh
+scripts/exgdas_atmos_verfozn.sh
+scripts/exgdas_atmos_verfrad.sh
+scripts/exgdas_atmos_vminmon.sh
+scripts/exgdas_enkf_ecen.sh
+scripts/exgdas_enkf_fcst.sh
+scripts/exgdas_enkf_post.sh
+scripts/exgdas_enkf_select_obs.sh
+scripts/exgdas_enkf_sfc.sh
+scripts/exgdas_enkf_update.sh
+scripts/exgfs_atmos_vminmon.sh
+scripts/exglobal_atmos_analysis.sh
+scripts/exglobal_atmos_analysis_calc.sh
+scripts/exglobal_diag.sh
+
+
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.24
+* The following GSI-fix files have been modified to include new data:
+cloudy_radiance_info.txt (add MWS and modify GMI)
+global_convinfo.txt (adding Saildrone, Windborne, GOES-19 AMVs and GRACE-FO GNSSRO)
+global_ozinfo.txt (NOAA-21 OMPS)
+global_satinfo.txt (Add GOES-19 CSRs, modify GMI, preparation for Metop-SG)
+global_scaninfo.txt (Add MWS and GOES-19)
+prepobs_errtable.global (Add Windborne (301/401) and Saildrone (302/402))
+mws_beamwidth.txt has been added to support future implementation of MWS when available 
 
 MODULE CHANGES
 --------------
@@ -86,12 +136,12 @@ MODULE CHANGES
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No changes from GFS v16.3.24
+* No significant changes from GFS v16.3.24
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.24
+* No significant changes from GFS v16.3.24
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -100,6 +150,8 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
   * All DA and wave jobs
 * Does this change require a 30-day evaluation?
   * No
+* Building GSI requires CRTMv2.4.0.2
+* GOES-19 and GMI bias correction files need to be updated before implementation.
 
 DISSEMINATION INFORMATION
 -------------------------
