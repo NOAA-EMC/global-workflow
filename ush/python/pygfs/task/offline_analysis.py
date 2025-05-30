@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import gsi_utils
 import os
 from collections import OrderedDict
 from logging import getLogger
 from typing import Dict, Any
+import f90nml
 from wxflow import (AttrDict,
                     Task,
                     FileHandler,
@@ -89,33 +89,38 @@ class OfflineAnalysis(Task):
 
         # generate namelists for the executables
         # set up the namelist for the background interpolation code
-        namelist = OrderedDict()
-        namelist['chgres_setup'] = {
-            "i_output": self.task_config.nlon_interp,
-            "j_output": self.task_config.nlat_interp,
-            "input_file": "atmanl.input.nc",
-            "output_file": "atmanl_mem001",
-            "terrain_file": "atmges_mem001",
-            "ref_file": "atmges_mem001",
+        namelist = {
+            'chgres_setup': {
+                "i_output": self.task_config.nlon_interp,
+                "j_output": self.task_config.nlat_interp,
+                "input_file": "atmanl.input.nc",
+                "output_file": "atmanl_mem001",
+                "terrain_file": "atmges_mem001",
+                "ref_file": "atmges_mem001",
+            }
         }
 
-        gsi_utils.write_nml(namelist, os.path.join(self.task_config.DATA, 'chgres_nc_gauss.nml'))
+        with open(os.path.join(self.task_config.DATA, 'chgres_nc_gauss.nml'), 'w') as nmlfile:
+            f90nml.write(namelist, nmlfile)
 
         # set up the namelist for the calc increment code
-        namelist = OrderedDict()
-        namelist["setup"] = {
-            "datapath": "'./'",
-            "analysis_filename": "'atmanl'",
-            "firstguess_filename": "'atmges'",
-            "increment_filename": "'atminc'",
-            "debug": ".false.",
-            "nens": 1,
-            "imp_physics": str(self.task_config.imp_physics)
+        namelist = {
+            "setup": {
+                "datapath": "./",
+                "analysis_filename": "atmanl",
+                "firstguess_filename": "atmges",
+                "increment_filename": "atminc",
+                "debug": False,
+                "nens": 1,
+                "imp_physics": self.task_config.imp_physics
+            },
+            "zeroinc": {
+                "incvars_to_zero": self.task_config.INCREMENTS_TO_ZERO
+            }
         }
 
-        namelist["zeroinc"] = {"incvars_to_zero": self.task_config.INCREMENTS_TO_ZERO}
-
-        gsi_utils.write_nml(namelist, os.path.join(self.task_config.DATA, 'calc_increment.nml'))
+        with open(os.path.join(self.task_config.DATA, 'calc_increment.nml'), 'w') as nmlfile:
+            f90nml.write(namelist, nmlfile)
 
         # copy executables to $DATA
         executables_to_copy = []
