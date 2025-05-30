@@ -108,10 +108,10 @@ class GEFSTasks(Tasks):
     def fcst(self):
         dependencies = []
 
-        if self.app_config.mode in ['general']:
+        if self.app_config.type in ['general']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
                 dependencies.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.mode['real_time']:
+        if self.app_config.type['real_time']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
                 dependencies.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave']:
