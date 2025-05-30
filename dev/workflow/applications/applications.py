@@ -116,7 +116,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         if base['RUN'] == 'gefs':
             self.type = base['TYPE']
             if self.type not in self.VALID_TYPES:
-                raise NotImplementedError(f'{self.mode} is not a valid application type.\n'
+                raise NotImplementedError(f'{self.type} is not a valid application type.\n'
                                           f'Valid application modes are:\n'
                                           f'{", ".join(self.VALID_TYPES)}\n')
         else:
