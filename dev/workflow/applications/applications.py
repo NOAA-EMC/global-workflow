@@ -114,7 +114,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
 
         if base['RUN'] == "gefs":
             self.gefstype = base['GEFSTYPE']
-        print(f"AppConfig: gefstype = {base['GEFSTYPE']}")
 
         self.net = base['NET']
         logger.info(f"Generating the XML for a {self.gefstype}_{self.mode}_{self.net} case")

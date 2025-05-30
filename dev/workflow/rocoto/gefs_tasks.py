@@ -11,9 +11,7 @@ class GEFSTasks(Tasks):
     def stage_ic(self):
 
         stage_ic_map = {'general': self._gen_stage_ic,
-                        'real_time': self._RT_stage_ic}
-        print(f"GEFSTasks: stage_ic: '{self.app_config.gefstype}'")  # Print with quotes to reveal extra spaces or characters
-
+                        'real-time': self._RT_stage_ic}
         try:
             task = stage_ic_map[self.app_config.gefstype]()
 
