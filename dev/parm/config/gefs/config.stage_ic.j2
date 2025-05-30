@@ -10,8 +10,13 @@ source "${EXPDIR}/config.resources" stage_ic
 export ICSDIR="{{ ICSDIR }}" # User provided ICSDIR; blank if not provided
 export BASE_IC="{{ BASE_IC }}" # Platform home for staged ICs
 
-# export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gefs_RT.yaml.j2"
-export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gefs.yaml.j2"
+if [[ ${TYPE} = "real-time" ]] ; then
+  export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gefs_RT.yaml.j2"Add commentMore actions
+elif [[ ${TYPE} = "general" ]] ; then
+  export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gefs.yaml.j2"
+else
+  echo "ERROR: Invalid TYPE=${TYPE} for config.stage_ic"
+fi
 
 source "${HOMEgfs}/versions/ic.ver"
 
