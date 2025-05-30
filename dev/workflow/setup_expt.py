@@ -134,6 +134,7 @@ def map_inputs_to_configs(inputs):
             "COMROOT": inputs.comroot,
             "EXP_WARM_START": warm_start_map[inputs.start],
             "MODE": inputs.mode,
+            "TYPE": inputs.type,
             "INTERVAL_GFS": inputs.interval,
             "SDATE_GFS": to_YMDH(inputs.sdate_gfs),
             "APP": inputs.app,

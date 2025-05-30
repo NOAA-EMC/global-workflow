@@ -13,6 +13,7 @@ export RUN_ENVIR="emc"
 
 # Account, queue, etc.
 export ACCOUNT="{{ ACCOUNT }}"
+export TYPE="{{ TYPE }}"
 export QUEUE="{{ QUEUE }}"
 export QUEUE_SERVICE="{{ QUEUE_SERVICE | default('${QUEUE}') }}"
 export QUEUE_DTN="{{ QUEUE_DTN | default('${QUEUE_SERVICE}') }}"
