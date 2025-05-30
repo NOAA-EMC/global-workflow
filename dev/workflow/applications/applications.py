@@ -85,7 +85,6 @@ class AppConfig(ABC, metaclass=AppConfigInit):
     """
 
     VALID_MODES = ['cycled', 'forecast-only']
-    VALID_TYPES = ['real-time', 'general']
 
     def __init__(self, conf: Configuration) -> None:
         """
