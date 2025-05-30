@@ -15,8 +15,6 @@ set +x
 source "${HOMEgfs}/dev/ush/gw_setup.sh"
 set -x
 
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
-export PYTHONPATH
 cd "${HOMEgfs}/dev/workflow" || exit 1
 
 # We need to tag the pslot with the current git commit hash
