@@ -245,13 +245,13 @@ else
    fi
 fi
 
-# Empty the _yaml_list array if -G, -E, and/or -S were selected
+# Empty the _yaml_list array if -G, -E, -S and/or -C were selected
 if [[ "${_run_all_gfs}" == "true" || \
       "${_run_all_gefs}" == "true" || \
       "${_run_all_gcafs}" == "true" || \
       "${_run_all_sfs}" == "true" ]]; then
 
-   # Raise an error if the user specified a yaml list and any of -G -E -S
+   # Raise an error if the user specified a yaml list and any of -G -E -S -C
    if [[ "${_specified_yaml_list}" == "true" ]]; then
       echo "Ambiguous case selection."
       echo "Please select which tests to run explicitly with -y \"list of tests\" or"
