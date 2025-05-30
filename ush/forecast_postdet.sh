@@ -218,7 +218,7 @@ EOF
           increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
         else
           if [[ "${RUN}" == "gcafs" ]]; then
-            increment_file="${COMIN_ATMOS_OFFLINE_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+            increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
           else
             increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
           fi
