@@ -142,7 +142,7 @@ class SnowAnalysis(Task):
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
+        self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=False)
 
     @logit(logger)
     def prepare_IMS(self) -> None:
