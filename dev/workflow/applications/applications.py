@@ -112,10 +112,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                                       f'Valid application modes are:\n'
                                       f'{", ".join(self.VALID_MODES)}\n')
 
-        if base['RUN'] == 'gefs':
-            self.type = base['TYPE']
-        else:
-            self.type = 'general'
+        self.type = 'general'
 
         self.net = base['NET']
         logger.info(f"Generating the XML for a {self.mode}_{self.net} case")
