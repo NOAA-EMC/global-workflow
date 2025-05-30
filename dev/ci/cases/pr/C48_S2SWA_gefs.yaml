@@ -12,6 +12,7 @@ arguments:
   nens: 2
   interval: 24
   start: cold
+  gefstype: general
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2021032312

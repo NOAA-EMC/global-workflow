@@ -12,13 +12,13 @@ class GEFSTasks(Tasks):
 
         stage_ic_map = {'general': self._gen_stage_ic,
                         'real_time': self._RT_stage_ic}
-        print(f'GEFSTasks: stage_ic: {self.app_config.type}')
+        print(f'GEFSTasks: stage_ic: {self.app_config.gefstype}')
 
         try:
-            task = stage_ic_map[self.app_config.type]()
+            task = stage_ic_map[self.app_config.gefstype]()
 
         except KeyError:
-            raise NotImplementedError(f'{self.app_config.type} is not a valid type.\n'
+            raise NotImplementedError(f'{self.app_config.gefstype} is not a valid type.\n'
                                       f'{" | ".join(stage_ic_map.keys())}')
 
         return task
@@ -108,10 +108,10 @@ class GEFSTasks(Tasks):
     def fcst(self):
         dependencies = []
 
-        if self.app_config.type in ['general']:
+        if self.app_config.gefstype in ['general']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.type in ['real_time']:
+        if self.app_config.gefstype in ['real_time']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
             dependencies.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave']:
