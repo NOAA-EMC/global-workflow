@@ -92,8 +92,6 @@ if __name__ == '__main__':
     # Create a list of arguments to setup_expt.py
     setup_expt_args = [testconf.experiment.system, testconf.experiment.mode]
     for kk, vv in testconf.arguments.items():
-        if kk == "type":  # Skip the 'type' key
-            continue
         setup_expt_args.append(f"--{kk}")
         setup_expt_args.append(str(vv))
 
