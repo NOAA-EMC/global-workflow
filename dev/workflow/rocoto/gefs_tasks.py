@@ -141,14 +141,14 @@ class GEFSTasks(Tasks):
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
-                     }
+                    }
 
         seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
         metatask_dict = {'task_name': f'{self.run}_fcst_mem000',
                          'is_serial': True,
                          'var_dict': seg_var_dict,
                          'task_dict': task_dict
-                         }
+                        }
 
         task = rocoto.create_task(metatask_dict)
 
