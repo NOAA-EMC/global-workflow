@@ -116,7 +116,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             self.gefstype = base['GEFSTYPE']
 
         self.net = base['NET']
-        logger.info(f"Generating the XML for a {self.gefstype}_{self.mode}_{self.net} case")
+        logger.info(f"Generating the XML for a {self.mode}_{self.net} case")
 
     def _init_finalize(self, conf: Configuration):
         """
