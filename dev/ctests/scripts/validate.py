@@ -85,8 +85,8 @@ def validate_cmpfiles(config):
         file_a, file_b = pair
         if file_checksum(file_a) != file_checksum(file_b):
             logger.error(f"Checksum mismatch: {file_a} vs {file_b}")
-            raise ValueError(f"Checksum mismatch: {file_a} vs {file_b}")
-        logger.info(f"checksums match: {file_a} vs {file_b}")
+            raise ValueError(f"Checksum mismatch: {file_a} {file_b}")
+        logger.info(f"checksum match: {file_a} {file_b}")
 
 
 @logit(logger)
@@ -118,6 +118,7 @@ def main():
         logger.info("Nothing to validate (TODO - Stubbed).")
         sys.exit(0)
 
+    logger.info(f"Comparing files between these two location:\n  {data['STAGED_CTESTS']}\n  {data['RUNTESTS']}")
     validate_cmpfiles(files)
     logger.info(f"All files exist and pass checksum for test: {args.yaml}")
 
