@@ -53,7 +53,8 @@ class Tasks:
         self._base = self._configs['base']
 
        #self.HOMEgfs = self._base['HOMEgfs']
-        self.HOMEgfs = '/scratch4/NAGAPE/epic/Wei.Huang/src/global-workflow-cloud'
+       #self.HOMEgfs = '/scratch4/NAGAPE/epic/Wei.Huang/src/global-workflow-cloud'
+        self.HOMEgfs = '/contrib/Wei.Huang/src/global-workflow-cloud'
         self.rotdir = self._base['ROTDIR']
         self.pslot = self._base['PSLOT']
         if self.run == "enkfgfs":

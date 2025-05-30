@@ -15,12 +15,11 @@ class Host:
     Gather Host specific information.
     """
 
-    SUPPORTED_HOSTS = ['HERA', 'ORION', 'HERCULES', 'WCOSS2', 'URSA',
+    SUPPORTED_HOSTS = ['HERA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
                        'GAEAC5', 'GAEAC6', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
-    def __init__(self, host='URSA'):
+    def __init__(self, host=None):
 
-        print(f'host: {host}')
         if host is not None and host not in Host.SUPPORTED_HOSTS:
             raise NotImplementedError(f'{host} is not a supported host.\n' +
                                       'Currently supported hosts are:\n' +
@@ -44,11 +43,8 @@ class Host:
         # Detect the machine name and store in self.machine
 
         machine_id = os.getenv('MACHINE_ID', 'UNKNOWN')
-        machine_id = 'URSA'
         pw_csp = os.getenv('PW_CSP', 'UNKNOWN')
-       #container = os.getenv('SINGULARITY_NAME', None)
-
-        print(f'machine_id: {machine_id}')
+        container = os.getenv('SINGULARITY_NAME', None)
 
         # Detect the machine since MACHINE_ID is set,
         # Additionaly, if PW_CSP is set, then the machine is a cloud machine
@@ -57,14 +53,9 @@ class Host:
                 self.machine = f"{pw_csp.upper()}PW"
             return
 
-        print("os.path.exists('/scratch3/NCEPDEV'): ", os.path.exists('/scratch3/NCEPDEV'))
         # Detect the machine since MACHINE_ID is not set
-        if os.path.exists('/scratch3/NCEPDEV'):
-            self.machine = 'URSA'
-            machine_id = 'URSA'
-        elif os.path.exists('/scratch1/NCEPDEV'):
+        if os.path.exists('/scratch1/NCEPDEV'):
             self.machine = 'HERA'
-            machine_id = 'HERA'
         elif os.path.exists('/work/noaa'):
             self.machine = socket.gethostname().split("-", 1)[0].upper()
         elif os.path.exists('/lfs/f1'):
@@ -73,18 +64,13 @@ class Host:
             self.machine = 'GAEAC5'
         elif os.path.exists('/gpfs/f6'):
             self.machine = 'GAEAC6'
-       #elif container is not None:
-       #    self.machine = 'CONTAINER'
+        elif container is not None:
+            self.machine = 'CONTAINER'
         elif pw_csp is not None:
             if pw_csp.lower() not in ['azure', 'aws', 'google']:
                 raise ValueError(
                     f'cloud service provider "{pw_csp}" is not supported.')
             self.machine = f"{pw_csp.upper()}PW"
-
-        print(f'self.machine: {self.machine}')
-        print('Host.SUPPORTED_HOSTS: ', Host.SUPPORTED_HOSTS)
-        self.machine = 'URSA'
-        machine_id = 'URSA'
 
         if self.machine not in Host.SUPPORTED_HOSTS:
             raise NotImplementedError('This machine is not a supported host.\n' +

@@ -35,7 +35,8 @@ class RocotoXML(ABC):
         # Add ACCOUNT to host_info, with that from config.base
         self.host_info.ACCOUNT = self._base['ACCOUNT']
        #self.HOMEgfs = self._base['HOMEgfs']
-        self.HOMEgfs = '/scratch4/NAGAPE/epic/Wei.Huang/src/global-workflow-cloud'
+       #self.HOMEgfs = '/scratch4/NAGAPE/epic/Wei.Huang/src/global-workflow-cloud'
+        self.HOMEgfs = '/contrib/Wei.Huang/src/global-workflow-cloud'
         self.expdir = self._base['EXPDIR']
         self.pslot = self._base['PSLOT']
 

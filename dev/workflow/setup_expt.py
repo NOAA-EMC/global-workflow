@@ -22,6 +22,13 @@ from wxflow import parse_j2yaml, AttrDict, to_datetime, to_timedelta, to_YMDH, J
 _here = os.path.dirname(__file__)
 _top = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
 
+print('__file__:', __file__)
+print('_here:', _here)
+print('_top:', _top)
+
+current_dir = os.getcwd()
+print('current_dir:', current_dir)
+
 # Setup the logger
 logger = getLogger(__name__)
 
@@ -83,13 +90,18 @@ def update_configs(host, inputs):
 
     # Combine host.info and inputs_dict into a single dict, add some additional keys
     host_plus_inputs_dict = AttrDict(host.info, **inputs_dict_remapped)
+
     host_plus_inputs_dict.HOMEgfs = _top
     host_plus_inputs_dict.MACHINE = str(host).upper()
 
     # Read in the YAML file
     yaml_path = inputs.yaml
+
+    if yaml_path.find('/opt/global-workflow-cloud') >= 0:
+        yaml_path = yaml_path.replace('/opt/global-workflow-cloud', host_plus_inputs_dict.HOMEgfs)
     if not os.path.exists(yaml_path):
         raise FileNotFoundError(f'YAML file does not exist, check path: {yaml_path}')
+
     yaml_dict = parse_j2yaml(yaml_path, host_plus_inputs_dict)
 
     # yaml_dict is in the form {defaults: {key1: val1, ...}, base: {key1: val1, ...}, ...}

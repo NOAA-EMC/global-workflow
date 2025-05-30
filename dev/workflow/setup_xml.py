@@ -97,9 +97,13 @@ def main(*argv):
 
     check_expdir(user_inputs.expdir, base['EXPDIR'])
 
+    print('user_inputs: ', user_inputs)
+
     # Check if "HOMEDIR","STMP","PTMP" dirrctories are writable
-    dir_keys = ["HOMEDIR", "STMP", "PTMP"]
+   #dir_keys = ["HOMEDIR", "STMP", "PTMP"]
+    dir_keys = ["STMP", "PTMP"]
     for dk in dir_keys:
+        print(f'base[{dk}]: {base[dk]}')
         check_dir_writable(base[dk])
         if not check_dir_writable(base[dk]):
             msg = f'The {dk} path {base[dk]} cannot be written to!  Please correct this path and try again.'
