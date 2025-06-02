@@ -15,7 +15,7 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-MKDIR GFS.V16.3.25
+mkdir gfs.v16.3.25
 cd gfs.v16.3.25
 git clone -b EMC-v16.3.25 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
