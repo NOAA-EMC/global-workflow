@@ -90,10 +90,10 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
             COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
     fi
-    
+
     for FHR in "${soilinc_fhrs[@]}"; do
-        
-	add_time_dim=".false."
+
+        add_time_dim=".false."
         time_list="${FHR}"
 
         rm -f "regrid.nml"
