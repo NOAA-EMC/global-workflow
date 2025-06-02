@@ -240,7 +240,7 @@ class AerosolObsPrep(Task):
         """Create COMOUT_OBS and sync relevant obs from DMPDIR to COMOUT_OBS"""
         # get list of files to copy
         obslist = []
-        obsin_list = glob.glob(os.path.join(self.task_config.COMIN_OBSDMP, '*aod*'))
+        obsin_list = glob.glob(os.path.join(self.task_config.COMIN_OBSPROC, '*aod*'))
         for ob in obsin_list:
             # replace gdas with gcdas in the dest
             obslist.append([ob,
