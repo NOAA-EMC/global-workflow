@@ -1,11 +1,11 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 '''
 'script'-level control of the aerosol init job.
 
-Reads environment variables, determines the atmospheric IC files and most recent available
-restart files, then calls the script that merges the tracers from the restart files into
-the IC files.
+Reads environment variables, determines the atmospheric IC files and most
+recent available restart files, then calls the script that merges the tracers
+from the restart files into the IC files.
 
 INPUTS
 ---------
@@ -21,17 +21,18 @@ PARMgfs:      Path to global-workflow `parm` directory
 
 Additionally, the following data files are used:
 
-- Tiled atmospheric initial conditions that follow the naming pattern determined by `atm_base_pattern` and `atm_file_pattern`
-- Restart files from a previous cycle that fit the pattern determined by restart_base_pattern and restart_file_pattern,
-  tracer_file_pattern, and dycore_file_pattern
-- A static file containing a list of tracers from the restart files to be added to the IC files, determined by
-  `tracer_list_file_pattern`
+- Tiled atmospheric initial conditions that follow the naming pattern determined
+  by `atm_base_pattern` and `atm_file_pattern`
+- Restart files from a previous cycle that fit the pattern determined by
+  restart_base_pattern and restart_file_pattern, tracer_file_pattern, and
+  dycore_file_pattern
+- A static file containing a list of tracers from the restart files to be added
+  to the IC files, determined by `tracer_list_file_pattern`
 
 OUTPUTS
 ---------
-The tiled atmospheric intial condition files will be updated with conservation-adjusted tracer fields from the restart files.
-
-
+The tiled atmospheric intial condition files will be updated with
+conservation-adjusted tracer fields from the restart files.
 '''
 
 import os
@@ -41,17 +42,26 @@ from datetime import datetime, timedelta
 from functools import partial
 
 # Constants
-atm_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model/atmos/input"         # Location of atmosphere ICs
-atm_file_pattern = "{path}/gfs_data.{tile}.nc"                                # Atm IC file names
-atm_ctrl_pattern = "{path}/gfs_ctrl.nc"                                       # Atm IC control file name
-restart_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model/atmos/restart"   # Location of restart files (time of previous run)
-restart_file_pattern = "{file_base}/{timestamp}fv_core.res.{tile}.nc"         # Name of restart data files (time when restart is valid)
-tracer_file_pattern = "{file_base}/{timestamp}fv_tracer.res.{tile}.nc"        # Name of restart tracer files (time when restart is valid)
-dycore_file_pattern = "{file_base}/{timestamp}fv_core.res.nc"                 # Name of restart dycore file (time when restart is valid)
-tracer_list_file_pattern = "{parm_gfs}/ufs/gocart/gocart_tracer.list"         # Text list of tracer names to copy
+# Location of atmosphere ICs
+atm_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model/atmos/input"
+# Atm IC file names
+atm_file_pattern = "{path}/gfs_data.{tile}.nc"
+# Atm IC control file name
+atm_ctrl_pattern = "{path}/gfs_ctrl.nc"
+# Location of restart files (time of previous run)
+restart_base_pattern = "{rot_dir}/{run}.%Y%m%d/%H/model/atmos/restart"
+# Name of restart data files (time when restart is valid)
+restart_file_pattern = "{file_base}/{timestamp}fv_core.res.{tile}.nc"
+# Name of restart tracer files (time when restart is valid)
+tracer_file_pattern = "{file_base}/{timestamp}fv_tracer.res.{tile}.nc"
+# Name of restart dycore file (time when restart is valid)
+dycore_file_pattern = "{file_base}/{timestamp}fv_core.res.nc"
+# Text list of tracer names to copy
+tracer_list_file_pattern = "{parm_gfs}/ufs/gocart/gocart_tracer.list"
 merge_script_pattern = "{ush_gfs}/merge_fv3_aerosol_tile.py"
 n_tiles = 6
-max_lookback = 4                                                              # Maximum number of past cycles to look for for tracer data
+# Maximum number of past cycles to look for for tracer data
+max_lookback = 4
 debug = True
 
 # End configurable settings
@@ -86,10 +96,13 @@ def main() -> None:
             print(f'{var} = {f"{var}"}')
 
     atm_files, ctrl_files = get_atm_files(atm_source_path)
-    tracer_files, rest_files, core_files = get_restart_files(time, incr, max_lookback, fcst_length, rot_dir, run)
+    tracer_files, rest_files, core_files = get_restart_files(
+        time, incr, max_lookback, fcst_length, rot_dir, run)
 
     if (tracer_files is not None):
-        merge_tracers(merge_script, atm_files, tracer_files, rest_files, core_files[0], ctrl_files[0], tracer_list_file)
+        merge_tracers(
+            merge_script, atm_files, tracer_files, rest_files,
+            core_files[0], ctrl_files[0], tracer_list_file)
 
     return
 
@@ -103,7 +116,8 @@ def get_env_var(varname: str, fail_on_missing: bool = True) -> str:
     varname : str
             Environment variable to read
     fail_on_missing : bool, optional
-            Whether to fail (if True) or print warning (False) if environment variable is not defined (default: True)
+            Whether to fail (if True) or print warning (False) if environment
+            variable is not defined (default: True)
 
     Returns
     ----------
@@ -124,7 +138,8 @@ def get_env_var(varname: str, fail_on_missing: bool = True) -> str:
         if (fail_on_missing is True):
             raise RuntimeError(f'Environment variable {varname} not set')
         else:
-            print(f"WARNING: Environment variable {varname} not set, continuing using None")
+            print(f"WARNING: Environment variable {varname} not set, "
+                  f"continuing using None")
     if (debug):
         print(f'\tValue: {var}')
     return (var)
@@ -132,8 +147,8 @@ def get_env_var(varname: str, fail_on_missing: bool = True) -> str:
 
 def get_atm_files(path: str) -> typing.List[typing.List[str]]:
     '''
-    Checks whether all atmospheric IC files exist in the given location and returns a list
-    of the filenames.
+    Checks whether all atmospheric IC files exist in the given location and
+    returns a list of the filenames.
 
     Parameters
     ----------
@@ -155,7 +170,8 @@ def get_atm_files(path: str) -> typing.List[typing.List[str]]:
 
     file_list = []
     for file_pattern in atm_file_pattern, atm_ctrl_pattern:
-        files = list(map(lambda tile: file_pattern.format(tile=tile, path=path), tiles))
+        files = list(map(lambda tile: file_pattern.format(tile=tile, path=path),
+                     tiles))
         for file_name in files:
             if (debug):
                 print(f"\tChecking for {file_name}")
@@ -167,9 +183,12 @@ def get_atm_files(path: str) -> typing.List[typing.List[str]]:
     return file_list
 
 
-def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length: int, rot_dir: str, run: str) -> typing.List[typing.List[str]]:
+def get_restart_files(
+        time: datetime, incr: int, max_lookback: int, fcst_length: int,
+        rot_dir: str, run: str) -> typing.List[typing.List[str]]:
     '''
-    Determines the last cycle where all the necessary restart files are available. Ideally the immediate previous cycle
+    Determines the last cycle where all the necessary restart files are
+    available. Ideally the immediate previous cycle
 
     Parameters
     ----------
@@ -189,8 +208,10 @@ def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length:
     Returns
     ----------
     list of str
-            Full pathnames of all restart files needed from previous cycle (fv_core and fv_tracer files)
-            If all needed files aren't found within lookback period, An array of three None is returned instead.
+            Full pathnames of all restart files needed from previous cycle
+            (fv_core and fv_tracer files)
+            If all needed files aren't found within lookback period,
+            An array of three None is returned instead.
 
     '''
     print(f"Looking for restart tracer files in {rot_dir}")
@@ -212,7 +233,10 @@ def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length:
         file_base = last_time.strftime(restart_base_pattern.format(**locals()))
 
         for file_pattern in tracer_file_pattern, restart_file_pattern, dycore_file_pattern:
-            files = list(map(lambda tile: file_pattern.format(timestamp=timestamp, file_base=file_base, tile=tile), tiles))
+            files = list(map(
+                lambda tile: file_pattern.format(
+                    timestamp=timestamp, file_base=file_base, tile=tile),
+                tiles))
             if (debug):
                 print(f"\t\tLooking for files {files} in directory {file_base}")
             file_list = file_list + [files]
@@ -232,16 +256,18 @@ def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length:
 
 
 # Merge tracer data into atmospheric data
-def merge_tracers(merge_script: str,
-                  atm_files: typing.List[str],
-                  tracer_files: typing.List[str],
-                  rest_files: typing.List[str],
-                  core_file: str,
-                  ctrl_file: str,
-                  tracer_list_file: str) -> None:
+def merge_tracers(
+        merge_script: str,
+        atm_files: typing.List[str],
+        tracer_files: typing.List[str],
+        rest_files: typing.List[str],
+        core_file: str,
+        ctrl_file: str,
+        tracer_list_file: str) -> None:
     '''
-    Call the merger script to merge the tracers into the atmospheric IC files. Merged file is written to a temp file
-    which then overwrites the original upon successful completion of the script.
+    Call the merger script to merge the tracers into the atmospheric IC files.
+    Merged file is written to a temp file which then overwrites the original
+    upon successful completion of the script.
 
     Parameters
     ----------
@@ -267,23 +293,29 @@ def merge_tracers(merge_script: str,
     Raises
     ----------
     ValueError
-            If `atm_files`, `tracer_files`, and `rest_files` are not all the same length
+            If `atm_files`, `tracer_files`, and `rest_files` are not all the
+            same length
     CalledProcessError
             If merge script exits with a non-zero error
 
     '''
     print("Merging tracers")
     if (len(atm_files) != len(tracer_files)):
-        raise ValueError("Atmosphere file list and tracer file list are not the same length")
+        raise ValueError(
+            "Atmosphere file list and tracer file list are not the same length")
 
     if (len(atm_files) != len(rest_files)):
-        raise ValueError("Atmosphere file list and dycore file list are not the same length")
+        raise ValueError(
+            "Atmosphere file list and dycore file list are not the same length")
 
     for atm_file, tracer_file, rest_file in zip(atm_files, tracer_files, rest_files):
         if debug:
             print(f"\tMerging tracers from {tracer_file} into {atm_file}")
         temp_file = f'{atm_file}.tmp'
-        subprocess.run([merge_script, atm_file, tracer_file, core_file, ctrl_file, rest_file, tracer_list_file, temp_file], check=True)
+        subprocess.run(
+            [merge_script, atm_file, tracer_file, core_file, ctrl_file,
+             rest_file, tracer_list_file, temp_file],
+            check=True)
         os.replace(temp_file, atm_file)
 
 

@@ -242,13 +242,6 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             with open(CalcAnlDir + '/hosts', 'w') as hostfile:
                 hostfile.write(hosts[ihost] + '\n')
                 if launcher == 'srun':  # need to write host per task not per node for slurm
-                    # For xjet, each instance of chgres_inc must run on two nodes each
-                    if os.getenv('SLURM_JOB_PARTITION', '') == 'xjet':
-                        for a in range(0, 4):
-                            hostfile.write(hosts[ihost] + '\n')
-                        ihost += 1
-                        for a in range(0, 5):
-                            hostfile.write(hosts[ihost] + '\n')
                     for a in range(0, 12):  # need 12 more of the same host for the 13 tasks for chgres_inc
                         hostfile.write(hosts[ihost] + '\n')
             if launcher == 'srun':
@@ -346,9 +339,9 @@ if __name__ == '__main__':
     DoIAU = gsi_utils.isTrue(os.getenv('DOIAU', 'NO'))
     l4DEnsVar = gsi_utils.isTrue(os.getenv('l4densvar', 'NO'))
     Write4Danl = gsi_utils.isTrue(os.getenv('lwrite4danl', 'NO'))
-    ComIn_Ges = os.getenv('COM_ATMOS_HISTORY_PREV', './')
+    ComIn_Ges = os.getenv('COMIN_ATMOS_HISTORY_PREV', './')
     GPrefix = os.getenv('GPREFIX', './')
-    ComOut = os.getenv('COM_ATMOS_ANALYSIS', './')
+    ComOut = os.getenv('COMOUT_ATMOS_ANALYSIS', './')
     APrefix = os.getenv('APREFIX', '')
     NThreads = os.getenv('NTHREADS_CHGRES', 1)
     FixDir = os.path.join(os.getenv('FIXgfs', './'), 'am')

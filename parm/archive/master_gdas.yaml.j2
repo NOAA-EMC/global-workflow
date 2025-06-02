@@ -40,7 +40,7 @@ datasets:
     # Determine if we will save restart ICs or not (only valid for cycled)
     {% set save_warm_start_forecast, save_warm_start_cycled = ( False, False ) %}
 
-    {% if ARCH_CYC == cycle_HH | int%}
+    {% if ARCH_CYC == cycle_HH | int %}
         # Save the forecast-only cycle ICs every ARCH_WARMICFREQ or ARCH_FCSTICFREQ days
         {% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
             {% set save_warm_start_forecast = True %}
@@ -96,4 +96,11 @@ datasets:
     {% endif %}
 
     # End of restart checking
+{% endif %}
+
+# Archive the EXPDIR if requested
+{% if archive_expdir %}
+{% filter indent(width=4) %}
+{% include "expdir.yaml.j2" %}
+{% endfilter %}
 {% endif %}

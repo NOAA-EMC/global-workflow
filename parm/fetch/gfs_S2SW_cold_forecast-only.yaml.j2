@@ -1,0 +1,37 @@
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set prev_cycle_YMD = previous_cycle | to_YMD %}
+{% set prev_cycle_HH = previous_cycle | strftime("%H") %}
+# For cold starts, the ATM component is in the current cycle RUN.YYYYMMDD/HH
+# For ocean/ice, some files are in the current cyle, some in the previous
+# For waves, all files are in the previous cycle
+# Previous cycles are always gdas (gdas.YYYYMMDD/HH)
+{% set atm_dir = RUN + "." ~ cycle_YMD ~ "/" ~ cycle_HH ~ "/model/atmos/input" %}
+{% set ocean_dir = RUN + "." ~ cycle_YMD ~ "/" ~ cycle_HH ~ "/model/ocean/restart" %}
+{% set ice_dir = RUN + "." ~ cycle_YMD ~ "/" ~ cycle_HH ~ "/model/ice/restart" %}
+{% set prev_ocean_dir = "gdas." ~ prev_cycle_YMD ~ "/" ~ prev_cycle_HH ~ "/model/ocean/restart" %}
+{% set prev_ice_dir = "gdas." ~ prev_cycle_YMD ~ "/" ~ prev_cycle_HH ~ "/model/ice/restart" %}
+{% set prev_wave_dir = "gdas." ~ prev_cycle_YMD ~ "/" ~ prev_cycle_HH ~ "/model/wave/restart" %}
+{% set restart_prefix = cycle_YMD ~ "." ~ cycle_HH ~ "0000" %}
+untar:
+    tarball : "{{ FETCHDIR }}/{{ cycle_YMDH }}/s2sw_cold.tar"
+    on_hpss: True
+    contents:
+        # ATM
+        - {{atm_dir}}/gfs_ctrl.nc
+        {% for ftype in ["gfs_data", "sfc_data"] %}
+        {% for ntile in range(1, ntiles + 1) %}
+        - {{atm_dir}}/{{ ftype }}.tile{{ ntile }}.nc
+        {% endfor %} # ntile
+        {% endfor %} # ftype
+        # Ocean
+        - {{ocean_dir}}/{{restart_prefix}}.MOM.res.nc
+        - {{prev_ocean_dir}}/{{restart_prefix}}.MOM.res.nc
+        # Ice
+        - {{ice_dir}}/{{restart_prefix}}.cice_model.res.nc
+        - {{prev_ice_dir}}/{{restart_prefix}}.cice_model.res.nc
+        # Wave
+        - {{prev_wave_dir}}/{{restart_prefix}}.restart.ww3
+        - {{prev_wave_dir}}/{{restart_prefix}}.restart.{{waveGRD}}
+    destination: "{{ DATAROOT }}"

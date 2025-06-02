@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "upp" -c "base upp"
 
 ##############################################
@@ -22,9 +21,11 @@ if [[ ! -d ${COMOUT_ATMOS_MASTER} ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
 ###############################################################
 # Run relevant exglobal script
 
-"${SCRgfs}/exglobal_atmos_upp.py"
-status=$?
-(( status != 0 )) && exit "${status}"
+"${SCRgfs}/exglobal_atmos_upp.py" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work
@@ -41,7 +42,9 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || exit 1
-[[ "${KEEPDATA:-NO}" = "NO" ]] && rm -rf "${DATA}"
+if [[ "${KEEPDATA:-NO}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

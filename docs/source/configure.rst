@@ -48,12 +48,21 @@ The global-workflow configs contain switches that change how the system runs. Ma
 |                  | (.true.) or cold (.false)?       |               |             | be set when running ``setup_expt.py`` script with |
 |                  |                                  |               |             | the ``--start`` flag (e.g. ``--start warm``)      |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
-| HPSSARCH         | Archive to HPPS                  | NO            | Possibly    | Whether to save output to tarballs on HPPS        |
+| DO_ARCHCOM       | Archive COM                      | YES/NO        | YES         | Whether to archive the COM structure.  Defaults   |
+|                  |                                  |               |             | are machine-specific.                             |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
-| LOCALARCH        | Archive to a local directory     | NO            | Possibly    | Instead of archiving data to HPSS, archive to a   |
-|                  |                                  |               |             | local directory, specified by ATARDIR. If         |
-|                  |                                  |               |             | LOCALARCH=YES, then HPSSARCH must =NO. Changing   |
-|                  |                                  |               |             | HPSSARCH from YES to NO will adjust the XML.      |
+| ARCHCOM_TO       | Where to archive COM             | hpss, local,  | YES         | If DO_ARCHCOM is YES, then this variable indicates|
+|                  |                                  | or globus_hpss|             | where the COM structure tarballs should be saved. |
+|                  |                                  |               |             | Choices are 'hpss', 'local', or 'globus_hpss'.    |
+|                  |                                  |               |             | HPSS archiving requires a direct connection.      |
+|                  |                                  |               |             | Globus-HPSS archiving uses Mercury as a server to |
+|                  |                                  |               |             | archiving to HPSS.  This is currently only        |
+|                  |                                  |               |             | supported on Hercules.  Defaults are machine      |
+|                  |                                  |               |             | specific.                                         |
++------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
+| ARCH_EXPDIR      | Archive the EXPDIR               | NO            | NO          | Whether to create a tarball of the EXPDIR.        |
+|                  |                                  |               |             | ARCH_HASHES and ARCH_DIFFS generate text files    |
+|                  |                                  |               |             | of git output that are archived with the EXPDIR.  |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
 | QUILTING         | Use I/O quilting                 | .true.        | NO          | If .true. choose OUTPUT_GRID as cubed_sphere_grid |
 |                  |                                  |               |             | in netcdf or gaussian_grid                        |

@@ -1,5 +1,4 @@
 #!/bin/bash
-source "${HOMEgfs}/ush/preamble.sh"
 
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/${jobid}"
@@ -39,9 +38,11 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 # Run relevant script
 
 EXSCRIPT=${GDASOCNLETKFPY:-${HOMEgfs}/scripts/exglobal_marine_analysis_letkf.py}
-${EXSCRIPT}
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work
@@ -57,7 +58,13 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || exit 1
-[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
+cd "${DATAROOT}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 exit 0

@@ -21,4 +21,6 @@ if __name__ == '__main__':
 
     # Instantiate the aerosol analysis task
     AeroAnl = AerosolAnalysis(config)
+
+    # Finalize JEDI aerosol variational analysis
     AeroAnl.finalize()

@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlinit" -c "base atmensanl atmensanlinit"
 
@@ -17,18 +16,21 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
+RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMIN_OBS:COM_OBS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
+   COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
 
 ###############################################################
 # Run relevant script
 
 EXSCRIPT=${GDASATMENSINITPY:-${SCRgfs}/exglobal_atmens_analysis_initialize.py}
-${EXSCRIPT}
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

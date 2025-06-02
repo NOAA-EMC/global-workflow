@@ -45,7 +45,10 @@ def link_executable(task_config: AttrDict, exe_name: str) -> None:
 
 
 @logit(logger)
-def prep_input_nml(task_config: AttrDict) -> None:
+def prep_input_nml(task_config: AttrDict,
+                   output_nml: str = "mom_input.nml",
+                   simple_geom: bool = False,
+                   mom_input: str = "MOM_input") -> None:
     """Prepare the mom_input.nml file
     """
     # stage input.nml.j2
@@ -56,9 +59,11 @@ def prep_input_nml(task_config: AttrDict) -> None:
     # swap date and stacksize
     date_init = [int(s) for s in task_config.MARINE_WINDOW_END.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
     input_nml_config = {'domain_stack_size': task_config.DOMAIN_STACK_SIZE,
-                        'date_init': date_init}
+                        'date_init': date_init,
+                        'simple_geom': simple_geom,
+                        'mom_input': mom_input}
     jinja_input_nml = jinja.Jinja(mom_input_nml_tmpl, input_nml_config)
-    jinja_input_nml.save('mom_input.nml')
+    jinja_input_nml.save(output_nml)
 
 
 @logit(logger)
@@ -93,9 +98,9 @@ def test_hist_date(histfile: str, ref_date: datetime) -> None:
 
 
 @logit(logger)
-def gen_bkg_list(bkg_path: str, window_begin=' ', yaml_name='bkg.yaml', ice_rst=False) -> None:
+def gen_bkg_list(bkg_path: str, window_begin=' ', ice_rst=False) -> None:
     """
-    Generate a YAML of the list of backgrounds for the pseudo model
+    Generate a list of backgrounds for the pseudo model
     """
 
     # Pseudo model parameters (time step, start date)
@@ -104,8 +109,6 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', yaml_name='bkg.yaml', ice_rst=
     bkg_date = window_begin
 
     # Construct list of background file names
-    cyc = str(os.getenv('cyc')).zfill(2)
-    gcyc = str((int(cyc) - 6) % 24).zfill(2)  # previous cycle
     fcst_hrs = list(range(6, 10, dt_pseudo))
     files = []
     for fcst_hr in fcst_hrs:
@@ -113,15 +116,13 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', yaml_name='bkg.yaml', ice_rst=
 
     # Identify the ocean background that will be used for the  vertical coordinate remapping
     ocn_filename_ic = './INPUT/MOM.res.nc'
-    test_hist_date(ocn_filename_ic, bkg_date)  # assert date of the history file is correct
 
     # Copy/process backgrounds and generate background yaml list
     bkg_list = []
     for bkg in files:
         logger.info(f"****************** bkg: {bkg}")
-        # assert validity of the ocean bkg date, remove basename
+        # remove basename of ocean bkg
         bkg_date = bkg_date + timedelta(hours=dt_pseudo)
-        test_hist_date(bkg, bkg_date)
         ocn_filename = os.path.splitext(os.path.basename(bkg))[0] + '.nc'
 
         # prepare the seaice background, aggregate if the backgrounds are CICE restarts
@@ -136,8 +137,7 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', yaml_name='bkg.yaml', ice_rst=
 
         bkg_list.append(bkg_dict)
 
-    # save pseudo model yaml configuration
-    save_as_yaml(bkg_list, yaml_name)
+    return bkg_list
 
 
 @logit(logger)

@@ -6,8 +6,6 @@
 # in the future, we should move it above somewhere else.
 ##############################################################
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 cd "${DATA}" || exit 2
 
 export NTS="${HOMEgfs}/gempak/ush/restore"
@@ -19,20 +17,28 @@ if [[ ${MODEL} == GDAS ]]; then
     max_tries=180
     export fhr3
     for fhr3 in ${fcsthrs}; do
-        gempak_file="${COM_ATMOS_GEMPAK_1p00}/${RUN}_1p00_${PDY}${cyc}f${fhr3}"
+        gempak_file="${COMIN_ATMOS_GEMPAK_1p00}/${RUN}_1p00_${PDY}${cyc}f${fhr3}"
         if ! wait_for_file "${gempak_file}" "${sleep_interval}" "${max_tries}" ; then
-            echo "FATAL ERROR: ${gempak_file} not found after ${max_tries} iterations"
-            exit 10
+            export err=10
+            if [[ ${err} -ne 0 ]]; then
+              err_exit "${gempak_file} not found after ${max_tries} iterations"
+            fi
         fi
 
-        cp "${gempak_file}" "gem_grids${fhr3}.gem"
+        if [[ ! -f "${gempak_file}" ]]; then
+            export err=1
+            if [[ ${err} -ne 0 ]]; then
+              err_exit "Could not copy ${gempak_file}"
+            fi
+        fi
+
+        cpreq "${gempak_file}" "gem_grids${fhr3}.gem"
+
+        "${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr3}_gif.sh" && true
         export err=$?
-        if (( err != 0 )) ; then
-            echo "FATAL: Could not copy ${gempak_file}"
-            exit "${err}"
+        if [[ ${err} -ne 0 ]]; then
+          err_exit
         fi
-
-        "${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr3}_gif.sh"
     done
 fi
 

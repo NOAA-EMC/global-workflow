@@ -1,0 +1,14 @@
+esnowanlensmean:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas.x'
+  mpi_cmd: '{{ APRUN_ESNOWANL }}'
+  jedi_args: ['fv3jedi', 'ensmean']  
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/snow/jcb-base.yaml.j2'
+  jcb_algo: 'fv3jedi_snow_ensmean' 
+snowanlvar:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas.x'
+  mpi_cmd: '{{ APRUN_ESNOWANL }}'
+  jedi_args: ['fv3jedi', 'variational']  
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/snow/jcb-base.yaml.j2'
+  jcb_algo_yaml: '{{ JCB_ALGO_YAML_VAR }}'

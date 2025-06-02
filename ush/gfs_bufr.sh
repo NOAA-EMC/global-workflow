@@ -21,15 +21,14 @@
 # 2024-08-08 Bo Cui: Update to handle one forecast at a time
 # echo "History: February 2003 - First implementation of this utility script"
 #
-fhr="$1"
-fhr_p="$2"
-FINT="$3"
-F00FLAG="$4"
-workdir="$5"
+
+fhr="${1}"
+fhr_p="${2}"
+FINT="${3}"
+F00FLAG="${4}"
+workdir="${5}"
 
 cd "${workdir}" || exit 2
-
-source "${USHgfs}/preamble.sh"
 
 if [[ "${F00FLAG}" == "YES" ]]; then
    f00flag=".true."
@@ -65,7 +64,7 @@ CLASS="class1fv3"
 cat << EOF > gfsparm
  &NAMMET
   levs=${LEVS},makebufr=${bufrflag},
-  dird="${COM_ATMOS_BUFR}/bufr",
+  dird="${COMOUT_ATMOS_BUFR}/bufr",
   nstart=${fhr},nend=${fhr},nint=${FINT},
   nend1=${NEND1},nint1=${NINT1},nint3=${NINT3},
   nsfc=80,f00=${f00flag},fformat=${fformat},np1=${np1},
@@ -78,22 +77,22 @@ EOF
 #---------------------------------------------------------
 # Make sure all files are available:
 
-filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
+filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
 if [[ -z ${filename} ]]; then
   echo "FATAL ERROR: COULD NOT LOCATE logf${fhr} file"
   exit 2
 fi
 
-filename="${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr_p}.${logfm}"
+filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr_p}.${logfm}"
 if [[ -z ${filename} ]]; then
   echo "FATAL ERROR: COULD NOT LOCATE logf${fhr_p} file"
   exit 2
 fi
 
 #------------------------------------------------------------------
-${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${fhr}.${atmfm}" "sigf${fhr}"
-${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr}.${atmfm}" "flxf${fhr}"
-${NLN} "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr_p}.${atmfm}" "flxf${fhr_p}"
+${NLN} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${fhr}.${atmfm}" "sigf${fhr}"
+${NLN} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr}.${atmfm}" "flxf${fhr}"
+${NLN} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr_p}.${atmfm}" "flxf${fhr_p}"
 
 #  define input BUFR table file.
 ${NLN} "${PARMgfs}/product/bufr_gfs_${CLASS}.tbl" fort.1
@@ -105,11 +104,11 @@ ${NLN} "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
 
 export err=$?
 
-if [[ "${err}" -ne 0 ]]; then
-   echo "GFS postsnd job error, Please check files "
-   echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${fhr}.${atmfm}"
-   echo "${COM_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr}.${atmfm}"
-   err_chk
+if [[ ${err} -ne 0 ]]; then
+   echo "WARNING GFS postsnd job error, Please check files "
+   echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${fhr}.${atmfm}"
+   echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr}.${atmfm}"
+   exit "${err}"
 fi
 
-exit "${err}"
+exit 0

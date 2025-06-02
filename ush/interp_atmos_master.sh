@@ -4,8 +4,6 @@
 # Generate 0.25 / 0.5 / 1 degree interpolated grib2 files for each input grib2 file
 # trim's RH and tweaks sea-ice cover
 
-source "${USHgfs}/preamble.sh"
-
 input_file=${1:-"pgb2file_in"}  # Input pressure grib2 file
 output_file_prefix=${2:-"pgb2file_out"}  # Prefix for output grib2 file; the prefix is appended by resolution e.g. _0p25
 grid_string=${3:-"0p25"}  # Target grids; e.g. "0p25" or "0p25:0p50"; If multiple, they need to be ":" seperated
@@ -48,12 +46,30 @@ ${WGRIB2} "${input_file}" ${defaults} \
                           ${interp_budget} \
                           ${increased_bits} \
                           ${output_grids}
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   echo "FATAL ERROR: WGRIB2 failed to generate interpolated grib2 file!"
+   exit "${err}"
+fi
 
 # trim and mask for all grids
 for grid in "${grids[@]}"; do
-  trim_rh "${output_file_prefix}_${grid}"; export err=$?; err_chk
-  mod_icec "${output_file_prefix}_${grid}"; export err=$?; err_chk
+  trim_rh "${output_file_prefix}_${grid}"
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+     echo "FATAL ERROR: Failed during the execution of trim_rh"
+     exit "${err}"
+  fi
+  # shellcheck disable=SC2312
+  var_count=$(${WGRIB2} "${output_file_prefix}_${grid}" -match "LAND|ICEC" |wc -l)
+  if [[ "${var_count}" -eq 2 ]]; then
+    mod_icec "${output_file_prefix}_${grid}"
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+       echo "FATAL ERROR: Failed during execution of mod_icec"
+       exit "${err}"
+    fi
+  fi
 done
 
 exit 0

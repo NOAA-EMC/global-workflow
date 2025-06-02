@@ -7,9 +7,11 @@
 #
 #########################################################################
 
+source "${HOMEgfs}/ush/preamble.sh"
+
 LATVAL="1/1/1/1/5;5"
 pixels="1728;1472"
-cp "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
+cpreq "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
 
 ##########################################################
 #                   FORECAST CHARTS                      #
@@ -170,18 +172,18 @@ EOF
 
 # Copy the GIF images into my area
 
-cp "${mslpthksfcdev}"   "${COM_ATMOS_GEMPAK_GIF}"
-cp "${hgtvor500dev}"    "${COM_ATMOS_GEMPAK_GIF}"
-cp "${hgtvor500usdev}"  "${COM_ATMOS_GEMPAK_GIF}"
-cp "${rhvvel700dev}"    "${COM_ATMOS_GEMPAK_GIF}"
+cpfs "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgtvor500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgtvor500usdev}"  "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${rhvvel700dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
 
 # Copy the GIF images onto the NCDC area on the public ftp server
 
 if [[ "${SENDDBN}" == YES ]]; then
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgtvor500dev}"
-  #  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${hgtvor500usdev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COM_ATMOS_GEMPAK_GIF}/${rhvvel700dev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtvor500dev}"
+  #  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtvor500usdev}"
+  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${rhvvel700dev}"
 fi
 
 echo "GEMPAK_GIF ${fhr3} hour completed normally"

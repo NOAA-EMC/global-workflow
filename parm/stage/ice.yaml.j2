@@ -1,12 +1,19 @@
+{% set START_ICE_FROM_ANA = False %}
+{% if DO_JEDIOCNVAR == True and RUN == 'gdas' %}
+    {% set START_ICE_FROM_ANA = True %}
+{% endif %}
+{% if DO_STARTMEM_FROM_JEDIICE == True and RUN == 'enkfgdas' %}
+    {% set START_ICE_FROM_ANA = True %}
+{% endif %}
 ice:
-    {% if DO_JEDIOCNVAR == True %}
+    {% if START_ICE_FROM_ANA == True %}
     mkdir:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ICE_ANALYSIS_MEM = COMOUT_ICE_ANALYSIS_MEM_list[imem] %}
         - "{{ COMOUT_ICE_ANALYSIS_MEM }}"
         {% endfor %} # mem loop
-    copy:
+    link_req:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ICE_ANALYSIS_MEM = COMOUT_ICE_ANALYSIS_MEM_list[imem] %}
@@ -19,7 +26,7 @@ ice:
         {% set COMOUT_ICE_RESTART_PREV_MEM = COMOUT_ICE_RESTART_PREV_MEM_list[imem] %}
         - "{{ COMOUT_ICE_RESTART_PREV_MEM }}"
         {% endfor %} # mem loop
-    copy:
+    link_req:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ICE_RESTART_PREV_MEM = COMOUT_ICE_RESTART_PREV_MEM_list[imem] %}

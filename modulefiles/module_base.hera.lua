@@ -21,6 +21,7 @@ load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
 load(pathJoin("hdf5", (os.getenv("hdf5_ver") or "None")))
 load(pathJoin("netcdf-c", (os.getenv("netcdf_c_ver") or "None")))
 load(pathJoin("netcdf-fortran", (os.getenv("netcdf_fortran_ver") or "None")))
+load(pathJoin("esmf", (os.getenv("esmf_ver") or "None")))
 
 load(pathJoin("nco", (os.getenv("nco_ver") or "None")))
 load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
@@ -54,3 +55,5 @@ prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/Fit2Ob
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 whatis("Description: GFS run environment")
+
+load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))

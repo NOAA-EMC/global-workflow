@@ -1,0 +1,3 @@
+[flake8]
+exclude = .git,.github,venv,__pycache__,old,build,dist
+max-line-length = 160

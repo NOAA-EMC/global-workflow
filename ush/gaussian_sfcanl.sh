@@ -35,8 +35,6 @@
 #                   Defaults to $EXECgfs/gaussian_sfcanl.x
 #     INISCRIPT     Preprocessing script.  Defaults to none.
 #     LOGSCRIPT     Log posting script.  Defaults to none.
-#     ERRSCRIPT     Error processing script
-#                   defaults to 'eval [[ $err = 0 ]]'
 #     ENDSCRIPT     Postprocessing script
 #                   defaults to none
 #     CDATE         Output analysis date in yyyymmddhh format. Required.
@@ -68,7 +66,6 @@
 #   Modules and files referenced:
 #     scripts    : $INISCRIPT
 #                  $LOGSCRIPT
-#                  $ERRSCRIPT
 #                  $ENDSCRIPT
 #
 #     programs   : $GAUSFCANLEXE
@@ -77,7 +74,7 @@
 #                  ${FIXWGTS}
 #                  ${FIXgfs}/am/global_hyblev.l65.txt
 #
-#     input data : ${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile*.nc
+#     input data : ${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile*.nc
 #
 #     output data: $PGMOUT
 #                  $PGMERR
@@ -99,8 +96,6 @@
 #   Machine: IBM SP
 #
 ################################################################################
-
-source "${USHgfs}/preamble.sh"
 
 CASE=${CASE:-C768}
 res=$(echo $CASE | cut -c2-)
@@ -133,8 +128,9 @@ export REDERR=${REDERR:-'2>'}
 ${INISCRIPT:-}
 pwd=$(pwd)
 cd "${DATA}" || exit 99
-[[ -d "${COM_ATMOS_ANALYSIS}" ]] || mkdir -p "${COM_ATMOS_ANALYSIS}"
-[[ -d "${COM_ATMOS_RESTART}" ]] || mkdir -p "${COM_ATMOS_RESTART}"
+if [[ ! -d "${COMOUT_ATMOS_ANALYSIS}" ]]; then
+   mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
+fi
 
 ################################################################################
 #  Make surface analysis
@@ -153,12 +149,12 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 ${NLN} "${FIXWGTS}" "./weights.nc"
 
 # input analysis tiles (with nst records)
-${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile1.nc" "./anal.tile1.nc"
-${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile2.nc" "./anal.tile2.nc"
-${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile3.nc" "./anal.tile3.nc"
-${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile4.nc" "./anal.tile4.nc"
-${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile5.nc" "./anal.tile5.nc"
-${NLN} "${COM_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile6.nc" "./anal.tile6.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile1.nc" "./anal.tile1.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile2.nc" "./anal.tile2.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile3.nc" "./anal.tile3.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile4.nc" "./anal.tile4.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile5.nc" "./anal.tile5.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile6.nc" "./anal.tile6.nc"
 
 # input orography tiles
 ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile1.nc" "./orog.tile1.nc"
@@ -171,7 +167,7 @@ ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile6.nc" "./orog.tile6.
 ${NLN} "${SIGLEVEL}" "./vcoord.txt"
 
 # output gaussian global surface analysis files
-${NLN} "${COM_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc" "./sfc.gaussian.analysis.file"
+${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc" "./sfc.gaussian.analysis.file"
 
 # Namelist uses booleans now
 if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
@@ -189,14 +185,16 @@ cat <<EOF > fort.41
  /
 EOF
 
-$APRUNSFC $GAUSFCANLEXE
+${APRUNSFC} "${GAUSFCANLEXE}"
 
-export ERR=$?
-export err=$ERR
-$ERRSCRIPT||exit 2
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status!"
+   exit "${err}"
+fi
 
 ################################################################################
 #  Postprocessing
-cd $pwd
+cd "${pwd}"
 
-exit ${err}
+exit 0

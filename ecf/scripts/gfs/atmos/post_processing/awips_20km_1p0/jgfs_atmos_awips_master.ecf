@@ -34,8 +34,8 @@ module list
 #############################################################
 export cyc=%CYC%
 export cycle=t%CYC%z
-export FHRGRP=%FHRGRP% FHRLST=%FHRLST% FCSTHR=%FCSTHR% TRDRUN=%TRDRUN% fcsthrs=%FCSTHR%
-export job=jgfs_awips_f%FCSTHR%_%CYC%
+export FHRGRP=%FHRGRP% FHRLST=%FHRLST% FCSTHR=%FCSTHR% TRDRUN=%TRDRUN% fcsthr=%FCSTHR%
+###export job=jgfs_awips_f%FCSTHR%_%CYC%
 
 ############################################################
 # CALL executable job script here

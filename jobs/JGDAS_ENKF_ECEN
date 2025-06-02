@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
 
 
@@ -41,10 +40,11 @@ MEMDIR="ensstat" RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 ###############################################################
 # Run relevant script
 
-${ENKFRECENSH:-${SCRgfs}/exgdas_enkf_ecen.sh}
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
-
+${ENKFRECENSH:-${SCRgfs}/exgdas_enkf_ecen.sh} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work
@@ -60,8 +60,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

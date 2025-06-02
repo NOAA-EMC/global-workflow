@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "epos" -c "base epos"
 
 
@@ -22,10 +21,11 @@ export LEVS=$((LEVS-1))
 ###############################################################
 # Run relevant script
 
-${ENKFPOSTSH:-${SCRgfs}/exgdas_enkf_post.sh}
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
-
+${ENKFPOSTSH:-${SCRgfs}/exgdas_enkf_post.sh} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work
@@ -41,8 +41,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

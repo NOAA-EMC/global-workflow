@@ -1,0 +1,8 @@
+mkdir:
+- '{{ DATA }}/bkg'
+copy:
+- ['{{ COMIN_ATMOS_RESTART_PREV }}/{{ current_cycle | to_fv3time }}.coupler.res', '{{ DATA }}/bkg/']
+{% for tile in range(1, ntiles+1) %}
+- ['{{ COMIN_ATMOS_RESTART_PREV }}/{{ current_cycle | to_fv3time }}.sfc_data.tile{{ tile }}.nc', '{{ DATA }}/bkg/']
+- ["{{ FIXorog }}/{{ CASE }}/{{ CASE }}.mx{{ OCNRES }}_oro_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/{{ CASE }}.mx{{ OCNRES }}_oro_data.tile{{ tile }}.nc" ]
+{% endfor %}

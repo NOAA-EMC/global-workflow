@@ -51,8 +51,8 @@ copy_to_comout() {
   if [[ -f "${rundir_outfile}" ]]; then
     cpfs "${rundir_outfile}" "${comout_dir}"
   else
-    echo "FATAL ERROR: Output file (${rundir_outfile}) does not exist."
-    export err=1; err_chk
+    export err=1
+    err_exit "Output file (${rundir_outfile}) does not exist."
   fi
 }
 

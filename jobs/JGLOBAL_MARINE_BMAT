@@ -1,6 +1,5 @@
 #!/bin/bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/${jobid}"
@@ -48,9 +47,11 @@ mkdir -p "${COMOUT_ICE_BMATRIX}"
 # Run relevant script
 
 EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRgfs}/exglobal_marinebmat.py}
-${EXSCRIPT}
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

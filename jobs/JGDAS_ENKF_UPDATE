@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 
 
@@ -25,25 +24,29 @@ export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
 
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COM_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+  COMIN_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMOUT_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
 
 MEMDIR="ensstat" RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-  COM_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
+  COMIN_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
 
 
 ###############################################################
 # Run relevant script
 
-${ENKFUPDSH:-${SCRgfs}/exgdas_enkf_update.sh}
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
-
+${ENKFUPDSH:-${SCRgfs}/exgdas_enkf_update.sh} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # Send Alerts
 ##############################################
 if [ ${SENDDBN} = YES  ] ; then
-   "${DBNROOT}/bin/dbn_alert" "MODEL" "ENKF1_MSC_enkfstat" "${job}" "${COM_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat"
+   "${DBNROOT}/bin/dbn_alert" "MODEL" "ENKF1_MSC_enkfstat" "${job}" "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat"
 fi
 
 
@@ -61,8 +64,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

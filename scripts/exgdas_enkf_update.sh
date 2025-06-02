@@ -17,8 +17,6 @@
 #
 ################################################################################
 
-source "${USHgfs}/preamble.sh"
-
 # Directories.
 pwd=$(pwd)
 
@@ -27,7 +25,7 @@ NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
 nm=""
-if [ $CFP_MP = "YES" ]; then
+if [[ "${CFP_MP}" == "YES" ]]; then
     nm=0
 fi
 APRUNCFP=${APRUNCFP:-""}
@@ -58,7 +56,7 @@ NAM_ENKF=${NAM_ENKF:-""}
 SATOBS_ENKF=${SATOBS_ENKF:-""}
 OZOBS_ENKF=${OZOBS_ENKF:-""}
 use_correlated_oberrs=${use_correlated_oberrs:-".false."}
-if [ $USE_CORRELATED_OBERRS == "YES" ]; then
+if [[ "${USE_CORRELATED_OBERRS}" == "YES" ]]; then
    use_correlated_oberrs=".true."
 fi
 imp_physics=${imp_physics:-"99"}
@@ -72,15 +70,14 @@ letkf_flag=${letkf_flag:-".false."}
 getkf=${getkf:-".false."}
 denkf=${denkf:-".false."}
 nobsl_max=${nobsl_max:-10000}
-lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 write_spread_diag=${write_spread_diag:-".false."}
 cnvw_option=${cnvw_option:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
 taperanalperts=${taperanalperts:-".false."}
-IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
+IAUFHRS_ENKF=${IAUFHRS_ENKF:-"6,"}
 NMEM_ENS_MAX=${NMEM_ENS:-80}
-if [ "${RUN}" = "enkfgfs" ]; then
+if [[ "${RUN}" == "enkfgfs" ]]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
    NMEM_ENS=${NMEM_ENS_GFS:-30}
    ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
@@ -91,25 +88,26 @@ else
    mem_offset=0
 fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
-GSI_SOILANAL=${GSI_SOILANAL:-"NO"}
+DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
+hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 
 ################################################################################
 
-ATMGES_ENSMEAN="${COM_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}atmf006.ensmean.nc"
-LONB_ENKF=${LONB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_xt)} # get LONB_ENKF
-LATB_ENKF=${LATB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_yt)} # get LATB_ENFK
-LEVS_ENKF=${LEVS_ENKF:-$($NCLEN $ATMGES_ENSMEAN pfull)} # get LEVS_ENFK
+ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}atmf006.ensmean.nc"
+LONB_ENKF=${LONB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_xt)} # get LONB_ENKF
+LATB_ENKF=${LATB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_yt)} # get LATB_ENFK
+LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" pfull)} # get LEVS_ENFK
 use_gfs_ncio=".true."
 use_gfs_nemsio=".false."
 paranc=${paranc:-".true."}
-WRITE_INCR_ZERO="incvars_to_zero= $INCREMENTS_TO_ZERO,"
-if [ $DO_CALC_INCREMENT = "YES" ]; then
+WRITE_INCR_ZERO="incvars_to_zero= ${INCREMENTS_TO_ZERO},"
+if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
    write_fv3_incr=".false."
 else
    write_fv3_incr=".true."
 fi
-LATA_ENKF=${LATA_ENKF:-$LATB_ENKF}
-LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
+LATA_ENKF=${LATA_ENKF:-${LATB_ENKF}}
+LONA_ENKF=${LONA_ENKF:-${LONB_ENKF}}
 SATANGL=${SATANGL:-${FIXgfs}/gsi/global_satangbias.txt}
 SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
 CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
@@ -119,151 +117,140 @@ HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS_ENKF}.txt}
 ANAVINFO=${ANAVINFO:-${FIXgfs}/gsi/global_anavinfo.l${LEVS_ENKF}.txt}
 VLOCALEIG=${VLOCALEIG:-${FIXgfs}/gsi/vlocal_eig_l${LEVS_ENKF}.dat}
 ENKF_SUFFIX="s"
-[[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
-
-################################################################################
-# Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
+if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
+    ENKF_SUFFIX=""
 fi
-cd $DATA || exit 99
 
 ################################################################################
 # Fixed files
-$NLN $SATANGL    satbias_angle
-$NLN $SATINFO    satinfo
-$NLN $SCANINFO   scaninfo
-$NLN $CONVINFO   convinfo
-$NLN $OZINFO     ozinfo
-$NLN $HYBENSINFO hybens_info
-$NLN $ANAVINFO   anavinfo
-$NLN $VLOCALEIG  vlocal_eig.dat
+${NLN} "${SATANGL}"    satbias_angle
+${NLN} "${SATINFO}"    satinfo
+${NLN} "${SCANINFO}"   scaninfo
+${NLN} "${CONVINFO}"   convinfo
+${NLN} "${OZINFO}"     ozinfo
+${NLN} "${HYBENSINFO}" hybens_info
+${NLN} "${ANAVINFO}"   anavinfo
+${NLN} "${VLOCALEIG}"  vlocal_eig.dat
 
 # Bias correction coefficients based on the ensemble mean
-${NLN} "${COM_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"
+${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"
 
 ################################################################################
 
-if [ $USE_CFP = "YES" ]; then
-   [[ -f $DATA/untar.sh ]] && rm $DATA/untar.sh
-   [[ -f $DATA/mp_untar.sh ]] && rm $DATA/mp_untar.sh
-   cat > $DATA/untar.sh << EOFuntar
+if [[ "${USE_CFP}" == "YES" ]]; then
+   rm -f "${DATA}/untar.sh" "${DATA}/mp_untar.sh"
+   cat > "${DATA}/untar.sh" << EOFuntar
 #!/bin/sh
 memchar=\$1
-COM_ATMOS_ANALYSIS=\$2
-flist="$CNVSTAT $OZNSTAT $RADSTAT"
+COMOUT_ATMOS_ANALYSIS=\$2
+flist="${CNVSTAT} ${OZNSTAT} ${RADSTAT}"
 for ftype in \$flist; do
-   if [ \$memchar = "ensmean" ]; then
-      fname=\${COM_ATMOS_ANALYSIS}/\${ftype}.ensmean
+   if [[ "\${memchar}" == "ensmean" ]]; then
+      fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype}.ensmean
    else
-      fname=\${COM_ATMOS_ANALYSIS}/\${ftype}
+      fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype}
    fi
    tar -xvf \$fname
 done
 EOFuntar
-   chmod 755 $DATA/untar.sh
+   chmod 755 "${DATA}/untar.sh"
 fi
 
 ################################################################################
 # Ensemble guess, observational data and analyses/increments
 
-flist="$CNVSTAT $OZNSTAT $RADSTAT"
-if [ $USE_CFP = "YES" ]; then
-   echo "${nm} ${DATA}/untar.sh ensmean ${COM_ATMOS_ANALYSIS_STAT}" | tee -a "${DATA}/mp_untar.sh"
-   if [ ${CFP_MP:-"NO"} = "YES" ]; then
+flist="${CNVSTAT} ${OZNSTAT} ${RADSTAT}"
+if [[ "${USE_CFP}" == "YES" ]]; then
+   echo "${nm} ${DATA}/untar.sh ensmean ${COMIN_ATMOS_ANALYSIS_STAT}" | tee -a "${DATA}/mp_untar.sh"
+   if [[ "${CFP_MP:-NO}" == "YES" ]]; then
        nm=$((nm+1))
    fi
 else
-   for ftype in $flist; do
-      fname="${COM_ATMOS_ANALYSIS_STAT}/${ftype}.ensmean"
-      tar -xvf $fname
+   for ftype in ${flist}; do
+      fname="${COMIN_ATMOS_ANALYSIS_STAT}/${ftype}.ensmean"
+      tar -xvf "${fname}"
    done
 fi
-nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
-for imem in $(seq 1 $NMEM_ENS); do
+nfhrs=$(echo "${IAUFHRS_ENKF}" | sed 's/,/ /g')
+for imem in $(seq 1 ${NMEM_ENS}); do
    smem=$((imem + mem_offset))
    if (( smem > NMEM_ENS_MAX )); then
       smem=$((smem - NMEM_ENS_MAX))
    fi
-   gmemchar="mem"$(printf %03i $smem)
-   memchar="mem"$(printf %03i $imem)
+   gmemchar="mem"$(printf "%03i" "${smem}")
+   memchar="mem"$(printf "%03i" "${imem}")
 
    MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
-      COM_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
+      COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
-      COM_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+      COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-   if [ $lobsdiag_forenkf = ".false." ]; then
-      if [ $USE_CFP = "YES" ]; then
-         echo "${nm} ${DATA}/untar.sh ${memchar} ${COM_ATMOS_ANALYSIS_MEM}" | tee -a "${DATA}/mp_untar.sh"
-         if [ ${CFP_MP:-"NO"} = "YES" ]; then
-             nm=$((nm+1))
-         fi
-      else
-         for ftype in $flist; do
-            fname="${COM_ATMOS_ANALYSIS_MEM}/${ftype}"
-            tar -xvf $fname
-         done
-      fi
-   fi
-   mkdir -p "${COM_ATMOS_ANALYSIS_MEM}"
-   for FHR in $nfhrs; do
-      ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
+   mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
+   
+   for FHR in ${nfhrs}; do
+      ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
-      if [ $GSI_SOILANAL = "YES" ]; then
-         ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
+      if [[ "${hofx_2m_sfcfile}" == ".true." ]]; then
+         ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
              "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
-      if [ $cnvw_option = ".true." ]; then
-         ${NLN} "${COM_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}.nc" \
+      if [[ "${cnvw_option}" == ".true." ]]; then
+         ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}.nc" \
             "sfgsfc_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
-      if [ $FHR -eq 6 ]; then
-         if [ $DO_CALC_INCREMENT = "YES" ]; then
-            ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}atmanl.nc" \
+      if [[ ${FHR} -eq 6 ]]; then
+         if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atmanl.nc" \
                "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          else
-            ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}atminc.nc" \
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atminc.nc" \
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
       else
-         if [ $DO_CALC_INCREMENT = "YES" ]; then
-            ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}atma00${FHR}.nc" \
+         if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atma00${FHR}.nc" \
                "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          else
-            ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}atmi00${FHR}.nc" \
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atmi00${FHR}.nc" \
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
       fi
-      if [ $GSI_SOILANAL = "YES" ]; then
-          ${NLN} "${COM_ATMOS_ANALYSIS_MEM}/${APREFIX}sfci00${FHR}.nc" \
+      if [[ "${DO_GSISOILDA}" == "YES" ]]; then
+          ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}sfci00${FHR}.nc" \
            "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
    done
 done
 
 # Ensemble mean guess
-for FHR in $nfhrs; do
+for FHR in ${nfhrs}; do
 
-   ${NLN} "${COM_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}atmf00${FHR}.ensmean.nc" \
+   ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}atmf00${FHR}.ensmean.nc" \
       "sfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
-   if [ $cnvw_option = ".true." ]; then
-      ${NLN} "${COM_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}sfcf00${FHR}.ensmean.nc" \
+   if [[ "${cnvw_option}" == ".true." ]]; then
+      ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}sfcf00${FHR}.ensmean.nc" \
          "sfgsfc_${PDY}${cyc}_fhr0${FHR}_ensmean"
+   fi
+   if [[ "${DO_GSISOILDA}" == "YES" ]]; then
+      ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}sfcf00${FHR}.ensmean.nc" \
+         "bfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
+      ${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${APREFIX}sfci00${FHR}.nc" \
+         "sfcincr_${PDY}${cyc}_fhr0${FHR}_ensmean"
    fi
 done
 
-if [[ $USE_CFP = "YES" ]]; then
-   chmod 755 $DATA/mp_untar.sh
-   ncmd=$(cat $DATA/mp_untar.sh | wc -l)
-   if [[ $ncmd -gt 0 ]]; then
+if [[ "${USE_CFP}" == "YES" ]]; then
+   chmod 755 "${DATA}/mp_untar.sh"
+   ncmd=$(wc -l < "${DATA}/mp_untar.sh")
+   if [[ ${ncmd} -gt 0 ]]; then
       ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
-      APRUNCFP=$(eval echo $APRUNCFP)
-      $APRUNCFP $DATA/mp_untar.sh
-      export err=$?; err_chk
+      APRUNCFP=$(eval echo "${APRUNCFP}")
+      ${APRUNCFP} "${DATA}/mp_untar.sh" && true
+      export err=$?
+      if [[ ${err} -ne 0 ]]; then
+         err_exit "Failed to untar input data!"
+      fi
    fi
 fi
 
@@ -271,7 +258,7 @@ fi
 # Create global_enkf namelist
 cat > enkf.nml << EOFnml
 &nam_enkf
-   datestring="${PDY}${cyc}",datapath="$DATA/",
+   datestring="${PDY}${cyc}",datapath="${DATA}/",
    analpertwtnh=${analpertwt},analpertwtsh=${analpertwt},analpertwttr=${analpertwt},
    covinflatemax=1.e2,covinflatemin=1,pseudo_rh=.false.,iassim_order=0,
    corrlengthnh=${corrlength},corrlengthsh=${corrlength},corrlengthtr=${corrlength},
@@ -281,21 +268,21 @@ cat > enkf.nml << EOFnml
    obtimelnh=1.e30,obtimelsh=1.e30,obtimeltr=1.e30,
    saterrfact=1.0,numiter=0,
    sprd_tol=1.e30,paoverpb_thresh=0.98,
-   nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENS,
+   nlons=${LONA_ENKF},nlats=${LATA_ENKF},nlevs=${LEVS_ENKF},nanals=${NMEM_ENS},
    deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
    reducedgrid=${reducedgrid},readin_localization=${readin_localization_enkf}.,
-   use_gfs_nemsio=${use_gfs_nemsio},use_gfs_ncio=${use_gfs_ncio},imp_physics=$imp_physics,lupp=$lupp,
+   use_gfs_nemsio=${use_gfs_nemsio},use_gfs_ncio=${use_gfs_ncio},imp_physics=${imp_physics},lupp=${lupp},
    univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
    letkf_flag=${letkf_flag},nobsl_max=${nobsl_max},denkf=${denkf},getkf=${getkf}.,
    nhr_anal=${IAUFHRS_ENKF},nhr_state=${IAUFHRS_ENKF},
-   lobsdiag_forenkf=${lobsdiag_forenkf},taperanalperts=${taperanalperts},
-   write_spread_diag=$write_spread_diag,
-   modelspace_vloc=$modelspace_vloc,
+   lobsdiag_forenkf=.true.,taperanalperts=${taperanalperts},
+   write_spread_diag=${write_spread_diag},
+   modelspace_vloc=${modelspace_vloc},
    use_correlated_oberrs=${use_correlated_oberrs},
-   netcdf_diag=$netcdf_diag,cnvw_option=$cnvw_option,
-   paranc=$paranc,write_fv3_incr=$write_fv3_incr,
-   $WRITE_INCR_ZERO
-   $NAM_ENKF
+   netcdf_diag=${netcdf_diag},cnvw_option=${cnvw_option},
+   paranc=${paranc},write_fv3_incr=${write_fv3_incr},
+   ${WRITE_INCR_ZERO}
+   ${NAM_ENKF}
 /
 &satobs_enkf
    sattypes_rad(1) = 'amsua_n15',     dsis(1) = 'amsua_n15',
@@ -377,7 +364,7 @@ cat > enkf.nml << EOFnml
    sattypes_rad(77)= 'viirs-m_j2',    dsis(77)= 'viirs-m_j2',
    sattypes_rad(78)= 'atms_n21',      dsis(78)= 'atms_n21',
    sattypes_rad(79)= 'cris-fsr_n21',  dsis(79)= 'cris-fsr_n21',
-   $SATOBS_ENKF
+   ${SATOBS_ENKF}
 /
 &ozobs_enkf
    sattypes_oz(1) = 'sbuv2_n16',
@@ -396,28 +383,29 @@ cat > enkf.nml << EOFnml
    sattypes_oz(14) = 'ompstc8_n21',
    sattypes_oz(15) = 'ompsnp_n21',
    sattypes_oz(16) = 'gome_metop-c',
-   $OZOBS_ENKF
+   ${OZOBS_ENKF}
 /
 EOFnml
 
 ################################################################################
 # Run enkf update
 
-export OMP_NUM_THREADS=$NTHREADS_ENKF
-export pgm=$ENKFEXEC
-. prep_step
+export OMP_NUM_THREADS=${NTHREADS_ENKF}
+export pgm=${ENKFEXEC}
+source prep_step
 
-$NCP $ENKFEXEC $DATA
-$APRUN_ENKF ${DATA}/$(basename $ENKFEXEC) 1>stdout 2>stderr
-export err=$?; err_chk
+cpreq "${ENKFEXEC}" "${DATA}"
+${APRUN_ENKF} "${DATA}/$(basename ${ENKFEXEC})" 1>stdout 2>stderr && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "Failed to run the EnKF!"
+fi
 
 # Cat runtime output files.
-cat stdout stderr > "${COM_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
+cat stdout stderr > "${COMOUT_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
 
 ################################################################################
 #  Postprocessing
-cd "$pwd"
-[[ $mkdata = "YES" ]] && rm -rf "${DATA}"
+cd "${pwd}" || exit 1
 
-
-exit ${err}
+exit "${err}"

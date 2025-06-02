@@ -9,7 +9,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 mkdir -p -m 775 "${DATA}/MAR_ATL"
 cd "${DATA}/MAR_ATL" || exit 2
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits
@@ -17,7 +17,7 @@ cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 mdl=gfs
@@ -272,10 +272,10 @@ if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit $(( err + 100 ))
 fi
 
-mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_atl"
+mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_atl"
 if [[ "${SENDDBN}" == "YES" ]] ; then
    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-      "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_atl"
+      "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_atl"
 fi
 
 

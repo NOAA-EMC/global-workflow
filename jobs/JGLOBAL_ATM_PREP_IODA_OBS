@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmiodaobs" -c "base prepatmiodaobs"
 
 ##############################################
@@ -12,15 +11,19 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmiodaobs" -c "base prepatmiodao
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
-
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMOUT_OBS:COM_OBS_TMPL
 
 ###############################################################
 # Run relevant script
 EXSCRIPT=${BUFR2IODASH:-${USHgfs}/run_bufr2ioda.py}
-${EXSCRIPT} "${PDY}${cyc}" "${RUN}" "${DMPDIR}" "${PARMgfs}/gdas/ioda/bufr2ioda" "${COM_OBS}/"
-status=$?
-[[ ${status} -ne 0 ]] && (echo "FATAL ERROR: Error executing ${EXSCRIPT}, ABORT!"; exit "${status}")
+${EXSCRIPT} "${PDY}${cyc}" "${RUN}" "${DMPDIR}" "${PARMgfs}/gdas/ioda/bufr2ioda" "${COMOUT_OBS}/" && true
+export err=$?
+set +x
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Error executing ${EXSCRIPT}"
+fi
+set_trace
 
 ##############################################
 # End JOB SPECIFIC work

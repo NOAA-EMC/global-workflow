@@ -341,7 +341,7 @@ because Rocoto uses `crontab`, which needs the cluster active all the time, or t
 
 After finishing your work on the AWS cluster, you should terminate/stop the cluster, unless you have reasons to keep it active.
 To stop/terminate the cluster, go to the cluster session, and click the green power button as show in :numref:`Figure %s <stop-cluster>`.
-A window will pop up; click the red *Turn Off* button to switch off the cluster. 
+A window will pop up; click the red *Turn Off* button to switch off the cluster.
 
 .. _stop-cluster:
 
@@ -394,7 +394,7 @@ or accessing the cluster from your web terminal, you can start to clone, compile
 
       gwhome=/contrib/Wei.Huang/src/global-workflow-cloud  # Change this to your own "global-workflow" source directory
       cd ${gwhome}/sorc
-      source ${gwhome}/workflow/gw_setup.sh
+      source ${gwhome}/dev/ush/gw_setup.sh
       #build_all.sh
       build_all.sh -w
       link_workflow.sh
@@ -416,4 +416,3 @@ EPIC has copied the C48 and C96 ATM, GEFS, and some other data to AWS, and the c
 If users want to run their own case, they need to make changes to the IC path and others to make it work.
 The execution of the global-workflow should now follow the same steps
 as those for the RDHPCS on-premises hosts.
-

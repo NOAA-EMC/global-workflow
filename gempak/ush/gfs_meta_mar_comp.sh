@@ -11,7 +11,7 @@ rm -Rf "${DATA}/GEMPAK_META_MAR"
 mkdir -p -m 775 "${DATA}/GEMPAK_META_MAR" "${DATA}/MAR_COMP"
 
 cd "${DATA}/MAR_COMP" || exit 2
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 export COMIN="gfs.multi"
 mkdir -p "${COMIN}"
@@ -477,10 +477,10 @@ if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit $(( err + 100 ))
 fi
 
-mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_comp"
+mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_comp"
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert MODEL" "${DBN_ALERT_TYPE}" "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_comp"
+        "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_comp"
 fi
 
 exit

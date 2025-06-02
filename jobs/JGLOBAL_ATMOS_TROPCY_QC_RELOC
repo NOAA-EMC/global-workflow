@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
 
 
@@ -28,8 +27,10 @@ export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}}   # path to tropical cyclone reco
 ##############################################
 # Define COM directories
 ##############################################
-declare_from_tmpl COM_OBS
-if [[ ! -d "${COM_OBS}" ]]; then mkdir -p "${COM_OBS}"; fi
+declare_from_tmpl COMOUT_OBS:COM_OBS_TMPL
+if [[ ! -d "${COMOUT_OBS}" ]]; then
+  mkdir -p "${COMOUT_OBS}"
+fi
 
 export CRES=$(echo ${CASE} | cut -c2-)
 export LATB=$((CRES*2))
@@ -42,9 +43,10 @@ export BKGFREQ=1                                # for hourly relocation
 ##############################################
 
 ${TROPCYQCRELOSH:-${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh}
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
-
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # Final processing
@@ -56,8 +58,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
 
 
 exit 0

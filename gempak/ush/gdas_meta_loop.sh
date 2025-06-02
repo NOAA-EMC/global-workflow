@@ -13,7 +13,7 @@ device="nc | gdasloop.meta"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L "${COMIN}" ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 if [[ "${envir}" == "para" ]] ; then
@@ -38,10 +38,10 @@ for (( fhr=24; fhr<=144; fhr+=24 )); do
     cycles=$(seq -s ' ' -f "%02g" 0 6 "${cyc}")
     for cycle in ${cycles}; do
         #  Test with GDAS in PROD
-        YMD=${day} HH=${cyc} GRID=1p00 declare_from_tmpl "COM_ATMOS_GEMPAK_1p00_past:COM_ATMOS_GEMPAK_TMPL"
+        YMD=${day} HH=${cyc} GRID=1p00 declare_from_tmpl "COMIN_ATMOS_GEMPAK_1p00_past:COM_ATMOS_GEMPAK_TMPL"
         export COMIN="${RUN}.${day}${cycle}"
         if [[ ! -L "${COMIN}" ]]; then
-            ${NLN} "${COM_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
+            ${NLN} "${COMIN_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
         fi
         gdfile="${COMIN}/gdas_1p00_${day}${cycle}f000"
 
@@ -228,16 +228,16 @@ if (( err != 0 )) || [[ ! -s gdasloop.meta ]]; then
     exit "${err}"
 fi
 
-mv gdasloop.meta "${COM_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
+mv gdasloop.meta "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
 export err=$?
 if (( err != 0 )) ; then
-    echo "FATAL ERROR: Failed to move meta file to ${COM_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
+    echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
     exit "${err}"
 fi
 
 if [[ ${SENDDBN} == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
+        "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
 fi
 
 exit

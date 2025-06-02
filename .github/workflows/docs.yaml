@@ -42,14 +42,14 @@ jobs:
         ./.github/scripts/build_docs.sh
 
     - name: Upload documentation (on success)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: documentation
         path: artifact/documentation
 
     - name: Upload warnings (on failure)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: documentation_warnings.log
