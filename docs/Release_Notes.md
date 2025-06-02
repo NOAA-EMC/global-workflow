@@ -1,9 +1,13 @@
-GFS V16.4.0 RELEASE NOTES
+GFS V16.3.25 RELEASE NOTES
 
 -------
 PRELUDE
 -------
-TODO: ADD DA UPDATE DETAILS
+Data assimilation upgrade which implements a version of GSI closer to the head of the develop branch and 
+includes the following new data types for assimilation: Windborne Balloon Sondes; Saildrone surface obs; 
+GOES-19 clear sky radiances; GMI radiances; NOAA-19 Ozone Profile Retreievals.   Preparation for Metop-SG
+instruments.  Also include minor modifications to ATMS thinning; treatment of surface ship pressure 
+observations and quality control of humidity Jacobians.
 
 Also included in this upgrade are changes to add an indicator log file for WW3 gridded output.
 
@@ -24,13 +28,15 @@ cd sorc
 
 The checkout script extracts the following GFS components:
 
-| Component | Tag         | POC               |
-| --------- | ----------- | ----------------- |
-| MODEL     | GFS.v16.4.0   | Jun.Wang@noaa.gov |
-| GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
-| GSI       | gfsda.v16.3.22 | Andrew.Collard@noaa.gov |
-| UFS_UTILS | ops-gfsv16.3.20 | George.Gayno@noaa.gov |
-| POST      | upp_v8.3.0 | Wen.Meng@noaa.gov |
+| Component  | Tag                          | POC                     |
+| ---------- | ---------------------------- | ----------------------- |
+| MODEL      | GFS.v16.3.25                 | Jun.Wang@noaa.gov       |
+| GLDAS      | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov      |
+| GSI        | gfsda.v16.3.25               | Andrew.Collard@noaa.gov |
+| UFS_UTILS  | ops-gfsv16.3.20              | George.Gayno@noaa.gov   |
+| POST       | upp_v8.3.0                   | Wen.Meng@noaa.gov       |
+| GSI-Utils  | gsiutil.v16.3.25             | Andrew.Collard@noaa.gov |
+| GSI-Monitor| gsimon_v16.3.25              | Edward.Safford@noaa.gov |
 
 To build all the GFS components, execute:
 ```bash
