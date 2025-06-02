@@ -142,10 +142,10 @@ class GCAFSCycledAppConfig(AppConfig):
 
         if options['do_globusarch']:
             configs += ['globus']
-            # TODO Enable when the globus archiving feature is available for ensembles
-            if options['do_hybvar']:
-                print("WARNING Globus archiving is currently only possible for deterministic members")
-                print("        Ensemble members will NOT be archived with this option!!")
+            # TODO Enable when a Hyb-Var capability is available for GCAFS
+            # if options['do_hybvar']:
+            #     print("WARNING Globus archiving is currently only possible for deterministic members")
+            #     print("        Ensemble members will NOT be archived with this option!!")
             # if options['do_hybvar']:
             #     configs += ['globus_earc']
 
