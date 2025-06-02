@@ -28,8 +28,8 @@
   specdir=$3
   workdir=$4
 
-  YMDHE=$(${NDATE} "${FHMAX_WAV_PNT}" "${CDATE}")
-  model_start_date=$(${NDATE} "${OFFSET_START_HOUR}" "${PDY}${cyc}")
+  YMDHE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} + ${FHMAX_WAV_PNT} hours")
+  model_start_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} + ${OFFSET_START_HOUR} hours")
 
   cd "${workdir}"
 
