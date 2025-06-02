@@ -89,6 +89,7 @@ class OfflineAnalysis(Task):
 
         # generate namelists for the executables
         # set up the namelist for the background interpolation code
+        logger.info("Generating namelist for 'chgres_nc'")
         namelist = {
             'chgres_setup': {
                 "i_output": self.task_config.nlon_interp,
@@ -99,10 +100,13 @@ class OfflineAnalysis(Task):
                 "ref_file": "atmges_mem001",
             }
         }
+        logger.info(namelist)
 
         with open(os.path.join(self.task_config.DATA, 'chgres_nc_gauss.nml'), 'w') as nmlfile:
             f90nml.write(namelist, nmlfile)
+        logger.info(f"Wrote namelist to {os.path.join(self.task_config.DATA, 'chgres_nc_gauss.nml')}")
 
+        logger.info("Generating namelist for 'calc_increment'")
         # set up the namelist for the calc increment code
         namelist = {
             "setup": {
@@ -118,9 +122,11 @@ class OfflineAnalysis(Task):
                 "incvars_to_zero": self.task_config.INCREMENTS_TO_ZERO
             }
         }
+        logger.info(namelist)
 
         with open(os.path.join(self.task_config.DATA, 'calc_increment.nml'), 'w') as nmlfile:
             f90nml.write(namelist, nmlfile)
+        logger.info(f"Wrote namelist to {os.path.join(self.task_config.DATA, 'calc_increment.nml')}")
 
         # copy executables to $DATA
         executables_to_copy = []
@@ -132,7 +138,7 @@ class OfflineAnalysis(Task):
 
     @logit(logger)
     def interpolate_analysis(self) -> None:
-        """If necessary, nterpolate the offline analysis
+        """If necessary, interpolate the offline analysis
         from its original resolution to the resolution of the
         previous model forecast.
 
