@@ -140,7 +140,10 @@ CHANGES TO FILE AND FILE SIZES
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No significant changes from GFS v16.3.24
+Improvements are made to several wave post-processing job resources:
+* gfs_wave_post_bndpnt job walltime reduced from 1hr to 30mins and compute resources reduced from 3 nodes/80 tasks to 1 node/1 task
+* gfs_wave_post_bndpntbll walltime reduced from 1hr to 10mins and compute resources reduced from 4 nodes/112 tasks to 1 node/2 tasks
+* gfs_wave_postpnt walltime reduced from 1.5hrs to 35mins and compute resources reduced from 4 nodes/50 tasks to 1 node/3 tasks
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
