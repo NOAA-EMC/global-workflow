@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 # create global_ozinfo file for a given date
-date=$1
+date_in=$1
 # header
 echo '! For mls data, pressure and obs errors are pulled from bufr, so not listed here'
 echo '! sens/instr/sat lev  use pressure gross   obs    b_oz  pg_oz'
