@@ -85,12 +85,12 @@ def get_validation_mode():
     """
     mode = os.environ.get('CTEST_VALIDATION_MODE', 'PRESENCE_ONLY').upper()
     valid_modes = ['STRICT', 'PRESENCE_ONLY', 'CHECKSUM_ONLY']
-    
+
     if mode not in valid_modes:
         logger.warning(f"Invalid CTEST_VALIDATION_MODE '{mode}', defaulting to 'PRESENCE_ONLY'")
         logger.warning(f"Valid modes are: {', '.join(valid_modes)}")
         mode = 'PRESENCE_ONLY'
-    
+
     logger.info(f"Validation mode: {mode}")
     return mode
 
@@ -115,32 +115,32 @@ def validate_cmpfiles(config, validation_mode='PRESENCE_ONLY'):
         If required files are missing in STRICT or PRESENCE_ONLY modes.
     """
     cmpfiles = config.get("output_files", {}).get("cmpfiles", [])
-    
+
     if not cmpfiles:
         logger.info("No files to validate")
         return
-    
+
     missing_files = []
     checksum_mismatches = []
     files_checked = 0
     files_present = 0
-    
+
     logger.info(f"Validating {len(cmpfiles)} file pairs in {validation_mode} mode")
-    
+
     for pair in cmpfiles:
         file_a, file_b = pair
         file_a_path = Path(file_a)
         file_b_path = Path(file_b)
-        
+
         # Check file existence
         file_a_exists = file_a_path.exists()
         file_b_exists = file_b_path.exists()
-        
+
         if not file_a_exists:
             missing_files.append(file_a)
         if not file_b_exists:
             missing_files.append(file_b)
-            
+
         # Handle missing files based on validation mode
         if not (file_a_exists and file_b_exists):
             if validation_mode in ['STRICT', 'PRESENCE_ONLY']:
@@ -149,31 +149,31 @@ def validate_cmpfiles(config, validation_mode='PRESENCE_ONLY'):
             elif validation_mode == 'CHECKSUM_ONLY':
                 logger.warning(f"Skipping missing files: {file_a} (exists: {file_a_exists}), {file_b} (exists: {file_b_exists})")
                 continue
-        
+
         files_present += 1
-        
+
         # Skip checksum validation in PRESENCE_ONLY mode
         if validation_mode == 'PRESENCE_ONLY':
             logger.info(f"Files present (checksum skipped): {file_a} {file_b}")
             continue
-            
+
         # Perform checksum validation
         try:
             checksum_a = file_checksum(file_a)
             checksum_b = file_checksum(file_b)
-            
+
             if checksum_a != checksum_b:
                 checksum_mismatches.append((file_a, file_b, checksum_a, checksum_b))
                 logger.error(f"Checksum mismatch: {file_a} ({checksum_a}) vs {file_b} ({checksum_b})")
             else:
                 logger.info(f"Checksum match: {file_a} {file_b} ({checksum_a})")
                 files_checked += 1
-                
+
         except Exception as e:
             logger.error(f"Error computing checksums for {file_a}, {file_b}: {e}")
             if validation_mode == 'STRICT':
                 raise
-    
+
     # Report results
     logger.info(f"Validation summary:")
     logger.info(f"  Total file pairs: {len(cmpfiles)}")
@@ -182,7 +182,7 @@ def validate_cmpfiles(config, validation_mode='PRESENCE_ONLY'):
         logger.info(f"  File pairs with matching checksums: {files_checked}")
     logger.info(f"  Missing files: {len(missing_files)}")
     logger.info(f"  Checksum mismatches: {len(checksum_mismatches)}")
-    
+
     # Handle validation failures based on mode
     if validation_mode in ['STRICT', 'PRESENCE_ONLY'] and missing_files:
         error_msg = f"Missing {len(missing_files)} files in {validation_mode} mode: {missing_files[:5]}"
@@ -190,7 +190,7 @@ def validate_cmpfiles(config, validation_mode='PRESENCE_ONLY'):
             error_msg += f" (and {len(missing_files) - 5} more)"
         logger.error(error_msg)
         raise FileNotFoundError(error_msg)
-    
+
     if validation_mode in ['STRICT', 'CHECKSUM_ONLY'] and checksum_mismatches:
         error_msg = f"Found {len(checksum_mismatches)} checksum mismatches"
         logger.error(error_msg)
@@ -233,7 +233,7 @@ def main():
     validation_mode = get_validation_mode()
     logger.info(f"Comparing files between these two location:\n  {data['STAGED_CTESTS']}\n  {data['RUNTESTS']}")
     validate_cmpfiles(files, validation_mode)
-    
+
     # Success message based on validation mode
     if validation_mode == 'STRICT':
         logger.info(f"All files exist and pass checksum for test: {args.yaml}")
