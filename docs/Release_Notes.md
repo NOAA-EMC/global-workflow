@@ -124,14 +124,14 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* The following GSI-fix files have been modified to include new data:
-cloudy_radiance_info.txt (add MWS and modify GMI)
-global_convinfo.txt (adding Saildrone, Windborne, GOES-19 AMVs and GRACE-FO GNSSRO)
-global_ozinfo.txt (NOAA-21 OMPS)
-global_satinfo.txt (Add GOES-19 CSRs, modify GMI, preparation for Metop-SG)
-global_scaninfo.txt (Add MWS and GOES-19)
-prepobs_errtable.global (Add Windborne (301/401) and Saildrone (302/402))
-mws_beamwidth.txt has been added to support future implementation of MWS when available 
+The following GSI-fix files have been modified to include new data:
+* `cloudy_radiance_info.txt` (add MWS and modify GMI)
+* `global_convinfo.txt` (adding Saildrone, Windborne, GOES-19 AMVs and GRACE-FO GNSSRO)
+* `global_ozinfo.txt` (NOAA-21 OMPS)
+* `global_satinfo.txt` (Add GOES-19 CSRs, modify GMI, preparation for Metop-SG)
+* `global_scaninfo.txt` (Add MWS and GOES-19)
+* `prepobs_errtable.global` (Add Windborne (301/401) and Saildrone (302/402))
+* `mws_beamwidth.txt` has been added to support future implementation of MWS when available 
 
 MODULE CHANGES
 --------------
