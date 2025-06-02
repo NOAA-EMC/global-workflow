@@ -56,7 +56,7 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* New GSI tag: `GFS.v16.4.0`
+* New MODEL tag: `GFS.v16.3.25`
 * New EMC_verif-global tag: `verif_global_v2.10.0.1` (Gulf of America changes)
 
 The GSI has been updated from an older release branch (gfsda.v16.3.20) to one much closer to the develop 
