@@ -34,6 +34,8 @@ export FHOUT_OCN=${FHOUT_OCN_GFS}
 export FHOUT_ICE=${FHOUT_ICE_GFS}
 export FHZERO="{{ FHZERO }}"
 
+export MERRA2_6ym=".false."
+
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst
 export domains_stack_size="16000000"

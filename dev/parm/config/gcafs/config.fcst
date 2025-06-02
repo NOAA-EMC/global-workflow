@@ -57,7 +57,7 @@ case ${RUN} in
     echo "FATAL ERROR: Unsupported RUN '${RUN}'"
     exit 1
 esac
-
+export MERRA2_6ym=".false."
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst
 export domains_stack_size="16000000"
