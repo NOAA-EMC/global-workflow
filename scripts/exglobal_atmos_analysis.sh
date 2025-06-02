@@ -57,7 +57,7 @@ ta2tb=${ta2tb:-".true."}
 netcdf_diag=${netcdf_diag:-".true."}
 binary_diag=${binary_diag:-".false."}
 lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
-    
+
 # IAU
 DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6,"}
@@ -82,7 +82,7 @@ RUN=${RUN:-""}
 SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
 export gesenvir=${gesenvir:-${envir}}
- 
+
 export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 export ignore_2mQM=${ignore_2mQM:-".false."}
 
@@ -725,22 +725,22 @@ EOFunzip
       else
          fname=$(echo ${diag_file} | cut -d'.' -f1)
          date=$(echo ${diag_file} | cut -d'.' -f2)
-         ${UNCOMPRESS} ${diag_file}
-         fnameges=$(echo ${fname}|sed 's/_ges//g')
-         ${NMV} ${fname}.${date}${DIAG_SUFFIX} ${fnameges}
+         ${UNCOMPRESS} "${diag_file}"
+         fnameges=$(echo "${fname}"|sed 's/_ges//g')
+         ${NMV} "${fname}.${date}${DIAG_SUFFIX}" "${fnameges}"
       fi
    done
 
    if [[ "${USE_CFP}" == "YES" ]] ; then
-      chmod 755 ${DATA}/mp_unzip.sh
-      ncmd=$(cat ${DATA}/mp_unzip.sh | wc -l)
+      chmod 755 "${DATA}/mp_unzip.sh"
+      ncmd=$(cat "${DATA}/mp_unzip.sh" | wc -l)
       if [[ ${ncmd} -gt 0 ]]; then
          if [[ ${ncmd} -lt ${max_tasks_per_node} ]]; then
             ncmd_max=${ncmd}
          else
             ncmd_max=${max_tasks_per_node}
          fi
-         APRUNCFP_UNZIP=$(eval echo ${APRUNCFP})
+         APRUNCFP_UNZIP=$(eval echo "${APRUNCFP}")
          ${APRUNCFP_UNZIP} "${DATA}/mp_unzip.sh"
          export err=$?
          if [[ ${err} -ne 0 ]]; then
@@ -888,8 +888,8 @@ export OMP_NUM_THREADS=${NTHREADS_GSI}
 export pgm=${GSIEXEC}
 . prep_step
 
-cpreq ${GSIEXEC} ${DATA}
-${APRUN_GSI} ${DATA}/$(basename ${GSIEXEC}) 1>&1 2>&2
+cpreq "${GSIEXEC}" "${DATA}"
+${APRUN_GSI} "${DATA}/$(basename "${GSIEXEC}")" 1>&1 2>&2
 export err=$?
 if [[ ${err} -ne 0 ]]; then
    err_exit "Failed to run the GSI analysis!"
@@ -911,13 +911,13 @@ fi
 ##############################################################
 # For eupd
 if [[ -s satbias_out.int ]]; then
-   cpfs satbias_out.int ${ABIASe}
+   cpfs satbias_out.int "${ABIASe}"
 else
-   cpfs satbias_in ${ABIASe}
+   cpfs satbias_in "${ABIASe}"
 fi
 
 # Cat runtime output files.
-cat fort.2* > ${GSISTAT}
+cat fort.2* > "${GSISTAT}"
 
 # If requested, create obsinput tarball from obs_input.* files
 if [[ ${RUN_SELECT} == "YES" ]]; then
@@ -925,11 +925,11 @@ if [[ ${RUN_SELECT} == "YES" ]]; then
   if [[ -s obsinput.tar ]]; then
       rm -f obsinput.tar
   fi
-  ${NLN} ${SELECT_OBS} obsinput.tar
+  ${NLN} "${SELECT_OBS}" obsinput.tar
   ${CHGRP_CMD} obs_input.*
   tar -cvf obsinput.tar obs_input.*
-  chmod 750 ${SELECT_OBS}
-  ${CHGRP_CMD} ${SELECT_OBS}
+  chmod 750 "${SELECT_OBS}"
+  ${CHGRP_CMD} "${SELECT_OBS}"
   rm -f obsinput.tar
   echo $(date) END tar obs_input >&2
 fi
@@ -938,7 +938,7 @@ fi
 # Send alerts
 if [[ ${SENDDBN} == "YES" ]]; then
     if [[ ${RUN} == "gfs" ]]; then
-       ${DBNROOT}/bin/dbn_alert MODEL GFS_abias ${job} ${ABIAS}
+       "${DBNROOT}/bin/dbn_alert" MODEL GFS_abias "${job}" "${ABIAS}"
     fi
 fi
 
