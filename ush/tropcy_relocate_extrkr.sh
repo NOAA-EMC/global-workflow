@@ -209,14 +209,13 @@ export maxtime=22    # Max number of forecast time levels
 if [ ! -d ${vdir} ];   then mkdir -p ${vdir};   fi
 if [ ! -d ${TMPDIR} ]; then mkdir -p ${TMPDIR}; fi
 
-CENT=$(echo ${symdh} | cut -c1-2)
-scc=$(echo ${symdh} | cut -c1-2)
-syy=$(echo ${symdh} | cut -c3-4)
-smm=$(echo ${symdh} | cut -c5-6)
-sdd=$(echo ${symdh} | cut -c7-8)
-shh=$(echo ${symdh} | cut -c9-10)
+scc=${symdh:0:2}
+syy=${symdh:2:2}
+smm=${symdh:4:2}
+sdd=${symdh:6:2}
+shh=${symdh:8:2}
 dishh=${shh}
-symd=${syy}${smm}${sdd}
+symd=${symdh:0:8}
 
 case ${shh} in
  0|00) dishh="00";;
@@ -302,7 +301,7 @@ case ${cmodel} in
         model=6;;
   ngps) set +x; echo " "; echo " ++ operational NAVGEM chosen"; set_trace;
 		fcsthrsngps=' 00 12 24 36 48 60 72';
-		#ngpsdir=/com/hourly/prod/hourly.${CENT}${symd};
+		#ngpsdir=/com/hourly/prod/hourly.${symd};
 		ngpsdir=$OMIN;
 		ngpsgfile=fnoc.t${dishh}z;
         model=7;;
@@ -489,19 +488,19 @@ mv ${vdir}/tempvit.nonameless ${vdir}/vitals.${symd}${dishh}
 # tracking program.
 #--------------------------------------------------------------#
 
-ymdh6ago=$( ${NDATE:?} -6 ${CENT}${symd}${dishh})
-syy6=$(echo ${ymdh6ago} | cut -c3-4)
-smm6=$(echo ${ymdh6ago} | cut -c5-6)
-sdd6=$(echo ${ymdh6ago} | cut -c7-8)
-shh6=$(echo ${ymdh6ago} | cut -c9-10)
-symd6=${syy6}${smm6}${sdd6}
+ymdh6ago=$(date --utc +%Y%m%d%H -d "${symd} ${dishh} - 6 hours")
+syy6=${ymdh6ago:2:2}
+smm6=${ymdh6ago:4:2}
+sdd6=${ymdh6ago:6:2}
+shh6=${ymdh6ago:8:2}
+symd6=${ymdh6ago:2:6}
 
-ymdh6ahead=$( ${NDATE:?} 6 ${CENT}${symd}${dishh})
-syyp6=$(echo ${ymdh6ahead} | cut -c3-4)
-smmp6=$(echo ${ymdh6ahead} | cut -c5-6)
-sddp6=$(echo ${ymdh6ahead} | cut -c7-8)
-shhp6=$(echo ${ymdh6ahead} | cut -c9-10)
-symdp6=${syyp6}${smmp6}${sddp6}
+ymdh6ahead=$(date --utc +%Y%m%d%H -d "${symd} ${dishh} + 6 hours")
+syyp6=${ymdh6ahead:2:2}
+smmp6=${ymdh6ahead:4:2}
+sddp6=${ymdh6ahead:6:2}
+shhp6=${ymdh6ahead:8:2}
+symdp6=${ymdh6ahead:2:6}
 
 vit_incr=6
 
