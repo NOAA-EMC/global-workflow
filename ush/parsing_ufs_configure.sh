@@ -125,7 +125,7 @@ atparse < "${ufs_configure_template}" >> "${DATA}/ufs.configure"
 echo "Rendered ufs.configure:"
 cat ufs.configure
 
-${NCP} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" fd_ufs.yaml
+${NCP} "${HOMEgfs}/parm/ufs/fd_ufs.yaml" fd_ufs.yaml
 
 echo "SUB ${FUNCNAME[0]}: ufs.configure ends"
 

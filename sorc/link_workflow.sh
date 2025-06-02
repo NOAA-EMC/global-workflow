@@ -15,6 +15,8 @@ Usage: ${BASH_SOURCE[0]} [-h][-o][--nest]
     Print this help message and exit
   -o:
     Configure for NCO (copy instead of link)
+  -c:
+    Configure for container (copy from .sif instead of link)
 EOF
   exit 1
 }
@@ -23,12 +25,19 @@ RUN_ENVIR="emc"
 
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":ho-:" option; do
+while getopts ":hoc-:" option; do
   case "${option}" in
   h) usage ;;
   o)
     echo "-o option received, configuring for NCO"
     RUN_ENVIR="nco"
+    ;;
+  c)
+    echo "-o option received, configuring for CONTAINER"
+    RUN_ENVIR="container"
+    SINGULARITY_IMAGE_FILE=/scratch4/NAGAPE/epic/Wei.Huang/src/container/gw-container
+    CONTAINER_DIR="/opt/global-workflow-cloud"
+    CONTAINER_COPY="singularity exec ${SINGULARITY_IMAGE_FILE} cp"
     ;;
   -)
     if [[ "${OPTARG}" == "nest" ]]; then
@@ -147,21 +156,41 @@ fi
 #---------------------------------------
 #--copy/link NoahMp table form ccpp-physics repository
 cd "${HOMEgfs}/parm/ufs" || exit 1
-${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
+if [ "${RUN_ENVIR}" == "container" ]; then
+  ${CONTAINER_COPY} ${CONTAINER_DIR}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl .
+else
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
+fi
 
 cd "${HOMEgfs}/parm/post" || exit 1
-${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" .
-${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/nam_micro_lookup.dat" .
-for dir in gfs gefs sfs
-do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
-done
-for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
-done
+if [ "${RUN_ENVIR}" == "container" ]; then
+  ${CONTAINER_COPY} ${CONTAINER_DIR}/sorc/upp.fd/parm/params_grib2_tbl_new .
+  ${CONTAINER_COPY} ${CONTAINER_DIR}/sorc/upp.fd/fix/nam_micro_lookup.dat .
+  for dir in gfs gefs sfs
+  do
+    ${CONTAINER_COPY} -r ${CONTAINER_DIR}/sorc/upp.fd/parm/${dir} .
+  done
+  for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
+    ${CONTAINER_COPY} "${CONTAINER_DIR}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
+  done
+else
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/nam_micro_lookup.dat" .
+  for dir in gfs gefs sfs
+  do
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
+  done
+  for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
+  done
+fi
 
 cd "${HOMEgfs}/scripts" || exit 8
-${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
+if [ "${RUN_ENVIR}" == "container" ]; then
+  ${CONTAINER_COPY} "${CONTAINER_DIR}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
+else
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
+fo
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   declare -a gdas_scripts=(exglobal_prep_ocean_obs.py
     exgdas_global_marine_analysis_ecen.py
@@ -171,9 +200,15 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   done
 fi
 cd "${HOMEgfs}/ush" || exit 8
-for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
-done
+if [ "${RUN_ENVIR}" == "container" ]; then
+  for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
+    ${CONTAINER_COPY} "${CONTAINER_DIR}/sorc/ufs_utils.fd/ush/${file}" .
+  done
+else
+  for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
+  done
+fi
 
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
@@ -195,7 +230,11 @@ for file in "${ufs_templates[@]}"; do
   if [[ -s "${file}" ]]; then
       rm -f "${file}"
   fi
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
+  if [ "${RUN_ENVIR}" == "container" ]; then
+    ${CONTAINER_COPY} "${CONTAINER_DIR}/sorc/ufs_model.fd/tests/parm/${file}" .
+else
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
+  fi
 done
 
 # Link the script from ufs-weather-model that parses the templates
@@ -203,7 +242,11 @@ cd "${HOMEgfs}/ush" || exit 1
 if [[ -s "atparse.bash" ]]; then
     rm -f "atparse.bash"
 fi
-${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
+if [ "${RUN_ENVIR}" == "container" ]; then
+  ${CONTAINER_COPY} "${CONTAINER_DIR}/sorc/ufs_model.fd/tests/atparse.bash" .
+else
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
+fi
 
 #------------------------------
 #--add GDASApp fix directory
@@ -308,8 +351,15 @@ for sys in "${model_systems[@]}"; do
   if [[ -s "${model_exe}" ]]; then
     rm -f "${model_exe}"
   fi
-  if [[ -f "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
+
+  if [ "${RUN_ENVIR}" == "container" ]; then
+    if [[ -f "${HOMEgfs}/bin/${model_exe}" ]]; then
+      ${LINK_OR_COPY} "${HOMEgfs}/bin/${model_exe}" "${model_exe}"
+    fi
+  else
+    if [[ -f "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
+      ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
+    fi
   fi
 done
 

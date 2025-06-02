@@ -17,25 +17,25 @@ set -x
 ulimit_s=$( ulimit -S -s )
 
 # Find module command and purge:
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/ush/module-setup.sh"
+#source "${HOMEgfs}/ush/detect_machine.sh"
+#source "${HOMEgfs}/ush/module-setup.sh"
 
 # Source versions file for runtime
-source "${HOMEgfs}/versions/run.ver"
+#source "${HOMEgfs}/versions/run.ver"
 
 # Load our modules:
-module use "${HOMEgfs}/modulefiles"
+#module use "${HOMEgfs}/modulefiles"
 
-case "${MACHINE_ID}" in
-  "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "jet" | "s4" | "noaacloud" | "container")
-    module load "module_base.${MACHINE_ID}"
-    ;;
-  *)
-    echo "WARNING: UNKNOWN PLATFORM"
-    ;;
-esac
+#case "${MACHINE_ID}" in
+#  "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "jet" | "s4" | "noaacloud" | "ursa")
+#    module load "module_base.${MACHINE_ID}"
+#    ;;
+#  *)
+#    echo "WARNING: UNKNOWN PLATFORM"
+#    ;;
+#esac
 
-module list
+#module list
 
 # If this function exists in the environment, run it; else set -x if it was set on entering this script
 ftype=$(type -t set_trace || echo "")
@@ -46,9 +46,9 @@ elif [[ "${set_x}" == "YES" ]]; then
 fi
 
 # Add wxflow to PYTHONPATH
-wxflowPATH="${HOMEgfs}/ush/python"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
-export PYTHONPATH
+#wxflowPATH="${HOMEgfs}/ush/python"
+#PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
+#export PYTHONPATH
 
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
