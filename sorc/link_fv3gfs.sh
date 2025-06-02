@@ -116,21 +116,8 @@ cd ${pwd}/../parm               ||exit 8
     cd mon
     $LINK ../../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm            da_mon.parm
     $LINK ../../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/parm/gdas_oznmon.parm               .
-#cd ${pwd}/../scripts            ||exit 8
-#    $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/scripts/exgdas_atmos_vminmon.sh        .
-#    $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/scripts/exgfs_atmos_vminmon.sh          .
-#    $LINK ../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/scripts/exgdas_atmos_verfozn.sh        .
-#    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/scripts/exgdas_atmos_verfrad.sh     .
 cd ${pwd}/../ush                ||exit 8
-#C    $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_costs.pl     .
-#C    $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_gnorms.pl    .
-#C    $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_reduct.pl    .
-#C    $LINK ../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/ush/ozn_xtrct.sh                     .
     $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/data_extract/ush/radmon_err_rpt.sh             .
-#C    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_angle.sh          .
-#C    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcoef.sh          .
-#C    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcor.sh           .
-#C    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_time.sh           .
 
 #------------------------------
 #--link executables
