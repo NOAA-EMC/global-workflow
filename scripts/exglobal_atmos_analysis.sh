@@ -733,7 +733,7 @@ EOFunzip
 
    if [[ "${USE_CFP}" == "YES" ]] ; then
       chmod 755 "${DATA}/mp_unzip.sh"
-      ncmd=$(cat "${DATA}/mp_unzip.sh" | wc -l)
+      ncmd=$(wc -l < "${DATA}/mp_unzip.sh")
       if [[ ${ncmd} -gt 0 ]]; then
          if [[ ${ncmd} -lt ${max_tasks_per_node} ]]; then
             ncmd_max=${ncmd}
