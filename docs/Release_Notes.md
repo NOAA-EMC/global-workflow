@@ -159,7 +159,13 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 * Does this change require a 30-day evaluation?
   * No
 * Building GSI requires CRTMv2.4.0.2
-* GOES-19 and GMI bias correction files need to be updated before implementation.
+* GOES-19 and GMI bias correction files need to be updated before implementation. We usually spin up 
+  the bias correction for a couple of weeks before turning on active assimilation. This can either be 
+  done by a two step implementation (starting with monitoring and then switching to active once the 
+  bias correction is spun up) or by taking the coefficients from a parallel.  A second wrinkle here 
+  is that the GMI bias correction is already spun up - but is wrong so we need to zero it first in 
+  the bias correction file. We suggest discussing how preciselt to do this before any pre-operational 
+  parallel runs are started.
 
 DISSEMINATION INFORMATION
 -------------------------
