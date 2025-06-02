@@ -101,7 +101,6 @@ gdas:
                 {% endfor %}
         - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}snowanlvar.yaml"
-        - "{{ COMIN_SNOW_ANLMON | relpath(ROTDIR) }}/*output_snow.nc"
             {% endif %}
 
         # Ozone verification
