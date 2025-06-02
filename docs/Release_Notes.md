@@ -100,21 +100,20 @@ SCRIPT CHANGES
 * WW3-related changes to `scripts/exgfs_wave_post_gridded_sbs.sh` and `scripts/exglobal_forecast.sh`. Grid loop and counter updates. Log files are now checked for completion instead of the associated gridded output.
 
 * The scripts/ directory of GSI have been moved to global-workflow:
-scripts/exgdas_atmos_chgres_forenkf.sh
-scripts/exgdas_atmos_verfozn.sh
-scripts/exgdas_atmos_verfrad.sh
-scripts/exgdas_atmos_vminmon.sh
-scripts/exgdas_enkf_ecen.sh
-scripts/exgdas_enkf_fcst.sh
-scripts/exgdas_enkf_post.sh
-scripts/exgdas_enkf_select_obs.sh
-scripts/exgdas_enkf_sfc.sh
-scripts/exgdas_enkf_update.sh
-scripts/exgfs_atmos_vminmon.sh
-scripts/exglobal_atmos_analysis.sh
-scripts/exglobal_atmos_analysis_calc.sh
-scripts/exglobal_diag.sh
-
+  * `scripts/exgdas_atmos_chgres_forenkf.sh`
+  * `scripts/exgdas_atmos_verfozn.sh`
+  * `scripts/exgdas_atmos_verfrad.sh`
+  * `scripts/exgdas_atmos_vminmon.sh`
+  * `scripts/exgdas_enkf_ecen.sh`
+  * `scripts/exgdas_enkf_fcst.sh`
+  * `scripts/exgdas_enkf_post.sh`
+  * `scripts/exgdas_enkf_select_obs.sh`
+  * `scripts/exgdas_enkf_sfc.sh`
+  * `scripts/exgdas_enkf_update.sh`
+  * `scripts/exgfs_atmos_vminmon.sh`
+  * `scripts/exglobal_atmos_analysis.sh`
+  * `scripts/exglobal_atmos_analysis_calc.sh`
+  * `scripts/exglobal_diag.sh`
 
 FIX CHANGES
 -----------
