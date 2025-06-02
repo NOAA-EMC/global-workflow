@@ -23,17 +23,15 @@
 pwd=$(pwd)
 
 # Base variables
-CDATE=${CDATE:-"2001010100"}
 rCDUMP=${rCDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-BDATE=$(${NDATE} -3 ${CDATE})
-PDY=$(echo ${CDATE} | cut -c1-8)
-cyc=$(echo ${CDATE} | cut -c9-10)
-bPDY=$(echo ${BDATE} | cut -c1-8)
-bcyc=$(echo ${BDATE} | cut -c9-10)
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 3 hours")
+bPDY=${BDATE:0:8}
+bcyc=${BDATE:8:2}
 
 # Utilities
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
@@ -942,7 +940,7 @@ OBS_INPUT::
 /
 &SINGLEOB_TEST
   maginnov=0.1,magoberr=0.1,oneob_type='t',
-  oblat=45.,oblon=180.,obpres=1000.,obdattim=${CDATE},
+  oblat=45.,oblon=180.,obpres=1000.,obdattim=${PDY}${cyc},
   obhourset=0.,
   ${SINGLEOB}
 /
@@ -1026,7 +1024,7 @@ cd "${pwd}" || exit 1
 if [[ ${SENDECF} == "YES" && "${RUN}" != "enkf" ]]; then
    ecflow_client --event release_fcst
 fi
-echo "${rCDUMP} ${CDATE} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt"
+echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt"
 
 ################################################################################
 
