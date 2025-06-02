@@ -127,8 +127,6 @@
 #     BKGFREQ       Frequency of background files for relocation
 #                   Default is "3" 
 #     SENDDBN       String when set to "YES" alerts output files to $COMSP
-#     NDATE         String indicating executable path for NDATE utility program
-#                   Default is "${EXECgfs}/ndate"
 #
 #     These do not have to be exported to this script.  If they are, they will
 #      be used by the script.  If they are not, they will be skipped
@@ -147,8 +145,6 @@
 #                  Herefile: RELOCATE_GES
 #                  ${USHgfs}/tropcy_relocate_extrkr.sh
 #                  ${USHgfs}/getges.sh
-#                  $NDATE (here and in child script
-#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #                  /usr/bin/poe
 #                  postmsg
 #                  $DATA/prep_step (here and in child script
@@ -433,7 +429,7 @@ fi
 
 MP_PULSE=0
 MP_TIMEOUT=600
-GDATE10=$( ${NDATE:?} -06 ${CDATE10})
+GDATE10=$(date --utc +%Y%m%d%H -d "${CDATE10:0:8} ${CDATE10:8:2} - 6 hours")
 
 #  make unique combined tcvitals file for t-12, t-6 and t+0 -- 
 #  if tcvitals does not contains record from current time, skip relocation
