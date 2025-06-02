@@ -14,7 +14,7 @@ do
     for f in "${sat}"/*; do
         if [[ ${f} != "${sat}/readme" ]]; then # skip readme file
            datex=$(basename "${f}")
-           if [[ ${date} -ge ${datex} ]]; then
+           if [[ ${date_in} -ge ${datex} ]]; then
               usedate=${datex}
            fi
         fi
