@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 # create global_satinfo file for a given date
-date=$1
+date_in=$1
 # header
 echo '!sensor/instr/sat      chan iuse  error  error_cld  ermax   var_b    var_pg  icld_det icloud iaerosol'
 # loop over satellites
