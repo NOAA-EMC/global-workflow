@@ -201,7 +201,7 @@ EOFdiag
    # If requested, compress diagnostic files
    if [[ "${DIAG_COMPRESS}" == "YES" && "${USE_CFP}" == "NO" ]]; then
       echo $(date) START "${COMPRESS}" diagnostic files >&2
-      for file in $(ls diag_*${CDATE}${DIAG_SUFFIX}); do
+      for file in $(ls "diag_*${CDATE}${DIAG_SUFFIX}"); do
          ${COMPRESS} "${file}"
       done
       echo "$(date) END ${COMPRESS} diagnostic files" >&2
@@ -246,7 +246,7 @@ EOFdiag
             TAROPTS="-cvf"
          fi
          if [[ ${numfile[n]} -gt 0 ]]; then
-            tar ${TAROPTS} "${diagfile[n]}" $(cat ${diaglist[n]})
+            tar ${TAROPTS} "${diagfile[n]}" $(cat "${diaglist[n]}")
             export err=$?
             if [[ ${err} -ne 0 ]]; then
                err_exit "Unable to create ${diagfile[n]}!"
