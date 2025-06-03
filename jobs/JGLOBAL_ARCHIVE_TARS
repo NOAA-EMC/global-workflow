@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_vrfy"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_tars"
 if [[ "${DO_WAVE}" == "YES" ]]; then
   source "${EXPDIR}/config.wave" 
   source "${USHgfs}/wave_domain_grid.sh"
