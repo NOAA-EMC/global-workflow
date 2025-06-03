@@ -1,0 +1,23 @@
+chem_emission:
+  config:
+    apply_quality_control: True
+    quality_control_threshold: 1.5
+    GBBEPX_TEMPLATE: GBBEPx-all01GRID_YYYYMMDD.nc
+    QFED_VARS: {{ qfed_vars }}
+    GBBEPX_VARS: {{ gbbepx_vars }}
+  data_in:
+    mkdir:
+      - "{{ DATA }}"
+    copy:
+      {% for file in files_in %}
+      - ["{{ AERO_EMIS_FIRE_DIR }}/{{ file }}", "{{ DATA }}/{{ file }}"]
+      {% endfor %}
+  data_out:
+    mkdir:
+      - "{{ COMOUT_CHEM_HISTORY }}"
+    copy:
+      {% for file in processed_files %}
+      - ["{{ DATA }}/{{ file }}", "{{ COMOUT_CHEM_HISTORY }}/{{ file }}"]
+      {% endfor %}
+
+

@@ -1,4 +1,3 @@
-
 ###############
 Global Workflow
 ###############
@@ -10,14 +9,13 @@ Status
 ======
 
 * State of develop (HEAD) branch: GFSv17+ development
-* State of operations (dev/gfs.v16 branch): GFS v16.3.13 `tag: [gfs.v16.3.13] <https://github.com/NOAA-EMC/global-workflow/releases/tag/gfs.v16.3.13>`_
+* State of operations (dev/gfs.v16 branch): GFS v16.3.24 `tag: [gfs.v16.3.24] <https://github.com/NOAA-EMC/global-workflow/releases/tag/gfs.v16.3.24>`_
 
 =============
 Code managers
 =============
 
 * Kate Friedman - @KateFriedman-NOAA / kate.friedman@noaa.gov
-* Walter Kolczynski - @WalterKolczynski-NOAA / walter.kolczynski@noaa.gov
 * David Huber - @DavidHuber-NOAA / david.huber@noaa.gov
 
 =============
@@ -46,3 +44,5 @@ Table of Contents
    noaa_csp.rst
    errors_faq.rst
    globus_arch.rst
+   configure.rst
+   gcafs.rst

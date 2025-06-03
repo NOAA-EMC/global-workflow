@@ -1,0 +1,109 @@
+# ==========================================================================
+# Templates and Configuration for CTest-Based Testing
+# ==========================================================================
+#
+# This file defines jobs and templates for running CMake/CTest-based fuctional
+# tests in the global-workflow project.  The CTests are designed to
+# test specific Rocoto Jobs singluarly with predefined input data.
+#
+# CTests are primarily triggered via GitHub API for quick validation of PRs,
+# whereas the full experiment cases are used for more extensive testing.
+#
+# Key components:
+# - .create_ctests: Template for setting up the CMake/CTest environment
+# - .run_ctests_template: Template for executing specific CTest labels
+#
+# CTests are defined in the dev/ctests directory and are categorized by labels,
+# which are referenced in the hosts file to determine which tests to run on
+# which platforms.
+
+# =======================================
+# Templates for CTests
+# =======================================
+
+# Setup job for ctests using CMake
+.create_ctests:
+  extends: .base_config
+  stage: create_experiments
+  script: |
+    echo "Setting up for ctests workflow"
+    echo "Using build directory ${GW_HOMEgfs}"
+    source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
+    source "${GW_HOMEgfs}/dev/ci/platforms/config.${machine}"
+    cd "${GW_HOMEgfs}/dev/ctests" || exit 1
+    mkdir -p build
+    cd build || exit 1
+    cmake -S "${GW_HOMEgfs}"
+    ctest -N
+    ctest_status=$?
+    if [[ ${ctest_status} -ne 0 ]]; then
+      echo "==========================================================="
+      echo "ERROR: CMake configuration failed with exit code ${ctest_status}"
+      echo "==========================================================="
+      exit 1  # Force exit code 1 for GitLab to recognize the failure
+    fi
+    num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
+    if [[ ${num} -le 0 ]]; then
+      echo "No tests found"
+      exit 1
+    fi
+    echo "CTests have been created and configured successfully"
+  needs:
+    - build-${machine}
+
+# Main template for CTest execution jobs
+.run_ctests_template:
+  extends: .base_config
+  stage: run_tests
+  script: |
+    echo "Using build directory ${GW_HOMEgfs}"
+    source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
+    cd "${GW_HOMEgfs}/dev/ctests/build" || exit 1
+    echo "Running CTests with label: ${CTEST_NAME} in ${PWD}"
+    num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
+    if [[ "${num}" -gt 0 ]]; then
+      echo "CTests found: ${num}"
+    else
+      echo "No tests found"
+      exit 1
+    fi
+    ctest -L "${CTEST_NAME}" --output-junit result.xml --stop-on-failure --output-on-failure
+    ctest_status=$?
+
+    # Check the JUnit XML file for failures explicitly
+    if [[ -f result.xml ]]; then
+      # Count failures in the JUnit XML
+      failures=$(grep -c "failures=\"[1-9][0-9]*\"" result.xml || true)
+      errors=$(grep -c "errors=\"[1-9][0-9]*\"" result.xml || true)
+
+      # If there are failures or errors in the JUnit report, fail the job
+      if [[ ${failures} -gt 0 || ${errors} -gt 0 || ${ctest_status} -ne 0 ]]; then
+        echo "========================================="
+        echo "ERROR: Test failures detected in JUnit report or CTest exit code: ${ctest_status}"
+        echo "Failures: ${failures}, Errors: ${errors}"
+        echo "========================================="
+        exit 1  # Force exit code 1 for GitLab to recognize the failure
+      else
+        echo "========================================="
+        echo "SUCCESS: All CTests passed"
+        echo "========================================="
+      fi
+    else
+      echo "ERROR: JUnit result file not found. Checking CTest exit code only."
+      # Fall back to just checking the ctest exit code if XML not found
+      if [[ "${ctest_status}" -ne 0 ]]; then
+        echo "========================================="
+        echo "ERROR: One or more CTests failed with exit code ${ctest_status}"
+        echo "========================================="
+        exit 1  # Force exit code 1 for GitLab
+      fi
+    fi
+  artifacts:
+    when: always
+    paths:
+      - ${GIT_CLONE_PATH}/dev/ctests/build/result.xml
+      - ${GIT_CLONE_PATH}/dev/ctests/build/Testing/Temporary/LastTest.log
+    reports:
+      junit: ${GIT_CLONE_PATH}/dev/ctests/build/result.xml
+  needs:
+    - create_ctests-${machine}

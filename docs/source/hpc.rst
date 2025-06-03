@@ -117,7 +117,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 
      - X   
      - X        
-     -
+     - X
    * - Orion   
      - 2   
      - X     
@@ -131,7 +131,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 
      - X   
      - X        
-     -
+     - X
    * - Gaea C5 
      - 3   
      - X     
@@ -202,34 +202,6 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 
      - 
      -
-   * - Jet     
-     - 3   
-     - X     
-     - 
-     - 
-     - X   
-     - 
-     - 
-     - X    
-     - 
-     - 
-     - X   
-     - X      
-     - X
-   * - S4      
-     - 3   
-     - 
-     - 
-     -
-     - X   
-     - 
-     - 
-     - X    
-     - 
-     - 
-     - X   
-     - X      
-     -
 
 ================================
 Experiment troubleshooting help
@@ -249,8 +221,6 @@ HPC helpdesks
 * Hercules:  rdhpcs.hercules.help@noaa.gov
 * HPSS: rdhpcs.hpss.help@noaa.gov
 * Gaea: oar.gfdl.help@noaa.gov
-* S4: innocent.souopgui@noaa.gov
-* Jet: rdhpcs.jet.help@noaa.gov
 * Cloud: rdhpcs.cloud.help@noaa.gov
 
 ======================
@@ -258,8 +228,6 @@ Restricted data access
 ======================
 
 The GFS system ingests dump data files that contain global observation data. A number of these dump files contain restricted data which means those files come with an extra level of permissions called restricted or ‘rstprod’. Users who wish to run cycled GFS experiments, which both utilizes restricted observation data and produces output containing restricted data, will need to gain rstprod group access.
-
-NOTE: Only non-restricted data is available on S4.
 
 To request rstprod access, do either a and/or b below:
 
@@ -271,15 +239,9 @@ b) If you need restricted data access on RDHPCS systems: go to the AIM system, c
 
 https://aim.rdhpcs.noaa.gov/
 
-====================================
-Optimizing the global workflow on S4
-====================================
-
-The S4 cluster is relatively small and so optimizations are recommended to improve cycled runtimes. Please contact Innocent Souopgui (innocent.souopgui@noaa.gov) if you are planning on running a cycled experiment on this system to obtain optimized configuration files.
-
-==================================================
-Stacksize on R&Ds (Hera, Orion, Hercules, Jet, S4)
-==================================================
+=========================================
+Stacksize on R&Ds (Hera, Orion, Hercules)
+=========================================
 
 Some GFS components, like the UPP, need an unlimited stacksize. Add the following setting into your appropriate .*rc file to support these components:
 

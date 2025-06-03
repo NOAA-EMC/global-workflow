@@ -4,8 +4,6 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
-source "${USHgfs}/preamble.sh"
-
 cd "${DATA}" || exit 1
 fhr3=$1
 
@@ -13,8 +11,11 @@ fhr3=$1
 source "${USHgfs}/product_functions.sh"
 
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
-  cp "${HOMEgfs}/gempak/fix/${table}" "${table}" || \
-    ( echo "FATAL ERROR: ${table} is missing" && exit 2 )
+  source_table="${HOMEgfs}/gempak/fix/${table}"
+  if [[ ! -f "${source_table}" ]]; then
+    err_exit "FATAL ERROR: ${table} is missing"
+  fi
+  cpreq "${source_table}" "${table}"
 done
 
 NAGRIB_TABLE="${HOMEgfs}/gempak/fix/nagrib.tbl"
@@ -41,22 +42,21 @@ else
   grdarea=
   proj=
   output=T
-fi  
+fi
 pdsext=no
 
 
 
 GEMGRD="${RUN2}_${PDY}${cyc}f${fhr3}"
-GRIBIN="${COM_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
+GRIBIN="${COMOUT_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
 GRIBIN_chk="${GRIBIN}"
 
 if [[ ! -r "${GRIBIN_chk}" ]]; then
-  echo "FATAL ERROR: GRIB index file ${GRIBIN_chk} not found!"
-  export err=7 ; err_chk
-  exit "${err}"
+  export err=7
+  err_exit "GRIB index file ${GRIBIN_chk} not found!"
 fi
 
-cp "${GRIBIN}" "grib${fhr3}"
+cpreq "${GRIBIN}" "grib${fhr3}"
 
 export pgm="nagrib_nc F${fhr3}"
 startmsg
@@ -79,12 +79,15 @@ l
 r
 EOF
 
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "Failed to run ${NAGRIB}!"
+fi
 
-cpfs "${GEMGRD}" "${COM_ATMOS_GEMPAK_0p25}/${GEMGRD}"
+cpfs "${GEMGRD}" "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 if [[ ${SENDDBN} == "YES" ]] ; then
   "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-    "${COM_ATMOS_GEMPAK_0p25}/${GEMGRD}"
+    "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 fi
 
 "${GEMEXE}/gpend"

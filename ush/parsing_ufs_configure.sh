@@ -35,6 +35,9 @@ local med_model="cmeps"
 local med_petlist_bounds="0 $(( MEDPETS-1 ))"
 local med_omp_num_threads="${MEDTHREADS}"
 
+# vector remapping
+local MAPUV3D=true
+
 if [[ "${cpl}" = ".true." ]]; then
   local coupling_interval_slow_sec="${CPL_SLOW}"
 fi
@@ -52,13 +55,18 @@ if [[ "${cplflx}" = ".true." ]]; then
   local RUNTYPE="${cmeps_run_type}"
   local CMEPS_RESTART_DIR="CMEPS_RESTART/"
   local CPLMODE="${cplmode}"
+  local CMEPS_PIO_FORMAT='pnetcdf'
+  local CMEPS_PIO_STRIDE=4
+  local CMEPS_PIO_IOTASKS=-99
+  local CMEPS_PIO_REARR='box'
+  local CMEPS_PIO_ROOT=-99
   local coupling_interval_fast_sec="${CPL_FAST}"
   local RESTART_N=999999
   local ocean_albedo_limit=0.06
   local ATMTILESIZE="${CASE:1}"
   local ocean_albedo_limit=0.06
   local pio_rearranger=${pio_rearranger:-"box"}
-  local MED_history_n=1000000 
+  local MED_history_n=1000000
 
   local histaux_enabled=".false."
 fi
@@ -97,11 +105,11 @@ if [[ "${cplchm}" = ".true." ]]; then
 
 fi
 
-#Set ESMF_THREADING variable for ufs configure 
-if [[ "${USE_ESMF_THREADING}" = "YES" ]]; then 
-  local ESMF_THREADING="true" 
+#Set ESMF_THREADING variable for ufs configure
+if [[ "${USE_ESMF_THREADING}" = "YES" ]]; then
+  local ESMF_THREADING="true"
 else
-  local ESMF_THREADING="false" 
+  local ESMF_THREADING="false"
 fi
 
 # Ensure the template exists
@@ -117,7 +125,7 @@ atparse < "${ufs_configure_template}" >> "${DATA}/ufs.configure"
 echo "Rendered ufs.configure:"
 cat ufs.configure
 
-${NCP} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" fd_ufs.yaml
+cpreq "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" fd_ufs.yaml
 
 echo "SUB ${FUNCNAME[0]}: ufs.configure ends"
 

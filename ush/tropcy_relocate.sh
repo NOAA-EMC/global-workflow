@@ -127,8 +127,6 @@
 #     BKGFREQ       Frequency of background files for relocation
 #                   Default is "3" 
 #     SENDDBN       String when set to "YES" alerts output files to $COMSP
-#     NDATE         String indicating executable path for NDATE utility program
-#                   Default is "${EXECgfs}/ndate"
 #
 #     These do not have to be exported to this script.  If they are, they will
 #      be used by the script.  If they are not, they will be skipped
@@ -147,22 +145,13 @@
 #                  Herefile: RELOCATE_GES
 #                  ${USHgfs}/tropcy_relocate_extrkr.sh
 #                  ${USHgfs}/getges.sh
-#                  $NDATE (here and in child script
-#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #                  /usr/bin/poe
 #                  postmsg
 #                  $DATA/prep_step (here and in child script
 #                        ${USHgfs}/tropcy_relocate_extrkr.sh)
-#                  $DATA/err_exit (here and in child script
-#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
-#                  $DATA/err_chk (here and in child script
-#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
-#          NOTE: The last three scripts above are NOT REQUIRED utilities.
+#          NOTE: The last script above is not a required utility.
 #                If $DATA/prep_step not found, a scaled down version of it is
-#                executed in-line.  If $DATA/err_exit or $DATA/err_chk are not
-#                found and a fatal error has occurred, then the script calling
-#                it will kill itself and exit with a 555 return code causing
-#                all parent scripts to be killed.
+#                executed in-line.
 #
 #     programs   :
 #          RELOCATE_MV_NVORTEX - executable $RELOX
@@ -182,8 +171,6 @@
 #   Machine: IBM-SP, SGI
 #
 ####
-
-source "${USHgfs}/preamble.sh"
 
 MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
 
@@ -228,12 +215,6 @@ then
    echo "ABNORMAL EXIT!!!!!!!!!!!"
    echo
    set_trace
-   if [ -s $DATA/err_exit ]; then
-      $DATA/err_exit
-   else
-######kill -9 ${qid}
-      exit 555
-   fi
    exit 9
 fi
 
@@ -289,16 +270,10 @@ if [ $modhr -ne 0 ]; then
 
    set +x
    echo
-   echo "cannot perform tropical cyclone processing because cycle hour is \
-not a multiple of 3-hrs;"
+   echo "cannot perform tropical cyclone processing because cycle hour is not a multiple of 3-hrs;"
    echo "ABNORMAL EXIT!!!!!!!!!!!"
    echo
    set_trace
-   if [ -s $DATA/err_exit ]; then
-      $DATA/err_exit
-   else
-      exit 555
-   fi
    exit 9
 fi
 
@@ -383,32 +358,26 @@ to center relocation date/time;"
          echo "ABNORMAL EXIT!!!!!!!!!!!"
          echo
          set_trace
-         if [ -s $DATA/err_exit ]; then
-            $DATA/err_exit
-         else
-############kill -9 ${qid}
-            exit 555
-         fi
          exit 9
       fi
 
 #  For center time sigma guess file obtained via getges, store pathname from
-#   getges into ${COM_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.$tmmark and, for now,
-#   also in ${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark - if relocation processing stops
+#   getges into ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.$tmmark and, for now,
+#   also in ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark - if relocation processing stops
 #   due to an error or due to no input tcvitals records found, then the center
 #   time sigma guess will not be modified and this getges file will be read in
 #   subsequent PREP processing; if relocation processing continues and the
-#   center sigma guess is modified, then ${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark will
+#   center sigma guess is modified, then ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark will
 #   be removed later in this script {the subsequent PREP step will correctly
-#   update ${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark to point to the sgesprep file
+#   update ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark to point to the sgesprep file
 #   updated here by the relocation}
 #  ----------------------------------------------------------------------------
 
       if [ $fhr = "0"  ]; then
          "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${CDATE10}" \
-          -t "${stype}" > "${COM_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
-         cp "${COM_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
-          "${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
+          -t "${stype}" > "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
+         cp "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
+          "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
       fi
       set +x
       echo
@@ -437,12 +406,6 @@ relative to center relocation date/time;"
          echo "ABNORMAL EXIT!!!!!!!!!!!"
          echo
          set_trace
-         if [ -s $DATA/err_exit ]; then
-            $DATA/err_exit
-         else
-############kill -9 ${qid}
-            exit 555
-         fi
          exit 9
       fi
       set +x
@@ -456,7 +419,7 @@ done
 if [ -f ${tstsp}syndata.tcvitals.$tmmark ]; then
    cp ${tstsp}syndata.tcvitals.$tmmark tcvitals.now
 else
-   cp "${COM_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" "tcvitals.now"
+   cp "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" "tcvitals.now"
 fi
 
 
@@ -466,7 +429,7 @@ fi
 
 MP_PULSE=0
 MP_TIMEOUT=600
-GDATE10=$( ${NDATE:?} -06 ${CDATE10})
+GDATE10=$(date --utc +%Y%m%d%H -d "${CDATE10:0:8} ${CDATE10:8:2} - 6 hours")
 
 #  make unique combined tcvitals file for t-12, t-6 and t+0 -- 
 #  if tcvitals does not contains record from current time, skip relocation
@@ -480,7 +443,7 @@ if [ $errgrep -ne 0 ] ; then
    echo "NO TCVITAL RECORDS FOUND FOR $CDATE10 - EXIT TROPICAL CYCLONE \
 RELOCATION PROCESSING"
 
-# The existence of ${COM_OBS}/${RUN}.${cycle}.tropcy_relocation_status.$tmmark file will tell the
+# The existence of ${COMOUT_OBS}/${RUN}.${cycle}.tropcy_relocation_status.$tmmark file will tell the
 #  subsequent PREP processing that RELOCATION processing occurred, echo
 #  "NO RECORDS to process" into it to further tell PREP processing that records
 #   were not processed by relocation and the global sigma guess was NOT
@@ -488,14 +451,14 @@ RELOCATION PROCESSING"
 #   found)
 #   Note:  When tropical cyclone relocation does run to completion and the
 #          global sigma guess is modified, the parent script to this will echo
-#          "RECORDS PROCESSED" into ${COM_OBS}/${RUN}.${cycle}.tropcy_relocation_status.$tmmark
+#          "RECORDS PROCESSED" into ${COMOUT_OBS}/${RUN}.${cycle}.tropcy_relocation_status.$tmmark
 #          assuming it doesn't already exist (meaning "NO RECORDS to process"
 #          was NOT echoed into it here)
 # ----------------------------------------------------------------------------
 
-   echo "NO RECORDS to process" > "${COM_OBS}/${RUN}.${cycle}.tropcy_relocation_status.${tmmark}"
-   if [[ ! -s "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}" ]]; then
-      cp "/dev/null" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+   echo "NO RECORDS to process" > "${COMOUT_OBS}/${RUN}.${cycle}.tropcy_relocation_status.${tmmark}"
+   if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}" ]]; then
+      cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
    fi
 else
 
@@ -520,20 +483,13 @@ else
       echo "ABNORMAL EXIT!!!!!!!!!!!"
       echo
       set_trace
-      if [ -s $DATA/err_exit ]; then
-         $DATA/err_exit "Script ${USHgfs}/tropcy_relocate_extrkr.sh failed"
-      else
-         exit 555
-      fi
       exit 9
    fi
 
 #  relocate model tropical cyclone vortices in ges sigma files
 #  -----------------------------------------------------------
 
-   if [ -s fort.*  ]; then
-     rm fort.*
-   fi
+   rm -f fort.*
 
    ${NLN} $DATA/tcvitals.now1      fort.11
    ${NLN} $DATA/model_track.all    fort.30
@@ -604,11 +560,6 @@ else
 
    echo; set_trace
    if [ "$errSTATUS" -gt '0' ]; then
-      if [ -s $DATA/err_exit ]; then
-         $DATA/err_exit "Script RELOCATE_GES failed"
-      else
-         exit 555
-      fi
       exit 9
    fi
 
@@ -634,11 +585,7 @@ else
 #  problem: $sges.relocate does not exist
 #  --------------------------------------
 
-         if [ -s $DATA/err_exit ]; then
-            $DATA/err_exit "The file $sges.relocate does not exist"
-         else
-            exit 555
-         fi
+         echo "FATAL ERROR: The file ${sges}.relocate does not exist"
          exit 9
       fi
    done
@@ -651,31 +598,31 @@ else
    rm -f RELOCATE_GES cmd
 
 
-   cp "rel_inform1" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-   cp "tcvitals" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+   cp "rel_inform1" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+   cp "tcvitals" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
    if [ "$SENDDBN" = "YES" ]; then
        if test "$RUN" = "gdas1"
        then
-           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
        fi
        if test "$RUN" = "gfs"
        then
-           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COM_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+           "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
        fi
    fi
 
 #  --------------------------------------------------------------------------
 #   Since relocation processing has ended sucessfully (and the center sigma
-#   guess has been modified), remove ${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark (which
+#   guess has been modified), remove ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark (which
 #   had earlier had getges center sigma guess pathname written into it - in
 #   case of error or no input tcvitals records found) - the subsequent PREP
-#   step will correctly update ${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark to point to
+#   step will correctly update ${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.$tmmark to point to
 #   the sgesprep file updated here by the relocation
 #  --------------------------------------------------------------------------
 
-   rm "${COM_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
+   rm -f "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
 
    echo "TROPICAL CYCLONE RELOCATION PROCESSING SUCCESSFULLY COMPLETED FOR \
 $CDATE10"

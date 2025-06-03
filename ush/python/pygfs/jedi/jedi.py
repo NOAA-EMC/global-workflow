@@ -70,7 +70,7 @@ class Jedi:
         self._jedi_config = self.jedi_config.deepcopy()
 
     @logit(logger)
-    def initialize(self, task_config: AttrDict) -> None:
+    def initialize(self, task_config: AttrDict, clean_empty_obsspaces=False) -> None:
         """Initialize JEDI application
 
         This method will initialize a JEDI application.
@@ -83,6 +83,9 @@ class Jedi:
         ----------
         task_config: AttrDict
             Attribute-dictionary of all configuration variables associated with a GDAS task.
+        clean_empty_obsspaces: bool
+            Flag to clean empty observation spaces from JEDI input configuration dictionary.
+            Default is False.
 
         Returns
         ----------
@@ -93,6 +96,11 @@ class Jedi:
         logger.info(f"Generating JEDI YAML config: {self.jedi_config.yaml}")
         self.jedi_config.input_config = self.render_jcb(task_config)
         logger.debug(f"JEDI config:\n{pformat(self.jedi_config.input_config)}")
+
+        # Remove obs spaces from JEDI config dictionary with missing obs files
+        if clean_empty_obsspaces:
+            logger.info(f"Clean empty obs spaces from JEDI YAML config: {self.jedi_config.yaml}")
+            self.clean_empty_obsspaces()
 
         # Save JEDI config dictionary to YAML in run directory
         logger.debug(f"Writing JEDI YAML config to: {self.jedi_config.yaml}")
@@ -257,6 +265,44 @@ class Jedi:
         # Return dictionary of JEDI objects
         return jedi_dict
 
+    @logit(logger)
+    def clean_empty_obsspaces(self):
+        """
+        Replace list of observers in JEDI input configuration dictionary with new list, removing
+        any observers with missing observation files.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        # Get observers from JEDI input config
+        observers = find_value_in_nested_dict(self.jedi_config.input_config, 'observers')
+
+        # Check if observers list actually present
+        if observers:
+            # Create new list of observers
+            cleaned_observers = []
+            for obs_space in observers:
+                fname = obs_space['obs space']['obsdatain']['engine']['obsfile']
+                if os.path.isfile(fname):
+                    cleaned_observers.append(obs_space)
+                else:
+                    logger.warning(f"WARNING: {fname} does not exist, removing obs space")
+
+            # Clear observers list in dictionary and replace with new list
+            observers.clear()
+            observers.extend(cleaned_observers)
+
+            # If no observers left in list, raise error
+            if observers == []:
+                logger.error(f"FATAL ERROR: No observers found in JEDI input config")
+                raise Exception(f"FATAL ERROR: No observers found in JEDI input config")
+
     @staticmethod
     @logit(logger)
     def remove_redundant(input_list: List) -> List:
@@ -349,4 +395,76 @@ def extract_tar(tar_file: str) -> None:
             raise tarfile.ReadError(f"FATAL ERROR: {tar_file} is not a tar archive")
     except tarfile.ExtractError as err:
         logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
-        raise tarfile.ExtractError("FATAL ERROR: unable to extract from {tar_file}")
+        raise tarfile.ExtractError(f"FATAL ERROR: unable to extract from {tar_file}")
+
+
+@logit(logger)
+def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
+    """
+    Recursively search through a nested dictionary and return the value for the target key.
+    This returns the first target key it finds.  So if a key exists in a subsequent
+    nested dictionary, it will not be found.
+
+    Parameters
+    ----------
+    nested_dict : Dict
+        Dictionary to search
+    target_key : str
+        Key to search for
+
+    Returns
+    -------
+    Any
+        Value of the target key
+
+    Raises
+    ------
+    KeyError
+        If key is not found in dictionary
+
+    TODO: if this gives issues due to landing on an incorrect key in the nested
+    dictionary, we will have to implement a more concrete method to search for a key
+    given a more complete address.  See resolved conversations in PR 2387
+
+    # Example usage:
+    nested_dict = {
+        'a': {
+            'b': {
+                'c': 1,
+                'd': {
+                    'e': 2,
+                    'f': 3
+                }
+            },
+            'g': 4
+        },
+        'h': {
+            'i': 5
+        },
+        'j': {
+            'k': 6
+        }
+    }
+
+    user_key = input("Enter the key to search for: ")
+    result = find_value_in_nested_dict(nested_dict, user_key)
+    """
+
+    if not isinstance(nested_dict, dict):
+        raise TypeError(f"Input is not of type(dict)")
+
+    result = nested_dict.get(target_key)
+    if result is not None:
+        return result
+
+    for value in nested_dict.values():
+        if isinstance(value, dict):
+            try:
+                result = find_value_in_nested_dict(value, target_key)
+                if result is not None:
+                    return result
+            except KeyError:
+                pass
+
+    logger.info(f"Key '{target_key}' not found in the nested dictionary")
+    return None

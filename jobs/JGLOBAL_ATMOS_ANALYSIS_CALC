@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
 
 
@@ -14,10 +13,8 @@ export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-# shellcheck disable=
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
@@ -42,17 +39,16 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
-    echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
-    exit 1
+    export err=1
+    err_exit "FILE MISSING: ATMGES = ${ATMGES}"
 fi
 
 # Get LEVS
-export LEVS=$(${NCLEN} ${ATMGES} pfull)
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+export LEVS=$(${NCLEN} ${ATMGES} pfull) && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
 fi
-
 
 # Generate Gaussian surface analysis  # TODO: Should this be removed now that sfcanl is its own job?
 export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
@@ -61,12 +57,11 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 ###############################################################
 # Run relevant script
 
-${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
 fi
-
 
 ##############################################
 # End JOB SPECIFIC work

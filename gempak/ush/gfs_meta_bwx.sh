@@ -9,7 +9,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 mkdir -p -m 775 "${DATA}/BWX"
 cd "${DATA}/BWX" || exit 2
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 metatype="bwx"
 metaname="${RUN}_${PDY}_${cyc}_us_${metatype}"
@@ -21,7 +21,7 @@ device="nc | ${metaname}"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 fend=F180
@@ -347,14 +347,14 @@ if (( err != 0 )) || [[ ! -s "${metaname}" ]]; then
     exit $(( err + 100 ))
 fi
 
-mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${metaname}"
+mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/${metaname}"
+        "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
     if [[ ${DBN_ALERT_TYPE} = "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
             "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-                "${COM_ATMOS_GEMPAK_META}/${metaname}"
+                "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
     fi
 fi
 exit

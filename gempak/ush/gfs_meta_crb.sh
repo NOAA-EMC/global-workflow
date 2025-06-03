@@ -9,7 +9,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 mkdir -p -m 775 "${DATA}/crb"
 cd "${DATA}/crb" || exit 2
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 mdl=gfs
 MDL=GFS
@@ -23,7 +23,7 @@ device="nc | ${metaname}"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 # DEFINE YESTERDAY
@@ -254,10 +254,10 @@ if [[ ${cyc} == 00 ]] ; then
     HPCECMWF_m1=ecmwf.${PDY}
     export HPCUKMET=ukmet.${PDYm1}
     if [[ ! -L "${HPCECMWF}" ]]; then
-        ${NLN} "${COMINecmwf}ecmwf.${PDY}/gempak" "${HPCECMWF}"
+        ${NLN} "${COMINecmwf}/ecmwf.${PDY}/gempak" "${HPCECMWF}"
     fi
     if [[ ! -L "${HPCECMWF_m1}" ]]; then
-        ${NLN} "${COMINecmwf}ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
+        ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
     fi
     if [[ ! -L "${HPCUKMET}" ]]; then
         ${NLN} "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"
@@ -404,14 +404,14 @@ if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit $(( err + 100 ))
 fi
 
-mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+        "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
     if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-            "${COM_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+            "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
     fi
 fi
 
