@@ -3,8 +3,11 @@ gdasocean_analysis:
     name: "GDASOCEAN_ANALYSIS"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_analysis.tar"
     required:
-        # TODO(AFE) cice_model_anl not tested with DOIAU="NO"
+        {% if DOIAU %}
         {% set anl_delta = "-3H" | to_timedelta %}
+        {% else %}
+        {% set anl_delta = "0H" | to_timedelta %}
+        {% endif %}
         {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
         # analysis and analysis increments
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocninc.nc'
