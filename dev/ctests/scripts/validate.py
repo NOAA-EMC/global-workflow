@@ -227,7 +227,7 @@ def main():
     files = parse_j2yaml(path=args.yaml, data=data)
     if 'output_files' not in files:
         logger.info(f"No output_files tag found for test: {args.yaml}")
-        logger.info("Nothing to validate).")
+        logger.info("Nothing to validate.")
         sys.exit(0)
 
     validation_mode = get_validation_mode()
