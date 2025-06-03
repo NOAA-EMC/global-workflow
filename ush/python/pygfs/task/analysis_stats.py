@@ -187,7 +187,7 @@ class AnalysisStats(Task):
 
         # path of output tar statfile
         iodastatzipfile = os.path.join(outdir, f"{self.task_config.APREFIX}{jedi_dict_key}_iodastat.tgz") 
-            
+
         logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
 
         # get list of iodastat files to put in tarball
