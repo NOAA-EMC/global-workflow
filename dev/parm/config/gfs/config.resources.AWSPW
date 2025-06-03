@@ -16,6 +16,14 @@ case ${step} in
     tasks_per_node=48
     ;;
 
+  "anal")
+    if [[ "${CASE}" == "C96" ]]; then
+      export PARTITION_BATCH="compute"
+      export threads_per_task=6  
+      tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    fi
+    ;;
+
   *)
     export PARTITION_BATCH="process"
     unset PARTITION_SERVICE
