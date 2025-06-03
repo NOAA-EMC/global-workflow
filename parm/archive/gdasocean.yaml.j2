@@ -2,8 +2,12 @@ gdasocean:
     {% set head = "gdas.ocean.t" + cycle_HH + "z." %}
     name: "GDASOCEAN"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean.tar"
+    # the FHMIN-hour forecast is skipped when DOIAU="NO"
     required:
-        {% for fhr in range(FHMIN, FHMAX + 1, FHOUT_OCN) %}
+        {% if DOIAU %}
+        - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}inst.f{{ '%03d' % FHMIN }}.nc"
+        {% endif %}
+        {% for fhr in range(FHMIN + FHOUT_OCN, FHMAX + 1, FHOUT_OCN) %}
         - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}inst.f{{ '%03d' % fhr }}.nc"
         {% endfor %}
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.MOM_input'
