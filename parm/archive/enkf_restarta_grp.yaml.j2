@@ -59,10 +59,14 @@ enkf_restarta_grp:
         {% endif %}
 
         {% if DOHYBVAR_OCN %}
+        {% if DOIAU_ENKF %}
         {% set rst_delta = "+3H" | to_timedelta %}
+        {% else %}
+        {% set rst_delta = "+6H" | to_timedelta %}
+        {% endif %} # DOIAU_ENKF
         {% set rst_time = current_cycle | add_to_datetime(rst_delta) %}
         - "{{ COMIN_OCEAN_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.MOM.res.nc"
         - "{{ COMIN_ICE_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.cice_model.res.nc"
-        {% endif %}
+        {% endif %} # DOHYBVAR_OCN
 
         {% endfor %}  # first_group_mem to last_group_mem
