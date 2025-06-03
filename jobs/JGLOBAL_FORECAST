@@ -24,7 +24,7 @@ if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 # Restart conditions for GCAFS cycle come from GCDAS
 rCDUMP="${RUN}"
 rCDUMP="${RUN/gfs/gdas}"
-export rCDUMP="${RUN/gcafs/gcdas}"
+export rCDUMP="${rCDUMP/gcafs/gcdas}"
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153

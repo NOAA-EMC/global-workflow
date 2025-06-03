@@ -14,8 +14,8 @@ GDUMP="gcdas"
 # Restart conditions for GFS cycle come from GDAS
 # Restart conditions for GCAFS cycle come from GCDAS
 GDUMP="${RUN}"
-GDUMP="${RUN/gfs/gdas}"
-GDUMP="${RUN/gcafs/gcdas}"
+GDUMP="${GDUMP/gfs/gdas}"
+GDUMP="${GDUMP/gcafs/gcdas}"
 
 ##############################################
 # Begin JOB SPECIFIC work
