@@ -179,6 +179,6 @@ class AnalysisStats(Task):
             dest = os.path.join(outdir, f"{analysis_dict['output file']}")
             logger.debug(f"copying {statfile} to {dest}")
             stat_copy = {
-                'copy': [[statfile, dest]]
+                'copy_opt': [[statfile, dest]]
             }
             FileHandler(stat_copy).sync()

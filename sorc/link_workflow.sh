@@ -159,7 +159,6 @@ for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml
 done
 
 cd "${HOMEgfs}/scripts" || exit 8
-${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   declare -a gdas_scripts=(exglobal_prep_ocean_obs.py
     exgdas_global_marine_analysis_ecen.py
@@ -169,7 +168,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   done
 fi
 cd "${HOMEgfs}/ush" || exit 8
-for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
+for file in global_cycle_driver.sh global_cycle.sh; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
 done
 
@@ -300,7 +299,7 @@ for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
 done
 
-declare -a model_systems=("gfs" "gefs" "sfs")
+declare -a model_systems=("gfs" "gefs" "sfs" "gcafs")
 for sys in "${model_systems[@]}"; do
   model_exe="${sys}_model.x"
   if [[ -s "${model_exe}" ]]; then

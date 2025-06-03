@@ -21,7 +21,8 @@ export GDUMP=${GDUMP:-"gdas"}
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_OBS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMIN_OBS:COM_OBS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
@@ -38,7 +39,9 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

@@ -104,11 +104,11 @@ ${NLN} "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
 
 export err=$?
 
-if [[ "${err}" -ne 0 ]]; then
-   echo "GFS postsnd job error, Please check files "
+if [[ ${err} -ne 0 ]]; then
+   echo "WARNING GFS postsnd job error, Please check files "
    echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${fhr}.${atmfm}"
    echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr}.${atmfm}"
-   err_chk
+   exit "${err}"
 fi
 
-exit "${err}"
+exit 0

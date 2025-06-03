@@ -127,8 +127,6 @@
 #     BKGFREQ       Frequency of background files for relocation
 #                   Default is "3" 
 #     SENDDBN       String when set to "YES" alerts output files to $COMSP
-#     NDATE         String indicating executable path for NDATE utility program
-#                   Default is "${EXECgfs}/ndate"
 #
 #     These do not have to be exported to this script.  If they are, they will
 #      be used by the script.  If they are not, they will be skipped
@@ -147,22 +145,13 @@
 #                  Herefile: RELOCATE_GES
 #                  ${USHgfs}/tropcy_relocate_extrkr.sh
 #                  ${USHgfs}/getges.sh
-#                  $NDATE (here and in child script
-#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
 #                  /usr/bin/poe
 #                  postmsg
 #                  $DATA/prep_step (here and in child script
 #                        ${USHgfs}/tropcy_relocate_extrkr.sh)
-#                  $DATA/err_exit (here and in child script
-#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
-#                  $DATA/err_chk (here and in child script
-#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
-#          NOTE: The last three scripts above are NOT REQUIRED utilities.
+#          NOTE: The last script above is not a required utility.
 #                If $DATA/prep_step not found, a scaled down version of it is
-#                executed in-line.  If $DATA/err_exit or $DATA/err_chk are not
-#                found and a fatal error has occurred, then the script calling
-#                it will kill itself and exit with a 555 return code causing
-#                all parent scripts to be killed.
+#                executed in-line.
 #
 #     programs   :
 #          RELOCATE_MV_NVORTEX - executable $RELOX
@@ -226,12 +215,6 @@ then
    echo "ABNORMAL EXIT!!!!!!!!!!!"
    echo
    set_trace
-   if [ -s $DATA/err_exit ]; then
-      $DATA/err_exit
-   else
-######kill -9 ${qid}
-      exit 555
-   fi
    exit 9
 fi
 
@@ -287,16 +270,10 @@ if [ $modhr -ne 0 ]; then
 
    set +x
    echo
-   echo "cannot perform tropical cyclone processing because cycle hour is \
-not a multiple of 3-hrs;"
+   echo "cannot perform tropical cyclone processing because cycle hour is not a multiple of 3-hrs;"
    echo "ABNORMAL EXIT!!!!!!!!!!!"
    echo
    set_trace
-   if [ -s $DATA/err_exit ]; then
-      $DATA/err_exit
-   else
-      exit 555
-   fi
    exit 9
 fi
 
@@ -381,12 +358,6 @@ to center relocation date/time;"
          echo "ABNORMAL EXIT!!!!!!!!!!!"
          echo
          set_trace
-         if [ -s $DATA/err_exit ]; then
-            $DATA/err_exit
-         else
-############kill -9 ${qid}
-            exit 555
-         fi
          exit 9
       fi
 
@@ -435,12 +406,6 @@ relative to center relocation date/time;"
          echo "ABNORMAL EXIT!!!!!!!!!!!"
          echo
          set_trace
-         if [ -s $DATA/err_exit ]; then
-            $DATA/err_exit
-         else
-############kill -9 ${qid}
-            exit 555
-         fi
          exit 9
       fi
       set +x
@@ -464,7 +429,7 @@ fi
 
 MP_PULSE=0
 MP_TIMEOUT=600
-GDATE10=$( ${NDATE:?} -06 ${CDATE10})
+GDATE10=$(date --utc +%Y%m%d%H -d "${CDATE10:0:8} ${CDATE10:8:2} - 6 hours")
 
 #  make unique combined tcvitals file for t-12, t-6 and t+0 -- 
 #  if tcvitals does not contains record from current time, skip relocation
@@ -518,20 +483,13 @@ else
       echo "ABNORMAL EXIT!!!!!!!!!!!"
       echo
       set_trace
-      if [ -s $DATA/err_exit ]; then
-         $DATA/err_exit "Script ${USHgfs}/tropcy_relocate_extrkr.sh failed"
-      else
-         exit 555
-      fi
       exit 9
    fi
 
 #  relocate model tropical cyclone vortices in ges sigma files
 #  -----------------------------------------------------------
 
-   if [ -s fort.*  ]; then
-     rm fort.*
-   fi
+   rm -f fort.*
 
    ${NLN} $DATA/tcvitals.now1      fort.11
    ${NLN} $DATA/model_track.all    fort.30
@@ -602,11 +560,6 @@ else
 
    echo; set_trace
    if [ "$errSTATUS" -gt '0' ]; then
-      if [ -s $DATA/err_exit ]; then
-         $DATA/err_exit "Script RELOCATE_GES failed"
-      else
-         exit 555
-      fi
       exit 9
    fi
 
@@ -632,11 +585,7 @@ else
 #  problem: $sges.relocate does not exist
 #  --------------------------------------
 
-         if [ -s $DATA/err_exit ]; then
-            $DATA/err_exit "The file $sges.relocate does not exist"
-         else
-            exit 555
-         fi
+         echo "FATAL ERROR: The file ${sges}.relocate does not exist"
          exit 9
       fi
    done
@@ -673,7 +622,7 @@ else
 #   the sgesprep file updated here by the relocation
 #  --------------------------------------------------------------------------
 
-   rm "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
+   rm -f "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
 
    echo "TROPICAL CYCLONE RELOCATION PROCESSING SUCCESSFULLY COMPLETED FOR \
 $CDATE10"

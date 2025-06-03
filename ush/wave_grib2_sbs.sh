@@ -87,14 +87,19 @@ cat ww3_grib.inp
 export pgm="${NET,,}_ww3_grib.x"
 source prep_step
 "${EXECgfs}/${pgm}" > "grib2_${grid_region}_${FH3}.out" 2>&1
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   echo "FATAL ERROR: ${pgm} returned non-zero status: ${err}; exiting!"
+   exit "${err}"
+fi
 cat "grib2_${grid_region}_${FH3}.out"
+
 if [[ ! -s gribfile ]]; then
   echo "FATAL ERROR: '${pgm}' failed!"
   exit 2
 fi
 
-if [[ "${fhr}" -gt 0 ]]; then
+if [[ ${fhr} -gt 0 ]]; then
   ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${outfile}"
   err=$?
 else
@@ -102,7 +107,8 @@ else
     -set table_1.4 1 -set table_1.2 1 -grib "${outfile}"
   err=$?
 fi
-if [[ "${err}" -ne 0 ]]; then
+
+if [[ ${err} -ne 0 ]]; then
   echo "FATAL ERROR: Error creating '${outfile}' with '${WGRIB2}'"
   exit 3
 fi
@@ -111,7 +117,7 @@ fi
 ${WGRIB2} -s "${outfile}" > "${outfile}.idx"
 
 # Move grib files to COM directory
-if [[ -s "${outfile}" ]] && [[ -s "${outfile}.idx" ]]; then
+if [[ -s "${outfile}" && -s "${outfile}.idx" ]]; then
   cpfs "${outfile}"     "${com_dir}/${outfile}"
   cpfs "${outfile}.idx" "${com_dir}/${outfile}.idx"
   echo "INFO: Copied ${outfile} and ${outfile}.idx from ${grib_DATA} to COM"
@@ -121,7 +127,7 @@ else
 fi
 
 # Create grib2 subgrid if this is the source grid
-if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]]; then
+if [[ "${grdID}" == "${WAV_SUBGRBSRC}" ]]; then
   for subgrb in ${WAV_SUBGRB}; do
     subgrbref=$(echo ${!subgrb} | cut -d " " -f 1-20)
     subgrbnam=$(echo ${!subgrb} | cut -d " " -f 21)
@@ -131,7 +137,7 @@ if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]]; then
     ${COPYGB2} -g "${subgrbref}" -i0 -x "${outfile}" "${subfnam}"
     ${WGRIB2} -s "${subfnam}" > "${subfnam}.idx"
 
-    if [[ -s "${subfnam}" ]] && [[ -s "${subfnam}.idx" ]]; then
+    if [[ -s "${subfnam}" && -s "${subfnam}.idx" ]]; then
       cpfs "${subfnam}"     "${com_dir}/${subfnam}"
       cpfs "${subfnam}.idx" "${com_dir}/${subfnam}.idx"
       echo "INFO: Copied ${subfnam} and ${subfnam}.idx from ${GRIBDATA} to COM"
@@ -142,7 +148,7 @@ if [[ "${grdID}" = "${WAV_SUBGRBSRC}" ]]; then
   done
 fi
 
-if [[ "${SENDDBN}" = 'YES' ]] && [[ "${outfile}" != *global.0p50* ]]; then
+if [[ "${SENDDBN}" == 'YES' && "${outfile}" != *global.0p50* ]]; then
   echo "INFO: Alerting GRIB file as ${outfile}"
   echo "INFO: Alerting GRIB index file as ${outfile}.idx"
   "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WAVE_GB2" "${job}" "${com_dir}/${outfile}"
