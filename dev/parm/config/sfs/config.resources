@@ -20,6 +20,7 @@ case ${machine} in
   "HERA")     max_tasks_per_node=40;;
   "ORION")    max_tasks_per_node=40;;
   "HERCULES") max_tasks_per_node=80;;
+  "GAEAC6")   max_tasks_per_node=192;;
   "AWSPW")
     export PARTITION_BATCH="compute"
     max_tasks_per_node=48

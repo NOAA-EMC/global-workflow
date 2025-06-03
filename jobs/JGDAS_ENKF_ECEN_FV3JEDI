@@ -38,7 +38,9 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 EXSCRIPT=${GDASATMRUNPY:-${SCRgfs}/exgdas_enkf_ecen_fv3jedi.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work
@@ -59,7 +61,9 @@ fi
 cd "${DATAROOT}" && true
 export err=$?
 set +x
-err_chk "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"
+if [[ ${err} -ne 0 ]]; then
+    err_exit "${DATAROOT} does not exist, ABORT!"
+fi
 set_trace
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"

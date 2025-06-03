@@ -7,8 +7,8 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 mkdir -p -m 775 "${DATA}/mrfus"
 cd "${DATA}/mrfus" || exit 2
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
-cp "${HOMEgfs}/gempak/fix/ak_sfstns.tbl" alaska.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/ak_sfstns.tbl" alaska.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits

@@ -103,13 +103,6 @@ class SnowEnsAnalysis(Task):
         ----------
         None
         """
-        # initialize JEDI variational application
-        logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['snowanlvar'].initialize(self.task_config)
-
-        # initialize ensemble mean computation
-        logger.info(f"Initializing JEDI ensemble mean application")
-        self.jedi_dict['esnowanlensmean'].initialize(self.task_config)
 
         # stage backgrounds
         logger.info(f"Staging background files from {self.task_config.SNOW_ENS_STAGE_TMPL}")
@@ -164,6 +157,14 @@ class SnowEnsAnalysis(Task):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
+
+        # initialize JEDI variational application
+        logger.info(f"Initializing JEDI variational DA application")
+        self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
+
+        # initialize ensemble mean computation
+        logger.info(f"Initializing JEDI ensemble mean application")
+        self.jedi_dict['esnowanlensmean'].initialize(self.task_config)
 
     @logit(logger)
     def prepare_IMS(self) -> None:

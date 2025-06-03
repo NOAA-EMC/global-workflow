@@ -19,7 +19,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 LATVAL="1/1/1/1/5;5"
 pixels="1728;1472"
-cp "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
+cpreq "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
 
 #################################################################
 #                       ANALYSIS CHARTS                         #
@@ -535,21 +535,21 @@ EOF
 
 
 # Copy the GIF images into my area
-cp "${hgttmp700dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${hgttmp500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${hgtiso300dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${hgtiso250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${hgttmp250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${hgtiso200dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${hgtiso100dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${hgttmp100dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${mslpthksfcusdev}" "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${hgtvor500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${hgtvor500usdev}"  "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${liftdev}"         "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${prswshtropdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}"
-cp "${rhvvel700dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgttmp700dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgttmp500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgtiso300dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgtiso250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgttmp250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgtiso200dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgtiso100dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgttmp100dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${mslpthksfcusdev}" "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgtvor500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgtvor500usdev}"  "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${liftdev}"         "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${prswshtropdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${rhvvel700dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
 
 # Copy the GIF images onto the NCDC area on the public ftp server
 

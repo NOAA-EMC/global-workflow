@@ -186,11 +186,6 @@ else
 fi
 
 cd "${HOMEgfs}/scripts" || exit 8
-if [ "${RUN_ENVIR}" == "container" ]; then
-  ${CONTAINER_COPY} "${CONTAINER_DIR}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
-else
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
-fo
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   declare -a gdas_scripts=(exglobal_prep_ocean_obs.py
     exgdas_global_marine_analysis_ecen.py

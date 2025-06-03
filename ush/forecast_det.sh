@@ -111,6 +111,13 @@ UFS_det(){
       && [[ "${ww3_rst_ok}" == "YES" ]]; then
       RERUN="YES"
       RERUN_DATE="${rdate}"
+
+      # Check if RERUN_DATE is at/after model end time; if so, this will cause the model to crash
+      if [[ ${RERUN_DATE} -ge ${forecast_end_cycle} ]]; then
+         echo "FATAL ERROR Warm start detected, but restart date (${RERUN_DATE}) is at/after model end date (${forecast_end_cycle})"
+         exit 1
+      fi
+
       warm_start=".true."
       echo "All restarts found for '${RERUN_DATE}', RERUN='${RERUN}', warm_start='${warm_start}'"
       break
