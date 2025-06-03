@@ -365,14 +365,12 @@ or accessing the cluster from your web terminal, you can start to clone, compile
 
       cd /contrib/$USER   #you should have a username and have a directory at /contrib, where we save our permanent files.
       git clone --recursive git@github.com:NOAA-EMC/global-workflow.git global-workflow
-      #or the develop fork at EPIC:
-      git clone --recursive git@github.com:NOAA-EPIC/global-workflow-cloud.git global-workflow-cloud
 
 #. Compile global-workflow:
 
    .. code-block:: console
 
-      cd /contrib/$USER/global-workflow   # or cd /contrib/$USER/global-workflow-cloud depending on which one you cloned
+      cd /contrib/$USER/global-workflow
       cd sorc
       build_all.sh      # or similar command to compile for gefs, or others.
       link_workflow.sh  # after build_all.sh finished successfully
@@ -392,7 +390,7 @@ or accessing the cluster from your web terminal, you can start to clone, compile
       #SBATCH -o compile.%J.log
       #SBATCH --exclusive
 
-      gwhome=/contrib/Wei.Huang/src/global-workflow-cloud  # Change this to your own "global-workflow" source directory
+      gwhome=/contrib/Wei.Huang/src/global-workflow  # Change this to your own "global-workflow" source directory
       cd ${gwhome}/sorc
       source ${gwhome}/dev/ush/gw_setup.sh
       #build_all.sh
