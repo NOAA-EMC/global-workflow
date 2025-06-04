@@ -17,8 +17,8 @@ class GEFSTasks(Tasks):
             if not isinstance(self.app_config.gefstype, str):
                 raise TypeError(f'gefstype must be a string')
             raise NotImplementedError(f'{self.app_config.gefstype} is not a valid type.\n'
-                                  f'Currently supported GEFS types are:\n'
-                                  f'{" | ".join(stage_ic_map.keys())}')
+                                      f'Currently supported GEFS types are:\n'
+                                      f'{" | ".join(stage_ic_map.keys())}')
         # Call the appropriate method based on gefstype
         task = stage_ic_map[self.app_config.gefstype]()
 
