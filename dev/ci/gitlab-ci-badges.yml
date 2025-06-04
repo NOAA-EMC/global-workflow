@@ -27,11 +27,9 @@ update_status_badges:
   image: bitnami/git:latest
   stage: update_badges
   variables:
-    # Map of hosts to their Gist IDs - REPLACE WITH YOUR ACTUAL GIST IDs
-    HERA_GIST_ID: "your-hera-gist-id-here"
-    GAEAC6_GIST_ID: "your-gaeac6-gist-id-here" 
-    WCOSS2_GIST_ID: "your-wcoss2-gist-id-here"
-    ORION_GIST_ID: "your-orion-gist-id-here"
+    # Map of hosts to their Gist IDs - UPDATE THESE WITH ACTUAL GIST IDs
+    HERA_GIST_ID: "6fc87bdca52a4046188460bcd35e4350"
+    GAEAC6_GIST_ID: "66059582886cb5c2485ff64bf24e7f93"
     # Add new hosts here as they are added to the pipeline
     
   script:
@@ -115,8 +113,8 @@ update_status_badges:
       update_host_badge "gaeac6" "$GAEAC6_GIST_ID"
       
       # Add new hosts here as they are added to the pipeline:
-      # update_host_badge "wcoss2" "$WCOSS2_GIST_ID"
       # update_host_badge "orion" "$ORION_GIST_ID" 
+      # update_host_badge "orion" "$HERCULES_GIST_ID"
       
       echo "Badge updates completed!"
       
