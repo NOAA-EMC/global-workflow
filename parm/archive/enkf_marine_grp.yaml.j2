@@ -25,7 +25,11 @@ enkf_marine_grp:
         {% endif %}
 
         # Store the individual member analysis data
+        {% if DOIAU_ENKF %}
         {% set anl_delta = "-3H" | to_timedelta %}
+        {% else %}
+        {% set anl_delta = "0H" | to_timedelta %}
+        {% endif %}
         {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
         - "{{ COMIN_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ocninc.nc"
         - "{{ COMIN_ICE_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.cice_model_anl.res.nc"
