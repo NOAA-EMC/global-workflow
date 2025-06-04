@@ -27,6 +27,7 @@ stages:
   - create_experiments
   - run_tests
   - finalize
+  - update_badges
 
 variables:
   BUILDTYPE: 'nightly'
@@ -44,6 +45,7 @@ include:
   - local: 'dev/ci/gitlab-ci-ctests.yml'  # CTest framework configuration
   - local: 'dev/ci/gitlab-ci-cases.yml'   # Standard test case templates
   - local: 'dev/ci/gitlab-ci-hosts.yml'   # Host-specific configurations
+  - local: 'dev/ci/gitlab-ci-badges.yml'  # Badge update configuration
 
 .base_config:
   variables:

@@ -2,6 +2,12 @@
 [![shellnorms](https://github.com/NOAA-EMC/global-workflow/actions/workflows/linters.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/linters.yaml)
 [![pynorms](https://github.com/NOAA-EMC/global-workflow/actions/workflows/pynorms.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/pynorms.yaml)
 
+## Scheduled CI Status by Host
+
+![Hera Status](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/6fc87bdca52a4046188460bcd35e4350/raw/hera_badge.json)
+![GAEAC6 Status](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/66059582886cb5c2485ff64bf24e7f93/raw/gaeac6_badge.json)
+
+## PR Case CI Status by Host
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/hera.json)
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/hercules.json)
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/wcoss2.json)

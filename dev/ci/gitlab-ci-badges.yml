@@ -1,0 +1,140 @@
+# ==========================================================================
+# Badge Update Configuration for Global Workflow CI Pipeline
+# ==========================================================================
+#
+# This file defines the badge update job that runs after scheduled pipeline
+# completion to update status badges for each host via GitHub Gists.
+#
+# The job updates badges for all supported hosts by checking the status of
+# their finalize jobs and updating corresponding GitHub Gists that are
+# referenced in the README.md file.
+#
+# Prerequisites:
+# 1. GitHub Personal Access Token with gist permissions stored as GITHUB_TOKEN
+# 2. GitHub Gists created for each host (see setup guide)
+# 3. README.md updated with badge links to the gists
+
+# Add a new stage for badge updates
+stages:
+  - build
+  - create_experiments  
+  - run_tests
+  - finalize
+  - update_badges
+
+# Badge update job - runs after all scheduled tests complete
+update_status_badges:
+  image: bitnami/git:latest
+  stage: update_badges
+  variables:
+    # Map of hosts to their Gist IDs - REPLACE WITH YOUR ACTUAL GIST IDs
+    HERA_GIST_ID: "your-hera-gist-id-here"
+    GAEAC6_GIST_ID: "your-gaeac6-gist-id-here" 
+    WCOSS2_GIST_ID: "your-wcoss2-gist-id-here"
+    ORION_GIST_ID: "your-orion-gist-id-here"
+    # Add new hosts here as they are added to the pipeline
+    
+  script:
+    - |
+      # Install GitHub CLI and required tools
+      echo "Installing GitHub CLI and dependencies..."
+      apt-get update -qq && apt-get install -y -qq curl jq
+      curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+      chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+      apt-get update -qq && apt-get install -y -qq gh
+      
+      # Authenticate GitHub CLI
+      echo "$GITHUB_TOKEN" | gh auth login --with-token
+      
+      # Create directory for badge files
+      mkdir -p badges
+      
+      # Function to create badge JSON for shields.io endpoint
+      create_badge_json() {
+        local status=$1
+        local color=$2
+        local label=$3
+        cat > "badges/${label}_badge.json" << EOF
+      {
+        "schemaVersion": 1,
+        "label": "$label",
+        "message": "$status",
+        "color": "$color"
+      }
+      }
+      
+      # Function to update host badge
+      update_host_badge() {
+        local host=$1
+        local gist_id=$2
+        local finalize_job="finalize-$host"
+        
+        # Get the job status from GitLab API
+        job_url="$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/jobs"
+        job_status=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$job_url" | jq -r ".[] | select(.name==\"$finalize_job\") | .status")
+        
+        # Determine badge status and color
+        case "$job_status" in
+          "success")
+            status="passing"
+            color="brightgreen"
+            ;;
+          "failed")
+            status="failing" 
+            color="red"
+            ;;
+          "canceled"|"skipped")
+            status="skipped"
+            color="yellow"
+            ;;
+          *)
+            status="unknown"
+            color="lightgrey"
+            ;;
+        esac
+        
+        # Create badge JSON
+        create_badge_json "$status" "$color" "$host"
+        
+        # Update the gist if we have a valid gist ID
+        if [[ "$gist_id" != "your-"*"-gist-id-here" ]]; then
+          echo "Updating gist $gist_id for $host with status: $status"
+          gh gist edit "$gist_id" "badges/${host}_badge.json"
+        else
+          echo "Skipping $host - gist ID not configured"
+          echo "Badge JSON content for $host:"
+          cat "badges/${host}_badge.json"
+        fi
+      }
+      
+      # Update badges for all configured hosts
+      echo "Starting badge updates for all hosts..."
+      
+      update_host_badge "hera" "$HERA_GIST_ID"
+      update_host_badge "gaeac6" "$GAEAC6_GIST_ID"
+      
+      # Add new hosts here as they are added to the pipeline:
+      # update_host_badge "wcoss2" "$WCOSS2_GIST_ID"
+      # update_host_badge "orion" "$ORION_GIST_ID" 
+      
+      echo "Badge updates completed!"
+      
+  # This job depends on all finalize jobs completing
+  needs:
+    - finalize-hera
+    - finalize-gaeac6
+    # Add new finalize jobs here as hosts are added
+    
+  # Only run for scheduled pipelines
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always  # Run regardless of upstream job status to show failures
+    - when: never
+      
+  # Allow failure so pipeline doesn't fail if badge update fails
+  allow_failure: true
+  
+  # Run on any available runner since this doesn't need specific host access
+  tags:
+    - shared
