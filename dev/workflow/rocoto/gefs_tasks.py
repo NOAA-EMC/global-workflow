@@ -10,7 +10,7 @@ class GEFSTasks(Tasks):
 
     def stage_ic(self):
 
-        stage_ic_map = {'general': self._gen_stage_ic,
+        stage_ic_map = {'offline': self._gen_stage_ic,
                         'real-time': self._RT_stage_ic}
         try:
             task = stage_ic_map[self.app_config.gefstype]()
@@ -107,10 +107,10 @@ class GEFSTasks(Tasks):
     def fcst(self):
         dependencies = []
 
-        if self.app_config.gefstype in ['general']:
+        if self.app_config.gefstype in ['offline']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.gefstype in ['real-time']:
+        if self.app_config.gefstype in ['near-real-time']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
             dependencies.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave']:
@@ -155,7 +155,7 @@ class GEFSTasks(Tasks):
 
     def efcs(self):
         dependencies = []
-        if self.app_config.gefstype in ['general']:
+        if self.app_config.gefstype in ['near-real-time']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
         if self.app_config.gefstype in ['real-time']:
