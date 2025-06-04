@@ -218,7 +218,7 @@ touch fnoc
 mv -f fnoc fnoc1
 ${USHgfs}/parse-storm-type.pl fnoc1 > fnoc
 
-if [ $SENDDBN = YES ]; then
+if [[ "${SENDDBN}" == "YES" ]]; then
   $DBNROOT/bin/dbn_alert MODEL SYNDAT_TCVITALS $job $ARCHSYND/syndat_tcvitals.$year
 fi
 
@@ -357,8 +357,7 @@ fi
 cp current "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
 
 #  Create the DBNet alert 
-if [ $SENDDBN = "YES" ]
-then
+if [[ "${SENDDBN}" == "YES" ]]; then
    "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS_TCVITALS" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
 fi
     

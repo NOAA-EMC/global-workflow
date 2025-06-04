@@ -47,9 +47,7 @@
 #   Input script positional parameters:
 #     1             String indicating the center date/time for the relocation
 #                   processing <yyyymmddhh> - if missing, then this time
-#                   is obtained from the /com/date/$cycle file unless
-#                   the imported variable MACHINE=sgi in which case the
-#                   script exits abnormally
+#                   is obtained from the /com/date/$cycle file
 #
 #   Imported Shell Variables:
 #
@@ -79,8 +77,6 @@
 #     These will be set to their default value in this script if not exported
 #      to this script by the parent script --
 #
-#     MACHINE       String indicating machine on which this job is running
-#                   Default is "$(hostname -s | cut -c 1-3)"
 #     envir         String indicating environment under which job runs ('prod'
 #                   or 'test')
 #                   Default is "prod"
@@ -172,30 +168,13 @@
 #
 ####
 
-MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
-
-export OPSROOT=${OPSROOT:-/lfs/h1/ops/prod}
-GRIBVERSION=${GRIBVERSION:-"grib2"}
-
-if [ ! -d $DATA ] ; then mkdir -p $DATA ;fi
-
-cd $DATA
-
 qid=$$
-
 
 #  obtain the center date/time for relocation processing
 #  -----------------------------------------------------
 
 if [ $# -ne 1 ] ; then
-   if [ $MACHINE != sgi ]; then
-#      cp ${COMROOT}/date/$cycle ncepdate
-#      err0=$?
-      ncepdate=${PDY}${cyc}      
-      CDATE10=$(cut -c7-16 ncepdate)
-   else
       err0=1
-   fi
 else 
    CDATE10=$1
    if [ "${#CDATE10}" -ne '10' ]; then
@@ -233,8 +212,6 @@ set_trace
 #  Create variables needed for this script and its children
 #  --------------------------------------------------------
 
-envir=${envir:-prod}
-
 envir_getges=${envir_getges:-$envir}
 if [ $modhr -eq 0 ]; then
    network_getges=${network_getges:-global}
@@ -242,15 +219,12 @@ else
    network_getges=${network_getges:-gfs}
 fi
 
+GRIBVERSION=${GRIBVERSION:-"grib2"}
 pgmout=${pgmout:-/dev/null}
-
 tstsp=${tstsp:-/tmp/null/}
 tmmark=${tmmark:-tm00}
-
 RELOX=${RELOX:-${EXECgfs}/relocate_mv_nvortex}
-
 export BKGFREQ=${BKGFREQ:-1}
-
 SUPVX=${SUPVX:-${EXECgfs}/supvit.x}
 GETTX=${GETTX:-${EXECgfs}/gettrk}
 
@@ -600,7 +574,7 @@ else
 
    cp "rel_inform1" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
    cp "tcvitals" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
-   if [ "$SENDDBN" = "YES" ]; then
+   if [[ "${SENDDBN}" == "YES" ]]; then
        if test "$RUN" = "gdas1"
        then
            "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"

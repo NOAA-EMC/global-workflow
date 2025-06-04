@@ -48,7 +48,7 @@ pdsext=no
 
 
 GEMGRD="${RUN2}_${PDY}${cyc}f${fhr3}"
-GRIBIN="${COMOUT_ATMOS_GOES}/${model}.${cycle}.${GRIB}${fhr3}${EXT}"
+GRIBIN="${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.${GRIB}${fhr3}${EXT}"
 GRIBIN_chk="${GRIBIN}"
 
 if [[ ! -r "${GRIBIN_chk}" ]]; then

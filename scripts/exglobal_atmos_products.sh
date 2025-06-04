@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-# Programs used
-export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-
 # Scripts used
 INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/interp_atmos_master.sh"}
 INTERP_ATMOS_SFLUXSH=${INTERP_ATMOS_SFLUXSH:-"${USHgfs}/interp_atmos_sflux.sh"}

@@ -38,7 +38,6 @@ export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
 
 # Other info used in this script
-export gesenvir=${gesenvir:-${envir}}
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GPREFIX="gdas.t${GDATE:8:2}z."

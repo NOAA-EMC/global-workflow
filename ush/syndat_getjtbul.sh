@@ -141,8 +141,8 @@ if [ "$errget" -gt '0' ];then
    if [ "$errget" -eq '1' ];then
       msg="No JTWC bulletins in $jtwcdir/tropcyc, no JTWC tcvitals \
 available for qctropcy for $CDATE10"
-      if [ "$RUN" = 'gfs' ]; then
-        if [ "$SENDSDM" = 'YES' ]; then
+      if [[ "$RUN" == "gfs" ]]; then
+        if [[ "${SENDSDM}" == "YES" ]]; then
          export ecf_family=$(echo $ECF_NAME |awk 'BEGIN {FS="/j"} {print $1}')
          echo $msg > $COMOUT/${NET}_${RUN}.t${cyc}z.emailbody
          echo "export subject='No JTWC bulletins available for $CDATE10 $RUN run'" >$COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
