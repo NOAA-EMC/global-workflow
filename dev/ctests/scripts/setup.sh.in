@@ -22,7 +22,7 @@ cd "${HOMEgfs}/dev/workflow" || exit 1
 # where the same test is run multiple times from the same user
 sha=$(git rev-parse --short HEAD)
 
-pslot="${TEST_NAME}_${pr_sha}" \
+pslot="${TEST_NAME}_${sha}" \
 RUNTESTS="${RUNTESTS}" \
 ICSDIR_ROOT="${ICSDIR_ROOT}" \
 HPC_ACCOUNT="${HPC_ACCOUNT}" \
