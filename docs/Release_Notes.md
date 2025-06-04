@@ -57,6 +57,7 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
+* add `ncdiag_ver=1.1.1` in `versions/build.ver` and `versions/run.ver`
 * `versions/run.ver` - change `version=v16.3.25`, `gfs_ver=v16.3.25`, and `obsproc_ver=v1.3`
 * also changed in version files for developers: `obsproc_run_ver=1.3.0` and `prepobs_run_ver=1.2.0`
 
@@ -137,7 +138,7 @@ The following GSI-fix files have been modified to include new data:
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.24
+* Add ncdiag module to modulefiles for the GSI
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
