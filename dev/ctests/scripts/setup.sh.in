@@ -20,7 +20,7 @@ cd "${HOMEgfs}/dev/workflow" || exit 1
 # We need to tag the pslot with the current git commit hash
 # for a unique path in the RUNDIR directory for the use case
 # where the same test is run multiple times from the same user
-pr_sha=$(git rev-parse --short HEAD)
+sha=$(git rev-parse --short HEAD)
 
 pslot="${TEST_NAME}_${pr_sha}" \
 RUNTESTS="${RUNTESTS}" \
