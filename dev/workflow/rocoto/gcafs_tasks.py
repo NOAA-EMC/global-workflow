@@ -1237,7 +1237,7 @@ class GCAFSTasks(Tasks):
         """
         deps = []
         if self.app_config.mode in ['cycled']:
-            if self.options['do_anlstat']:
+            if self.options['do_anlstat'] and self.options['do_aero_anl']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                 deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies
