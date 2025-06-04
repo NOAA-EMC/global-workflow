@@ -171,7 +171,7 @@ for hr in "${!gcycle_dates[@]}"; do
     cpreq "${DATA}/fnbgsi.00${nn}"                       "${DATA}/fnbgso.00${nn}"
   done
 
-  CDATE="${PDY}${cyc}" ${CYCLESH}
+  CDATE="${PDY}${cyc}" "${CYCLESH}" && true
   export err=$?
   if [[ ${err} -ne 0 ]]; then
      err_exit "Unable to update surface data from guess and analysis!"

@@ -52,7 +52,7 @@ where:
      - S2SWA: atm-ocean-ice-wave-aerosols
 
    * ``$START`` is the start type (warm or cold [default])
-   * ``$IDATE`` is the initial start date of your run (first cycle CDATE, YYYYMMDDCC)
+   * ``$IDATE`` is the initial start date of your run (first cycle, YYYYMMDDCC)
    * ``$EDATE`` is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete [default: $IDATE]
    * ``$PSLOT`` is the name of your experiment [default: test]
    * ``$CONFIGDIR`` is the path to the ``/config`` folder under the copy of the system you're using [default: $TOP_OF_CLONE/dev/parm/config/]
@@ -166,7 +166,7 @@ where:
      - S2SW: atm-ocean-ice-wave
      - S2SWA: atm-ocean-ice-wave-aerosols
 
-   * ``$IDATE`` is the initial start date of your run (first cycle CDATE, YYYYMMDDCC)
+   * ``$IDATE`` is the initial start date of your run (first cycle, YYYYMMDDCC)
    * ``$EDATE`` is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete [default: $IDATE]
    * ``$START`` is the start type (warm or cold [default])
    * ``$INTERVAL_GFS`` is the forecast interval in hours [default: 6]

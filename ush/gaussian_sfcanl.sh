@@ -37,7 +37,6 @@
 #     LOGSCRIPT     Log posting script.  Defaults to none.
 #     ENDSCRIPT     Postprocessing script
 #                   defaults to none
-#     CDATE         Output analysis date in yyyymmddhh format. Required.
 #     PGMOUT        Executable standard output
 #                   defaults to $pgmout, then to '&1'
 #     PGMERR        Executable standard error
@@ -113,8 +112,6 @@ DATA=${DATA:-$(pwd)}
 XC=${XC:-}
 GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.x}
 SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVSP1}.txt}
-
-CDATE=${CDATE:?}
 
 #  Other variables.
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
