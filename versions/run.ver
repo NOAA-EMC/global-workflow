@@ -47,6 +47,7 @@ export g2_ver=3.4.5
 export zlib_ver=1.2.11
 export sp_ver=2.3.3
 export ip_ver=3.3.3
+export ncdiag_ver=1.1.1
 
 export cmdaccel_ver=1.1
 
