@@ -155,10 +155,10 @@ class GEFSTasks(Tasks):
 
     def efcs(self):
         dependencies = []
-        if self.app_config.gefstype in ['near-real-time']:
+        if self.app_config.gefstype in ['offline']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.gefstype in ['real-time']:
+        if self.app_config.gefstype in ['near-real-time']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
         if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
