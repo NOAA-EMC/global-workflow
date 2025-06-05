@@ -8,6 +8,7 @@ HOMEgfs = find_upward('.github')
 current_dir = os.path.dirname(os.path.abspath(__file__))
 RUNDIR = os.path.join(current_dir, 'testdata/RUNDIR')
 pslot = "C48_ATM"
+account = "fv3-cpu"
 foobar = "foobar"
 
 
@@ -34,6 +35,7 @@ def test_setup_xml():
 
     cfg = Configuration(f"{RUNDIR}/{pslot}")
     base = cfg.parse_config('config.base')
+    assert base.ACCOUNT == account
 
     assert "UNKNOWN" not in base.values()
 

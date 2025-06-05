@@ -56,6 +56,9 @@ jobs:
         sudo mkdir -p /scratch1/NCEPDEV/global
         sudo chmod -R a+w /scratch1/NCEPDEV
         source rocoto-${{ env.ROCOTO_VERSION }}/rocoto_path.sh
+        touch .gwrc
+        echo "user:" >> .gwrc
+        echo "  ACCOUNT: 'fv3-cpu'" >> .gwrc
         cd global-workflow/sorc
         git submodule update --init -j 2 wxflow ufs_model.fd
         ./link_workflow.sh
