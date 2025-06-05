@@ -45,6 +45,14 @@ export USHminmon=${USHminmon:-$HOMEminmon/ush}
 
 
 #############################################
+# Run setpdy and initialize PDY variables
+#############################################
+export cycle=t${cyc}z
+setpdy.sh
+. ./PDY
+
+
+#############################################
 #  determine PDY and cyc for previous cycle
 #############################################
 
