@@ -134,5 +134,4 @@ update_status_badges:
   allow_failure: true
   
   # Run on any available runner since this doesn't need specific host access
-  tags:
-    - shared
+  tags: []
