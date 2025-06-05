@@ -638,7 +638,7 @@ def main(*argv):
         logger.info(f'Using user configuration file: {gwrc_file}')
     else:
         logger.warning(f'User configuration file does not exist: {user_inputs.gwrc}, use repository defaults')
-        gwrc_file = os.path.join(_top, 'dev/workflow/gwrc')
+        gwrc_file = os.path.join(_top, 'dev/parm/workflow/gwrc')
     gwrc_dict = parse_j2yaml(gwrc_file, os.environ)
 
     host.info = update_host_info_with_user_gwrc(host.info, gwrc_dict.user)
