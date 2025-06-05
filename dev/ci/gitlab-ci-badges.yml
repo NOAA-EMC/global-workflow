@@ -45,7 +45,7 @@ update_status_badges:
 
       # Check for authenticate with GitHub CLI using the
       # provided token GITHUB_TOKEN from GitLab CI/CD variables
-      gh auth login status
+      gh auth status
       if [ $? -ne 0 ]; then
         echo "Authenticating with GitHub CLI failed"
       else
