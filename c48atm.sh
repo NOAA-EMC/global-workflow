@@ -2,6 +2,7 @@
 
  set -x
 
+ HOMEDIR=/scratch4/NAGAPE/epic/Wei.Huang/demo
  rundir=/scratch4/NAGAPE/epic/Wei.Huang/run
  mkdir -p ${rundir}
 

@@ -1,23 +1,26 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-export FPATH=/usr/lmod/lmod/libexec
+HOMEgfs=/scratch4/NAGAPE/epic/Wei.Huang/demo/global-workflow-cloud
 
-export HOMEgfs=/opt/global-workflow-cloud
+#source /opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/intel/2021.10.0/intel-oneapi-mpi-2021.9.0-6bnjcwc/setvars.sh --force
+
 source /usr/lmod/lmod/init/bash
 module purge
-source ${HOMEgfs}/versions/run.ver
-module use ${HOMEgfs}/modulefiles
-module load module_base.container
+source ${HOMEgfs}/dev/ush/gw_setup.sh
+
+module list
 
 #module load python/3.10.13
-#module load py-f90nml/1.4.3
-#module load py-netcdf4/1.5.8
-#module load py-pyyaml/6.0
-#module load py-jinja2/3.1.2
-#module load py-pandas/1.5.3
-#module load py-numpy/1.22.3
-#module load py-xarray/2023.7.0
-#module load py-python-dateutil/2.8.2
+module load py-f90nml/1.4.3
+module load py-netcdf4/1.5.8
+module load py-pyyaml/6.0
+module load py-jinja2/3.0.3
+module load py-pandas/1.5.3
+module load py-numpy/1.22.3
+module load py-xarray/2023.7.0
+module load py-python-dateutil/2.8.2
+
+module list
 
 wxflowPATH="${HOMEgfs}/ush/python"
 export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"

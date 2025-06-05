@@ -1,31 +1,16 @@
-#!/bin/bash
-#img=/scratch2/NAGAPE/epic/Wei.Huang/src/gw-container-spack-stack-1.6.0/gw-container.sif
- img=/scratch2/NAGAPE/epic/Wei.Huang/src/gw-container-spack-stack-1.6.0/gw-container
- cmd=/opt/global-workflow-cloud/ush/run_wgrib2.sh
- arg="$@"
-#echo running: singularity exec "${img}" $cmd $arg
- singularity exec ${img} $cmd $arg
+#!/usr/bin/env bash
 
-module reset
-unset MACHINE_ID
-export HOMEgfs=/scratch2/NAGAPE/epic/Wei.Huang/src/global-workflow-cloud
-# Find module command and purge:
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/ush/module-setup.sh"
+export HOMEgfs=/scratch4/NAGAPE/epic/Wei.Huang/demo/global-workflow-cloud
 
-# Source versions file for runtime
-source "${HOMEgfs}/versions/run.ver"
+source /usr/lmod/lmod/init/bash
+module purge
+module use ${HOMEgfs}/modulefiles
+module load module_gwsetup.container
 
-# Load our modules:
-module use "${HOMEgfs}/modulefiles"
+module load wgrib2/2.0.8
+export LD_LIBRARY_PATH=/opt/intel/oneapi/compiler/2024.0/lib:$LD_LIBRARY_PATH
 
-case "${MACHINE_ID}" in
-  "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "jet" | "s4" | "noaacloud" | "container")
-    module load "module_base.${MACHINE_ID}"
-    ;;
-  *)
-    echo "WARNING: UNKNOWN PLATFORM"
-    ;;
-esac
+arg="$@"
 
-module load prod_util
+/opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/intel/2021.10.0/wgrib2-2.0.8-bq36dgw/bin/wgrib2 $arg
+
