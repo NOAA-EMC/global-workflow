@@ -12,7 +12,7 @@ class GEFSTasks(Tasks):
 
         stage_ic_map = {'gefs-offline': self._gen_stage_ic,
                         'near-real-time': self._RT_stage_ic}
-    # Check if gefstype is valid
+        # Check if gefstype is valid
         if self.app_config.gefstype not in stage_ic_map:
             if not isinstance(self.app_config.gefstype, str):
                 raise TypeError(f'gefstype must be a string')
