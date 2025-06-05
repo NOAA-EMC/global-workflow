@@ -8,7 +8,6 @@ HOMEgfs = find_upward('.github')
 current_dir = os.path.dirname(os.path.abspath(__file__))
 RUNDIR = os.path.join(current_dir, 'testdata/RUNDIR')
 pslot = "C48_ATM"
-account = "fv3-cpu"
 foobar = "foobar"
 
 
@@ -18,8 +17,7 @@ def test_setup_expt():
         "gfs", "forecast-only",
         "--pslot", pslot, "--app", "ATM", "--resdetatmos", "48",
         "--comroot", RUNDIR, "--expdir", RUNDIR,
-        "--idate", "2021032312", "--edate", "2021032312", "--overwrite",
-        "--account", account
+        "--idate", "2021032312", "--edate", "2021032312", "--overwrite"
     ]
     setup_expt_script = Executable(os.path.join(HOMEgfs, "dev/workflow/setup_expt.py"))
     setup_expt_script.add_default_arg(arguments)
@@ -36,7 +34,6 @@ def test_setup_xml():
 
     cfg = Configuration(f"{RUNDIR}/{pslot}")
     base = cfg.parse_config('config.base')
-    assert base.ACCOUNT == account
 
     assert "UNKNOWN" not in base.values()
 
