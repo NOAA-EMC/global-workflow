@@ -21,6 +21,14 @@ export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 export OPREFIX="${RUN}.t${cyc}z."
 
+export NMEM_ENS_MAX=${NMEM_ENS}
+if [[ "${RUN}" == "gfs"  && "${DOHYBVAR_OCN}" == "YES" ]]; then
+   NMEM_ENS=${NMEM_ENS_GFS}
+   export mem_offset=$((NMEM_ENS_GFS_OFFSET * cyc/6))
+else
+   export mem_offset=0
+fi
+
 RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
   COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
   COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
