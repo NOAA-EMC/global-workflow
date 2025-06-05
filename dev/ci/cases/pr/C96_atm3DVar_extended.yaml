@@ -3,7 +3,6 @@ experiment:
   mode: cycled
 
 arguments:
-  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: ATM
   resdetatmos: 96

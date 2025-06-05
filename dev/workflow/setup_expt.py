@@ -12,7 +12,9 @@ and configures the experiment based on user inputs and host capabilities.
 import os
 import shutil
 from logging import getLogger
+from typing import Dict
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, ArgumentTypeError
+from pprint import pprint
 
 from hosts import Host
 
@@ -139,7 +141,6 @@ def map_inputs_to_configs(inputs):
             "APP": inputs.app,
             "NMEM_ENS": getattr(inputs, 'nens', 0),
             "ICSDIR": inputs.icsdir,
-            "ACCOUNT": inputs.account,
         })
     except Exception as ee:
         raise Exception("Error in constructing dictionary from user inputs, check inputs: ") from ee
@@ -223,6 +224,9 @@ def input_args(*argv):
         argparse.ArgumentParser
             Parser with added arguments
         """
+
+        default_gwrc = os.path.join(os.getenv('HOME', ''), '.gwrc')
+
         parser.add_argument('--pslot', help='parallel experiment name',
                             type=str, required=False, default='test')
         parser.add_argument('--resdetatmos', help='atmosphere resolution of the deterministic model forecast',
@@ -236,7 +240,7 @@ def input_args(*argv):
         parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                             required=True, type=lambda dd: to_datetime(dd))
         parser.add_argument('--edate', help='end date experiment', required=False, type=lambda dd: to_datetime(dd))
-        parser.add_argument('--account', help='HPC account to use; default is host-dependent', required=False, default=os.getenv('HPC_ACCOUNT'))
+        parser.add_argument('--gwrc', help='location of user configuration .gwrc yaml', required=False, default=default_gwrc, type=str)
         parser.add_argument('--interval', help='frequency of forecast (in hours); must be a multiple of 6 or 0 for no forecasts',
                             type=_validate_interval, required=False, default=6)
         parser.add_argument('--icsdir', help='full path to user initial condition directory', type=str, required=False, default='')
@@ -578,6 +582,40 @@ def get_ocean_resolution(resdetatmos):
         raise KeyError(f"Ocean resolution for {resdetatmos} is not implemented")
 
 
+def update_host_info_with_user_gwrc(host_info: Dict, gwrc: Dict) -> Dict:
+    """
+    Update the host information with values from the users .gwrc file.
+
+    Parameters
+    ----------
+    host_info : Dict
+        Host.info attribute to update
+    gwrc : Dict
+        Parsed .gwrc file containing user configuration
+
+    Returns
+    -------
+    host_info_out : Dict
+        Updated dictionary with user settings
+    """
+
+    # Make a copy of the host info to avoid modifying the original
+    host_info_out = host_info.copy()
+
+    # Set default account if not defined in gwrc
+    host_info_out.ACCOUNT = 'UNDEFINED'
+
+    for key, value in gwrc.items():
+        if hasattr(host_info_out, key):
+            if value != 'default':
+                logger.info(f"Updating host info: {key} = {value}")
+                setattr(host_info_out, key, value)
+        else:
+            logger.warning(f"Invalid key '{key}' in .gwrc not found in host info; skipping.")
+
+    return host_info_out
+
+
 @logit(logger, name='setup_expt.main')
 def main(*argv):
     """
@@ -595,12 +633,17 @@ def main(*argv):
 
     user_inputs = input_args(*argv)
     host = Host()
+    if os.path.exists(user_inputs.gwrc):
+        gwrc_file = user_inputs.gwrc
+        logger.info(f'Using user configuration file: {gwrc_file}')
+    else:
+        logger.warning(f'User configuration file does not exist: {user_inputs.gwrc}, use repository defaults')
+        gwrc_file = os.path.join(_top, 'dev/workflow/gwrc')
+    gwrc_dict = parse_j2yaml(gwrc_file, os.environ)
+
+    host.info = update_host_info_with_user_gwrc(host.info, gwrc_dict.user)
 
     validate_user_request(host, user_inputs)
-
-    # Update the default host account if the user supplied one
-    if user_inputs.account is not None:
-        host.info.ACCOUNT = user_inputs.account
 
     # Determine ocean resolution if not provided
     if user_inputs.resdetocean <= 0:
