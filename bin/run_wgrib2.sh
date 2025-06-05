@@ -4,11 +4,11 @@
  HOMEgfs=/scratch4/NAGAPE/epic/Wei.Huang/demo/global-workflow-cloud
  cmd=${HOMEgfs}/ush/run_wgrib2.sh
 
- source /usr/lmod/lmod/init/bash
- module purge
- source ${HOMEgfs}/versions/run.ver
- module use ${HOMEgfs}/modulefiles
- module load module_base.container
+#source /usr/lmod/lmod/init/bash
+#module purge
+#source ${HOMEgfs}/versions/run.ver
+#module use ${HOMEgfs}/modulefiles
+#module load module_base.container
 
  arg="$@"
  singularity exec \
