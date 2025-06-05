@@ -10,7 +10,7 @@ class GEFSTasks(Tasks):
 
     def stage_ic(self):
 
-        stage_ic_map = {'gefs-offline': self._gen_stage_ic,
+        stage_ic_map = {'gefs-offline': self._offline_stage_ic,
                         'near-real-time': self._RT_stage_ic}
         # Check if gefstype is valid
         if self.app_config.gefstype not in stage_ic_map:
@@ -24,7 +24,7 @@ class GEFSTasks(Tasks):
 
         return task
 
-    def _gen_stage_ic(self):
+    def _offline_stage_ic(self):
 
         resources = self.get_resource('stage_ic')
         task_name = f'{self.run}_stage_ic'
