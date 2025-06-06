@@ -51,9 +51,9 @@ cnvw_option=${cnvw_option:-".false."}
 cao_check=${cao_check:-".true."}
 ta2tb=${ta2tb:-".true."}
 optconv=${optconv:-0.06}
-AIRS_CADS=${AIRS_CADS:-".true."}
-IASI_CADS=${IASI_CADS:-".true."}
-CRIS_CADS=${CRIS_CADS:-".true."}
+AIRS_CADS=${AIRS_CADS:-".false."}
+IASI_CADS=${IASI_CADS:-".false."}
+CRIS_CADS=${CRIS_CADS:-".false."}
 
 # Diagnostic files options
 netcdf_diag=${netcdf_diag:-".true."}
@@ -119,7 +119,7 @@ ESIASI=${ESIASI:-${COMIN_OBS}/${OPREFIX}esiasi.tm00.bufr_d${OSUFFIX}}
 IASIDB=${IASIDB:-${COMIN_OBS}/${OPREFIX}iasidb.tm00.bufr_d${OSUFFIX}}
 AMSREBF=${AMSREBF:-${COMIN_OBS}/${OPREFIX}amsre.tm00.bufr_d${OSUFFIX}}
 AMSR2BF=${AMSR2BF:-${COMIN_OBS}/${OPREFIX}amsr2.tm00.bufr_d${OSUFFIX}}
-GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}} # GMI temporarily disabled due to array overflow.
+GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}} 
 SAPHIRBF=${SAPHIRBF:-${COMIN_OBS}/${OPREFIX}saphir.tm00.bufr_d${OSUFFIX}}
 SEVIRIBF=${SEVIRIBF:-${COMIN_OBS}/${OPREFIX}sevcsr.tm00.bufr_d${OSUFFIX}}
 AHIBF=${AHIBF:-${COMIN_OBS}/${OPREFIX}ahicsr.tm00.bufr_d${OSUFFIX}}
@@ -457,10 +457,10 @@ ${NLN} ${B1AMUB}           amsubbufr
 ${NLN} ${B1MHS}            mhsbufr
 ${NLN} ${ESAMUA}           amsuabufrears
 ${NLN} ${ESAMUB}           amsubbufrears
-#$NLN $ESMHS            mhsbufrears
+#$NLN  $ESMHS              mhsbufrears
 ${NLN} ${AMUADB}           amsuabufr_db
 ${NLN} ${AMUBDB}           amsubbufr_db
-#$NLN $MHSDB            mhsbufr_db
+#$NLN  $MHSDB              mhsbufr_db
 ${NLN} ${SBUVBF}           sbuvbufr
 ${NLN} ${OMPSNPBF}         ompsnpbufr
 ${NLN} ${OMPSLPBF}         ompslpbufr
@@ -476,7 +476,7 @@ ${NLN} ${ESIASI}           iasibufrears
 ${NLN} ${IASIDB}           iasibufr_db
 ${NLN} ${AMSREBF}          amsrebufr
 ${NLN} ${AMSR2BF}          amsr2bufr
-#${NLN} ${GMI1CRBF}         gmibufr # GMI temporarily disabled due to array overflow.
+${NLN} ${GMI1CRBF}         gmibufr
 ${NLN} ${SAPHIRBF}         saphirbufr
 ${NLN} ${SEVIRIBF}         seviribufr
 ${NLN} ${CRISBF}           crisbufr
@@ -498,6 +498,8 @@ ${NLN} ${AHIBF}            ahibufr
 ${NLN} ${ABIBF}            abibufr
 ${NLN} ${HDOB}             hdobbufr
 ${NLN} ${SSTVIIRS}         sstviirs
+${NLN} ${SAILDRONE}        sdbufr
+${NLN} ${GSBBF}            wbbufr
 
 if [[ "${DONST}" == "YES" ]]; then
     ${NLN} "${NSSTBF}" nsstbufr
@@ -791,7 +793,7 @@ cat > gsiparm.anl << EOF
 /
 &OBSQC
   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-  use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.false.,nvqc=.true.,
+  use_poq7=.true.,qc_noirjaco3_pole=.false.,vqc=.false.,nvqc=.true.,
   aircraft_t_bc=.true.,biaspredt=1.0e5,upd_aircraft=.true.,cleanup_tail=.true.,
   tcp_width=70.0,tcp_ermax=7.35,airs_cads=${AIRS_CADS},cris_cads=${CRIS_CADS},
   iasi_cads=${IASI_CADS},blacklst=.true.,
@@ -814,6 +816,13 @@ OBS_INPUT::
    prepbufr       pw          null        pw                  0.0     0     0
    prepbufr       uv          null        uv                  0.0     0     0
    prepbufr_profl uv          null        uv                  0.0     0     0
+   wbbufr         t           null        t                   0.0     0     0
+   wbbufr         q           null        q                   0.0     0     0
+   wbbufr         uv          null        uv                  0.0     0     0
+   sdbufr         ps          null        ps                  0.0     0     0
+   sdbufr         t           null        t                   0.0     0     0
+   sdbufr         q           null        q                   0.0     0     0
+   sdbufr         uv          null        uv                  0.0     0     0
    satwndbufr     uv          null        uv                  0.0     0     0
    hdobbufr       uv          null        uv                  0.0     0     0
    prepbufr       spd         null        spd                 0.0     0     0
@@ -900,6 +909,7 @@ OBS_INPUT::
    abibufr        abi         g16         abi_g16             0.0     1     0
    abibufr        abi         g17         abi_g17             0.0     1     0
    abibufr        abi         g18         abi_g18             0.0     1     0
+   abibufr        abi         g19         abi_g19             0.0     1     0
    rapidscatbufr  uv          null        uv                  0.0     0     0
    ompsnpbufr     ompsnp      npp         ompsnp_npp          0.0     0     0
    ompslpbufr     ompslp      npp         ompslp_npp          0.0     0     0
