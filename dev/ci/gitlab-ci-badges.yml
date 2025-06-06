@@ -63,7 +63,7 @@ update_status_badges:
         cat > "badges/${label}_badge.json" << EOF
       {
         "schemaVersion": 1,
-        "label": "$label",
+        "label": "$label scheduled",
         "message": "$status",
         "color": "$color"
       }
