@@ -1,0 +1,24 @@
+experiment:
+  system: gcafs
+  mode: cycled
+
+arguments:
+  account: {{ 'HPC_ACCOUNT' | getenv }}
+  pslot: {{ 'pslot' | getenv }}
+  app: ATMA
+  resdetatmos: 96
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250327
+  idate: 2021122012
+  edate: 2021122100
+  nens: 0
+  interval: 12
+  start: cold
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gcafs_cycled_defaults_ci.yaml
+
+skip_ci_on_hosts:
+  - orion
+  - gaeac5
+  - hercules
+  - awsepicglobalworkflow

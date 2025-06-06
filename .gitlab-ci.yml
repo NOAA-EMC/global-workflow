@@ -35,8 +35,8 @@ variables:
   # Define a base path that will be used for initial cloning
   GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_ID}/global-workflow
   GIT_DEPTH: 10
-  RUNNER_SCRIPT_TIMEOUT: 6h
-  RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
+  RUNNER_SCRIPT_TIMEOUT: 8h
+  RUNNER_AFTER_SCRIPT_TIMEOUT: 8h
   PR_NUMBER: ${PR_NUMBER:-"0"}
 
 # Include specialized pipeline configuration files

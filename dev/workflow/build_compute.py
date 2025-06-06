@@ -33,7 +33,7 @@ def input_args(*argv):
     parser.add_argument('--account', help='HPC account to use', required=True)
     parser.add_argument('--yaml', help='Input YAML file',
                         type=str, required=False, default='build_opts.yaml')
-    parser.add_argument('--systems', help='System(s) to build (options: gfs, gefs, sfs, gsi, gdas, or all)', required=False, default='gfs')
+    parser.add_argument('--systems', help='System(s) to build (options: gfs, gefs, sfs, gcafs, gsi, gdas, or all)', required=False, default='gfs')
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)
 

@@ -30,6 +30,11 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COMOUT_OCEAN_LETKF:COM_OCEAN_LETKF_TMPL \
   COMOUT_ICE_LETKF:COM_ICE_LETKF_TMPL
 
+# TODO: remove explicit RUN specification once https://github.com/NOAA-EMC/global-workflow/issues/3767 is fixed
+RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} MEMDIR="ensstat" declare_from_tmpl -rx \
+  COMOUT_CONF:COM_CONF_TMPL
+
+if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
