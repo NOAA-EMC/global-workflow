@@ -72,7 +72,7 @@ NTHREADS_ESFC=${NTHREADS_ESFC:-${NTHREADS:-1}}
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-BDATE=$(${NDATE} -3 "${PDY}${cyc}")
+BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 3 hours")
 bPDY=${BDATE:0:8}
 bcyc=${BDATE:8:2}
 

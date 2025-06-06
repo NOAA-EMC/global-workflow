@@ -50,15 +50,12 @@ Starting MWW3 PREPROCESSOR SCRIPT for ${WAV_MOD_TAG}
                           PREP for wave component of NCEP coupled system
                           Wave component identifier : ${WAV_MOD_TAG}
 
-Starting at : $(date)
 
 EOF
 
   # 0.b Date and time stuff
 
   # Beginning time for outpupt may differ from SDATE if DOIAU=YES
-  export date=${PDY}
-  export YMDH=${PDY}${cyc}
   # Roll back ${IAU_FHROT} hours of DOIAU=YES
   IAU_FHROT=3
   if [[ "${DOIAU}" == "YES" ]]
@@ -68,30 +65,31 @@ EOF
   # Set time stamps for model start and output
   # For special case when IAU is on but this is an initial half cycle
   if [[ ${IAU_OFFSET} -eq 0 ]]; then
-    ymdh_beg=${YMDH}
+    ymdh_beg=${PDY}${cyc}
   else
-    ymdh_beg=$(${NDATE} -${WAVHINDH} ${YMDH})
+    ymdh_beg=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${WAVHINDH} hours")
   fi
-  time_beg="$(echo ${ymdh_beg} | cut -c1-8) $(echo ${ymdh_beg} | cut -c9-10)0000"
-  ymdh_end=$(${NDATE} ${FHMAX_WAV} ${YMDH})
-  time_end="$(echo ${ymdh_end} | cut -c1-8) $(echo ${ymdh_end} | cut -c9-10)0000"
-  ymdh_beg_out=${YMDH}
+  time_beg=$(date --utc -d "${ymdh_beg:0:8} ${ymdh_beg:8:2}" +"%Y%m%d %H0000")
+  ymdh_end=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} + ${FHMAX_WAV} hours")
+  time_end=$(date --utc -d "${ymdh_end:0:8} ${ymdh_end:8:2}" +"%Y%m%d %H0000")
+  ymdh_beg_out=${PDY}${cyc}
   time_beg_out="$(echo ${ymdh_beg_out} | cut -c1-8) $(echo ${ymdh_beg_out} | cut -c9-10)0000"
 
   # Restart file times (already has IAU_FHROT in WAVHINDH)
   RSTOFFSET=$(( ${WAVHCYC} - ${WAVHINDH} ))
   # Update restart time is added offset relative to model start
   RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF_WAV} ))
-  ymdh_rst_ini=$(${NDATE} ${RSTOFFSET} ${YMDH})
+  ymdh_rst_ini=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} + ${RSTOFFSET} hours")
   RST2OFFSET=$(( DT_2_RST_WAV / 3600 ))
-  ymdh_rst2_ini=$(${NDATE} ${RST2OFFSET} ${YMDH}) # DT2 relative to first-first-cycle restart file
+  # DT2 relative to first-first-cycle restart file
+  ymdh_rst2_ini=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} + ${RST2OFFSET} hours")
   # First restart file for cycling
   time_rst_ini="$(echo ${ymdh_rst_ini} | cut -c1-8) $(echo ${ymdh_rst_ini} | cut -c9-10)0000"
   if [[ ${DT_1_RST_WAV} -eq 1 ]]; then
     time_rst1_end=${time_rst_ini}
   else
     RST1OFFSET=$(( DT_1_RST_WAV / 3600 ))
-    ymdh_rst1_end=$(${NDATE} ${RST1OFFSET} ${ymdh_rst_ini})
+    ymdh_rst1_end=$(date --utc +%Y%m%d%H -d "${ymdh_rst_ini} + ${RST1OFFSET} hours")
     time_rst1_end="$(echo ${ymdh_rst1_end} | cut -c1-8) $(echo ${ymdh_rst1_end} | cut -c9-10)0000"
   fi
   # Second restart file for checkpointing
@@ -100,7 +98,7 @@ EOF
     time_rst2_end=${time_end}
   # Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
     if [[ ${ymdh_rst2_ini} -ge ${ymdh_end} ]]; then
-      ymdh_rst2_ini=$(${NDATE} 3 ${ymdh_end})
+      ymdh_rst2_ini=$(date --utc +%Y%m%d%H -d "${ymdh_end} + 3 hours")
       time_rst2_ini="$(echo ${ymdh_rst2_ini} | cut -c1-8) $(echo ${ymdh_rst2_ini} | cut -c9-10)0000"
       time_rst2_end=${time_rst2_ini}
     fi
@@ -113,7 +111,7 @@ EOF
 
 Times in wave model format :
 ----------------------------
-   date / cycle  : ${date} ${cycle}
+   date / cycle  : ${PDY} ${cycle}
    starting time : ${time_beg}
    ending time   : ${time_end}
 
@@ -273,10 +271,13 @@ EOF
       touch cmdfile
       chmod 744 cmdfile
 
+      BDATE=$(date --utc +%Y%m%d%H -d "${RPDY}00 - 24 hours")
+      bPDY=${BDATE:0:8}
+
       ymdh_rtofs=${RPDY}00 # RTOFS runs once daily use ${PDY}00
       if [[ ${ymdh_beg} -lt ${ymdh_rtofs} ]]; then
          #If the start time is before the first hour of RTOFS, use the previous cycle
-         export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
+         export RPDY=${bPDY}
       fi
       #Set the first time for RTOFS files to be the beginning time of simulation
       ymdh_rtofs=${ymdh_beg}
@@ -287,7 +288,7 @@ EOF
         rtofsfile3="${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f072_prog.nc"
         if [[ ! -f ${rtofsfile1} ]] || [[ ! -f ${rtofsfile2} ]] || [[ ! -f ${rtofsfile3} ]]; then
            #Needed current files are not available, so use RTOFS from previous day 
-           export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
+           export RPDY=${bPDY}
         fi
       else
         rtofsfile1="${COMINrtofs}/rtofs.${RPDY}/rtofs_glo_2ds_f096_prog.nc"
@@ -298,16 +299,16 @@ EOF
         if [[ ! -f ${rtofsfile1} ]] || [[ ! -f ${rtofsfile2} ]] || [[ ! -f ${rtofsfile3} ]] ||
             [[ ! -f ${rtofsfile4} ]] || [[ ! -f ${rtofsfile5} ]]; then
             #Needed current files are not available, so use RTOFS from previous day 
-            export RPDY=$(${NDATE} -24 ${RPDY}00 | cut -c1-8)
+            export RPDY=${bPDY}
         fi
       fi
 
-      ymdh_end_rtofs=$(${NDATE} ${FHMAX_WAV_CUR} ${RPDY}00)
+      ymdh_end_rtofs=$(date --utc +%Y%m%d%H -d "${RPDY}00 + ${FHMAX_WAV_CUR} hours")
       if [[ ${ymdh_end} -lt ${ymdh_end_rtofs} ]]; then
          ymdh_end_rtofs=${ymdh_end}
       fi
 
-      NDATE_DT=${WAV_CUR_HF_DT}
+      DATE_DT=${WAV_CUR_HF_DT}
       FLGHF='T'
       FLGFIRST='T'
       fext='f'
@@ -354,9 +355,9 @@ EOF
         fi
 
         if [[ ${fhr_rtofs} -ge ${WAV_CUR_HF_FH} ]] ; then
-          NDATE_DT=${WAV_CUR_DT}
+          DATE_DT=${WAV_CUR_DT}
         fi
-        ymdh_rtofs=$(${NDATE} ${NDATE_DT} ${ymdh_rtofs})
+        ymdh_rtofs=$(date --utc +%Y%m%d%H -d "${ymdh_rtofs} + ${DATE_DT} hours")
       done
 
 # Set number of processes for mpmd
