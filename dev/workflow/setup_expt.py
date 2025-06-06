@@ -14,7 +14,6 @@ import shutil
 from logging import getLogger
 from typing import Dict
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, ArgumentTypeError
-from pprint import pprint
 
 from hosts import Host
 
