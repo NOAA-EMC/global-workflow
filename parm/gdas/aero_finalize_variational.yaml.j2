@@ -10,6 +10,7 @@
 mkdir:
 - "{{ COMOUT_CHEM_ANALYSIS }}"
 - "{{ COMOUT_ATMOS_RESTART }}"
+- "{{ COMOUT_CONF }}"
 copy:
 ## copy variational YAML to ROTDIR
 - ["{{ DATA }}/aeroanlvar.yaml", "{{ COMOUT_CONF }}/{{ APREFIX }}aerovar.yaml"]
