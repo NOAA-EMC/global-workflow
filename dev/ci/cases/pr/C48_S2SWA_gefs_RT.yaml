@@ -9,15 +9,23 @@ arguments:
   resdetatmos: 48
   resdetocean: 5.0
   resensatmos: 48
-  nens: 2
+  nens: 30
   interval: 24
   start: cold
-  gefstype: gefs-offline
+  gefstype: near-real-time
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  idate: 2021032312
-  edate: 2021032312
+  idate: 2024111700
+  edate: 2024111700
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
 
+# TODO run on supported platforms once the gefs forecast and subsequent tasks can succeed with RETRO ICs
+# Add this to run the stage ic job 'icsdir: /lfs/h2/emc/ens/noscrub/eric.sinsky/RETRO_ICS'
 skip_ci_on_hosts:
-  - None
+  - gaeac6
+  - gaeac5
+  - hercules
+  - wcoss2
+  - hera
+  - orion
+  - awsepicglobalworkflow
