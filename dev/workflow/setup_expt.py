@@ -431,11 +431,11 @@ def input_args(*argv):
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     # Set up sub-parsers for various modes of experimentation
-    sysparser = parser.add_subparsers(dest='system')
-    gfs = sysparser.add_parser('gfs', help='arguments for GFS')
-    gefs = sysparser.add_parser('gefs', help='arguments for GEFS')
-    sfs = sysparser.add_parser('sfs', help='arguments for SFS')
-    gcafs = sysparser.add_parser('gcafs', help='arguments for GCAFS')
+    netparser = parser.add_subparsers(dest='net')
+    gfs = netparser.add_parser('gfs', help='arguments for GFS')
+    gefs = netparser.add_parser('gefs', help='arguments for GEFS')
+    sfs = netparser.add_parser('sfs', help='arguments for SFS')
+    gcafs = netparser.add_parser('gcafs', help='arguments for GCAFS')
 
     gfsmodeparser = gfs.add_subparsers(dest='mode')
     gfscycled = gfsmodeparser.add_parser('cycled', help='arguments for cycled mode')

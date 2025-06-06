@@ -1,5 +1,5 @@
 experiment:
-  system: gcafs
+  net: gcafs
   mode: cycled
 
 arguments:

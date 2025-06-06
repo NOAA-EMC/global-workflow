@@ -1,5 +1,5 @@
 experiment:
-  system: sfs
+  net: sfs
   mode: forecast-only
 
 arguments:
