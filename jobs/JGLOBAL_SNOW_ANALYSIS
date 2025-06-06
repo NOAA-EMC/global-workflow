@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "snowanl" -c "base snowanl"
 
 ##############################################
@@ -31,10 +30,10 @@ mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 # Run relevant script
 
 EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snow_analysis.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
 fi
 
 ##############################################
@@ -51,7 +50,11 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || exit 1
+cd "${DATAROOT}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

@@ -1,13 +1,11 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prepobsaero" -c "base prepobsaero"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 
-export COMIN_OBS="${DATA}"
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 
 ##############################################
@@ -18,12 +16,11 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 # Run relevant script
 
 EXSCRIPT=${GDASPREPAEROOBSPY:-${SCRgfs}/exglobal_prep_obs_aero.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
 fi
-
 
 ##############################################
 # End JOB SPECIFIC work
@@ -39,7 +36,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || exit
+cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

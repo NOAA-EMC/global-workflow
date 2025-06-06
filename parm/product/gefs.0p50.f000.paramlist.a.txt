@@ -1,8 +1,11 @@
-############################# sorted pgrb2a 201408
 :CAPE:180-0 mb above ground:
+:CAPE:surface:
 :CIN:180-0 mb above ground:
-:DLWRF:surface:
-:DSWRF:surface:
+:CIN:surface:
+:CPOFP:surface:
+:DPT:2 m above ground:
+:FDNSSTMP:surface:
+:GUST:surface:
 :HGT:10 mb:
 :HGT:100 mb:
 :HGT:1000 mb:
@@ -14,9 +17,13 @@
 :HGT:700 mb:
 :HGT:850 mb:
 :HGT:925 mb:
+:HGT:cloud ceiling:
 :HGT:surface:
+:HLCY:3000-0 m above ground:
+:ICEG:10 m above mean sea level:
 :ICETK:surface:
-:LHTFL:surface:
+:MSLET:mean sea level:
+:PEVPR:surface:
 :PRES:surface:
 :PRMSL:mean sea level:
 :PWAT:entire atmosphere (considered as a single layer):
@@ -31,9 +38,10 @@
 :RH:700 mb:
 :RH:850 mb:
 :RH:925 mb:
-:SHTFL:surface:
 :SNOD:surface:
 :SOILW:0-0.1 m below ground:
+:TMAX:2 m above ground:
+:TMIN:2 m above ground:
 :TMP:10 mb:
 :TMP:100 mb:
 :TMP:1000 mb:
@@ -75,6 +83,6 @@
 :VGRD:700 mb:
 :VGRD:850 mb:
 :VGRD:925 mb:
+:VIS:surface:
 :VVEL:850 mb:
 :WEASD:surface:
-;############################ do not leave a blank line at the end

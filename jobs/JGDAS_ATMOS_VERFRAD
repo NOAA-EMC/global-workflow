@@ -3,7 +3,6 @@
 #############################################################
 # Set up environment for GDAS Radiance Monitor job
 #############################################################
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
 
 #############################################
@@ -34,10 +33,10 @@ if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p ${TANKverf_rad} ; fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgdas_atmos_verfrad.sh"
-err=$?
-if (( err != 0 )); then
-    exit "${err}"
+"${SCRgfs}/exgdas_atmos_verfrad.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
 fi
 
 ################################

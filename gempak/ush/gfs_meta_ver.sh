@@ -9,7 +9,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 mkdir -p -m 775 "${DATA}/VER"
 cd "${DATA}/VER" || exit 2
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 MDL=GFS
 metaname="gfsver_${cyc}.meta"
@@ -21,7 +21,7 @@ device="nc | ${metaname}"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COM_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
@@ -208,14 +208,14 @@ EOFplt
 
 done
 
-mv "${metaname}" "${COM_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
+mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
 if [[ "${SENDDBN}" == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COM_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
+        "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
     if [[ "${DBN_ALERT_TYPE}" = "GFS_METAFILE_LAST" ]] ; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-            "${COM_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
+            "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
     fi
 fi
 

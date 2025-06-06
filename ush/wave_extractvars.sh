@@ -9,7 +9,6 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/preamble.sh"
 source "${USHgfs}/wave_domain_grid.sh"
 
 process_grdID "${waveGRD}"
@@ -25,9 +24,9 @@ fi
 for (( nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT )); do
   fnh=$(printf "%3.3d" "${nh}")
 
-  infile=${com_dir}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
-  new_infile=${subdata}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}_ext.grib2
-  outfile=${subdata}/${RUN}wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
+  infile=${com_dir}/${RUN}.wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
+  new_infile=${subdata}/${RUN}.wave.t${cyc}z.global.${wavres}.f${fnh}_ext.grib2
+  outfile=${subdata}/${RUN}.wave.t${cyc}z.global.${wavres}.f${fnh}.grib2
   rm -f "${outfile}" # Remove outfile if it already exists before extraction
 
   if [[ -f "${infile}" ]]; then # Check if input file exists before extraction

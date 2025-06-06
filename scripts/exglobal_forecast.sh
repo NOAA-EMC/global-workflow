@@ -77,8 +77,6 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/preamble.sh"
-
 # include all subroutines. Executions later.
 source "${USHgfs}/forecast_predet.sh" 	# include functions for variable definition
 source "${USHgfs}/forecast_det.sh"  # include functions for run type determination
@@ -166,7 +164,7 @@ echo "MAIN: Name lists and model configuration written"
 #------------------------------------------------------------------
 # run the executable
 
-if [[ "${esmf_profile:-}" = ".true." ]]; then
+if [[ "${esmf_profile:-}" == ".true." ]]; then
   export ESMF_RUNTIME_PROFILE=ON
   export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 fi
@@ -177,11 +175,12 @@ else
   export OMP_NUM_THREADS=${UFS_THREADS:-1}
 fi
 
-${NCP} "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
-${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2
-export ERR=$?
-export err=${ERR}
-${ERRSCRIPT} || exit "${err}"
+cpreq "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
+${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "The forecast failed to run to completion!"
+fi
 
 FV3_out
 if [[ "${cplflx}" == ".true." ]]; then
@@ -206,4 +205,4 @@ echo "MAIN: Output copied to ROTDIR"
 
 #------------------------------------------------------------------
 
-exit "${err}"
+exit 0

@@ -21,8 +21,6 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${USHgfs}/preamble.sh"
-
 # 0.a Basic modes of operation
   bloc=$1
   MAXHOUR=$2
@@ -30,33 +28,20 @@ source "${USHgfs}/preamble.sh"
 
 # 0.b Check if buoy location set
 
-  if [ "$#" -lt '1' ]
+  if [[ $# -lt 1 ]]
   then
-    set +x
-    echo ' '
-    echo '***********************************************'
-    echo '*** LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
-    echo '***********************************************'
-    echo ' '
-    set_trace
+    echo 'FATAL ERROR: LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
     exit 1
   else
-    buoy=$bloc
+    buoy=${bloc}
   fi
 
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$DTPNT_WAV" ] || [ -z "$FHMIN_WAV" ] || \
-     [ -z "$WAV_MOD_TAG" ] || [ -z "${STA_DIR}" ]
+  if [[ -z "${DTPNT_WAV+0}" || -z "${FHMIN_WAV+0}" || -z "${WAV_MOD_TAG+0}" || -z "${STA_DIR+0}" ]]
   then
-    set +x
-    echo ' '
-    echo '******************************************************'
-    echo '*** EXPORTED VARIABLES IN ww3_outp_cat.sh NOT SET ***'
-    echo '******************************************************'
-    echo ' '
-    set_trace
+    echo 'FATAL ERROR: EXPORTED VARIABLES IN ww3_outp_cat.sh NOT SET ***'
     exit 3
   fi
 
@@ -64,30 +49,24 @@ source "${USHgfs}/preamble.sh"
 # --------------------------------------------------------------------------- #
 # 1. Cat for a buoy all fhr into one file
 
-  set +x
   echo "   Generate input file for ww3_outp."
-  set_trace
 
-  if [ "$specdir" = "bull" ]
+  if [[ "${specdir}" == "bull" ]]
   then
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
     coutfile=${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
-    for f in outfile coutfile; do
-      if [[ -f ${f} ]]; then rm ${f}; fi
-    done
+    rm -f "${outfile}" "${coutfile}"
   else
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
-    if [[ -f ${outfile} ]]; then
-      rm ${outfile}
-    fi    
+    rm -f "${outfile}"
   fi
 
   fhr=$FHMIN_WAV
   fhrp=$fhr
-  while [ $fhr -le $MAXHOUR ]; do
+  while [[ ${fhr} -le ${MAXHOUR} ]]; do
 
-    ymdh=$($NDATE $fhr $CDATE)
-    if [ "$specdir" = "bull" ]
+    ymdh=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} + ${fhr} hours")
+    if [[ "$specdir" == "bull" ]]
     then
       outfilefhr=${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.bull
       coutfilefhr=${STA_DIR}/c${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.cbull
@@ -95,51 +74,37 @@ source "${USHgfs}/preamble.sh"
       outfilefhr=${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.spec
     fi
 
-    if [ -f $outfilefhr ]
+    if [[ -f "${outfilefhr}" ]]
     then
-      if [ "$specdir" = "bull" ]
+      if [[ "$specdir" == "bull" ]]
       then
-        cat $outfilefhr >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
-        cat $coutfilefhr >> ${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
-        rm $outfilefhr $coutfilefhr
+        cat "${outfilefhr}" >> "${STA_DIR}/${specdir}/${WAV_MOD_TAG}.${buoy}.bull"
+        cat "${coutfilefhr}" >> "${STA_DIR}/c${specdir}/${WAV_MOD_TAG}.${buoy}.cbull"
+        rm -f "${outfilefhr}" "${coutfilefhr}"
       else
-        cat $outfilefhr >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
-        #rm $outfilefhr
+        cat "${outfilefhr}" >> "${STA_DIR}/${specdir}/${WAV_MOD_TAG}.${buoy}.spec"
+        #rm -f "${outfilefhr}"
       fi
     else
-      set +x
-      echo ' '
-      echo '************************************************************************** '
-      echo "*** FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy at ${ymdh} NOT FOUND *** "
-      echo '************************************************************************** '
-      echo ' '
-      set_trace
-      err=2; export err;${errchk}
-      exit $err
+      echo "FATAL ERROR: OUTPUT DATA FILE FOR BUOY ${buoy} at ${ymdh} NOT FOUND"
+      exit 9
     fi
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
-    if [ $fhr = $fhrp ]
+    if [[ ${fhr} -eq ${fhrp} ]]
     then
       fhrp=$((fhr+FHINCP))
     fi
-    echo $fhrp
+    echo "${fhrp}"
 
-    fhr=$fhrp # no gridded output, loop with out_pnt stride
+    fhr=${fhrp} # no gridded output, loop with out_pnt stride
 
   done
 
-  if [ ! -f ${outfile} ]
+  if [[ ! -f "${outfile}" ]]
   then
-    set +x
-    echo ' '
-    echo '*************************************************** '
-    echo " FATAL ERROR : OUTPUTFILE ${outfile} not created    "
-    echo '*************************************************** '
-    echo ' '
-    set_trace
-    err=2; export err;${errchk}
-    exit $err
+    echo "FATAL ERROR: OUTPUTFILE ${outfile} not created    "
+    exit 2
   fi
 
 # End of ww3_outp_cat.sh ---------------------------------------------------- #

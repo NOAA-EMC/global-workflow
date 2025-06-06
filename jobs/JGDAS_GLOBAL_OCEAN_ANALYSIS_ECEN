@@ -1,5 +1,4 @@
 #!/bin/bash
-source "${HOMEgfs}/ush/preamble.sh"
 
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/${jobid}"
@@ -31,6 +30,11 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMIN_ICE_RESTART:COM_ICE_RESTART_TMPL \
    COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL
 
+export NMEM_ENS_MAX=${NMEM_ENS}
+if [[ "${RUN}" == "gfs" ]]; then
+   NMEM_ENS=${NMEM_ENS_GFS}
+fi
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
@@ -39,10 +43,10 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 # Run relevant script
 
 EXSCRIPT=${GDASOCNCENPY:-${HOMEgfs}/scripts/exgdas_global_marine_analysis_ecen.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
 fi
 
 ##############################################
@@ -59,7 +63,12 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || exit 1
+cd "${DATAROOT}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

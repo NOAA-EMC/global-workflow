@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${USHgfs}/preamble.sh"
-
 ################################################################################
 # exgdas_atmos_verfozn.sh
 #
@@ -9,7 +7,7 @@ source "${USHgfs}/preamble.sh"
 # (OznMon) DA package.
 #
 ################################################################################
-err=0
+export err=0
 
 data_available=0
 
@@ -21,10 +19,10 @@ if [[ -s ${oznstat} ]]; then
    #  Untar oznstat file.
    #------------------------------------------------------------------
 
-   ${NCP} "${oznstat}" "./oznstat.${PDY}${cyc}"
+   cpreq "${oznstat}" "./oznstat.${PDY}${cyc}"
 
    tar -xvf "oznstat.${PDY}${cyc}"
-   rm "oznstat.${PDY}${cyc}"
+   rm -f "oznstat.${PDY}${cyc}"
 
    netcdf=0
    count=$(ls diag* | grep ".nc4" | wc -l)
@@ -38,13 +36,15 @@ if [[ -s ${oznstat} ]]; then
 
    export OZNMON_NETCDF=${netcdf}
 
-   "${USHgfs}/ozn_xtrct.sh"
-   err=$?
+   "${USHgfs}/ozn_xtrct.sh" && true
+   export err=$?
+   if [[ ${err} -ne 0 ]]; then
+     err_exit "ozn_xtrct.sh failed!"
+   fi
 
 else
    # oznstat file not found
-   err=1
+   export err=1
+   err_exit "${oznstat} does not exist!"
 fi
-
-exit ${err}
-
+exit 0

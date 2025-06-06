@@ -17,22 +17,18 @@
 #
 ################################################################################
 
-source "${USHgfs}/preamble.sh"
-
 #  Directories.
 pwd=$(pwd)
 
 # Base variables
-CDATE=${CDATE:-"2001010100"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables
-GDATE=$($NDATE -$assim_freq $CDATE)
-BDATE=$($NDATE -3 $CDATE)
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
-bPDY=$(echo $BDATE | cut -c1-8)
-bcyc=$(echo $BDATE | cut -c9-10)
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 3 hours")
+bPDY=${BDATE:0:8}
+bcyc=${BDATE:8:2}
 
 # Utilities
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
@@ -40,7 +36,7 @@ export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 
 # IAU
 DOIAU=${DOIAU:-"NO"}
-export IAUFHRS=${IAUFHRS:-"6"}
+export IAUFHRS=${IAUFHRS:-"6,"}
 
 # Dependent Scripts and Executables
 export APRUN_CHGRES=${APRUN_CHGRES:-${APRUN:-""}}
@@ -60,22 +56,22 @@ SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS}.txt}
 APREFIX=${APREFIX:-""}
 APREFIX_ENS=${APREFIX_ENS:-""}
 # at full resolution
-ATMF03=${ATMF03:-${COM_ATMOS_HISTORY}/${APREFIX}atmf003.nc}
-ATMF04=${ATMF04:-${COM_ATMOS_HISTORY}/${APREFIX}atmf004.nc}
-ATMF05=${ATMF05:-${COM_ATMOS_HISTORY}/${APREFIX}atmf005.nc}
-ATMF06=${ATMF06:-${COM_ATMOS_HISTORY}/${APREFIX}atmf006.nc}
-ATMF07=${ATMF07:-${COM_ATMOS_HISTORY}/${APREFIX}atmf007.nc}
-ATMF08=${ATMF08:-${COM_ATMOS_HISTORY}/${APREFIX}atmf008.nc}
-ATMF09=${ATMF09:-${COM_ATMOS_HISTORY}/${APREFIX}atmf009.nc}
+ATMF03=${ATMF03:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf003.nc}
+ATMF04=${ATMF04:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf004.nc}
+ATMF05=${ATMF05:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf005.nc}
+ATMF06=${ATMF06:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf006.nc}
+ATMF07=${ATMF07:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf007.nc}
+ATMF08=${ATMF08:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf008.nc}
+ATMF09=${ATMF09:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf009.nc}
 # at ensemble resolution
-ATMF03ENS=${ATMF03ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf003.ensres.nc}
-ATMF04ENS=${ATMF04ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf004.ensres.nc}
-ATMF05ENS=${ATMF05ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf005.ensres.nc}
-ATMF06ENS=${ATMF06ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf006.ensres.nc}
-ATMF07ENS=${ATMF07ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf007.ensres.nc}
-ATMF08ENS=${ATMF08ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf008.ensres.nc}
-ATMF09ENS=${ATMF09ENS:-${COM_ATMOS_HISTORY}/${APREFIX}atmf009.ensres.nc}
-ATMFCST_ENSRES=${ATMFCST_ENSRES:-${COM_ATMOS_HISTORY_MEM}/${APREFIX_ENS}atmf006.nc}
+ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf003.ensres.nc}
+ATMF04ENS=${ATMF04ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf004.ensres.nc}
+ATMF05ENS=${ATMF05ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf005.ensres.nc}
+ATMF06ENS=${ATMF06ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf006.ensres.nc}
+ATMF07ENS=${ATMF07ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf007.ensres.nc}
+ATMF08ENS=${ATMF08ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf008.ensres.nc}
+ATMF09ENS=${ATMF09ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf009.ensres.nc}
+ATMFCST_ENSRES=${ATMFCST_ENSRES:-${COMIN_ATMOS_HISTORY_MEM}/${APREFIX_ENS}atmf006.nc}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -127,9 +123,7 @@ if [ $DO_CALC_ANALYSIS == "YES" ]; then
    SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS_ENKF}.txt}
 
    if [[ "${USE_CFP}" == "YES" ]]; then
-      if [[ -f "${DATA}/mp_chgres.sh" ]]; then
-          rm "${DATA}/mp_chgres.sh"
-      fi
+       rm -f "${DATA}/mp_chgres.sh"
    fi
 
    nfhrs=$(echo "${IAUFHRS_ENKF}" | sed 's/,/ /g')
@@ -146,9 +140,9 @@ terrain_file="atmens_fcst"
 ref_file="atmens_fcst"
 /
 EOF
-     if [ $USE_CFP = "YES" ]; then
+     if [[ $USE_CFP == "YES" ]]; then
           echo "$nm $APRUN_CHGRES $CHGRESNCEXEC chgres_nc_gauss0$FHR.nml" | tee -a $DATA/mp_chgres.sh
-          if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          if [[ ${CFP_MP:-"NO"} = "YES" ]]; then
               nm=$((nm+1))
           fi
      else
@@ -156,23 +150,29 @@ EOF
          export pgm=$CHGRESNCEXEC
          . prep_step
 
-         $APRUN_CHGRES $CHGRESNCEXEC chgres_nc_gauss0$FHR.nml
-         export err=$?; err_chk
+         ${APRUN_CHGRES} "${CHGRESNCEXEC}" "chgres_nc_gauss0${FHR}.nml" && true
+         export err=$?
+         if [[ ${err} -ne 0 ]]; then
+            err_exit
+         fi
      fi
    done
 
-   if [ $USE_CFP = "YES" ]; then
-      chmod 755 $DATA/mp_chgres.sh
-      ncmd=$(cat $DATA/mp_chgres.sh | wc -l)
-      if [ $ncmd -gt 0 ]; then
+   if [[ ${USE_CFP} == "YES" ]]; then
+      chmod 755 ${DATA}/mp_chgres.sh
+      ncmd=$(wc -l < "${DATA}/mp_chgres.sh")
+      if [[ ${ncmd} -gt 0 ]]; then
          ncmd_max=$((ncmd < max_tasks_per_node ? ncmd : max_tasks_per_node))
-         APRUNCFP_CHGRES=$(eval echo $APRUNCFP)
+         APRUNCFP_CHGRES=$(eval echo "${APRUNCFP}")
 
-         export pgm=$CHGRESNCEXEC
-         . prep_step
+         export pgm=${CHGRESNCEXEC}
+         source prep_step
 
-         $APRUNCFP_CHGRES $DATA/mp_chgres.sh
-         export err=$?; err_chk
+         ${APRUNCFP_CHGRES} "${DATA}/mp_chgres.sh" && true
+         export err=$?
+         if [[ ${err} -ne 0 ]]; then
+           err_exit
+         fi
       fi
    fi
 

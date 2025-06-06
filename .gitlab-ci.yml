@@ -1,0 +1,104 @@
+# ==========================================================================
+# Main GitLab CI Configuration for the global-workflow Project
+# ==========================================================================
+#
+# This is the primary CI/CD configuration file that orchestrates the GitLab CI
+# testing framework for the global-workflow project. It defines pipeline stages
+# and includes specialized configuration files for different testing aspects.
+#
+# The pipeline architecture supports:
+#   1. Multiple host environments (hera, gaeac6, etc.)
+#   2. Two primary testing modes:
+#      - PR validation via standard test cases
+#      - CTest-based tests triggered via GitHub API
+#
+# Included files:
+#   - .gitlab-ci-ctests.yml: Handles CMake/CTest-based testing framework
+#   - .gitlab-ci-cases.yml: Defines templates for standard experiment cases
+#   - .gitlab-ci-hosts.yml: Contains host-specific configurations and test matrices
+#                          that can be extended to support additional hosts
+#
+# The host configuration in .gitlab-ci-hosts.yml is designed to be easily 
+# extended with new computing platforms and allows per-host specification 
+# of which test cases to run.
+
+stages:
+  - build
+  - create_experiments
+  - run_tests
+  - finalize
+
+variables:
+  BUILDTYPE: 'nightly'
+  # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
+  WORKSPACE_ID: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
+  # Define a base path that will be used for initial cloning
+  GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_ID}/global-workflow
+  GIT_DEPTH: 10
+  RUNNER_SCRIPT_TIMEOUT: 6h
+  RUNNER_AFTER_SCRIPT_TIMEOUT: 6h
+  PR_NUMBER: ${PR_NUMBER:-"0"}
+
+# Include specialized pipeline configuration files
+include:
+  - local: 'dev/ci/gitlab-ci-ctests.yml'  # CTest framework configuration
+  - local: 'dev/ci/gitlab-ci-cases.yml'   # Standard test case templates
+  - local: 'dev/ci/gitlab-ci-hosts.yml'   # Host-specific configurations
+
+.base_config:
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - |
+      # Use CI_BUILDS_DIR and WORKSPACE_ID for all paths - no date in paths during pipeline execution
+      export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_ID}"
+      export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone, we keep it
+      export RUNTESTS_DIR="${GW_RUN_PATH}/RUNTESTS"
+
+      # Create a date-based directory name for successful runs
+      export DATE="$(date +'%m%d%y')"
+      export WORKSPACE_DATE="${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
+
+      echo "WORKSPACE_ID: ${WORKSPACE_ID}"
+      echo "WORKSPACE_DATE: ${WORKSPACE_DATE}"
+      echo "GW_RUN_PATH: ${GW_RUN_PATH}"
+      echo "GIT_CLONE_PATH: ${GIT_CLONE_PATH}"
+      echo "GW_HOMEgfs: ${GW_HOMEgfs}"
+
+      # Make sure GW_HOMEgfs is properly set and the directory exists
+      if [ ! -d "${GW_HOMEgfs}" ]; then
+        echo "ERROR: GW_HOMEgfs directory does not exist: ${GW_HOMEgfs}"
+        exit 1
+      fi
+
+# Common build template for all modalities
+.build_template:
+  extends: .base_config
+  variables:
+    GIT_STRATEGY: clone
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SSL_NO_VERIFY: "true"  # Address potential certificate verification issues
+  stage: build
+  script:
+    - |
+      echo "Setting up build environment for ${machine}"
+      echo "Using build directory ${GW_HOMEgfs}"
+      git submodule status
+
+      if [[ ${CI_PIPELINE_SOURCE} == "trigger" && ${PR_NUMBER} != 0 ]]; then
+        echo "Triggering pipeline via GitHub API running CTests on PR_NUMBER=${PR_NUMBER}"
+        git remote add github "${GW_REPO_URL}"
+        git fetch github
+        gh pr checkout "${PR_NUMBER}"
+      fi
+
+      dev/ci/scripts/utils/ci_utils.sh build
+      build_status=$?
+
+      if [[ ${build_status} -ne 0 ]]; then
+        echo "Build failed with exit code ${build_status}"
+        exit 1
+      fi
+
+      sorc/link_workflow.sh
+      mkdir -p ${RUNTESTS_DIR}

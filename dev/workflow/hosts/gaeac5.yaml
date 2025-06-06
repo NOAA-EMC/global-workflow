@@ -1,0 +1,38 @@
+# Paths
+DMPDIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/dump'
+BASE_GIT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/git'
+BASE_DATA: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data'
+BASE_IC: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/ICSDIR'
+AERO_INPUTS_DIR: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/GEFS_ExtData/20250310'
+PACKAGEROOT: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/nwpara'
+HOMEDIR: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
+STMP: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
+PTMP: '/gpfs/f5/${ACCOUNT}/scratch/${USER}'
+NOSCRUB: '${HOMEDIR}'
+COMINsyn: '/gpfs/f5/ufs-ard/world-shared/global/glopara/data/com/gfs/prod/syndat'
+# BQS properties
+SCHEDULER: slurm
+QUEUE: normal
+QUEUE_SERVICE: normal
+QUEUE_DTN: 'hpss'
+PARTITION_BATCH: batch
+PARTITION_SERVICE: batch
+PARTITION_DTN: 'dtn_f5_f6'
+CLUSTERS: 'c5'
+CLUSTERS_DTN: 'es'
+CONSTRAINT_DTN: 'f5'
+RESERVATION: ''
+# HPSS properties
+HPSS_PROJECT: emc-global
+ARCHCOM_TO: 'local'
+ATARDIR: '${NOSCRUB}/archive_rotdir/${PSLOT}'
+CHGRP_RSTPROD: 'NO'
+CHGRP_CMD: 'chgrp rstprod'
+# Features
+SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
+DO_ARCHCOM: 'NO'
+DO_TRACKER: 'NO'
+DO_GENESIS: 'NO'
+DO_METP: 'NO'
+MAKE_NSSTBUFR: 'NO'
+MAKE_ACFTBUFR: 'NO'
