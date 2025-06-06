@@ -53,10 +53,10 @@ The following command examples include variables for reference but users should 
 where:
 
    * ``NET`` is the first positional argument that initializes the parser for the correct system.  Valid values are:
-     - gfs: Global Forecast System (GFS)
-     - gefs: Global Ensemble Forecast System (GEFS)
-     - sfs: Seasonal Forecast System (SFS)
-     - gcafs: Global Chemistry and Aerosol Forecast System (GCAFS)
+       - gfs: Global Forecast System (GFS)
+       - gefs: Global Ensemble Forecast System (GEFS)
+       - sfs: Seasonal Forecast System (SFS)
+       - gcafs: Global Chemistry and Aerosol Forecast System (GCAFS)
    * ``MODE`` is the second positional argument that instructs the setup script to produce an experiment directory for mode of execution.  Valid options are:
        - forecast-only: for running a forecast only experiment
        - cycled: for running a cycled experiment (forecast + data assimilation)
@@ -73,24 +73,24 @@ where:
      - S2SW: atm-ocean-ice-wave
      - S2SWA: atm-ocean-ice-wave-aerosols
 
-   * ``$START`` is the start type (warm or cold [default])
-   * ``$IDATE`` is the initial start date of your run (first cycle CDATE, YYYYMMDDCC)
-   * ``$EDATE`` is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete [default: $IDATE]
-   * ``$PSLOT`` is the name of your experiment [default: test]
-   * ``$CONFIGDIR`` is the path to the ``/config`` folder under the copy of the system you're using [default: $TOP_OF_CLONE/dev/parm/config/]
-   * ``$RESDETATMOS`` is the resolution of the atmosphere component of the system (i.e. 768 for C768) [default: 384]
-   * ``$RESDETOCEAN`` is the resolution of the ocean component of the system (i.e. 0.25 for 1/4 degree) [default: 0.; determined based on atmosphere resolution]
-   * ``$INTERVAL_GFS`` is the forecast interval in hours [default: 6]
-   * ``$COMROOT`` is the path to your experiment output directory. Your ``ROTDIR`` (rotating com directory) will be created using ``COMROOT`` and ``PSLOT``. [default: $HOME (but do not use default due to limited space in home directories normally, provide a path to a larger scratch space)]
-   * ``$EXPDIR`` is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you. [default: $HOME]
-   * ``$GWRC`` is the custom user global-workflow resource configuration file. [default: ``$HOME/.gwrc`` or $TOP_OF_CLONE/dev/parm/workflow/gwrc]
+   * ``$START`` is the start type (``warm`` or ``cold`` [default: ``cold``])
+   * ``$IDATE`` is the initial start date of your run (first cycle date in ``YYYYMMDDCC``)
+   * ``$EDATE`` is the ending date of your run (``YYYYMMDDCC``) and is the last cycle that will complete [default: ``$IDATE``]
+   * ``$PSLOT`` is the name of your experiment [default: ``test``]
+   * ``$CONFIGDIR`` is the path to the ``/config`` folder under the copy of the system you're using [default: ``$TOP_OF_CLONE/dev/parm/config/``]
+   * ``$RESDETATMOS`` is the resolution of the atmosphere component of the system (i.e. 768 for C768) [default: ``384``]
+   * ``$RESDETOCEAN`` is the resolution of the ocean component of the system (i.e. 0.25 for 1/4 degree) [default: ``0.``; determined based on atmosphere resolution]
+   * ``$INTERVAL_GFS`` is the forecast interval in hours [default: ``6``]
+   * ``$COMROOT`` is the path to your experiment output directory. Your ``ROTDIR`` (rotating com directory) will be created using ``COMROOT`` and ``PSLOT``. [default: ``$HOME`` (but do not use default due to limited space in home directories normally, provide a path to a larger scratch space)]
+   * ``$EXPDIR`` is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you. [default: ``$HOME``]
+   * ``$GWRC`` is the custom user global-workflow resource configuration file. [default: ``$HOME/.gwrc`` or ``$TOP_OF_CLONE/dev/parm/workflow/gwrc``]
 
    For the ``cycled`` mode, additional options are available:
 
-   * ``$SDATE_GFS`` cycle to begin GFS forecast [default: $IDATE + 6]
-   * ``$RESENSATMOS`` is the resolution of the atmosphere component of the ensemble forecast [default: 192]
-   * ``$NENS`` is the number of ensemble members [default: 20]
-   * ``$RUN`` is the starting phase [default: gdas]
+   * ``$SDATE_GFS`` cycle to begin GFS forecast [default: ``$IDATE + 6``]
+   * ``$RESENSATMOS`` is the resolution of the atmosphere component of the ensemble forecast [default: ``192``]
+   * ``$NENS`` is the number of ensemble members [default: ``20``]
+   * ``$RUN`` is the starting phase [default: ``gdas``]
 
 Examples:
 
@@ -126,29 +126,29 @@ Cycled with the Atmosphere-only model (including ensembles) in the GFS:
 Step 3: Check user and experiment settings
 ******************************************
 
-Go to your EXPDIR and check the following variables within your config.base now before running the next script:
+Go to your ``EXPDIR`` and check the following variables within your ``config.base`` now before running the next script:
 
-   * ACCOUNT
-   * HOMEDIR
-   * STMP
-   * PTMP
-   * ARCDIR (location on disk for online archive used by verification system)
-   * HPSSARCH (YES turns on archival)
-   * HPSS_PROJECT (project on HPSS if archiving)
-   * ATARDIR (location on HPSS if archiving)
+   * ``ACCOUNT``
+   * ``HOMEDIR``
+   * ``STMP``
+   * ``PTMP``
+   * ``ARCDIR`` (location on disk for online archive used by verification system)
+   * ``HPSSARCH`` (YES turns on archival)
+   * ``HPSS_PROJECT`` (project on HPSS if archiving)
+   * ``ATARDIR`` (location on HPSS if archiving)
 
 Some of those variables will be found within a machine-specific if-block so make sure to change the correct ones for the machine you'll be running on.
 
 `NOTE`: If you selected ``ARCHCOM_TO='globus_hpss``, then you will need to activate your globus connections between Mercury and MSU.  See :doc: globus_arch.rst for more details.
 
-Now is also the time to change any other variables/settings you wish to change in config.base or other configs. `Do that now.` Once done making changes to the configs in your EXPDIR go back to your clone to run the second setup script. See :doc:configure.rst for more information on configuring your run.
-Go to your EXPDIR and check/change the following variables within your config.base now before running the next script.
+Now is also the time to change any other variables/settings you wish to change in ``config.base`` or other configs. `Do that now.` Once done making changes to the configs in your EXPDIR go back to your clone to run the second setup script. See :doc:configure.rst for more information on configuring your run.
+Go to your ``EXPDIR`` and check/change the following variables within your ``config.base`` now before running the next script.
 
 *************************************
 Step 4: Run workflow generator script
 *************************************
 
-This step sets up the files needed by the Workflow Manager/Driver. At this moment only ROCOTO configurations are generated:
+This step sets up the files needed by the Workflow Manager/Driver. At this moment only Rocoto configurations are generated:
 
 ::
 
@@ -166,4 +166,4 @@ Additional options for setting up Rocoto are available with `setup_xml.py -h` th
 Step 5: Confirm files from setup scripts
 ****************************************
 
-You will now have a rocoto xml file in your EXPDIR ($PSLOT.xml) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun setup_xml.py script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.
+You will now have a rocoto xml file in your ``$EXPDIR`` (``$PSLOT.xml``) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun setup_xml.py script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.
