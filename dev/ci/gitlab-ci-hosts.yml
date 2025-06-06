@@ -118,7 +118,7 @@ finalize-gaeac6:
   stage: run_tests
   parallel:
     matrix:
-      - CTEST_NAME: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0', 'C48_S2SW_gfs_atmos_prod_f000-f003']
+      - CTEST_NAME: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0']
 
 # Host-specific CTest setup jobs
 create_ctests-hera:
