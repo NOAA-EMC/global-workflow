@@ -38,7 +38,7 @@ for grd in ${WAVECUR_FID} ${WAVEICE_FID} ${WAVEWND_FID} ${waveuoutpGRD} ${waveGR
 done
 
 for grdID in "${grdALL[@]}"; do
-  echo "INFO: Mod def file for ${grdID} not found in ${COMOUT_WAVE_PREP}. Setting up to generate ..."
+  echo "INFO: Setting up to generate mod_def file for ${grdID}"
   if [[ -f "${FIXgfs}/wave/ww3_grid.inp.${grdID}" ]]; then
     cpreq "${FIXgfs}/wave/ww3_grid.inp.${grdID}" "ww3_grid.inp.${grdID}"
     echo "INFO: ww3_grid.inp.${grdID} copied (${FIXgfs}/wave/ww3_grid.inp.${grdID})."
