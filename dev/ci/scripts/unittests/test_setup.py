@@ -8,7 +8,7 @@ HOMEgfs = find_upward('.github')
 current_dir = os.path.dirname(os.path.abspath(__file__))
 RUNDIR = os.path.join(current_dir, 'testdata/RUNDIR')
 pslot = "C48_ATM"
-account = "fv3-cpu"
+account = os.environ.get('HPC_ACCOUNT')
 foobar = "foobar"
 
 
