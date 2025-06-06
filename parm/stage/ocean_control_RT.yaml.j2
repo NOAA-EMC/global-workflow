@@ -1,0 +1,18 @@
+ocean_control_RT:
+    mkdir:
+        - "{{ COMOUT_OCEAN_RESTART_PREV_MEM }}"
+        - "{{ COMOUT_OCEAN_ANALYSIS_MEM }}"
+    copy:
+        {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
+        {% set restart_path = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.' %}
+        {% set increment_file = ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/ocean/gfs.t' ~ current_cycle_HH ~ 'z.ocninc.nc' %}
+        {% set restart_destination_path = COMOUT_OCEAN_RESTART_PREV_MEM %}
+        {% set increment_destination_path = COMOUT_OCEAN_ANALYSIS_MEM %}
+
+        # Restart increment files
+        {% for ftype in ["MOM.res.nc", "MOM.res_1.nc", "MOM.res_2.nc", "MOM.res_3.nc"] %}
+            {% set file = restart_path ~ ftype %}
+        - ["{{ file }}", "{{ restart_destination_path }}"]
+        {% endfor %}
+        # Include increment files
+        - ["{{ increment_file }}", "{{ increment_destination_path }}"]

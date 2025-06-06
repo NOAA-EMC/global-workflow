@@ -87,7 +87,7 @@ system_builds=(
    ["gcafs"]="ufs_gcafs gfs_utils ufs_utils upp"
    ["gsi"]="gsi_enkf gsi_monitor gsi_utils"
    ["gdas"]="gdas gsi_monitor gsi_utils"
-   ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils"
+   ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ufs_gcafs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils"
 )
 
 logs_dir="${HOMEgfs}/sorc/logs"
@@ -112,7 +112,7 @@ build_opts=(
     ["ufs_gfs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gfs_exec}"
     ["ufs_gefs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -w -e ${_gefs_exec}"
     ["ufs_sfs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -y -e ${_sfs_exec}"
-    ["ufs_gcafs"]="${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gcafs_exec}"
+    ["ufs_gcafs"]="-a ATMAERO ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gcafs_exec}"
     ["upp"]="${_build_debug}"
     ["ww3_gfs"]="${_verbose_opt} ${_build_debug}"
     ["ww3_gefs"]="-w ${_verbose_opt} ${_build_debug}"

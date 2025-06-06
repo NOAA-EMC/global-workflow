@@ -1,7 +1,10 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_tars" -c "base arch_tars wave"
-source "${USHgfs}/wave_domain_grid.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_tars"
+if [[ "${DO_WAVE}" == "YES" ]]; then
+  source "${EXPDIR}/config.wave" 
+  source "${USHgfs}/wave_domain_grid.sh"
+fi
 
 ##############################################
 # Set variables used in the script
@@ -21,6 +24,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
     COMIN_MED_RESTART:COM_MED_RESTART_TMPL \
     COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
+    COMIN_SNOW_ANLMON:COM_SNOW_ANLMON_TMPL \
     COMIN_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
     COMIN_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL \
     COMIN_ICE_HISTORY:COM_ICE_HISTORY_TMPL \
