@@ -134,6 +134,7 @@ def map_inputs_to_configs(inputs):
             "COMROOT": inputs.comroot,
             "EXP_WARM_START": warm_start_map[inputs.start],
             "MODE": inputs.mode,
+            "GEFSTYPE": inputs.gefstype,
             "INTERVAL_GFS": inputs.interval,
             "SDATE_GFS": to_YMDH(inputs.sdate_gfs),
             "APP": inputs.app,
@@ -240,6 +241,7 @@ def input_args(*argv):
         parser.add_argument('--interval', help='frequency of forecast (in hours); must be a multiple of 6 or 0 for no forecasts',
                             type=_validate_interval, required=False, default=6)
         parser.add_argument('--icsdir', help='full path to user initial condition directory', type=str, required=False, default='')
+        parser.add_argument('--gefstype', help='type of the gefs experiment: near-real-time or gefs-offline', type=str, required=False, default='')
         parser.add_argument('--overwrite', help='overwrite previously created experiment (if it exists)',
                             action='store_true', required=False)
         return parser
