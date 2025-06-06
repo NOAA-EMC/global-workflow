@@ -30,6 +30,8 @@ systems:
   sfs:
     - "sfs_model"
     - "gefs_ww3_prepost"
+  gcafs:
+    - "gcafs_model"
 build:
   gfs_model:
     command: "./build_ufs.sh -e gfs_model.x"
@@ -53,6 +55,11 @@ build:
 
   sfs_model:
     command: "./build_ufs.sh -y -e sfs_model.x"
+    cores: 12
+    walltime: "00:30:00"
+
+  gcafs_model:
+    command: "./build_ufs.sh -a ATMAERO -e gcafs_model.x"
     cores: 12
     walltime: "00:30:00"
 
