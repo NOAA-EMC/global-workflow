@@ -1022,7 +1022,7 @@ fi
 # Send alerts
 if [[ ${SENDDBN} == "YES" ]]; then
     if [[ ${RUN} == "gfs" ]]; then
-       ${DBNROOT}/bin/dbn_alert MODEL GFS_abias ${job} ${ABIAS}
+       "${DBNROOT}/bin/dbn_alert" MODEL GFS_abias "${job}" "${ABIAS}"
     fi
 fi
 
