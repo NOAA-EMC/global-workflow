@@ -5,6 +5,7 @@
 export is_exclusive="True"
 unset memory
 unset "memory_${RUN}"
+export threads_per_task=1
 
 step=$1
 
@@ -19,7 +20,6 @@ case ${step} in
   "anal")
     if [[ "${CASE}" == "C96" ]]; then
       export PARTITION_BATCH="compute"
-      export threads_per_task=6  
       tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
