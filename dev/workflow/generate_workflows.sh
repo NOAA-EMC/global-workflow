@@ -43,7 +43,9 @@ function _usage() {
 
     -S Run all valid SFS cases in the specified YAML directory.
 
-    NOTES on -G, -E, and -S:
+    -C Run all valid GCAFS cases in the specified YAML directory.
+
+    NOTES on -G, -E, -S and -C:
          - Valid cases are determined by the experiment:system key as
            well as the skip_ci_on_hosts list in each YAML.
 
@@ -91,6 +93,7 @@ _specified_yaml_dir=false
 _run_all_gfs=false
 _run_all_gefs=false
 _run_all_sfs=false
+_run_all_gcafs=false
 _hpc_account=""
 _set_account=false
 _update_cron=false
@@ -107,7 +110,7 @@ _auto_del=false
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-   while getopts ":H:bDuy:Y:GESA:ce:t:vVdh" option; do
+   while getopts ":H:bDuy:Y:GESCA:ce:t:vVdh" option; do
       case "${option}" in
         H)
            HOMEgfs="${OPTARG}"
@@ -132,6 +135,7 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
         G) _run_all_gfs=true ;;
         E) _run_all_gefs=true ;;
         S) _run_all_sfs=true ;;
+        C) _run_all_gcafs=true ;;
         c) _update_cron=true ;;
         e) _email="${OPTARG}" && _set_email=true ;;
         t) _tag="_${OPTARG}" ;;
@@ -241,16 +245,17 @@ else
    fi
 fi
 
-# Empty the _yaml_list array if -G, -E, and/or -S were selected
+# Empty the _yaml_list array if -G, -E, -S and/or -C were selected
 if [[ "${_run_all_gfs}" == "true" || \
       "${_run_all_gefs}" == "true" || \
+      "${_run_all_gcafs}" == "true" || \
       "${_run_all_sfs}" == "true" ]]; then
 
-   # Raise an error if the user specified a yaml list and any of -G -E -S
+   # Raise an error if the user specified a yaml list and any of -G -E -S -C
    if [[ "${_specified_yaml_list}" == "true" ]]; then
       echo "Ambiguous case selection."
       echo "Please select which tests to run explicitly with -y \"list of tests\" or"
-      echo "by specifying -G (all GFS), -E (all GEFS), and/or -S (all SFS), but not both."
+      echo "by specifying -G (all GFS), -E (all GEFS), -C (all GCAFS) and/or -S (all SFS), but not both."
       exit 3
    fi
 
@@ -361,6 +366,15 @@ if [[ "${_run_all_sfs}" == "true" ]]; then
    declare -a _gfs_yaml_list
    select_all_yamls "sfs" "_sfs_yaml_list"
    _yaml_list=("${_yaml_list[@]}" "${_sfs_yaml_list[@]}")
+fi
+
+# Check if running all GCAFS cases
+if [[ "${_run_all_gcafs}" == "true" ]]; then
+   _build_flags="${_build_flags} gcafs gdas "
+
+   declare -a _gfs_yaml_list
+   select_all_yamls "gcafs" "_gcafs_yaml_list"
+   _yaml_list=("${_yaml_list[@]}" "${_gcafs_yaml_list[@]}")
 fi
 
 # Loading modules sometimes raises unassigned errors, so disable checks
