@@ -10,8 +10,12 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlinit" -c "base aeroanl aeroanl
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
-GDUMP="gdas"
-
+GDUMP="gcdas"
+# Restart conditions for GFS cycle come from GDAS
+# Restart conditions for GCAFS cycle come from GCDAS
+GDUMP="${RUN}"
+GDUMP="${GDUMP/gfs/gdas}"
+GDUMP="${GDUMP/gcafs/gcdas}"
 
 ##############################################
 # Begin JOB SPECIFIC work
