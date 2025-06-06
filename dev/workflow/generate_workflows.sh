@@ -327,7 +327,7 @@ EOM
       # Check if the specified yamls are for the specified system
       for i in "${!_nameref_yaml_list}"; do
          _yaml="${_nameref_yaml_list[${i}]}"
-         _found=$(grep -l "net: *${system}" "${_yaml_dir}/${_yaml}.yaml")
+         _found=$(grep -l "net: *${_net}" "${_yaml_dir}/${_yaml}.yaml")
          if [[ -z "${_found}" ]]; then
             echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_net^^} system"
             echo "Removing this yaml from the set of cases to run"
