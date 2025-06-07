@@ -33,7 +33,9 @@ if [[ ! -d ${M_TANKverf} ]]; then mkdir -p "${M_TANKverf}" ; fi
 # Execute the script.
 "${SCRgfs}/exglobal_atmos_vminmon.sh" && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ################################
 # Remove the Working Directory

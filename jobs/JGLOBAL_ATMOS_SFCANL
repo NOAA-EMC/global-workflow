@@ -11,7 +11,12 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 export GDATE
 
-RUN="gdas" YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
+BKG_RUN="gdas"
+if [[ "${RUN}" == "gcafs" || "${RUN}" == "gcdas" ]]; then
+  BKG_RUN="gcdas"
+fi
+
+RUN=${BKG_RUN} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
   COMIN_OBS_PREV:COM_OBS_TMPL \
   COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
@@ -34,7 +39,9 @@ mkdir -p "${COMOUT_ATMOS_RESTART}"
 
 ${SFCANALSH:-${SCRgfs}/exglobal_atmos_sfcanl.sh} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work

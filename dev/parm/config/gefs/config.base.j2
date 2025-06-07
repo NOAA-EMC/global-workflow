@@ -64,7 +64,7 @@ export DO_AWIPS="{{ DO_AWIPS }}"         # AWIPS products
 # Experiment mode (cycled or forecast-only)
 export MODE="{{ MODE }}" # cycled/forecast-only
 export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for automated testing
-
+export GEFSTYPE="{{ GEFSTYPE }}" # near-real-time/gefs-offline
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
 # IF YOU HAVE TO MAKE MACHINE SPECIFIC CHANGES BELOW
@@ -75,7 +75,6 @@ export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for au
 export HOMEpost="${HOMEgfs}"
 
 # CONVENIENT utility scripts and other environment parameters
-export NCP="/bin/cp -p"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
@@ -110,10 +109,7 @@ export RUN="gefs"  # RUN is defined in the job-card (ecf)
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
 
-# shellcheck disable=SC2016
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
-#export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
 export REDOUT="1>"
 export REDERR="2>"

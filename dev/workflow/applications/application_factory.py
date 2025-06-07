@@ -19,6 +19,7 @@ from applications.gfs_forecast_only import GFSForecastOnlyAppConfig
 from applications.gefs import GEFSAppConfig
 from applications.sfs import SFSAppConfig
 from applications.gcafs_forecast_only import GCAFSForecastOnlyAppConfig
+from applications.gcafs_cycled import GCAFSCycledAppConfig
 
 # Initialize the application configuration factory
 app_config_factory = Factory('AppConfig')
@@ -29,3 +30,4 @@ app_config_factory.register('gfs_forecast-only', GFSForecastOnlyAppConfig)
 app_config_factory.register('gefs_forecast-only', GEFSAppConfig)
 app_config_factory.register('sfs_forecast-only', SFSAppConfig)
 app_config_factory.register('gcafs_forecast-only', GCAFSForecastOnlyAppConfig)
+app_config_factory.register('gcafs_cycled', GCAFSCycledAppConfig)

@@ -1,0 +1,32 @@
+#! /usr/bin/env bash
+
+########## config.fetch ##########
+
+echo "BEGIN: config.fetch"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" fetch
+
+if [[ "${PDY}${cyc}" -gt "${SDATE}" ]]; then
+   # determine GDAS version based on date
+   if [[ "${PDY}${cyc}" -ge "2022112900" ]]; then
+       gdas_version="v16.3"
+   elif [[ "${PDY}${cyc}" -ge "2022062700" ]]; then
+       gdas_version="v16.2"
+   else
+       gdas_version="prod"
+   fi
+   export gdas_version
+   export FETCH_YAML_TMPL_LIST="${PARMgfs}/fetch/${NET}_${APP}_gdas-anl.yaml.j2,${PARMgfs}/fetch/${NET}_${APP}_gdas-dtfanl.yaml.j2"
+else
+   # fetch based on first cycle
+   # Determine start type
+   if [[ "${EXP_WARM_START}" == ".false." ]]; then
+      ic_type="cold"
+   else
+      ic_type="warm"
+   fi
+   export FETCH_YAML_TMPL="${PARMgfs}/fetch/${NET}_${APP}_${ic_type}_${MODE}.yaml.j2"
+fi
+
+echo "END: config.fetch"

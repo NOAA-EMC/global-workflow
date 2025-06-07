@@ -31,7 +31,9 @@ fi
 ###################################
 ${SCRgfs}/exgfs_wave_prdgen_gridded.sh && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ###################################
 # Remove temp directories

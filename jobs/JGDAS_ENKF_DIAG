@@ -13,10 +13,8 @@ export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-# shellcheck disable=
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
@@ -45,7 +43,7 @@ MEMDIR="ensstat" RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.ensmean.nc"
 if [ ! -f ${ATMGES_ENSMEAN} ]; then
     export err=1
-    err_chk "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
+    err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
 fi
 
 # Link observational data
@@ -101,7 +99,9 @@ done
 
 ${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work
