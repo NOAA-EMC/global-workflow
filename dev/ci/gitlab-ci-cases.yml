@@ -34,9 +34,13 @@
   stage: run_tests
   script:
     - |
-      echo "Using build directory $GW_HOMEgfs (dated $BUILD_DATE)"
+      RESTART_EXPERIMENT=${RESTART_EXPERIMENT:-true}
+      echo "Running test case ${caseName} on ${machine} in ${RUNTESTS_DIR} at $(date)"
       pslot=$("${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS_DIR}" "${caseName}")
-      "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" delete_dataroot "${RUNTESTS_DIR}" "${pslot}"
+      if [[ ${RESTART_EXPERIMENT} == true]]; then
+        "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" delete_dataroot "${RUNTESTS_DIR}" "${pslot}"
+        rm -f "${RUNTESTS_DIR}/${pslot}/${pslot}.db"
+      fi
       "${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       error=$?
       if [[ ${error} -ne 0 ]]; then
