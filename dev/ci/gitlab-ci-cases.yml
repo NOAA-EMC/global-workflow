@@ -36,6 +36,7 @@
     - |
       echo "Using build directory $GW_HOMEgfs (dated $BUILD_DATE)"
       pslot=$("${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS_DIR}" "${caseName}")
+      "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" delete_dataroot "${RUNTESTS_DIR}" "${pslot}"
       "${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       error=$?
       if [[ ${error} -ne 0 ]]; then
