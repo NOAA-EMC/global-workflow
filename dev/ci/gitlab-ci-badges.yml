@@ -79,6 +79,11 @@ update_status_badges:
         # Get the job status from GitLab API
         job_url="$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/jobs"
         job_status=$(curl -s --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" "$job_url" | jq -r ".[] | select(.name==\"$finalize_job\") | .status")
+        if [[ -z "$job_status" ]]; then
+          echo "No job status found for $finalize_job"
+          return
+        fi
+        echo "Job status for $finalize_job: $job_status"
         
         # Determine badge status and color
         case "$job_status" in
