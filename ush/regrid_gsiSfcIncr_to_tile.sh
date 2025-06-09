@@ -112,9 +112,9 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     if [[ ${DO_LAND_IAU} = ".true." ]]; then 
 
         add_time_dim=".true."
-	time_list="${IAUFHRS}"	
+        time_list="${IAUFHRS}"
 
-	rm -f "regrid.nml"
+        rm -f "regrid.nml"
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
         for FHI in "${landifhrs[@]}"; do
