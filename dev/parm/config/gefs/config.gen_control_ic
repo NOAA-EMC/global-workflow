@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
-########## config.arch ##########
-# Archive specific
+########## config.gen_control_ic ##########
+# Gen Control IC specific
 
 echo "BEGIN: config.gen_control_ic"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" gen_control_ic
+source "${EXPDIR}/config.resources" gen_control_ic
 
-echo "END: config.arch"
+echo "END: config.gen_control_ic"
