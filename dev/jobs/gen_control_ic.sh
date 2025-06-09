@@ -5,7 +5,7 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-export job="gen_control"
+export job="gen_control_ic"
 export jobid="${job}.$$"
 
 ###############################################################
