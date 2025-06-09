@@ -134,6 +134,7 @@ def map_inputs_to_configs(inputs):
             "COMROOT": inputs.comroot,
             "EXP_WARM_START": warm_start_map[inputs.start],
             "MODE": inputs.mode,
+            "GEFSTYPE": inputs.gefstype,
             "INTERVAL_GFS": inputs.interval,
             "SDATE_GFS": to_YMDH(inputs.sdate_gfs),
             "APP": inputs.app,
@@ -240,6 +241,7 @@ def input_args(*argv):
         parser.add_argument('--interval', help='frequency of forecast (in hours); must be a multiple of 6 or 0 for no forecasts',
                             type=_validate_interval, required=False, default=6)
         parser.add_argument('--icsdir', help='full path to user initial condition directory', type=str, required=False, default='')
+        parser.add_argument('--gefstype', help='type of the gefs experiment: near-real-time or gefs-offline', type=str, required=False, default='')
         parser.add_argument('--overwrite', help='overwrite previously created experiment (if it exists)',
                             action='store_true', required=False)
         return parser
@@ -395,6 +397,29 @@ def input_args(*argv):
                             default=os.path.join(_top, 'dev/parm/config/gcafs/yaml/defaults.yaml'))
         return parser
 
+    # GCAFS cycled arguments
+    def _gcafs_cycled_args(parser):
+        """
+        Add GCAFS-specific arguments to parser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
+        parser.add_argument('--start', help='restart mode: warm or cold', type=str,
+                            choices=['warm', 'cold'], required=False, default='cold')
+        parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
+                            default=os.path.join(_top, 'dev/parm/config/gcafs'))
+        parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
+                            default=os.path.join(_top, 'dev/parm/config/gcafs/yaml/defaults.yaml'))
+        return parser
+
     description = """
         Setup files and directories to start a GFS parallel.\n
         Create EXPDIR, copy config files.\n
@@ -423,9 +448,10 @@ def input_args(*argv):
 
     gcafsmodeparser = gcafs.add_subparsers(dest='mode')
     gcafsforecasts = gcafsmodeparser.add_parser('forecast-only', help='arguments for forecast-only mode')
+    gcafscycled = gcafsmodeparser.add_parser('cycled', help='arguments for cycled mode')
 
     # Common arguments across all modes
-    for subp in [gfscycled, gfsforecasts, gefsforecasts, sfsforecasts, gcafsforecasts]:
+    for subp in [gfscycled, gfsforecasts, gefsforecasts, sfsforecasts, gcafsforecasts, gcafscycled]:
         subp = _common_args(subp)
 
     # GFS-only arguments
@@ -433,7 +459,7 @@ def input_args(*argv):
         subp = _gfs_args(subp)
 
     # ensemble-only arguments
-    for subp in [gfscycled, gefsforecasts, sfsforecasts]:
+    for subp in [gfscycled, gefsforecasts, sfsforecasts, gcafscycled]:
         subp = _any_ensemble_args(subp)
 
     # GFS/GEFS forecast-only additional arguments
@@ -441,7 +467,7 @@ def input_args(*argv):
         subp = _any_forecast_args(subp)
 
     # cycled mode additional arguments
-    for subp in [gfscycled]:
+    for subp in [gfscycled, gcafscycled]:
         subp = _gfs_cycled_args(subp)
 
     # GEFS forecast-only arguments
@@ -453,7 +479,7 @@ def input_args(*argv):
         subp = _sfs_args(subp)
 
     # GCAFS arguments
-    for subp in [gcafsforecasts]:
+    for subp in [gcafsforecasts, gcafscycled]:
         subp = _gcafs_args(subp)
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)
