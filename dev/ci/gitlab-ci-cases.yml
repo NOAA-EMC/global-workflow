@@ -37,7 +37,7 @@
       RESTART_EXPERIMENT=${RESTART_EXPERIMENT:-true}
       echo "Running test case ${caseName} on ${machine} in ${RUNTESTS_DIR} at $(date)"
       pslot=$("${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS_DIR}" "${caseName}")
-      if [[ ${RESTART_EXPERIMENT} == true]]; then
+      if [[ "${RESTART_EXPERIMENT}" == "true" ]]; then
         "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" delete_dataroot "${RUNTESTS_DIR}" "${pslot}"
         rm -f "${RUNTESTS_DIR}/${pslot}/${pslot}.db"
       fi
@@ -65,9 +65,9 @@
       echo "Creating date-based directory: ${WORKSPACE_DATE}"
       cd "${CI_BUILDS_DIR}"
       rm -f stable
-      if [ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" ]; then
+      if [[ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" ]]; then
         # Rename the WORKSPACE_ID directory to one with the DATE
-        if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]; then
+        if [[ -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]]; then
           echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
           mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}"
           echo "Setting softlink to ${WORKSPACE_DATE} as ${CI_BUILDS_DIR}/stable"
