@@ -4,7 +4,7 @@
 #############################################################
 set -xa
 echo `date` $0 `date -u` begin
-
+export PS4='$SECONDS + '
 
 ###############################
 # Specify NET, RUN, and COMPONENT name
@@ -32,6 +32,13 @@ cd ${DATA}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
 export cycle=t${cyc}z
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+setpdy.sh
+. ./PDY
 
 
 #---------------------------------------------
