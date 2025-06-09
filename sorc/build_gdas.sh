@@ -5,12 +5,11 @@ readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.."
 
 OPTIND=1
 _opts="-f "  # forces a clean build
-while getopts ":j:dvw:" option; do
+while getopts ":j:dv" option; do
   case "${option}" in
     d) _opts+="-c -DCMAKE_BUILD_TYPE=Debug " ;;
     j) BUILD_JOBS=${OPTARG};;
     v) _opts+="-v ";;
-    w) HOMEgfs=${OPTARG};;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage
