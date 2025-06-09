@@ -1,0 +1,44 @@
+# Set variables/lists needed to parse the enkf templates
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+
+# Determine which data to archive
+datasets:
+    gcafs:
+        {% set head = "gcafs.t" + cycle_HH + "z." %}
+        name: "GCAFS"
+        target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gcafs.tar"
+        required:
+            {% for fhr in range(0, ARCH_GAUSSIAN_FHMAX + ARCH_GAUSSIAN_FHINC, ARCH_GAUSSIAN_FHINC) %}
+            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.nc"
+            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.nc"
+            {% endfor %}
+            {% if ARCH_GAUSSIAN %}
+            {% for fhr in range(0, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2b.0p25.f{{ '%03d' % fhr }}"
+            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2b.0p25.f{{ '%03d' % fhr }}.idx"
+            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2b.1p00.f{{ '%03d' % fhr }}"
+            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2b.1p00.f{{ '%03d' % fhr }}.idx"
+            {% endfor %}
+            {% endif %}
+            - "{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.input.nml"
+            # Forecast GRIB2 products
+            {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}"
+            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ '%03d' % fhr }}.idx"
+            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.logf{{ '%03d' % fhr }}.txt"
+            {% endfor %}
+            # GRIB2 forecast data
+            {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+            - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}"
+            - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}.idx"
+            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
+            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
+            {% endfor %}
+# Archive the EXPDIR if requested
+{% if archive_expdir %}
+{% filter indent(width=4) %}
+{% include "expdir.yaml.j2" %}
+{% endfilter %}
+{% endif %}

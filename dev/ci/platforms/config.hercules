@@ -13,11 +13,13 @@ export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
 # /work2/noaa/global/role-global/GFS_CI_CD/HERCULES/CI
 # is defined in the Jenkinsfile
 
-# CTest functional test directories for pre stagged input data
-export CTESTS_STAGED_TESTS_DIR=${GFS_CI_ROOT}/CTESTS_STAGED_TESTS_DIR
-
 # CI BASH test directories
 export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
+
+#########################################################################
+# CTest functional test directories for pre-staged input data
+#########################################################################
+export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
 
 # HPC account which overides the default account
 export HPC_ACCOUNT=fv3-cpu
