@@ -11,7 +11,7 @@ class GEFSTasks(Tasks):
     def stage_ic(self):
 
         stage_ic_map = {'gefs-offline': self._offline_stage_ic,
-                        'near-real-time': self._RT_stage_ic}
+                        'near-real-time': self._rt_stage_ic}
         # Check if gefstype is valid
         if self.app_config.gefstype not in stage_ic_map:
             if not isinstance(self.app_config.gefstype, str):
@@ -41,7 +41,7 @@ class GEFSTasks(Tasks):
 
         return task
 
-    def _RT_stage_ic(self):
+    def _rt_stage_ic(self):
 
         resources = self.get_resource('stage_ic')
         stage_ic_envars = self.envars.copy()
@@ -74,8 +74,10 @@ class GEFSTasks(Tasks):
 
     def gen_control_ic(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
-        dependencies.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.gefstype in ['near-real-time']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+
         resources = self.get_resource('gen_control_ic')
         task_name = f'{self.run}_gen_control_ic'
         task_dict = {'task_name': task_name,
