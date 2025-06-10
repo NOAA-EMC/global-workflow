@@ -126,7 +126,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 	      ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 	      export err=$?
 	      if [[ ${err} -ne 0 ]]; then
-	          err_exit "${pgm} failled, ABORT!"
+	          err_exit "${pgm} failed, ABORT!"
 	      fi
 
         for n in $(seq 1 "${ntiles}"); do
