@@ -221,14 +221,16 @@ EOFdiag
    fi
 
    # Restrict diagnostic files containing rstprod data
-   rlist="conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_uv saphir"
-   for rtype in ${rlist}; do
-      for rfile in *"${rtype}"*; do
-         if [[ -s "${rfile}" ]]; then
-            ${CHGRP_CMD} "${rfile}"
-         fi
+   if [[ "${CHGRP_RSTPROD}" == "YES" ]]; then
+      rlist="conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_uv saphir"
+      for rtype in ${rlist}; do
+         for rfile in *"${rtype}"*; do
+            if [[ -s "${rfile}" ]]; then
+               ${CHGRP_CMD} "${rfile}"
+            fi
+         done
       done
-   done
+   fi
 
    # If requested, create diagnostic file tarballs
    if [[ ${DIAG_TARBALL} == "YES" ]]; then
@@ -251,11 +253,15 @@ EOFdiag
 
       # Restrict CNVSTAT
       chmod 750 "${CNVSTAT}"
-      ${CHGRP_CMD} "${CNVSTAT}"
+      if [[ "${CHGRP_RSTPROD}" == "YES" ]]; then
+         ${CHGRP_CMD} "${CNVSTAT}"
+      fi
 
       # Restrict RADSTAT
       chmod 750 "${RADSTAT}"
-      ${CHGRP_CMD} "${RADSTAT}"
+      if [[ "${CHGRP_RSTPROD}" == "YES" ]]; then
+         ${CHGRP_CMD} "${RADSTAT}"
+      fi
 
       echo "$(date) END tar diagnostic files" >&2
    fi
