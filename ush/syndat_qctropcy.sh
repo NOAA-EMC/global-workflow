@@ -114,15 +114,15 @@ positional parameter 1"
    exit
 fi
 
-CDATE10=$1
+run_date=$1
 
 set +x
 echo
-echo "Run date is $CDATE10"
+echo "Run date is ${run_date}"
 echo
 set_trace
 
-year=$(echo $CDATE10 | cut -c1-4)
+year=${run_date:0:4}
 
  
 #  Copy the seasonal statistics from archive directory to local
@@ -211,7 +211,7 @@ ${USHgfs}/parse-storm-type.pl nhc1 > nhc
 cp -p nhc nhc.ORIG
 # JTWC/FNOC ... execute syndat_getjtbul script to write into working directory
 #               as fnoc; copy to archive
-${USHgfs}/syndat_getjtbul.sh $CDATE10
+${USHgfs}/syndat_getjtbul.sh ${run_date}
 touch fnoc
 [ "$copy_back" = 'YES' ]  &&  cat fnoc >> $ARCHSYND/syndat_tcvitals.$year
 
@@ -241,9 +241,9 @@ else
    unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi
 
-echo "$CDATE10"      > cdate10.dat
+echo "${run_date}"      > run_date.dat
 export FORT11=slmask.126
-export FORT12=cdate10.dat
+export FORT12=run_date.dat
 ${EXECgfs}/${pgm} >> $pgmout 2> errfile
 errqct=$?
 ###cat errfile
