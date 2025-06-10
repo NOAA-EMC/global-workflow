@@ -492,7 +492,7 @@ if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
    export DO_VMINMON="NO"     # GSI minimization monitoring
    export DO_ANLSTAT="YES"    # JEDI-based analysis statistics
 else
-   if [[ ${DO_AERO} = "YES" || ${DO_JEDIOCNVAR} = "YES" || ${DO_JEDISNOWDA} = "YES " ]]; then
+   if [[ "${DO_AERO}" = "YES" || "${DO_JEDIOCNVAR}" = "YES" || "${DO_JEDISNOWDA}" = "YES" ]]; then
      export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
    fi
 fi

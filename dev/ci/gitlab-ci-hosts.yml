@@ -29,7 +29,7 @@ setup_experiments-hera:
       - hera
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
   needs:
     - build-hera
   rules:
@@ -43,7 +43,7 @@ run_tests-hera:
     - hera
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
   needs:
     - setup_experiments-hera
   rules:
@@ -58,7 +58,7 @@ setup_experiments-gaeac6:
     - gaeac6
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
   needs:
     - build-gaeac6
   rules:
@@ -72,13 +72,13 @@ run_tests-gaeac6:
     - gaeac6
   parallel:
     matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmaerosnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA"]
+      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
   needs:
     - setup_experiments-gaeac6
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
-# Host: Hera - Finalize 
+# Host: Hera - Finalize
 finalize-hera:
   extends: .finalize_template
   variables:
