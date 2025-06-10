@@ -482,7 +482,6 @@ class GEFSTasks(Tasks):
         if is_replay and 0 in fhrs:
             fhrs.remove(0)
 
-
         print(self._configs['awips'])
         max_tasks = self._configs['awips']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
