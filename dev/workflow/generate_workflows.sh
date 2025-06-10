@@ -285,8 +285,7 @@ function select_all_yamls()
    # YAMLs in that list that are not for the specified system and issue warnings when
    # doing so.
 
-   _system="${1}"
-   _SYSTEM="${_system^^}"
+   _net="${1}"
 
    # Bash cannot return an array from a function and any edits are descoped at
    # the end of the function, so use a nameref instead.
@@ -295,12 +294,12 @@ function select_all_yamls()
    if [[ "${_specified_yaml_list}" == false ]]; then
       # Start over with an empty _yaml_list
       _nameref_yaml_list=()
-      printf "Running all %s cases in %s\n\n" "${_SYSTEM}" "${_yaml_dir}"
+      printf "Running all %s cases in %s\n\n" "${_net^^}" "${_yaml_dir}"
       _yaml_count=0
 
       for _full_path in "${_yaml_dir}/"*.yaml; do
          # Skip any YAML that isn't supported
-         if ! grep -l "system: *${_system}" "${_full_path}" >& /dev/null ; then continue; fi
+         if ! grep -l "net: *${_net}" "${_full_path}" >& /dev/null ; then continue; fi
 
          # Select only cases for the specified system
          _yaml=$(basename "${_full_path}")
@@ -315,7 +314,7 @@ function select_all_yamls()
 
       if [[ ${_yaml_count} -eq 0 ]]; then
          read -r -d '' _message << EOM
-            "No YAMLs or ${_SYSTEM} were found in the directory (${_yaml_dir})!"
+            "No YAMLs or ${_net^^} were found in the directory (${_yaml_dir})!"
             "Please check the directory/YAMLs and try again"
 EOM
          echo "${_message}"
@@ -328,9 +327,9 @@ EOM
       # Check if the specified yamls are for the specified system
       for i in "${!_nameref_yaml_list}"; do
          _yaml="${_nameref_yaml_list[${i}]}"
-         _found=$(grep -l "system: *${system}" "${_yaml_dir}/${_yaml}.yaml")
+         _found=$(grep -l "net: *${_net}" "${_yaml_dir}/${_yaml}.yaml")
          if [[ -z "${_found}" ]]; then
-            echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_SYSTEM} system"
+            echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_net^^} system"
             echo "Removing this yaml from the set of cases to run"
             unset '_nameref_yaml_list[${i}]'
             # Sleep 2 seconds to give the user a moment to react
