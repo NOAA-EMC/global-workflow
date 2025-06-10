@@ -109,7 +109,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         done
     done 
 
-    if [[ ${DO_LAND_IAU} = ".true." ]]; then 
+    if [[ "${DO_LAND_IAU}" = ".true." ]]; then 
 
         add_time_dim=".true."
         time_list="${IAUFHRS}"
