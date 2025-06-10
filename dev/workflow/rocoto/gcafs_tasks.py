@@ -1240,6 +1240,9 @@ class GCAFSTasks(Tasks):
             if self.options['do_anlstat'] and self.options['do_aero_anl']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                 deps.append(rocoto.add_dependency(dep_dict))
+            if self.run in ['gcdas']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlgenb'}
+                deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
