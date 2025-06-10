@@ -41,7 +41,7 @@ for vi in $( seq 1 "${LSOIL_INCR}" ); do
     soil_incr_vars=${soil_incr_vars}'"slc'${vi}'_inc"',
 done
 
-if [[ ${DO_LAND_IAU} = ".true." ]]; then
+if [[ "${DO_LAND_IAU}" = ".true." ]]; then
     IFS=',' read -ra landifhrs <<< "${IAUFHRS}"
 fi
 in_fname="'enkfgdas.sfci'"
