@@ -1,9 +1,8 @@
 experiment:
-  system: gefs
+  net: gefs
   mode: forecast-only
 
 arguments:
-  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: S2SWA
   resdetatmos: 48
