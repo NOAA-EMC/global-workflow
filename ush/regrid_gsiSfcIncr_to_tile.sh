@@ -118,8 +118,8 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
         for FHI in "${landifhrs[@]}"; do
-                  cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHI}.nc" \
-                   "${DATA}/enkfgdas.sfci00${FHI}.nc"
+            cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHI}.nc" \
+                  "${DATA}/enkfgdas.sfci00${FHI}.nc"
         done
         
         export pgm="${REGRID_EXEC}"
