@@ -74,7 +74,7 @@
 # GFS members (80)
 {% set cyc_ranges = [(range(1, 31) | list), (range(21, 51) | list), (range(41, 71) | list), (range(61, 81) | list) + (range(1, 11) | list)] %}
 # select the relevant member for each GEFS member from GFS outputs
-{% set gfs_member = cyc_ranges[m_index][(ENSMEM - 1) % 80] %}
+{% set gfs_member = cyc_ranges[m_index][(ENSMEM - 1)] %}
 {% endif %}
 
 {% if ENSMEM == 0 %}
