@@ -24,6 +24,10 @@ case ${step} in
     fi
     ;;
 
+  "analcalc")
+    export PARTITION_BATCH="compute"
+    ;;
+
   *)
     export PARTITION_BATCH="process"
     unset PARTITION_SERVICE
