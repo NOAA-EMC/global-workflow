@@ -30,7 +30,7 @@ APREFIX_ENS="enkfgdas.t${cyc}z."
 
 LSOIL_INCR=${LSOIL_INCR:-2}
 
-n_vars=$(( LSOIL_INCR*2 ))
+export n_vars=$(( LSOIL_INCR*2 ))
 
 soil_incr_vars=""
 for vi in $( seq 1 "${LSOIL_INCR}" ); do
@@ -43,14 +43,15 @@ done
 if [[ "${DO_LAND_IAU}" = ".true." ]]; then
     IFS=',' read -ra landifhrs <<< "${IAUFHRS}"
 fi
-in_fname="'enkfgdas.sfci'"
-out_fname="'sfci'"
-dir_mask_in="'./'"
-fname_mask_in="'NULL'"
-ires=${LONB_CASE_IN}
-jres=${LATB_CASE_IN}
-ireso=${CASE_OUT:1}
-jreso=${CASE_OUT:1}
+export in_fname="'enkfgdas.sfci'"
+export out_fname="'sfci'"
+export dir_mask_in="'./'"
+export fname_mask_in="'NULL'"
+export ires=${LONB_CASE_IN}
+export jres=${LATB_CASE_IN}
+export ireso=${CASE_OUT:1}
+export jreso=${CASE_OUT:1}
+
 regrid_nml_tmpl="${PARMgfs}/regrid_sfc/regrid.nml_tmpl" 
 
 # input, fixed files
@@ -92,8 +93,8 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 
     for FHR in "${soilinc_fhrs[@]}"; do
 
-        add_time_dim=".false."
-        time_list="${FHR}"
+        export add_time_dim=".false."
+        export time_list="${FHR}"
 
         rm -f "regrid.nml"
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
@@ -110,8 +111,8 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then 
 
-        add_time_dim=".true."
-        time_list="${IAUFHRS}"
+        export add_time_dim=".true."
+        export time_list="${IAUFHRS}"
 
         rm -f "regrid.nml"
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
