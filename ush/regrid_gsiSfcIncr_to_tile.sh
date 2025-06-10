@@ -52,7 +52,7 @@ ires=${LONB_CASE_IN}
 jres=${LATB_CASE_IN}
 ireso=${CASE_OUT:1}
 jreso=${CASE_OUT:1}
-regrid_nml_tmpl="${HOMEgfs}/parm/ufs_utils/regrid_sfc/regrid.nml_tmpl" 
+regrid_nml_tmpl="${PARMgfs}/regrid_sfc/regrid.nml_tmpl" 
 
 # input, fixed files
 cpreq "${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
