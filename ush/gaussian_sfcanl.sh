@@ -106,7 +106,6 @@ DONST=${DONST:-"NO"}
 LEVS=${LEVS:-64}
 LEVSP1=$(($LEVS+1))
 FIXWGTS=${FIXWGTS:-${FIXorog}/${CASE}/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
-DATA=${DATA:-$(pwd)}
 
 #  Filenames.
 XC=${XC:-}
@@ -124,7 +123,6 @@ export REDERR=${REDERR:-'2>'}
 #  Preprocessing
 ${INISCRIPT:-}
 pwd=$(pwd)
-cd "${DATA}" || exit 99
 if [[ ! -d "${COMOUT_ATMOS_ANALYSIS}" ]]; then
    mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 fi
