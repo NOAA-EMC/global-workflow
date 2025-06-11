@@ -72,7 +72,10 @@ class GEFSAppConfig(AppConfig):
             List of configuration file names needed for the GEFS run
         """
         options = self.run_options[run]
-        configs = ['stage_ic', 'gen_control_ic', 'fcst', 'atmos_products']
+        configs = ['stage_ic', 'fcst', 'atmos_products']
+
+        if options['do_gefstype']:
+            configs += ['gen_control_ic']
 
         if options['do_bufrsnd']:
             configs += ['postsnd']
@@ -139,7 +142,10 @@ class GEFSAppConfig(AppConfig):
             Dictionary with run name as key and list of task names as value
         """
         options = self.run_options[self.run]
-        tasks = ['stage_ic', 'gen_control_ic']
+        tasks = ['stage_ic']
+
+        if options['do_gefstype']:
+            tasks += ['gen_control_ic']
 
         if options['do_wave']:
             tasks += ['waveinit']
