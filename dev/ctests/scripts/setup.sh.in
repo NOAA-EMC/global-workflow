@@ -15,11 +15,18 @@ set +x
 source "${HOMEgfs}/dev/ush/gw_setup.sh"
 set -x
 
-pslot="${TEST_NAME}" \
+cd "${HOMEgfs}/dev/workflow" || exit 1
+
+# We need to tag the pslot with the current git commit hash
+# for a unique path in the RUNDIR directory for the use case
+# where the same test is run multiple times from the same user
+sha=$(git rev-parse --short HEAD)
+
+pslot="${TEST_NAME}_${sha}" \
 RUNTESTS="${RUNTESTS}" \
 ICSDIR_ROOT="${ICSDIR_ROOT}" \
 HPC_ACCOUNT="${HPC_ACCOUNT}" \
-"${HOMEgfs}/dev/workflow/create_experiment.py" --yaml "${YAML_FILE}" --overwrite
+./create_experiment.py --yaml "${YAML_FILE}" --overwrite
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     set +x
