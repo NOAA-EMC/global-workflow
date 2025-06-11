@@ -27,25 +27,43 @@ last_rtofs=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDRTOFS:-48} hours")
 function remove_files() {
     local directory=$1
     shift
-    if [[ ! -d ${directory} ]]; then
-        echo "No directory ${directory} to remove files from, skiping"
+
+    if [[ ! -d "${directory}" ]]; then
+        echo "No directory ${directory} to remove files from, skipping"
         return
     fi
+
     local find_exclude_string=""
+
+    # Build the exclusion clause
     for exclude in "$@"; do
-        find_exclude_string+="${find_exclude_string} -name ${exclude} -or"
+        [[ -n "$exclude" ]] && find_exclude_string+=" -name \"$exclude\" -or"
     done
-    # Chop off any trailing or
-    find_exclude_string="${find_exclude_string[*]/%-or}"
-    # Remove all regular files that do not match
-    # shellcheck disable=SC2086
-    find "${directory}" -type f -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
-    # Remove all symlinks that do not match
-    # shellcheck disable=SC2086
-    find "${directory}" -type l -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
-    # Remove any empty directories
+
+    # Remove trailing -or if it exists
+    find_exclude_string="${find_exclude_string% -or}"
+
+    # Print for debugging
+    echo "DEBUG: directory = '${directory}'"
+    echo "DEBUG: find_exclude_string = ${find_exclude_string}"
+
+    if [[ -n "$find_exclude_string" ]]; then
+        # shellcheck disable=SC2086
+        eval find "${directory}" -type f -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
+        eval find "${directory}" -type l -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
+    else
+        echo "WARNING: No exclusion patterns provided. Deleting all files and symlinks in ${directory}."
+        find "${directory}" -type f -ignore_readdir_race -delete
+        find "${directory}" -type l -ignore_readdir_race -delete
+    fi
+
+    # Always remove empty directories
     find "${directory}" -type d -empty -delete
 }
+
+
+# Always remove empty directories
+
 
 for (( current_date=first_date; current_date <= last_date; \
   current_date=$(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours") )); do
