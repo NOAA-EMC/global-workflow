@@ -61,7 +61,7 @@ function remove_files() {
     find "${directory}" -type d -empty -delete
 }
 
-for (( current_date={first_date}; current_date <= {last_date}; \
+for (( current_date=${first_date}; current_date <= ${last_date}; \
   current_date=$(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours") )); do
     current_PDY="${current_date:0:8}"
     current_cyc="${current_date:8:2}"
