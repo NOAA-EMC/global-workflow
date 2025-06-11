@@ -18,14 +18,14 @@ case ${step} in
     ;;
 
   "anal")
-    if [[ "${CASE}" == "C96" ]]; then
-      export PARTITION_BATCH="compute"
-      tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    fi
+    export PARTITION_BATCH="compute"
+    max_tasks_per_node=48
+    tasks_per_node=48
     ;;
 
-  "analcalc")
+  "analcalc" | "analdiag" | "upp")
     export PARTITION_BATCH="compute"
+    max_tasks_per_node=48
     ;;
 
   *)
