@@ -7,7 +7,6 @@ echo "Begin Cleanup ${DATAROOT}!"
 # TODO: Handle this better
 DATAfcst="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
 if [[ -d "${DATAfcst}" ]]; then rm -rf "${DATAfcst}"; fi
-#DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
 rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 ###############################################################
 
@@ -96,7 +95,7 @@ if [[ "${RUN}" == "gfs" ]]; then
     fi
 
     touch_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_FITS} hours")
-    while (( touch_date < "${PDY}${cyc}" )); do
+    while (( touch_date < ${PDY}${cyc} )); do
         touch_PDY="${touch_date:0:8}"
         touch_cyc="${touch_date:8:2}"
         touch_dir="${ROTDIR}/vrfyarch/${RUN}.${touch_PDY}/${touch_cyc}"
@@ -114,7 +113,7 @@ if (( GDATE < RDATE )); then
     RDATE=${GDATE}
 fi
 deletion_target="${ROTDIR}/${RUN}.${RDATE:0:8}"
-if [[ -d ${deletion_target} ]]; then rm -rf "${deletion_target}"; fi
+if [[ -d "${deletion_target}" ]]; then rm -rf "${deletion_target}"; fi
 
 # sync and wait to avoid filesystem synchronization issues
 sync && sleep 1
