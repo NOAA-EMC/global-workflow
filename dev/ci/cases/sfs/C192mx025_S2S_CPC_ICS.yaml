@@ -12,7 +12,7 @@ arguments:
   resensatmos: 192
   resdetocean: 0.25
   start: 'cold'
-  nens: 10
+  nens: 3
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'TOPICDIR' | getenv }}/CPC/C192mx025
