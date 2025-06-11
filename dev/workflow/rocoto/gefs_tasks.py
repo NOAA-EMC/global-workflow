@@ -74,9 +74,8 @@ class GEFSTasks(Tasks):
 
     def gen_control_ic(self):
         dependencies = []
-        if self.app_config.gefstype in ['near-real-time']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
+        dependencies.append(rocoto.add_dependency(dep_dict))
 
         resources = self.get_resource('gen_control_ic')
         task_name = f'{self.run}_gen_control_ic'
@@ -133,8 +132,6 @@ class GEFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
         elif self.app_config.gefstype in ['near-real-time']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_gen_control_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
