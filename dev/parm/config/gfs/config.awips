@@ -10,5 +10,6 @@ echo "BEGIN: config.awips"
 
 # No. of concurrent awips jobs
 export NAWIPSGRP=42
+export MAX_TASKS=25
 
 echo "END: config.awips"
