@@ -198,9 +198,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_aero_fcst'] = run_base.get('DO_AERO_FCST', False)
 
             if run_base.get('GEFSTYPE', "") == "near-real-time":
-                run_options[run]['do_gefstype'] = True
+                run_options[run]['do_gefs_real_time'] = True
             elif run_base.get('GEFSTYPE', "") == "gefs-offline":
-                run_options[run]['do_gefstype'] = False
+                run_options[run]['do_gefs_real_time'] = False
             if run_options[run]['do_archcom'] and run_base.get('ARCHCOM_TO', "") == "globus_hpss":
                 run_options[run]['do_globusarch'] = True
             else:

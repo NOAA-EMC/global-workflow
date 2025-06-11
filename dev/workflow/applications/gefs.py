@@ -74,7 +74,7 @@ class GEFSAppConfig(AppConfig):
         options = self.run_options[run]
         configs = ['stage_ic', 'fcst', 'atmos_products']
 
-        if options['do_gefstype']:
+        if options['do_gefs_real_time']:
             configs += ['gen_control_ic']
 
         if options['do_bufrsnd']:
@@ -144,7 +144,7 @@ class GEFSAppConfig(AppConfig):
         options = self.run_options[self.run]
         tasks = ['stage_ic']
 
-        if options['do_gefstype']:
+        if options['do_gefs_real_time']:
             tasks += ['gen_control_ic']
 
         if options['do_wave']:
