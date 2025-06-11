@@ -130,5 +130,3 @@ class MarineRecenter(Task):
         logger.info("---------------- Save recentered increments and ensemble statistics")
         soca_ens_list = parse_j2yaml(self.task_config.MARINE_ECEN_FINALIZE_YAML_TMPL, self.task_config)
         FileHandler(soca_ens_list).sync()
-
-
