@@ -201,6 +201,10 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 run_options[run]['do_gefstype'] = True
             elif run_base.get('GEFSTYPE', "") == "gefs-offline":
                 run_options[run]['do_gefstype'] = False
+            if run_options[run]['do_archcom'] and run_base.get('ARCHCOM_TO', "") == "globus_hpss":
+                run_options[run]['do_globusarch'] = True
+            else:
+                run_options[run]['do_globusarch'] = False
 
             run_options[run]['fcst_segments'] = run_base.get('FCST_SEGMENTS', None)
 
