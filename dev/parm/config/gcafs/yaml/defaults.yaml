@@ -1,4 +1,6 @@
 base:
+  USE_AERO_ANL: "YES"
+  AERO_ANL_RUNS: "gcdas"
   DOIAU: "NO"
   DO_JEDIATMVAR: "NO"
   DO_JEDIATMENS: "NO"
