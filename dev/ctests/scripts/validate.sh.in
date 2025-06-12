@@ -6,9 +6,9 @@ TEST_NAME=${2:?"Name of the test is required"}
 TEST_DATE=${3:?"idate of the test is required"}
 
 # CMake to fill these variables
-CTESTS_STAGED_TESTS_DIR="@CTESTS_STAGED_TESTS_DIR@"
 RUNTESTS="@RUNTESTS@"
 HOMEgfs="@PROJECT_SOURCE_DIR@"
+STAGED_CTESTS="@STAGED_CTESTS@"
 
 # Load the runtime environment for this script (needs wxflow and its dependencies)
 set +x
@@ -22,15 +22,17 @@ PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 export PYTHONPATH
 
 YAML_FILE="${HOMEgfs}/dev/ctests/cases/${TEST_NAME}.yaml"
-# Find pslot with pattern CASE_NAME_<suffix> where suffix is typically a hash
-PSLOT=$("${HOMEgfs}"/dev/ci/scripts/utils/ci_utils.sh get_pslot "${CTESTS_STAGED_TESTS_DIR}" "${CASE_NAME}")
+
+# Find pslot with pattern CASE_NAME_<suffix> where suffix was added to induce unique paths in RUNDIR
+PSLOT=$("${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${STAGED_CTESTS}" "${CASE_NAME}")
+TEST_NAME=$("${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS}" "${TEST_NAME}")
 
 echo "validating '${TEST_NAME}' with yaml file '${YAML_FILE}'"
 
+STAGED_CTESTS="${STAGED_CTESTS}" \
 PSLOT="${PSLOT}" \
 TEST_NAME="${TEST_NAME}" \
 RUNTESTS="${RUNTESTS}" \
-CTESTS_STAGED_TESTS_DIR="${CTESTS_STAGED_TESTS_DIR}" \
 "${HOMEgfs}/dev/ctests/scripts/validate.py" --yaml "${YAML_FILE}" --test_date "${TEST_DATE}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
