@@ -4,7 +4,7 @@ function _usage() {
   cat << EOF
 Builds all of the global-workflow components on compute nodes.
 
-Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT [gfs gefs sfs gsi gdas all]
+Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT [gfs gefs sfs gcafs gsi gdas all]
   -h:
     Print this help message and exit
   -v:
@@ -14,7 +14,7 @@ Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT [gfs gefs sfs gsi gdas all]
 
   Input arguments are the system(s) to build.
   Valid options are
-    "gfs", "gefs", "sfs", "gsi", "gdas", or "all".
+    "gfs", "gefs", "sfs", "gcafs", "gsi", "gdas", or "all".
     (default is "gfs")
 EOF
   exit 1
