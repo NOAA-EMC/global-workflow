@@ -812,10 +812,22 @@ class GFSTasks(Tasks):
 
     def ocnanalecen(self):
 
+        # deps = []
+        # dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
+        # deps.append(rocoto.add_dependency(dep_dict))
+        # dependencies = rocoto.create_dependency(dep=deps)
+
+
+        ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
+
+        # can run in parallel with marinebmat 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
+        data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
+        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ocnanalecen')
         task_name = f'{self.run}_ocnanalecen'
