@@ -19,4 +19,4 @@ arguments:
   #idate: 2023041506
   #edate: 2023061600
   #icsdir: /lfs/h2/emc/da/noscrub/catherine.thomas/ICS/C1152C384/2023041506
-  yaml: {{ HOMEgfs }}/ci/cases/gfsv17/s2sw.yaml
+  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw.yaml
