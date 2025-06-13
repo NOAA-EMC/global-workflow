@@ -408,11 +408,17 @@ fi
 # Generate post-processing ensemble spread files
 export ENKF_SPREAD="YES"
 
+#Soil DA and whether it is (land) IAU
+export DO_GSISOILDA="{{ DO_GSISOILDA }}"
+export DO_LAND_IAU="{{ DO_LAND_IAU }}"
+export LSOIL_INCR=2
+
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
   export IAUFHRS="6,"
+  export DO_LAND_IAU=".false."
 fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6,"; fi
@@ -428,8 +434,6 @@ fi
 export restart_interval_enkfgfs=${restart_interval_enkfgdas}
 
 export restart_interval_gdas="3"
-
-export DO_GSISOILDA="{{ DO_GSISOILDA }}"
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
