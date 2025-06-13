@@ -5,19 +5,12 @@ var:
   jedi_args: ['soca', 'variational']
   jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/jcb-base.yaml.j2'
   jcb_algo_yaml: '{{ JCB_ALGO_YAML_VAR }}'
-socaincr2mom6:
+soca_incpostproc:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/gdas_incr_handler.x'
   mpi_cmd: '{{ APRUN_MARINEANLCHKPT }}'
   jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/jcb-base.yaml.j2'
-  jcb_algo: socaincr2mom6
-soca_2cice_global:
-  rundir: '{{ DATA }}'
-  exe_src: '{{ EXECgfs }}/gdas.x'
-  mpi_cmd: '{{ APRUN_MARINEANLCHKPT }}'
-  jedi_args: ['soca', 'convertstate']
-  jcb_base_yaml: '{{ PARMgfs }}/gdas/soca/jcb-base.yaml.j2'
-  jcb_algo: soca_2cice_global
+  jcb_algo: soca_incpostproc
 soca_diag_stats:
   rundir: '{{ DATA }}'
   exe_src: '{{ EXECgfs }}/gdassoca_obsstats.x'

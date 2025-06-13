@@ -74,6 +74,12 @@ datasets:
 
     {% endfor %}
 
+    {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                          '${RUN}':RUN,
+                          '${YMD}':cycle_YMD,
+                          '${HH}':cycle_HH,
+                          '${MEMDIR}': "ensstat"}) %}
+    {% set COMIN_CONF = COM_CONF_TMPL | replace_tmpl(tmpl_dict) %}
     # Archive member data
     {% filter indent(width=4) %}
 {% include "enkf_grp.yaml.j2" %}

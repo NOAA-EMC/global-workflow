@@ -306,6 +306,9 @@ elif [[ "${RUN}" =~ "gfs" ]] ; then # GFS cycle specific parameters
       export io_layout="1,1"
     fi
 
+    # Turn off Land IAU for GFS
+    export DO_LAND_IAU=".false."
+
 fi
 
 # Remember config.efcs will over-ride these values for ensemble forecasts

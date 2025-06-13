@@ -37,6 +37,8 @@ def main():
     for key in stage.task_config.keys():
         if key.startswith("COM"):
             stage_dict[key] = stage.task_config[key]
+        if "ENSMEM" in stage.task_config:
+            stage_dict["ENSMEM"] = stage.task_config["ENSMEM"]
 
     # Stage ICs
     stage.execute_stage(stage_dict)
