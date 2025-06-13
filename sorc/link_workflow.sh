@@ -122,7 +122,11 @@ for dir in aer \
     rm -rf "${dir}"
   fi
   fix_ver="${dir}_ver"
-  ${LINK_OR_COPY} "${FIX_DIR}/${dir}/${!fix_ver}" "${dir}"
+  if [[ "${dir}" == "aer" ]]; then
+    ${LINK_OR_COPY} "${FIX_DIR}/${dir}" "${dir}"
+  else
+    ${LINK_OR_COPY} "${FIX_DIR}/${dir}/${!fix_ver}" "${dir}"
+  fi
 done
 # global-nest uses different versions of orog and ugwd
 if [[ "${LINK_NEST:-OFF}" == "ON" ]]; then
