@@ -1,1 +1,13 @@
-../gfs/config.wavegempak
+#! /usr/bin/env bash
+
+########## config.wavegempak ##########
+# Wave steps specific
+
+echo "BEGIN: config.wavegempak"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" wavegempak
+
+export GEMPAK_GRIDS='glo_025'
+
+echo "END: config.wavegempak"

@@ -46,28 +46,31 @@ EOF
 for grid in ${grids}; do
   case ${grid} in
     aoc_9km)
-      grdIDout="${RUN}wavearc"
+      grdIDout="${NET}wavearc"
     ;;
     at_10m)
-      grdIDout="${RUN}waveat10m"
+      grdIDout="${NET}waveat10m"
     ;;
     ep_10m)
-      grdIDout="${RUN}waveep10m"
+      grdIDout="${NET}waveep10m"
     ;;
     wc_10m)
-      grdIDout="${RUN}wavewc10m"
+      grdIDout="${NET}wavewc10m"
     ;;
     glo_30m)
-      grdIDout="${RUN}wavegl30m"
+      grdIDout="${NET}wavegl30m"
     ;;
     gnh_10m)
-      grdIDout="${RUN}wavenh"
+      grdIDout="${NET}wavenh"
     ;;
     gsh_15m)
-      grdIDout="${RUN}wavesh"
+      grdIDout="${NET}wavesh"
     ;;
     glo_200)
-      grdIDout="${RUN}waves200k"
+      grdIDout="${NET}waves200k"
+    ;;
+    glo_025)
+      grdIDout="${NET}wave0p25"
     ;;
     *)
       echo "FATAL ERROR: Unspecified grid '${grid}'"
