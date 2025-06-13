@@ -202,8 +202,12 @@ class MarineAnalysis(Task):
         FileHandler(soca_finalize_list).sync()
 
         # Save obs diag statistics to COM
-        diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
-        FileHandler(diags_list).sync()
+        try:
+            logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
+            diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
+            FileHandler(diags_list).sync()
+        except Exception as e:
+            logger.warning(f"WARNING: Failed to save SOCA analysis observation statistics: {e}")
 
     @logit(logger)
     def initialize_obs_stats(self) -> None:
@@ -223,19 +227,22 @@ class MarineAnalysis(Task):
         """
 
         #
-        cleaned_observations = []
-        obs_variables = {}
-        for obs_space in self.jedi_dict['var'].jedi_config.input_config['cost function']['observations']['observers']:
-            name = obs_space['obs space']['name']
-            variable = obs_space['obs space']['simulated variables'][0]
+        try:
+            cleaned_observations = []
+            obs_variables = {}
+            for obs_space in self.jedi_dict['var'].jedi_config.input_config['cost function']['observations']['observers']:
+                name = obs_space['obs space']['name']
+                variable = obs_space['obs space']['simulated variables'][0]
 
-            cleaned_observations.append(name)
-            obs_variables[name] = variable
+                cleaned_observations.append(name)
+                obs_variables[name] = variable
 
-        # Update the task_config with the observation variables
-        self.task_config['cleaned_observations'] = cleaned_observations
-        self.task_config['obs_variables'] = obs_variables
+            # Update the task_config with the observation variables
+            self.task_config['cleaned_observations'] = cleaned_observations
+            self.task_config['obs_variables'] = obs_variables
 
-        # Initialize the observation statistics
-        logger.info(f"Initializing JEDI SOCA observation statistics application")
-        self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
+            # Initialize the observation statistics
+            logger.info(f"Initializing JEDI SOCA observation statistics application")
+            self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
+        except Exception as e:
+            logger.warning(f"WARNING: Failed to initialize soca_diag_stats application: {e}")

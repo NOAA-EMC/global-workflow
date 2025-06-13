@@ -28,4 +28,7 @@ if __name__ == '__main__':
     MarineAnl.execute('soca_2cice_global')
 
     # Compute the observation space statistics
-    MarineAnl.execute('soca_diag_stats')
+    try:
+        MarineAnl.execute('soca_diag_stats')
+    except Exception as e:
+        logger.warning(f"WARNING: Executation of soca_diag_stat application failed: {e}")
