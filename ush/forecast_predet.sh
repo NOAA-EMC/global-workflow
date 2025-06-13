@@ -541,10 +541,10 @@ FV3_predet(){
       year=${current_cycle:0:4}
       for i in {1980..2300..5}
       do
-        if [ $year -le $i ]
+        if [[ ${year} -le ${i} ]]
         then
           Eyear=$(printf %04d "${i}")
-          Syear=$(($i-5))
+          Syear=$(( i - 5 ))
           break
         fi
       done
