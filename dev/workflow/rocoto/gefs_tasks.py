@@ -690,7 +690,6 @@ class GEFSTasks(Tasks):
 
         return task
 
-
     def extractvars(self):
         deps = []
         if self.options['do_wave']:
