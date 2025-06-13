@@ -647,7 +647,6 @@ class GEFSTasks(Tasks):
         task = rocoto.create_task(member_metatask_dict)
 
         return task
-    
 
     def wavegempak(self):
         deps = []
