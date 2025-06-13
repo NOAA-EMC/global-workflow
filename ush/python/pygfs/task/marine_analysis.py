@@ -80,7 +80,7 @@ class MarineAnalysis(Task):
         self.task_config.update(local_dict)
 
         # Construct dictionary of JEDI objects, one for each JEDI application need for the analysis
-        expected_keys = ['var', 'socaincr2mom6', 'soca_2cice_global', 'soca_diag_stats']
+        expected_keys = ['var', 'soca_incpostproc', 'soca_diag_stats']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML_ANALYSIS, self.task_config, expected_keys)
 
     @logit(logger)
@@ -153,10 +153,7 @@ class MarineAnalysis(Task):
         self.jedi_dict['var'].initialize(self.task_config, clean_empty_obsspaces=True)
 
         logger.info(f"Initializing SOCA increment handler")
-        self.jedi_dict['socaincr2mom6'].initialize(self.task_config)
-
-        logger.info(f"Initializing SOCA convertstate application")
-        self.jedi_dict['soca_2cice_global'].initialize(self.task_config)
+        self.jedi_dict['soca_incpostproc'].initialize(self.task_config)
 
         # This method is a bit of a hack that will be removed in the future when the anlstat
         # job fully replaces the SOCA obs_diag_stats application
