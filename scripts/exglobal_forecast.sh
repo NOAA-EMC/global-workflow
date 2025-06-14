@@ -175,6 +175,11 @@ else
   export OMP_NUM_THREADS=${UFS_THREADS:-1}
 fi
 
+echo "EXECgfs: ${EXECgfs}"
+echo "FCSTEXEC: ${FCSTEXEC}"
+echo "DATA: ${DATA}"
+echo "APRUN_UFS: ${APRUN_UFS}"
+
 cpreq "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
