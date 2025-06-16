@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-source "${USHgfs}/load_fv3gfs_modules.sh"
-module load wgrib2/2.0.8
+#source "${USHgfs}/load_fv3gfs_modules.sh"
+#module load wgrib2/2.0.8
 
 # Programs used
 #export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
