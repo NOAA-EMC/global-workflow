@@ -245,6 +245,6 @@ class AerosolObsPrep(Task):
             # replace gdas with gcdas in the dest
             obslist.append([ob,
                             os.path.join(self.task_config.COMOUT_OBS,
-                                         os.path.basename(ob)).replace('gdas', 'gcdas')])
+                                         os.path.basename(ob).replace('gdas', 'gcdas'))])
         # create output directory and copy files
         FileHandler({'mkdir': [self.task_config.COMOUT_OBS], 'copy': obslist}).sync()
