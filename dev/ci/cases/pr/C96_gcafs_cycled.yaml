@@ -17,7 +17,5 @@ arguments:
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gcafs_cycled_defaults_ci.yaml
 
 skip_ci_on_hosts:
-  - orion
   - gaeac5
-  - hercules
   - awsepicglobalworkflow

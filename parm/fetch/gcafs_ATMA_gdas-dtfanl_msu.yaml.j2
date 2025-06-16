@@ -4,7 +4,7 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_HH = current_cycle | strftime("%H") %}
 target:
-    tarball : "/NCEPPROD/hpssprod/runhistory/rh{{ cycle_Y }}/{{ cycle_YM }}/{{ cycle_YMD }}/com_gfs_{{ gdas_version }}_gdas.{{ cycle_YMD }}_{{ cycle_HH }}.gdas_restart.tar"
+    tarball: "/work/noaa/da/cmartin/june2025/gcafs/gcafs-tars/com_gfs_{{ gdas_version }}_gdas.{{ cycle_YMD }}_{{ cycle_HH }}.gdas_restart.tar.gz"
     on_hpss: False
     contents:
         # NSST analysis
