@@ -171,9 +171,8 @@ class GEFSAppConfig(AppConfig):
 
         if options['nens'] > 0:
             tasks += ['atmos_ensstat']
-
-        if options['do_awips']:
-            tasks += ['awips']
+            if options['do_awips']:
+                tasks += ['awips']
 
         if options['do_ocean']:
             tasks += ['ocean_prod']
