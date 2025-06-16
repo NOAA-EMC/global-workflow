@@ -19,7 +19,9 @@ export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
 #########################################################################
 # CTest functional test directories for pre-staged input data
 #########################################################################
-export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
+# TODO GITLAB not supported on Hercules yet
+#export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
+#export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
 
 # HPC account which overides the default account
 export HPC_ACCOUNT=fv3-cpu
