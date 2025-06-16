@@ -477,16 +477,15 @@ local MOM6_RESTART_SETTING=${MOM6_RESTART_SETTING:-'n'}
 local MOM6_RESTART_DIR=MOM6_RESTART/
 
 # Land IAU defaults
-
-local DO_LAND_IAU=.false.
-local LAND_IAU_FHRS=3,6,9
-local LAND_IAU_DELHRS=6
+local DO_LAND_IAU=${DO_LAND_IAU:-".false."}
+local LAND_IAU_FHRS=${IAUFHRS}
+local LAND_IAU_DELHRS=${IAU_DELTHRS}
 local LAND_IAU_INC_FILES="'sfc_inc',''"
-local LSOIL_INCR=3
-local LAND_IAU_FILTER_INC=.false.
-local LAND_IAU_UPD_STC=.true.
-local LAND_IAU_UPD_SLC=.true.
-local LAND_IAU_DP_STCSMC_ADJ=.true.
+local LSOIL_INCR=${LSOIL_INCR:-2}
+local LAND_IAU_FILTER_INC=".false."
+local LAND_IAU_UPD_STC=".true."
+local LAND_IAU_UPD_SLC=".true."
+local LAND_IAU_DP_STCSMC_ADJ=".true."
 local LAND_IAU_MIN_T_INC=0.0001
 
 # Check will need to be modified in the future

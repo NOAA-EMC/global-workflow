@@ -138,7 +138,7 @@ FV3_postdet() {
         IAU_DELTHRS=0
         IAU_INC_FILES="''"
       fi
-
+      DO_LAND_IAU=".false."
     #--------------------------------------------------------------------------
     else  # "${RERUN}" == "NO"
 
@@ -225,6 +225,21 @@ EOF
         fi
         cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
       done
+
+      # Land IAU increments: sfc_inc in FV3 grid, all timesteps in one file per tile 
+      if [[ ${DO_LAND_IAU} = ".true." ]]; then
+        local TN sfc_increment_file
+        for TN in $(seq 1 "${ntiles}"); do
+          sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/sfc_inc.tile${TN}.nc"
+          if [[ ! -f "${sfc_increment_file}" ]]; then
+            echo "FATAL ERROR: DO_LAND_IAU=${DO_LAND_IAU}, but missing increment file ${sfc_increment_file}, ABORT!"
+            exit 1
+          else
+            cpreq "${sfc_increment_file}" "${DATA}/INPUT/sfc_inc.tile${TN}.nc"
+          fi
+        done
+
+      fi
 
     fi  # if [[ "${RERUN}" == "YES" ]]; then
     #--------------------------------------------------------------------------
