@@ -2,11 +2,11 @@
 
  set -x
 
- HOMEDIR=/scratch4/NAGAPE/epic/Wei.Huang/demo
+ HOMEDIR=/scratch4/NAGAPE/epic/Wei.Huang/dev
  rundir=/scratch4/NAGAPE/epic/Wei.Huang/run
  mkdir -p ${rundir}
 
- source ~/.bashrc
+#source ~/.bashrc
  source dev/ush/gw_setup.sh
 
  HPC_ACCOUNT=epic \

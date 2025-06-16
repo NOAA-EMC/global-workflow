@@ -7,8 +7,6 @@ set -x
 ## FHRLST : forecast hour list to post-process (e.g. -f001, f000, f000_f001_f002, ...)
 ###############################################################
 
-module reset
-
 # Source FV3GFS workflow modules
 . "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?

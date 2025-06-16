@@ -1,11 +1,14 @@
 #! /usr/bin/env bash
 
-#source "${USHgfs}/load_fv3gfs_modules.sh"
-#module load wgrib2/2.0.8
-
 # Programs used
-#export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-export WGRIB2="${HOMEgfs}/bin/run_wgrib2.sh"
+if [ "$RUN_WITH_CONTAINER" == "NO" ]; then
+    source "${USHgfs}/load_fv3gfs_modules.sh"
+    module load wgrib2/2.0.8
+
+    export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
+else
+    export WGRIB2="${HOMEgfs}/bin/run_wgrib2.sh"
+fi
 
 # Scripts used
 INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/interp_atmos_master.sh"}

@@ -43,8 +43,10 @@
 _calling_script="${BASH_SOURCE[1]}"
 source "${HOMEgfs}/ush/preamble.sh"
 
-export PATH=/home/Wei.Huang/prod-util-2.1.1/bin:$PATH
-export LD_LIBRARY_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2023.2.0-uov33rpz3lplh3hh3v5c6vssbc7ndxuk/lib
+if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
+    export PATH=/home/Wei.Huang/prod-util-2.1.1/bin:$PATH
+   #export LD_LIBRARY_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2023.2.0-uov33rpz3lplh3hh3v5c6vssbc7ndxuk/lib
+fi
 
 OPTIND=1
 while getopts "c:e:" option; do

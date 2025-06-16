@@ -43,9 +43,7 @@ function _usage() {
 
     -S Run all valid SFS cases in the specified YAML directory.
 
-    -C Run all valid GCAFS cases in the specified YAML directory.
-
-    NOTES on -G, -E, -S and -C:
+    NOTES on -G, -E, and -S:
          - Valid cases are determined by the experiment:system key as
            well as the skip_ci_on_hosts list in each YAML.
 
@@ -67,6 +65,8 @@ function _usage() {
 
     -t Add a 'tag' to the end of the case names in the pslots to distinguish
        pslots between multiple sets of tests.
+
+    -R Run with Container
 
     -v Verbose mode.  Prints output of all commands to stdout.
 
@@ -93,7 +93,7 @@ _specified_yaml_dir=false
 _run_all_gfs=false
 _run_all_gefs=false
 _run_all_sfs=false
-_run_all_gcafs=false
+_run_with_container=false
 _hpc_account=""
 _set_account=false
 _update_cron=false
@@ -110,7 +110,7 @@ _auto_del=false
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-   while getopts ":H:bDuy:Y:GESCA:ce:t:vVdh" option; do
+   while getopts ":H:bDuy:Y:GESA:ce:t:vVRdh" option; do
       case "${option}" in
         H)
            HOMEgfs="${OPTARG}"
@@ -135,12 +135,12 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
         G) _run_all_gfs=true ;;
         E) _run_all_gefs=true ;;
         S) _run_all_sfs=true ;;
-        C) _run_all_gcafs=true ;;
         c) _update_cron=true ;;
         e) _email="${OPTARG}" && _set_email=true ;;
         t) _tag="_${OPTARG}" ;;
         v) _verbose=true ;;
         V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
+        R) _run_with_container=true ;;
         A) _set_account=true && _hpc_account="${OPTARG}" ;;
         d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v" && PS4='${LINENO}: ' ;;
         h) _usage && exit 0 ;;
@@ -245,17 +245,16 @@ else
    fi
 fi
 
-# Empty the _yaml_list array if -G, -E, -S and/or -C were selected
+# Empty the _yaml_list array if -G, -E, and/or -S were selected
 if [[ "${_run_all_gfs}" == "true" || \
       "${_run_all_gefs}" == "true" || \
-      "${_run_all_gcafs}" == "true" || \
       "${_run_all_sfs}" == "true" ]]; then
 
-   # Raise an error if the user specified a yaml list and any of -G -E -S -C
+   # Raise an error if the user specified a yaml list and any of -G -E -S
    if [[ "${_specified_yaml_list}" == "true" ]]; then
       echo "Ambiguous case selection."
       echo "Please select which tests to run explicitly with -y \"list of tests\" or"
-      echo "by specifying -G (all GFS), -E (all GEFS), -C (all GCAFS) and/or -S (all SFS), but not both."
+      echo "by specifying -G (all GFS), -E (all GEFS), and/or -S (all SFS), but not both."
       exit 3
    fi
 
@@ -269,6 +268,16 @@ if [[ "${_specified_home}" == "false" ]]; then
    if [[ "${_verbose}" == "true" ]]; then
        printf "Setting HOMEgfs to %s\n\n" "${HOMEgfs}"
    fi
+fi
+
+# Set RUN_WITH_CONTAINER if it is set by the user
+if [[ "${_run_with_container}" == "true" ]]; then
+   RUN_WITH_CONTAINER=YES
+   if [[ "${_verbose}" == "true" ]]; then
+       printf "Run with Container %s\n\n" "${RUN_WITH_CONTAINER}"
+   fi
+else
+   RUN_WITH_CONTAINER=NO
 fi
 
 # Set the _yaml_dir to HOMEgfs/dev/ci/cases/pr if not explicitly set
@@ -285,7 +294,8 @@ function select_all_yamls()
    # YAMLs in that list that are not for the specified system and issue warnings when
    # doing so.
 
-   _net="${1}"
+   _system="${1}"
+   _SYSTEM="${_system^^}"
 
    # Bash cannot return an array from a function and any edits are descoped at
    # the end of the function, so use a nameref instead.
@@ -294,12 +304,12 @@ function select_all_yamls()
    if [[ "${_specified_yaml_list}" == false ]]; then
       # Start over with an empty _yaml_list
       _nameref_yaml_list=()
-      printf "Running all %s cases in %s\n\n" "${_net^^}" "${_yaml_dir}"
+      printf "Running all %s cases in %s\n\n" "${_SYSTEM}" "${_yaml_dir}"
       _yaml_count=0
 
       for _full_path in "${_yaml_dir}/"*.yaml; do
          # Skip any YAML that isn't supported
-         if ! grep -l "net: *${_net}" "${_full_path}" >& /dev/null ; then continue; fi
+         if ! grep -l "system: *${_system}" "${_full_path}" >& /dev/null ; then continue; fi
 
          # Select only cases for the specified system
          _yaml=$(basename "${_full_path}")
@@ -314,7 +324,7 @@ function select_all_yamls()
 
       if [[ ${_yaml_count} -eq 0 ]]; then
          read -r -d '' _message << EOM
-            "No YAMLs or ${_net^^} were found in the directory (${_yaml_dir})!"
+            "No YAMLs or ${_SYSTEM} were found in the directory (${_yaml_dir})!"
             "Please check the directory/YAMLs and try again"
 EOM
          echo "${_message}"
@@ -327,9 +337,9 @@ EOM
       # Check if the specified yamls are for the specified system
       for i in "${!_nameref_yaml_list}"; do
          _yaml="${_nameref_yaml_list[${i}]}"
-         _found=$(grep -l "net: *${_net}" "${_yaml_dir}/${_yaml}.yaml")
+         _found=$(grep -l "system: *${system}" "${_yaml_dir}/${_yaml}.yaml")
          if [[ -z "${_found}" ]]; then
-            echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_net^^} system"
+            echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_SYSTEM} system"
             echo "Removing this yaml from the set of cases to run"
             unset '_nameref_yaml_list[${i}]'
             # Sleep 2 seconds to give the user a moment to react
@@ -365,15 +375,6 @@ if [[ "${_run_all_sfs}" == "true" ]]; then
    declare -a _gfs_yaml_list
    select_all_yamls "sfs" "_sfs_yaml_list"
    _yaml_list=("${_yaml_list[@]}" "${_sfs_yaml_list[@]}")
-fi
-
-# Check if running all GCAFS cases
-if [[ "${_run_all_gcafs}" == "true" ]]; then
-   _build_flags="${_build_flags} gcafs gdas "
-
-   declare -a _gfs_yaml_list
-   select_all_yamls "gcafs" "_gcafs_yaml_list"
-   _yaml_list=("${_yaml_list[@]}" "${_gcafs_yaml_list[@]}")
 fi
 
 # Loading modules sometimes raises unassigned errors, so disable checks
@@ -451,15 +452,28 @@ fi
 if [[ "${_verbose}" == true ]]; then
     printf "Linking the workflow\n\n"
 fi
-if ! "${HOMEgfs}/sorc/link_workflow.sh" >& stdout; then
-   cat stdout
-   echo "link_workflow.sh failed!"
-   if [[ "${_set_email}" == true ]]; then
-      _stdout=$(cat stdout)
-      send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
+if [[ "${_run_with_container}" == true ]]; then
+   if ! "${HOMEgfs}/sorc/link_workflow.sh" -r >& stdout; then
+      cat stdout
+      echo "link_workflow.sh failed!"
+      if [[ "${_set_email}" == true ]]; then
+         _stdout=$(cat stdout)
+         send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
+      fi
+      rm -f stdout
+      exit 9
    fi
-   rm -f stdout
-   exit 9
+else
+   if ! "${HOMEgfs}/sorc/link_workflow.sh" >& stdout; then
+      cat stdout
+      echo "link_workflow.sh failed!"
+      if [[ "${_set_email}" == true ]]; then
+         _stdout=$(cat stdout)
+         send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
+      fi
+      rm -f stdout
+      exit 9
+   fi
 fi
 rm -f stdout
 
@@ -522,7 +536,11 @@ for _case in "${_yaml_list[@]}"; do
       echo "${_case}"
    fi
    _pslot="${_case}${_tag}"
-   _create_exp_cmd="./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+   if [[ "${_run_with_container}" == "true" ]]; then
+       _create_exp_cmd="../../bin/run_python.sh ./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+   else
+       _create_exp_cmd="./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+   fi
    if [[ "${_verbose}" == true ]]; then
       pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd}
    else

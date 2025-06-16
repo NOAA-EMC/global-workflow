@@ -4,19 +4,20 @@
 
 HOMEgfs="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
 TRACE=NO source "${HOMEgfs}/ush/preamble.sh"
+_run_with_container=false
 
 function usage() {
   cat <<EOF
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-h][-o][--nest]
+Usage: ${BASH_SOURCE[0]} [-h][-o][-r][--nest]
   -h:
     Print this help message and exit
   -o:
     Configure for NCO (copy instead of link)
-  -c:
-    Configure for container (copy from .sif instead of link)
+  -r:
+    Configure run with container
 EOF
   exit 1
 }
@@ -25,19 +26,16 @@ RUN_ENVIR="emc"
 
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":hoc-:" option; do
+while getopts ":hor-:" option; do
   case "${option}" in
   h) usage ;;
   o)
     echo "-o option received, configuring for NCO"
     RUN_ENVIR="nco"
     ;;
-  c)
-    echo "-o option received, configuring for CONTAINER"
-    RUN_ENVIR="container"
-    SINGULARITY_IMAGE_FILE=/scratch4/NAGAPE/epic/Wei.Huang/src/container/gw-container
-    CONTAINER_DIR="/opt/global-workflow-cloud"
-    CONTAINER_COPY="singularity exec ${SINGULARITY_IMAGE_FILE} cp"
+  r)
+    echo "-r option received, configuring run with container"
+    _run_with_container=true
     ;;
   -)
     if [[ "${OPTARG}" == "nest" ]]; then
@@ -81,13 +79,12 @@ ${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/ru
 case "${machine}" in
 "wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
 "hera") FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
-"ursa") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
+"ursa") FIX_DIR="/scratch3/NCEPDEV/global/glopara/fix" ;;
 "orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
 "gaeac6") FIX_DIR="/gpfs/f6/drsa-precip3/world-shared/role.glopara/fix" ;;
 "noaacloud") FIX_DIR="/contrib/global-workflow-shared-data/fix" ;;
-"container") FIX_DIR="/contrib/global-workflow-shared-data/fix" ;;
 *)
   echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
   exit 1
@@ -156,34 +153,18 @@ fi
 #---------------------------------------
 #--copy/link NoahMp table form ccpp-physics repository
 cd "${HOMEgfs}/parm/ufs" || exit 1
-if [ "${RUN_ENVIR}" == "container" ]; then
-  ${CONTAINER_COPY} ${CONTAINER_DIR}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl .
-else
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
-fi
+${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
 
 cd "${HOMEgfs}/parm/post" || exit 1
-if [ "${RUN_ENVIR}" == "container" ]; then
-  ${CONTAINER_COPY} ${CONTAINER_DIR}/sorc/upp.fd/parm/params_grib2_tbl_new .
-  ${CONTAINER_COPY} ${CONTAINER_DIR}/sorc/upp.fd/fix/nam_micro_lookup.dat .
-  for dir in gfs gefs sfs
-  do
-    ${CONTAINER_COPY} -r ${CONTAINER_DIR}/sorc/upp.fd/parm/${dir} .
-  done
-  for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
-    ${CONTAINER_COPY} "${CONTAINER_DIR}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
-  done
-else
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/nam_micro_lookup.dat" .
-  for dir in gfs gefs sfs
-  do
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
-  done
-  for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
-  done
-fi
+${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" .
+${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/nam_micro_lookup.dat" .
+for dir in gfs gefs sfs
+do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
+done
+for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
+done
 
 cd "${HOMEgfs}/scripts" || exit 8
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
@@ -195,15 +176,9 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   done
 fi
 cd "${HOMEgfs}/ush" || exit 8
-if [ "${RUN_ENVIR}" == "container" ]; then
-  for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
-    ${CONTAINER_COPY} "${CONTAINER_DIR}/sorc/ufs_utils.fd/ush/${file}" .
-  done
-else
-  for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
-  done
-fi
+for file in global_cycle_driver.sh global_cycle.sh; do
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
+done
 
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
@@ -225,11 +200,7 @@ for file in "${ufs_templates[@]}"; do
   if [[ -s "${file}" ]]; then
       rm -f "${file}"
   fi
-  if [ "${RUN_ENVIR}" == "container" ]; then
-    ${CONTAINER_COPY} "${CONTAINER_DIR}/sorc/ufs_model.fd/tests/parm/${file}" .
-else
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
-  fi
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
 done
 
 # Link the script from ufs-weather-model that parses the templates
@@ -237,19 +208,7 @@ cd "${HOMEgfs}/ush" || exit 1
 if [[ -s "atparse.bash" ]]; then
     rm -f "atparse.bash"
 fi
-if [ "${RUN_ENVIR}" == "container" ]; then
-  ${CONTAINER_COPY} "${CONTAINER_DIR}/sorc/ufs_model.fd/tests/atparse.bash" .
-else
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
-fi
-
-# add ufs_utils parm dir 
-if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
-  cd "${HOMEgfs}/parm" || exit 1
-  mkdir -p regrid_sfc
-  cd regrid_sfc || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/parm/regrid_sfc/regrid.nml_tmpl" .
-fi
+${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
 
 #------------------------------
 #--add GDASApp fix directory
@@ -354,15 +313,14 @@ for sys in "${model_systems[@]}"; do
   if [[ -s "${model_exe}" ]]; then
     rm -f "${model_exe}"
   fi
-
-  if [ "${RUN_ENVIR}" == "container" ]; then
-    if [[ -f "${HOMEgfs}/bin/${model_exe}" ]]; then
-      ${LINK_OR_COPY} "${HOMEgfs}/bin/${model_exe}" "${model_exe}"
-    fi
+  if [[ "$_run_with_container" == "true" ]]; then
+      if [[ -f "${HOMEgfs}/bin/${model_exe}" ]]; then
+        ${LINK_OR_COPY} "${HOMEgfs}/bin/${model_exe}" "${model_exe}"
+      fi
   else
-    if [[ -f "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
-      ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
-    fi
+      if [[ -f "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
+      fi
   fi
 done
 

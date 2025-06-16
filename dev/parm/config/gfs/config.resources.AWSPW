@@ -17,14 +17,6 @@ case ${step} in
     tasks_per_node=48
     ;;
 
-  "arch_vrfy" | "arch_tars")
-    export PARTITION_BATCH="process"
-    max_tasks_per_node=24
-    ;;
-
-  "atmos_products" | "oceanice_products" | "wavepostsbs" )
-    export PARTITION_BATCH="process"
-    max_tasks_per_node=24
   "anal")
     export PARTITION_BATCH="compute"
     max_tasks_per_node=48
