@@ -21,11 +21,8 @@ if __name__ == '__main__':
     # Create a MarineAnalysis object
     MarineAnl = MarineAnalysis(config)
 
-    # Prepare the SOCA increment for MOM6 IAU
-    MarineAnl.execute('socaincr2mom6')
-
-    # Insert the seaice analysis into the CICE6 restart
-    MarineAnl.execute('soca_2cice_global')
+    # Prepare the SOCA increment for MOM6 IAU and CICE6 restart
+    MarineAnl.execute('soca_incpostproc')
 
     # Compute the observation space statistics
     MarineAnl.execute('soca_diag_stats')
