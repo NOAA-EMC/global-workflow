@@ -86,7 +86,7 @@ class GEFSAppConfig(AppConfig):
         if options['nens'] > 0:
             configs += ['efcs', 'atmos_ensstat']
             if options['do_awips']:
-                tasks += ['awips']
+                configs += ['awips']
 
         if options['do_wave']:
             configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
