@@ -157,11 +157,6 @@ class GEFSAppConfig(AppConfig):
 
         tasks += ['fcst']
 
-        if options['nens'] > 0:
-            tasks += ['efcs', 'atmos_ensstat']
-            if options['do_awips']:
-                tasks += ['awips']
-
         tasks += ['atmos_prod']
 
         if options['do_bufrsnd']:
@@ -169,6 +164,11 @@ class GEFSAppConfig(AppConfig):
 
         if options['do_gempak']:
             tasks += ['gempak']
+
+        if options['nens'] > 0:
+            tasks += ['efcs', 'atmos_ensstat']
+            if options['do_awips']:
+                tasks += ['awips']
 
         if options['do_ocean']:
             tasks += ['ocean_prod']
