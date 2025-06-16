@@ -36,6 +36,7 @@ export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
 export CYCLVARS=${CYCLVARS:-""}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
+export COUPLED=${COUPLED:-".false."}
 
 # Other info used in this script
 export gesenvir=${gesenvir:-${envir}}
