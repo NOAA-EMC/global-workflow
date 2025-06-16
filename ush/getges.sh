@@ -34,7 +34,7 @@
 # or the guess could not be found; a message is written to standard error in
 # this case, but neither a file copy nor a standard output write will be done.
 # The file returned is guaranteed to exist and be readable.
-# The script uses the utility commands NDATE and NHOUR.
+# The script uses the utility command NHOUR.
 #
 # Example 1. Copy the production sigma guess for 1998100100 to the file sges.
 #  getges.sh -e prod -t sigges -v 1998100100 sges 
@@ -1314,10 +1314,6 @@ if [[ $valid -lt 20000000 ]];then
  echo '*          Please use full a 4-digit year in this utility. *' >&2
  echo '************************************************************' >&2
 fi
-if [[ $($NDATE 0 $valid 2>/dev/null) != $valid ]];then
- echo getges.sh: invalid date $valid >&2
- exit 2
-fi
 if [[ -z "$geslist" ]];then
  echo getges.sh: filetype $typef or resolution $resol not recognized >&2
  exit 2
@@ -1374,7 +1370,7 @@ while [[ $fh -le $fhend ]];do
  ghp1=$fhp1;[[ $ghp1 -lt 100 ]]&&ghp1=0$ghp1
  ghp2=$fhp2;[[ $ghp2 -lt 100 ]]&&ghp2=0$ghp2
  ghp3=$fhp3;[[ $ghp3 -lt 100 ]]&&ghp3=0$ghp3
- id=$($NDATE -$fh $valid)
+ id=$(date --utc +%Y%m%d%H -d "${valid:0:8} ${valid:8:2} - ${fh} hours")
 
  day=$(echo $id | xargs | cut -c8)
  cyc=$(echo $id | xargs | rev | cut -c1-2 | rev)

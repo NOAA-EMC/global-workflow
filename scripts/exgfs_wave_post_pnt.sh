@@ -155,7 +155,7 @@ EOF
 
 # 1.d Linking the output files
 
-  ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${cyc}")
+  ymdh=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${WAVHINDH} hours")
   tstart="${ymdh:0:8} ${ymdh:8:2}0000"
   N=$(( (${FHMAX_WAV_PNT} - ${FHMIN_WAV}) * 3600 / ${DTPNT_WAV} + 1 ))
   truntime="${PDY} ${cyc}0000"
@@ -163,7 +163,7 @@ EOF
   # Loop through forecast hours to link output file
   fhr=${FHMIN_WAV}
   while [[ ${fhr} -le ${FHMAX_WAV_PNT} ]]; do
-    ymdh=$(${NDATE} ${fhr} "${PDY}${cyc}")
+    ymdh=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} + ${fhr} hours")
     YMD=${ymdh:0:8}
     HMS="${ymdh:8:2}0000"
     FH3=$(printf %03i ${fhr})
@@ -184,7 +184,7 @@ EOF
 
   if [[ "${DOSPC_WAV}" == 'YES' || "${DOBLL_WAV}" == 'YES' ]]
   then
-    ymdh=$(${NDATE} -"${WAVHINDH}" "${PDY}${cyc}")
+    ymdh=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${WAVHINDH} hours")
     YMD=${ymdh:0:8}
     tstart="${ymdh:0:8} ${ymdh:8:2}0000"
     N=$(( (FHMAX_WAV_PNT - FHMIN_WAV) * 3600 / DTPNT_WAV + 1 ))

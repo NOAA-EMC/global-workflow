@@ -210,6 +210,21 @@ function build () {
 
 }
 
+function delete_dataroot() {
+
+  _runtests="${1}"
+  _pslot="${2}"
+
+   # shellcheck disable=SC2312
+   eval "$(PDY=0 cyc=0 source "${_runtests}/EXPDIR/${_pslot}/config.base" >& /dev/null; echo _dataroot="${STMP}/RUNDIRS/${_pslot}")"
+   if [[ -d "${_dataroot}" ]]; then
+      echo "A previous DATAROOT exists for ${_pslot} in ${_dataroot} and is being deleted."
+      rm -rf "${_dataroot}"
+  else
+      echo "DATAROOT is not present for ${_pslot} in ${_dataroot}, nothing done."
+  fi
+}
+
 # --- Dispatch logic ---
 
 # Check if the script is being executed directly (not sourced)
