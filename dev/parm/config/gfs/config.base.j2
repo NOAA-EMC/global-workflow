@@ -298,19 +298,23 @@ breakpnts="{{ FCST_BREAKPOINTS }}"
 export FCST_SEGMENTS="${FHMIN_GFS},${breakpnts:+${breakpnts},}${FHMAX_GFS}"
 export FHOUT_GFS=3 # 3 for ops
 export FHMAX_HF_GFS="{{ FHMAX_HF_GFS }}"
+export FHMAX_HF_GFS=$(( FHMAX_HF_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_HF_GFS ))
 export FHOUT_HF_GFS=1
+
+# Wave output and frequency
+export FHMIN_WAV=0
+export FHOUT_WAV=1
+export FHMAX_WAV=${FHMAX:-9}
+export FHMAX_WAV=$(( FHMAX_WAV > FHMAX ? FHMAX : FHMAX_WAV ))
+export FHOUT_WAV_GFS=3
+export FHMAX_WAV_GFS=${FHMAX_GFS}
+export FHOUT_HF_WAV=1
+export FHMAX_HF_WAV=${FHMAX_HF_GFS:-120}
+export FHMAX_HF_WAV=$(( FHMAX_HF_WAV > FHMAX_WAV_GFS ? FHMAX_WAV_GFS : FHMAX_HF_WAV ))
+
+# Ocean and ice output and frequency
 export FHOUT_OCN_GFS=6
 export FHOUT_ICE_GFS=6
-export FHMIN_WAV=0
-export FHOUT_WAV=3
-export FHMAX_HF_WAV=120
-export FHOUT_HF_WAV=1
-export FHMAX_WAV=${FHMAX:-9}
-export FHMAX_WAV_GFS=${FHMAX_GFS}
-export FHMAX_HF_GFS=$(( FHMAX_HF_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_HF_GFS ))
-export FHMAX_WAV=$(( FHMAX_WAV > FHMAX ? FHMAX : FHMAX_WAV ))
-export FHMAX_WAV_GFS=$(( FHMAX_WAV_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_WAV_GFS ))
-export FHMAX_HF_WAV=$(( FHMAX_HF_WAV > FHMAX_WAV_GFS ? FHMAX_WAV_GFS : FHMAX_HF_WAV ))
 
 # TODO: Change gempak to use standard out variables (#2348)
 export ILPOST=${FHOUT_HF_GFS}           # gempak output frequency up to F120
