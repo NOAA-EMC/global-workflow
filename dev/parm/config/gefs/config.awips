@@ -1,1 +1,14 @@
-../gfs/config.awips
+#! /usr/bin/env bash
+
+########## config.awips ##########
+# GEFS awips step specific
+
+echo "BEGIN: config.awips"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" awips
+
+# No. of concurrent awips jobs
+export MAX_TASKS=42
+
+echo "END: config.awips"
