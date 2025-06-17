@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ########## config.awips ##########
-# GEFS awips step specific
+# GFS awips step specific
 
 echo "BEGIN: config.awips"
 
