@@ -17,9 +17,7 @@ vcyc=${CDATE:8:2}
 YMD=${vday} HH=${vcyc} declare_from_tmpl -rx COMIN_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 RUN=${RUN/enkf} YMD=${vday} HH=${vcyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
 
-# We want to defer variable expansion, so ignore warning about single quotes
-# shellcheck disable=SC2016
-export COMIN_HISTORY='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
+export COM_VRFYARCH=${COM_VRFYARCH:-${ROTDIR}/vrfyarch}
 
 export PRPI=${COMIN_OBS}/${RUN}.t${vcyc}z.prepbufr
 # shellcheck disable=SC2153
