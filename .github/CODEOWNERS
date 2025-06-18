@@ -3,23 +3,22 @@
 
 # global-workflow default owners (not a complete list)
 @KateFriedman-NOAA
-@WalterKolczynski-NOAA
 @DavidHuber-NOAA
 
 # Specific directory owners
 # dev/
-dev/jobs/ @WalterKolczynski-NOAA @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
-dev/ush/ @WalterKolczynski-NOAA @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
-dev/workflow/ @WalterKolczynski-NOAA @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
-dev/test/ @WalterKolczynski-NOAA @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
-dev/ci/ @TerrenceMcGuinness-NOAA @WalterKolczynski-NOAA @DavidHuber-NOAA
+dev/jobs/ @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
+dev/ush/ @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
+dev/workflow/ @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
+dev/test/ @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
+dev/ci/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
 dev/ctests/ @TerrenceMcGuinness-NOAA @aerorahul
 
 /ecf/ @lgannoaa
 
 # Specific file owners
 # dev side scripts
-dev/ush/compare_f90nml.py @WalterKolczynski-NOAA @aerorahul
+dev/ush/compare_f90nml.py @aerorahul
 
 # Specific workflow scripts
 dev/workflow/generate_workflows.sh @DavidHuber-NOAA
@@ -27,8 +26,8 @@ dev/workflow/build_compute.py @DavidHuber-NOAA @aerorahul
 dev/workflow/build_*opts.yaml @DavidHuber-NOAA @aerorahul
 
 # build scripts
-sorc/build_*.sh @WalterKolczynski-NOAA @DavidHuber-NOAA @aerorahul @KateFriedman-NOAA
-sorc/link_workflow.sh @WalterKolczynski-NOAA @DavidHuber-NOAA @aerorahul @KateFriedman-NOAA
+sorc/build_*.sh @DavidHuber-NOAA @aerorahul @KateFriedman-NOAA
+sorc/link_workflow.sh @DavidHuber-NOAA @aerorahul @KateFriedman-NOAA
 
 # jobs
 jobs/JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX @CoryMartin-NOAA
@@ -59,7 +58,7 @@ jobs/JGLOBAL_*ARCH* @DavidHuber-NOAA
 jobs/JGLOBAL_ATMENS_ANALYSIS_* @RussTreadon-NOAA @CoryMartin-NOAA @DavidNew-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS @RussTreadon-NOAA @CatherineThomas-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS_CALC @RussTreadon-NOAA @CatherineThomas-NOAA @CoryMartin-NOAA
-jobs/JGLOBAL_ATMOS_PREP_SFC @GeorgeGayno-NOAA @KateFriedman-NOAA 
+jobs/JGLOBAL_ATMOS_PREP_SFC @GeorgeGayno-NOAA @KateFriedman-NOAA
 jobs/JGLOBAL_ATMOS_ENSSTAT
 jobs/JGLOBAL_ATMOS_POST_MANAGER
 jobs/JGLOBAL_ATMOS_PRODUCTS @WenMeng-NOAA
@@ -68,7 +67,7 @@ jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
 jobs/JGLOBAL_ATMOS_UPP @WenMeng-NOAA
 jobs/JGLOBAL_ATMOS_VMINMON @EdwardSafford-NOAA
 jobs/JGLOBAL_ATM_* @RussTreadon-NOAA @DavidNew-NOAA @CoryMartin-NOAA
-jobs/JGLOBAL_CLEANUP @WalterKolczynski-NOAA @DavidHuber-NOAA @KateFriedman-NOAA
+jobs/JGLOBAL_CLEANUP @DavidHuber-NOAA @KateFriedman-NOAA
 jobs/JGLOBAL_EXTRACTVARS @EricSinsky-NOAA
 jobs/JGLOBAL_FORECAST @aerorahul
 jobs/JGLOBAL_MARINE_* @guillaumevernieres @AndrewEichmann-NOAA
@@ -96,7 +95,7 @@ scripts/exgdas_enkf_sfc.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-N
 scripts/exgdas_enkf_snow_recenter.py @jiaruidong2017
 scripts/exgdas_enkf_update.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
 scripts/exgdas_global_marine_analysis_letkf.py @guillaumevernieres @AndrewEichmann-NOAA
-scripts/exgfs_aero_init_aerosol.py @WalterKolczynski-NOAA
+scripts/exgfs_aero_init_aerosol.py
 scripts/exgfs_atmos_awips_20km_1p0deg.sh @ChristopherHill-NOAA
 scripts/exgfs_atmos_fbwind.sh @ChristopherHill-NOAA
 scripts/exgfs_atmos_gempak_gif_ncdc_skew_t.sh @ChristopherHill-NOAA
@@ -126,14 +125,14 @@ scripts/exglobal_cleanup.sh @DavidHuber-NOAA
 scripts/exglobal_diag.sh @RussTreadon-NOAA @CoryMartin-NOAA
 scripts/exglobal_extractvars.sh @EricSinsky-NOAA
 scripts/exglobal_forecast.py @aerorahul
-scripts/exglobal_forecast.sh @aerorahul @WalterKolczynski-NOAA
+scripts/exglobal_forecast.sh @aerorahul
 scripts/exglobal_marine_analysis_* @guillaumevernieres @AndrewEichmann-NOAA
 scripts/exglobal_marinebmat.py @guillaumevernieres @AndrewEichmann-NOAA
 scripts/exglobal_oceanice_products.py @GwenChen-NOAA @AminIlia-NOAA @ChristopherHill-NOAA
 scripts/exglobal_offline_atmos_analysis.py @CoryMartin-NOAA
 scripts/exglobal_prep_emissions.py @bbakernoaa
 scripts/exglobal_prep_obs_aero.py @CoryMartin-NOAA
-scripts/exglobal_prep_sfc.sh @GeorgeGayno-NOAA @KateFriedman-NOAA 
+scripts/exglobal_prep_sfc.sh @GeorgeGayno-NOAA @KateFriedman-NOAA
 scripts/exglobal_prep_snow_obs.py @jiaruidong2017
 scripts/exglobal_snow_analysis.py @jiaruidong2017
 scripts/exglobal_stage_ic.py @KateFriedman-NOAA
@@ -142,19 +141,19 @@ scripts/exglobal_stage_ic.py @KateFriedman-NOAA
 ush/WAM_XML_to_ASCII.pl
 ush/atmos_ensstat.sh
 ush/atmos_extractvars.sh @EricSinsky-NOAA
-ush/bash_utils.sh @WalterKolczynski-NOAA
+ush/bash_utils.sh
 ush/calcanl_gfs.py @CoryMartin-NOAA
 ush/calcinc_gfs.py @CoryMartin-NOAA
-ush/detect_machine.sh @WalterKolczynski-NOAA
+ush/detect_machine.sh
 ush/extractvars_tools.sh @EricSinsky-NOAA
-ush/file_utils.sh @WalterKolczynski-NOAA
-ush/forecast_det.sh @aerorahul @WalterKolczynski-NOAA
-ush/forecast_postdet.sh @aerorahul @WalterKolczynski-NOAA
-ush/forecast_predet.sh @aerorahul @WalterKolczynski-NOAA
+ush/file_utils.sh
+ush/forecast_det.sh @aerorahul
+ush/forecast_postdet.sh @aerorahul
+ush/forecast_predet.sh @aerorahul
 ush/fv3gfs_remap_weights.sh
 ush/gaussian_sfcanl.sh @GeorgeGayno-NOAA
-ush/getdump.sh @WalterKolczynski-NOAA @KateFriedman-NOAA
-ush/getges.sh @WalterKolczynski-NOAA @KateFriedman-NOAA
+ush/getdump.sh @KateFriedman-NOAA
+ush/getges.sh @KateFriedman-NOAA
 ush/getgfsnctime @CoryMartin-NOAA
 ush/getncdimlen @CoryMartin-NOAA
 ush/gfs_bfr2gpk.sh @BoCui-NOAA
@@ -164,33 +163,33 @@ ush/gfs_sndp.sh @BoCui-NOAA
 ush/gfs_truncate_enkf.sh @CoryMartin-NOAA
 ush/global_savefits.sh
 ush/gsi_utils.py @CoryMartin-NOAA
-ush/interp_atmos_master.sh @aerorahul @WenMeng-NOAA @WalterKolczynski-NOAA
-ush/interp_atmos_sflux.sh @aerorahul @WenMeng-NOAA @WalterKolczynski-NOAA
-ush/jjob_header.sh @WalterKolczynski-NOAA
-ush/link_crtm_fix.sh @WalterKolczynski-NOAA
-ush/load_fv3gfs_modules.sh @WalterKolczynski-NOAA @aerorahul
-ush/load_ufsda_modules.sh @WalterKolczynski-NOAA @aerorahul @CoryMartin-NOAA
-ush/load_ufswm_modules.sh @WalterKolczynski-NOAA @aerorahul @JessicaMeixner-NOAA
-ush/merge_fv3_aerosol_tile.py @WalterKolczynski-NOAA
+ush/interp_atmos_master.sh @aerorahul @WenMeng-NOAA
+ush/interp_atmos_sflux.sh @aerorahul @WenMeng-NOAA
+ush/jjob_header.sh
+ush/link_crtm_fix.sh
+ush/load_fv3gfs_modules.sh @aerorahul
+ush/load_ufsda_modules.sh @aerorahul @CoryMartin-NOAA
+ush/load_ufswm_modules.sh @aerorahul @JessicaMeixner-NOAA
+ush/merge_fv3_aerosol_tile.py
 ush/minmon_xtrct_*.pl @EdwardSafford-NOAA
-ush/module-setup.sh @WalterKolczynski-NOAA @aerorahul
+ush/module-setup.sh @aerorahul
 ush/ocnice_extractvars.sh @EricSinsky-NOAA
 ush/ozn_xtrct.sh @EdwardSafford-NOAA
 ush/parse-storm-type.pl
-ush/parsing_model_configure_FV3.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa
-ush/parsing_namelists_CICE.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa @DeniseWorthen
-ush/parsing_namelists_FV3.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa
+ush/parsing_model_configure_FV3.sh @aerorahul @junwang-noaa
+ush/parsing_namelists_CICE.sh @aerorahul @junwang-noaa @DeniseWorthen
+ush/parsing_namelists_FV3.sh @aerorahul @junwang-noaa
 ush/parsing_namelists_FV3_nest.sh @guoqing-noaa
-ush/parsing_namelists_MOM6.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa @jiandewang
-ush/parsing_namelists_WW3.sh @WalterKolczynski-NOAA @aerorahul @JessicaMeixner-NOAA @sbanihash
-ush/parsing_ufs_configure.sh @WalterKolczynski-NOAA @aerorahul @junwang-noaa
-ush/preamble.sh @WalterKolczynski-NOAA
-ush/prep_sfc_ice_blend.sh @GeorgeGayno-NOAA @KateFriedman-NOAA 
-ush/prep_sfc_snow.sh @GeorgeGayno-NOAA @KateFriedman-NOAA 
-ush/product_functions.sh @WalterKolczynski-NOAA @aerorahul
+ush/parsing_namelists_MOM6.sh @aerorahul @junwang-noaa @jiandewang
+ush/parsing_namelists_WW3.sh @aerorahul @JessicaMeixner-NOAA @sbanihash
+ush/parsing_ufs_configure.sh @aerorahul @junwang-noaa
+ush/preamble.sh
+ush/prep_sfc_ice_blend.sh @GeorgeGayno-NOAA @KateFriedman-NOAA
+ush/prep_sfc_snow.sh @GeorgeGayno-NOAA @KateFriedman-NOAA
+ush/product_functions.sh @aerorahul
 ush/radmon_*.sh @EdwardSafford-NOAA
-ush/rstprod.sh @WalterKolczynski-NOAA @DavidHuber-NOAA
-ush/run_mpmd.sh @WalterKolczynski-NOAA @aerorahul @DavidHuber-NOAA
+ush/rstprod.sh @DavidHuber-NOAA
+ush/run_mpmd.sh @aerorahul @DavidHuber-NOAA
 ush/syndat_getjtbul.sh @JiayiPeng-NOAA
 ush/syndat_qctropcy.sh @JiayiPeng-NOAA
 ush/tropcy_relocate.sh @JiayiPeng-NOAA
