@@ -5,7 +5,6 @@ type: "task"
 projects: ["NOAA-EMC/41"]
 assignees:
   - KateFriedman-NOAA
-  - WalterKolczynski-NOAA
 
 body:
   - type: dropdown
