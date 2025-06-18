@@ -3,6 +3,7 @@ on: [pull_request, push, workflow_dispatch]
 
 env:
   ROCOTO_VERSION: "1.3.7"
+  HPC_ACCOUNT: "fv3-cpu"
 
 jobs:
 

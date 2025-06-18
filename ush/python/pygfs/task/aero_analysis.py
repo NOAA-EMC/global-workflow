@@ -17,6 +17,7 @@ from wxflow import (AttrDict,
                     YAMLFile, parse_j2yaml,
                     logit)
 from pygfs.jedi import Jedi
+import numpy as np
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -61,10 +62,10 @@ class AerosolAnalysis(Task):
                 'npz_anl': self.task_config['LEVS'] - 1,
                 'AERO_WINDOW_BEGIN': _window_begin,
                 'AERO_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
-                'aero_bkg_fhr': self.task_config['aero_bkg_times'],
+                'aero_bkg_fhr': [fh - 3 for fh in self.task_config['aero_bkg_times']],
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'GPREFIX': f"gcdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'aero_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'aero_obsdataout_path': f"{self.task_config.DATA}/diags/",
                 'BKG_TSTEP': "PT3H"  # FGAT
@@ -93,10 +94,6 @@ class AerosolAnalysis(Task):
         - staging model backgrounds
         - creating output directories
         """
-
-        # initialize JEDI variational application
-        logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['aeroanlvar'].initialize(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files generated from JEDI config")
@@ -134,6 +131,10 @@ class AerosolAnalysis(Task):
         aero_var_stage_dict = parse_j2yaml(self.task_config.AERO_STAGE_VARIATIONAL_TMPL, self.task_config)
         FileHandler(aero_var_stage_dict).sync()
         logger.debug(f"Staging from COM:\n{pformat(aero_var_stage_dict)}")
+
+        # initialize JEDI variational application
+        logger.info(f"Initializing JEDI variational DA application")
+        self.jedi_dict['aeroanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -238,6 +239,8 @@ class AerosolAnalysis(Task):
             with Dataset(inc_path, mode='r') as incfile, Dataset(bkg_path, mode='a') as rstfile:
                 for vname in incvars:
                     increment = incfile.variables[vname][:]
+                    # round to 7th decimal due to JEDI reproducibility issues when changing PE count
+                    increment = np.round(increment, 7)
                     bkg = rstfile.variables[vname][:]
                     anl = bkg + increment
                     rstfile.variables[vname][:] = anl[:]

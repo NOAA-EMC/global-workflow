@@ -35,8 +35,8 @@ export pgm=bulls_fbwndgfs
 source prep_step
 
 for fhr3 in 006 012 024; do
-  cp "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pgrb2.0p25.f${fhr3}"   "tmp_pgrb2_0p25${fhr3}" 
-  cp "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pgrb2b.0p25.f${fhr3}"  "tmp_pgrb2b_0p25${fhr3}"
+  cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pgrb2.0p25.f${fhr3}"   "tmp_pgrb2_0p25${fhr3}" 
+  cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pgrb2b.0p25.f${fhr3}"  "tmp_pgrb2b_0p25${fhr3}"
   cat "tmp_pgrb2_0p25${fhr3}" "tmp_pgrb2b_0p25${fhr3}" > "tmp0p25filef${fhr3}"
   # shellcheck disable=SC2312
   ${WGRIB2} "tmp0p25filef${fhr3}" | grep -F -f "${PARMgfs}/product/gfs_fbwnd_parmlist_g2" | \
@@ -61,10 +61,13 @@ export FORT33="gfs.t${cyc}z.grbf024_grb1.idx"
 
 export FORT51="tran.fbwnd_pacific"
 
-cp "${PARMgfs}/product/fbwnd_pacific.stnlist" fbwnd_pacific.stnlist
+cpreq "${PARMgfs}/product/fbwnd_pacific.stnlist" fbwnd_pacific.stnlist
 
 "${EXECgfs}/fbwndgfs.x" < fbwnd_pacific.stnlist >> "${pgmout}" 2> errfile && true
-export err=$?; err_chk
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "Failed to run fbwnd for the Pacific!"
+fi
 
 "${USHgfs}/make_ntc_bull.pl" WMOBH NONE KWNO NONE tran.fbwnd_pacific "${outfile_name}"
 

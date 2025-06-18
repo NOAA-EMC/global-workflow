@@ -2,8 +2,7 @@
 
 # Determine HOMEgfs_ and source machine detection early
 if [[ -z "${HOMEgfs_}" ]]; then
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    HOMEgfs_="$("${SCRIPT_DIR}/find_homegfs.py")"
+  HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 fi
 source "${HOMEgfs_}/ush/detect_machine.sh"
 
@@ -123,10 +122,13 @@ function cancel_all_batch_jobs () {
 function create_experiment () {
 
   local yaml_config="${1}"
-  cd "${HOMEgfs_}" || exit 1
   pr_sha=$(git rev-parse --short HEAD)
+  local TAG="${2:-${pr_sha}}"
+  cd "${HOMEgfs_}" || exit 1
   case=$(basename "${yaml_config}" .yaml) || true
-  export pslot=${case}_${pr_sha}
+  
+  echo "Using provided TAG: ${TAG} for pslot"
+  export pslot=${case}_${TAG}
 
   if [[ ${MACHINE_ID} == "noaacloud" ]]; then
       source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
@@ -201,11 +203,26 @@ function build () {
   source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
   # TODO: when it's safe to build on C6 compute nodes again, do so
   if [[ "${MACHINE_ID}" == "gaeac6" ]]; then
-    "${HOMEgfs_}/sorc/build_all.sh" -v -k all
+    "${HOMEgfs_}/sorc/build_all.sh" -k all
   else
-    "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" -v all
+    "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" all
   fi
 
+}
+
+function delete_dataroot() {
+
+  _runtests="${1}"
+  _pslot="${2}"
+
+   # shellcheck disable=SC2312
+   eval "$(PDY=0 cyc=0 source "${_runtests}/EXPDIR/${_pslot}/config.base" >& /dev/null; echo _dataroot="${STMP}/RUNDIRS/${_pslot}")"
+   if [[ -d "${_dataroot}" ]]; then
+      echo "A previous DATAROOT exists for ${_pslot} in ${_dataroot} and is being deleted."
+      rm -rf "${_dataroot}"
+  else
+      echo "DATAROOT is not present for ${_pslot} in ${_dataroot}, nothing done."
+  fi
 }
 
 # --- Dispatch logic ---

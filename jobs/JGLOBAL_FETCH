@@ -10,15 +10,14 @@ err=$?
 
 ###############################################################
 # Check for errors and exit if any of the above failed
-if [[ "${err}" -ne 0 ]]; then
-  echo "FATAL ERROR: Unable to fetch ICs to ${ROTDIR}; ABORT!"
-  exit "${err}"
+if [[ ${err} -ne 0 ]]; then
+  err_exit "Unable to fetch ICs to ${ROTDIR}; ABORT!"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
+cd "${DATAROOT}" || exit 1
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

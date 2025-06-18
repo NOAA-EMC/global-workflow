@@ -102,7 +102,7 @@ def rocotostat_summary(rocotostat):
     """
     rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--summary')
-    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 3, 90, ProcessError)
+    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 3, 120, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:2] for line in rocotostat_output]
 

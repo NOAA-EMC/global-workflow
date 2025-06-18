@@ -7,11 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfinal" -c "base atmanl atmanlfi
 ##############################################
 # Set variables used in the script
 ##############################################
-# shellcheck disable=SC2153
-GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-gPDY=${GDATE:0:8}
-gcyc=${GDATE:8:2}
-GDUMP="gdas"
 
 
 ##############################################
@@ -19,15 +14,10 @@ GDUMP="gdas"
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+   COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
-    COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL \
-    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
-
-mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
-
+mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 
 ###############################################################
 # Run relevant script
@@ -35,7 +25,9 @@ mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
 EXSCRIPT=${GDASATMFINALPY:-${SCRgfs}/exglobal_atm_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
 ##############################################
 # End JOB SPECIFIC work
@@ -54,7 +46,9 @@ fi
 cd "${DATAROOT}" && true
 export err=$?
 set +x
-err_chk "FATAL ERROR: ${DATAROOT} does not exist, ABORT!"
+if [[ ${err} -ne 0 ]]; then
+    err_exit "${DATAROOT} does not exist, ABORT!"
+fi
 set_trace
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"

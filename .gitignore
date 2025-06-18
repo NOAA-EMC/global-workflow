@@ -89,12 +89,14 @@ parm/ufs/ice_in.IN
 parm/ufs/ufs.configure.*.IN
 parm/ufs/post_itag_gfs
 parm/ufs/ww3_shel.nml.IN
+parm/ufs/global_control.nml.IN
 
 # Ignore sorc and logs folders from externals
 #--------------------------------------------
 sorc/build.xml
 sorc/build.db
 sorc/build_lock.db
+sorc/rocotostat.out
 sorc/*log
 sorc/logs
 sorc/calc_analysis.fd
@@ -138,7 +140,6 @@ sorc/ocnicepost.fd
 #------------------------------
 # jobs symlinks
 # scripts symlinks
-scripts/exemcsfc_global_sfc_prep.sh
 scripts/exgdas_global_marine_analysis_ecen.py
 scripts/exglobal_prep_ocean_obs.py
 # ush symlinks
@@ -151,8 +152,6 @@ ush/bufr2ioda_insitu_profile_xbtctd.py
 ush/bufr2ioda_insitu_surface_altkob.py
 ush/bufr2ioda_insitu_surface_trkob.py
 ush/chgres_cube.sh
-ush/emcsfc_ice_blend.sh
-ush/emcsfc_snow.sh
 ush/fix_precip.sh
 ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_filter_topo.sh
@@ -182,5 +181,3 @@ versions/run.ver
 
 # jcb checkout and symlinks
 ush/python/jcb
-workflow/jcb
-ci/scripts/jcb

@@ -58,7 +58,7 @@ atparse < "${template}" >> "diag_table"
 
 
 # copy data table
-${NCP} "${DATA_TABLE}" data_table
+cpreq "${DATA_TABLE}" data_table
 
 # build field_table
 if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
@@ -77,7 +77,7 @@ if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
   # add non-prognostic tracers from additional table
   dnats=$(( dnats + dnats_aero ))
 else
-  ${NCP} "${FIELD_TABLE}" field_table
+  cpreq "${FIELD_TABLE}" field_table
 fi
 
 # Set variables for global_control.nml template
@@ -251,7 +251,7 @@ local IOPT_BTR=${iopt_btr:-"1"}
 local IOPT_RUN=${iopt_run:-"1"}
 local IOPT_SFC=${iopt_sfc:-"1"}
 local IOPT_TRS=${iopt_trs:-"2"}
-local IOPT_DIAG=${iopt_diag:-"2"} 
+local IOPT_DIAG=${iopt_diag:-"2"}
 local IOPT_FRZ=${iopt_frz:-"1"}
 local IOPT_INF=${iopt_inf:-"1"}
 local IOPT_RAD=${iopt_rad:-"1"}
@@ -341,7 +341,7 @@ else
   local HIDE_AIAU="!"
 fi
 
-#GWP options  
+#GWP options
 if [[ ${knob_ugwp_version} -eq 0 ]]; then
   local HIDE_UGWPV0=" "
   local HIDE_UGWPV1="!"
@@ -380,7 +380,7 @@ local KNOB_UGWP_TAUMIN=${knob_ugwp_taumin:-0.25e-3}
 local KNOB_UGWP_TAUAMP=${knob_ugwp_tauamp:-3.0e-3}
 local KNOB_UGWP_LHMET=${knob_ugwp_lhmet:-200.0e3}
 local KNOB_UGWP_OROSOLV=${knob_ugwp_orosolv:-\'pss-1986\'}
- 
+
 # gfdl_cloud_microphysics options
 local REIFLAG=${reiflag:-"2"}
 
@@ -441,10 +441,12 @@ local SKEB_LSCALE=${SKEB_LSCALE:-"-999."}
 local SKEBNORM=${SKEBNORM:-"1"}
 local SKEB_NPASS=${SKEB_NPASS:-"30"}
 local SKEB_VDOF=${SKEB_VDOF:-"5"}
+local SKEBINT=${SKEBINT:-"1800"}
 local SHUM=${SHUM:-"-999."}
 local ISEED_SHUM=${ISEED_SHUM:-${ISEED}}
 local SHUM_TAU=${SHUM_TAU:-"-999."}
 local SHUM_LSCALE=${SHUM_LSCALE:-"-999."}
+local SHUMINT=${SHUMINT:-"3600"}
 local SPPT=${SPPT:-"-999."}
 local ISEED_SPPT=${ISEED_SPPT:-${ISEED}}
 local SPPT_TAU=${SPPT_TAU:-"-999."}
@@ -452,6 +454,7 @@ local SPPT_LSCALE=${SPPT_LSCALE:-"-999."}
 local SPPT_LOGIT=${SPPT_LOGIT:-".true."}
 local SPPT_SFCLIMIT=${SPPT_SFCLIMIT:-".true."}
 local USE_ZMTNBLCK=${use_zmtnblck:-".true."}
+local SPPTINT=${SPPTINT:-"1800"}
 local PBL_TAPER=${pbl_taper:-"0,0,0,0.125,0.25,0.5,0.75"}
 local OCNSPPT=${OCNSPPT:-"0.8,0.4,0.2,0.08,0.04"}
 local OCNSPPT_LSCALE=${OCNSPPT_LSCALE:-"500.E3,1000.E3,2000.E3,2000.E3,2000.E3"}
@@ -474,16 +477,15 @@ local MOM6_RESTART_SETTING=${MOM6_RESTART_SETTING:-'n'}
 local MOM6_RESTART_DIR=MOM6_RESTART/
 
 # Land IAU defaults
-
-local DO_LAND_IAU=.false.
-local LAND_IAU_FHRS=3,6,9
-local LAND_IAU_DELHRS=6
+local DO_LAND_IAU=${DO_LAND_IAU:-".false."}
+local LAND_IAU_FHRS=${IAUFHRS}
+local LAND_IAU_DELHRS=${IAU_DELTHRS}
 local LAND_IAU_INC_FILES="'sfc_inc',''"
-local LSOIL_INCR=3
-local LAND_IAU_FILTER_INC=.false.
-local LAND_IAU_UPD_STC=.true.
-local LAND_IAU_UPD_SLC=.true.
-local LAND_IAU_DP_STCSMC_ADJ=.true.
+local LSOIL_INCR=${LSOIL_INCR:-2}
+local LAND_IAU_FILTER_INC=".false."
+local LAND_IAU_UPD_STC=".true."
+local LAND_IAU_UPD_SLC=".true."
+local LAND_IAU_DP_STCSMC_ADJ=".true."
 local LAND_IAU_MIN_T_INC=0.0001
 
 # Check will need to be modified in the future
@@ -494,7 +496,7 @@ else
   local HIDE_LIAU="!"
 fi
 
-local global_template="${HOMEgfs}/parm/ufs/fv3/global_control.nml.IN"
+local global_template="${HOMEgfs}/parm/ufs/global_control.nml.IN"
 atparse < "${global_template}" >> "input.nml"
 
 }

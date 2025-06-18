@@ -9,7 +9,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 mkdir  -p -m 775 "${DATA}/hur"
 cd "${DATA}/hur" || exit 2
-cp "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 mdl=gfs
 MDL=GFS
@@ -307,10 +307,10 @@ if [[ ${cyc} -eq 00 ]] ; then
     HPCECMWF_m1=ecmwf.${PDY}
     export HPCUKMET=ukmet.${PDYm1}
     if [[ ! -L "${HPCECMWF}" ]]; then
-        ${NLN} "${COMINecmwf}ecmwf.${PDY}/gempak" "${HPCECMWF}"
+        ${NLN} "${COMINecmwf}/ecmwf.${PDY}/gempak" "${HPCECMWF}"
     fi
     if [[ ! -L "${HPCECMWF_m1}" ]]; then
-        Ln -sf "${COMINecmwf}ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
+        Ln -sf "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
     fi
     if [[ ! -L "${HPCUKMET}" ]]; then
         ${NLN} "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"

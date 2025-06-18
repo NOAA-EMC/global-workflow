@@ -1,0 +1,1 @@
+/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Dev_Work/GEFS/INFRST/GW-DEV/global-workflow/sorc/ufs_utils.fd/ush/emcsfc_snow.sh

@@ -13,8 +13,8 @@ __all__ = ['Tasks']
 class Tasks:
     SERVICE_TASKS = ['arch_vrfy', 'earc_vrfy', 'stage_ic', 'cleanup', 'globus', 'ens_globus']
     DTN_TASKS = ['arch_tars', 'earc_tars', 'fetch']
-    VALID_TASKS = ['aerosol_init', 'stage_ic', 'fetch', 'globus', 'ens_globus',
-                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars', "cleanup",
+    VALID_TASKS = ['aerosol_init', 'stage_ic', 'gen_control_ic', 'fetch', 'globus', 'ens_globus',
+                   'prep_sfc', 'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars', 'cleanup',
                    'ecen_fv3jedi', 'analcalc_fv3jedi',
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
                    'prep_emissions', 'prepoceanobs',
@@ -22,8 +22,9 @@ class Tasks:
                    'eobs', 'epos', 'esfc', 'eupd',
                    'earc_vrfy', 'earc_tars', 'ecen', 'echgres', 'ediag', 'efcs',
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
-                   'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
+                   'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb', 'prepobsaero',
                    'snowanl', 'esnowanl',
+                   'offlineanl',
                    'fcst',
                    'upp', 'atmanlprod', 'atmupp', 'goesupp',
                    'atmos_products', 'oceanice_products',
@@ -196,11 +197,11 @@ class Tasks:
 
         # Get a list of all forecast hours
         fhrs = []
-        if run in ['gdas']:
+        if run in ['gdas', 'gcdas']:
             fhmax = local_config['FHMAX']
             fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))
-        elif run in ['gfs', 'gefs', 'sfs']:
+        elif run in ['gfs', 'gefs', 'sfs', 'gcafs']:
             fhmax = local_config['FHMAX_GFS']
             fhout = local_config['FHOUT_GFS']
             fhout_hf = local_config['FHOUT_HF_GFS']

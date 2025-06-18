@@ -9,6 +9,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_tars" -c "base arch_tars earc_ta
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COMIN_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL \
   COMIN_ATMOS_HISTORY_ENSSTAT:COM_ATMOS_HISTORY_TMPL \
+  COMIN_ICE_ANALYSIS_ENSSTAT:COM_ICE_ANALYSIS_TMPL \
+  COMIN_OCEAN_ANALYSIS_ENSSTAT:COM_OCEAN_ANALYSIS_TMPL \
   COMIN_SNOW_ANALYSIS_ENSSTAT:COM_SNOW_ANALYSIS_TMPL \
   COMOUT_CONF:COM_CONF_TMPL
 
@@ -24,7 +26,9 @@ export -n SHELLOPTS
 "${SCRgfs}/exgdas_enkf_earc_tars.py"
 export err=$?
 set +x
-err_chk "FATAL ERROR Failed to archive the ensemble COM structure"
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to archive the ensemble COM structure"
+fi
 set_trace
 set_strict
 

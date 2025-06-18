@@ -159,7 +159,6 @@ for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml
 done
 
 cd "${HOMEgfs}/scripts" || exit 8
-${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   declare -a gdas_scripts=(exglobal_prep_ocean_obs.py
     exgdas_global_marine_analysis_ecen.py
@@ -169,7 +168,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   done
 fi
 cd "${HOMEgfs}/ush" || exit 8
-for file in emcsfc_ice_blend.sh global_cycle_driver.sh emcsfc_snow.sh global_cycle.sh; do
+for file in global_cycle_driver.sh global_cycle.sh; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
 done
 
@@ -187,7 +186,8 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
   "ufs.configure.s2swa.IN"
   "ufs.configure.leapfrog_atm_wav.IN"
   "ww3_shel.nml.IN"
-  "post_itag_gfs")
+  "post_itag_gfs"
+  "global_control.nml.IN")
 for file in "${ufs_templates[@]}"; do
   if [[ -s "${file}" ]]; then
       rm -f "${file}"
@@ -195,17 +195,20 @@ for file in "${ufs_templates[@]}"; do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
 done
 
-# Link global_control.nml.IN template to parm/fv3
-cd "${HOMEgfs}/parm/ufs/fv3" || exit 1
-[[ -s "global_control.nml.IN" ]] && rm -f "global_control.nml.IN"
-${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/global_control.nml.IN" .
-
 # Link the script from ufs-weather-model that parses the templates
 cd "${HOMEgfs}/ush" || exit 1
 if [[ -s "atparse.bash" ]]; then
     rm -f "atparse.bash"
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
+
+# add ufs_utils parm dir 
+if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
+  cd "${HOMEgfs}/parm" || exit 1
+  mkdir -p regrid_sfc
+  cd regrid_sfc || exit 1
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/parm/regrid_sfc/regrid.nml_tmpl" .
+fi
 
 #------------------------------
 #--add GDASApp fix directory
@@ -304,7 +307,7 @@ for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
 done
 
-declare -a model_systems=("gfs" "gefs" "sfs")
+declare -a model_systems=("gfs" "gefs" "sfs" "gcafs")
 for sys in "${model_systems[@]}"; do
   model_exe="${sys}_model.x"
   if [[ -s "${model_exe}" ]]; then

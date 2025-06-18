@@ -102,9 +102,6 @@ class SnowAnalysis(Task):
         ----------
         None
         """
-        # initialize JEDI variational application
-        logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['snowanlvar'].initialize(self.task_config)
 
         # stage backgrounds
         logger.info(f"Staging background files from {self.task_config.VAR_BKG_STAGING_YAML}")
@@ -142,6 +139,10 @@ class SnowAnalysis(Task):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
+
+        # initialize JEDI variational application
+        logger.info(f"Initializing JEDI variational DA application")
+        self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=False)
 
     @logit(logger)
     def prepare_IMS(self) -> None:
@@ -395,6 +396,11 @@ class SnowAnalysis(Task):
                 'DATA': self.task_config.DATA,
                 'HOMEgfs': self.task_config.HOMEgfs,
                 'OCNRES': self.task_config.OCNRES,
+                'ens_size': self.task_config.ens_size,
+                'ntiles': self.task_config.ntiles,
+                'noincr_threshold': self.task_config.noincr_threshold,
+                'print_debug': self.task_config.print_debug,
+                'truncate_incr': self.task_config.truncate_incr
             }
             nml_data = Jinja(nml_template, nml_config).render
             logger.debug(f"apply_incr_nml:\n{nml_data}")

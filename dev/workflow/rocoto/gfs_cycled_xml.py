@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+"""
+GFS cycled XML generator module.
+
+This module provides functionality to generate Rocoto XML workflow configurations
+for GFS cycled runs with data assimilation. It handles cycle definitions for both
+the analysis (GDAS) and medium-range forecast (GFS) components of the workflow.
+"""
+
 from rocoto.workflow_xml import RocotoXML
 from applications.applications import AppConfig
 from wxflow import to_timedelta, timedelta_to_HMS
@@ -7,11 +15,48 @@ from typing import Dict
 
 
 class GFSCycledRocotoXML(RocotoXML):
+    """
+    Rocoto XML generator for GFS cycled workflows.
+
+    This class handles the generation of Rocoto XML configuration for GFS
+    cycled mode with data assimilation, including cycle definitions for
+    GDAS and GFS components and workflow scheduling.
+
+    Parameters
+    ----------
+    app_config : AppConfig
+        Application configuration object containing GFS settings
+    rocoto_config : Dict
+        Dictionary containing Rocoto-specific configuration
+    """
 
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
+        """
+        Initialize GFS cycled Rocoto XML generator.
+
+        Parameters
+        ----------
+        app_config : AppConfig
+            Application configuration object containing GFS settings
+        rocoto_config : Dict
+            Dictionary containing Rocoto-specific configuration
+        """
         super().__init__(app_config, rocoto_config)
 
     def get_cycledefs(self):
+        """
+        Generate cycle definition strings for Rocoto XML.
+
+        This method creates the cycle definitions for both GDAS (analysis) and
+        GFS (medium-range forecast) cycles based on the configured start dates,
+        end dates, and intervals. For cycled applications, there are special
+        considerations for the initial cycle and subsequent cycles.
+
+        Returns
+        -------
+        str
+            Concatenated cycle definition strings formatted for Rocoto XML
+        """
         sdate = self._base['SDATE']
         edate = self._base['EDATE']
         interval = to_timedelta(f"{self._base['assim_freq']}H")

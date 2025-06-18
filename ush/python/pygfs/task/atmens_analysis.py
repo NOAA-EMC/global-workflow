@@ -78,7 +78,7 @@ class AtmEnsAnalysis(Task):
 
         This method will initialize a global atmens analysis.
         This includes:
-        - initialize JEDI applications
+        - initialize JEDI LETKF observer and FV3 increment converter applications
         - staging observation files
         - staging bias correction files
         - staging CRTM fix files
@@ -94,18 +94,6 @@ class AtmEnsAnalysis(Task):
         ----------
         None
         """
-
-        # initialize JEDI LETKF observer application
-        logger.info(f"Initializing JEDI LETKF observer application")
-        self.jedi_dict['atmensanlobs'].initialize(self.task_config)
-
-        # initialize JEDI LETKF solver application
-        logger.info(f"Initializing JEDI LETKF solver application")
-        self.jedi_dict['atmensanlsol'].initialize(self.task_config)
-
-        # initialize JEDI FV3 increment conversion application
-        logger.info(f"Initializing JEDI FV3 increment conversion application")
-        self.jedi_dict['atmensanlfv3inc'].initialize(self.task_config)
 
         # stage observations
         logger.info(f"Staging list of observation files")
@@ -148,6 +136,18 @@ class AtmEnsAnalysis(Task):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
+
+        # initialize JEDI LETKF observer application
+        logger.info(f"Initializing JEDI LETKF observer application")
+        self.jedi_dict['atmensanlobs'].initialize(self.task_config, clean_empty_obsspaces=True)
+
+        # initialize JEDI LETKF solver application
+        logger.info(f"Initializing JEDI LETKF solver application")
+        self.jedi_dict['atmensanlsol'].initialize(self.task_config)
+
+        # initialize JEDI FV3 increment conversion application
+        logger.info(f"Initializing JEDI FV3 increment conversion application")
+        self.jedi_dict['atmensanlfv3inc'].initialize(self.task_config)
 
     @logit(logger)
     def initialize_letkf(self) -> None:
@@ -203,7 +203,7 @@ class AtmEnsAnalysis(Task):
 
         # ---- tar up diags
         # path of output tar statfile
-        atmensstat = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX_ENS}atmensstat")
+        atmensstat = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX_ENS}atmensstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
@@ -228,10 +228,10 @@ class AtmEnsAnalysis(Task):
 
         # copy full YAML from executable to ROTDIR
         for src in yamls:
-            logger.info(f"Copying {src} to {self.task_config.COM_ATMOS_ANALYSIS_ENS}")
+            logger.info(f"Copying {src} to {self.task_config.COMOUT_ATMOS_ANALYSIS_ENS}")
             yaml_base = os.path.splitext(os.path.basename(src))[0]
             dest_yaml_name = f"{self.task_config.APREFIX_ENS}{yaml_base}.yaml"
-            dest = os.path.join(self.task_config.COM_ATMOS_ANALYSIS_ENS, dest_yaml_name)
+            dest = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
                 'copy': [[src, dest]]
@@ -250,7 +250,7 @@ class AtmEnsAnalysis(Task):
         # copy ensemble mean analysis to comrot
         logger.info("Copy ensemble mean analysis")
         fh_dict = {'copy': [[f"{self.task_config.DATA}/anl/{self.task_config.APREFIX_ENS}cubed_sphere_grid_atmanl.ensmean.nc",
-                             f"{self.task_config.COM_ATMOS_ANALYSIS_ENS}"]]}
+                             f"{self.task_config.COMOUT_ATMOS_ANALYSIS_ENS}"]]}
         FileHandler(fh_dict).sync()
 
         # copy FV3 atm increment to comrot directory

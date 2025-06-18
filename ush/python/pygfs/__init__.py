@@ -10,6 +10,7 @@ from .task.atmens_analysis import AtmEnsAnalysis
 from .task.ensemble_recenter import EnsembleRecenter
 from .task.fv3_analysis_calc import FV3AnalysisCalc
 from .task.marine_bmat import MarineBMat
+from .task.offline_analysis import OfflineAnalysis
 from .task.snow_analysis import SnowAnalysis
 from .task.snowens_analysis import SnowEnsAnalysis
 from .task.upp import UPP
