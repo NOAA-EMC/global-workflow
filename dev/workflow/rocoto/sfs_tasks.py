@@ -654,6 +654,14 @@ class SFSTasks(Tasks):
         if self.options['do_extractvars']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_extractvars'}
             deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_archcom']:
+            if self.options['do_globusarch']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
+            else:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
+
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         resources = self.get_resource('cleanup')
         task_name = f'{self.run}_cleanup'
