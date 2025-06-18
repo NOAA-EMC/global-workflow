@@ -42,7 +42,7 @@ enkf_restartb_grp:
         {% endfor %}
         {% endif %}
 
-        #add ocean reastarts 
+        # Add ocean restarts
         {% if DOHYBVAR_OCN %}
         {% set rst_delta = "+3H" | to_timedelta %}
         {% set rst_time = current_cycle | add_to_datetime(rst_delta) %}
