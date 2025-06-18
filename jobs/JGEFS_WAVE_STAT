@@ -17,7 +17,8 @@ done
 
 # Execute the Script
 "${SCRgfs}/exgefs_wave_stat.sh"
-
+export err=$?
+err_chk
 ##########################################
 ## Remove the Temporary working directory
 ###########################################
