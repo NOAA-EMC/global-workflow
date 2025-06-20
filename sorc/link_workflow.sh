@@ -384,6 +384,21 @@ if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd/install" ]]; then
   done
 fi
 
+# GDASApp executables
+if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
+  mv -v "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas*           ./
+  mv -v "${HOMEgfs}/sorc/gdas.cd/install/bin/bufr2ioda.x"     ./gdas_bufr2ioda.x
+  mv -v "${HOMEgfs}/sorc/gdas.cd/install/bin/calcfIMS.exe"    ./gdas_calcfIMS.x
+  mv -v "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe"  ./gdas_apply_incr.x
+fi
+
+# GDASApp libraries
+if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
+  if [[ ! -d "${HOMEgfs}/lib" ]]; then mkdir "${HOMEgfs}/lib" || exit 1; fi
+  cd "${HOMEgfs}/lib" || exit 1
+  rsync -av "${HOMEgfs}/sorc/gdas.cd/install/lib/" ./
+fi
+
 #------------------------------
 #--link source code directories
 #------------------------------
