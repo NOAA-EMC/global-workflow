@@ -1,12 +1,9 @@
 #!/bin/bash
 
-HOMEgfs=/scratch4/NAGAPE/epic/Wei.Huang/demo/global-workflow-cloud
-
-#source /opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/intel/2021.10.0/intel-oneapi-mpi-2021.9.0-6bnjcwc/setvars.sh --force
-
 source /usr/lmod/lmod/init/bash
 module purge
-source ${HOMEgfs}/dev/ush/gw_setup.sh
+module use HOMEgfs/modulefiles
+module load module_gwsetup.container
 
 module list
 
@@ -22,8 +19,8 @@ module load py-python-dateutil/2.8.2
 
 module list
 
-wxflowPATH="${HOMEgfs}/ush/python"
-export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
+wxflowPATH="HOMEgfs/ush/python"
+export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}HOMEgfs/ush:${wxflowPATH}"
 
 arg="$@"
 

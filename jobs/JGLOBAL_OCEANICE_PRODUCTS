@@ -13,8 +13,13 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMOUT_${COMPONENT^^}_GRIB":"COM
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMOUT_${COMPONENT^^}_NETCDF":"COM_${COMPONENT^^}_NETCDF_TMPL"
 
 ###############################################################
+#RUN_WITH_CONTAINER=YES
 # Run exglobal script
-"${SCRgfs}/exglobal_oceanice_products.py" && true
+if [ "$RUN_WITH_CONTAINER" == "YES" ]; then
+    ${HOMEgfs}/exec/run_python.sh ${SCRgfs}/exglobal_oceanice_products.py
+else
+    "${SCRgfs}/exglobal_oceanice_products.py" && true
+fi
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

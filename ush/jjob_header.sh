@@ -43,9 +43,20 @@
 _calling_script="${BASH_SOURCE[1]}"
 source "${HOMEgfs}/ush/preamble.sh"
 
+export RUN_WITH_CONTAINER=YES
 if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
-    export PATH=/home/Wei.Huang/prod-util-2.1.1/bin:$PATH
+   #export PATH=/home/Wei.Huang/prod-util-2.1.1/bin:$PATH
    #export LD_LIBRARY_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2023.2.0-uov33rpz3lplh3hh3v5c6vssbc7ndxuk/lib
+
+    if [[ -v PATH ]]; then
+        if [[ "$PATH" =~ "prod-util" ]]; then
+            echo "PATH already contains prod-util"
+        else
+            export PATH=/home/Wei.Huang/prod-util-2.1.1/bin:$PATH
+        fi
+    else
+        export PATH=/home/Wei.Huang/prod-util-2.1.1/bin
+    fi
 fi
 
 OPTIND=1
@@ -98,6 +109,8 @@ export pgm=${pgm:-}
 ##############################################
 # Run setpdy and initialize PDY variables
 ##############################################
+which setpdy.sh
+
 export cycle="t${cyc}z"
 setpdy.sh || true
 source ./PDY || true

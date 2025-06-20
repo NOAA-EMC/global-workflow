@@ -16,10 +16,11 @@
  RUNTESTS=${rundir} \
 	./generate_workflows.sh \
 	-H ${HOMEDIR} \
-	-y "C48_ATM" \
+	-y "C48_S2SW" \
 	-Y ${HOMEDIR}/dev/ci/cases/pr \
 	-A ${HPC_ACCOUNT} \
 	-e "Wei.Huang@noaa.gov" \
     	-R -v
 
  ${HOMEDIR}/dev/container/create-container-links.sh
+

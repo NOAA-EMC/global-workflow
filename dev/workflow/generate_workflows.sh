@@ -537,7 +537,7 @@ for _case in "${_yaml_list[@]}"; do
    fi
    _pslot="${_case}${_tag}"
    if [[ "${_run_with_container}" == "true" ]]; then
-       _create_exp_cmd="../../bin/run_python.sh ./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+       _create_exp_cmd="../../exec/run_python.sh ./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
    else
        _create_exp_cmd="./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
    fi

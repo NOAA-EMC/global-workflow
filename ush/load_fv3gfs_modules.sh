@@ -15,6 +15,7 @@ fi
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
 
+RUN_WITH_CONTAINER=YES
 if [[ "$RUN_WITH_CONTAINER" == "NO" ]]; then
     # Find module command and purge:
     source "${HOMEgfs}/ush/detect_machine.sh"
@@ -36,12 +37,12 @@ if [[ "$RUN_WITH_CONTAINER" == "NO" ]]; then
     esac
 
     module list
-
-    # Add wxflow to PYTHONPATH
-    wxflowPATH="${HOMEgfs}/ush/python"
-    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
-    export PYTHONPATH
 fi
+
+# Add wxflow to PYTHONPATH
+wxflowPATH="${HOMEgfs}/ush/python"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
+export PYTHONPATH
 
 # If this function exists in the environment, run it; else set -x if it was set on entering this script
 ftype=$(type -t set_trace || echo "")

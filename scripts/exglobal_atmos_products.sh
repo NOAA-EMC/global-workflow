@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 
+RUN_WITH_CONTAINER=YES
 # Programs used
 if [ "$RUN_WITH_CONTAINER" == "NO" ]; then
     source "${USHgfs}/load_fv3gfs_modules.sh"
@@ -7,7 +8,7 @@ if [ "$RUN_WITH_CONTAINER" == "NO" ]; then
 
     export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 else
-    export WGRIB2="${HOMEgfs}/bin/run_wgrib2.sh"
+    export WGRIB2="${HOMEgfs}/exec/run_wgrib2.sh"
 fi
 
 # Scripts used
