@@ -65,6 +65,8 @@ if [[ "${verbose}" == "YES" ]]; then
    set -x
 fi
 
+script_dir="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
+HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
 # Needs to be exported for gw_setup.sh
 export HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
 
