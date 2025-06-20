@@ -8,8 +8,11 @@
 # This script should be SOURCED to properly setup the environment.
 #
 
-HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
+script_dir="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
+export HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
-module load "module_gwsetup.${MACHINE_ID}"
+module load "gw_setup.${MACHINE_ID}"
+
+unset HOMEgfs
