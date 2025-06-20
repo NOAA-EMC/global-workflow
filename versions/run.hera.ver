@@ -1,6 +1,10 @@
-export stack_intel_ver=2021.5.0
-export stack_impi_ver=2021.5.1
-export spack_env=gsi-addon-dev-fms-2024.01
+export stack_compiler=oneapi
+export stack_compiler_ver=2024.2.1
+
+export stack_mpi=intel-oneapi-mpi
+export stack_mpi_ver=2021.13
+
+source "${HOMEgfs:-}/versions/spack.ver"
 
 export hpss_ver=hpss
 export ncl_ver=6.6.2
@@ -8,8 +12,4 @@ export R_ver=3.6.1
 
 export gempak_ver=7.17.0
 export perl_ver=5.38.0
-
-source "${HOMEgfs:-}/versions/spack.ver"
-export spack_mod_path="/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-${spack_stack_ver}/envs/${spack_env}/install/modulefiles/Core"
-
 export imagemagick_ver=7.1.1-11
