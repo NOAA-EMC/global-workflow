@@ -396,7 +396,7 @@ fi
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
   if [[ ! -d "${HOMEgfs}/lib" ]]; then mkdir "${HOMEgfs}/lib" || exit 1; fi
   cd "${HOMEgfs}/lib" || exit 1
-  rsync -av "${HOMEgfs}/sorc/gdas.cd/install/lib/" ./
+  rsync -av -f "${HOMEgfs}/sorc/gdas.cd/install/lib/" ./
 fi
 
 #------------------------------
