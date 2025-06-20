@@ -29,7 +29,7 @@ if [[ -z ${HOMEgfs+x} ]]; then
     if [[ ${err} -ne 0 ]]; then
         is_git_dir=$( cd -- "${script_dir}" &> /dev/null && git rev-parse --is-inside-work-tree)
         git_stat=$?
-        if [[ ${git_stat} -ne 0 || ${script_dir} != "true" ]]; then
+        if [[ ${git_stat} -ne 0 || ${is_git_dir} != "true" ]]; then
             echo "FATAL ERROR unable to determine the root because it is not a git repository."
         else
             echo "FATAL ERROR unable to determine the root because git rev-parse --show-toplevel failed for an unknown reason"
