@@ -23,12 +23,13 @@ if [[ -z ${HOMEgfs+x} ]]; then
     _unset_homegfs="YES"
 
     script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-    export HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
+    HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
+    export HOMEgfs
     err=$?
     if [[ ${err} -ne 0 ]]; then
-        is_git_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && git rev-parse --is-inside-work-tree)
+        is_git_dir=$( cd -- "${script_dir}" &> /dev/null && git rev-parse --is-inside-work-tree)
         git_stat=$?
-        if [[ ${git_stat} -ne 0 ]]; then
+        if [[ ${git_stat} -ne 0 || ${script_dir} != "true" ]]; then
             echo "FATAL ERROR unable to determine the root because it is not a git repository."
         else
             echo "FATAL ERROR unable to determine the root because git rev-parse --show-toplevel failed for an unknown reason"

@@ -9,7 +9,8 @@
 #
 
 script_dir="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
-export HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
+HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
+export HOMEgfs
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/modulefiles"
