@@ -396,7 +396,7 @@ fi
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
   if [[ ! -d "${HOMEgfs}/lib" ]]; then mkdir "${HOMEgfs}/lib" || exit 1; fi
   cd "${HOMEgfs}/lib" || exit 1
-  cp -rf "${HOMEgfs}/sorc/gdas.cd/install/lib/" ./
+  cp -af "${HOMEgfs}/sorc/gdas.cd/install/lib/." ./
 fi
 
 #------------------------------
