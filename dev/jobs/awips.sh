@@ -21,7 +21,9 @@ for fhr in "${fhr_list[@]}"; do
   ###############################################################
  # "${HOMEgfs}/jobs/J${RUN^^}_ATMOS_AWIPS"
   err=$?
-  [[ ${err} -ne 0 ]] && exit "${err}"
+  if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+  fi
 done
 
 exit 0
