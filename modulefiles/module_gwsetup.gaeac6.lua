@@ -19,4 +19,6 @@ load("py-pyyaml")
 load("py-numpy")
 load("git-lfs")
 
+unload("cray-libsci")
+
 whatis("Description: GFS run setup environment")
