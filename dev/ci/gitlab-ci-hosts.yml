@@ -52,6 +52,7 @@ run_tests-hera:
     - setup_experiments-hera
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
     - if: $PIPELINE_TYPE == "pr_cases"
     - if: $PIPELINE_TYPE == "ctests"
       when: never  # Prevent this job from running for CTests
@@ -70,6 +71,7 @@ setup_experiments-gaeac6:
     - build-gaeac6
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
     - if: $PIPELINE_TYPE == "pr_cases"
     - if: $PIPELINE_TYPE == "ctests"
       when: never  # Prevent this job from running for CTests
@@ -87,6 +89,7 @@ run_tests-gaeac6:
     - setup_experiments-gaeac6
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
     - if: $PIPELINE_TYPE == "pr_cases"
     - if: $PIPELINE_TYPE == "ctests"
       when: never  # Prevent this job from running for CTests
