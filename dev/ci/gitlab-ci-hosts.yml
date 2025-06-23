@@ -33,8 +33,10 @@ setup_experiments-hera:
   needs:
     - build-hera
   rules:
+    - if: $PIPELINE_TYPE == "ctests"  # Ensure this runs only for CTests, not PR cases
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($PIPELINE_TYPE == "pr_cases" && ($RUN_ON_MACHINES =~ /\bhera\b|all/))
 
 run_tests-hera:
   extends: .run_tests_template
@@ -48,8 +50,10 @@ run_tests-hera:
   needs:
     - setup_experiments-hera
   rules:
+    - if: $PIPELINE_TYPE == "ctests"  # Ensure this runs only for CTests, not PR cases
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($PIPELINE_TYPE == "pr_cases" && ($RUN_ON_MACHINES =~ /\bhera\b|all/))
 
 # Host: GAEAC6 - Standard Cases
 setup_experiments-gaeac6:
@@ -64,8 +68,10 @@ setup_experiments-gaeac6:
   needs:
     - build-gaeac6
   rules:
+    - if: $PIPELINE_TYPE == "ctests"  # Ensure this runs only for CTests, not PR cases
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($PIPELINE_TYPE == "pr_cases" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/))
 
 run_tests-gaeac6:
   extends: .run_tests_template
@@ -79,8 +85,10 @@ run_tests-gaeac6:
   needs:
     - setup_experiments-gaeac6
   rules:
+    - if: $PIPELINE_TYPE == "ctests"  # Ensure this runs only for CTests, not PR cases
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($PIPELINE_TYPE == "pr_cases" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/))
 
 # Host: Hera - Finalize
 finalize-hera:
