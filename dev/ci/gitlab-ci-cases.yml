@@ -27,6 +27,7 @@
       exit $?
   needs:
     - build-${machine}
+      optional: true
 
 # Template for test execution jobs
 .run_tests_template:
