@@ -120,6 +120,10 @@ if [[ ${err} -ne 0 ]]; then
 fi
 
 "${GEMEXE}/gpend"
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "${GEMEXE}/gpend failed!"
+fi
 
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
 
