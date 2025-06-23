@@ -1368,7 +1368,7 @@ case ${step} in
 
   "gempak")
     # Walltime is per forecast hour; will be multipled by group size
-    walltime="00:30:00"
+    walltime="00:05:00"
     threads_per_task=1
     if [[ "${RUN}" = *gdas ]]; then
       ntasks=2
