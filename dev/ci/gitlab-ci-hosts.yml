@@ -135,9 +135,9 @@ create_ctests-hera:
   needs:
     - build-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
     - if: $PIPELINE_TYPE == "pr_cases"  # Ensure this runs only for CTests, not PR cases
       when: never
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
 create_ctests-gaeac6:
   extends: .create_ctests
@@ -149,9 +149,9 @@ create_ctests-gaeac6:
   needs:
     - build-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
     - if: $PIPELINE_TYPE == "pr_cases"  # Ensure this runs only for CTests, not PR cases
       when: never
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 # Host: Hera - CTests
 run_ctests-hera:
@@ -161,9 +161,9 @@ run_ctests-hera:
   needs:
     - create_ctests-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
     - if: $PIPELINE_TYPE == "pr_cases"  # Ensure this runs only for CTests, not PR cases
       when: never
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
 # Host: GAEAC6 - CTests
 run_ctests-gaeac6:
@@ -173,9 +173,9 @@ run_ctests-gaeac6:
   needs:
     - create_ctests-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
     - if: $PIPELINE_TYPE == "pr_cases"  # Ensure this runs only for CTests, not PR cases
       when: never
+    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 # =======================================
 # Common build configurations by host
@@ -189,10 +189,10 @@ build-hera:
   tags:
     - hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "trigger"
     - if: $RUN_ON_MACHINES =~ /\bhera\b|^all$/i
       when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
     - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
 
 build-gaeac6:
@@ -202,8 +202,8 @@ build-gaeac6:
   tags:
     - gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "trigger"
     - if: $RUN_ON_MACHINES =~ /\bgaeac6\b|^all$/i
       when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
     - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
