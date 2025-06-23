@@ -29,9 +29,9 @@ stages:
   - finalize
 
 variables:
-  BUILDTYPE: 'nightly'
+  PIPELINETYPE: 'nightly'
   # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
-  WORKSPACE_ID: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
+  WORKSPACE_ID: ${PIPELINETYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
   # Define a base path that will be used for initial cloning
   GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_ID}/global-workflow
   GIT_DEPTH: 10
@@ -57,7 +57,7 @@ include:
 
       # Create a date-based directory name for successful runs
       export DATE="$(date +'%m%d%y')"
-      export WORKSPACE_DATE="${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
+      export WORKSPACE_DATE="${PIPELINETYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
 
       echo "WORKSPACE_ID: ${WORKSPACE_ID}"
       echo "WORKSPACE_DATE: ${WORKSPACE_DATE}"
