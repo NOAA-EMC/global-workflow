@@ -21,16 +21,14 @@
 pwd=$(pwd)
 
 # Base variables
-CDATE=${CDATE:-"2001010100"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables
-GDATE=$($NDATE -$assim_freq $CDATE)
-BDATE=$($NDATE -3 $CDATE)
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
-bPDY=$(echo $BDATE | cut -c1-8)
-bcyc=$(echo $BDATE | cut -c9-10)
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 3 hours")
+bPDY=${BDATE:0:8}
+bcyc=${BDATE:8:2}
 
 # Utilities
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}

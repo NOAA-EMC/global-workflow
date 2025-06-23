@@ -64,7 +64,7 @@ export DO_AWIPS="{{ DO_AWIPS }}"         # AWIPS products
 # Experiment mode (cycled or forecast-only)
 export MODE="{{ MODE }}" # cycled/forecast-only
 export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for automated testing
-
+export GEFSTYPE="{{ GEFSTYPE }}" # near-real-time/gefs-offline
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
 # IF YOU HAVE TO MAKE MACHINE SPECIFIC CHANGES BELOW
@@ -131,6 +131,7 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_EXTRACTVARS="{{ DO_EXTRACTVARS }}" # Option to process and extract a subset of products to save on disk
 export DO_AERO_FCST="NO"
+export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO" # The GEFS buoys file does not currently have any boundary points
 export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
@@ -244,6 +245,7 @@ export FHOUT_OCN_GFS="{{ FHOUT_OCN_GFS }}"
 export FHOUT_ICE_GFS="{{ FHOUT_ICE_GFS }}"
 export FHMIN_WAV=${OFFSET_START_HOUR:-0}
 export FHOUT_WAV=3
+export FHOUT_WAV_GFS=3
 export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
 export FHMAX_WAV=${FHMAX_GFS}
