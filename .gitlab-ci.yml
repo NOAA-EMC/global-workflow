@@ -29,9 +29,9 @@ stages:
   - finalize
 
 variables:
-  PIPELINE_TYPE: ${PIPELINE_TYPE:-"pr_cases"}  # Default to PR cases if not set
+  PIPELINETYPE: ${PIPELINETYPE:-"pr_cases"}  # Default to PR cases if not set
   # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
-  WORKSPACE_ID: ${PIPELINE_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
+  WORKSPACE_ID: ${PIPELINETYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
   # Define a base path that will be used for initial cloning
   GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_ID}/global-workflow
   GIT_DEPTH: 10
@@ -57,7 +57,7 @@ include:
 
       # Create a date-based directory name for successful runs
       export DATE="$(date +'%m%d%y')"
-      export WORKSPACE_DATE="${PIPELINE_TYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
+      export WORKSPACE_DATE="${PIPELINETYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
 
       echo "WORKSPACE_ID: ${WORKSPACE_ID}"
       echo "WORKSPACE_DATE: ${WORKSPACE_DATE}"
@@ -87,9 +87,9 @@ include:
 
       if [[ ${CI_PIPELINE_SOURCE} == "trigger" && ${PR_NUMBER} != 0 ]]; then
         echo "Triggering pipeline via GitHub API running CTests on PR_NUMBER=${PR_NUMBER}"
-        git remote add github "${GW_REPO_URL}"
-        git fetch github
-        gh pr checkout "${PR_NUMBER}"
+        #git remote add github "${GW_REPO_URL}"
+        #git fetch github
+        #gh pr checkout "${PR_NUMBER}"
       fi
 
       dev/ci/scripts/utils/ci_utils.sh build
