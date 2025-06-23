@@ -130,6 +130,11 @@ if [[ ${err} -ne 0 ]]; then
    err_exit "JOBSPROC_GLOBAL_PREP job failed!"
 fi
 
+if [[ ! -f "${COMOUT_OBS}/${OPREFIX}prepbufr" ]]; then
+   export err=1
+   err_exit "JOBSPROC_GLOBAL_PREP failed to create the prepbufr file, ABORT!"
+fi
+
 # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
 if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
     if [[ ${DONST} = "YES" ]]; then
