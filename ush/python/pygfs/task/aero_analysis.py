@@ -102,17 +102,21 @@ class AerosolAnalysis(Task):
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # # stage bias corrections
-        # logger.info(f"Staging list of bias correction files")
-        # bias_dict = self.jedi_dict['aeroanlvar'].render_jcb(self.task_config, 'aero_bias_staging')
-        # if bias_dict['copy'] is None:
-        #     logger.info(f"No bias correction files to stage")
-        # else:
-        #     bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
-        #     FileHandler(bias_dict).sync()
-        #     logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+        logger.info(f"Staging list of bias correction files")
+        bias_dict = self.jedi_dict['aeroanlvar'].render_jcb(self.task_config, 'aero_bias_staging')
 
-        #     # extract bias corrections
-        #     Jedi.extract_tar_from_filehandler_dict(bias_dict)
+        if bias_dict['copy'] is None:
+            logger.info(f"No bias correction files to stage")
+        else:
+            try:
+                bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
+                FileHandler(bias_dict).sync()
+                logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+
+                # extract bias corrections
+                Jedi.extract_tar_from_filehandler_dict(bias_dict)
+            except FileNotFoundError:
+                logger.error(f"Bias correction files or directories do not exist:\n{pformat(bias_dict)}")
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
@@ -184,12 +188,23 @@ class AerosolAnalysis(Task):
         self._add_fms_cube_sphere_increments()
 
         # tar up bias correction files
-        # NOTE TODO
+        bfile = f"{self.task_config.APREFIX}aero_varbc_params.tar"
+        aertar = os.path.join(self.task_config.COMOUT_CHEM_ANALYSIS, bfile)
+
+        # get lists of aerosol bias correction files to add to tarball
+        satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
 
         # copy files back to COM
         logger.info(f"Copying files to COM based on {self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL}")
         aero_var_final_list = parse_j2yaml(self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL, self.task_config)
         FileHandler(aero_var_final_list).sync()
+
+        # tar aerosol bias correction files to ROTDIR
+        logger.info(f"Creating aerosol bias correction tar file {aertar}")
+        with tarfile.open(aertar, 'w') as aerbcor:
+            for satfile in satlist:
+                aerbcor.add(satfile, arcname=os.path.basename(satfile))
+            logger.info(f"Add {aerbcor.getnames()}")
 
         # open tar file for writing
         with tarfile.open(aerostat, "w|gz") as archive:
