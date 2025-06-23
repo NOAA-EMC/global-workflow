@@ -26,8 +26,7 @@
       "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${DATE}"
       exit $?
   needs:
-    - job: build-${machine}
-      optional: true
+    - build-${machine}
 
 # Template for test execution jobs
 .run_tests_template:
