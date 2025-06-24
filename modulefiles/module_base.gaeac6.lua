@@ -53,4 +53,6 @@ local hsi_mod_path=(os.getenv("hsi_mod_path") or "None")
 append_path("MODULEPATH", hsi_mod_path)
 load(pathJoin("hsi", (os.getenv("hsi_ver") or "None")))
 
+unload("cray-libsci")
+
 whatis("Description: GFS run setup environment")
