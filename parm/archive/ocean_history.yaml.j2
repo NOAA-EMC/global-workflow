@@ -1,0 +1,18 @@
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN ~ ".ocean.t" ~ cycle_HH ~ "z." %}
+ocean_history:
+    name: "OCEAN_HISTORY"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_history.tar"
+    required:
+        - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}*.nc"
+        {% for mem in range(1, NMEM_ENS + 1) %}
+        {% set mem_char = 'mem%03d' | format(mem) %}
+        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                              '${RUN}':RUN,
+                              '${YMD}':cycle_YMD,
+                              '${HH}':cycle_HH,
+                              '${MEMDIR}': mem_char }) %}
+        {% set COMIN_OCEAN_HISTORY = COM_OCEAN_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
+        - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}*.nc"
+        {% endfor %}
+       

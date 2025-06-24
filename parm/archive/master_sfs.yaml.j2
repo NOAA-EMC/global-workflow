@@ -4,6 +4,28 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 
 datasets:
+# Archive the EXPDIR if requested
+{% if archive_expdir %}
+{% filter indent(width=4) %}
+{% include "expdir.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% filter indent(width=4) %}
+{% include "atmos_products_0p50.yaml.j2" %}
+{% endfilter %}
+
+{% filter indent(width=4) %}
+{% include "atmos_products_1p00.yaml.j2" %}
+{% endfilter %}
+
+{% filter indent(width=4) %}
+{% include "ocean_history.yaml.j2" %}
+{% endfilter %}
+
+{% filter indent(width=4) %}
+{% include "ice_history.yaml.j2" %}
+{% endfilter %}
 
 {% filter indent(width=4) %}
 {% include "namelists.yaml.j2" %}

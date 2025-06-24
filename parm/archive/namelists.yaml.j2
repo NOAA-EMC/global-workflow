@@ -2,9 +2,7 @@ namelists:
     name: "NAMELISTS"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/namelists.tar"
     required:
-        {% set FILES = ['diag_table', 'ice_in', 'input.nml', 'model_configure', 'MOM_input', 'ufs.configure'] %}
-        {% for file in FILES %}
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.{{ file }}'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.*'
         
         {% for mem in range(1, NMEM_ENS + 1) %}
         {% set mem_char = 'mem%03d' | format(mem) %}
@@ -14,9 +12,7 @@ namelists:
                               '${HH}':cycle_HH,
                               '${MEMDIR}': mem_char }) %}
         {% set COMIN_CONF = COM_CONF_TMPL | replace_tmpl(tmpl_dict) %}
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.{{ file }}'
-        
-        {% endfor %}
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.*' 
         {% endfor %}
         
 
