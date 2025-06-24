@@ -30,6 +30,7 @@ stages:
 
 variables:
   PIPELINE_TYPE: ${PIPELINE_TYPE:-"pr_cases"}  # Default to PR cases if not set
+  RUN_ON_MACHINES: ${RUN_ON_MACHINES:-"all"}  # Default to all machines if not set
   # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
   WORKSPACE_ID: ${PIPELINE_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
   # Define a base path that will be used for initial cloning
@@ -64,6 +65,8 @@ include:
       echo "GW_RUN_PATH: ${GW_RUN_PATH}"
       echo "GIT_CLONE_PATH: ${GIT_CLONE_PATH}"
       echo "GW_HOMEgfs: ${GW_HOMEgfs}"
+      echo "PIPELINE_TYPE: ${PIPELINE_TYPE}"
+      echo "RUN_ON_MACHINES: ${RUN_ON_MACHINES}"
 
       # Make sure GW_HOMEgfs is properly set and the directory exists
       if [ ! -d "${GW_HOMEgfs}" ]; then

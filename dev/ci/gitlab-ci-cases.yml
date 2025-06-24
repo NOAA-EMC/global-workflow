@@ -57,7 +57,8 @@
   script:
     - |
       echo "Finalizing test cases on ${machine} using ${GW_HOMEgfs}"
-      if [ "$CI_PIPELINE_SOURCE" == "schedule" ]; then
+      if [[ "${PIPELINE_TYPE}" == "pr_cases" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+        echo "This is a scheduled pipeline, creating date-based directories and symlinks to stable"
         echo "Creating date-based directory: ${WORKSPACE_DATE}"
         cd "${CI_BUILDS_DIR}"
         rm -f stable
@@ -82,8 +83,10 @@
         # Clean up old directories from this pipeline type except stable
         echo "Cleaning up old ${PIPELINE_TYPE} directories except stable"
         find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" -not -path "$(readlink -f ${CI_BUILDS_DIR}/stable)" -exec rm -rf {} \; 2>/dev/null || true
+        echo "TODO set status badges on GitHub status here"
       else
         echo "Skipping directory rename and cleanup for non-scheduled pipeline."
+        echo "TODO set GitHub status labels here"
       fi
   needs:
     - run_experiments-${machine}
