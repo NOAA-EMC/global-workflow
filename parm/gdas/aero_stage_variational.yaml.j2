@@ -13,7 +13,7 @@
 {% else %}
   {% set anl_time = current_cycle %}
 {% endif %}
-{% set fvfiles = ['fv_core.res.', 'fv_tracer.res.'] %}
+{% set fvfiles = ['fv_core.res.', 'fv_tracer.res.', 'sfc_data.', 'fv_srf_wnd.res.'] %}
 ######################################
 mkdir:
 - "{{ DATA }}/anl"
