@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 set -eux
 
+# shellcheck disable=SC2155
+readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+
 OPTIND=1
 _opts="-f "  # forces a clean build
 while getopts ":j:dv" option; do
@@ -25,6 +28,6 @@ shift $((OPTIND-1))
 BUILD_JOBS="${BUILD_JOBS:-8}" \
 WORKFLOW_BUILD="${WORKFLOW_BUILD:-"ON"}" \
 WORKFLOW_TESTS="${WORKFLOW_TESTS:-"OFF"}" \
-./gdas.cd/build.sh ${_opts} -f
+./gdas.cd/build.sh ${_opts} -f -w ${HOMEgfs_}
 
 exit
