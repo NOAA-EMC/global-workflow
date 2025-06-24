@@ -17,9 +17,9 @@
 # are referenced by name in the host configuration file's test matrix.
 
 # Template for experiment setup jobs
-.setup_template:
+.setup_experiment_template:
   extends: .base_config
-  stage: create_experiments
+  stage: setup_tests
   script:
     - |
       export RUNTESTS="${RUNTESTS_DIR}"
@@ -29,7 +29,7 @@
     - build-${machine}
 
 # Template for test execution jobs
-.run_tests_template:
+.run_experiments_template:
   extends: .base_config
   stage: run_tests
   script:
@@ -86,4 +86,4 @@
         echo "Skipping directory rename and cleanup for non-scheduled pipeline."
       fi
   needs:
-    - run_tests-${machine}
+    - run_experiments-${machine}

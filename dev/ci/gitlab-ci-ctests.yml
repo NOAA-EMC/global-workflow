@@ -22,9 +22,9 @@
 # =======================================
 
 # Setup job for ctests using CMake
-.create_ctests:
+.setup_ctests_template:
   extends: .base_config
-  stage: create_experiments
+  stage: setup_tests
   script: |
     echo "Setting up for ctests workflow"
     echo "Using build directory ${GW_HOMEgfs}"
