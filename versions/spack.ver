@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 spack_stack_env="${spack_stack_env:-ue-${stack_compiler}-${stack_compiler_ver}}"
-spack_stack_ver="${spack_stack_ver:-1.9.1}"
+spack_stack_ver="${spack_stack_ver:-1.9.2}"
 export stack_core_path="${spack_stack_root}/spack-stack-${spack_stack_ver}/envs/${spack_stack_env}/install/modulefiles/Core"
 
 export cmake_ver=3.27.9
