@@ -187,7 +187,7 @@ case ${step} in
     ;;
 
   "wavepostbndpntbll")
-    walltime="00:10:00"
+    walltime="00:15:00"
     ntasks=2
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
