@@ -97,7 +97,7 @@ jobs:
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             --form "ref=gitlab_pr_cases" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
-            --form "variables[GW_REPO_URL]=https://github.com/NOAA-EMC/global-workflow.git" \
+            --form "variables[GW_REPO_URL]=$${{ vars.GW_REPO_URL }}" \
             --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
             --form "variables[PIPELINE_TYPE]=pr_cases" \
             ${{ vars.GITLAB_TRIGGER_URL }}
