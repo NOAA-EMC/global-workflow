@@ -21,6 +21,7 @@ nohup.out
 #-------------------
 exec/
 build*/
+lib/
 install*/
 
 # Ignore fix directory symlinks
@@ -80,6 +81,7 @@ parm/post/ice.csv
 parm/post/ice_gefs.csv
 parm/post/ice_gfs.csv
 parm/post/ocnicepost.nml.jinja2
+parm/regrid_sfc
 parm/ufs/noahmptable.tbl
 parm/ufs/model_configure.IN
 parm/ufs/input_global_nest.nml.IN
