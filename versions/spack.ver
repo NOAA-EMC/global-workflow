@@ -3,6 +3,7 @@ spack_stack_env="${spack_stack_env:-ue-${stack_compiler}-${stack_compiler_ver}}"
 spack_stack_ver="${spack_stack_ver:-1.9.2}"
 export stack_core_path="${spack_stack_root}/spack-stack-${spack_stack_ver}/envs/${spack_stack_env}/install/modulefiles/Core"
 
+echo $stack_core_path
 export cmake_ver=3.27.9
 export stack_python_ver=3.11.7
 export jasper_ver=2.0.32
@@ -46,7 +47,7 @@ export met_ver=11.1.1
 export metplus_ver=5.1.0
 
 export obsproc_run_ver=1.2.0
-export prepobs_run_ver=1.1.0
+export prepobs_run_ver=1.1.1
 
 export ens_tracker_ver=v1.2.0
 export fit2obs_ver=1.1.7.1
