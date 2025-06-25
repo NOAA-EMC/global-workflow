@@ -2,19 +2,19 @@
 
 set -xe
 
+HOMEgfs="@PROJECT_SOURCE_DIR@"
 TEST_NAME=${1:?"Name of the test is required"}
+TEST_NAME=$("${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "@CMAKE_CURRENT_BINARY_DIR@/RUNTESTS" "${TEST_NAME}")
 JOB=${2:?"Job name is required"}
-# TODO - adding idate by hand for now, need to get this from the test somehow 
 idate=$3
 
-#TODO - add rocotoboot_dryrun to repo some how
 rocotoboot_dryrun=$(command -v rocotoboot_dryrun) || true
 CASEDIR="@CMAKE_CURRENT_BINARY_DIR@/RUNTESTS/EXPDIR/${TEST_NAME}"
 cd "${CASEDIR}"
 rm -f ./*.db
 rm -f ./jobcard                                                                             
 
-yes | "${rocotoboot_dryrun}" -d "${TEST_NAME}.db" -w "${TEST_NAME}.xml" -v 10 -c "${idate}00" -t "${JOB}" 2> jobcard || true
+yes | "${rocotoboot_dryrun}" --dryrun -d "${TEST_NAME}.db" -w "${TEST_NAME}.xml" -v 10 -c "${idate}00" -t "${JOB}" 2> jobcard || true
 # Rocoto outputs the job card inside of {{}}.  Strip all other output to get just the job card.
 sed -n '/^{{/,/^}}/p' < jobcard | sed '1d;$d'  > "${TEST_NAME}.sub" || true
 

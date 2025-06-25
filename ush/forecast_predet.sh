@@ -119,7 +119,12 @@ common_predet(){
     else
       model_start_date_current_cycle=${current_cycle}
     fi
-    model_start_date_next_cycle=${next_cycle}
+    if [[ "${DO_AERO_ANL:-NO}" == "YES" ]]; then
+      # even without IAU we want 3-hourly restarts for FGAT
+      model_start_date_next_cycle="${next_cycle_begin}"
+    else  
+      model_start_date_next_cycle=${next_cycle}
+    fi
   fi
 
   FHMIN=${FHMIN:-0}
