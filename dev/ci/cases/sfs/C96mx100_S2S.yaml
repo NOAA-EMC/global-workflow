@@ -1,9 +1,8 @@
 experiment:
-  system: sfs
+  net: sfs
   mode: forecast-only
 
 arguments:
-  account: {{ 'HPC_ACCOUNT' | getenv }}
   idate: 1994050100
   edate: 1994050100
   pslot: {{ 'pslot' | getenv }}
@@ -17,6 +16,3 @@ arguments:
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/sfs_full.yaml
-
-skip_ci_on_hosts:
-  - awsepicglobalworkflow

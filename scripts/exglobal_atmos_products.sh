@@ -1,11 +1,16 @@
 #! /usr/bin/env bash
 
-#source "${USHgfs}/load_fv3gfs_modules.sh"
-#module load wgrib2/2.0.8
+source "${HOMEgfs}/ush/preamble.sh"
 
 # Programs used
-#export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-export WGRIB2="${HOMEgfs}/bin/run_wgrib2.sh"
+if [ "$RUN_WITH_CONTAINER" == "NO" ]; then
+    source "${USHgfs}/load_fv3gfs_modules.sh"
+    module load wgrib2/2.0.8
+
+    export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
+else
+    export WGRIB2="${HOMEgfs}/exec/run_wgrib2.sh"
+fi
 
 # Scripts used
 INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/interp_atmos_master.sh"}
@@ -52,6 +57,7 @@ MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.grb2${fhr3}"
 ${WGRIB2} "${MASTER_FILE}" > wgrib2.log
 grep -F -f "${paramlista}" wgrib2.log > grep.res
 ${WGRIB2} -i -grib "tmpfile_${fhr3}" "${MASTER_FILE}" < grep.res
+
 export err=$?
 if [[ ${err} -ne 0 ]]; then
    err_exit "wgrib2 failed to create intermediate grib2 file from ${MASTER_FILE} using ${paramlista}"

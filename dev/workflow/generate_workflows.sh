@@ -66,6 +66,8 @@ function _usage() {
     -t Add a 'tag' to the end of the case names in the pslots to distinguish
        pslots between multiple sets of tests.
 
+    -R Run with Container
+
     -v Verbose mode.  Prints output of all commands to stdout.
 
     -V Very verbose mode.  Passes -v to all commands and prints to stdout.
@@ -91,6 +93,7 @@ _specified_yaml_dir=false
 _run_all_gfs=false
 _run_all_gefs=false
 _run_all_sfs=false
+_run_with_container=false
 _hpc_account=""
 _set_account=false
 _update_cron=false
@@ -107,7 +110,7 @@ _auto_del=false
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-   while getopts ":H:bDuy:Y:GESA:ce:t:vVdh" option; do
+   while getopts ":H:bDuy:Y:GESA:ce:t:vVRdh" option; do
       case "${option}" in
         H)
            HOMEgfs="${OPTARG}"
@@ -137,6 +140,7 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
         t) _tag="_${OPTARG}" ;;
         v) _verbose=true ;;
         V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
+        R) _run_with_container=true ;;
         A) _set_account=true && _hpc_account="${OPTARG}" ;;
         d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v" && PS4='${LINENO}: ' ;;
         h) _usage && exit 0 ;;
@@ -264,6 +268,18 @@ if [[ "${_specified_home}" == "false" ]]; then
    if [[ "${_verbose}" == "true" ]]; then
        printf "Setting HOMEgfs to %s\n\n" "${HOMEgfs}"
    fi
+fi
+
+# Set RUN_WITH_CONTAINER if it is set by the user
+if [[ "${_run_with_container}" == "true" ]]; then
+   RUN_WITH_CONTAINER=YES
+   if [[ "${_verbose}" == "true" ]]; then
+       printf "Run with Container %s\n\n" "${RUN_WITH_CONTAINER}"
+   fi
+   sed -i 's/RUN_WITH_CONTAINER=NO/RUN_WITH_CONTAINER=YES/g' ../../ush/preamble.sh
+else
+   RUN_WITH_CONTAINER=NO
+   sed -i 's/RUN_WITH_CONTAINER=YES/RUN_WITH_CONTAINER=NO/g' ../../ush/preamble.sh
 fi
 
 # Set the _yaml_dir to HOMEgfs/dev/ci/cases/pr if not explicitly set
@@ -438,15 +454,28 @@ fi
 if [[ "${_verbose}" == true ]]; then
     printf "Linking the workflow\n\n"
 fi
-if ! "${HOMEgfs}/sorc/link_workflow.sh" >& stdout; then
-   cat stdout
-   echo "link_workflow.sh failed!"
-   if [[ "${_set_email}" == true ]]; then
-      _stdout=$(cat stdout)
-      send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
+if [[ "${_run_with_container}" == true ]]; then
+   if ! "${HOMEgfs}/sorc/link_workflow.sh" -r >& stdout; then
+      cat stdout
+      echo "link_workflow.sh failed!"
+      if [[ "${_set_email}" == true ]]; then
+         _stdout=$(cat stdout)
+         send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
+      fi
+      rm -f stdout
+      exit 9
    fi
-   rm -f stdout
-   exit 9
+else
+   if ! "${HOMEgfs}/sorc/link_workflow.sh" >& stdout; then
+      cat stdout
+      echo "link_workflow.sh failed!"
+      if [[ "${_set_email}" == true ]]; then
+         _stdout=$(cat stdout)
+         send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
+      fi
+      rm -f stdout
+      exit 9
+   fi
 fi
 rm -f stdout
 
@@ -509,7 +538,11 @@ for _case in "${_yaml_list[@]}"; do
       echo "${_case}"
    fi
    _pslot="${_case}${_tag}"
-   _create_exp_cmd="./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+   if [[ "${_run_with_container}" == "true" ]]; then
+       _create_exp_cmd="../../exec/run_python.sh ./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+   else
+       _create_exp_cmd="./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+   fi
    if [[ "${_verbose}" == true ]]; then
       pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd}
    else

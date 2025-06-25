@@ -5,12 +5,24 @@ import os
 from wxflow import AttrDict, Logger, logit, cast_strdict_as_dtypedict
 from pygfs.task.oceanice_products import OceanIceProducts
 
+import argparse
+
 # initialize root logger
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
 
 
 @logit(logger)
 def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true",
+                        help="increase output verbosity")
+    parser.add_argument("-c", "--container", action="store_true",
+                        help="use container")
+    args = parser.parse_args()
+
+    if args.verbose:
+        logger.info(f"use contaier {args.container}")
 
     config = cast_strdict_as_dtypedict(os.environ)
 
@@ -39,7 +51,7 @@ def main():
         oceanice.configure(oceanice_dict, grid)
 
         # Run the oceanice post executable to interpolate and create grib2 files
-        oceanice.execute(oceanice_dict, grid)
+        oceanice.execute(oceanice_dict, grid, run_with_container=args.container)
 
     # Subset raw model data to create netCDF products
     oceanice.subset(oceanice_dict)

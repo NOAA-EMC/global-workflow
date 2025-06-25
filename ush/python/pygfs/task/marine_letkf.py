@@ -88,6 +88,7 @@ class MarineLETKF(Analysis):
                 'COMIN_ICE_HISTORY_PREV',
                 'COMOUT_ICE_LETKF',
                 'COMOUT_OCEAN_LETKF',
+                'COMOUT_CONF',
                 'DATA',
                 'DIST_HALO_SIZE',
                 'ENSPERT_RELPATH',
@@ -205,7 +206,7 @@ class MarineLETKF(Analysis):
         keys = ['current_cycle', 'DATA', 'NMEM_ENS', 'WINDOW_BEGIN', 'GDUMP_ENS',
                 'PARMgfs', 'ROTDIR', 'COM_OCEAN_LETKF_TMPL', 'COM_ICE_LETKF_TMPL',
                 'COMOUT_OCEAN_LETKF', 'COMOUT_ICE_LETKF', 'WINDOW_MIDDLE',
-                'MARINE_OBS_LIST_YAML']
+                'MARINE_OBS_LIST_YAML', 'COMOUT_CONF', 'letkf_yaml_file']
         for key in keys:
             letkfsaveconf[key] = self.task_config[key]
 
@@ -223,5 +224,9 @@ class MarineLETKF(Analysis):
                 obs_files_to_copy.append([obs_src, obs_dst])
         FileHandler({'mkdir': [os.path.join(letkfsaveconf.COMOUT_OCEAN_LETKF, 'diags')]}).sync()
         FileHandler({'copy': obs_files_to_copy}).sync()
+        # yaml configurations
+        yamls_to_copy = []
+        yamls_to_copy.append([letkfsaveconf.letkf_yaml_file, os.path.join(letkfsaveconf.COMOUT_CONF, 'soca_letkf.yaml')])
+        FileHandler({'copy': yamls_to_copy}).sync()
         letkf_save_list = parse_j2yaml(self.task_config.MARINE_LETKF_SAVE_YAML_TMPL, letkfsaveconf)
         FileHandler(letkf_save_list).sync()

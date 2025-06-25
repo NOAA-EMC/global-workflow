@@ -1,0 +1,10 @@
+#!/bin/bash
+ arg="$@"
+
+ export LD_LIBRARY_PATH=$(dirname SIF)
+
+ singularity exec \
+        BINDINGS \
+        SIF \
+	HOMEgfs/ush/container/run_python.sh $arg
+

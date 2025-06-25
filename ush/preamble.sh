@@ -176,6 +176,18 @@ trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 
 source "${HOMEgfs}/ush/bash_utils.sh"
 
+# Decide if run with container
+export RUN_WITH_CONTAINER=YES
+
+if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
+  export WGRIB2="${HOMEgfs}/exec/run_wgrib2.sh"
+else
+  source "${HOMEgfs}/ush/detect_machine.sh"
+  source "${HOMEgfs}/ush/module-setup.sh"
+  module load wgrib2
+  export WGRIB2=wgrib2
+fi
+
 # Turn on our settings
 export SHELLOPTS
 declare -xf set_strict

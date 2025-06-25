@@ -52,9 +52,9 @@ case ${machine} in
     ;;
   "URSA")
               export PARTITION_BATCH="u1-compute"
-              max_tasks_per_node=96
+              max_tasks_per_node=192
               # shellcheck disable=SC2034
-              mem_node_max="96GB"
+              mem_node_max="384GB"
     ;;
   "GAEAC5")
               max_tasks_per_node=128
@@ -101,10 +101,9 @@ case ${machine} in
     mem_node_max=""
     ;;
   "CONTAINER")
-    export PARTITION_BATCH="compute"
-    npe_node_max=48
-    max_tasks_per_node=48
-    # TODO Supply a max mem/node value for CONTAINER
+    npe_node_max=1
+    max_tasks_per_node=
+    # TODO Supply a max mem/node value for container
     # shellcheck disable=SC2034
     mem_node_max=""
     ;;

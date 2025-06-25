@@ -8,12 +8,6 @@
 #
 # Thank you for your contribution
 
-# Overwrite auto-detect if it is in a container.
-if [[ -d /opt/spack-stack ]]; then
-  # We are in a container
-  MACHINE_ID=container
-fi
-
 # If the MACHINE_ID variable is set, skip this script.
 if [[ -n "${MACHINE_ID:-}" ]]; then
     return
@@ -110,5 +104,3 @@ elif [[ -d /data/prod ]]; then
 else
   echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
-
-export MACHINE_ID

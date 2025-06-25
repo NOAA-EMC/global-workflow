@@ -22,6 +22,7 @@ case ${machine} in
   "HERCULES") max_tasks_per_node=80;;
   "GAEAC5")   max_tasks_per_node=128;;
   "GAEAC6")   max_tasks_per_node=192;;
+  "URSA")     max_tasks_per_node=192;;
   "AWSPW")
     export PARTITION_BATCH="compute"
     max_tasks_per_node=48
@@ -44,6 +45,14 @@ export max_tasks_per_node
 case ${step} in
 
   "stage_ic")
+    export walltime="00:15:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
+    ;;
+
+  "gen_control_ic")
     export walltime="00:15:00"
     export ntasks=1
     export tasks_per_node=1
