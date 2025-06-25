@@ -1598,7 +1598,6 @@ class GFSTasks(Tasks):
         for key, value in gempak_dict.items():
             gempak_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        resources = self.get_resource('gempak')
         task_name = f'{self.run}_gempak_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
