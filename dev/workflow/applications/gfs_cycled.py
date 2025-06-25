@@ -344,10 +344,10 @@ class GFSCycledAppConfig(AppConfig):
                         task_names[run] += ['metp']
 
                 if options['do_wave']:
-                    task_names[run] += 'wavepostsbs'
+                    task_names[run] += ['wavepostsbs']
                     if options['do_wave_bnd']:
                         task_names[run] += wave_bndpnt_tasks
-                    task_names[run] += 'wavepostpnt'
+                    task_names[run] += ['wavepostpnt']
                     # wave gempak and awips jobs are gfs-specific
                     if run == 'gfs':
                         if options['do_gempak']:
