@@ -59,7 +59,7 @@ include:
 
       # Create a date-based directory name for successful runs
       export DATE="$(date +'%m%d%y')"
-      export WORKSPACE_DATE="${PIPELINE_TYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
+      export WORKSPACE_DATE="${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
 
       echo "WORKSPACE_ID: ${WORKSPACE_ID}"
       echo "WORKSPACE_DATE: ${WORKSPACE_DATE}"
