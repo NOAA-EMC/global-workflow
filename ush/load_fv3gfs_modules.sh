@@ -44,9 +44,15 @@ elif [[ "${set_x}" == "YES" ]]; then
   set -x
 fi
 
-# Add wxflow to PYTHONPATH
-wxflowPATH="${HOMEgfs}/ush/python"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
+# Set up the PYTHONPATH for wxflow if it is not already loaded
+if ! python3 -c "import wxflow" 2>/dev/null; then
+  if [[ -d "${HOMEgfs}/sorc/wxflow/src/wxflow" ]]; then
+    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src/wxflow"
+  fi
+fi
+
+# Add HOMEgfs/ush to PYTHONPATH
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush"
 export PYTHONPATH
 
 # Restore stack soft limit:

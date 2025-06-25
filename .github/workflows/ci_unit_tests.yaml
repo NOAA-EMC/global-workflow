@@ -21,17 +21,8 @@ jobs:
       with:
         python-version: 3.11.8
 
-    #- name: Cache APT packages
-    #  id: cache-apt
-    #  uses: actions/cache@v4
-    #  with:
-    #    path: |
-    #      /var/cache/apt/archives
-    #    key: ${{ runner.os }}-apt-${{ env.ROCOTO_VERSION }}
-
     - name: Install APT packages
       id: install-apt
-      #if: steps.cache-apt.outputs.cache-hit != 'true'
       run: |
         sudo apt-get update
         sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl

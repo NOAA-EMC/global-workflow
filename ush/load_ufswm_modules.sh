@@ -30,11 +30,15 @@ export WGRIB2=wgrib2
 module list
 unset MACHINE_ID
 
-###############################################################
-# exglobal_forecast.py requires the following in PYTHONPATH
-# This will be moved to a module load when ready
-wxflowPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/wxflow/src:${HOMEgfs}/ush/python/pygfs"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${wxflowPATH}"
+# Set up the PYTHONPATH for wxflow if it is not already loaded
+if ! python3 -c "import wxflow" 2>/dev/null; then
+  if [[ -d "${HOMEgfs}/sorc/wxflow/src/wxflow" ]]; then
+    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src/wxflow"
+  fi
+fi
+
+# Add HOMEgfs/ush to PYTHONPATH
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush"
 export PYTHONPATH
 
 # Restore stack soft limit:

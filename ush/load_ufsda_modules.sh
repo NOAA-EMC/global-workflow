@@ -45,7 +45,7 @@ case "${MACHINE_ID}" in
     if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
       export LMOD_TMOD_FIND_FIRST=yes
       # TODO: Add path to GDASApp libraries and cray-mpich as temporary patches
-      # TODO: Remove LD_LIBRARY_PATH lines as soon as permanent solutions are available	
+      # TODO: Remove LD_LIBRARY_PATH lines as soon as permanent solutions are available
       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEgfs}/sorc/gdas.cd/build/lib"
       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/cray/pe/mpich/8.1.19/ofi/intel/19.0/lib"
     fi
@@ -56,7 +56,7 @@ case "${MACHINE_ID}" in
     ;;
   ("acorn")
     echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-    ;;  
+    ;;
   *)
     echo "WARNING: UNKNOWN PLATFORM"
     ;;
@@ -73,9 +73,15 @@ fi
 
 pip list
 
-# Add wxflow to PYTHONPATH
-wxflowPATH="${HOMEgfs}/ush/python"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
+# Set up the PYTHONPATH for wxflow if it is not already loaded
+if ! python3 -c "import wxflow" 2>/dev/null; then
+  if [[ -d "${HOMEgfs}/sorc/wxflow/src/wxflow" ]]; then
+    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src/wxflow"
+  fi
+fi
+
+# Add HOMEgfs/ush to PYTHONPATH
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush"
 export PYTHONPATH
 
 # Detect the Python major.minor version
