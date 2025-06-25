@@ -155,7 +155,7 @@ class OceanIceProducts(Task):
 
     @staticmethod
     @logit(logger)
-    def execute(config: Dict, product_grid: str) -> None:
+    def execute(config: Dict, product_grid: str, run_with_container=False) -> None:
         """Run the ocnicepost.x executable to interpolate and convert to grib2
 
         Parameters
@@ -171,14 +171,15 @@ class OceanIceProducts(Task):
         """
 
         # Run the ocnicepost.x executable
-        OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
+        OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST,
+                                exec_name="ocnicepost.x", run_with_container=run_with_container)
 
         # Index the interpolated grib2 file
         OceanIceProducts.index(config, product_grid)
 
     @staticmethod
     @logit(logger)
-    def interp(workdir: str, aprun_cmd: str, exec_name: str = "ocnicepost.x") -> None:
+    def interp(workdir: str, aprun_cmd: str, exec_name: str = "ocnicepost.x", run_with_container=False) -> None:
         """
         Run the interpolation executable to generate interpolated file
 
@@ -200,7 +201,11 @@ class OceanIceProducts(Task):
         os.chdir(workdir)
         logger.debug(f"Current working directory: {os.getcwd()}")
 
-        exec_cmd = Executable(aprun_cmd)
+        print(f'aprun_cmd: {aprun_cmd}')
+        if run_with_container:
+            exec_cmd = Executable('time')
+        else:
+            exec_cmd = Executable(aprun_cmd)
         exec_cmd.add_default_arg(os.path.join(workdir, exec_name))
         try:
             exec_cmd()
@@ -236,6 +241,7 @@ class OceanIceProducts(Task):
         logger.info("Generate index file")
 
         wgrib2_cmd = os.environ.get("WGRIB2", None)
+        print('wgrib2_cmd:', wgrib2_cmd)
 
         grbfile = f"{config.component}.{grid}.grib2"
         grbfidx = f"{grbfile}.idx"
@@ -245,6 +251,7 @@ class OceanIceProducts(Task):
             return
 
         logger.info(f"Creating index file for {grbfile}")
+        print('which(wgrib2):', which("wgrib2"))
         exec_cmd = which("wgrib2") if wgrib2_cmd is None else Executable(wgrib2_cmd)
         exec_cmd.add_default_arg("-s")
         try:

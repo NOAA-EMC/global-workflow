@@ -9,26 +9,40 @@ fi
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
 
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/ush/module-setup.sh"
-
-module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
-module load "ufs_${MACHINE_ID}.intel"
-module load prod_util
-if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
-  module load cray-pals
-  module load cfp
-  module load libjpeg
-  module load craype-network-ucx
-  module load cray-mpich-ucx
+#RUN_WITH_CONTAINER=YES
+if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
+  if [[ -v PATH ]]; then
+    if [[ "$PATH" =~ "prod-util" ]]; then
+      echo "PATH already contains prod-util"
+    else
+      export PATH=/home/Wei.Huang/prod-util-2.1.1/bin:$PATH
+    fi
+  else
+    export PATH=/home/Wei.Huang/prod-util-2.1.1/bin
+  fi
+  export WGRIB2="${HOMEgfs}/exec/run_wgrib2.sh"
 else
-  export UTILROOT=${prod_util_ROOT}
-fi
-module load wgrib2
-export WGRIB2=wgrib2
+  source "${HOMEgfs}/ush/detect_machine.sh"
+  source "${HOMEgfs}/ush/module-setup.sh"
 
-module list
-unset MACHINE_ID
+  module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
+  module load "ufs_${MACHINE_ID}.intel"
+  module load prod_util
+  if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
+    module load cray-pals
+    module load cfp
+    module load libjpeg
+    module load craype-network-ucx
+    module load cray-mpich-ucx
+  else
+    export UTILROOT=${prod_util_ROOT}
+  fi
+  module load wgrib2
+  export WGRIB2=wgrib2
+
+  module list
+  unset MACHINE_ID
+fi
 
 ###############################################################
 # exglobal_forecast.py requires the following in PYTHONPATH

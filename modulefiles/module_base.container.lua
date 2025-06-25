@@ -4,12 +4,15 @@ Load environment to run GFS in container
 
 prepend_path("MODULEPATH", "/opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/intel-oneapi-mpi/2021.9.0/intel/2021.10.0")
 prepend_path("MODULEPATH", "/opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core")
-prepend_path("MODULEPATH", "/opt/spack-stack/spack-stack-1.6.0/envs/fms-2024.01/install/modulefiles/Core")
+-- prepend_path("MODULEPATH", "/opt/spack-stack/spack-stack-1.6.0/envs/fms-2024.01/install/modulefiles/Core")
 
-load("gnu")
+setenv("stack_intel_ver", "2021.10.0")
+setenv("stack_impi_ver", "2021.9.0")
+
+-- load("gnu")
 load(pathJoin("stack-intel", (os.getenv("stack_intel_ver") or "None")))
 load(pathJoin("stack-intel-oneapi-mpi", (os.getenv("stack_impi_ver") or "None")))
-unload("gnu")
+-- unload("gnu")
 
 -- load(pathJoin("python", (os.getenv("python_ver") or "None")))
 
