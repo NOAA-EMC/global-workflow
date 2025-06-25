@@ -2,12 +2,12 @@
 
 ###############################################################
 if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
-    echo "Loading modules quietly..."
-    set +x
+  echo "Loading modules quietly..."
+  set +x
 fi
 
 # Setup runtime environment by loading modules
-ulimit_s=$( ulimit -S -s )
+ulimit_s=$(ulimit -S -s)
 
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
@@ -31,14 +31,14 @@ module list
 unset MACHINE_ID
 
 # Set up the PYTHONPATH for wxflow if it is not already loaded
-if ! python3 -c "import wxflow" 2>/dev/null; then
-  if [[ -d "${HOMEgfs}/sorc/wxflow/src/wxflow" ]]; then
-    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src/wxflow"
+if ! python -c "import wxflow" 2>/dev/null; then
+  if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
+    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
   fi
 fi
 
-# Add HOMEgfs/ush to PYTHONPATH
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush"
+# Add HOMEgfs/ush/python to PYTHONPATH
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
 export PYTHONPATH
 
 # Restore stack soft limit:

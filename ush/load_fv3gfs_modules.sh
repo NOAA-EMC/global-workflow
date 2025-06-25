@@ -2,18 +2,18 @@
 
 ###############################################################
 if [[ "$-" == *x* ]]; then
-    set_x=YES
+  set_x=YES
 else
-    set_x=NO
+  set_x=NO
 fi
 
 if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
-    echo "Loading modules quietly..."
-    set +x
+  echo "Loading modules quietly..."
+  set +x
 fi
 
 # Setup runtime environment by loading modules
-ulimit_s=$( ulimit -S -s )
+ulimit_s=$(ulimit -S -s)
 
 # Find module command and purge:
 source "${HOMEgfs}/ush/detect_machine.sh"
@@ -26,12 +26,12 @@ source "${HOMEgfs}/versions/run.ver"
 module use "${HOMEgfs}/modulefiles"
 
 case "${MACHINE_ID}" in
-  "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
-    module load "module_base.${MACHINE_ID}"
-    ;;
-  *)
-    echo "WARNING: UNKNOWN PLATFORM"
-    ;;
+"wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
+  module load "module_base.${MACHINE_ID}"
+  ;;
+*)
+  echo "WARNING: UNKNOWN PLATFORM"
+  ;;
 esac
 
 module list
@@ -45,14 +45,14 @@ elif [[ "${set_x}" == "YES" ]]; then
 fi
 
 # Set up the PYTHONPATH for wxflow if it is not already loaded
-if ! python3 -c "import wxflow" 2>/dev/null; then
-  if [[ -d "${HOMEgfs}/sorc/wxflow/src/wxflow" ]]; then
-    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src/wxflow"
+if ! python -c "import wxflow" 2>/dev/null; then
+  if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
+    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
   fi
 fi
 
-# Add HOMEgfs/ush to PYTHONPATH
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush"
+# Add HOMEgfs/ush/python to PYTHONPATH
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
 export PYTHONPATH
 
 # Restore stack soft limit:

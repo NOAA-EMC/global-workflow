@@ -169,8 +169,8 @@ ush/global_chgres_driver.sh
 ush/global_cycle.sh
 ush/global_cycle_driver.sh
 ush/jediinc2fv3.py
-ush/ufsda
-ush/soca
+ush/python/ufsda
+ush/python/soca
 ush/imsfv3_scf2ioda.py
 ush/atparse.bash
 ush/run_bufr2ioda.py

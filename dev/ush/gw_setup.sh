@@ -16,8 +16,8 @@ module load "module_gwsetup.${MACHINE_ID}"
 
 # Set up the PYTHONPATH for wxflow if it is not already loaded
 if ! python3 -c "import wxflow" 2>/dev/null; then
-  if [[ -d "${HOMEgfs}/sorc/wxflow/src/wxflow" ]]; then
-    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src/wxflow"
+  if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
+    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
     export PYTHONPATH
   fi
 fi
