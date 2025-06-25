@@ -57,6 +57,7 @@
   script:
     - |
       echo "Finalizing test cases on ${machine} using ${GW_HOMEgfs}"
+      # Set GFS_CI_RUN_TYPE to "nightly" in the Gitlab pipeline scheduler
       if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
         echo "This is a scheduled pipeline, creating date-based directories and symlinks to stable"
         echo "Creating date-based directory: ${WORKSPACE_DATE}"

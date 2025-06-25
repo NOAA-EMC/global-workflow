@@ -89,7 +89,8 @@ include:
       echo "Setting up build environment for ${machine}"
       echo "Using build directory ${GW_HOMEgfs}"
       git submodule status
-
+      # When GFS_CI_RUN_TYPE is set to "nightly", we use the develop branch
+      # It should be set when configuring the scheculed nightly pipeline
       if [[ ${GFS_CI_RUN_TYPE} == "pr_cases" && ${PR_NUMBER} != 0 ]]; then
         echo "pipeline is set to checkout PR_NUMBER=${PR_NUMBER} from ${GW_REPO_URL}"
         git remote add github "${GW_REPO_URL}"
