@@ -78,6 +78,7 @@
 {% set COMOUT_OCEAN_ANALYSIS_MEM_list = [] %}
 {% set COMOUT_MED_RESTART_PREV_MEM_list = [] %}
 {% set COMOUT_WAVE_RESTART_PREV_MEM_list = [] %}
+{% set COMOUT_CHEM_ANALYSIS_MEM_list = [] %}
 
 # Construct member COM directory lists
 # ------------------------------------
@@ -110,6 +111,7 @@
     {% set COMOUT_OCEAN_ANALYSIS_MEM = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
     {% set COMOUT_MED_RESTART_PREV_MEM = COM_MED_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
     {% set COMOUT_WAVE_RESTART_PREV_MEM = COM_WAVE_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
+    {% set COMOUT_CHEM_ANALYSIS_MEM = COM_CHEM_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
 
     # Append the member COM directories
     {% do COMOUT_ATMOS_INPUT_MEM_list.append(COMOUT_ATMOS_INPUT_MEM)%}
@@ -122,6 +124,7 @@
     {% do COMOUT_OCEAN_ANALYSIS_MEM_list.append(COMOUT_OCEAN_ANALYSIS_MEM)%}
     {% do COMOUT_MED_RESTART_PREV_MEM_list.append(COMOUT_MED_RESTART_PREV_MEM)%}
     {% do COMOUT_WAVE_RESTART_PREV_MEM_list.append(COMOUT_WAVE_RESTART_PREV_MEM)%}
+    {% do COMOUT_CHEM_ANALYSIS_MEM_list.append(COMOUT_CHEM_ANALYSIS_MEM)%}
 
 {% endfor %}
 
@@ -187,5 +190,11 @@
 {% if DO_WAVE %}
 {% filter indent(width=4) %}
 {% include "wave.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if DO_AERO_ANL %}
+{% filter indent(width=4) %}
+{% include "aero.yaml.j2" %}
 {% endfilter %}
 {% endif %}

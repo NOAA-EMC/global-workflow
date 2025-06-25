@@ -38,27 +38,21 @@ for grd in ${WAVECUR_FID} ${WAVEICE_FID} ${WAVEWND_FID} ${waveuoutpGRD} ${waveGR
 done
 
 for grdID in "${grdALL[@]}"; do
-  if [[ -f "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" ]]; then
-    echo "INFO: Mod def file for ${grdID} found in ${COMOUT_WAVE_PREP}. copying ...."
-    cpreq "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
-
+  echo "INFO: Setting up to generate mod_def file for ${grdID}"
+  if [[ -f "${FIXgfs}/wave/ww3_grid.inp.${grdID}" ]]; then
+    cpreq "${FIXgfs}/wave/ww3_grid.inp.${grdID}" "ww3_grid.inp.${grdID}"
+    echo "INFO: ww3_grid.inp.${grdID} copied (${FIXgfs}/wave/ww3_grid.inp.${grdID})."
   else
-    echo "INFO: Mod def file for ${grdID} not found in ${COMOUT_WAVE_PREP}. Setting up to generate ..."
-    if [[ -f "${FIXgfs}/wave/ww3_grid.inp.${grdID}" ]]; then
-      cpreq "${FIXgfs}/wave/ww3_grid.inp.${grdID}" "ww3_grid.inp.${grdID}"
-      echo "INFO: ww3_grid.inp.${grdID} copied (${FIXgfs}/wave/ww3_grid.inp.${grdID})."
-    else
-      export err=2
-      err_exit "No inp file for model definition file for grid ${grdID}"
-    fi
-
-    if [[ -f "${FIXgfs}/wave/${grdID}.msh" ]]; then
-      cpreq "${FIXgfs}/wave/${grdID}.msh" "${grdID}.msh"
-    fi
-    #TODO: how do we say "it's unstructured, and therefore need to have error check here"
-
-    echo "${USHgfs}/wave_grid_moddef.sh ${grdID}" >> mpmd_script
+    export err=2
+    err_exit "No inp file for model definition file for grid ${grdID}"
   fi
+
+  if [[ -f "${FIXgfs}/wave/${grdID}.msh" ]]; then
+    cpreq "${FIXgfs}/wave/${grdID}.msh" "${grdID}.msh"
+  fi
+  #TODO: how do we say "it's unstructured, and therefore need to have error check here"
+
+  echo "${USHgfs}/wave_grid_moddef.sh ${grdID}" >> mpmd_script
 done
 
 # 1.a.1 Execute MPMD or process serially
