@@ -485,6 +485,53 @@ class GEFSTasks(Tasks):
 
         return task
 
+    def awips(self):
+
+        resources = self.get_resource('awips')
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_ensstat_#fhr_label#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        fhrs = self._get_forecast_hours(self.run, self._configs['awips'])
+
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        is_replay = self._configs['awips']['REPLAY_ICS']
+        if is_replay and 0 in fhrs:
+            fhrs.remove(0)
+
+        max_tasks = self._configs['awips']['MAX_TASKS']
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Adjust walltime based on the largest group
+        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
+        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
+
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHR_LIST': '#fhr_list#'}
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        task_name = f'{self.run}_awips_#fhr_label#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': postenvars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEgfs}/dev/jobs/awips.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'}
+
+        fhr_metatask_dict = {'task_name': f'{self.run}_awips',
+                             'task_dict': task_dict,
+                             'var_dict': fhr_var_dict}
+
+        task = rocoto.create_task(fhr_metatask_dict)
+
+        return task
+
     def wavepostsbs(self):
 
         wave_grid = self._configs['base']['waveGRD']
