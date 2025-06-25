@@ -63,19 +63,18 @@ enkf:
                            "atmensanlsol.yaml",
                            "atmensanlfv3inc.yaml",
                            "correction_increment.yaml",
-                           "ensemble_recenter.yaml",
-                           "atmensstat"] %}
+                           "ensemble_recenter.yaml"] %}
         {% else %}
         {% set da_files = ["atmensanlletkf.yaml",
                            "atmensanlfv3inc.yaml",
                            "correction_increment.yaml",
-                           "ensemble_recenter.yaml",
-                           "atmensstat"] %}
+                           "ensemble_recenter.yaml"] %}
         {% endif %}
         {% endif %}
         {% for file in da_files %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
+        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}{{ file }}"
         {% endfor %}
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmensstat"
 
         {% if DO_JEDISNOWDA %}
         - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
