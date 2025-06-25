@@ -31,7 +31,8 @@ stages:
 variables:
   PIPELINE_TYPE: ${PIPELINE_TYPE:-"pr_cases"}  # Default to PR cases if not set
   RUN_ON_MACHINES: ${RUN_ON_MACHINES:-"all"}   # Default to all machines if not set
-  GFS_CI_RUN_TYPE: ${GFS_CI_RUN_TYPE:-"nightly"}  # Default run type
+  GFS_CI_RUN_TYPE: ${GFS_CI_RUN_TYPE:-${PIPELINE_TYPE}}  # Default run type
+  GW_REPO_URL: ${GW_REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
   # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
   WORKSPACE_ID: ${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
   # Define a base path that will be used for initial cloning
@@ -89,11 +90,11 @@ include:
       echo "Using build directory ${GW_HOMEgfs}"
       git submodule status
 
-      if [[ ${CI_PIPELINE_SOURCE} == "trigger" && ${PR_NUMBER} != 0 ]]; then
-        echo "Triggering pipeline via GitHub API running CTests on PR_NUMBER=${PR_NUMBER}"
-        #git remote add github "${GW_REPO_URL}"
-        #git fetch github
-        #gh pr checkout "${PR_NUMBER}"
+      if [[ ${GFS_CI_RUN_TYPE} == "pr_cases" && ${PR_NUMBER} != 0 ]]; then
+        echo "pipeline is set to checkout PR_NUMBER=${PR_NUMBER} from ${GW_REPO_URL}"
+        git remote add github "${GW_REPO_URL}"
+        git fetch github
+        gh pr checkout "${PR_NUMBER}"
       fi
 
       dev/ci/scripts/utils/ci_utils.sh build
