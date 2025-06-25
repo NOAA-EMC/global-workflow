@@ -33,7 +33,7 @@ variables:
   RUN_ON_MACHINES: ${RUN_ON_MACHINES:-"all"}   # Default to all machines if not set
   GFS_CI_RUN_TYPE: ${GFS_CI_RUN_TYPE:-"nightly"}  # Default run type
   # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
-  WORKSPACE_ID: ${GFS_CI_RUN_TYPE_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
+  WORKSPACE_ID: ${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
   # Define a base path that will be used for initial cloning
   GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_ID}/global-workflow
   GIT_DEPTH: 10
