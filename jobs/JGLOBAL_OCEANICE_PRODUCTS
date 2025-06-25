@@ -13,11 +13,16 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMOUT_${COMPONENT^^}_GRIB":"COM
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMOUT_${COMPONENT^^}_NETCDF":"COM_${COMPONENT^^}_NETCDF_TMPL"
 
 ###############################################################
+#RUN_WITH_CONTAINER=YES
 # Run exglobal script
 if [ "$RUN_WITH_CONTAINER" == "YES" ]; then
+<<<<<<< HEAD
     export WGRIB2=${HOMEgfs}/ush/container/run_wgrib2.sh
     ${HOMEgfs}/exec/run_python.sh ${SCRgfs}/exglobal_oceanice_products.py -c -v
     export WGRIB2=${HOMEgfs}/exec/run_wgrib2.sh
+=======
+    ${HOMEgfs}/exec/run_python.sh ${SCRgfs}/exglobal_oceanice_products.py
+>>>>>>> origin/feature/container-on-ursa-readonly
 else
     "${SCRgfs}/exglobal_oceanice_products.py" && true
 fi

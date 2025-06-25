@@ -4,17 +4,20 @@
 
 HOMEgfs="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
 TRACE=NO source "${HOMEgfs}/ush/preamble.sh"
+_run_with_container=false
 
 function usage() {
   cat <<EOF
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-h][-o][--nest]
+Usage: ${BASH_SOURCE[0]} [-h][-o][-r][--nest]
   -h:
     Print this help message and exit
   -o:
     Configure for NCO (copy instead of link)
+  -r:
+    Configure run with container
 EOF
   exit 1
 }
@@ -23,12 +26,16 @@ RUN_ENVIR="emc"
 
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":ho-:" option; do
+while getopts ":hor-:" option; do
   case "${option}" in
   h) usage ;;
   o)
     echo "-o option received, configuring for NCO"
     RUN_ENVIR="nco"
+    ;;
+  r)
+    echo "-r option received, configuring run with container"
+    _run_with_container=true
     ;;
   -)
     if [[ "${OPTARG}" == "nest" ]]; then
@@ -72,12 +79,12 @@ ${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/ru
 case "${machine}" in
 "wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
 "hera") FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
+"ursa") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
 "orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
 "gaeac6") FIX_DIR="/gpfs/f6/drsa-precip3/world-shared/role.glopara/fix" ;;
 "noaacloud") FIX_DIR="/contrib/global-workflow-shared-data/fix" ;;
-"container") FIX_DIR="/contrib/global-workflow-shared-data/fix" ;;
 *)
   echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
   exit 1
@@ -203,14 +210,6 @@ if [[ -s "atparse.bash" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
 
-# add ufs_utils parm dir 
-if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
-  cd "${HOMEgfs}/parm" || exit 1
-  mkdir -p regrid_sfc
-  cd regrid_sfc || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/parm/regrid_sfc/regrid.nml_tmpl" .
-fi
-
 #------------------------------
 #--add GDASApp fix directory
 #------------------------------
@@ -314,8 +313,14 @@ for sys in "${model_systems[@]}"; do
   if [[ -s "${model_exe}" ]]; then
     rm -f "${model_exe}"
   fi
-  if [[ -f "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
+  if [[ "$_run_with_container" == "true" ]]; then
+      if [[ -f "${HOMEgfs}/bin/${model_exe}" ]]; then
+        ${LINK_OR_COPY} "${HOMEgfs}/bin/${model_exe}" "${model_exe}"
+      fi
+  else
+      if [[ -f "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
+      fi
   fi
 done
 

@@ -16,7 +16,7 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
-                       'GAEAC5', 'GAEAC6', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
+                       'GAEAC5', 'GAEAC6', 'URSA', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
     def __init__(self, host=None):
 
@@ -56,6 +56,7 @@ class Host:
         # Detect the machine since MACHINE_ID is not set
         if os.path.exists('/scratch1/NCEPDEV'):
             self.machine = 'HERA'
+            machine_id = 'HERA'
         elif os.path.exists('/work/noaa'):
             self.machine = socket.gethostname().split("-", 1)[0].upper()
         elif os.path.exists('/lfs/f1'):
@@ -64,6 +65,9 @@ class Host:
             self.machine = 'GAEAC5'
         elif os.path.exists('/gpfs/f6'):
             self.machine = 'GAEAC6'
+        elif os.path.exists('/scratch3/NCEPDEV'):
+            self.machine = 'URSA'
+            machine_id = 'URSA'
         elif container is not None:
             self.machine = 'CONTAINER'
         elif pw_csp is not None:

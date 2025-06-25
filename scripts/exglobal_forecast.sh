@@ -175,11 +175,14 @@ else
   export OMP_NUM_THREADS=${UFS_THREADS:-1}
 fi
 
+<<<<<<< HEAD
 echo "EXECgfs: ${EXECgfs}"
 echo "FCSTEXEC: ${FCSTEXEC}"
 echo "DATA: ${DATA}"
 echo "APRUN_UFS: ${APRUN_UFS}"
 
+=======
+>>>>>>> origin/feature/container-on-ursa-readonly
 cpreq "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?

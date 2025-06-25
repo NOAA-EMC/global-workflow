@@ -9,7 +9,11 @@ fi
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
 
+<<<<<<< HEAD
 #RUN_WITH_CONTAINER=YES
+=======
+RUN_WITH_CONTAINER=YES
+>>>>>>> origin/feature/container-on-ursa-readonly
 if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
   if [[ -v PATH ]]; then
     if [[ "$PATH" =~ "prod-util" ]]; then

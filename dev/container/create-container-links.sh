@@ -2,8 +2,6 @@
 
 verbose=true
 
-#echo "Verbose: $verbose"
-
 source ${HOMEgfs}/ush/detect_machine.sh
 
 bindings="-B /scratch3 -B /scratch4"
@@ -19,8 +17,10 @@ elif [[ ${MACHINE_ID} = gaea* ]] ; then
     container=/gpfs/f6/scratch/Wei.Huang/container/ubuntu22.04-intel-ufs-env-v1.6.0.img
 fi
 
-#echo "HOMEgfs: $HOMEgfs"
-#echo "container: $container"
+echo "HOMEgfs: $HOMEgfs"
+echo "container: $container"
+echo "bindings: $bindings"
+echo "Verbose: $verbose"
 
 #${HOMEgfs}/dev/container/gen-wrapper.sh -H ${HOMEgfs} -c ${container} -b "${bindings}"
 

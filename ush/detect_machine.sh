@@ -8,12 +8,6 @@
 #
 # Thank you for your contribution
 
-# Overwrite auto-detect if it is in a container.
-if [[ -d /opt/spack-stack ]]; then
-  # We are in a container
-  MACHINE_ID=container
-fi
-
 # If the MACHINE_ID variable is set, skip this script.
 if [[ -n "${MACHINE_ID:-}" ]]; then
     return
@@ -38,6 +32,9 @@ case $(hostname -f) in
   hfe0[1-9]) MACHINE_ID=hera ;; ### hera01-09
   hfe1[0-2]) MACHINE_ID=hera ;; ### hera10-12
   hecflow01) MACHINE_ID=hera ;; ### heraecflow01
+
+  ufe0[1-9]) MACHINE_ID=ursa ;; ### ursa01-09
+  ufe1[0-2]) MACHINE_ID=ursa ;; ### ursa10-12
 
   s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
 
@@ -84,6 +81,9 @@ elif [[ -d /mnt/lfs5 ]]; then
 elif [[ -d /scratch1 ]]; then
   # We are on NOAA Hera
   MACHINE_ID=hera
+elif [[ -d /scratch3 ]]; then
+  # We are on NOAA Ursa
+  MACHINE_ID=ursa
 elif [[ -d /work ]]; then
   # We are on MSU Orion or Hercules
   mount=$(findmnt -n -o SOURCE /home)
@@ -104,5 +104,3 @@ elif [[ -d /data/prod ]]; then
 else
   echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
-
-export MACHINE_ID

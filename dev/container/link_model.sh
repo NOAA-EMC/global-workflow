@@ -38,9 +38,9 @@ if [[ ! -v HOMEgfs || ! -v container || ! -v model ]]; then
    exit -1
 fi
 
-#echo "HOMEgfs: $HOMEgfs"
-#echo "model: $model"
-#echo "Verbose: $verbose"
+echo "HOMEgfs: $HOMEgfs"
+echo "model: $model"
+echo "Verbose: $verbose"
 
 if [[ "$verbose" == "true" ]]; then
    set -x
@@ -54,10 +54,6 @@ cat > $run_model_script << EOF_MODEL
 
 # Set OMP_NUM_THREADS to 1 to avoid oversubscription when doing MPMD
 export OMP_NUM_THREADS=1
-
-#source /opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/intel/2021.10.0/intel-oneapi-mpi-2021.9.0-6bnjcwc/setvars.sh --force
-#export LD_LIBRARY_PATH=/opt/intel/oneapi/compiler/2023.2.3/linux/compiler/lib/intel64_lin
-#export LD_LIBRARY_PATH=/opt/intel/oneapi/compiler/2024.0/lib:$LD_LIBRARY_PATH
 
 source /usr/lmod/lmod/init/bash
 module purge
