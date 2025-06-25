@@ -24,8 +24,7 @@ local hsi_mod_path=(os.getenv("hsi_mod_path") or "None")
 append_path("MODULEPATH", hsi_mod_path)
 load(pathJoin("hsi", (os.getenv("hsi_ver") or "None")))
 
--- Unload the wgrib2 module and point to the wgrib2 executable with ipolates
-unload("wgrib2")
+-- Point to the wgrib2 executable with ipolates
 setenv("WGRIB2", "/autofs/ncrc-svm1_proj/epic/c6/spack-stack/spack-stack-1.9.1/envs/gw-intel-2023.2.0/install/intel/2023.2.0/wgrib2-3.6.0-fjguk3g/bin/wgrib2")
 prepend_path("PATH", "/autofs/ncrc-svm1_proj/epic/c6/spack-stack/spack-stack-1.9.1/envs/gw-intel-2023.2.0/install/intel/2023.2.0/wgrib2-3.6.0-fjguk3g/bin")
 
