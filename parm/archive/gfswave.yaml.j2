@@ -23,7 +23,7 @@ gfswave:
         {% endfor %}
 
         # Global wave GRIB2 forecast products
-        {% for fh in range(FHMAX_HF_WAV + FHOUT_WAV, FHMAX_WAV_GFS + FHOUT_WAV, FHOUT_WAV) %}
+        {% for fh in range(FHMAX_HF_WAV + FHOUT_WAV_GFS, FHMAX_WAV_GFS + FHOUT_WAV_GFS, FHOUT_WAV_GFS) %}
         - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
         - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
         {% endfor %}

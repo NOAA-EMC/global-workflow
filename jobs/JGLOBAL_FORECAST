@@ -21,8 +21,10 @@ if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 ##############################################
 
 # Restart conditions for GFS cycle come from GDAS
+# Restart conditions for GCAFS cycle come from GCDAS
 rCDUMP="${RUN}"
-export rCDUMP="${RUN/gfs/gdas}"
+rCDUMP="${RUN/gfs/gdas}"
+export rCDUMP="${rCDUMP/gcafs/gcdas}"
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
@@ -35,7 +37,6 @@ declare -rx gcyc="${GDATE:8:2}"
 # Construct COM variables from templates (see config.com)
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
   COMIN_ATMOS_INPUT:COM_ATMOS_INPUT_TMPL \
-  COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
   COMOUT_CONF:COM_CONF_TMPL \
   COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
   COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
@@ -44,6 +45,16 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
 
 RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
   COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+
+# GCAFS/GCDAS uses an offline atmospheric analysis
+if [[ "${RUN}" =~ "gcafs" ]] || [[ "${RUN}" =~ "gcdas" ]]; then
+  YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
+    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+else
+  # other runs use their own atmospheric analysis
+  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+fi
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
   YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
@@ -79,6 +90,8 @@ fi
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
   YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
     COMOUT_CHEM_HISTORY:COM_CHEM_HISTORY_TMPL
+  YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
+    COMIN_TRACER_RESTART:COM_ATMOS_RESTART_TMPL
 fi
 
 

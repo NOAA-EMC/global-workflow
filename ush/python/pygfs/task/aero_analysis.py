@@ -17,6 +17,7 @@ from wxflow import (AttrDict,
                     YAMLFile, parse_j2yaml,
                     logit)
 from pygfs.jedi import Jedi
+import numpy as np
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -61,10 +62,10 @@ class AerosolAnalysis(Task):
                 'npz_anl': self.task_config['LEVS'] - 1,
                 'AERO_WINDOW_BEGIN': _window_begin,
                 'AERO_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
-                'aero_bkg_fhr': self.task_config['aero_bkg_times'],
+                'aero_bkg_fhr': [fh - 3 for fh in self.task_config['aero_bkg_times']],
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'GPREFIX': f"gcdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'aero_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'aero_obsdataout_path': f"{self.task_config.DATA}/diags/",
                 'BKG_TSTEP': "PT3H"  # FGAT
@@ -101,17 +102,21 @@ class AerosolAnalysis(Task):
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # # stage bias corrections
-        # logger.info(f"Staging list of bias correction files")
-        # bias_dict = self.jedi_dict['aeroanlvar'].render_jcb(self.task_config, 'aero_bias_staging')
-        # if bias_dict['copy'] is None:
-        #     logger.info(f"No bias correction files to stage")
-        # else:
-        #     bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
-        #     FileHandler(bias_dict).sync()
-        #     logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+        logger.info(f"Staging list of bias correction files")
+        bias_dict = self.jedi_dict['aeroanlvar'].render_jcb(self.task_config, 'aero_bias_staging')
 
-        #     # extract bias corrections
-        #     Jedi.extract_tar_from_filehandler_dict(bias_dict)
+        if bias_dict['copy'] is None:
+            logger.info(f"No bias correction files to stage")
+        else:
+            try:
+                bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
+                FileHandler(bias_dict).sync()
+                logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+
+                # extract bias corrections
+                Jedi.extract_tar_from_filehandler_dict(bias_dict)
+            except FileNotFoundError:
+                logger.error(f"Bias correction files or directories do not exist:\n{pformat(bias_dict)}")
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
@@ -183,12 +188,23 @@ class AerosolAnalysis(Task):
         self._add_fms_cube_sphere_increments()
 
         # tar up bias correction files
-        # NOTE TODO
+        bfile = f"{self.task_config.APREFIX}aero_varbc_params.tar"
+        aertar = os.path.join(self.task_config.COMOUT_CHEM_ANALYSIS, bfile)
+
+        # get lists of aerosol bias correction files to add to tarball
+        satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
 
         # copy files back to COM
         logger.info(f"Copying files to COM based on {self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL}")
         aero_var_final_list = parse_j2yaml(self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL, self.task_config)
         FileHandler(aero_var_final_list).sync()
+
+        # tar aerosol bias correction files to ROTDIR
+        logger.info(f"Creating aerosol bias correction tar file {aertar}")
+        with tarfile.open(aertar, 'w') as aerbcor:
+            for satfile in satlist:
+                aerbcor.add(satfile, arcname=os.path.basename(satfile))
+            logger.info(f"Add {aerbcor.getnames()}")
 
         # open tar file for writing
         with tarfile.open(aerostat, "w|gz") as archive:
@@ -238,6 +254,8 @@ class AerosolAnalysis(Task):
             with Dataset(inc_path, mode='r') as incfile, Dataset(bkg_path, mode='a') as rstfile:
                 for vname in incvars:
                     increment = incfile.variables[vname][:]
+                    # round to 7th decimal due to JEDI reproducibility issues when changing PE count
+                    increment = np.round(increment, 7)
                     bkg = rstfile.variables[vname][:]
                     anl = bkg + increment
                     rstfile.variables[vname][:] = anl[:]

@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+source "${HOMEgfs}/ush/atparse.bash"
+
 #-------------------------------------------------------------------------------------------------
 # Script to regrid surface increment from GSI grid
 # to fv3 tiles.
@@ -28,7 +30,7 @@ APREFIX_ENS="enkfgdas.t${cyc}z."
 
 LSOIL_INCR=${LSOIL_INCR:-2}
 
-n_vars=$(( LSOIL_INCR*2 ))
+export n_vars=$(( LSOIL_INCR*2 ))
 
 soil_incr_vars=""
 for vi in $( seq 1 "${LSOIL_INCR}" ); do
@@ -38,33 +40,19 @@ for vi in $( seq 1 "${LSOIL_INCR}" ); do
     soil_incr_vars=${soil_incr_vars}'"slc'${vi}'_inc"',
 done
 
-cat << EOF > regrid.nml
- &config
-  n_vars=${n_vars},
-  variable_list=${soil_incr_vars}
-  missing_value=0.,
- /
- &input
-  gridtype="gau_inc",
-  ires=${LONB_CASE_IN},
-  jres=${LATB_CASE_IN},
-  fname="enkfgdas.sfci.nc",
-  dir="./",
-  fname_coord="gaussian_scrip.nc",
-  dir_coord="./"
-/
+if [[ "${DO_LAND_IAU}" = ".true." ]]; then
+    IFS=',' read -ra landifhrs <<< "${IAUFHRS}"
+fi
+export in_fname="'enkfgdas.sfci'"
+export out_fname="'sfci'"
+export dir_mask_in="'./'"
+export fname_mask_in="'NULL'"
+export ires=${LONB_CASE_IN}
+export jres=${LATB_CASE_IN}
+export ireso=${CASE_OUT:1}
+export jreso=${CASE_OUT:1}
 
- &output
-  gridtype="fv3_rst",
-  ires=${CASE_OUT:1},
-  jres=${CASE_OUT:1},
-  fname="sfci",
-  dir="./",
-  fname_mask="vegetation_type"
-  dir_mask="./"
-  dir_coord="./",
- /
-EOF
+regrid_nml_tmpl="${PARMgfs}/regrid_sfc/regrid.nml_tmpl" 
 
 # input, fixed files
 cpreq "${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
@@ -104,15 +92,49 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     fi
 
     for FHR in "${soilinc_fhrs[@]}"; do
+
+        export add_time_dim=".false."
+        export time_list="${FHR}"
+
+        rm -f "regrid.nml"
+        atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
+
         cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-              "${DATA}/enkfgdas.sfci.nc"
+               "${DATA}/enkfgdas.sfci00${FHR}.nc"
 
         ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
         for n in $(seq 1 "${ntiles}"); do
             cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
         done
-    done
+    done 
+
+    if [[ "${DO_LAND_IAU}" = ".true." ]]; then 
+
+        export add_time_dim=".true."
+        export time_list="${IAUFHRS}"
+
+        rm -f "regrid.nml"
+        atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
+
+        for FHI in "${landifhrs[@]}"; do
+            cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHI}.nc" \
+                  "${DATA}/enkfgdas.sfci00${FHI}.nc"
+        done
+        
+        export pgm="${REGRID_EXEC}"
+	      ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+	      export err=$?
+	      if [[ ${err} -ne 0 ]]; then
+	          err_exit "${pgm} failed, ABORT!"
+	      fi
+
+        for n in $(seq 1 "${ntiles}"); do
+            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
+        done
+	    
+    fi
+
 done
 
 exit 0

@@ -10,6 +10,22 @@ class GEFSTasks(Tasks):
 
     def stage_ic(self):
 
+        stage_ic_map = {'gefs-offline': self._offline_stage_ic,
+                        'near-real-time': self._rt_stage_ic}
+        # Check if gefstype is valid
+        if self.app_config.gefstype not in stage_ic_map:
+            if not isinstance(self.app_config.gefstype, str):
+                raise TypeError(f'gefstype must be a string')
+            raise NotImplementedError(f'{self.app_config.gefstype} is not a valid type.\n'
+                                      f'Currently supported GEFS types are:\n'
+                                      f'{" | ".join(stage_ic_map.keys())}')
+        # Call the appropriate method based on gefstype
+        task = stage_ic_map[self.app_config.gefstype]()
+
+        return task
+
+    def _offline_stage_ic(self):
+
         resources = self.get_resource('stage_ic')
         task_name = f'{self.run}_stage_ic'
         task_dict = {'task_name': task_name,
@@ -17,6 +33,57 @@ class GEFSTasks(Tasks):
                      'envars': self.envars,
                      'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/dev/jobs/stage_ic.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def _rt_stage_ic(self):
+
+        resources = self.get_resource('stage_ic')
+        stage_ic_envars = self.envars.copy()
+        stage_ic_dict = {'ENSMEM': '#member#',
+                         'MEMDIR': 'mem#member#'}
+
+        for key, value in stage_ic_dict.items():
+            stage_ic_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        task_name = f'{self.run}_stage_ic_mem#member#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': stage_ic_envars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEgfs}/dev/jobs/stage_ic.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_stage_ic',
+                                'task_dict': task_dict,
+                                'var_dict': member_var_dict
+                                }
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
+    def gen_control_ic(self):
+        dependencies = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
+        dependencies.append(rocoto.add_dependency(dep_dict))
+
+        resources = self.get_resource('gen_control_ic')
+        task_name = f'{self.run}_gen_control_ic'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEgfs}/dev/jobs/gen_control_ic.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -61,13 +128,16 @@ class GEFSTasks(Tasks):
 
     def fcst(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
-        dependencies.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.gefstype in ['gefs-offline']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+        elif self.app_config.gefstype in ['near-real-time']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_gen_control_ic'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
             dependencies.append(rocoto.add_dependency(dep_dict))
-
         if self.options['do_aero_fcst']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
@@ -107,13 +177,15 @@ class GEFSTasks(Tasks):
 
     def efcs(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
-        dependencies.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.gefstype in ['gefs-offline']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+        elif self.app_config.gefstype in ['near-real-time']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
 
         if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
             dependencies.append(rocoto.add_dependency(dep_dict))
-
         if self.options['do_aero_fcst']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
@@ -406,6 +478,53 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'}
 
         fhr_metatask_dict = {'task_name': f'{self.run}_atmos_ensstat',
+                             'task_dict': task_dict,
+                             'var_dict': fhr_var_dict}
+
+        task = rocoto.create_task(fhr_metatask_dict)
+
+        return task
+
+    def awips(self):
+
+        resources = self.get_resource('awips')
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_ensstat_#fhr_label#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        fhrs = self._get_forecast_hours(self.run, self._configs['awips'])
+
+        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
+        is_replay = self._configs['awips']['REPLAY_ICS']
+        if is_replay and 0 in fhrs:
+            fhrs.remove(0)
+
+        max_tasks = self._configs['awips']['MAX_TASKS']
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Adjust walltime based on the largest group
+        largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
+        resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
+
+        postenvars = self.envars.copy()
+        postenvar_dict = {'FHR_LIST': '#fhr_list#'}
+        for key, value in postenvar_dict.items():
+            postenvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        task_name = f'{self.run}_awips_#fhr_label#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': postenvars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEgfs}/dev/jobs/awips.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'}
+
+        fhr_metatask_dict = {'task_name': f'{self.run}_awips',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 

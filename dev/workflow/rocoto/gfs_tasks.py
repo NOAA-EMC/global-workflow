@@ -1523,7 +1523,7 @@ class GFSTasks(Tasks):
             fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
             fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
-        nawipsgrp = config['NAWIPSGRP']
+        nawipsgrp = config['MAX_TASKS']
         ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
 
         fhrs = [f'f{fhr:03d}' for fhr in fhrs]
@@ -1598,7 +1598,6 @@ class GFSTasks(Tasks):
         for key, value in gempak_dict.items():
             gempak_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        resources = self.get_resource('gempak')
         task_name = f'{self.run}_gempak_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
