@@ -12,9 +12,6 @@ ulimit_s=$( ulimit -S -s )
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
-# Enable exit on error for robust module loading
-set -e
-
 module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
 module load "ufs_${MACHINE_ID}.intel"
 export err=$?

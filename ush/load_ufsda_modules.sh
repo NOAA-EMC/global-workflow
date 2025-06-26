@@ -36,9 +36,6 @@ ulimit_s=$( ulimit -S -s )
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
-# Enable exit on error for robust module loading
-set -e
-
 # Load our modules:
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 

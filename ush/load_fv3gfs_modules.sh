@@ -22,9 +22,6 @@ source "${HOMEgfs}/ush/module-setup.sh"
 # Source versions file for runtime
 source "${HOMEgfs}/versions/run.ver"
 
-# Enable exit on error for robust module loading
-set -e
-
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"
 
