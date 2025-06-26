@@ -2,19 +2,8 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_atmos_chgres_forenkf.sh
-# Script description:  Runs chgres on full-resolution forecast for EnKF recentering
-#
-# Author: Cory Martin      Org: NCEP/EMC     Date: 2020-06-08
-#
-# Abstract: This script runs chgres on full-resolution forecast for later
-#           use in the EnKF recentering step
-#
-# $Id$
-#
-# Attributes:
-#   Language: POSIX shell
-#
+# Script name:         exglobal_atmos_chgres_gen_control.sh
+# Script description:  Runs chgres on changing resolution of GEFS stage ic control member
 ################################################################################
 
 #  Directories.
@@ -57,21 +46,8 @@ APREFIX=${APREFIX:-""}
 APREFIX_ENS=${APREFIX_ENS:-""}
 # at full resolution
 ATMF03=${ATMF03:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf003.nc}
-ATMF04=${ATMF04:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf004.nc}
-ATMF05=${ATMF05:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf005.nc}
-ATMF06=${ATMF06:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf006.nc}
-ATMF07=${ATMF07:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf007.nc}
-ATMF08=${ATMF08:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf008.nc}
-ATMF09=${ATMF09:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf009.nc}
 # at ensemble resolution
 ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf003.ensres.nc}
-ATMF04ENS=${ATMF04ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf004.ensres.nc}
-ATMF05ENS=${ATMF05ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf005.ensres.nc}
-ATMF06ENS=${ATMF06ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf006.ensres.nc}
-ATMF07ENS=${ATMF07ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf007.ensres.nc}
-ATMF08ENS=${ATMF08ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf008.ensres.nc}
-ATMF09ENS=${ATMF09ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf009.ensres.nc}
-ATMFCST_ENSRES=${ATMFCST_ENSRES:-${COMIN_ATMOS_HISTORY_MEM}/${APREFIX_ENS}atmf006.nc}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -79,45 +55,19 @@ lrun_subdirs=${lrun_subdirs:-".true."}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
 nm=""
-if [ $CFP_MP = "YES" ]; then
-    nm=0
-fi
-if [ $DOHYBVAR = "YES" ]; then
-   l_hyb_ens=.true.
-   export l4densvar=${l4densvar:-".false."}
-   export lwrite4danl=${lwrite4danl:-".false."}
-else
-   echo "DOHYBVAR != YES, this script will exit without regridding deterministic forecast"
-   exit 0
-fi
 
 ################################################################################
-################################################################################
-
 # get resolution information
 LONB_ENKF=${LONB_ENKF:-$($NCLEN $ATMFCST_ENSRES grid_xt)} # get LONB_ENKF
 LATB_ENKF=${LATB_ENKF:-$($NCLEN $ATMFCST_ENSRES grid_yt)} # get LATB_ENFK
 LEVS_ENKF=${LEVS_ENKF:-$($NCLEN $ATMFCST_ENSRES pfull)} # get LATB_ENFK
-
 ##############################################################
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 if [ $DO_CALC_ANALYSIS == "YES" ]; then
-   $NLN $ATMF06 fcst.06
-   $NLN $ATMF06ENS fcst.ensres.06
    $NLN $ATMFCST_ENSRES atmens_fcst
    if [ $DOHYBVAR = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
       $NLN $ATMF03     fcst.03
       $NLN $ATMF03ENS  fcst.ensres.03
-      $NLN $ATMF04     fcst.04
-      $NLN $ATMF04ENS  fcst.ensres.04
-      $NLN $ATMF05     fcst.05
-      $NLN $ATMF05ENS  fcst.ensres.05
-      $NLN $ATMF07     fcst.07
-      $NLN $ATMF07ENS  fcst.ensres.07
-      $NLN $ATMF08     fcst.08
-      $NLN $ATMF08ENS  fcst.ensres.08
-      $NLN $ATMF09     fcst.09
-      $NLN $ATMF09ENS  fcst.ensres.09
    fi
    export OMP_NUM_THREADS=$NTHREADS_CHGRES
    SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS_ENKF}.txt}
@@ -186,3 +136,4 @@ fi
 cd $pwd
 
 exit $err
+

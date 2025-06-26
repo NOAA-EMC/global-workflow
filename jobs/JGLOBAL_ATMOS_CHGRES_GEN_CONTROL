@@ -6,12 +6,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal echgres"
 ##############################################
 # Set variables used in the script
 ##############################################
-export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
-
-
-##############################################
-# Begin JOB SPECIFIC work
-##############################################
 
 export APREFIX="${RUN/enkf}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
@@ -30,10 +24,6 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
-
-##############################################
-# End JOB SPECIFIC work
-##############################################
 
 ##############################################
 # Final processing
