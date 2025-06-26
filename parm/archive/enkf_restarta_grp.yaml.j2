@@ -65,7 +65,7 @@ enkf_restarta_grp:
         {% set rst_delta = "+6H" | to_timedelta %}
         {% endif %} # DOIAU_ENKF
         {% set rst_time = current_cycle | add_to_datetime(rst_delta) %}
-        - "{{ COMIN_OCEAN_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.MOM.res.nc"
+        - "{{ COMIN_OCEAN_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.MOM.r*.nc"
         - "{{ COMIN_ICE_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.cice_model.res.nc"
         {% endif %} # DOHYBVAR_OCN
 
