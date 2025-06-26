@@ -64,7 +64,7 @@ class MarineRecenter(Task):
 
         # Construct dictionary of JEDI objects, one for each JEDI application need for the analysis
         expected_keys = ['gridgen', 'ens_handler']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML_ANALYSIS, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML_ECEN, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self):
@@ -98,6 +98,13 @@ class MarineRecenter(Task):
         logger.info("---------------- Stage ensemble members and CICE restarts")
         soca_ens_list = parse_j2yaml(self.task_config.MARINE_ECEN_STAGE_YAML_TMPL, self.task_config)
         FileHandler(soca_ens_list).sync()
+
+        # initialize JEDI applications
+        logger.info(f"Initializing SOCA gridgen application")
+        self.jedi_dict['gridgen'].initialize(self.task_config)
+
+        logger.info(f"Initializing SOCA ensemble handler")
+        self.jedi_dict['ens_handler'].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
