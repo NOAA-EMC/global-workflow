@@ -210,7 +210,7 @@ function delete_dir() {
 }
 
 if [[ -z "${_runtests}" ]]; then
-   echo "Mising run directory (RUNTESTS) argument/environment variable."
+   echo "Missing run directory (RUNTESTS) argument/environment variable."
    sleep 2
    _usage
    exit 3
