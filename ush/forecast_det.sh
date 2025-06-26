@@ -89,6 +89,9 @@ UFS_det(){
       MOM6_WARMSTART_FILE="none"
       MOM6_INIT_UV="zero"
       ODA_INCUPD="False"
+      #nspinup=0
+      NST_SPINUP=0
+      nstf_name="${NST_MODEL},${NST_SPINUP},${NST_RESV},${ZSEA1},${ZSEA2}"
     fi
 
     # Check for CICE6 restart availability
