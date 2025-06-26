@@ -1,9 +1,8 @@
 experiment:
-  system: gfs
+  net: gfs
   mode: cycled
 
 arguments:
-  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: S2S
   resdetatmos: 384

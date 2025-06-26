@@ -160,7 +160,7 @@ class SnowEnsAnalysis(Task):
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
+        self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=False)
 
         # initialize ensemble mean computation
         logger.info(f"Initializing JEDI ensemble mean application")
@@ -416,6 +416,11 @@ class SnowEnsAnalysis(Task):
                     'OCNRES': self.task_config.OCNRES,
                     'MYMEM': f"{mem:03d}",
                     'CASE_ENS': self.task_config.CASE_ENS,
+                    'ens_size': self.task_config.ens_size,
+                    'ntiles': self.task_config.ntiles,
+                    'noincr_threshold': self.task_config.noincr_threshold,
+                    'print_debug': self.task_config.print_debug,
+                    'truncate_incr': self.task_config.truncate_incr
                 }
                 nml_data = Jinja(nml_template, nml_config).render
                 logger.debug(f"apply_incr_nml:\n{nml_data}")

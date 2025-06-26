@@ -5,6 +5,8 @@ enkf_restartb_grp:
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
         {% set imem = mem - first_group_mem %}
         {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
+        {% set COMIN_OCEAN_RESTART_MEM = COMIN_OCEAN_RESTART_MEM_list[imem] %}
+        {% set COMIN_ICE_RESTART_MEM = COMIN_ICE_RESTART_MEM_list[imem] %}
 
         # Grab surface analysis data.
         # If IAU is on, grab the beginning of the window, otherwise grab the center.
@@ -39,4 +41,13 @@ enkf_restartb_grp:
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ r_prefix }}.fv_core.res.nc"
         {% endfor %}
         {% endif %}
+
+        # Add ocean restarts
+        {% if DOHYBVAR_OCN %}
+        {% set rst_delta = "+3H" | to_timedelta %}
+        {% set rst_time = current_cycle | add_to_datetime(rst_delta) %}
+        - "{{ COMIN_OCEAN_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.MOM.r*.nc"
+        - "{{ COMIN_ICE_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.cice_model.res.nc"
+        {% endif %}
         {% endfor %}
+

@@ -32,6 +32,13 @@ if (NOT DEFINED HPC_ACCOUNT)
   return()
 endif()
 
+# Set STAGED_CTESTS
+set_from_env_or_default(STAGED_CTESTS STAGED_CTESTS "")
+if (NOT DEFINED STAGED_CTESTS)
+  message(WARNING "STAGED_CTESTS must be set. CTests will not be created.")
+  return()
+endif()
+
 # Set ICSDIR_ROOT
 set_from_env_or_default(ICSDIR_ROOT ICSDIR_ROOT "")
 if (NOT DEFINED ICSDIR_ROOT)
@@ -39,18 +46,10 @@ if (NOT DEFINED ICSDIR_ROOT)
   return()
 endif()
 
-# Set CTESTS_STAGED_TESTS_DIR
-set_from_env_or_default(CTESTS_STAGED_TESTS_DIR CTESTS_STAGED_TESTS_DIR "")
-if (NOT DEFINED CTESTS_STAGED_TESTS_DIR)
-  message(WARNING "CTESTS_STAGED_TESTS_DIR must be set. CTests will not be created.")
-  return()
-endif()
-
 message(STATUS "gw: global-workflow baselines will be used from: '${HOMEgfs}'")
 message(STATUS "gw: global-workflow tests will be run at: '${RUNTESTS}'")
 message(STATUS "gw: global-workflow tests will use the allocation: '${HPC_ACCOUNT}'")
 message(STATUS "gw: global-workflow tests will use ICSDIR_ROOT: '${ICSDIR_ROOT}'")
-message(STATUS "gw: global-workflow tests will use staged data from:  '${CTESTS_STAGED_TESTS_DIR}'")
 
 # Prepare test scripts
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/setup.sh.in
@@ -108,11 +107,5 @@ AddJJOBTest(
 AddJJOBTest(
   CASE "C48_S2SW"
   JOB "gfs_fcst_seg0"
-  TEST_DATE "2021032312"
-)
-
-AddJJOBTest(
-  CASE "C48_S2SW"
-  JOB "gfs_atmos_prod_f000-f003"
   TEST_DATE "2021032312"
 )

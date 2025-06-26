@@ -12,7 +12,6 @@ enkf_marine_grp:
         {% set COMIN_ICE_LETKF_MEM = COMIN_ICE_LETKF_MEM_list[imem] %}
         {% set COMIN_ICE_HISTORY_MEM = COMIN_ICE_HISTORY_MEM_list[imem] %}
 
-
         # Forecast data
         {% if is_gdas %}
         {% for fhr in range(3, 10, 3) %}
@@ -36,5 +35,6 @@ enkf_marine_grp:
         {% if DOLETKF_OCN %}
         - "{{ COMIN_OCEAN_LETKF_MEM | relpath(ROTDIR) }}/{{ head_ocean }}analysis.nc"
         - "{{ COMIN_ICE_LETKF_MEM | relpath(ROTDIR) }}/{{ head_ice }}analysis.nc"
+        - "{{ COMIN_CONF | relpath(ROTDIR) }}/soca_letkf.yaml"
         {% endif %}
         {% endfor %}  # first_group_mem to last_group_mem

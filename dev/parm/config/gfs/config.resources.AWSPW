@@ -5,6 +5,7 @@
 export is_exclusive="True"
 unset memory
 unset "memory_${RUN}"
+export threads_per_task=1
 
 step=$1
 
@@ -14,6 +15,17 @@ case ${step} in
     unset PARTITION_SERVICE
     max_tasks_per_node=48
     tasks_per_node=48
+    ;;
+
+  "anal")
+    export PARTITION_BATCH="compute"
+    max_tasks_per_node=48
+    tasks_per_node=48
+    ;;
+
+  "analcalc" | "analdiag" | "upp")
+    export PARTITION_BATCH="compute"
+    max_tasks_per_node=48
     ;;
 
   *)
