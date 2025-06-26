@@ -29,10 +29,12 @@ stages:
   - finalize
 
 variables:
-  PIPELINE_TYPE: ${PIPELINE_TYPE:-"pr_cases"}  # Default to PR cases if not set
-  RUN_ON_MACHINES: ${RUN_ON_MACHINES:-"all"}   # Default to all machines if not set
-  GFS_CI_RUN_TYPE: ${GFS_CI_RUN_TYPE:-"pr_cases"}  # distinguishes nightly from pr_tests
-  GW_REPO_URL: ${GW_REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
+  PIPELINE_TYPE: pr_cases    # Default to PR Cases if not overwritten by GitLab Scheduled Pipelines
+  RUN_ON_MACHINES: all       # Default to all machines (overwritten by triggers form GitHub)
+  # Set GFS_CI_RUN_TYPE=nightly in the GitLab Scheuled Pipelines
+  # to run the nightly against the develop branch
+  GFS_CI_RUN_TYPE: pr_cases  # default value (overwritten by GitLab Scheuled Pipelines)
+  GW_REPO_URL: https://github.com/NOAA-EMC/global-workflow.git
   # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
   WORKSPACE_ID: ${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
   # Define a base path that will be used for initial cloning
