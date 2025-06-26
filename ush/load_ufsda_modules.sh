@@ -36,6 +36,9 @@ ulimit_s=$( ulimit -S -s )
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
+# Enable exit on error for robust module loading
+set -e
+
 # Load our modules:
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
@@ -50,6 +53,11 @@ case "${MACHINE_ID}" in
       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/cray/pe/mpich/8.1.19/ofi/intel/19.0/lib"
     fi
     module load "${MODS}/${MACHINE_ID}"
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      echo "FATAL ERROR: Failed to load ${MODS}/${MACHINE_ID}"
+      exit 1
+    fi
     ncdump=$( command -v ncdump )
     NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
     export NETCDF

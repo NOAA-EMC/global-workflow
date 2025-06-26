@@ -22,12 +22,20 @@ source "${HOMEgfs}/ush/module-setup.sh"
 # Source versions file for runtime
 source "${HOMEgfs}/versions/run.ver"
 
+# Enable exit on error for robust module loading
+set -e
+
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"
 
 case "${MACHINE_ID}" in
   "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
     module load "module_base.${MACHINE_ID}"
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      echo "FATAL ERROR: Failed to load module_base.${MACHINE_ID}"
+      exit 1
+    fi
     ;;
   *)
     echo "WARNING: UNKNOWN PLATFORM"
