@@ -31,7 +31,7 @@ stages:
 variables:
   PIPELINE_TYPE: ${PIPELINE_TYPE:-"pr_cases"}  # Default to PR cases if not set
   RUN_ON_MACHINES: ${RUN_ON_MACHINES:-"all"}   # Default to all machines if not set
-  GFS_CI_RUN_TYPE: ${GFS_CI_RUN_TYPE:-${PIPELINE_TYPE}}  # distinguishes nightly from pr_tests
+  GFS_CI_RUN_TYPE: ${GFS_CI_RUN_TYPE:-"pr_cases"}}  # distinguishes nightly from pr_tests
   GW_REPO_URL: ${GW_REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
   # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
   WORKSPACE_ID: ${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
