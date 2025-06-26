@@ -15,5 +15,5 @@ arguments:
   nens: 10
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'TOPICDIR' | getenv }}/CPC/C192mx025
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/CPC/C192mx025
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/sfs_full_C192mx025_CPC_ICS.yaml
