@@ -1,7 +1,6 @@
 #!/bin/bash
 
 verbose=false
-bindings="-B /scratch3 -B /scratch4"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in

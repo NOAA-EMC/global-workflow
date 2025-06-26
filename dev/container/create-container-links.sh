@@ -1,19 +1,42 @@
 #!/bin/bash
 
-verbose=true
+HOMEgfs=/gpfs/f6/scratch/Wei.Huang/src/global-workflow-cloud
+verbose=false
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -H|--HOMEgfs)
+      HOMEgfs="$2"
+      shift 2
+      ;;
+    -v|--verbose)
+      verbose=true
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
+
+if [[ ! -v HOMEgfs ]]; then
+   echo "Usage: create-container-links.sh -H/--HOMEgfs gw-home-dir [-v]"
+   exit -1
+fi
 
 source ${HOMEgfs}/ush/detect_machine.sh
+
+echo "MACHINE_ID: ${MACHINE_ID}"
 
 bindings="-B /scratch3 -B /scratch4"
 if [[ ${MACHINE_ID} = ursa* ]] ; then
     echo "We are on NOAA Ursa"
     bindings="-B /scratch3 -B /scratch4"
-    HOMEgfs=/scratch4/NAGAPE/epic/Wei.Huang/dev/global-workflow-cloud
     container=/scratch4/NAGAPE/epic/Wei.Huang/demo/ubuntu22.04-intel-ufs-env-v1.6.0.img
 elif [[ ${MACHINE_ID} = gaea* ]] ; then
     echo "We are on NOAA Gaea"
     bindings="-B /gpfs/f6/scratch"
-    HOMEgfs=/gpfs/f6/scratch/Wei.Huang/src/global-workflow-cloud
     container=/gpfs/f6/scratch/Wei.Huang/container/ubuntu22.04-intel-ufs-env-v1.6.0.img
 fi
 

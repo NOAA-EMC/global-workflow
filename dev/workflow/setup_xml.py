@@ -44,6 +44,8 @@ def input_args(*argv):
                         default=10, required=False)
     parser.add_argument('--force', help='raise warnings instead of errors when possible',
                         action='store_true', dest="force")
+    parser.add_argument('--rocotorun', help='rocotorun fullpath', type=str,
+                        default=None, required=False)
 
     return parser.parse_args(argv[0][0] if len(argv[0]) else None)
 
@@ -89,6 +91,7 @@ def main(*argv):
     rocoto_param_dict = {'maxtries': user_inputs.maxtries,
                          'cyclethrottle': user_inputs.cyclethrottle,
                          'taskthrottle': user_inputs.taskthrottle,
+                         'rocotorun': user_inputs.rocotorun,
                          'verbosity': user_inputs.verbosity}
 
     cfg = Configuration(user_inputs.expdir)
