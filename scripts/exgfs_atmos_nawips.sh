@@ -119,13 +119,18 @@ if [[ ${err} -ne 0 ]]; then
    err_exit
 fi
 
+"${GEMEXE}/gpend"
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "${GEMEXE}/gpend failed!"
+fi
+
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
+
 if [[ ${SENDDBN} == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
       "${destination}/${GEMGRD}"
 fi
 cd "${DATA_RUN}" || exit 1
-
-"${GEMEXE}/gpend"
 
 ############################### END OF SCRIPT #######################
