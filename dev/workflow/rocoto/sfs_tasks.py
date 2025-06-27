@@ -94,7 +94,7 @@ class SFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
+        seg_var_dict = {'seg': ' '.join([f"{seg + 1}" for seg in range(0, num_fcst_segments)])}
         metatask_dict = {'task_name': f'{self.run}_fcst_mem000',
                          'is_serial': True,
                          'var_dict': seg_var_dict,
@@ -151,7 +151,7 @@ class SFSTasks(Tasks):
                          'maxtries': '&MAXTRIES;'
                          }
 
-            seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
+            seg_var_dict = {'seg': ' '.join([f"{seg + 1}" for seg in range(0, num_fcst_segments)])}
             seg_metatask_dict = {'task_name': f'{self.run}_fcst_mem{member}',
                                  'is_serial': True,
                                  'var_dict': seg_var_dict,

@@ -431,13 +431,23 @@ WW3_postdet() {
     first_ww3_restart_out=$(date --utc -d "${first_ww3_restart_out:0:8} ${first_ww3_restart_out:8:2} + ${half_window} hours" +%Y%m%d%H)
   fi
 
+  # Link restart files to their expected names in DATArestart/WW3_RESTART
+  # TODO: Have the UFSWM write out the WW3 restart files in the expected format of 'YYYYMMDD.HHmmSS.restart.ww3.nc'
+  for (( vdate = first_ww3_restart_out; vdate <= forecast_end_cycle;
+         vdate = $(date --utc -d "${vdate:0:8} ${vdate:8:2} + ${restart_interval} hours" +%Y%m%d%H) )); do
+    seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
+    ww3_restart_ufs_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"  # UFS restart file name
+    ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"  # WW3 restart file name in COM
+    ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${DATArestart}/WW3_RESTART/${ww3_restart_ufs_file}"
+  done
+
   # TODO: link GEFS restart for next cycle IC
   #if [[ "${RUN}" == "gefs" ]]; then
   #  vdate=${model_start_date_next_cycle}
   #  seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
   #  ww3_restart_ufs_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"
   #  ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"
-  #  ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${ww3_restart_ufs_file}"
+  #  ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${DATArestart}/WW3_RESTART/${ww3_restart_ufs_file}"
   #fi
 
   # Link output files
