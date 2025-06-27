@@ -5,7 +5,9 @@
 HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
-echo "MACHINE_ID: $MACHINE_ID"
+#yamllist="C48_ATM"
+#yamllist="C48_S2SW"
+yamllist="C48_S2SWA_gefs"
 
 HOMEDIR=${HOMEgfs}
 if [[ ${MACHINE_ID} = ursa* ]] ; then
@@ -41,7 +43,7 @@ fi
  RUNDIRS=${rundir} \
 	./generate_workflows.sh \
 	-H ${HOMEDIR} \
-	-y "C48_ATM" \
+	-y ${yamllist} \
 	-Y ${HOMEDIR}/dev/ci/cases/pr \
 	-A ${HPC_ACCOUNT} \
 	-e "Wei.Huang@noaa.gov" \

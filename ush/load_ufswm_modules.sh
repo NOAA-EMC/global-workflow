@@ -9,7 +9,6 @@ fi
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
 
-#RUN_WITH_CONTAINER=YES
 if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
   if [[ -v PATH ]]; then
     if [[ "$PATH" =~ "prod-util" ]]; then
@@ -27,6 +26,11 @@ else
 
   module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
   module load "ufs_${MACHINE_ID}.intel"
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+    echo "FATAL ERROR: Failed to load ufs_${MACHINE_ID}.intel"
+    exit 1
+  fi
   module load prod_util
   if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
     module load cray-pals
