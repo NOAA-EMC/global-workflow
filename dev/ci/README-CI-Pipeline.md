@@ -72,15 +72,6 @@ The GitHub Actions workflow provides a user-friendly interface for triggering Gi
   - Gaea C6 (default: disabled)
   - Additional machines can be added as boolean inputs
 
-#### API Translation
-The GitHub Action translates user selections into GitLab pipeline variables:
-```yaml
-# GitHub selection -> GitLab variable
-Pipeline Type: "CTests" -> PIPELINE_TYPE=ctests
-Pipeline Type: "PR Cases" -> PIPELINE_TYPE=pr_cases
-Machine checkboxes -> RUN_ON_MACHINES="selected_machines"
-```
-
 ## Directory Structure and Naming
 
 ### Standard Pipeline Runs
@@ -197,7 +188,3 @@ PR_NUMBER=1234  # Set via GitHub trigger
 ### GitLab Integration
 - Uses GitLab pipeline trigger tokens
 - Environment-protected secrets for cross-platform communication
-
----
-
-*This architecture provides a robust, flexible, and scalable CI/CD solution for the global-workflow project, enabling efficient testing across multiple modalities and computing platforms.*
