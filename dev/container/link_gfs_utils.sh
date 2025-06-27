@@ -32,10 +32,10 @@ if [[ ! -v HOMEgfs || ! -v container ]]; then
    exit -1
 fi
 
-echo "HOMEgfs: $HOMEgfs"
-echo "container: $container"
-echo "bindings: $bindings"
-echo "Verbose: $verbose"
+#echo "HOMEgfs: $HOMEgfs"
+#echo "container: $container"
+#echo "bindings: $bindings"
+#echo "Verbose: $verbose"
 
 if [[ "$verbose" == "true" ]]; then
    set -x
@@ -63,7 +63,7 @@ module load gfsutils_container.intel
 module load wgrib2/2.0.8
 
 arg="\$@"
-${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${model} \$arg
+${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${model}.x \$arg
 EOF_MODEL
 
    chmod 755 $run_model_script

@@ -32,10 +32,10 @@ if [[ ! -v HOMEgfs || ! -v container ]]; then
    exit -1
 fi
 
-echo "HOMEgfs: $HOMEgfs"
-echo "container: $container"
-echo "bindings: $bindings"
-echo "Verbose: $verbose"
+#echo "HOMEgfs: $HOMEgfs"
+#echo "container: $container"
+#echo "bindings: $bindings"
+#echo "Verbose: $verbose"
 
 if [[ "$verbose" == "true" ]]; then
    set -x
@@ -44,7 +44,6 @@ fi
 for nm in emcsfc_ice_blend emcsfc_snow2mdl fregrid global_cycle regridStates.x
 do
    model=${nm}
-   # echo "model: $model"
 
    run_model_script=${HOMEgfs}/ush/container/run_${model}.sh
    rm -f ${run_model_script}

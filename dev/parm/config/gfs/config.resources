@@ -35,6 +35,9 @@ step=$1
 
 echo "BEGIN: config.resources"
 
+echo "%0 step: ${step}"
+echo "%0 machine: ${machine}"
+
 case ${machine} in
   "WCOSS2")
               max_tasks_per_node=128

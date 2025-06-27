@@ -27,7 +27,7 @@
  RUNTESTS=${rundir} \
 	./generate_workflows.sh \
 	-H ${HOMEDIR} \
-	-y "C48_ATM" \
+	-y "C96mx100_S2S" \
 	-Y ${HOMEDIR}/dev/ci/cases/pr \
 	-A ${HPC_ACCOUNT} \
 	-e "Wei.Huang@noaa.gov" \
@@ -35,3 +35,4 @@
     	-R -v
 
  ${HOMEDIR}/dev/container/create-container-links.sh -H ${HOMEDIR}
+

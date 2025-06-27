@@ -12,6 +12,8 @@ if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     set +x
 fi
 
+source "${HOMEgfs}/ush/preamble.sh"
+
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
 
@@ -27,7 +29,7 @@ if [[ "$RUN_WITH_CONTAINER" == "NO" ]]; then
     module use "${HOMEgfs}/modulefiles"
 
     case "${MACHINE_ID}" in
-      "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
+      "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud" | "ursa")
         module load "module_base.${MACHINE_ID}"
         export err=$?
         if [[ ${err} -ne 0 ]]; then

@@ -117,7 +117,6 @@ if __name__ == '__main__':
         setup_xml_args.append("--rocotorun")
         setup_xml_args.append(user_inputs.rocotorun)
 
-    print('setup_xml_args: ', setup_xml_args)
     logger.info(f"Call: setup_xml.main()")
     logger.debug(f"setup_xml.py {' '.join(setup_xml_args)}")
     setup_xml.main(setup_xml_args)

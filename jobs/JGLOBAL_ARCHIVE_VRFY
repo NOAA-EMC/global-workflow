@@ -24,8 +24,11 @@ done
 ###############################################################
 # Run archive script
 ###############################################################
-
-${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
+if [ "$RUN_WITH_CONTAINER" == "YES" ]; then
+    ${HOMEgfs}/exec/run_python.sh ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py} -c -v
+else
+    ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
+fi
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

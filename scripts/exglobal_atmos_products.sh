@@ -1,11 +1,7 @@
 #! /usr/bin/env bash
 
-<<<<<<< HEAD
 source "${HOMEgfs}/ush/preamble.sh"
 
-=======
-RUN_WITH_CONTAINER=YES
->>>>>>> origin/feature/container-on-ursa-readonly
 # Programs used
 if [ "$RUN_WITH_CONTAINER" == "NO" ]; then
     source "${USHgfs}/load_fv3gfs_modules.sh"
