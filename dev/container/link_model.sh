@@ -78,7 +78,10 @@ cat > $link_model_script << EOF_LINK
 
  export LD_LIBRARY_PATH=$(dirname ${container})
  arg="\$@"
- singularity exec ${bindings} ${container} ${run_model_script} \$arg
+ singularity exec \\
+ ${bindings} \\
+ ${container} \\
+ ${run_model_script} \$arg
 EOF_LINK
 
 chmod 755 $link_model_script

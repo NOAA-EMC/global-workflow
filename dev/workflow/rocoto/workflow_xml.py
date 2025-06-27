@@ -160,7 +160,10 @@ class RocotoXML(ABC):
         rocotoruncmd = find_executable('rocotorun')
         if rocotoruncmd is None:
             try:
-                rocotoruncmd = '/apps/rocoto/default/bin/rocotorun'
+                if ( 'rocotorun' in self.rocoto_config.keys() ):
+                    rocotoruncmd = self.rocoto_config['rocotorun']
+                else:
+                    rocotoruncmd = '/apps/rocoto/default/bin/rocotorun'
                 os.path.exists(rocotoruncmd)
             except Exception as ee:
                 raise Exception("Failed to find rocotorun, crontab will not be created: ") from ee
@@ -271,9 +274,18 @@ class RocotoXML(ABC):
         rocotorun = which("rocotorun")
 
         if rocotorun is None:
-            raise FileNotFoundError("Could not find the rocotorun executable.  Make sure you have the module loaded!")
+            try:
+                if ( 'rocotorun' in self.rocoto_config.keys() ):
+                    rocotorun = self.rocoto_config['rocotorun']
+                else:
+                    rocotorun = '/apps/rocoto/default/bin/rocotorun'
+                os.path.exists(rocotorun)
+            except Exception as ee:
+                raise Exception("Could not find the rocotorun executable.  Make sure you have the module loaded!: ") from ee
 
-        version = rocotorun("--version", output=str, error=str).split()[-1].strip()
+            version = rocotorun.split('/')[-3]
+        else:
+            version = rocotorun("--version", output=str, error=str).split()[-1].strip()
 
         homedir = os.path.expanduser("~")
         rocotorc_file = os.path.join(homedir, ".rocoto", version, "rocotorc")

@@ -63,6 +63,8 @@ function _usage() {
        If this option is not specified, then the existing email address in
        the crontab will be preserved.
 
+    -r specify rocotorun fullpath (mainly work with container)
+
     -t Add a 'tag' to the end of the case names in the pslots to distinguish
        pslots between multiple sets of tests.
 
@@ -94,10 +96,13 @@ _run_all_gfs=false
 _run_all_gefs=false
 _run_all_sfs=false
 _run_with_container=false
+_run_all_gcafs=false
 _hpc_account=""
 _set_account=false
 _update_cron=false
 _email=""
+_has_rocotorun=false
+_rocotorun_fullpath=""
 _tag=""
 _set_email=false
 _verbose=false
@@ -110,7 +115,7 @@ _auto_del=false
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-   while getopts ":H:bDuy:Y:GESA:ce:t:vVRdh" option; do
+   while getopts ":H:bDuy:Y:GESCA:ce:t:r:vVRdh" option; do
       case "${option}" in
         H)
            HOMEgfs="${OPTARG}"
@@ -141,6 +146,7 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
         v) _verbose=true ;;
         V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
         R) _run_with_container=true ;;
+        r) _rocotorun_fullpath="${OPTARG}" && _has_rocotorun=true ;;
         A) _set_account=true && _hpc_account="${OPTARG}" ;;
         d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v" && PS4='${LINENO}: ' ;;
         h) _usage && exit 0 ;;
@@ -539,7 +545,11 @@ for _case in "${_yaml_list[@]}"; do
    fi
    _pslot="${_case}${_tag}"
    if [[ "${_run_with_container}" == "true" ]]; then
-       _create_exp_cmd="../../exec/run_python.sh ./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+       if [[ "${_has_rocotorun}" == "true" ]]; then
+           _create_exp_cmd="../../exec/run_python.sh ./create_experiment.py -y ${_yaml_dir}/${_case}.yaml -r ${_rocotorun_fullpath} --overwrite"
+       else
+           _create_exp_cmd="../../exec/run_python.sh ./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+       fi
    else
        _create_exp_cmd="./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
    fi

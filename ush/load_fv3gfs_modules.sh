@@ -12,10 +12,11 @@ if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     set +x
 fi
 
+source "${HOMEgfs}/ush/preamble.sh"
+
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
 
-#RUN_WITH_CONTAINER=YES
 if [[ "$RUN_WITH_CONTAINER" == "NO" ]]; then
     # Find module command and purge:
     source "${HOMEgfs}/ush/detect_machine.sh"

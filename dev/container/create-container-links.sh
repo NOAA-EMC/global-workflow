@@ -1,22 +1,41 @@
 #!/bin/bash
 
-HOMEgfs=/scratch4/NAGAPE/epic/Wei.Huang/dev/global-workflow-cloud
-container=/scratch4/NAGAPE/epic/Wei.Huang/demo/ubuntu22.04-intel-ufs-env-v1.6.0.img
-verbose=true
+verbose=false
 
-#echo "HOMEgfs: $HOMEgfs"
-#echo "container: $container"
-#echo "Verbose: $verbose"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -H|--HOMEgfs)
+      HOMEgfs="$2"
+      shift 2
+      ;;
+    -c|--container)
+      container="$2"
+      shift 2
+      ;;
+    -b|--bindings)
+      bindings="$2"
+      shift 2
+      ;;
+    -v|--verbose)
+      verbose=true
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
 
-source ${HOMEgfs}/ush/detect_machine.sh
-
-bindings="-B /scratch3 -B /scratch4"
-if [[ ${MACHINE_ID} = ursa* ]] ; then
-    # We are on NOAA Ursa
-    bindings="-B /scratch3 -B /scratch4"
+if [[ ! -v HOMEgfs || ! -v container || ! -v bindings ]]; then
+   echo "Usage: create-container-links.sh -H/--HOMEgfs gw-home-dir -c/--container container-fullpath -b/--bindings list-of-binding-dirs [-v]"
+   exit -1
 fi
 
-#${HOMEgfs}/dev/container/gen-wrapper.sh -H ${HOMEgfs} -c ${container} -b "${bindings}"
+echo "HOMEgfs: $HOMEgfs"
+echo "container: $container"
+echo "bindings: $bindings"
+echo "Verbose: $verbose"
 
 ${HOMEgfs}/dev/container/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t gfs
 ${HOMEgfs}/dev/container/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t sfs

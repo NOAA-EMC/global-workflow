@@ -15,7 +15,7 @@ class Host:
     Gather Host specific information.
     """
 
-    SUPPORTED_HOSTS = ['HERA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
+    SUPPORTED_HOSTS = ['HERA', 'ORION', 'HERCULES', 'WCOSS2',
                        'GAEAC5', 'GAEAC6', 'URSA', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
     def __init__(self, host=None):
@@ -44,7 +44,6 @@ class Host:
 
         machine_id = os.getenv('MACHINE_ID', 'UNKNOWN')
         pw_csp = os.getenv('PW_CSP', 'UNKNOWN')
-        container = os.getenv('SINGULARITY_NAME', None)
 
         # Detect the machine since MACHINE_ID is set,
         # Additionaly, if PW_CSP is set, then the machine is a cloud machine
@@ -67,8 +66,6 @@ class Host:
         elif os.path.exists('/scratch3/NCEPDEV'):
             self.machine = 'URSA'
             machine_id = 'URSA'
-        elif container is not None:
-            self.machine = 'CONTAINER'
         elif pw_csp is not None:
             if pw_csp.lower() not in ['azure', 'aws', 'google']:
                 raise ValueError(
