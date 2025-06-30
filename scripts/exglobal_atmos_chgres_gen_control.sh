@@ -21,7 +21,7 @@ ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf003.ensres.nc}
 
 ##############################################################
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
-cat > chgres_nc_gauss0$FHR.nml << EOF
+cat > chgres_nc_gauss03.nml << EOF
 &chgres_setup
 mosaic_file_target_grid="/scratch1/NCEPDEV/nems/role.ufsutils/ufs_utils/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc"
 fix_dir_target_grid="/scratch1/NCEPDEV/nems/role.ufsutils/ufs_utils/reg_tests/chgres_cube/fix/C96/sfc"
@@ -66,6 +66,5 @@ thomp_mp_climo_file="NULL"
 wam_cold_start=.false.
 /
 EOF
-${APRUN_CHGRES} "${CHGRESNCEXEC}" $ATMF03 $ATMF03ENS
-
+${APRUN_CHGRES} "${CHGRESNCEXEC}" "chgres_nc_gauss03.nml"
 exit $err
