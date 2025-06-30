@@ -1,5 +1,5 @@
-name: Feature Request
-description: Request new capability
+name: New Feature
+description: New capability is desired
 labels: ["triage"]
 type: "feature"
 projects: ["NOAA-EMC/41"]
@@ -14,23 +14,23 @@ body:
         - It is initiating a production update
         - Files need to be updated in a directory managed by workflow CMs under "glopara"
 
-        Please search on the [Issue tracker](https://github.com/NOAA-EMC/global-workflow/issues) to make sure the feature has not already been requested to avoid duplicates.
-  
+        Please search on the [Issue tracker](https://github.com/NOAA-EMC/global-workflow/issues) to make sure there is not an already open issue for this new feature.  If so, please update the existing issue.
+
   - type: textarea
     id: description
     attributes:
       label: What new functionality do you need?
-      placeholder: Provide a consise description of the problem to be addressed by this feature request. Please be clear what parts of the problem are considered to be in-scope and out-of-scope
+      placeholder: Provide a consise description of the problem to be addressed by this new feature. Please be clear what parts of the problem are considered to be in-scope and out-of-scope
     validations:
       required: true
-  
+
   - type: textarea
     id: requirements
     attributes:
       label: What are the requirements for the new functionality?
     validations:
       required: true
-  
+
   - type: textarea
     id: criteria
     attributes:
@@ -48,7 +48,7 @@ body:
         - [ ] Criterion #3
     validations:
       required: true
-  
+
   - type: textarea
     id: suggested_solution
     attributes:
