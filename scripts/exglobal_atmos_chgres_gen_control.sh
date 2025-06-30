@@ -10,7 +10,7 @@
 pwd=$(pwd)
 # Dependent Scripts and Executables
 export APRUN_CHGRES=${APRUN_CHGRES:-${APRUN:-""}}
-export CHGRESNCEXEC=${/scratch1/NCEPDEV/global/Anton.Fernando/global-workflow/sorc/ufs_utils.fd/reg_tests/chgres_cube}
+export CHGRESNCEXEC=${${HOMEgfs}/sorc/ufs_utils.fd/reg_tests/chgres_cube}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 APRUNCFP=${APRUNCFP:-""}
 
