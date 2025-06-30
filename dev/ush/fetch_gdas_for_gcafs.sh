@@ -5,7 +5,7 @@ set -e
 set -u
 
 # Get arguments from command line
-if [ "${#}" -ne 2 ]; then
+if [[ "${#}" -ne 2 ]]; then
     echo "Usage: ${0} <YYYYMMDDHH> <output_directory>"
     exit 1
 fi
