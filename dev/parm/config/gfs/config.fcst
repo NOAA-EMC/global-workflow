@@ -43,6 +43,7 @@ case ${RUN} in
     export FHOUT_HF=${FHOUT_HF_GFS}
     export FHOUT_OCN=${FHOUT_OCN_GFS}
     export FHOUT_ICE=${FHOUT_ICE_GFS}
+    export FHOUT_WAV=${FHOUT_WAV_GFS}
     ;;
   *gdas)
     export FHMAX_HF=0
