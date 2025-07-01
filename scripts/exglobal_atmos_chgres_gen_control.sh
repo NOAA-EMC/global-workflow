@@ -13,19 +13,22 @@ cp "/lfs/h2/emc/global/noscrub/anton.fernando/global-workflow/sorc/ufs_utils.fd/
 cp "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" .
 cp "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" .
 
-
-
-export CHGRESNCEXEC="./chgres_cube"
+CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
-
+PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
+PGMERR=${PGMERR:-${pgmerr:-'&2'}}
+REDOUT=${REDOUT:-'1>'}
+REDERR=${REDERR:-'2>'}
+DATA=${DATA:-$pwd}
 # at full resolution
 ATMF03="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc"
 # at ensemble resolution
 ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.ensres.nc}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
 export APRUN_CHGRES=${APRUN_CHGRES:-${APRUN:-""}}
 ##############################################################
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
-cat > chgres_nc_gauss03.nml << EOF
+cat << EOF > ./fort.41
 &config
 mosaic_file_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc"
 fix_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/sfc"
@@ -71,5 +74,5 @@ wam_cold_start=.false.
 /
 EOF
 
-$APRUN_CHGRES $CHGRESNCEXEC "chgres_nc_gauss03.nml"
+$APRUN $CHGRESEXEC $REDOUT$PGMOUT $REDERR$PGMERR
 exit $err
