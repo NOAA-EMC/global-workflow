@@ -9,7 +9,7 @@
 #  Directories.
 pwd=$(pwd)
 # Dependent Scripts and Executables
-export CHGRESNCEXEC="${HOMEgfs}/sorc/ufs_utils.fd/reg_tests/chgres_cube"
+export CHGRESNCEXEC="${HOMEgfs}/lfs/h2/emc/global/noscrub/anton.fernando/global-workflow/sorc/ufs_utils.fd/exec/chgres_cube"
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 
 # at full resolution
