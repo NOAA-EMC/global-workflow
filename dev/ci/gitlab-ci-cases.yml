@@ -41,16 +41,9 @@
       "${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       error=$?
       if [[ ${error} -ne 0 ]]; then
-        export GW_CI_RUN_STATE="Failed"
-        export FAILED_TEST_CASE="${caseName}"
-        echo "================================================================================"
-        echo "ERROR: Test case ${caseName} failed on ${machine} in ${RUNTESTS_DIR} at $(date)"
-        echo "================================================================================"
-        exit 1  # Force exit code 1 for GitLab to recognize the failure
-      else
-        echo "================================================================================"
-        echo "SUCCESS: Test case ${caseName} passed on ${machine} in ${RUNTESTS_DIR} at $(date)"
-        echo "================================================================================"
+        # Failsafe exit for GitLab to recognize the failure incase allow_failure state is changed
+        echo "Experiment ${caseName} failed with error code ${error}"
+        exit 1
       fi
   needs:
     - setup_experiments-${machine}
@@ -112,7 +105,7 @@
                 --gist "PR_${PR_NUMBER}_${case_name}")
 
               # Upload to repo as well for backup
-              "${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
+              "${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py"
                 --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${case_name}" || true
 
               # Create formatted GitHub comment
