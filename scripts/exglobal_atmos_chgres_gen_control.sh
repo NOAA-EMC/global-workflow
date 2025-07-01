@@ -9,8 +9,7 @@
 #  Directories.
 pwd=$(pwd)
 # Dependent Scripts and Executables
-export APRUN_CHGRES=${APRUN_CHGRES:-${APRUN:-""}}
-export CHGRESNCEXEC=${${HOMEgfs}/sorc/ufs_utils.fd/reg_tests/chgres_cube}
+export APRUN_CHGRES="${HOMEgfs}/sorc/ufs_utils.fd/reg_tests/chgres_cube"
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 APRUNCFP=${APRUNCFP:-""}
 
@@ -66,5 +65,5 @@ thomp_mp_climo_file="NULL"
 wam_cold_start=.false.
 /
 EOF
-${APRUN_CHGRES} "${CHGRESNCEXEC}" "chgres_nc_gauss03.nml"
+"${CHGRESNCEXEC}" "chgres_nc_gauss03.nml"
 exit $err
