@@ -67,5 +67,5 @@ wam_cold_start=.false.
 /
 EOF
 
-$APRUN $CHGRESEXEC $REDOUT$PGMOUT $REDERR$PGMERR
+$APRUN $CHGRESNCEXEC $ATMF03
 exit $err
