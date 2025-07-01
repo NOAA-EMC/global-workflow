@@ -21,15 +21,15 @@ ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.ensres.nc}
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 cat > chgres_nc_gauss03.nml << EOF
 &chgres_setup
-mosaic_file_target_grid="/scratch1/NCEPDEV/nems/role.ufsutils/ufs_utils/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc"
-fix_dir_target_grid="/scratch1/NCEPDEV/nems/role.ufsutils/ufs_utils/reg_tests/chgres_cube/fix/C96/sfc"
-orog_dir_target_grid="/scratch1/NCEPDEV/nems/role.ufsutils/ufs_utils/reg_tests/chgres_cube/fix/C96"
+mosaic_file_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc"
+fix_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/sfc"
+orog_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
 orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
-vcoord_file_target_grid="/scratch1/NCEPDEV/global/Anton.Fernando/UFS_UTILS/fix/am/global_hyblev.l64.txt"
+vcoord_file_target_grid="/lfs/h2/emc/global/noscrub/anton.fernando/UFS_UTILS/reg_tests/chgres_cube/../../fix/am/global_hyblev.l64.txt"
 mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
 orog_files_input_grid="NULL"
-data_dir_input_grid="/scratch1/NCEPDEV/nems/role.ufsutils/ufs_utils/reg_tests/chgres_cube/input_data/fv3.netcdf"
+data_dir_input_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf"
 atm_files_input_grid="gfs.t00z.atmf000.nc"
 atm_core_files_input_grid="NULL"
 atm_tracer_files_input_grid="NULL"
