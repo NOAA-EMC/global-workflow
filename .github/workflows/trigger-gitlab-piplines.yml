@@ -117,11 +117,14 @@ jobs:
         run: |
           # Important note: This token should be a proper GitLab Pipeline Trigger token
           # created via Settings > CI/CD > Pipeline triggers in your GitLab project
+
+          # --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
+
           curl --verbose --request POST \
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=develop" \
+            --form "ref=gitlab_pr_cases_bronzing" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
-            --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
+            --form "variables[GW_REPO_URL]=https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git" \
             --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
             --form "variables[PIPELINE_TYPE]=${{ env.PIPELINE_TYPE }}" \
             ${{ vars.GITLAB_TRIGGER_URL }}
