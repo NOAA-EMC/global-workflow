@@ -114,6 +114,8 @@ jobs:
           echo "MACHINES=${MACHINES}" >> "${GITHUB_ENV}"
           
       - name: Trigger GitLab Pipeline
+        env:
+          GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
         run: |
           # Important note: This token should be a proper GitLab Pipeline Trigger token
           # created via Settings > CI/CD > Pipeline triggers in your GitLab project
@@ -134,6 +136,3 @@ jobs:
             echo "Adding label for machine: ${MACHINE}"
             gh pr edit ${{ env.PR_NUM }} --repo ${{ vars.GW_REPO_URL }} --add-label "CI-${MACHINE^}-Ready"
           done
-        env:
-          GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
