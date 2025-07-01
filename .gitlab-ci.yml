@@ -89,6 +89,13 @@ include:
         exit 1
       fi
 
+      # Setup GitHub CLI for use throughout the pipeline
+      export GH=$(which gh 2>/dev/null || echo "${HOME}/bin/gh")
+      if [ ! -x "${GH}" ]; then
+        echo "ERROR: GitHub CLI (gh) not found or not executable. Please install it."
+        exit 1
+      fi
+
 # Common build template for all modalities
 .build_template:
   extends: .base_config
@@ -99,16 +106,17 @@ include:
   stage: build
   script:
     - |
-      echo "Setting up build environment for ${machine}"
+      echo "Setting up build environment for ${machine^}..."
       echo "Using build directory ${GW_HOMEgfs}"
       git submodule status
       # When GFS_CI_RUN_TYPE is set to "nightly", we use the develop branch
       # It should be set when configuring the scheculed nightly pipeline
       if [[ ${GFS_CI_RUN_TYPE} == "pr_cases" && ${PR_NUMBER} != 0 ]]; then
+        ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} --add-label "CI-${machine^}-Building" --remove-label "CI-${machine^}-Ready"
         echo "pipeline is set to checkout PR_NUMBER=${PR_NUMBER} from ${GW_REPO_URL}"
         git remote add github "${GW_REPO_URL}"
         git fetch github
-        gh pr checkout "${PR_NUMBER}"
+        ${GH} pr checkout "${PR_NUMBER}"
       fi
 
       dev/ci/scripts/utils/ci_utils.sh build

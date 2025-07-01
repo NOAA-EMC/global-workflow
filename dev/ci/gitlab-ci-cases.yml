@@ -22,6 +22,7 @@
   stage: setup_tests
   script:
     - |
+      "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" --add-label "CI-${machine^}-Running" --remove-label "CI-${machine^}-Building" || true
       export RUNTESTS="${RUNTESTS_DIR}"                                                        # the dash delemeter is needed here as to not break pslot get parser
       "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${CI_COMMIT_SHORT_SHA}-${CI_PIPELINE_ID}"
       exit $?
@@ -39,11 +40,13 @@
       "${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       error=$?
       if [[ ${error} -ne 0 ]]; then
+        export GW_CI_RUN_STATE="Failed"
         echo "================================================================================"
         echo "ERROR: Test case ${caseName} failed on ${machine} in ${RUNTESTS_DIR} at $(date)"
         echo "================================================================================"
         exit 1  # Force exit code 1 for GitLab to recognize the failure
       else
+        export GW_CI_RUN_STATE="Passed"
         echo "================================================================================"
         echo "SUCCESS: Test case ${caseName} passed on ${machine} in ${RUNTESTS_DIR} at $(date)"
         echo "================================================================================"
@@ -56,9 +59,11 @@
   stage: finalize
   script:
     - |
-      echo "Finalizing test cases on ${machine} using ${GW_HOMEgfs}"
+      Machine=${machine^}
+      "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" --add-label "CI-${Machine}-${GW_CI_RUN_STATE}" --remove-label "CI-${Machine}-Running" || true
+      echo "Finalizing test cases on ${Machine} using ${GW_HOMEgfs}"
       # Set GFS_CI_RUN_TYPE to "nightly" in the Gitlab pipeline scheduler
-      if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+      if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" && GW_CI_RUN_STATE == "Passed" ]]; then
         echo "This is a scheduled pipeline, creating date-based directories and symlinks to stable"
         echo "Creating date-based directory: ${WORKSPACE_DATE}"
         cd "${CI_BUILDS_DIR}"
@@ -86,8 +91,47 @@
         find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" -not -path "$(readlink -f ${CI_BUILDS_DIR}/stable)" -exec rm -rf {} \; 2>/dev/null || true
         echo "TODO set status badges on GitHub status here"
       else
+        # Passed pipelines that are not scheduled nightly do not need to rename directories
         echo "Skipping directory rename and cleanup for non-scheduled pipeline."
-        echo "TODO set GitHub status labels here"
+        exit 0
       fi
+
+      if [[ "${GW_CI_RUN_STATE}" == "Failed" ]]; then
+        echo "Test case ${caseName} failed on ${Machine}. Please check the logs for details."
+        error_logs=""
+        error_logs_message=""
+
+        cd "${WORKSPACE_ID}"
+        pslot=$("${GW_HOMEgfs}/ci/scripts/utils/get_pslot.sh" "${RUNTESTS_DIR}" "${caseName}")
+        error_file="${RUNTESTS_DIR}/${pslot}_error.logs"
+
+        if [[ -f "$error_file" ]]; then
+            while IFS= read -r line; do
+                full_path="${WORKSPACE_ID}/${line}"
+                if [[ -f "$full_path" && -s "$full_path" ]]; then
+                    mkdir -p "${WORKSPACE_ID}/archived_logs"
+                    cp "$full_path" "${WORKSPACE_ID}/archived_logs/"
+                    error_logs="${error_logs}${full_path} "
+                    error_logs_message="${error_logs_message}${full_path}\n"
+                fi
+            done < "$error_file"
+
+            if [[ -n "$error_logs" ]]; then
+                source "${GW_HOMEgfs}/ush/gw_setup.sh"
+                "${GW_HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --repo "PR_${PR_NUMBER}"
+                gist_url=$("${GW_HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --multiple --format=github --gist "PR_${PR_NUMBER}" | tail -n 1)
+                "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "Experiment ${caseName} **FAILED** on ${Machine} in Pipeline# ${CI_PIPELINE_ID} with error logs:\n\`\`\`\n${error_logs_message}\`\`\`\n\nFollow link here to view the contents of the above file(s): ${gist_url}"
+                "${GW_HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --repo "PR_${PR_NUMBER}"
+            fi
+        fi
+
+        "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-Failed"
+        pslot=$(basename "$error_file" "_error.logs")
+        "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "Experiment ${caseName} **FAILED** on ${Machine} from Pipeline# ${CI_PIPELINE_ID} in\n\\\`${WORKSPACE_ID}/RUNTESTS/EXPDIR/${pslot}\\\`"
+
+      else
+        echo "Test case ${caseName} passed on ${Machine}."
+      fi
+
   needs:
     - run_experiments-${machine}
