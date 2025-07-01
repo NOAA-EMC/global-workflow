@@ -131,6 +131,7 @@ jobs:
 
           # Add labels for each machine in the list
           for MACHINE in ${{ env.MACHINES }}; do
+            echo "Adding label for machine: ${MACHINE}"
             gh pr edit ${{ env.PR_NUM }} --repo ${{ vars.GW_REPO_URL }} --add-label "CI-${MACHINE^}-Ready"
           done
         env:
