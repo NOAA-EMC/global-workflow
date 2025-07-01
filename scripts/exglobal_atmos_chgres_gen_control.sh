@@ -9,18 +9,20 @@
 #  Directories.
 pwd=$(pwd)
 # Dependent Scripts and Executables
-export CHGRESNCEXEC="${HOMEgfs}/lfs/h2/emc/global/noscrub/anton.fernando/global-workflow/sorc/ufs_utils.fd/exec/chgres_cube"
+cp "${HOMEgfs}/lfs/h2/emc/global/noscrub/anton.fernando/global-workflow/sorc/ufs_utils.fd/exec/chgres_cube" .
+cp "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" .
+export CHGRESNCEXEC="chgres_cube"
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 
 # at full resolution
-ATMF03=${ATMF03:-${COMIN_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.nc}
+ATMF03="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc"
 # at ensemble resolution
 ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.ensres.nc}
-
+export APRUN=${APRUN:-${APRUN:-""}}
 ##############################################################
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 cat > chgres_nc_gauss03.nml << EOF
-&chgres_setup
+&config
 mosaic_file_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc"
 fix_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/sfc"
 orog_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
@@ -64,5 +66,5 @@ thomp_mp_climo_file="NULL"
 wam_cold_start=.false.
 /
 EOF
-"${CHGRESNCEXEC}" "chgres_nc_gauss03.nml"
+$APRUN "${CHGRESNCEXEC}" ${ATMF03}
 exit $err
