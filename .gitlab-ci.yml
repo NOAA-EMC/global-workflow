@@ -59,7 +59,6 @@ include:
       export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_ID}"
       export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone
       export RUNTESTS_DIR="${GW_RUN_PATH}/RUNTESTS"
-      export GW_CI_RUN_STATE="Passed"
 
       PR_NUMBER=${PR_NUMBER:-0}
       if [[ "${PIPELINE_TYPE}" == "ctests" ]]; then

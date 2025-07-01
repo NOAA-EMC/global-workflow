@@ -61,7 +61,6 @@
       error_log_files=$(find "${RUNTESTS_DIR}" -maxdepth 1 -name "*_error.logs" -type f 2>/dev/null || true)
 
       if [[ -n "${error_log_files}" ]]; then
-        export GW_CI_RUN_STATE="Failed"
         echo "================================================================================"
         echo "FAILURE DETECTED: Found error log files in ${RUNTESTS_DIR}"
         echo "Error log files: ${error_log_files}"
@@ -121,7 +120,7 @@ ${error_logs_markdown}
 ${gist_links}
 
 ---
-*This failure was detected automatically by the CI finalize stage.*"
+*This failure was detected automatically by global-workflow's CI/CD Pipeline"
 
               # Post GitHub comment
               "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
