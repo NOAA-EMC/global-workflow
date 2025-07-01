@@ -217,7 +217,7 @@ else
   esac
 
   module load wgrib2
-  module load prod_util/2.1.1
+  module load prod_util
   export WGRIB2=wgrib2
 fi
 
