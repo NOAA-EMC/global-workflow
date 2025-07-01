@@ -18,7 +18,7 @@ export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 ATMF03="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc"
 # at ensemble resolution
 ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.ensres.nc}
-export APRUN=${APRUN:-${APRUN:-""}}
+export APRUN=${APRUN:-${APRUN:-"mpiexec -n 12 -ppn 12 --cpu-bind core"}}
 ##############################################################
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 cat > chgres_nc_gauss03.nml << EOF
@@ -66,5 +66,6 @@ thomp_mp_climo_file="NULL"
 wam_cold_start=.false.
 /
 EOF
-$APRUN "${CHGRESNCEXEC}" ${ATMF03}
+
+$APRUN $CHGRESEXEC $REDOUT$PGMOUT $REDERR$PGMERR
 exit $err
