@@ -2,8 +2,8 @@
 # Templates for Standard Test Cases
 # ==========================================================================
 #
-# This file defines templates for setting up and running standard experiment 
-# test cases for the global-workflow project. These cases represent more 
+# This file defines templates for setting up and running standard experiment
+# test cases for the global-workflow project. These cases represent more
 # comprehensive, end-to-end testing scenarios than the CTesting framework.
 #
 # These templates are used primarily for PR testing when GITHUB_API_TRIGGER=false.
@@ -22,8 +22,9 @@
   stage: setup_tests
   script:
     - |
-      export RUNTESTS="${RUNTESTS_DIR}"                                                        # the dash delemeter is needed here as to not break pslot get parser
-      "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${CI_COMMIT_SHORT_SHA}-${CI_PIPELINE_ID}"
+      export RUNTESTS="${RUNTESTS_DIR}"
+      "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment \
+        "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${CI_COMMIT_SHORT_SHA}-${CI_PIPELINE_ID}"
       exit $?
   needs:
     - build-${machine}
@@ -35,7 +36,7 @@
   allow_failure: false
   script:
     - |
-      echo "Using build directory $GW_HOMEgfs (dated $DATE)"
+      echo "Using build directory ${GW_HOMEgfs} (dated ${DATE})"
       pslot=$("${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS_DIR}" "${caseName}")
       "${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       error=$?
@@ -57,78 +58,119 @@
 .finalize_template:
   extends: .base_config
   stage: finalize
+  when: always
   script:
     - |
       Machine=${machine^}
-      "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" --add-label "CI-${Machine}-${GW_CI_RUN_STATE}" --remove-label "CI-${Machine}-Running" || true
       echo "Finalizing test cases on ${Machine} using ${GW_HOMEgfs}"
-      # Set GFS_CI_RUN_TYPE to "nightly" in the Gitlab pipeline scheduler
-      if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" && GW_CI_RUN_STATE == "Passed" ]]; then
-        echo "This is a scheduled pipeline, creating date-based directories and symlinks to stable"
-        echo "Creating date-based directory: ${WORKSPACE_DATE}"
-        cd "${CI_BUILDS_DIR}"
-        rm -f stable
-        if [ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" ]; then
-          # Rename the WORKSPACE_ID directory to one with the DATE
-          if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]; then
-            echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
-            mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}"
-            echo "Setting softlink to ${WORKSPACE_DATE} as ${CI_BUILDS_DIR}/stable"
-            ln -sf ${WORKSPACE_DATE} stable
-            echo "Successfully created date-based directory and stable symlink"
-          else
-            echo "WARNING: Source directory ${CI_BUILDS_DIR}/${WORKSPACE_ID} not found"
-            # Create the symlink anyway from original path
-            ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
-          fi
-        else
-          echo "WORKSPACE_ID already includes the date, creating stable symlink"
-          ln -sf ${WORKSPACE_DATE} stable
-        fi
 
-        # Clean up old directories from this pipeline type except stable
-        echo "Cleaning up old ${PIPELINE_TYPE} directories except stable"
-        find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" -not -path "$(readlink -f ${CI_BUILDS_DIR}/stable)" -exec rm -rf {} \; 2>/dev/null || true
-        echo "TODO set status badges on GitHub status here"
-      else
-        # Passed pipelines that are not scheduled nightly do not need to rename directories
-        echo "All cases passed on ${Machine} in ${RUNTESTS_DIR} at $(date)"
-        echo "Skipping directory rename and cleanup for non-scheduled pipeline."
-        exit 0
-      fi
+      # Detect failure state by checking for error log files in RUNTESTS_DIR
+      error_log_files=$(find "${RUNTESTS_DIR}" -maxdepth 1 -name "*_error.logs" -type f 2>/dev/null || true)
 
-      if [[ "${GW_CI_RUN_STATE}" == "Failed" ]]; then
-        echo "Test case ${FAILED_TEST_CASE} failed on ${Machine}. Please check the logs for details."
-        error_logs=""
-        error_logs_message=""
+      if [[ -n "${error_log_files}" ]]; then
+        export GW_CI_RUN_STATE="Failed"
+        echo "================================================================================"
+        echo "FAILURE DETECTED: Found error log files in ${RUNTESTS_DIR}"
+        echo "Error log files: ${error_log_files}"
+        echo "================================================================================"
 
-        cd "${WORKSPACE_ID}"
-        pslot=$("${GW_HOMEgfs}/ci/scripts/utils/get_pslot.sh" "${RUNTESTS_DIR}" "${FAILED_TEST_CASE}")
-        error_file="${RUNTESTS_DIR}/${pslot}_error.logs"
+        # Create processed logs directory to prevent reprocessing
+        processed_dir="${RUNTESTS_DIR}/processed_error_logs_$(date +%Y%m%d_%H%M%S)"
+        mkdir -p "${processed_dir}"
 
-        if [[ -f "$error_file" ]]; then
-            while IFS= read -r line; do
-                full_path="${WORKSPACE_ID}/${line}"
-                if [[ -f "$full_path" && -s "$full_path" ]]; then
-                    mkdir -p "${WORKSPACE_ID}/archived_logs"
-                    cp "$full_path" "${WORKSPACE_ID}/archived_logs/"
-                    error_logs="${error_logs}${full_path} "
-                    error_logs_message="${error_logs_message}${full_path}\n"
-                fi
-            done < "$error_file"
+        # Process each error log file
+        for error_file in ${error_log_files}; do
+          if [[ -f "${error_file}" && -s "${error_file}" ]]; then
+            # Extract case name and pslot from error file name
+            error_filename=$(basename "${error_file}")
+            pslot=$(basename "${error_file}" "_error.logs")
+            case_name=$(echo "${pslot}" | sed 's/_[a-f0-9]*-[0-9]*$//')
 
-            if [[ -n "$error_logs" ]]; then
-                source "${GW_HOMEgfs}/ush/gw_setup.sh"
-                "${GW_HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --repo "PR_${PR_NUMBER}"
-                gist_url=$("${GW_HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --multiple --format=github --gist "PR_${PR_NUMBER}" | tail -n 1)
-                "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "Experiment ${FAILED_TEST_CASE} **FAILED** on ${Machine} in Pipeline# ${CI_PIPELINE_ID} with error logs:\n\`\`\`\n${error_logs_message}\`\`\`\n\nFollow link here to view the contents of the above file(s): ${gist_url}"
-                "${GW_HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --repo "PR_${PR_NUMBER}"
+            echo "Processing failure for case: ${case_name}, pslot: ${pslot}"
+
+            # Collect error log paths and create markdown
+            error_logs_for_gist=""
+            error_logs_markdown=""
+
+            while IFS= read -r log_path; do
+              [[ -n "${log_path}" ]] || continue
+              # Convert relative path to absolute if needed
+              full_log_path="${log_path}"
+              [[ "${log_path}" =~ ^RUNTESTS/ ]] && full_log_path="${GW_RUN_PATH}/${log_path}"
+
+              if [[ -f "${full_log_path}" && -s "${full_log_path}" ]]; then
+                error_logs_for_gist="${error_logs_for_gist} ${full_log_path}"
+                error_logs_markdown="${error_logs_markdown}- \`$(basename "${full_log_path}")\`\n"
+              fi
+            done < "${error_file}"
+
+            if [[ -n "${error_logs_for_gist}" ]]; then
+              # Generate gist URLs with formatted markdown links
+              source "${GW_HOMEgfs}/ush/gw_setup.sh"
+              gist_links=$("${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
+                --file ${error_logs_for_gist} --multiple --format=github \
+                --gist "PR_${PR_NUMBER}_${case_name}")
+
+              # Upload to repo as well for backup
+              "${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
+                --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${case_name}" || true
+
+              # Create formatted GitHub comment
+              comment_body="## 🚫 Experiment **${case_name}** FAILED on **${Machine}**
+
+**Pipeline:** ${CI_PIPELINE_ID}
+**Workspace:** \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
+**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+
+### 📋 Error Log Files:
+${error_logs_markdown}
+### 🔗 View Error Logs:
+${gist_links}
+
+---
+*This failure was detected automatically by the CI finalize stage.*"
+
+              # Post GitHub comment
+              "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
             fi
+
+            # Move processed error log to prevent reprocessing
+            mv "${error_file}" "${processed_dir}/"
+          fi
+        done
+
+        # Update GitHub labels
+        "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
+          --add-label "CI-${Machine}-Failed" --remove-label "CI-${Machine}-Running" || true
+
+      else
+        export GW_CI_RUN_STATE="Passed"
+        echo "================================================================================"
+        echo "SUCCESS: No error log files found - all tests passed on ${Machine}"
+        echo "================================================================================"
+
+        # Handle nightly pipeline success logic
+        if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+          echo "This is a scheduled nightly pipeline, creating date-based directories and symlinks"
+          cd "${CI_BUILDS_DIR}" && rm -f stable
+          if [[ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" && -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]]; then
+            echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
+            mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}" && ln -sf "${WORKSPACE_DATE}" stable
+          else
+            [[ "${WORKSPACE_ID}" == "${WORKSPACE_DATE}" ]] && ln -sf "${WORKSPACE_DATE}" stable
+            [[ ! -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]] && ln -sf "${GW_RUN_PATH}" stable
+          fi
+
+          # Clean up old directories from this pipeline type except stable
+          echo "Cleaning up old ${PIPELINE_TYPE} directories except stable"
+          find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" \
+            -not -path "$(readlink -f ${CI_BUILDS_DIR}/stable)" -exec rm -rf {} \; 2>/dev/null || true
+          echo "TODO set status badges on GitHub status here"
         fi
 
-        "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-Failed"
-        pslot=$(basename "$error_file" "_error.logs")
-        "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "Experiment ${FAILED_TEST_CASE} **FAILED** on ${Machine} from Pipeline# ${CI_PIPELINE_ID} in\n\\\`${WORKSPACE_ID}/RUNTESTS/EXPDIR/${pslot}\\\`"
+        # Update GitHub labels for success
+        "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
+          --add-label "CI-${Machine}-Passed" --remove-label "CI-${Machine}-Running" || true
       fi
 
   needs:
