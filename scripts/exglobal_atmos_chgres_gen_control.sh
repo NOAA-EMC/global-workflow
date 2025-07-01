@@ -11,6 +11,10 @@ pwd=$(pwd)
 # Dependent Scripts and Executables
 cp "/lfs/h2/emc/global/noscrub/anton.fernando/global-workflow/sorc/ufs_utils.fd/exec/chgres_cube" .
 cp "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" .
+cp "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" .
+
+
+
 export CHGRESNCEXEC="./chgres_cube"
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 
@@ -27,7 +31,7 @@ mosaic_file_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/c
 fix_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/sfc"
 orog_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
 orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
-vcoord_file_target_grid="/lfs/h2/emc/global/noscrub/anton.fernando/UFS_UTILS/reg_tests/chgres_cube/../../fix/am/global_hyblev.l64.txt"
+vcoord_file_target_grid="/lfs/h2/emc/global/noscrub/anton.fernando/UFS_UTILS/reg_tests/chgres_cube/fix/am/global_hyblev.l64.txt"
 mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
 orog_files_input_grid="NULL"
@@ -67,5 +71,5 @@ wam_cold_start=.false.
 /
 EOF
 
-$APRUN $CHGRESNCEXEC $ATMF03
+$APRUN $CHGRESNCEXEC "chgres_nc_gauss03.nml"
 exit $err
