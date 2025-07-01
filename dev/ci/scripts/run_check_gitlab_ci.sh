@@ -32,7 +32,7 @@ run_check_logfile="${RUNTESTS}/ci-run_check.log"
 report_failure_to_github() {
   local pslot="${1}"
   local Machine="${MACHINE_ID^}"
-  local caseName="${caseName:-$(echo "${pslot}" | sed 's/_[a-f0-9]*-[0-9]*$//')}"
+  local caseName="${caseName:-${pslot%_*-*}}"
   local error_log_file="${RUNTESTS}/EXPDIR/${pslot}/${pslot}_fullpath_error.logs"
   local gist_message_section=""
 
