@@ -53,6 +53,9 @@ case ${RUN} in
     exit 1
 esac
 
+#use 2014-2023 mean MERRA2 aerosol
+export MERRA2_6ym=".false."
+
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst
 export domains_stack_size="16000000"
