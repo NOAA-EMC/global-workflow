@@ -461,7 +461,6 @@ WW3_postdet() {
   # Loop for gridded output (uses FHINC)
   local fhr fhr3 vdate FHINC ww3_grid
   fhr=${FHMIN_WAV}
-  fhinc=${FHOUT_WAV}
   while (( fhr <= FHMAX_WAV )); do
     fhr3=$(printf '%03d' "${fhr}")
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
@@ -469,6 +468,8 @@ WW3_postdet() {
 
     if (( FHMAX_HF_WAV > 0 && FHOUT_HF_WAV > 0 && fhr < FHMAX_HF_WAV )); then
       fhinc=${FHOUT_HF_WAV}
+    else 
+      fhinc=${FHOUT_WAV}
     fi
     fhr=$((fhr + fhinc))
   done
