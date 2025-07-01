@@ -9,9 +9,8 @@
 #  Directories.
 pwd=$(pwd)
 # Dependent Scripts and Executables
-export APRUN_CHGRES="${HOMEgfs}/sorc/ufs_utils.fd/reg_tests/chgres_cube"
+export CHGRESNCEXEC="${HOMEgfs}/sorc/ufs_utils.fd/reg_tests/chgres_cube"
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
-APRUNCFP=${APRUNCFP:-""}
 
 # at full resolution
 ATMF03=${ATMF03:-${COMIN_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.nc}
