@@ -32,7 +32,7 @@ run_check_logfile="${RUNTESTS}/ci-run_check.log"
 report_failure_to_github() {
   local pslot="${1}"
   local Machine="${MACHINE_ID^}"
-  local caseName="${caseName:-${pslot-?}}"
+  local caseName="${caseName:-$(echo "${pslot}" | sed 's/_[a-f0-9]*-[0-9]*$//')}"
   local error_log_file="${RUNTESTS}/EXPDIR/${pslot}/${pslot}_fullpath_error.logs"
   local gist_message_section=""
 
@@ -74,8 +74,6 @@ report_failure_to_github() {
       --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${caseName}" || true
 
       # Prepare markdown section for files links to gist for GitHub comment
-
-                  # Prepare markdown section for files links to gist for GitHub comment
       gist_message_section=$(cat <<EOF
 ### 📋 Error Log Files:
 \`\`\`
