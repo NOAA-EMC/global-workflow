@@ -14,9 +14,9 @@ export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 APRUNCFP=${APRUNCFP:-""}
 
 # at full resolution
-ATMF03=${ATMF03:-${COMIN_ATMOS_HISTORY}/${APREFIX}atmf003.nc}
+ATMF03=${ATMF03:-${COMIN_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.nc}
 # at ensemble resolution
-ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}atmf003.ensres.nc}
+ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.ensres.nc}
 
 ##############################################################
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
