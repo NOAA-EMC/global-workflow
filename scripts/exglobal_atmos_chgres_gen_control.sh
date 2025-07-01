@@ -11,7 +11,7 @@ pwd=$(pwd)
 # Dependent Scripts and Executables
 cp "/lfs/h2/emc/global/noscrub/anton.fernando/global-workflow/sorc/ufs_utils.fd/exec/chgres_cube" .
 cp "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" .
-export CHGRESNCEXEC="chgres_cube"
+export CHGRESNCEXEC="./chgres_cube"
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 
 # at full resolution
