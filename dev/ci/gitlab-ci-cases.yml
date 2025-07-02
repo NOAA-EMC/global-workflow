@@ -41,6 +41,7 @@
       error=$?
       if [[ ${error} -ne 0 ]]; then
         export GW_CI_RUN_STATE="Failed"
+        export FAILED_TEST_CASE="${caseName}"
         echo "================================================================================"
         echo "ERROR: Test case ${caseName} failed on ${machine} in ${RUNTESTS_DIR} at $(date)"
         echo "================================================================================"
@@ -91,17 +92,18 @@
         echo "TODO set status badges on GitHub status here"
       else
         # Passed pipelines that are not scheduled nightly do not need to rename directories
+        echo "All cases passed on ${Machine} in ${RUNTESTS_DIR} at $(date)"
         echo "Skipping directory rename and cleanup for non-scheduled pipeline."
         exit 0
       fi
 
       if [[ "${GW_CI_RUN_STATE}" == "Failed" ]]; then
-        echo "Test case ${caseName} failed on ${Machine}. Please check the logs for details."
+        echo "Test case ${FAILED_TEST_CASE} failed on ${Machine}. Please check the logs for details."
         error_logs=""
         error_logs_message=""
 
         cd "${WORKSPACE_ID}"
-        pslot=$("${GW_HOMEgfs}/ci/scripts/utils/get_pslot.sh" "${RUNTESTS_DIR}" "${caseName}")
+        pslot=$("${GW_HOMEgfs}/ci/scripts/utils/get_pslot.sh" "${RUNTESTS_DIR}" "${FAILED_TEST_CASE}")
         error_file="${RUNTESTS_DIR}/${pslot}_error.logs"
 
         if [[ -f "$error_file" ]]; then
@@ -119,17 +121,14 @@
                 source "${GW_HOMEgfs}/ush/gw_setup.sh"
                 "${GW_HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --repo "PR_${PR_NUMBER}"
                 gist_url=$("${GW_HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --multiple --format=github --gist "PR_${PR_NUMBER}" | tail -n 1)
-                "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "Experiment ${caseName} **FAILED** on ${Machine} in Pipeline# ${CI_PIPELINE_ID} with error logs:\n\`\`\`\n${error_logs_message}\`\`\`\n\nFollow link here to view the contents of the above file(s): ${gist_url}"
+                "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "Experiment ${FAILED_TEST_CASE} **FAILED** on ${Machine} in Pipeline# ${CI_PIPELINE_ID} with error logs:\n\`\`\`\n${error_logs_message}\`\`\`\n\nFollow link here to view the contents of the above file(s): ${gist_url}"
                 "${GW_HOMEgfs}/ci/scripts/utils/publish_logs.py" --file ${error_logs} --repo "PR_${PR_NUMBER}"
             fi
         fi
 
         "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" --remove-label "CI-${Machine}-Running" --add-label "CI-${Machine}-Failed"
         pslot=$(basename "$error_file" "_error.logs")
-        "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "Experiment ${caseName} **FAILED** on ${Machine} from Pipeline# ${CI_PIPELINE_ID} in\n\\\`${WORKSPACE_ID}/RUNTESTS/EXPDIR/${pslot}\\\`"
-
-      else
-        echo "Test case ${caseName} passed on ${Machine}."
+        "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "Experiment ${FAILED_TEST_CASE} **FAILED** on ${Machine} from Pipeline# ${CI_PIPELINE_ID} in\n\\\`${WORKSPACE_ID}/RUNTESTS/EXPDIR/${pslot}\\\`"
       fi
 
   needs:
