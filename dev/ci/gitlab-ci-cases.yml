@@ -43,6 +43,9 @@
 .finalize_template:
   extends: .base_config
   stage: finalize
+  variables:
+    hera_GIST_ID: "6fc87bdca52a4046188460bcd35e4350"
+    gaeac6_GIST_ID: "66059582886cb5c2485ff64bf24e7f93"
   script:
     - |
       Machine="${machine^}"
@@ -62,10 +65,16 @@
         echo "Cleaning up old ${PIPELINE_TYPE} directories except stable"
         find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" \
           -not -path "$(readlink -f "${CI_BUILDS_DIR}/stable")" -exec rm -rf {} \; 2>/dev/null || true
+
+        # Update GitHub badges for success
+        echo "Updating develop branch badge..."
+        curl -L "https://img.shields.io/badge/${Machine}-Passed-brightgreen?style=flat-square&logo=gitlab" -o "badges/${Machine}_pipeline_badge.svg"
+        ${GH} gist edit "${machine}_GIST_ID" "badges/${Machine}_pipeline_badge.svg"
       fi
 
       # Update GitHub labels for success
       "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
         --add-label "CI-${Machine}-Passed" --remove-label "CI-${Machine}-Running" || true
+
   needs:
     - run_experiments-${machine}
