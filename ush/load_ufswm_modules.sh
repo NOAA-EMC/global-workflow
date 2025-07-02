@@ -11,18 +11,6 @@ ulimit_s=$( ulimit -S -s )
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
-  module load cray-pals
-  module load cfp
-  module load libjpeg
-  module load craype-network-ucx
-  module load cray-mpich-ucx
-else
-  export UTILROOT=${prod_util_ROOT}
-fi
-
-unset MACHINE_ID
-
 ###############################################################
 # exglobal_forecast.py requires the following in PYTHONPATH
 # This will be moved to a module load when ready

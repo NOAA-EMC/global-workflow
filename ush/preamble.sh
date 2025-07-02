@@ -177,7 +177,7 @@ trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 source "${HOMEgfs}/ush/bash_utils.sh"
 
 # Decide if run with container
-export RUN_WITH_CONTAINER=NO
+export RUN_WITH_CONTAINER=YES
 
 if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
   export WGRIB2="${HOMEgfs}/exec/run_wgrib2.sh"
@@ -185,13 +185,13 @@ if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
     # cp -r $prod_util_ROOT ~/prod-util-2.1.1
   # fi
 
-  if [[ "$PATH" =~ "prod-util" ]]; then
-      export PATH=~/prod-util-2.1.1/bin:$PATH
-  fi
-  export FSYNC ~/prod-util-2.1.1/bin/fsync_file
-  export MDATE ~/prod-util-2.1.1/bin/mdate
-  export NDATE ~/prod-util-2.1.1/bin/ndate
-  export NHOUR ~/prod-util-2.1.1/bin/nhour
+ #if [[ "$PATH" =~ "prod-util" ]]; then
+    export PATH=~/prod-util-2.1.1/bin:$PATH
+ #fi
+  export FSYNC=~/prod-util-2.1.1/bin/fsync_file
+  export MDATE=~/prod-util-2.1.1/bin/mdate
+  export NDATE=~/prod-util-2.1.1/bin/ndate
+  export NHOUR=~/prod-util-2.1.1/bin/nhour
 else
   source "${HOMEgfs}/ush/detect_machine.sh"
   source "${HOMEgfs}/ush/module-setup.sh"
@@ -203,18 +203,28 @@ else
   module use "${HOMEgfs}/modulefiles"
 
   case "${MACHINE_ID}" in
-    "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud" | "ursa")
+    "wcoss2")
+      module load cray-pals
+      module load cfp
+      module load libjpeg
+      module load craype-network-ucx
+      module load cray-mpich-ucx
       module load "module_base.${MACHINE_ID}"
-      export err=$?
-      if [[ ${err} -ne 0 ]]; then
-        echo "FATAL ERROR: Failed to load module_base.${MACHINE_ID}"
-        exit 1
-      fi
+      ;;
+    "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud" | "ursa")
+      module load "module_base.${MACHINE_ID}"
+      export UTILROOT=${prod_util_ROOT}
       ;;
     *)
       echo "WARNING: UNKNOWN PLATFORM"
       ;;
   esac
+
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+    echo "FATAL ERROR: Failed to load module_base.${MACHINE_ID}"
+    exit 1
+  fi
 
   module load wgrib2
   module load prod_util
