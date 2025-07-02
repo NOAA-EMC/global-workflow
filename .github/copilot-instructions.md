@@ -10,6 +10,7 @@
 - Use consistent indentation (2 spaces)
 - Follow the BASH style aleady in code base expecally "${variable}" for variables
 - Alays have no extra whitespace at the end or beginning of lines
+- Use pycodestyle for Python code
 
 ## Code Quality
 - Ensure code is clean, well-commented, and follows best practices
