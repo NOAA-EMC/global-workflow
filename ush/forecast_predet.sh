@@ -119,7 +119,12 @@ common_predet(){
     else
       model_start_date_current_cycle=${current_cycle}
     fi
-    model_start_date_next_cycle=${next_cycle}
+    if [[ "${DO_AERO_ANL:-NO}" == "YES" ]]; then
+      # even without IAU we want 3-hourly restarts for FGAT
+      model_start_date_next_cycle="${next_cycle_begin}"
+    else  
+      model_start_date_next_cycle=${next_cycle}
+    fi
   fi
 
   FHMIN=${FHMIN:-0}
@@ -533,15 +538,32 @@ FV3_predet(){
 
   # Aerosol options
   IAER=${IAER:-1011}
-
+  MERRA2_6ym=${MERRA2_6ym:-".false."}
   ## merra2 aerosol climo
   if (( IAER == 1011 )); then
-    local month mm
-    for (( month = 1; month <=12; month++ )); do
-      mm=$(printf %02d "${month}")
-      cpreq "${FIXgfs}/aer/merra2.aerclim.2014-2023.m${mm}.nc" "aeroclim.m${mm}.nc"
-    done
-  fi
+    if [[ "${MERRA2_6ym}" == ".false." ]]; then
+#   local month mm
+      for (( month = 1; month <=12; month++ )); do
+        mm=$(printf %02d "${month}")
+        cpreq "${FIXgfs}/aer/merra2.aerclim.2014-2023.m${mm}.nc" "aeroclim.m${mm}.nc"
+      done
+    elif [[ "${MERRA2_6ym}" == ".true." ]]; then
+      year=${current_cycle:0:4}
+      for i in {1980..2300..5}
+      do
+        if [[ ${year} -le ${i} ]]
+        then
+          Eyear=$(printf %04d "${i}")
+          Syear=$(( i - 5 ))
+          break
+        fi
+      done
+      for (( month = 1; month <=12; month++ )); do
+        mm=$(printf %02d "${month}")
+        cpreq "${FIXgfs}/aer/y${Syear}-${Eyear}/merra2_${Syear}-${Eyear}_${mm}.nc" "aeroclim.m${mm}.nc"
+      done
+    fi # if [[ "${MERRA2_6ym}" == ".true." ]];
+  fi  # if (( IAER == 1011 ))
 
   cpreq "${FIXgfs}/am/global_climaeropac_global.txt" "${DATA}/aerosol.dat"
   if (( IAER > 0 )) ; then

@@ -64,6 +64,11 @@ FV3_postdet() {
           rm -f "${DATA}/INPUT/sfc_data.tile${nn}.nc"
           cpreq "${COMIN_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.sfcanl_data.tile${nn}.nc" \
                 "${DATA}/INPUT/sfc_data.tile${nn}.nc"
+        # GCAFS does not run the sfcanl, only GCDAS
+        elif [[ ${DO_AERO_FCST} == "YES" && -f "${COMIN_TRACER_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.sfcanl_data.tile${nn}.nc" ]]; then
+          rm -f "${DATA}/INPUT/sfc_data.tile${nn}.nc"
+          cpreq "${COMIN_TRACER_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.sfcanl_data.tile${nn}.nc" \
+                "${DATA}/INPUT/sfc_data.tile${nn}.nc"
         else
           echo "'sfcanl_data.tile1.nc' not found in '${COMIN_ATMOS_RESTART}', using 'sfc_data.tile1.nc'"
           break
@@ -75,7 +80,7 @@ FV3_postdet() {
         local nn
         local use_anl_aero="YES"
         for (( nn = 1; nn <= ntiles; nn++ )); do
-          test_tracer_file="${COMOUT_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc"
+          test_tracer_file="${COMIN_TRACER_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc"
           if [[ ! -f  "${test_tracer_file}" ]]; then
             use_anl_aero="NO"
             echo "WARNING: File ${test_tracer_file} does not exist, will not replace any files from the aerosol analysis"
@@ -85,7 +90,7 @@ FV3_postdet() {
         if [[ ${use_anl_aero} == "YES" ]]; then
           for (( nn = 1; nn <= ntiles; nn++ )); do
             rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
-            cpreq "${COMIN_ATMOS_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
+            cpreq "${COMIN_TRACER_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
                   "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
           done
         fi # if [[ ${use_anl_aero} == "YES" ]]; then
@@ -133,7 +138,7 @@ FV3_postdet() {
         IAU_DELTHRS=0
         IAU_INC_FILES="''"
       fi
-
+      DO_LAND_IAU=".false."
     #--------------------------------------------------------------------------
     else  # "${RERUN}" == "NO"
 
@@ -212,10 +217,29 @@ EOF
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
           increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
         else
-          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          if [[ "${RUN}" == "gcafs" ]]; then
+            increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          else
+            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          fi
         fi
         cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
       done
+
+      # Land IAU increments: sfc_inc in FV3 grid, all timesteps in one file per tile 
+      if [[ ${DO_LAND_IAU} = ".true." ]]; then
+        local TN sfc_increment_file
+        for TN in $(seq 1 "${ntiles}"); do
+          sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/sfc_inc.tile${TN}.nc"
+          if [[ ! -f "${sfc_increment_file}" ]]; then
+            echo "FATAL ERROR: DO_LAND_IAU=${DO_LAND_IAU}, but missing increment file ${sfc_increment_file}, ABORT!"
+            exit 1
+          else
+            cpreq "${sfc_increment_file}" "${DATA}/INPUT/sfc_inc.tile${TN}.nc"
+          fi
+        done
+
+      fi
 
     fi  # if [[ "${RERUN}" == "YES" ]]; then
     #--------------------------------------------------------------------------
