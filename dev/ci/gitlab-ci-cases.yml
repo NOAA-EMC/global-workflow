@@ -97,4 +97,9 @@
         ${GH} gist edit "${GIST_ID}" --add "badges/${machine}_pipeline_badge.svg"
       fi
   needs:
-    - run_experiments-${machine}
+    - job: build-${machine}
+      optional: true
+    - job: setup_experiments-${machine}
+      optional: true
+    - job: run_experiments-${machine}
+      optional: true
