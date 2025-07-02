@@ -88,10 +88,11 @@ finalize_success-hera:
   tags:
     - hera
   needs:
-    - run_experiments-hera
+    - job: run_experiments-hera
+      optional: true
   when: on_success
   rules:
-    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
 finalize_success-gaeac6:
   extends: .finalize_success_template
@@ -100,7 +101,8 @@ finalize_success-gaeac6:
   tags:
     - gaeac6
   needs:
-    - run_experiments-gaeac6
+    - job: run_experiments-gaeac6
+      optional: true
   when: on_success
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
@@ -112,10 +114,15 @@ finalize_fail-hera:
   tags:
     - hera
   needs:
-    - run_experiments-hera
+    - job: build-hera
+      optional: true
+    - job: setup_experiments-hera
+      optional: true
+    - job: run_experiments-hera
+      optional: true
   when: on_failure
   rules:
-    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
 finalize_fail-gaeac6:
   extends: .finalize_fail_template
@@ -124,7 +131,12 @@ finalize_fail-gaeac6:
   tags:
     - gaeac6
   needs:
-    - run_experiments-gaeac6
+    - job: build-gaeac6
+      optional: true
+    - job: setup_experiments-gaeac6
+      optional: true
+    - job: run_experiments-gaeac6
+      optional: true
   when: on_failure
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
