@@ -10,8 +10,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
+# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+# shellcheck disable=
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"

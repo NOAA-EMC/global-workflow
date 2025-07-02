@@ -13,11 +13,11 @@
 # Make sure we are in the $DATA directory
 cd "${DATA}"
 
-tmhr=${tmmark:2:2}
-cdate10=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${tmhr} hours")
+tmhr=$(echo "${tmmark}"|cut -c3-4)
+cdate10=$( ${NDATE:?} -"${tmhr}" "${PDY}""${cyc}")
 
-NET_uc=${RUN^^}
-tmmark_uc=${tmmark^^}
+NET_uc=$(echo "${RUN}" | tr [a-z] [A-Z])
+tmmark_uc=$(echo "${tmmark}" | tr [a-z] [A-Z])
 
 iflag=0
 if [[ "${RUN}" = ndas ]]; then
