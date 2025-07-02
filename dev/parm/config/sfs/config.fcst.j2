@@ -34,6 +34,9 @@ export FHOUT_OCN=${FHOUT_OCN_GFS}
 export FHOUT_ICE=${FHOUT_ICE_GFS}
 export FHZERO="{{ FHZERO }}"
 
+#use 6 year mean MERRA2 aerosol sync with time
+export MERRA2_6ym=".true."
+
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst
 export domains_stack_size="16000000"
