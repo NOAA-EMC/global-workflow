@@ -7,9 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "fit2obs" -c "base fit2obs"
 # Set variables used in the script
 ##############################################
 
-# Ignore spelling warning; nothing is misspelled
-# shellcheck disable=SC2153
-CDATE=$(${NDATE} -"${VBACKUP_FITS}" "${PDY}${cyc}") # set CDATE to lookback cycle for use in fit2obs package
+CDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${VBACKUP_FITS} hours")
 export CDATE
 vday=${CDATE:0:8}
 vcyc=${CDATE:8:2}
