@@ -35,9 +35,6 @@ step=$1
 
 echo "BEGIN: config.resources"
 
-echo "%0 step: ${step}"
-echo "%0 machine: ${machine}"
-
 case ${machine} in
   "WCOSS2")
               max_tasks_per_node=128
@@ -97,13 +94,6 @@ case ${machine} in
     npe_node_max=30
     max_tasks_per_node=30
     # TODO Supply a max mem/node value for GOOGLE
-    # shellcheck disable=SC2034
-    mem_node_max=""
-    ;;
-  "CONTAINER")
-    npe_node_max=1
-    max_tasks_per_node=
-    # TODO Supply a max mem/node value for container
     # shellcheck disable=SC2034
     mem_node_max=""
     ;;

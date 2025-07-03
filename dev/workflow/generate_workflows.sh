@@ -43,7 +43,9 @@ function _usage() {
 
     -S Run all valid SFS cases in the specified YAML directory.
 
-    NOTES on -G, -E, and -S:
+    -C Run all valid GCAFS cases in the specified YAML directory.
+
+    NOTES on -G, -E, -S and -C:
          - Valid cases are determined by the experiment:system key as
            well as the skip_ci_on_hosts list in each YAML.
 
@@ -140,6 +142,7 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
         G) _run_all_gfs=true ;;
         E) _run_all_gefs=true ;;
         S) _run_all_sfs=true ;;
+        C) _run_all_gcafs=true ;;
         c) _update_cron=true ;;
         e) _email="${OPTARG}" && _set_email=true ;;
         t) _tag="_${OPTARG}" ;;
@@ -251,16 +254,17 @@ else
    fi
 fi
 
-# Empty the _yaml_list array if -G, -E, and/or -S were selected
+# Empty the _yaml_list array if -G, -E, -S and/or -C were selected
 if [[ "${_run_all_gfs}" == "true" || \
       "${_run_all_gefs}" == "true" || \
+      "${_run_all_gcafs}" == "true" || \
       "${_run_all_sfs}" == "true" ]]; then
 
-   # Raise an error if the user specified a yaml list and any of -G -E -S
+   # Raise an error if the user specified a yaml list and any of -G -E -S -C
    if [[ "${_specified_yaml_list}" == "true" ]]; then
       echo "Ambiguous case selection."
       echo "Please select which tests to run explicitly with -y \"list of tests\" or"
-      echo "by specifying -G (all GFS), -E (all GEFS), and/or -S (all SFS), but not both."
+      echo "by specifying -G (all GFS), -E (all GEFS), -C (all GCAFS) and/or -S (all SFS), but not both."
       exit 3
    fi
 
@@ -302,8 +306,7 @@ function select_all_yamls()
    # YAMLs in that list that are not for the specified system and issue warnings when
    # doing so.
 
-   _system="${1}"
-   _SYSTEM="${_system^^}"
+   _net="${1}"
 
    # Bash cannot return an array from a function and any edits are descoped at
    # the end of the function, so use a nameref instead.
@@ -312,12 +315,12 @@ function select_all_yamls()
    if [[ "${_specified_yaml_list}" == false ]]; then
       # Start over with an empty _yaml_list
       _nameref_yaml_list=()
-      printf "Running all %s cases in %s\n\n" "${_SYSTEM}" "${_yaml_dir}"
+      printf "Running all %s cases in %s\n\n" "${_net^^}" "${_yaml_dir}"
       _yaml_count=0
 
       for _full_path in "${_yaml_dir}/"*.yaml; do
          # Skip any YAML that isn't supported
-         if ! grep -l "system: *${_system}" "${_full_path}" >& /dev/null ; then continue; fi
+         if ! grep -l "net: *${_net}" "${_full_path}" >& /dev/null ; then continue; fi
 
          # Select only cases for the specified system
          _yaml=$(basename "${_full_path}")
@@ -332,7 +335,7 @@ function select_all_yamls()
 
       if [[ ${_yaml_count} -eq 0 ]]; then
          read -r -d '' _message << EOM
-            "No YAMLs or ${_SYSTEM} were found in the directory (${_yaml_dir})!"
+            "No YAMLs or ${_net^^} were found in the directory (${_yaml_dir})!"
             "Please check the directory/YAMLs and try again"
 EOM
          echo "${_message}"
@@ -347,7 +350,7 @@ EOM
          _yaml="${_nameref_yaml_list[${i}]}"
          _found=$(grep -l "system: *${system}" "${_yaml_dir}/${_yaml}.yaml")
          if [[ -z "${_found}" ]]; then
-            echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_SYSTEM} system"
+            echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_net^^} system"
             echo "Removing this yaml from the set of cases to run"
             unset '_nameref_yaml_list[${i}]'
             # Sleep 2 seconds to give the user a moment to react
@@ -383,6 +386,15 @@ if [[ "${_run_all_sfs}" == "true" ]]; then
    declare -a _gfs_yaml_list
    select_all_yamls "sfs" "_sfs_yaml_list"
    _yaml_list=("${_yaml_list[@]}" "${_sfs_yaml_list[@]}")
+fi
+
+# Check if running all GCAFS cases
+if [[ "${_run_all_gcafs}" == "true" ]]; then
+   _build_flags="${_build_flags} gcafs gdas "
+
+   declare -a _gfs_yaml_list
+   select_all_yamls "gcafs" "_gcafs_yaml_list"
+   _yaml_list=("${_yaml_list[@]}" "${_gcafs_yaml_list[@]}")
 fi
 
 # Loading modules sometimes raises unassigned errors, so disable checks

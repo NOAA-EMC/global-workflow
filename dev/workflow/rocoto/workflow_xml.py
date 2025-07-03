@@ -160,7 +160,7 @@ class RocotoXML(ABC):
         rocotoruncmd = find_executable('rocotorun')
         if rocotoruncmd is None:
             try:
-                if ( 'rocotorun' in self.rocoto_config.keys() ):
+                if ('rocotorun' in self.rocoto_config.keys()):
                     rocotoruncmd = self.rocoto_config['rocotorun']
                 else:
                     rocotoruncmd = '/apps/rocoto/default/bin/rocotorun'
@@ -275,7 +275,7 @@ class RocotoXML(ABC):
 
         if rocotorun is None:
             try:
-                if ( 'rocotorun' in self.rocoto_config.keys() ):
+                if ('rocotorun' in self.rocoto_config.keys()):
                     rocotorun = self.rocoto_config['rocotorun']
                 else:
                     rocotorun = '/apps/rocoto/default/bin/rocotorun'
