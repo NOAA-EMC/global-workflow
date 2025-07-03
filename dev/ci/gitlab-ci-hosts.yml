@@ -82,8 +82,8 @@ run_experiments-gaeac6:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 # Host: Hera - Finalize
-finalize-hera:
-  extends: .finalize_template
+finalize_success-hera:
+  extends: .finalize_success_template
   variables:
     machine: hera
   tags:
@@ -95,8 +95,8 @@ finalize-hera:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
 # Host: Gaea C6 - Finalize
-finalize-gaeac6:
-  extends: .finalize_template
+finalize_success-gaeac6:
+  extends: .finalize_success_template
   variables:
     machine: gaeac6
   tags:
@@ -104,6 +104,32 @@ finalize-gaeac6:
   needs:
     - run_experiments-gaeac6
   when: on_success
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
+
+# Host: Hera - Finalize
+finalize_failure-hera:
+  extends: .finalize_failure_template
+  variables:
+    machine: hera
+  tags:
+    - hera
+  needs:
+    - run_experiments-hera
+  when: on_failure
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
+
+# Host: Gaea C6 - Finalize
+finalize_failure-gaeac6:
+  extends: .finalize_failure_template
+  variables:
+    machine: gaeac6
+  tags:
+    - gaeac6
+  needs:
+    - run_experiments-gaeac6
+  when: on_failure
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 

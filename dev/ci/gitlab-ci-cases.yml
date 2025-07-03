@@ -2,19 +2,16 @@
 # Templates for Standard Test Cases
 # ==========================================================================
 #
-# This file defines templates for setting up and running standard experiment
-# test cases for the global-workflow project. These cases represent more
-# comprehensive, end-to-end testing scenarios than the CTesting framework.
+# This file defines templates for setting up and running experiment
+# test cases found in dev/ci/cases/pr for the global-workflow project.
 #
-# These templates are used primarily for PR testing when GITHUB_API_TRIGGER=false.
-# The actual test case matrix for each host is defined in .gitlab-ci-hosts.yml.
+# These cases represent more comprehensive, end-to-end testing
+# scenarios than the CTesting framework.
 #
 # Key templates:
 # - .setup_template: Creates experiment directories based on case YAML files
 # - .run_tests_template: Executes and validates the experiment workflows
-#
-# Test cases are defined as YAML files in the dev/ci/cases/pr directory and
-# are referenced by name in the host configuration file's test matrix.
+# - .finalize_{state}_template: Handles success and failure reporting
 
 # Template for experiment setup jobs
 .setup_experiment_template:
@@ -33,6 +30,7 @@
 .run_experiments_template:
   extends: .base_config
   stage: run_tests
+  fail_fast: true
   script:
     - |
       echo "Using build directory ${GW_HOMEgfs} (dated ${DATE})"
@@ -41,103 +39,99 @@
       error=$?
       if [[ ${error} -ne 0 ]]; then
         echo "Experiment ${caseName} failed with error code ${error}"
+        exit 1
       fi
+  needs:
+    - setup_experiments-${machine}
 
+# Failure finalize - runs when ANY case job fails
+.finalize_failure_template:
+  extends: .base_config
+  stage: finalize
+  script:
+    - |
       Machine=${machine^}
       echo "Finalizing test cases on ${Machine} using ${GW_HOMEgfs}"
+      error_log_file="${RUNTESTS_DIR}/EXPDIR/${pslot}/${pslot}_error.logs"
 
-      # Detect failure state by checking for error log files in RUNTESTS_DIR
-      error_log_files=$(find "${RUNTESTS_DIR}" -maxdepth 1 -name "*_error.logs" -type f 2>/dev/null || true)
-
-      if [[ -n "${error_log_files}" ]]; then
+      if [[ -n "${error_log_file}" ]]; then
         echo "================================================================================"
-        echo "FAILURE DETECTED: Found error log files in ${RUNTESTS_DIR}"
-        echo "Error log files: ${error_log_files}"
+        echo "FAILURE DETECTED: Found error log files in ${RUNTESTS_DIR}/EXPDIR/${pslot}"
+        echo "Error log file: ${error_log_file}"
         echo "================================================================================"
 
         # Create processed logs directory to prevent reprocessing
         processed_dir="${RUNTESTS_DIR}/processed_error_logs_$(date +%Y%m%d_%H%M%S)"
         mkdir -p "${processed_dir}"
 
-        # Process each error log file
-        for error_file in ${error_log_files}; do
-          if [[ -f "${error_file}" && -s "${error_file}" ]]; then
-            # Extract case name and pslot from error file name
-            error_filename=$(basename "${error_file}")
-            pslot=$(basename "${error_file}" "_error.logs")
-            case_name=$(echo "${pslot}" | sed 's/_[a-f0-9]*-[0-9]*$//')
+        if [[ -f "${error_log_file}" && -s "${error_log_file}" ]]; then
+          echo "Processing log reports to GitHub for failure with case: ${caseName}, pslot: ${pslot}"
+          error_logs_for_gist=""
+          error_logs_markdown=""
 
-            echo "Processing failure for case: ${case_name}, pslot: ${pslot}"
+          while IFS= read -r log_path; do
+            [[ -n "${log_path}" ]] || continue
+            # Convert relative path to absolute if needed
+            full_log_path="${log_path}"
+            [[ "${log_path}" =~ ^RUNTESTS/ ]] && full_log_path="${GW_RUN_PATH}/${log_path}"
 
-            # Collect error log paths and create markdown
-            error_logs_for_gist=""
-            error_logs_markdown=""
+            if [[ -f "${full_log_path}" && -s "${full_log_path}" ]]; then
+              error_logs_for_gist="${error_logs_for_gist} ${full_log_path}"
+              error_logs_markdown="${error_logs_markdown}- \`$(basename "${full_log_path}")\`\n"
+            fi
+          done < "${error_log_file}"
 
-            while IFS= read -r log_path; do
-              [[ -n "${log_path}" ]] || continue
-              # Convert relative path to absolute if needed
-              full_log_path="${log_path}"
-              [[ "${log_path}" =~ ^RUNTESTS/ ]] && full_log_path="${GW_RUN_PATH}/${log_path}"
+          if [[ -n "${error_logs_for_gist}" ]]; then
+            # Generate gist URLs with formatted markdown links
+            source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
+            gist_links=$("${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
+              --file ${error_logs_for_gist} --multiple --format=github \
+              --gist "PR_${PR_NUMBER}_${caseName}")
 
-              if [[ -f "${full_log_path}" && -s "${full_log_path}" ]]; then
-                error_logs_for_gist="${error_logs_for_gist} ${full_log_path}"
-                error_logs_markdown="${error_logs_markdown}- \`$(basename "${full_log_path}")\`\n"
-              fi
-            done < "${error_file}"
+            # Upload to repo as well for backup
+            "${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py"
+                --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${caseName}" || true
 
-            if [[ -n "${error_logs_for_gist}" ]]; then
-              # Generate gist URLs with formatted markdown links
-              source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
-              gist_links=$("${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
-                --file ${error_logs_for_gist} --multiple --format=github \
-                --gist "PR_${PR_NUMBER}_${case_name}")
+             gist_message_section="### 📋 Error Log Files:
+      ${error_logs_markdown}
+      ### 🔗 View Error Logs:
+      ${gist_links}"
+          else
+            echo "No valid error log files found for case: ${caseName}, pslot: ${pslot}"
+            gist_message_section="No valid error log files found for this case."
+          fi
+      fi
 
-              # Upload to repo as well for backup
-              "${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py"
-                --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${case_name}" || true
-
-              # Create formatted GitHub comment
-              comment_body="## 🚫 Experiment **${case_name}** FAILED on **${Machine}**
+      # Create formatted GitHub comment
+      comment_body="## 🚫 Experiment **${caseName}** FAILED on **${Machine}**
 
       **Pipeline:** ${CI_PIPELINE_ID}
       **Workspace:** \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
       **Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
-
-      ### 📋 Error Log Files:
-      ${error_logs_markdown}
-      ### 🔗 View Error Logs:
-      ${gist_links}
+      ${gist_message_section}
 
       ---
       *This failure was detected automatically by global-workflow's CI/CD Pipeline"
 
-              # Post GitHub comment
-              "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
-            fi
+      # Post GitHub comment
+      "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
 
-            # Move processed error log to prevent reprocessing
-            mv "${error_file}" "${processed_dir}/"
-          fi
-        done
+      # Move processed error log to prevent reprocessing
+      mv "${error_file}" "${processed_dir}/"
 
-        # Update GitHub labels
-        "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
-          --add-label "CI-${Machine}-Failed" --remove-label "CI-${Machine}-Running" || true
+      # Update GitHub labels
+      "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" --add-label "CI-${Machine}-Failed" --remove-label "CI-${Machine}-Running" || true
 
   needs:
-    - setup_experiments-${machine}
+    - run_experiments-${machine}
 
-.finalize_template:
+# Success finalize - runs when ALL case jobs succeed
+.finalize_success_template:
   extends: .base_config
   stage: finalize
 
   script:
     - |
-        echo "================================================================================"
-        echo "SUCCESS: No error log files found - all tests passed on ${Machine}"
-        echo "================================================================================"
-
-        # Handle nightly pipeline success logic
         Machine=${machine^}
         if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
           echo "This is a scheduled nightly pipeline, creating date-based directories and symlinks"
