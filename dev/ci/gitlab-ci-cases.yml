@@ -49,7 +49,7 @@
   stage: finalize
   script:
     - |
-      Machine=${machine^}
+      Machine="${machine^}"
       echo "Finalizing test cases on ${Machine} using ${GW_HOMEgfs}"
       error_log_file="${RUNTESTS_DIR}/EXPDIR/${pslot}/${pslot}_error.logs"
 
@@ -88,10 +88,10 @@
               --gist "PR_${PR_NUMBER}_${caseName}")
 
             # Upload to repo as well for backup
-            "${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py"
-                --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${caseName}" || true
-
-             gist_message_section="### 📋 Error Log Files:
+            "${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
+              --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${caseName}" || true
+            # Prepare markdown section for files links to gist for GitHub comment
+            gist_message_section="### 📋 Error Log Files:
       ${error_logs_markdown}
       ### 🔗 View Error Logs:
       ${gist_links}"
@@ -99,6 +99,7 @@
             echo "No valid error log files found for case: ${caseName}, pslot: ${pslot}"
             gist_message_section="No valid error log files found for this case."
           fi
+        fi
       fi
 
       # Create formatted GitHub comment
@@ -110,17 +111,16 @@
       ${gist_message_section}
 
       ---
-      *This failure was detected automatically by global-workflow's CI/CD Pipeline"
+      *This failure was detected automatically by global-workflow's CI/CD Pipeline*"
 
       # Post GitHub comment
       "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
 
       # Move processed error log to prevent reprocessing
-      mv "${error_file}" "${processed_dir}/"
+      mv "${error_log_file}" "${processed_dir}/"
 
       # Update GitHub labels
       "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" --add-label "CI-${Machine}-Failed" --remove-label "CI-${Machine}-Running" || true
-
   needs:
     - run_experiments-${machine}
 
@@ -128,31 +128,29 @@
 .finalize_success_template:
   extends: .base_config
   stage: finalize
-
   script:
     - |
-        Machine=${machine^}
-        if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
-          echo "This is a scheduled nightly pipeline, creating date-based directories and symlinks"
-          cd "${CI_BUILDS_DIR}" && rm -f stable
-          if [[ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" && -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]]; then
-            echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
-            mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}" && ln -sf "${WORKSPACE_DATE}" stable
-          else
-            [[ "${WORKSPACE_ID}" == "${WORKSPACE_DATE}" ]] && ln -sf "${WORKSPACE_DATE}" stable
-            [[ ! -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]] && ln -sf "${GW_RUN_PATH}" stable
-          fi
-
-          # Clean up old directories from this pipeline type except stable
-          echo "Cleaning up old ${PIPELINE_TYPE} directories except stable"
-          find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" \
-            -not -path "$(readlink -f ${CI_BUILDS_DIR}/stable)" -exec rm -rf {} \; 2>/dev/null || true
-          echo "TODO set status badges on GitHub status here"
+      Machine="${machine^}"
+      if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+        echo "This is a scheduled nightly pipeline, creating date-based directories and symlinks"
+        cd "${CI_BUILDS_DIR}" && rm -f stable
+        if [[ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" && -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]]; then
+          echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
+          mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}" && ln -sf "${WORKSPACE_DATE}" stable
+        else
+          [[ "${WORKSPACE_ID}" == "${WORKSPACE_DATE}" ]] && ln -sf "${WORKSPACE_DATE}" stable
+          [[ ! -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]] && ln -sf "${GW_RUN_PATH}" stable
         fi
 
-        # Update GitHub labels for success
-        "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
-          --add-label "CI-${Machine}-Passed" --remove-label "CI-${Machine}-Running" || true
+        # Clean up old directories from this pipeline type except stable
+        echo "Cleaning up old ${PIPELINE_TYPE} directories except stable"
+        find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" \
+          -not -path "$(readlink -f "${CI_BUILDS_DIR}/stable")" -exec rm -rf {} \; 2>/dev/null || true
+        echo "TODO set status badges on GitHub status here"
+      fi
 
+      # Update GitHub labels for success
+      "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
+        --add-label "CI-${Machine}-Passed" --remove-label "CI-${Machine}-Running" || true
   needs:
     - run_experiments-${machine}
