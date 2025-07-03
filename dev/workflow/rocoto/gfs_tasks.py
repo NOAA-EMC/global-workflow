@@ -728,7 +728,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def marinebmat(self):
+    def marinebmatinit(self):
 
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
 
@@ -739,6 +739,30 @@ class GFSTasks(Tasks):
         if self.options['do_hybvar_ocn']:
             dep_dict = {'type': 'metatask', 'name': 'enkfgdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('marinebmatinit')
+        task_name = f'{self.run}_marinebmatinit'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/dev/jobs/marinebmatinit.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def marinebmat(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_marinebmatinit'}
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('marinebmat')
@@ -812,14 +836,9 @@ class GFSTasks(Tasks):
 
     def ocnanalecen(self):
 
-        ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
-
         # can run in parallel with marinebmat
         deps = []
-        data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_marinebmatinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

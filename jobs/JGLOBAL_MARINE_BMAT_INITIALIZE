@@ -1,8 +1,7 @@
 #!/bin/bash
 
-export WIPE_DATA="NO"
+
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
-#export DATA="${DATAjob}/${jobid}"
 export DATA="${DATAjob}/marinebmat"
 # Create the directory to hold ensemble perturbations
 export DATAens="${DATAjob}/ensdata"
@@ -10,9 +9,9 @@ export DATAstaticb="${DATAjob}/staticb"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
 if [[ ! -d "${DATAstaticb}" ]]; then mkdir -p "${DATAstaticb}"; fi
 
-# source config.base, config.ocnanal and config.marinebmat
+# source config.base, config.ocnanal and config.marinebmatinit
 # and pass marinebmat to ${machine}.env
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmat" -c "base marineanl marinebmat"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmatinit" -c "base marineanl marinebmatinit"
 
 ##############################################
 # Set variables used in the script
@@ -56,13 +55,12 @@ mkdir -p "${COMOUT_ICE_BMATRIX}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRgfs}/exglobal_marinebmat.py}
+EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRgfs}/exglobal_marinebmat_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
-
 ##############################################
 # End JOB SPECIFIC work
 ##############################################
@@ -74,4 +72,7 @@ if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
 
+echo 'fiddle'
+pwd
+ls -l
 exit 0
