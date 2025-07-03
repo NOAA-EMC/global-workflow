@@ -90,7 +90,7 @@ finalize-hera:
     - hera
   needs:
     - run_experiments-hera
-  when: always
+  when: on_success
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
@@ -103,7 +103,7 @@ finalize-gaeac6:
     - gaeac6
   needs:
     - run_experiments-gaeac6
-  when: always
+  when: on_success
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 

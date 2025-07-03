@@ -33,7 +33,6 @@
 .run_experiments_template:
   extends: .base_config
   stage: run_tests
-  allow_failure: false
   script:
     - |
       echo "Using build directory ${GW_HOMEgfs} (dated ${DATE})"
@@ -41,19 +40,9 @@
       "${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       error=$?
       if [[ ${error} -ne 0 ]]; then
-        # Failsafe exit for GitLab to recognize the failure incase allow_failure state is changed
         echo "Experiment ${caseName} failed with error code ${error}"
-        exit 1
       fi
-  needs:
-    - setup_experiments-${machine}
 
-.finalize_template:
-  extends: .base_config
-  stage: finalize
-  when: always
-  script:
-    - |
       Machine=${machine^}
       echo "Finalizing test cases on ${Machine} using ${GW_HOMEgfs}"
 
@@ -98,7 +87,7 @@
 
             if [[ -n "${error_logs_for_gist}" ]]; then
               # Generate gist URLs with formatted markdown links
-              source "${GW_HOMEgfs}/ush/gw_setup.sh"
+              source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
               gist_links=$("${GW_HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
                 --file ${error_logs_for_gist} --multiple --format=github \
                 --gist "PR_${PR_NUMBER}_${case_name}")
@@ -135,13 +124,21 @@
         "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
           --add-label "CI-${Machine}-Failed" --remove-label "CI-${Machine}-Running" || true
 
-      else
-        export GW_CI_RUN_STATE="Passed"
+  needs:
+    - setup_experiments-${machine}
+
+.finalize_template:
+  extends: .base_config
+  stage: finalize
+
+  script:
+    - |
         echo "================================================================================"
         echo "SUCCESS: No error log files found - all tests passed on ${Machine}"
         echo "================================================================================"
 
         # Handle nightly pipeline success logic
+        Machine=${machine^}
         if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
           echo "This is a scheduled nightly pipeline, creating date-based directories and symlinks"
           cd "${CI_BUILDS_DIR}" && rm -f stable
@@ -163,7 +160,6 @@
         # Update GitHub labels for success
         "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
           --add-label "CI-${Machine}-Passed" --remove-label "CI-${Machine}-Running" || true
-      fi
 
   needs:
     - run_experiments-${machine}
