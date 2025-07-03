@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exglobal_marinebmat_intialize.py
+# exglobal_marinebmat_initialize.py
 # This script creates an marineBmat object
 # and runs the execute method
 # which executes all the steps necessary to create the global marine B-matrix
