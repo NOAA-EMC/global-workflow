@@ -6,8 +6,9 @@ HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
 #yamllist="C48_ATM"
-yamllist="C48_S2SW"
+#yamllist="C48_S2SW"
 #yamllist="C48_S2SWA_gefs"
+yamllist="C96mx100_S2S"
 
 HOMEDIR=${HOMEgfs}
 if [[ ${MACHINE_ID} = ursa* ]] ; then
