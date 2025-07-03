@@ -72,7 +72,4 @@ if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
 
-echo 'fiddle'
-pwd
-ls -l
 exit 0

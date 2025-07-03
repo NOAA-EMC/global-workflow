@@ -2,7 +2,6 @@
 
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
-#export DATA="${DATAjob}/${jobid}"
 export DATA="${DATAjob}/marinebmat"
 # Create the directory to hold ensemble perturbations
 export DATAens="${DATAjob}/ensdata"
