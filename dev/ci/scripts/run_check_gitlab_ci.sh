@@ -42,7 +42,7 @@ report_failure_to_github() {
   echo "================================================================================"
 
   # Create processed logs directory to prevent reprocessing
-  local processed_dir="${RUNTESTS}/EXPDIR/${pslot}/error_logs/$(date +%Y%m%d_%H%M%S)"
+  local processed_dir="${RUNTESTS}/EXPDIR/${pslot}/error_logs/$(date +%Y%m%d_%H%M%S)" || true
   mkdir -p "${processed_dir}"
 
   if [[ -f "${error_log_file}" && -s "${error_log_file}" ]]; then
@@ -63,12 +63,12 @@ report_failure_to_github() {
       # Generate gist URLs with formatted markdown links
       source "${HOMEgfs}/dev/ush/gw_setup.sh"
       local gist_links=$("${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
-      --file ${error_logs_for_gist} --multiple --format=github \
-      --gist "PR_${PR_NUMBER}_${caseName}" | tail -n 1)
+      --file "${error_logs_for_gist}" --multiple --format=github \
+      --gist "PR_${PR_NUMBER}_${caseName}" | tail -n 1) || true
 
       # Upload to repo as well for backup
       "${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
-      --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${caseName}" || true
+      --file "${error_logs_for_gist}" --repo "PR_${PR_NUMBER}_${caseName}" || true
 
       # Prepare markdown section for files links to gist for GitHub comment
 
@@ -96,7 +96,7 @@ EOF
   **Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
   ${gist_message_section}
 
-  _This failure was detected automatically by global-workflow's CI/CD Pipeline_"
+  _This failure was detected automatically by global-workflow's CI/CD Pipeline_" || true
 
   # Post GitHub comment
   "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
