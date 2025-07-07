@@ -30,7 +30,6 @@
 .run_experiments_template:
   extends: .base_config
   stage: run_tests
-  allow_failure: true
   script:
     - |
       echo "Using build directory ${GW_HOMEgfs} (dated ${DATE})"

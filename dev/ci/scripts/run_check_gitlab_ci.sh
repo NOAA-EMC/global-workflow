@@ -42,7 +42,7 @@ report_failure_to_github() {
   echo "================================================================================"
 
   # Create processed logs directory to prevent reprocessing
-  local processed_dir="${RUNTESTS}/processed_error_logs_$(date +%Y%m%d_%H%M%S)"
+  local processed_dir="${RUNTESTS}/EXPDIR/${pslot}/error_logs/$(date +%Y%m%d_%H%M%S)"
   mkdir -p "${processed_dir}"
 
   if [[ -f "${error_log_file}" && -s "${error_log_file}" ]]; then
@@ -55,7 +55,7 @@ report_failure_to_github() {
 
       if [[ -f "${full_log_path}" && -s "${full_log_path}" ]]; then
         error_logs_for_gist="${error_logs_for_gist} ${full_log_path}"
-        error_logs_markdown="${error_logs_markdown}- \`$(basename "${full_log_path}")\`\n"
+        error_logs_markdown=$(echo -e "${error_logs_markdown}\n${full_log_path}")
       fi
     done < "${error_log_file}"
 
@@ -63,18 +63,25 @@ report_failure_to_github() {
       # Generate gist URLs with formatted markdown links
       source "${HOMEgfs}/dev/ush/gw_setup.sh"
       local gist_links=$("${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
-        --file ${error_logs_for_gist} --multiple --format=github \
-        --gist "PR_${PR_NUMBER}_${caseName}")
+      --file ${error_logs_for_gist} --multiple --format=github \
+      --gist "PR_${PR_NUMBER}_${caseName}" | tail -n 1)
 
       # Upload to repo as well for backup
       "${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
-        --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${caseName}" || true
-      
+      --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${caseName}" || true
+
       # Prepare markdown section for files links to gist for GitHub comment
-      gist_message_section="### 📋 Error Log Files:
-      ${error_logs_markdown}
-      ### 🔗 View Error Logs:
-      ${gist_links}"
+
+                  # Prepare markdown section for files links to gist for GitHub comment
+      gist_message_section=$(cat <<EOF
+### 📋 Error Log Files:
+\`\`\`
+${error_logs_markdown}
+\`\`\`
+### 🔗 View Error Logs:
+${gist_links}
+EOF
+      )
     else
       echo "No valid error log files found for case: ${caseName}, pslot: ${pslot}"
       gist_message_section="No valid error log files found for this case."
@@ -82,7 +89,7 @@ report_failure_to_github() {
   fi
 
   # Create formatted GitHub comment
-  local comment_body="###🚫 Experiment ${caseName} FAILED on ${Machine}
+  local comment_body="### 🚫 Experiment ${caseName} FAILED on ${Machine}
 
   **GitLab Pipeline#:** ${CI_PIPELINE_ID}
   **Workspace:** \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
