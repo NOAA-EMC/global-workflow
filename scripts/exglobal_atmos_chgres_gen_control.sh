@@ -22,7 +22,7 @@ ATMF03="gfs.t00z.atmf000.nc"
 SFC03="gfs.t00z.sfcf000.nc"
 # at ensemble resolution
 ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.ensres.nc}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-6}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
 export APRUN_CHGRES=${APRUN_CHGRES:-${APRUN:-""}}
 ##############################################################
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
