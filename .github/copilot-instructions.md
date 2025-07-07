@@ -14,8 +14,8 @@
 ## Code Quality
 - Ensure code is clean, well-commented, and follows best practices
 - Use consistent naming conventions
-- Avoid unnecessary complexity
-- Avoid over-engineering solutions always favor fewer lines of code when possible
+- Avoid unnecessary complexity at all costs and make sure the code is easy to understand by average developers
+- Avoid over-engineering solutions
 - Use readable code that conveys intent and meaning over comments
 - Write unit tests for new features and bug fixes
 - Ensure code is modular and reusable
