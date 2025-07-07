@@ -31,8 +31,8 @@ run_check_logfile="${RUNTESTS}/ci-run_check.log"
 # Function to report experiment failure to GitHub
 report_failure_to_github() {
   local pslot="${1}"
-  local caseName="${pslot##*-}"  # Extract case name from pslot
   local Machine="${MACHINE_ID^}"
+  local caseName="${caseName:-"${pslot-?}}"
   local error_log_file="${RUNTESTS}/EXPDIR/${pslot}/${pslot}_fullpath_error.logs"
   local gist_message_section=""
 
@@ -42,7 +42,8 @@ report_failure_to_github() {
   echo "================================================================================"
 
   # Create processed logs directory to prevent reprocessing
-  local processed_dir="${RUNTESTS}/EXPDIR/${pslot}/error_logs/$(date +%Y%m%d_%H%M%S)" || true
+  local DATE=$(date +%Y%m%d_%H%M%S)
+  local processed_dir="${RUNTESTS}/EXPDIR/${pslot}/error_logs/${DATE}" || true
   mkdir -p "${processed_dir}"
 
   if [[ -f "${error_log_file}" && -s "${error_log_file}" ]]; then
@@ -62,13 +63,15 @@ report_failure_to_github() {
     if [[ -n "${error_logs_for_gist}" ]]; then
       # Generate gist URLs with formatted markdown links
       source "${HOMEgfs}/dev/ush/gw_setup.sh"
+      # shellcheck disable=SC2027,SC2086
       local gist_links=$("${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
-      --file "${error_logs_for_gist}" --multiple --format=github \
+      --file ${error_logs_for_gist} --multiple --format=github \
       --gist "PR_${PR_NUMBER}_${caseName}" | tail -n 1) || true
 
       # Upload to repo as well for backup
+      # shellcheck disable=SC2027,SC2086
       "${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
-      --file "${error_logs_for_gist}" --repo "PR_${PR_NUMBER}_${caseName}" || true
+      --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${caseName}" || true
 
       # Prepare markdown section for files links to gist for GitHub comment
 
@@ -89,11 +92,12 @@ EOF
   fi
 
   # Create formatted GitHub comment
+  DATE=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
   local comment_body="### 🚫 Experiment ${caseName} FAILED on ${Machine}
 
   **GitLab Pipeline#:** ${CI_PIPELINE_ID}
   **Workspace:** \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
-  **Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+  **Timestamp:** ${DATE}
   ${gist_message_section}
 
   _This failure was detected automatically by global-workflow's CI/CD Pipeline_" || true
