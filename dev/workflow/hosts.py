@@ -15,7 +15,7 @@ class Host:
     Gather Host specific information.
     """
 
-    SUPPORTED_HOSTS = ['HERA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
+    SUPPORTED_HOSTS = ['HERA', 'URSA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
                        'GAEAC5', 'GAEAC6', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
     def __init__(self, host=None):
@@ -54,9 +54,11 @@ class Host:
             return
 
         # Detect the machine since MACHINE_ID is not set
-        if os.path.exists('/scratch1/NCEPDEV'):
-            self.machine = 'HERA'
+        if os.path.exists('/scratch3/NCEPDEV'):
+            # Hera or Ursa
+            self.machine = socket.gethostname().split("-", 1)[0].upper()
         elif os.path.exists('/work/noaa'):
+            # Orion or Hercules
             self.machine = socket.gethostname().split("-", 1)[0].upper()
         elif os.path.exists('/lfs/f1'):
             self.machine = 'WCOSS2'

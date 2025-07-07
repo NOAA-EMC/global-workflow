@@ -56,7 +56,7 @@ fi
 module use "${HOMEgfs}/modulefiles"
 
 case "${MACHINE_ID}" in
-  "wcoss2" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
+  "wcoss2" | "ursa" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
     module load "gw_run.${MACHINE_ID}"
     ;;
   *)
