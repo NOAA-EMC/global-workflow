@@ -53,7 +53,7 @@ case ${step} in
 
   "gen_control_ic")
     export walltime="00:15:00"
-    export ntasks=6
+    export ntasks=12
     export tasks_per_node=1
     export threads_per_task=1
     export memory="4096M"
