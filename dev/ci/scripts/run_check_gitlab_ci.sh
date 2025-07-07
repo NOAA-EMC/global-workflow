@@ -63,7 +63,7 @@ report_failure_to_github() {
     if [[ -n "${error_logs_for_gist}" ]]; then
       # Generate gist URLs with formatted markdown links
       source "${HOMEgfs}/dev/ush/gw_setup.sh"
-      # shellcheck disable=SC2027,SC2086, SC2155
+      # shellcheck disable=SC2027,SC2086,SC2155
       local gist_links=$("${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
       --file ${error_logs_for_gist} --multiple --format=github \
       --gist "PR_${PR_NUMBER}_${caseName}" | tail -n 1) || true
