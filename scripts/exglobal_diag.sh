@@ -196,6 +196,7 @@ EOFdiag
    # If requested, compress diagnostic files
    if [[ "${DIAG_COMPRESS}" == "YES" && "${USE_CFP}" == "NO" ]]; then
       echo $(date) START "${COMPRESS}" diagnostic files >&2
+      # shellcheck disable=SC2086
       for file in $(ls diag_*${PDY}${cyc}${DIAG_SUFFIX}); do
          ${COMPRESS} "${file}"
       done
