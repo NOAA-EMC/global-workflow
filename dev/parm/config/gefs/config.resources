@@ -56,7 +56,7 @@ case ${step} in
     export ntasks=12
     export tasks_per_node=12
     export threads_per_task=1
-    export memory="4096M"
+    export memory="32GB"
     ;;
 
   "waveinit")
