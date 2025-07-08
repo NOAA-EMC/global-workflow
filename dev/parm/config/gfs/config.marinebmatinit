@@ -6,6 +6,6 @@
 echo "BEGIN: config.marinebmatinit"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" marinebmatinit
+source "${EXPDIR}/config.resources" marinebmatinit
 
 echo "END: config.marinebmatinit"
