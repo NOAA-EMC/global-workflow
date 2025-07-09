@@ -66,6 +66,12 @@ copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96.mx100_oro_data.tile4.nc" "$DATA/gen_control_ic"
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96.mx100_oro_data.tile5.nc" "$DATA/gen_control_ic"
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96.mx100_oro_data.tile6.nc" "$DATA/gen_control_ic"
+copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_grid.tile1.nc" "$DATA/gen_control_ic"
+copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_grid.tile2.nc" "$DATA/gen_control_ic"
+copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_grid.tile3.nc" "$DATA/gen_control_ic"
+copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_grid.tile4.nc" "$DATA/gen_control_ic"
+copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_grid.tile5.nc" "$DATA/gen_control_ic"
+copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_grid.tile6.nc" "$DATA/gen_control_ic"
 copy_file "/lfs/h2/emc/global/noscrub/anton.fernando/UFS_UTILS/fix/am/global_hyblev.l64.txt" "$DATA/gen_control_ic"
 
 echo "All files copied successfully."
