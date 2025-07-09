@@ -13,10 +13,8 @@ enkf_grp:
         {% if is_gdas %}
         {% for fhr in range(3, 10, 3) %}
         - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf{{ "%03d" % fhr }}.nc"
         {% endfor %}
-
-        # Only store the 6-hour surface forecast
-        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf006.nc"
         {% endif %}
 
         # Store the individual member analysis data
