@@ -349,6 +349,7 @@ def extract_tar(tar_file: str) -> None:
     except Exception as e:
         raise WorkflowException(f"An error occurred while extracting {tar_file}: {e}")
 
+
 @logit(logger)
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """
