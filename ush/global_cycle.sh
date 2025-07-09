@@ -204,7 +204,7 @@
 XC=${XC:-" "}
 PREINP=${PREINP:-" "}
 SUFINP=${SUFINP:-" "}
-CYCLEXEC=${CYCLEXEC:-$EXECgfs/global_cycle$XC}
+CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle${XC}}
 
 FHOUR=${FHOUR:-00}
 
@@ -229,7 +229,7 @@ DONST=${DONST:-"NO"}
 DO_SFCCYCLE=${DO_SFCCYCLE:-.true.}
 GCYCLE_DO_SOILINCR=${GCYCLE_DO_SOILINCR:-.false.}
 GCYCLE_DO_SNOWINCR=${GCYCLE_DO_SNOWINCR:-.false.}
-if [ "$GCYCLE_DO_SOILINCR" == ".true." ] || [ "$GCYCLE_DO_SNOWINCR" == ".true." ] ; then
+if [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]] || [[ "${GCYCLE_DO_SNOWINCR}" == ".true." ]] ; then
         DO_LANDINCR=".true."
 else
         DO_LANDINCR=".false."
@@ -247,7 +247,7 @@ FNSALC=${FNSALC:-${FIXgfs}/am/global_salclm.t1534.3072.1536.nc}
 FNSNOC=${FNSNOC:-${FIXgfs}/am/global_snoclim.1.875.grb}
 FNZORC=${FNZORC:-igbp}
 FNAISC=${FNAISC:-${FIXgfs}/am/IMS-NIC.blended.ice.monthly.clim.grb}
-FNSMCC=${FNSMCC:-${FIXgfs}/am/global_soilmgldas.statsgo.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.grb}
+FNSMCC=${FNSMCC:-${FIXgfs}/am/global_soilmgldas.statsgo.t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}.grb}
 FNALBC2=${FNALBC2:-${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tileX.nc}
 FNTG3C=${FNTG3C:-${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tileX.nc}
 FNVEGC=${FNVEGC:-${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc}
@@ -272,16 +272,16 @@ export REDERR=${REDERR:-'2>'}
 ################################################################################
 #  Preprocessing
 
-ln -fs $FNTSFC sstclm
-ln -fs $FNSALC salclm
+ln -fs "${FNTSFC}" sstclm
+ln -fs "${FNSALC}" salclm
 
 # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
-[[ ! -f $FNSMCC ]] && FNSMCC="$FIXgfs/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
+[[ ! -f ${FNSMCC} ]] && FNSMCC="${FIXgfs}/am/global_soilmgldas.statsgo.t1534.3072.1536.grb"
 
 ################################################################################
 #  Make surface analysis
-export PGM=$CYCLEXEC
-export pgm=$PGM
+export PGM=${CYCLEXEC}
+export pgm=${PGM}
 
 iy=${PDY:0:4}
 im=${PDY:4:2}
@@ -292,61 +292,61 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS_CY:-${CYCLETHREAD:-1}}
 
 cat << EOF > fort.35
 &NAMSFC
-  FNGLAC="$FNGLAC",
-  FNMXIC="$FNMXIC",
-  FNTSFC="$FNTSFC",
-  FNSNOC="$FNSNOC",
-  FNZORC="$FNZORC",
-  FNALBC="$FNALBC",
-  FNALBC2="$FNALBC2",
-  FNAISC="$FNAISC",
-  FNTG3C="$FNTG3C",
-  FNVEGC="$FNVEGC",
-  FNVETC="$FNVETC",
-  FNSOTC="$FNSOTC",
-  FNSMCC="$FNSMCC",
-  FNVMNC="$FNVMNC",
-  FNVMXC="$FNVMXC",
-  FNSLPC="$FNSLPC",
-  FNABSC="$FNABSC",
-  FNMSKH="$FNMSKH",
-  FNTSFA="$FNTSFA",
-  FNACNA="$FNACNA",
-  FNSNOA="$FNSNOA",
+  FNGLAC="${FNGLAC}",
+  FNMXIC="${FNMXIC}",
+  FNTSFC="${FNTSFC}",
+  FNSNOC="${FNSNOC}",
+  FNZORC="${FNZORC}",
+  FNALBC="${FNALBC}",
+  FNALBC2="${FNALBC2}",
+  FNAISC="${FNAISC}",
+  FNTG3C="${FNTG3C}",
+  FNVEGC="${FNVEGC}",
+  FNVETC="${FNVETC}",
+  FNSOTC="${FNSOTC}",
+  FNSMCC="${FNSMCC}",
+  FNVMNC="${FNVMNC}",
+  FNVMXC="${FNVMXC}",
+  FNSLPC="${FNSLPC}",
+  FNABSC="${FNABSC}",
+  FNMSKH="${FNMSKH}",
+  FNTSFA="${FNTSFA}",
+  FNACNA="${FNACNA}",
+  FNSNOA="${FNSNOA}",
   LDEBUG=.false.,
-  FSLPL=$FSLPL,
-  FSOTL=$FSOTL,
-  FVETL=$FVETL,
-  FSMCL(2)=$FSMCL2,
-  FSMCL(3)=$FSMCL2,
-  FSMCL(4)=$FSMCL2,
-  $CYCLVARS
+  FSLPL=${FSLPL},
+  FSOTL=${FSOTL},
+  FVETL=${FVETL},
+  FSMCL(2)=${FSMCL2},
+  FSMCL(3)=${FSMCL2},
+  FSMCL(4)=${FSMCL2},
+  ${CYCLVARS}
  /
 EOF
 
 cat << EOF > fort.36
  &NAMCYC
-  idim=$CRES, jdim=$CRES, lsoil=$LSOIL,
-  iy=$iy, im=$im, id=$id, ih=$ih, fh=$FHOUR,
-  deltsfc=$DELTSFC,ialb=$IALB,use_ufo=$use_ufo,donst="$DONST",
-  do_sfccycle=$DO_SFCCYCLE,do_landincr=$DO_LANDINCR,isot=$ISOT,ivegsrc=$IVEGSRC,
-  zsea1_mm=$zsea1,zsea2_mm=$zsea2,MAX_TASKS=$MAX_TASKS_CY,
-  frac_grid=$FRAC_GRID
+  idim=${CRES}, jdim=${CRES}, lsoil=${LSOIL},
+  iy=${iy}, im=${im}, id=${id}, ih=${ih}, fh=${FHOUR},
+  deltsfc=${DELTSFC},ialb=${IALB},use_ufo=${use_ufo},donst="${DONST}",
+  do_sfccycle=${DO_SFCCYCLE},do_landincr=${DO_LANDINCR},isot=${ISOT},ivegsrc=${IVEGSRC},
+  zsea1_mm=${zsea1},zsea2_mm=${zsea2},MAX_TASKS=${MAX_TASKS_CY},
+  frac_grid=${FRAC_GRID}
  /
 EOF
 
 
 cat << EOF > fort.37
  &NAMSFCD
-  NST_FILE="$NST_FILE",
-  DO_SOILINCR=$GCYCLE_DO_SOILINCR,
-  DO_SNOWINCR=$GCYCLE_DO_SNOWINCR,
-  INTERP_LANDINCR=$GCYCLE_INTERP_LANDINCR,
-  lsoil_incr=$LSOIL_INCR,
+  NST_FILE="${NST_FILE}",
+  DO_SOILINCR=${GCYCLE_DO_SOILINCR},
+  DO_SNOWINCR=${GCYCLE_DO_SNOWINCR},
+  INTERP_LANDINCR=${GCYCLE_INTERP_LANDINCR},
+  lsoil_incr=${LSOIL_INCR},
  /
 EOF
 
-$APRUNCY $CYCLEXEC $REDOUT$PGMOUT $REDERR$PGMERR
+${APRUNCY} "${CYCLEXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
 export err=$?
 
