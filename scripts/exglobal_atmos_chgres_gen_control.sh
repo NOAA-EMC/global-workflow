@@ -81,14 +81,14 @@ echo "All files copied successfully."
 cat << EOF > ./fort.41
 &config
 mosaic_file_target_grid=$GEN_CONTROL_IC_MOSAIC
-fix_dir_target_grid=$GEN_CONTROL_IC
-orog_dir_target_grid=$GEN_CONTROL_IC
+fix_dir_target_grid=$GEN_CONTROL_IC_DIR
+orog_dir_target_grid=$GEN_CONTROL_IC_DIR
 orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
-vcoord_file_target_grid=$GEN_CONTROL_IC
+vcoord_file_target_grid=$GEN_CONTROL_IC_DIR
 mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
 orog_files_input_grid="NULL"
-data_dir_input_grid=$GEN_CONTROL_IC
+data_dir_input_grid=$GEN_CONTROL_IC_DIR
 atm_files_input_grid=$ATMF03
 atm_core_files_input_grid="NULL"
 atm_tracer_files_input_grid="NULL"
