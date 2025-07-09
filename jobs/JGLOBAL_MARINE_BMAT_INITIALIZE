@@ -2,6 +2,7 @@
 
 
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+# Create the directory to hold the BMAT initialization data
 export DATA="${DATAjob}/marinebmat"
 # Create the directory to hold ensemble perturbations
 export DATAens="${DATAjob}/ensdata"
