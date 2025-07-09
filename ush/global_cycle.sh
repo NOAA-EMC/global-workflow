@@ -350,4 +350,4 @@ ${APRUNCY} "${CYCLEXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
 export err=$?
 
-exit ${err}
+exit "${err}"
