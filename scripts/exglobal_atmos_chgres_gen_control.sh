@@ -23,7 +23,7 @@ SFC03="gfs.t00z.sfcf000.nc"
 # at ensemble resolution
 ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.ensres.nc}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
-export APRUN_CHGRES=${APRUN_CHGRES:-"mpiexec -l -n ${ntasks} -ppn ${tasks_per_node} --cpu-bind depth --depth 1"}
+export APRUN_CHGRES="mpiexec -l -n 12 -ppn 12 --cpu-bind core"
 ##############################################################
 #copy input data to DATA directory
 # Ensure $DATA/gen_control_ic directory exists
@@ -56,6 +56,7 @@ copy_file() {
     fi
 }
 GEN_CONTROL_IC_DIR="$DATA/gen_control_ic"
+GEN_CONTROL_IC_MOSAIC="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
 # Copy required files to $DATA/gen_control_ic
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc" "$GEN_CONTROL_IC_DIR"
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "$GEN_CONTROL_IC_DIR"
@@ -79,15 +80,15 @@ echo "All files copied successfully."
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 cat << EOF > ./fort.41
 &config
-mosaic_file_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.2158932/gen_control_ic/C96_mosaic.nc"
-fix_dir_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.2158932/gen_control_ic"
-orog_dir_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.2158932/gen_control_ic"
+mosaic_file_target_grid=$GEN_CONTROL_IC_MOSAIC
+fix_dir_target_grid=$GEN_CONTROL_IC
+orog_dir_target_grid=$GEN_CONTROL_IC
 orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
-vcoord_file_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.2158932/gen_control_ic"
+vcoord_file_target_grid=$GEN_CONTROL_IC
 mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
 orog_files_input_grid="NULL"
-data_dir_input_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.2158932/gen_control_ic"
+data_dir_input_grid=$GEN_CONTROL_IC
 atm_files_input_grid=$ATMF03
 atm_core_files_input_grid="NULL"
 atm_tracer_files_input_grid="NULL"
