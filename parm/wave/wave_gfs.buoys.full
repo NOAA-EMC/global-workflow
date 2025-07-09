@@ -2252,29 +2252,28 @@ $
   -168.18  -9.7	  'NW-PGG71  '  999.   IBP  NCEP      45
   -167.68  -9.7	  'NW-PGG72  '  999.   IBP  NCEP      45
   -167.0   -9.7	  'NW-PGG73  '  999.   IBP  NCEP      45
-  -167.0   -10.19 'NW-PGG71  '  999.   IBP  NCEP      45
-  -167.0   -10.69 'NW-PGG72  '  999.   IBP  NCEP      45
-  -167.0   -11.19 'NW-PGG73  '  999.   IBP  NCEP      45
-  -167.0   -11.69 'NW-PGG74  '  999.   IBP  NCEP      45
-  -167.0   -12.19 'NW-PGG75  '  999.   IBP  NCEP      45
-  -167.0   -12.69 'NW-PGG76  '  999.   IBP  NCEP      45
-  -167.0   -13.19 'NW-PGG77  '  999.   IBP  NCEP      45
-  -167.0   -13.69 'NW-PGG78  '  999.   IBP  NCEP      45
-  -167.0   -14.19 'NW-PGG79  '  999.   IBP  NCEP      45
-  -167.0   -14.69 'NW-PGG80  '  999.   IBP  NCEP      45
-  -167.0   -15.19 'NW-PGG81  '  999.   IBP  NCEP      45
-  -167.0   -15.69 'NW-PGG82  '  999.   IBP  NCEP      45
-  -167.0   -15.69 'NW-PGG83  '  999.   IBP  NCEP      45
-  -167.68  -15.69 'NW-PGG84  '  999.   IBP  NCEP      45
-  -168.18  -15.69 'NW-PGG85  '  999.   IBP  NCEP      45
-  -168.68  -15.69 'NW-PGG86  '  999.   IBP  NCEP      45
-  -169.18  -15.69 'NW-PGG87  '  999.   IBP  NCEP      45
-  -169.68  -15.69 'NW-PGG88  '  999.   IBP  NCEP      45
-  -170.18  -15.69 'NW-PGG89  '  999.   IBP  NCEP      45
-  -170.68  -15.69 'NW-PGG90  '  999.   IBP  NCEP      45
-  -171.18  -15.69 'NW-PGG91  '  999.   IBP  NCEP      45
-  -171.68  -15.69 'NW-PGG92  '  999.   IBP  NCEP      45
-  -172.18  -15.69 'NW-PGG93  '  999.   IBP  NCEP      45
+  -167.0   -10.19 'NW-PGG74  '  999.   IBP  NCEP      45
+  -167.0   -10.69 'NW-PGG75  '  999.   IBP  NCEP      45
+  -167.0   -11.19 'NW-PGG76  '  999.   IBP  NCEP      45
+  -167.0   -11.69 'NW-PGG77  '  999.   IBP  NCEP      45
+  -167.0   -12.19 'NW-PGG78  '  999.   IBP  NCEP      45
+  -167.0   -12.69 'NW-PGG79  '  999.   IBP  NCEP      45
+  -167.0   -13.19 'NW-PGG80  '  999.   IBP  NCEP      45
+  -167.0   -13.69 'NW-PGG81  '  999.   IBP  NCEP      45
+  -167.0   -14.19 'NW-PGG82  '  999.   IBP  NCEP      45
+  -167.0   -14.69 'NW-PGG83  '  999.   IBP  NCEP      45
+  -167.0   -15.19 'NW-PGG84  '  999.   IBP  NCEP      45
+  -167.0   -15.69 'NW-PGG85  '  999.   IBP  NCEP      45
+  -167.68  -15.69 'NW-PGG86  '  999.   IBP  NCEP      45
+  -168.18  -15.69 'NW-PGG87  '  999.   IBP  NCEP      45
+  -168.68  -15.69 'NW-PGG88  '  999.   IBP  NCEP      45
+  -169.18  -15.69 'NW-PGG89  '  999.   IBP  NCEP      45
+  -169.68  -15.69 'NW-PGG90  '  999.   IBP  NCEP      45
+  -170.18  -15.69 'NW-PGG91  '  999.   IBP  NCEP      45
+  -170.68  -15.69 'NW-PGG92  '  999.   IBP  NCEP      45
+  -171.18  -15.69 'NW-PGG93  '  999.   IBP  NCEP      45
+  -171.68  -15.69 'NW-PGG94  '  999.   IBP  NCEP      45
+  -172.18  -15.69 'NW-PGG95  '  999.   IBP  NCEP      45
 $
 $
    -80.00   27.50  'NW-OPC51  '  999.   IBP  NCEP      45
