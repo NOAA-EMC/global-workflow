@@ -55,7 +55,7 @@ copy_file() {
         exit 1
     fi
 }
-GEN_CONTROL_IC_DIR="$DATA/gen_control_ic"
+GEN_CONTROL_IC_DIR="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.2033479/gen_control_ic"
 GEN_CONTROL_IC_MOSAIC="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
 # Copy required files to $DATA/gen_control_ic
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc" "$GEN_CONTROL_IC_DIR"
