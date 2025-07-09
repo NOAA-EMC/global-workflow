@@ -52,7 +52,7 @@ copy_file() {
         exit 1
     fi
 }
-export GEN_CONTROL_IC_DIR="$DATA/gen_control_ic"
+export GEN_CONTROL_IC_DIR=$DATA
 export GEN_CONTROL_IC_MOSAIC="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
 export ATM_FILE="gfs.t00z.atmf000.nc"
 export SFC_FILE="gfs.t00z.sfcf000.nc"
