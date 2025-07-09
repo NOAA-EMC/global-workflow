@@ -255,12 +255,7 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['anal', 'analcalc']
 
                 if options['do_jediocnvar']:
-                    task_names[run] += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar']
-                    if options['do_letkf_ocn']:
-                        task_names[run] += ['marineanlletkf']
-                    if options['do_hybvar']:
-                        task_names[run] += ['ocnanalecen']
-                    task_names[run] += ['marineanlchkpt', 'marineanlfinal']
+                    task_names[run] += ['prepoceanobs', 'marineanlinit', 'marinebmat', 'marineanlvar', 'marineanlchkpt', 'marineanlfinal']
 
                 task_names[run] += ['sfcanl']
 
@@ -392,6 +387,12 @@ class GFSCycledAppConfig(AppConfig):
                         task_names[run] += ['atmensanlletkf']
                     task_names[run].append('efcs') if 'gdas' in run else 0
                     task_names[run].append('epos') if 'gdas' in run else 0
+
+                    if options['do_jediocnvar']:
+                        if options['do_letkf_ocn']:
+                            task_names[run] += ['marineanlletkf']
+                        if options['do_hybvar']:
+                            task_names[run] += ['ocnanalecen']
 
                 else:
                     task_names[run] += ['eobs', 'eupd', 'ecen']
