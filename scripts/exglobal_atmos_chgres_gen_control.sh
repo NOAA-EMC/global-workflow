@@ -17,11 +17,8 @@ PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 REDOUT=${REDOUT:-'1>'}
 REDERR=${REDERR:-'2>'}
 DATA=${DATA:-$pwd}
-# at full resolution
-ATMF03="gfs.t00z.atmf000.nc"
-SFC03="gfs.t00z.sfcf000.nc"
+
 # at ensemble resolution
-ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY_MEM}/${APREFIX}atmf003.ensres.nc}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
 export APRUN_CHGRES="mpiexec -l -n 12 -ppn 12 --cpu-bind core"
 ##############################################################
@@ -55,8 +52,8 @@ copy_file() {
         exit 1
     fi
 }
-GEN_CONTROL_IC_DIR="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.2033479/gen_control_ic"
-GEN_CONTROL_IC_MOSAIC="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
+export GEN_CONTROL_IC_DIR="$DATA/gen_control_ic"
+export GEN_CONTROL_IC_MOSAIC="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
 # Copy required files to $DATA/gen_control_ic
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc" "$GEN_CONTROL_IC_DIR"
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "$GEN_CONTROL_IC_DIR"
@@ -89,10 +86,10 @@ mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
 orog_files_input_grid="NULL"
 data_dir_input_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.2033479/gen_control_ic"
-atm_files_input_grid=$ATMF03
+atm_files_input_grid="gfs.t00z.atmf000.nc"
 atm_core_files_input_grid="NULL"
 atm_tracer_files_input_grid="NULL"
-sfc_files_input_grid=$SFC03
+sfc_files_input_grid="gfs.t00z.sfcf000.nc"
 nst_files_input_grid="NULL"
 grib2_file_input_grid="NULL"
 geogrid_file_input_grid="NULL"
