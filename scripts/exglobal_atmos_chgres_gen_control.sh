@@ -52,7 +52,7 @@ copy_file() {
         exit 1
     fi
 }
-export GEN_CONTROL_IC_DIR=$DATA
+export GEN_CONTROL_IC_DIR="$DATA/gen_control_ic"
 export GEN_CONTROL_IC_MOSAIC="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
 export ATM_FILE="gfs.t00z.atmf000.nc"
 export SFC_FILE="gfs.t00z.sfcf000.nc"
@@ -79,7 +79,7 @@ echo "All files copied successfully."
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 cat << EOF > ./fort.41
 &config
-mosaic_file_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc"
+mosaic_file_target_grid=$GEN_CONTROL_IC_MOSAIC
 fix_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/sfc"
 orog_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
 orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
