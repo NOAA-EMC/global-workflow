@@ -79,16 +79,16 @@ echo "All files copied successfully."
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 cat << EOF > ./fort.41
 &config
-mosaic_file_target_grid=$GEN_CONTROL_IC_MOSAIC
-fix_dir_target_grid=$GEN_CONTROL_IC_DIR
-orog_dir_target_grid=$GEN_CONTROL_IC_DIR
+mosaic_file_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc"
+fix_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/sfc"
+orog_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
 orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
-vcoord_file_target_grid=$GEN_CONTROL_IC_DIR
+vcoord_file_target_grid="/lfs/h2/emc/global/noscrub/anton.fernando/UFS_UTILS/fix/am/global_hyblev.l64.txt"
 mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
 orog_files_input_grid="NULL"
-data_dir_input_grid=$GEN_CONTROL_IC_DIR
-atm_files_input_grid=$ATM_FILE
+data_dir_input_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf"
+atm_files_input_grid=$ATMF_FILE
 atm_core_files_input_grid="NULL"
 atm_tracer_files_input_grid="NULL"
 sfc_files_input_grid=$SFC_FILE
