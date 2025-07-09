@@ -79,7 +79,7 @@ echo "All files copied successfully."
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 cat << EOF > ./fort.41
 &config
-mosaic_file_target_grid=$GEN_CONTROL_IC_MOSAIC
+mosaic_file_target_grid="$GEN_CONTROL_IC_MOSAIC"
 fix_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/sfc"
 orog_dir_target_grid="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
 orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
