@@ -1402,10 +1402,10 @@ fi
 #-------------------------------------------------------------------------------
 # Either copy guess to a file or write guess name to standard output.
 if [[ -z "$gfile" ]];then
- echo $ges
+ echo ${ges}
  err=$?
 else
- cp $ges $gfile
+ cp ${ges} ${gfile}
  err=$?
 fi
 

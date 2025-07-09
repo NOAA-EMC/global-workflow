@@ -499,7 +499,7 @@ else
    i1=0
    for gesfhr in $( seq 3 $BKGFREQ 9 ) ; do
 
-     echo $gesfhr $LONB $LATB $BKGFREQ >parm.$i1
+     echo ${gesfhr} ${LONB} ${LATB} ${BKGFREQ} >parm.${i1}
 
      i1=$((i1+1))
 
