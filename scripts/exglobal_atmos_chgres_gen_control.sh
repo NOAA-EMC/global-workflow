@@ -54,6 +54,8 @@ copy_file() {
 }
 export GEN_CONTROL_IC_DIR="$DATA/gen_control_ic"
 export GEN_CONTROL_IC_MOSAIC="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
+export ATM_FILE="$GEN_CONTROL_IC_DIR/gfs.t00z.atmf000.nc"
+export SFC_FILE="$GEN_CONTROL_IC_DIR/gfs.t00z.sfcf"
 # Copy required files to $DATA/gen_control_ic
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc" "$GEN_CONTROL_IC_DIR"
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "$GEN_CONTROL_IC_DIR"
@@ -86,10 +88,10 @@ mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
 orog_files_input_grid="NULL"
 data_dir_input_grid=$GEN_CONTROL_IC_DIR
-atm_files_input_grid="gfs.t00z.atmf000.nc"
+atm_files_input_grid=$ATM_FILE
 atm_core_files_input_grid="NULL"
 atm_tracer_files_input_grid="NULL"
-sfc_files_input_grid="gfs.t00z.sfcf000.nc"
+sfc_files_input_grid=$SFC_FILE
 nst_files_input_grid="NULL"
 grib2_file_input_grid="NULL"
 geogrid_file_input_grid="NULL"
