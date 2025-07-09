@@ -27,15 +27,21 @@ export APRUN_CHGRES=${APRUN_CHGRES:-"mpiexec -l -n ${ntasks} -ppn ${tasks_per_no
 ##############################################################
 #copy input data to DATA directory
 # Ensure $DATA/gen_control_ic directory exists
-if [ ! -d "$DATA/gen_control_ic" ]; then
-    echo "Creating directory: $DATA/gen_control_ic"
-    mkdir -p "$DATA/gen_control_ic"
+# Forcefully create $DATA/gen_control_ic directory
+if [ -d "$DATA/gen_control_ic" ]; then
+    echo "Directory $DATA/gen_control_ic already exists. Removing it..."
+    rm -rf "$DATA/gen_control_ic"
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to create directory $DATA/gen_control_ic"
+        echo "Error: Failed to remove existing directory $DATA/gen_control_ic"
         exit 1
     fi
-else
-    echo "Directory $DATA/gen_control_ic already exists."
+fi
+
+echo "Creating directory: $DATA/gen_control_ic"
+mkdir -p "$DATA/gen_control_ic"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to create directory $DATA/gen_control_ic"
+    exit 1
 fi
 
 # Function to copy files and check success
@@ -67,15 +73,15 @@ echo "All files copied successfully."
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 cat << EOF > ./fort.41
 &config
-mosaic_file_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic/C96_mosaic.nc"
-fix_dir_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic"
-orog_dir_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic"
+mosaic_file_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.1170040/gen_control_ic/C96_mosaic.nc"
+fix_dir_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.1170040/gen_control_ic"
+orog_dir_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.1170040/gen_control_ic"
 orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
-vcoord_file_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic"
+vcoord_file_target_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.1170040/gen_control_ic"
 mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
 orog_files_input_grid="NULL"
-data_dir_input_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic"
+data_dir_input_grid="/lfs/h2/emc/stmp/anton.fernando/RUNDIRS/C48_S2SWA_gefs_RT/gefs.2024111700/gen_control_ic.1170040/gen_control_ic"
 atm_files_input_grid=$ATMF03
 atm_core_files_input_grid="NULL"
 atm_tracer_files_input_grid="NULL"
