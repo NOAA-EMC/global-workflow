@@ -54,8 +54,8 @@ copy_file() {
 }
 export GEN_CONTROL_IC_DIR="$DATA/gen_control_ic"
 export GEN_CONTROL_IC_MOSAIC="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
-export ATM_FILE="$GEN_CONTROL_IC_DIR/gfs.t00z.atmf000.nc"
-export SFC_FILE="$GEN_CONTROL_IC_DIR/gfs.t00z.sfcf000.nc"
+export ATM_FILE="gfs.t00z.atmf000.nc"
+export SFC_FILE="gfs.t00z.sfcf000.nc"
 # Copy required files to $DATA/gen_control_ic
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc" "$GEN_CONTROL_IC_DIR"
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "$GEN_CONTROL_IC_DIR"
