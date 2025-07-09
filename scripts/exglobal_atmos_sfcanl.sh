@@ -19,9 +19,6 @@
 
 #  Set environment.
 
-#  Directories.
-cd "${DATA}" || exit 99
-
 # Derived base variables
 
 # Dependent Scripts and Executables
@@ -171,7 +168,7 @@ for hr in "${!gcycle_dates[@]}"; do
     cpreq "${DATA}/fnbgsi.00${nn}"                       "${DATA}/fnbgso.00${nn}"
   done
 
-  CDATE="${PDY}${cyc}" "${CYCLESH}" && true
+  "${CYCLESH}" && true
   export err=$?
   if [[ ${err} -ne 0 ]]; then
      err_exit "Unable to update surface data from guess and analysis!"
