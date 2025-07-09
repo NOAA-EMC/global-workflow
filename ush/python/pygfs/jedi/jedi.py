@@ -7,10 +7,10 @@ from typing import List, Dict, Any, Optional
 from pprint import pformat
 from jcb import render
 from wxflow import (AttrDict, FileHandler, Task, Executable,
+                    WorkflowException, WorkflowKeyError, WorkflowTypeError,
                     chdir, rm_p,
                     parse_j2yaml, save_as_yaml,
-                    logit,
-                    WorkflowException)
+                    logit)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -44,12 +44,10 @@ class Jedi:
 
         # Make sure input dictionary for Jedi class constructor has the required keys
         if 'yaml_name' not in config:
-            logger.error(f"FATAL ERROR: Key 'yaml_name' not found in config")
-            raise KeyError(f"FATAL ERROR: Key 'yaml_name' not found in config")
+            raise WorkflowKeyError(f"Required key 'yaml_name' not found in config")
         for key in required_jedi_keys:
             if key not in config:
-                logger.error(f"FATAL ERROR: Required key '{key}' not found in config")
-                raise KeyError(f"FATAL ERROR: Required key '{key}' not found in config")
+                raise WorkflowKeyError(f"Required key '{key}' not found in config")
 
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
@@ -131,12 +129,8 @@ class Jedi:
         logger.info(f"Executing {exec_cmd}")
         try:
             exec_cmd()
-        except OSError:
-            logger.error(f"FATAL ERROR: Failed to execute {exec_cmd}")
-            raise OSError(f"FATAL ERROR: Failed to execute {exec_cmd}")
-        except Exception:
-            logger.error(f"FATAL ERROR: An error occurred during execution of {exec_cmd}")
-            raise WorkflowException(f"FATAL ERROR: An error occurred during execution of {exec_cmd}")
+        except Exception as e:
+            raise WorkflowException(f"An error occurred during execution of {exec_cmd}: {e}")
 
     @logit(logger)
     def render_jcb(self, task_config: AttrDict, algorithm: Optional[str] = None) -> AttrDict:
@@ -160,14 +154,13 @@ class Jedi:
         if self.jedi_config.jcb_base_yaml is not None:
             jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         else:
-            logger.error(f"FATAL ERROR: JCB base YAML must be specified in order  to render YAML using JCB")
-            raise KeyError(f"FATAL ERROR: JCB base YAML must be specified in order to render YAML using JCB")
+            raise WorkflowKeyError("JCB base YAML not specified")
 
         # Add JCB algorithm YAML, if it exists, to JCB config dictionary
         if self.jedi_config.jcb_algo_yaml is not None:
             jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
 
-        # Set algorithm in JCB config dictionary
+        # Set algorithm in JCB config dictionary (method input algorithm takes precedence)
         if algorithm is not None:
             jcb_config['algorithm'] = algorithm
         elif self.jedi_config.jcb_algo is not None:
@@ -175,34 +168,12 @@ class Jedi:
         elif 'algorithm' in jcb_config:
             pass
         else:
-            logger.error(f"FATAL ERROR: JCB algorithm must be specified as input to jedi.render_jcb(), " +
-                         "in JEDI configuration dictionary as jcb_algo, or in JCB algorithm YAML")
-            raise Exception(f"FATAL ERROR: JCB algorithm must be specified as input to jedi.render_jcb(), " +
-                            "in JEDI configuration dictionary as jcb_algo, or in JCB algorithm YAML")
+            raise WorkflowException("JCB algorithm not specified")
 
         # Generate JEDI YAML config by rendering JCB config dictionary
         jedi_input_config = render(jcb_config)
 
         return jedi_input_config
-
-    @logit(logger)
-    def link_exe(self) -> None:
-        """Link JEDI executable to run directory
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-
-        # TODO: linking is not permitted per EE2.
-        # Needs work in JEDI to be able to copy the exec. [NOAA-EMC/GDASApp#1254]
-        logger.warn("Linking is not permitted per EE2.")
-        if not os.path.exists(self.jedi_config.exe):
-            os.symlink(self.jedi_config.exe_src, self.jedi_config.exe)
 
     @staticmethod
     @logit(logger)
@@ -237,8 +208,7 @@ class Jedi:
             # Make sure all required keys present
             for key in required_jedi_keys:
                 if key not in jedi_config_dict[block_name]:
-                    logger.error(f"FATAL ERROR: Required key {key} not found in {jedi_config_yaml} for block {block_name}.")
-                    raise KeyError(f"FATAL ERROR: Required key {key} not found in {jedi_config_yaml} for block {block_name}.")
+                    raise WorkflowKeyError(f"Required key {key} not found in {jedi_config_yaml} for block {block_name}.")
 
             # Set optional keys to None
             for key in optional_jedi_keys:
@@ -252,11 +222,9 @@ class Jedi:
         if expected_block_names:
             for block_name in expected_block_names:
                 if block_name not in jedi_dict:
-                    logger.error(f"FATAL ERROR: Expected block {block_name} not present {jedi_config_yaml}")
-                    raise Exception(f"FATAL ERROR: Expected block {block_name} not present {jedi_config_yaml}")
+                    raise WorkflowKeyError(f"Expected block {block_name} not present {jedi_config_yaml}")
             if len(jedi_dict) > len(expected_block_names):
-                logger.error(f"FATAL ERROR: {jedi_config_yaml} specifies more Jedi objects than expected.")
-                raise Exception(f"FATAL ERROR: {jedi_config_yaml} specifies more Jedi objects than expected.")
+                raise WorkflowException(f"{jedi_config_yaml} specifies more Jedi objects than expected.")
 
         # Return dictionary of JEDI objects
         return jedi_dict
@@ -296,8 +264,7 @@ class Jedi:
 
             # If no observers left in list, raise error
             if observers == []:
-                logger.error(f"FATAL ERROR: No observers found in JEDI input config")
-                raise Exception(f"FATAL ERROR: No observers found in JEDI input config")
+                raise WorkflowException(f"No observers found in JEDI input config")
 
     @staticmethod
     @logit(logger)
@@ -379,20 +346,8 @@ def extract_tar(tar_file: str) -> None:
         with tarfile.open(tar_file, "r") as tarball:
             tarball.extractall(path=tar_path)
             logger.info(f"Extract {tarball.getnames()}")
-    except tarfile.FileExistsError as err:
-        logger.exception(f"FATAL ERROR: {tar_file} does not exist")
-        raise tarfile.FileExistsError(f"FATAL ERROR: {tar_file} does not exist")
-    except tarfile.ReadError as err:
-        if tarfile.is_tarfile(tar_file):
-            logger.error(f"FATAL ERROR: tar archive {tar_file} could not be read")
-            raise tarfile.ReadError(f"FATAL ERROR: tar archive {tar_file} could not be read")
-        else:
-            logger.error(f"FATAL ERROR: {tar_file} is not a tar archive")
-            raise tarfile.ReadError(f"FATAL ERROR: {tar_file} is not a tar archive")
-    except tarfile.ExtractError as err:
-        logger.exception(f"FATAL ERROR: unable to extract from {tar_file}")
-        raise tarfile.ExtractError(f"FATAL ERROR: unable to extract from {tar_file}")
-
+    except Exception as e:
+        raise WorkflowException(f"An error occurred while extracting {tar_file}: {e}")
 
 @logit(logger)
 def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
@@ -415,8 +370,8 @@ def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
 
     Raises
     ------
-    KeyError
-        If key is not found in dictionary
+    WorkflowTypeError
+        If input is not a dictionary
 
     TODO: if this gives issues due to landing on an incorrect key in the nested
     dictionary, we will have to implement a more concrete method to search for a key
@@ -447,7 +402,7 @@ def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     """
 
     if not isinstance(nested_dict, dict):
-        raise TypeError(f"Input is not of type(dict)")
+        raise WorkflowTypeError(f"Input is not of type(dict)")
 
     result = nested_dict.get(target_key)
     if result is not None:

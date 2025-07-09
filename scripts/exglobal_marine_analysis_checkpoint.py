@@ -28,4 +28,4 @@ if __name__ == '__main__':
     try:
         MarineAnl.execute('soca_diag_stats')
     except Exception as e:
-        logger.warning(f"WARNING: Execution of soca_diag_stat application failed: {e}")
+        logger.warning(f"Execution of 'soca_diag_stat' application failed: {e}")

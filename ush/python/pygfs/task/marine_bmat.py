@@ -292,7 +292,7 @@ class MarineBMat(Task):
         yamls = glob.glob(os.path.join(self.task_config.DATA, '*.yaml'))
         yaml_list = []
         for yaml_file in yamls:
-            dest = os.path.join(self.task_config.COMOUT_OCEAN_BMATRIX,
+            dest = os.path.join(self.task_config.COMOUT_CONF,
                                 f"{APREFIX}{os.path.basename(yaml_file)}")
             yaml_list.append([yaml_file, dest])
         FileHandler({'copy': yaml_list}).sync()

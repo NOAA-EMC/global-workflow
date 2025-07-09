@@ -157,7 +157,10 @@ class MarineAnalysis(Task):
 
         # This method is a bit of a hack that will be removed in the future when the anlstat
         # job fully replaces the SOCA obs_diag_stats application
-        self.initialize_obs_stats()
+        try:
+            self.initialize_obs_stats()
+        except Exception as e:
+            logger.warning(f"Failed to initialize observation statistics: {e}")
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -198,13 +201,13 @@ class MarineAnalysis(Task):
         soca_finalize_list = parse_j2yaml(self.task_config.MARINE_DET_FINALIZE_YAML_TMPL, self.task_config)
         FileHandler(soca_finalize_list).sync()
 
-        # Save obs diag statistics to COM
+        # Save obs diag statistics to COM (success is optional)
+        logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
         try:
-            logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
             diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
-            FileHandler(diags_list).sync()
         except Exception as e:
-            logger.warning(f"WARNING: Failed to save SOCA analysis observation statistics: {e}")
+            logger.warning(f"Failed to render JCB template, 'soca_diags_finalize': {e}")
+        FileHandler(diags_list).sync()
 
     @logit(logger)
     def initialize_obs_stats(self) -> None:
@@ -224,22 +227,19 @@ class MarineAnalysis(Task):
         """
 
         #
-        try:
-            cleaned_observations = []
-            obs_variables = {}
-            for obs_space in self.jedi_dict['var'].jedi_config.input_config['cost function']['observations']['observers']:
-                name = obs_space['obs space']['name']
-                variable = obs_space['obs space']['simulated variables'][0]
+        cleaned_observations = []
+        obs_variables = {}
+        for obs_space in self.jedi_dict['var'].jedi_config.input_config['cost function']['observations']['observers']:
+            name = obs_space['obs space']['name']
+            variable = obs_space['obs space']['simulated variables'][0]
 
-                cleaned_observations.append(name)
-                obs_variables[name] = variable
+            cleaned_observations.append(name)
+            obs_variables[name] = variable
 
-            # Update the task_config with the observation variables
-            self.task_config['cleaned_observations'] = cleaned_observations
-            self.task_config['obs_variables'] = obs_variables
+        # Update the task_config with the observation variables
+        self.task_config['cleaned_observations'] = cleaned_observations
+        self.task_config['obs_variables'] = obs_variables
 
-            # Initialize the observation statistics
-            logger.info(f"Initializing JEDI SOCA observation statistics application")
-            self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
-        except Exception as e:
-            logger.warning(f"WARNING: Failed to initialize soca_diag_stats application: {e}")
+        # Initialize the observation statistics
+        logger.info(f"Initializing JEDI SOCA observation statistics application")
+        self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
