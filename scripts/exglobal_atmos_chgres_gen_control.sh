@@ -18,7 +18,7 @@ REDERR=${REDERR:-'2>'}
 DATA=${DATA:-${pwd}}
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
-export APRUN_CHGRES="mpiexec -l -n 12 -ppn 12 --cpu-bind core"
+export APRUN_CHGRES=${APRUN_CHGRES:-"mpiexec -l -n 12 -ppn 12 --cpu-bind core"}
 ##############################################################
 DESTINATION_DIR="${DATA}/gen_control_ic"
 SFC_DESTINATION_DIR="${DESTINATION_DIR}/sfc"
