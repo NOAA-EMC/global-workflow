@@ -64,9 +64,9 @@ done
 
 echo "All contents from ${SOURCE_DIR} copied successfully to ${DESTINATION_DIR}."
 
-copy_file "${UTILSufs}/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" "${DESTINATION_DIR}"
-copy_file "${UTILSufs}/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "${DESTINATION_DIR}"
-copy_file "${UTILSufs}/UFS_UTILS.git/fix/am/global_hyblev.l64.txt" "${DESTINATION_DIR}"
+copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" "${DESTINATION_DIR}"
+copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "${DESTINATION_DIR}"
+copy_file "${HOMEgfs}/fix/am/global_hyblev.l64.txt" "${DESTINATION_DIR}"
 
 echo "All files copied successfully."
 
@@ -117,5 +117,5 @@ wam_cold_start=.false.
 /
 EOF
 
-$APRUN_CHGRES $CHGRESEXEC $REDOUT$PGMOUT $REDERR$PGMERR
+"$APRUN_CHGRES" "$CHGRESEXEC" "$REDOUT$PGMOUT" "$REDERR$PGMERR"
 exit "${err}"
