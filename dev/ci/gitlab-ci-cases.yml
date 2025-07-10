@@ -75,7 +75,6 @@
         "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
           --add-label "CI-${Machine}-Passed" --remove-label "CI-${Machine}-Running" || true
       fi
-
   needs:
     - run_experiments-${machine}
 
@@ -98,3 +97,5 @@
         curl -sSL "https://img.shields.io/badge/${machine} nightly_failed-red?style=flat-round&logo=gitlab" -o "badges/${machine}_pipeline_badge.svg"
         ${GH} gist edit "${GIST_ID}" --add "badges/${machine}_pipeline_badge.svg"
       fi
+  needs:
+    - run_experiments-${machine}
