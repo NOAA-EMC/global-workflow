@@ -5,14 +5,11 @@ import glob
 from logging import getLogger
 import pygfs.utils.marine_da_utils as mdau
 
-from wxflow import (AttrDict,
-                    FileHandler,
-                    add_to_datetime, to_timedelta,
+from wxflow import (AttrDict, FileHandler, Executable, Task,
+                    add_to_datetime, to_timedelta, to_isotime,
                     chdir,
                     parse_j2yaml, save_as_yaml,
-                    logit,
-                    Executable,
-                    Task)
+                    logit)
 
 from pygfs.jedi import Jedi
 
