@@ -6,8 +6,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_
 ##############################################
 # Set variables used in the script
 ##############################################
-
-export APREFIX="gfs.t003z."
 export EXECufs=${EXECufs:-${HOMEgfs}/sorc/ufs_utils.fd/exec}
 export UTILSufs="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS"
 
