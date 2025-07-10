@@ -61,6 +61,10 @@ case ${step} in
     fi
     ;;
 
+  "atmanlvar" | "atmensanlobs" | "atmensanlsol")
+    export tasks_per_node=48
+    ;;
+
   "marinebmat")
     case ${OCNRES} in
       "025")
