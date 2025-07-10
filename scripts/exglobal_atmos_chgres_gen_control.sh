@@ -70,7 +70,7 @@ copy_file "${HOMEgfs}/fix/am/global_hyblev.l64.txt" "${DESTINATION_DIR}"
 
 echo "All files copied successfully."
 
-# If analysis increment is written by GSI, regrid forecasts to increment resolution
+# add the namelist
 cat << EOF > ./fort.41
 &config
 mosaic_file_target_grid="${MOSAIC_DESTINATION_FILE}"
