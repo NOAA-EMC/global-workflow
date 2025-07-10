@@ -40,12 +40,10 @@
     - setup_experiments-${machine}
 
 # Success finalize - runs when ALL case jobs succeed
-.finalize_template:
+.finalize_success_template:
   extends: .base_config
   stage: finalize
-  variables:
-    hera_GIST_ID: "6fc87bdca52a4046188460bcd35e4350"
-    gaeac6_GIST_ID: "66059582886cb5c2485ff64bf24e7f93"
+
   script:
     - |
       Machine="${machine^}"
@@ -58,7 +56,7 @@
           mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}"
           ln -sf "${WORKSPACE_DATE}" stable
         elif [[ "${WORKSPACE_ID}" == "${WORKSPACE_DATE}" ]]; then
-            ln -sf "${WORKSPACE_DATE}" stable
+          ln -sf "${WORKSPACE_DATE}" stable
         fi
 
         # Clean up old directories from this pipeline type except stable
@@ -66,15 +64,37 @@
         find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" \
           -not -path "$(readlink -f "${CI_BUILDS_DIR}/stable")" -exec rm -rf {} \; 2>/dev/null || true
 
-        # Update GitHub badges for success
-        echo "Updating develop branch badge..."
-        curl -L "https://img.shields.io/badge/${Machine}-Passed-brightgreen?style=flat-square&logo=gitlab" -o "badges/${Machine}_pipeline_badge.svg"
-        ${GH} gist edit "${machine}_GIST_ID" "badges/${Machine}_pipeline_badge.svg"
+        # Update GitHub badges for success of nightly pipelines
+        declare -n gist_id_var="${machine}_GIST_ID"
+        GIST_ID="${gist_id_var}"
+        echo "Updating develop branch badge for ${Machine} to indicate Passed"
+        curl -sSL "https://img.shields.io/badge/${machine} nightly_passed-brightgreen?style=flat-round&logo=gitlab" -o "badges/${machine}_pipeline_badge.svg"
+        ${GH} gist edit "${GIST_ID}" --add "badges/${machine}_pipeline_badge.svg"
+      elif [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
+        # Update GitHub labels for success of pr_cases with a PR number
+        "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
+          --add-label "CI-${Machine}-Passed" --remove-label "CI-${Machine}-Running" || true
       fi
-
-      # Update GitHub labels for success
-      "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
-        --add-label "CI-${Machine}-Passed" --remove-label "CI-${Machine}-Running" || true
 
   needs:
     - run_experiments-${machine}
+
+
+# Failure finalize - runs when ANY case job fails
+.finalize_fail_template:
+  extends: .base_config
+  stage: finalize
+  script:
+    - |
+      Machine="${machine^}"
+      if [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
+        echo "Updating GitHub labels for failure for Case runs with PR number ${PR_NUMBER}"
+        "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
+          --add-label "CI-${Machine}-Failed" --remove-label "CI-${Machine}-Running" || true
+      elif [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+        echo "Updating develop branch badge for ${Machine} to indicate nightly Failed"
+        declare -n gist_id_var="${machine}_GIST_ID"
+        GIST_ID="${gist_id_var}"
+        curl -sSL "https://img.shields.io/badge/${machine} nightly_failed-red?style=flat-round&logo=gitlab" -o "badges/${machine}_pipeline_badge.svg"
+        ${GH} gist edit "${GIST_ID}" --add "badges/${machine}_pipeline_badge.svg"
+      fi
