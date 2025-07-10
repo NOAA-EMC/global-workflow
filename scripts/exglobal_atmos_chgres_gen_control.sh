@@ -57,8 +57,8 @@ copy_file() {
 }
 
 # Ensure the source directory exists
-if [ ! -d "$FIX_SOURCE_DIR" ]; then
-    echo "Error: Source directory $FIX_SOURCE_DIR does not exist."
+if [ ! -d "$SOURCE_DIR" ]; then
+    echo "Error: Source directory $SOURCE_DIR does not exist."
     exit 1
 fi
 
