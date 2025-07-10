@@ -35,12 +35,12 @@ SFC_SOURCE_DIR="$SOURCE_DIR/sfc"
 rm -rf "$DESTINATION_DIR"
 
 # Create directory $DATA/gen_control_ic
-echo "Creating directory: $DATA/gen_control_ic"
-mkdir -p "$DESTINATION_DIR"
+echo "Creating directory: $DESTINATION_DIR" and subdirectory: "$SFC_DESTINATION_DIR"
+mkdir -p "$SFC_DESTINATION_DIR"
 
 # Check if the directory creation failed
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to create directory $DESTINATION_DIR"
+    echo "Error: Failed to create directory $DESTINATION_DIR and subdirectory: $SFC_DESTINATION_DIR"
     exit 1
 fi
 
