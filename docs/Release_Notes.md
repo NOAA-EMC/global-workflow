@@ -18,10 +18,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-
-mkdir gfs.v16.3.25
-cd gfs.v16.3.25
-git clone -b EMC-v16.3.25 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.26
+cd gfs.v16.3.26
+git clone -b EMC-v16.3.26 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -58,7 +57,7 @@ VERSION FILE CHANGES
 --------------------
 
 * add `ncdiag_ver=1.1.1` in `versions/build.ver` and `versions/run.ver`
-* in `versions/run.ver` change `version=v16.3.25` and `gfs_ver=v16.3.25`
+* in `versions/run.ver` change `version=v16.3.26` and `gfs_ver=v16.3.26`
 * also changed in version files for developers: `obsproc_run_ver=1.2.6` and `prepobs_run_ver=1.1.2`
 
 SORC CHANGES
@@ -100,7 +99,7 @@ The jobs/ directory of GSI have been moved to global-workflow:
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.24
+* No changes from GFS v16.3.25
 
 SCRIPT CHANGES
 --------------
@@ -143,7 +142,7 @@ MODULE CHANGES
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No significant changes from GFS v16.3.24
+* No significant changes from GFS v16.3.25
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
@@ -172,22 +171,22 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.24
+* No changes from GFS v16.3.25
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.24
+* No changes from GFS v16.3.25
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.24
+* No changes from GFS v16.3.25
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.24
+* No changes from GFS v16.3.25
 
 PREPARED BY
 -----------
