@@ -49,7 +49,6 @@ export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 export DO_BUFRSND="YES"    # BUFR sounding products
 export DO_GEMPAK="YES"     # GEMPAK products
 export DO_AWIPS="YES"      # AWIPS products
-export WAFSF="YES"         # WAFS products
 export DO_WDQMS="YES"      # Generate WDQMS products
 
 # NO for retrospective parallel; YES for real-time parallel

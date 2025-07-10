@@ -11,6 +11,8 @@ load(pathJoin("esmf", os.getenv("esmf_ver")))
 load(pathJoin("cfp", os.getenv("cfp_ver")))
 setenv("USE_CFP","YES")
 
+load(pathJoin("cmdaccel", os.getenv("cmdaccel_ver")))
+
 load(pathJoin("python", os.getenv("python_ver")))
 load(pathJoin("prod_envir", os.getenv("prod_envir_ver")))
 load(pathJoin("gempak", os.getenv("gempak_ver")))
@@ -33,7 +35,6 @@ load(pathJoin("crtm", os.getenv("crtm_ver")))
 load(pathJoin("g2tmpl", os.getenv("g2tmpl_ver")))
 load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 
-prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
 
 whatis("Description: GFS run environment")
