@@ -37,7 +37,7 @@ GitLab scheduled pipelines can override pipeline behavior using environment vari
 
 #### Setting Pipeline Type
 ```bash
-# In GitLab Project > CI/CD > Pipelines > Schedules
+# In GitLab Project > Build > Pipelines schedules
 # Set variables in the pipeline schedule configuration:
 
 PIPELINE_TYPE=ctests          # Override to run CTests
