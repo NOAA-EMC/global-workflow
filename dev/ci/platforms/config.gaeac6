@@ -60,4 +60,4 @@ export max_concurrent_cases=5 # number of concurrent cases that can run simultan
 export max_concurrent_pr=4    # number of concurrent pull requests
 
 # HPC account information - For job submission
-export HPC_ACCOUNT=drsa-precip3
+export HPC_ACCOUNT=${HPC_ACCOUNT:-drsa-precip3}
