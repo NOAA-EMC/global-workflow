@@ -26,7 +26,7 @@ MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/C96_mosaic.nc"
 ATM_FILE="gfs.t00z.atmf000.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l64.txt"
-SOURCE_DIR="${HOMEgfs}/fix/C96"
+SOURCE_DIR="${HOMEgfs}/fix/orog/C96"
 
 # Remove existing $DATA/gen_control_ic
 rm -rf "${DESTINATION_DIR}"
