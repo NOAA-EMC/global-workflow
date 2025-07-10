@@ -17,7 +17,7 @@ Both pipeline modalities support running on multiple compute hosts using a share
 
 Both modalities use the following stages:
 - `build`: Builds the codebase (shared between modalities)
-- `create_experiments`: Sets up experiments or ctests
+- `setup_tests`: Sets up experiments or ctests
 - `run_tests`: Executes the test workflows
 - `finalize`: Updates status badges
 
