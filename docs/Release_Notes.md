@@ -49,7 +49,7 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `rtofs_ver=v2.5`,`version=v16.3.25`, and `gfs_ver=v16.3.25`
+* `versions/run.ver` - change `rtofs_ver=v2.5`, `version=v16.3.25`, and `gfs_ver=v16.3.25`
 
 SORC CHANGES
 ------------
