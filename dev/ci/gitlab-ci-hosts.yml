@@ -91,7 +91,7 @@ finalize_success-hera:
     - run_experiments-hera
   when: on_success
   rules:
-    - if: $RUN_ON_MACHINES =~ /\bgaeac6\b|all/
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 finalize_success-gaeac6:
   extends: .finalize_success_template
@@ -103,7 +103,7 @@ finalize_success-gaeac6:
     - run_experiments-gaeac6
   when: on_success
   rules:
-    - if: $RUN_ON_MACHINES =~ /\bgaeac6\b|all/
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 finalize_fail-hera:
   extends: .finalize_fail_template
@@ -115,7 +115,7 @@ finalize_fail-hera:
     - run_experiments-hera
   when: on_failure
   rules:
-    - if: $RUN_ON_MACHINES =~ /\bgaeac6\b|all/
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 finalize_fail-gaeac6:
   extends: .finalize_fail_template
@@ -127,7 +127,7 @@ finalize_fail-gaeac6:
     - run_experiments-gaeac6
   when: on_failure
   rules:
-    - if: $RUN_ON_MACHINES =~ /\bgaeac6\b|all/
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 # =======================================
 # CTests configurations by host
