@@ -18,7 +18,7 @@ REDERR=${REDERR:-'2>'}
 DATA=${DATA:-${pwd}}
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
-export APRUN_CHGRES=${APRUN_CHGRES:-"mpiexec -l -n 12 -ppn 12 --cpu-bind core"}
+export APRUN_CHGRES="mpiexec -l -n 12 -ppn 12 --cpu-bind core"
 ##############################################################
 DESTINATION_DIR="${DATA}/gen_control_ic"
 SFC_DESTINATION_DIR="${DESTINATION_DIR}/sfc"
@@ -26,7 +26,7 @@ MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/C96_mosaic.nc"
 ATM_FILE="gfs.t00z.atmf000.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l64.txt"
-SOURCE_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
+SOURCE_DIR="${HOMEgfs}/fix/C96"
 
 # Remove existing $DATA/gen_control_ic
 rm -rf "${DESTINATION_DIR}"
@@ -117,5 +117,5 @@ wam_cold_start=.false.
 /
 EOF
 
-"${APRUN_CHGRES}" ${CHGRESEXEC} ${REDOUT}${PGMOUT} ${REDERR}${PGMERR}
+$APRUN_CHGRES $CHGRESEXEC $REDOUT$PGMOUT $REDERR$PGMERR
 exit "${err}"
