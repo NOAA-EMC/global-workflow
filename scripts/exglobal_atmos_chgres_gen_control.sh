@@ -28,19 +28,19 @@ MOSAIC_DESTINATION_FILE="$DESTINATION_DIR/C96_mosaic.nc"
 ATM_FILE="gfs.t00z.atmf000.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
 HYBLEV_FILE="$DESTINATION_DIR/global_hyblev.l64.txt"
-SOURCE_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
+SOURCE_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/"
 SFC_SOURCE_DIR="$SOURCE_DIR/sfc"
 
 # Remove existing $DATA/gen_control_ic
 rm -rf "$DESTINATION_DIR"
 
 # Create directory $DATA/gen_control_ic
-echo "Creating directory: $DESTINATION_DIR" and subdirectory: "$SFC_DESTINATION_DIR"
-mkdir -p "$SFC_DESTINATION_DIR"
+echo "Creating directory: $DESTINATION_DIR"
+mkdir -p "$DESTINATION_DIR"
 
 # Check if the directory creation failed
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to create directory $DESTINATION_DIR and subdirectory: $SFC_DESTINATION_DIR"
+    echo "Error: Failed to create directory $DESTINATION_DIR"
     exit 1
 fi
 
