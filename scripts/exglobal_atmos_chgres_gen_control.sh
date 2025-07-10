@@ -44,6 +44,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Ensure the source directory exists
+if [ ! -d "$SOURCE_DIR" ]; then
+    echo "Error: Source directory $SOURCE_DIR does not exist."
+    exit 1
+fi
+
 # Function to copy files and check success
 copy_file() {
     local src=$1
@@ -55,12 +61,6 @@ copy_file() {
         exit 1
     fi
 }
-
-# Ensure the source directory exists
-if [ ! -d "$SOURCE_DIR" ]; then
-    echo "Error: Source directory $SOURCE_DIR does not exist."
-    exit 1
-fi
 
 # Copy all contents (including subdirectories) to $GEN_CONTROL_IC_DIR
 echo "Copying all contents from $SOURCE_DIR to $DESTINATION_DIR..."
