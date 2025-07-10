@@ -1,6 +1,28 @@
 #!/bin/bash
 set -x
 
+################################################################################
+# UNIX Script Documentation Block
+# Name:     exgdas_atmos_analysis_wdqms.sh
+# Author:   Rahul Mahajan
+# Org:      NCEP/EMC
+# Abstract: This script unpacks GSI diagnostic files, runs them through a python
+#           script ush/wdqms.py, and creates CSV files.
+#           These CSV files contain observation information, residual statistics,
+#           and data use in the assimilation for certain observation sub-types
+# History Log:
+#   2024-04-01  Rahul Mahajan  Initial Version.
+# Usage:
+# Input Files:
+#   ${RUN}.t${cyc}z.cnvstat
+# Output Files:
+#   ${RUN}.t${cyc}z.${otype}.csv
+#   where: otype = synop | temp | marine
+# Condition codes:
+#   == 0 : success
+#   != 0 : non-fatal error encountered while generating output file
+################################################################################
+
 # Input GSI diagnostic file containing inputs to wdqms.py
 CNVSTAT="${RUN}.t${cyc}z.cnvstat"
 
@@ -24,15 +46,15 @@ cd "${DATA}" || ( echo "FATAL ERROR: Unable to cd into '${DATA}', ABORT!"; exit 
 # Copy cnvstat file from COMIN to DATA, untar and gunzip input files for wdqms.py
 # These should always be available
 cp "${COMIN}/${CNVSTAT}" .
-rc=$?
-(( rc != 0 )) && ( echo "FATAL ERROR: Unable to copy '${CNVSTAT}' from '${COMIN}', ABORT!"; exit 2 )
+export err=$?
+(( err != 0 )) && ( msg="FATAL ERROR: Unable to copy '${CNVSTAT}' from '${COMIN}', ABORT!"; err_exit "${msg}" )
 for diagfile in "${INPUT_LIST[@]}"; do
   tar -xvf "${CNVSTAT}" "${diagfile}.gz"
-  rc=$?
-  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to extract '${diagfile}.gz' from '${CNVSTAT}', ABORT!"; exit 3 )
+  export err=$?
+  (( err != 0 )) && ( msg="FATAL ERROR: Unable to extract '${diagfile}.gz' from '${CNVSTAT}', ABORT!"; err_exit "${msg}" )
   gunzip "${diagfile}.gz"
-  rc=$?
-  (( rc != 0 )) && ( echo "FATAL ERROR: Unable to gunzip '${diagfile}.gz', ABORT!"; exit 3 )
+  export err=$?
+  (( err != 0 )) && ( msg="FATAL ERROR: Unable to gunzip '${diagfile}.gz', ABORT!"; err_exit "${msg}" )
 done
 
 #-------------------------------------------------------------------------------

@@ -8,7 +8,7 @@ date
 #############################
 # Source relevant config files
 #############################
-configs="base"
+configs="base sfcprep"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -16,6 +16,13 @@ for config in $configs; do
     status=$?
     [[ $status -ne 0 ]] && exit $status
 done
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env sfcprep
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 
 ##############################################
@@ -64,8 +71,7 @@ export COMIN_m6hrs=${COMIN_m6hrs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN
 
 export IMS_FILE=${COMINobsproc}/${RUN}.${cycle}.imssnow96.grib2
 export FIVE_MIN_ICE_FILE=${COMINobsproc}/${RUN}.${cycle}.seaice.5min.grib2
-export AFWA_NH_FILE=${COMINobsproc}/${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb
-export AFWA_SH_FILE=${COMINobsproc}/${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb
+export AFWA_GLOBAL_FILE=${COMINobsproc}/${RUN}.${cycle}.snow.usaf.grib2
 
 export BLENDED_ICE_FILE=${BLENDED_ICE_FILE:-${RUN}.${cycle}.seaice.5min.blend.grb}
 export BLENDED_ICE_FILE_m6hrs=${BLENDED_ICE_FILE_m6hrs:-${COMIN_m6hrs}/${RUN}.${cycle_m6hrs}.seaice.5min.blend.grb}

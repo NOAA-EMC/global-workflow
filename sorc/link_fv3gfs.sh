@@ -35,11 +35,11 @@ if [ $machine == "cray" ]; then
 elif [ $machine = "dell" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16.3.0"
 elif [ $machine = "wcoss2" ]; then
-    FIX_DIR="/lfs/h2/emc/global/save/emc.global/FIX/fix_nco_gfsv16.3.0"
+    FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix_nco_gfsv16.3.22"
 elif [ $machine = "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16.3.0"
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16.3.22"
 elif [ $machine = "orion" ]; then
-    FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16.3.0"
+    FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16.3.22"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; do
@@ -90,25 +90,6 @@ cd ${pwd}/../util               ||exit 8
     for file in sub_slurm sub_wcoss_c sub_wcoss_d ; do
         $LINK ../sorc/ufs_utils.fd/util/$file .
     done
-
-
-#-----------------------------------
-#--add gfs_wafs link if checked out
-if [ -d ${pwd}/gfs_wafs.fd ]; then
-#-----------------------------------
- cd ${pwd}/../jobs               ||exit 8
-     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
- cd ${pwd}/../parm               ||exit 8
-     [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
- cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
- cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
- cd ${pwd}/../fix                ||exit 8
-    [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
-fi
 
 
 #------------------------------
@@ -182,11 +163,13 @@ cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_gnorms.pl    .
     $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_reduct.pl    .
     $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared/ush/ozn_xtrct.sh                     .
+    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_diag_ck.sh             .
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_err_rpt.sh             .
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_angle.sh          .
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcoef.sh          .
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcor.sh           .
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_time.sh           .
+    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/rstprod.sh                    .
 
 
 #------------------------------
@@ -205,16 +188,6 @@ fi
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
-
-if [ -d ${pwd}/gfs_wafs.fd ]; then
-    for wafsexe in \
-          wafs_awc_wafavn  wafs_blending  wafs_blending_0p25 \
-          wafs_cnvgrib2  wafs_gcip  wafs_grib2_0p25 \
-          wafs_makewafs  wafs_setmissing; do
-        [[ -s $wafsexe ]] && rm -f $wafsexe
-        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
-    done
-fi
 
 for ufs_utilsexe in \
      emcsfc_ice_blend  emcsfc_snow2mdl  global_cycle ; do
@@ -302,18 +275,6 @@ cd ${pwd}/../sorc   ||   exit 8
         emcsfc_snow2mdl.fd   global_chgres.fd  orog.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
-
-
-    if [ -d ${pwd}/gfs_wafs.fd ]; then
-        $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_blending_0p25.fd                                           wafs_blending_0p25.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_grib2_0p25.fd                                              wafs_grib2_0p25.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
-    fi
 
     for prog in gdas2gldas.fd  gldas2gdas.fd  gldas_forcing.fd  gldas_model.fd  gldas_post.fd  gldas_rst.fd ;do
         $SLINK gldas.fd/sorc/$prog                                                     $prog

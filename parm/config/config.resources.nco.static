@@ -8,12 +8,11 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
+    echo "sfcprep prep anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
-    echo "wafs wafsgrib2 wafsblending wafsgrib20p25 wafsblending0p25 wafsgcip"
     exit 1
 
 fi
@@ -24,7 +23,16 @@ echo "BEGIN: config.resources"
 
 export npe_node_max=128
 
-if [ $step = "prep" -o $step = "prepbufr" ]; then
+if [ $step = "sfcprep" ]; then
+
+    export wtime_sfcprep="00:08:00"
+    export npe_sfcprep=1
+    export nth_sfcprep=1
+    export npe_node_sfcprep=1
+    export NTASKS=$npe_sfcprep
+    export memory_sfcprep="10GB"
+
+elif [ $step = "prep" -o $step = "prepbufr" ]; then
 
     eval "export wtime_$step='00:45:00'"
     eval "export npe_$step=4"
@@ -61,31 +69,31 @@ elif [ $step = "wavepostsbs" ]; then
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$npe_wavepostsbs
     export memory_wavepostsbs="10GB"
-    export memory_wavepostsbs_gfs="10GB"
+    export memory_wavepostsbs_gfs="100GB"
     export NTASKS=$npe_wavepostsbs
 
 elif [ $step = "wavepostbndpnt" ]; then
 
-    export wtime_wavepostbndpnt="01:00:00"
-    export npe_wavepostbndpnt=240
+    export wtime_wavepostbndpnt="00:30:00"
+    export npe_wavepostbndpnt=1
     export nth_wavepostbndpnt=1
-    export npe_node_wavepostbndpnt=80
+    export npe_node_wavepostbndpnt=${npe_wavepostbndpnt}
     export NTASKS=$npe_wavepostbndpnt
 
 elif [ $step = "wavepostbndpntbll" ]; then
 
-    export wtime_wavepostbndpntbll="01:00:00"
-    export npe_wavepostbndpntbll=448
+    export wtime_wavepostbndpntbll="00:10:00"
+    export npe_wavepostbndpntbll=2
     export nth_wavepostbndpntbll=1
-    export npe_node_wavepostbndpntbll=112
+    export npe_node_wavepostbndpntbll=${npe_wavepostbndpntbll}
     export NTASKS=$npe_wavepostbndpntbll
 
 elif [ $step = "wavepostpnt" ]; then
 
-    export wtime_wavepostpnt="01:30:00"
-    export npe_wavepostpnt=200
+    export wtime_wavepostpnt="00:35:00"
+    export npe_wavepostpnt=3
     export nth_wavepostpnt=1
-    export npe_node_wavepostpnt=50
+    export npe_node_wavepostpnt=${npe_wavepostpnt}
     export NTASKS=$npe_wavepostpnt
 
 elif [ $step = "wavegempak" ]; then
@@ -95,7 +103,7 @@ elif [ $step = "wavegempak" ]; then
     export nth_wavegempak=1
     export npe_node_wavegempak=$npe_wavegempak
     export NTASKS=$npe_wavegempak
-    export memory_wavegempak="1GB"
+    export memory_wavegempak="100GB"
 
 elif [ $step = "waveawipsbulls" ]; then
 
@@ -112,7 +120,7 @@ elif [ $step = "waveawipsgridded" ]; then
     export nth_waveawipsgridded=1
     export npe_node_waveawipsgridded=$(echo "$npe_node_max / $nth_waveawipsgridded" | bc)
     export NTASKS=$npe_waveawipsgridded
-    export memory_waveawipsgridded_gfs="1GB"
+    export memory_waveawipsgridded_gfs="20GB"
 
 elif [ $step = "anal" ]; then
 
@@ -183,54 +191,6 @@ elif [ $step = "post" ]; then
     export npe_node_post_gfs=$npe_post
     export npe_node_dwn=$npe_node_max
 
-elif [ $step = "wafs" ]; then
-
-    export wtime_wafs="00:30:00"
-    export npe_wafs=1
-    export npe_node_wafs=$npe_wafs
-    export nth_wafs=1
-    export memory_wafs="1GB"
-
-elif [ $step = "wafsgcip" ]; then
-
-    export wtime_wafsgcip="00:30:00"
-    export npe_wafsgcip=2
-    export npe_node_wafsgcip=$npe_wafsgcip
-    export nth_wafsgcip=1
-    export memory_wafsgcip="50GB"
-
-elif [ $step = "wafsgrib2" ]; then
-
-    export wtime_wafsgrib2="00:30:00"
-    export npe_wafsgrib2=18
-    export npe_node_wafsgrib2=$npe_wafsgrib2
-    export nth_wafsgrib2=1
-    export memory_wafsgrib2="80GB"
-
-elif [ $step = "wafsblending" ]; then
-
-    export wtime_wafsblending="00:30:00"
-    export npe_wafsblending=1
-    export npe_node_wafsblending=$npe_wafsblending
-    export nth_wafsblending=1
-    export memory_wafsblending="1GB"
-
-elif [ $step = "wafsgrib20p25" ]; then
-
-    export wtime_wafsgrib20p25="00:30:00"
-    export npe_wafsgrib20p25=11
-    export npe_node_wafsgrib20p25=$npe_wafsgrib20p25
-    export nth_wafsgrib20p25=1
-    export memory_wafsgrib20p25="80GB"
-
-elif [ $step = "wafsblending0p25" ]; then
-
-    export wtime_wafsblending0p25="00:30:00"
-    export npe_wafsblending0p25=1
-    export npe_node_wafsblending0p25=$npe_wafsblending0p25
-    export nth_wafsblending0p25=1
-    export memory_wafsblending0p25="15GB"
-
 elif [ $step = "vrfy" ]; then
 
     export wtime_vrfy="03:00:00"
@@ -286,9 +246,9 @@ elif [ $step = "ediag" ]; then
 
 elif [ $step = "eupd" ]; then
 
-    export wtime_eupd="00:30:00"
-    export npe_eupd=315
-    export nth_eupd=14
+    export wtime_eupd="00:40:00"
+    export npe_eupd=280
+    export nth_eupd=16
     export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
 
 elif [ $step = "ecen" ]; then
@@ -308,7 +268,7 @@ elif [ $step = "esfc" ]; then
     export nth_esfc=1
     export nth_cycle=$nth_esfc
     export npe_node_cycle=$(echo "$npe_node_max / $nth_cycle" | bc)
-    export memory_esfc="60GB"
+    export memory_esfc="500GB"
 
 elif [ $step = "efcs" ]; then
 
@@ -339,7 +299,7 @@ elif [ $step = "awips" ]; then
     export npe_awips=1
     export npe_node_awips=1
     export nth_awips=1
-    export memory_awips="3GB"
+    export memory_awips="100GB"
 
 elif [ $step = "gempak" ]; then
 
@@ -350,7 +310,7 @@ elif [ $step = "gempak" ]; then
     export npe_node_gempak_gfs=28
     export nth_gempak=1
     export memory_gempak="4GB"
-    export memory_gempak_gfs="2GB"
+    export memory_gempak_gfs="150GB"
 
 else
 
