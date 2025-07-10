@@ -36,6 +36,7 @@ fi
 
 echo "Creating directory: $DATA/gen_control_ic"
 mkdir -p "$DATA/gen_control_ic"
+mkdir -p "$DATA/gen_control_ic/sfc"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to create directory $DATA/gen_control_ic"
     exit 1
@@ -53,7 +54,8 @@ copy_file() {
     fi
 }
 GEN_CONTROL_IC_DIR="$DATA/gen_control_ic"
-GEN_CONTROL_IC_MOSAIC="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
+GEN_CONTROL_IC_SFC_DIR="$GEN_CONTROL_IC_DIR/sfc"
+GEN_CONTROL_IC_MOSAIC_DIR="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
 ATM_FILE="gfs.t00z.atmf000.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
 HYBLEV_FILE="$GEN_CONTROL_IC_DIR/global_hyblev.l64.txt"
@@ -74,14 +76,18 @@ copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96_grid.tile4.nc" "$GEN_CONT
 copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96_grid.tile5.nc" "$GEN_CONTROL_IC_DIR"
 copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96_grid.tile6.nc" "$GEN_CONTROL_IC_DIR"
 copy_file "$UTILSufs/UFS_UTILS.git/fix/am/global_hyblev.l64.txt" "$GEN_CONTROL_IC_DIR"
+SOURCE_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/sfc"
+for file in "$SOURCE_DIR"/*; do
+    copy_file "$file" "$GEN_CONTROL_IC_SFC_DIR"
+done
 
 echo "All files copied successfully."
 
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 cat << EOF > ./fort.41
 &config
-mosaic_file_target_grid="$GEN_CONTROL_IC_MOSAIC"
-fix_dir_target_grid="$GEN_CONTROL_IC_DIR"
+mosaic_file_target_grid="$GEN_CONTROL_IC_MOSAIC_DIR"
+fix_dir_target_grid="$GEN_CONTROL_IC_SFC_DIR"
 orog_dir_target_grid="$GEN_CONTROL_IC_DIR"
 orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
 vcoord_file_target_grid="$HYBLEV_FILE"
