@@ -28,8 +28,7 @@ MOSAIC_DESTINATION_FILE="$DESTINATION_DIR/C96_mosaic.nc"
 ATM_FILE="gfs.t00z.atmf000.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
 HYBLEV_FILE="$DESTINATION_DIR/global_hyblev.l64.txt"
-SOURCE_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/"
-SFC_SOURCE_DIR="$SOURCE_DIR/sfc"
+SOURCE_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
 
 # Remove existing $DATA/gen_control_ic
 rm -rf "$DESTINATION_DIR"
@@ -62,9 +61,11 @@ copy_file() {
     fi
 }
 
-# Copy all contents (including subdirectories) to $GEN_CONTROL_IC_DIR
+# Copy all contents (including subdirectories) to $DESTINATION_DIR
 echo "Copying all contents from $SOURCE_DIR to $DESTINATION_DIR..."
-copy_file "$SOURCE_DIR" "$DESTINATION_DIR"
+for item in "$SOURCE_DIR"/*; do
+    copy_file "$item" "$DESTINATION_DIR"
+done
 
 echo "All contents from $SOURCE_DIR copied successfully to $DESTINATION_DIR."
 
