@@ -72,10 +72,6 @@ copy_file "$UTILSufs/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf00
 copy_file "$UTILSufs/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "$DESTINATION_DIR"
 copy_file "$UTILSufs/UFS_UTILS.git/fix/am/global_hyblev.l64.txt" "$DESTINATION_DIR"
 
-ATM_FILE="gfs.t00z.atmf000.nc"
-SFC_FILE="gfs.t00z.sfcf000.nc"
-HYBLEV_FILE="$DESTINATION_DIR/global_hyblev.l64.txt"
-
 echo "All files copied successfully."
 
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
