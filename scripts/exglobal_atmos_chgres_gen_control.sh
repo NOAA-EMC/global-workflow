@@ -15,7 +15,7 @@ PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 REDOUT=${REDOUT:-'1>'}
 REDERR=${REDERR:-'2>'}
-DATA=${DATA:-$pwd}
+DATA="${DATA:-$pwd}"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
 export APRUN_CHGRES="mpiexec -l -n ${ntasks} -ppn ${tasks_per_node} --cpu-bind depth --depth 1"
