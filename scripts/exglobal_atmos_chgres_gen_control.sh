@@ -9,7 +9,6 @@
 #  Directories.
 pwd=$(pwd)
 # Dependent Scripts and Executables
-
 CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
@@ -18,7 +17,6 @@ REDOUT=${REDOUT:-'1>'}
 REDERR=${REDERR:-'2>'}
 DATA=${DATA:-$pwd}
 
-# at ensemble resolution
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
 export APRUN_CHGRES="mpiexec -l -n ${ntasks} -ppn ${tasks_per_node} --cpu-bind depth --depth 1"
 ##############################################################
@@ -31,7 +29,7 @@ HYBLEV_FILE="$DESTINATION_DIR/global_hyblev.l64.txt"
 SOURCE_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
 
 # Remove existing $DATA/gen_control_ic
-rm -rf "$DESTINATION_DIR"
+sudo rm -rf "$DESTINATION_DIR"
 
 # Create directory $DATA/gen_control_ic
 echo "Creating directory: $DESTINATION_DIR"
@@ -65,6 +63,7 @@ copy_file() {
 echo "Copying all contents from $SOURCE_DIR to $DESTINATION_DIR..."
 for item in "$SOURCE_DIR"/*; do
     copy_file "$item" "$DESTINATION_DIR"
+    chmod -R u+w "$DESTINATION_DIR/$(basename "$item")"
 done
 
 echo "All contents from $SOURCE_DIR copied successfully to $DESTINATION_DIR."
