@@ -71,7 +71,7 @@ build:
   gsi_enkf:
     command: "./build_gsi_enkf.sh"
     cores: 8
-    walltime: "00:15:00"
+    walltime: "00:20:00"
 
   gsi_monitor:
     command: "./build_gsi_monitor.sh"

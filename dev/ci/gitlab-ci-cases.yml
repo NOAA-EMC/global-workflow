@@ -20,9 +20,8 @@
   script:
     - |
       export RUNTESTS="${RUNTESTS_DIR}"
-      "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment \
-        "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${CI_COMMIT_SHORT_SHA}-${CI_PIPELINE_ID}"
-      exit $?
+      "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${CI_COMMIT_SHORT_SHA}-${CI_PIPELINE_ID}"
+      exit $?                           # This dash delemeter on pslot between the SHA & ID is needed for the parser when recovering the pslot:  ^
   needs:
     - build-${machine}
 

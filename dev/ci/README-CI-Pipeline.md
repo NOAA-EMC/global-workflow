@@ -33,12 +33,12 @@ The pipeline supports two primary testing modalities controlled by the `PIPELINE
 
 ### GitLab Scheduled Pipelines
 
-Using GitLab scheduled pipelines the default runtime BASH values can be overwritten to change the behavior driven by the GitHub Actions while launching:
+GitLab scheduled pipelines can override pipeline behavior using environment variable settings:
 
 #### Setting Pipeline Type
 ```bash
-# In GitLab Project > CI/CD > Pipelines > Schedules
-# All the global BASH variables in the pipeline can be overwritten by using the schedule configuration in the Values section:
+# In GitLab Project > Build > Pipelines schedules
+# Set variables in the pipeline schedule configuration:
 
 PIPELINE_TYPE=ctests          # Override to run CTests
 PIPELINE_TYPE=pr_cases        # Explicit setting for PR cases (default behavior)
