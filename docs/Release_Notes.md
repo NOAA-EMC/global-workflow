@@ -1,10 +1,10 @@
-GFS V16.3.24 RELEASE NOTES
+GFS V16.3.25 RELEASE NOTES
 
 -------
 PRELUDE
 -------
 
-Tropical storm name updates for the 2025-2026 hurricane seasons are made in the GFS syndat_stmnames fix file.
+The upstream RTOFS system is updated to v2.5.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.24
-cd gfs.v16.3.24
-git clone -b EMC-v16.3.24 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.25
+cd gfs.v16.3.25
+git clone -b EMC-v16.3.25 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -49,7 +49,7 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* `versions/run.ver` - change `version=v16.3.24` and `gfs_ver=v16.3.24`
+* `versions/run.ver` - change `rtofs_ver=v2.5`,`version=v16.3.25`, and `gfs_ver=v16.3.25`
 
 SORC CHANGES
 ------------
@@ -74,7 +74,7 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-The `fix_am/syndat_stmnames` file is updated to adjust some hurricane names for 2025/2026 seasons.
+* No changes from GFS v16.3.24
 
 MODULE CHANGES
 --------------
@@ -122,4 +122,3 @@ DOCUMENTATION
 PREPARED BY
 -----------
 Kate.Friedman@noaa.gov
-Qingfu.Liu@noaa.gov
