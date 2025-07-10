@@ -437,6 +437,11 @@ fi
 export restart_interval_enkfgfs=${restart_interval_enkfgdas}
 
 export restart_interval_gdas="3"
+if [[ "${DOIAU}" == "YES" || "${DO_AERO_ANL}" == "YES" ]]; then
+  export restart_interval_gdas="3"
+else
+  export restart_interval_gdas="6"
+fi
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
