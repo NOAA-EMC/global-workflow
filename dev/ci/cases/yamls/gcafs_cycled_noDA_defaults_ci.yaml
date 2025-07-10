@@ -3,4 +3,4 @@ defaults:
 base:
   DO_TEST_MODE: "NO"
   USE_AERO_ANL: "NO"
-  AERO_ANL_RUNS: "gdas"
+  AERO_ANL_RUNS: ""
