@@ -20,25 +20,28 @@ DATA=${DATA:-$pwd}
 
 # at ensemble resolution
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
-export APRUN_CHGRES="mpiexec -l -n 12 -ppn 12 --cpu-bind core"
+export APRUN_CHGRES="mpiexec -l -n ${ntasks} -ppn ${tasks_per_node} --cpu-bind depth --depth 1"
 ##############################################################
-#copy input data to DATA directory
-# Ensure $DATA/gen_control_ic directory exists
-# Forcefully create $DATA/gen_control_ic directory
-if [ -d "$DATA/gen_control_ic" ]; then
-    echo "Directory $DATA/gen_control_ic already exists. Removing it..."
-    rm -rf "$DATA/gen_control_ic"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to remove existing directory $DATA/gen_control_ic"
-        exit 1
-    fi
-fi
+DESTINATION_DIR="$DATA/gen_control_ic"
+SFC_DESTINATION_DIR="$DESTINATION_DIR/sfc"
+MOSAIC_DESTINATION_FILE="$DESTINATION_DIR/C96_mosaic.nc"
+ATM_FILE="gfs.t00z.atmf000.nc"
+SFC_FILE="gfs.t00z.sfcf000.nc"
+HYBLEV_FILE="$DESTINATION_DIR/global_hyblev.l64.txt"
+SOURCE_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
+SFC_SOURCE_DIR="$SOURCE_DIR/sfc"
+FIX_SOURCE_DIR="$SOURCE_DIR/C96"
 
+# Remove existing $DATA/gen_control_ic
+rm -rf "$DESTINATION_DIR"
+
+# Create directory $DATA/gen_control_ic
 echo "Creating directory: $DATA/gen_control_ic"
-mkdir -p "$DATA/gen_control_ic"
-mkdir -p "$DATA/gen_control_ic/sfc"
+mkdir -p "$DESTINATION_DIR"
+
+# Check if the directory creation failed
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to create directory $DATA/gen_control_ic"
+    echo "Error: Failed to create directory $DESTINATION_DIR"
     exit 1
 fi
 
@@ -47,54 +50,47 @@ copy_file() {
     local src=$1
     local dest=$2
     echo "Copying $src to $dest"
-    cp -f "$src" "$dest"
+    cp -rf "$src" "$dest"
     if [ $? -ne 0 ]; then
         echo "Error: Failed to copy $src to $dest"
         exit 1
     fi
 }
-GEN_CONTROL_IC_DIR="$DATA/gen_control_ic"
-GEN_CONTROL_IC_SFC_DIR="$GEN_CONTROL_IC_DIR/sfc"
-GEN_CONTROL_IC_MOSAIC_DIR="$GEN_CONTROL_IC_DIR/C96_mosaic.nc"
+
+# Ensure the source directory exists
+if [ ! -d "$FIX_SOURCE_DIR" ]; then
+    echo "Error: Source directory $FIX_SOURCE_DIR does not exist."
+    exit 1
+fi
+
+# Copy all contents (including subdirectories) to $GEN_CONTROL_IC_DIR
+echo "Copying all contents from $FIX_SOURCE_DIR to $DESTINATION_DIR..."
+copy_file "$FIX_SOURCE_DIR" "$DESTINATION_DIR"
+
+echo "All contents from $FIX_SOURCE_DIR copied successfully to $DESTINATION_DIR."
+
+copy_file "$UTILSufs/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" "$DESTINATION_DIR"
+copy_file "$UTILSufs/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "$DESTINATION_DIR"
+copy_file "$UTILSufs/UFS_UTILS.git/fix/am/global_hyblev.l64.txt" "$DESTINATION_DIR"
+
 ATM_FILE="gfs.t00z.atmf000.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
-HYBLEV_FILE="$GEN_CONTROL_IC_DIR/global_hyblev.l64.txt"
-# Copy required files to $DATA/gen_control_ic
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96_mosaic.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96.mx100_oro_data.tile1.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96.mx100_oro_data.tile2.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96.mx100_oro_data.tile3.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96.mx100_oro_data.tile4.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96.mx100_oro_data.tile5.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96.mx100_oro_data.tile6.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96_grid.tile1.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96_grid.tile2.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96_grid.tile3.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96_grid.tile4.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96_grid.tile5.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/reg_tests/chgres_cube/fix/C96/C96_grid.tile6.nc" "$GEN_CONTROL_IC_DIR"
-copy_file "$UTILSufs/UFS_UTILS.git/fix/am/global_hyblev.l64.txt" "$GEN_CONTROL_IC_DIR"
-SOURCE_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96/sfc"
-for file in "$SOURCE_DIR"/*; do
-    copy_file "$file" "$GEN_CONTROL_IC_SFC_DIR"
-done
+HYBLEV_FILE="$DESTINATION_DIR/global_hyblev.l64.txt"
 
 echo "All files copied successfully."
 
 # If analysis increment is written by GSI, regrid forecasts to increment resolution
 cat << EOF > ./fort.41
 &config
-mosaic_file_target_grid="$GEN_CONTROL_IC_MOSAIC_DIR"
-fix_dir_target_grid="$GEN_CONTROL_IC_SFC_DIR"
-orog_dir_target_grid="$GEN_CONTROL_IC_DIR"
+mosaic_file_target_grid="$MOSAIC_DESTINATION_FILE"
+fix_dir_target_grid="$SFC_DESTINATION_DIR"
+orog_dir_target_grid="$DESTINATION_DIR"
 orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
 vcoord_file_target_grid="$HYBLEV_FILE"
 mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
 orog_files_input_grid="NULL"
-data_dir_input_grid="$GEN_CONTROL_IC_DIR"
+data_dir_input_grid="$DESTINATION_DIR"
 atm_files_input_grid=$ATM_FILE
 atm_core_files_input_grid="NULL"
 atm_tracer_files_input_grid="NULL"
