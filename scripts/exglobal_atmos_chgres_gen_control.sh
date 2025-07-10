@@ -36,10 +36,7 @@ echo "Creating directory: ${DESTINATION_DIR}"
 mkdir -p "${DESTINATION_DIR}"
 
 # Check if the directory creation failed
-if [[ $? -ne 0 ]]; then
-    echo "Error: Failed to create directory ${DESTINATION_DIR}"
-    exit 1
-fi
+mycmd "Failed to create directory ${DESTINATION_DIR}"
 
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -53,10 +50,7 @@ copy_file() {
     local dest=$2
     echo "Copying ${src} to ${dest}"
     cp -rf "${src}" "${dest}"
-    if [[ $? -ne 0 ]]; then
-        echo "Error: Failed to copy ${src} to ${dest}"
-        exit 1
-    fi
+    mycmd "Failed to copy ${src} to ${dest}"
 }
 
 # Copy all contents (including subdirectories) to $DESTINATION_DIR
@@ -121,5 +115,5 @@ wam_cold_start=.false.
 /
 EOF
 
-${APRUN_CHGRES} ${CHGRESEXEC} ${REDOUT}${PGMOUT} ${REDERR}${PGMERR}
+"${APRUN_CHGRES}" "${CHGRESEXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 exit "${err}"
