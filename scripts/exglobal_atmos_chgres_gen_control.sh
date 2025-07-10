@@ -29,7 +29,7 @@ HYBLEV_FILE="$DESTINATION_DIR/global_hyblev.l64.txt"
 SOURCE_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/fix/C96"
 
 # Remove existing $DATA/gen_control_ic
-sudo rm -rf "$DESTINATION_DIR"
+rm -rf "$DESTINATION_DIR"
 
 # Create directory $DATA/gen_control_ic
 echo "Creating directory: $DESTINATION_DIR"
