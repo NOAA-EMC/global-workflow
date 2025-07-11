@@ -33,7 +33,7 @@ enkf_grp:
         {% endif %}
         {% endif %}
         
-        # soil DA increments  #TODO: update this when JEDISOILDA becomes available
+        # soil DA increments  
         {% if DO_GSISOILDA %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}sfci006.nc"
         {% endif %}
