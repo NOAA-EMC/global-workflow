@@ -2,15 +2,15 @@
 # This file is to ensure that new development gets reviewed by the appropriate SME
 
 # global-workflow default owners (not a complete list)
-@KateFriedman-NOAA
 @DavidHuber-NOAA
+@aerorahul
 
 # Specific directory owners
 # dev/
-dev/jobs/ @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
-dev/ush/ @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
-dev/workflow/ @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
-dev/test/ @DavidHuber-NOAA @KateFriedman-NOAA @aerorahul
+dev/jobs/ @DavidHuber-NOAA @aerorahul
+dev/ush/ @DavidHuber-NOAA @aerorahul
+dev/workflow/ @DavidHuber-NOAA @aerorahul
+dev/test/ @DavidHuber-NOAA @aerorahul
 dev/ci/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
 dev/ctests/ @TerrenceMcGuinness-NOAA @aerorahul
 
@@ -26,8 +26,8 @@ dev/workflow/build_compute.py @DavidHuber-NOAA @aerorahul
 dev/workflow/build_*opts.yaml @DavidHuber-NOAA @aerorahul
 
 # build scripts
-sorc/build_*.sh @DavidHuber-NOAA @aerorahul @KateFriedman-NOAA
-sorc/link_workflow.sh @DavidHuber-NOAA @aerorahul @KateFriedman-NOAA
+sorc/build_*.sh @DavidHuber-NOAA @aerorahul
+sorc/link_workflow.sh @DavidHuber-NOAA @aerorahul
 
 # jobs
 jobs/JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX @CoryMartin-NOAA
@@ -58,7 +58,7 @@ jobs/JGLOBAL_*ARCH* @DavidHuber-NOAA
 jobs/JGLOBAL_ATMENS_ANALYSIS_* @RussTreadon-NOAA @CoryMartin-NOAA @DavidNew-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS @RussTreadon-NOAA @CatherineThomas-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS_CALC @RussTreadon-NOAA @CatherineThomas-NOAA @CoryMartin-NOAA
-jobs/JGLOBAL_ATMOS_PREP_SFC @GeorgeGayno-NOAA @KateFriedman-NOAA
+jobs/JGLOBAL_ATMOS_PREP_SFC @GeorgeGayno-NOAA
 jobs/JGLOBAL_ATMOS_ENSSTAT
 jobs/JGLOBAL_ATMOS_POST_MANAGER
 jobs/JGLOBAL_ATMOS_PRODUCTS @WenMeng-NOAA
@@ -67,7 +67,7 @@ jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
 jobs/JGLOBAL_ATMOS_UPP @WenMeng-NOAA
 jobs/JGLOBAL_ATMOS_VMINMON @EdwardSafford-NOAA
 jobs/JGLOBAL_ATM_* @RussTreadon-NOAA @DavidNew-NOAA @CoryMartin-NOAA
-jobs/JGLOBAL_CLEANUP @DavidHuber-NOAA @KateFriedman-NOAA
+jobs/JGLOBAL_CLEANUP @DavidHuber-NOAA
 jobs/JGLOBAL_EXTRACTVARS @EricSinsky-NOAA
 jobs/JGLOBAL_FORECAST @aerorahul
 jobs/JGLOBAL_MARINE_* @guillaumevernieres @AndrewEichmann-NOAA
@@ -77,7 +77,7 @@ jobs/JGLOBAL_PREP_EMISSIONS @bbakernoaa
 jobs/JGLOBAL_PREP_OBS_AERO @CoryMartin-NOAA
 jobs/JGLOBAL_PREP_OCEAN_OBS @guillaumevernieres @AndrewEichmann-NOAA
 jobs/JGLOBAL_*SNOW* @jiaruidong2017
-jobs/JGLOBAL_STAGE_IC @KateFriedman-NOAA
+jobs/JGLOBAL_STAGE_IC @DavidHuber-NOAA @aerorahul
 jobs/JGLOBAL_WAVE_* @JessicaMeixner-NOAA @sbanihash
 
 # scripts
@@ -133,10 +133,10 @@ scripts/exglobal_oceanice_products.py @GwenChen-NOAA @AminIlia-NOAA @Christopher
 scripts/exglobal_offline_atmos_analysis.py @CoryMartin-NOAA
 scripts/exglobal_prep_emissions.py @bbakernoaa
 scripts/exglobal_prep_obs_aero.py @CoryMartin-NOAA
-scripts/exglobal_prep_sfc.sh @GeorgeGayno-NOAA @KateFriedman-NOAA
+scripts/exglobal_prep_sfc.sh @GeorgeGayno-NOAA
 scripts/exglobal_prep_snow_obs.py @jiaruidong2017
 scripts/exglobal_snow_analysis.py @jiaruidong2017
-scripts/exglobal_stage_ic.py @KateFriedman-NOAA
+scripts/exglobal_stage_ic.py @DavidHuber-NOAA @aerorahul
 
 # ush
 ush/WAM_XML_to_ASCII.pl
@@ -153,8 +153,8 @@ ush/forecast_postdet.sh @aerorahul
 ush/forecast_predet.sh @aerorahul
 ush/fv3gfs_remap_weights.sh
 ush/gaussian_sfcanl.sh @GeorgeGayno-NOAA
-ush/getdump.sh @KateFriedman-NOAA
-ush/getges.sh @KateFriedman-NOAA
+ush/getdump.sh @DavidHuber-NOAA @aerorahul 
+ush/getges.sh @DavidHuber-NOAA @aerorahul 
 ush/getgfsnctime @CoryMartin-NOAA
 ush/getncdimlen @CoryMartin-NOAA
 ush/gfs_bfr2gpk.sh @BoCui-NOAA
@@ -185,8 +185,8 @@ ush/parsing_namelists_MOM6.sh @aerorahul @junwang-noaa @jiandewang
 ush/parsing_namelists_WW3.sh @aerorahul @JessicaMeixner-NOAA @sbanihash
 ush/parsing_ufs_configure.sh @aerorahul @junwang-noaa
 ush/preamble.sh
-ush/prep_sfc_ice_blend.sh @GeorgeGayno-NOAA @KateFriedman-NOAA
-ush/prep_sfc_snow.sh @GeorgeGayno-NOAA @KateFriedman-NOAA
+ush/prep_sfc_ice_blend.sh @GeorgeGayno-NOAA
+ush/prep_sfc_snow.sh @GeorgeGayno-NOAA
 ush/product_functions.sh @aerorahul
 ush/radmon_*.sh @EdwardSafford-NOAA
 ush/rstprod.sh @DavidHuber-NOAA
@@ -220,7 +220,7 @@ ush/python/pygfs/task/oceanice_products.py @aerorahul @GwenChen-NOAA @AminIlia-N
 ush/python/pygfs/task/offline_analysis.py @CoryMartin-NOAA
 ush/python/pygfs/task/snow_analysis.py @jiaruidong2017
 ush/python/pygfs/task/snowens_analysis.py @jiaruidong2017
-ush/python/pygfs/task/stage_ic.py @KateFriedman-NOAA
+ush/python/pygfs/task/stage_ic.py @DavidHuber-NOAA @aerorahul
 ush/python/pygfs/task/upp.py @aerorahul @WenMeng-NOAA
 ush/python/pygfs/ufswm/__init__.py @aerorahul
 ush/python/pygfs/ufswm/gfs.py @aerorahul
