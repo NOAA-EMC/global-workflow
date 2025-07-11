@@ -11,9 +11,9 @@
 
 set -x
 
-gwhome=/contrib/Wei.Huang/src/global-workflow-cloud
-img=/contrib/Wei.Huang/src/gw-container-spack-stack-1.6.0/ubuntu22.04-intel-ufs-env-v1.6.0.img
-cmd=${gwhome}/sorc/com.sh
+container=/scratch4/NAGAPE/epic/${USER}/demo/ubuntu22.04-intel-ufs-env-v1.6.0.img
+bindings="-B /scratch3 -B /scratch4 -B /home/${USER}"
 
-singularity exec -B /contrib -B /lustre ${img} ${cmd}
+singularity exec ${bindings} ${container} \
+	/scratch4/NAGAPE/epic/Wei.Huang/src/global-workflow-cloud/dev/container/compile-gw-in-container.sh
 

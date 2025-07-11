@@ -5,14 +5,18 @@
 HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
+#type=pr
 #yamllist="C48_ATM"
-yamllist="C48_S2SW"
+#yamllist="C48_S2SW"
 #yamllist="C48_S2SWA_gefs"
+
+type=hires
+yamllist="C768_S2SW"
 
 HOMEDIR=${HOMEgfs}
 if [[ ${MACHINE_ID} = ursa* ]] ; then
    container=/scratch4/NAGAPE/epic/${USER}/demo/ubuntu22.04-intel-ufs-env-v1.6.0.img
-   rundir=/scratch4/NAGAPE/epic/${USER}/run
+   rundir=/scratch3/NAGAPE/epic/${USER}/run
    bindings="-B /scratch3 -B /scratch4"
    HPC_ACCOUNT=epic
 elif [[ ${MACHINE_ID} = gaea* ]] ; then
@@ -44,7 +48,7 @@ fi
 	./generate_workflows.sh \
 	-H ${HOMEDIR} \
 	-y ${yamllist} \
-	-Y ${HOMEDIR}/dev/ci/cases/pr \
+	-Y ${HOMEDIR}/dev/ci/cases/${type} \
 	-A ${HPC_ACCOUNT} \
 	-e "Wei.Huang@noaa.gov" \
 	-r ${rocotocmd} \
