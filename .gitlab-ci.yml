@@ -128,8 +128,9 @@ include:
         echo "Build failed with exit code ${build_status}"
         ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} --add-label "CI-${machine^}-Failed" --remove-label "CI-${machine^}-Building"
         exit 1
+      elif [[ ${GFS_CI_RUN_TYPE} == "pr_cases" && ${PR_NUMBER} != 0 ]]; then
+        ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} --add-label "CI-${machine^}-Running" --remove-label "CI-${machine^}-Building"
       fi
 
       sorc/link_workflow.sh
       mkdir -p ${RUNTESTS_DIR}
-      ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} --add-label "CI-${machine^}-Running" --remove-label "CI-${machine^}-Building"
