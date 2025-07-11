@@ -35,11 +35,9 @@ export WGRIB2=wgrib2
 module list
 unset MACHINE_ID
 
-# Set up the PYTHONPATH for wxflow if it is not already loaded
-if ! python -c "import wxflow" 2>/dev/null; then
-  if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
-    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
-  fi
+# Set up the PYTHONPATH to include wxflow from HOMEgfs
+if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
+  PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 fi
 
 # Add HOMEgfs/ush/python to PYTHONPATH
