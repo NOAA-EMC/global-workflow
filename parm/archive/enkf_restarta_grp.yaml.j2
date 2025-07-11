@@ -53,7 +53,7 @@ enkf_restarta_grp:
         {% endif %}
         {% endfor %}  # iaufhr in IAUFHRS
         
-        # soil DA increments  #TODO: update this when JEDISOILDA becomes available
+        # soil DA increments  
         {% if DO_GSISOILDA %}
         {% for iaufhr in IAUFHRS %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}sfci{{ '%03d' % iaufhr }}.nc"
