@@ -388,16 +388,16 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run].append('efcs') if 'gdas' in run else 0
                     task_names[run].append('epos') if 'gdas' in run else 0
 
+                else:
+                    task_names[run] += ['eobs', 'eupd', 'ecen']
+                    task_names[run].append('echgres') if 'gdas' in run else 0
+                    task_names[run] += ['ediag']
+
                 if options['do_jediocnvar']:
                     if options['do_letkf_ocn']:
                         task_names[run] += ['marineanlletkf']
                     if options['do_hybvar']:
                         task_names[run] += ['ocnanalecen']
-
-                else:
-                    task_names[run] += ['eobs', 'eupd', 'ecen']
-                    task_names[run].append('echgres') if 'gdas' in run else 0
-                    task_names[run] += ['ediag']
 
                 task_names[run].append('esnowanl') if options['do_jedisnowda'] else 0
                 task_names[run].append('efcs') if 'gdas' in run else 0

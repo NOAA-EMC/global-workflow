@@ -102,7 +102,8 @@ class MarineLETKF(Analysis):
                 'ROTDIR',
                 'RUN',
                 'WINDOW_BEGIN',
-                'WINDOW_MIDDLE']
+                'WINDOW_MIDDLE',
+                'DATAens']
         for key in keys:
             stageconfig[key] = self.task_config[key]
 

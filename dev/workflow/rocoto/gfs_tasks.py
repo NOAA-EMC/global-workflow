@@ -705,9 +705,9 @@ class GFSTasks(Tasks):
     def marineanlletkf(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_prepoceanobs'}
+        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_prepoceanobs"}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_marinebmat'}
+        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_marinebmat"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -838,7 +838,7 @@ class GFSTasks(Tasks):
 
         # can run in parallel with marinebmat
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_marinebmatinit'}
+        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_marinebmatinit"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 

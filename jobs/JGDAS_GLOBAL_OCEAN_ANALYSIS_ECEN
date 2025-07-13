@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATAjob="${DATAROOT//enkf/}/${RUN//enkf/}marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/${jobid}"
 export DATAens="${DATAjob}/ensdata"
 
