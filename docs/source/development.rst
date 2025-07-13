@@ -10,8 +10,8 @@ This section is devoted to developers who wish to contribute to the Global Workf
 Code managers
 =============
 
- * Kate Friedman - @KateFriedman-NOAA / kate.friedman@noaa.gov
  * David Huber - @DavidHuber-NOAA / david.huber@noaa.gov
+ * Rahul Mahajan - @aerorahul / rahul.mahajan@noaa.gov
 
 .. _development:
 
