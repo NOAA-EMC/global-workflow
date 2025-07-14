@@ -48,7 +48,7 @@ export RSHPDY="${PDY:4:}${PDY:2:2}"
 cpreq "${HOMEgfs}/gempak/dictionaries/sonde.land.tbl" sonde.land.tbl
 cpreq "${HOMEgfs}/gempak/dictionaries/metar.tbl" metar.tbl
 sort -k 2n,2 metar.tbl > metar_stnm.tbl
-cpreq "${COMIN_OBS}/${model}.${cycle}.adpupa.tm00.bufr_d" fort.40
+cpreq "${COMIN_OBS}/${RUN}.${cycle}.adpupa.tm00.bufr_d" fort.40
 
 "${HOMEgfs}/exec/rdbfmsua.x" >> "${pgmout}" 2> errfile
 export err=$?
@@ -63,10 +63,10 @@ export filesize=$( ls -l rdbfmsua.out | awk '{print $5}' )
 #   only run script if rdbfmsua.out contained upper air data.
 ################################################################
 
-if [[ ${filesize} -gt 40 ]]; then
+if [[ "${filesize}" -gt 40 ]]; then
     cpfs rdbfmsua.out "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperair"
     cpfs sonde.idsms.tbl "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperairtble"
-    if [[ ${SENDDBN} = "YES" ]]; then
+    if [[ "${SENDDBN}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" DATA MSUPPER_AIR "${job}" "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperair"
         "${DBNROOT}/bin/dbn_alert" DATA MSUPPER_AIRTBL "${job}" "${COMOUT_ATMOS_GEMPAK_UPPER_AIR}/${RUN}.${cycle}.msupperairtble"
     fi
