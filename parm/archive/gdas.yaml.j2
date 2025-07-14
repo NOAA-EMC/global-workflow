@@ -27,9 +27,6 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlvar.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlfinal.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlchkpt.log"
-                {% if DOHYBVAR_OCN %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_ocnanalecen.log"
-                {% endif %}
             {% endif %}
             {% if DO_AERO_ANL %}
         - "logs/{{ cycle_YMDH }}/gdas_aeroanlgenb.log"

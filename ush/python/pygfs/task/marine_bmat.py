@@ -114,6 +114,7 @@ class MarineBMat(Task):
 
         # stage backgrounds
         # TODO(G): Check ocean backgrounds dates for consistency
+        logger.info(f"Staging SOCA backgrounds")
         bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
@@ -142,14 +143,12 @@ class MarineBMat(Task):
         # stage ensemble members for the hybrid background error
         if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
             logger.debug(f"Stage ensemble members for the hybrid background error")
-            mdau.stage_ens_mem(self.task_config)
+            letkf_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, self.task_config)
+            FileHandler(letkf_stage_list).sync()
 
         # create the symbolic link to the static B-matrix directory
-        link_target = os.path.join(self.task_config.DATAstaticb)
-        link_name = os.path.join(self.task_config.DATA, 'staticb')
-        if os.path.exists(link_name):
-            os.remove(link_name)
-        os.symlink(link_target, link_name)
+        FileHandler({'link': [[self.task_config.DATAstaticb, 
+                               os.path.join(self.task_config.DATA, 'staticb')]]}).sync()
 
     @logit(logger)
     def execute(self) -> None:

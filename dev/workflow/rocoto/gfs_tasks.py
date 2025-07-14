@@ -865,7 +865,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
-            dep_dict = {'type': 'task', 'name': f'enkf{self.run}_ocnanalecen'}
+            dep_dict = {'type': 'task', 'name': f"enkf{self.run}_ocnanalecen"}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_mergensst']:
             data = f'&ROTDIR;/{self.run}.@Y@m@d/@H/atmos/{self.run}.t@Hz.sfcanl.nc'
@@ -2792,7 +2792,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
-            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_ocnanalecen'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_ocnanalecen'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
@@ -2976,7 +2976,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
             deps.append(rocoto.add_dependency(dep_dict))
             if self._base.get('DOHYBVAR_OCN', True):
-                dep_dict = {'type': 'task', 'name': f'gfs_ocnanalecen'}
+                dep_dict = {'type': 'task', 'name': f'enkfgfs_ocnanalecen'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'task', 'name': f'gfs_marineanlfinal'}
                 deps.append(rocoto.add_dependency(dep_dict))
