@@ -145,7 +145,7 @@ class MarineBMat(Task):
             FileHandler(letkf_stage_list).sync()
 
         # create the symbolic link to the static B-matrix directory
-        FileHandler({'link': [[self.task_config.DATAstaticb, 
+        FileHandler({'link': [[self.task_config.DATAstaticb,
                                os.path.join(self.task_config.DATA, 'staticb')]]}).sync()
 
     @logit(logger)
