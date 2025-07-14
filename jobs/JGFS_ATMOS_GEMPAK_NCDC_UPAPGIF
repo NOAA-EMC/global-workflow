@@ -19,10 +19,6 @@ fi
 export finc=6
 export fstart=00
 
-###################################
-# Specify NET and RUN Name and model
-####################################
-export model=${model:-gfs}
 export COMPONENT="atmos"
 
 ##############################################
@@ -41,9 +37,6 @@ done
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_WMO:COM_ATMOS_WMO_TMPL
 if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then mkdir -m 775 -p "${COMOUT_ATMOS_WMO}"; fi
-
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 export pgmout=OUTPUT.$$
 
