@@ -20,63 +20,66 @@
 # Standard Cases configurations by host
 # =======================================
 
+# Template matrices for case lists
+.hera_cases_matrix: &hera_cases
+  - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
+
+.gaeac6_cases_matrix: &gaeac6_cases
+  - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
+
 # Host: Hera - Standard Cases
 setup_experiments-hera:
-  extends: .setup_template
+  extends: .setup_experiment_template
   variables:
     machine: hera
   tags:
       - hera
   parallel:
-    matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
+    matrix: *hera_cases
   needs:
     - build-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
-run_tests-hera:
-  extends: .run_tests_template
+run_experiments-hera:
+  extends: .run_experiments_template
   variables:
     machine: hera
   tags:
     - hera
   parallel:
-    matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
+    matrix: *hera_cases
   needs:
     - setup_experiments-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
 # Host: GAEAC6 - Standard Cases
 setup_experiments-gaeac6:
-  extends: .setup_template
+  extends: .setup_experiment_template
   variables:
     machine: gaeac6
   tags:
     - gaeac6
   parallel:
-    matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
+    matrix: *gaeac6_cases
   needs:
     - build-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
-run_tests-gaeac6:
-  extends: .run_tests_template
+run_experiments-gaeac6:
+  extends: .run_experiments_template
   variables:
     machine: gaeac6
   tags:
     - gaeac6
   parallel:
-    matrix:
-      - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
+    matrix: *gaeac6_cases
   needs:
     - setup_experiments-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 # Host: Hera - Finalize
 finalize-hera:
@@ -86,12 +89,9 @@ finalize-hera:
   tags:
     - hera
   needs:
-    - run_tests-hera
+    - run_experiments-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: on_success  # Explicitly set to run only if all upstream jobs succeed
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: never
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
 # Host: Gaea C6 - Finalize
 finalize-gaeac6:
@@ -101,12 +101,9 @@ finalize-gaeac6:
   tags:
     - gaeac6
   needs:
-    - run_tests-gaeac6
+    - run_experiments-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: on_success  # Explicitly set to run only if all upstream jobs succeed
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: never
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 # =======================================
 # CTests configurations by host
@@ -121,9 +118,9 @@ finalize-gaeac6:
       - CTEST_NAME: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0']
 
 # Host-specific CTest setup jobs
-create_ctests-hera:
-  extends: .create_ctests
-  stage: create_experiments
+setup_ctests-hera:
+  extends: .setup_ctests_template
+  stage: setup_tests
   tags:
     - hera
   variables:
@@ -131,11 +128,11 @@ create_ctests-hera:
   needs:
     - build-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
-create_ctests-gaeac6:
-  extends: .create_ctests
-  stage: create_experiments
+setup_ctests-gaeac6:
+  extends: .setup_ctests_template
+  stage: setup_tests 
   tags:
     - gaeac6
   variables:
@@ -143,7 +140,7 @@ create_ctests-gaeac6:
   needs:
     - build-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 # Host: Hera - CTests
 run_ctests-hera:
@@ -151,9 +148,9 @@ run_ctests-hera:
   tags:
     - hera
   needs:
-    - create_ctests-hera
+    - setup_ctests-hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
 # Host: GAEAC6 - CTests
 run_ctests-gaeac6:
@@ -161,9 +158,9 @@ run_ctests-gaeac6:
   tags:
     - gaeac6
   needs:
-    - create_ctests-gaeac6
+    - setup_ctests-gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
 # =======================================
 # Common build configurations by host
@@ -177,8 +174,7 @@ build-hera:
   tags:
     - hera
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $RUN_ON_MACHINES =~ /\bhera\b|^all$/i
+    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
     - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
 
 build-gaeac6:
@@ -188,6 +184,5 @@ build-gaeac6:
   tags:
     - gaeac6
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $RUN_ON_MACHINES =~ /\bgaeac6\b|^all$/i
+    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
     - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)

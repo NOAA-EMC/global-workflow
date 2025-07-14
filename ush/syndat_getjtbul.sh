@@ -34,11 +34,9 @@ echo " " >> $pgmout
    exit
 fi
 
-CDATE10=$1
+run_date=$1
 
-ymd=$(echo $CDATE10 | cut -c3-8)
-pdy=$(echo $CDATE10 | cut -c1-8)
-hour=$(echo $CDATE10 | cut -c9-10)
+ymd=${run_date:2:6}
 
 echo $PDYm1
 pdym1=$PDYm1
@@ -49,38 +47,36 @@ echo "Entering sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
 echo " " >> $pgmout
 
 
-if test $hour -eq "00"
+if test ${cyc} -eq "00"
 then
 
 # For 00Z cycle, need to go to prior day's tank
 # ---------------------------------------------
 
-   ymddir=$pdy
-   jtwcdir=$TANK_TROPCY/$pdy/wtxtbul
+   jtwcdir=$TANK_TROPCY/${PDY}/wtxtbul
    jtwcdirm1=$TANK_TROPCY/$pdym1/wtxtbul
 else
-   ymddir=$pdy
-   jtwcdir=$TANK_TROPCY/$pdy/wtxtbul
+   jtwcdir=$TANK_TROPCY/${PDY}/wtxtbul
 fi
 
 
 set +x
 echo
-echo "  Run date is $CDATE10"
+echo "  Run date is ${run_date}"
 echo
-echo "  pdy is      $pdy"
+echo "  PDY is      ${PDY}"
 echo
 echo "  pdym1 is    $pdym1"
 echo
-echo "  ymddir is   $ymddir"
+echo "  ymddir is   ${PDY}"
 echo
 set_trace
 
-find=$ymd" "$hour
+find=$ymd" "${cyc}
 echo "looking for string  $find  in $jtwcdir/tropcyc" >> $pgmout
 
 rm -f jtwcbul
-grep "$ymd $hour" $jtwcdir/tropcyc | grep JTWC > jtwcbul
+grep "$ymd ${cyc}" $jtwcdir/tropcyc | grep JTWC > jtwcbul
 if [ -s jtwcbul ]; then
    echo "String found: contents of JTWC bulletin are:" >> $pgmout
    cat jtwcbul >> $pgmout
@@ -88,9 +84,9 @@ else
    echo "String not found: no JTWC bulletins available for this run" >> $pgmout
 fi
 
-if test $hour -eq "00"
+if test ${cyc} -eq "00"
 then
-   grep "$ymd $hour" $jtwcdirm1/tropcyc | grep JTWC >> jtwcbul
+   grep "$ymd ${cyc}" $jtwcdirm1/tropcyc | grep JTWC >> jtwcbul
    if [ -s jtwcbul ]; then
       echo "String found: contents of JTWC bulletin are:" >> $pgmout
       cat jtwcbul >> $pgmout
@@ -140,23 +136,23 @@ set_trace
 if [ "$errget" -gt '0' ];then
    if [ "$errget" -eq '1' ];then
       msg="No JTWC bulletins in $jtwcdir/tropcyc, no JTWC tcvitals \
-available for qctropcy for $CDATE10"
-      if [ "$RUN" = 'gfs' ]; then
-        if [ "$SENDSDM" = 'YES' ]; then
+available for qctropcy for ${run_date}"
+      if [[ "$RUN" == "gfs" ]]; then
+        if [[ "${SENDSDM}" == "YES" ]]; then
          export ecf_family=$(echo $ECF_NAME |awk 'BEGIN {FS="/j"} {print $1}')
          echo $msg > $COMOUT/${NET}_${RUN}.t${cyc}z.emailbody
-         echo "export subject='No JTWC bulletins available for $CDATE10 $RUN run'" >$COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
+         echo "export subject='No JTWC bulletins available for ${run_date} ${RUN} run'" >$COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
          # JY echo "export maillist='sdm@noaa.gov'" >> $COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
          echo "export maillist=$maillist" >> $COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
          ecflow_client --run ${ecf_family}/j${RUN}_jtwc_bull_email
         fi
       fi
    else
-      echo "**NON-FATAL ERROR PROGRAM  SYNDAT_GETJTBUL  FOR $CDATE10 \
+      echo "**NON-FATAL ERROR PROGRAM  SYNDAT_GETJTBUL  FOR ${run_date} \
 RETURN CODE $errget"
    fi
 else
-   echo "program  SYNDAT_GETJTBUL  completed normally for $CDATE10, JTWC \
+   echo "program  SYNDAT_GETJTBUL  completed normally for ${run_date}, JTWC \
 rec. passed to qctropcy"
 fi
 set +x

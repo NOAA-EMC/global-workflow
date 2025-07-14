@@ -4,7 +4,8 @@ labels: ["production update", "triage"]
 type: "feature"
 projects: ["NOAA-EMC/41"]
 assignees:
-  - KateFriedman-NOAA
+  - DavidHuber-NOAA
+  - aerorahul
 
 body:
   - type: textarea

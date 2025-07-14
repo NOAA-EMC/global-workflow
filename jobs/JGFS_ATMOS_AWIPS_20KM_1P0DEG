@@ -4,18 +4,11 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
-###################################
-# Specify NET and RUN Name and model
-####################################
-export model=${model:-gfs}
 export COMPONENT="atmos"
 
 ##############################################
 # Define COM directories
 ##############################################
-export SENDDBN=${SENDDBN:-NO}
-export SENDAWIP=${SENDAWIP:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_WMO:COM_ATMOS_WMO_TMPL

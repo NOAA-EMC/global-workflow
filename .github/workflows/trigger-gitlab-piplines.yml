@@ -1,4 +1,4 @@
-name: Trigger GitLab CTests Pipeline
+name: Trigger GitLab Pipelines
 
 on:
   # Only allow manual triggering by admins/maintainers
@@ -8,6 +8,14 @@ on:
         description: 'PR number to test (use 0 for develop branch)'
         required: true
         type: string
+      pipeline_type:
+        description: 'Pipeline Type'
+        required: true
+        type: choice
+        options:
+          - 'CTests'
+          - 'PR Cases'
+        default: 'CTests'
       hera:
         description: 'Hera'
         type: boolean
@@ -50,6 +58,22 @@ jobs:
           # Set PR number
           echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> ${GITHUB_ENV}
           
+          # Set pipeline type based on selection
+          case "${{ github.event.inputs.pipeline_type }}" in
+            "CTests")
+              PIPELINE_TYPE="ctests"
+              ;;
+            "PR Cases")
+              PIPELINE_TYPE="pr_cases"
+              ;;
+            *)
+              echo "Invalid pipeline type: ${{ github.event.inputs.pipeline_type }}"
+              exit 1
+              ;;
+          esac
+          echo "PIPELINE_TYPE=${PIPELINE_TYPE}" >> ${GITHUB_ENV}
+          echo "Selected pipeline type: ${PIPELINE_TYPE}"
+          
           # ---------------------------------------------------------------
           # Machine Selection Logic
           # This section builds the machine list based on user inputs
@@ -58,7 +82,7 @@ jobs:
           
           # Build machine list from inputs that are set to 'true'
           MACHINES=""
-          INPUTS=$(jq -r 'to_entries[] | select(.key != "pr_number") | "\(.key)=\(.value)"' <<< '${{ toJson(github.event.inputs) }}')
+          INPUTS=$(jq -r 'to_entries[] | select(.key != "pr_number" and .key != "pipeline_type") | "\(.key)=\(.value)"' <<< '${{ toJson(github.event.inputs) }}')
 
           while read -r input; do
             # Skip empty lines
@@ -99,7 +123,7 @@ jobs:
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
             --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
             --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
-            --form "variables[BUILDTYPE]=ctests" \
+            --form "variables[PIPELINE_TYPE]=${{ env.PIPELINE_TYPE }}" \
             ${{ vars.GITLAB_TRIGGER_URL }}
         env:
           GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
