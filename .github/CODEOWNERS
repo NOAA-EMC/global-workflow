@@ -127,6 +127,7 @@ scripts/exglobal_extractvars.sh @EricSinsky-NOAA
 scripts/exglobal_forecast.py @aerorahul
 scripts/exglobal_forecast.sh @aerorahul
 scripts/exglobal_marine_analysis_* @guillaumevernieres @AndrewEichmann-NOAA
+scripts/exglobal_marinebmat_initialize.py @guillaumevernieres @AndrewEichmann-NOAA
 scripts/exglobal_marinebmat.py @guillaumevernieres @AndrewEichmann-NOAA
 scripts/exglobal_oceanice_products.py @GwenChen-NOAA @AminIlia-NOAA @ChristopherHill-NOAA
 scripts/exglobal_offline_atmos_analysis.py @CoryMartin-NOAA
