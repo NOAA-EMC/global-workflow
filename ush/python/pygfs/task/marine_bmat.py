@@ -219,7 +219,7 @@ class MarineBMat(Task):
         os.rename(os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
                   os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.nc"))
         os.rename(os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
-                  os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc"))      
+                  os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc"))
 
         # Save output files to COM
         logger.info(f"Copy files to ROTDIR")
