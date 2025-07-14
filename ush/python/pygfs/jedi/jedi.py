@@ -171,7 +171,7 @@ class Jedi:
             raise WorkflowKeyError("JCB algorithm not specified")
         jcb_config['algorithm'] = algorithm
 
-        # Generate JEDI YAML config by rendering JCB config dictionary 
+        # Generate JEDI YAML config by rendering JCB config dictionary
         try:
             jedi_input_config = render(jcb_config)
         except Exception as e:
