@@ -5,8 +5,7 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 # echo "----------------------------------------------------"
 # echo "History: Mar 2000 - First implementation of this new script."
-# echo "Sept 2011 - First implementation of this new script based on"
-# echo "               /nwprod/scripts/exnawips.sh.sms"
+# echo "Sept 2011 - First implementation of this new script"
 # echo " March 2020- Modified for GEFSv12.0"
 #  March-2020 Roberto.Padilla@noaa.gov
 #####################################################################

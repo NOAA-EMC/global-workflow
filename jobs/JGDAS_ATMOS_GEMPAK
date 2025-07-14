@@ -2,10 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
-############################################
-# Set up model and cycle specific variables
-############################################
-export model=${model:-gdas}
 export GRIB=${GRIB:-pgrb2f}
 export EXT=""
 export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GDAS_GEMPAK}
