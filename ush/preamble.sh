@@ -151,13 +151,13 @@ function err_exit() {
     fi
 
     # Write to ecflow log:
-    if [[ "${SENDECF}" = "YES" ]]; then
+    if [[ "${SENDECF}" == "YES" ]]; then
       timeout 30 ecflow_client --msg "${ECF_NAME}: ${msg1}"
       timeout 30 ssh "${ECF_HOST}" "echo \"${msg}2\" >> ${ECF_JOBOUT:?}"
     fi
 
     # KILL THE JOB:
-    if [[ "${SENDECF}" = "YES" ]]; then
+    if [[ "${SENDECF}" == "YES" ]]; then
       ecflow_client --kill="${ECF_NAME:?}"
     fi
 

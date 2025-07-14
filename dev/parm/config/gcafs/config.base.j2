@@ -124,7 +124,7 @@ export BASE_ENV="${HOMEgfs}/env"
 export SDATE="{{ SDATE }}"
 export EDATE="{{ EDATE }}"
 export EXP_WARM_START="{{ EXP_WARM_START }}"
-export assim_freq=6
+export assim_freq="{{ assim_freq }}" # Assimilation frequency in hours
 export PSLOT="{{ PSLOT }}"
 export EXPDIR="{{ EXPDIR }}/${PSLOT}"
 export ROTDIR="{{ COMROOT }}/${PSLOT}"
@@ -154,6 +154,7 @@ export SENDSDM=${SENDSDM:-"NO"}
 export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
+export SENDAWIP=${SENDAWIP:-"NO"}
 
 # APP settings
 export APP="{{ APP }}"
@@ -178,7 +179,7 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 DO_AERO="NO"
 export DO_PREP_OBS_AERO="NO"
-aero_anl_runs="gdas gcdas" # When to run aerosol analysis: gdas, gfs, or both
+aero_anl_runs="{{ AERO_ANL_RUNS }}" # When to run aerosol analysis: gcdas, gcafs or both
 export DO_AERO_FCST="YES"
 export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO"
@@ -267,6 +268,7 @@ if [[ "${DO_AERO}" == "YES" ]]; then
     export DO_AERO_ANL="YES"
   fi
   export DO_AERO_FCST="YES"
+  export USE_AERO_ANL="{{ USE_AERO_ANL }}" # Use aerosol analysis in forecast
 fi
 
 # Surface cycle update frequency
@@ -279,11 +281,11 @@ fi
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
-export FHMAX=9
+export FHMAX="{{ FHMAX }}"
 export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
 export FHOUT_OCN=3
 export FHOUT_ICE=3
-export FHOUT_AERO=3
+export FHOUT_AERO="{{ FHOUT_AERO }}"
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
 export EUPD_CYC="{{ EUPD_CYC }}"
@@ -364,6 +366,7 @@ export imp_physics=8
 # DA engine
 export DO_JEDIATMVAR="{{ DO_JEDIATMVAR }}"
 export DO_JEDIATMENS="{{ DO_JEDIATMENS }}"
+export DO_JEDIAEROVAR="{{ DO_JEDIAEROVAR }}"
 export DO_JEDIOCNVAR="{{ DO_JEDIOCNVAR }}"
 export DO_JEDISNOWDA="{{ DO_JEDISNOWDA }}"
 export DO_MERGENSST="{{ DO_MERGENSST }}"
@@ -434,7 +437,11 @@ fi
 
 export restart_interval_enkfgfs=${restart_interval_enkfgdas}
 
-export restart_interval_gdas="3"
+if [[ "${DOIAU}" == "YES" || "${DO_AERO_ANL}" == "YES" ]]; then
+  export restart_interval_gdas="3"
+else
+  export restart_interval_gdas="6"
+fi
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
@@ -495,7 +502,7 @@ if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
    export DO_VMINMON="NO"     # GSI minimization monitoring
    export DO_ANLSTAT="YES"    # JEDI-based analysis statistics
 else
-   if [[ ${DO_AERO} = "YES" || ${DO_JEDIOCNVAR} = "YES" || ${DO_JEDISNOWDA} = "YES " ]]; then
+   if [[ ${DO_AERO_ANL} = "YES" || ${DO_JEDIOCNVAR} = "YES" || ${DO_JEDISNOWDA} = "YES" ]]; then
      export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
    fi
 fi
