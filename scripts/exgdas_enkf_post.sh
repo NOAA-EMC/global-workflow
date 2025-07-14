@@ -23,9 +23,6 @@ pwd=$(pwd)
 APRUN_EPOS=${APRUN_EPOS:-${APRUN:-""}}
 NTHREADS_EPOS=${NTHREADS_EPOS:-1}
 
-# Ops stuff
-SENDDBN=${SENDDBN:-"NO"}
-
 # Fix files
 LEVS=${LEVS:-64}
 HYBENSMOOTH=${HYBENSMOOTH:-${FIXgfs}/gsi/global_hybens_smoothinfo.l${LEVS}.txt}

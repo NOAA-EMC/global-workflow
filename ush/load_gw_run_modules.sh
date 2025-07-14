@@ -58,6 +58,11 @@ module use "${HOMEgfs}/modulefiles"
 case "${MACHINE_ID}" in
   "wcoss2" | "ursa" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
     module load "gw_run.${MACHINE_ID}"
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      echo "FATAL ERROR: Failed to load module_base.${MACHINE_ID}"
+      exit 1
+    fi
     ;;
   *)
     echo "WARNING: UNKNOWN PLATFORM"

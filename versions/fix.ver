@@ -1,7 +1,7 @@
 #!/bin/bash
 # Fix file subfolder versions
 
-export aer_ver=20220805
+export aer_ver=20250529
 export am_ver=20220805
 export chem_ver=20220805
 export cice_ver=20240416
