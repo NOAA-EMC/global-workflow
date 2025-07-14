@@ -17,24 +17,24 @@
 # are referenced by name in the host configuration file's test matrix.
 
 # Template for experiment setup jobs
-.setup_template:
+.setup_experiment_template:
   extends: .base_config
-  stage: create_experiments
+  stage: setup_tests
   script:
     - |
       export RUNTESTS="${RUNTESTS_DIR}"
-      "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${DATE}"
-      exit $?
+      "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${CI_COMMIT_SHORT_SHA}-${CI_PIPELINE_ID}"
+      exit $?                           # This dash delemeter on pslot between the SHA & ID is needed for the parser when recovering the pslot:  ^
   needs:
     - build-${machine}
 
 # Template for test execution jobs
-.run_tests_template:
+.run_experiments_template:
   extends: .base_config
   stage: run_tests
   script:
     - |
-      echo "Using build directory $GW_HOMEgfs (dated $BUILD_DATE)"
+      echo "Using build directory $GW_HOMEgfs (dated $DATE)"
       pslot=$("${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS_DIR}" "${caseName}")
       "${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       error=$?
@@ -56,31 +56,38 @@
   stage: finalize
   script:
     - |
-      echo "Finalizing PR test cases on ${machine} using ${GW_HOMEgfs}"
-      echo "Creating date-based directory: ${WORKSPACE_DATE}"
-      cd "${CI_BUILDS_DIR}"
-      rm -f stable
-      if [ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" ]; then
-        # Rename the WORKSPACE_ID directory to one with the DATE
-        if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]; then
-          echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
-          mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}"
-          echo "Setting softlink to ${WORKSPACE_DATE} as ${CI_BUILDS_DIR}/stable"
-          ln -sf ${WORKSPACE_DATE} stable
-          echo "Successfully created date-based directory and stable symlink"
+      echo "Finalizing test cases on ${machine} using ${GW_HOMEgfs}"
+      # Set GFS_CI_RUN_TYPE to "nightly" in the Gitlab pipeline scheduler
+      if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+        echo "This is a scheduled pipeline, creating date-based directories and symlinks to stable"
+        echo "Creating date-based directory: ${WORKSPACE_DATE}"
+        cd "${CI_BUILDS_DIR}"
+        rm -f stable
+        if [ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" ]; then
+          # Rename the WORKSPACE_ID directory to one with the DATE
+          if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]; then
+            echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
+            mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}"
+            echo "Setting softlink to ${WORKSPACE_DATE} as ${CI_BUILDS_DIR}/stable"
+            ln -sf ${WORKSPACE_DATE} stable
+            echo "Successfully created date-based directory and stable symlink"
+          else
+            echo "WARNING: Source directory ${CI_BUILDS_DIR}/${WORKSPACE_ID} not found"
+            # Create the symlink anyway from original path
+            ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
+          fi
         else
-          echo "WARNING: Source directory ${CI_BUILDS_DIR}/${WORKSPACE_ID} not found"
-          # Create the symlink anyway from original path
-          ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
+          echo "WORKSPACE_ID already includes the date, creating stable symlink"
+          ln -sf ${WORKSPACE_DATE} stable
         fi
+
+        # Clean up old directories from this pipeline type except stable
+        echo "Cleaning up old ${PIPELINE_TYPE} directories except stable"
+        find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" -not -path "$(readlink -f ${CI_BUILDS_DIR}/stable)" -exec rm -rf {} \; 2>/dev/null || true
+        echo "TODO set status badges on GitHub status here"
       else
-        echo "WORKSPACE_ID already includes the date, creating stable symlink"
-        ln -sf ${WORKSPACE_DATE} stable
+        echo "Skipping directory rename and cleanup for non-scheduled pipeline."
+        echo "TODO set GitHub status labels here"
       fi
-
-      # Clean up old nightly directories except the one linked to stable
-      echo "Cleaning up old nightly directories except stable"
-      find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "nightly*" -not -path "$(readlink -f ${CI_BUILDS_DIR}/stable)" -exec rm -rf {} \; 2>/dev/null || true
-
   needs:
-    - run_tests-${machine}
+    - run_experiments-${machine}
