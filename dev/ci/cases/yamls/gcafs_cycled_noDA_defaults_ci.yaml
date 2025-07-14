@@ -2,4 +2,5 @@ defaults:
   !INC {{ HOMEgfs }}/dev/parm/config/gcafs/yaml/defaults.yaml
 base:
   DO_TEST_MODE: "NO"
-  AERO_ANL_RUNS: "gcdas"
+  USE_AERO_ANL: "NO"
+  AERO_ANL_RUNS: ""

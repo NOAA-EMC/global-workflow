@@ -162,6 +162,7 @@ ush/gfs_bufr.sh @BoCui-NOAA
 ush/gfs_bufr_netcdf.sh @BoCui-NOAA
 ush/gfs_sndp.sh @BoCui-NOAA
 ush/gfs_truncate_enkf.sh @CoryMartin-NOAA
+ush/global_cycle.sh @GeorgeGayno-NOAA
 ush/global_savefits.sh
 ush/gsi_utils.py @CoryMartin-NOAA
 ush/interp_atmos_master.sh @aerorahul @WenMeng-NOAA

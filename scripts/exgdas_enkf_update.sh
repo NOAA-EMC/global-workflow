@@ -35,9 +35,6 @@ NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 # Executables
 ENKFEXEC=${ENKFEXEC:-${EXECgfs}/enkf.x}
 
-# Cycling and forecast hour specific parameters
-CDATE=${CDATE:-"2001010100"}
-
 # Filenames.
 GPREFIX=${GPREFIX:-""}
 APREFIX=${APREFIX:-""}
