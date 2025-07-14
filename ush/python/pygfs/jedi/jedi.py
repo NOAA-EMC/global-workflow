@@ -130,10 +130,10 @@ class Jedi:
         try:
             exec_cmd()
         except Exception as e:
-            raise WorkflowException(f"An error occurred during execution of {exec_cmd}: {e}")
+            raise WorkflowException(f"An error occurred during execution of {exec_cmd}:\n{e}") from e
 
     @logit(logger)
-    def render_jcb(self, task_config: AttrDict, algorithm: Optional[str] = None) -> AttrDict:
+    def render_jcb(self, task_config: AttrDict, algorithm_in: Optional[str] = None) -> AttrDict:
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
 
         Parameters
@@ -154,24 +154,28 @@ class Jedi:
         if self.jedi_config.jcb_base_yaml is not None:
             jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         else:
-            raise WorkflowKeyError("JCB base YAML not specified")
+            raise WorkflowKeyError("JCB base YAML not specified as key 'jcb_base_yaml' in JEDI-class config dictionary")
 
         # Add JCB algorithm YAML, if it exists, to JCB config dictionary
         if self.jedi_config.jcb_algo_yaml is not None:
             jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
 
         # Set algorithm in JCB config dictionary (method input algorithm takes precedence)
-        if algorithm is not None:
-            jcb_config['algorithm'] = algorithm
+        if algorithm_in is not None:
+            algorithm = algorithm_in
         elif self.jedi_config.jcb_algo is not None:
-            jcb_config['algorithm'] = self.jedi_config.jcb_algo
+            algorithm = self.jedi_config.jcb_algo
         elif 'algorithm' in jcb_config:
-            pass
+            algorithm = jcb_config.algorithm
         else:
-            raise WorkflowException("JCB algorithm not specified")
+            raise WorkflowKeyError("JCB algorithm not specified")
+        jcb_config['algorithm'] = algorithm
 
-        # Generate JEDI YAML config by rendering JCB config dictionary
-        jedi_input_config = render(jcb_config)
+        # Generate JEDI YAML config by rendering JCB config dictionary 
+        try:
+            jedi_input_config = render(jcb_config)
+        except Exception as e:
+            raise WorkflowException(f"An error occurred while rendering JCB template for algorithm {algorithm}:\n{e}") from e
 
         return jedi_input_config
 
@@ -222,7 +226,7 @@ class Jedi:
         if expected_block_names:
             for block_name in expected_block_names:
                 if block_name not in jedi_dict:
-                    raise WorkflowKeyError(f"Expected block {block_name} not present {jedi_config_yaml}")
+                    raise WorkflowKeyError(f"Expected block key {block_name} not present {jedi_config_yaml}")
             if len(jedi_dict) > len(expected_block_names):
                 raise WorkflowException(f"{jedi_config_yaml} specifies more Jedi objects than expected.")
 
@@ -347,7 +351,7 @@ def extract_tar(tar_file: str) -> None:
             tarball.extractall(path=tar_path)
             logger.info(f"Extract {tarball.getnames()}")
     except Exception as e:
-        raise WorkflowException(f"An error occurred while extracting {tar_file}: {e}")
+        raise WorkflowException(f"An error occurred while extracting {tar_file}:\n{e}") from e
 
 
 @logit(logger)
