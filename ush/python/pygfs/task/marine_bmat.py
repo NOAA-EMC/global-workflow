@@ -126,8 +126,6 @@ class MarineBMat(Task):
         # initialize vtscales python script
         vtscales_config = self.jedi_dict['soca_parameters_diffusion_vt'].render_jcb(self.task_config, 'soca_vtscales')
         save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
-        FileHandler({'copy': [[os.path.join(self.task_config.CALC_SCALE_EXEC),
-                               os.path.join(self.task_config.DATA, 'calc_scales.x')]]}).sync()
 
         # initialize JEDI applications
         self.jedi_dict['gridgen'].initialize(self.task_config)
@@ -182,7 +180,7 @@ class MarineBMat(Task):
 
         # vertical diffusion
         exec_cmd = Executable("python")
-        exec_name = os.path.join(self.task_config.DATA, 'calc_scales.x')
+        exec_name = self.task_config.CALC_SCALE_EXEC
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg('soca_vtscales.yaml')
         mdau.run(exec_cmd)
