@@ -1,4 +1,6 @@
 base:
+  USE_AERO_ANL: "YES"
+  AERO_ANL_RUNS: "gcdas"
   DOIAU: "NO"
   DO_JEDIATMVAR: "NO"
   DO_JEDIATMENS: "NO"
@@ -30,6 +32,9 @@ base:
   DO_LETKF: "NO"
   NMEM_ENS: 0
   l4densvar: ".false."
+  assim_freq: 6
+  FHMAX: 9
+  FHOUT_AERO: 3
 
 atmanl:
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"

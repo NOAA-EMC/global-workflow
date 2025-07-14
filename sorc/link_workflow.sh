@@ -167,10 +167,6 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/scripts/${gdas_script}" .
   done
 fi
-cd "${HOMEgfs}/ush" || exit 8
-for file in global_cycle_driver.sh global_cycle.sh; do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
-done
 
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
