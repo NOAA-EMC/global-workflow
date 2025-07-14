@@ -24,6 +24,6 @@ export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
 # export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
 
 # HPC account which overides the default account
-export HPC_ACCOUNT=fv3-cpu
+export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
 export max_concurrent_cases=5
 export max_concurrent_pr=4

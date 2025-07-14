@@ -47,9 +47,7 @@
 #   Input script positional parameters:
 #     1             String indicating the center date/time for the relocation
 #                   processing <yyyymmddhh> - if missing, then this time
-#                   is obtained from the /com/date/$cycle file unless
-#                   the imported variable MACHINE=sgi in which case the
-#                   script exits abnormally
+#                   is obtained from the /com/date/$cycle file
 #
 #   Imported Shell Variables:
 #
@@ -79,8 +77,6 @@
 #     These will be set to their default value in this script if not exported
 #      to this script by the parent script --
 #
-#     MACHINE       String indicating machine on which this job is running
-#                   Default is "$(hostname -s | cut -c 1-3)"
 #     envir         String indicating environment under which job runs ('prod'
 #                   or 'test')
 #                   Default is "prod"
@@ -133,7 +129,7 @@
 #      over by the script.
 #
 #   Exported Shell Variables:
-#     CDATE10       String indicating the center date/time for the relocation
+#     run_date      String indicating the center date/time for the relocation
 #                   processing <yyyymmddhh>
 #     CMODEL        String indicating model on which hurricane tracker should
 #                   run (this is passed to child script
@@ -172,36 +168,19 @@
 #
 ####
 
-MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
-
-export OPSROOT=${OPSROOT:-/lfs/h1/ops/prod}
-GRIBVERSION=${GRIBVERSION:-"grib2"}
-
-if [ ! -d $DATA ] ; then mkdir -p $DATA ;fi
-
-cd $DATA
-
 qid=$$
-
 
 #  obtain the center date/time for relocation processing
 #  -----------------------------------------------------
 
 if [ $# -ne 1 ] ; then
-   if [ $MACHINE != sgi ]; then
-#      cp ${COMROOT}/date/$cycle ncepdate
-#      err0=$?
-      ncepdate=${PDY}${cyc}      
-      CDATE10=$(cut -c7-16 ncepdate)
-   else
       err0=1
-   fi
 else 
-   CDATE10=$1
-   if [ "${#CDATE10}" -ne '10' ]; then
+   run_date=$1
+   if [ "${#run_date}" -ne '10' ]; then
       err0=1
    else
-      cycle=t$(echo $CDATE10|cut -c9-10)z
+      cycle="t${run_date:8:2}z"
       err0=0
    fi
 fi
@@ -218,13 +197,11 @@ then
    exit 9
 fi
 
-pdy=$(echo $CDATE10|cut -c1-8)
-cyc=$(echo $CDATE10|cut -c9-10)
-modhr=$(expr $cyc % 3)
+modhr=$(expr ${cyc} % 3)
 
 set +x
 echo
-echo "CENTER DATE/TIME FOR RELOCATION PROCESSING IS $CDATE10"
+echo "CENTER DATE/TIME FOR RELOCATION PROCESSING IS ${run_date}"
 echo
 set_trace
 
@@ -233,8 +210,6 @@ set_trace
 #  Create variables needed for this script and its children
 #  --------------------------------------------------------
 
-envir=${envir:-prod}
-
 envir_getges=${envir_getges:-$envir}
 if [ $modhr -eq 0 ]; then
    network_getges=${network_getges:-global}
@@ -242,15 +217,12 @@ else
    network_getges=${network_getges:-gfs}
 fi
 
+GRIBVERSION=${GRIBVERSION:-"grib2"}
 pgmout=${pgmout:-/dev/null}
-
 tstsp=${tstsp:-/tmp/null/}
 tmmark=${tmmark:-tm00}
-
 RELOX=${RELOX:-${EXECgfs}/relocate_mv_nvortex}
-
 export BKGFREQ=${BKGFREQ:-1}
-
 SUPVX=${SUPVX:-${EXECgfs}/supvit.x}
 GETTX=${GETTX:-${EXECgfs}/gettrk}
 
@@ -261,7 +233,7 @@ GETTX=${GETTX:-${EXECgfs}/gettrk}
 #  attempt to perform tropical cyclone relocation
 #  ----------------------------------------------
 
-echo "Attempt to perform tropical cyclone relocation for $CDATE10"
+echo "Attempt to perform tropical cyclone relocation for ${run_date}"
 
 if [ $modhr -ne 0 ]; then
 
@@ -293,7 +265,7 @@ echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
       set_trace
       ${USHgfs}/getges.sh -e $envir_getges -n $network_getges \
-       -v $CDATE10 -f $fhr -t tcvges tcvitals.m${fhr}
+       -v ${run_date} -f $fhr -t tcvges tcvitals.m${fhr}
       set +x
       echo
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -347,7 +319,7 @@ echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
       set_trace
       ${USHgfs}/getges.sh -e $envir_getges -n $network_getges \
-       -v $CDATE10 -t $stype $sges
+       -v ${run_date} -t $stype $sges
       errges=$?
       if test $errges -ne 0; then
 #  problem obtaining global sigma first guess so exit
@@ -374,7 +346,7 @@ to center relocation date/time;"
 #  ----------------------------------------------------------------------------
 
       if [ $fhr = "0"  ]; then
-         "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${CDATE10}" \
+         "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${run_date}" \
           -t "${stype}" > "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
          cp "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
           "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
@@ -395,7 +367,7 @@ echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
       set_trace
       ${USHgfs}/getges.sh -e $envir_getges -n $network_getges \
-       -v $CDATE10 -t $ptype $pges
+       -v ${run_date} -t $ptype $pges
       errges=$?
       if test $errges -ne 0; then
 #  problem obtaining global pressure grib guess so exit
@@ -429,18 +401,18 @@ fi
 
 MP_PULSE=0
 MP_TIMEOUT=600
-GDATE10=$(date --utc +%Y%m%d%H -d "${CDATE10:0:8} ${CDATE10:8:2} - 6 hours")
+GDATE10=$(date --utc +%Y%m%d%H -d "${run_date:0:8} ${run_date:8:2} - 6 hours")
 
 #  make unique combined tcvitals file for t-12, t-6 and t+0 -- 
 #  if tcvitals does not contains record from current time, skip relocation
 #  processing
 #  -----------------------------------------------------------------------
 
-grep "$pdy $cyc" VITL
+grep "${PDY} ${cyc}" VITL
 errgrep=$?
 > tcvitals
 if [ $errgrep -ne 0 ] ; then
-   echo "NO TCVITAL RECORDS FOUND FOR $CDATE10 - EXIT TROPICAL CYCLONE \
+   echo "NO TCVITAL RECORDS FOUND FOR ${run_date} - EXIT TROPICAL CYCLONE \
 RELOCATION PROCESSING"
 
 # The existence of ${COMOUT_OBS}/${RUN}.${cycle}.tropcy_relocation_status.$tmmark file will tell the
@@ -463,7 +435,7 @@ RELOCATION PROCESSING"
 else
 
    cat VITL >>tcvitals
-   grep "$pdy $cyc" VITL > tcvitals.now1 
+   grep "${PDY} ${cyc}" VITL > tcvitals.now1 
 
 
 #  create model forecast track location file
@@ -527,7 +499,7 @@ else
    i1=0
    for gesfhr in $( seq 3 $BKGFREQ 9 ) ; do
 
-     echo $gesfhr $LONB $LATB $BKGFREQ >parm.$i1
+     echo ${gesfhr} ${LONB} ${LATB} ${BKGFREQ} > "parm.${i1}"
 
      i1=$((i1+1))
 
@@ -600,7 +572,7 @@ else
 
    cp "rel_inform1" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
    cp "tcvitals" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
-   if [ "$SENDDBN" = "YES" ]; then
+   if [[ "${SENDDBN}" == "YES" ]]; then
        if test "$RUN" = "gdas1"
        then
            "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS1_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
@@ -624,8 +596,7 @@ else
 
    rm -f "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
 
-   echo "TROPICAL CYCLONE RELOCATION PROCESSING SUCCESSFULLY COMPLETED FOR \
-$CDATE10"
+   echo "TROPICAL CYCLONE RELOCATION PROCESSING SUCCESSFULLY COMPLETED FOR ${run_date}"
 
 # end GFDL ges manipulation
 # -------------------------

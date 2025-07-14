@@ -4,27 +4,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "tracker" -c "base tracker"
 
 export COMPONENT="atmos"
 
-
-##############################################
-# Set variables used in the exglobal script
-##############################################
-
-
-####################################
-# SENDDBN  - Issue DBNet Client Calls
-####################################
-export SENDDBN=${SENDDBN:-NO}
-export SENDECF=${SENDECF:-NO}
-
-####################################
-# Specify Execution Areas
-####################################
-export HOMEens_tracker=${HOMEens_tracker:-${PACKAGEROOT}/ens_tracker.${ens_tracker_ver}}
-export EXECens_tracker=${EXECens_tracker:-${HOMEens_tracker}/exec}
-export FIXens_tracker=${FIXens_tracker:-${HOMEens_tracker}/fix}
-export USHens_tracker=${USHens_tracker:-${HOMEens_tracker}/ush}
-
-
 ##############################################
 # Define COM and Data directories
 ##############################################
