@@ -63,7 +63,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" && true
+cd "${DATAROOT//enkf/}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
