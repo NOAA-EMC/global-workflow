@@ -22,7 +22,6 @@
       export RUNTESTS="${RUNTESTS_DIR}"
       "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${CI_COMMIT_SHORT_SHA}-${CI_PIPELINE_ID}"
       exit $?                           # This dash delemeter on pslot between the SHA & ID is needed for the parser when recovering the pslot:  ^
-    - build-${machine}
 
 # Template for test execution jobs
 .run_experiments_template:
@@ -64,8 +63,8 @@
         declare -n gist_id_var="${machine}_GIST_ID"
         GIST_ID="${gist_id_var}"
         echo "Updating develop branch badge for ${Machine} to indicate Passed"
-        curl -sSL "https://img.shields.io/badge/${machine}_nightly_passed-brightgreen?style=flat-round&logo=gitlab" -o "badges/${machine}_pipeline_badge.svg"
-        ${GH} gist edit "${GIST_ID}" --add "badges/${machine}_pipeline_badge.svg"
+        curl -sSL "https://img.shields.io/badge/${machine}_nightly_passed-brightgreen?style=flat-round&logo=gitlab" -o "${machine}_pipeline_badge.svg"
+        ${GH} gist edit "${GIST_ID}" --add "${machine}_pipeline_badge.svg"
       elif [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
         # Update GitHub labels for success of pr_cases with a PR number
         "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
