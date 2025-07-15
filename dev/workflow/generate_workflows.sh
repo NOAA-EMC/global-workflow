@@ -116,8 +116,11 @@ _runtests="${RUNTESTS:-${_runtests:-}}"
 _auto_del=false
 _nonflag_option_count=0
 
+n=0
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-   while getopts ":H:bDuy:Y:GESCA:ce:t:r:vVRdh" option; do
+   while getopts ":H:bDuy:Y:GESCA:ce:t:r:vVdhR" option; do
+      n=$((n + 1))
+      echo "No. $n: option: $option"
       case "${option}" in
         H)
            HOMEgfs="${OPTARG}"
@@ -280,16 +283,16 @@ if [[ "${_specified_home}" == "false" ]]; then
    fi
 fi
 
+echo "_run_with_container: ${_run_with_container}"
+
 # Set RUN_WITH_CONTAINER if it is set by the user
 if [[ "${_run_with_container}" == "true" ]]; then
-   RUN_WITH_CONTAINER=YES
    if [[ "${_verbose}" == "true" ]]; then
-       printf "Run with Container %s\n\n" "${RUN_WITH_CONTAINER}"
+       printf "Run with Container"
    fi
-   sed -i 's/RUN_WITH_CONTAINER=NO/RUN_WITH_CONTAINER=YES/g' ../../ush/preamble.sh
+   sed -i "s?RUN_WITH_CONTAINER=NO?RUN_WITH_CONTAINER=YES?g" ../../ush/preamble.sh
 else
-   RUN_WITH_CONTAINER=NO
-   sed -i 's/RUN_WITH_CONTAINER=YES/RUN_WITH_CONTAINER=NO/g' ../../ush/preamble.sh
+   sed -i "s?RUN_WITH_CONTAINER=YES?RUN_WITH_CONTAINER=NO?g" ../../ush/preamble.sh
 fi
 
 # Set the _yaml_dir to HOMEgfs/dev/ci/cases/pr if not explicitly set

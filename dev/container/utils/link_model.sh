@@ -73,15 +73,22 @@ cat > $link_model_script << EOF_LINK
 #!/bin/bash
 
 #Need these lines on AWS to run more than one node.
- export I_MPI_DEBUG=1
- export I_MPI_FABRICS=shm:ofi
- export I_MPI_OFI_PROVIDER=tcp
- export FI_PROVIDER=tcp
- export FI_TCP_IFACE=eth0
+ export I_MPI_DEBUG=10
+#export I_MPI_FABRICS=shm:ofi
+#export I_MPI_OFI_PROVIDER=tcp
+#export FI_PROVIDER=tcp
+#export FI_TCP_IFACE=eth0
+
+#For GaeaC6
+#export SINGULARITY_ENABLE_OVERLAY=try
+#export SINGULARITY_DISABLE_OVERLAY=yes
+#export SINGULARITY_DEBUG=10
+#export SINGULARITY_DEBUG=0
+#unset SINGULARITY_DEBUG
 
  export LD_LIBRARY_PATH=$(dirname ${container})
  arg="\$@"
- singularity exec \\
+ /usr/bin/apptainer exec \\
  ${bindings} \\
  ${container} \\
  ${run_model_script} \$arg
