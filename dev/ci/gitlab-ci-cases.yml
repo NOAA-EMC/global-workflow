@@ -63,7 +63,8 @@
         declare -n gist_id_var="${machine}_GIST_ID"
         GIST_ID="${gist_id_var}"
         echo "Updating develop branch badge for ${Machine} to indicate Passed nightly run with GIST ID ${GIST_ID}"
-        badge_img_file="${TMPDIR:-/tmp}/${machine}_badge_$$_$(date +%s).tmp"
+        badge_img_file="${TMPDIR:-/tmp}/$(uuidgen)/${machine}_pipeline_badge.svg"
+        mkdir -p "$(dirname "${badge_img_file}")"
         curl -sSL "https://img.shields.io/badge/${machine}_nightly_passed-brightgreen?style=flat-round&logo=gitlab" -o "${badge_img_file}"
         ${GH} gist edit "${GIST_ID}" --add "${badge_img_file}"
       elif [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
@@ -85,10 +86,11 @@
         "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
           --add-label "CI-${Machine}-Failed" --remove-label "CI-${Machine}-Running" || true
       elif [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
-        echo "Updating develop branch badge for ${Machine} to indicate nightly Failed with GIST ID ${GIST_ID}"
         declare -n gist_id_var="${machine}_GIST_ID"
         GIST_ID="${gist_id_var}"
-        badge_img_file="${TMPDIR:-/tmp}/${machine}_badge_$$_$(date +%s).tmp"
+        echo "Updating develop branch badge for ${Machine} to indicate nightly Failed with GIST ID ${GIST_ID}"
+        badge_img_file="${TMPDIR:-/tmp}/$(uuidgen)/${machine}_pipeline_badge.svg"
+        mkdir -p "$(dirname "${badge_img_file}")"
         curl -sSL "https://img.shields.io/badge/${machine}_nightly_failed-red?style=flat-round&logo=gitlab" -o "${badge_img_file}"
         ${GH} gist edit "${GIST_ID}" --add "${badge_img_file}"
       fi
