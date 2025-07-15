@@ -63,6 +63,7 @@
         declare -n gist_id_var="${machine}_GIST_ID"
         GIST_ID="${gist_id_var}"
         echo "Updating develop branch badge for ${Machine} to indicate Passed"
+        cd "${RUNTESTS_DIR}"
         curl -sSL "https://img.shields.io/badge/${machine}_nightly_passed-brightgreen?style=flat-round&logo=gitlab" -o "${machine}_pipeline_badge.svg"
         ${GH} gist edit "${GIST_ID}" --add "${machine}_pipeline_badge.svg"
       elif [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
