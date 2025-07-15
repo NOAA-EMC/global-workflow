@@ -225,7 +225,7 @@ Forecast-only P8 prototype initial conditions are made available to users on sup
 
     WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED
     HERA: /scratch1/NCEPDEV/climate/role.ufscpara/IC
-    ORION/Hercules: /work/noaa/global/role.glopara/data/ICSDIR/prototype_ICs
+    ORION/Hercules: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
 
 These locations are known within the workflow via paths set in ``parm/config/config.coupled_ic``.
 
