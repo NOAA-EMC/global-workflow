@@ -96,6 +96,11 @@ enkf:
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atmanl.ensmean.nc"
         {% endif %}
+        
+        # soil DA increments  
+        {% if DO_GSISOILDA %}
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfci006.nc"
+        {% endif %}
 
         {% if DOIAU %}
         # IAU increments/analyses
@@ -114,6 +119,12 @@ enkf:
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atma{{ '%03d' % fhr }}.ensmean.nc"
         {% endif %}
+
+        # soil DA increments  
+        {% if DO_GSISOILDA %} 
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfci{{ '%03d' % fhr }}.nc"
+        {% endif %}
+
         {% endfor %}
 
         {% endif %}  # End IAU

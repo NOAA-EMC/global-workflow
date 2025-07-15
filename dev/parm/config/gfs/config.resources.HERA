@@ -20,6 +20,11 @@ case ${step} in
     export tasks_per_node=12
     ;;
 
+  "aeroanlvar")
+    export tasks_per_node=20
+    export memory="96GB"
+    ;;
+  
   "eupd")
     case "${CASE}" in
       "C1152" | "C768")

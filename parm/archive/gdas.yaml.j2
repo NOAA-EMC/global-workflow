@@ -40,6 +40,9 @@ gdas:
             {% if DO_JEDISNOWDA %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_snowanl.log"
             {% endif %}
+            {% if DO_GSISOILDA %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanl.log"
+            {% endif %}
 
         # Analysis GRIB2 (sub-sampled) data
         - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.anl"
