@@ -74,7 +74,7 @@ EOF
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [[ -z "${CDATE+0}" || -z "${dtspec+0}" || -z "${EXECgfs+0}" || -z "${WAV_MOD_TAG+0}" || -z "${STA_DIR+0}" ]]
+  if [[ -z "${PDY+0}" || -z "${cyc+0}" || -z "${dtspec+0}" || -z "${EXECgfs+0}" || -z "${WAV_MOD_TAG+0}" || -z "${STA_DIR+0}" ]]
   then
     echo 'FATAL ERROR: EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET'
     exit 3
@@ -82,9 +82,9 @@ EOF
 
 # 0.d Starting time for output
 
-  tstart="$(echo "${ymdh}" | cut -c1-8) $(echo "${ymdh}" | cut -c9-10)0000"
-  YMD="$(echo "${ymdh}" | cut -c1-8)"
-  HMS="$(echo "${ymdh}" | cut -c9-10)0000"
+  tstart="${ymdh:0:8} ${ymdh:8:2}0000"
+  YMD="${ymdh:0:8}"
+  HMS="${ymdh:8:2}0000"
   printf "   Output starts at %s.\n" "${tstart}"
 
 # 0.e sync important files
@@ -106,8 +106,8 @@ EOF
 
   if [[ "${specdir}" == "bull" ]]
   then
-    tstart="$(echo "${ymdh}" | cut -c1-8) $(echo "${ymdh}" | cut -c9-10)0000"
-    truntime="$(echo "${CDATE}" | cut -c1-8) $(echo "${CDATE}" | cut -c9-10)0000"
+    tstart="${ymdh:0:8} ${ymdh:8:2}0000"
+    truntime="${PDY} ${cyc}0000"
     sed -e "s/TIME/${tstart}/g" \
       -e "s/DT/${dtspec}/g" \
       -e "s/POINT/${point}/g" \
@@ -122,7 +122,7 @@ EOF
       -e "s/ITYPE/1/g" \
       -e "s/FORMAT/F/g" \
                                "${DATA}/ww3_outp_spec.inp.tmpl" > ww3_outp.inp
-    outfile=ww3.$(echo "${tstart}" | cut -c3-8)$(echo "${tstart}" | cut -c10-11).spc
+    outfile=ww3.${tstart:2:5}${tstart:9:2}.spc
   fi
 
 # 2.b Run the postprocessor

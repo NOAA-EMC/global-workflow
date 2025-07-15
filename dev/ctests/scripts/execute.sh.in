@@ -45,7 +45,7 @@ done
 
 # Second loop: monitor job status until completion or failure
 timeout=0
-TIMEOUT=60
+TIMEOUT=120
 while true; do
     job_status=$(sacct -j "${job_id}" --format=State --noheader -n | head -1 | tr -cd '[:alpha:]' | xargs) || true
     if [[ "${job_status}" == "COMPLETED" ]]; then

@@ -20,7 +20,6 @@
 #  Set environment.
 
 # Base variables
-CDATE="${PDY}${cyc}"
 GDUMP=${GDUMP:-"gdas"}
 
 # Utilities
@@ -117,15 +116,16 @@ binary_diag=\$2
 type=\$3
 loop=\$4
 string=\$5
-CDATE=\$6
-DIAG_COMPRESS=\$7
-DIAG_SUFFIX=\$8
+PDY=\$6
+cyc=\$7
+DIAG_COMPRESS=\$8
+DIAG_SUFFIX=\$9
 if [[ "\${lrun_subdirs}" == ".true." ]]; then
    prefix=" dir.*/"
 else
    prefix="pe*"
 fi
-file=diag_\${type}_\${string}.\${CDATE}\${DIAG_SUFFIX}
+file=diag_\${type}_\${string}.\${PDY}\${cyc}\${DIAG_SUFFIX}
 if [[ "\${binary_diag}" == ".true." ]]; then
    cat \${prefix}\${type}_\${loop}* > \$file
 else
@@ -164,25 +164,25 @@ EOFdiag
             count=$(ls ${prefix}${type}_${loop}* 2>/dev/null | wc -l)
             if [[ ${count} -gt 1 ]]; then
                if [[ "${USE_CFP}" == "YES" ]]; then
-                  echo "${nm} ${DATA}/diag.sh ${lrun_subdirs} ${binary_diag} ${type} ${loop} ${string} ${CDATE} ${DIAG_COMPRESS} ${DIAG_SUFFIX}" | tee -a "${DATA}/mp_diag.sh"
+                  echo "${nm} ${DATA}/diag.sh ${lrun_subdirs} ${binary_diag} ${type} ${loop} ${string} ${PDY} ${cyc} ${DIAG_COMPRESS} ${DIAG_SUFFIX}" | tee -a "${DATA}/mp_diag.sh"
                   if [[ "${CFP_MP:-"NO"}" == "YES" ]]; then
                      nm=$((nm+1))
                   fi
                else
                   if [[ "${binary_diag}" == ".true." ]]; then
-                     cat ${prefix}${type}_${loop}* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
+                     cat ${prefix}${type}_${loop}* > "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}"
                   else
-                     ${CATEXEC} -o "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}" "${prefix}${type}_${loop}"*
+                     ${CATEXEC} -o "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}" "${prefix}${type}_${loop}"*
                   fi
                fi
-               echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
+               echo "diag_${type}_${string}.${PDY}${cyc}*" >> ${diaglist[n]}
                numfile[n]=$(expr ${numfile[n]} + 1)
             elif [[ ${count} -eq 1 ]]; then
-                cat ${prefix}${type}_${loop}* > "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
+                cat ${prefix}${type}_${loop}* > "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}"
                 if [[ "${DIAG_COMPRESS}" == "YES" ]]; then
-                   ${COMPRESS} "diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}"
+                   ${COMPRESS} "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}"
                 fi
-                echo diag_${type}_${string}.${CDATE}* >> ${diaglist[n]}
+                echo diag_${type}_${string}.${PDY}${cyc}* >> ${diaglist[n]}
                 numfile[n]=$(expr "${numfile[n]}" + 1)
             fi
          done
@@ -196,7 +196,8 @@ EOFdiag
    # If requested, compress diagnostic files
    if [[ "${DIAG_COMPRESS}" == "YES" && "${USE_CFP}" == "NO" ]]; then
       echo $(date) START "${COMPRESS}" diagnostic files >&2
-      for file in $(ls diag_*${CDATE}${DIAG_SUFFIX}); do
+      # shellcheck disable=SC2086
+      for file in $(ls diag_*${PDY}${cyc}${DIAG_SUFFIX}); do
          ${COMPRESS} "${file}"
       done
       echo "$(date) END ${COMPRESS} diagnostic files" >&2
