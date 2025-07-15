@@ -30,10 +30,6 @@ if (( fhend > FHMAX_GFS )); then
   export fhend=${FHMAX_GFS}
 fi
 
-###################################
-# Specify NET and RUN Name and model
-####################################
-export model=${model:-gfs}
 export COMPONENT="atmos"
 
 ##############################################

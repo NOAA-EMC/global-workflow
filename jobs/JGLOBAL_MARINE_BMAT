@@ -1,8 +1,9 @@
 #!/bin/bash
 
-
+export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
-export DATA="${DATAjob}/${jobid}"
+# DATA is pre-populated by the MARINE_BMAT_INIT job
+export DATA="${DATAjob}/marinebmat"
 # Create the directory to hold ensemble perturbations
 export DATAens="${DATAjob}/ensdata"
 export DATAstaticb="${DATAjob}/staticb"
