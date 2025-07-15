@@ -22,7 +22,6 @@
       export RUNTESTS="${RUNTESTS_DIR}"
       "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${CI_COMMIT_SHORT_SHA}-${CI_PIPELINE_ID}"
       exit $?                           # This dash delemeter on pslot between the SHA & ID is needed for the parser when recovering the pslot:  ^
-  needs:
     - build-${machine}
 
 # Template for test execution jobs
@@ -35,8 +34,6 @@
       pslot=$("${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS_DIR}" "${caseName}")
       "${GW_HOMEgfs}/dev/ci/scripts/run_check_gitlab_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       exit $? 
-  needs:
-    - setup_experiments-${machine}
 
 # Success finalize - runs when ALL case jobs succeed
 .finalize_success_template:
@@ -74,8 +71,6 @@
         "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
           --add-label "CI-${Machine}-Passed" --remove-label "CI-${Machine}-Running" || true
       fi
-  needs:
-    - run_experiments-${machine}
 
 
 # Failure finalize - runs when ANY case job fails
@@ -96,10 +91,3 @@
         curl -sSL "https://img.shields.io/badge/${machine}_nightly_failed-red?style=flat-round&logo=gitlab" -o "badges/${machine}_pipeline_badge.svg"
         ${GH} gist edit "${GIST_ID}" --add "badges/${machine}_pipeline_badge.svg"
       fi
-  needs:
-    - job: build-${machine}
-      optional: true
-    - job: setup_experiments-${machine}
-      optional: true
-    - job: run_experiments-${machine}
-      optional: true
