@@ -223,7 +223,7 @@ output_files:
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf003.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf003.grib2]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf006.grib2]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf009.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf009.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf012grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf012.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf012.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf012.grib2]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf015.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf015.grib2]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf018.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf018.grib2]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf021.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master/gfs.t{{ cyc }}z.sfluxgrbf021.grib2]

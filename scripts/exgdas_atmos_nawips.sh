@@ -41,7 +41,7 @@ pdsext=no
 
 GEMGRD="${RUN}_${grid}_${PDY}${cyc}f${fhr3}"
 source_dirvar="COMOUT_ATMOS_GRIB_${grid}"
-export GRIBIN="${!source_dirvar}/${model}.${cycle}.pgrb2.${grid}.f${fhr3}"
+export GRIBIN="${!source_dirvar}/${RUN}.${cycle}.pgrb2.${grid}.f${fhr3}"
 GRIBIN_chk="${GRIBIN}.idx"
 
 if [[ ! -r "${GRIBIN_chk}" ]]; then
@@ -77,7 +77,7 @@ if [[ ${err} -ne 0 ]]; then
 fi
 
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
-if [[ ${SENDDBN} = "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]] ; then
   "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
     "${destination}/${GEMGRD}"
 fi

@@ -7,7 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "metp" -c "base metp"
 ## Inline METplus verification and diagnostics driver script
 ## HOMEgfs   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
-## CDATE  : current analysis date (YYYYMMDDHH)
 ## PDY    : current date (YYYYMMDD)
 ## RUN    : cycle name (gdas / gfs)
 ## cyc    : current cycle (HH)
@@ -17,6 +16,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "metp" -c "base metp"
 
 VDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${VRFYBACK_HRS} hours")
 export VDATE=${VDATE:0:8}
+export CDATE=${PDY}${cyc}
 
 # Since this is currently a one-element list, shellcheck things we would rather run this as a command
 # shellcheck disable=SC2041
