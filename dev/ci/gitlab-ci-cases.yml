@@ -62,10 +62,10 @@
         # Update GitHub badges for success of nightly pipelines
         declare -n gist_id_var="${machine}_GIST_ID"
         GIST_ID="${gist_id_var}"
-        echo "Updating develop branch badge for ${Machine} to indicate Passed"
-        cd "${RUNTESTS_DIR}"
-        curl -sSL "https://img.shields.io/badge/${machine}_nightly_passed-brightgreen?style=flat-round&logo=gitlab" -o "${machine}_pipeline_badge.svg"
-        ${GH} gist edit "${GIST_ID}" --add "${machine}_pipeline_badge.svg"
+        echo "Updating develop branch badge for ${Machine} to indicate Passed nightly run with GIST ID ${GIST_ID}"
+        badge_img_file="${TMPDIR:-/tmp}/${machine}_badge_$$_$(date +%s).tmp"
+        curl -sSL "https://img.shields.io/badge/${machine}_nightly_passed-brightgreen?style=flat-round&logo=gitlab" -o "${badge_img_file}"
+        ${GH} gist edit "${GIST_ID}" --add "${badge_img_file}"
       elif [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
         # Update GitHub labels for success of pr_cases with a PR number
         "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
