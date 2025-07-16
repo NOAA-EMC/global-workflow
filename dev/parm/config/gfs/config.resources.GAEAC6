@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck disable=SC2034
 
 # GaeaC6-specific job resources
 
@@ -59,6 +60,10 @@ case ${step} in
         fi
         export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
+    ;;
+
+  "atmanlvar" | "atmensanlobs" | "atmensanlsol")
+    export tasks_per_node=48
     ;;
 
   "marinebmat")
