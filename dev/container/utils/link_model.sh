@@ -88,7 +88,7 @@ cat > $link_model_script << EOF_LINK
 
  export LD_LIBRARY_PATH=$(dirname ${container})
  arg="\$@"
- /usr/bin/apptainer exec \\
+ /usr/bin/singularity exec \\
  ${bindings} \\
  ${container} \\
  ${run_model_script} \$arg
