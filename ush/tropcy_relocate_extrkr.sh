@@ -15,11 +15,11 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 export gribver=${gribver:-1}
 
 user=$LOGNAME
-#	CDATE10 - 10 digit date
-#	RUN     - network run (gfs, gdas, etc)
-#	DATA    - working directory
-#	SUPVX - tcvitals update program
-#	GETTX - Tim's get track program
+#	PDYcyc - 10 digit date
+#	RUN    - network run (gfs, gdas, etc)
+#	DATA   - working directory
+#	SUPVX  - tcvitals update program
+#	GETTX  - Tim's get track program
 ##XLF_LINKSSH=${XLF_LINKSSH:-""}
 export APRNGETTX=${APRNGETTX:-""}
 
@@ -106,7 +106,6 @@ export FHINT=${FHINT:-03}
 #     Enter the starting date, in yyyymmddhh format, of the forecast:
 
 export YYYYMMDDHH=$GDATE10
-#export YYYYMMDDHH=$CDATE10
 
 
 #     -------------------------

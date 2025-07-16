@@ -7,7 +7,6 @@ set -x
 ## Inline awips driver script
 ## HOMEgfs   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
-## CDATE  : current analysis date (YYYYMMDDHH)
 ## RUN    : cycle name (gdas / gfs)
 ## PDY    : current date (YYYYMMDD)
 ## cyc    : current cycle (HH)

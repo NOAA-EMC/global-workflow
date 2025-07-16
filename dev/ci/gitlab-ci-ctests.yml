@@ -10,7 +10,7 @@
 # whereas the full experiment cases are used for more extensive testing.
 #
 # Key components:
-# - .create_ctests: Template for setting up the CMake/CTest environment
+# - .setup_ctests_template: Template for setting up the CMake/CTest environment
 # - .run_ctests_template: Template for executing specific CTest labels
 #
 # CTests are defined in the dev/ctests directory and are categorized by labels,
@@ -22,9 +22,9 @@
 # =======================================
 
 # Setup job for ctests using CMake
-.create_ctests:
+.setup_ctests_template:
   extends: .base_config
-  stage: create_experiments
+  stage: setup_tests
   script: |
     echo "Setting up for ctests workflow"
     echo "Using build directory ${GW_HOMEgfs}"
@@ -106,4 +106,4 @@
     reports:
       junit: ${GIT_CLONE_PATH}/dev/ctests/build/result.xml
   needs:
-    - create_ctests-${machine}
+    - setup_ctests-${machine}

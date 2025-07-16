@@ -619,8 +619,9 @@ class GCAFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
-        dependencies.append(rocoto.add_dependency(dep_dict))
+        if self.options['use_aero_anl']:
+            dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
@@ -1240,7 +1241,7 @@ class GCAFSTasks(Tasks):
             if self.options['do_anlstat'] and self.options['do_aero_anl']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            if self.run in ['gcdas']:
+            if self.run in ['gcdas'] and self.options['do_aero_anl']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlgenb'}
                 deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies

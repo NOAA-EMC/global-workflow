@@ -203,14 +203,6 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 
      -
 
-================================
-Experiment troubleshooting help
-================================
-
-Users may email Kate Friedman (kate.friedman@noaa.gov) questions or requests for troubleshooting assistance with their global-workflow experiments/parallels on supported platforms. For troubleshooting, please provide a brief description of the issue(s) and include relevant error messages and/or paths to logs for failed jobs.
-
-Any issues related to HPC/machine problems, and which are unrelated to the workflow itself, should go to the appropriate HPC helpdesk. 
-
 =============
 HPC helpdesks
 =============
