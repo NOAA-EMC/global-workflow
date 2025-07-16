@@ -115,9 +115,12 @@ finalize_fail-hera:
     - hera
   needs:
     - job: build-hera
+      optional: true
     - job: setup_experiments-hera
       optional: true
     - job: run_experiments-hera
+      optional: true
+    - job: finalize_success-hera
       optional: true
   when: on_failure
   rules:
@@ -129,8 +132,16 @@ finalize_fail-gaeac6:
     machine: gaeac6
   tags:
     - gaeac6
-  needs: []
-  when: always
+  needs:
+    - job: build-gaeac6
+      optional: true
+    - job: setup_experiments-gaeac6
+      optional: true
+    - job: run_experiments-gaeac6
+      optional: true
+    - job: finalize_success-gaeac6
+      optional: true
+  when: on_failure
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
