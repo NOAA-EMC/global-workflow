@@ -115,12 +115,9 @@ finalize_fail-hera:
     - hera
   needs:
     - job: build-hera
-      optional: true
     - job: setup_experiments-hera
       optional: true
     - job: run_experiments-hera
-      optional: true
-    - job: finalize_success-hera
       optional: true
   when: on_failure
   rules:
@@ -134,12 +131,9 @@ finalize_fail-gaeac6:
     - gaeac6
   needs:
     - job: build-gaeac6
-      optional: true
     - job: setup_experiments-gaeac6
       optional: true
     - job: run_experiments-gaeac6
-      optional: true
-    - job: finalize_success-gaeac6
       optional: true
   when: on_failure
   rules:
