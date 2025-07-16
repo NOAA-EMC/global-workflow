@@ -97,9 +97,40 @@ include:
         exit 1
       fi
 
+# Reusable template for failure cleanup in after_script
+.failure_cleanup_template:
+  after_script:
+    - |
+      if [[ ${CI_JOB_STATUS} == "failed" ]]; then
+        echo "Job failed, performing cleanup actions for ${machine}"
+        Machine="${machine^}"
+
+        if [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
+          echo "Updating GitHub labels for PR ${PR_NUMBER} failure on ${Machine}"
+          ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} \
+            --add-label "CI-${Machine}-Failed" \
+            --remove-label "CI-${Machine}-Building" \
+            --remove-label "CI-${Machine}-Running" || true
+
+        elif [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+          echo "Updating nightly badge for ${Machine} failure with GIST ID ${badge_GIST_ID}"
+          badge_img_file="${TMPDIR:-/tmp}/$(uuidgen)/${machine}_pipeline_badge.svg"
+          mkdir -p "$(dirname "${badge_img_file}")"
+          curl -sSL "https://img.shields.io/badge/${machine}_nightly-failed-red?style=flat-round&logo=gitlab" -o "${badge_img_file}"
+          ${GH} gist edit "${badge_GIST_ID}" --add "${badge_img_file}" || true
+
+        else
+          echo "No cleanup actions needed for GFS_CI_RUN_TYPE=${GFS_CI_RUN_TYPE}, CI_PIPELINE_SOURCE=${CI_PIPELINE_SOURCE}"
+        fi
+      else
+        echo "Job status: ${CI_JOB_STATUS}, no failure cleanup needed"
+      fi
+
 # Common build template for all modalities
 .build_template:
-  extends: .base_config
+  extends:
+    - .base_config
+    - .failure_cleanup_template
   variables:
     GIT_STRATEGY: clone
     GIT_SUBMODULE_STRATEGY: recursive
@@ -125,7 +156,7 @@ include:
 
       if [[ ${build_status} -ne 0 ]]; then
         echo "Build failed with exit code ${build_status}"
-        ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} --add-label "CI-${machine^}-Failed" --remove-label "CI-${machine^}-Building"
+        # Mark the build as failed, but don't update labels here - let after_script handle it
         exit 1
       elif [[ ${GFS_CI_RUN_TYPE} == "pr_cases" && ${PR_NUMBER} != 0 ]]; then
         ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} --add-label "CI-${machine^}-Running" --remove-label "CI-${machine^}-Building"
