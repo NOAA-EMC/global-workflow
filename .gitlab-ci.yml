@@ -53,8 +53,7 @@ include:
 
 .base_config:
   variables:
-    hera_GIST_ID: "6fc87bdca52a4046188460bcd35e4350"
-    gaeac6_GIST_ID: "66059582886cb5c2485ff64bf24e7f93"
+    badge_GIST_ID: "66059582886cb5c2485ff64bf24e7f93"
     GIT_STRATEGY: none
   before_script:
     - |
