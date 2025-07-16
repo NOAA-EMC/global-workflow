@@ -101,6 +101,7 @@ include:
 .failure_cleanup_template:
   after_script:
     - |
+      echo "After script is running for job ${CI_JOB_NAME} on ${machine} with status ${CI_JOB_STATUS}"
       if [[ ${CI_JOB_STATUS} == "failed" ]]; then
         echo "Job failed, performing cleanup actions for ${machine}"
         Machine="${machine^}"
