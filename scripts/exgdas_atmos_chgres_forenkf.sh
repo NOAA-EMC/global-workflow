@@ -44,11 +44,6 @@ export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 APRUNCFP=${APRUNCFP:-""}
 
-# OPS flags
-RUN=${RUN:-""}
-SENDECF=${SENDECF:-"NO"}
-SENDDBN=${SENDDBN:-"NO"}
-
 # level info file
 SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS}.txt}
 

@@ -208,7 +208,7 @@ if [[ "$DOIAU" == "YES" ]]; then
 
         done # ensembles
 
-        CDATE="${PDY}${cyc}" "${CYCLESH}" && true
+        "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
            err_exit "Failed to update surface fields!"
@@ -282,7 +282,7 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             fi
         done
 
-        CDATE="${PDY}${cyc}" "${CYCLESH}" && true
+        "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
            err_exit "Failed to update surface increment!"
