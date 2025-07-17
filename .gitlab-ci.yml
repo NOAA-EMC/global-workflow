@@ -95,7 +95,7 @@ include:
 
       # Setup GitHub CLI for use throughout the pipeline
       export GH=$(which gh 2>/dev/null || echo "${HOME}/bin/gh")
-      if [ ! -x "${GH}" ]; then
+      if [[ ! -x "${GH}" ]]; then
         echo "ERROR: GitHub CLI (gh) not found or not executable. Please install it."
         exit 1
       fi
