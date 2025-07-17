@@ -129,15 +129,18 @@ jobs:
 
           curl --verbose --request POST \
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=feature/gitlab_labels_badges" \
+            --form "ref=develop" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
-            --form "variables[GW_REPO_URL]=https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git" \
+            --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
             --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
             --form "variables[PIPELINE_TYPE]=${{ env.PIPELINE_TYPE }}" \
             ${{ vars.GITLAB_TRIGGER_URL }}
 
           # Add labels for each machine in the list
-          for MACHINE in ${{ env.MACHINES }}; do
-            echo "Adding label for machine: ${MACHINE}"
-            gh pr edit ${{ env.PR_NUM }} --repo ${{ vars.GW_REPO_URL }} --add-label "CI-${MACHINE^}-Ready"
-          done
+          if [[ "${{ env.PR_NUM }}" != "0" ]]; then
+            # Use GitHub CLI to add labels to the PR
+            for MACHINE in ${{ env.MACHINES }}; do
+              echo "Adding CI Ready label for machine: ${MACHINE}"
+              gh pr edit ${{ env.PR_NUM }} --repo ${{ vars.GW_REPO_URL }} --add-label "CI-${MACHINE^}-Ready"
+            done
+          fi
