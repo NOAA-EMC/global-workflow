@@ -9,7 +9,7 @@
 - Follow the existing code style in the repository
 - Use consistent indentation (2 spaces)
 - Follow the BASH style already in code base especially "${variable}" for variables
-- Alays have no extra whitespace at the end or beginning of lines
+- Never add extra whitespace at the end or beginning of lines
 - Use pycodestyle for Python code
 
 ## Code Quality
