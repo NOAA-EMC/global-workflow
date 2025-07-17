@@ -54,7 +54,7 @@ class Host:
             return
 
         # Detect the machine since MACHINE_ID is not set
-        if os.path.exists('/scratch1/NCEPDEV'):
+        if os.path.exists('/scratch3/NCEPDEV'):
             self.machine = 'HERA'
         elif os.path.exists('/work/noaa'):
             self.machine = socket.gethostname().split("-", 1)[0].upper()
