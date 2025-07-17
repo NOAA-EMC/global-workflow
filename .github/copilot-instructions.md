@@ -3,7 +3,7 @@
 - Follow semantic versioning guidelines
 - Include date and description of changes
 - periodically perform git commits with clear messages when appropriate
-- Never change the branch that we start with for managablity
+- Never change the branch that we start with
 
 ## Code Style
 - Follow the existing code style in the repository
