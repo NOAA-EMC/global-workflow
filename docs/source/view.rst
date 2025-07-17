@@ -33,7 +33,7 @@ Here is an example ``ROTDIR`` for a cycled run as it may look several cycles in 
 
 ::
 
-   -bash-4.2$ ll /scratch1/NCEPDEV/stmp4/Joe.Schmo/comroot/testcyc192
+   -bash-4.2$ ll /scratch3/NCEPDEV/stmp/Joe.Schmo/comroot/testcyc192
    total 88
    drwxr-sr-x   4 Joe.Schmo stmp  4096 Oct 22 04:50 enkfgdas.20190529
    drwxr-sr-x   4 Joe.Schmo stmp  4096 Oct 22 07:20 enkfgdas.20190530
