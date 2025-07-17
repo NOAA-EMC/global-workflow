@@ -100,52 +100,6 @@ include:
         exit 1
       fi
 
-# Reusable template for failure cleanup in after_script
-.failure_cleanup_template:
-  after_script:
-    - |
-      echo "=== AFTER_SCRIPT DEBUG START ==="
-      echo "Job Name: ${CI_JOB_NAME}"
-      echo "Job Status: ${CI_JOB_STATUS}"
-      echo "Machine variable: ${machine}"
-      echo "GFS_CI_RUN_TYPE: ${GFS_CI_RUN_TYPE}"
-      echo "PR_NUMBER: ${PR_NUMBER}"
-      echo "PIPELINE_SOURCE: ${CI_PIPELINE_SOURCE}"
-      echo "GH variable: ${GH}"
-      echo "=== AFTER_SCRIPT DEBUG END ==="
-
-      echo "After script is running for job ${CI_JOB_NAME} on ${machine} with status ${CI_JOB_STATUS}"
-      if [[ ${CI_JOB_STATUS} == "failed" ]]; then
-        echo "Job failed, performing cleanup actions for ${machine}"
-        Machine="${machine^}"
-
-        # Re-setup GH if needed
-        export GH=$(which gh 2>/dev/null || echo "${HOME}/bin/gh")
-        if [ ! -x "${GH}" ]; then
-          echo "WARNING: GitHub CLI (gh) not found in after_script, trying to continue anyway"
-        fi
-
-        if [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
-          echo "Updating GitHub labels for PR ${PR_NUMBER} failure on ${Machine}"
-          ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} \
-            --add-label "CI-${Machine}-Failed" \
-            --remove-label "CI-${Machine}-Building" \
-            --remove-label "CI-${Machine}-Running" || true
-
-        elif [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
-          echo "Updating nightly badge for ${Machine} failure with GIST ID ${badge_GIST_ID}"
-          badge_img_file="${TMPDIR:-/tmp}/$(uuidgen)/${machine}_pipeline_badge.svg"
-          mkdir -p "$(dirname "${badge_img_file}")"
-          curl -sSL "https://img.shields.io/badge/${machine}_nightly-failed-red?style=flat-round&logo=gitlab" -o "${badge_img_file}"
-          ${GH} gist edit "${badge_GIST_ID}" --add "${badge_img_file}" || true
-
-        else
-          echo "No cleanup actions needed for GFS_CI_RUN_TYPE=${GFS_CI_RUN_TYPE}, CI_PIPELINE_SOURCE=${CI_PIPELINE_SOURCE}"
-        fi
-      else
-        echo "Job status: ${CI_JOB_STATUS}, no failure cleanup needed"
-      fi
-
 # Common build template for all modalities
 .build_template:
   extends:
@@ -184,3 +138,39 @@ include:
 
       sorc/link_workflow.sh
       mkdir -p ${RUNTESTS_DIR}
+
+# Reusable template for failure cleanup in after_script
+.failure_cleanup_template:
+  after_script:
+    - |
+      echo "After script is running for job ${CI_JOB_NAME} on ${machine} with status ${CI_JOB_STATUS}"
+      if [[ ${CI_JOB_STATUS} == "failed" ]]; then
+        Machine="${machine^}"
+        echo "Job failed, performing cleanup actions for ${Machine}"
+
+        # Re-setup GH if needed
+        export GH=$(which gh 2>/dev/null || echo "${HOME}/bin/gh")
+        if [ ! -x "${GH}" ]; then
+          echo "WARNING: GitHub CLI (gh) not found in after_script, trying to continue anyway"
+        fi
+
+        if [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
+          echo "Updating GitHub labels for PR ${PR_NUMBER} failure on ${Machine}"
+          ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} \
+            --add-label "CI-${Machine}-Failed" \
+            --remove-label "CI-${Machine}-Building" \
+            --remove-label "CI-${Machine}-Running" || true
+
+        elif [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+          echo "Updating nightly badge for ${Machine} failure with GIST ID ${badge_GIST_ID}"
+          badge_img_file="${TMPDIR:-/tmp}/$(uuidgen)/${machine}_pipeline_badge.svg"
+          mkdir -p "$(dirname "${badge_img_file}")"
+          curl -sSL "https://img.shields.io/badge/${machine}_nightly-failed-red?style=flat-round&logo=gitlab" -o "${badge_img_file}"
+          ${GH} gist edit "${badge_GIST_ID}" --add "${badge_img_file}" || true
+
+        else
+          echo "No cleanup actions needed for GFS_CI_RUN_TYPE=${GFS_CI_RUN_TYPE}, CI_PIPELINE_SOURCE=${CI_PIPELINE_SOURCE}"
+        fi
+      else
+        echo "Job status: ${CI_JOB_STATUS}, no failure cleanup needed"
+      fi
