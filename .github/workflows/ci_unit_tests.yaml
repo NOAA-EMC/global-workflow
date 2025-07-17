@@ -51,11 +51,10 @@ jobs:
     - name: Run tests
       shell: bash
       run: |
-        sudo mkdir -p /scratch1/NCEPDEV
-        sudo mkdir -p /scratch1/NCEPDEV/stmp2
-        sudo mkdir -p /scratch1/NCEPDEV/stmp4
-        sudo mkdir -p /scratch1/NCEPDEV/global
-        sudo chmod -R a+w /scratch1/NCEPDEV
+        sudo mkdir -p /scratch3/NCEPDEV
+        sudo mkdir -p /scratch3/NCEPDEV/stmp
+        sudo mkdir -p /scratch3/NCEPDEV/global
+        sudo chmod -R a+w /scratch3/NCEPDEV
         source rocoto-${{ env.ROCOTO_VERSION }}/rocoto_path.sh
         cd global-workflow/sorc
         git submodule update --init -j 2 wxflow ufs_model.fd

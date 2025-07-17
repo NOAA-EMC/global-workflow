@@ -75,7 +75,7 @@ elif [[ -d /lfs/h1 && ! -d /lfs/h3 ]]; then
 elif [[ -d /mnt/lfs5 ]]; then
   # We are on NOAA Jet
   MACHINE_ID=jet
-elif [[ -d /scratch1 ]]; then
+elif [[ -d /scratch3 ]]; then
   # We are on NOAA Hera
   MACHINE_ID=hera
 elif [[ -d /work ]]; then

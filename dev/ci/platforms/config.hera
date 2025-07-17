@@ -8,11 +8,11 @@
 #########################################################################
 
 # Main CI root directory - Base directory for all CI/CD operations
-export GFS_CI_ROOT=/scratch1/NCEPDEV/global/glopara/GFS_CI_CD
+export GFS_CI_ROOT=/scratch3/NCEPDEV/global/role.glopara/GFS_CI_CD
 
 # ICSDIR root directory - Contains initial condition data
 # Used by create_experiment.py for setting up test cases
-export ICSDIR_ROOT=/scratch1/NCEPDEV/global/glopara/data/ICSDIR
+export ICSDIR_ROOT=/scratch3/NCEPDEV/global/role.glopara/data/ICSDIR
 
 
 #########################################################################
@@ -28,7 +28,7 @@ export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
 
 # NOTE: JENKINS custom_workspace directory where CI jobs are run
 # and is defined in $HOMEgfs/dev/ci/Jenkinsfile as custom_workspace
-# /scratch1/NCEPDEV/global/glopara/CI
+# /scratch3/NCEPDEV/global/role.glopara/CI
 
 
 #########################################################################
