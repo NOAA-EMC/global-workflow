@@ -649,6 +649,12 @@ WW3_predet(){
   #if shel, only 1 waveGRD which is linked to mod_def.ww3
   cpreq "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${waveGRD}.bin" "${DATA}/mod_def.ww3"
 
+  #If pnt_wght file exists, use it to speed up initialization for unstructured grids
+  # this file does not exist for structured, and the model can run without it (just slower init)
+  if [[ -f "${FIXgfs}/wave/pnt_wght.${waveGRD}.nc" ]]; then
+    cpreq "${FIXgfs}/wave/pnt_wght.${waveGRD}.nc" "${DATA}/pnt_wght.ww3.nc"
+  fi 
+
   if [[ "${WW3ICEINP}" == "YES" ]]; then
     local wavicefile="${COMIN_WAVE_PREP}/${RUN}wave.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
     if [[ ! -f "${wavicefile}" ]]; then
