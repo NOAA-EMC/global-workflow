@@ -142,8 +142,7 @@ if [[ "${progsigma}" == ".true." ]]; then tbp="_progsigma" ; fi
 
 # Radiation options
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
-    export IAER=1011 #TO DO undo this temp fix for gocart issues
-    #export IAER=2011  # spectral band mapping method for aerosol optical properties
+    export IAER=2011  # spectral band mapping method for aerosol optical properties
 else
     export IAER=1011
 fi
