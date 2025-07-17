@@ -13,17 +13,17 @@ on:
         required: true
         type: choice
         options:
-          - 'CTests'
           - 'PR Cases'
-        default: 'CTests'
+          - 'CTests'
+        default: 'PR Cases'
       hera:
         description: 'Hera'
         type: boolean
-        default: true
+        default: false
       gaeac6:
         description: 'Gaea C6'
         type: boolean
-        default: false
+        default: true
       # Add more machines by directly using their names as input IDs
 
 jobs:
@@ -56,15 +56,22 @@ jobs:
         id: setup
         run: |
           # Set PR number
-          echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> ${GITHUB_ENV}
-          
+          PR_NUM="${{ github.event.inputs.pr_number }}"
+          if [[ "${PR_NUM}" != "0" ]]; then
+            if ! gh pr view "${PR_NUM}" --repo "${{ vars.GW_REPO_URL }}" >/dev/null 2>&1; then
+              echo "PR ${PR_NUM} not found"
+              exit 1
+            fi
+          fi
+          echo "PR_NUM=${PR_NUM}" >> ${GITHUB_ENV}
+
           # Set pipeline type based on selection
           case "${{ github.event.inputs.pipeline_type }}" in
-            "CTests")
-              PIPELINE_TYPE="ctests"
-              ;;
             "PR Cases")
               PIPELINE_TYPE="pr_cases"
+              ;;
+            "CTests")
+              PIPELINE_TYPE="ctests"
               ;;
             *)
               echo "Invalid pipeline type: ${{ github.event.inputs.pipeline_type }}"
@@ -72,7 +79,7 @@ jobs:
               ;;
           esac
           echo "PIPELINE_TYPE=${PIPELINE_TYPE}" >> ${GITHUB_ENV}
-          echo "Selected pipeline type: ${PIPELINE_TYPE}"
+
           
           # ---------------------------------------------------------------
           # Machine Selection Logic

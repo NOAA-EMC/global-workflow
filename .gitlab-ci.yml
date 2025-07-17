@@ -63,7 +63,7 @@ include:
       PR_NUMBER=${PR_NUMBER:-0}
       if [[ "${PIPELINE_TYPE}" == "ctests" ]]; then
         GFS_CI_RUN_TYPE="ctests"
-        WORKSPACE_ID="${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}"
+        WORKSPACE_ID="${GFS_CI_RUN_TYPE}_${PR_NUMBER}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}"
       fi
 
       export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_ID}"
