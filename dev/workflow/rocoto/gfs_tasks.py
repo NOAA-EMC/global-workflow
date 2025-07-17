@@ -2059,6 +2059,8 @@ class GFSTasks(Tasks):
             if self.options['do_wave_bnd']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpntbll'}
+                deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2128,6 +2130,8 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_wave_bnd']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpnt'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpntbll'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ocean']:
             if self.run in ['gfs']:
@@ -2301,6 +2305,8 @@ class GFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
                 if self.options['do_wave_bnd']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpnt'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostbndpntbll'}
                     deps.append(rocoto.add_dependency(dep_dict))
             if self.options['do_ocean']:
                 if self.run in ['gfs']:
