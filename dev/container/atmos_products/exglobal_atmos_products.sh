@@ -25,8 +25,8 @@ export UTILROOT=${prod_util_ROOT}
 export WGRIB2=wgrib2
 
 # Scripts used
-INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/interp_atmos_master.sh"}
-INTERP_ATMOS_SFLUXSH=${INTERP_ATMOS_SFLUXSH:-"${USHgfs}/interp_atmos_sflux.sh"}
+INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/container/interp_atmos_master.sh"}
+INTERP_ATMOS_SFLUXSH=${INTERP_ATMOS_SFLUXSH:-"${USHgfs}/container/interp_atmos_sflux.sh"}
 
 # Variables used in this job
 downset=${downset:-1}  # No. of groups of pressure grib2 products to create
