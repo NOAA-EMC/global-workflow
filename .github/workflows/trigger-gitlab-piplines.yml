@@ -122,7 +122,7 @@ jobs:
 
           curl --verbose --request POST \
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=develop" \
+            --form "ref=feature/gitlab_labels_badges" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
             --form "variables[GW_REPO_URL]=https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git" \
             --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
