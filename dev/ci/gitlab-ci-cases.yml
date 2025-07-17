@@ -55,8 +55,8 @@
         fi
 
         # Clean up old directories from this pipeline type except stable
-        echo "Cleaning up old ${PIPELINE_TYPE} directories except stable"
-        find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" \
+        echo "Cleaning up old ${GFS_CI_RUN_TYPE} directories except stable"
+        find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${GFS_CI_RUN_TYPE}*" \
           -not -path "$(readlink -f "${CI_BUILDS_DIR}/stable")" -exec rm -rf {} \; 2>/dev/null || true
 
         # Update GitHub badges for success of nightly pipelines
