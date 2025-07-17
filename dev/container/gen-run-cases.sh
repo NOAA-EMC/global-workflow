@@ -7,19 +7,19 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 
 run_with_container=YES
 
-casetype=pr
+#casetype=pr
 #yamllist="C48_ATM"
 #yamllist="C48_S2SW"
-yamllist="C48_S2SWA_gefs"
+#yamllist="C48_S2SWA_gefs"
 #yamllist="C96mx100_S2S"
 
-#casetype=hires
-#yamllist="C768_S2SW"
+casetype=hires
+yamllist="C768_S2SW"
 
 HOMEDIR=${HOMEgfs}
 if [[ ${MACHINE_ID} = ursa* ]] ; then
    container=/scratch4/NAGAPE/epic/${USER}/demo/ubuntu22.04-intel-ufs-env-v1.6.0.img
-   rundir=/scratch4/NAGAPE/epic/${USER}/run
+   rundir=/scratch3/NAGAPE/epic/${USER}/run
    bindings="-B /scratch3 -B /scratch4"
    HPC_ACCOUNT=epic
 
