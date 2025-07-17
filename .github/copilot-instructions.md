@@ -11,6 +11,7 @@
 - Follow the BASH style already in code base especially "${variable}" for variables
 - Never add extra whitespace at the end or beginning of lines
 - Use pycodestyle for Python code
+- Use shfmt where appropriate and shellcheck for linting
 
 ## Code Quality
 - Ensure code is clean, well-commented, and follows best practices
