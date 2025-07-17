@@ -22,4 +22,4 @@
 - Ensure code is modular and reusable
 
 ## Documentation
-- use matlab docstrings for functions and classes
+- use numpy style docstrings for python functions and classes
