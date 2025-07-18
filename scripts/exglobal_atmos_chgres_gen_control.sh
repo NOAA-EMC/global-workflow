@@ -16,7 +16,14 @@ PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 REDOUT=${REDOUT:-'1>'}
 REDERR=${REDERR:-'2>'}
 DATA=${DATA:-${pwd}}
-
+################################################################################
+#dates
+CDATE=${CDATE:?}
+iy=$(echo ${CDATE}|cut -c1-4)
+im=$(echo ${CDATE}|cut -c5-6)
+id=$(echo ${CDATE}|cut -c7-8)
+ih=$(echo ${CDATE}|cut -c9-10)
+cyc_hour=$(printf "%03d" "$(echo ${CDATE} | cut -c9-10)")
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
 export APRUN_CHGRES=${APRUN_CHGRES:-"mpiexec -l -n 12 -ppn 12 --cpu-bind core"}
 ##############################################################
@@ -98,10 +105,10 @@ grib2_file_input_grid="NULL"
 geogrid_file_input_grid="NULL"
 varmap_file="NULL"
 wam_parm_file="NULL"
-cycle_year=2020
-cycle_mon=02
-cycle_day=02
-cycle_hour=00
+cycle_year=${iy}
+cycle_mon=${im}
+cycle_day=${id}
+cycle_hour=${ih}
 convert_atm=.true.
 convert_sfc=.true.
 convert_nst=.true.
