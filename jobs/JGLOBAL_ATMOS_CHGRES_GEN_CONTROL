@@ -7,7 +7,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_
 # Set variables used in the script
 ##############################################
 export EXECufs=${EXECufs:-${HOMEgfs}/sorc/ufs_utils.fd/exec}
-
+export CASE_CHANGE="C96"
+export LEVS="64"
 MEMDIR="mem000" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL \
     COMOUT_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL
@@ -22,10 +23,10 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || true
-if [[ "${KEEPDATA}" == "NO" ]]; then
-    rm -rf "${DATA}"
-fi
+# cd "${DATAROOT}" || true
+# if [[ "${KEEPDATA}" == "NO" ]]; then
+#     rm -rf "${DATA}"
+# fi
 
 
 exit 0

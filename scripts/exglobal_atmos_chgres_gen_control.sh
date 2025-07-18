@@ -27,21 +27,11 @@ cyc_hour=$(printf "%03d" "$(echo ${CDATE} | cut -c9-10)")
 ##############################################################
 DESTINATION_DIR="${DATA}"
 SFC_DESTINATION_DIR="${DESTINATION_DIR}/sfc"
-MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/C96_mosaic.nc"
+MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_CHANGE}_mosaic.nc"
 ATM_FILE="gfs.t00z.atmf000.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
-HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l64.txt"
-SOURCE_DIR="${HOMEgfs}/fix/orog/C96"
-
-# Remove existing $DATA/gen_control_ic
-rm -rf "${DESTINATION_DIR}"
-
-# Create directory $DATA/gen_control_ic
-echo "Creating directory: ${DESTINATION_DIR}"
-if ! mkdir -p "${DESTINATION_DIR}"; then
-    echo "Error: Failed to create directory ${DESTINATION_DIR}" >&2
-    exit 1
-fi
+HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
+SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_CHANGE}"
 
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -71,12 +61,12 @@ echo "All contents from ${SOURCE_DIR} copied successfully to ${DESTINATION_DIR}.
 
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" "${DESTINATION_DIR}"
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "${DESTINATION_DIR}"
-copy_file "${HOMEgfs}/fix/am/global_hyblev.l64.txt" "${DESTINATION_DIR}"
+copy_file "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt" "${DESTINATION_DIR}"
 
 echo "All files copied successfully."
 
 OROG_TARGET_FILES=$(for i in {1..6}; do
-    printf "\"C96.mx100_oro_data.tile%d.nc\"" "$i"
+    printf "\"${CASE_CHANGE}.mx100_oro_data.tile%d.nc\"" "$i"
     if [ "$i" -lt 6 ]; then
         printf ","
     fi
