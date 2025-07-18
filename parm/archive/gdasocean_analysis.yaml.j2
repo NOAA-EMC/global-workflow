@@ -32,9 +32,9 @@ gdasocean_analysis:
         {% endfor %}
         {% endif %}
 
+        # runtime configs
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/*.yaml'
+    optional:
         # obs space diags
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/{{ head }}ocn.*.stats.csv'
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/*.nc4'
-
-        # runtime configs
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/yaml/*.yaml'
