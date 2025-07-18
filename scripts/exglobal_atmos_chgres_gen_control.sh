@@ -24,7 +24,7 @@ ih=$(echo ${CDATE}|cut -c9-10)
 cyc_hour=$(printf "%03d" "$(echo ${CDATE} | cut -c9-10)")
 ##############################################################
 DESTINATION_DIR="${DATA}"
-SFC_DESTINATION_DIR="${DESTINATION_DIR}/sfc"
+SFC_DESTINATION_DIR="${DESTINATION_DIR}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_CHANGE}_mosaic.nc"
 ATM_FILE="gfs.t00z.atmf000.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
@@ -48,8 +48,6 @@ copy_file() {
     fi
 }
 
-echo "All contents from ${SOURCE_DIR} copied successfully to ${DESTINATION_DIR}."
-
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" "${DESTINATION_DIR}"
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "${DESTINATION_DIR}"
 copy_file "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt" "${DESTINATION_DIR}"
@@ -60,6 +58,10 @@ for i in {1..6}; do
     copy_file "${SOURCE_DIR}/${file}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/${file}"
 done
+
+# Copy global_hyblev.l${LEVS}.txt to DESTINATION_DIR and set write permission
+copy_file "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt" "${DESTINATION_DIR}/"
+chmod -R u+w "${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 
 # Copy C96_mosaic.nc from SOURCE_DIR to DESTINATION_DIR and set write permission
 file="C96_mosaic.nc"
@@ -73,6 +75,12 @@ for i in {1..6}; do
     chmod -R u+w "${DESTINATION_DIR}/${file}"
 done
 
+# Copy C96.mx100.slope_type.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
+for i in {1..6}; do
+    file="C96.mx100.slope_type.tile${i}.nc"
+    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${file}"
+done
 echo "All files copied successfully."
 
 OROG_TARGET_FILES=$(for i in {1..6}; do
@@ -86,8 +94,8 @@ done)
 # add the namelist
 cat << EOF > ./fort.41
 &config
-mosaic_file_target_grid="${MOSAIC_DESTINATION_FILE}"
-fix_dir_target_grid="${SFC_DESTINATION_DIR}"
+mosaic_file_target_grid="${DESTINATION_FILE}"
+fix_dir_target_grid="${DESTINATION_DIR}"
 orog_dir_target_grid="${DESTINATION_DIR}"
 orog_files_target_grid=${OROG_TARGET_FILES}
 vcoord_file_target_grid="${HYBLEV_FILE}"
