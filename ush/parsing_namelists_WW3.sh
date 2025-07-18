@@ -52,9 +52,9 @@ WW3_namelists(){
   export WW3_DTFLD="${DTFLD_WAV}"
   export WW3_DTPNT="${DTPNT_WAV}"
 
-  export WW3_GRD_OUTDIR='./'
-  export WW3_PNT_OUTDIR='./'
-  export WW3_RST_OUTDIR='./'
+  export WW3_GRD_OUTDIR="./WW3_OUTPUT/"
+  export WW3_PNT_OUTDIR="./WW3_OUTPUT/"
+  export WW3_RST_OUTDIR="./WW3_RESTART/"
 
   # Ensure the template exists
   local template=${WW3_INPUT_TEMPLATE:-"${PARMgfs}/ufs/ww3_shel.nml.IN"}

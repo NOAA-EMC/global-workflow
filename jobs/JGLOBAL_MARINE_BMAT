@@ -1,8 +1,9 @@
 #!/bin/bash
 
-
+export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
-export DATA="${DATAjob}/${jobid}"
+# DATA is pre-populated by the MARINE_BMAT_INIT job
+export DATA="${DATAjob}/marinebmat"
 # Create the directory to hold ensemble perturbations
 export DATAens="${DATAjob}/ensdata"
 export DATAstaticb="${DATAjob}/staticb"
@@ -47,10 +48,12 @@ RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMOUT_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
-   COMOUT_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
+   COMOUT_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL \
+   COMOUT_CONF:COM_CONF_TMPL
 
-mkdir -p "${COMOUT_OCEAN_BMATRIX}"
-mkdir -p "${COMOUT_ICE_BMATRIX}"
+mkdir -m 775 -p "${COMOUT_OCEAN_BMATRIX}"
+mkdir -m 775 -p "${COMOUT_ICE_BMATRIX}"
+mkdir -m 775 -p "${COMOUT_CONF}"
 
 ###############################################################
 # Run relevant script

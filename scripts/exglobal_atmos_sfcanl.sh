@@ -19,9 +19,6 @@
 
 #  Set environment.
 
-#  Directories.
-cd "${DATA}" || exit 99
-
 # Derived base variables
 
 # Dependent Scripts and Executables
@@ -38,7 +35,6 @@ export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
 
 # Other info used in this script
-export gesenvir=${gesenvir:-${envir}}
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GPREFIX="gdas.t${GDATE:8:2}z."
@@ -172,7 +168,7 @@ for hr in "${!gcycle_dates[@]}"; do
     cpreq "${DATA}/fnbgsi.00${nn}"                       "${DATA}/fnbgso.00${nn}"
   done
 
-  CDATE="${PDY}${cyc}" ${CYCLESH}
+  "${CYCLESH}" && true
   export err=$?
   if [[ ${err} -ne 0 ]]; then
      err_exit "Unable to update surface data from guess and analysis!"

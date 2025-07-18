@@ -1,4 +1,4 @@
-name: Trigger GitLab CTests Pipeline
+name: Trigger GitLab Pipelines
 
 on:
   # Only allow manual triggering by admins/maintainers
@@ -8,14 +8,22 @@ on:
         description: 'PR number to test (use 0 for develop branch)'
         required: true
         type: string
+      pipeline_type:
+        description: 'Pipeline Type'
+        required: true
+        type: choice
+        options:
+          - 'PR Cases'
+          - 'CTests'
+        default: 'PR Cases'
       hera:
         description: 'Hera'
         type: boolean
-        default: true
+        default: false
       gaeac6:
         description: 'Gaea C6'
         type: boolean
-        default: false
+        default: true
       # Add more machines by directly using their names as input IDs
 
 jobs:
@@ -48,7 +56,30 @@ jobs:
         id: setup
         run: |
           # Set PR number
-          echo "PR_NUM=${{ github.event.inputs.pr_number }}" >> ${GITHUB_ENV}
+          PR_NUM="${{ github.event.inputs.pr_number }}"
+          if [[ "${PR_NUM}" != "0" ]]; then
+            if ! gh pr view "${PR_NUM}" --repo "${{ vars.GW_REPO_URL }}" >/dev/null 2>&1; then
+              echo "PR ${PR_NUM} not found"
+              exit 1
+            fi
+          fi
+          echo "PR_NUM=${PR_NUM}" >> ${GITHUB_ENV}
+
+          # Set pipeline type based on selection
+          case "${{ github.event.inputs.pipeline_type }}" in
+            "PR Cases")
+              PIPELINE_TYPE="pr_cases"
+              ;;
+            "CTests")
+              PIPELINE_TYPE="ctests"
+              ;;
+            *)
+              echo "Invalid pipeline type: ${{ github.event.inputs.pipeline_type }}"
+              exit 1
+              ;;
+          esac
+          echo "PIPELINE_TYPE=${PIPELINE_TYPE}" >> ${GITHUB_ENV}
+
           
           # ---------------------------------------------------------------
           # Machine Selection Logic
@@ -58,7 +89,7 @@ jobs:
           
           # Build machine list from inputs that are set to 'true'
           MACHINES=""
-          INPUTS=$(jq -r 'to_entries[] | select(.key != "pr_number") | "\(.key)=\(.value)"' <<< '${{ toJson(github.event.inputs) }}')
+          INPUTS=$(jq -r 'to_entries[] | select(.key != "pr_number" and .key != "pipeline_type") | "\(.key)=\(.value)"' <<< '${{ toJson(github.event.inputs) }}')
 
           while read -r input; do
             # Skip empty lines
@@ -90,16 +121,26 @@ jobs:
           echo "MACHINES=${MACHINES}" >> "${GITHUB_ENV}"
           
       - name: Trigger GitLab Pipeline
+        env:
+          GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
         run: |
           # Important note: This token should be a proper GitLab Pipeline Trigger token
           # created via Settings > CI/CD > Pipeline triggers in your GitLab project
+
           curl --verbose --request POST \
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             --form "ref=develop" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
             --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
             --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
-            --form "variables[BUILDTYPE]=ctests" \
+            --form "variables[PIPELINE_TYPE]=${{ env.PIPELINE_TYPE }}" \
             ${{ vars.GITLAB_TRIGGER_URL }}
-        env:
-          GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
+
+          # Add labels for each machine in the list
+          if [[ "${{ env.PR_NUM }}" != "0" ]]; then
+            # Use GitHub CLI to add labels to the PR
+            for MACHINE in ${{ env.MACHINES }}; do
+              echo "Adding CI Ready label for machine: ${MACHINE}"
+              gh pr edit ${{ env.PR_NUM }} --repo ${{ vars.GW_REPO_URL }} --add-label "CI-${MACHINE^}-Ready"
+            done
+          fi

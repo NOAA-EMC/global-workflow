@@ -21,7 +21,7 @@ Key Features
 Running GCAFS
 ------------
 
-GCAFS can be run using the global-workflow framework. To set up a GCAFS experiment:
+GCAFS can be run using the global-workflow framework. To set up a free-forecast GCAFS experiment:
 
 .. code-block:: bash
 
@@ -39,6 +39,13 @@ After setting up the experiment, build the workflow XML and launch it:
    ./setup_xml.py /path/to/exp/my_gcafs_run
    cd /path/to/exp/my_gcafs_run
    rocotorun -w gcafs.xml -d gcafs.db
+
+
+One can also run in 'cycled' mode, see other sections of the global-workflow documentation
+for details on how to set up a cycled experiment.
+For GCAFS, the meteorological analysis in 'cycled' mode is taken from the GDAS (either from
+HPSS archive or a location stored on disk). The aerosol analysis is optional and controlled by setting
+`USE_AERO_ANL` to be "YES"
 
 GCAFS Workflow
 -------------
