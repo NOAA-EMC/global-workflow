@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<!DOCTYPE workflow
+[
+	<!ENTITY PSLOT "test_local">
+	<!ENTITY ROTDIR "/home/tmcguinness/GITHUB/COPILOT/test_workflow">
+	<!ENTITY JOBS_DIR "/home/tmcguinness/GITHUB/COPILOT/test_workflow/scripts">
+	<!ENTITY MAXTRIES "2">
+]>
+
+<workflow realtime="F" scheduler="slurm" cyclethrottle="3" taskthrottle="25">
+
+	<log verbosity="10"><cyclestr>&ROTDIR;/logs/workflow_@Y@m@d@H.log</cyclestr></log>
+
+	<!-- Define the cycles -->
+	<cycledef group="test">202507181200 202507181800 06:00:00</cycledef>
+
+<task name="stage_test" cycledefs="test" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/stage_test_fail.sh</command>
+
+	<jobname><cyclestr>test_local_stage_test_@H</cyclestr></jobname>
+	<queue>local</queue>
+	<walltime>00:05:00</walltime>
+	<cores>1</cores>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/stage_test.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>test</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+
+</task>
+
+<task name="run_test" cycledefs="test" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/run_test.sh</command>
+
+	<jobname><cyclestr>test_local_run_test_@H</cyclestr></jobname>
+	<queue>local</queue>
+	<walltime>00:05:00</walltime>
+	<cores>2</cores>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/run_test.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>test</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="stage_test"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="post_test" cycledefs="test" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/post_test.sh</command>
+
+	<jobname><cyclestr>test_local_post_test_@H</cyclestr></jobname>
+	<queue>local</queue>
+	<walltime>00:05:00</walltime>
+	<cores>1</cores>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/post_test.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>test</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="run_test"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="cleanup_test" cycledefs="test" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/cleanup_test.sh</command>
+
+	<jobname><cyclestr>test_local_cleanup_test_@H</cyclestr></jobname>
+	<queue>local</queue>
+	<walltime>00:05:00</walltime>
+	<cores>1</cores>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/cleanup_test.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>test</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="post_test"/>
+		</and>
+	</dependency>
+
+</task>
+
+</workflow>

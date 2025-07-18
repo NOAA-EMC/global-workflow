@@ -1,0 +1,868 @@
+[
+  {
+    "scenario": {
+      "name": "base_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db",
+      "description": "Base working workflow with all tasks succeeding",
+      "timestamp": "2025-07-18T18:18:30.171194"
+    },
+    "test_args": null,
+    "official_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "07/18/25 18:18:32 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "returncode": 1,
+      "execution_time": 1752877112.363004
+    },
+    "custom_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "returncode": 1,
+      "execution_time": 1752877112.4069943
+    },
+    "comparison": {
+      "outputs_match": true,
+      "return_codes_match": true,
+      "both_successful": false,
+      "official_output": "",
+      "custom_output": "",
+      "official_stderr": "07/18/25 18:18:32 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "custom_stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "differences": []
+    },
+    "timestamp": "2025-07-18T18:18:32.407003",
+    "test_name": "base_workflow_default"
+  },
+  {
+    "scenario": {
+      "name": "base_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db",
+      "description": "Base working workflow with all tasks succeeding",
+      "timestamp": "2025-07-18T18:18:30.171194"
+    },
+    "test_args": [
+      "-v"
+    ],
+    "official_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "07/18/25 18:18:32 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "returncode": 1,
+      "execution_time": 1752877112.7845466
+    },
+    "custom_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "returncode": 1,
+      "execution_time": 1752877112.8318455
+    },
+    "comparison": {
+      "outputs_match": true,
+      "return_codes_match": true,
+      "both_successful": false,
+      "official_output": "",
+      "custom_output": "",
+      "official_stderr": "07/18/25 18:18:32 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "custom_stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "differences": []
+    },
+    "timestamp": "2025-07-18T18:18:32.831853",
+    "test_name": "base_workflow_-v"
+  },
+  {
+    "scenario": {
+      "name": "base_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db",
+      "description": "Base working workflow with all tasks succeeding",
+      "timestamp": "2025-07-18T18:18:30.171194"
+    },
+    "test_args": [
+      "-t",
+      "stage_test"
+    ],
+    "official_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "07/18/25 18:18:33 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "returncode": 1,
+      "execution_time": 1752877113.226219
+    },
+    "custom_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "returncode": 1,
+      "execution_time": 1752877113.2731159
+    },
+    "comparison": {
+      "outputs_match": true,
+      "return_codes_match": true,
+      "both_successful": false,
+      "official_output": "",
+      "custom_output": "",
+      "official_stderr": "07/18/25 18:18:33 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "custom_stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "differences": []
+    },
+    "timestamp": "2025-07-18T18:18:33.273122",
+    "test_name": "base_workflow_-t_stage_test"
+  },
+  {
+    "scenario": {
+      "name": "base_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db",
+      "description": "Base working workflow with all tasks succeeding",
+      "timestamp": "2025-07-18T18:18:30.171194"
+    },
+    "test_args": [
+      "-c",
+      "202507181200"
+    ],
+    "official_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "07/18/25 18:18:33 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "returncode": 1,
+      "execution_time": 1752877113.687184
+    },
+    "custom_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "returncode": 1,
+      "execution_time": 1752877113.7398722
+    },
+    "comparison": {
+      "outputs_match": true,
+      "return_codes_match": true,
+      "both_successful": false,
+      "official_output": "",
+      "custom_output": "",
+      "official_stderr": "07/18/25 18:18:33 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "custom_stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "differences": []
+    },
+    "timestamp": "2025-07-18T18:18:33.739879",
+    "test_name": "base_workflow_-c_202507181200"
+  },
+  {
+    "scenario": {
+      "name": "base_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db",
+      "description": "Base working workflow with all tasks succeeding",
+      "timestamp": "2025-07-18T18:18:30.171194"
+    },
+    "test_args": [
+      "-T"
+    ],
+    "official_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "07/18/25 18:18:34 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "returncode": 1,
+      "execution_time": 1752877114.1482594
+    },
+    "custom_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "returncode": 1,
+      "execution_time": 1752877114.1869617
+    },
+    "comparison": {
+      "outputs_match": true,
+      "return_codes_match": true,
+      "both_successful": false,
+      "official_output": "",
+      "custom_output": "",
+      "official_stderr": "07/18/25 18:18:34 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "custom_stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "differences": []
+    },
+    "timestamp": "2025-07-18T18:18:34.186968",
+    "test_name": "base_workflow_-T"
+  },
+  {
+    "scenario": {
+      "name": "base_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db",
+      "description": "Base working workflow with all tasks succeeding",
+      "timestamp": "2025-07-18T18:18:30.171194"
+    },
+    "test_args": [
+      "-s"
+    ],
+    "official_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "07/18/25 18:18:34 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "returncode": 1,
+      "execution_time": 1752877114.5912783
+    },
+    "custom_result": {
+      "success": false,
+      "stdout": "",
+      "stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "returncode": 1,
+      "execution_time": 1752877114.6348927
+    },
+    "comparison": {
+      "outputs_match": true,
+      "return_codes_match": true,
+      "both_successful": false,
+      "official_output": "",
+      "custom_output": "",
+      "official_stderr": "07/18/25 18:18:34 EDT :: test_workflow_simple.xml :: ERROR: Can not open /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db read-only because it does not exist\n",
+      "custom_stderr": "Database file does not exist: /home/tmcguinness/GITHUB/COPILOT/test_workflow_simple.db\n",
+      "differences": []
+    },
+    "timestamp": "2025-07-18T18:18:34.634898",
+    "test_name": "base_workflow_-s"
+  },
+  {
+    "scenario": {
+      "name": "failing_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.db",
+      "description": "Workflow with intentionally failing stage_test task",
+      "timestamp": "2025-07-18T18:18:31.140617"
+    },
+    "test_args": null,
+    "official_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          65              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                          66              QUEUED                   -         0           0.0\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877115.2468908
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877115.3462317
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          65              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                          66              QUEUED                   -         0           0.0\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "custom_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 3,
+          "official": "202507181200              stage_test                          65              QUEUED                   -         0           0.0",
+          "custom": "202507181200              stage_test                           -                   -                   -         -             -"
+        },
+        {
+          "line": 8,
+          "official": "202507181800              stage_test                          66              QUEUED                   -         0           0.0",
+          "custom": "202507181800              stage_test                           -                   -                   -         -             -"
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:35.346278",
+    "test_name": "failing_workflow_default"
+  },
+  {
+    "scenario": {
+      "name": "failing_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.db",
+      "description": "Workflow with intentionally failing stage_test task",
+      "timestamp": "2025-07-18T18:18:31.140617"
+    },
+    "test_args": [
+      "-v"
+    ],
+    "official_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          65              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                          66              QUEUED                   -         0           0.0\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877115.8951862
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877115.949167
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          65              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                          66              QUEUED                   -         0           0.0\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "custom_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 3,
+          "official": "202507181200              stage_test                          65              QUEUED                   -         0           0.0",
+          "custom": "202507181200              stage_test                           -                   -                   -         -             -"
+        },
+        {
+          "line": 8,
+          "official": "202507181800              stage_test                          66              QUEUED                   -         0           0.0",
+          "custom": "202507181800              stage_test                           -                   -                   -         -             -"
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:35.949184",
+    "test_name": "failing_workflow_-v"
+  },
+  {
+    "scenario": {
+      "name": "failing_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.db",
+      "description": "Workflow with intentionally failing stage_test task",
+      "timestamp": "2025-07-18T18:18:31.140617"
+    },
+    "test_args": [
+      "-t",
+      "stage_test"
+    ],
+    "official_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          65              QUEUED                   -         0           0.0\n================================================================================================================================\n202507181800              stage_test                          66              QUEUED                   -         0           0.0\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877116.5099466
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877116.5525358
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          65              QUEUED                   -         0           0.0\n================================================================================================================================\n202507181800              stage_test                          66              QUEUED                   -         0           0.0\n",
+      "custom_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 3,
+          "official": "202507181200              stage_test                          65              QUEUED                   -         0           0.0",
+          "custom": "202507181200              stage_test                           -                   -                   -         -             -"
+        },
+        {
+          "line": 5,
+          "official": "202507181800              stage_test                          66              QUEUED                   -         0           0.0",
+          "custom": "202507181800              stage_test                           -                   -                   -         -             -"
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:36.552550",
+    "test_name": "failing_workflow_-t_stage_test"
+  },
+  {
+    "scenario": {
+      "name": "failing_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.db",
+      "description": "Workflow with intentionally failing stage_test task",
+      "timestamp": "2025-07-18T18:18:31.140617"
+    },
+    "test_args": [
+      "-c",
+      "202507181200"
+    ],
+    "official_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          65              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877117.1565082
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877117.200575
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          65              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n",
+      "custom_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 3,
+          "official": "202507181200              stage_test                          65              QUEUED                   -         0           0.0",
+          "custom": "202507181200              stage_test                           -                   -                   -         -             -"
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:37.200606",
+    "test_name": "failing_workflow_-c_202507181200"
+  },
+  {
+    "scenario": {
+      "name": "failing_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.db",
+      "description": "Workflow with intentionally failing stage_test task",
+      "timestamp": "2025-07-18T18:18:31.140617"
+    },
+    "test_args": [
+      "-T"
+    ],
+    "official_result": {
+      "success": true,
+      "stdout": "                TASK           CYCLE                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n          stage_test    202507181200                          65              QUEUED                   -         0           0.0\n          stage_test    202507181800                          66              QUEUED                   -         0           0.0\n================================================================================================================================\n            run_test    202507181200                           -                   -                   -         -             -\n            run_test    202507181800                           -                   -                   -         -             -\n================================================================================================================================\n           post_test    202507181200                           -                   -                   -         -             -\n           post_test    202507181800                           -                   -                   -         -             -\n================================================================================================================================\n        cleanup_test    202507181200                           -                   -                   -         -             -\n        cleanup_test    202507181800                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877117.760199
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "                TASK           CYCLE                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n        cleanup_test    202507181200                          -               -                        -         -           -\n        cleanup_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n           post_test    202507181200                          -               -                        -         -           -\n           post_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n            run_test    202507181200                          -               -                        -         -           -\n            run_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n          stage_test    202507181200                          -               -                        -         -           -\n          stage_test    202507181800                          -               -                        -         -           -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877117.805726
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "                TASK           CYCLE                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n          stage_test    202507181200                          65              QUEUED                   -         0           0.0\n          stage_test    202507181800                          66              QUEUED                   -         0           0.0\n================================================================================================================================\n            run_test    202507181200                           -                   -                   -         -             -\n            run_test    202507181800                           -                   -                   -         -             -\n================================================================================================================================\n           post_test    202507181200                           -                   -                   -         -             -\n           post_test    202507181800                           -                   -                   -         -             -\n================================================================================================================================\n        cleanup_test    202507181200                           -                   -                   -         -             -\n        cleanup_test    202507181800                           -                   -                   -         -             -\n",
+      "custom_output": "                TASK           CYCLE                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n        cleanup_test    202507181200                          -               -                        -         -           -\n        cleanup_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n           post_test    202507181200                          -               -                        -         -           -\n           post_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n            run_test    202507181200                          -               -                        -         -           -\n            run_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n          stage_test    202507181200                          -               -                        -         -           -\n          stage_test    202507181800                          -               -                        -         -           -\n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 3,
+          "official": "          stage_test    202507181200                          65              QUEUED                   -         0           0.0",
+          "custom": "        cleanup_test    202507181200                          -               -                        -         -           -"
+        },
+        {
+          "line": 4,
+          "official": "          stage_test    202507181800                          66              QUEUED                   -         0           0.0",
+          "custom": "        cleanup_test    202507181800                          -               -                        -         -           -"
+        },
+        {
+          "line": 6,
+          "official": "            run_test    202507181200                           -                   -                   -         -             -",
+          "custom": "           post_test    202507181200                          -               -                        -         -           -"
+        },
+        {
+          "line": 7,
+          "official": "            run_test    202507181800                           -                   -                   -         -             -",
+          "custom": "           post_test    202507181800                          -               -                        -         -           -"
+        },
+        {
+          "line": 9,
+          "official": "           post_test    202507181200                           -                   -                   -         -             -",
+          "custom": "            run_test    202507181200                          -               -                        -         -           -"
+        },
+        {
+          "line": 10,
+          "official": "           post_test    202507181800                           -                   -                   -         -             -",
+          "custom": "            run_test    202507181800                          -               -                        -         -           -"
+        },
+        {
+          "line": 12,
+          "official": "        cleanup_test    202507181200                           -                   -                   -         -             -",
+          "custom": "          stage_test    202507181200                          -               -                        -         -           -"
+        },
+        {
+          "line": 13,
+          "official": "        cleanup_test    202507181800                           -                   -                   -         -             -",
+          "custom": "          stage_test    202507181800                          -               -                        -         -           -"
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:37.805748",
+    "test_name": "failing_workflow_-T"
+  },
+  {
+    "scenario": {
+      "name": "failing_workflow",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/failing_workflow.db",
+      "description": "Workflow with intentionally failing stage_test task",
+      "timestamp": "2025-07-18T18:18:31.140617"
+    },
+    "test_args": [
+      "-s"
+    ],
+    "official_result": {
+      "success": true,
+      "stdout": "   CYCLE         STATE           ACTIVATED              DEACTIVATED     \n202507181200      Active    Jul 18 2025 22:18:31             -          \n202507181800      Active    Jul 18 2025 22:18:31             -          \n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877118.3623173
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "   CYCLE         STATE           ACTIVATED              DEACTIVATED     \n202507181200      Active    Jul 18 2025 21:26:18             -         \n202507181800      Active    Jul 18 2025 21:26:18             -         \n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877118.4094713
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "   CYCLE         STATE           ACTIVATED              DEACTIVATED     \n202507181200      Active    Jul 18 2025 22:18:31             -          \n202507181800      Active    Jul 18 2025 22:18:31             -          \n",
+      "custom_output": "   CYCLE         STATE           ACTIVATED              DEACTIVATED     \n202507181200      Active    Jul 18 2025 21:26:18             -         \n202507181800      Active    Jul 18 2025 21:26:18             -         \n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 2,
+          "official": "202507181200      Active    Jul 18 2025 22:18:31             -          ",
+          "custom": "202507181200      Active    Jul 18 2025 21:26:18             -         "
+        },
+        {
+          "line": 3,
+          "official": "202507181800      Active    Jul 18 2025 22:18:31             -          ",
+          "custom": "202507181800      Active    Jul 18 2025 21:26:18             -         "
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:38.409484",
+    "test_name": "failing_workflow_-s"
+  },
+  {
+    "scenario": {
+      "name": "multi_cycle",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.db",
+      "description": "Workflow with multiple cycles (every 30 minutes)",
+      "timestamp": "2025-07-18T18:18:31.986836"
+    },
+    "test_args": null,
+    "official_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          67              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                          68              QUEUED                   -         0           0.0\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877118.979143
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877119.0372815
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          67              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                          68              QUEUED                   -         0           0.0\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "custom_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 3,
+          "official": "202507181200              stage_test                          67              QUEUED                   -         0           0.0",
+          "custom": "202507181200              stage_test                           -                   -                   -         -             -"
+        },
+        {
+          "line": 8,
+          "official": "202507181800              stage_test                          68              QUEUED                   -         0           0.0",
+          "custom": "202507181800              stage_test                           -                   -                   -         -             -"
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:39.037298",
+    "test_name": "multi_cycle_default"
+  },
+  {
+    "scenario": {
+      "name": "multi_cycle",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.db",
+      "description": "Workflow with multiple cycles (every 30 minutes)",
+      "timestamp": "2025-07-18T18:18:31.986836"
+    },
+    "test_args": [
+      "-v"
+    ],
+    "official_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          67              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                          68              QUEUED                   -         0           0.0\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877119.6215954
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877119.6775079
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          67              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                          68              QUEUED                   -         0           0.0\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "custom_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n202507181800                run_test                           -                   -                   -         -             -\n202507181800               post_test                           -                   -                   -         -             -\n202507181800            cleanup_test                           -                   -                   -         -             -\n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 3,
+          "official": "202507181200              stage_test                          67              QUEUED                   -         0           0.0",
+          "custom": "202507181200              stage_test                           -                   -                   -         -             -"
+        },
+        {
+          "line": 8,
+          "official": "202507181800              stage_test                          68              QUEUED                   -         0           0.0",
+          "custom": "202507181800              stage_test                           -                   -                   -         -             -"
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:39.677524",
+    "test_name": "multi_cycle_-v"
+  },
+  {
+    "scenario": {
+      "name": "multi_cycle",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.db",
+      "description": "Workflow with multiple cycles (every 30 minutes)",
+      "timestamp": "2025-07-18T18:18:31.986836"
+    },
+    "test_args": [
+      "-t",
+      "stage_test"
+    ],
+    "official_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          67              QUEUED                   -         0           0.0\n================================================================================================================================\n202507181800              stage_test                          68              QUEUED                   -         0           0.0\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877120.2710907
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877120.3146203
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          67              QUEUED                   -         0           0.0\n================================================================================================================================\n202507181800              stage_test                          68              QUEUED                   -         0           0.0\n",
+      "custom_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n================================================================================================================================\n202507181800              stage_test                           -                   -                   -         -             -\n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 3,
+          "official": "202507181200              stage_test                          67              QUEUED                   -         0           0.0",
+          "custom": "202507181200              stage_test                           -                   -                   -         -             -"
+        },
+        {
+          "line": 5,
+          "official": "202507181800              stage_test                          68              QUEUED                   -         0           0.0",
+          "custom": "202507181800              stage_test                           -                   -                   -         -             -"
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:40.314634",
+    "test_name": "multi_cycle_-t_stage_test"
+  },
+  {
+    "scenario": {
+      "name": "multi_cycle",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.db",
+      "description": "Workflow with multiple cycles (every 30 minutes)",
+      "timestamp": "2025-07-18T18:18:31.986836"
+    },
+    "test_args": [
+      "-c",
+      "202507181200"
+    ],
+    "official_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          67              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877120.879698
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877120.9277577
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                          67              QUEUED                   -         0           0.0\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n",
+      "custom_output": "       CYCLE                    TASK                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n202507181200              stage_test                           -                   -                   -         -             -\n202507181200                run_test                           -                   -                   -         -             -\n202507181200               post_test                           -                   -                   -         -             -\n202507181200            cleanup_test                           -                   -                   -         -             -\n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 3,
+          "official": "202507181200              stage_test                          67              QUEUED                   -         0           0.0",
+          "custom": "202507181200              stage_test                           -                   -                   -         -             -"
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:40.927772",
+    "test_name": "multi_cycle_-c_202507181200"
+  },
+  {
+    "scenario": {
+      "name": "multi_cycle",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.db",
+      "description": "Workflow with multiple cycles (every 30 minutes)",
+      "timestamp": "2025-07-18T18:18:31.986836"
+    },
+    "test_args": [
+      "-T"
+    ],
+    "official_result": {
+      "success": true,
+      "stdout": "                TASK           CYCLE                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n          stage_test    202507181200                          67              QUEUED                   -         0           0.0\n          stage_test    202507181800                          68              QUEUED                   -         0           0.0\n================================================================================================================================\n            run_test    202507181200                           -                   -                   -         -             -\n            run_test    202507181800                           -                   -                   -         -             -\n================================================================================================================================\n           post_test    202507181200                           -                   -                   -         -             -\n           post_test    202507181800                           -                   -                   -         -             -\n================================================================================================================================\n        cleanup_test    202507181200                           -                   -                   -         -             -\n        cleanup_test    202507181800                           -                   -                   -         -             -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877121.4807153
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "                TASK           CYCLE                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n        cleanup_test    202507181200                          -               -                        -         -           -\n        cleanup_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n           post_test    202507181200                          -               -                        -         -           -\n           post_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n            run_test    202507181200                          -               -                        -         -           -\n            run_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n          stage_test    202507181200                          -               -                        -         -           -\n          stage_test    202507181800                          -               -                        -         -           -\n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877121.5268514
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "                TASK           CYCLE                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n          stage_test    202507181200                          67              QUEUED                   -         0           0.0\n          stage_test    202507181800                          68              QUEUED                   -         0           0.0\n================================================================================================================================\n            run_test    202507181200                           -                   -                   -         -             -\n            run_test    202507181800                           -                   -                   -         -             -\n================================================================================================================================\n           post_test    202507181200                           -                   -                   -         -             -\n           post_test    202507181800                           -                   -                   -         -             -\n================================================================================================================================\n        cleanup_test    202507181200                           -                   -                   -         -             -\n        cleanup_test    202507181800                           -                   -                   -         -             -\n",
+      "custom_output": "                TASK           CYCLE                       JOBID               STATE         EXIT STATUS     TRIES      DURATION\n================================================================================================================================\n        cleanup_test    202507181200                          -               -                        -         -           -\n        cleanup_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n           post_test    202507181200                          -               -                        -         -           -\n           post_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n            run_test    202507181200                          -               -                        -         -           -\n            run_test    202507181800                          -               -                        -         -           -\n================================================================================================================================\n          stage_test    202507181200                          -               -                        -         -           -\n          stage_test    202507181800                          -               -                        -         -           -\n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 3,
+          "official": "          stage_test    202507181200                          67              QUEUED                   -         0           0.0",
+          "custom": "        cleanup_test    202507181200                          -               -                        -         -           -"
+        },
+        {
+          "line": 4,
+          "official": "          stage_test    202507181800                          68              QUEUED                   -         0           0.0",
+          "custom": "        cleanup_test    202507181800                          -               -                        -         -           -"
+        },
+        {
+          "line": 6,
+          "official": "            run_test    202507181200                           -                   -                   -         -             -",
+          "custom": "           post_test    202507181200                          -               -                        -         -           -"
+        },
+        {
+          "line": 7,
+          "official": "            run_test    202507181800                           -                   -                   -         -             -",
+          "custom": "           post_test    202507181800                          -               -                        -         -           -"
+        },
+        {
+          "line": 9,
+          "official": "           post_test    202507181200                           -                   -                   -         -             -",
+          "custom": "            run_test    202507181200                          -               -                        -         -           -"
+        },
+        {
+          "line": 10,
+          "official": "           post_test    202507181800                           -                   -                   -         -             -",
+          "custom": "            run_test    202507181800                          -               -                        -         -           -"
+        },
+        {
+          "line": 12,
+          "official": "        cleanup_test    202507181200                           -                   -                   -         -             -",
+          "custom": "          stage_test    202507181200                          -               -                        -         -           -"
+        },
+        {
+          "line": 13,
+          "official": "        cleanup_test    202507181800                           -                   -                   -         -             -",
+          "custom": "          stage_test    202507181800                          -               -                        -         -           -"
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:41.526874",
+    "test_name": "multi_cycle_-T"
+  },
+  {
+    "scenario": {
+      "name": "multi_cycle",
+      "xml_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.xml",
+      "db_file": "/home/tmcguinness/GITHUB/COPILOT/rocoto_testing/multi_cycle_workflow.db",
+      "description": "Workflow with multiple cycles (every 30 minutes)",
+      "timestamp": "2025-07-18T18:18:31.986836"
+    },
+    "test_args": [
+      "-s"
+    ],
+    "official_result": {
+      "success": true,
+      "stdout": "   CYCLE         STATE           ACTIVATED              DEACTIVATED     \n202507181200      Active    Jul 18 2025 22:18:31             -          \n202507181800      Active    Jul 18 2025 22:18:31             -          \n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877122.1089816
+    },
+    "custom_result": {
+      "success": true,
+      "stdout": "   CYCLE         STATE           ACTIVATED              DEACTIVATED     \n202507181200      Active    Jul 18 2025 21:26:18             -         \n202507181800      Active    Jul 18 2025 21:26:18             -         \n",
+      "stderr": "",
+      "returncode": 0,
+      "execution_time": 1752877122.1609833
+    },
+    "comparison": {
+      "outputs_match": false,
+      "return_codes_match": true,
+      "both_successful": true,
+      "official_output": "   CYCLE         STATE           ACTIVATED              DEACTIVATED     \n202507181200      Active    Jul 18 2025 22:18:31             -          \n202507181800      Active    Jul 18 2025 22:18:31             -          \n",
+      "custom_output": "   CYCLE         STATE           ACTIVATED              DEACTIVATED     \n202507181200      Active    Jul 18 2025 21:26:18             -         \n202507181800      Active    Jul 18 2025 21:26:18             -         \n",
+      "official_stderr": "",
+      "custom_stderr": "",
+      "differences": [
+        {
+          "line": 2,
+          "official": "202507181200      Active    Jul 18 2025 22:18:31             -          ",
+          "custom": "202507181200      Active    Jul 18 2025 21:26:18             -         "
+        },
+        {
+          "line": 3,
+          "official": "202507181800      Active    Jul 18 2025 22:18:31             -          ",
+          "custom": "202507181800      Active    Jul 18 2025 21:26:18             -         "
+        }
+      ]
+    },
+    "timestamp": "2025-07-18T18:18:42.160996",
+    "test_name": "multi_cycle_-s"
+  }
+]
