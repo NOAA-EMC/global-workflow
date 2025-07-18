@@ -24,10 +24,8 @@ im=$(echo ${CDATE}|cut -c5-6)
 id=$(echo ${CDATE}|cut -c7-8)
 ih=$(echo ${CDATE}|cut -c9-10)
 cyc_hour=$(printf "%03d" "$(echo ${CDATE} | cut -c9-10)")
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
-export APRUN_CHGRES=${APRUN_CHGRES:-"mpiexec -l -n 12 -ppn 12 --cpu-bind core"}
 ##############################################################
-DESTINATION_DIR="${DATA}/gen_control_ic"
+DESTINATION_DIR="${DATA}"
 SFC_DESTINATION_DIR="${DESTINATION_DIR}/sfc"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/C96_mosaic.nc"
 ATM_FILE="gfs.t00z.atmf000.nc"
@@ -141,12 +139,12 @@ if [[ ! -d "${COMIN_ATMOS_INPUT_MEM}" ]]; then
     fi
 fi
 
-# Copy out.atm.tile{1..6}.nc to COMIN_ATMOS_INPUT_MEM
+# Copy out.atm.tile{1..6}.nc to COMIN_ATMOS_INPUT_MEM, force overwrite
 for i in {1..6}; do
     src_file="out.atm.tile${i}.nc"
     if [[ -f "${src_file}" ]]; then
         echo "Copying ${src_file} to ${COMIN_ATMOS_INPUT_MEM}/"
-        cp "${src_file}" "${COMIN_ATMOS_INPUT_MEM}/"
+        cp -f "${src_file}" "${COMIN_ATMOS_INPUT_MEM}/"
     else
         echo "Warning: ${src_file} does not exist and will not be copied."
     fi
