@@ -3,22 +3,26 @@
 import sys
 import os
 import copy
-from time import sleep
+from time import sleep, time
 
 from wxflow import which, Logger, CommandNotFoundError, ProcessError
 from argparse import ArgumentParser, FileType
 
 from collections import Counter
 
-logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
+logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
+                colored_log=False)
 
 
-def attempt_multiple_times(expression, max_attempts, sleep_duration=0, exception_class=Exception):
+def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
+                           exception_class=Exception, use_telescoping_delay=True):
     """
-    Retries a function multiple times.
+    Retries a function multiple times with optional telescoping delays.
 
-    Try to execute the function expression up to max_attempts times ignoring any exceptions
-    of the type exception_class, It waits for sleep_duration seconds between attempts.
+    Try to execute the function expression up to max_attempts times ignoring
+    any exceptions of the type exception_class. It waits for sleep_duration
+    seconds between attempts. If use_telescoping_delay is True, the sleep
+    duration increases with each attempt.
 
     Parameters
     ----------
@@ -27,9 +31,12 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0, exception
     max_attempts : int
         The maximum number of attempts to execute the function.
     sleep_duration : int, optional
-        The number of seconds to wait between attempts. Default is 0.
+        The base number of seconds to wait between attempts. Default is 0.
     exception_class : Exception, optional
-        The type of exception to catch. Default is the base Exception class, catching all exceptions.
+        The type of exception to catch. Default is the base Exception class,
+        catching all exceptions.
+    use_telescoping_delay : bool, optional
+        If True, use increasing delays between attempts. Default is True.
 
     Returns
     -------
@@ -45,15 +52,51 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0, exception
 
     attempt = 0
     last_exception = None
+    total_start_time = time()
+
     while attempt < max_attempts:
+        call_start_time = time()
         try:
-            pass
-            return expression()
-        except exception_class as last_exception:
+            result = expression()
+            call_end_time = time()
+
+            # Log performance metrics
+            call_duration = call_end_time - call_start_time
+            total_duration = call_end_time - total_start_time
+
+            logger.info(f"Rocoto call successful on attempt {attempt + 1}: "
+                        f"call_time={call_duration:.2f}s, "
+                        f"total_time={total_duration:.2f}s")
+
+            return result
+
+        except exception_class as e:
+            last_exception = e
             attempt += 1
-            sleep(sleep_duration)
-    else:
-        raise last_exception
+            call_end_time = time()
+            call_duration = call_end_time - call_start_time
+
+            logger.warning(f"Rocoto call failed on attempt {attempt}: "
+                           f"call_time={call_duration:.2f}s, "
+                           f"error={str(last_exception)}")
+
+            if attempt < max_attempts:
+                if use_telescoping_delay:
+                    # Telescoping delay: base_duration * (2^attempt)
+                    current_delay = sleep_duration * (2 ** (attempt - 1))
+                else:
+                    current_delay = sleep_duration
+
+                if current_delay > 0:
+                    logger.info(f"Waiting {current_delay}s before retry "
+                                f"attempt {attempt + 1}")
+                    sleep(current_delay)
+
+    # Log final failure
+    total_duration = time() - total_start_time
+    logger.error(f"All {max_attempts} attempts failed after "
+                 f"{total_duration:.2f}s total")
+    raise last_exception
 
 
 def input_args():
@@ -68,18 +111,28 @@ def input_args():
 
     description = """
         Using rocotostat to get the status of all jobs this scripts
-        determines rocoto_state: if all cycles are done, then rocoto_state is Done.
-        Assuming rocotorun had just been run, and the rocoto_state is not Done, then
-        rocoto_state is Stalled if there are no jobs that are RUNNING, SUBMITTING, or QUEUED.
+        determines rocoto_state: if all cycles are done, then rocoto_state
+        is Done. Assuming rocotorun had just been run, and the rocoto_state
+        is not Done, then rocoto_state is Stalled if there are no jobs that
+        are RUNNING, SUBMITTING, or QUEUED.
         """
 
     parser = ArgumentParser(description=description)
 
-    parser.add_argument('-w', help='workflow_document', type=FileType('r'), required=True)
-    parser.add_argument('-d', help='database_file', metavar='Database File', type=FileType('r'), required=True)
-    parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
-    parser.add_argument('-v', action='store_true', help='List the states and the number of jobs that are in each', required=False)
-    parser.add_argument('--export', action='store_true', help='create and export list of the status values for bash', required=False)
+    parser.add_argument('-w', help='workflow_document', type=FileType('r'),
+                        required=True)
+    parser.add_argument('-d', help='database_file',
+                        metavar='Database File', type=FileType('r'),
+                        required=True)
+    parser.add_argument('--verbose', action='store_true',
+                        help='List the states and the number of jobs '
+                             'that are in each', required=False)
+    parser.add_argument('-v', action='store_true',
+                        help='List the states and the number of jobs '
+                             'that are in each', required=False)
+    parser.add_argument('--export', action='store_true',
+                        help='create and export list of the status '
+                             'values for bash', required=False)
 
     args = parser.parse_args()
 
@@ -102,7 +155,7 @@ def rocotostat_summary(rocotostat):
     """
     rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--summary')
-    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 3, 120, ProcessError)
+    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 3, 30, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:2] for line in rocotostat_output]
 
@@ -131,7 +184,7 @@ def rocoto_statcount(rocotostat):
     rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--all')
 
-    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 4, 120, ProcessError)
+    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 4, 30, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:4] for line in rocotostat_output]
     rocotostat_output = [line for line in rocotostat_output if len(line) != 1]
@@ -215,7 +268,7 @@ if __name__ == '__main__':
         error_return = rocoto_status['FAIL'] + rocoto_status['DEAD']
         rocoto_state = 'FAIL'
     elif rocoto_status['UNAVAILABLE'] > 0 or rocoto_status['UNKNOWN'] > 0:
-        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 120, ProcessError)
+        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 30, ProcessError)
         error_return = 0
         rocoto_state = 'RUNNING'
         if rocoto_status['UNAVAILABLE'] > 0:
@@ -225,7 +278,7 @@ if __name__ == '__main__':
             error_return += rocoto_status['UNKNOWN']
             rocoto_state = 'UNKNOWN'
     elif is_stalled(rocoto_status):
-        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 120, ProcessError)
+        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 30, ProcessError)
         if is_stalled(rocoto_status):
             error_return = 3
             rocoto_state = 'STALLED'
