@@ -5,7 +5,6 @@
 # Script name:         exglobal_atmos_chgres_gen_control.sh
 # Script description:  Runs chgres on changing resolution of GEFS stage ic control member
 ################################################################################
-
 #  Directories.
 pwd=$(pwd)
 # Dependent Scripts and Executables
@@ -16,6 +15,8 @@ PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 REDOUT=${REDOUT:-'1>'}
 REDERR=${REDERR:-'2>'}
 DATA=${DATA:-${pwd}}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
+export APRUN_CHGRES=${APRUN_CHGRES:-"mpiexec -l -n ${ntasks} -ppn ${tasks_per_node} --cpu-bind core"}
 ################################################################################
 #dates
 CDATE=${CDATE:?}
