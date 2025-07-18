@@ -70,13 +70,20 @@ copy_file "${HOMEgfs}/fix/am/global_hyblev.l64.txt" "${DESTINATION_DIR}"
 
 echo "All files copied successfully."
 
+OROG_TARGET_FILES=$(for i in {1..6}; do
+    printf "\"C96.mx100_oro_data.tile%d.nc\"" "$i"
+    if [ "$i" -lt 6 ]; then
+        printf ","
+    fi
+done)
+
 # add the namelist
 cat << EOF > ./fort.41
 &config
 mosaic_file_target_grid="${MOSAIC_DESTINATION_FILE}"
 fix_dir_target_grid="${SFC_DESTINATION_DIR}"
 orog_dir_target_grid="${DESTINATION_DIR}"
-orog_files_target_grid="C96.mx100_oro_data.tile1.nc","C96.mx100_oro_data.tile2.nc","C96.mx100_oro_data.tile3.nc","C96.mx100_oro_data.tile4.nc","C96.mx100_oro_data.tile5.nc","C96.mx100_oro_data.tile6.nc"
+orog_files_target_grid=${OROG_TARGET_FILES}
 vcoord_file_target_grid="${HYBLEV_FILE}"
 mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
@@ -118,4 +125,23 @@ wam_cold_start=.false.
 EOF
 
 eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+# Ensure COMIN_ATMOS_INPUT_MEM directory exists, create if it does not
+if [[ ! -d "${COMIN_ATMOS_INPUT_MEM}" ]]; then
+    echo "Directory ${COMIN_ATMOS_INPUT_MEM} does not exist. Creating it."
+    if ! mkdir -p "${COMIN_ATMOS_INPUT_MEM}"; then
+        echo "Error: Failed to create directory ${COMIN_ATMOS_INPUT_MEM}."
+        exit 1
+    fi
+fi
+
+# Copy out.atm.tile{1..6}.nc to COMIN_ATMOS_INPUT_MEM
+for i in {1..6}; do
+    src_file="out.atm.tile${i}.nc"
+    if [[ -f "${src_file}" ]]; then
+        echo "Copying ${src_file} to ${COMIN_ATMOS_INPUT_MEM}/"
+        cp "${src_file}" "${COMIN_ATMOS_INPUT_MEM}/"
+    else
+        echo "Warning: ${src_file} does not exist and will not be copied."
+    fi
+done
 exit "${err}"
