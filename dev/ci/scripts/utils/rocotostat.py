@@ -3,6 +3,7 @@
 import sys
 import os
 import copy
+import subprocess
 from time import sleep, time
 
 from wxflow import which, Logger, CommandNotFoundError, ProcessError
@@ -11,7 +12,70 @@ from argparse import ArgumentParser, FileType
 from collections import Counter
 
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
-                colored_log=False)
+                colored_log=False,
+                logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE"))
+
+
+def get_user_thread_count():
+    """
+    Get the current user thread count for monitoring against ulimit -u.
+
+    Returns
+    -------
+    dict
+        Dictionary containing thread count and limit information
+    """
+    try:
+        current_user = os.getenv('USER', 'unknown')
+
+        # Get user thread count using ps -u $USER -L
+        result = subprocess.run(['ps', '-u', current_user, '-L'],
+                               capture_output=True, text=True)
+        if result.returncode == 0:
+            user_threads = len(result.stdout.strip().split('\n')) - 1 if result.stdout.strip() else 0
+        else:
+            user_threads = -1
+
+        # Get ulimit -u (process limit)
+        result = subprocess.run(['bash', '-c', 'ulimit -u'],
+                               capture_output=True, text=True)
+        if result.returncode == 0:
+            process_limit = int(result.stdout.strip())
+        else:
+            process_limit = -1
+
+        return {
+            'user': current_user,
+            'thread_count': user_threads,
+            'process_limit': process_limit,
+            'utilization_pct': round((user_threads / process_limit * 100), 2) if process_limit > 0 else -1
+        }
+
+    except Exception as e:
+        logger.warning(f"Error getting user thread count: {e}")
+        return {
+            'user': 'unknown',
+            'thread_count': -1,
+            'process_limit': -1,
+            'utilization_pct': -1
+        }
+
+
+def log_thread_count(stage=""):
+    """
+    Log the current user thread count with optional stage identifier.
+
+    Parameters
+    ----------
+    stage : str
+        Optional stage identifier (e.g., "START", "END")
+    """
+    thread_info = get_user_thread_count()
+    stage_prefix = f"[{stage}] " if stage else ""
+
+    logger.info(f"{stage_prefix}USER_THREAD_COUNT: {thread_info['user']} has "
+                f"{thread_info['thread_count']}/{thread_info['process_limit']} threads "
+                f"({thread_info['utilization_pct']}% utilization)")
 
 
 def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
@@ -64,6 +128,9 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
             call_duration = call_end_time - call_start_time
             total_duration = call_end_time - total_start_time
 
+            # Log thread count after successful call
+            log_thread_count(f"ROCOTO_SUCCESS_ATTEMPT_{attempt + 1}")
+
             logger.info(f"Rocoto call successful on attempt {attempt + 1}: "
                         f"call_time={call_duration:.2f}s, "
                         f"total_time={total_duration:.2f}s")
@@ -75,6 +142,9 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
             attempt += 1
             call_end_time = time()
             call_duration = call_end_time - call_start_time
+
+            # Log thread count after failed call
+            log_thread_count(f"ROCOTO_FAILED_ATTEMPT_{attempt}")
 
             logger.warning(f"Rocoto call failed on attempt {attempt}: "
                            f"call_time={call_duration:.2f}s, "
@@ -248,12 +318,16 @@ if __name__ == '__main__':
     out to stdout spcific information of rocoto workflow.
     """
 
+    # Log thread count at start
+    log_thread_count("START")
+
     args = input_args()
 
     try:
         rocotostat = which("rocotostat")
     except CommandNotFoundError:
         logger.exception("rocotostat not found in PATH")
+        log_thread_count("ERROR_EXIT")
         raise CommandNotFoundError("rocotostat not found in PATH")
 
     rocotostat.add_default_arg(['-w', os.path.abspath(args.w.name), '-d', os.path.abspath(args.d.name)])
@@ -299,5 +373,8 @@ if __name__ == '__main__':
             print(f'export {status}={rocoto_status[status]}')
     else:
         print(rocoto_state)
+
+    # Log thread count at end
+    log_thread_count("END")
 
     sys.exit(error_return)
