@@ -57,6 +57,7 @@ class MarineLETKF(Analysis):
         self.task_config.PARMsoca = os.path.join(self.task_config.PARMgfs, 'gdas', 'soca')
         self.task_config.app_path_observations = self.task_config.MARINE_JCB_GDAS_OBS
         self.task_config.letkf_app = "true"
+        self.task_config.OPREFIX = f"{self.task_config.RUN.replace('enkf','')}.t{self.task_config.cyc:02d}z."
 
     @logit(logger)
     def initialize(self):
