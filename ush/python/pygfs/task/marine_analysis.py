@@ -157,7 +157,10 @@ class MarineAnalysis(Task):
 
         # This method is a bit of a hack that will be removed in the future when the anlstat
         # job fully replaces the SOCA obs_diag_stats application
-        self.initialize_obs_stats()
+        try:
+            self.initialize_obs_stats()
+        except Exception as e:
+            logger.warning(f"Failed to initialize observation statistics: {e}")
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -198,8 +201,12 @@ class MarineAnalysis(Task):
         soca_finalize_list = parse_j2yaml(self.task_config.MARINE_DET_FINALIZE_YAML_TMPL, self.task_config)
         FileHandler(soca_finalize_list).sync()
 
-        # Save obs diag statistics to COM
-        diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
+        # Save obs diag statistics to COM (success is optional)
+        logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
+        try:
+            diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
+        except Exception as e:
+            logger.warning(f"Failed to render JCB template, 'soca_diags_finalize': {e}")
         FileHandler(diags_list).sync()
 
     @logit(logger)

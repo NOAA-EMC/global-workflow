@@ -12,6 +12,7 @@
 # Key components:
 # - .setup_ctests_template: Template for setting up the CMake/CTest environment
 # - .run_ctests_template: Template for executing specific CTest labels
+# Note: .failure_cleanup_template is defined in the main .gitlab-ci.yml file
 #
 # CTests are defined in the dev/ctests directory and are categorized by labels,
 # which are referenced in the hosts file to determine which tests to run on
@@ -23,11 +24,12 @@
 
 # Setup job for ctests using CMake
 .setup_ctests_template:
-  extends: .base_config
+  extends:
+    - .base_config
+    - .failure_cleanup_template
   stage: setup_tests
   script: |
-    echo "Setting up for ctests workflow"
-    echo "Using build directory ${GW_HOMEgfs}"
+    echo "Setting up for ctests pipeline building in ${GW_HOMEgfs} on ${machine}"
     source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
     source "${GW_HOMEgfs}/dev/ci/platforms/config.${machine}"
     cd "${GW_HOMEgfs}/dev/ctests" || exit 1
@@ -35,28 +37,21 @@
     cd build || exit 1
     cmake -S "${GW_HOMEgfs}"
     ctest -N
-    ctest_status=$?
-    if [[ ${ctest_status} -ne 0 ]]; then
-      echo "==========================================================="
-      echo "ERROR: CMake configuration failed with exit code ${ctest_status}"
-      echo "==========================================================="
-      exit 1  # Force exit code 1 for GitLab to recognize the failure
-    fi
     num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
     if [[ ${num} -le 0 ]]; then
       echo "No tests found"
       exit 1
     fi
     echo "CTests have been created and configured successfully"
-  needs:
-    - build-${machine}
 
 # Main template for CTest execution jobs
 .run_ctests_template:
-  extends: .base_config
+  extends: 
+    - .base_config
+    - .failure_cleanup_template
   stage: run_tests
   script: |
-    echo "Using build directory ${GW_HOMEgfs}"
+    echo "Using build directory ${GW_HOMEgfs} for running CTests"
     source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
     cd "${GW_HOMEgfs}/dev/ctests/build" || exit 1
     echo "Running CTests with label: ${CTEST_NAME} in ${PWD}"
@@ -105,5 +100,3 @@
       - ${GIT_CLONE_PATH}/dev/ctests/build/Testing/Temporary/LastTest.log
     reports:
       junit: ${GIT_CLONE_PATH}/dev/ctests/build/result.xml
-  needs:
-    - setup_ctests-${machine}

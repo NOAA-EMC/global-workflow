@@ -52,29 +52,33 @@ enkf:
 
         # Ensemble mean state
         {% if not DO_JEDIATMENS %}
-        {% set da_files = ["enkfstat",
-                           "gsistat.ensmean",
-                           "cnvstat.ensmean",
-                           "oznstat.ensmean",
-                           "radstat.ensmean"] %}
+        {% set da_stat_files = ["enkfstat",
+                                "gsistat.ensmean",
+                                "cnvstat.ensmean",
+                                "oznstat.ensmean",
+                                "radstat.ensmean"] %}
+        {% set da_conf_files = [] %}
         {% else %}
         {% if lobsdiag_forenkf %}
-        {% set da_files = ["atmensanlobs.yaml",
-                           "atmensanlsol.yaml",
-                           "atmensanlfv3inc.yaml",
-                           "correction_increment.yaml",
-                           "ensemble_recenter.yaml",
-                           "atmensstat"] %}
+        {% set da_stat_files = [] %}
+        {% set da_conf_files = ["atmensanlobs.yaml",
+                                "atmensanlsol.yaml",
+                                "atmensanlfv3inc.yaml",
+                                "correction_increment.yaml",
+                                "ensemble_recenter.yaml"] %}
         {% else %}
-        {% set da_files = ["atmensanlletkf.yaml",
-                           "atmensanlfv3inc.yaml",
-                           "correction_increment.yaml",
-                           "ensemble_recenter.yaml",
-                           "atmensstat"] %}
+        {% set da_stat_files = ["atmensstat"]%}
+        {% set da_conf_files = ["atmensanlletkf.yaml",
+                                "atmensanlfv3inc.yaml",
+                                "correction_increment.yaml",
+                                "ensemble_recenter.yaml"] %}
         {% endif %}
         {% endif %}
-        {% for file in da_files %}
+        {% for file in da_stat_files %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
+        {% endfor %}
+        {% for file in da_conf_files %}
+        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}{{ file }}"
         {% endfor %}
 
         {% if DO_JEDISNOWDA %}

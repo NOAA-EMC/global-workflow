@@ -216,7 +216,7 @@ pipeline {
                                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                                         script {
                                                 def pslot = sh(script: "${HOMEgfs_dev}/ci/scripts/utils/ci_utils.sh get_pslot ${CUSTOM_WORKSPACE}/RUNTESTS ${caseName}", returnStdout: true).trim()
-                                                def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/${pslot}_error.logs"
+                                                def error_file = "${CUSTOM_WORKSPACE}/RUNTESTS/EXPDIR/${pslot}/${pslot}_error.logs"
                                                 sh(script: " rm -f ${error_file}")
                                                 try {
                                                     sh(script: """
