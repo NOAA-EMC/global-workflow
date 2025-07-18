@@ -73,6 +73,7 @@ OROG_TARGET_FILES=$(for i in {1..6}; do
     fi
 done)
 
+
 # add the namelist
 cat << EOF > ./fort.41
 &config
@@ -120,7 +121,7 @@ wam_cold_start=.false.
 /
 EOF
 
-eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${PGMOUT}"
 # Ensure COMIN_ATMOS_INPUT_MEM directory exists, create if it does not
 if [[ ! -d "${COMIN_ATMOS_INPUT_MEM}" ]]; then
     echo "Directory ${COMIN_ATMOS_INPUT_MEM} does not exist. Creating it."
