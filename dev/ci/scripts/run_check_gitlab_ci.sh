@@ -28,6 +28,90 @@ HOMEgfs="${TEST_DIR}/${SYSTEM_BUILD_DIR}"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 run_check_logfile="${RUNTESTS}/ci-run_check.log"
 
+# Function to report experiment failure to GitHub
+report_failure_to_github() {
+  local pslot="${1}"
+  local Machine="${MACHINE_ID^}"
+  local caseName="${caseName:-${pslot%_*-*}}"
+  local error_log_file="${RUNTESTS}/EXPDIR/${pslot}/${pslot}_fullpath_error.logs"
+  local gist_message_section=""
+
+  echo "================================================================================"
+  echo "FAILURE DETECTED: Found error log files in ${RUNTESTS}/EXPDIR/${pslot}"
+  echo "Error log file: ${error_log_file}"
+  echo "================================================================================"
+
+  # Create processed logs directory to prevent reprocessing
+  DATE=$(date +%Y%m%d_%H%M%S)
+  local processed_dir="${RUNTESTS}/EXPDIR/${pslot}/error_logs/${DATE}" || true
+  mkdir -p "${processed_dir}"
+
+  if [[ -f "${error_log_file}" && -s "${error_log_file}" ]]; then
+    echo "Processing log reports to GitHub for failure with case: ${caseName}, pslot: ${pslot}"
+    local error_logs_for_gist=""
+    local error_logs_markdown=""
+
+    while IFS= read -r full_log_path; do
+      [[ -n "${full_log_path}" ]] || continue
+
+      if [[ -f "${full_log_path}" && -s "${full_log_path}" ]]; then
+        error_logs_for_gist="${error_logs_for_gist} ${full_log_path}"
+        error_logs_markdown=$(echo -e "${error_logs_markdown}\n${full_log_path}")
+      fi
+    done < "${error_log_file}"
+
+    if [[ -n "${error_logs_for_gist}" ]]; then
+      # Generate gist URLs with formatted markdown links
+      source "${HOMEgfs}/dev/ush/gw_setup.sh"
+      # shellcheck disable=SC2027,SC2086,SC2155
+      local gist_links=$("${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
+      --file ${error_logs_for_gist} --multiple --format=github \
+      --gist "PR_${PR_NUMBER}_${caseName}" | tail -n 1) || true
+
+      # Upload to repo as well for backup
+      # shellcheck disable=SC2027,SC2086
+      "${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
+      --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${caseName}" || true
+
+      # Prepare markdown section for files links to gist for GitHub comment
+      gist_message_section=$(cat <<EOF
+### 📋 Error Log Files:
+\`\`\`
+${error_logs_markdown}
+\`\`\`
+### 🔗 View Error Logs:
+${gist_links}
+EOF
+      )
+    else
+      echo "No valid error log files found for case: ${caseName}, pslot: ${pslot}"
+      gist_message_section="No valid error log files found for this case."
+    fi
+  fi
+
+  # Create formatted GitHub comment
+  DATE=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+  local comment_body="### 🚫 Experiment ${caseName} FAILED on ${Machine}
+
+  **GitLab Pipeline#:** ${CI_PIPELINE_ID}
+  **Workspace:** \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
+  **Timestamp:** ${DATE}
+  ${gist_message_section}
+
+  _This failure was detected automatically by global-workflow's CI/CD Pipeline_" || true
+
+  # Post GitHub comment
+  "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
+
+  # Move processed error log to prevent reprocessing
+  if [[ -f "${error_log_file}" ]]; then
+    mv "${error_log_file}" "${processed_dir}/"
+  fi
+
+  # Update GitHub labels
+  "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" --add-label "CI-${Machine}-Failed" --remove-label "CI-${Machine}-Running" || true
+}
+
 # Source modules and setup logging
 echo "Source modules."
 source "${HOMEgfs}/dev/ush/gw_setup.sh"
@@ -93,8 +177,15 @@ while true; do
       rm -f "${RUNTESTS}/${pslot}_error.logs"
       for log in ${error_logs}; do
         echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/EXPDIR/${pslot}/${pslot}_error.logs"
+        echo "${log}" >> "${RUNTESTS}/EXPDIR/${pslot}/${pslot}_fullpath_error.logs"
       done
    fi
+   
+   # Report failure to GitHub if running in CI environment
+   if [[ -n "${CI_PIPELINE_ID:-}" && -n "${PR_NUMBER:-}" && "${PR_NUMBER}" != "0" ]]; then
+     report_failure_to_github "${pslot}"
+   fi
+   
    rc=1
    break
   fi

@@ -2,19 +2,16 @@
 # Templates for Standard Test Cases
 # ==========================================================================
 #
-# This file defines templates for setting up and running standard experiment 
-# test cases for the global-workflow project. These cases represent more 
-# comprehensive, end-to-end testing scenarios than the CTesting framework.
+# This file defines templates for setting up and running experiment
+# test cases found in dev/ci/cases/pr for the global-workflow project.
 #
-# These templates are used primarily for PR testing when GITHUB_API_TRIGGER=false.
-# The actual test case matrix for each host is defined in .gitlab-ci-hosts.yml.
+# These cases represent more comprehensive, end-to-end testing
+# scenarios than the CTesting framework.
 #
 # Key templates:
 # - .setup_template: Creates experiment directories based on case YAML files
 # - .run_tests_template: Executes and validates the experiment workflows
-#
-# Test cases are defined as YAML files in the dev/ci/cases/pr directory and
-# are referenced by name in the host configuration file's test matrix.
+# - .finalize_{state}_template: Handles success and failure reporting
 
 # Template for experiment setup jobs
 .setup_experiment_template:
@@ -24,9 +21,7 @@
     - |
       export RUNTESTS="${RUNTESTS_DIR}"
       "${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" create_experiment "${GW_HOMEgfs}/dev/ci/cases/pr/${caseName}.yaml" "${CI_COMMIT_SHORT_SHA}-${CI_PIPELINE_ID}"
-      exit $?                           # This dash delemeter on pslot between the SHA & ID is needed for the parser when recovering the pslot:  ^
-  needs:
-    - build-${machine}
+      exit $?
 
 # Template for test execution jobs
 .run_experiments_template:
@@ -34,60 +29,64 @@
   stage: run_tests
   script:
     - |
-      echo "Using build directory $GW_HOMEgfs (dated $DATE)"
+      echo "Using build directory ${GW_HOMEgfs} (dated ${DATE})"
       pslot=$("${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS_DIR}" "${caseName}")
-      "${GW_HOMEgfs}/dev/ci/scripts/run_check_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
-      error=$?
-      if [[ ${error} -ne 0 ]]; then
-        echo "================================================================================"
-        echo "ERROR: Test case ${caseName} failed on ${machine} in ${RUNTESTS_DIR} at $(date)"
-        echo "================================================================================"
-        exit 1  # Force exit code 1 for GitLab to recognize the failure
-      else
-        echo "================================================================================"
-        echo "SUCCESS: Test case ${caseName} passed on ${machine} in ${RUNTESTS_DIR} at $(date)"
-        echo "================================================================================"
-      fi
-  needs:
-    - setup_experiments-${machine}
+      "${GW_HOMEgfs}/dev/ci/scripts/run_check_gitlab_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
+      exit $? 
 
-.finalize_template:
+# Success finalize - runs when ALL case jobs succeed
+.finalize_success_template:
+  extends: .base_config
+  stage: finalize
+
+  script:
+    - |
+      Machine="${machine^}"
+      if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+        echo "This is a scheduled nightly pipeline, creating date-based directories and symlinks"
+        cd "${CI_BUILDS_DIR}"
+        rm -f stable
+        if [[ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" && -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]]; then
+          echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
+          mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}"
+          ln -sf "${WORKSPACE_DATE}" stable
+        elif [[ "${WORKSPACE_ID}" == "${WORKSPACE_DATE}" ]]; then
+          ln -sf "${WORKSPACE_DATE}" stable
+        fi
+
+        # Clean up old directories from this pipeline type except stable
+        echo "Cleaning up old ${GFS_CI_RUN_TYPE} directories except stable"
+        find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${GFS_CI_RUN_TYPE}*" \
+          -not -path "$(readlink -f "${CI_BUILDS_DIR}/stable")" -exec rm -rf {} \; 2>/dev/null || true
+
+        # Update GitHub badges for success of nightly pipelines
+        echo "Updating develop branch badge for ${Machine} to indicate Passed nightly run with GIST ID ${badge_GIST_ID}"
+        badge_img_file="${TMPDIR:-/tmp}/$(uuidgen)/${machine}_pipeline_badge.svg"
+        mkdir -p "$(dirname "${badge_img_file}")"
+        curl -sSL "https://img.shields.io/badge/${machine}_nightly-passed-brightgreen?style=flat-round&logo=gitlab" -o "${badge_img_file}"
+        ${GH} gist edit "${badge_GIST_ID}" --add "${badge_img_file}"
+      elif [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
+        # Update GitHub labels for success of pr_cases with a PR number
+        "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
+          --add-label "CI-${Machine}-Passed" --remove-label "CI-${Machine}-Running" || true
+      fi
+
+
+# Failure finalize - runs when ANY case job fails
+.finalize_fail_template:
   extends: .base_config
   stage: finalize
   script:
     - |
-      echo "Finalizing test cases on ${machine} using ${GW_HOMEgfs}"
-      # Set GFS_CI_RUN_TYPE to "nightly" in the Gitlab pipeline scheduler
-      if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
-        echo "This is a scheduled pipeline, creating date-based directories and symlinks to stable"
-        echo "Creating date-based directory: ${WORKSPACE_DATE}"
-        cd "${CI_BUILDS_DIR}"
-        rm -f stable
-        if [ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" ]; then
-          # Rename the WORKSPACE_ID directory to one with the DATE
-          if [ -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]; then
-            echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
-            mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}"
-            echo "Setting softlink to ${WORKSPACE_DATE} as ${CI_BUILDS_DIR}/stable"
-            ln -sf ${WORKSPACE_DATE} stable
-            echo "Successfully created date-based directory and stable symlink"
-          else
-            echo "WARNING: Source directory ${CI_BUILDS_DIR}/${WORKSPACE_ID} not found"
-            # Create the symlink anyway from original path
-            ln -sf "${GW_RUN_PATH}" "${CI_BUILDS_DIR}/stable"
-          fi
-        else
-          echo "WORKSPACE_ID already includes the date, creating stable symlink"
-          ln -sf ${WORKSPACE_DATE} stable
-        fi
-
-        # Clean up old directories from this pipeline type except stable
-        echo "Cleaning up old ${PIPELINE_TYPE} directories except stable"
-        find "${CI_BUILDS_DIR}" -maxdepth 1 -type d -name "${PIPELINE_TYPE}*" -not -path "$(readlink -f ${CI_BUILDS_DIR}/stable)" -exec rm -rf {} \; 2>/dev/null || true
-        echo "TODO set status badges on GitHub status here"
-      else
-        echo "Skipping directory rename and cleanup for non-scheduled pipeline."
-        echo "TODO set GitHub status labels here"
+      Machine="${machine^}"
+      if [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
+        echo "Updating GitHub labels for failure for Case runs with PR number ${PR_NUMBER}"
+        "${GH}" pr edit "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
+          --add-label "CI-${Machine}-Failed" --remove-label "CI-${Machine}-Running" || true
+      elif [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+        echo "Updating develop branch badge for ${Machine} to indicate nightly Failed with GIST ID ${badge_GIST_ID}"
+        badge_img_file="${TMPDIR:-/tmp}/$(uuidgen)/${machine}_pipeline_badge.svg"
+        mkdir -p "$(dirname "${badge_img_file}")"
+        curl -sSL "https://img.shields.io/badge/${machine}_nightly-failed-red?style=flat-round&logo=gitlab" -o "${badge_img_file}"
+        ${GH} gist edit "${badge_GIST_ID}" --add "${badge_img_file}"
       fi
-  needs:
-    - run_experiments-${machine}
