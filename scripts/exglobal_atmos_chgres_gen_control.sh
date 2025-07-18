@@ -11,9 +11,6 @@ pwd=$(pwd)
 CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
-PGMERR=${PGMERR:-${pgmerr:-'&2'}}
-REDOUT=${REDOUT:-'1>'}
-REDERR=${REDERR:-'2>'}
 DATA=${DATA:-${pwd}}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
 export APRUN_CHGRES=${APRUN_CHGRES:-"mpiexec -l -n 12 -ppn 12 --cpu-bind core"}
@@ -51,18 +48,30 @@ copy_file() {
     fi
 }
 
-# Copy all contents (including subdirectories) to $DESTINATION_DIR
-echo "Copying all contents from ${SOURCE_DIR} to ${DESTINATION_DIR}..."
-for item in "${SOURCE_DIR}"/*; do
-    copy_file "${item}" "${DESTINATION_DIR}"
-    chmod -R u+w "${DESTINATION_DIR}/$(basename "${item}")"
-done
-
 echo "All contents from ${SOURCE_DIR} copied successfully to ${DESTINATION_DIR}."
 
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" "${DESTINATION_DIR}"
 copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "${DESTINATION_DIR}"
 copy_file "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt" "${DESTINATION_DIR}"
+
+# Copy C96_grid.tile{1..6}.nc files from SOURCE_DIR to DESTINATION_DIR and set write permission
+for i in {1..6}; do
+    file="C96_grid.tile${i}.nc"
+    copy_file "${SOURCE_DIR}/${file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${file}"
+done
+
+# Copy C96_mosaic.nc from SOURCE_DIR to DESTINATION_DIR and set write permission
+file="C96_mosaic.nc"
+copy_file "${SOURCE_DIR}/${file}" "${DESTINATION_DIR}/"
+chmod -R u+w "${DESTINATION_DIR}/${file}"
+
+# Copy C96.mx100_oro_data.tile{1..6}.nc files from SOURCE_DIR to DESTINATION_DIR and set write permission
+for i in {1..6}; do
+    file="C96.mx100_oro_data.tile${i}.nc"
+    copy_file "${SOURCE_DIR}/${file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${file}"
+done
 
 echo "All files copied successfully."
 
