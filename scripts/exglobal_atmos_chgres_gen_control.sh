@@ -90,8 +90,8 @@ done
 echo "All files copied successfully."
 
 OROG_TARGET_FILES=$(for i in {1..6}; do
-    printf "\"${CASE_CHANGE}.mx100_oro_data.tile%d.nc\"" "$i"
-    if [ "$i" -lt 6 ]; then
+    printf "\"${CASE_CHANGE}.mx100_oro_data.tile%d.nc\"" "${i}"
+    if [ "${i}" -lt 6 ]; then
         printf ","
     fi
 done)
