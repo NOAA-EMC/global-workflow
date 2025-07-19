@@ -183,8 +183,7 @@ EOF
      echo "          in ${COMOUT_WAVE_WMO}"
      cpfs "${AWIPSGRB}.${grdID}.f${fhr}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
 
-     if [[ "${SENDDBN}" = 'YES' ]]
-     then
+     if [[ "${SENDDBN}" == "YES" ]]; then
        echo "      Sending ${AWIPSGRB}.${grdID}.f${fhr} to DBRUN."
        "${DBNROOT}/bin/dbn_alert" GRIB_LOW "${RUN}" "${job}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
      fi

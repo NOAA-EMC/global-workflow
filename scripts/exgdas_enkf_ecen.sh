@@ -21,9 +21,6 @@
 pwd=$(pwd)
 
 # Base variables
-CDATE=${CDATE:-"2010010100"}
-DONST=${DONST:-"NO"}
-export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
 
 # Utilities

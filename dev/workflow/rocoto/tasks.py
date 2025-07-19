@@ -71,7 +71,7 @@ class Tasks:
                       'EXPDIR': self._base.get('EXPDIR'),
                       'NET': self._base.get('NET'),
                       'RUN': self.run,
-                      'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',
+                      'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',  # TODO: remove CDATE
                       'PDY': '<cyclestr>@Y@m@d</cyclestr>',
                       'cyc': '<cyclestr>@H</cyclestr>',
                       'COMROOT': self._base.get('COMROOT'),
