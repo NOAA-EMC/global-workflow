@@ -5,12 +5,11 @@ source "${USHgfs}/wave_domain_grid.sh"
 
 # Set COM Paths
 
-for grid in ${wavepostGRD}; do
-  process_grdID "${grid}"
-  prod_dir="COMOUT_WAVE_STATION_ENS"
-  MEMDIR="ensstat"  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_WAVE_STATION_TMPL"
-  if [[ ! -d "${!prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
-done
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMOUT_WAVE_STATION_ENS:COM_WAVE_STATION_TMPL
+if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
+  mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"
+fi
 
 # Execute the Script
 "${SCRgfs}/exgefs_wave_stat_pnt.sh"
