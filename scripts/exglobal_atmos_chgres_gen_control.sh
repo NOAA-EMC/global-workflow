@@ -49,7 +49,7 @@ copy_file() {
     fi
 }
 
-# List of single files to copy (src, dest, and chmod)
+# List of single files to copy
 input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
     "${SOURCE_DIR}/C96_mosaic.nc"
@@ -63,7 +63,7 @@ for src in "${input_files[@]}"; do
 done
 
 # Patterns for tiled files: "prefix" "dir"
-tiled_file_set=(
+tile_file_set=(
     "C96_grid.tile"           "${SOURCE_DIR}"
     "C96.mx100_oro_data.tile" "${SOURCE_DIR}"
     "C96.mx100.slope_type.tile" "${SOURCE_DIR}/sfc"
