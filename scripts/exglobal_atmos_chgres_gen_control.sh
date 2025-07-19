@@ -17,11 +17,11 @@ export APRUN_CHGRES=${APRUN_CHGRES:-"mpiexec -l -n 12 -ppn 12 --cpu-bind core"}
 ################################################################################
 #dates
 CDATE=${CDATE:?}
-iy=$(echo ${CDATE}|cut -c1-4)
-im=$(echo ${CDATE}|cut -c5-6)
-id=$(echo ${CDATE}|cut -c7-8)
-ih=$(echo ${CDATE}|cut -c9-10)
-cyc_hour=$(printf "%03d" "$(echo ${CDATE} | cut -c9-10)")
+iy=$(echo "${CDATE}" | cut -c1-4)
+im=$(echo "${CDATE}" | cut -c5-6)
+id=$(echo "${CDATE}" | cut -c7-8)
+ih=$(echo "${CDATE}" | cut -c9-10)
+cyc_hour=$(printf "%03d" "$(echo "${CDATE}" | cut -c9-10)")
 ##############################################################
 DESTINATION_DIR="${DATA}"
 INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf"
