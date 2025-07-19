@@ -24,6 +24,7 @@ ih=$(echo ${CDATE}|cut -c9-10)
 cyc_hour=$(printf "%03d" "$(echo ${CDATE} | cut -c9-10)")
 ##############################################################
 DESTINATION_DIR="${DATA}"
+INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf"
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_CHANGE}"
 SFC_DESTINATION_DIR="${DESTINATION_DIR}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_CHANGE}_mosaic.nc"
@@ -48,88 +49,42 @@ copy_file() {
     fi
 }
 
-copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.atmf000.nc" "${DESTINATION_DIR}"
-copy_file "/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/gfs.t00z.sfcf000.nc" "${DESTINATION_DIR}"
-copy_file "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt" "${DESTINATION_DIR}"
+# List of single files to copy (src, dest, and chmod)
+input_files=(
+    "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
+    "${SOURCE_DIR}/C96_mosaic.nc"
+    "${INPUT_DIR}/${ATM_FILE}"
+    "${INPUT_DIR}/${SFC_FILE}"
+)
 
-# Copy C96_grid.tile{1..6}.nc files from SOURCE_DIR to DESTINATION_DIR and set write permission
-for i in {1..6}; do
-    file="C96_grid.tile${i}.nc"
-    copy_file "${SOURCE_DIR}/${file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${file}"
+for src in "${input_files[@]}"; do
+    copy_file "${src}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/$(basename "${src}")"
 done
 
-# Copy global_hyblev.l${LEVS}.txt to DESTINATION_DIR and set write permission
-copy_file "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt" "${DESTINATION_DIR}/"
-chmod -R u+w "${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
+# Patterns for tiled files: "prefix" "dir"
+tiled_file_set=(
+    "C96_grid.tile"           "${SOURCE_DIR}"
+    "C96.mx100_oro_data.tile" "${SOURCE_DIR}"
+    "C96.mx100.slope_type.tile" "${SOURCE_DIR}/sfc"
+    "C96.mx100.maximum_snow_albedo.tile" "${SOURCE_DIR}/sfc"
+    "C96.mx100.snowfree_albedo.tile" "${SOURCE_DIR}/sfc"
+    "C96.mx100.soil_type.tile" "${SOURCE_DIR}/sfc"
+    "C96.mx100.vegetation_type.tile" "${SOURCE_DIR}/sfc"
+    "C96.mx100.substrate_temperature.tile" "${SOURCE_DIR}/sfc"
+    "C96.mx100.vegetation_greenness.tile" "${SOURCE_DIR}/sfc"
+    "C96.mx100.facsf.tile" "${SOURCE_DIR}/sfc"
+)
 
-# Copy C96_mosaic.nc from SOURCE_DIR to DESTINATION_DIR and set write permission
-file="C96_mosaic.nc"
-copy_file "${SOURCE_DIR}/${file}" "${DESTINATION_DIR}/"
-chmod -R u+w "${DESTINATION_DIR}/${file}"
-
-# Copy C96.mx100_oro_data.tile{1..6}.nc files from SOURCE_DIR to DESTINATION_DIR and set write permission
-for i in {1..6}; do
-    file="C96.mx100_oro_data.tile${i}.nc"
-    copy_file "${SOURCE_DIR}/${file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${file}"
-done
-
-# Copy C96.mx100.slope_type.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
-for i in {1..6}; do
-    file="C96.mx100.slope_type.tile${i}.nc"
-    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${file}"
-done
-echo "All files copied successfully."
-
-# Copy C96.mx100.maximum_snow_albedo.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
-for i in {1..6}; do
-    file="C96.mx100.maximum_snow_albedo.tile${i}.nc"
-    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${file}"
-done
-
-# Copy C96.mx100.snowfree_albedo.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
-for i in {1..6}; do
-    file="C96.mx100.snowfree_albedo.tile${i}.nc"
-    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${file}"
-done
-
-# Copy C96.mx100.soil_type.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
-for i in {1..6}; do
-    file="C96.mx100.soil_type.tile${i}.nc"
-    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${file}"
-done
-
-# Copy C96.mx100.vegetation_type.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
-for i in {1..6}; do
-    file="C96.mx100.vegetation_type.tile${i}.nc"
-    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${file}"
-done
-
-# Copy C96.mx100.substrate_temperature.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
-for i in {1..6}; do
-    file="C96.mx100.substrate_temperature.tile${i}.nc"
-    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${file}"
-done
-
-# Copy C96.mx100.vegetation_greenness.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
-for i in {1..6}; do
-    file="C96.mx100.vegetation_greenness.tile${i}.nc"
-    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${file}"
-done
-
-# Copy C96.mx100.facsf.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
-for i in {1..6}; do
-    file="C96.mx100.facsf.tile${i}.nc"
-    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${file}"
+# Loop through patterns and tiles
+for ((p=0; p<${#tile_file_set[@]}; p+=2)); do
+    prefix="${tile_file_set[p]}"
+    dir="${tile_file_set[p+1]}"
+    for i in {1..6}; do
+        tile_file="${prefix}${i}.nc"
+        copy_file "${dir}/${tile_file}" "${DESTINATION_DIR}/"
+        chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
+    done
 done
 
 echo "All files copied successfully."
