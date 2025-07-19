@@ -9,11 +9,8 @@
 pwd=$(pwd)
 # Dependent input scripts and Executables
 CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
-export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 DATA=${DATA:-${pwd}}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
-export APRUN_CHGRES=${APRUN_CHGRES:-"mpiexec -l -n 12 -ppn 12 --cpu-bind core"}
 ################################################################################
 #dates
 CDATE=${CDATE:?}
