@@ -24,12 +24,12 @@ ih=$(echo ${CDATE}|cut -c9-10)
 cyc_hour=$(printf "%03d" "$(echo ${CDATE} | cut -c9-10)")
 ##############################################################
 DESTINATION_DIR="${DATA}"
+SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_CHANGE}"
 SFC_DESTINATION_DIR="${DESTINATION_DIR}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_CHANGE}_mosaic.nc"
+HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 ATM_FILE="gfs.t00z.atmf000.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
-HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
-SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_CHANGE}"
 
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -86,6 +86,13 @@ echo "All files copied successfully."
 # Copy C96.mx100.maximum_snow_albedo.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
 for i in {1..6}; do
     file="C96.mx100.maximum_snow_albedo.tile${i}.nc"
+    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${file}"
+done
+
+# Copy C96.mx100.soil_type.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
+for i in {1..6}; do
+    file="C96.mx100.soil_type.tile${i}.nc"
     copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/${file}"
 done
