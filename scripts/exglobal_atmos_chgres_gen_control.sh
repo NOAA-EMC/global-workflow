@@ -142,7 +142,7 @@ EOF
 eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${PGMOUT}"
 ################################################################################
 # Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
-if [[ ! -d "${COMIN_ATMOS_INPUT_MEM}" ]] && ! mkdir -p "${COMIN_ATMOS_INPUT_MEM}"; then
+if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]] && ! mkdir -p "${COMIN_ATMOS_INPUT_MEM}"; then
     echo "Error: Failed to create directory ${COMIN_ATMOS_INPUT_MEM}."
     exit 1
 fi
