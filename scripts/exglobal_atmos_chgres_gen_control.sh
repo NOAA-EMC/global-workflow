@@ -83,6 +83,14 @@ for i in {1..6}; do
 done
 echo "All files copied successfully."
 
+# Copy C96.mx100.maximum_snow_albedo.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
+for i in {1..6}; do
+    file="C96.mx100.maximum_snow_albedo.tile${i}.nc"
+    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${file}"
+done
+echo "All files copied successfully."
+
 OROG_TARGET_FILES=$(for i in {1..6}; do
     printf "\"${CASE_CHANGE}.mx100_oro_data.tile%d.nc\"" "$i"
     if [ "$i" -lt 6 ]; then
