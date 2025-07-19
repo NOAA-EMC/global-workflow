@@ -90,6 +90,13 @@ for i in {1..6}; do
     chmod -R u+w "${DESTINATION_DIR}/${file}"
 done
 
+# Copy C96.mx100.snowfree_albedo.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
+for i in {1..6}; do
+    file="C96.mx100.snowfree_albedo.tile${i}.nc"
+    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${file}"
+done
+
 # Copy C96.mx100.soil_type.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
 for i in {1..6}; do
     file="C96.mx100.soil_type.tile${i}.nc"
