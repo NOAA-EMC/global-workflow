@@ -89,11 +89,13 @@ class GEFSAppConfig(AppConfig):
                 configs += ['awips']
 
         if options['do_wave']:
-            configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
+            configs += ['waveinit', 'wavepostsbs']
             if options['do_wave_bnd']:
                 configs += ['wavepostbndpnt', 'wavepostbndpntbll']
             if options['do_wave_stat']:
                 configs += ['wave_stat', 'wave_stat_pnt']
+            else:
+                configs += ['wavepostpnt']
 
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
