@@ -7,7 +7,7 @@
 ################################################################################
 #  Directories.
 pwd=$(pwd)
-# Dependent Scripts and Executables
+# Dependent input scripts and Executables
 CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
@@ -21,23 +21,22 @@ iy=$(echo "${CDATE}" | cut -c1-4)
 im=$(echo "${CDATE}" | cut -c5-6)
 id=$(echo "${CDATE}" | cut -c7-8)
 ih=$(echo "${CDATE}" | cut -c9-10)
-cyc_hour=$(printf "%03d" "$(echo "${CDATE}" | cut -c9-10)")
-##############################################################
+################################################################################
+# Set up theinput and output directories
 DESTINATION_DIR="${DATA}"
 INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf"
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_CHANGE}"
-SFC_DESTINATION_DIR="${DESTINATION_DIR}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_CHANGE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 ATM_FILE="gfs.t00z.atmf000.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
-
+################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
     echo "Error: Source directory ${SOURCE_DIR} does not exist."
     exit 1
 fi
-
+################################################################################
 # Function to copy files and check success
 copy_file() {
     local src=$1
@@ -48,8 +47,8 @@ copy_file() {
         exit 1
     fi
 }
-
-# List of single files to copy
+################################################################################
+# List of input files to copy
 input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
     "${SOURCE_DIR}/C96_mosaic.nc"
@@ -62,7 +61,6 @@ for src in "${input_files[@]}"; do
     chmod -R u+w "${DESTINATION_DIR}/$(basename "${src}")"
 done
 
-# Patterns for tiled files: "prefix" "dir"
 tile_file_set=(
     "C96_grid.tile"           "${SOURCE_DIR}"
     "C96.mx100_oro_data.tile" "${SOURCE_DIR}"
@@ -88,16 +86,16 @@ for ((p=0; p<${#tile_file_set[@]}; p+=2)); do
 done
 
 echo "All files copied successfully."
-
+################################################################################
+# Prepare the orography target files
 OROG_TARGET_FILES=$(for i in {1..6}; do
     printf "\"${CASE_CHANGE}.mx100_oro_data.tile%d.nc\"" "${i}"
-    if [ "${i}" -lt 6 ]; then
+    if [[ "${i}" -lt 6 ]]; then
         printf ","
     fi
 done)
-
-
-# add the namelist
+################################################################################
+# add the namelist and run chgres
 cat << EOF > ./fort.41
 &config
 mosaic_file_target_grid="${MOSAIC_DESTINATION_FILE}"
@@ -145,6 +143,7 @@ wam_cold_start=.false.
 EOF
 
 eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${PGMOUT}"
+################################################################################
 # Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
 if [[ ! -d "${COMIN_ATMOS_INPUT_MEM}" ]] && ! mkdir -p "${COMIN_ATMOS_INPUT_MEM}"; then
     echo "Error: Failed to create directory ${COMIN_ATMOS_INPUT_MEM}."
@@ -161,3 +160,4 @@ for i in {1..6}; do
     fi
 done
 exit "${err}"
+################################################################################
