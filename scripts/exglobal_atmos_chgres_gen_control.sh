@@ -94,7 +94,7 @@ done)
 # add the namelist
 cat << EOF > ./fort.41
 &config
-mosaic_file_target_grid="${DESTINATION_FILE}"
+mosaic_file_target_grid="${MOSAIC_DESTINATION_FILE}"
 fix_dir_target_grid="${DESTINATION_DIR}"
 orog_dir_target_grid="${DESTINATION_DIR}"
 orog_files_target_grid=${OROG_TARGET_FILES}
