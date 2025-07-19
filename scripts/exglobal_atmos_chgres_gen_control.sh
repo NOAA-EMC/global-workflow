@@ -96,6 +96,35 @@ for i in {1..6}; do
     copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/${file}"
 done
+
+# Copy C96.mx100.vegetation_type.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
+for i in {1..6}; do
+    file="C96.mx100.vegetation_type.tile${i}.nc"
+    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${file}"
+done
+
+# Copy C96.mx100.substrate_temperature.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
+for i in {1..6}; do
+    file="C96.mx100.substrate_temperature.tile${i}.nc"
+    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${file}"
+done
+
+# Copy C96.mx100.vegetation_greenness.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
+for i in {1..6}; do
+    file="C96.mx100.vegetation_greenness.tile${i}.nc"
+    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${file}"
+done
+
+# Copy C96.mx100.facsf.tile{1..6}.nc from SOURCE_DIR/sfc to DESTINATION_DIR
+for i in {1..6}; do
+    file="C96.mx100.facsf.tile${i}.nc"
+    copy_file "${SOURCE_DIR}/sfc/${file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${file}"
+done
+
 echo "All files copied successfully."
 
 OROG_TARGET_FILES=$(for i in {1..6}; do
@@ -154,16 +183,12 @@ wam_cold_start=.false.
 EOF
 
 eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${PGMOUT}"
-# Ensure COMIN_ATMOS_INPUT_MEM directory exists, create if it does not
-if [[ ! -d "${COMIN_ATMOS_INPUT_MEM}" ]]; then
-    echo "Directory ${COMIN_ATMOS_INPUT_MEM} does not exist. Creating it."
-    if ! mkdir -p "${COMIN_ATMOS_INPUT_MEM}"; then
-        echo "Error: Failed to create directory ${COMIN_ATMOS_INPUT_MEM}."
-        exit 1
-    fi
+# Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
+if [[ ! -d "${COMIN_ATMOS_INPUT_MEM}" ]] && ! mkdir -p "${COMIN_ATMOS_INPUT_MEM}"; then
+    echo "Error: Failed to create directory ${COMIN_ATMOS_INPUT_MEM}."
+    exit 1
 fi
 
-# Copy out.atm.tile{1..6}.nc to COMIN_ATMOS_INPUT_MEM, force overwrite
 for i in {1..6}; do
     src_file="out.atm.tile${i}.nc"
     if [[ -f "${src_file}" ]]; then
