@@ -27,10 +27,10 @@ esac
 
 # ...existing code...
 MEMDIR="mem000" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+    COMOUT_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL
 gPDY=${gPDY:-${PDY}}
 MEMDIR="mem000" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL
+    COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 ###############################################################
 # Run relevant script
 ${CHGRESFCSTSH:-${SCRgfs}/exglobal_atmos_chgres_gen_control.sh} && true
