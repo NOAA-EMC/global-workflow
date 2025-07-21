@@ -9,8 +9,26 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_
 export EXECufs=${EXECufs:-${HOMEgfs}/sorc/ufs_utils.fd/exec}
 export CASE_CHANGE="C96"
 export LEVS="64"
+# Calculate gPDY (previous day) and gcyc (previous cycle hour)
+PDY="${PDY:-$(date +%Y%m%d)}"
+cyc="${cyc:-00}"
+
+# gPDY: previous day in YYYYMMDD format
+gPDY=$(date -d "${PDY} -1 day" +%Y%m%d)
+
+# gcyc: previous cycle hour
+case "${cyc}" in
+  "00") gcyc="18" ;;
+  "06") gcyc="00" ;;
+  "12") gcyc="06" ;;
+  "18") gcyc="12" ;;
+  *) gcyc="00" ;; # default fallback
+esac
+
+# ...existing code...
 MEMDIR="mem000" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+gPDY=${gPDY:-${PDY}}
 MEMDIR="mem000" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL
 ###############################################################
