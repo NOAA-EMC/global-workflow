@@ -8,6 +8,7 @@ import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
 from pygfs.task.aero_analysis import AerosolAnalysis
+from pygfs.task.upp import UPP
 
 
 # Initialize root logger
@@ -22,5 +23,11 @@ if __name__ == '__main__':
     # Instantiate the aerosol analysis task
     AeroAnl = AerosolAnalysis(config)
 
+    # Process aerosal products through UPP
+    AeroAnl.upp_anlproc()
+
     # Finalize JEDI aerosol variational analysis
     AeroAnl.finalize()
+
+
+
