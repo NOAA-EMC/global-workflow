@@ -18,6 +18,7 @@ GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
 
 ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
 export NMEM_ENS_MAX=${NMEM_ENS}
