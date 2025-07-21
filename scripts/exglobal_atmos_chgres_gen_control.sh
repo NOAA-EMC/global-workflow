@@ -52,7 +52,7 @@ input_files=(
     "${SOURCE_DIR}/C96_mosaic.nc"
     "${INPUT_DIR}/${ATM_FILE}"
     "${INPUT_DIR}/${SFC_FILE}"
-    "${COMIN_ATMOS_ANALYSIS_MEM}/gfs.t00z.atminc.nc"
+    "${COMOUT_ATMOS_INPUT_MEM}/gfs.t00z.atminc.nc"
 )
 
 for src in "${input_files[@]}"; do
