@@ -20,6 +20,7 @@ mkdir:
 - "{{ DATA }}/diags"
 - "{{ DATA }}/berror"
 - "{{ DATA }}/bkg"
+- "{{ DATA }}/upp"
 copy:
 ######################################
 ## copy backgrounds
@@ -48,3 +49,11 @@ copy:
 ### copy diffusion files
 - ["{{ COMIN_CHEM_BMAT_PREV }}/{{ GPREFIX }}aero_diffusion_hz.nc", "{{ DATA }}/berror/diffusion_hz.nc"]
 - ["{{ COMIN_CHEM_BMAT_PREV }}/{{ GPREFIX }}aero_diffusion_vt.nc", "{{ DATA }}/berror/diffusion_vt.nc"]
+
+######################################
+### copy backgrounds from COMIN_ATMOS_HISTORY_PREV
+- ["{{ COMIN_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}atmf006.nc", "{{ DATA }}/upp/atm_{{ current_cycle | to_YMDH }}0000.nc"]
+- ["{{ COMIN_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}sfcf006.nc", "{{ DATA }}/upp/sfc_{{ current_cycle | to_YMDH }}0000.nc"]
+### copy atmos increment from COMIN_ATMOS_ANALYSIS
+- ["{{ COMIN_ATMOS_ANALYSIS }}/{{ APREFIX }}atminc.nc", "{{ DATA }}/upp/{{ APREFIX }}atminc.nc"]
+
