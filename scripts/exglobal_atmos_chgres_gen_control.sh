@@ -144,16 +144,16 @@ EOF
 eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${PGMOUT}"
 ################################################################################
 # Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
-if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]] && ! mkdir -p "${COMIN_ATMOS_INPUT_MEM}"; then
-    echo "Error: Failed to create directory ${COMIN_ATMOS_INPUT_MEM}."
+if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]] && ! mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"; then
+    echo "Error: Failed to create directory ${COMOUT_ATMOS_INPUT_MEM}."
     exit 1
 fi
 
 for i in {1..6}; do
     src_file="out.atm.tile${i}.nc"
     if [[ -f "${src_file}" ]]; then
-        echo "Copying ${src_file} to ${COMIN_ATMOS_INPUT_MEM}/"
-        cp -f "${src_file}" "${COMIN_ATMOS_INPUT_MEM}/"
+        echo "Copying ${src_file} to ${COMOUT_ATMOS_INPUT_MEM}/"
+        cp -f "${src_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
     else
         echo "Warning: ${src_file} does not exist and will not be copied."
     fi
