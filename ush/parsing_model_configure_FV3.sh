@@ -57,7 +57,7 @@ local OUTPUT_FH=${FV3_OUTPUT_FH_NML}
 local IAU_OFFSET=${IAU_OFFSET:-0}
 
 #set FV3 output directory:
-local FV3ATM_OUTPUT_DIR="./"
+local FV3ATM_OUTPUT_DIR="./FV3ATM_OUTPUT"
 
 # Ensure the template exists
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then

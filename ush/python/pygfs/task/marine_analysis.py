@@ -38,7 +38,7 @@ class MarineAnalysis(Task):
         """
 
         super().__init__(config)
-        _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'soca', 'calc_scales.py')
+        _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'python', 'soca', 'calc_scales.py')
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 

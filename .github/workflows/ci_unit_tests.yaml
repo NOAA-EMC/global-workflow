@@ -21,13 +21,18 @@ jobs:
       with:
         python-version: 3.11.8
 
-    - name: Install dependencies
+    - name: Install APT packages
+      id: install-apt
       run: |
         sudo apt-get update
         sudo apt-get install -y perl libxml-libxml-perl libxml-libxslt-perl libdatetime-perl
+
+    - name: Install python dependencies
+      id: install-pydeps
+      run: |
         python -m pip install --upgrade pip
         python -m pip install -r global-workflow/dev/workflow/requirements.txt
-        pip install pytest pytest-cov pyyaml jinja2 wget
+        pip install pytest pytest-cov wget
 
     - name: Cache Rocoto
       id: cache-rocoto
@@ -57,7 +62,7 @@ jobs:
         sudo chmod -R a+w /scratch3/NCEPDEV
         source rocoto-${{ env.ROCOTO_VERSION }}/rocoto_path.sh
         cd global-workflow/sorc
-        git submodule update --init -j 2 wxflow ufs_model.fd
+        git submodule update --init -j 2 ufs_model.fd gsi_monitor.fd
         ./link_workflow.sh
 
         # Create test data directory for unit tests
