@@ -26,6 +26,7 @@ SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_CHANGE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_CHANGE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 ATM_FILE="gfs.t00z.atmf000.nc"
+ATM_FILE_m="gfs.t00z.atminc.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
 ################################################################################
 # Ensure the source directory exists
@@ -51,6 +52,7 @@ input_files=(
     "${SOURCE_DIR}/C96_mosaic.nc"
     "${INPUT_DIR}/${ATM_FILE}"
     "${INPUT_DIR}/${SFC_FILE}"
+    "${COMIN_ATMOS_ANALYSIS_MEM}/gfs.t00z.atminc.nc"
 )
 
 for src in "${input_files[@]}"; do
@@ -107,7 +109,7 @@ data_dir_input_grid="${DESTINATION_DIR}"
 atm_files_input_grid="${ATM_FILE}"
 atm_core_files_input_grid="NULL"
 atm_tracer_files_input_grid="NULL"
-sfc_files_input_grid="${SFC_FILE}"
+sfc_files_input_grid="${SFC_FILE_m}"
 nst_files_input_grid="NULL"
 grib2_file_input_grid="NULL"
 geogrid_file_input_grid="NULL"

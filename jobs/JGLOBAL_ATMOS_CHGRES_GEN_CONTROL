@@ -10,7 +10,7 @@ export EXECufs=${EXECufs:-${HOMEgfs}/sorc/ufs_utils.fd/exec}
 export CASE_CHANGE="C96"
 export LEVS="64"
 MEMDIR="mem000" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL \
+    COMIN_ATMOS_ANALYSIS_MEM:COM_ANALYSIS_INPUT_TMPL \
     COMOUT_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL
 ###############################################################
 # Run relevant script
