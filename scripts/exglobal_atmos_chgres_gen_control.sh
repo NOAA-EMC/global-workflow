@@ -26,7 +26,7 @@ SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_CHANGE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_CHANGE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 ATM_FILE="gfs.t00z.atmf000.nc"
-ATM_FILE_m="gfs.t00z.atminc.nc"
+ATM_FILE_m="gdas.t18z.atma003.ensres.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
 ################################################################################
 # Ensure the source directory exists
