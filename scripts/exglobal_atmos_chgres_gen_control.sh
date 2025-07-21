@@ -26,8 +26,8 @@ SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_CHANGE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_CHANGE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 ATM_FILE="gfs.t00z.atmf000.nc"
-ATM_FILE_m="gdas.t18z.atma003.ensres.nc"
 SFC_FILE="gfs.t00z.sfcf000.nc"
+ATM_FILE_m="gdas.t18z.atma003.ensres.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -61,16 +61,16 @@ for src in "${input_files[@]}"; do
 done
 
 tile_file_set=(
-    "C96_grid.tile"           "${SOURCE_DIR}"
-    "C96.mx100_oro_data.tile" "${SOURCE_DIR}"
-    "C96.mx100.slope_type.tile" "${SOURCE_DIR}/sfc"
-    "C96.mx100.maximum_snow_albedo.tile" "${SOURCE_DIR}/sfc"
-    "C96.mx100.snowfree_albedo.tile" "${SOURCE_DIR}/sfc"
-    "C96.mx100.soil_type.tile" "${SOURCE_DIR}/sfc"
-    "C96.mx100.vegetation_type.tile" "${SOURCE_DIR}/sfc"
-    "C96.mx100.substrate_temperature.tile" "${SOURCE_DIR}/sfc"
-    "C96.mx100.vegetation_greenness.tile" "${SOURCE_DIR}/sfc"
-    "C96.mx100.facsf.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_CHANGE}_grid.tile"           "${SOURCE_DIR}"
+    "${CASE_CHANGE}.mx100_oro_data.tile" "${SOURCE_DIR}"
+    "${CASE_CHANGE}.mx100.slope_type.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_CHANGE}.mx100.maximum_snow_albedo.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_CHANGE}.mx100.snowfree_albedo.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_CHANGE}.mx100.soil_type.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_CHANGE}.mx100.vegetation_type.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_CHANGE}.mx100.substrate_temperature.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_CHANGE}.mx100.vegetation_greenness.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_CHANGE}.mx100.facsf.tile" "${SOURCE_DIR}/sfc"
 )
 
 # Loop through patterns and tiles

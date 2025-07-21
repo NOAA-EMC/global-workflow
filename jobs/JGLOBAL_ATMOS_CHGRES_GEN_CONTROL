@@ -22,7 +22,10 @@ case "${cyc}" in
   "06") gcyc="00" ;;
   "12") gcyc="06" ;;
   "18") gcyc="12" ;;
-  *) gcyc="00" ;; # default fallback
+  *)
+    echo "ERROR: Invalid cyc value '${cyc}'. Must be one of 00, 06, 12, 18."
+    exit 1
+    ;;
 esac
 
 # ...existing code...
