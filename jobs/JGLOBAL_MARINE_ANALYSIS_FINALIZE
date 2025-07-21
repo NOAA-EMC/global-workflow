@@ -19,11 +19,13 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
    COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
-   COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL
+   COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL \
+   COMOUT_CONF:COM_CONF_TMPL
 
-mkdir -p "${COMOUT_OCEAN_ANALYSIS}"
-mkdir -p "${COMOUT_ICE_ANALYSIS}"
-mkdir -p "${COMOUT_ICE_RESTART}"
+mkdir -m 775 -p  "${COMOUT_OCEAN_ANALYSIS}"
+mkdir -m 775 -p  "${COMOUT_ICE_ANALYSIS}"
+mkdir -m 775 -p  "${COMOUT_ICE_RESTART}"
+mkdir -m 775 -p  "${COMOUT_CONF}"
 
 ###############################################################
 # Run relevant script

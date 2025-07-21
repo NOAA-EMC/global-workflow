@@ -67,7 +67,7 @@ $ Gulf of Alaska (AG) Spectral data (4) near S/SW Alaska Anchorage (8)
   -152.230  59.050 '46079     '   4.9   DAT  NDBC      45
   -152.233  59.049 '46105     '   2.0   DAT  NDBC      45
   -147.992  59.925 '46107     '   2.0   DAT  NDBC      45
-  -165.475  64.473 '46265     '   2.0   DAT  NDBC      45
+  -165.479  64.460 '46265     '   2.0   DAT  NDBC      45
 $AGGA48
 $
 $AGGA47
@@ -243,12 +243,12 @@ $ Hawaiian waters (HW) spectra (4) in Pacific Ocean and Pacific Isles (0)
   -158.12   21.28  '51204     '  999.   DAT  SCRIPPS   11
   -156.42   21.02  '51205     '  999.   DAT  SCRIPPS   11
   -154.97   19.78  '51206     '  999.   DAT  SCRIPPS   11
-  -157.75   21.48  '51207     '  999.   DAT  SCRIPPS   11
+$  -157.75   21.48  '51207     '  999.   DAT  SCRIPPS   11
   -153.87    0.02  '51028     '   5.0   DAT  NDBC      11
   -158.303  21.096 '51200     ' 999.0   DAT  NDBC      11
   -159.574  22.285 '51208     '  999.   DAT  SCRIPPS   11
   -170.5   -14.273 '51209     ' 999.0   DAT  NDBC     360
-  -157.756  21.477 '51210     ' 999.0   DAT  NDBC      11
+$  -157.756  21.477 '51210     ' 999.0   DAT  NDBC      11
    134.670   7.692 '52212     ' 999.0   DAT  NDBC     360
   -157.959  21.297 '51211     ' 999.0   DAT  NDBC     360
   -158.150  21.323 '51212     ' 999.0   DAT  NDBC     360
@@ -530,13 +530,13 @@ $  Western Atlantic (NT) spectra (4) NE states north of VA (1)
    -68.998  44.055 '44033     '   4.0   DAT  NDBC      80
    -68.109  44.106 '44034     '   4.0   DAT  NDBC      80
    -72.655  41.138 '44039     '   3.5   DAT  NDBC      80
-   -73.580  40.956 '44040     '   3.5   DAT  NDBC      80
-   -76.391  39.152 '44043     '   3.0   DAT  NDBC      80
+$   -73.580  40.956 '44040     '   3.5   DAT  NDBC      80
+$   -76.391  39.152 '44043     '   3.0   DAT  NDBC      80
    -75.183  38.883 '44054     ' 999.0   DAT  NDBC      80
    -75.256  39.122 '44055     ' 999.0   DAT  NDBC      80
    -76.257  37.567 '44058     '   3.0   DAT  NDBC      80
    -72.067  41.263 '44060     '   3.5   DAT  NDBC      80
-   -77.036  38.788 '44061     '   2.0   DAT  NDBC      80
+$   -77.036  38.788 '44061     '   2.0   DAT  NDBC      80
    -76.415  38.556 '44062     '   3.0   DAT  NDBC      80
    -76.448  38.963 '44063     '   3.0   DAT  NDBC      80
    -76.087  36.998 '44064     '   3.0   DAT  NDBC      80
@@ -583,9 +583,9 @@ $ Tropical Belt (XT) spectra (4) near South America (3)
    -36.25   -3.00  'FORTALEZA '  999.   VBY  NCEP     360
    -47.50    3.00  'AMAZON    '  999.   VBY  NCEP     360
    -30.00    1.00  'PETER_PAUL'  999.   VBY  NCEP     360
-   -5.7833 35.7833 'TANGER    '  999.   VBY  WMO      360 
+   -5.783   35.9   'TANGER    '  999.   VBY  WMO      360 
    -9.6333 30.4167 'AGADIR    '  999.   VBY  WMO      360
-   -7.6167 33.6000 'CASABLANCA'  999.   VBY  WMO      360
+   -7.617  33.7000 'CASABLANCA'  999.   VBY  WMO      360
     3.5     6.0    'LAGOS     '  999.   VBY  WMO      360
     5.0     5.0    'FORCADOS  '  999.   VBY  WMO      360
     7.0     4.0    'NIGERDELTA'  999.   VBY  WMO      360
@@ -769,10 +769,10 @@ $ Indian Ocean (I) spectra (4) non-descript (5)
     68.97    7.13  '23495     '  999.   DAT  UNKNOWN  120
     24.988 -34.060 'JEFFREYBAY'  999.   VBY  NCEP     360
     27.933 -33.033 'EASTLONDON'  999.   VBY  NCEP     360
-    17.967 -33.050 'SALDANHABY'  999.   VBY  NCEP     360
+    17.9   -33.055 'SALDANHABY'  999.   VBY  NCEP     360
     18.283 -34.200 'CAPEPOINT '  999.   VBY  NCEP     360
     22.167 -34.967 'FAPLATFORM'  999.   VBY  NCEP     360
-    22.150 -34.117 'MOSSELBAY '  999.   VBY  NCEP     360
+    22.170 -34.15  'MOSSELBAY '  999.   VBY  NCEP     360
 $AGIO45
 $
 $ END of AWIPS Section
@@ -1058,6 +1058,28 @@ $ Boundary Points for Kenya , Madagascar and Seychelles
     50.000  -6.000 'SYC69    '  999.   BPT  WMO      360
     50.000  -8.000 'SYC70    '  999.   BPT  WMO      360
     50.000 -10.000 'SYC71    '  999.   BPT  WMO      360
+$ 
+$ NASA 
+$
+  -117.8    32.333 'SITE3     '  999.   VBY  NASA     360
+  -117.8    32.8   'SITEX     '  999.   VBY  NASA     360
+   -80.595  28.615 'CAPC      '  999.   VBY  NASA     360
+   -75.758  32.516 'ATX1      '  999.   VBY  NASA     360
+   -75.570  32.671 'ATX2      '  999.   VBY  NASA     360
+   -80.25   28.25  'CAP1      '  999.   VBY  NASA     360
+   -80.23   28.85  'CAPN      '  999.   VBY  NASA     360
+   -80.6    28.8   'DAB       '  999.   VBY  NASA     360
+   -80.25   30.918 'JAX       '  999.   VBY  NASA     360
+   -83.75   28.5   'TPA       '  999.   VBY  NASA     360
+   -84.2    29.25  'TLH       '  999.   VBY  NASA     360
+   -86.028  29.766 'PAN       '  999.   VBY  NASA     360
+   -87.5    29.8   'PEN       '  999.   VBY  NASA     360
+   -64.970  42.054 'ECALE     '  999.   VBY  NASA     360
+   -54.250  45.875 'ECALL     '  999.   VBY  NASA     360
+    -9.253  51.226 'SHAN      '  999.   VBY  NASA     360
+   -53.005  46.350 'STJO      '  999.   VBY  NASA     360
+   -75.048  33.501 'CMFS      '  999.   VBY  NASA     360
+  -143.638 -21.942 'TAHI      '  999.   VBY  NASA     360
 $
 $ Hawaii BPT
 $
@@ -1487,7 +1509,7 @@ $
    -71.05   41.25  'NW-NYC60  '  999.   IBP  NCEP      45
    -71.05   41.38  'NW-NYC61  '  999.   IBP  NCEP      45
 $
-   -75.25   38.20  'NW-PHI51  '  999.   IBP  NCEP      45
+   -75.1    38.20  'NW-PHI51  '  999.   IBP  NCEP      45
    -74.75   38.20  'NW-PHI52  '  999.   IBP  NCEP      45
    -74.25   38.20  'NW-PHI53  '  999.   IBP  NCEP      45
    -73.75   38.20  'NW-PHI54  '  999.   IBP  NCEP      45
@@ -1520,7 +1542,7 @@ $
    -76.50   34.00  'NW-ILM62  '  999.   IBP  NCEP      45
    -76.50   34.50  'NW-ILM63  '  999.   IBP  NCEP      45
 $
-   -70.86   42.40  'NW-GYX51  '  999.   IBP  NCEP      45
+   -70.80   42.40  'NW-GYX51  '  999.   IBP  NCEP      45
    -70.36   42.40  'NW-GYX52  '  999.   IBP  NCEP      45
    -69.86   42.40  'NW-GYX53  '  999.   IBP  NCEP      45
    -69.36   42.40  'NW-GYX54  '  999.   IBP  NCEP      45
@@ -1985,7 +2007,7 @@ $
   -170.00   53.15  'NW-ALU177 '  999.   IBP  NCEP      45
   -169.50   53.15  'NW-ALU178 '  999.   IBP  NCEP      45
   -169.00   53.15  'NW-ALU179 '  999.   IBP  NCEP      45
-  -168.50   53.15  'NW-ALU180 '  999.   IBP  NCEP      45
+  -168.18   53.15  'NW-ALU180 '  999.   IBP  NCEP      45
   -168.00   53.15  'NW-ALU181 '  999.   IBP  NCEP      45
   -167.50   53.15  'NW-ALU182 '  999.   IBP  NCEP      45
   -167.00   53.15  'NW-ALU183 '  999.   IBP  NCEP      45
@@ -2206,42 +2228,52 @@ $
    148.29   17.34  'NW-GUM112 '  999.   IBP  NCEP      45
    148.29   16.84  'NW-GUM113 '  999.   IBP  NCEP      45
 $
-  -172.50  -15.25  'NW-PGG51  '  999.   IBP  NCEP      45
-  -172.50  -14.75  'NW-PGG52  '  999.   IBP  NCEP      45
-  -172.50  -14.25  'NW-PGG53  '  999.   IBP  NCEP      45
-  -172.50  -13.75  'NW-PGG54  '  999.   IBP  NCEP      45
-  -172.50  -13.25  'NW-PGG55  '  999.   IBP  NCEP      45
-  -172.50  -12.75  'NW-PGG56  '  999.   IBP  NCEP      45
-  -172.50  -12.25  'NW-PGG57  '  999.   IBP  NCEP      45
-  -172.50  -11.75  'NW-PGG58  '  999.   IBP  NCEP      45
-  -172.50  -11.25  'NW-PGG59  '  999.   IBP  NCEP      45
-  -172.50  -10.75  'NW-PGG60  '  999.   IBP  NCEP      45
-  -172.50  -10.25  'NW-PGG61  '  999.   IBP  NCEP      45
-  -172.00  -10.25  'NW-PGG62  '  999.   IBP  NCEP      45
-  -171.50  -10.25  'NW-PGG63  '  999.   IBP  NCEP      45
-  -171.00  -10.25  'NW-PGG64  '  999.   IBP  NCEP      45
-  -170.50  -10.25  'NW-PGG65  '  999.   IBP  NCEP      45
-  -170.00  -10.25  'NW-PGG66  '  999.   IBP  NCEP      45
-  -169.50  -10.25  'NW-PGG67  '  999.   IBP  NCEP      45
-  -169.00  -10.25  'NW-PGG68  '  999.   IBP  NCEP      45
-  -168.50  -10.25  'NW-PGG69  '  999.   IBP  NCEP      45
-  -168.50  -10.75  'NW-PGG70  '  999.   IBP  NCEP      45
-  -168.50  -11.25  'NW-PGG71  '  999.   IBP  NCEP      45
-  -168.50  -11.75  'NW-PGG72  '  999.   IBP  NCEP      45
-  -168.50  -12.25  'NW-PGG73  '  999.   IBP  NCEP      45
-  -168.50  -12.75  'NW-PGG74  '  999.   IBP  NCEP      45
-  -168.50  -13.25  'NW-PGG75  '  999.   IBP  NCEP      45
-  -168.50  -13.75  'NW-PGG76  '  999.   IBP  NCEP      45
-  -168.50  -14.25  'NW-PGG77  '  999.   IBP  NCEP      45
-  -168.50  -14.75  'NW-PGG78  '  999.   IBP  NCEP      45
-  -168.50  -15.24  'NW-PGG79  '  999.   IBP  NCEP      45
-  -169.00  -15.25  'NW-PGG80  '  999.   IBP  NCEP      45
-  -169.50  -15.25  'NW-PGG81  '  999.   IBP  NCEP      45
-  -170.00  -15.25  'NW-PGG82  '  999.   IBP  NCEP      45
-  -170.50  -15.25  'NW-PGG83  '  999.   IBP  NCEP      45
-  -171.00  -15.25  'NW-PGG84  '  999.   IBP  NCEP      45
-  -171.50  -15.25  'NW-PGG85  '  999.   IBP  NCEP      45
-  -172.00  -15.25  'NW-PGG86  '  999.   IBP  NCEP      45
+  -172.68  -15.69 'NW-PGG50  '  999.   IBP  NCEP      45
+  -172.68  -15.19 'NW-PGG51  '  999.   IBP  NCEP      45
+  -172.68  -14.69 'NW-PGG52  '  999.   IBP  NCEP      45
+  -172.68  -14.19 'NW-PGG53  '  999.   IBP  NCEP      45
+  -172.68  -13.69 'NW-PGG54  '  999.   IBP  NCEP      45
+  -172.68  -13.19 'NW-PGG55  '  999.   IBP  NCEP      45
+  -172.68  -12.69 'NW-PGG56  '  999.   IBP  NCEP      45
+  -172.68  -12.19 'NW-PGG57  '  999.   IBP  NCEP      45
+  -172.68  -11.69 'NW-PGG58  '  999.   IBP  NCEP      45
+  -172.68  -11.19 'NW-PGG59  '  999.   IBP  NCEP      45
+  -172.68  -10.69 'NW-PGG60  '  999.   IBP  NCEP      45
+  -172.68  -10.19 'NW-PGG61  '  999.   IBP  NCEP      45
+  -172.68  -9.7	  'NW-PGG62  '  999.   IBP  NCEP      45
+  -172.18  -9.7	  'NW-PGG63  '  999.   IBP  NCEP      45
+  -171.68  -9.7	  'NW-PGG64  '  999.   IBP  NCEP      45
+  -171.18  -9.7	  'NW-PGG65  '  999.   IBP  NCEP      45
+  -170.68  -9.7	  'NW-PGG66  '  999.   IBP  NCEP      45
+  -170.18  -9.7	  'NW-PGG67  '  999.   IBP  NCEP      45
+  -169.68  -9.7	  'NW-PGG68  '  999.   IBP  NCEP      45
+  -169.18  -9.7	  'NW-PGG69  '  999.   IBP  NCEP      45
+  -168.68  -9.7	  'NW-PGG70  '  999.   IBP  NCEP      45
+  -168.18  -9.7	  'NW-PGG71  '  999.   IBP  NCEP      45
+  -167.68  -9.7	  'NW-PGG72  '  999.   IBP  NCEP      45
+  -167.0   -9.7	  'NW-PGG73  '  999.   IBP  NCEP      45
+  -167.0   -10.19 'NW-PGG74  '  999.   IBP  NCEP      45
+  -167.0   -10.69 'NW-PGG75  '  999.   IBP  NCEP      45
+  -167.0   -11.19 'NW-PGG76  '  999.   IBP  NCEP      45
+  -167.0   -11.69 'NW-PGG77  '  999.   IBP  NCEP      45
+  -167.0   -12.19 'NW-PGG78  '  999.   IBP  NCEP      45
+  -167.0   -12.69 'NW-PGG79  '  999.   IBP  NCEP      45
+  -167.0   -13.19 'NW-PGG80  '  999.   IBP  NCEP      45
+  -167.0   -13.69 'NW-PGG81  '  999.   IBP  NCEP      45
+  -167.0   -14.19 'NW-PGG82  '  999.   IBP  NCEP      45
+  -167.0   -14.69 'NW-PGG83  '  999.   IBP  NCEP      45
+  -167.0   -15.19 'NW-PGG84  '  999.   IBP  NCEP      45
+  -167.0   -15.69 'NW-PGG85  '  999.   IBP  NCEP      45
+  -167.68  -15.69 'NW-PGG86  '  999.   IBP  NCEP      45
+  -168.18  -15.69 'NW-PGG87  '  999.   IBP  NCEP      45
+  -168.68  -15.69 'NW-PGG88  '  999.   IBP  NCEP      45
+  -169.18  -15.69 'NW-PGG89  '  999.   IBP  NCEP      45
+  -169.68  -15.69 'NW-PGG90  '  999.   IBP  NCEP      45
+  -170.18  -15.69 'NW-PGG91  '  999.   IBP  NCEP      45
+  -170.68  -15.69 'NW-PGG92  '  999.   IBP  NCEP      45
+  -171.18  -15.69 'NW-PGG93  '  999.   IBP  NCEP      45
+  -171.68  -15.69 'NW-PGG94  '  999.   IBP  NCEP      45
+  -172.18  -15.69 'NW-PGG95  '  999.   IBP  NCEP      45
 $
 $
    -80.00   27.50  'NW-OPC51  '  999.   IBP  NCEP      45
@@ -2355,7 +2387,7 @@ $
 $
 $ HWRF wave grid boundary points -- Region c (CPAC)
 $
-   125.00   1.50   'HWRFc-50  '  999.   IBP  NCEP      360
+   125.35   1.50   'HWRFc-50  '  999.   IBP  NCEP      360
    126.00   1.50   'HWRFc-51  '  999.   IBP  NCEP      360
    127.00   1.50   'HWRFc-52  '  999.   IBP  NCEP      360
    128.00   1.50   'HWRFc-53  '  999.   IBP  NCEP      360
@@ -2580,7 +2612,7 @@ $
    133.00  41.50   'HWRFc-272 '  999.   IBP  NCEP      360
    132.00  41.50   'HWRFc-273 '  999.   IBP  NCEP      360
    125.00  39.50   'HWRFc-274 '  999.   IBP  NCEP      360
-   125.00  38.50   'HWRFc-275 '  999.   IBP  NCEP      360
+   125.00  38.70   'HWRFc-275 '  999.   IBP  NCEP      360
    125.00  37.50   'HWRFc-276 '  999.   IBP  NCEP      360
    125.00  36.50   'HWRFc-277 '  999.   IBP  NCEP      360
    125.00  35.50   'HWRFc-278 '  999.   IBP  NCEP      360
@@ -2606,14 +2638,14 @@ $
    125.00  15.50   'HWRFc-298 '  999.   IBP  NCEP      360
    125.00  14.50   'HWRFc-299 '  999.   IBP  NCEP      360
    125.00  13.50   'HWRFc-300 '  999.   IBP  NCEP      360
-   125.00  12.50   'HWRFc-301 '  999.   IBP  NCEP      360
-   125.00  11.50   'HWRFc-302 '  999.   IBP  NCEP      360
-   125.00  10.50   'HWRFc-303 '  999.   IBP  NCEP      360
+   125.00  13.00   'HWRFc-301 '  999.   IBP  NCEP      360
+   125.00  12.60   'HWRFc-302 '  999.   IBP  NCEP      360
+   125.00  10.00   'HWRFc-303 '  999.   IBP  NCEP      360
    125.00   9.50   'HWRFc-304 '  999.   IBP  NCEP      360
-   125.00   8.50   'HWRFc-305 '  999.   IBP  NCEP      360
-   125.00   7.50   'HWRFc-306 '  999.   IBP  NCEP      360
-   125.00   6.50   'HWRFc-307 '  999.   IBP  NCEP      360
-   125.00   5.50   'HWRFc-308 '  999.   IBP  NCEP      360
+   125.00   9.00   'HWRFc-305 '  999.   IBP  NCEP      360
+   125.00   5.75   'HWRFc-306 '  999.   IBP  NCEP      360
+   125.00   5.50   'HWRFc-307 '  999.   IBP  NCEP      360
+   125.00   5.00   'HWRFc-308 '  999.   IBP  NCEP      360
    125.00   4.50   'HWRFc-309 '  999.   IBP  NCEP      360
    125.00   3.50   'HWRFc-310 '  999.   IBP  NCEP      360
    125.00   2.50   'HWRFc-311 '  999.   IBP  NCEP      360
@@ -3212,7 +3244,7 @@ $
    141.00 -42.50   'HWRFp-58  '  999.   IBP  NCEP      360
    143.00 -42.50   'HWRFp-59  '  999.   IBP  NCEP      360
    145.00 -42.50   'HWRFp-60  '  999.   IBP  NCEP      360
-   147.00 -42.50   'HWRFp-61  '  999.   IBP  NCEP      360
+   148.20 -42.50   'HWRFp-61  '  999.   IBP  NCEP      360
    149.00 -42.50   'HWRFp-62  '  999.   IBP  NCEP      360
    151.00 -42.50   'HWRFp-63  '  999.   IBP  NCEP      360
    153.00 -42.50   'HWRFp-64  '  999.   IBP  NCEP      360
