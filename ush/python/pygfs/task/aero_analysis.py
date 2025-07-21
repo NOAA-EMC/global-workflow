@@ -11,13 +11,14 @@ from typing import Dict, List
 
 from wxflow import (AttrDict,
                     FileHandler,
-                    add_to_datetime, to_fv3time, to_timedelta,
+                    add_to_datetime, to_timedelta,
                     to_fv3time,
-                    Task,
+                    Task, Jinja,
                     YAMLFile, parse_j2yaml,
-                    logit)
+                    logit, cast_strdict_as_dtypedict)
 from pygfs.jedi import Jedi
 import numpy as np
+from pygfs.task.upp import UPP
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -68,7 +69,8 @@ class AerosolAnalysis(Task):
                 'GPREFIX': f"gcdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'aero_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'aero_obsdataout_path': f"{self.task_config.DATA}/diags/",
-                'BKG_TSTEP': "PT3H"  # FGAT
+                'BKG_TSTEP': "PT3H",  # FGAT
+ #               'UPP_RUN': "analysis"
             }
         )
 
@@ -139,6 +141,12 @@ class AerosolAnalysis(Task):
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
         self.jedi_dict['aeroanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
+
+        # stage upp files
+        #logger.info(f"Staging UPP files from {self.task_config.AERO_STAGE_UPP_TMPL}")
+        #upp_stage_dict = parse_j2yaml(self.task_config.AERO_STAGE_UPP_TMPL, self.task_config)
+        #FileHandler(upp_stage_dict).sync()
+        #logger.debug(f"UPP files:\n{pformat(upp_stage_dict)}")
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -263,3 +271,131 @@ class AerosolAnalysis(Task):
                         rstfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
                     except (AttributeError, RuntimeError):
                         pass  # checksum is missing, move on
+
+    @logit(logger)
+    def upp_anlproc(self)-> None:  
+        """Process aerosol analysis to GRIB2
+
+        This method processes aerosol AOD analysis from tracer fields using UPP.
+        This includes: 
+        - Creating a UPP object
+        - Staging UPP fix files 
+        - Creating the 'upp_dict' for UPP object
+        - Generating the upp namelist
+        - Adding atmos and aerosol increments to the background
+        - Execute upp.x
+        """
+
+        local_dict = AttrDict(
+            {   
+                'UPP_RUN': "analysis",
+                'FORECAST_HOUR': 0
+            }
+        )
+        self.task_config = AttrDict(**self.task_config, **local_dict)
+        self.task_config.UPP_CONFIG = self.task_config.UPP_CONFIG_YAML
+        upp = UPP(self.task_config)
+
+        #upp_yaml = parse_j2yaml(self.task_config.UPP_CONFIG, self.task_config)
+        upp_yaml = upp.task_config.upp_yaml
+        upp.initialize(upp_yaml)
+
+        upp_dict = AttrDict()
+        keys = [ 'APRUN_AEROANLFINAL', 'forecast_hour',
+                 'atmos_filename', 'flux_filename']
+
+        upp_dict = AttrDict()
+        for key in keys:
+           upp_dict[key] = upp.task_config[key]
+
+        upp_dict['NET'] = 'gfs'   # set to 'gfs' temperally because upp didn't work with 'gcafs'.
+        upp_dict['valid_datetime'] = self.task_config.current_cycle
+        upp_dict['DATA'] = os.path.join(self.task_config.DATA, 'upp')
+        upp_dict.update(upp_yaml['upp']['config'])
+
+         # Configure the namelist and write to file
+        logger.info("Create namelist for upp.x")
+        nml_template = os.path.join(upp_dict.DATA, "itag.jinja")
+        nml_data = Jinja(nml_template, upp_dict).render
+        logger.debug(f"itag:\n{nml_data}")
+        nml_file = os.path.join(upp_dict.DATA, 'itag')
+        with open(nml_file, "w") as fho:
+          fho.write(nml_data)
+
+        # ---- add aero increments to atmf000 files
+        logger.info('Adding aero increments to RESTART files')
+        bkg_file = os.path.join(upp_dict.DATA, f"{upp_dict.atmos_filename}")
+        inc_file = os.path.join(self.task_config.DATA, 'anl', f"aeroinc_gauss.{self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%S')}Z.gaussian.modelLevels.nc")
+        incvars_list_path = os.path.join(self.task_config['PARMgfs'], 'gdas', 'aeroanl_upp_config.yaml.j2')
+        allvars = YAMLFile(path=incvars_list_path)['aeroincvars'][:]
+        bkgvars = [var[0] for var in allvars]
+        incvars = [var[1] for var in allvars]
+        self.add_aero_gaussian_increments(inc_file, bkg_file, incvars, bkgvars)
+
+        # ---- add atmo increments to atmf000 files
+        logger.info('Adding atmo increments to RESTART files')
+        inc_file = os.path.join(upp_dict.DATA, f"{self.task_config.APREFIX}atminc.nc")
+        allvars = YAMLFile(path=incvars_list_path)['atmincvars'][:]
+        bkgvars = [var[0] for var in allvars]
+        incvars = [var[1] for var in allvars]
+        self.add_atm_gaussian_increments(inc_file, bkg_file, incvars, bkgvars)
+
+        upp.execute(upp_dict.DATA, upp_dict.APRUN_AEROANLFINAL, upp_dict.forecast_hour)
+
+        
+    @logit(logger)
+    def add_aero_gaussian_increments(self, inc_file: str, bkg_file: str, incvars: List, bkgvars: List) -> None:
+        """Add aero gaussian increments to gaussian backgrounds
+
+        Parameters
+        ----------
+        inc_file : str
+           increment file
+        bkg_file : str
+           background file
+        incvars : List
+           List of increment variables to add to the background
+        bkgvars : List
+           List of background variables to which the increment variables will be added.
+        """
+        with Dataset(inc_file, mode='r') as incfile, Dataset(bkg_file, mode='a') as rstfile:
+            for incname, bkgname in zip(incvars, bkgvars):
+                increment = incfile.variables[incname][:]
+                # round to 7th decimal due to JEDI reproducibility issues when changing PE count
+                increment = np.round(increment, 7)
+                # reordering the dimensions of increment to macth background 
+                increment_reshape = np.transpose(increment, (2, 0, 1))
+
+                bkg = rstfile.variables[bkgname][:]
+                anl = bkg + increment_reshape[np.newaxis, :, :, :]
+                rstfile.variables[bkgname][:] = anl[:]
+                try:
+                    rstfile.variables[bkgname].delncattr('checksum')  # remove the checksum so fv3 does not complain
+                except (AttributeError, RuntimeError):
+                    pass  # checksum is missing, move on
+
+    @logit(logger)
+    def add_atm_gaussian_increments(self, inc_file: str, bkg_file: str, incvars: List, bkgvars: List) -> None:
+        """Add atm gaussian increments to gaussian backgrounds
+
+        Parameters
+        ----------
+        inc_file : str
+           increment file
+        bkg_file : str
+           background file
+        incvars : List
+           List of increment variables to add to the background
+        bkgvars : List
+           List of background variables to which the increment variables will be added.
+        """
+        with Dataset(inc_file, mode='r') as incfile, Dataset(bkg_file, mode='a') as rstfile:
+            for incname, bkgname in zip(incvars, bkgvars):
+                increment = incfile.variables[incname][:]
+                # handel latitude inversion in atminc
+                lat_axis_index = 1
+                increment_lat_inversion = np.flip(increment, axis=lat_axis_index)
+
+                bkg = rstfile.variables[bkgname][:]
+                anl = bkg + increment_lat_inversion[np.newaxis, :, :, :]
+                rstfile.variables[bkgname][:] = anl[:]
