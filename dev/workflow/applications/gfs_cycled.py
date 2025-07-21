@@ -119,7 +119,7 @@ class GFSCycledAppConfig(AppConfig):
             if options['do_letkf_ocn']:
                 configs += ['marineanlletkf']
             if options['do_hybvar']:
-                configs += ['ocnanalecen']
+                configs += ['marineanlecen']
             configs += ['marineanlchkpt', 'marineanlfinal']
 
         if options['do_ocean'] or options['do_ice']:
@@ -397,7 +397,7 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_letkf_ocn']:
                         task_names[run] += ['marineanlletkf']
                     if options['do_hybvar']:
-                        task_names[run] += ['ocnanalecen']
+                        task_names[run] += ['marineanlecen']
 
                 task_names[run].append('esnowanl') if options['do_jedisnowda'] else 0
                 task_names[run].append('efcs') if 'gdas' in run else 0

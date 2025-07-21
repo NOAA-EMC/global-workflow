@@ -76,7 +76,7 @@ case ${step} in
     esac
     ;;
 
-  "ocnanalecen")
+  "marineanlecen")
     case ${OCNRES} in
       "025")
         ntasks=288

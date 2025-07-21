@@ -10,7 +10,7 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-export job="ocnanalecen"
+export job="marineanlecen"
 export jobid="${job}.$$"
 
 ###############################################################

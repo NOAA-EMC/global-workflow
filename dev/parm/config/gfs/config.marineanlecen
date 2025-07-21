@@ -1,0 +1,11 @@
+#!/bin/bash
+
+########## config.marineanlecen ##########
+# Ocn Analysis specific
+
+echo "BEGIN: config.marineanlecen"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" marineanlecen
+
+echo "END: config.marineanlecen"
