@@ -1365,8 +1365,8 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         # Hour groupings need to match gridded post for dependencies to be correct
-        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
-        max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavegempak'], 'wave')
+        max_tasks = self._configs['wavegempak']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
         wave_post_envars = self.envars.copy()
