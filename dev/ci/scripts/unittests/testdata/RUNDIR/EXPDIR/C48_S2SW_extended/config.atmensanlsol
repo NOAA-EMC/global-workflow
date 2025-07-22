@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.atmensanlsol ##########
+# Pre Atm Ens Analysis specific
+
+echo "BEGIN: config.atmensanlsol"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" atmensanlsol
+
+echo "END: config.atmensanlsol"

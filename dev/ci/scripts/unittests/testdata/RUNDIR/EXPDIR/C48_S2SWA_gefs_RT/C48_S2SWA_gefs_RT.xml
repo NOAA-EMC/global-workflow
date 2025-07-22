@@ -1,0 +1,1911 @@
+<?xml version="1.0"?>
+<!DOCTYPE workflow
+[
+	<!--
+	PROGRAM
+		Main workflow manager for Global Forecast System
+
+	NOTES:
+		This workflow was automatically generated at 2025-07-22 16:11:44.514424
+	-->
+	<!ENTITY PSLOT "C48_S2SWA_gefs_RT">
+	<!ENTITY ROTDIR "/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT">
+	<!ENTITY MAXTRIES "2">
+]>
+
+<workflow realtime="F" scheduler="slurm" cyclethrottle="3" taskthrottle="25">
+
+	<log verbosity="10"><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT/logs/@Y@m@d@H.log</cyclestr></log>
+
+	<!-- Define the cycles -->
+	<cycledef group="gefs">202411170000 202411170000 24:00:00</cycledef>
+
+<metatask name="gefs_stage_ic" mode="parallel">
+
+	<var name="member">000 001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020 021 022 023 024 025 026 027 028 029 030</var>
+
+	<task name="gefs_stage_ic_mem#member#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/stage_ic.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_stage_ic_mem#member#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>00:15:00</walltime>
+		<nodes>1:ppn=1:tpp=1</nodes>
+		<native>--export=NONE --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_stage_ic_mem#member#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>#member#</value></envar>
+		<envar><name>MEMDIR</name><value>mem#member#</value></envar>
+
+	</task>
+
+</metatask>
+
+<task name="gefs_gen_control_ic" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/gen_control_ic.sh</command>
+
+	<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_gen_control_ic_@H</cyclestr></jobname>
+	<account>local</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_gen_control_ic.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+	<envar><name>NET</name><value>gefs</value></envar>
+	<envar><name>RUN</name><value>gefs</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+</task>
+
+<task name="gefs_wave_init" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/waveinit.sh</command>
+
+	<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_wave_init_@H</cyclestr></jobname>
+	<account>local</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_wave_init.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+	<envar><name>NET</name><value>gefs</value></envar>
+	<envar><name>RUN</name><value>gefs</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+</task>
+
+<task name="gefs_prep_emissions" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/prep_emissions.sh</command>
+
+	<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_prep_emissions_@H</cyclestr></jobname>
+	<account>local</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_prep_emissions.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+	<envar><name>NET</name><value>gefs</value></envar>
+	<envar><name>RUN</name><value>gefs</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+</task>
+
+<metatask name="gefs_fcst_mem000" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem000_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem000_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem000_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_gen_control_ic"/>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem001" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem001_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem001_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem001_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>001</value></envar>
+		<envar><name>MEMDIR</name><value>mem001</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem002" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem002_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem002_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem002_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>002</value></envar>
+		<envar><name>MEMDIR</name><value>mem002</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem003" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem003_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem003_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem003_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>003</value></envar>
+		<envar><name>MEMDIR</name><value>mem003</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem004" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem004_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem004_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem004_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>004</value></envar>
+		<envar><name>MEMDIR</name><value>mem004</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem005" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem005_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem005_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem005_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>005</value></envar>
+		<envar><name>MEMDIR</name><value>mem005</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem006" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem006_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem006_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem006_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>006</value></envar>
+		<envar><name>MEMDIR</name><value>mem006</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem007" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem007_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem007_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem007_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>007</value></envar>
+		<envar><name>MEMDIR</name><value>mem007</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem008" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem008_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem008_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem008_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>008</value></envar>
+		<envar><name>MEMDIR</name><value>mem008</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem009" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem009_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem009_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem009_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>009</value></envar>
+		<envar><name>MEMDIR</name><value>mem009</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem010" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem010_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem010_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem010_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>010</value></envar>
+		<envar><name>MEMDIR</name><value>mem010</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem011" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem011_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem011_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem011_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>011</value></envar>
+		<envar><name>MEMDIR</name><value>mem011</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem012" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem012_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem012_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem012_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>012</value></envar>
+		<envar><name>MEMDIR</name><value>mem012</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem013" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem013_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem013_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem013_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>013</value></envar>
+		<envar><name>MEMDIR</name><value>mem013</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem014" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem014_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem014_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem014_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>014</value></envar>
+		<envar><name>MEMDIR</name><value>mem014</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem015" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem015_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem015_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem015_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>015</value></envar>
+		<envar><name>MEMDIR</name><value>mem015</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem016" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem016_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem016_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem016_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>016</value></envar>
+		<envar><name>MEMDIR</name><value>mem016</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem017" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem017_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem017_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem017_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>017</value></envar>
+		<envar><name>MEMDIR</name><value>mem017</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem018" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem018_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem018_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem018_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>018</value></envar>
+		<envar><name>MEMDIR</name><value>mem018</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem019" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem019_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem019_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem019_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>019</value></envar>
+		<envar><name>MEMDIR</name><value>mem019</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem020" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem020_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem020_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem020_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>020</value></envar>
+		<envar><name>MEMDIR</name><value>mem020</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem021" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem021_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem021_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem021_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>021</value></envar>
+		<envar><name>MEMDIR</name><value>mem021</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem022" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem022_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem022_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem022_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>022</value></envar>
+		<envar><name>MEMDIR</name><value>mem022</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem023" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem023_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem023_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem023_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>023</value></envar>
+		<envar><name>MEMDIR</name><value>mem023</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem024" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem024_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem024_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem024_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>024</value></envar>
+		<envar><name>MEMDIR</name><value>mem024</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem025" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem025_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem025_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem025_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>025</value></envar>
+		<envar><name>MEMDIR</name><value>mem025</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem026" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem026_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem026_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem026_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>026</value></envar>
+		<envar><name>MEMDIR</name><value>mem026</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem027" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem027_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem027_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem027_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>027</value></envar>
+		<envar><name>MEMDIR</name><value>mem027</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem028" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem028_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem028_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem028_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>028</value></envar>
+		<envar><name>MEMDIR</name><value>mem028</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem029" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem029_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem029_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem029_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>029</value></envar>
+		<envar><name>MEMDIR</name><value>mem029</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_fcst_mem030" mode="serial">
+
+	<var name="seg">0 1</var>
+
+	<task name="gefs_fcst_mem030_seg#seg#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_fcst_mem030_seg#seg#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>04:00:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_fcst_mem030_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>030</value></envar>
+		<envar><name>MEMDIR</name><value>mem030</value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_wave_init"/>
+				<taskdep task="gefs_prep_emissions"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_atmos_prod" mode="parallel">
+
+	<var name="member">000 001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020 021 022 023 024 025 026 027 028 029 030</var>
+
+	<metatask name="gefs_atmos_prod_#member#" mode="parallel">
+
+		<var name="fhr_list">0 6 12 18 24 30 36 42 48 54 60 66 72 78 84 90 96 102 108 114 120</var>
+		<var name="fhr_label">f000 f006 f012 f018 f024 f030 f036 f042 f048 f054 f060 f066 f072 f078 f084 f090 f096 f102 f108 f114 f120</var>
+		<var name="seg_dep">seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1</var>
+		<var name="fhr3_last">000 006 012 018 024 030 036 042 048 054 060 066 072 078 084 090 096 102 108 114 120</var>
+		<var name="fhr3_next">006 012 018 024 030 036 042 048 054 060 066 072 078 084 090 096 102 108 114 120 126</var>
+
+		<task name="gefs_atmos_prod_mem#member#_#fhr_label#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+			<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/atmos_products.sh</command>
+
+			<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_atmos_prod_mem#member#_#fhr_label#_@H</cyclestr></jobname>
+			<account>local</account>
+			<queue>normal</queue>
+			<partition>batch</partition>
+			<walltime>00:15:00</walltime>
+			<nodes>1:ppn=24:tpp=1</nodes>
+			<native>--exclusive --clusters=c6</native>
+
+			<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_atmos_prod_mem#member#_#fhr_label#.log</cyclestr></join>
+
+			<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+			<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+			<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+			<envar><name>NET</name><value>gefs</value></envar>
+			<envar><name>RUN</name><value>gefs</value></envar>
+			<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+			<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+			<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+			<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+			<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+			<envar><name>ENSMEM</name><value>#member#</value></envar>
+			<envar><name>MEMDIR</name><value>mem#member#</value></envar>
+			<envar><name>FHR_LIST</name><value>#fhr_list#</value></envar>
+			<envar><name>COMPONENT</name><value>atmos</value></envar>
+
+			<dependency>
+				<or>
+					<datadep age="120"><cyclestr>&ROTDIR;/gefs.@Y@m@d/@H/mem#member#/model/atmos/master/gefs.t@Hz.master.grb2f#fhr3_last#</cyclestr></datadep>
+					<taskdep task="gefs_fcst_mem#member#_#seg_dep#"/>
+				</or>
+			</dependency>
+
+		</task>
+
+	</metatask>
+
+</metatask>
+
+<metatask name="gefs_atmos_ensstat" mode="parallel">
+
+	<var name="fhr_list">0 6 12 18 24 30 36 42 48 54 60 66 72 78 84 90 96 102 108 114 120</var>
+	<var name="fhr_label">f000 f006 f012 f018 f024 f030 f036 f042 f048 f054 f060 f066 f072 f078 f084 f090 f096 f102 f108 f114 f120</var>
+	<var name="seg_dep">seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1</var>
+	<var name="fhr3_last">000 006 012 018 024 030 036 042 048 054 060 066 072 078 084 090 096 102 108 114 120</var>
+	<var name="fhr3_next">006 012 018 024 030 036 042 048 054 060 066 072 078 084 090 096 102 108 114 120 126</var>
+
+	<task name="gefs_atmos_ensstat_#fhr_label#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/atmos_ensstat.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_atmos_ensstat_#fhr_label#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>00:15:00</walltime>
+		<nodes>1:ppn=6:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_atmos_ensstat_#fhr_label#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>FHR_LIST</name><value>#fhr_list#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gefs_atmos_prod_mem000_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem001_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem002_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem003_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem004_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem005_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem006_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem007_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem008_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem009_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem010_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem011_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem012_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem013_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem014_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem015_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem016_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem017_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem018_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem019_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem020_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem021_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem022_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem023_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem024_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem025_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem026_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem027_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem028_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem029_#fhr_label#"/>
+				<taskdep task="gefs_atmos_prod_mem030_#fhr_label#"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gefs_ocean_prod" mode="parallel">
+
+	<var name="member">000 001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020 021 022 023 024 025 026 027 028 029 030</var>
+
+	<metatask name="gefs_ocean_prod_#member#" mode="parallel">
+
+		<var name="fhr_list">24 48 72 96 120</var>
+		<var name="fhr_label">f024 f048 f072 f096 f120</var>
+		<var name="seg_dep">seg0 seg0 seg1 seg1 seg1</var>
+		<var name="fhr3_last">024 048 072 096 120</var>
+		<var name="fhr3_next">048 072 096 120 144</var>
+
+		<task name="gefs_ocean_prod_mem#member#_#fhr_label#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+			<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/oceanice_products.sh</command>
+
+			<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_ocean_prod_mem#member#_#fhr_label#_@H</cyclestr></jobname>
+			<account>local</account>
+			<queue>normal</queue>
+			<partition>batch</partition>
+			<walltime>00:15:00</walltime>
+			<nodes>1:ppn=1:tpp=1</nodes>
+			<native>--export=NONE --clusters=c6</native>
+
+			<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_ocean_prod_mem#member#_#fhr_label#.log</cyclestr></join>
+
+			<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+			<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+			<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+			<envar><name>NET</name><value>gefs</value></envar>
+			<envar><name>RUN</name><value>gefs</value></envar>
+			<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+			<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+			<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+			<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+			<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+			<envar><name>ENSMEM</name><value>#member#</value></envar>
+			<envar><name>MEMDIR</name><value>mem#member#</value></envar>
+			<envar><name>FHR_LIST</name><value>#fhr_list#</value></envar>
+			<envar><name>COMPONENT</name><value>ocean</value></envar>
+
+			<dependency>
+				<or>
+					<datadep age="120"><cyclestr>&ROTDIR;/gefs.@Y@m@d/@H/mem#member#/model/ocean/history/gefs.ocean.t@Hz.24hr_avg.f#fhr3_next#.nc</cyclestr></datadep>
+					<taskdep task="gefs_fcst_mem#member#_#seg_dep#"/>
+				</or>
+			</dependency>
+
+		</task>
+
+	</metatask>
+
+</metatask>
+
+<metatask name="gefs_ice_prod" mode="parallel">
+
+	<var name="member">000 001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020 021 022 023 024 025 026 027 028 029 030</var>
+
+	<metatask name="gefs_ice_prod_#member#" mode="parallel">
+
+		<var name="fhr_list">24 48 72 96 120</var>
+		<var name="fhr_label">f024 f048 f072 f096 f120</var>
+		<var name="seg_dep">seg0 seg0 seg1 seg1 seg1</var>
+		<var name="fhr3_last">024 048 072 096 120</var>
+		<var name="fhr3_next">048 072 096 120 144</var>
+
+		<task name="gefs_ice_prod_mem#member#_#fhr_label#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+			<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/oceanice_products.sh</command>
+
+			<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_ice_prod_mem#member#_#fhr_label#_@H</cyclestr></jobname>
+			<account>local</account>
+			<queue>normal</queue>
+			<partition>batch</partition>
+			<walltime>00:15:00</walltime>
+			<nodes>1:ppn=1:tpp=1</nodes>
+			<native>--export=NONE --clusters=c6</native>
+
+			<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_ice_prod_mem#member#_#fhr_label#.log</cyclestr></join>
+
+			<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+			<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+			<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+			<envar><name>NET</name><value>gefs</value></envar>
+			<envar><name>RUN</name><value>gefs</value></envar>
+			<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+			<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+			<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+			<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+			<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+			<envar><name>ENSMEM</name><value>#member#</value></envar>
+			<envar><name>MEMDIR</name><value>mem#member#</value></envar>
+			<envar><name>FHR_LIST</name><value>#fhr_list#</value></envar>
+			<envar><name>COMPONENT</name><value>ice</value></envar>
+
+			<dependency>
+				<or>
+					<datadep age="120"><cyclestr>&ROTDIR;/gefs.@Y@m@d/@H/mem#member#/model/ice/history/gefs.ice.t@Hz.24hr_avg.f#fhr3_last#.nc</cyclestr></datadep>
+					<taskdep task="gefs_fcst_mem#member#_#seg_dep#"/>
+				</or>
+			</dependency>
+
+		</task>
+
+	</metatask>
+
+</metatask>
+
+<metatask name="gefs_wave_post_grid" mode="parallel">
+
+	<var name="member">000 001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020 021 022 023 024 025 026 027 028 029 030</var>
+
+	<metatask name="gefs_wave_post_grid_#member#" mode="parallel">
+
+		<var name="fhr_list">0,1,2,3,4 5,6,7,8,9 10,11,12,13,14 15,16,17,18,19 20,21,22,23,24 25,26,27,28,29 30,31,32,33,34 35,36,37,38,39 40,41,42,43,44 45,46,47,48 49,50,51,52,53 54,55,56,57,58 59,60,61,62,63 64,65,66,67,68 69,70,71,72,73 74,75,76,77,78 79,80,81,82,83 84,85,86,87,88 89,90,91,92,93 94,95,96,97,98 99,100,101,102,103 104,105,106,107,108 109,110,111,112 113,114,115,116 117,118,119,120</var>
+		<var name="fhr_label">f000-f004 f005-f009 f010-f014 f015-f019 f020-f024 f025-f029 f030-f034 f035-f039 f040-f044 f045-f048 f049-f053 f054-f058 f059-f063 f064-f068 f069-f073 f074-f078 f079-f083 f084-f088 f089-f093 f094-f098 f099-f103 f104-f108 f109-f112 f113-f116 f117-f120</var>
+		<var name="seg_dep">seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1 seg1</var>
+		<var name="fhr3_last">004 009 014 019 024 029 034 039 044 048 053 058 063 068 073 078 083 088 093 098 103 108 112 116 120</var>
+		<var name="fhr3_next">005 010 015 020 025 030 035 040 045 049 054 059 064 069 074 079 084 089 094 099 104 109 113 117 121</var>
+
+		<task name="gefs_wave_post_grid_mem#member#_#fhr_label#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+			<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/wavepostsbs.sh</command>
+
+			<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_wave_post_grid_mem#member#_#fhr_label#_@H</cyclestr></jobname>
+			<account>local</account>
+			<queue>normal</queue>
+			<partition>batch</partition>
+			<walltime>01:15:00</walltime>
+			<nodes>1:ppn=192:tpp=1</nodes>
+			<native>--export=NONE --clusters=c6</native>
+
+			<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_wave_post_grid_mem#member#_#fhr_label#.log</cyclestr></join>
+
+			<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+			<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+			<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+			<envar><name>NET</name><value>gefs</value></envar>
+			<envar><name>RUN</name><value>gefs</value></envar>
+			<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+			<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+			<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+			<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+			<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+			<envar><name>ENSMEM</name><value>#member#</value></envar>
+			<envar><name>MEMDIR</name><value>mem#member#</value></envar>
+			<envar><name>FHR_LIST</name><value>#fhr_list#</value></envar>
+
+			<dependency>
+				<or>
+					<datadep><cyclestr>&ROTDIR;/gefs.@Y@m@d/@H/mem#member#/model/wave/history//gefs.wave.t@Hz.glo_500.f#fhr3_next#.bin</cyclestr></datadep>
+					<taskdep task="gefs_fcst_mem#member#_#seg_dep#"/>
+				</or>
+			</dependency>
+
+		</task>
+
+	</metatask>
+
+</metatask>
+
+<metatask name="gefs_wave_post_pnt" mode="parallel">
+
+	<var name="member">000 001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020 021 022 023 024 025 026 027 028 029 030</var>
+
+	<task name="gefs_wave_post_pnt_mem#member#" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/wavepostpnt.sh</command>
+
+		<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_wave_post_pnt_mem#member#_@H</cyclestr></jobname>
+		<account>local</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>00:45:00</walltime>
+		<nodes>1:ppn=40:tpp=1</nodes>
+		<native>--export=NONE --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_wave_post_pnt_mem#member#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+		<envar><name>NET</name><value>gefs</value></envar>
+		<envar><name>RUN</name><value>gefs</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>#member#</value></envar>
+		<envar><name>MEMDIR</name><value>mem#member#</value></envar>
+
+		<dependency>
+			<and>
+				<metataskdep metatask="gefs_fcst_mem#member#"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<task name="gefs_arch_tars" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/arch_tars.sh</command>
+
+	<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_arch_tars_@H</cyclestr></jobname>
+	<account>local</account>
+	<queue>hpss</queue>
+	<partition>dtn_f5_f6</partition>
+	<walltime>06:00:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=es</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_arch_tars.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+	<envar><name>NET</name><value>gefs</value></envar>
+	<envar><name>RUN</name><value>gefs</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<metataskdep metatask="gefs_atmos_prod"/>
+			<metataskdep metatask="gefs_atmos_ensstat"/>
+			<metataskdep metatask="gefs_ice_prod"/>
+			<metataskdep metatask="gefs_ocean_prod"/>
+			<metataskdep metatask="gefs_wave_post_grid"/>
+			<metataskdep metatask="gefs_wave_post_pnt"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gefs_arch_vrfy" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/arch_vrfy.sh</command>
+
+	<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_arch_vrfy_@H</cyclestr></jobname>
+	<account>local</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_arch_vrfy.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+	<envar><name>NET</name><value>gefs</value></envar>
+	<envar><name>RUN</name><value>gefs</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<metataskdep metatask="gefs_atmos_prod"/>
+			<metataskdep metatask="gefs_atmos_ensstat"/>
+			<metataskdep metatask="gefs_ice_prod"/>
+			<metataskdep metatask="gefs_ocean_prod"/>
+			<metataskdep metatask="gefs_wave_post_grid"/>
+			<metataskdep metatask="gefs_wave_post_pnt"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gefs_cleanup" cycledefs="gefs" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/cleanup.sh</command>
+
+	<jobname><cyclestr>C48_S2SWA_gefs_RT_gefs_cleanup_@H</cyclestr></jobname>
+	<account>local</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT/C48_S2SWA_gefs_RT/logs/@Y@m@d@H/gefs_cleanup.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C48_S2SWA_gefs_RT</value></envar>
+	<envar><name>NET</name><value>gefs</value></envar>
+	<envar><name>RUN</name><value>gefs</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/local/world-shared/tmcguinness/RUNDIRS/C48_S2SWA_gefs_RT/gefs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gefs_arch_tars"/>
+			<taskdep task="gefs_arch_vrfy"/>
+		</and>
+	</dependency>
+
+</task>
+
+</workflow>

@@ -1,0 +1,19 @@
+#! /usr/bin/env bash
+
+########## config.fetch ##########
+
+echo "BEGIN: config.fetch"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" fetch
+
+# Determine start type
+if [[ "${EXP_WARM_START}" == ".false." ]]; then
+   ic_type="cold"
+else
+   ic_type="warm"
+fi
+
+export FETCH_YAML_TMPL="${PARMgfs}/fetch/${NET}_${APP}_${ic_type}_${MODE}.yaml.j2"
+
+echo "END: config.fetch"

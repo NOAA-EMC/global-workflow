@@ -1,0 +1,27 @@
+#! /usr/bin/env bash
+
+########## config.atmensanl ##########
+# configuration common to all atm ens analysis tasks
+
+echo "BEGIN: config.atmensanl"
+
+export JCB_ALGO_YAML_LETKF="${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_lgetkf_ufs_hybatmDA.yaml.j2"
+export JCB_ALGO_YAML_OBS="${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_lgetkf_observer_ufs_hybatmDA.yaml.j2"
+export JCB_ALGO_YAML_SOL="${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_lgetkf_solver_ufs_hybatmDA.yaml.j2"
+export JCB_ALGO_YAML_FV3INC="${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jcb-prototype_lgetkf-fv3inc_ufs_hybatmDA.yaml.j2"
+
+export INTERP_METHOD='barycentric'
+
+export CRTM_FIX_YAML="${PARMgfs}/gdas/atm_crtm_coeff.yaml.j2"
+export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
+
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/atmensanl_jedi_config.yaml.j2"
+export LGETKF_BKG_STAGING_YAML="${PARMgfs}/gdas/staging/atm_lgetkf_bkg.yaml.j2"
+
+export layout_x_atmensanl="4"
+export layout_y_atmensanl="4"
+
+export io_layout_x="1"
+export io_layout_y="1"
+
+echo "END: config.atmensanl"

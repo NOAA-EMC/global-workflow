@@ -1,0 +1,11 @@
+
+#################### C96C48_hybatmsnowDA ####################
+#SCRON --partition=cron_c6
+#SCRON --account=local
+#SCRON --mail-user=
+#SCRON --job-name=C96C48_hybatmsnowDA_scron
+#SCRON --output=/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C96C48_hybatmsnowDA/logs/scron.log
+#SCRON --time=00:10:00
+#SCRON --dependency=singleton
+*/5 * * * * /home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNDIR/EXPDIR/C96C48_hybatmsnowDA/C96C48_hybatmsnowDA.scron.sh
+#################################################################

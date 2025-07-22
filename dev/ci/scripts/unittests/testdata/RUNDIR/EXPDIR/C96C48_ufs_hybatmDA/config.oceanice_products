@@ -1,0 +1,18 @@
+#! /usr/bin/env bash
+
+########## config.oceanice_products ##########
+
+echo "BEGIN: config.oceanice_products"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" oceanice_products
+
+# Maximum number of rocoto tasks per member
+export MAX_TASKS=25
+
+export OCEANICEPRODUCTS_CONFIG="${PARMgfs}/post/oceanice_products_gfs.yaml"
+
+# No. of forecast hours to process in a single job
+export NFHRS_PER_GROUP=3
+
+echo "END: config.oceanice_products"

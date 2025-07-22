@@ -43,7 +43,7 @@ def test_setup_xml():
         contents = file.read()
     assert contents.count(account) > 5
 
-    rmtree(RUNDIR)
+#    rmtree(RUNDIR)
 
 
 def test_setup_xml_fail_config_env_cornercase():

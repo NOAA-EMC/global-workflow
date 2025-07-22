@@ -7,6 +7,7 @@ HOMEgfs = find_upward('.github')
 current_dir = os.path.dirname(os.path.abspath(__file__))
 RUNDIR_FAKE = os.path.join(current_dir, 'testdata/RUNDIR')
 ICSDIR_FAKE = os.path.join(current_dir, 'testdata/ICSDIR')
+HPC_ACCOUNT="local"
 
 
 def test_create_experiment():
@@ -17,6 +18,7 @@ def test_create_experiment():
     env = os.environ.copy()
     env['RUNTESTS'] = RUNDIR_FAKE
     env['ICSDIR_ROOT'] = ICSDIR_FAKE
+    env['HPC_ACCOUNT'] = HPC_ACCOUNT
 
     err = 0
     for case in os.listdir(yaml_dir):
@@ -30,4 +32,4 @@ def test_create_experiment():
                 err = 1
     assert err == 0, f"create_experiment.py failed!"
 
-    rmtree(RUNDIR_FAKE)
+#    rmtree(RUNDIR_FAKE)

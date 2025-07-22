@@ -1,0 +1,753 @@
+<?xml version="1.0"?>
+<!DOCTYPE workflow
+[
+	<!--
+	PROGRAM
+		Main workflow manager for Global Forecast System
+
+	NOTES:
+		This workflow was automatically generated at 2024-06-24 16:02:56.058549
+	-->
+	<!ENTITY PSLOT "C48mx500_3DVarAOWCDA_d1d88a6d">
+	<!ENTITY ROTDIR "/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d">
+	<!ENTITY JOBS_DIR "/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto">
+	<!ENTITY MAXTRIES "2">
+]>
+
+<workflow realtime="F" scheduler="slurm" cyclethrottle="3" taskthrottle="25">
+
+	<log verbosity="10"><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H.log</cyclestr></log>
+
+	<!-- Define the cycles -->
+	<cycledef group="gdas_half">202103241200 202103241200 06:00:00</cycledef>
+	<cycledef group="gdas">202103241800 202103241800 06:00:00</cycledef>
+
+<task name="gdasprep" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/prep.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasprep_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>2:ppn=2:tpp=1</nodes>
+	<memory>40GB</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasprep.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<and>
+			<metataskdep metatask="gdasatmos_prod" cycle_offset="-06:00:00"/>
+			<datadep><cyclestr offset="-06:00:00">&ROTDIR;/gdas.@Y@m@d/@H//model_data/atmos/history/gdas.t@Hz.atmf009.nc</cyclestr></datadep>
+			<datadep><cyclestr>/scratch1/NCEPDEV/global/glopara/dump/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.updated.status.tm00.bufr_d_NOT</cyclestr></datadep>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdasanal" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/anal.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasanal_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>01:20:00</walltime>
+	<nodes>11:ppn=8:tpp=5</nodes>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasanal.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<taskdep task="gdasprep"/>
+	</dependency>
+
+</task>
+
+<task name="gdasprepoceanobs" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/prepoceanobs.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasprepoceanobs_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=40:tpp=1</nodes>
+	<memory>48GB</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasprepoceanobs.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<datadep><cyclestr offset="-06:00:00">&ROTDIR;/gdas.@Y@m@d/@H//model_data/ocean/history/gdas.ocean.t@Hz.inst.f009.nc</cyclestr></datadep>
+	</dependency>
+
+</task>
+
+<task name="gdasocnanalprep" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/ocnanalprep.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasocnanalprep_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=40:tpp=1</nodes>
+	<memory>24GB</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasocnanalprep.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<taskdep task="gdasprepoceanobs"/>
+	</dependency>
+
+</task>
+
+<task name="gdasocnanalbmat" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/ocnanalbmat.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasocnanalbmat_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=40:tpp=1</nodes>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasocnanalbmat.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<taskdep task="gdasocnanalprep"/>
+	</dependency>
+
+</task>
+
+<task name="gdasocnanalrun" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/ocnanalrun.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasocnanalrun_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=40:tpp=1</nodes>
+	<memory>24GB</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasocnanalrun.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<taskdep task="gdasocnanalbmat"/>
+	</dependency>
+
+</task>
+
+<task name="gdasocnanalchkpt" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/ocnanalchkpt.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasocnanalchkpt_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=40:tpp=1</nodes>
+	<memory>32GB</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasocnanalchkpt.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasocnanalrun"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdasocnanalpost" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/ocnanalpost.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasocnanalpost_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=40:tpp=1</nodes>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasocnanalpost.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasocnanalchkpt"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdassfcanl" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/sfcanl.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdassfcanl_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:20:00</walltime>
+	<nodes>1:ppn=40:tpp=1</nodes>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdassfcanl.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<taskdep task="gdasanal"/>
+	</dependency>
+
+</task>
+
+<task name="gdasanalcalc" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/analcalc.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasanalcalc_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>4:ppn=40:tpp=1</nodes>
+	<memory>48GB</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasanalcalc.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasanal"/>
+			<taskdep task="gdassfcanl"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdasanaldiag" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/analdiag.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasanaldiag_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>3:ppn=40:tpp=1</nodes>
+	<memory>48GB</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasanaldiag.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasanal"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdasatmanlupp" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/upp.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasatmanlupp_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>2:ppn=40:tpp=1</nodes>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasatmanlupp.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>FHR3</name><value>000</value></envar>
+	<envar><name>UPP_RUN</name><value>analysis</value></envar>
+
+	<dependency>
+		<and>
+			<datadep age="120"><cyclestr>&ROTDIR;/gdas.@Y@m@d/@H//analysis/atmos/gdas.t@Hz.atmanl.nc</cyclestr></datadep>
+			<datadep age="120"><cyclestr>&ROTDIR;/gdas.@Y@m@d/@H//analysis/atmos/gdas.t@Hz.sfcanl.nc</cyclestr></datadep>
+			<datadep age="60"><cyclestr>&ROTDIR;/gdas.@Y@m@d/@H//analysis/atmos/gdas.t@Hz.loganl.txt</cyclestr></datadep>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdasatmanlprod" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/atmos_products.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasatmanlprod_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=24:tpp=1</nodes>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasatmanlprod.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>FHR3</name><value>-001</value></envar>
+
+	<dependency>
+		<datadep age="120"><cyclestr>&ROTDIR;/gdas.@Y@m@d/@H//model_data/atmos/master/gdas.t@Hz.master.grb2anl</cyclestr></datadep>
+	</dependency>
+
+</task>
+
+<task name="gdasfcst" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/fcst.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasfcst_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:20:00</walltime>
+	<nodes>1:ppn=40:tpp=1</nodes>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasfcst.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<or>
+			<and>
+				<taskdep task="gdassfcanl"/>
+				<taskdep task="gdasocnanalpost"/>
+			</and>
+			<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+		</or>
+	</dependency>
+
+</task>
+
+<metatask name="gdasatmos_prod">
+
+	<var name="fhr">000 003 006 009</var>
+
+	<task name="gdasatmos_prod_f#fhr#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/atmos_products.sh</command>
+
+		<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasatmos_prod_f#fhr#_@H</cyclestr></jobname>
+		<account>nems</account>
+		<queue>batch</queue>
+		<partition>hera</partition>
+		<walltime>00:15:00</walltime>
+		<nodes>1:ppn=24:tpp=1</nodes>
+		<native>--export=NONE</native>
+
+		<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasatmos_prod_f#fhr#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+		<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+		<envar><name>NET</name><value>gfs</value></envar>
+		<envar><name>CDUMP</name><value>gdas</value></envar>
+		<envar><name>RUN</name><value>gdas</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+		<envar><name>FHR3</name><value>#fhr#</value></envar>
+		<envar><name>COMPONENT</name><value>atmos</value></envar>
+
+		<dependency>
+			<datadep age="120"><cyclestr>&ROTDIR;/gdas.@Y@m@d/@H//model_data/atmos/master/gdas.t@Hz.master.grb2f#fhr#</cyclestr></datadep>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<task name="gdasfit2obs" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/fit2obs.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasfit2obs_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:20:00</walltime>
+	<nodes>3:ppn=1:tpp=1</nodes>
+	<memory>20G</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasfit2obs.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<metataskdep metatask="gdasatmos_prod"/>
+	</dependency>
+
+</task>
+
+<task name="gdasverfozn" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/verfozn.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasverfozn_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:05:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<memory>1G</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasverfozn.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<taskdep task="gdasanaldiag"/>
+	</dependency>
+
+</task>
+
+<task name="gdasverfrad" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/verfrad.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasverfrad_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:40:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<memory>5G</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasverfrad.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<taskdep task="gdasanaldiag"/>
+	</dependency>
+
+</task>
+
+<task name="gdasvminmon" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/vminmon.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasvminmon_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:05:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<memory>1G</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasvminmon.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<taskdep task="gdasanal"/>
+	</dependency>
+
+</task>
+
+<task name="gdasarch" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/arch.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdasarch_@H</cyclestr></jobname>
+	<account>fv3-cpu</account>
+	<queue>batch</queue>
+	<partition>service</partition>
+	<walltime>06:00:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<memory>4096M</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdasarch.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasatmanlprod"/>
+			<taskdep task="gdasfit2obs"/>
+			<taskdep task="gdasverfozn"/>
+			<taskdep task="gdasverfrad"/>
+			<taskdep task="gdasvminmon"/>
+			<metataskdep metatask="gdasatmos_prod"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdascleanup" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/scratch1/NCEPDEV/global/CI/2700/gfs/jobs/rocoto/cleanup.sh</command>
+
+	<jobname><cyclestr>C48mx500_3DVarAOWCDA_d1d88a6d_gdascleanup_@H</cyclestr></jobname>
+	<account>nems</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<memory>4096M</memory>
+	<native>--export=NONE</native>
+
+	<join><cyclestr>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT/C48mx500_3DVarAOWCDA_d1d88a6d/logs/@Y@m@d@H/gdascleanup.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/global/CI/2700/gfs</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/EXPDIR/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/CI/2700/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Terry.McGuinness/RUNDIRS/C48mx500_3DVarAOWCDA_d1d88a6d</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasarch"/>
+		</and>
+	</dependency>
+
+</task>
+
+</workflow>

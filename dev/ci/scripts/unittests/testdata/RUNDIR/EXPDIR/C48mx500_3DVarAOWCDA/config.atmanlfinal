@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+
+########## config.atmanlfinal ##########
+# Post Atm Var Analysis specific
+
+echo "BEGIN: config.atmanlfinal"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" atmanlfinal
+echo "END: config.atmanlfinal"

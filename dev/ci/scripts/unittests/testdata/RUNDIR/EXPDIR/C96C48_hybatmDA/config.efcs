@@ -1,0 +1,102 @@
+#! /usr/bin/env bash
+
+########## config.efcs ##########
+# Ensemble forecast specific, dependency: config.fcst
+
+echo "BEGIN: config.efcs"
+
+export CASE="${CASE_ENS}"
+
+# Source model specific information that is resolution dependent
+string="--fv3 ${CASE}"
+# Ocean/Ice/Waves ensemble configurations are identical to deterministic member
+if [[ "${DO_OCN}" == "YES" ]]; then
+    string="${string} --mom6 ${OCNRES}"
+fi
+if [[ "${DO_ICE}" == "YES" ]]; then
+    string="${string} --cice6 ${ICERES}"
+fi
+if [[ "${DO_WAVE}" == "YES" ]]; then
+    string="${string} --ww3 ${waveGRD// /;}"
+fi
+if [[ "${DO_AERO_FCST}" == "YES" ]]; then
+    string="${string} --gocart"
+fi
+# We are counting on $string being multiple arguments
+# shellcheck disable=SC2086
+source "${EXPDIR}/config.ufs" ${string}
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" efcs
+
+# nggps_diag_nml
+export FHOUT=${FHOUT_ENKF:-3}
+if [[ ${RUN} == "enkfgfs" ]]; then
+    export FHOUT=${FHOUT_ENKF_GFS:-${FHOUT}}
+fi
+
+# model_configure
+export FHMIN=${FHMIN_ENKF:-3}
+export FHMAX=${FHMAX_ENKF:-9}
+if [[ ${RUN} == "enkfgfs" ]]; then
+   export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX}}
+fi
+
+# Use serial I/O for ensemble (lustre?)
+export OUTPUT_FILETYPE_ATM="netcdf"
+export OUTPUT_FILETYPE_SFC="netcdf"
+
+# Turn off inline UPP for EnKF forecast
+export WRITE_DOPOST=".false."
+
+# Stochastic physics parameters (only for ensemble forecasts)
+export DO_SKEB="YES"
+export SKEB=0.3
+export SKEB_TAU=21600.
+export SKEB_LSCALE=250000.
+export SKEBNORM=0
+export SKEB_NPASS=30
+export SKEB_VDOF=5
+export DO_SHUM="YES"
+export SHUM=0.005
+export SHUM_TAU=21600.
+export SHUM_LSCALE=500000.
+export DO_SPPT="YES"
+export SPPT=0.5
+export SPPT_TAU=21600.
+export SPPT_LSCALE=500000.
+export SPPT_LOGIT=".true."
+export SPPT_SFCLIMIT=".true."
+
+if [[ "${QUILTING}" == ".true." ]] && [[ "${OUTPUT_GRID}" == "gaussian_grid" ]]; then
+    export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da"
+else
+    export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da_orig"
+fi
+
+# Model config option for Ensemble
+# export TYPE=nh                  # choices:  nh, hydro
+# export MONO=non-mono            # choices:  mono, non-mono
+
+# gfs_physics_nml
+export FHSWR=3600.
+export FHLWR=3600.
+export IEMS=1
+export ISOL=2
+export ICO2=2
+export dspheat=".true."
+export shal_cnv=".true."
+export FHZERO=6
+
+# Set PREFIX_ATMINC to r when recentering on
+if [[ ${RECENTER_ENKF:-"YES"} == "YES" ]]; then
+   export PREFIX_ATMINC="r"
+fi
+
+# Set restart interval to enable restarting forecasts after failures
+export restart_interval=${restart_interval_enkfgdas:-6}
+if [[ ${RUN} == "enkfgfs" ]]; then
+    export restart_interval=${restart_interval_enkfgfs:-12}
+fi
+
+echo "END: config.efcs"
