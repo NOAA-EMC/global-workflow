@@ -280,8 +280,10 @@ class AerosolAnalysis(Task):
         """
 
         local_dict = AttrDict(
-            { 'UPP_RUN': "analysis",
-              'FORECAST_HOUR': 0 }
+            {
+                'UPP_RUN': "analysis",
+                'FORECAST_HOUR': 0
+            }
         )
         self.task_config = AttrDict(**self.task_config, **local_dict)
         self.task_config.UPP_CONFIG = self.task_config.UPP_CONFIG_YAML
@@ -331,7 +333,7 @@ class AerosolAnalysis(Task):
         self.add_atm_gaussian_increments(inc_file, bkg_file, incvars, bkgvars)
 
         upp.execute(upp_dict.DATA, upp_dict.APRUN_AEROANLFINAL, upp_dict.forecast_hour)
-        
+
     @logit(logger)
     def add_aero_gaussian_increments(self, inc_file: str, bkg_file: str, incvars: List, bkgvars: List) -> None:
         """Add aero gaussian increments to gaussian backgrounds
@@ -352,7 +354,7 @@ class AerosolAnalysis(Task):
                 increment = incfile.variables[incname][:]
                 # round to 7th decimal due to JEDI reproducibility issues when changing PE count
                 increment = np.round(increment, 7)
-                # reordering the dimensions of increment to macth background 
+                # reordering the dimensions of increment to macth background
                 increment_reshape = np.transpose(increment, (2, 0, 1))
 
                 bkg = rstfile.variables[bkgname][:]

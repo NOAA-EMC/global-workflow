@@ -28,6 +28,3 @@ if __name__ == '__main__':
 
     # Finalize JEDI aerosol variational analysis
     AeroAnl.finalize()
-
-
-
