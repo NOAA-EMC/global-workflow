@@ -23,7 +23,7 @@ ih=$(echo "${CDATE}" | cut -c9-10)
 DESTINATION_DIR="${DATA}"
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_OUTPUT}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_OUTPUT}_mosaic.nc"
-HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev3.${LEVS}.txt"
+HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 SFC_FILE="gdas.t18z.sfcf003.nc"
 ATM_FILE="gdas.t18z.atma003.ensres.nc"
 ################################################################################
@@ -46,7 +46,7 @@ copy_file() {
 ################################################################################
 # List of input files to copy
 input_files=(
-    "${HOMEgfs}/fix/am/global_hyblev3.${LEVS}.txt"
+    "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
     "${SOURCE_DIR}/${CASE_OUTPUT}_mosaic.nc"
     "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
     "${COMIN_ATMOS_RESTART_MEM}/${ATM_FILE}"
