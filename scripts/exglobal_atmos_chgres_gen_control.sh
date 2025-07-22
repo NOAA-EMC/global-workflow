@@ -25,9 +25,8 @@ INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/inp
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_CHANGE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_CHANGE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
-ATM_FILE="gfs.t00z.atmf000.nc"
-SFC_FILE="gfs.t00z.sfcf000.nc"
-ATM_FILE_m="gdas.t18z.atma003.ensres.nc"
+SFC_FILE="gdas.t18z.sfcf003.nc"
+ATM_FILE="gdas.t18z.atma003.ensres.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -49,10 +48,9 @@ copy_file() {
 # List of input files to copy
 input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
-    "${SOURCE_DIR}/C96_mosaic.nc"
-    "${INPUT_DIR}/${ATM_FILE}"
-    "${INPUT_DIR}/${SFC_FILE}"
-    "${COMIN_ATMOS_RESTART_MEM}/gdas.t18z.atma003.ensres.nc"
+    "${SOURCE_DIR}/${CASE_CHANGE}_mosaic.nc"
+    "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
+    "${COMIN_ATMOS_RESTART_MEM}/${ATM_FILE}"
 )
 
 for src in "${input_files[@]}"; do
