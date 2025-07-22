@@ -41,54 +41,44 @@ case ${machine} in
   "WCOSS2")
               max_tasks_per_node=128
               # WCOSS2 nodes have 512GB of RAM, but only 500GB are reservable
-              # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
   "HERA")
               max_tasks_per_node=40
-              # shellcheck disable=SC2034
               mem_node_max="96GB"
     ;;
   "GAEAC5")
               max_tasks_per_node=128
-              # shellcheck disable=SC2034
               mem_node_max="251GB"
     ;;
   "GAEAC6")
               max_tasks_per_node=192
-              # shellcheck disable=SC2034
               mem_node_max="384GB"
     ;;
   "ORION")
               max_tasks_per_node=40
-              # shellcheck disable=SC2034
               mem_node_max="180GB"
     ;;
   "HERCULES")
               max_tasks_per_node=80
-              # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
   "JET")
     case ${PARTITION_BATCH} in
       "xjet")
               max_tasks_per_node=24
-              # shellcheck disable=SC2034
               mem_node_max="61GB"
         ;;
       "vjet")
               max_tasks_per_node=16
-              # shellcheck disable=SC2034
               mem_node_max="61GB"
         ;;
       "sjet")
               max_tasks_per_node=16
-              # shellcheck disable=SC2034
               mem_node_max="29GB"
         ;;
       "kjet")
               max_tasks_per_node=40
-              # shellcheck disable=SC2034
               mem_node_max="88GB"
         ;;
       *)
@@ -99,12 +89,10 @@ case ${machine} in
   "S4")
     case ${PARTITION_BATCH} in
       "s4")   max_tasks_per_node=32
-              # shellcheck disable=SC2034
               mem_node_max="168GB"
         ;;
       "ivy")
               max_tasks_per_node=20
-              # shellcheck disable=SC2034
               mem_node_max="128GB"
         ;;
       *)
@@ -117,7 +105,6 @@ case ${machine} in
     npe_node_max=48
     max_tasks_per_node=48
     # TODO Supply a max mem/node value for AWS
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "AZUREPW")
@@ -125,7 +112,6 @@ case ${machine} in
     npe_node_max=36
     max_tasks_per_node=36
     # TODO Supply a max mem/node value for AZURE
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "GOOGLEPW")
@@ -133,13 +119,11 @@ case ${machine} in
     npe_node_max=30
     max_tasks_per_node=30
     # TODO Supply a max mem/node value for GOOGLE
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "CONTAINER")
     max_tasks_per_node=1
     # TODO Supply a max mem/node value for a container
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   *)

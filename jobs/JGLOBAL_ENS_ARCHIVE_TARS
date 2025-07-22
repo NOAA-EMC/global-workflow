@@ -12,9 +12,9 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COMIN_ICE_ANALYSIS_ENSSTAT:COM_ICE_ANALYSIS_TMPL \
   COMIN_OCEAN_ANALYSIS_ENSSTAT:COM_OCEAN_ANALYSIS_TMPL \
   COMIN_SNOW_ANALYSIS_ENSSTAT:COM_SNOW_ANALYSIS_TMPL \
-  COMOUT_CONF:COM_CONF_TMPL
+  COMIN_CONF:COM_CONF_TMPL
 
-if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
+if [[ ! -d ${COMIN_CONF} ]]; then mkdir -p "${COMIN_CONF}"; fi
 
 ###############################################################
 # Run archive script
