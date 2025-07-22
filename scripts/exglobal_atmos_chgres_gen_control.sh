@@ -26,7 +26,7 @@ SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 SFC_FILE="gdas.t18z.sfcf003.nc"
-ATM_FILE="gdas.t18z.atmf003.n.nc"
+ATM_FILE="gdas.t18z.atmf003.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
