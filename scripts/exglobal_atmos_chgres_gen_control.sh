@@ -61,14 +61,14 @@ tile_file_set=(
 )
 
 # Loop through patterns and tiles
-for entry in "${tile_file_set[@]}"; do
-  prefix="${entry%% *}"
-  dir="${entry#* }"
+for ((p=0; p<${#tile_file_set[@]}; p+=2)); do
+  prefix="${tile_file_set[p]}"
+  dir="${tile_file_set[p+1]}"
   for i in {1..6}; do
     tile_file="${prefix}${i}.nc"
     cpfs "${dir}/${tile_file}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
-  done
+   done
 done
 echo "All files copied successfully."
 ################################################################################
