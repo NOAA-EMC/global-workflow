@@ -28,7 +28,7 @@ case "${cyc}" in
     ;;
 esac
 
-# ...existing code...
+# Define COM directories
 MEMDIR="mem000" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL \
     COMIN_ATMOS_HISTORY_MEM:COM_ATMOS_HISTORY_TMPL
