@@ -532,10 +532,10 @@ case ${step} in
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
     esac
-    ntasks=1
+    ntasks=120
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    memory="13072M"
+    memory=${mem_node_max}
     ;;
 
   "marineanlinit")

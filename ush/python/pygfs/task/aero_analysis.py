@@ -69,7 +69,7 @@ class AerosolAnalysis(Task):
                 'GPREFIX': f"gcdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'aero_obsdatain_path': f"{self.task_config.DATA}/obs/",
                 'aero_obsdataout_path': f"{self.task_config.DATA}/diags/",
-                'BKG_TSTEP': "PT3H",  # FGAT
+                'BKG_TSTEP': "PT3H"  # FGAT
             }
         )
 
@@ -280,10 +280,8 @@ class AerosolAnalysis(Task):
         """
 
         local_dict = AttrDict(
-            {   
-                'UPP_RUN': "analysis",
-                'FORECAST_HOUR': 0
-            }
+            { 'UPP_RUN': "analysis",
+              'FORECAST_HOUR': 0 }
         )
         self.task_config = AttrDict(**self.task_config, **local_dict)
         self.task_config.UPP_CONFIG = self.task_config.UPP_CONFIG_YAML
@@ -317,10 +315,9 @@ class AerosolAnalysis(Task):
         # ---- add aero increments to atmf000 files
         logger.info('Adding aero increments to RESTART files')
         bkg_file = os.path.join(upp_dict.DATA, f"{upp_dict.atmos_filename}")
-        inc_file = os.path.join(self.task_config.DATA, 'anl', 
-        f"aeroinc_gauss.{self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%S')}Z.gaussian.modelLevels.nc")
-        incvars_list_path = os.path.join(self.task_config['PARMgfs'], 'gdas', 'aeroanl_upp_config.yaml.j2')
-        allvars = YAMLFile(path=incvars_list_path)['aeroincvars'][:]
+        inc_filename = f"aeroinc_gauss.{self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%S')}Z.gaussian.modelLevels.nc"
+        inc_file = os.path.join(self.task_config.DATA, 'anl', inc_filename)
+        allvars = upp_yaml['aeroincvars'][:]
         bkgvars = [var[0] for var in allvars]
         incvars = [var[1] for var in allvars]
         self.add_aero_gaussian_increments(inc_file, bkg_file, incvars, bkgvars)
@@ -328,7 +325,7 @@ class AerosolAnalysis(Task):
         # ---- add atmo increments to atmf000 files
         logger.info('Adding atmo increments to RESTART files')
         inc_file = os.path.join(upp_dict.DATA, f"{self.task_config.APREFIX}atminc.nc")
-        allvars = YAMLFile(path=incvars_list_path)['atmincvars'][:]
+        allvars = upp_yaml['atmincvars'][:]
         bkgvars = [var[0] for var in allvars]
         incvars = [var[1] for var in allvars]
         self.add_atm_gaussian_increments(inc_file, bkg_file, incvars, bkgvars)
