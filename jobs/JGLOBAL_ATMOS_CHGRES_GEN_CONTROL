@@ -7,8 +7,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_
 # Set variables used in the script
 ##############################################
 export EXECufs=${EXECufs:-${HOMEgfs}/sorc/ufs_utils.fd/exec}
-export CASE_OUTPUT="C384"
+export CASE="C384"
 export LEVS="28"
+export OCNRES="100"
 # Calculate gPDY (previous day) and gcyc (previous cycle hour)
 PDY="${PDY:-$(date +%Y%m%d)}"
 cyc="${cyc:-00}"
@@ -30,7 +31,6 @@ esac
 
 # Define COM directories
 MEMDIR="mem000" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL \
     COMIN_ATMOS_HISTORY_MEM:COM_ATMOS_HISTORY_TMPL
 MEMDIR="mem000" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL

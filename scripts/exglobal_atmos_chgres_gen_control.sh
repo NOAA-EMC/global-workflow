@@ -21,11 +21,11 @@ ih=$(echo "${CDATE}" | cut -c9-10)
 ################################################################################
 # Set up theinput and output directories
 DESTINATION_DIR="${DATA}"
-SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_OUTPUT}"
-MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_OUTPUT}_mosaic.nc"
+SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
+MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 SFC_FILE="gdas.t18z.sfcf003.nc"
-ATM_FILE="gdas.t18z.atma003.ensres.nc"
+ATM_FILE="gdas.t18z.atmf003.n.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -33,59 +33,47 @@ if [[ ! -d "${SOURCE_DIR}" ]]; then
     exit 1
 fi
 ################################################################################
-# Function to copy files and check success
-copy_file() {
-    local src=$1
-    local dest=$2
-    echo "Copying ${src} to ${dest}"
-    if ! cp -rf "${src}" "${dest}"; then
-        echo "Error: Failed to copy ${src} to ${dest}" >&2
-        exit 1
-    fi
-}
-################################################################################
 # List of input files to copy
 input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
-    "${SOURCE_DIR}/${CASE_OUTPUT}_mosaic.nc"
+    "${SOURCE_DIR}/${CASE}_mosaic.nc"
     "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
     "${COMIN_ATMOS_RESTART_MEM}/${ATM_FILE}"
 )
 
 for src in "${input_files[@]}"; do
-    copy_file "${src}" "${DESTINATION_DIR}/"
+    cpfs "${src}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/$(basename "${src}")"
 done
 
 tile_file_set=(
-    "${CASE_OUTPUT}_grid.tile"           "${SOURCE_DIR}"
-    "${CASE_OUTPUT}.mx100_oro_data.tile" "${SOURCE_DIR}"
-    "${CASE_OUTPUT}.mx100.slope_type.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_OUTPUT}.mx100.maximum_snow_albedo.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_OUTPUT}.mx100.snowfree_albedo.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_OUTPUT}.mx100.soil_type.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_OUTPUT}.mx100.vegetation_type.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_OUTPUT}.mx100.substrate_temperature.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_OUTPUT}.mx100.vegetation_greenness.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_OUTPUT}.mx100.facsf.tile" "${SOURCE_DIR}/sfc"
+    "${CASE}_grid.tile"           "${SOURCE_DIR}"
+    "${CASE}.mx${OCNRES}_oro_data.tile" "${SOURCE_DIR}"
+    "${CASE}.mx${OCNRES}.slope_type.tile" "${SOURCE_DIR}/sfc"
+    "${CASE}.mx${OCNRES}.maximum_snow_albedo.tile" "${SOURCE_DIR}/sfc"
+    "${CASE}.mx${OCNRES}.snowfree_albedo.tile" "${SOURCE_DIR}/sfc"
+    "${CASE}.mx${OCNRES}.soil_type.tile" "${SOURCE_DIR}/sfc"
+    "${CASE}.mx${OCNRES}.vegetation_type.tile" "${SOURCE_DIR}/sfc"
+    "${CASE}.mx${OCNRES}.substrate_temperature.tile" "${SOURCE_DIR}/sfc"
+    "${CASE}.mx${OCNRES}.vegetation_greenness.tile" "${SOURCE_DIR}/sfc"
+    "${CASE}.mx${OCNRES}.facsf.tile" "${SOURCE_DIR}/sfc"
 )
 
 # Loop through patterns and tiles
-for ((p=0; p<${#tile_file_set[@]}; p+=2)); do
-    prefix="${tile_file_set[p]}"
-    dir="${tile_file_set[p+1]}"
-    for i in {1..6}; do
-        tile_file="${prefix}${i}.nc"
-        copy_file "${dir}/${tile_file}" "${DESTINATION_DIR}/"
-        chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
-    done
+for entry in "${tile_file_set[@]}"; do
+  prefix="${entry%% *}"
+  dir="${entry#* }"
+  for i in {1..6}; do
+    tile_file="${prefix}${i}.nc"
+    cpfs "${dir}/${tile_file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
+  done
 done
-
 echo "All files copied successfully."
 ################################################################################
 # Prepare the orography target files
 OROG_TARGET_FILES=$(for i in {1..6}; do
-    printf "\"${CASE_OUTPUT}.mx100_oro_data.tile%d.nc\"" "${i}"
+    printf "\"${CASE}.mx${OCNRES}_oro_data.tile%d.nc\"" "${i}"
     if [[ "${i}" -lt 6 ]]; then
         printf ","
     fi
