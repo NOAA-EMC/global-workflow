@@ -21,8 +21,8 @@ ih=$(echo "${CDATE}" | cut -c9-10)
 ################################################################################
 # Set up theinput and output directories
 DESTINATION_DIR="${DATA}"
-SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_CHANGE}"
-MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_CHANGE}_mosaic.nc"
+SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE_OUTPUT}"
+MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE_OUTPUT}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 SFC_FILE="gdas.t18z.sfcf003.nc"
 ATM_FILE="gdas.t18z.atma003.ensres.nc"
@@ -47,7 +47,7 @@ copy_file() {
 # List of input files to copy
 input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
-    "${SOURCE_DIR}/${CASE_CHANGE}_mosaic.nc"
+    "${SOURCE_DIR}/${CASE_OUTPUT}_mosaic.nc"
     "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
     "${COMIN_ATMOS_RESTART_MEM}/${ATM_FILE}"
 )
@@ -58,16 +58,16 @@ for src in "${input_files[@]}"; do
 done
 
 tile_file_set=(
-    "${CASE_CHANGE}_grid.tile"           "${SOURCE_DIR}"
-    "${CASE_CHANGE}.mx100_oro_data.tile" "${SOURCE_DIR}"
-    "${CASE_CHANGE}.mx100.slope_type.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_CHANGE}.mx100.maximum_snow_albedo.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_CHANGE}.mx100.snowfree_albedo.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_CHANGE}.mx100.soil_type.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_CHANGE}.mx100.vegetation_type.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_CHANGE}.mx100.substrate_temperature.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_CHANGE}.mx100.vegetation_greenness.tile" "${SOURCE_DIR}/sfc"
-    "${CASE_CHANGE}.mx100.facsf.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_OUTPUT}_grid.tile"           "${SOURCE_DIR}"
+    "${CASE_OUTPUT}.mx100_oro_data.tile" "${SOURCE_DIR}"
+    "${CASE_OUTPUT}.mx100.slope_type.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_OUTPUT}.mx100.maximum_snow_albedo.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_OUTPUT}.mx100.snowfree_albedo.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_OUTPUT}.mx100.soil_type.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_OUTPUT}.mx100.vegetation_type.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_OUTPUT}.mx100.substrate_temperature.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_OUTPUT}.mx100.vegetation_greenness.tile" "${SOURCE_DIR}/sfc"
+    "${CASE_OUTPUT}.mx100.facsf.tile" "${SOURCE_DIR}/sfc"
 )
 
 # Loop through patterns and tiles
@@ -85,7 +85,7 @@ echo "All files copied successfully."
 ################################################################################
 # Prepare the orography target files
 OROG_TARGET_FILES=$(for i in {1..6}; do
-    printf "\"${CASE_CHANGE}.mx100_oro_data.tile%d.nc\"" "${i}"
+    printf "\"${CASE_OUTPUT}.mx100_oro_data.tile%d.nc\"" "${i}"
     if [[ "${i}" -lt 6 ]]; then
         printf ","
     fi
