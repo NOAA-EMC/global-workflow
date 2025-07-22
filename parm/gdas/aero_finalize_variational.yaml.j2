@@ -23,3 +23,6 @@ copy:
 {% for tile in range(1,ntiles+1) %}
 - ["{{ DATA }}/anl/{{ bkgtime | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc", "{{ COMOUT_ATMOS_RESTART }}/{{ bkgtime | to_fv3time }}.aeroanl_fv_tracer.res.tile{{ tile }}.nc"]
 {% endfor %}
+## copy grib2 analysis
+- ["{{ DATA }}/upp/GFSPRS.GrbF06", "{{ COMOUT_CHEM_ANALYSIS }}/{{ APREFIX }}aeroanl.grib2"]
+
