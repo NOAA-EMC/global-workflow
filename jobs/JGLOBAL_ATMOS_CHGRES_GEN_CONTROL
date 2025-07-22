@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_
 ##############################################
 export EXECufs=${EXECufs:-${HOMEgfs}/sorc/ufs_utils.fd/exec}
 export CASE_OUTPUT="C384"
-export LEVS="28"
+export LEVS="128"
 # Calculate gPDY (previous day) and gcyc (previous cycle hour)
 PDY="${PDY:-$(date +%Y%m%d)}"
 cyc="${cyc:-00}"
