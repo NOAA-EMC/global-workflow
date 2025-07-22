@@ -86,7 +86,7 @@ case "${fv3_res}" in
         export k_split=1
         export n_split=4
         export tau=10.0
-        export rf_cutoff=100.0
+        export rf_cutoff=300.0
         export fv_sg_adj=3600
         export knob_ugwp_tauamp=6.0e-3      # setting for UGWPv1 non-stationary GWD
         export WRITE_GROUP=1
@@ -106,7 +106,7 @@ case "${fv3_res}" in
         export k_split=1
         export n_split=4
         export tau=8.0
-        export rf_cutoff=100.0
+        export rf_cutoff=300.0
         export fv_sg_adj=1800
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
@@ -125,7 +125,7 @@ case "${fv3_res}" in
         export k_split=2
         export n_split=4
         export tau=6.0
-        export rf_cutoff=100.0
+        export rf_cutoff=300.0
         export fv_sg_adj=1800
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
@@ -143,7 +143,7 @@ case "${fv3_res}" in
         export k_split=2
         export n_split=4
         export tau=4.0
-        export rf_cutoff=100.0
+        export rf_cutoff=300.0
         export fv_sg_adj=900
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=8
@@ -161,7 +161,7 @@ case "${fv3_res}" in
         export k_split=2
         export n_split=4
         export tau=3.0
-        export rf_cutoff=100.0
+        export rf_cutoff=300.0
         export fv_sg_adj=450
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
@@ -179,7 +179,7 @@ case "${fv3_res}" in
         export k_split=2
         export n_split=6
         export tau=2.5
-        export rf_cutoff=100.0
+        export rf_cutoff=300.0
         export fv_sg_adj=450
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available
@@ -197,7 +197,7 @@ case "${fv3_res}" in
         export k_split=4
         export n_split=5
         export tau=0.5
-        export rf_cutoff=100.0
+        export rf_cutoff=300.0
         export fv_sg_adj=300
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10  # TODO: refine these numbers when a case is available

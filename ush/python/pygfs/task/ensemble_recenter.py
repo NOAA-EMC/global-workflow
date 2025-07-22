@@ -178,7 +178,7 @@ class EnsembleRecenter(Task):
         for app_name in self.jedi_dict.keys():
             src = os.path.join(self.task_config.DATA,
                                f"{app_name}.yaml")
-            dest = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS_ENSSTAT,
+            dest = os.path.join(self.task_config.COMOUT_CONF,
                                 f"{self.task_config.APREFIX_ENS}{app_name}.yaml")
             fh_dict['copy'].append([src, dest])
 

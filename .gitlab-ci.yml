@@ -29,6 +29,8 @@ stages:
   - finalize
 
 variables:
+  CI_DEBUG_TRACE: "false"    # Enable debug tracing for CI jobs
+  CI_DEBUG_SERVICES: "false" # Enable debug services for CI jobs
   PIPELINE_TYPE: pr_cases    # Default to PR Cases if not overwritten by GitLab Scheduled Pipelines
   RUN_ON_MACHINES: all       # Default to all machines (overwritten by triggers)
   # Set GFS_CI_RUN_TYPE=nightly in the GitLab Scheuled Pipelines
@@ -36,7 +38,7 @@ variables:
   GFS_CI_RUN_TYPE: pr_cases  # default value (overwritten by GitLab Scheuled Pipelines)
   GW_REPO_URL: https://github.com/NOAA-EMC/global-workflow.git
   # Using CI_PIPELINE_ID guarantees uniqueness per pipeline (also used for pslot tags)
-  WORKSPACE_ID: ${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
+  WORKSPACE_ID: ${GFS_CI_RUN_TYPE}_${PR_NUMBER}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
   # Define a base path that will be used for initial cloning
   GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_ID}/global-workflow
   GIT_DEPTH: 10
@@ -53,18 +55,20 @@ include:
 
 .base_config:
   variables:
+    badge_GIST_ID: "66059582886cb5c2485ff64bf24e7f93"
     GIT_STRATEGY: none
   before_script:
     - |
-      export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_ID}"
-      export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone
-      export RUNTESTS_DIR="${GW_RUN_PATH}/RUNTESTS"
-
+      echo "Starting GitLab CI pipeline for global-workflow project"
       PR_NUMBER=${PR_NUMBER:-0}
       if [[ "${PIPELINE_TYPE}" == "ctests" ]]; then
         GFS_CI_RUN_TYPE="ctests"
-        WORKSPACE_ID="${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}"
+        WORKSPACE_ID="${GFS_CI_RUN_TYPE}_${PR_NUMBER}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}"
       fi
+
+      export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_ID}"
+      export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone
+      export RUNTESTS_DIR="${GW_RUN_PATH}/RUNTESTS"
 
       # Create a date-based directory name for successful nightly runs
       # on success of nightly pipelines will have the final directory name
@@ -89,9 +93,18 @@ include:
         exit 1
       fi
 
+      # Setup GitHub CLI for use throughout the pipeline
+      export GH=$(which gh 2>/dev/null || echo "${HOME}/bin/gh")
+      if [[ ! -x "${GH}" ]]; then
+        echo "ERROR: GitHub CLI (gh) not found or not executable. Please install it."
+        exit 1
+      fi
+
 # Common build template for all modalities
 .build_template:
-  extends: .base_config
+  extends:
+    - .base_config
+    - .failure_cleanup_template
   variables:
     GIT_STRATEGY: clone
     GIT_SUBMODULE_STRATEGY: recursive
@@ -99,16 +112,17 @@ include:
   stage: build
   script:
     - |
-      echo "Setting up build environment for ${machine}"
+      echo "Setting up build environment for ${machine^}..."
       echo "Using build directory ${GW_HOMEgfs}"
       git submodule status
       # When GFS_CI_RUN_TYPE is set to "nightly", we use the develop branch
       # It should be set when configuring the scheculed nightly pipeline
       if [[ ${GFS_CI_RUN_TYPE} == "pr_cases" && ${PR_NUMBER} != 0 ]]; then
-        echo "pipeline is set to checkout PR_NUMBER=${PR_NUMBER} from ${GW_REPO_URL}"
+        echo "pipeline is set to checkout PR_NUMBER=${PR_NUMBER} from ${GW_REPO_URL} on machine ${machine^}"
+        ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} --add-label "CI-${machine^}-Building" --remove-label "CI-${machine^}-Ready"
         git remote add github "${GW_REPO_URL}"
         git fetch github
-        gh pr checkout "${PR_NUMBER}"
+        ${GH} pr checkout "${PR_NUMBER}"
       fi
 
       dev/ci/scripts/utils/ci_utils.sh build
@@ -116,8 +130,47 @@ include:
 
       if [[ ${build_status} -ne 0 ]]; then
         echo "Build failed with exit code ${build_status}"
+        # Mark the build as failed, but don't update labels here - let after_script handle it
         exit 1
+      elif [[ ${GFS_CI_RUN_TYPE} == "pr_cases" && ${PR_NUMBER} != 0 ]]; then
+        ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} --add-label "CI-${machine^}-Running" --remove-label "CI-${machine^}-Building"
       fi
 
       sorc/link_workflow.sh
       mkdir -p ${RUNTESTS_DIR}
+
+# Reusable template for failure cleanup in after_script
+.failure_cleanup_template:
+  after_script:
+    - |
+      echo "After script is running for job ${CI_JOB_NAME} on ${machine} with status ${CI_JOB_STATUS}"
+      if [[ ${CI_JOB_STATUS} == "failed" ]]; then
+        Machine="${machine^}"
+        echo "Job failed, performing cleanup actions for ${Machine}"
+
+        # Re-setup GH if needed
+        export GH=$(which gh 2>/dev/null || echo "${HOME}/bin/gh")
+        if [ ! -x "${GH}" ]; then
+          echo "WARNING: GitHub CLI (gh) not found in after_script, trying to continue anyway"
+        fi
+
+        if [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
+          echo "Updating GitHub labels for PR ${PR_NUMBER} failure on ${Machine}"
+          ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} \
+            --add-label "CI-${Machine}-Failed" \
+            --remove-label "CI-${Machine}-Building" \
+            --remove-label "CI-${Machine}-Running" || true
+
+        elif [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+          echo "Updating nightly badge for ${Machine} failure with GIST ID ${badge_GIST_ID}"
+          badge_img_file="${TMPDIR:-/tmp}/$(uuidgen)/${machine}_pipeline_badge.svg"
+          mkdir -p "$(dirname "${badge_img_file}")"
+          curl -sSL "https://img.shields.io/badge/${machine}_nightly-failed-red?style=flat-round&logo=gitlab" -o "${badge_img_file}"
+          ${GH} gist edit "${badge_GIST_ID}" --add "${badge_img_file}" || true
+
+        else
+          echo "No cleanup actions needed for GFS_CI_RUN_TYPE=${GFS_CI_RUN_TYPE}, CI_PIPELINE_SOURCE=${CI_PIPELINE_SOURCE}"
+        fi
+      else
+        echo "Job status: ${CI_JOB_STATUS}, no failure cleanup needed"
+      fi
