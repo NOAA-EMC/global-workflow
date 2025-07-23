@@ -111,7 +111,7 @@ FV3_postdet() {
     err=$?
     if [[ ${err} -ne 0 ]]; then
       echo "FATAL ERROR: check_land_input_orography.py returned error code ${err}, ABORT!"
-      exit ${err}
+      exit "${err}"
     fi
   fi
 
