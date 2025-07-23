@@ -22,7 +22,7 @@ ih=$(echo "${CDATE}" | cut -c9-10)
 ################################################################################
 # Set up theinput and output directories
 DESTINATION_DIR="${DATA}"
-INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/"
+INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf"
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
@@ -41,10 +41,10 @@ fi
 input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
     "${SOURCE_DIR}/${CASE}_mosaic.nc"
-    "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
-    "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}"
-    "${INPUT_DIR}/gfs.t00z.atmf003.nc"
-    "${INPUT_DIR}/gfs.t00z.sfcf003.nc"
+#    "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
+#    "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}"
+    "${INPUT_DIR}/${SFC_FILE}"
+    "${INPUT_DIR}/${ATM_FILE}"
 )
 
 for src in "${input_files[@]}"; do
