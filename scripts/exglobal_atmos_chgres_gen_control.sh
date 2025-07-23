@@ -22,12 +22,11 @@ ih=$(echo "${CDATE}" | cut -c9-10)
 ################################################################################
 # Set up theinput and output directories
 DESTINATION_DIR="${DATA}"
-INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf"
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
-SFC_FILE="gfs.t00z.sfcf000.nc"
-ATM_FILE="gfs.t00z.atmf000.nc"
+SFC_FILE="gdas.t18z.sfcf003.nc"
+ATM_FILE="gdas.t18z.atmf003.n.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -39,8 +38,8 @@ fi
 input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
     "${SOURCE_DIR}/${CASE}_mosaic.nc"
-    "${INPUT_DIR}/${SFC_FILE}"
-    "${INPUT_DIR}/${ATM_FILE}"
+    "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
+    "${COMIN_ATMOS_RESTART_MEM}/${ATM_FILE}"
 )
 ################################################################################
 # Function to copy files and check success
@@ -142,19 +141,19 @@ EOF
 eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${PGMOUT}"
 ################################################################################
 # Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
-if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]] && ! mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"; then
-    echo "Error: Failed to create directory ${COMOUT_ATMOS_INPUT_MEM}."
-    exit 1
-fi
-
 for i in {1..6}; do
-    src_file="out.atm.tile${i}.nc"
-    if [[ -f "${src_file}" ]]; then
-        echo "Copying ${src_file} to ${COMOUT_ATMOS_INPUT_MEM}/"
-        copy_file "${src_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
-    else
-        echo "Warning: ${src_file} does not exist and will not be copied."
-    fi
+  atm_file="out.atm.tile${i}.nc"
+  sfc_file="out.sfc.tile${i}.nc"
+  if [[ -f "${atm_file}" ]]; then
+    copy_file "${atm_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
+  fi
+  if [[ -f "${sfc_file}" ]]; then
+    copy_file "${sfc_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
+  fi
 done
+
+if [[ -f "gfs_ctrl.nc" ]]; then
+  copy_file "gfs_ctrl.nc" "${COMOUT_ATMOS_INPUT_MEM}/"
+fi
 exit "${err}"
 ################################################################################
