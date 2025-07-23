@@ -5,7 +5,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Programs used
 if [ "$RUN_WITH_CONTAINER" == "NO" ]; then
     source "${USHgfs}/load_fv3gfs_modules.sh"
-    module load wgrib2/2.0.8
+    module load wgrib2/3.6.0
 
     export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 else

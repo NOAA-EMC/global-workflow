@@ -5,10 +5,18 @@ Load environment to run GFS on noaacloud
 local spack_mod_path=(os.getenv("spack_mod_path") or "None")
 prepend_path("MODULEPATH", spack_mod_path)
 
-load("gnu")
-load(pathJoin("stack-intel", (os.getenv("stack_intel_ver") or "None")))
-load(pathJoin("stack-intel-oneapi-mpi", (os.getenv("stack_impi_ver") or "None")))
-unload("gnu")
+prepend_path("MODULEPATH", "/contrib/spack-stack-rocky8/spack-stack-1.9.2/envs/ue-oneapi-2024.2.1/install/modulefiles/intel-oneapi-mpi/2021.13-mg3hegm/gcc/13.2.0")
+prepend_path("MODULEPATH", "/apps/modules/modulefiles")
+
+gnu_ver=os.getenv("gnu_ver") or "13.2.0"
+stack_oneapi_ver=os.getenv("stack_oneapi_ver") or "2024.2.1"
+stack_impi_ver=os.getenv("stack_impi_ver") or "2021.13"
+cmake_ver=os.getenv("cmake_ver") or "3.27.9"
+
+load(pathJoin("gnu", gnu_ver))
+load(pathJoin("stack-oneapi", stack_oneapi_ver))
+load(pathJoin("stack-intel-oneapi-mpi", stack_impi_ver))
+load(pathJoin("cmake", cmake_ver))
 
 load(pathJoin("python", (os.getenv("python_ver") or "None")))
 
