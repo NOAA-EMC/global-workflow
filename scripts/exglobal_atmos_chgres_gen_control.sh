@@ -26,9 +26,9 @@ INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/inp
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
-SFC_FILE="gfs.t00z.atmf003.nc"
+SFC_FILE="gfs.t00z.sfcf000.nc"
 #"gdas.t18z.sfcf003.nc"
-ATM_FILE="gfs.t00z.atmf003.nc"
+ATM_FILE="gfs.t00z.atmf000.nc"
 #"gdas.t18z.atmf003.nc"
 ################################################################################
 # Ensure the source directory exists
