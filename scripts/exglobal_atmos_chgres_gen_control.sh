@@ -26,8 +26,8 @@ INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/inp
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
-SFC_FILE="gdas.t18z.sfcf003.nc"
-ATM_FILE="gdas.t18z.atmf003.nc"
+SFC_FILE="gfs.t00z.sfcf000.nc"
+ATM_FILE="gfs.t00z.atmf000.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -39,8 +39,8 @@ fi
 input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
     "${SOURCE_DIR}/${CASE}_mosaic.nc"
-    "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
-    "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}"
+    "${INPUT_DIR}/${SFC_FILE}"
+    "${INPUT_DIR}/${ATM_FILE}"
 )
 ################################################################################
 # Function to copy files and check success
