@@ -352,18 +352,12 @@ class AerosolAnalysis(Task):
         with Dataset(inc_file, mode='r') as incfile, Dataset(bkg_file, mode='a') as rstfile:
             for incname, bkgname in zip(incvars, bkgvars):
                 increment = incfile.variables[incname][:]
-                # round to 7th decimal due to JEDI reproducibility issues when changing PE count
-                increment = np.round(increment, 7)
                 # reordering the dimensions of increment to macth background
                 increment_reshape = np.transpose(increment, (2, 0, 1))
 
                 bkg = rstfile.variables[bkgname][:]
                 anl = bkg + increment_reshape[np.newaxis, :, :, :]
                 rstfile.variables[bkgname][:] = anl[:]
-                try:
-                    rstfile.variables[bkgname].delncattr('checksum')  # remove the checksum so fv3 does not complain
-                except (AttributeError, RuntimeError):
-                    pass  # checksum is missing, move on
 
     @logit(logger)
     def add_atm_gaussian_increments(self, inc_file: str, bkg_file: str, incvars: List, bkgvars: List) -> None:
