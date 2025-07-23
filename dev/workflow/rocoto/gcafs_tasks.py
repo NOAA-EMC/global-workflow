@@ -904,13 +904,7 @@ class GCAFSTasks(Tasks):
         fhout_ice_gfs = self._configs['base']['FHOUT_ICE_GFS']
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'},
-                         'ocean': {'config': 'oceanice_products',
-                                   'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr3_next#.nc'},
-                         'ice': {'config': 'oceanice_products',
-                                 'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr3_last#.nc'}}
+                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']

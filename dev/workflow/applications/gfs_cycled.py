@@ -269,7 +269,6 @@ class GFSCycledAppConfig(AppConfig):
 
                 wave_prep_tasks = ['waveinit']
                 wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
-                wave_post_tasks = ['wavepostsbs', 'wavepostpnt']
 
                 # gdas- and gfs-specific analysis tasks
                 if run == 'gdas':
@@ -345,9 +344,10 @@ class GFSCycledAppConfig(AppConfig):
                         task_names[run] += ['metp']
 
                 if options['do_wave']:
+                    task_names[run] += ['wavepostsbs']
                     if options['do_wave_bnd']:
                         task_names[run] += wave_bndpnt_tasks
-                    task_names[run] += wave_post_tasks
+                    task_names[run] += ['wavepostpnt']
                     # wave gempak and awips jobs are gfs-specific
                     if run == 'gfs':
                         if options['do_gempak']:
