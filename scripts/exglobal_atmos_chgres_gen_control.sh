@@ -22,11 +22,14 @@ ih=$(echo "${CDATE}" | cut -c9-10)
 ################################################################################
 # Set up theinput and output directories
 DESTINATION_DIR="${DATA}"
+INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/input_data/fv3.netcdf/"
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
-SFC_FILE="gdas.t18z.sfcf003.nc"
-ATM_FILE="gdas.t18z.atmf003.nc"
+SFC_FILE="gfs.t00z.atmf003.nc"
+#"gdas.t18z.sfcf003.nc"
+ATM_FILE="gfs.t00z.atmf003.nc"
+#"gdas.t18z.atmf003.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -40,6 +43,8 @@ input_files=(
     "${SOURCE_DIR}/${CASE}_mosaic.nc"
     "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
     "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}"
+    "${INPUT_DIR}/gfs.t00z.atmf003.nc"
+    "${INPUT_DIR}/gfs.t00z.sfcf003.nc"
 )
 
 for src in "${input_files[@]}"; do
