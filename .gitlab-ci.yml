@@ -24,46 +24,64 @@
 
 stages:
   - build
-  - create_experiments
+  - setup_tests
   - run_tests
   - finalize
 
 variables:
-  BUILDTYPE: 'nightly'
-  # Using CI_PIPELINE_ID guarantees uniqueness per pipeline
-  WORKSPACE_ID: ${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
+  PIPELINE_TYPE: pr_cases    # Default to PR Cases if not overwritten by GitLab Scheduled Pipelines
+  RUN_ON_MACHINES: all       # Default to all machines (overwritten by triggers)
+  # Set GFS_CI_RUN_TYPE=nightly in the GitLab Scheuled Pipelines
+  # to run the nightly against the develop branch
+  GFS_CI_RUN_TYPE: pr_cases  # default value (overwritten by GitLab Scheuled Pipelines)
+  GW_REPO_URL: https://github.com/NOAA-EMC/global-workflow.git
+  # Using CI_PIPELINE_ID guarantees uniqueness per pipeline (also used for pslot tags)
+  WORKSPACE_ID: ${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}
   # Define a base path that will be used for initial cloning
   GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${WORKSPACE_ID}/global-workflow
   GIT_DEPTH: 10
   RUNNER_SCRIPT_TIMEOUT: 8h
   RUNNER_AFTER_SCRIPT_TIMEOUT: 8h
-  PR_NUMBER: ${PR_NUMBER:-"0"}
+  PR_NUMBER: 0 # PR number is set by GitHub Actions
+               # when the pipeline is triggered from a PR
 
 # Include specialized pipeline configuration files
 include:
   - local: 'dev/ci/gitlab-ci-ctests.yml'  # CTest framework configuration
-  - local: 'dev/ci/gitlab-ci-cases.yml'   # Standard test case templates
-  - local: 'dev/ci/gitlab-ci-hosts.yml'   # Host-specific configurations
+  - local: 'dev/ci/gitlab-ci-cases.yml'   # Standard test pr case templates
+  - local: 'dev/ci/gitlab-ci-hosts.yml'   # Host configurations, modality logic, and test lists
 
 .base_config:
   variables:
     GIT_STRATEGY: none
   before_script:
     - |
-      # Use CI_BUILDS_DIR and WORKSPACE_ID for all paths - no date in paths during pipeline execution
       export GW_RUN_PATH="${CI_BUILDS_DIR}/${WORKSPACE_ID}"
-      export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone, we keep it
+      export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone
       export RUNTESTS_DIR="${GW_RUN_PATH}/RUNTESTS"
 
-      # Create a date-based directory name for successful runs
+      PR_NUMBER=${PR_NUMBER:-0}
+      if [[ "${PIPELINE_TYPE}" == "ctests" ]]; then
+        GFS_CI_RUN_TYPE="ctests"
+        WORKSPACE_ID="${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_ID}"
+      fi
+
+      # Create a date-based directory name for successful nightly runs
+      # on success of nightly pipelines will have the final directory name
+      # (GFS_CI_RUN_TYPE)_(SHORT_SHA)_(MMDDYY) such as nightly_affeae_061025
+      # all other pipelines will have the CI_PIPELINE_ID appended instead
+      # (GFS_CI_RUN_TYPE)_(SHORT_SHA)_(CI_PIPELINE_ID) such as pr_cases_affeae_2345
+
       export DATE="$(date +'%m%d%y')"
-      export WORKSPACE_DATE="${BUILDTYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
+      export WORKSPACE_DATE="${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
 
       echo "WORKSPACE_ID: ${WORKSPACE_ID}"
       echo "WORKSPACE_DATE: ${WORKSPACE_DATE}"
       echo "GW_RUN_PATH: ${GW_RUN_PATH}"
       echo "GIT_CLONE_PATH: ${GIT_CLONE_PATH}"
       echo "GW_HOMEgfs: ${GW_HOMEgfs}"
+      echo "PIPELINE_TYPE: ${PIPELINE_TYPE}"
+      echo "RUN_ON_MACHINES: ${RUN_ON_MACHINES}"
 
       # Make sure GW_HOMEgfs is properly set and the directory exists
       if [ ! -d "${GW_HOMEgfs}" ]; then
@@ -84,9 +102,10 @@ include:
       echo "Setting up build environment for ${machine}"
       echo "Using build directory ${GW_HOMEgfs}"
       git submodule status
-
-      if [[ ${CI_PIPELINE_SOURCE} == "trigger" && ${PR_NUMBER} != 0 ]]; then
-        echo "Triggering pipeline via GitHub API running CTests on PR_NUMBER=${PR_NUMBER}"
+      # When GFS_CI_RUN_TYPE is set to "nightly", we use the develop branch
+      # It should be set when configuring the scheculed nightly pipeline
+      if [[ ${GFS_CI_RUN_TYPE} == "pr_cases" && ${PR_NUMBER} != 0 ]]; then
+        echo "pipeline is set to checkout PR_NUMBER=${PR_NUMBER} from ${GW_REPO_URL}"
         git remote add github "${GW_REPO_URL}"
         git fetch github
         gh pr checkout "${PR_NUMBER}"

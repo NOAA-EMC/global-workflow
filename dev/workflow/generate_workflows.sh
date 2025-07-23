@@ -117,7 +117,7 @@ _auto_del=false
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-   while getopts ":H:bDuy:Y:GESCA:ce:t:r:vVRdh" option; do
+   while getopts ":H:bDuy:Y:GESCA:ce:t:r:vVdhR" option; do
       case "${option}" in
         H)
            HOMEgfs="${OPTARG}"
@@ -280,16 +280,15 @@ if [[ "${_specified_home}" == "false" ]]; then
    fi
 fi
 
+if [[ "${_verbose}" == "true" ]]; then
+   echo "_run_with_container: ${_run_with_container}"
+fi
+
 # Set RUN_WITH_CONTAINER if it is set by the user
 if [[ "${_run_with_container}" == "true" ]]; then
-   RUN_WITH_CONTAINER=YES
-   if [[ "${_verbose}" == "true" ]]; then
-       printf "Run with Container %s\n\n" "${RUN_WITH_CONTAINER}"
-   fi
-   sed -i 's/RUN_WITH_CONTAINER=NO/RUN_WITH_CONTAINER=YES/g' ../../ush/preamble.sh
+   sed -i "s?RUN_WITH_CONTAINER=NO?RUN_WITH_CONTAINER=YES?g" ../../ush/preamble.sh
 else
-   RUN_WITH_CONTAINER=NO
-   sed -i 's/RUN_WITH_CONTAINER=YES/RUN_WITH_CONTAINER=NO/g' ../../ush/preamble.sh
+   sed -i "s?RUN_WITH_CONTAINER=YES?RUN_WITH_CONTAINER=NO?g" ../../ush/preamble.sh
 fi
 
 # Set the _yaml_dir to HOMEgfs/dev/ci/cases/pr if not explicitly set
@@ -348,7 +347,7 @@ EOM
       # Check if the specified yamls are for the specified system
       for i in "${!_nameref_yaml_list}"; do
          _yaml="${_nameref_yaml_list[${i}]}"
-         _found=$(grep -l "system: *${system}" "${_yaml_dir}/${_yaml}.yaml")
+         _found=$(grep -l "net: *${_net}" "${_yaml_dir}/${_yaml}.yaml")
          if [[ -z "${_found}" ]]; then
             echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_net^^} system"
             echo "Removing this yaml from the set of cases to run"

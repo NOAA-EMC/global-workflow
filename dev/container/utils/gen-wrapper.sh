@@ -51,7 +51,7 @@ do
     mkdir -p ${targetdir}
     for fnm in python wgrib2
     do
-        sourcef=${HOMEgfs}/dev/container/${dnm}.${fnm}
+        sourcef=${HOMEgfs}/dev/container/utils/${dnm}.${fnm}
         targetf=${targetdir}/run_${fnm}.sh
 
         sed -e "s?HOMEgfs?${HOMEgfs}?g" \

@@ -8,18 +8,6 @@ input_file=${1:-"pgb2file_in"}  # Input pressure grib2 file
 output_file_prefix=${2:-"pgb2file_out"}  # Prefix for output grib2 file; the prefix is appended by resolution e.g. _0p25
 grid_string=${3:-"0p25"}  # Target grids; e.g. "0p25" or "0p25:0p50"; If multiple, they need to be ":" seperated
 
-source "${HOMEgfs}/ush/preamble.sh"
-
-# Programs used
-if [ "$RUN_WITH_CONTAINER" == "NO" ]; then
-   #source "${USHgfs}/load_fv3gfs_modules.sh"
-   #module load wgrib2/2.0.8
-
-    export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-else
-    export WGRIB2="${HOMEgfs}/exec/run_wgrib2.sh"
-fi
-
 # wgrib2 options for regridding
 defaults="-set_grib_type same -set_bitmap 1 -set_grib_max_bits 16"
 interp_winds="-new_grid_winds earth"

@@ -55,10 +55,6 @@ cat > $run_model_script << EOF_MODEL
 # Set OMP_NUM_THREADS to 1 to avoid oversubscription when doing MPMD
 export OMP_NUM_THREADS=1
 
-#source /opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/intel/2021.10.0/intel-oneapi-mpi-2021.9.0-6bnjcwc/setvars.sh --force
-#export LD_LIBRARY_PATH=/opt/intel/oneapi/compiler/2023.2.3/linux/compiler/lib/intel64_lin
-#export LD_LIBRARY_PATH=/opt/intel/oneapi/compiler/2024.0/lib:$LD_LIBRARY_PATH
-
 source /usr/lmod/lmod/init/bash
 module purge
 module use ${HOMEgfs}/sorc/ufs_model.fd/modulefiles
@@ -77,15 +73,22 @@ cat > $link_model_script << EOF_LINK
 #!/bin/bash
 
 #Need these lines on AWS to run more than one node.
- export I_MPI_DEBUG=1
- export I_MPI_FABRICS=shm:ofi
- export I_MPI_OFI_PROVIDER=tcp
- export FI_PROVIDER=tcp
- export FI_TCP_IFACE=eth0
+ export I_MPI_DEBUG=10
+#export I_MPI_FABRICS=shm:ofi
+#export I_MPI_OFI_PROVIDER=tcp
+#export FI_PROVIDER=tcp
+#export FI_TCP_IFACE=eth0
+
+#For GaeaC6
+#export SINGULARITY_ENABLE_OVERLAY=try
+#export SINGULARITY_DISABLE_OVERLAY=yes
+#export SINGULARITY_DEBUG=10
+#export SINGULARITY_DEBUG=0
+#unset SINGULARITY_DEBUG
 
  export LD_LIBRARY_PATH=$(dirname ${container})
  arg="\$@"
- singularity exec \\
+ /apps/bin/apptainer exec \\
  ${bindings} \\
  ${container} \\
  ${run_model_script} \$arg

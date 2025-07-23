@@ -1,54 +1,78 @@
 #!/bin/bash
 
- set -x
+set -x
 
 HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
+run_with_container=YES
+
+#casetype=pr
 #yamllist="C48_ATM"
-yamllist="C48_S2SW"
+#yamllist="C48_S2SW"
 #yamllist="C48_S2SWA_gefs"
+#yamllist="C96mx100_S2S"
+
+casetype=hires
+yamllist="C768_S2SW"
 
 HOMEDIR=${HOMEgfs}
 if [[ ${MACHINE_ID} = ursa* ]] ; then
    container=/scratch4/NAGAPE/epic/${USER}/demo/ubuntu22.04-intel-ufs-env-v1.6.0.img
-   rundir=/scratch4/NAGAPE/epic/${USER}/run
+   rundir=/scratch3/NAGAPE/epic/${USER}/run
    bindings="-B /scratch3 -B /scratch4"
    HPC_ACCOUNT=epic
+
+   module load rocoto/1.3.7
+   rocotocmd=`which rocotorun`
 elif [[ ${MACHINE_ID} = gaea* ]] ; then
    container=/gpfs/f6/scratch/${USER}/container/ubuntu22.04-intel-ufs-env-v1.6.0.img
    rundir=/gpfs/f6/scratch/${USER}/run
    bindings="-B /gpfs/f6/scratch -B /ncrc/home1/${USER}"
    HPC_ACCOUNT=bil-fire8
+
+   rocotocmd=/autofs/ncrc-svm1_home2/Christopher.W.Harrop/rocoto-1.3.7/bin/rocotorun
 elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    TOPICDIR=/bucket/global-workflow-shared-data/ICSDIR
    container=/contrib/${USER}/src/gw-container-spack-stack-1.6.0/ubuntu22.04-intel-ufs-env-v1.6.0.img
    rundir=/lustre/${USER}/run
    bindings="--env \"I_MPI_FABRICS=ofi:shm,I_MPI_DEBUG=6\" -B /apps/slurm/default/lib/libpmi2.so -B /contrib -B /lustre -B /bucket"
    HPC_ACCOUNT=${USER}
+
+   module load rocoto/1.3.7
+   rocotocmd=`which rocotorun`
 fi
 
- module load rocoto/1.3.7
+mkdir -p ${rundir}
 
- rocotocmd=`which rocotorun`
+cd ${HOMEDIR}/dev/workflow
 
- mkdir -p ${rundir}
+if [[ "${run_with_container}" == "YES" ]]; then
+   ${HOMEDIR}/dev/container/utils/gen-wrapper.sh -H ${HOMEDIR} -c ${container} -b "${bindings}" -v
 
- ${HOMEDIR}/dev/container/gen-wrapper.sh -H ${HOMEDIR} -c ${container} -b "${bindings}" -v
-
- cd ${HOMEDIR}/dev/workflow
-
- TOPICDIR=${TOPICDIR} \
- RUNTESTS=${rundir} \
- RUNDIRS=${rundir} \
+   TOPICDIR=${TOPICDIR} \
+   RUNTESTS=${rundir} \
+   RUNDIRS=${rundir} \
 	./generate_workflows.sh \
 	-H ${HOMEDIR} \
 	-y ${yamllist} \
-	-Y ${HOMEDIR}/dev/ci/cases/pr \
+	-Y ${HOMEDIR}/dev/ci/cases/${casetype} \
 	-A ${HPC_ACCOUNT} \
-	-e "Wei.Huang@noaa.gov" \
+	-e "${USER}@noaa.gov" \
 	-r ${rocotocmd} \
-    	-R -v
+    	-v -R
 
- ${HOMEDIR}/dev/container/create-container-links.sh -H ${HOMEDIR} -c ${container} -b "${bindings}"
+   ${HOMEDIR}/dev/container/utils/create-container-links.sh -H ${HOMEDIR} -c ${container} -b "${bindings}"
+else
+   TOPICDIR=${TOPICDIR} \
+   RUNTESTS=${rundir} \
+   RUNDIRS=${rundir} \
+        ./generate_workflows.sh \
+        -H ${HOMEDIR} \
+        -y ${yamllist} \
+        -Y ${HOMEDIR}/dev/ci/cases/${casetype} \
+        -A ${HPC_ACCOUNT} \
+        -e "${USER}@noaa.gov" \
+        -v
+fi
 

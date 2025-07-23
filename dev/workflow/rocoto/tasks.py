@@ -18,7 +18,8 @@ class Tasks:
                    'ecen_fv3jedi', 'analcalc_fv3jedi',
                    'prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
                    'prep_emissions', 'prepoceanobs',
-                   'marineanlinit', 'marineanlletkf', 'marinebmat', 'marineanlvar', 'ocnanalecen', 'marineanlchkpt', 'marineanlfinal', 'ocnanalvrfy',
+                   'marineanlinit', 'marineanlletkf', 'marinebmatinit', 'marinebmat', 'marineanlvar',
+                   'ocnanalecen', 'marineanlchkpt', 'marineanlfinal', 'ocnanalvrfy',
                    'eobs', 'epos', 'esfc', 'eupd',
                    'earc_vrfy', 'earc_tars', 'ecen', 'echgres', 'ediag', 'efcs',
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
@@ -70,7 +71,7 @@ class Tasks:
                       'EXPDIR': self._base.get('EXPDIR'),
                       'NET': self._base.get('NET'),
                       'RUN': self.run,
-                      'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',
+                      'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',  # TODO: remove CDATE
                       'PDY': '<cyclestr>@Y@m@d</cyclestr>',
                       'cyc': '<cyclestr>@H</cyclestr>',
                       'COMROOT': self._base.get('COMROOT'),

@@ -37,11 +37,11 @@ if [[ ! -v HOMEgfs || ! -v container || ! -v type ]]; then
    exit -1
 fi
 
-#echo "HOMEgfs: $HOMEgfs"
-#echo "container: $container"
-#echo "bindings: $bindings"
-#echo "type: $type"
-#echo "Verbose: $verbose"
+echo "HOMEgfs: $HOMEgfs"
+echo "container: $container"
+echo "bindings: $bindings"
+echo "type: $type"
+echo "Verbose: $verbose"
 
 if [[ "$verbose" == "true" ]]; then
    set -x
@@ -69,8 +69,8 @@ export OMP_NUM_THREADS=1
 
 source /usr/lmod/lmod/init/bash
 module purge
-module use ${HOMEgfs}/sorc/ufs_model.fd/modulefiles
-module load ufs_container.intel
+module use ${HOMEgfs}/sorc/gfs_utils.fd/modulefiles
+module load gfsutils_container.intel
 
 arg="\$@"
 ${HOMEgfs}/sorc/ufs_model.fd/WW3/install/${pdlib}/bin/${model} \$arg

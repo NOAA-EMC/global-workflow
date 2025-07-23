@@ -390,7 +390,7 @@ For forecast-only there are two tarballs to pull
 
 ...where ``GFSVER`` is the version of the GFS (e.g. "16.3").
 
-2. File #2 (for prior cycle GDATE=SDATE-06):
+2. File #2 (for prior cycle SDATE-06):
 
 ::
 
@@ -398,7 +398,7 @@ For forecast-only there are two tarballs to pull
 
 ...where ``GFSVER`` is the version of the GFS (e.g. "16.3").
 
-For cycled mode there 18 tarballs to pull (9 for SDATE and 9 for GDATE (SDATE-06)):
+For cycled mode there 18 tarballs to pull (9 for SDATE and 9 for prior cycle (SDATE-06)):
 
 ::
 
@@ -432,16 +432,16 @@ Recent pre-implementation parallel series was for GFS v16 (implemented March 202
 * **What dates have warm-start files saved?** Unfortunately the frequency changed enough during the runs that it’s not easy to provide a definitive list easily.
 * **What files?** All warm-starts are saved in separate tarballs which include “restart” in the name. You need to pull the entirety of each tarball, all files included in the restart tarballs are needed.
 * **Where are these tarballs?** See below for the location on HPSS for each v16 pre-implementation parallel.
-* **What tarballs do I need to grab for my experiment?** Tarballs from two cycles are required. The tarballs are listed below, where $CDATE is your starting cycle and $GDATE is one cycle prior.
+* **What tarballs do I need to grab for my experiment?** Tarballs from two cycles are required. The tarballs are listed below, where $PDY$cyc is your starting cycle and $gPDY$gcyc is one cycle prior.
 
   - Forecast-only
-    + ../$CDATE/gfs_restarta.tar
-    + ../$GDATE/gdas_restartb.tar
+    + ../$PDY$cyc/gfs_restarta.tar
+    + ../$gPDY$gcyc/gdas_restartb.tar
   - Cycled w/EnKF
-    + ../$CDATE/gdas_restarta.tar
-    + ../$CDATE/enkfgdas_restarta_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
-    + ../$GDATE/gdas_restartb.tar
-    + ../$GDATE/enkfgdas_restartb_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
+    + ../$PDY$cyc/gdas_restarta.tar
+    + ../$PDY$cyc/enkfgdas_restarta_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
+    + ../$gPDY$gcyc/gdas_restartb.tar
+    + ../$gPDY$gcyc/enkfgdas_restartb_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
 
 * **Where do I put the warm-start initial conditions?** Extraction should occur right inside your ROTDIR. You may need to rename the enkf folder (enkf.gdas.$PDY -> enkfgdas.$PDY).
 

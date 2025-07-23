@@ -2,16 +2,6 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-# Programs used
-if [ "$RUN_WITH_CONTAINER" == "NO" ]; then
-    source "${USHgfs}/load_fv3gfs_modules.sh"
-    module load wgrib2/3.6.0
-
-    export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
-else
-    export WGRIB2="${HOMEgfs}/exec/run_wgrib2.sh"
-fi
-
 # Scripts used
 INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/interp_atmos_master.sh"}
 INTERP_ATMOS_SFLUXSH=${INTERP_ATMOS_SFLUXSH:-"${USHgfs}/interp_atmos_sflux.sh"}
