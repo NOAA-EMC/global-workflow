@@ -1,3 +1,0 @@
-Tue Jul 22 17:34:50 EDT 2025: Starting mock atmos_products job
-Mock atmos_products: Sleeping for 30 seconds to simulate atmospheric products generation...
-slurmstepd-DESKTOP-KD9I287: error: *** JOB 169 ON DESKTOP-KD9I287 CANCELLED AT 2025-07-22T17:35:06 ***
