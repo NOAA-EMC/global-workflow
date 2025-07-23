@@ -56,7 +56,7 @@ case ${step} in
     export walltime="00:15:00"
     export ntasks=12
     export tasks_per_node=12
-    export threads_per_task=12
+    export threads_per_task=1
     export memory="80GB"
     ;;
 
