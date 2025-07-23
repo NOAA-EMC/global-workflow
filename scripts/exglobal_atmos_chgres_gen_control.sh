@@ -26,10 +26,8 @@ INPUT_DIR="/lfs/h2/emc/nems/noscrub/emc.nems/UFS_UTILS/reg_tests/chgres_cube/inp
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
 MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
 HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
-SFC_FILE="gfs.t00z.sfcf000.nc"
-#"gdas.t18z.sfcf003.nc"
-ATM_FILE="gfs.t00z.atmf000.nc"
-#"gdas.t18z.atmf003.nc"
+SFC_FILE="gdas.t18z.sfcf003.nc"
+ATM_FILE="gdas.t18z.atmf003.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -41,14 +39,23 @@ fi
 input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
     "${SOURCE_DIR}/${CASE}_mosaic.nc"
-#    "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
-#    "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}"
-    "${INPUT_DIR}/${SFC_FILE}"
-    "${INPUT_DIR}/${ATM_FILE}"
+    "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
+    "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}"
 )
-
+################################################################################
+# Function to copy files and check success
+copy_file() {
+    local src=$1
+    local dest=$2
+    echo "Copying ${src} to ${dest}"
+    if ! cp -rf "${src}" "${dest}"; then
+        echo "Error: Failed to copy ${src} to ${dest}" >&2
+        exit 1
+    fi
+}
+###############################################################################
 for src in "${input_files[@]}"; do
-    cpfs "${src}" "${DESTINATION_DIR}/"
+    copy_file "${src}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/$(basename "${src}")"
 done
 
@@ -71,7 +78,7 @@ for ((p=0; p<${#tile_file_set[@]}; p+=2)); do
   dir="${tile_file_set[p+1]}"
   for i in {1..6}; do
     tile_file="${prefix}${i}.nc"
-    cpfs "${dir}/${tile_file}" "${DESTINATION_DIR}/"
+    copy_file "${dir}/${tile_file}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
    done
 done
@@ -144,7 +151,7 @@ for i in {1..6}; do
     src_file="out.atm.tile${i}.nc"
     if [[ -f "${src_file}" ]]; then
         echo "Copying ${src_file} to ${COMOUT_ATMOS_INPUT_MEM}/"
-        cp -f "${src_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
+        copy_file "${src_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
     else
         echo "Warning: ${src_file} does not exist and will not be copied."
     fi
