@@ -27,12 +27,18 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
   module load wgrib2/2.0.8
   export WGRIB2=wgrib2
   module load python/3.8.6
-  module load crtm/2.4.0  # TODO: This is only needed when UPP_RUN=goes.  Is there a better way to handle this?
+  if [[ "${UPP_RUN:-}" == "goes" ]]; then
+    module load crtm/2.4.0
+  fi
   set -x
 
-  # Add wxflow to PYTHONPATH
-  wxflowPATH="${HOMEgfs}/ush/python"
-  PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
+  # Set up the PYTHONPATH to include wxflow from HOMEgfs
+  if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
+    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
+  fi
+
+  # Add HOMEgfs/ush/python to PYTHONPATH
+  PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
   export PYTHONPATH
 
 else

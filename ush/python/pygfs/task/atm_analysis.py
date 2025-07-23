@@ -231,7 +231,7 @@ class AtmAnalysis(Task):
         for src in yamls:
             yaml_base = os.path.splitext(os.path.basename(src))[0]
             dest_yaml_name = f"{self.task_config.APREFIX}{yaml_base}.yaml"
-            dest = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, dest_yaml_name)
+            dest = os.path.join(self.task_config.COMOUT_CONF, dest_yaml_name)
             logger.debug(f"Copying {src} to {dest}")
             yaml_copy = {
                 'copy': [[src, dest]]
