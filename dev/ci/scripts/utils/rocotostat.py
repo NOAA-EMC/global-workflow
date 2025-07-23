@@ -4,6 +4,7 @@ import sys
 import os
 import copy
 import subprocess
+import logging
 from time import sleep, time
 
 from wxflow import which, Logger, CommandNotFoundError, ProcessError
@@ -14,6 +15,13 @@ from collections import Counter
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
                 colored_log=False,
                 logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE"))
+
+# If logging to file, suppress console output unless explicitly requested
+if os.environ.get("ROCOTOSTAT_LOG_FILE") and not os.environ.get("ROCOTOSTAT_CONSOLE_LOG", "").lower() in ['true', '1', 'yes']:
+    # Remove console handlers to suppress stdout/stderr output when logging to file
+    for handler in logger._logger.handlers[:]:
+        if isinstance(handler, logging.StreamHandler) and handler.stream.name in ['<stdout>', '<stderr>']:
+            logger._logger.removeHandler(handler)
 
 
 def get_user_thread_count():

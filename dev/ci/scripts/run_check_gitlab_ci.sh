@@ -28,6 +28,9 @@ HOMEgfs="${TEST_DIR}/${SYSTEM_BUILD_DIR}"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 run_check_logfile="${RUNTESTS}/ci-run_check.log"
 
+ROCOTOSTAT_LOG_FILE="${RUNTESTS}/EXPDIR/${pslot}/rocotostat.log"
+export ROCOTOSTAT_LOG_FILE
+
 # Function to report experiment failure to GitHub
 report_failure_to_github() {
   local pslot="${1}"

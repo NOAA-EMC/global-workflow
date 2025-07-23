@@ -1,8 +1,20 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-# Mock script for testing Rocoto workflow
-echo "$(date): Starting mock tracker job"
-echo "Mock tracker: Sleeping for 30 seconds to simulate cyclone tracking..."
-sleep 30
-echo "$(date): Mock tracker job completed successfully"
-exit 0
+set -x
+
+###############################################################
+# Source FV3GFS workflow modules
+source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+status=$?
+(( status != 0 )) && exit "${status}"
+
+export job="tracker"
+export jobid="${job}.$$"
+
+###############################################################
+# Execute the JJOB
+
+"${HOMEgfs}/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
+status=$?
+
+exit "${status}"

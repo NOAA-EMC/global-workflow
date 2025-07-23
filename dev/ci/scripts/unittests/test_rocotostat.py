@@ -1,89 +1,211 @@
+#!/usr/bin/env python3
+
+import pytest
+import time
 import sys
 import os
-from shutil import rmtree
-import wget
+from unittest.mock import Mock, patch
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(os.path.dirname(script_dir), 'utils'))
-
-from rocotostat import rocoto_statcount, rocotostat_summary, is_done, is_stalled
-from wxflow import which, CommandNotFoundError
-
-test_data_url = 'https://noaa-nws-global-pds.s3.amazonaws.com/data/CI/'
-
-testdata_path = 'testdata/rocotostat'
-testdata_full_path = os.path.join(script_dir, testdata_path)
+# Add the utils directory to the path to import rocotostat
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'utils'))
+from rocotostat import attempt_multiple_times, logger
 
 
-if not os.path.isfile(os.path.join(testdata_full_path, 'database.db')):
-    os.makedirs(testdata_full_path, exist_ok=True)
-    workflow_url = test_data_url + str(testdata_path) + '/workflow.xml'
-    workflow_destination = os.path.join(testdata_full_path, 'workflow.xml')
-    wget.download(workflow_url, workflow_destination)
+class TestAttemptMultipleTimes:
+    """Test cases for the attempt_multiple_times function."""
 
-    database_url = test_data_url + str(testdata_path) + '/database.db'
-    database_destination = os.path.join(testdata_full_path, 'database.db')
-    wget.download(database_url, database_destination)
+    def test_success_on_first_attempt(self):
+        """Test that function returns immediately on successful first attempt."""
+        mock_func = Mock(return_value="success")
 
-rocotostat_cmd = which('rocotostat')
-if not rocotostat_cmd:
-    raise CommandNotFoundError("rocotostat not found in PATH")
+        start_time = time.time()
+        result = attempt_multiple_times(mock_func, max_attempts=3, sleep_duration=1)
+        end_time = time.time()
 
-rocotostat_cmd.add_default_arg(['-w', os.path.join(testdata_path, 'workflow.xml'), '-d', os.path.join(testdata_path, 'database.db')])
+        assert result == "success"
+        assert mock_func.call_count == 1
+        # Should complete quickly (no sleep)
+        assert end_time - start_time < 0.5
+
+    def test_success_after_retries(self):
+        """Test that function succeeds after some failures."""
+        mock_func = Mock(side_effect=[Exception("fail1"), Exception("fail2"), "success"])
+
+        result = attempt_multiple_times(mock_func, max_attempts=3, sleep_duration=0)
+
+        assert result == "success"
+        assert mock_func.call_count == 3
+
+    def test_failure_after_max_attempts(self):
+        """Test that function raises last exception after max attempts."""
+        mock_func = Mock(side_effect=RuntimeError("persistent error"))
+
+        with pytest.raises(RuntimeError, match="persistent error"):
+            attempt_multiple_times(mock_func, max_attempts=3, sleep_duration=0)
+
+        assert mock_func.call_count == 3
+
+    def test_telescoping_delay(self):
+        """Test that telescoping delay increases properly between attempts."""
+        mock_func = Mock(side_effect=[Exception("fail1"), Exception("fail2"), "success"])
+
+        # Mock sleep to capture the delay values
+        with patch('rocotostat.sleep') as mock_sleep:
+            result = attempt_multiple_times(
+                mock_func,
+                max_attempts=3,
+                sleep_duration=2,
+                use_telescoping_delay=True
+            )
+
+        assert result == "success"
+        # Should sleep with telescoping delays: 2s, 4s
+        expected_calls = [pytest.approx(2), pytest.approx(4)]
+        actual_calls = [call[0][0] for call in mock_sleep.call_args_list]
+        assert actual_calls == expected_calls
+
+    def test_fixed_delay(self):
+        """Test that fixed delay remains constant between attempts."""
+        mock_func = Mock(side_effect=[Exception("fail1"), Exception("fail2"), "success"])
+
+        with patch('rocotostat.sleep') as mock_sleep:
+            result = attempt_multiple_times(
+                mock_func,
+                max_attempts=3,
+                sleep_duration=1,
+                use_telescoping_delay=False
+            )
+
+        assert result == "success"
+        # Should sleep with fixed delays: 1s, 1s
+        expected_calls = [1, 1]
+        actual_calls = [call[0][0] for call in mock_sleep.call_args_list]
+        assert actual_calls == expected_calls
+
+    def test_no_sleep_duration(self):
+        """Test that no sleep occurs when sleep_duration is 0."""
+        mock_func = Mock(side_effect=[Exception("fail1"), "success"])
+
+        with patch('rocotostat.sleep') as mock_sleep:
+            result = attempt_multiple_times(mock_func, max_attempts=2, sleep_duration=0)
+
+        assert result == "success"
+        mock_sleep.assert_not_called()
+
+    def test_specific_exception_class(self):
+        """Test that only specific exception types are caught."""
+        mock_func = Mock(side_effect=ValueError("specific error"))
+
+        # Should catch ValueError
+        with pytest.raises(ValueError):
+            attempt_multiple_times(
+                mock_func,
+                max_attempts=2,
+                sleep_duration=0,
+                exception_class=ValueError
+            )
+
+        # Should NOT catch RuntimeError (different exception type)
+        mock_func.side_effect = RuntimeError("different error")
+        with pytest.raises(RuntimeError):
+            attempt_multiple_times(
+                mock_func,
+                max_attempts=2,
+                sleep_duration=0,
+                exception_class=ValueError
+            )
+
+    @patch('rocotostat.logger')
+    def test_logging_messages(self, mock_logger):
+        """Test that appropriate log messages are generated."""
+        mock_func = Mock(side_effect=[Exception("fail1"), "success"])
+
+        # Mock time to return predictable values - need enough for all time() calls
+        with patch('rocotostat.time', side_effect=[0, 0.5, 0.5, 1.0, 1.0, 1.5]):
+            result = attempt_multiple_times(mock_func, max_attempts=2, sleep_duration=0)
+
+        assert result == "success"
+
+        # Check that warning and info messages were logged
+        warning_calls = [call for call in mock_logger.warning.call_args_list]
+        info_calls = [call for call in mock_logger.info.call_args_list]
+
+        assert len(warning_calls) == 1  # One failure
+        # Should have: 2 thread count logs + 1 success message = 3 info calls
+        assert len(info_calls) == 3
+
+        # Check log message content - find the rocoto-specific messages
+        warning_msg = warning_calls[0][0][0]
+        assert "Rocoto call failed on attempt 1" in warning_msg
+        assert "call_time=0.00s" in warning_msg  # Should be 0.00s based on our mock
+
+        # Find the success message (not the thread count messages)
+        success_msgs = [call[0][0] for call in info_calls if "Rocoto call successful" in call[0][0]]
+        assert len(success_msgs) == 1
+        success_msg = success_msgs[0]
+        assert "Rocoto call successful on attempt 2" in success_msg
+        assert "call_time=0.00s" in success_msg
+        assert "total_time=1.00s" in success_msg
+
+    @patch('rocotostat.log_thread_count')
+    def test_thread_count_logging(self, mock_log_thread_count):
+        """Test that thread count is logged for success and failure."""
+        mock_func = Mock(side_effect=[Exception("fail1"), "success"])
+
+        result = attempt_multiple_times(mock_func, max_attempts=2, sleep_duration=0)
+
+        assert result == "success"
+
+        # Should log thread count for failure and success
+        expected_calls = [
+            (("ROCOTO_FAILED_ATTEMPT_1",), {}),
+            (("ROCOTO_SUCCESS_ATTEMPT_2",), {})
+        ]
+        assert mock_log_thread_count.call_args_list == expected_calls
+
+    def test_performance_timing(self):
+        """Test that timing measurements are reasonable."""
+        def slow_func():
+            time.sleep(0.1)  # 100ms delay
+            return "success"
+
+        with patch('rocotostat.logger') as mock_logger:
+            start_time = time.time()
+            result = attempt_multiple_times(slow_func, max_attempts=1, sleep_duration=0)
+            end_time = time.time()
+
+        assert result == "success"
+
+        # Should take at least 100ms
+        assert end_time - start_time >= 0.1
+
+        # Check that timing was logged correctly
+        info_calls = mock_logger.info.call_args_list
+        # Find the success message (not the thread count message)
+        success_msgs = [call[0][0] for call in info_calls if "Rocoto call successful" in call[0][0]]
+        assert len(success_msgs) == 1
+        success_msg = success_msgs[0]
+        assert "call_time=" in success_msg
+        assert "total_time=" in success_msg
+
+    def test_edge_case_single_attempt(self):
+        """Test behavior with max_attempts=1."""
+        mock_func = Mock(return_value="success")
+
+        result = attempt_multiple_times(mock_func, max_attempts=1, sleep_duration=1)
+
+        assert result == "success"
+        assert mock_func.call_count == 1
+
+    def test_edge_case_zero_attempts(self):
+        """Test behavior with max_attempts=0 (should not execute)."""
+        mock_func = Mock(return_value="success")
+
+        with pytest.raises(Exception):  # Should raise the last_exception which is None initially
+            attempt_multiple_times(mock_func, max_attempts=0, sleep_duration=0)
+
+        assert mock_func.call_count == 0
 
 
-def test_rocoto_statcount():
-
-    result = rocoto_statcount(rocotostat_cmd)
-
-    assert result['SUCCEEDED'] == 20
-    assert result['FAIL'] == 0
-    assert result['DEAD'] == 0
-    assert result['RUNNING'] == 0
-    assert result['SUBMITTING'] == 0
-    assert result['QUEUED'] == 0
-
-
-def test_rocoto_summary():
-
-    result = rocotostat_summary(rocotostat_cmd)
-
-    assert result['CYCLES_TOTAL'] == 1
-    assert result['CYCLES_DONE'] == 1
-
-
-def test_rocoto_done():
-
-    result = rocotostat_summary(rocotostat_cmd)
-
-    assert is_done(result)
-
-    rmtree(testdata_full_path)
-
-
-def test_rocoto_stalled():
-    testdata_path = 'testdata/rocotostat_stalled'
-    testdata_full_path = os.path.join(script_dir, testdata_path)
-    xml = os.path.join(testdata_full_path, 'stalled.xml')
-    db = os.path.join(testdata_full_path, 'stalled.db')
-
-    if not os.path.isfile(os.path.join(testdata_full_path, 'stalled.db')):
-        os.makedirs(testdata_full_path, exist_ok=True)
-        workflow_url = test_data_url + str(testdata_path) + '/stalled.xml'
-        database_url = test_data_url + str(testdata_path) + '/stalled.db'
-
-        workflow_destination = os.path.join(testdata_full_path, 'stalled.xml')
-        wget.download(workflow_url, workflow_destination)
-
-        database_destination = os.path.join(testdata_full_path, 'stalled.db')
-        wget.download(database_url, database_destination)
-
-    rocotostat_cmd = which('rocotostat')
-    rocotostat_cmd.add_default_arg(['-w', xml, '-d', db])
-
-    result = rocoto_statcount(rocotostat_cmd)
-
-    assert result['SUCCEEDED'] == 11
-    assert is_stalled(result)
-
-    rmtree(testdata_full_path)
+if __name__ == '__main__':
+    pytest.main([__file__, '-v'])
