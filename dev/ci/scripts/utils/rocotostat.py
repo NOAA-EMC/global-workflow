@@ -179,12 +179,16 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
 
 def input_args():
     """
-    Parse command-line arguments.
+    Parse command-line arguments for rocotostat workflow analysis.
+
+    This function configures and parses command-line arguments used to specify the Rocoto workflow XML document and database
+    file, along with optional flags for verbose output and bash export functionality. The function validates input files and
+    returns a namespace object containing all parsed arguments for use throughout the rocotostat analysis process.
 
     Returns
     -------
     args : Namespace
-        The parsed command-line arguments.
+        The parsed command-line arguments containing workflow document path, database file path, and output format options.
     """
 
     description = """
@@ -197,20 +201,11 @@ def input_args():
 
     parser = ArgumentParser(description=description)
 
-    parser.add_argument('-w', help='workflow_document', type=FileType('r'),
-                        required=True)
-    parser.add_argument('-d', help='database_file',
-                        metavar='Database File', type=FileType('r'),
-                        required=True)
-    parser.add_argument('--verbose', action='store_true',
-                        help='List the states and the number of jobs '
-                             'that are in each', required=False)
-    parser.add_argument('-v', action='store_true',
-                        help='List the states and the number of jobs '
-                             'that are in each', required=False)
-    parser.add_argument('--export', action='store_true',
-                        help='create and export list of the status '
-                             'values for bash', required=False)
+    parser.add_argument('-w', help='workflow_document', type=FileType('r'), required=True)
+    parser.add_argument('-d', help='database_file', metavar='Database File', type=FileType('r'), required=True)
+    parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
+    parser.add_argument('-v', action='store_true', help='List the states and the number of jobs that are in each', required=False)
+    parser.add_argument('--export', action='store_true', help='create and export list of the status values for bash', required=False)
 
     args = parser.parse_args()
 
@@ -219,17 +214,22 @@ def input_args():
 
 def rocotostat_summary(rocotostat):
     """
-    rocoto_summary Run rocotostat and process its output.
+    Execute rocotostat with summary flag and analyze workflow cycle completion status.
 
-    rocoto_summary(rocotostat) adds a default argument '--summary' to the rocotostat
-    command, runs it, and processes its output to return a dictionary with the total
-    number of cycles and the number of cycles marked as 'Done'.
+    This function invokes the rocotostat command with the '--summary' argument to retrieve high-level workflow information,
+    then processes the output to extract cycle completion statistics. It parses the summary output to determine the total
+    number of workflow cycles and counts how many cycles have reached the 'Done' state, providing essential metrics for
+    workflow progress monitoring and completion assessment.
 
-    Input:
-    rocotostat - The rocotostat command.
+    Parameters
+    ----------
+    rocotostat : callable
+        The rocotostat command object configured with workflow and database file paths for execution.
 
-    Output:
-    rocoto_status - A dictionary with the total number of cycles and the number of cycles marked as 'Done'.
+    Returns
+    -------
+    rocoto_status : dict
+        Dictionary containing 'CYCLES_TOTAL' (total cycles) and 'CYCLES_DONE' (completed cycles) for status tracking.
     """
     rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--summary')
@@ -246,17 +246,22 @@ def rocotostat_summary(rocotostat):
 
 def rocoto_statcount(rocotostat):
     """
-    rocoto_statcount Run rocotostat and process its output.
+    Execute rocotostat with all jobs flag and analyze detailed job status distribution across workflow cycles.
 
-    rocoto_statcount(rocotostat) adds a default argument '--all' to the rocotostat
-    command, runs it, and processes its output to return a dictionary with the count
-    of each status case.
+    This function runs the rocotostat command with the '--all' argument to retrieve comprehensive job status information
+    for all workflow cycles and tasks. It processes the detailed output to count jobs in each status category including
+    SUCCEEDED, FAIL, DEAD, RUNNING, SUBMITTING, QUEUED, UNAVAILABLE, and UNKNOWN states, providing granular insight into
+    workflow execution progress and identifying potential issues or bottlenecks in the job execution pipeline.
 
-    Input:
-    rocotostat - The rocotostat command.
+    Parameters
+    ----------
+    rocotostat : callable
+        The rocotostat command object configured with workflow and database file paths for comprehensive job analysis.
 
-    Output:
-    rocoto_status - A dictionary with the count of each status case.
+    Returns
+    -------
+    rocoto_status : dict
+        Dictionary containing counts for each job status category (SUCCEEDED, FAIL, DEAD, RUNNING, etc.) for monitoring.
     """
 
     rocotostat = copy.deepcopy(rocotostat)

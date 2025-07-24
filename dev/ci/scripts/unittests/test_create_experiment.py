@@ -32,4 +32,4 @@ def test_create_experiment():
                 err = 1
     assert err == 0, f"create_experiment.py failed!"
 
-#    rmtree(RUNDIR_FAKE)
+    rmtree(RUNDIR_FAKE)
