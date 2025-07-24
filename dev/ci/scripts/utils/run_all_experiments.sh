@@ -188,10 +188,10 @@ while [[ ${#running[@]} -gt 0 ]]; do
             
             if [[ ${exit_status} -eq 0 ]]; then
                 completed+=("${exp}")
-                echo "✅ COMPLETED: ${exp} (PID: ${pid})"
+                echo "[PASS] COMPLETED: ${exp} (PID: ${pid})"
             else
                 failed+=("${exp}")
-                echo "❌ FAILED: ${exp} (PID: ${pid}) - Exit code: ${exit_status}"
+                echo "[FAIL] FAILED: ${exp} (PID: ${pid}) - Exit code: ${exit_status}"
             fi
         fi
     done
@@ -211,14 +211,14 @@ echo "ALL EXPERIMENTS FINISHED"
 echo "================================================================================"
 
 # Final summary
-echo "📊 FINAL SUMMARY:"
+echo "===== FINAL SUMMARY ====="
 echo "  Total experiments: ${#experiments[@]}"
 echo "  Completed successfully: ${#completed[@]}"
 echo "  Failed: ${#failed[@]}"
 echo ""
 
 if [[ ${#completed[@]} -gt 0 ]]; then
-    echo "✅ SUCCESSFUL EXPERIMENTS:"
+    echo "[PASS] SUCCESSFUL EXPERIMENTS:"
     for exp in "${completed[@]}"; do
         echo "  - ${exp}"
     done
@@ -226,7 +226,7 @@ if [[ ${#completed[@]} -gt 0 ]]; then
 fi
 
 if [[ ${#failed[@]} -gt 0 ]]; then
-    echo "❌ FAILED EXPERIMENTS:"
+    echo "[FAIL] FAILED EXPERIMENTS:"
     for exp in "${failed[@]}"; do
         echo "  - ${exp}"
     done
@@ -238,6 +238,6 @@ if [[ ${#failed[@]} -gt 0 ]]; then
     echo "Some experiments failed. Check individual logs for details."
     exit 1
 else
-    echo "All experiments completed successfully! 🎉"
+    echo "All experiments completed successfully! [SUCCESS]"
     exit 0
 fi

@@ -146,8 +146,8 @@ dev/ci/
 3. Configure:
    - PR Number: `1234` (or `0` for develop)
    - Pipeline Type: `CTests`
-   - Hera: ✅ (checked)
-   - Gaea C6: ❌ (unchecked)
+   - Hera: [PASS] (checked)
+   - Gaea C6: [SKIP] (unchecked)
 
 ### Setting Up Nightly Regression Testing
 In GitLab scheduled pipeline configuration:

@@ -78,7 +78,7 @@ report_failure_to_github() {
 
       # Prepare markdown section for files links to gist for GitHub comment
       gist_message_section=$(cat <<EOF
-### 📋 Error Log Files:
+### Error Log Files:
 \`\`\`
 ${error_logs_markdown}
 \`\`\`
