@@ -2,17 +2,13 @@ help([[
 Load environment to run GFS workflow setup scripts in container
 ]])
 
---load(pathJoin("rocoto"))
+prepend_path("MODULEPATH", "/opt/spack-stack/spack-stack-1.9.1/envs/unified-env/install/modulefiles/Core")
 
-prepend_path("MODULEPATH", "/opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core")
+stack_oneapi_ver=os.getenv("stack_oneapi_ver") or "2024.2.0"
+stack_impi_ver=os.getenv("stack_impi_ver") or "2021.13"
 
-local stack_intel_ver=os.getenv("stack_intel_ver") or "2021.10.0"
-local stack_mpi_ver=os.getenv("stack_mpi_ver") or "2021.9.0"
-
-load("gnu")
-load(pathJoin("stack-intel", stack_intel_ver))
-load(pathJoin("stack-intel-oneapi-mpi", stack_mpi_ver))
-unload("gnu")
+load(pathJoin("stack-oneapi", stack_oneapi_ver))
+load(pathJoin("stack-intel-oneapi-mpi", stack_impi_ver))
 
 load("py-jinja2")
 load("py-pyyaml")
