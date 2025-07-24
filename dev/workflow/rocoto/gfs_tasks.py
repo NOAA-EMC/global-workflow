@@ -994,33 +994,47 @@ class GFSTasks(Tasks):
 
     def _fcst_cycled(self):
 
+        deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
-        dep = rocoto.add_dependency(dep_dict)
-        dependencies = rocoto.create_dependency(dep=dep)
+        deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
             wave_job = 'waveprep' if self.options['app'] in ['ATMW'] else 'waveinit'
             dep_dict = {'type': 'task', 'name': f'{self.run}_{wave_job}'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_jediocnvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_aero_anl']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+            deps.append(rocoto.add_dependency(dep_dict))
 
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
+        dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        if self.run in ['gdas']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+        deps.append(rocoto.add_dependency(dep_dict))
+
+        if self.options['do_wave']:
+            wave_job = 'waveprep' if self.options['app'] in ['ATMW'] else 'waveinit'
+            dep_dict = {'type': 'task', 'name': f'{self.run}_{wave_job}'}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        dependencies = []
+        dependencies.append(dependencies1)
+        dependencies.append(dependencies2)
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
 
