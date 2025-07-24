@@ -1375,15 +1375,47 @@ class GFSTasks(Tasks):
         return task
 
     def wavegempak(self):
+
+        def _str2int(str_in):
+            return int(str_in[1:])
+
+        def _return_label(fhr3, sbs_fhr_label_l):
+            ifhr = _str2int(fhr3)
+            label = None
+            for item in sbs_fhr_label_l:
+                if "-" in item:
+                    [start, end] = item.split('-')
+                else:
+                    [start, end] = item, item
+                [start, end] = _str2int(start), _str2int(end)
+                if start <= ifhr <= end:
+                    label = item
+                    break
+
+            if label is None:
+                raise LookupError(f"Unable to find {fhr3} in the input list")
+
+            return label
+
+        sbs_fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
+        sbs_max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        sbs_fhr_var_dict = self.get_grouped_fhr_dict(fhrs=sbs_fhrs, ngroups=sbs_max_tasks)
+
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs_#fhr_label#'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs_#sbs_fhr_label#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        # Hour groupings need to match gridded post for dependencies to be correct
         fhrs = self._get_forecast_hours(self.run, self._configs['wavegempak'], 'wave')
         max_tasks = self._configs['wavegempak']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Search for sbs_fhr_label for group dependencies
+        sbs_fhr_var_dict_fhr_label = sbs_fhr_var_dict['fhr_label'].split(' ')
+        labs = []
+        for fhr3 in fhr_var_dict['fhr3_last'].split(' '):
+            labs.append(_return_label(f"f{fhr3}", sbs_fhr_var_dict_fhr_label))
+        fhr_var_dict['sbs_fhr_label'] = ' '.join(labs)
 
         wave_post_envars = self.envars.copy()
         postenvar_dict = {'FHR_LIST': '#fhr_list#'}
