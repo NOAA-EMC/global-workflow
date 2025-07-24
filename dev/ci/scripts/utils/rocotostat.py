@@ -262,7 +262,7 @@ def rocoto_statcount(rocotostat):
     rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--all')
 
-    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 4, 30, ProcessError)
+    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 4, 120, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:4] for line in rocotostat_output]
     rocotostat_output = [line for line in rocotostat_output if len(line) != 1]
@@ -350,7 +350,7 @@ if __name__ == '__main__':
         error_return = rocoto_status['FAIL'] + rocoto_status['DEAD']
         rocoto_state = 'FAIL'
     elif rocoto_status['UNAVAILABLE'] > 0 or rocoto_status['UNKNOWN'] > 0:
-        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 30, ProcessError)
+        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 120, ProcessError)
         error_return = 0
         rocoto_state = 'RUNNING'
         if rocoto_status['UNAVAILABLE'] > 0:
@@ -360,7 +360,7 @@ if __name__ == '__main__':
             error_return += rocoto_status['UNKNOWN']
             rocoto_state = 'UNKNOWN'
     elif is_stalled(rocoto_status):
-        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 30, ProcessError)
+        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat), 2, 120, ProcessError)
         if is_stalled(rocoto_status):
             error_return = 3
             rocoto_state = 'STALLED'
