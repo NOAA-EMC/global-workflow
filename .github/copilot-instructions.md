@@ -10,8 +10,12 @@
 - Use consistent indentation (2 spaces)
 - Follow the BASH style already in code base especially "${variable}" for variables
 - Never add extra whitespace at the end or beginning of lines
-- Use pycodestyle for Python code
+- Use pycodestyle for Python code (exclude line length checks: --ignore=E501)
 - Use shfmt where appropriate and shellcheck for linting
+
+## Production Compatibility
+- NEVER use Unicode emoji characters in code, scripts, or output
+- Use ASCII-only alternatives for visual indicators/
 
 ## Code Quality
 - Ensure code is clean, well-commented, and follows best practices
@@ -21,6 +25,7 @@
 - Use readable code that conveys intent and meaning over comments
 - Write unit tests for new features and bug fixes
 - Ensure code is modular and reusable
+- Use standalone pytest functions instead of pytest class-based methods
 
 ## Documentation
 - use numpy style docstrings for python functions and classes
