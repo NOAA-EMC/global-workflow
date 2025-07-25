@@ -116,6 +116,7 @@ declare -a pids=()
 declare -a experiments=()
 
 # Find all experiment directories with .xml files
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this while loop
 while IFS= read -r -d '' experiment_dir; do
     pslot="$(basename "${experiment_dir}")"
     
