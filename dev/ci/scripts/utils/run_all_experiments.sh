@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this file
 
 set -eu
 
@@ -116,7 +117,6 @@ declare -a pids=()
 declare -a experiments=()
 
 # Find all experiment directories with .xml files
-# shellcheck disable=SC2317  # Don't warn about unreachable commands in this while loop
 while IFS= read -r -d '' experiment_dir; do
     pslot="$(basename "${experiment_dir}")"
     
@@ -144,7 +144,7 @@ while IFS= read -r -d '' experiment_dir; do
     else
         echo "Skipping ${pslot}: No .xml files found"
     fi
-done < <(find "${EXPDIR}" -mindepth 1 -maxdepth 1 -type d -print0)
+done < <(find "${EXPDIR}" -mindepth 1 -maxdepth 1 -type d -print0 || true)
 
 # Check if any experiments were found
 if [[ ${#pids[@]} -eq 0 ]]; then
@@ -153,7 +153,6 @@ if [[ ${#pids[@]} -eq 0 ]]; then
     exit 1
 fi
 
-# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
 echo "================================================================================"
 echo "Started ${#pids[@]} experiments in parallel:"
 for i in "${!experiments[@]}"; do
@@ -162,7 +161,6 @@ done
 echo "================================================================================"
 
 # Function to cleanup background processes on script exit
-# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
 cleanup() {
     echo ""
     echo "Cleaning up background processes..."
@@ -201,7 +199,7 @@ while [[ ${#running[@]} -gt 0 ]]; do
         exp="${experiments[i]}"
         
         # Skip if already completed or failed
-        if [[ ! " ${running[*]} " =~ " ${exp} " ]]; then
+        if [[ ! "${running[*]}" =~ ${exp} ]]; then
             continue
         fi
         
@@ -226,8 +224,11 @@ while [[ ${#running[@]} -gt 0 ]]; do
     
     # Show progress
     total=${#experiments[@]}
-    done_count=$((${#completed[@]} + ${#failed[@]}))
-    echo "Progress: ${done_count}/${total} experiments finished (${#completed[@]} completed, ${#failed[@]} failed, ${#running[@]} running)"
+    completed_count=${#completed[@]}
+    failed_count=${#failed[@]}
+    running_count=${#running[@]}
+    done_count=$((completed_count + failed_count))
+    echo "Progress: ${done_count}/${total} experiments finished (${completed_count} completed, ${failed_count} failed, ${running_count} running)"
     
     # Wait before next check
     sleep 30
