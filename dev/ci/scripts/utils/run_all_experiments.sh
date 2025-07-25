@@ -161,8 +161,8 @@ done
 echo "================================================================================"
 
 # Function to cleanup background processes on script exit
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in cleanup function
 cleanup() {
-    # shellcheck disable=SC2317  # Don't warn about unreachable commands in cleanup function
     echo ""
     echo "Cleaning up background processes..."
     for pid in "${pids[@]}"; do
