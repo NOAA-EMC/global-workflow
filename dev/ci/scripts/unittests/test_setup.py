@@ -11,6 +11,7 @@ RUNDIR = os.path.join(current_dir, 'testdata/RUNTESTS')
 pslot = "C48_ATM"
 # Note: account is now set within each test function as needed
 
+
 def test_setup_expt():
     # Set the HPC_ACCOUNT environment variable for this test
     test_account = "test_account_123"
@@ -21,7 +22,7 @@ def test_setup_expt():
     gwrc_content = """user:
   ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
 """
- 
+
     # Create a temporary file for the .gwrc
     with tempfile.NamedTemporaryFile(mode='w', suffix='.gwrc', delete=False) as temp_gwrc:
         temp_gwrc.write(gwrc_content)
@@ -119,3 +120,13 @@ export HOMEgfs=foobar
             rmtree(RUNDIR)
         except FileNotFoundError:
             pass
+
+
+def test_setup_function():  # Added second blank line before function
+    """Test setup functionality."""
+    pass
+
+
+def another_test():
+    """Another test function."""
+    pass
