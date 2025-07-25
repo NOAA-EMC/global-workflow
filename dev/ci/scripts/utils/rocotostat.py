@@ -202,7 +202,6 @@ def input_args():
     parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
     parser.add_argument('-v', action='store_true', help='List the states and the number of jobs that are in each', required=False)
     parser.add_argument('--export', action='store_true', help='create and export list of the status values for bash', required=False)
-    parser.add_argument("--workflow", help="Workflow name to check", required=True)
 
     args = parser.parse_args()
 
