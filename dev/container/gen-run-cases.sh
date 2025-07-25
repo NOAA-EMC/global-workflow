@@ -9,8 +9,8 @@ run_with_container=YES
 
 casetype=pr
 #yamllist="C48_ATM"
-#yamllist="C48_S2SW"
-yamllist="C48_S2SWA_gefs"
+ yamllist="C48_S2SW"
+#yamllist="C48_S2SWA_gefs"
 #yamllist="C96mx100_S2S"
 
 #casetype=hires
@@ -36,7 +36,8 @@ elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    TOPICDIR=/bucket/global-workflow-shared-data/ICSDIR
    container=/contrib/${USER}/src/gw-container-spack-stack-1.6.0/ubuntu22.04-intel-ufs-env-v1.6.0.img
    rundir=/lustre/${USER}/run
-   bindings="--env \"I_MPI_FABRICS=ofi:shm,I_MPI_DEBUG=6\" -B /apps/slurm/default/lib/libpmi2.so -B /contrib -B /lustre -B /bucket"
+   bindings="--env \"I_MPI_FABRICS=shm:ofi,I_MPI_DEBUG=6\" -B /apps/slurm/default/lib/libpmi2.so -B /contrib -B /lustre -B /bucket"
+  #bindings="-B /apps/slurm/default/lib/libpmi2.so -B /contrib -B /lustre -B /bucket"
    HPC_ACCOUNT=${USER}
 
    module load rocoto/1.3.7
@@ -63,6 +64,7 @@ if [[ "${run_with_container}" == "YES" ]]; then
     	-v -R
 
    ${HOMEDIR}/dev/container/utils/create-container-links.sh -H ${HOMEDIR} -c ${container} -b "${bindings}"
+   ${HOMEDIR}/dev/container/utils/create-atmos-products.sh -H ${HOMEDIR} -c ${container} -b "${bindings}"
 else
    TOPICDIR=${TOPICDIR} \
    RUNTESTS=${rundir} \
