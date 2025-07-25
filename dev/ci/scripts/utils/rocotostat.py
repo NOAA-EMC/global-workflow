@@ -155,7 +155,7 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
             logger.warning(f"Rocoto call failed on attempt {attempt}: "
                            f"call_time={call_duration:.2f}s, "
                            f"error={str(last_exception)}")
-
+            max_delay = 600
             if attempt < max_attempts:
                 if use_telescoping_delay:
                     current_delay = min(sleep_duration * (2 ** (attempt - 1)), max_delay)
@@ -228,6 +228,7 @@ def rocotostat_summary(rocotostat):
     rocoto_status : dict
         Dictionary containing 'CYCLES_TOTAL' (total cycles) and 'CYCLES_DONE' (completed cycles) for status tracking.
     """
+
     rocotostat = copy.deepcopy(rocotostat)
     rocotostat.add_default_arg('--summary')
     rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 3, 120, ProcessError)
