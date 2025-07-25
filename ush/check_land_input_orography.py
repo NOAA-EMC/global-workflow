@@ -5,7 +5,7 @@ check_land_input_orography.py
 This script compares the land mask between input surface data files and orography files for consistency across tiles.
 
 It provides functions to:
-- Count valid points in 'vtype' and 'stype' variables from input NetCDF files.
+- Count valid points in 'vtype' variable from input NetCDF files.
 - Count land points in 'land_frac' variable from orography NetCDF files.
 - Compare the counts between input and orography data for each tile, optionally raising errors on mismatches.
 
@@ -46,10 +46,10 @@ NTILES = 6  # Number of tiles expected in the input and orography data
 @logit(logger)
 def count_points_from_input(input_dir: str) -> Dict:
     """
-    Counts the number of valid points in the 'vtype' and 'stype' variables from surface data NetCDF files
+    Counts the number of valid points in the 'vtype' variable from surface data NetCDF files
     in the specified input directory.
     For each tile (from 1 to NTILES), attempts to open the corresponding 'sfc_data.tile{tt}.nc' file and
-    counts the number of elements greater than zero in the 'vtype' and 'stype' arrays.
+    counts the number of elements greater than zero in the 'vtype' array.
     Results are stored in dictionaries keyed by tile name.
 
     Parameters
@@ -62,7 +62,6 @@ def count_points_from_input(input_dir: str) -> Dict:
     counts: Dict
         Dictionary with:
         - vtype: Number of points with 'vtype' > 0 for each tile.
-        - stype: Number of points with 'stype' > 0 for each tile.
 
     Notes
     -----
@@ -72,7 +71,6 @@ def count_points_from_input(input_dir: str) -> Dict:
     # Initialize the counting dictionary
     counts = AttrDict()
     counts.vtype = {}
-    counts.stype = {}
 
     for tt in range(1, NTILES + 1):
         try:
@@ -80,7 +78,6 @@ def count_points_from_input(input_dir: str) -> Dict:
             logger.debug(f"Processing input file: {fname}")
             with Dataset(fname, mode='r') as ncid:
                 counts.vtype[f"tile{tt}"] = np.sum(ncid.variables['vtype'][:] > 0)
-                counts.stype[f"tile{tt}"] = np.sum(ncid.variables['stype'][:] > 0)
         except FileNotFoundError:
             logger.warning(f"File {fname} not found. Skipping tile {tt}.")
             continue
