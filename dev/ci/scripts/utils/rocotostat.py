@@ -169,7 +169,7 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
 
     # Log final failure
     total_duration = time() - total_start_time
-    logger.error(f"All {max_attempts} attempts failed after " f"{total_duration:.2f}s total")
+    logger.error(f"All {max_attempts} attempts failed after {total_duration:.2f}s total")
     raise last_exception
 
 
