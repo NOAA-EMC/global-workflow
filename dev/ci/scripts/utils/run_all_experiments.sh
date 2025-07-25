@@ -127,8 +127,8 @@ while IFS= read -r -d '' experiment_dir; do
     if [[ -f "${xml_files[0]}" ]]; then
         echo "Found valid experiment: ${pslot}"
         echo "  Directory: ${experiment_dir}"
-        xml_count=$(find "${experiment_dir}" -maxdepth 1 -name "*.xml")
-        xml_count=$(echo "${xml_count}" | wc -l)
+        xml_files_list=$(find "${experiment_dir}" -maxdepth 1 -name "*.xml")
+        xml_count=$(echo "${xml_files_list}" | wc -l)
         echo "  XML files: ${xml_count}"
         
         # Run the check script in background
