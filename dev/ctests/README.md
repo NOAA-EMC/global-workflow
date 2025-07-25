@@ -18,12 +18,6 @@ The CTest framework consists of the following scripts:
 
 To configure the **CTest** framework using **CMake**, you need to provide several environment variables. Here is an example of how to configure and build the project:
 
-```bash
-# Set environment variables (may also be include at command line with -D)
-export HPC_ACCOUNT="your_hpc_account"
-export ICSDIR_ROOT="/path/to/icsdir_root"
-export STAGED_CTESTS="/path/to/STAGED_CTESTS"
-```
 **NOTE**: The the specific values for these three enviroment variables can be found in `$HOMEgfs/dev/ci/platforms/config.$MACHINE_ID` and may also be added to the `cmake` command line with the `-D` option
 
 # Run CMake to configure the ctest framework
@@ -33,7 +27,6 @@ mkdir build
 cd build
 cmake ../..
 ```
-
 
 ### Running Tests with CTest
 
