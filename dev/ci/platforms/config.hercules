@@ -1,14 +1,26 @@
 #!/usr/bin/bash
 
+#########################################################################
+# config.hera - Platform-specific configuration for Hera
+#
+# This file contains environment variables used by CI/CD scripts,
+# directories, and settings specific to the Gaea C6 platform.
+#########################################################################
+
 # Main CI root directory
 export GFS_CI_ROOT=/work2/noaa/global/${USER}/GFS_CI_CD/HERCULES
-# ICSDIR root directory used on the create_experment.py command line
-export ICSDIR_ROOT=/work/noaa/global/glopara/data/ICSDIR
+
+#########################################################################
+# Jenkins configuration settings
+#########################################################################
 
 # JENKINS launch directory for agent
 export JENKINS_AGENT_LAUNCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+
 # JENKINS internal working directories for CI jobs (not for users use)
+# Where Jenkins stores temporary files during CI job execution
 export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
+
 # NOTE: JENKINS custom_workspace directory where CI jobs are run
 # /work2/noaa/global/role-global/GFS_CI_CD/HERCULES/CI
 # is defined in the Jenkinsfile
@@ -32,8 +44,5 @@ export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
 # This is where runner state/config files are stored (--working-directory parameter)
 export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
 
-
 # HPC account which overides the default account
 export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
-export max_concurrent_cases=5
-export max_concurrent_pr=4
