@@ -65,10 +65,33 @@ if [[ ! -d "${TEST_DIR}/${SYSTEM_BUILD_DIR}" ]]; then
 fi
 
 # Validate RUNTESTS/EXPDIR structure
-EXPDIR="${TEST_DIR}/RUNTESTS/EXPDIR"
+RUNTESTS="${TEST_DIR}/RUNTESTS"
+EXPDIR="${RUNTESTS}/EXPDIR"
 if [[ ! -d "${EXPDIR}" ]]; then
-    echo "ERROR: Expected experiment directory '${EXPDIR}' does not exist"
-    exit 1
+    echo "WARNING: Expected experiment directory '${EXPDIR}' does not exist"
+    echo "Attempting to generate workflows using generate_workflow.sh..."
+
+    # Locate generate_workflow.sh script
+    GENERATE_WORKFLOW_SCRIPT="${TEST_DIR}/${SYSTEM_BUILD_DIR}/dev/workflow/generate_workflow.sh"
+
+    if [[ ! -f "${GENERATE_WORKFLOW_SCRIPT}" ]]; then
+        echo "ERROR: generate_workflow.sh not found at '${GENERATE_WORKFLOW_SCRIPT}'"
+        exit 1
+    fi
+
+    # Run generate_workflow.sh with required flags
+    echo "Running: ${GENERATE_WORKFLOW_SCRIPT} -GESC ${RUNTESTS}"
+    if ! "${GENERATE_WORKFLOW_SCRIPT}" -GESC "${RUNTESTS}"; then
+        echo "ERROR: Failed to generate workflows"
+        exit 1
+    fi
+
+    # Verify EXPDIR was created
+    if [[ ! -d "${EXPDIR}" ]]; then
+        echo "ERROR: EXPDIR '${EXPDIR}' was not created by generate_workflow.sh"
+        exit 1
+    fi
+    echo "Successfully generated workflows in '${EXPDIR}'"
 fi
 
 # Script location
@@ -103,7 +126,9 @@ while IFS= read -r -d '' experiment_dir; do
     if [[ -f "${xml_files[0]}" ]]; then
         echo "Found valid experiment: ${pslot}"
         echo "  Directory: ${experiment_dir}"
-        echo "  XML files: $(ls "${experiment_dir}"/*.xml | wc -l)"
+        xml_count=$(find "${experiment_dir}" -maxdepth 1 -name "*.xml")
+        xml_count=$(echo "${xml_count}" | wc -l)
+        echo "  XML files: ${xml_count}"
         
         # Run the check script in background
         echo "Starting experiment ${pslot}..."
@@ -127,6 +152,7 @@ if [[ ${#pids[@]} -eq 0 ]]; then
     exit 1
 fi
 
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
 echo "================================================================================"
 echo "Started ${#pids[@]} experiments in parallel:"
 for i in "${!experiments[@]}"; do
@@ -135,6 +161,7 @@ done
 echo "================================================================================"
 
 # Function to cleanup background processes on script exit
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
 cleanup() {
     echo ""
     echo "Cleaning up background processes..."
