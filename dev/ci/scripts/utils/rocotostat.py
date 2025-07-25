@@ -37,16 +37,14 @@ def get_user_thread_count():
         current_user = os.getenv('USER', 'unknown')
 
         # Get user thread count using ps -u $USER -L
-        result = subprocess.run(['ps', '-u', current_user, '-L'],
-                               capture_output=True, text=True)
+        result = subprocess.run(['ps', '-u', current_user, '-L'], capture_output=True, text=True)
         if result.returncode == 0:
             user_threads = len(result.stdout.strip().split('\n')) - 1 if result.stdout.strip() else 0
         else:
             user_threads = -1
 
         # Get ulimit -u (process limit)
-        result = subprocess.run(['bash', '-c', 'ulimit -u'],
-                               capture_output=True, text=True)
+        result = subprocess.run(['bash', '-c', 'ulimit -u'], capture_output=True, text=True)
         if result.returncode == 0:
             process_limit = int(result.stdout.strip())
         else:
@@ -160,7 +158,6 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
 
             if attempt < max_attempts:
                 if use_telescoping_delay:
-                    # Telescoping delay: base_duration * (2^attempt)
                     current_delay = sleep_duration * (2 ** (attempt - 1))
                 else:
                     current_delay = sleep_duration
@@ -172,8 +169,7 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
 
     # Log final failure
     total_duration = time() - total_start_time
-    logger.error(f"All {max_attempts} attempts failed after "
-                 f"{total_duration:.2f}s total")
+    logger.error(f"All {max_attempts} attempts failed after " f"{total_duration:.2f}s total")
     raise last_exception
 
 
