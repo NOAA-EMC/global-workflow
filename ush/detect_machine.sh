@@ -80,7 +80,7 @@ elif [[ -d /mnt/lfs5 ]]; then
   MACHINE_ID=jet
 elif [[ -d /scratch3 ]]; then
   # We are on NOAA Hera or Ursa
-  mount=$(findmnt -n -o SOURCE /home)
+  mount=$(findmnt -n -o SOURCE /home)  # /home doesn't exist on the github runners
   if [[ ${mount} =~ "ursa" ]]; then
     MACHINE_ID=ursa
   else
@@ -88,7 +88,7 @@ elif [[ -d /scratch3 ]]; then
   fi
 elif [[ -d /work ]]; then
   # We are on MSU Orion or Hercules
-  mount=$(findmnt -n -o SOURCE /home) || true  # /home doesn't exist on the github runners
+  mount=$(findmnt -n -o SOURCE /home) || true
   if [[ ${mount+x} =~ "hercules" ]]; then
     MACHINE_ID=hercules
   else
