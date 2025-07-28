@@ -14,6 +14,7 @@ if [[ -n "${MACHINE_ID:-}" ]]; then
 fi
 
 # First detect w/ hostname
+echo "$(hostname -f)"
 case $(hostname -f) in
 
   adecflow0[12].acorn.wcoss2.ncep.noaa.gov)  MACHINE_ID=acorn ;; ### acorn
@@ -68,7 +69,7 @@ MACHINE_ID=${MACHINE:-${MACHINE_ID}}
 if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
   return
 fi
-
+ls /
 # Try searching based on paths since hostname may not match on compute nodes
 if [[ -d /lfs/h3 ]]; then
   # We are on NOAA Cactus or Dogwood
