@@ -25,3 +25,7 @@
 [submodule "sorc/gsi_monitor.fd"]
   path = sorc/gsi_monitor.fd
   url = https://github.com/NOAA-EMC/GSI-Monitor.git
+[submodule "dev/ci/scripts/utils/Rocoto"]
+	path = dev/ci/scripts/utils/Rocoto
+	url = https://github.com/TerrenceMcGuinness-NOAA/rocoto.git
+	branch = performance_metrics

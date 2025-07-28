@@ -203,7 +203,10 @@ for exp in "${experiments[@]}"; do
     running+=("${exp}")
 done
 
-# Monitor loop
+# Monitor loop with rocotometrics tracking
+last_rocotometrics_time=0
+rocotometrics_interval=300  # 5 minutes in seconds
+
 while [[ ${#running[@]} -gt 0 ]]; do
     # Check each running process
     for i in "${!pids[@]}"; do
@@ -241,6 +244,21 @@ while [[ ${#running[@]} -gt 0 ]]; do
     running_count=${#running[@]}
     done_count=$((completed_count + failed_count))
     echo "Progress: ${done_count}/${total} experiments finished (${completed_count} completed, ${failed_count} failed, ${running_count} running)"
+    
+    # Run rocotometrics every 5 minutes
+    current_time=$(date +%s)
+    if [[ $((current_time - last_rocotometrics_time)) -ge ${rocotometrics_interval} ]]; then
+        echo "Running rocotometrics analysis..."
+        if command -v rocotometrics >/dev/null 2>&1; then
+            rocotometrics -v 2 || echo "Warning: rocotometrics command failed"
+        elif [[ -f "${SCRIPT_DIR}/Rocoto/bin/rocotometrics" ]]; then
+            "${SCRIPT_DIR}/Rocoto/bin/rocotometrics" -v 2 || echo "Warning: rocotometrics command failed"
+        else
+            echo "Warning: rocotometrics not found in PATH or ${SCRIPT_DIR}/Rocoto/bin/"
+        fi
+        last_rocotometrics_time=${current_time}
+        echo ""
+    fi
     
     # Wait before next check
     sleep 30
