@@ -5,7 +5,7 @@ module purge
 module use HOMEgfs/modulefiles
 module load module_gwsetup.container
 
-module load wgrib2/2.0.8
+module load wgrib2/3.6.0
 
 arg=$@
 

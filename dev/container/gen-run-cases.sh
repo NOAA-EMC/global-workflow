@@ -37,7 +37,8 @@ elif [[ ${MACHINE_ID} = gaea* ]] ; then
 elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    TOPICDIR=/bucket/global-workflow-shared-data/ICSDIR
    container=/contrib/${USER}/container/${img}
-   rundir=/lustre/${USER}/run
+   rundir=/lustre/${USER}/ss191/run
+   STMP=/lustre/${USER}/ss191/stmp
    bindings="--env \"I_MPI_FABRICS=ofi:shm,I_MPI_DEBUG=6\" -B /apps/slurm/default/lib/libpmi2.so -B /contrib -B /lustre -B /bucket"
    HPC_ACCOUNT=${USER}
 
@@ -64,6 +65,7 @@ if [[ "${run_with_container}" == "YES" ]]; then
 	-r ${rocotocmd} \
     	-v -R
 
+   ${HOMEDIR}/dev/container/utils/create-atmos-products.sh -H ${HOMEDIR} -c ${container} -b "${bindings}"
    ${HOMEDIR}/dev/container/utils/create-container-links.sh -H ${HOMEDIR} -c ${container} -b "${bindings}"
 else
    TOPICDIR=${TOPICDIR} \
