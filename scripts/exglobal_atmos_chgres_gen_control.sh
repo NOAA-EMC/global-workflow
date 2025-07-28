@@ -15,19 +15,19 @@ DATA=${DATA:-${pwd}}
 ################################################################################
 #dates
 CDATE=${CDATE:?}
-iy=$(echo "${CDATE}" | cut -c1-4)
-im=$(echo "${CDATE}" | cut -c5-6)
-id=$(echo "${CDATE}" | cut -c7-8)
-ih=$(echo "${CDATE}" | cut -c9-10)
+export iy=$(echo "${CDATE}" | cut -c1-4)
+export im=$(echo "${CDATE}" | cut -c5-6)
+export id=$(echo "${CDATE}" | cut -c7-8)
+export ih=$(echo "${CDATE}" | cut -c9-10)
 ################################################################################
 # Set up theinput and output directories
 
-DESTINATION_DIR="${DATA}"
-SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
-MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
-HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
-SFC_FILE="gdas.t18z.sfcf003.nc"
-ATM_FILE="gdas.t18z.atmf003.nc"
+export DESTINATION_DIR="${DATA}"
+export SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
+export MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
+export HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
+export SFC_FILE="gdas.t18z.sfcf003.nc"
+export ATM_FILE="gdas.t18z.atmf003.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -91,11 +91,12 @@ OROG_TARGET_FILES=$(for i in {1..6}; do
         printf ","
     fi
 done)
+export OROG_TARGET_FILES
 ################################################################################
 # run the chgres script to change resolution of sfc file
-convert_atm=".false."
-convert_sfc=".true."
-output_log="./fort.41_1"
+export convert_atm=".false."
+export convert_sfc=".true."
+export output_log="./fort.41_1"
 "${HOMEgfs}/ush/gen_control_changres.sh"
 err=$?
 if [[ ${err} -ne 0 ]]; then
@@ -103,9 +104,9 @@ if [[ ${err} -ne 0 ]]; then
   exit ${err}
 fi
 # run the chgres script to change resolution of atm file
-convert_atm=".true."
-convert_sfc=".false."
-output_log="./fort.41_2"
+export convert_atm=".true."
+export convert_sfc=".false."
+export output_log="./fort.41_2"
 "${HOMEgfs}/ush/gen_control_changres.sh"
 err=$?
 if [[ ${err} -ne 0 ]]; then
