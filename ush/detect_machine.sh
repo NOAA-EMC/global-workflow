@@ -14,7 +14,6 @@ if [[ -n "${MACHINE_ID:-}" ]]; then
 fi
 
 # First detect w/ hostname
-echo "$(hostname -f)"
 case $(hostname -f) in
 
   adecflow0[12].acorn.wcoss2.ncep.noaa.gov)  MACHINE_ID=acorn ;; ### acorn
@@ -69,7 +68,6 @@ MACHINE_ID=${MACHINE:-${MACHINE_ID}}
 if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
   return
 fi
-ls /
 # Try searching based on paths since hostname may not match on compute nodes
 if [[ -d /lfs/h3 ]]; then
   # We are on NOAA Cactus or Dogwood
@@ -90,8 +88,8 @@ elif [[ -d /scratch3 ]]; then
   fi
 elif [[ -d /work ]]; then
   # We are on MSU Orion or Hercules
-  mount=$(findmnt -n -o SOURCE /home)
-  if [[ ${mount} =~ "hercules" ]]; then
+  mount=$(findmnt -n -o SOURCE /home) || true  # /home doesn't exist on the github runners
+  if [[ ${mount+x} =~ "hercules" ]]; then
     MACHINE_ID=hercules
   else
     MACHINE_ID=orion
