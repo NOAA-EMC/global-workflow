@@ -14,6 +14,7 @@ if [[ -n "${MACHINE_ID:-}" ]]; then
 fi
 
 # First detect w/ hostname
+echo $(hostname -f)
 case $(hostname -f) in
 
   adecflow0[12].acorn.wcoss2.ncep.noaa.gov)  MACHINE_ID=acorn ;; ### acorn
