@@ -15,7 +15,7 @@ if (( $# <= 1 )); then
     echo "--fv3 C48|C96|C192|C384|C768|C1152|C3072"
     echo "--mom6 500|100|025"
     echo "--cice6 500|100|025"
-    echo "--ww3 gnh_10m;aoc_9km;gsh_15m|gwes_30m|glo_025|glo_100|glo_200|glo_500|mx025|uglo_100km"
+    echo "--ww3 gwes_30m|glo_025|glo_100|glo_200|glo_500|mx025|uglo_100km"
     echo "--gocart"
 
     exit 1
@@ -293,7 +293,7 @@ case "${fv3_res}" in
         export nthreads_ufs=4
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
-	                                                # For GAEAC6 use 60 
+                                                        # For GAEAC6 use 60
         if [[ "${RUN}" = *gdas ]]; then
           export layout_x=16
           export layout_y=24
@@ -589,9 +589,6 @@ if [[ "${skip_ww3}" == "false" ]]; then
   model_list="${model_list}.wave"
   nthreads_ww3=1
   case "${ww3_res}" in
-    "gnh_10m;aoc_9km;gsh_15m")
-      ntasks_ww3=140
-      ;;
     "gwes_30m")
       ntasks_ww3=100
       ;;

@@ -26,6 +26,7 @@ if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
   module load libjpeg
   module load craype-network-ucx
   module load cray-mpich-ucx
+  module load python/3.8.6
 else
   export UTILROOT=${prod_util_ROOT}
 fi
