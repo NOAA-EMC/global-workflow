@@ -6,6 +6,11 @@ set -eu
 #####################################################################################
 # Script description: Driver script to run run_check_gitlab_ci.sh on all experiment
 #                     directories that contain .xml files
+#
+# DISCLAIMER: This script is designed to emulate the load behavior of running
+#             multiple experiments in a CI/CD pipeline for performance evaluation
+#             purposes. It simulates realistic workloads to assess system
+#             performance under concurrent experiment execution scenarios.
 #####################################################################################
 
 usage() {
@@ -82,10 +87,16 @@ if [[ ! -d "${EXPDIR}" ]]; then
 
     # Run generate_workflow.sh with required flags
     echo "Running: ${GENERATE_WORKFLOW_SCRIPT} -GESC ${RUNTESTS}"
-    if ! "${GENERATE_WORKFLOW_SCRIPT}" -GESC "${RUNTESTS}"; then
+    # Save current directory and change to script directory
+    ORIGINAL_DIR="$(pwd)"
+    SCRIPT_DIR="$(dirname "${GENERATE_WORKFLOW_SCRIPT}")"
+    cd "${SCRIPT_DIR}"
+    if ! ./generate_workflow.sh -GESC "${RUNTESTS}"; then
         echo "ERROR: Failed to generate workflows"
         exit 1
     fi
+    # Return to original directory
+    cd "${ORIGINAL_DIR}"
 
     # Verify EXPDIR was created
     if [[ ! -d "${EXPDIR}" ]]; then
