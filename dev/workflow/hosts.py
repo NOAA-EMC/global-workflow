@@ -57,6 +57,11 @@ class Host:
         if os.path.exists('/scratch3/NCEPDEV'):
             # Hera or Ursa
             self.machine = socket.gethostname().split("-", 1)[0].upper()
+            # TODO: When Hera is no longer used, remove this check and switch to Ursa.
+            # Check if this is the GitHub runner
+            if self.machine != 'HERA' and self.machine != 'URSA':
+                print(f'Detecting host as {self.machine}; assuming this is a GitHub runner.')
+                self.machine = 'HERA'
         elif os.path.exists('/work/noaa'):
             # Orion or Hercules
             self.machine = socket.gethostname().split("-", 1)[0].upper()
