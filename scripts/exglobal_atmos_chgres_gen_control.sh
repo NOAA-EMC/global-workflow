@@ -9,8 +9,8 @@
 pwd=$(pwd)
 # Dependent input scripts and Executables
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
-CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
-PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
+export CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
+export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 DATA=${DATA:-${pwd}}
 ################################################################################
 #dates
