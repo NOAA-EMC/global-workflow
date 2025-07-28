@@ -9,7 +9,7 @@ set -x
 ###############################################################
 
 # Source FV3GFS workflow modules
-#. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+#source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
 #status=$?
 #if (( status != 0 )); then exit "${status}"; fi
 # Temporarily load modules from UPP on WCOSS2
@@ -42,7 +42,7 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
   export PYTHONPATH
 
 else
-  . "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+  source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
   status=$?
   if (( status != 0 )); then exit "${status}"; fi
 fi
