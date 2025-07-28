@@ -75,23 +75,23 @@ RUNTESTS="${TEST_DIR}/RUNTESTS"
 EXPDIR="${RUNTESTS}/EXPDIR"
 if [[ ! -d "${EXPDIR}" ]]; then
     echo "WARNING: Expected experiment directory '${EXPDIR}' does not exist"
-    echo "Attempting to generate workflows using generate_workflow.sh..."
+    echo "Attempting to generate workflows using generate_workflows.sh..."
 
-    # Locate generate_workflow.sh script
-    GENERATE_WORKFLOW_SCRIPT="${TEST_DIR}/${SYSTEM_BUILD_DIR}/dev/workflow/generate_workflow.sh"
+    # Locate generate_workflows.sh script
+    GENERATE_WORKFLOW_SCRIPT="${TEST_DIR}/${SYSTEM_BUILD_DIR}/dev/workflow/generate_workflows.sh"
 
     if [[ ! -f "${GENERATE_WORKFLOW_SCRIPT}" ]]; then
-        echo "ERROR: generate_workflow.sh not found at '${GENERATE_WORKFLOW_SCRIPT}'"
+        echo "ERROR: generate_workflows.sh not found at '${GENERATE_WORKFLOW_SCRIPT}'"
         exit 1
     fi
 
-    # Run generate_workflow.sh with required flags
+    # Run generate_workflows.sh with required flags
     echo "Running: ${GENERATE_WORKFLOW_SCRIPT} -GESC ${RUNTESTS}"
     # Save current directory and change to script directory
     ORIGINAL_DIR="$(pwd)"
     SCRIPT_DIR="$(dirname "${GENERATE_WORKFLOW_SCRIPT}")"
     cd "${SCRIPT_DIR}"
-    if ! ./generate_workflow.sh -GESC "${RUNTESTS}"; then
+    if ! ./generate_workflows.sh -GESC "${RUNTESTS}"; then
         echo "ERROR: Failed to generate workflows"
         exit 1
     fi
@@ -100,7 +100,7 @@ if [[ ! -d "${EXPDIR}" ]]; then
 
     # Verify EXPDIR was created
     if [[ ! -d "${EXPDIR}" ]]; then
-        echo "ERROR: EXPDIR '${EXPDIR}' was not created by generate_workflow.sh"
+        echo "ERROR: EXPDIR '${EXPDIR}' was not created by generate_workflows.sh"
         exit 1
     fi
     echo "Successfully generated workflows in '${EXPDIR}'"
