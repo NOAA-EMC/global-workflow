@@ -70,6 +70,8 @@ if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
   return
 fi
 
+ls /
+
 # Try searching based on paths since hostname may not match on compute nodes
 if [[ -d /lfs/h3 ]]; then
   # We are on NOAA Cactus or Dogwood
