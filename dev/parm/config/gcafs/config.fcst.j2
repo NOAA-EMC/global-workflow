@@ -22,7 +22,7 @@ if [[ "${DO_ICE}" == "YES" ]]; then
     string="${string} --cice6 ${ICERES}"
 fi
 if [[ "${DO_WAVE}" == "YES" ]]; then
-    string="${string} --ww3 ${waveGRD// /;}"
+    string="${string} --ww3 ${waveGRD}"
 fi
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
     string="${string} --gocart"
@@ -323,6 +323,8 @@ else
     exit 1
 fi
 
+# This is used to ensure that the orography in the land restart file matches the orography
+export CHECK_LAND_RESTART_OROG="{{ CHECK_LAND_RESTART_OROG }}"
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
