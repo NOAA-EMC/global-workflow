@@ -41,17 +41,6 @@ input_files=(
     "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
     "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}"
 )
-################################################################################
-# Function to copy files and check success
-copy_file() {
-    local src=$1
-    local dest=$2
-    echo "Copying ${src} to ${dest}"
-    if ! cp -rf "${src}" "${dest}"; then
-        echo "Error: Failed to copy ${src} to ${dest}" >&2
-        exit 1
-    fi
-}
 ###############################################################################
 for src in "${input_files[@]}"; do
     cpfs "${src}" "${DESTINATION_DIR}/"
@@ -81,7 +70,6 @@ for ((p=0; p<${#tile_file_set[@]}; p+=2)); do
     chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
    done
 done
-echo "All files copied successfully."
 ################################################################################
 # Prepare the orography target files
 OROG_TARGET_FILES=$(for i in {1..6}; do
@@ -116,7 +104,7 @@ cycle_year=${iy}
 cycle_mon=${im}
 cycle_day=${id}
 cycle_hour=${ih}
-convert_atm=.true.
+convert_atm=.false.
 convert_sfc=.true.
 convert_nst=.true.
 input_type="gaussian_netcdf"
