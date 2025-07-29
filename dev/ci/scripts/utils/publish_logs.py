@@ -132,7 +132,10 @@ def upload_logs_to_repo(args, emcbot_gh, emcbot_ci_url):
     for file in args.file:
         with open(file.name, 'r', encoding='latin-1') as file:
             file_content = file.read()
-        file_path_in_repo = f"{repo_path}/{path_header}/" + str(os.path.basename(file.name))
+        # Include parent directory name with filename for uniqueness and context
+        parent_dir = os.path.basename(os.path.dirname(file.name))
+        filename_with_dir = f"{parent_dir}_{os.path.basename(file.name)}"
+        file_path_in_repo = f"{repo_path}/{path_header}/{filename_with_dir}"
         emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
 
     file_url = f"{emcbot_ci_url.rsplit('.', 1)[0]}/tree/{repo_branch}/{repo_path}/{path_header}"
