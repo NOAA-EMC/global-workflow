@@ -156,7 +156,7 @@ def test_attempt_multiple_times_delay():
     assert result == "success"
     assert mock_func.call_count == 2
     # Should take at least 0.2 seconds due to the delay
-    assert end_time - start_time >= 0.15  # Allow some tolerance
+    assert end_time - start_time >= 0.2  # Allow some tolerance
 
 
 @patch('rocotostat.logger')
