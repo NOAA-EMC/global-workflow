@@ -13,7 +13,7 @@ export CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 DATA=${DATA:-${pwd}}
 ################################################################################
-#dates
+# Dates
 CDATE=${CDATE:?}
 iy="$(echo "${CDATE}" | cut -c1-4)"
 im="$(echo "${CDATE}" | cut -c5-6)"
@@ -22,7 +22,6 @@ ih="$(echo "${CDATE}" | cut -c9-10)"
 export iy im id ih
 ################################################################################
 # Set up theinput and output directories
-
 export DESTINATION_DIR="${DATA}"
 export SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
 export MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
