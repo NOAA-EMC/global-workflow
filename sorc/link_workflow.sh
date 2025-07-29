@@ -4,7 +4,6 @@
 
 HOMEgfs="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
 TRACE=NO source "${HOMEgfs}/ush/preamble.sh"
-set -x
 
 function usage() {
   cat <<EOF
