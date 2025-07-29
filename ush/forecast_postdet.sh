@@ -74,9 +74,10 @@ FV3_postdet() {
           break
         fi
       done
+
       # If aerosol analysis is to be done, replace fv_tracer with aeroanl_fv_tracer
       # restart files from current cycle (if found)
-      if [[ ${DO_AERO_FCST} == "YES" ]]; then
+      if [[ "${DO_AERO_FCST}" == "YES" ]]; then
         local nn
         local use_anl_aero="YES"
         for (( nn = 1; nn <= ntiles; nn++ )); do
@@ -87,7 +88,7 @@ FV3_postdet() {
             break
           fi
         done
-        if [[ ${use_anl_aero} == "YES" ]]; then
+        if [[ "${use_anl_aero}" == "YES" ]]; then
           for (( nn = 1; nn <= ntiles; nn++ )); do
             rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
             cpreq "${COMIN_TRACER_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
@@ -100,6 +101,19 @@ FV3_postdet() {
     fi  # if [[ "${RERUN}" == "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
+
+  # Regardless of warm_start or not, the sfc_data and orography files should be consistent
+  # Check for consistency
+  # TODO: the checker has a --fatal option, which is not used here.  This needs to be decided how to handle.
+  if [[ "${CHECK_LAND_RESTART_OROG:-NO}" == "YES" ]]; then
+    "${USHgfs}/check_land_input_orography.py" \
+      --input_dir "${DATA}/INPUT" --orog_dir "${DATA}/INPUT"
+    err=$?
+    if [[ ${err} -ne 0 ]]; then
+      echo "FATAL ERROR: check_land_input_orography.py returned error code ${err}, ABORT!"
+      exit "${err}"
+    fi
+  fi
 
   #============================================================================
   # Determine increment files when doing cold start
@@ -391,9 +405,8 @@ FV3_out() {
 # shellcheck disable=SC2034
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
-  local ww3_grid first_ww3_restart_out ww3_restart_file
   # Copy initial condition files:
-  local restart_date restart_dir seconds
+  local restart_date restart_dir
   if [[ "${RERUN}" == "YES" ]]; then
     restart_date="${RERUN_DATE}"
     restart_dir="${DATArestart}/WW3_RESTART"
@@ -426,6 +439,7 @@ WW3_postdet() {
     fi
   fi
 
+  local first_ww3_restart_out
   first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   if [[ "${DOIAU:-NO}" == "YES" ]]; then
     first_ww3_restart_out=$(date --utc -d "${first_ww3_restart_out:0:8} ${first_ww3_restart_out:8:2} + ${half_window} hours" +%Y%m%d%H)
@@ -433,29 +447,33 @@ WW3_postdet() {
 
   # Link restart files to their expected names in DATArestart/WW3_RESTART
   # TODO: Have the UFSWM write out the WW3 restart files in the expected format of 'YYYYMMDD.HHmmSS.restart.ww3.nc'
+  local cwd vdate ww3_ufs_restart_file ww3_netcdf_restart_file
+  cwd="${PWD}"
+  cd "${DATArestart}/WW3_RESTART" || exit 1
   for (( vdate = first_ww3_restart_out; vdate <= forecast_end_cycle;
          vdate = $(date --utc -d "${vdate:0:8} ${vdate:8:2} + ${restart_interval} hours" +%Y%m%d%H) )); do
     seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
-    ww3_restart_ufs_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"  # UFS restart file name
+    ww3_ufs_restart_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"  # UFS restart file name
     ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"  # WW3 restart file name in COM
-    ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${DATArestart}/WW3_RESTART/${ww3_restart_ufs_file}"
+    ${NLN} "${ww3_netcdf_restart_file}" "${ww3_ufs_restart_file}"
   done
 
   # TODO: link GEFS restart for next cycle IC
   #if [[ "${RUN}" == "gefs" ]]; then
   #  vdate=${model_start_date_next_cycle}
   #  seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
-  #  ww3_restart_ufs_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"
+  #  ww3_ufs_restart_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"
   #  ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"
-  #  ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${DATArestart}/WW3_RESTART/${ww3_restart_ufs_file}"
+  #  ${NLN} "${ww3_netcdf_restart_file}" "${ww3_ufs_restart_file}"
   #fi
+  cd "${cwd}" || exit 1
 
   # Link output files
   local wavprfx="${RUN}.wave.t${cyc}z"
   ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
 
   # Loop for gridded output (uses FHINC)
-  local fhr fhr3 vdate FHINC ww3_grid
+  local fhr fhr3 FHINC
   fhr=${FHMIN_WAV}
   if [[ ${FHMAX_HF_WAV} -gt 0 && ${FHOUT_HF_WAV} -gt 0 && ${fhr} -lt ${FHMAX_HF_WAV} ]]; then
     fhinc=${FHOUT_HF_WAV}

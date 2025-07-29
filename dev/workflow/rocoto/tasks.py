@@ -4,7 +4,7 @@ import numpy as np
 from applications.applications import AppConfig
 import rocoto.rocoto as rocoto
 from wxflow import Template, TemplateConstants, to_timedelta, timedelta_to_HMS
-from typing import List, Union
+from typing import Dict, List, Union
 from bisect import bisect_right
 
 __all__ = ['Tasks']
@@ -309,6 +309,59 @@ class Tasks:
                         'fhr3_last': ' '.join([f'{fhr:03d}' for fhr in fhrs_last]),
                         'fhr3_next': ' '.join([f'{fhr:03d}' for fhr in fhrs_next])
                         }
+
+        return fhr_var_dict
+
+    @staticmethod
+    def get_dep_fhr_label(my_fhr_var_dict: Dict, their_fhr_var_dict: Dict) -> Dict:
+        """
+        Takes two dictionaries of fhr_var_dicts; one for the current task and
+        another for a dependency task, and returns the dependency fhr_label
+        added to the current task dict.
+
+        Parameters
+        ----------
+        my_fhr_var_dict : Dict
+            Dictionary containing forecast hours, etc. for the current task.
+        their_fhr_var_dict : Dict
+            Dictionary containing forecast hours, etc. from another task.
+
+        Returns
+        -------
+        fhr_var_dict: Dict
+            Updated `my_fhr_var_dict` with `dep_fhr_label` containing
+            dependency labels from `their_fhr_var_dict` corressponding to `fhr3_last` from
+            `my_fhr_var_dict`.
+        """
+
+        def _str2int(str_in):
+            return int(str_in[1:])
+
+        def _find_label(fhr3, fhr_label):
+            ifhr = _str2int(fhr3)
+            label = None
+            for item in fhr_label:
+                start, end = item.split('-') if '-' in item else (item, item)
+                start, end = _str2int(start), _str2int(end)
+                if start <= ifhr <= end:
+                    label = item
+                    break
+
+            if label is None:
+                raise LookupError(f"Unable to find {fhr3} in the input list {fhr_label}")
+
+            return label
+
+        fhr_var_dict = my_fhr_var_dict.copy()
+        my_fhr3_last = my_fhr_var_dict['fhr3_last'].split(' ')
+        their_fhr_label = their_fhr_var_dict['fhr_label'].split(' ')
+
+        # Search for fhr_label from their_fhr_label's for group dependencies
+        dep_fhr_label = []
+        for fhr3 in my_fhr3_last:
+            dep_fhr_label.append(_find_label(f"f{fhr3}", their_fhr_label))
+
+        fhr_var_dict['dep_fhr_label'] = ' '.join(dep_fhr_label)
 
         return fhr_var_dict
 
