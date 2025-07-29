@@ -15,10 +15,11 @@ DATA=${DATA:-${pwd}}
 ################################################################################
 #dates
 CDATE=${CDATE:?}
-export iy="$(echo "${CDATE}" | cut -c1-4)"
-export im="$(echo "${CDATE}" | cut -c5-6)"
-export id="$(echo "${CDATE}" | cut -c7-8)"
-export ih="$(echo "${CDATE}" | cut -c9-10)"
+iy="$(echo "${CDATE}" | cut -c1-4)"
+im="$(echo "${CDATE}" | cut -c5-6)"
+id="$(echo "${CDATE}" | cut -c7-8)"
+ih="$(echo "${CDATE}" | cut -c9-10)"
+export iy im id ih
 ################################################################################
 # Set up theinput and output directories
 
