@@ -82,7 +82,7 @@ OROG_TARGET_FILES=$(for i in {1..6}; do
 done)
 export OROG_TARGET_FILES
 ################################################################################
-# # run the chgres script to change resolution of sfc file
+# run the chgres script to change resolution of sfc file
 # export convert_atm=".false."
 # export convert_sfc=".true."
 # export output_log="sfs_out.log" # namelist output log
