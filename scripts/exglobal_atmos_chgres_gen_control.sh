@@ -103,6 +103,14 @@ if [[ ${err} -ne 0 ]]; then
   exit "${err}"
 fi
 ################################################################################
+# Ensure COMOUT_ATMOS_INPUT_MEM directory exists, create if needed
+if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]]; then
+  mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"
+  if [[ $? -ne 0 ]]; then
+    echo "ERROR: Failed to create directory ${COMOUT_ATMOS_INPUT_MEM}"
+    exit 1
+  fi
+fi
 # Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
 for i in {1..6}; do
   atm_file="out.atm.tile${i}.nc"
