@@ -93,15 +93,15 @@ if [[ ${err} -ne 0 ]]; then
   exit "${err}"
 fi
 # run the chgres script to change resolution of atm file
-# export convert_atm=".true."
-# export convert_sfc=".false."
-# export output_log="./fort.41_2"
-# "${HOMEgfs}/ush/gen_control_changres.sh"
-# err=$?
-# if [[ ${err} -ne 0 ]]; then
-#   echo "ERROR: atm chgres run failed"
-#   exit "${err}"
-# fi
+export convert_atm=".true."
+export convert_sfc=".false."
+export output_log="atm_out.log"
+"${HOMEgfs}/ush/gen_control_changres.sh"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+  echo "ERROR: atm chgres run failed"
+  exit "${err}"
+fi
 ################################################################################
 # Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
 for i in {1..6}; do
