@@ -90,7 +90,7 @@ export output_log="./fort.41_1"
 err=$?
 if [[ ${err} -ne 0 ]]; then
   echo "ERROR: sfc chgres run failed"
-  exit ${err}
+  exit "${err}"
 fi
 # run the chgres script to change resolution of atm file
 # export convert_atm=".true."
