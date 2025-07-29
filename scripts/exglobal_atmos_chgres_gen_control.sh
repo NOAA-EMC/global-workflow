@@ -9,24 +9,25 @@
 pwd=$(pwd)
 # Dependent input scripts and Executables
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
-CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
-PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
+export CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
+export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 DATA=${DATA:-${pwd}}
 ################################################################################
 #dates
 CDATE=${CDATE:?}
-iy=$(echo "${CDATE}" | cut -c1-4)
-im=$(echo "${CDATE}" | cut -c5-6)
-id=$(echo "${CDATE}" | cut -c7-8)
-ih=$(echo "${CDATE}" | cut -c9-10)
+export iy=$(echo "${CDATE}" | cut -c1-4)
+export im=$(echo "${CDATE}" | cut -c5-6)
+export id=$(echo "${CDATE}" | cut -c7-8)
+export ih=$(echo "${CDATE}" | cut -c9-10)
 ################################################################################
 # Set up theinput and output directories
-DESTINATION_DIR="${DATA}"
-SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
-MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
-HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
-SFC_FILE="gdas.t18z.sfcf003.nc"
-ATM_FILE="gdas.t18z.atmf003.nc"
+
+export DESTINATION_DIR="${DATA}"
+export SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
+export MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
+export HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
+export SFC_FILE="gdas.t18z.sfcf003.nc"
+export ATM_FILE="gdas.t18z.atmf003.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -70,6 +71,7 @@ for ((p=0; p<${#tile_file_set[@]}; p+=2)); do
     chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
    done
 done
+echo "All files copied successfully."
 ################################################################################
 # Prepare the orography target files
 OROG_TARGET_FILES=$(for i in {1..6}; do
@@ -78,55 +80,28 @@ OROG_TARGET_FILES=$(for i in {1..6}; do
         printf ","
     fi
 done)
+export OROG_TARGET_FILES
 ################################################################################
-# add the namelist and run chgres
-cat << EOF > ./fort.41
-&config
-mosaic_file_target_grid="${MOSAIC_DESTINATION_FILE}"
-fix_dir_target_grid="${DESTINATION_DIR}"
-orog_dir_target_grid="${DESTINATION_DIR}"
-orog_files_target_grid=${OROG_TARGET_FILES}
-vcoord_file_target_grid="${HYBLEV_FILE}"
-mosaic_file_input_grid="NULL"
-orog_dir_input_grid="NULL"
-orog_files_input_grid="NULL"
-data_dir_input_grid="${DESTINATION_DIR}"
-atm_files_input_grid="NULL"
-atm_core_files_input_grid="NULL"
-atm_tracer_files_input_grid="NULL"
-sfc_files_input_grid="${SFC_FILE}"
-nst_files_input_grid="NULL"
-grib2_file_input_grid="NULL"
-geogrid_file_input_grid="NULL"
-varmap_file="NULL"
-wam_parm_file="NULL"
-cycle_year=${iy}
-cycle_mon=${im}
-cycle_day=${id}
-cycle_hour=${ih}
-convert_atm=.false.
-convert_sfc=.true.
-convert_nst=.true.
-input_type="gaussian_netcdf"
-tracers="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
-tracers_input="spfh","clwmr","o3mr","icmr","rwmr","snmr","grle"
-regional=0
-halo_bndy=0
-halo_blend=0
-sotyp_from_climo=.true.
-vgtyp_from_climo=.true.
-vgfrc_from_climo=.true.
-minmax_vgfrc_from_climo=.true.
-tg3_from_soil=.false.
-lai_from_climo=true.
-external_model="GFS"
-nsoill_out=4
-thomp_mp_climo_file="NULL"
-wam_cold_start=.false.
-/
-EOF
-
-eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${PGMOUT}"
+# run the chgres script to change resolution of sfc file
+export convert_atm=".false."
+export convert_sfc=".true."
+export output_log="./fort.41_1"
+"${HOMEgfs}/ush/gen_control_changres.sh"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+  echo "ERROR: sfc chgres run failed"
+  exit ${err}
+fi
+# run the chgres script to change resolution of atm file
+# export convert_atm=".true."
+# export convert_sfc=".false."
+# export output_log="./fort.41_2"
+# "${HOMEgfs}/ush/gen_control_changres.sh"
+# err=$?
+# if [[ ${err} -ne 0 ]]; then
+#   echo "ERROR: atm chgres run failed"
+#   exit "${err}"
+# fi
 ################################################################################
 # Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
 for i in {1..6}; do
