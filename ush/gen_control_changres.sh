@@ -17,7 +17,7 @@
 set -eu
 
 # Generate the namelist for chgres
-cat << EOF > ${output_log}
+cat << EOF > ./fort.41
 &config
 mosaic_file_target_grid="${MOSAIC_DESTINATION_FILE:-"NULL"}"
 fix_dir_target_grid="${DESTINATION_DIR:-"NULL"}"
@@ -62,6 +62,10 @@ thomp_mp_climo_file=${THOMP_MP_CLIMO_FILE:-"NULL"}
 wam_cold_start=${WAM_COLD_START:-".false."}
 /
 EOF
+
+if [[ -n "${output_log:-}" ]]; then
+  cp ./fort.41 "${output_log}"
+fi
 
 # Run the chgres executable
 eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${PGMOUT}"
