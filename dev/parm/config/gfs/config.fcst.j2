@@ -17,7 +17,7 @@ if [[ "${DO_ICE}" == "YES" ]]; then
     string="${string} --cice6 ${ICERES}"
 fi
 if [[ "${DO_WAVE}" == "YES" ]]; then
-    string="${string} --ww3 ${waveGRD// /;}"
+    string="${string} --ww3 ${waveGRD}"
 fi
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
     string="${string} --gocart"
@@ -92,7 +92,7 @@ export gwd_opt=2
 # --GFS.v16 uGWD.v0, used for suite FV3_GFS_v16 and UFS p6 etc
 # do_ugwp=T: use unified CGWD and OGWD, and turbulent orographic form drag (TOFD)
 # do_ugwp=F: use unified CGWD but old OGWD, TOFD is not uded.
-if (( gwd_opt == 1 )); then
+if [[ ${gwd_opt} -eq 1 ]]; then
     export knob_ugwp_version=0
     export do_ugwp=".false."
     export do_tofd=".false."
@@ -102,7 +102,7 @@ fi
 
 
 # -- uGWD.v1, for suite FV3_GFS_v17 and FV3_GFS_v17p8b etc
-if (( gwd_opt == 2 )); then
+if [[ ${gwd_opt} -eq 2 ]]; then
 
     #--used for UFS p7 and p8a
     #export  knob_ugwp_version=1
@@ -314,6 +314,9 @@ elif [[ "${RUN}" =~ "gfs" ]] ; then # GFS cycle specific parameters
     export DO_LAND_IAU=".false."
 
 fi
+
+# This is used to ensure that the orography in the land restart file matches the orography
+export CHECK_LAND_RESTART_OROG="{{ CHECK_LAND_RESTART_OROG }}"
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
