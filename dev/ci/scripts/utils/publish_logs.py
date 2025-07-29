@@ -130,6 +130,13 @@ def upload_logs_to_repo(args, emcbot_gh, emcbot_ci_url):
             break
 
     for file in args.file:
+        # Check file size - skip files larger than 100MB
+        file_size = os.path.getsize(file.name)
+        max_size = 100 * 1024 * 1024  # 100MB in bytes
+        if file_size > max_size:
+            print(f"Skipping {file.name}: file size ({file_size} bytes) exceeds 100MB limit")
+            continue
+
         with open(file.name, 'r', encoding='latin-1') as file:
             file_content = file.read()
         # Include 3 levels of directory basenames with filename for uniqueness and context
@@ -150,7 +157,12 @@ def upload_logs_to_repo(args, emcbot_gh, emcbot_ci_url):
             filename_with_dir = os.path.basename(file.name)
         
         file_path_in_repo = f"{repo_path}/{path_header}/{filename_with_dir}"
-        emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
+
+        try:
+            emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
+        except Exception as e:
+            print(f"Failed to upload {file.name}: {e}")
+            continue
 
     file_url = f"{emcbot_ci_url.rsplit('.', 1)[0]}/tree/{repo_branch}/{repo_path}/{path_header}"
     print(file_url)
