@@ -54,7 +54,7 @@ copy_file() {
 }
 ###############################################################################
 for src in "${input_files[@]}"; do
-    copy_file "${src}" "${DESTINATION_DIR}/"
+    cpfs "${src}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/$(basename "${src}")"
 done
 
@@ -77,7 +77,7 @@ for ((p=0; p<${#tile_file_set[@]}; p+=2)); do
   dir="${tile_file_set[p+1]}"
   for i in {1..6}; do
     tile_file="${prefix}${i}.nc"
-    copy_file "${dir}/${tile_file}" "${DESTINATION_DIR}/"
+    cpfs "${dir}/${tile_file}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
    done
 done
@@ -116,7 +116,7 @@ cycle_year=${iy}
 cycle_mon=${im}
 cycle_day=${id}
 cycle_hour=${ih}
-convert_atm=.false.
+convert_atm=.true.
 convert_sfc=.true.
 convert_nst=.true.
 input_type="gaussian_netcdf"
@@ -145,15 +145,15 @@ for i in {1..6}; do
   atm_file="out.atm.tile${i}.nc"
   sfc_file="out.sfc.tile${i}.nc"
   if [[ -f "${atm_file}" ]]; then
-    copy_file "${atm_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
+    cpfs "${atm_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
   fi
   if [[ -f "${sfc_file}" ]]; then
-    copy_file "${sfc_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
+    cpfs "${sfc_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
   fi
 done
 
 if [[ -f "gfs_ctrl.nc" ]]; then
-  copy_file "gfs_ctrl.nc" "${COMOUT_ATMOS_INPUT_MEM}/"
+  cpfs "gfs_ctrl.nc" "${COMOUT_ATMOS_INPUT_MEM}/"
 fi
 exit "${err}"
 ################################################################################
