@@ -8,7 +8,7 @@
 # Author:              Global Workflow Team
 # Date:                July 2025
 #
-# Usage:               gen_chgres_namelist.sh
+# Usage:               gen_control_changres.sh
 #
 # Script history log:
 # 2025-07-28  Initial script creation
@@ -17,7 +17,7 @@
 set -eu
 
 # Generate the namelist for chgres
-cat << EOF > ${output_log:-"./fort.41"}
+cat << EOF > ${output_log}
 &config
 mosaic_file_target_grid="${MOSAIC_DESTINATION_FILE:-"NULL"}"
 fix_dir_target_grid="${DESTINATION_DIR:-"NULL"}"
