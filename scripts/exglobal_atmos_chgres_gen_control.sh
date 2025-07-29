@@ -85,7 +85,7 @@ export OROG_TARGET_FILES
 # run the chgres script to change resolution of sfc file
 export convert_atm=".false."
 export convert_sfc=".true."
-export output_log="./fort.41_1"
+export output_log="./fort.41"
 "${HOMEgfs}/ush/gen_control_changres.sh"
 err=$?
 if [[ ${err} -ne 0 ]]; then
