@@ -201,6 +201,7 @@ ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
 
 # Temporarilly link load_gw_run_modules.sh to load_fv3gfs_modules.sh
 # TODO: Use load_gw_run_modules.sh everywhere
+cd "${HOMEgfs}/dev/ush"
 ${LINK_OR_COPY} "${HOMEgfs}/ush/load_gw_run_modules.sh" load_fv3gfs_modules.sh
 
 # add ufs_utils parm dir
