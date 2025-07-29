@@ -132,9 +132,23 @@ def upload_logs_to_repo(args, emcbot_gh, emcbot_ci_url):
     for file in args.file:
         with open(file.name, 'r', encoding='latin-1') as file:
             file_content = file.read()
-        # Include parent directory name with filename for uniqueness and context
-        parent_dir = os.path.basename(os.path.dirname(file.name))
-        filename_with_dir = f"{parent_dir}_{os.path.basename(file.name)}"
+        # Include 3 levels of directory basenames with filename for uniqueness and context
+        path_parts = os.path.normpath(file.name).split(os.sep)
+        if len(path_parts) >= 4:
+            # Get last 3 directory components before filename
+            dir_context = "_".join(path_parts[-4:-1])
+        elif len(path_parts) >= 2:
+            # Use available directory components
+            dir_context = "_".join(path_parts[:-1])
+        else:
+            # Fallback to just filename if no directory path
+            dir_context = ""
+        
+        if dir_context:
+            filename_with_dir = f"{dir_context}_{os.path.basename(file.name)}"
+        else:
+            filename_with_dir = os.path.basename(file.name)
+        
         file_path_in_repo = f"{repo_path}/{path_header}/{filename_with_dir}"
         emcbot_gh.repo.create_file(file_path_in_repo, "Adding error log file", file_content, branch="error_logs")
 
