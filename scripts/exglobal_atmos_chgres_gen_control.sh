@@ -48,9 +48,12 @@ for src in "${input_files[@]}"; do
     chmod -R u+w "${DESTINATION_DIR}/$(basename "${src}")"
 done
 
-tile_file_set=(
+oro_file_set=(
     "${CASE}_grid.tile"           "${SOURCE_DIR}"
     "${CASE}.mx${OCNRES}_oro_data.tile" "${SOURCE_DIR}"
+)
+
+sfc_file_set=(
     "${CASE}.mx${OCNRES}.slope_type.tile" "${SOURCE_DIR}/sfc"
     "${CASE}.mx${OCNRES}.maximum_snow_albedo.tile" "${SOURCE_DIR}/sfc"
     "${CASE}.mx${OCNRES}.snowfree_albedo.tile" "${SOURCE_DIR}/sfc"
@@ -61,17 +64,23 @@ tile_file_set=(
     "${CASE}.mx${OCNRES}.facsf.tile" "${SOURCE_DIR}/sfc"
 )
 
-# Loop through patterns and tiles
-for ((p=0; p<${#tile_file_set[@]}; p+=2)); do
-  prefix="${tile_file_set[p]}"
-  dir="${tile_file_set[p+1]}"
+# Process orography files
+for file in "${oro_file_set[@]}"; do
   for i in {1..6}; do
-    tile_file="${prefix}${i}.nc"
-    cpfs "${dir}/${tile_file}" "${DESTINATION_DIR}/"
+    tile_file="${file}${i}.nc"
+    cpfs "${SOURCE_DIR}/${tile_file}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
   done
 done
-echo "All files copied successfully."
+
+# Process surface files
+for file in "${sfc_file_set[@]}"; do
+  for i in {1..6}; do
+    tile_file="${file}${i}.nc"
+    cpfs "${SOURCE_DIR}/sfc/${tile_file}" "${DESTINATION_DIR}/"
+    chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
+  done
+done
 ################################################################################
 # Prepare the orography target files
 OROG_TARGET_FILES=$(for i in {1..6}; do
