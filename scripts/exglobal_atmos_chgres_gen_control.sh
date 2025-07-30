@@ -105,8 +105,7 @@ fi
 ################################################################################
 # Ensure COMOUT_ATMOS_INPUT_MEM directory exists, create if needed
 if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]]; then
-  mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"
-  if [[ $? -ne 0 ]]; then
+  if ! mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"; then
     echo "ERROR: Failed to create directory ${COMOUT_ATMOS_INPUT_MEM}"
     exit 1
   fi
