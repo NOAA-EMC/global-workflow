@@ -27,7 +27,7 @@ export SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
 export MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
 export HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
 export SFC_FILE="gdas.t18z.sfcf003.nc"
-export ATM_FILE="gdas.t18z.atmf003.ensres.nc"
+export ATM_FILE="gdas.t18z.atma003.ensres.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -65,7 +65,7 @@ sfc_file_set=(
   "${CASE}.mx${OCNRES}.vegetation_greenness.tile"
   "${CASE}.mx${OCNRES}.facsf.tile"
 )
-
+cp "/lfs/h2/emc/ens/noscrub/eric.sinsky/RETRO_ICS/gdas.20241124/18/model/atmos/history/gdas.t18z.atmf003.ensres.nc" "${DESTINATION_DIR}/"
 # Process orography files
 for file in "${oro_file_set[@]}"; do
   for i in {1..6}; do
