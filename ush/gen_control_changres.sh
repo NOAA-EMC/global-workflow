@@ -8,8 +8,6 @@
 # Author:              Global Workflow Team
 # Date:                July 2025
 #
-# Usage:               gen_control_changres.sh
-#
 # Script history log:
 # 2025-07-28  Initial script creation
 ################################################################################
