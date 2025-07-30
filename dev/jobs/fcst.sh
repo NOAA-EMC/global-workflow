@@ -9,7 +9,7 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
   source "${HOMEgfs}/dev/ush/load_ufswm_modules.sh"
 else
-  source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
+  source "${HOMEgfs}/dev/ush/load_ufswm_modules.sh"
 fi
 status=$?
 if [[ ${status} -ne 0 ]]; then
