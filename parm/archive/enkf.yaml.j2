@@ -34,6 +34,9 @@ enkf:
               {% set steps = ["eobs", "eupd"] %}
            {% endif %}
         {% endif %}
+        {% if DOHYBVAR_OCN %}
+          {% set steps = steps + ["marineanlecen"] %}
+        {% endif %}
 
         {% for step in steps %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_{{ step }}.log"
