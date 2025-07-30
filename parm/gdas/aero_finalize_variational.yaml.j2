@@ -11,6 +11,7 @@ mkdir:
 - "{{ COMOUT_CHEM_ANALYSIS }}"
 - "{{ COMOUT_ATMOS_RESTART }}"
 - "{{ COMOUT_CONF }}"
+- "{{ COMOUT_CHEM_GRIB }}"
 copy:
 ## copy variational YAML to ROTDIR
 - ["{{ DATA }}/aeroanlvar.yaml", "{{ COMOUT_CONF }}/{{ APREFIX }}aerovar.yaml"]
@@ -24,5 +25,6 @@ copy:
 - ["{{ DATA }}/anl/{{ bkgtime | to_fv3time }}.fv_tracer.res.tile{{ tile }}.nc", "{{ COMOUT_ATMOS_RESTART }}/{{ bkgtime | to_fv3time }}.aeroanl_fv_tracer.res.tile{{ tile }}.nc"]
 {% endfor %}
 ## copy grib2 analysis
-- ["{{ DATA }}/upp/GFSPRS.GrbF06", "{{ COMOUT_CHEM_ANALYSIS }}/{{ APREFIX }}aeroanl.grib2"]
+- ["{{ DATA }}/upp/GFSPRS.GrbF00", "{{ COMOUT_CHEM_GRIB }}/{{ APREFIX }}aeroanl.grib2"]
+- ["{{ DATA }}/upp/GFSPRS.GrbF00.idx", "{{ COMOUT_CHEM_GRIB }}/{{ APREFIX }}aeroanl.grib2.idx"]
 
