@@ -1,8 +1,8 @@
 #!/bin/bash
 export WIPE_DATA="NO"
-export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
+export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 export DATAens="${DATAjob}/ensdata"
-export DATA="${DATAjob}/marinevariational"
+export DATA="${DATAjob}/marineanlvar"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlfinal" -c "base marineanl marineanlfinal"
 
 ##############################################
@@ -48,7 +48,7 @@ if [[ ${err} -ne 0 ]]; then
 fi
 
 if [[ "${KEEPDATA}" == "NO" ]]; then
-    rm -rf "${DATA}"
+    rm -rf "${DATAjob}"
 fi
 
 exit 0
