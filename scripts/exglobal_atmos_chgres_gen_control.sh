@@ -40,7 +40,7 @@ input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
     "${SOURCE_DIR}/${CASE}_mosaic.nc"
     "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
-    "${COMIN_ATMOS_RESTART_PREV_MEM}/${ATM_FILE}"
+#    "${COMIN_ATMOS_RESTART_PREV_MEM}/${ATM_FILE}"
 )
 ###############################################################################
 for src in "${input_files[@]}"; do
