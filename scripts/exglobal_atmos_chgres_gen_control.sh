@@ -49,19 +49,19 @@ for src in "${input_files[@]}"; do
 done
 
 oro_file_set=(
-    "${CASE}_grid.tile"           "${SOURCE_DIR}"
-    "${CASE}.mx${OCNRES}_oro_data.tile" "${SOURCE_DIR}"
+    "${CASE}_grid.tile"
+    "${CASE}.mx${OCNRES}_oro_data.tile"
 )
 
 sfc_file_set=(
-    "${CASE}.mx${OCNRES}.slope_type.tile" "${SOURCE_DIR}/sfc"
-    "${CASE}.mx${OCNRES}.maximum_snow_albedo.tile" "${SOURCE_DIR}/sfc"
-    "${CASE}.mx${OCNRES}.snowfree_albedo.tile" "${SOURCE_DIR}/sfc"
-    "${CASE}.mx${OCNRES}.soil_type.tile" "${SOURCE_DIR}/sfc"
-    "${CASE}.mx${OCNRES}.vegetation_type.tile" "${SOURCE_DIR}/sfc"
-    "${CASE}.mx${OCNRES}.substrate_temperature.tile" "${SOURCE_DIR}/sfc"
-    "${CASE}.mx${OCNRES}.vegetation_greenness.tile" "${SOURCE_DIR}/sfc"
-    "${CASE}.mx${OCNRES}.facsf.tile" "${SOURCE_DIR}/sfc"
+    "${CASE}.mx${OCNRES}.slope_type.tile"
+    "${CASE}.mx${OCNRES}.maximum_snow_albedo.tile"
+    "${CASE}.mx${OCNRES}.snowfree_albedo.tile"
+    "${CASE}.mx${OCNRES}.soil_type.tile"
+    "${CASE}.mx${OCNRES}.vegetation_type.tile"
+    "${CASE}.mx${OCNRES}.substrate_temperature.tile"
+    "${CASE}.mx${OCNRES}.vegetation_greenness.tile"
+    "${CASE}.mx${OCNRES}.facsf.tile"
 )
 
 # Process orography files
