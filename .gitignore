@@ -143,7 +143,6 @@ sorc/ocnicepost.fd
 #------------------------------
 # jobs symlinks
 # scripts symlinks
-scripts/exgdas_global_marine_analysis_ecen.py
 scripts/exglobal_prep_ocean_obs.py
 # ush symlinks
 ush/bufr2ioda_insitu_profile_argo.py
