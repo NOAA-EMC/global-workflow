@@ -12,6 +12,7 @@ end
 
 load("gw_run.common")
 load(pathJoin("intel-oneapi-mkl", (os.getenv("intel_mkl_ver") or "None")))
+load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))
 
 -- Set the path for the Sven executables
 append_path("PATH", pathJoin((os.getenv("sven_root_path") or "None"), "bin"))
