@@ -64,7 +64,7 @@ wam_cold_start=${WAM_COLD_START:-".false."}
 EOF
 
 if [[ -n "${output_log:-}" ]]; then
-  cp ./fort.41 "${output_log}"
+  cp fort.41 "${output_log}"
 fi
 
 # Run the chgres executable
