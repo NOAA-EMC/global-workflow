@@ -69,7 +69,7 @@ for ((p=0; p<${#tile_file_set[@]}; p+=2)); do
     tile_file="${prefix}${i}.nc"
     cpfs "${dir}/${tile_file}" "${DESTINATION_DIR}/"
     chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
-   done
+  done
 done
 echo "All files copied successfully."
 ################################################################################
