@@ -104,8 +104,8 @@ class SnowAnalysis(Task):
         """
 
         # stage backgrounds
-        logger.info(f"Staging background files from {self.task_config.VAR_BKG_STAGING_YAML}")
-        bkg_staging_dict = parse_j2yaml(self.task_config.VAR_BKG_STAGING_YAML, self.task_config)
+        logger.info(f"Staging background files from {self.task_config.SNOW_DET_STAGE_BKG_TMPL}")
+        bkg_staging_dict = parse_j2yaml(self.task_config.SNOW_DET_STAGE_BKG_TMPL}"), self.task_config)
         FileHandler(bkg_staging_dict).sync()
         logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}")
 
@@ -121,14 +121,14 @@ class SnowAnalysis(Task):
         FileHandler(gts_mapping_list).sync()
 
         # stage FV3-JEDI fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.SNOW_STAGE_JEDI_FIX_TMPL}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.SNOW_STAGE_JEDI_FIX_TMPL, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # staging B error files
         logger.info("Stage files for static background error")
-        berror_staging_dict = parse_j2yaml(self.task_config.BERROR_STAGING_YAML, self.task_config)
+        berror_staging_dict = parse_j2yaml(self.task_config.SNOW_STAGE_BERROR_TMPL, self.task_config)
         FileHandler(berror_staging_dict).sync()
         logger.debug(f"Background error files:\n{pformat(berror_staging_dict)}")
 

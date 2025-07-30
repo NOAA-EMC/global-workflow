@@ -88,13 +88,13 @@ class AerosolBMatrix(Task):
         """
 
         # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.AERO_STAGE_JEDI_FIX_TMPL}")
+        jedi_fix_list = parse_j2yaml(self.task_config.AERO_STAGE_JEDI_FIX_TMPL}"), self.task_config)
         FileHandler(jedi_fix_list).sync()
 
-        # stage backgrounds
-        logger.info(f"Staging backgrounds prescribed from {self.task_config.AERO_BMATRIX_STAGE_TMPL}")
-        aero_bmat_stage_list = parse_j2yaml(self.task_config.AERO_BMATRIX_STAGE_TMPL, self.task_config)
+        # stage files from COM and create working directories
+        logger.info(f"Staging files from COM and creating working directories {self.task_config.AERO_BMAT_INITIALIZE_TMPL}")
+        aero_bmat_stage_list = parse_j2yaml(self.task_config.AERO_BMAT_INITIALIZE_TMPL, self.task_config)
         FileHandler(aero_bmat_stage_list).sync()
 
         # initialize JEDI applications

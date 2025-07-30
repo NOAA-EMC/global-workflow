@@ -119,20 +119,20 @@ class AerosolAnalysis(Task):
                 logger.error(f"Bias correction files or directories do not exist:\n{pformat(bias_dict)}")
 
         # stage CRTM fix files
-        logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
+        logger.info(f"Staging CRTM fix files from {self.task_config.AERO_STAGE_CRTM_COEFF_TMPL}")
+        crtm_fix_dict = parse_j2yaml(self.task_config.AERO_STAGE_CRTM_COEFF_TMPL}"), self.task_config)
         FileHandler(crtm_fix_dict).sync()
         logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
 
         # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.AERO_STAGE_JEDI_FIX_TMPL}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.AERO_STAGE_JEDI_FIX_TMPL}"), self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # stage files from COM and create working directories
-        logger.info(f"Staging files prescribed from {self.task_config.AERO_STAGE_VARIATIONAL_TMPL}")
-        aero_var_stage_dict = parse_j2yaml(self.task_config.AERO_STAGE_VARIATIONAL_TMPL, self.task_config)
+        logger.info(f"Staging files prescribed from {self.task_config.AERO_DET_INITIALIZE_TMPL}")
+        aero_var_stage_dict = parse_j2yaml(self.task_config.AERO_DET_INITIALIZE_TMPL}"), self.task_config)
         FileHandler(aero_var_stage_dict).sync()
         logger.debug(f"Staging from COM:\n{pformat(aero_var_stage_dict)}")
 
@@ -230,7 +230,7 @@ class AerosolAnalysis(Task):
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + increment_template)
         bkg_template = os.path.join(self.task_config.DATA, 'anl', restart_template)
         # get list of increment vars
-        incvars_list_path = os.path.join(self.task_config['PARMgfs'], 'gdas', 'aeroanl_inc_vars.yaml')
+        incvars_list_path = os.path.join(self.task_config['PARMgfs'], 'gdas', 'aero', 'aero_det_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)['incvars']
         self.add_fv3_increments(inc_template, bkg_template, incvars)
 
