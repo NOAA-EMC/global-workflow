@@ -269,7 +269,7 @@ class AerosolAnalysis(Task):
     def upp_anlproc(self) -> None:
         """Process aerosol analysis to GRIB2
 
-        This method processes aerosol AOD analysis from tracer fields using UPP.
+        This method processes aerosol analysis products from tracer fields using UPP.
         This includes:
         - Creating a UPP object
         - Staging UPP fix files
@@ -300,13 +300,13 @@ class AerosolAnalysis(Task):
         for key in keys:
             upp_dict[key] = upp.task_config[key]
 
-        upp_dict['NET'] = 'gfs'   # set to 'gfs' temperally because upp didn't work with 'gcafs'.
+        upp_dict['NET'] = 'gfs'   # set to 'gfs' so upp can recognize
         upp_dict['valid_datetime'] = self.task_config.current_cycle
         upp_dict['DATA'] = os.path.join(self.task_config.DATA, 'upp')
         upp_dict.update(upp_yaml['upp']['config'])
 
         # Configure the namelist and write to file
-        logger.info("Create namelist for upp.x")
+        logger.info("Creating namelist for upp.x")
         nml_template = os.path.join(upp_dict.DATA, "itag.jinja")
         nml_data = Jinja(nml_template, upp_dict).render
         logger.debug(f"itag:\n{nml_data}")
@@ -331,6 +331,13 @@ class AerosolAnalysis(Task):
         bkgvars = [var[0] for var in allvars]
         incvars = [var[1] for var in allvars]
         self.add_atm_gaussian_increments(inc_file, bkg_file, incvars, bkgvars)
+
+        # reset time to 0 (analysis time)
+        flux_file = os.path.join(upp_dict.DATA, f"{upp_dict.flux_filename}")
+        with Dataset(flux_file, mode='a') as rstfile:
+            time = rstfile.variables['time']
+            time[:] = 0.0
+            time.setncattr("units", f"hours since {self.task_config.current_cycle.strftime('%Y-%m-%d %H:%M:%S')}")
 
         upp.execute(upp_dict.DATA, upp_dict.APRUN_AEROANLFINAL, upp_dict.forecast_hour)
 
@@ -358,6 +365,9 @@ class AerosolAnalysis(Task):
                 bkg = rstfile.variables[bkgname][:]
                 anl = bkg + increment_reshape[np.newaxis, :, :, :]
                 rstfile.variables[bkgname][:] = anl[:]
+            time = rstfile.variables['time']
+            time[:] = 0.0
+            time.setncattr("units", f"hours since {self.task_config.current_cycle.strftime('%Y-%m-%d %H:%M:%S')}")
 
     @logit(logger)
     def add_atm_gaussian_increments(self, inc_file: str, bkg_file: str, incvars: List, bkgvars: List) -> None:
