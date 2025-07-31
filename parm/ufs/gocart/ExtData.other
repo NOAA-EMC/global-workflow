@@ -7,7 +7,7 @@
 TROPP            'Pa'    Y       N                  -            0.0      1.0      TROPP         /dev/null:10000.
 
 #====== Dust Imports =================================================
-# FENGSHA input files. Note: regridding should be N or E - Use files with _FillValue != NaN 
+# FENGSHA input files. Note: regridding should be N or E - Use files with _FillValue != NaN
 DU_CLAY           '1'  Y E           -           none none clayfrac    ExtData/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
 DU_SAND           '1'  Y E           -           none none sandfrac    ExtData/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
 DU_SILT           '1'  Y E           -           none none siltfrac    /dev/null
@@ -17,12 +17,12 @@ DU_UTHRES         '1'  Y E           -           none none uthres      ExtData/n
 
 #====== Sulfate Sources =================================================
 # Anthropogenic (BF & FF) emissions -- allowed to input as two layers
-SU_ANTHROL1 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO2      ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
-SU_ANTHROL2 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO2_elev ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+SU_ANTHROL1 NA  N Y %y4-%m2-%d2t12:00:00 none none SO2      ChemInput/NXS_DIAG.%y4%m2%d2.nc
+SU_ANTHROL2 NA  N Y %y4-%m2-%d2t12:00:00 none none SO2_elev ChemInput/NXS_DIAG.%y4%m2%d2.nc
 
 # Ship emissions
-SU_SHIPSO2 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO2_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
-SU_SHIPSO4 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO4_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+SU_SHIPSO2 NA  N Y %y4-%m2-%d2t12:00:00 none none SO2_ship  ChemInput/NXS_DIAG.%y4%m2%d2.nc
+SU_SHIPSO4 NA  N Y %y4-%m2-%d2t12:00:00 none none SO4_ship  ChemInput/NXS_DIAG.%y4%m2%d2.nc
 
 # Aircraft fuel consumption
 SU_AIRCRAFT NA  Y Y %y4-%m2-%d2t12:00:00 none none none /dev/null
@@ -31,9 +31,9 @@ SU_AIRCRAFT NA  Y Y %y4-%m2-%d2t12:00:00 none none none /dev/null
 SU_DMSO NA  Y Y %y4-%m2-%d2t12:00:00 none none conc         ExtData/MERRA2/sfc/DMSclim_sfcconcentration.x360_y181_t12.Lana2011.nc4
 
 # Aviation emissions during the three phases of flight
-SU_AVIATION_LTO NA  Y Y %y4-%m2-%d2t12:00:00 none none so2_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.aviation_lto.x3600_y1800_t12.2010.nc4
-SU_AVIATION_CDS NA  Y Y %y4-%m2-%d2t12:00:00 none none so2_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.aviation_cds.x3600_y1800_t12.2010.nc4
-SU_AVIATION_CRS NA  Y Y %y4-%m2-%d2t12:00:00 none none so2_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.aviation_crs.x3600_y1800_t12.2010.nc4
+SU_AVIATION_LTO NA  N Y %y4-%m2-%d2t12:00:00 none none SO2_lto ChemInput/NXS_DIAG.%y4%m2%d2.nc
+SU_AVIATION_CDS NA  N Y %y4-%m2-%d2t12:00:00 none none SO2_cds ChemInput/NXS_DIAG.%y4%m2%d2.nc
+SU_AVIATION_CRS NA  N Y %y4-%m2-%d2t12:00:00 none none SO2_crs ChemInput/NXS_DIAG.%y4%m2%d2.nc
 
 # H2O2, OH and NO3 mixing ratios
 # --------------------------------------------------------------
