@@ -1,9 +1,16 @@
-# Set variables/lists needed to parse the enkf templates
+# Set variables/lists needed to parse the templates
 {% set cycle_HH = current_cycle | strftime("%H") %}
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 
-# Determine which data to archive
+{% if TARBALL_TYPE is defined %}
+# Archive specific tarball type based on TARBALL_TYPE variable
+datasets:
+{% filter indent(width=4) %}
+{% include TARBALL_TYPE ~ '.yaml.j2' %}
+{% endfilter %}
+{% else %}
+# Determine which data to archive (default behavior when TARBALL_TYPE not specified)
 datasets:
 # Always archive atmosphere forecast/analysis data
 {% filter indent(width=4) %}
@@ -76,6 +83,7 @@ datasets:
 {% include "gfs_restarta.yaml.j2" %}
         {% endfilter %}
     {% endif %}
+{% endif %}
 {% endif %}
 
 # Archive the EXPDIR if requested
