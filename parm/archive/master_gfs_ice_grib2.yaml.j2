@@ -1,0 +1,10 @@
+# Set variables/lists needed to parse the templates
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+
+# Ice GRIB2 data archive
+datasets:
+{% filter indent(width=4) %}
+{% include "ice_grib2.yaml.j2" %}
+{% endfilter %}

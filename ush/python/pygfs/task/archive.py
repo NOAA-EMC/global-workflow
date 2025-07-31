@@ -157,6 +157,17 @@ class Archive(Task):
                     self._pop_git_info(arch_dict)
 
         master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
+        
+        # Use specific master file if TARBALL_TYPE is specified
+        tarball_type = arch_dict.get('TARBALL_TYPE')
+        if tarball_type:
+            specific_master = f"master_{arch_dict.RUN}_{tarball_type}.yaml.j2"
+            specific_path = os.path.join(archive_parm, specific_master)
+            if os.path.exists(specific_path):
+                master_yaml = specific_master
+                logger.info(f"Using specific master YAML: {master_yaml}")
+            else:
+                logger.warning(f"Specific master YAML {specific_master} not found, using default: {master_yaml}")
 
         parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml),
                                    arch_dict,
