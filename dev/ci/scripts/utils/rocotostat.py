@@ -36,7 +36,6 @@ def get_user_thread_count():
     try:
         current_user = os.getenv('USER', 'unknown')
 
-        # Get user thread count using ps -u $USER -L
         ps = which('ps')
         try:
             result = ps(["-u", current_user, "-L"], output=str)
@@ -44,10 +43,9 @@ def get_user_thread_count():
         except ProcessError:
             user_threads = -1
 
-        # Get ulimit -u (process limit) - ulimit is a shell builtin, so use bash
-        bash = Executable('bash')
+        bash = which('ulimit')
         try:
-            result = bash(["-c", "ulimit -u"], output=str)
+            result = bash(["-u"], output=str)
             process_limit = int(result.strip())
         except (ProcessError, ValueError):
             process_limit = -1
