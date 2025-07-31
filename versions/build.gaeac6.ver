@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 export stack_compiler=intel
 export stack_compiler_ver=2023.2.0
 
