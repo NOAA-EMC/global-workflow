@@ -2,14 +2,18 @@
 
 # UFS-Aerosols settings
 
-# Path to the input data tree
+#================================================================================
+# 1. Aerosol settings
+#================================================================================
 export AERO_INPUTS_DIR="{{ AERO_INPUTS_DIR }}"
 
+#-----------------------------------------------
+# Diag Table and Field Table for GOCART aerosols
+#-----------------------------------------------
 export AERO_DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table.aero"
 export AERO_FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table.aero"
-# Biomass burning emission dataset. Choose from: gbbepx, qfed, none
-export AERO_EMIS_FIRE="qfed"
-# Directory containing GOCART configuration files
+
+# Aerosol configuration
 export AERO_CONFIG_DIR="${PARMgfs}/ufs/gocart"
 
 # Aerosol convective scavenging factors (list of string array elements)
@@ -19,5 +23,75 @@ export fscav_aero="'*:0.3','so2:0.0','msa:0.0','dms:0.0','nh3:0.4','nh4:0.6','bc
 #
 # Number of diagnostic aerosol tracers (default: 0)
 export dnats_aero=2
+
+#================================================================================
+# 2. Aerosol emissions settings
+#================================================================================
+# Biomass burning emission dataset. Choose from: gbbepx, qfed, none
+export AERO_EMIS_FIRE="qfed"
+export AERO_EMIS_FIRE_VERSION="061"
+export AERO_EMIS_FIRE_HIST=1                           # Use historical fire emissions
+export FIRE_EMIS_NRT_DIR="${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
+
+#===============================================================================
+# 3. NEXUS settings
+#===============================================================================
+# NEXUS aerosol emissions dataset. Choose from: gocart, none
+
+# NEXUS configuration set
+export NXS_CONFIG={{ NXS_CONFIG | default("gocart") }} # Options: gocart, none
+export NXS_CONFIG_DIR="${PARMgfs}/chem/nexus/${NXS_CONFIG}" # Directory containing NEXUS configuration files
+
+#---------------------
+# NEXUS root directory
+#---------------------
+export NXS_INPUT_DIR="{{ AERO_INPUTS_DIR }}"
+
+#--------------------------
+# NEXUS Time Step (seconds)
+#--------------------------
+NXS_TSTEP={{ NXS_TSTEP | default(3600) }} # Default NEXUS time step in seconds
+
+#------------------
+# NEXUS Grid
+#------------------
+export NXS_NX={{ NXS_NX | default(1440) }}
+export NXS_NY={{ NXS_NY | default(720) }}
+export NXS_XMIN={{ NXS_XMIN | default(-180.0) }}
+export NXS_XMAX={{ NXS_XMAX | default(180.0) }}
+export NXS_YMIN={{ NXS_YMIN | default(-90.0) }}
+export NXS_YMAX={{ NXS_YMAX | default(90.0) }}
+export NXS_NZ={{ NXS_NZ | default(1) }}
+
+#-------------------
+# NEXUS Config Files
+#-------------------
+export NXS_GRID_NAME={{ NXS_GRID_NAME | default("HEMCO_sa_Grid.rc") }}
+export NXS_TIME_NAME={{ NXS_TIME_NAME | default("HEMCO_sa_Time.rc") }}
+export NXS_DIAG_NAME={{ NXS_DIAG_NAME | default("HEMCO_sa_Diag.rc") }}
+export NXS_SPEC_NAME={{ NXS_SPEC_NAME | default("HEMCO_sa_Spec.rc") }}
+export NXS_CONFIG_NAME={{ NXS_CONFIG_NAME | default("NEXUS_Config.rc") }}
+
+#------------------
+# NEXUS Diagnostics
+#------------------
+export NXS_DIAG_PREFIX={{ NXS_DIAG_PREFIX | default("NXS_DIAG") }}
+export NXS_DIAG_FREQ={{ NXS_DIAG_FREQ | default("Hourly") }} # Options: Hourly, Daily, Monthly
+
+#------------------
+# NEXUS Logging
+#------------------
+export NXS_LOGFILE={{ NXS_LOGFILE | default("NEXUS.log") }}
+
+#------------------
+# NEXUS Emissions
+#------------------
+export NXS_DO_MEGAN=.false # Use MEGAN biogenic emissions
+export NXS_DO_CEDS2019=.true. # Use CEDS2019 emissions
+export NXS_DO_CEDS2024=.false. # Use CEDS2024 emissions
+export NXS_DO_HTAPv2=.true. # Use HTAPv2 emissions
+export NXS_DO_HTAPv3=.false. # Use HTAPv3 emissions
+export NXS_DO_CAMS=.false. # Use CAMS global emissions
+export NXS_DO_CAMSTEMPO=.false # Use CAMS temporal emissions
 
 echo "END: config.aero"
