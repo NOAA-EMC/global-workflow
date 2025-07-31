@@ -288,6 +288,23 @@ if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd" ]]; then
 fi
 
 #------------------------------
+#--add NEXUS files
+#------------------------------
+if [[ -d "${HOMEgfs}/sorc/nexus.fd" ]]; then
+  cd "${HOMEgfs}/parm/chem" || exit 1
+  if [[ -d nexus ]]; then
+      rm -rf nexus
+  fi
+  mkdir -p nexus/gocart
+  cd nexus/gocart || exit 1
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/NEXUS_Config.rc.j2" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Grid.rc.j2" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Time.rc.j2" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Diag.rc.j2" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Spec.rc.j2" .
+fi
+
+#------------------------------
 #--link executables
 #------------------------------
 
@@ -394,6 +411,11 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
   if [[ ! -d "${HOMEgfs}/lib" ]]; then mkdir "${HOMEgfs}/lib" || exit 1; fi
   cd "${HOMEgfs}/lib" || exit 1
   cp -af "${HOMEgfs}/sorc/gdas.cd/install/lib/." ./
+fi
+
+# NEXUS executable
+if [[ -d "${HOMEgfs}/sorc/nexus.fd/build/bin" ]]; then
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/build/bin/nexus" nexus.x
 fi
 
 #------------------------------
