@@ -5,7 +5,7 @@
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
-from pygfs import AerosolEmissions
+from pygfs import ChemFireEmissions, NXSEmissions
 
 
 # Initialize root logger
@@ -19,8 +19,16 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the emissions pre-processing task
-    # emissions = AerosolEmissions(config)
-    # emissions.initialize()
-    # emissions.configure()
-    # emissions.execute(emissions.task_config.DATA, emissions.task_config.APRUN)
-    # emissions.finalize()
+    emissions = ChemFireEmissions(config)
+    emissions.initialize()
+    emissions.configure()
+    emissions.execute()
+    emissions.finalize()
+
+    nxsemis = NXSEmissions(config)
+    nxsemis.initialize()
+    nxsemis.configure()
+    nxsemis.execute()
+    nxsemis.finalize()
+
+
