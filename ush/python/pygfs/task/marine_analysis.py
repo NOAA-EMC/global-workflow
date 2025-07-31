@@ -197,7 +197,7 @@ class MarineAnalysis(Task):
         """
 
         # Save output files to COM
-        logger.info(f"Copy files from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
+        logger.info(f"Copy files to ROTDIR")
         soca_finalize_list = parse_j2yaml(self.task_config.MARINE_DET_FINALIZE_YAML_TMPL, self.task_config)
         FileHandler(soca_finalize_list).sync()
 
