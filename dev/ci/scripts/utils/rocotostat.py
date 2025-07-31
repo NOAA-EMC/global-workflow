@@ -6,7 +6,7 @@ import copy
 import logging
 from time import sleep, time
 
-from wxflow import which, Logger, CommandNotFoundError, ProcessError
+from wxflow import which, Logger, CommandNotFoundError, ProcessError, Executable
 from argparse import ArgumentParser, FileType
 
 from collections import Counter
@@ -44,12 +44,12 @@ def get_user_thread_count():
         except ProcessError:
             user_threads = -1
 
-        # Get user thread count using ps -u $USER -L
-        ulimit = which('ulimit')
+        # Get ulimit -u (process limit) - ulimit is a shell builtin, so use bash
+        bash = Executable('bash')
         try:
-            result = ulimit(["-u"], ouput=str)
-            process_limit = int(result.stdout.strip())
-        except ProcessError:
+            result = bash(["-c", "ulimit -u"], output=str)
+            process_limit = int(result.strip())
+        except (ProcessError, ValueError):
             process_limit = -1
 
         return {
