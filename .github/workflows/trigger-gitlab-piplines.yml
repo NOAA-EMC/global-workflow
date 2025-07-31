@@ -54,6 +54,8 @@ jobs:
     steps:
       - name: Set up parameters
         id: setup
+        env:
+          GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
         run: |
           # Set PR number
           PR_NUM="${{ github.event.inputs.pr_number }}"
