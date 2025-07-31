@@ -1,0 +1,28 @@
+fire_emission:
+  config:
+    apply_quality_control: True
+    quality_control_threshold: 1.5
+    QFED_VARS:
+      {% for qvar in fire_vars %}
+      - "{{ qvar }}"
+      {% endfor %}
+    GBBEX_VARS:
+      {% for gvar in fire_vars %}
+      - "{{ gvar }}"
+      {% endfor %}
+  data_in:
+    mkdir:
+      - "{{ DATA }}"
+    copy:
+      {% for fin in rawfiles %}
+      - ["{{ fin }}", "{{ DATA }}/"]
+      {% endfor %}
+  data_out:
+    mkdir:
+      - "{{ COMOUT_CHEM_INPUT }}"
+    copy:
+      {% for fileout in processed_files %}
+      - ["{{ DATA }}/{{ fileout }}", "{{ COMOUT_CHEM_INPUT }}/"]
+      {% endfor %}
+
+
