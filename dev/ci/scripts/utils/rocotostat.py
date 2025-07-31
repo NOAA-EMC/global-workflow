@@ -3,7 +3,6 @@
 import sys
 import os
 import copy
-import subprocess
 import logging
 from time import sleep, time
 
@@ -33,21 +32,24 @@ def get_user_thread_count():
     dict
         Dictionary containing thread count and limit information
     """
+
     try:
         current_user = os.getenv('USER', 'unknown')
 
         # Get user thread count using ps -u $USER -L
-        result = subprocess.run(['ps', '-u', current_user, '-L'], capture_output=True, text=True)
-        if result.returncode == 0:
-            user_threads = len(result.stdout.strip().split('\n')) - 1 if result.stdout.strip() else 0
-        else:
+        ps = which('ps')
+        try:
+            result = ps(["-u", current_user, "-L"], output=str)
+            user_threads = len(result.strip().split('\n')) - 1 if result.strip() else 0
+        except ProcessError:
             user_threads = -1
 
-        # Get ulimit -u (process limit)
-        result = subprocess.run(['bash', '-c', 'ulimit -u'], capture_output=True, text=True)
-        if result.returncode == 0:
+        # Get user thread count using ps -u $USER -L
+        ulimit = which('ulimit')
+        try:
+            result = ulimit(["-u"], ouput=str)
             process_limit = int(result.stdout.strip())
-        else:
+        except ProcessError:
             process_limit = -1
 
         return {
