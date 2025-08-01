@@ -1,0 +1,27 @@
+#!/bin/bash
+
+########## config.marineanl ##########
+# configuration common to all ocean analysis tasks
+
+echo "BEGIN: config.marineanl"
+
+export JEDI_CONFIG_YAML_ANALYSIS="${PARMgfs}/gdas/soca_analysis_jedi_config.yaml.j2"
+export JCB_ALGO_YAML_VAR="${PARMgfs}/gdas/soca/jcb-prototype_3dfgat.yaml.j2"
+
+export MARINE_OBS_YAML_DIR="${PARMgfs}/gdas/soca/obs/config"
+export MARINE_OBS_LIST_YAML="${PARMgfs}/gdas/soca/obs/obs_list.yaml.j2"
+export SOCA_INPUT_FIX_DIR="${FIXgfs}/gdas/soca/72x35x25/soca"
+export SOCA_ANL_GEOM="${FIXgfs}/gdas/soca/72x35x25/soca"
+export SOCA_NINNER="100"
+export DOMAIN_STACK_SIZE=116640000  #TODO: Make the stack size resolution dependent
+export SOCA_ENS_BKG_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_ens_bkg_stage.yaml.j2"
+export SOCA_FIX_YAML_TMPL="${PARMgfs}/gdas/soca/soca_fix_stage_${OCNRES}.yaml.j2"
+export MARINE_UTILITY_YAML_TMPL="${PARMgfs}/gdas/soca/soca_utils_stage.yaml.j2"
+export MARINE_ENSDA_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/ensda/stage_ens_mem.yaml.j2"
+export MARINE_DET_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_bkg_stage.yaml.j2"
+export MARINE_DET_STAGE_FILES_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_files_stage.yaml.j2"
+export MARINE_DET_FINALIZE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_finalize.yaml.j2"
+export MARINE_JCB_GDAS_ALGO="${PARMgfs}/gdas/jcb-gdas/algorithm/marine"
+export MARINE_JCB_GDAS_OBS="${PARMgfs}/gdas/jcb-gdas/observations/marine"
+
+echo "END: config.marineanl"

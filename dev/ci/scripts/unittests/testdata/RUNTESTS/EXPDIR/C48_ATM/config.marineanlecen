@@ -1,0 +1,15 @@
+#!/bin/bash
+
+########## config.marineanlecen ##########
+# Ocn Analysis specific
+
+echo "BEGIN: config.marineanlecen"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" marineanlecen
+
+export JEDI_CONFIG_YAML_ECEN="${PARMgfs}/gdas/soca/soca_ecen_jedi_config.yaml.j2"
+export MARINE_ECEN_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_ecen_stage.yaml.j2"
+export MARINE_ECEN_FINALIZE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_ecen_finalize.yaml.j2"
+
+echo "END: config.marineanlecen"

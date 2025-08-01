@@ -1,0 +1,11 @@
+#!/bin/bash
+
+########## config.marineanlvar ##########
+# Marine Analysis specific
+
+echo "BEGIN: config.marineanlvar"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" marineanlvar
+
+echo "END: config.marineanlvar"

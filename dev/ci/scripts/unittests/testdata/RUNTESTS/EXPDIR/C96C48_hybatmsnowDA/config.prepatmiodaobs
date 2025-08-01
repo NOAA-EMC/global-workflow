@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.prepatmiodaobs ##########
+# Atm Obs Prep specific
+
+echo "BEGIN: config.prepatmiodaobs"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" prepatmiodaobs
+
+echo "END: config.prepatmiodaobs"

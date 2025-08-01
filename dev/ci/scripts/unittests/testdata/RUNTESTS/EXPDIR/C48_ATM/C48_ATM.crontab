@@ -1,0 +1,11 @@
+
+#################### C48_ATM ####################
+#SCRON --partition=cron_c6
+#SCRON --account=UNDEFINED
+#SCRON --mail-user=
+#SCRON --job-name=C48_ATM_scron
+#SCRON --output=/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48_ATM/logs/scron.log
+#SCRON --time=00:10:00
+#SCRON --dependency=singleton
+*/5 * * * * /home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48_ATM/C48_ATM.scron.sh
+#################################################################

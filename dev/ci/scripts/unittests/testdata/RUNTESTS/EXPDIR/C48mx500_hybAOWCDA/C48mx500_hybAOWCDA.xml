@@ -1,0 +1,1378 @@
+<?xml version="1.0"?>
+<!DOCTYPE workflow
+[
+	<!--
+	PROGRAM
+		Main workflow manager for Global Forecast System
+
+	NOTES:
+		This workflow was automatically generated at 2025-07-31 21:22:09.811450
+	-->
+	<!ENTITY PSLOT "C48mx500_hybAOWCDA">
+	<!ENTITY ROTDIR "/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA">
+	<!ENTITY MAXTRIES "2">
+]>
+
+<workflow realtime="F" scheduler="slurm" cyclethrottle="3" taskthrottle="25">
+
+	<log verbosity="10"><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA/logs/@Y@m@d@H.log</cyclestr></log>
+
+	<!-- Define the cycles -->
+	<cycledef group="gdas_half">202103241800 202103241800 06:00:00</cycledef>
+	<cycledef group="gdas">202103250000 202103250000 06:00:00</cycledef>
+
+<task name="gdas_prep" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/prep.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_prep_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=14:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_prep.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<metataskdep metatask="gdas_atmos_prod" cycle_offset="-06:00:00"/>
+			<datadep><cyclestr offset="-06:00:00">&ROTDIR;/gdas.@Y@m@d/@H//model/atmos/history/gdas.t@Hz.atmf009.nc</cyclestr></datadep>
+			<datadep><cyclestr>/gpfs/f6/drsa-precip3/world-shared/role.glopara/dump/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.updated.status.tm00.bufr_d</cyclestr></datadep>
+			<metataskdep metatask="gdas_fcst" cycle_offset="-06:00:00"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_anal" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/anal.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_anal_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>01:20:00</walltime>
+	<nodes>3:ppn=38:tpp=5</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_anal.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_prep"/>
+			<metataskdep metatask="enkfgdas_epmn" cycle_offset="-06:00:00"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_analcalc" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/analcalc.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_analcalc_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_analcalc.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_anal"/>
+			<taskdep task="gdas_sfcanl"/>
+			<taskdep task="enkfgdas_echgres" cycle_offset="-06:00:00"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_prepoceanobs" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/prepoceanobs.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_prepoceanobs_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_prepoceanobs.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<datadep><cyclestr offset="-06:00:00">&ROTDIR;/gdas.@Y@m@d/@H//model/ocean/history/gdas.ocean.t@Hz.inst.f009.nc</cyclestr></datadep>
+	</dependency>
+
+</task>
+
+<task name="gdas_marineanlinit" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/marineanlinit.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_marineanlinit_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_marineanlinit.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_prepoceanobs"/>
+			<taskdep task="gdas_marinebmat"/>
+			<metataskdep metatask="gdas_fcst" cycle_offset="-06:00:00"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_marinebmatinit" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/marinebmatinit.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_marinebmatinit_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_marinebmatinit.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<datadep><cyclestr offset="-06:00:00">&ROTDIR;/gdas.@Y@m@d/@H//model/ocean/history/gdas.ocean.t@Hz.inst.f009.nc</cyclestr></datadep>
+			<metataskdep metatask="enkfgdas_fcst" cycle_offset="-06:00:00"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_marinebmat" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/marinebmat.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_marinebmat_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=96:tpp=1</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_marinebmat.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="gdas_marinebmatinit"/>
+	</dependency>
+
+</task>
+
+<task name="gdas_marineanlvar" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/marineanlvar.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_marineanlvar_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=96:tpp=1</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_marineanlvar.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="gdas_marineanlinit"/>
+	</dependency>
+
+</task>
+
+<task name="gdas_marineanlchkpt" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/marineanlchkpt.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_marineanlchkpt_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_marineanlchkpt.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_marineanlvar"/>
+			<taskdep task="enkfgdas_marineanlecen"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_marineanlfinal" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/marineanlfinal.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_marineanlfinal_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_marineanlfinal.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="gdas_marineanlchkpt"/>
+	</dependency>
+
+</task>
+
+<task name="gdas_sfcanl" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/sfcanl.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_sfcanl_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:20:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_sfcanl.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="gdas_anal"/>
+	</dependency>
+
+</task>
+
+<task name="gdas_analdiag" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/analdiag.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_analdiag_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_analdiag.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_anal"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_stage_ic" cycledefs="gdas_half" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/stage_ic.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_stage_ic_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_stage_ic.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+</task>
+
+<task name="gdas_atmanlupp" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/upp.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_atmanlupp_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=48:tpp=1</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_atmanlupp.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>FHR3</name><value>000</value></envar>
+	<envar><name>UPP_RUN</name><value>analysis</value></envar>
+
+	<dependency>
+		<and>
+			<datadep age="120"><cyclestr>&ROTDIR;/gdas.@Y@m@d/@H//analysis/atmos/gdas.t@Hz.atmanl.nc</cyclestr></datadep>
+			<datadep age="120"><cyclestr>&ROTDIR;/gdas.@Y@m@d/@H//analysis/atmos/gdas.t@Hz.sfcanl.nc</cyclestr></datadep>
+			<datadep age="60"><cyclestr>&ROTDIR;/gdas.@Y@m@d/@H//analysis/atmos/gdas.t@Hz.loganl.txt</cyclestr></datadep>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_atmanlprod" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/atmos_products.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_atmanlprod_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=24:tpp=1</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_atmanlprod.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>FHR_LIST</name><value>-1</value></envar>
+
+	<dependency>
+		<datadep age="120"><cyclestr>&ROTDIR;/gdas.@Y@m@d/@H//model/atmos/master/gdas.t@Hz.master.grb2anl</cyclestr></datadep>
+	</dependency>
+
+</task>
+
+<metatask name="gdas_fcst" mode="serial">
+
+	<var name="seg">0</var>
+
+	<task name="gdas_fcst_seg#seg#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_fcst_seg#seg#_@H</cyclestr></jobname>
+		<account>UNDEFINED</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>00:20:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_fcst_seg#seg#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+		<envar><name>NET</name><value>gfs</value></envar>
+		<envar><name>RUN</name><value>gdas</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
+
+		<dependency>
+			<or>
+				<and>
+					<taskdep task="gdas_sfcanl"/>
+					<taskdep task="gdas_marineanlfinal"/>
+				</and>
+				<and>
+					<taskdep task="gdas_stage_ic"/>
+					<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+				</and>
+			</or>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="gdas_atmos_prod" mode="parallel">
+
+	<var name="fhr_list">0 1 2 3 4 5 6 7 8 9</var>
+	<var name="fhr_label">f000 f001 f002 f003 f004 f005 f006 f007 f008 f009</var>
+	<var name="seg_dep">seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg0 seg0</var>
+	<var name="fhr3_last">000 001 002 003 004 005 006 007 008 009</var>
+	<var name="fhr3_next">001 002 003 004 005 006 007 008 009 010</var>
+
+	<task name="gdas_atmos_prod_#fhr_label#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/atmos_products.sh</command>
+
+		<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_atmos_prod_#fhr_label#_@H</cyclestr></jobname>
+		<account>UNDEFINED</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>00:15:00</walltime>
+		<nodes>1:ppn=24:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_atmos_prod_#fhr_label#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+		<envar><name>NET</name><value>gfs</value></envar>
+		<envar><name>RUN</name><value>gdas</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>FHR_LIST</name><value>#fhr_list#</value></envar>
+		<envar><name>COMPONENT</name><value>atmos</value></envar>
+
+		<dependency>
+			<or>
+				<datadep age="120"><cyclestr>&ROTDIR;/gdas.@Y@m@d/@H//model/atmos/master/gdas.t@Hz.master.grb2f#fhr3_last#</cyclestr></datadep>
+				<metataskdep metatask="gdas_fcst"/>
+			</or>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<task name="gdas_fit2obs" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fit2obs.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_fit2obs_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:20:00</walltime>
+	<nodes>3:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_fit2obs.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<metataskdep metatask="gdas_atmos_prod"/>
+	</dependency>
+
+</task>
+
+<task name="gdas_verfozn" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/verfozn.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_verfozn_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_verfozn.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="gdas_analdiag"/>
+	</dependency>
+
+</task>
+
+<task name="gdas_verfrad" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/verfrad.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_verfrad_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:40:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_verfrad.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="gdas_analdiag"/>
+	</dependency>
+
+</task>
+
+<task name="gdas_vminmon" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/vminmon.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_vminmon_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:05:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_vminmon.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="gdas_anal"/>
+	</dependency>
+
+</task>
+
+<task name="gdas_anlstat" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/anlstat.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_anlstat_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=20:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_anlstat.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_marineanlfinal"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_arch_vrfy" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/arch_vrfy.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_arch_vrfy_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_arch_vrfy.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_atmanlprod"/>
+			<taskdep task="gdas_fit2obs"/>
+			<metataskdep metatask="gdas_atmos_prod"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_arch_tars" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/arch_tars.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_arch_tars_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>hpss</queue>
+	<partition>dtn_f5_f6</partition>
+	<walltime>06:00:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=es</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_arch_tars.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_atmanlprod"/>
+			<taskdep task="gdas_fit2obs"/>
+			<taskdep task="gdas_verfozn"/>
+			<taskdep task="gdas_verfrad"/>
+			<taskdep task="gdas_vminmon"/>
+			<taskdep task="gdas_anlstat"/>
+			<metataskdep metatask="gdas_atmos_prod"/>
+			<taskdep task="gdas_arch_vrfy"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_cleanup" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/cleanup.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_gdas_cleanup_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/gdas_cleanup.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_atmanlprod"/>
+			<taskdep task="gdas_fit2obs"/>
+			<taskdep task="gdas_verfozn"/>
+			<taskdep task="gdas_verfrad"/>
+			<taskdep task="gdas_vminmon"/>
+			<metataskdep metatask="gdas_atmos_prod"/>
+			<taskdep task="gdas_arch_vrfy"/>
+			<taskdep task="gdas_arch_tars"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="enkfgdas_stage_ic" cycledefs="gdas_half" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/stage_ic.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_stage_ic_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_stage_ic.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+</task>
+
+<task name="enkfgdas_eobs" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/eobs.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_eobs_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=96:tpp=2</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_eobs.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_prep"/>
+			<metataskdep metatask="enkfgdas_epmn" cycle_offset="-06:00:00"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="enkfgdas_eupd" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/eupd.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_eupd_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:45:00</walltime>
+	<nodes>1:ppn=96:tpp=2</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_eupd.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="enkfgdas_ediag"/>
+	</dependency>
+
+</task>
+
+<metatask name="enkfgdas_ecmn" mode="parallel">
+
+	<var name="grp">000 001 002</var>
+	<var name="dep">003 006 009</var>
+	<var name="lst">003 006 009</var>
+
+	<task name="enkfgdas_ecen#grp#" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/ecen.sh</command>
+
+		<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_ecen#grp#_@H</cyclestr></jobname>
+		<account>UNDEFINED</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>00:20:00</walltime>
+		<nodes>1:ppn=96:tpp=2</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_ecen#grp#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+		<envar><name>NET</name><value>gfs</value></envar>
+		<envar><name>RUN</name><value>enkfgdas</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>FHRGRP</name><value>#grp#</value></envar>
+		<envar><name>FHRLST</name><value>#lst#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gdas_analcalc"/>
+				<taskdep task="enkfgdas_eupd"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<task name="enkfgdas_echgres" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/echgres.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_echgres_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>3:ppn=1:tpp=192</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_echgres.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<metataskdep metatask="gdas_fcst"/>
+			<taskdep task="enkfgdas_fcst_mem001"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="enkfgdas_ediag" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/ediag.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_ediag_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_ediag.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="enkfgdas_eobs"/>
+	</dependency>
+
+</task>
+
+<task name="enkfgdas_marineanlletkf" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/marineanlletkf.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_marineanlletkf_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=96:tpp=1</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_marineanlletkf.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_prepoceanobs"/>
+			<taskdep task="gdas_marinebmat"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="enkfgdas_marineanlecen" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/marineanlecen.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_marineanlecen_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=96:tpp=1</nodes>
+	<native>--exclusive --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_marineanlecen.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="gdas_marinebmatinit"/>
+	</dependency>
+
+</task>
+
+<metatask name="enkfgdas_fcst" mode="parallel">
+
+	<var name="member">001 002</var>
+
+	<task name="enkfgdas_fcst_mem#member#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/fcst.sh</command>
+
+		<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_fcst_mem#member#_@H</cyclestr></jobname>
+		<account>UNDEFINED</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>00:20:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_fcst_mem#member#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+		<envar><name>NET</name><value>gfs</value></envar>
+		<envar><name>RUN</name><value>enkfgdas</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSMEM</name><value>#member#</value></envar>
+		<envar><name>MEMDIR</name><value>mem#member#</value></envar>
+
+		<dependency>
+			<or>
+				<and>
+					<metataskdep metatask="enkfgdas_ecmn"/>
+					<taskdep task="enkfgdas_esfc"/>
+					<taskdep task="enkfgdas_marineanlecen"/>
+				</and>
+				<taskdep task="enkfgdas_stage_ic"/>
+			</or>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<metatask name="enkfgdas_epmn" mode="parallel">
+
+	<var name="grp">000 001 002 003 004 005 006</var>
+	<var name="dep">f003 f004 f005 f006 f007 f008 f009</var>
+	<var name="lst">f003 f004 f005 f006 f007 f008 f009</var>
+
+	<task name="enkfgdas_epos#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/epos.sh</command>
+
+		<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_epos#grp#_@H</cyclestr></jobname>
+		<account>UNDEFINED</account>
+		<queue>normal</queue>
+		<partition>batch</partition>
+		<walltime>00:15:00</walltime>
+		<nodes>1:ppn=192:tpp=1</nodes>
+		<native>--exclusive --clusters=c6</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_epos#grp#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+		<envar><name>NET</name><value>gfs</value></envar>
+		<envar><name>RUN</name><value>enkfgdas</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>FHRGRP</name><value>#grp#</value></envar>
+		<envar><name>FHRLST</name><value>#lst#</value></envar>
+
+		<dependency>
+			<metataskdep metatask="enkfgdas_fcst"/>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<task name="enkfgdas_esfc" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/esfc.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_esfc_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>01:00:00</walltime>
+	<nodes>1:ppn=192:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_esfc.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdas_analcalc"/>
+			<taskdep task="enkfgdas_eupd"/>
+		</and>
+	</dependency>
+
+</task>
+
+<task name="enkfgdas_earc_vrfy" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/earc_vrfy.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_earc_vrfy_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_earc_vrfy.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>ENSGRP</name><value>#grp#</value></envar>
+
+	<dependency>
+		<and>
+			<metataskdep metatask="enkfgdas_epmn"/>
+			<taskdep task="enkfgdas_echgres"/>
+		</and>
+	</dependency>
+
+</task>
+
+<metatask name="enkfgdas_earc_tars" mode="parallel">
+
+	<var name="grp">00 01</var>
+
+	<task name="enkfgdas_earc_tars_#grp#" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+		<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/earc_tars.sh</command>
+
+		<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_earc_tars_#grp#_@H</cyclestr></jobname>
+		<account>UNDEFINED</account>
+		<queue>hpss</queue>
+		<partition>dtn_f5_f6</partition>
+		<walltime>06:00:00</walltime>
+		<nodes>1:ppn=1:tpp=1</nodes>
+		<native>--export=NONE --clusters=es</native>
+
+		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_earc_tars_#grp#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+		<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+		<envar><name>NET</name><value>gfs</value></envar>
+		<envar><name>RUN</name><value>enkfgdas</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSGRP</name><value>#grp#</value></envar>
+
+		<dependency>
+			<and>
+				<metataskdep metatask="enkfgdas_epmn"/>
+				<taskdep task="enkfgdas_echgres"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+
+<task name="enkfgdas_cleanup" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/jobs/cleanup.sh</command>
+
+	<jobname><cyclestr>C48mx500_hybAOWCDA_enkfgdas_cleanup_@H</cyclestr></jobname>
+	<account>UNDEFINED</account>
+	<queue>normal</queue>
+	<partition>batch</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<native>--export=NONE --clusters=c6</native>
+
+	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48mx500_hybAOWCDA/logs/@Y@m@d@H/enkfgdas_cleanup.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked</value></envar>
+	<envar><name>EXPDIR</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48mx500_hybAOWCDA</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48mx500_hybAOWCDA/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="enkfgdas_earc_vrfy"/>
+			<metataskdep metatask="enkfgdas_earc_tars"/>
+		</and>
+	</dependency>
+
+</task>
+
+</workflow>

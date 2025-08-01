@@ -1,0 +1,22 @@
+#! /usr/bin/env bash
+
+########## config.earc_tars ##########
+# Ensemble archive specific
+
+echo "BEGIN: config.earc_tars"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" "arch_tars"
+
+#--starting and ending hours of previous cycles to be removed from rotating directory
+export RMOLDSTD_ENKF=144
+export RMOLDEND_ENKF=24
+
+# If we are running globus archiving, create tarballs in a temporary location
+if [[ "${ARCHCOM_TO}" == "globus_hpss" ]]; then
+    export ENSGRP="${ENSGRP:-0}"
+    export ATARDIR="${DATAROOT}/archive_rotdir/${PSLOT}/${RUN}/${ENSGRP}"
+    export LOCALARCH="YES"
+fi
+
+echo "END: config.earc_tars"

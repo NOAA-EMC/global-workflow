@@ -1,0 +1,11 @@
+
+#################### C96_atm3DVar_extended ####################
+#SCRON --partition=cron_c6
+#SCRON --account=UNDEFINED
+#SCRON --mail-user=
+#SCRON --job-name=C96_atm3DVar_extended_scron
+#SCRON --output=/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C96_atm3DVar_extended/logs/scron.log
+#SCRON --time=00:10:00
+#SCRON --dependency=singleton
+*/5 * * * * /home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C96_atm3DVar_extended/C96_atm3DVar_extended.scron.sh
+#################################################################
