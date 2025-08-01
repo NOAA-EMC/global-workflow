@@ -2229,6 +2229,9 @@ class GFSTasks(Tasks):
             
         if self.options['do_bufrsnd']:
             tarball_types.append('gfs_downstream')
+            
+        # Add restart archives (timing logic handled in template)
+        tarball_types.append('gfs_restarta')
 
         # Create a metatask that contains all the individual archive jobs
         dependencies = self._arch_tars_deps()
