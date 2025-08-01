@@ -1,0 +1,886 @@
+2025-07-31 22:40:59 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_stage_ic
+2025-07-31 22:40:59 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_fcst_seg0
+2025-07-31 22:40:59 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f000-f002
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f003-f005
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f006-f008
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f009-f011
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f012-f014
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f015-f017
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f018-f020
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f021-f023
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f024-f026
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f027-f029
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f030-f032
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f033-f035
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f036-f038
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f039-f041
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f042-f044
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f045-f047
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f048-f054
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f057-f063
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f066-f072
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f075-f081
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f084-f090
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f093-f099
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f102-f108
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:41:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_stage_ic
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_fcst_seg0
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f000-f002
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f003-f005
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f006-f008
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f009-f011
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f012-f014
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f015-f017
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f018-f020
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f021-f023
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f024-f026
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f027-f029
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f030-f032
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f033-f035
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f036-f038
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f039-f041
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f042-f044
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f045-f047
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f048-f054
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f057-f063
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f066-f072
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f075-f081
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f084-f090
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f093-f099
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f102-f108
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 25 will be violated.
+2025-07-31 22:47:32 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 25 will be violated.
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_stage_ic
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_fcst_seg0
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f000-f002
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f003-f005
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f006-f008
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f009-f011
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f012-f014
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f015-f017
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f018-f020
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f021-f023
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f024-f026
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f027-f029
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f030-f032
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f033-f035
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f036-f038
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f039-f041
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f042-f044
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f045-f047
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f048-f054
+2025-07-31 23:04:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f057-f063
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f066-f072
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f075-f081
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f084-f090
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f093-f099
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f102-f108
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 25 will be violated.
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 25 will be violated.
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 25 will be violated.
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 25 will be violated.
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 25 will be violated.
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 25 will be violated.
+2025-07-31 23:04:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 25 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_stage_ic
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_fcst_seg0, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f000-f002, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f003-f005, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f006-f008, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f009-f011, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f012-f014, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:08:28 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_stage_ic, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_fcst_seg0, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f000-f002, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f003-f005, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f006-f008, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f009-f011, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f012-f014, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f015-f017, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f018-f020, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f021-f023, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f024-f026, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f027-f029, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f030-f032, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f033-f035, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:10:59 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f036-f038, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f039-f041, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f042-f044, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f045-f047, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f048-f054, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f057-f063, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f066-f072, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f075-f081, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f084-f090, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f093-f099, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f102-f108, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:11:00 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_stage_ic
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_fcst_seg0, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f000-f002, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f003-f005, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f006-f008, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f009-f011, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f012-f014, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:16:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_stage_ic
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_fcst_seg0, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f000-f002, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f003-f005, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f006-f008, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f009-f011, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f012-f014, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:25:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Task gfs_stage_ic, jobid=0, in state UNKNOWN (Unknown)
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_fcst_seg0, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f000-f002, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f003-f005, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f006-f008, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f009-f011, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f012-f014, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:26:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:30:27 -0400 :: DESKTOP-KD9I287 :: Submitting test_job
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_stage_ic
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_fcst_seg0, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f000-f002, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f003-f005, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f006-f008, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f009-f011, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f012-f014, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:37:46 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_stage_ic succeeded, jobid=562
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Task gfs_stage_ic, jobid=562, in state SUCCEEDED (COMPLETED), ran for 31.0 seconds, exit status=0, try=1 (of 2)
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_fcst_seg0
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f000-f002, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f003-f005, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f006-f008, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f009-f011, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f012-f014, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 1 will be violated.
+2025-07-31 23:38:45 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_fcst_seg0 succeeded, jobid=563
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Task gfs_fcst_seg0, jobid=563, in state SUCCEEDED (COMPLETED), ran for 30.0 seconds, exit status=0, try=1 (of 2)
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f000-f002
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f003-f005
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f006-f008
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f009-f011
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f012-f014
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 5 will be violated.
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f000-f002 succeeded, jobid=564
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f003-f005 succeeded, jobid=565
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f006-f008 succeeded, jobid=566
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f009-f011 succeeded, jobid=567
+2025-07-31 23:40:40 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f012-f014 succeeded, jobid=568
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_stage_ic
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_fcst_seg0
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f000-f002
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f003-f005
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f006-f008
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f009-f011
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f012-f014, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_stage_ic succeeded, jobid=569
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_fcst_seg0 succeeded, jobid=570
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f000-f002 succeeded, jobid=571
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f003-f005 succeeded, jobid=572
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f006-f008 succeeded, jobid=573
+2025-07-31 23:42:49 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f009-f011 succeeded, jobid=574
+2025-08-01 03:42:58 +0000 :: DESKTOP-KD9I287 :: Task gfs_stage_ic, jobid=569, in state RUNNING (RUNNING)
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Task gfs_fcst_seg0, jobid=570, in state RUNNING (RUNNING)
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f000-f002, jobid=571, in state RUNNING (RUNNING)
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f003-f005, jobid=572, in state RUNNING (RUNNING)
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f006-f008, jobid=573, in state RUNNING (RUNNING)
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f009-f011, jobid=574, in state RUNNING (RUNNING)
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f012-f014, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:42:59 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Task gfs_stage_ic, jobid=569, in state RUNNING (RUNNING)
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Task gfs_fcst_seg0, jobid=570, in state RUNNING (RUNNING)
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f000-f002, jobid=571, in state RUNNING (RUNNING)
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f003-f005, jobid=572, in state RUNNING (RUNNING)
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f006-f008, jobid=573, in state RUNNING (RUNNING)
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f009-f011, jobid=574, in state RUNNING (RUNNING)
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f012-f014, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:43:08 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Task gfs_stage_ic, jobid=569, in state SUCCEEDED (COMPLETED), ran for 30.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Task gfs_fcst_seg0, jobid=570, in state SUCCEEDED (COMPLETED), ran for 30.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f000-f002, jobid=571, in state SUCCEEDED (COMPLETED), ran for 30.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f003-f005, jobid=572, in state SUCCEEDED (COMPLETED), ran for 30.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f006-f008, jobid=573, in state SUCCEEDED (COMPLETED), ran for 30.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f009-f011, jobid=574, in state SUCCEEDED (COMPLETED), ran for 30.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f012-f014
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f015-f017
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f018-f020
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f021-f023
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f024-f026
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f027-f029
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f012-f014 succeeded, jobid=575
+2025-08-01 03:43:49 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f015-f017 succeeded, jobid=576
+2025-08-01 03:43:50 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f018-f020 succeeded, jobid=577
+2025-08-01 03:43:50 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f021-f023 succeeded, jobid=578
+2025-08-01 03:43:50 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f024-f026 succeeded, jobid=579
+2025-08-01 03:43:50 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f027-f029 succeeded, jobid=580
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f012-f014, jobid=575, in state RUNNING (RUNNING)
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f015-f017, jobid=576, in state RUNNING (RUNNING)
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f018-f020, jobid=577, in state RUNNING (RUNNING)
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f021-f023, jobid=578, in state RUNNING (RUNNING)
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f024-f026, jobid=579, in state RUNNING (RUNNING)
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f027-f029, jobid=580, in state RUNNING (RUNNING)
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 6 will be violated.
+2025-08-01 03:43:54 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 6 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f012-f014, jobid=575, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f015-f017, jobid=576, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f018-f020, jobid=577, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f021-f023, jobid=578, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f024-f026, jobid=579, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f027-f029, jobid=580, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f030-f032
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f033-f035
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f036-f038
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f039-f041
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f042-f044
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f045-f047
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f048-f054
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f057-f063
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f030-f032 succeeded, jobid=581
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f033-f035 succeeded, jobid=582
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f036-f038 succeeded, jobid=583
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f039-f041 succeeded, jobid=584
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f042-f044 succeeded, jobid=585
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f045-f047 succeeded, jobid=586
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f048-f054 succeeded, jobid=587
+2025-07-31 23:44:15 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f057-f063 succeeded, jobid=588
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f030-f032, jobid=581, in state RUNNING (RUNNING)
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f033-f035, jobid=582, in state RUNNING (RUNNING)
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f036-f038, jobid=583, in state RUNNING (RUNNING)
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f039-f041, jobid=584, in state RUNNING (RUNNING)
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f042-f044, jobid=585, in state RUNNING (RUNNING)
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f045-f047, jobid=586, in state RUNNING (RUNNING)
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f048-f054, jobid=587, in state RUNNING (RUNNING)
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f057-f063, jobid=588, in state RUNNING (RUNNING)
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:20 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f030-f032, jobid=581, in state RUNNING (RUNNING)
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f033-f035, jobid=582, in state RUNNING (RUNNING)
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f036-f038, jobid=583, in state RUNNING (RUNNING)
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f039-f041, jobid=584, in state RUNNING (RUNNING)
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f042-f044, jobid=585, in state RUNNING (RUNNING)
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f045-f047, jobid=586, in state RUNNING (RUNNING)
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f048-f054, jobid=587, in state RUNNING (RUNNING)
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f057-f063, jobid=588, in state RUNNING (RUNNING)
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:26 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f030-f032, jobid=581, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f033-f035, jobid=582, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f036-f038, jobid=583, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f039-f041, jobid=584, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f042-f044, jobid=585, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f045-f047, jobid=586, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f048-f054, jobid=587, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f057-f063, jobid=588, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f066-f072
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f075-f081
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f084-f090
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f093-f099
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f102-f108
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f111-f114
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f117-f120
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_tracker
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f066-f072 succeeded, jobid=589
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f075-f081 succeeded, jobid=590
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f084-f090 succeeded, jobid=591
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f093-f099 succeeded, jobid=592
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f102-f108 succeeded, jobid=593
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f111-f114 succeeded, jobid=594
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f117-f120 succeeded, jobid=595
+2025-08-01 03:44:37 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_tracker succeeded, jobid=596
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f066-f072, jobid=589, in state RUNNING (RUNNING)
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f075-f081, jobid=590, in state RUNNING (RUNNING)
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f084-f090, jobid=591, in state RUNNING (RUNNING)
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f093-f099, jobid=592, in state RUNNING (RUNNING)
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f102-f108, jobid=593, in state RUNNING (RUNNING)
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f111-f114, jobid=594, in state RUNNING (RUNNING)
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f117-f120, jobid=595, in state RUNNING (RUNNING)
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Task gfs_tracker, jobid=596, in state RUNNING (RUNNING)
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:44:43 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 8 will be violated.
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f066-f072, jobid=589, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f075-f081, jobid=590, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f084-f090, jobid=591, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f093-f099, jobid=592, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f102-f108, jobid=593, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f111-f114, jobid=594, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f117-f120, jobid=595, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Task gfs_tracker, jobid=596, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_genesis
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_arch_tars
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_arch_vrfy
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_cleanup
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_genesis succeeded, jobid=597
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_arch_tars succeeded, jobid=598
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_arch_vrfy succeeded, jobid=599
+2025-08-01 03:45:39 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_cleanup succeeded, jobid=600
+2025-08-01 03:45:47 +0000 :: DESKTOP-KD9I287 :: Task gfs_genesis, jobid=597, in state RUNNING (RUNNING)
+2025-08-01 03:45:47 +0000 :: DESKTOP-KD9I287 :: Task gfs_arch_tars, jobid=598, in state RUNNING (RUNNING)
+2025-08-01 03:45:47 +0000 :: DESKTOP-KD9I287 :: Task gfs_arch_vrfy, jobid=599, in state RUNNING (RUNNING)
+2025-08-01 03:45:47 +0000 :: DESKTOP-KD9I287 :: Task gfs_cleanup, jobid=600, in state RUNNING (RUNNING)
+2025-08-01 03:46:06 +0000 :: DESKTOP-KD9I287 :: Task gfs_genesis, jobid=597, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:46:06 +0000 :: DESKTOP-KD9I287 :: Task gfs_arch_tars, jobid=598, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:46:06 +0000 :: DESKTOP-KD9I287 :: Task gfs_arch_vrfy, jobid=599, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:46:06 +0000 :: DESKTOP-KD9I287 :: Task gfs_cleanup, jobid=600, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 03:46:06 +0000 :: DESKTOP-KD9I287 :: This cycle is complete: Success
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_stage_ic
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_fcst_seg0
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f000-f002
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f003-f005
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f006-f008
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f009-f011
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f012-f014
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f015-f017
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 8 will be violated.
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_stage_ic succeeded, jobid=601
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_fcst_seg0 succeeded, jobid=602
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f000-f002 succeeded, jobid=603
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f003-f005 succeeded, jobid=604
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f006-f008 succeeded, jobid=605
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f009-f011 succeeded, jobid=606
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f012-f014 succeeded, jobid=607
+2025-07-31 23:55:45 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f015-f017 succeeded, jobid=608
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Task gfs_stage_ic, jobid=601, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Task gfs_fcst_seg0, jobid=602, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f000-f002, jobid=603, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f003-f005, jobid=604, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f006-f008, jobid=605, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f009-f011, jobid=606, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f012-f014, jobid=607, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f015-f017, jobid=608, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f018-f020
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f021-f023
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f024-f026
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f027-f029
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f030-f032
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f033-f035
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f036-f038
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f039-f041
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f018-f020 succeeded, jobid=609
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f021-f023 succeeded, jobid=610
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f024-f026 succeeded, jobid=611
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f027-f029 succeeded, jobid=612
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f030-f032 succeeded, jobid=613
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f033-f035 succeeded, jobid=614
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f036-f038 succeeded, jobid=615
+2025-08-01 00:06:29 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f039-f041 succeeded, jobid=616
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f018-f020, jobid=609, in state RUNNING (RUNNING)
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f021-f023, jobid=610, in state RUNNING (RUNNING)
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f024-f026, jobid=611, in state RUNNING (RUNNING)
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f027-f029, jobid=612, in state RUNNING (RUNNING)
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f030-f032, jobid=613, in state RUNNING (RUNNING)
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f033-f035, jobid=614, in state RUNNING (RUNNING)
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f036-f038, jobid=615, in state RUNNING (RUNNING)
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f039-f041, jobid=616, in state RUNNING (RUNNING)
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:06:40 +0000 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f018-f020, jobid=609, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f021-f023, jobid=610, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f024-f026, jobid=611, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f027-f029, jobid=612, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f030-f032, jobid=613, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f033-f035, jobid=614, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f036-f038, jobid=615, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f039-f041, jobid=616, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f042-f044
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f045-f047
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f048-f054
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f057-f063
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f066-f072
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f075-f081
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f084-f090
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f093-f099
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f042-f044 succeeded, jobid=617
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f045-f047 succeeded, jobid=618
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f048-f054 succeeded, jobid=619
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f057-f063 succeeded, jobid=620
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f066-f072 succeeded, jobid=621
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f075-f081 succeeded, jobid=622
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f084-f090 succeeded, jobid=623
+2025-08-01 00:07:01 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f093-f099 succeeded, jobid=624
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f042-f044, jobid=617, in state RUNNING (RUNNING)
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f045-f047, jobid=618, in state RUNNING (RUNNING)
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f048-f054, jobid=619, in state RUNNING (RUNNING)
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f057-f063, jobid=620, in state RUNNING (RUNNING)
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f066-f072, jobid=621, in state RUNNING (RUNNING)
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f075-f081, jobid=622, in state RUNNING (RUNNING)
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f084-f090, jobid=623, in state RUNNING (RUNNING)
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f093-f099, jobid=624, in state RUNNING (RUNNING)
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 8 will be violated.
+2025-08-01 00:07:03 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 8 will be violated.
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f042-f044, jobid=617, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f045-f047, jobid=618, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f048-f054, jobid=619, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f057-f063, jobid=620, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f066-f072, jobid=621, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f075-f081, jobid=622, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f084-f090, jobid=623, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f093-f099, jobid=624, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f102-f108
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f111-f114
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f117-f120
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_tracker
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_genesis
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_arch_tars
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_arch_vrfy
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submitting gfs_cleanup
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f102-f108 succeeded, jobid=625
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f111-f114 succeeded, jobid=626
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f117-f120 succeeded, jobid=627
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_tracker succeeded, jobid=628
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_genesis succeeded, jobid=629
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_arch_tars succeeded, jobid=630
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_arch_vrfy succeeded, jobid=631
+2025-08-01 04:19:05 +0000 :: DESKTOP-KD9I287 :: Submission of gfs_cleanup succeeded, jobid=632
+2025-08-01 04:21:48 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f102-f108, jobid=625, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:21:48 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f111-f114, jobid=626, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:21:48 +0000 :: DESKTOP-KD9I287 :: Task gfs_atmos_prod_f117-f120, jobid=627, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:21:48 +0000 :: DESKTOP-KD9I287 :: Task gfs_tracker, jobid=628, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:21:48 +0000 :: DESKTOP-KD9I287 :: Task gfs_genesis, jobid=629, in state SUCCEEDED (COMPLETED), ran for 21.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:21:48 +0000 :: DESKTOP-KD9I287 :: Task gfs_arch_tars, jobid=630, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:21:48 +0000 :: DESKTOP-KD9I287 :: Task gfs_arch_vrfy, jobid=631, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:21:49 +0000 :: DESKTOP-KD9I287 :: Task gfs_cleanup, jobid=632, in state SUCCEEDED (COMPLETED), ran for 20.0 seconds, exit status=0, try=1 (of 2)
+2025-08-01 04:21:49 +0000 :: DESKTOP-KD9I287 :: This cycle is complete: Success
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_stage_ic
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_fcst_seg0
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f000-f002
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f003-f005
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Submitting gfs_atmos_prod_f006-f008
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f009-f011, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f012-f014, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f015-f017, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f018-f020, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f021-f023, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f024-f026, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f027-f029, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f030-f032, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f033-f035, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f036-f038, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f039-f041, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f042-f044, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f045-f047, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f048-f054, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f057-f063, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f066-f072, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f075-f081, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f084-f090, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f093-f099, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f102-f108, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f111-f114, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_atmos_prod_f117-f120, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_tracker, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_genesis, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_tars, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_arch_vrfy, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Cannot submit gfs_cleanup, because maximum global task throttle of 5 will be violated.
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_stage_ic succeeded, jobid=633
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_fcst_seg0 succeeded, jobid=634
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f000-f002 succeeded, jobid=635
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f003-f005 succeeded, jobid=636
+2025-08-01 00:37:09 -0400 :: DESKTOP-KD9I287 :: Submission of gfs_atmos_prod_f006-f008 succeeded, jobid=637

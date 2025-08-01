@@ -1,0 +1,7 @@
+Starting mock job: /var/lib/slurm/slurmd/job00559/slurm_script
+Job Name: test_slurm_vars
+Job ID: 559
+Partition: local
+Account: root
+Sleeping for 30 seconds...
+Mock job completed successfully
