@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         gen_chgres_namelist.sh
+# Script name:         gen_control_changres.sh
 # Script description:  Generates chgres_cube namelist and runs the executable
 #
 # Author:              Global Workflow Team
