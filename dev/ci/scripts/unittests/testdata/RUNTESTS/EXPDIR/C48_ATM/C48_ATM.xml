@@ -3,10 +3,21 @@
 [
 	<!--
 	PROGRAM
-		Main workflow manager for Global Forecast System
+		Main workflow 		<envar><n>DATAROOT</n><value>/gpfs/f6/UNDEF		<envar><n>COMROOT</n><value>/home	<envar><n>COMROOT</n><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+	<envar><n>DATAROOT</n><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+</task>ness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
+		<envar><n>DATAROOT</n><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><n>FHR_LIST</n><value>#fhr_list#</value></envar>
+		<envar><n>COMPONENT</n><value>atmos</value></envar>
+
+	</task>ared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><n>FCST_SEGMENT</n><value>#seg#</value></envar>
+
+	</task>r Global Forecast System
 
 	NOTES:
-		This workflow was automatically generated at 2025-07-31 21:05:41.553434
+		This workflow was automatically generated at 2025-07-31 21:21:55.395399
 	-->
 	<!ENTITY PSLOT "C48_ATM">
 	<!ENTITY ROTDIR "/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM">
@@ -30,7 +41,6 @@
 	<partition>local</partition>
 	<walltime>00:15:00</walltime>
 	<nodes>1:ppn=1:tpp=1</nodes>
-	<native>--export=NONE --clusters=c6</native>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_stage_ic.log</cyclestr></join>
 
@@ -43,7 +53,7 @@
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/gpfs/f6/root/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 </task>
 
@@ -60,8 +70,7 @@
 		<queue>normal</queue>
 		<partition>local</partition>
 		<walltime>03:00:00</walltime>
-		<nodes>1:ppn=192:tpp=1</nodes>
-		<native>--exclusive --clusters=c6</native>
+		<nodes>1:ppn=1:tpp=1</nodes>
 
 		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_fcst_seg#seg#.log</cyclestr></join>
 
@@ -74,14 +83,9 @@
 		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
-		<envar><name>DATAROOT</name><value>/gpfs/f6/root/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>FCST_SEGMENT</name><value>#seg#</value></envar>
 
-		<dependency>
-			<and>
-				<taskdep task="gfs_stage_ic"/>
-			</and>
-		</dependency>
 
 	</task>
 
@@ -104,8 +108,7 @@
 		<queue>normal</queue>
 		<partition>local</partition>
 		<walltime>00:45:00</walltime>
-		<nodes>1:ppn=24:tpp=1</nodes>
-		<native>--exclusive --clusters=c6</native>
+		<nodes>1:ppn=1:tpp=1</nodes>
 
 		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_atmos_prod_#fhr_label#.log</cyclestr></join>
 
@@ -118,13 +121,11 @@
 		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 		<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
-		<envar><name>DATAROOT</name><value>/gpfs/f6/root/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>FHR_LIST</name><value>#fhr_list#</value></envar>
 		<envar><name>COMPONENT</name><value>atmos</value></envar>
 
-                <dependency>
-                        <metataskdep metatask="gfs_fcst"/>
-                </dependency>	</task>
+	</task>
 
 </metatask>
 
@@ -138,7 +139,6 @@
 	<partition>local</partition>
 	<walltime>00:10:00</walltime>
 	<nodes>1:ppn=1:tpp=1</nodes>
-	<native>--export=NONE --clusters=c6</native>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_tracker.log</cyclestr></join>
 
@@ -151,11 +151,8 @@
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/gpfs/f6/root/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
-	<dependency>
-		<metataskdep metatask="gfs_atmos_prod"/>
-	</dependency>
 
 </task>
 
@@ -169,7 +166,6 @@
 	<partition>local</partition>
 	<walltime>00:40:00</walltime>
 	<nodes>1:ppn=1:tpp=1</nodes>
-	<native>--export=NONE --clusters=c6</native>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_genesis.log</cyclestr></join>
 
@@ -182,11 +178,8 @@
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/gpfs/f6/root/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
-	<dependency>
-		<metataskdep metatask="gfs_atmos_prod"/>
-	</dependency>
 
 </task>
 
@@ -200,7 +193,6 @@
 	<partition>local</partition>
 	<walltime>06:00:00</walltime>
 	<nodes>1:ppn=1:tpp=1</nodes>
-	<native>--export=NONE --clusters=es</native>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_arch_tars.log</cyclestr></join>
 
@@ -213,16 +205,8 @@
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/gpfs/f6/root/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
-	<dependency>
-		<and>
-			<taskdep task="gfs_tracker"/>
-			<taskdep task="gfs_genesis"/>
-			<metataskdep metatask="gfs_atmos_prod"/>
-			<taskdep task="gfs_arch_vrfy"/>
-		</and>
-	</dependency>
 
 </task>
 
@@ -236,7 +220,6 @@
 	<partition>local</partition>
 	<walltime>00:30:00</walltime>
 	<nodes>1:ppn=1:tpp=1</nodes>
-	<native>--export=NONE --clusters=c6</native>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_arch_vrfy.log</cyclestr></join>
 
@@ -249,15 +232,8 @@
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/gpfs/f6/root/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
-	<dependency>
-		<and>
-			<taskdep task="gfs_tracker"/>
-			<taskdep task="gfs_genesis"/>
-			<metataskdep metatask="gfs_atmos_prod"/>
-		</and>
-	</dependency>
 
 </task>
 
@@ -271,7 +247,6 @@
 	<partition>local</partition>
 	<walltime>00:15:00</walltime>
 	<nodes>1:ppn=1:tpp=1</nodes>
-	<native>--export=NONE --clusters=c6</native>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_cleanup.log</cyclestr></join>
 
@@ -284,17 +259,8 @@
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 	<envar><name>COMROOT</name><value>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT</value></envar>
-	<envar><name>DATAROOT</name><value>/gpfs/f6/root/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>DATAROOT</name><value>/gpfs/f6/UNDEFINED/world-shared/tmcguinness/RUNDIRS/C48_ATM/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
-	<dependency>
-		<and>
-			<taskdep task="gfs_tracker"/>
-			<taskdep task="gfs_genesis"/>
-			<metataskdep metatask="gfs_atmos_prod"/>
-			<taskdep task="gfs_arch_vrfy"/>
-			<taskdep task="gfs_arch_tars"/>
-		</and>
-	</dependency>
 
 </task>
 
