@@ -24,7 +24,7 @@
 	<!ENTITY MAXTRIES "2">
 ]>
 
-<workflow realtime="F" scheduler="slurm" cyclethrottle="3" taskthrottle="25">
+<workflow realtime="F" scheduler="slurm" cyclethrottle="2" taskthrottle="8">
 
 	<log verbosity="10"><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/EXPDIR/C48_ATM/logs/@Y@m@d@H.log</cyclestr></log>
 
@@ -37,10 +37,9 @@
 
 	<jobname><cyclestr>C48_ATM_gfs_stage_ic_@H</cyclestr></jobname>
 	<account>root</account>
-	<queue>normal</queue>
 	<partition>local</partition>
 	<walltime>00:15:00</walltime>
-	<nodes>1:ppn=1:tpp=1</nodes>
+	<cores>1</cores>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_stage_ic.log</cyclestr></join>
 
@@ -67,10 +66,9 @@
 
 		<jobname><cyclestr>C48_ATM_gfs_fcst_seg#seg#_@H</cyclestr></jobname>
 		<account>root</account>
-		<queue>normal</queue>
 		<partition>local</partition>
 		<walltime>03:00:00</walltime>
-		<nodes>1:ppn=1:tpp=1</nodes>
+		<cores>1</cores>
 
 		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_fcst_seg#seg#.log</cyclestr></join>
 
@@ -105,10 +103,9 @@
 
 		<jobname><cyclestr>C48_ATM_gfs_atmos_prod_#fhr_label#_@H</cyclestr></jobname>
 		<account>root</account>
-		<queue>normal</queue>
 		<partition>local</partition>
 		<walltime>00:45:00</walltime>
-		<nodes>1:ppn=1:tpp=1</nodes>
+		<cores>1</cores>
 
 		<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_atmos_prod_#fhr_label#.log</cyclestr></join>
 
@@ -135,10 +132,9 @@
 
 	<jobname><cyclestr>C48_ATM_gfs_tracker_@H</cyclestr></jobname>
 	<account>root</account>
-	<queue>normal</queue>
 	<partition>local</partition>
 	<walltime>00:10:00</walltime>
-	<nodes>1:ppn=1:tpp=1</nodes>
+	<cores>1</cores>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_tracker.log</cyclestr></join>
 
@@ -162,10 +158,9 @@
 
 	<jobname><cyclestr>C48_ATM_gfs_genesis_@H</cyclestr></jobname>
 	<account>root</account>
-	<queue>normal</queue>
 	<partition>local</partition>
 	<walltime>00:40:00</walltime>
-	<nodes>1:ppn=1:tpp=1</nodes>
+	<cores>1</cores>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_genesis.log</cyclestr></join>
 
@@ -189,10 +184,9 @@
 
 	<jobname><cyclestr>C48_ATM_gfs_arch_tars_@H</cyclestr></jobname>
 	<account>root</account>
-	<queue>hpss</queue>
 	<partition>local</partition>
 	<walltime>06:00:00</walltime>
-	<nodes>1:ppn=1:tpp=1</nodes>
+	<cores>1</cores>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_arch_tars.log</cyclestr></join>
 
@@ -216,10 +210,9 @@
 
 	<jobname><cyclestr>C48_ATM_gfs_arch_vrfy_@H</cyclestr></jobname>
 	<account>root</account>
-	<queue>normal</queue>
 	<partition>local</partition>
 	<walltime>00:30:00</walltime>
-	<nodes>1:ppn=1:tpp=1</nodes>
+	<cores>1</cores>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_arch_vrfy.log</cyclestr></join>
 
@@ -243,10 +236,9 @@
 
 	<jobname><cyclestr>C48_ATM_gfs_cleanup_@H</cyclestr></jobname>
 	<account>root</account>
-	<queue>normal</queue>
 	<partition>local</partition>
 	<walltime>00:15:00</walltime>
-	<nodes>1:ppn=1:tpp=1</nodes>
+	<cores>1</cores>
 
 	<join><cyclestr>/home/tmcguinness/GITHUB/COPILOT/global-workflow_forked/dev/ci/scripts/unittests/testdata/RUNTESTS/COMROOT/C48_ATM/logs/@Y@m@d@H/gfs_cleanup.log</cyclestr></join>
 
