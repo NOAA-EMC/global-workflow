@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
-export DATA="${DATAjob}/${jobid}"
-# Create the directory to hold ensemble perturbations
+# Use ${DATAROOT/enkf} because DATAjob is created by a gdas_marineanlinit job
+export DATAjob="${DATAROOT/enkf}/marineanalysis.${PDY:-}${cyc}"
+export DATA="${DATAjob}/marineanlletkf"
 export DATAens="${DATAjob}/ensdata"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
 
@@ -19,11 +19,10 @@ gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
-export OPREFIX="${RUN}.t${cyc}z."
 
 ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
 export NMEM_ENS_MAX=${NMEM_ENS}
-if [[ "${RUN}" == "gfs"  && "${DOHYBVAR_OCN}" == "YES" ]]; then
+if [[ "${RUN/enkf}" == "gfs"  && "${DOHYBVAR_OCN}" == "YES" ]]; then
    NMEM_ENS=${NMEM_ENS_GFS}
    export mem_offset=$((ec_offset * cyc/6))
 else
@@ -34,13 +33,14 @@ RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
   COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
   COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+RUN="${GDUMP}" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COMIN_OBS:COM_OBS_TMPL \
+
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COMOUT_OCEAN_LETKF:COM_OCEAN_LETKF_TMPL \
   COMOUT_ICE_LETKF:COM_ICE_LETKF_TMPL
 
-# TODO: remove explicit RUN specification once https://github.com/NOAA-EMC/global-workflow/issues/3767 is fixed
-RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} MEMDIR="ensstat" declare_from_tmpl -rx \
+YMD=${PDY} HH=${cyc} MEMDIR="ensstat" declare_from_tmpl -rx \
   COMOUT_CONF:COM_CONF_TMPL
 
 if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
@@ -72,13 +72,11 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" && true
+# Use ${DATAROOT/enkf} because DATAjob is created by a gdas_marineanlinit job
+cd "${DATAROOT/enkf}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
-fi
-if [[ "${KEEPDATA}" == "NO" ]]; then
-    rm -rf "${DATA}"
 fi
 
 exit 0
