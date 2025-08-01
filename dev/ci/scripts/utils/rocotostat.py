@@ -38,14 +38,14 @@ def get_user_thread_count():
 
         ps = which('ps')
         try:
-            result = ps([f"-u {current_user} -L"], output=str)
+            result = ps("-u", current_user, "-L", output=str)
             user_threads = len(result.strip().split('\n')) - 1 if result.strip() else 0
         except ProcessError:
             user_threads = -1
 
         bash = which('bash')
         try:
-            result=bash(["-c ulimit -u"], output=str)
+            result=bash("-c", "ulimit -u", output=str)
             process_limit = int(result.strip())
         except (ProcessError, ValueError):
             process_limit = -1
@@ -228,9 +228,7 @@ def rocotostat_summary(rocotostat):
         Dictionary containing 'CYCLES_TOTAL' (total cycles) and 'CYCLES_DONE' (completed cycles) for status tracking.
     """
 
-    rocotostat = copy.deepcopy(rocotostat)
-    rocotostat.add_default_arg('--summary')
-    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 3, 120, ProcessError)
+    rocotostat_output = attempt_multiple_times(lambda: rocotostat("--summary", output=str), 3, 120, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:2] for line in rocotostat_output]
 
@@ -261,10 +259,8 @@ def rocoto_statcount(rocotostat):
         Dictionary containing counts for each job status category (SUCCEEDED, FAIL, DEAD, RUNNING, etc.) for monitoring.
     """
 
-    rocotostat = copy.deepcopy(rocotostat)
-    rocotostat.add_default_arg('--all')
 
-    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 4, 120, ProcessError)
+    rocotostat_output = attempt_multiple_times(lambda: rocotostat('--all', output=str), 4, 120, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:4] for line in rocotostat_output]
     rocotostat_output = [line for line in rocotostat_output if len(line) != 1]
