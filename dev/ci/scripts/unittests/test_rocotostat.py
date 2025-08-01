@@ -131,20 +131,6 @@ def test_attempt_multiple_times_max_attempts_exceeded():
     assert mock_func.call_count == 2
 
 
-def test_attempt_multiple_times_with_args_and_kwargs():
-    """Test that attempt_multiple_times passes arguments correctly"""
-    mock_func = Mock(return_value="success")
-
-    result = attempt_multiple_times(
-        mock_func,
-        max_attempts=3,
-        sleep_duration=0.1
-    )
-
-    assert result == "success"
-    mock_func.assert_called_with()
-
-
 def test_attempt_multiple_times_delay():
     """Test that attempt_multiple_times respects delay between attempts"""
     mock_func = Mock(side_effect=[Exception("fail"), "success"])

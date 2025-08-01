@@ -120,13 +120,3 @@ export HOMEgfs=foobar
             rmtree(RUNDIR)
         except FileNotFoundError:
             pass
-
-
-def test_setup_function():  # Added second blank line before function
-    """Test setup functionality."""
-    pass
-
-
-def another_test():
-    """Another test function."""
-    pass
