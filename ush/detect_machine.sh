@@ -90,7 +90,7 @@ elif [[ -d /scratch3 ]]; then
 elif [[ -d /work ]]; then
   # We are on MSU Orion or Hercules
   mount=$(findmnt -n -o SOURCE /home)
-  if [[ ${mount+x} =~ "hercules" ]]; then
+  if [[ ! -z "${mount+0}" && ${mount} =~ "hercules" ]]; then
     MACHINE_ID=hercules
   else
     MACHINE_ID=orion
