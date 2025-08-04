@@ -36,7 +36,7 @@ build:
   gfs_model:
     command: "./build_ufs.sh -e gfs_model.x"
     cores: 12
-    walltime: "00:30:00"
+    walltime: "00:40:00"
 
   gfs_ww3prepost:
     command: "./build_ww3prepost.sh"
@@ -46,7 +46,7 @@ build:
   gefs_model:
     command: "./build_ufs.sh -w -e gefs_model.x"
     cores: 12
-    walltime: "00:30:00"
+    walltime: "00:40:00"
 
   gefs_ww3_prepost:
     command: "./build_ww3prepost.sh -w"
@@ -56,12 +56,12 @@ build:
   sfs_model:
     command: "./build_ufs.sh -y -e sfs_model.x"
     cores: 12
-    walltime: "00:30:00"
+    walltime: "00:40:00"
 
   gcafs_model:
     command: "./build_ufs.sh -a ATMAERO -e gcafs_model.x"
     cores: 12
-    walltime: "00:30:00"
+    walltime: "00:40:00"
 
   upp:
     command: "./build_upp.sh"
