@@ -5,7 +5,7 @@ from wxflow import Executable, find_upward
 
 HOMEgfs = find_upward('.github')
 current_dir = os.path.dirname(os.path.abspath(__file__))
-RUNDIR_FAKE = os.path.join(current_dir, 'testdata/RUNDIR')
+RUNDIR_FAKE = os.path.join(current_dir, 'testdata/RUNTESTS')
 ICSDIR_FAKE = os.path.join(current_dir, 'testdata/ICSDIR')
 
 
@@ -31,3 +31,7 @@ def test_create_experiment():
     assert err == 0, f"create_experiment.py failed!"
 
     rmtree(RUNDIR_FAKE)
+
+
+def test_something():
+    assert 1 == 1
