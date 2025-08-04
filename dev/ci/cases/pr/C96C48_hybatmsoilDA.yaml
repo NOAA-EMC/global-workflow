@@ -1,0 +1,25 @@
+experiment:
+  net: gfs
+  mode: cycled
+
+arguments:
+  pslot: {{ 'pslot' | getenv }}
+  app: ATM
+  resdetatmos: 96
+  resensatmos: 48
+  resdetocean: 5.0
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  idate: 2021122106
+  edate: 2021122200
+  nens: 20
+  interval: 6
+  start: warm
+  icsdir: /gpfs/f6/ira-sti/world-shared/Tseganeh.Gichamo/ICS/C96C48_20211221/
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/atmsoilDA_defaults_ci.yaml
+
+skip_ci_on_hosts:
+  - orion
+  - gaeac5
+  - hercules
+  - awsepicglobalworkflow
