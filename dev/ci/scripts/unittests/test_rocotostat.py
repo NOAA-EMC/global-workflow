@@ -6,8 +6,6 @@ import os
 from shutil import rmtree
 import wget
 
-from unittest.mock import Mock, patch
-
 # Add the utils directory to the path to import rocotostat
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'utils'))
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -97,10 +95,10 @@ def test_rocoto_stalled():
     rmtree(testdata_full_path)
 
 
-def test_attempt_multiple_times_success_first_try():
+def test_attempt_multiple_times_success_first_try(mocker):
 
     """Test that attempt_multiple_times succeeds on first try"""
-    mock_func = Mock(return_value="success")
+    mock_func = mocker.Mock(return_value="success")
 
     result = attempt_multiple_times(mock_func, max_attempts=3, sleep_duration=0.1)
 
@@ -108,9 +106,9 @@ def test_attempt_multiple_times_success_first_try():
     mock_func.assert_called_once()
 
 
-def test_attempt_multiple_times_success_after_retries():
+def test_attempt_multiple_times_success_after_retries(mocker):
     """Test that attempt_multiple_times succeeds after some failures"""
-    mock_func = Mock(side_effect=[Exception("fail"), Exception("fail"), "success"])
+    mock_func = mocker.Mock(side_effect=[Exception("fail"), Exception("fail"), "success"])
 
     result = attempt_multiple_times(mock_func, max_attempts=3, sleep_duration=0.1)
 
@@ -118,9 +116,9 @@ def test_attempt_multiple_times_success_after_retries():
     assert mock_func.call_count == 3
 
 
-def test_attempt_multiple_times_max_attempts_exceeded():
+def test_attempt_multiple_times_max_attempts_exceeded(mocker):
     """Test that attempt_multiple_times fails after max attempts"""
-    mock_func = Mock(side_effect=Exception("always fail"))
+    mock_func = mocker.Mock(side_effect=Exception("always fail"))
 
     try:
         attempt_multiple_times(mock_func, max_attempts=2, sleep_duration=0.1)
@@ -131,9 +129,9 @@ def test_attempt_multiple_times_max_attempts_exceeded():
     assert mock_func.call_count == 2
 
 
-def test_attempt_multiple_times_delay():
+def test_attempt_multiple_times_delay(mocker):
     """Test that attempt_multiple_times respects delay between attempts"""
-    mock_func = Mock(side_effect=[Exception("fail"), "success"])
+    mock_func = mocker.Mock(side_effect=[Exception("fail"), "success"])
 
     start_time = time.time()
     result = attempt_multiple_times(mock_func, max_attempts=3, sleep_duration=0.2)
@@ -145,10 +143,10 @@ def test_attempt_multiple_times_delay():
     assert end_time - start_time >= 0.2  # Allow some tolerance
 
 
-@patch('rocotostat.logger')
-def test_attempt_multiple_times_logging(mock_logger):
+def test_attempt_multiple_times_logging(mocker):
     """Test that attempt_multiple_times logs retry attempts"""
-    mock_func = Mock(side_effect=[Exception("fail"), "success"])
+    mock_logger = mocker.patch('rocotostat.logger')
+    mock_func = mocker.Mock(side_effect=[Exception("fail"), "success"])
 
     result = attempt_multiple_times(mock_func, max_attempts=3, sleep_duration=0.1)
 
