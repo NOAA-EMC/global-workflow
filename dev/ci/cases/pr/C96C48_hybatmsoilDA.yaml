@@ -11,7 +11,7 @@ arguments:
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2021122106
-  edate: 2021122200
+  edate: 2021122118
   nens: 20
   interval: 6
   start: warm
