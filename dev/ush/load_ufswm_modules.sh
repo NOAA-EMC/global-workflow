@@ -31,7 +31,7 @@ if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
 else
   export UTILROOT=${prod_util_ROOT}
   source "${HOMEgfs}/versions/run.ver"
-  module load wgrib2/${wgrib2_ver}
+  module load "wgrib2/${wgrib2_ver}"
 fi
 export WGRIB2=wgrib2
 
