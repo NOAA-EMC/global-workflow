@@ -42,7 +42,7 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
   export PYTHONPATH
 
 else
-  source "${HOMEgfs}/dev/ush/load_upp_modules.sh"
+  source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
   status=$?
   if [[ ${status} -ne 0 ]]; then
      exit "${status}";
