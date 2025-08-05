@@ -31,7 +31,3 @@ def test_create_experiment():
     assert err == 0, f"create_experiment.py failed!"
 
     rmtree(RUNDIR_FAKE)
-
-
-def test_something():
-    assert 1 == 1
