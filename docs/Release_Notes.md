@@ -1,12 +1,12 @@
-GFS V16.3.25 RELEASE NOTES
+GFS V16.3.26 RELEASE NOTES
 
 -------
 PRELUDE
 -------
-Data assimilation upgrade which implements a version of GSI closer to the head of the develop branch and 
-includes the following new data types for assimilation: Windborne Balloon Sondes; Saildrone surface obs; 
+Data assimilation upgrade which implements a version of GSI closer to the head of the develop branch and
+includes the following new data types for assimilation: Windborne Balloon Sondes; Saildrone surface obs;
 GOES-19 clear sky radiances; GMI radiances; NOAA-19 Ozone Profile Retreievals.   Preparation for Metop-SG
-instruments.  Also include minor modifications to ATMS thinning; treatment of surface ship pressure 
+instruments.  Also include minor modifications to ATMS thinning; treatment of surface ship pressure
 observations and quality control of humidity Jacobians.
 
 Also included in this upgrade are changes to add an indicator log file for WW3 gridded output.
@@ -29,13 +29,13 @@ The checkout script extracts the following GFS components:
 
 | Component  | Tag                          | POC                     |
 | ---------- | ---------------------------- | ----------------------- |
-| MODEL      | GFS.v16.3.25                 | Jun.Wang@noaa.gov       |
+| MODEL      | GFS.v16.3.26                 | Jun.Wang@noaa.gov       |
 | GLDAS      | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov      |
-| GSI        | gfsda.v16.3.25               | Andrew.Collard@noaa.gov |
+| GSI        | gfsda.v16.3.26               | Andrew.Collard@noaa.gov |
 | UFS_UTILS  | ops-gfsv16.3.20              | George.Gayno@noaa.gov   |
 | POST       | upp_v8.3.0                   | Wen.Meng@noaa.gov       |
-| GSI-Utils  | gsiutil.v16.3.25             | Andrew.Collard@noaa.gov |
-| GSI-Monitor| gsimon_v16.3.25              | Edward.Safford@noaa.gov |
+| GSI-Utils  | gsiutil.v16.3.26             | Andrew.Collard@noaa.gov |
+| GSI-Monitor| gsimon_v16.3.26              | Edward.Safford@noaa.gov |
 
 To build all the GFS components, execute:
 ```bash
@@ -63,18 +63,18 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* New MODEL tag: `GFS.v16.3.25`
+* New MODEL tag: `GFS.v16.3.26`
 * New EMC_verif-global tag: `verif_global_v2.10.0.1` (Gulf of America changes)
 
-The GSI has been updated from an older release branch (gfsda.v16.3.20) to one much closer to the develop 
-branch (gfsda.v16.3.25) with a large number of changes to the code that do not affect results.   
-Between these versions there has been a reorganisation of the repositories 
-resulting in some functionality moving from GSI to new repositories.  
+The GSI has been updated from an older release branch (gfsda.v16.3.20) to one much closer to the develop
+branch (gfsda.v16.3.26) with a large number of changes to the code that do not affect results.
+Between these versions there has been a reorganisation of the repositories
+resulting in some functionality moving from GSI to new repositories.
 Therefore the following new repositories are checked out:
 
-GSI:  gfsda.v16.3.25
-GSI-Utils:  gsiutil.v16.3.25
-GSI-Monitor: gsimon_v16.3.25 
+GSI:  gfsda.v16.3.26
+GSI-Utils:  gsiutil.v16.3.26
+GSI-Monitor: gsimon_v16.3.26
 
 JOBS CHANGES
 ------------
@@ -132,7 +132,7 @@ The following GSI-fix files have been modified to include new data:
 * `global_satinfo.txt` (Add GOES-19 CSRs, modify GMI, preparation for Metop-SG)
 * `global_scaninfo.txt` (Add MWS and GOES-19)
 * `prepobs_errtable.global` (Add Windborne (301/401) and Saildrone (302/402))
-* `mws_beamwidth.txt` has been added to support future implementation of MWS when available 
+* `mws_beamwidth.txt` has been added to support future implementation of MWS when available
 
 MODULE CHANGES
 --------------
@@ -160,12 +160,12 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 * Does this change require a 30-day evaluation?
   * No
 * Building GSI requires CRTMv2.4.0.2
-* GOES-19 and GMI bias correction files need to be updated before implementation. We usually spin up 
-  the bias correction for a couple of weeks before turning on active assimilation. This can either be 
-  done by a two step implementation (starting with monitoring and then switching to active once the 
-  bias correction is spun up) or by taking the coefficients from a parallel.  A second wrinkle here 
-  is that the GMI bias correction is already spun up - but is wrong so we need to zero it first in 
-  the bias correction file. We suggest discussing how precisely to do this before any pre-operational 
+* GOES-19 and GMI bias correction files need to be updated before implementation. We usually spin up
+  the bias correction for a couple of weeks before turning on active assimilation. This can either be
+  done by a two step implementation (starting with monitoring and then switching to active once the
+  bias correction is spun up) or by taking the coefficients from a parallel.  A second wrinkle here
+  is that the GMI bias correction is already spun up - but is wrong so we need to zero it first in
+  the bias correction file. We suggest discussing how precisely to do this before any pre-operational
   parallel runs are started.
 
 DISSEMINATION INFORMATION
@@ -194,3 +194,4 @@ Kate.Friedman@noaa.gov
 Andrew.Collard@noaa.gov
 Matthew.Masarik@noaa.gov
 Jessica.Meixner@noaa.gov
+Rahul.Mahajan@noaa.gov

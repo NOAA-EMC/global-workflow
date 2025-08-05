@@ -23,7 +23,7 @@ echo $topdir
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    git clone --recursive --branch GFS.v16.3.25 https://github.com/ufs-community/ufs-weather-model.git fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    git clone --recursive --branch GFS.v16.3.26 https://github.com/ufs-community/ufs-weather-model.git fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
@@ -32,7 +32,7 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
-    git clone --recursive --branch gfsda.v16.3.25 https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
+    git clone --recursive --branch gfsda.v16.3.26 https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
     git submodule update --init
     cd ${topdir}
@@ -43,7 +43,7 @@ fi
 echo gsi_utils checkout ...
 if [[ ! -d gsi_utils.fd ]] ; then
     rm -f ${topdir}/checkout-gsi_utils.log
-    git clone --branch gsiutil.v16.3.25 https://github.com/NOAA-EMC/GSI-Utils.git gsi_utils.fd >> ${topdir}/checkout-gsi_utils.log 2>&1
+    git clone --branch gsiutil.v16.3.26 https://github.com/NOAA-EMC/GSI-Utils.git gsi_utils.fd >> ${topdir}/checkout-gsi_utils.log 2>&1
     cd gsi_utils.fd
     cd ${topdir}
 else
@@ -54,7 +54,7 @@ echo gsi_monitor checkout ...
 if [[ ! -d gsi_monitor.fd ]] ; then
     rm -f ${topdir}/checkout-gsi_monitor.log
     # Check out a version before changes for the new directory structure were introduced.
-    git clone --branch gsimon_v16.3.25 https://github.com/NOAA-EMC/GSI-Monitor.git gsi_monitor.fd >> ${topdir}/checkout-gsi_monitor.log 2>&1
+    git clone --branch gsimon_v16.3.26 https://github.com/NOAA-EMC/GSI-Monitor.git gsi_monitor.fd >> ${topdir}/checkout-gsi_monitor.log 2>&1
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi_monitor.fd already exists.'
