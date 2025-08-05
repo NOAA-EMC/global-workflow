@@ -45,7 +45,7 @@ def get_user_thread_count():
 
         bash = which('bash')
         try:
-            result=bash("-c", "ulimit -u", output=str)
+            result = bash("-c", "ulimit -u", output=str)
             process_limit = int(result.strip())
         except (ProcessError, ValueError):
             process_limit = -1
