@@ -11,6 +11,7 @@ if (homegfssdir == "None") then
 end
 
 load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
+load(pathJoin("mkl", (os.getenv("mkl_ver") or "None")))
 
 load("gw_run.common")
 
