@@ -259,7 +259,6 @@ def rocoto_statcount(rocotostat):
         Dictionary containing counts for each job status category (SUCCEEDED, FAIL, DEAD, RUNNING, etc.) for monitoring.
     """
 
-
     rocotostat_output = attempt_multiple_times(lambda: rocotostat('--all', output=str), 4, 120, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:4] for line in rocotostat_output]
