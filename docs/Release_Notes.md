@@ -31,11 +31,11 @@ The checkout script extracts the following GFS components:
 | ---------- | ---------------------------- | ----------------------- |
 | MODEL      | GFS.v16.3.25                 | Jun.Wang@noaa.gov       |
 | GLDAS      | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov      |
-| GSI        | gfsda.v16.3.25               | Andrew.Collard@noaa.gov |
+| GSI        | gfsda.v16.3.26               | Andrew.Collard@noaa.gov |
 | UFS_UTILS  | ops-gfsv16.3.20              | George.Gayno@noaa.gov   |
 | POST       | upp_v8.3.0                   | Wen.Meng@noaa.gov       |
-| GSI-Utils  | gsiutil.v16.3.25             | Andrew.Collard@noaa.gov |
-| GSI-Monitor| gsimon_v16.3.25              | Edward.Safford@noaa.gov |
+| GSI-Utils  | gsiutil.v16.3.26             | Andrew.Collard@noaa.gov |
+| GSI-Monitor| gsimon_v16.3.26              | Edward.Safford@noaa.gov |
 
 To build all the GFS components, execute:
 ```bash
@@ -67,14 +67,14 @@ SORC CHANGES
 * New EMC_verif-global tag: `verif_global_v2.10.0.1` (Gulf of America changes)
 
 The GSI has been updated from an older release branch (gfsda.v16.3.20) to one much closer to the develop
-branch (gfsda.v16.3.25) with a large number of changes to the code that do not affect results.
+branch (gfsda.v16.3.26) with a large number of changes to the code that do not affect results.
 Between these versions there has been a reorganisation of the repositories
 resulting in some functionality moving from GSI to new repositories.
 Therefore the following new repositories are checked out:
 
-GSI:  gfsda.v16.3.25
-GSI-Utils:  gsiutil.v16.3.25
-GSI-Monitor: gsimon_v16.3.25
+GSI:  gfsda.v16.3.26
+GSI-Utils:  gsiutil.v16.3.26
+GSI-Monitor: gsimon_v16.3.26
 
 JOBS CHANGES
 ------------
