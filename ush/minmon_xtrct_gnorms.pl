@@ -414,7 +414,7 @@ if( $rc == 0 ) {
       #--------------------------
       #  move files to $M_TANKverf
       #--------------------------
-      my $tankdir = $ENV{"M_TANKverfM0"};
+      my $tankdir = $ENV{"M_TANKverf"};
       if(! -d $tankdir) {
          system( "mkdir -p $tankdir" );
       }

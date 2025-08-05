@@ -122,8 +122,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
    #-------------------------------------------------------------
    #  Update the SATYPE if any new sat/instrument was 
-   #  found in $radstat_satype.  Write the SATYPE contents back 
-   #  to $TANKverf/radmon.$PDY.
+   #  found in $radstat_satype.  
    #-------------------------------------------------------------
    satype_changes=0
    new_satype=$SATYPE
@@ -139,7 +138,10 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
       fi
    done
 
- 
+   if (( satype_changes == 1 )); then
+      SATYPE=${new_satype}
+   fi
+	
    #------------------------------------------------------------------
    # Rename the diag files and uncompress
    #------------------------------------------------------------------
