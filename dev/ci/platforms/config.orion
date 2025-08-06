@@ -4,7 +4,7 @@
 # config.orion - Platform-specific configuration for Orion
 #
 # This file contains environment variables used by CI/CD scripts,
-# directories, and settings specific to the Gaea C6 platform.
+# directories, and settings specific to the Orion platform.
 #########################################################################
 
 # Main CI root directory
