@@ -11,7 +11,7 @@ arguments:
   resensatmos: 96
   resdetocean: 1
   start: 'cold'
-  nens: 10
+  nens: 3
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'TOPICDIR' | getenv }}/CPC/C96mx100
