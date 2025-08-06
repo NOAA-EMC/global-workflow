@@ -4,7 +4,8 @@ labels: ["Static Data Mgmt"]
 type: "task"
 projects: ["NOAA-EMC/41"]
 assignees:
-  - KateFriedman-NOAA
+  - DavidHuber-NOAA
+  - aerorahul 
 
 body:
   - type: dropdown

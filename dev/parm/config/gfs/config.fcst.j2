@@ -6,12 +6,7 @@
 echo "BEGIN: config.fcst"
 
 export USE_ESMF_THREADING="YES"  # Toggle to use ESMF-managed threading or traditional threading in UFSWM
-if [[ "${DO_CHEM_WARMSTART}" == "YES" ]]; then
-    export COPY_FINAL_RESTARTS="YES" # science configuration requires restarts to be copied
-
-else
-    export COPY_FINAL_RESTARTS="NO"
-fi
+export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GEFS Run (GDAS is handled seperately)
 
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE}"
@@ -22,7 +17,7 @@ if [[ "${DO_ICE}" == "YES" ]]; then
     string="${string} --cice6 ${ICERES}"
 fi
 if [[ "${DO_WAVE}" == "YES" ]]; then
-    string="${string} --ww3 ${waveGRD// /;}"
+    string="${string} --ww3 ${waveGRD}"
 fi
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
     string="${string} --gocart"
@@ -33,7 +28,7 @@ source "${EXPDIR}/config.ufs" ${string}
 
 # Forecast length for GFS forecast
 case ${RUN} in
-  gfs|gcafs)
+  *gfs)
     # Convert comma-separated string into bash array
     IFS=', ' read -ra segments <<< "${FCST_SEGMENTS}"
     # Determine MIN and MAX based on the forecast segment
@@ -48,8 +43,9 @@ case ${RUN} in
     export FHOUT_HF=${FHOUT_HF_GFS}
     export FHOUT_OCN=${FHOUT_OCN_GFS}
     export FHOUT_ICE=${FHOUT_ICE_GFS}
+    export FHOUT_WAV=${FHOUT_WAV_GFS}
     ;;
-  *gdas|gcdas)
+  *gdas)
     export FHMAX_HF=0
     export FHOUT_HF=0
     ;;
@@ -57,6 +53,9 @@ case ${RUN} in
     echo "FATAL ERROR: Unsupported RUN '${RUN}'"
     exit 1
 esac
+
+#use 2014-2023 mean MERRA2 aerosol
+export MERRA2_6ym=".false."
 
 # Get task specific resources
 source "${EXPDIR}/config.resources" fcst
@@ -75,7 +74,7 @@ export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_O
 
 export FORECASTSH="${SCRgfs}/exglobal_forecast.sh"
 #export FORECASTSH="${SCRgfs}/exglobal_forecast.py"  # Temp. while this is worked on
-export FCSTEXEC="gcafs_model.x"
+export FCSTEXEC="gfs_model.x"
 
 #######################################################################
 # Model configuration
@@ -93,7 +92,7 @@ export gwd_opt=2
 # --GFS.v16 uGWD.v0, used for suite FV3_GFS_v16 and UFS p6 etc
 # do_ugwp=T: use unified CGWD and OGWD, and turbulent orographic form drag (TOFD)
 # do_ugwp=F: use unified CGWD but old OGWD, TOFD is not uded.
-if (( gwd_opt == 1 )); then
+if [[ ${gwd_opt} -eq 1 ]]; then
     export knob_ugwp_version=0
     export do_ugwp=".false."
     export do_tofd=".false."
@@ -103,7 +102,7 @@ fi
 
 
 # -- uGWD.v1, for suite FV3_GFS_v17 and FV3_GFS_v17p8b etc
-if (( gwd_opt == 2 )); then
+if [[ ${gwd_opt} -eq 2 ]]; then
 
     #--used for UFS p7 and p8a
     #export  knob_ugwp_version=1
@@ -158,12 +157,8 @@ tbp=""
 if [[ "${progsigma}" == ".true." ]]; then tbp="_progsigma" ; fi
 
 # Radiation options
-if [[ "${DO_AERO_FCST}" == "YES" ]]; then
-    if [[ "${RUN}" =~ "gfs" || "${RUN}" == "gcafs" || "${RUN}" == "gcdas" ]]; then
-        export IAER=2011  # spectral band mapping method for aerosol optical properties
-    else
-        export IAER=1011
-    fi
+if [[ "${DO_AERO_FCST}" == "YES" && "${RUN}" =~ "gfs" ]]; then
+    export IAER=2011  # spectral band mapping method for aerosol optical properties
 else
     export IAER=1011
 fi
@@ -286,7 +281,7 @@ export FSICL="0"
 export FSICS="0"
 
 #---------------------------------------------------------------------
-if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gcdas" ]] ; then # GDAS cycle specific parameters
+if [[ "${RUN}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
     export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da"
@@ -297,7 +292,7 @@ if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gcdas" ]] ; then # GDAS cycle specific 
     # Turn on dry mass adjustment in GDAS
     export adjust_dry_mass=".true."
 
-elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]] ; then # GFS or GCAFS cycle specific parameters
+elif [[ "${RUN}" =~ "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
@@ -315,11 +310,13 @@ elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]] ; then # GFS or GCAFS cycle sp
       export io_layout="1,1"
     fi
 
-else
-    echo "FATAL ERROR: Unsupported RUN '${RUN}'"
-    exit 1
+    # Turn off Land IAU for GFS
+    export DO_LAND_IAU=".false."
+
 fi
 
+# This is used to ensure that the orography in the land restart file matches the orography
+export CHECK_LAND_RESTART_OROG="{{ CHECK_LAND_RESTART_OROG }}"
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.

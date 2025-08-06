@@ -2,15 +2,8 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_spec" -c "base gempak"
 
-############################################
-# Set up model and cycle specific variables
-############################################
 export COMPONENT="atmos"
-export model=${model:-gfs}
 export EXT=""
-
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 ##############################################
 # Define COM directories
