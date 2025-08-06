@@ -17,7 +17,7 @@ export STAGE_DIR="${DATAROOT}/archive_rotdir/${PSLOT}"
 export SERVER_NAME="mercury"
 
 # Username on the server
-export SERVER_USERNAME=""
+export SERVER_USERNAME="Neil.Barton"
 # General delivery location on Mercury (staging area for data on server)
 export SERVER_HOME="/collab2/data/${SERVER_USERNAME}/${PSLOT}"
 
