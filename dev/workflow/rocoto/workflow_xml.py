@@ -229,9 +229,6 @@ class RocotoXML(ABC):
         # This method generates a script and a cron entry to run it.
         # It is the user's responsibility to add the cron entry to the server's crontab.
 
-        print('NPB')
-        print(self._app_config.configs['sfs'].keys())
-        print('NPB')
         globus_conf = self._app_config.configs[next(iter(self._app_config.configs))]['globus']
 
         expdir = globus_conf["EXPDIR"]
