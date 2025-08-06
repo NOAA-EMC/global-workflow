@@ -3,96 +3,22 @@
 import sys
 import os
 import copy
-import logging
-from time import sleep, time
+from time import sleep
 
-from wxflow import which, Logger, CommandNotFoundError, ProcessError, Executable
+from wxflow import which, Logger, CommandNotFoundError, ProcessError
 from argparse import ArgumentParser, FileType
 
 from collections import Counter
 
-logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
-                colored_log=False,
-                logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE"))
-
-# If logging to file, suppress console output unless explicitly requested
-if os.environ.get("ROCOTOSTAT_LOG_FILE") and not os.environ.get("ROCOTOSTAT_CONSOLE_LOG", "").lower() in ['true', '1', 'yes']:
-    # Remove console handlers to suppress stdout/stderr output when logging to file
-    for handler in logger._logger.handlers[:]:
-        if isinstance(handler, logging.StreamHandler) and handler.stream.name in ['<stdout>', '<stderr>']:
-            logger._logger.removeHandler(handler)
+logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=False)
 
 
-def get_user_thread_count():
+def attempt_multiple_times(expression, max_attempts, sleep_duration=0, exception_class=Exception):
     """
-    Get the current user thread count for monitoring against ulimit -u.
+    Retries a function multiple times.
 
-    Returns
-    -------
-    dict
-        Dictionary containing thread count and limit information
-    """
-
-    try:
-        current_user = os.getenv('USER', 'unknown')
-
-        ps = which('ps')
-        try:
-            result = ps("-u", current_user, "-L", output=str)
-            user_threads = len(result.strip().split('\n')) - 1 if result.strip() else 0
-        except ProcessError:
-            user_threads = -1
-
-        bash = which('bash')
-        try:
-            result = bash("-c", "ulimit -u", output=str)
-            process_limit = int(result.strip())
-        except (ProcessError, ValueError):
-            process_limit = -1
-
-        return {
-            'user': current_user,
-            'thread_count': user_threads,
-            'process_limit': process_limit,
-            'utilization_pct': round((user_threads / process_limit * 100), 2) if process_limit > 0 else -1
-        }
-
-    except Exception as e:
-        logger.warning(f"Error getting user thread count: {e}")
-        return {
-            'user': 'unknown',
-            'thread_count': -1,
-            'process_limit': -1,
-            'utilization_pct': -1
-        }
-
-
-def log_thread_count(stage=""):
-    """
-    Log the current user thread count with optional stage identifier.
-
-    Parameters
-    ----------
-    stage : str
-        Optional stage identifier (e.g., "START", "END")
-    """
-    thread_info = get_user_thread_count()
-    stage_prefix = f"[{stage}] " if stage else ""
-
-    logger.info(f"{stage_prefix}USER_THREAD_COUNT: {thread_info['user']} has "
-                f"{thread_info['thread_count']}/{thread_info['process_limit']} threads "
-                f"({thread_info['utilization_pct']}% utilization)")
-
-
-def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
-                           exception_class=Exception, use_telescoping_delay=True):
-    """
-    Retries a function multiple times with optional telescoping delays.
-
-    Try to execute the function expression up to max_attempts times ignoring
-    any exceptions of the type exception_class. It waits for sleep_duration
-    seconds between attempts. If use_telescoping_delay is True, the sleep
-    duration increases with each attempt.
+    Try to execute the function expression up to max_attempts times ignoring any exceptions
+    of the type exception_class, It waits for sleep_duration seconds between attempts.
 
     Parameters
     ----------
@@ -101,12 +27,9 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
     max_attempts : int
         The maximum number of attempts to execute the function.
     sleep_duration : int, optional
-        The base number of seconds to wait between attempts. Default is 0.
+        The number of seconds to wait between attempts. Default is 0.
     exception_class : Exception, optional
-        The type of exception to catch. Default is the base Exception class,
-        catching all exceptions.
-    use_telescoping_delay : bool, optional
-        If True, use increasing delays between attempts. Default is True.
+        The type of exception to catch. Default is the base Exception class, catching all exceptions.
 
     Returns
     -------
@@ -122,77 +45,32 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
 
     attempt = 0
     last_exception = None
-    total_start_time = time()
-
     while attempt < max_attempts:
-        call_start_time = time()
         try:
-            result = expression()
-            call_end_time = time()
-
-            # Log performance metrics
-            call_duration = call_end_time - call_start_time
-            total_duration = call_end_time - total_start_time
-
-            # Log thread count after successful call
-            log_thread_count(f"ROCOTO_SUCCESS_ATTEMPT_{attempt + 1}")
-
-            logger.info(f"Rocoto call successful on attempt {attempt + 1}: "
-                        f"call_time={call_duration:.2f}s, "
-                        f"total_time={total_duration:.2f}s")
-
-            return result
-
-        except exception_class as e:
-            last_exception = e
+            pass
+            return expression()
+        except exception_class as last_exception:
             attempt += 1
-            call_end_time = time()
-            call_duration = call_end_time - call_start_time
-
-            # Log thread count after failed call
-            log_thread_count(f"ROCOTO_FAILED_ATTEMPT_{attempt}")
-
-            logger.warning(f"Rocoto call failed on attempt {attempt}: "
-                           f"call_time={call_duration:.2f}s, "
-                           f"error={str(last_exception)}")
-            max_delay = 600
-            if attempt < max_attempts:
-                if use_telescoping_delay:
-                    current_delay = min(sleep_duration * (2 ** attempt), max_delay)
-                else:
-                    current_delay = sleep_duration
-
-                if current_delay > 0:
-                    logger.info(f"Waiting {current_delay}s before retry "
-                                f"attempt {attempt + 1}")
-                    sleep(current_delay)
-
-    # Log final failure
-    total_duration = time() - total_start_time
-    logger.error(f"All {max_attempts} attempts failed after {total_duration:.2f}s total")
-    raise last_exception
+            sleep(sleep_duration)
+    else:
+        raise last_exception
 
 
 def input_args():
     """
-    Parse command-line arguments for rocotostat workflow analysis.
-
-    This function configures and parses command-line arguments used to specify the Rocoto workflow XML document and database
-    file, along with optional flags for verbose output and bash export functionality. The function validates input files and
-    returns a namespace object containing all parsed arguments for use throughout the rocotostat analysis process.
+    Parse command-line arguments.
 
     Returns
     -------
     args : Namespace
-        The parsed command-line arguments containing workflow document path, database file path, and output format options.
+        The parsed command-line arguments.
     """
 
     description = """
         Using rocotostat to get the status of all jobs this scripts
-        determines rocoto_state: if all cycles are done, then rocoto_state
-        is Done. Assuming rocotorun had just been run, and the rocoto_state
-        is not Done, then rocoto_state is Stalled if there are no jobs that
-        are RUNNING, SUBMITTING, or QUEUED.
+        determines rocoto_state: if all cycles are done, then rocoto_state is Done.
+        Assuming rocotorun had just been run, and the rocoto_state is not Done, then
+        rocoto_state is Stalled if there are no jobs that are RUNNING, SUBMITTING, or QUEUED.
         """
 
     parser = ArgumentParser(description=description)
@@ -210,25 +88,21 @@ def input_args():
 
 def rocotostat_summary(rocotostat):
     """
-    Execute rocotostat with summary flag and analyze workflow cycle completion status.
+    rocoto_summary Run rocotostat and process its output.
 
-    This function invokes the rocotostat command with the '--summary' argument to retrieve high-level workflow information,
-    then processes the output to extract cycle completion statistics. It parses the summary output to determine the total
-    number of workflow cycles and counts how many cycles have reached the 'Done' state, providing essential metrics for
-    workflow progress monitoring and completion assessment.
+    rocoto_summary(rocotostat) adds a default argument '--summary' to the rocotostat
+    command, runs it, and processes its output to return a dictionary with the total
+    number of cycles and the number of cycles marked as 'Done'.
 
-    Parameters
-    ----------
-    rocotostat : callable
-        The rocotostat command object configured with workflow and database file paths for execution.
+    Input:
+    rocotostat - The rocotostat command.
 
-    Returns
-    -------
-    rocoto_status : dict
-        Dictionary containing 'CYCLES_TOTAL' (total cycles) and 'CYCLES_DONE' (completed cycles) for status tracking.
+    Output:
+    rocoto_status - A dictionary with the total number of cycles and the number of cycles marked as 'Done'.
     """
-
-    rocotostat_output = attempt_multiple_times(lambda: rocotostat("--summary", output=str), 3, 120, ProcessError)
+    rocotostat = copy.deepcopy(rocotostat)
+    rocotostat.add_default_arg('--summary')
+    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 3, 120, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:2] for line in rocotostat_output]
 
@@ -241,25 +115,23 @@ def rocotostat_summary(rocotostat):
 
 def rocoto_statcount(rocotostat):
     """
-    Execute rocotostat with all jobs flag and analyze detailed job status distribution across workflow cycles.
+    rocoto_statcount Run rocotostat and process its output.
 
-    This function runs the rocotostat command with the '--all' argument to retrieve comprehensive job status information
-    for all workflow cycles and tasks. It processes the detailed output to count jobs in each status category including
-    SUCCEEDED, FAIL, DEAD, RUNNING, SUBMITTING, QUEUED, UNAVAILABLE, and UNKNOWN states, providing granular insight into
-    workflow execution progress and identifying potential issues or bottlenecks in the job execution pipeline.
+    rocoto_statcount(rocotostat) adds a default argument '--all' to the rocotostat
+    command, runs it, and processes its output to return a dictionary with the count
+    of each status case.
 
-    Parameters
-    ----------
-    rocotostat : callable
-        The rocotostat command object configured with workflow and database file paths for comprehensive job analysis.
+    Input:
+    rocotostat - The rocotostat command.
 
-    Returns
-    -------
-    rocoto_status : dict
-        Dictionary containing counts for each job status category (SUCCEEDED, FAIL, DEAD, RUNNING, etc.) for monitoring.
+    Output:
+    rocoto_status - A dictionary with the count of each status case.
     """
 
-    rocotostat_output = attempt_multiple_times(lambda: rocotostat('--all', output=str), 4, 120, ProcessError)
+    rocotostat = copy.deepcopy(rocotostat)
+    rocotostat.add_default_arg('--all')
+
+    rocotostat_output = attempt_multiple_times(lambda: rocotostat(output=str), 4, 120, ProcessError)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:4] for line in rocotostat_output]
     rocotostat_output = [line for line in rocotostat_output if len(line) != 1]
@@ -323,16 +195,12 @@ if __name__ == '__main__':
     out to stdout spcific information of rocoto workflow.
     """
 
-    # Log thread count at start
-    log_thread_count("START")
-
     args = input_args()
 
     try:
         rocotostat = which("rocotostat")
     except CommandNotFoundError:
         logger.exception("rocotostat not found in PATH")
-        log_thread_count("ERROR_EXIT")
         raise CommandNotFoundError("rocotostat not found in PATH")
 
     rocotostat.add_default_arg(['-w', os.path.abspath(args.w.name), '-d', os.path.abspath(args.d.name)])
@@ -378,8 +246,5 @@ if __name__ == '__main__':
             print(f'export {status}={rocoto_status[status]}')
     else:
         print(rocoto_state)
-
-    # Log thread count at end
-    log_thread_count("END")
 
     sys.exit(error_return)
