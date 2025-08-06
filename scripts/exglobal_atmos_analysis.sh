@@ -79,12 +79,6 @@ CHGRESEXEC=${CHGRESEXEC:-${EXECgfs}/enkf_chgres_recenter.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
 CALCINCPY=${CALCINCPY:-${USHgfs}/calcinc_gfs.py}
 
-# OPS flags
-RUN=${RUN:-""}
-SENDECF=${SENDECF:-"NO"}
-SENDDBN=${SENDDBN:-"NO"}
-export gesenvir=${gesenvir:-${envir}}
- 
 export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 
 # Observations

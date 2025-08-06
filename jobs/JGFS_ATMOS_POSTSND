@@ -2,23 +2,13 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
 
-
-##############################################
-# Set variables used in the exglobal script
-##############################################
-
 ########################################
 # Runs GFS BUFR SOUNDINGS
 ########################################
 
-export model=${model:-gfs}
-export SENDDBN=${SENDDBN:-YES}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
-
 ##############################
 # Define COM Directories
 ##############################
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \

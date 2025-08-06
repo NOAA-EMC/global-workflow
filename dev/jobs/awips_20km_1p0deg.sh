@@ -7,7 +7,6 @@ set -x
 ## Inline awips driver script
 ## HOMEgfs   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
-## CDATE  : current analysis date (YYYYMMDDHH)
 ## RUN    : cycle name (gdas / gfs)
 ## PDY    : current date (YYYYMMDD)
 ## cyc    : current cycle (HH)
@@ -15,7 +14,7 @@ set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"

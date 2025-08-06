@@ -195,6 +195,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             run_options[run]['do_ice'] = run_base.get('DO_ICE', False)
             run_options[run]['do_prep_obs_aero'] = run_base.get('DO_PREP_OBS_AERO', False)
             run_options[run]['do_aero_anl'] = run_base.get('DO_AERO_ANL', False)
+            run_options[run]['use_aero_anl'] = run_base.get('USE_AERO_ANL', False)
             run_options[run]['do_aero_fcst'] = run_base.get('DO_AERO_FCST', False)
 
             if run_base.get('GEFSTYPE', "") == "near-real-time":

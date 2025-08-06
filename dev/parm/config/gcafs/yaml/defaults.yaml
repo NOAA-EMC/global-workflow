@@ -1,4 +1,6 @@
 base:
+  USE_AERO_ANL: "YES"
+  AERO_ANL_RUNS: "gcdas"
   DOIAU: "NO"
   DO_JEDIATMVAR: "NO"
   DO_JEDIATMENS: "NO"
@@ -30,6 +32,9 @@ base:
   DO_LETKF: "NO"
   NMEM_ENS: 0
   l4densvar: ".false."
+  assim_freq: 6
+  FHMAX: 9
+  FHOUT_AERO: 3
 
 atmanl:
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"
@@ -71,6 +76,9 @@ prepoceanobs:
   OBSPREP_YAML: "${PARMgfs}/gdas/soca/obsprep/obsprep_config.yaml"
   use_exp_obs: "YES"
   dmpdir_exp: "${BASE_DATA}/experimental_obs"
+
+fcst:
+  CHECK_LAND_RESTART_OROG: "YES"
 
 # config.aero has just a system-specific path to add.
 # This is handled by the setup_expt.py, but it has to be told to write to it.

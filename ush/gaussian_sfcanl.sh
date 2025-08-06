@@ -37,7 +37,6 @@
 #     LOGSCRIPT     Log posting script.  Defaults to none.
 #     ENDSCRIPT     Postprocessing script
 #                   defaults to none
-#     CDATE         Output analysis date in yyyymmddhh format. Required.
 #     PGMOUT        Executable standard output
 #                   defaults to $pgmout, then to '&1'
 #     PGMERR        Executable standard error
@@ -109,14 +108,11 @@ LEVS=${LEVS:-64}
 LEVSP1=$(($LEVS+1))
 FIXWGTS=/lfs/h2/emc/da/noscrub/catherine.thomas/fix/diffres/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc
 #FIXWGTS=${FIXWGTS:-${FIXorog}/${CASE}/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
-DATA=${DATA:-$(pwd)}
 
 #  Filenames.
 XC=${XC:-}
 GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.x}
 SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVSP1}.txt}
-
-CDATE=${CDATE:?}
 
 #  Other variables.
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
@@ -129,7 +125,6 @@ export REDERR=${REDERR:-'2>'}
 #  Preprocessing
 ${INISCRIPT:-}
 pwd=$(pwd)
-cd "${DATA}" || exit 99
 if [[ ! -d "${COMOUT_ATMOS_ANALYSIS}" ]]; then
    mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 fi

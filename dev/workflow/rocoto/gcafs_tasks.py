@@ -619,8 +619,9 @@ class GCAFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
-        dependencies.append(rocoto.add_dependency(dep_dict))
+        if self.options['use_aero_anl']:
+            dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
@@ -903,13 +904,7 @@ class GCAFSTasks(Tasks):
         fhout_ice_gfs = self._configs['base']['FHOUT_ICE_GFS']
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'},
-                         'ocean': {'config': 'oceanice_products',
-                                   'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr3_next#.nc'},
-                         'ice': {'config': 'oceanice_products',
-                                 'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr3_last#.nc'}}
+                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -1240,7 +1235,7 @@ class GCAFSTasks(Tasks):
             if self.options['do_anlstat'] and self.options['do_aero_anl']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            if self.run in ['gcdas']:
+            if self.run in ['gcdas'] and self.options['do_aero_anl']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlgenb'}
                 deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies

@@ -2,9 +2,11 @@
 [![shellnorms](https://github.com/NOAA-EMC/global-workflow/actions/workflows/linters.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/linters.yaml)
 [![pynorms](https://github.com/NOAA-EMC/global-workflow/actions/workflows/pynorms.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/pynorms.yaml)
 
-![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/hera.json)
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/hercules.json)
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/wcoss2.json)
+
+![Custom badge](https://gist.githubusercontent.com/emcbot/66059582886cb5c2485ff64bf24e7f93/raw/hera_pipeline_badge.svg)
+![Custom badge](https://gist.githubusercontent.com/emcbot/66059582886cb5c2485ff64bf24e7f93/raw/gaeac6_pipeline_badge.svg)
 
 The Global Workflow supporting the Global Forecast System (GFS), the Global Ensemble Forecasting System (GEFS), and the Seasonal Forecast System (SFS) with the [UFS-weather-model](https://github.com/ufs-community/ufs-weather-model).  Data assimilation, currently only available for the GFS, is provides by both the [GSI](https://github.com/NOAA-EMC/GSI)- and [GDASApp (JEDI)](https://github.com/NOAA-EMC/GDASApp)-based Data Assimilation systems.
 

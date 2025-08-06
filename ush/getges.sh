@@ -25,7 +25,7 @@
 # natges, natgm3, natgm2, natgm1, natgp1, natgp2, natgp3, natcur,
 # nsfges, nsfgm3, nsfgm2, nsfgm1, nsfgp1, nsfgp2, nsfgp3, nsfcur,
 # nstcur, nflges, nflgp3
-# Specify option "-v valid" for the valid date wanted (default $CDATE).
+# Specify option "-v valid" for the valid date wanted (default $PDY$cyc).
 # Currently, the valid hours specified must be a multiple of 3.
 # Either 2-digit or 4-digit years are currently allowed.
 # Specify positional argument to be the file to which to copy the guess.
@@ -40,7 +40,6 @@
 #  getges.sh -e prod -t sigges -v 1998100100 sges 
 #
 # Example 2. Assign the pressure grib guess for the date 1998100121.
-#  export CDATE=1998100121
 #  export XLFUNIT_12="$(getges.sh -qt pgbges||echo /dev/null)"
 #
 # Example 3. Get the PRX pgb analysis or the best valid guess at 1998100112.
@@ -89,7 +88,7 @@ fhour=any                        # default forecast hour
 quiet=YES                        # default quiet mode
 resol=high                       # default resolution
 typef=sigges                     # default filetype
-valid=${CDATE:-'?'}              # default valid date
+valid=${PDY}${cyc}               # default valid date
 err=0
 
 while getopts n:e:f:qr:t:v: opt;do
@@ -107,7 +106,7 @@ done
 shift $(($OPTIND-1))
 gfile=$1
 if [[ -z $valid ]];then
- echo "$0: either -v option or environment variable CDATE must be set" >&2
+ echo "$0: either -v option or environment variables PDY and cyc must be set" >&2
 elif [[ $# -gt 1 ]];then
  echo "$0: too many positional arguments" >&2
 elif [[ $err -ne 0 ]];then
@@ -144,7 +143,7 @@ if [[ $gfile = '?' || $# -gt 1 || $err -ne 0 || -z $valid ||\
   echo "           nstcur, nflges, nflgp3," >&2
  elif [[ $valid = '?' ]];then
   echo "         valid is the valid date in yyyymmddhh or yymmddhh form" >&2
-  echo "         (default is environmental variable CDATE)" >&2
+  echo "         (default is environmental variable $PDY$cyc)" >&2
  elif [[ $gfile = '?' ]];then
   echo "         gfile is the guess file to write" >&2
   echo "         (default is to write the guess file name to stdout)" >&2
@@ -1403,10 +1402,10 @@ fi
 #-------------------------------------------------------------------------------
 # Either copy guess to a file or write guess name to standard output.
 if [[ -z "$gfile" ]];then
- echo $ges
+ echo ${ges}
  err=$?
 else
- cp $ges $gfile
+ cp ${ges} ${gfile}
  err=$?
 fi
 
