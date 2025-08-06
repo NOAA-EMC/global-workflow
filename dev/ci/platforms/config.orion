@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 #########################################################################
-# config.hera - Platform-specific configuration for Hera
+# config.orion - Platform-specific configuration for Orion
 #
 # This file contains environment variables used by CI/CD scripts,
 # directories, and settings specific to the Gaea C6 platform.
