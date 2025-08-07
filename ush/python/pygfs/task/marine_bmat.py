@@ -102,7 +102,7 @@ class MarineBMat(Task):
 
         # stage fix files
         logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
-        soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
+        soca_fix_list = parse_j2yaml(self.task_config.MARINE_STAGE_FIX_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
         # prepare the deterministic MOM6 input.nml
@@ -120,7 +120,7 @@ class MarineBMat(Task):
 
         # stage the soca utility yamls (fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files")
-        soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
+        soca_utility_list = parse_j2yaml(self.task_config.MARINE_STAGE_UTILITIES_TMPL, self.task_config)
         FileHandler(soca_utility_list).sync()
 
         # initialize vtscales python script
@@ -141,7 +141,7 @@ class MarineBMat(Task):
         # stage ensemble members for the hybrid background error
         if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
             logger.debug(f"Stage ensemble members for the hybrid background error")
-            letkf_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, self.task_config)
+            letkf_stage_list = parse_j2yaml(self.task_config.MARINE_ENS_STAGE_BKG_TMPL, self.task_config)
             FileHandler(letkf_stage_list).sync()
 
         # create the symbolic link to the static B-matrix directory
@@ -221,5 +221,5 @@ class MarineBMat(Task):
 
         # Save output files to COM
         logger.info(f"Copy files to ROTDIR")
-        soca_finalize_list = parse_j2yaml(self.task_config.MARINE_BMAT_FINALIZE_YAML_TMPL, self.task_config)
+        soca_finalize_list = parse_j2yaml(self.task_config.MARINE_BMAT_FINALIZE_TMPL, self.task_config)
         FileHandler(soca_finalize_list).sync()

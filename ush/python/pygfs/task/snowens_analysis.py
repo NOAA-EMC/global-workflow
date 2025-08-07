@@ -135,7 +135,7 @@ class SnowEnsAnalysis(Task):
 
         # stage GTS bufr2ioda mapping YAML files
         logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.SNOW_STAGE_GTS_TMPL}")
-        gts_mapping_list = parse_j2yaml(self.task_config.SNOW_STAGE_GTS_TMPL}"), self.task_config)
+        gts_mapping_list = parse_j2yaml(self.task_config.SNOW_STAGE_GTS_TMPL"), self.task_config)
         FileHandler(gts_mapping_list).sync()
 
         # stage FV3-JEDI fix files

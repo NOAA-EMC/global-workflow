@@ -79,7 +79,7 @@ class MarineRecenter(Task):
 
         # stage fix files
         logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
-        soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
+        soca_fix_list = parse_j2yaml(self.task_config.SOCA_STAGE_FIX_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
         # prepare the MOM6 input.nml
@@ -87,16 +87,16 @@ class MarineRecenter(Task):
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
-        soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
+        soca_utility_list = parse_j2yaml(self.task_config.MARINE_STAGE_UTILITIES_TMPL, self.task_config)
         FileHandler(soca_utility_list).sync()
 
         # stage backgrounds
-        bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
+        bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
         # stage the ensemble members and CICE restarts
         logger.info("---------------- Stage ensemble members and CICE restarts")
-        soca_ens_list = parse_j2yaml(self.task_config.MARINE_ECEN_STAGE_YAML_TMPL, self.task_config)
+        soca_ens_list = parse_j2yaml(self.task_config.MARINE_ECEN_INITIALIZE_TMPL, self.task_config)
         FileHandler(soca_ens_list).sync()
 
         # initialize JEDI applications
@@ -135,5 +135,5 @@ class MarineRecenter(Task):
 
         # Save recentered increments and ensemble statistics
         logger.info("---------------- Save recentered increments and ensemble statistics")
-        soca_ens_list = parse_j2yaml(self.task_config.MARINE_ECEN_FINALIZE_YAML_TMPL, self.task_config)
+        soca_ens_list = parse_j2yaml(self.task_config.MARINE_ECEN_FINALIZE_TMPL, self.task_config)
         FileHandler(soca_ens_list).sync()

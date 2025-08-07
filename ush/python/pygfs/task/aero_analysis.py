@@ -120,7 +120,7 @@ class AerosolAnalysis(Task):
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.AERO_STAGE_CRTM_COEFF_TMPL}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.AERO_STAGE_CRTM_COEFF_TMPL}"), self.task_config)
+        crtm_fix_dict = parse_j2yaml(self.task_config.AERO_STAGE_CRTM_COEFF_TMPL, self.task_config)
         FileHandler(crtm_fix_dict).sync()
         logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
 

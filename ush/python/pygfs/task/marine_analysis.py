@@ -109,7 +109,7 @@ class MarineAnalysis(Task):
 
         # stage fix files
         logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
-        soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
+        soca_fix_list = parse_j2yaml(self.task_config.MARINE_STAGE_FIX_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
         # prepare the deterministic MOM6 input.nml
@@ -129,17 +129,17 @@ class MarineAnalysis(Task):
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
-        soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
+        soca_utility_list = parse_j2yaml(self.task_config.MARINE_STAGE_UTILITIES_TMPL, self.task_config)
         FileHandler(soca_utility_list).sync()
 
         # stage the ocean and ice backgrounds for FGAT
         logger.info(f"Staging files needed for deterministic analysis from COM")
-        bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
+        bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
         # stage files and link directories from B-matrix job needed for deterministic analysis
         logger.info(f"Staging files needed for deterministic analysis from COM")
-        soca_files_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_FILES_YAML_TMPL, self.task_config)
+        soca_files_list = parse_j2yaml(self.task_config.MARINE_DET_INITIALIZE_TMPL, self.task_config)
         FileHandler(soca_files_list).sync()
 
         # assert that dates of the history files are correct
@@ -198,7 +198,7 @@ class MarineAnalysis(Task):
 
         # Save output files to COM
         logger.info(f"Copy files to ROTDIR")
-        soca_finalize_list = parse_j2yaml(self.task_config.MARINE_DET_FINALIZE_YAML_TMPL, self.task_config)
+        soca_finalize_list = parse_j2yaml(self.task_config.MARINE_DET_FINALIZE_TMPL, self.task_config)
         FileHandler(soca_finalize_list).sync()
 
         # Save obs diag statistics to COM (success is optional)

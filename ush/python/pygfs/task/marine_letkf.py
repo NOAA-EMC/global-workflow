@@ -73,7 +73,7 @@ class MarineLETKF(Analysis):
         logger.info("initialize")
 
         # make directories and stage ensemble background files
-        soca_fix_stage_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
+        soca_fix_stage_list = parse_j2yaml(self.task_config.MARINE_STAGE_FIX_TMPL, self.task_config)
         FileHandler(soca_fix_stage_list).sync()
         stageconfig = AttrDict()
         keys = ['app_path_observations',
@@ -114,11 +114,11 @@ class MarineLETKF(Analysis):
         jcb_config = {**jcb_base_config, **stageconfig}
 
         # stage letkf-specific files
-        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, jcb_config)
+        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_ENS_INITIALIZE_TMPL, jcb_config)
         FileHandler(letkf_stage_list).sync()
 
         # stage ensemble background files
-        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, stageconfig)
+        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.MARINE_ENS_STAGE_BKG_TMPL, stageconfig)
         FileHandler(soca_ens_bkg_stage_list).sync()
 
         # "observations" is expected by later JCB code to populate it with config info,
@@ -232,5 +232,5 @@ class MarineLETKF(Analysis):
         yamls_to_copy = []
         yamls_to_copy.append([letkfsaveconf.letkf_yaml_file, os.path.join(letkfsaveconf.COMOUT_CONF, 'soca_letkf.yaml')])
         FileHandler({'copy': yamls_to_copy}).sync()
-        letkf_save_list = parse_j2yaml(self.task_config.MARINE_LETKF_SAVE_YAML_TMPL, letkfsaveconf)
+        letkf_save_list = parse_j2yaml(self.task_config.MARINE_ENS_FINALIZE_TMPL, letkfsaveconf)
         FileHandler(letkf_save_list).sync()
