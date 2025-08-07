@@ -231,7 +231,6 @@ class NXSEmissions(Task):
         _write_txt_file(self.task_config.NXS_TIME_TEMPLATE, outfile)
         logger.info(f"NEXUS time file rendered successfully: written to {outfile}")
 
-
         # Render NXS Diag File
         nxs_diag_template = env.get_template(f"{self.task_config.NXS_DIAG_NAME}.j2")
         self.task_config.NXS_DIAG_TEMPLATE = nxs_diag_template.render(tmpl_dict)
@@ -246,8 +245,6 @@ class NXSEmissions(Task):
         _write_txt_file(self.task_config.NXS_SPEC_TEMPLATE, outfile)
         logger.info(f"NEXUS spec file rendered successfully: written to {outfile}")
 
-        # pprint(self.task_config)
-
     @logit(logger)
     def execute(self) -> None:
         """Run NEXUS emission preprocessor based on configuration.
@@ -255,7 +252,6 @@ class NXSEmissions(Task):
         This will run the NEXUS preprocessor executable with the provided configuration.
         It will process the emission files based on the task configuration and forecast dates.
         It will also handle different types of emissions based on the configuration.
-
 
         Parameters
         ----------
@@ -351,6 +347,7 @@ class NXSEmissions(Task):
         FileHandler(self.task_config.nxs_emission.data_out).sync()
 
         logger.info("Chemical emissions finalization complete")
+
 
 def _write_txt_file(content: str, file_path: Union[str, os.PathLike]) -> None:
     """Write content to a text file.

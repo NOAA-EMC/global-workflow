@@ -30,5 +30,3 @@ if __name__ == '__main__':
     nxsemis.configure()
     nxsemis.execute()
     nxsemis.finalize()
-
-

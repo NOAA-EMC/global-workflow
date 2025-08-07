@@ -45,7 +45,7 @@ class ChemFireEmissions(Task):
         self.AERO_INPUTS_DIR = self.task_config.get('AERO_INPUTS_DIR', None)
         self.COMOUT_CHEM_INPUT = self.task_config.get('COMOUT_CHEM_INPUT', None)
         nforecast_hours = self.task_config["FHMAX_GFS"]
-        self.start_date = self.task_config["PDY"] #- datetime.timedelta(days=1)
+        self.start_date = self.task_config["PDY"]
         self.end_date = self.start_date + to_timedelta(f'{nforecast_hours + 24}H')
         self.forecast_dates = list(rrule(freq=DAILY, dtstart=self.start_date, until=self.end_date))
 
@@ -641,7 +641,6 @@ class ChemFireEmissions(Task):
             import traceback
             logger.error(f"Traceback: {traceback.format_exc()}")
             return None
-
 
     @logit(logger)
     def _process_gbbepx_files(self, workdir: str) -> List[str]:
