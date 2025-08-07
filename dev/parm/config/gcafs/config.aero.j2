@@ -30,8 +30,8 @@ export dnats_aero=2
 # Biomass burning emission dataset. Choose from: gbbepx, qfed, none
 export AERO_EMIS_FIRE="qfed"
 export AERO_EMIS_FIRE_VERSION="061"
-export AERO_EMIS_FIRE_HIST=1                           # Use historical fire emissions
-export FIRE_EMIS_NRT_DIR="" #TODO set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
+export AERO_EMIS_FIRE_HIST=1 # Use historical fire emissions | 1 = true 0 = false
+export FIRE_EMIS_NRT_DIR="" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
 
 #===============================================================================
 # 3. NEXUS settings
@@ -39,49 +39,49 @@ export FIRE_EMIS_NRT_DIR="" #TODO set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/f
 # NEXUS aerosol emissions dataset. Choose from: gocart, none
 
 # NEXUS configuration set
-export NXS_CONFIG={{ NXS_CONFIG | default("gocart") }} # Options: gocart, none
+export NXS_CONFIG="{{ NXS_CONFIG | default('gocart') }}" # Options: gocart, none
 export NXS_CONFIG_DIR="${PARMgfs}/chem/nexus/${NXS_CONFIG}" # Directory containing NEXUS configuration files
 
 #---------------------
 # NEXUS root directory
 #---------------------
-export NXS_INPUT_DIR="{{ AERO_INPUTS_DIR }}"
-
+export NXS_NY="{{ NXS_NY | default(720) }}"
+export NXS_XMIN="{{ NXS_XMIN | default(-180.0) }}"
 #--------------------------
 # NEXUS Time Step (seconds)
 #--------------------------
-NXS_TSTEP={{ NXS_TSTEP | default(3600) }} # Default NEXUS time step in seconds
+export NXS_TSTEP="{{ NXS_TSTEP | default(3600) }}" # Default NEXUS time step in seconds
 
 #------------------
 # NEXUS Grid
 #------------------
-export NXS_NX={{ NXS_NX | default(1440) }}
-export NXS_NY={{ NXS_NY | default(720) }}
-export NXS_XMIN={{ NXS_XMIN | default(-180.0) }}
-export NXS_XMAX={{ NXS_XMAX | default(180.0) }}
-export NXS_YMIN={{ NXS_YMIN | default(-90.0) }}
-export NXS_YMAX={{ NXS_YMAX | default(90.0) }}
-export NXS_NZ={{ NXS_NZ | default(1) }}
+export NXS_NX="{{ NXS_NX | default(1440) }}"
+export NXS_NY="{{ NXS_NY | default(720) }}"
+export NXS_XMIN="{{ NXS_XMIN | default(-180.0) }}"
+export NXS_XMAX="{{ NXS_XMAX | default(180.0) }}"
+export NXS_YMIN="{{ NXS_YMIN | default(-90.0) }}"
+export NXS_YMAX="{{ NXS_YMAX | default(90.0) }}"
+export NXS_NZ="{{ NXS_NZ | default(1) }}"
 
 #-------------------
 # NEXUS Config Files
 #-------------------
-export NXS_GRID_NAME={{ NXS_GRID_NAME | default("HEMCO_sa_Grid.rc") }}
-export NXS_TIME_NAME={{ NXS_TIME_NAME | default("HEMCO_sa_Time.rc") }}
-export NXS_DIAG_NAME={{ NXS_DIAG_NAME | default("HEMCO_sa_Diag.rc") }}
-export NXS_SPEC_NAME={{ NXS_SPEC_NAME | default("HEMCO_sa_Spec.rc") }}
-export NXS_CONFIG_NAME={{ NXS_CONFIG_NAME | default("NEXUS_Config.rc") }}
+export NXS_GRID_NAME="{{ NXS_GRID_NAME | default("HEMCO_sa_Grid.rc") }}"
+export NXS_TIME_NAME="{{ NXS_TIME_NAME | default("HEMCO_sa_Time.rc") }}"
+export NXS_DIAG_NAME="{{ NXS_DIAG_NAME | default("HEMCO_sa_Diag.rc") }}"
+export NXS_SPEC_NAME="{{ NXS_SPEC_NAME | default("HEMCO_sa_Spec.rc") }}"
+export NXS_CONFIG_NAME="{{ NXS_CONFIG_NAME | default("NEXUS_Config.rc") }}"
 
 #------------------
 # NEXUS Diagnostics
 #------------------
-export NXS_DIAG_PREFIX={{ NXS_DIAG_PREFIX | default("NXS_DIAG") }}
-export NXS_DIAG_FREQ={{ NXS_DIAG_FREQ | default("Hourly") }} # Options: Hourly, Daily, Monthly
+export NXS_DIAG_PREFIX="{{ NXS_DIAG_PREFIX | default("NXS_DIAG") }}"
+export NXS_DIAG_FREQ="{{ NXS_DIAG_FREQ | default("Hourly") }}" # Options: Hourly, Daily, Monthly
 
 #------------------
 # NEXUS Logging
 #------------------
-export NXS_LOGFILE={{ NXS_LOGFILE | default("NEXUS.log") }}
+export NXS_LOGFILE="{{ NXS_LOGFILE | default("NEXUS.log") }}"
 
 #------------------
 # NEXUS Emissions
