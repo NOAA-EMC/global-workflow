@@ -794,7 +794,8 @@ GOCART_predet(){
   local current
   local YYYYMMDDHH
   current="${current_cycle_begin}"
-  while [[ "${current}" -le "${current_cycle_end}" ]]; do
+  cycleend=$(date -d "${current_cycle_end:0:8} ${current_cycle_end:8:2} +24 hour" +%Y%m%d%H)
+  while [[ "${current}" -le "${cycleend}" ]]; do
     # Validate current is a valid date string
     if ! YYYYMMDD=$(date -d "${current:0:8} ${current:8:2}:00:00" +%Y%m%d 2>/dev/null); then
       echo "FATAL ERROR: Invalid date string '${current}' in GOCART_predet, ABORT!"
@@ -817,8 +818,8 @@ GOCART_predet(){
   # Copy NXS Emission Files ChemInput directory
   # NXS files are hourly, so we need to loop through each hour in the cycle
   current=$(date -d "${current_cycle_begin:0:8} ${current_cycle_begin:8:2}" +%Y%m%d%H)
-  cycleend=$(date -d "${current_cycle_end:0:8} ${current_cycle_end:8:2} +12 hour" +%Y%m%d%H)
-  while [[ "${current}" -le "${current_cycle_end}" ]]; do
+  cycleend=$(date -d "${current_cycle_end:0:8} ${current_cycle_end:8:2} +24 hour" +%Y%m%d%H)
+  while [[ "${current}" -le "${cycleend}" ]]; do
     if ! YYYYMMDD=$(date -d "${current:0:8} ${current:8:2}:00:00" +%Y%m%d 2>/dev/null); then
       echo "FATAL ERROR: Invalid date string '${current}' in GOCART_predet, ABORT!"
       exit 1
