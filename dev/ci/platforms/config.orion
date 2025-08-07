@@ -10,6 +10,10 @@
 # Main CI root directory
 export GFS_CI_ROOT=/work2/noaa/global/${USER}/GFS_CI_CD/ORION
 
+# ICSDIR root directory - Contains initial condition data
+# Used by create_experiment.py for setting up test cases
+export ICSDIR_ROOT=/work/noaa/global/glopara/data/ICSDIR
+
 #########################################################################
 # Jenkins configuration settings
 #########################################################################
