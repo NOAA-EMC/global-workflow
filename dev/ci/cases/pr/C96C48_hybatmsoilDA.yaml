@@ -9,11 +9,11 @@ arguments:
   resensatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  #icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250327
+  #icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
   icsdir: /gpfs/f6/ira-sti/world-shared/Tseganeh.Gichamo/ICS/C96C48mx500/  #gaea
-  idate: 2021122106
-  edate: 2021122118
-  nens: 20
+  idate: 2022051506
+  edate: 2022051518
+  nens: 30
   interval: 6
   start: warm
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/atmsoilDA_defaults_ci.yaml
