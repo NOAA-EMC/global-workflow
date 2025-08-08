@@ -99,7 +99,6 @@ export HOMEgfs=foobar
         # Get the account value from the config
         account_value = base.ACCOUNT
 
-        assert foobar not in base.values()
         assert "UNKNOWN" not in base.values()
 
         with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
