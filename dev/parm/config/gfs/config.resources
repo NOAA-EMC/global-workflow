@@ -1078,7 +1078,8 @@ case ${step} in
     tasks_per_node=1
     case "${CASE_HIST}" in
       "C768")
-        memory="80GB"
+	memory="200GB"
+	walltime="00:40:00"
         ;;
       "C1152")
         memory="400GB"

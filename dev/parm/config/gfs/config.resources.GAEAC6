@@ -51,7 +51,7 @@ case ${step} in
       *) 
         ;;
     esac
-    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
+    if [[ "${CASE_HIST}" == "C768" || "${CASE_HIST}" == "C1152" ]]; then
         # Make ntasks a multiple of 16
         if [[ "${RUN}" == "gdas" ]]; then
             export ntasks=784
