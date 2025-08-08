@@ -13,7 +13,7 @@ arguments:
   icsdir: /gpfs/f6/ira-sti/world-shared/Tseganeh.Gichamo/ICS/C96C48mx500/  #gaea
   idate: 2022051506
   edate: 2022051518
-  nens: 30
+  nens: 20
   interval: 6
   start: warm
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/atmsoilDA_defaults_ci.yaml
@@ -21,5 +21,4 @@ arguments:
 skip_ci_on_hosts:
   - orion
   - gaeac5
-  - hercules
   - awsepicglobalworkflow
