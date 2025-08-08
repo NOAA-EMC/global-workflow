@@ -5,7 +5,7 @@ import os
 import copy
 from time import sleep, time
 
-from wxflow import which, Logger, CommandNotFoundError, ProcessError, Executable
+from wxflow import which, Logger, CommandNotFoundError, ProcessError
 from argparse import ArgumentParser, FileType
 
 from collections import Counter
