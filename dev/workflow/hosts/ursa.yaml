@@ -16,8 +16,8 @@ COMINukmet: '/scratch3/NCEPDEV/global/glopara/data/external_gempak/ukmet'
 # BQS properties
 SCHEDULER: slurm
 QUEUE: batch
-PARTITION_BATCH: ursa
-PARTITION_SERVICE: service
+PARTITION_BATCH: u1-compute
+PARTITION_SERVICE: u1-service
 # HPSS properties
 HPSS_PROJECT: emc-global
 ARCHCOM_TO: 'hpss'
