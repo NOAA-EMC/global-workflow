@@ -153,9 +153,10 @@ while true; do
   # Get job statistics
   echo "Gather Rocoto statistics"
   # shellcheck disable=SC2312 # We want to use the exit code of the command
-  full_state=$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
+  full_state=$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v --thread-logging)
   error_stat=$?
 
+  # Assign bash values from -v side effects of the rocotostat.py utility
   for state in CYCLES_TOTAL CYCLES_DONE SUCCEEDED FAIL DEAD; do
     declare "${state}"="$(echo "${full_state}" | grep "${state}" | cut -d: -f2)" || true
   done
