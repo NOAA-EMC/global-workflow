@@ -13,25 +13,25 @@ This document provides comprehensive guidance for AI agents working on the NOAA 
 
 ### Directory Structure
 ```
-dev/workflow/               # Core workflow orchestration system
-├── applications/           # Application-specific configurations (GFS, GEFS, SFS, GCAFS)  
+dev/workflow/              # Core workflow orchestration system
+├── applications/          # Application-specific configurations (GFS, GEFS, SFS, GCAFS)
 ├── rocoto/                # Rocoto XML generation and task definitions
 ├── hosts/                 # Host-specific configurations and settings
-└── ecFlow/               # Alternative workflow engine support
+└── ecFlow/                # Alternative workflow engine support
 
 dev/workflow/rocoto/       # Rocoto-specific implementations
 ├── workflow_xml.py        # Base RocotoXML abstract class
 ├── rocoto_xml_factory.py  # Factory for creating workflow XML generators
-├── tasks.py              # Base Tasks class with common task functionality
+├── tasks.py               # Base Tasks class with common task functionality
 ├── workflow_tasks.py      # Task orchestration and dependency management
-├── gfs_*.py              # GFS-specific implementations
-├── gefs_*.py             # GEFS-specific implementations  
-├── sfs_*.py              # SFS-specific implementations
-└── gcafs_*.py            # GCAFS-specific implementations
+├── gfs_*.py               # GFS-specific implementations
+├── gefs_*.py              # GEFS-specific implementations  
+├── sfs_*.py               # SFS-specific implementations
+└── gcafs_*.py             # GCAFS-specific implementations
 
-ush/                      # Utility scripts and environment setup
-├── gw_setup.sh           # Main environment setup with PYTHONPATH configuration
-└── detect_machine.sh     # Machine detection and module loading
+ush/                       # Utility scripts and environment setup
+├── gw_setup.sh            # Main environment setup with PYTHONPATH configuration
+└── detect_machine.sh      # Machine detection and module loading
 ```
 
 ## Key Architectural Patterns
