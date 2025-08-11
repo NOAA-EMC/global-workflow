@@ -42,11 +42,6 @@ export FIRE_EMIS_NRT_DIR="" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/
 export NEXUS_CONFIG="{{ NEXUS_CONFIG | default('gocart') }}" # Options: gocart, none
 export NEXUS_CONFIG_DIR="${PARMgfs}/chem/nexus/${NEXUS_CONFIG}" # Directory containing NEXUS configuration files
 
-#---------------------
-# NEXUS root directory
-#---------------------
-export NEXUS_NY="{{ NEXUS_NY | default(720) }}"
-export NEXUS_XMIN="{{ NEXUS_XMIN | default(-180.0) }}"
 #--------------------------
 # NEXUS Time Step (seconds)
 #--------------------------
