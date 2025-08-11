@@ -313,6 +313,11 @@ class ChemFireEmissions(Task):
         # Find all possible months
         months, years = self._get_unique_months()
 
+        # Format dates properly for matching
+        if not isinstance(dates, list):
+            dates = [dates]
+        date_strings = [d.strftime('%Y%m%d') if hasattr(d, 'strftime') else str(d) for d in dates]
+
         files_found = []
         # Find all possible files
         for mon in months:
@@ -454,7 +459,7 @@ class ChemFireEmissions(Task):
         return files_found
 
     @logit(logger)
-    def GBBEPx_to_COARDS(fname: Union[str, os.PathLike]) -> xr.Dataset:
+    def GBBEPx_to_COARDS(self, fname: Union[str, os.PathLike]) -> xr.Dataset:
         """Convert GBBEPx file to COARDS compliant format
 
         Parameters

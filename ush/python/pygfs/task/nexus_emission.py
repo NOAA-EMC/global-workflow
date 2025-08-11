@@ -8,7 +8,7 @@ import cftime
 from logging import getLogger
 from typing import Dict, Any, Union, List
 from dateutil.rrule import DAILY, HOURLY, rrule
-from pprint import pprint
+# from pprint import pprint
 from jinja2 import Environment, FileSystemLoader
 from wxflow import (AttrDict,
                     FileHandler,
@@ -22,11 +22,11 @@ from wxflow import (AttrDict,
 logger = getLogger(__name__.split('.')[-1])
 
 
-class NXSEmissions(Task):
+class NEXUSEmissions(Task):
     """NEXUS Emissions pre-processing Task
     """
 
-    @logit(logger, name="NXSEmissions")
+    @logit(logger, name="NEXUSEmissions")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the NEXUS Emissions task
 
@@ -47,17 +47,17 @@ class NXSEmissions(Task):
         nforecast_hours = self.task_config["FHMAX_GFS"]
         self.start_date = self.task_config["SDATE"] - to_timedelta('12H')
         self.end_date = self.task_config["EDATE"] + to_timedelta('12H')
-        frequency = self.task_config.get("NXS_DIAG_FREQ", "Hourly")
+        frequency = self.task_config.get("NEXUS_DIAG_FREQ", "Hourly")
         if frequency == "Hourly":
             self.forecast_dates = list(rrule(freq=HOURLY, dtstart=self.start_date, until=self.end_date))
         elif frequency == 'Daily':
             self.forecast_dates = list(rrule(freq=DAILY, dtstart=self.start_date, until=self.end_date))
         else:
-            raise WorkflowException(f"Unsupported NXS_DIAG_FREQ: {frequency}")
+            raise WorkflowException(f"Unsupported NEXUS_DIAG_FREQ: {frequency}")
 
         self.forecast_dates_daily = list(rrule(freq=DAILY, dtstart=self.start_date, until=self.end_date))
 
-        logger.info(f"NXSEmissions initialized with start date: {self.start_date}, end date: {self.end_date}")
+        logger.info(f"NEXUSEmissions initialized with start date: {self.start_date}, end date: {self.end_date}")
 
     @logit(logger)
     def initialize(self) -> None:
@@ -65,7 +65,7 @@ class NXSEmissions(Task):
 
         This method performs the following steps:
         1. Render the NEXUS configuration files using Jinja2 templates
-           found in `parm/chem/nexus/$NXS_CONFIG`
+           found in `parm/chem/nexus/$NEXUS_CONFIG`
         2. Sets up template variables for emission configuration
         3. Creates necessary working directories
         4. Copies required input files to working directory
@@ -106,97 +106,100 @@ class NXSEmissions(Task):
         #
         logger.info("Rendering NEXUS configuration files")
         # Check for required NEXUS configuration parameters
-        nxs_config_set = self.task_config.get('NXS_CONFIG', None)
-        if not nxs_config_set:
-            raise WorkflowException("NXS_CONFIG must be set in task configuration")
-        nxs_config_dir = self.task_config.get('NXS_CONFIG_DIR', None)
-        if not nxs_config_dir:
-            raise WorkflowException("NXS_CONFIG_DIR must be set in task configuration")
-        nxs_input_dir = self.task_config.get('NXS_INPUT_DIR', None)
-        if not nxs_input_dir:
-            raise WorkflowException("NXS_INPUT_DIR must be set in task configuration")
-        # Default NXS_TSTEP to 3600 seconds (1 hour) if not set
-        nxs_tstep = self.task_config.get('NXS_TSTEP', 3600)
-        if not nxs_tstep:
-            raise WorkflowException("NXS_TSTEP must be set in task configuration")
+        required_nexus_params = [
+            'NEXUS_CONFIG',
+            'NEXUS_CONFIG_DIR',
+            'NEXUS_INPUT_DIR',
+        ]
+        for param in required_nexus_params:
+            if not self.task_config.get(param, None):
+                raise WorkflowException(f"{param} must be set in task configuration")
 
-        logger.info(f"Using NXS_CONFIG: {nxs_config_set}")
-        logger.info(f"Using NXS_CONFIG_DIR: {nxs_config_dir}")
-        logger.info(f"Using NXS_INPUT_DIR: {nxs_input_dir}")
-        logger.info(f"Using NXS_TSTEP: {nxs_tstep}")
+        nexus_config_set = self.task_config.get('NEXUS_CONFIG', None)
+        nexus_config_dir = self.task_config.get('NEXUS_CONFIG_DIR', None)
+        nexus_input_dir = self.task_config.get('NEXUS_INPUT_DIR', None
+        )
+        # Default NEXUS_TSTEP to 3600 seconds (1 hour) if not set
+        nexus_tstep = self.task_config.get('NEXUS_TSTEP', 3600)
+        if not nexus_tstep:
+            raise WorkflowException("NEXUS_TSTEP must be set in task configuration")
+
+        logger.info(f"Using NEXUS_CONFIG: {nexus_config_set}")
+        logger.info(f"Using NEXUS_CONFIG_DIR: {nexus_config_dir}")
+        logger.info(f"Using NEXUS_INPUT_DIR: {nexus_input_dir}")
+        logger.info(f"Using NEXUS_TSTEP: {nexus_tstep}")
 
         # Check for grid parameters
-        if not self.task_config.get('NXS_NX', None):
-            raise WorkflowException("NXS_NX must be set in task configuration")
-        if not self.task_config.get('NXS_NY', None):
-            raise WorkflowException("NXS_NY must be set in task configuration")
-        if not self.task_config.get('NXS_NZ', None):
-            raise WorkflowException("NXS_NZ must be set in task configuration")
-        if not self.task_config.get('NXS_XMIN', None):
-            raise WorkflowException("NXS_XMIN must be set in task configuration")
-        if not self.task_config.get('NXS_XMAX', None):
-            raise WorkflowException("NXS_XMAX must be set in task configuration")
-        if not self.task_config.get('NXS_YMIN', None):
-            raise WorkflowException("NXS_YMIN must be set in task configuration")
+        required_grid_params = [
+            'NEXUS_NX',
+            'NEXUS_NY',
+            'NEXUS_NZ',
+            'NEXUS_XMIN',
+            'NEXUS_XMAX',
+            'NEXUS_YMIN'
+        ]
+        for param in required_grid_params:
+            if not self.task_config.get(param, None):
+                raise WorkflowException(f"{param} must be set in task configuration")
 
-        logger.info(f"Grid parameters: NXS_NX={self.task_config.NXS_NX}")
-        logger.info(f"Grid parameters: NXS_NY={self.task_config.NXS_NY}")
-        logger.info(f"Grid parameters: NXS_NZ={self.task_config.NXS_NZ}")
-        logger.info(f"Grid parameters: NXS_XMIN={self.task_config.NXS_XMIN}")
-        logger.info(f"Grid parameters: NXS_XMAX={self.task_config.NXS_XMAX}")
-        logger.info(f"Grid parameters: NXS_YMIN={self.task_config.NXS_YMIN}")
-        logger.info(f"Grid parameters: NXS_YMAX={self.task_config.NXS_YMAX}")
+        logger.info(f"Grid parameters: NEXUS_NX={self.task_config.NEXUS_NX}")
+        logger.info(f"Grid parameters: NEXUS_NY={self.task_config.NEXUS_NY}")
+        logger.info(f"Grid parameters: NEXUS_NZ={self.task_config.NEXUS_NZ}")
+        logger.info(f"Grid parameters: NEXUS_XMIN={self.task_config.NEXUS_XMIN}")
+        logger.info(f"Grid parameters: NEXUS_XMAX={self.task_config.NEXUS_XMAX}")
+        logger.info(f"Grid parameters: NEXUS_YMIN={self.task_config.NEXUS_YMIN}")
+        logger.info(f"Grid parameters: NEXUS_YMAX={self.task_config.NEXUS_YMAX}")
 
-        processed_nxs_files = []
+        processed_nexus_files = []
         final_output_files = []
         sorted_dates = sorted(self.forecast_dates)
         for d in sorted_dates[:-1]:
-            fname = f"{self.task_config.NXS_DIAG_PREFIX}.{d.strftime('%Y%m%d%H')}00.nc"
-            fname_final = f"{self.task_config.NXS_DIAG_PREFIX}.{d.strftime('%Y%m%d')}.nc"
-            processed_nxs_files.append(fname)
+            fname = f"{self.task_config.NEXUS_DIAG_PREFIX}.{d.strftime('%Y%m%d%H')}00.nc"
+            fname_final = f"{self.task_config.NEXUS_DIAG_PREFIX}.{d.strftime('%Y%m%d')}.nc"
+            processed_nexus_files.append(fname)
             final_output_files.append(fname_final)
-        self.processed_nxs_files = processed_nxs_files
+        self.processed_nexus_files = processed_nexus_files
         # render the NEXUS configuration files
-        if not os.path.exists(nxs_config_dir):
-            raise WorkflowException(f"NEXUS configuration file not found: {nxs_config_dir}")
-        logger.info(f"Rendering NEXUS configuration from {nxs_config_dir}")
+        if not os.path.exists(nexus_config_dir):
+            raise WorkflowException(f"NEXUS configuration file not found: {nexus_config_dir}")
+        logger.info(f"Rendering NEXUS configuration from {nexus_config_dir}")
         tmpl_dict = {
-            'NXS_CONFIG': nxs_config_set,
-            'NXS_CONFIG_DIR': nxs_config_dir,
-            'NXS_INPUT_DIR': nxs_input_dir,
-            'NXS_DIAG_PREFIX': self.task_config.NXS_DIAG_PREFIX,
-            'NXS_TSTEP': nxs_tstep,
-            'NXS_NX': self.task_config.NXS_NX,
-            'NXS_NY': self.task_config.NXS_NY,
-            'NXS_NZ': self.task_config.NXS_NZ,
-            'NXS_XMIN': self.task_config.NXS_XMIN,
-            'NXS_XMAX': self.task_config.NXS_XMAX,
-            'NXS_YMIN': self.task_config.NXS_YMIN,
-            'NXS_YMAX': self.task_config.NXS_YMAX,
+            'NEXUS_CONFIG': nexus_config_set,
+            'NEXUS_CONFIG_DIR': nexus_config_dir,
+            'NEXUS_INPUT_DIR': nexus_input_dir,
+            'NEXUS_DIAG_PREFIX': self.task_config.NEXUS_DIAG_PREFIX,
+            'NEXUS_TSTEP': nexus_tstep,
+            'NEXUS_NX': self.task_config.NEXUS_NX,
+            'NEXUS_NY': self.task_config.NEXUS_NY,
+            'NEXUS_NZ': self.task_config.NEXUS_NZ,
+            'NEXUS_XMIN': self.task_config.NEXUS_XMIN,
+            'NEXUS_XMAX': self.task_config.NEXUS_XMAX,
+            'NEXUS_YMIN': self.task_config.NEXUS_YMIN,
+            'NEXUS_YMAX': self.task_config.NEXUS_YMAX,
             'LOCAL_INPUT_DIR': os.path.join(self.task_config.DATA, 'INPUT'),
-            'NXS_EXECUTABLE': os.path.join(self.task_config.get('HOMEgfs', None), "exec/nexus.x"),
-            "WORK_DIR": self.task_config.DATA,
-            "NXS_DO_MEGAN": self.task_config.get('NXS_DO_MEGAN', False),
-            "NXS_DO_CEDS2019": self.task_config.get('NXS_DO_CEDS2019', True),
-            "NXS_DO_CEDS2024": self.task_config.get('NXS_DO_CEDS2024', False),
-            "NXS_DO_HTAPv2": self.task_config.get('NXS_DO_HTAPv2', True),
-            "NXS_DO_HTAPv3": self.task_config.get('NXS_DO_HTAPv3', False),
-            "NXS_DO_CAMS": self.task_config.get('NXS_DO_CAMS', False),
-            "NXS_DO_CAMSTEMPO": self.task_config.get('NXS_DO_CAMSTEMPO', False),
+            'NEXUS_EXECUTABLE': os.path.join(self.task_config.get('HOMEgfs', None), "exec/nexus.x"),
+            "DATA": self.task_config.DATA,
+            "NEXUS_DO_MEGAN": self.task_config.get('NEXUS_DO_MEGAN', False),
+            "NEXUS_DO_CEDS2019": self.task_config.get('NEXUS_DO_CEDS2019', True),
+            "NEXUS_DO_CEDS2024": self.task_config.get('NEXUS_DO_CEDS2024', False),
+            "NEXUS_DO_HTAPv2": self.task_config.get('NEXUS_DO_HTAPv2', True),
+            "NEXUS_DO_HTAPv3": self.task_config.get('NEXUS_DO_HTAPv3', False),
+            "NEXUS_DO_CAMS": self.task_config.get('NEXUS_DO_CAMS', False),
+            "NEXUS_DO_CAMSTEMPO": self.task_config.get('NEXUS_DO_CAMSTEMPO', False),
             "start_date": self.start_date.strftime('%Y-%m-%d %H:%M:%S'),
             "end_date": self.end_date.strftime('%Y-%m-%d %H:%M:%S'),
             "FINAL_OUTPUT": final_output_files,
             "COMOUT_CHEM_INPUT": self.task_config.COMOUT_CHEM_INPUT,
             "COMOUT_CHEM_RESTART": self.task_config.COMOUT_CHEM_RESTART,
             "RestartFile": f"HEMCO_restart.{self.end_date.strftime('%Y%m%d%H')}00.nc",
-            "processed_nxs_files": processed_nxs_files,
+            "processed_nexus_files": processed_nexus_files,
 
         }
 
-        yaml_template = os.path.join(self.task_config.HOMEgfs, 'parm', 'chem', 'nxs_emission.yaml.j2')
+        yaml_template = os.path.join(self.task_config.HOMEgfs, 'parm', 'chem', 'nexus_emission.yaml.j2')
         if not os.path.exists(yaml_template):
             logger.warning(f"Template file not found: {yaml_template}, using default configuration")
-            yaml_config = {'nxs_emission': {}}
+            yaml_config = {'nexus_emission': {}}
         else:
             logger.debug(f'Parsing YAML template: {yaml_template}')
             yaml_config = parse_j2yaml(yaml_template, tmpl_dict)
@@ -205,44 +208,44 @@ class NXSEmissions(Task):
         self.task_config = AttrDict(**self.task_config, **yaml_config)
 
         # Link NEXUS input directory to the working directory
-        FileHandler(self.task_config.nxs_emission.data_in).sync()
+        FileHandler(self.task_config.nexus_emission.data_in).sync()
         logger.info(f"NEXUS input directory linked to {self.task_config.DATA}")
 
-        # Render NXS Grid File
-        file_loader = FileSystemLoader(self.task_config.NXS_CONFIG_DIR)
+        # Render NEXUS Grid File
+        file_loader = FileSystemLoader(self.task_config.NEXUS_CONFIG_DIR)
         env = Environment(loader=file_loader)
-        nxs_grid_template = env.get_template(f"{self.task_config.NXS_GRID_NAME}.j2")
-        self.task_config.NXS_GRID_TEMPLATE = nxs_grid_template.render(tmpl_dict)
-        outfile = os.path.join(self.task_config.DATA, self.task_config.NXS_GRID_NAME)
-        _write_txt_file(self.task_config.NXS_GRID_TEMPLATE, outfile)
+        nexus_grid_template = env.get_template(f"{self.task_config.NEXUS_GRID_NAME}.j2")
+        self.task_config.NEXUS_GRID_TEMPLATE = nexus_grid_template.render(tmpl_dict)
+        outfile = os.path.join(self.task_config.DATA, self.task_config.NEXUS_GRID_NAME)
+        _write_txt_file(self.task_config.NEXUS_GRID_TEMPLATE, outfile)
         logger.info(f"NEXUS grid file rendered successfully: written to {outfile}")
 
-        # Render NXS Config File
-        nxs_config_template = env.get_template(f"{self.task_config.NXS_CONFIG_NAME}.j2")
-        self.task_config.NXS_CONFIG_TEMPLATE = nxs_config_template.render(tmpl_dict)
-        outfile = os.path.join(self.task_config.DATA, self.task_config.NXS_CONFIG_NAME)
-        _write_txt_file(self.task_config.NXS_CONFIG_TEMPLATE, outfile)
+        # Render NEXUS Config File
+        nexus_config_template = env.get_template(f"{self.task_config.NEXUS_CONFIG_NAME}.j2")
+        self.task_config.NEXUS_CONFIG_TEMPLATE = nexus_config_template.render(tmpl_dict)
+        outfile = os.path.join(self.task_config.DATA, self.task_config.NEXUS_CONFIG_NAME)
+        _write_txt_file(self.task_config.NEXUS_CONFIG_TEMPLATE, outfile)
         logger.info(f"NEXUS config file rendered successfully: written to {outfile}")
 
-        # Render NXS Time File
-        nxs_time_template = env.get_template(f"{self.task_config.NXS_TIME_NAME}.j2")
-        self.task_config.NXS_TIME_TEMPLATE = nxs_time_template.render(tmpl_dict)
-        outfile = os.path.join(self.task_config.DATA, self.task_config.NXS_TIME_NAME)
-        _write_txt_file(self.task_config.NXS_TIME_TEMPLATE, outfile)
+        # Render NEXUS Time File
+        nexus_time_template = env.get_template(f"{self.task_config.NEXUS_TIME_NAME}.j2")
+        self.task_config.NEXUS_TIME_TEMPLATE = nexus_time_template.render(tmpl_dict)
+        outfile = os.path.join(self.task_config.DATA, self.task_config.NEXUS_TIME_NAME)
+        _write_txt_file(self.task_config.NEXUS_TIME_TEMPLATE, outfile)
         logger.info(f"NEXUS time file rendered successfully: written to {outfile}")
 
-        # Render NXS Diag File
-        nxs_diag_template = env.get_template(f"{self.task_config.NXS_DIAG_NAME}.j2")
-        self.task_config.NXS_DIAG_TEMPLATE = nxs_diag_template.render(tmpl_dict)
-        outfile = os.path.join(self.task_config.DATA, self.task_config.NXS_DIAG_NAME)
-        _write_txt_file(self.task_config.NXS_DIAG_TEMPLATE, outfile)
+        # Render NEXUS Diag File
+        nexus_diag_template = env.get_template(f"{self.task_config.NEXUS_DIAG_NAME}.j2")
+        self.task_config.NEXUS_DIAG_TEMPLATE = nexus_diag_template.render(tmpl_dict)
+        outfile = os.path.join(self.task_config.DATA, self.task_config.NEXUS_DIAG_NAME)
+        _write_txt_file(self.task_config.NEXUS_DIAG_TEMPLATE, outfile)
         logger.info(f"NEXUS diag file rendered successfully: written to {outfile}")
 
-        # Render NXS Spec File
-        nxs_spec_template = env.get_template(f"{self.task_config.NXS_SPEC_NAME}.j2")
-        self.task_config.NXS_SPEC_TEMPLATE = nxs_spec_template.render(tmpl_dict)
-        outfile = os.path.join(self.task_config.DATA, self.task_config.NXS_SPEC_NAME)
-        _write_txt_file(self.task_config.NXS_SPEC_TEMPLATE, outfile)
+        # Render NEXUS Spec File
+        nexus_spec_template = env.get_template(f"{self.task_config.NEXUS_SPEC_NAME}.j2")
+        self.task_config.NEXUS_SPEC_TEMPLATE = nexus_spec_template.render(tmpl_dict)
+        outfile = os.path.join(self.task_config.DATA, self.task_config.NEXUS_SPEC_NAME)
+        _write_txt_file(self.task_config.NEXUS_SPEC_TEMPLATE, outfile)
         logger.info(f"NEXUS spec file rendered successfully: written to {outfile}")
 
     @logit(logger)
@@ -286,12 +289,12 @@ class NXSEmissions(Task):
                     str(1),
                     'nexus.x',
                     '-c',
-                    self.task_config.NXS_CONFIG_NAME]
+                    self.task_config.NEXUS_CONFIG_NAME]
         exe(*arg_list, output='stdout', error='stderr')
 
         logger.info("Concatenating processed NEXUS files...")
 
-        files = sorted(self.processed_nxs_files)
+        files = sorted(self.processed_nexus_files)
         dsets = []
         for f in files:
             dsets.append(xr.open_dataset(f, decode_cf=False))
@@ -322,7 +325,7 @@ class NXSEmissions(Task):
         encoding = {var: {"zlib": True, "complevel": 4} for var in ds.data_vars}
         for day_str, indices in day_to_indices.items():
             daily_ds = ds.isel(time=indices)
-            outname = f"{self.task_config.NXS_DIAG_PREFIX}.{day_str}.nc"
+            outname = f"{self.task_config.NEXUS_DIAG_PREFIX}.{day_str}.nc"
             daily_ds.to_netcdf(outname, format="NETCDF4", encoding=encoding)
             logger.info(f"Wrote daily output: {outname}")
 
@@ -344,7 +347,7 @@ class NXSEmissions(Task):
         """
         logger.info("Finalizing NEXUS emissions processing")
 
-        FileHandler(self.task_config.nxs_emission.data_out).sync()
+        FileHandler(self.task_config.nexus_emission.data_out).sync()
 
         logger.info("Chemical emissions finalization complete")
 

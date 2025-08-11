@@ -39,59 +39,59 @@ export FIRE_EMIS_NRT_DIR="" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/
 # NEXUS aerosol emissions dataset. Choose from: gocart, none
 
 # NEXUS configuration set
-export NXS_CONFIG="{{ NXS_CONFIG | default('gocart') }}" # Options: gocart, none
-export NXS_CONFIG_DIR="${PARMgfs}/chem/nexus/${NXS_CONFIG}" # Directory containing NEXUS configuration files
+export NEXUS_CONFIG="{{ NEXUS_CONFIG | default('gocart') }}" # Options: gocart, none
+export NEXUS_CONFIG_DIR="${PARMgfs}/chem/nexus/${NEXUS_CONFIG}" # Directory containing NEXUS configuration files
 
 #---------------------
 # NEXUS root directory
 #---------------------
-export NXS_NY="{{ NXS_NY | default(720) }}"
-export NXS_XMIN="{{ NXS_XMIN | default(-180.0) }}"
+export NEXUS_NY="{{ NEXUS_NY | default(720) }}"
+export NEXUS_XMIN="{{ NEXUS_XMIN | default(-180.0) }}"
 #--------------------------
 # NEXUS Time Step (seconds)
 #--------------------------
-export NXS_TSTEP="{{ NXS_TSTEP | default(3600) }}" # Default NEXUS time step in seconds
+export NEXUS_TSTEP="{{ NEXUS_TSTEP | default(3600) }}" # Default NEXUS time step in seconds
 
 #------------------
 # NEXUS Grid
 #------------------
-export NXS_NX="{{ NXS_NX | default(1440) }}"
-export NXS_NY="{{ NXS_NY | default(720) }}"
-export NXS_XMIN="{{ NXS_XMIN | default(-180.0) }}"
-export NXS_XMAX="{{ NXS_XMAX | default(180.0) }}"
-export NXS_YMIN="{{ NXS_YMIN | default(-90.0) }}"
-export NXS_YMAX="{{ NXS_YMAX | default(90.0) }}"
-export NXS_NZ="{{ NXS_NZ | default(1) }}"
+export NEXUS_NX="{{ NEXUS_NX | default(1440) }}"
+export NEXUS_NY="{{ NEXUS_NY | default(720) }}"
+export NEXUS_XMIN="{{ NEXUS_XMIN | default(-180.0) }}"
+export NEXUS_XMAX="{{ NEXUS_XMAX | default(180.0) }}"
+export NEXUS_YMIN="{{ NEXUS_YMIN | default(-90.0) }}"
+export NEXUS_YMAX="{{ NEXUS_YMAX | default(90.0) }}"
+export NEXUS_NZ="{{ NEXUS_NZ | default(1) }}"
 
 #-------------------
 # NEXUS Config Files
 #-------------------
-export NXS_GRID_NAME="{{ NXS_GRID_NAME | default('HEMCO_sa_Grid.rc') }}"
-export NXS_TIME_NAME="{{ NXS_TIME_NAME | default('HEMCO_sa_Time.rc') }}"
-export NXS_DIAG_NAME="{{ NXS_DIAG_NAME | default('HEMCO_sa_Diag.rc') }}"
-export NXS_SPEC_NAME="{{ NXS_SPEC_NAME | default('HEMCO_sa_Spec.rc') }}"
-export NXS_CONFIG_NAME="{{ NXS_CONFIG_NAME | default('NEXUS_Config.rc') }}"
+export NEXUS_GRID_NAME="{{ NEXUS_GRID_NAME | default('HEMCO_sa_Grid.rc') }}"
+export NEXUS_TIME_NAME="{{ NEXUS_TIME_NAME | default('HEMCO_sa_Time.rc') }}"
+export NEXUS_DIAG_NAME="{{ NEXUS_DIAG_NAME | default('HEMCO_sa_Diag.rc') }}"
+export NEXUS_SPEC_NAME="{{ NEXUS_SPEC_NAME | default('HEMCO_sa_Spec.rc') }}"
+export NEXUS_CONFIG_NAME="{{ NEXUS_CONFIG_NAME | default('NEXUS_Config.rc') }}"
 
 #------------------
 # NEXUS Diagnostics
 #------------------
-export NXS_DIAG_PREFIX="{{ NXS_DIAG_PREFIX | default('NXS_DIAG') }}"
-export NXS_DIAG_FREQ="{{ NXS_DIAG_FREQ | default('Hourly') }}" # Options: Hourly, Daily, Monthly
+export NEXUS_DIAG_PREFIX="{{ NEXUS_DIAG_PREFIX | default('NEXUS_DIAG') }}"
+export NEXUS_DIAG_FREQ="{{ NEXUS_DIAG_FREQ | default('Hourly') }}" # Options: Hourly, Daily, Monthly
 
 #------------------
 # NEXUS Logging
 #------------------
-export NXS_LOGFILE="{{ NXS_LOGFILE | default('NEXUS.log') }}"
+export NEXUS_LOGFILE="{{ NEXUS_LOGFILE | default('NEXUS.log') }}"
 
 #------------------
 # NEXUS Emissions
 #------------------
-export NXS_DO_MEGAN=.false # Use MEGAN biogenic emissions
-export NXS_DO_CEDS2019=.true. # Use CEDS2019 emissions
-export NXS_DO_CEDS2024=.false. # Use CEDS2024 emissions
-export NXS_DO_HTAPv2=.true. # Use HTAPv2 emissions
-export NXS_DO_HTAPv3=.false. # Use HTAPv3 emissions
-export NXS_DO_CAMS=.false. # Use CAMS global emissions
-export NXS_DO_CAMSTEMPO=.false. # Use CAMS temporal emissions
+export NEXUS_DO_MEGAN=.false # Use MEGAN biogenic emissions
+export NEXUS_DO_CEDS2019=.true. # Use CEDS2019 emissions
+export NEXUS_DO_CEDS2024=.false. # Use CEDS2024 emissions
+export NEXUS_DO_HTAPv2=.true. # Use HTAPv2 emissions
+export NEXUS_DO_HTAPv3=.false. # Use HTAPv3 emissions
+export NEXUS_DO_CAMS=.false. # Use CAMS global emissions
+export NEXUS_DO_CAMSTEMPO=.false. # Use CAMS temporal emissions
 
 echo "END: config.aero"

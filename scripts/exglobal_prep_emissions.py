@@ -5,7 +5,7 @@
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
-from pygfs import ChemFireEmissions, NXSEmissions
+from pygfs import ChemFireEmissions, NEXUSEmissions
 
 
 # Initialize root logger
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     emissions.execute()
     emissions.finalize()
 
-    nxsemis = NXSEmissions(config)
+    nxsemis = NEXUSEmissions(config)
     nxsemis.initialize()
     nxsemis.configure()
     nxsemis.execute()

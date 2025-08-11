@@ -39,7 +39,7 @@ import os
 
 from .task.analysis import Analysis
 from .task.chem_fire_emission import ChemFireEmissions
-from .task.nxs_emission import NXSEmissions
+from .task.nexus_emission import NEXUSEmissions
 from .task.aero_analysis import AerosolAnalysis
 from .task.aero_bmatrix import AerosolBMatrix
 from .task.atm_analysis import AtmAnalysis
