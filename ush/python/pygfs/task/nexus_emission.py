@@ -8,7 +8,6 @@ import cftime
 from logging import getLogger
 from typing import Dict, Any, Union, List
 from dateutil.rrule import DAILY, HOURLY, rrule
-# from pprint import pprint
 from jinja2 import Environment, FileSystemLoader
 from wxflow import (AttrDict,
                     FileHandler,
@@ -121,8 +120,6 @@ class NEXUSEmissions(Task):
 
         # Default NEXUS_TSTEP to 3600 seconds (1 hour) if not set
         nexus_tstep = self.task_config.get('NEXUS_TSTEP', 3600)
-        if not nexus_tstep:
-            raise WorkflowException("NEXUS_TSTEP must be set in task configuration")
 
         logger.info(f"Using NEXUS_CONFIG: {nexus_config_set}")
         logger.info(f"Using NEXUS_CONFIG_DIR: {nexus_config_dir}")
