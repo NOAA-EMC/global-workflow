@@ -217,27 +217,6 @@ module load "module_gwsetup.${MACHINE_ID}"
 - WCOSS2 (Operational system)
 - AWS, Azure, Google Cloud (Cloud platforms)
 
-## Performance and Monitoring
-
-### Rocoto Performance Analysis
-- Use `rocoto_performance_analyzer.py` for workflow monitoring
-- Thread count tracking via `rocotostat.py` modifications
-- Integration with matplotlib/seaborn for visualization
-- GNUPlot alternative with `rocoto_gnuplot_charts.gp`
-
-### Thread Management
-```python
-# Critical for Rocoto performance
-def monitor_thread_counts():
-    # Track active threads in workflow execution
-```
-
-### Throttling Configuration
-```xml
-<workflow cyclethrottle="1" taskthrottle="25">
-  <!-- Prevent resource exhaustion -->
-</workflow>
-```
 
 ## Common Integration Points
 
