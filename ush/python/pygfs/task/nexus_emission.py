@@ -117,8 +117,8 @@ class NEXUSEmissions(Task):
 
         nexus_config_set = self.task_config.get('NEXUS_CONFIG', None)
         nexus_config_dir = self.task_config.get('NEXUS_CONFIG_DIR', None)
-        nexus_input_dir = self.task_config.get('NEXUS_INPUT_DIR', None
-        )
+        nexus_input_dir = self.task_config.get('NEXUS_INPUT_DIR', None)
+
         # Default NEXUS_TSTEP to 3600 seconds (1 hour) if not set
         nexus_tstep = self.task_config.get('NEXUS_TSTEP', 3600)
         if not nexus_tstep:
