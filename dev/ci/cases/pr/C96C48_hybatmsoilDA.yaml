@@ -9,8 +9,7 @@ arguments:
   resensatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  #icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
-  icsdir: /gpfs/f6/ira-sti/world-shared/Tseganeh.Gichamo/ICS/C96C48mx500/  #gaea
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808/
   idate: 2022051506
   edate: 2022051518
   nens: 20
@@ -20,5 +19,6 @@ arguments:
 
 skip_ci_on_hosts:
   - orion
+  - hercules
   - gaeac5
   - awsepicglobalworkflow
