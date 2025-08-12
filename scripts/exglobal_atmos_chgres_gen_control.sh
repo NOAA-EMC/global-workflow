@@ -8,7 +8,6 @@
 #  Directories.
 pwd=$(pwd)
 # Dependent input scripts and Executables
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
 export CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 DATA=${DATA:-${pwd}}
@@ -94,23 +93,13 @@ done)
 export OROG_TARGET_FILES
 ################################################################################
 # run the chgres script to change resolution of sfc file
-export CONVERT_ATM=".false."
+export CONVERT_ATM=".true."
 export CONVERT_SFC=".true."
-export output_log="sfs_out.log" # namelist output log
+export output_log="sfs_atm_out.log" # namelist output log
 "${HOMEgfs}/ush/gen_control_changres.sh"
 err=$?
 if [[ ${err} -ne 0 ]]; then
   echo "ERROR: sfc chgres run failed"
-  exit "${err}"
-fi
-# run the chgres script to change resolution of atm file
-export CONVERT_ATM=".true."
-export CONVERT_SFC=".false."
-export output_log="atm_out.log"
-"${HOMEgfs}/ush/gen_control_changres.sh"
-err=$?
-if [[ ${err} -ne 0 ]]; then
-  echo "ERROR: atm chgres run failed"
   exit "${err}"
 fi
 ################################################################################
