@@ -4,13 +4,13 @@ set -x
 
 ###############################################################
 # Source UFSDA workflow modules
-. "${HOMEgfs}/ush/load_ufsda_modules.sh"
+source "${HOMEgfs}/dev/ush/load_ufsda_modules.sh"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-export job="ocnanalecen"
+export job="marineanlecen"
 export jobid="${job}.$$"
 
 ###############################################################
@@ -20,6 +20,6 @@ export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_ECEN
+"${HOMEgfs}"/jobs/JGLOBAL_MARINE_ANALYSIS_ECEN
 status=$?
 exit "${status}"
