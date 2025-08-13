@@ -25,10 +25,8 @@ fi
 ${CHGRESFCSTSH:-${SCRgfs}/exglobal_atmos_chgres_gen_control.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to run chgres_cube, ABORT!"
 fi
-################################################################
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
