@@ -9,9 +9,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
 export rCDUMP=${RUN/enkf}
 export COMPONENT="atmos"
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
-export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
-export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
-
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -71,9 +68,7 @@ if [[ ! -f ${PREPQC} ]]; then
 fi
 export TCVITL="${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00"
 if [[ ${DONST} = "YES" ]]; then
-   if [[ ${MAKE_NSSTBUFR} == "YES" ]]; then
-      export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
-   fi
+    export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 

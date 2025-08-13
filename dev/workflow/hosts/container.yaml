@@ -24,4 +24,3 @@ CHGRP_CMD: 'chgrp rstprod'
 # Features
 SUPPORTED_RESOLUTIONS: ['C96', 'C48']
 DO_ARCHCOM: 'NO'
-MAKE_ACFTBUFR: 'NO'
