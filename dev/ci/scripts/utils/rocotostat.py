@@ -15,21 +15,21 @@ from collections import Counter
 # ============================================================================
 
 # Rocoto command retry configuration
-ROCOTO_SUMMARY_MAX_ATTEMPTS = 3      # Maximum attempts for rocotostat --summary
-ROCOTO_SUMMARY_SLEEP_DURATION = 120  # Sleep duration (seconds) between summary attempts
+ROCOTO_SUMMARY_MAX_ATTEMPTS = 3        # Maximum attempts for rocotostat --summary
+ROCOTO_SUMMARY_SLEEP_DURATION = 120    # Sleep duration (seconds) between summary attempts
 
-ROCOTO_STATCOUNT_MAX_ATTEMPTS = 4     # Maximum attempts for rocotostat --all
-ROCOTO_STATCOUNT_SLEEP_DURATION = 120 # Sleep duration (seconds) between statcount attempts
+ROCOTO_STATCOUNT_MAX_ATTEMPTS = 4      # Maximum attempts for rocotostat --all
+ROCOTO_STATCOUNT_SLEEP_DURATION = 120  # Sleep duration (seconds) between statcount attempts
 
-ROCOTO_RETRY_MAX_ATTEMPTS = 2        # Maximum retry attempts for status checks
-ROCOTO_RETRY_SLEEP_DURATION = 120    # Sleep duration (seconds) between retry attempts
+ROCOTO_RETRY_MAX_ATTEMPTS = 2          # Maximum retry attempts for status checks
+ROCOTO_RETRY_SLEEP_DURATION = 120      # Sleep duration (seconds) between retry attempts
 
 # Telescoping delay configuration
-TELESCOPING_MAX_DELAY_SECONDS = 600  # Maximum delay cap for telescoping retries
-TELESCOPING_DELAY_MULTIPLIER = 2     # Base multiplier for exponential backoff
+TELESCOPING_MAX_DELAY_SECONDS = 600    # Maximum delay cap for telescoping retries
+TELESCOPING_DELAY_MULTIPLIER = 2       # Base multiplier for exponential backoff
 
 # Exit codes
-EXIT_CODE_STALLED = 3                # Exit code when workflow is stalled
+EXIT_CODE_STALLED = 3                  # Exit code when workflow is stalled
 
 # ============================================================================
 
@@ -231,7 +231,8 @@ def input_args():
     parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
     parser.add_argument('-v', action='store_true', help='List the states and the number of jobs that are in each', required=False)
     parser.add_argument('--export', action='store_true', help='create and export list of the status values for bash', required=False)
-    parser.add_argument('--thread-logging', action='store_true', help='Enable thread count performance logging for monitoring system resource usage', required=False)
+    parser.add_argument('--thread-logging', action='store_true',
+                        help='Enable thread count performance logging for monitoring system resource usage', required=False)
 
     args = parser.parse_args()
 
