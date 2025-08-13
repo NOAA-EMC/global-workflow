@@ -38,7 +38,13 @@ EXIT_CODE_STALLED = 3                # Exit code when workflow is stalled
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
                 colored_log=False,
                 stdout=False,  # Disable stdout by default to keep logs only in file
-                logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE"))
+# Default behavior: logs go to stdout unless ROCOTOSTAT_LOG_STDOUT is set to "0" or "false"
+logger = Logger(
+    level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
+    colored_log=False,
+    stdout=os.environ.get("ROCOTOSTAT_LOG_STDOUT", "1").lower() not in ("0", "false"),
+    logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE")
+)
 
 
 def get_user_thread_count():
