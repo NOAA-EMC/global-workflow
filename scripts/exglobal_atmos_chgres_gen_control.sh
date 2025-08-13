@@ -8,8 +8,8 @@
 #  Directories.
 pwd=$(pwd)
 # Dependent input scripts and Executables
-export CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
-export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
+CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
+PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 DATA=${DATA:-${pwd}}
 ################################################################################
 # Dates
