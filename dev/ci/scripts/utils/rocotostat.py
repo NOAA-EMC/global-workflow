@@ -18,7 +18,7 @@ from collections import Counter
 ROCOTO_SUMMARY_MAX_ATTEMPTS = 3      # Maximum attempts for rocotostat --summary
 ROCOTO_SUMMARY_SLEEP_DURATION = 120  # Sleep duration (seconds) between summary attempts
 
-ROCOTO_STATCOUNT_MAX_ATTEMPTS = 4    # Maximum attempts for rocotostat --all
+ROCOTO_STATCOUNT_MAX_ATTEMPTS = 4     # Maximum attempts for rocotostat --all
 ROCOTO_STATCOUNT_SLEEP_DURATION = 120 # Sleep duration (seconds) between statcount attempts
 
 ROCOTO_RETRY_MAX_ATTEMPTS = 2        # Maximum retry attempts for status checks
@@ -33,16 +33,14 @@ EXIT_CODE_STALLED = 3                # Exit code when workflow is stalled
 
 # ============================================================================
 
-# Use the new stdout parameter to control whether logs appear on stdout
-# Default behavior: logs only go to file when ROCOTOSTAT_LOG_FILE is set
-logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
-                colored_log=False,
-                stdout=False,  # Disable stdout by default to keep logs only in file
-# Default behavior: logs go to stdout unless ROCOTOSTAT_LOG_STDOUT is set to "0" or "false"
+# This scrpit is a utility with unix style pipe-able side effects so
+# stdout True only if LOGGING_LEVEL is DEBUG, else False
+_log_level = os.environ.get("LOGGING_LEVEL", "INFO").upper()
+_stdout = _log_level == "DEBUG"
 logger = Logger(
-    level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
+    level=_log_level,
     colored_log=False,
-    stdout=os.environ.get("ROCOTOSTAT_LOG_STDOUT", "1").lower() not in ("0", "false"),
+    stdout=_stdout,
     logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE")
 )
 
