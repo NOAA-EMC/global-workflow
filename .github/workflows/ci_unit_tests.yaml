@@ -65,7 +65,7 @@ jobs:
         cd global-workflow/sorc
         git submodule update --init -j 2 ufs_model.fd gsi_monitor.fd wxflow
         ./link_workflow.sh
-        PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${PWD}/wxflow/src"
+        export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${PWD}/wxflow/src"
         # Create test data directory for unit tests
         mkdir -p ../dev/ci/scripts/unittests/test_data
         echo "Creating test directories and files for CI tests"
