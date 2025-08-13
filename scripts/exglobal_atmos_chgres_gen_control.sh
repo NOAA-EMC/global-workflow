@@ -5,30 +5,12 @@
 # Script name:         exglobal_atmos_chgres_gen_control.sh
 # Script description:  Runs chgres on changing resolution of GEFS stage ic control member
 ################################################################################
-#  Directories.
-pwd=$(pwd)
 # Dependent input scripts and Executables
-CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
-DATA=${DATA:-${pwd}}
-################################################################################
-# Dates
-iy="${PDY:0:4}"
-im="${PDY:4:6}"
-id="${PDY:6:8}"
-ih="${cyc}"
-################################################################################
-# Set up input and output directories
-SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
-################################################################################
-# Ensure the source directory exists
-if [[ ! -d "${SOURCE_DIR}" ]]; then
-    echo "Error: Source directory ${SOURCE_DIR} does not exist."
-    exit 1
-fi
+CHGRESEXEC="${HOMEgfs}/sorc/ufs_utils.fd/exec/chgres_cube"
 ################################################################################
 # copy input files to DATA from the source directory
-cpfs "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
-cpfs "${SOURCE_DIR}/${CASE}_mosaic.nc" "${DATA}/"
+cpfs "${FIXgfs}/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
+cpfs "${FIXgfs}/orog/${CASE}_mosaic.nc" "${DATA}/"
 # uncomment and modify when the correct files are available
 # cpfs "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}" "${DATA}/"
 # cpfs "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}" "${DATA}/"
@@ -37,16 +19,16 @@ cpfs "${SOURCE_DIR}/${CASE}_mosaic.nc" "${DATA}/"
 ###############################################################################
 # copy orography,surface, and ancillary files to DATA from the source directory
 for i in {1..6}; do
-  cpfs "${SOURCE_DIR}/${CASE}_grid.tile${i}.nc" "${DATA}/"
-  cpfs "${SOURCE_DIR}/${CASE}.mx${OCNRES}_oro_data.tile${i}.nc" "${DATA}/"
-  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.slope_type.tile${i}.nc" "${DATA}/"
-  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tile${i}.nc" "${DATA}/"
-  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tile${i}.nc" "${DATA}/"
-  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.soil_type.tile${i}.nc" "${DATA}/"
-  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tile${i}.nc" "${DATA}/"
-  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tile${i}.nc" "${DATA}/"
-  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tile${i}.nc" "${DATA}/"
-  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.facsf.tile${i}.nc" "${DATA}/"
+  cpfs "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${i}.nc" "${DATA}/"
+  cpfs "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${i}.nc" "${DATA}/"
+  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tile${i}.nc" "${DATA}/"
+  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tile${i}.nc" "${DATA}/"
+  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tile${i}.nc" "${DATA}/"
+  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tile${i}.nc" "${DATA}/"
+  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tile${i}.nc" "${DATA}/"
+  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tile${i}.nc" "${DATA}/"
+  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tile${i}.nc" "${DATA}/"
+  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tile${i}.nc" "${DATA}/"
 done
 ################################################################################
 # add the namelist and run chgres
@@ -55,8 +37,12 @@ cat << EOF > ./fort.41
   mosaic_file_target_grid="./${CASE}_mosaic.nc"
   fix_dir_target_grid="./"
   orog_dir_target_grid="./"
-
- orog_files_target_grid="${CASE}.mx${OCNRES}_oro_data.tile1.nc","${CASE}.mx${OCNRES}_oro_data.tile2.nc","${CASE}.mx${OCNRES}_oro_data.tile3.nc","${CASE}.mx${OCNRES}_oro_data.tile4.nc","${CASE}.mx${OCNRES}_oro_data.tile5.nc","${CASE}.mx${OCNRES}_oro_data.tile6.nc"
+  orog_files_target_grid="${CASE}.mx${OCNRES}_oro_data.tile1.nc",\
+                         "${CASE}.mx${OCNRES}_oro_data.tile2.nc",\
+                         "${CASE}.mx${OCNRES}_oro_data.tile3.nc",\
+                         "${CASE}.mx${OCNRES}_oro_data.tile4.nc",\
+                         "${CASE}.mx${OCNRES}_oro_data.tile5.nc",\
+                         "${CASE}.mx${OCNRES}_oro_data.tile6.nc"
   vcoord_file_target_grid="./global_hyblev.l${LEVS}.txt"
   mosaic_file_input_grid="NULL"
   orog_dir_input_grid="NULL"

@@ -6,7 +6,6 @@
 echo "BEGIN: config.gen_control_ic"
 # Set variables used in the script
 ##############################################
-export EXECufs=${EXECufs:-${HOMEgfs}/sorc/ufs_utils.fd/exec}
 export CASE="C384"
 export LEVS="128"
 export OCNRES="025"
