@@ -10,7 +10,7 @@ CHGRESEXEC="${HOMEgfs}/sorc/ufs_utils.fd/exec/chgres_cube"
 ################################################################################
 # copy input files to DATA from the source directory
 cpfs "${FIXgfs}/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
-cpfs "${FIXgfs}/orog/${CASE}_mosaic.nc" "${DATA}/"
+cpfs "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/"
 # uncomment and modify when the correct files are available
 # cpfs "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}" "${DATA}/"
 # cpfs "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}" "${DATA}/"
