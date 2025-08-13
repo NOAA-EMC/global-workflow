@@ -94,13 +94,13 @@ OROG_TARGET_FILES=$(for i in {1..6}; do
 done)
 export OROG_TARGET_FILES
 ################################################################################
-# run the chgres script to change resolution of sfc file
+# run the chgres script to change resolution of sfc and atm files
 export CONVERT_ATM=".true."
 export CONVERT_SFC=".true."
 "${HOMEgfs}/ush/gen_control_changres.sh"
 err=$?
 if [[ ${err} -ne 0 ]]; then
-  echo "ERROR: sfc chgres run failed"
+  echo "ERROR: chgres run failed"
   exit "${err}"
 fi
 ################################################################################
