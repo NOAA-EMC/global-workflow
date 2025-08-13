@@ -7,19 +7,9 @@ PDY="${PDY:-$(date +%Y%m%d)}"
 cyc="${cyc:-00}"
 
 # gPDY: previous day in YYYYMMDD format
-gPDY=$(date -d "${PDY} -1 day" +%Y%m%d)
-
-# gcyc: previous cycle hour
-case "${cyc}" in
-  "00") gcyc="18" ;;
-  "06") gcyc="00" ;;
-  "12") gcyc="06" ;;
-  "18") gcyc="12" ;;
-  *)
-    echo "ERROR: Invalid cyc value '${cyc}'. Must be one of 00, 06, 12, 18."
-    exit 1
-    ;;
-esac
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
 
 # Define COM directories
 MEMDIR="mem000" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \

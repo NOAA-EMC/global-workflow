@@ -13,19 +13,13 @@ PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 DATA=${DATA:-${pwd}}
 ################################################################################
 # Dates
-CDATE=${CDATE:?}
-iy="$(echo "${CDATE}" | cut -c1-4)"
-im="$(echo "${CDATE}" | cut -c5-6)"
-id="$(echo "${CDATE}" | cut -c7-8)"
-ih="$(echo "${CDATE}" | cut -c9-10)"
+iy="${PDY:0:4}"
+im="${PDY:4:6}"
+id="${PDY:6:8}"
+ih="${cyc}"
 ################################################################################
 # Set up input and output directories
 SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
-MOSAIC_DESTINATION_FILE="${DATA}/${CASE}_mosaic.nc"
-HYBLEV_FILE="${DATA}/global_hyblev.l${LEVS}.txt"
-# uncomment when the correct files are available
-# SFC_FILE="gdas.t18z.sfcf003.nc"
-# ATM_FILE="gdas.t18z.atmf003.ensres.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -33,76 +27,39 @@ if [[ ! -d "${SOURCE_DIR}" ]]; then
     exit 1
 fi
 ################################################################################
-# List of input files to copy
+# copy input files to DATA from the source directory
 # uncomment when the correct files are available
-input_files=(
-    "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
-    "${SOURCE_DIR}/${CASE}_mosaic.nc"
-#    "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
-#    "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}"
-)
+cpfs "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
+cpfs "${SOURCE_DIR}/${CASE}_mosaic.nc" "${DATA}/"
+# cpfs "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}" "${DATA}/"
+# cpfs "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}" "${DATA}/"
 ###############################################################################
-for src in "${input_files[@]}"; do
-    cpfs "${src}" "${DATA}/"
-    chmod -R u+w "${DATA}/$(basename "${src}")"
+# copy orography,surface, and ancillary files to DATA from the source directory
+for i in {1..6}; do
+  cpfs "${SOURCE_DIR}/${CASE}_grid.tile${i}.nc" "${DATA}/"
+  cpfs "${SOURCE_DIR}/${CASE}.mx${OCNRES}_oro_data.tile${i}.nc" "${DATA}/"
+  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.slope_type.tile${i}.nc" "${DATA}/"
+  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tile${i}.nc" "${DATA}/"
+  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tile${i}.nc" "${DATA}/"
+  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.soil_type.tile${i}.nc" "${DATA}/"
+  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tile${i}.nc" "${DATA}/"
+  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tile${i}.nc" "${DATA}/"
+  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tile${i}.nc" "${DATA}/"
+  cpfs "${SOURCE_DIR}/sfc/${CASE}.mx${OCNRES}.facsf.tile${i}.nc" "${DATA}/"
 done
-
-# Define orography file patterns
-oro_file_set=(
-  "${CASE}_grid.tile"
-  "${CASE}.mx${OCNRES}_oro_data.tile"
-)
-
-# Define surface file patterns
-sfc_file_set=(
-  "${CASE}.mx${OCNRES}.slope_type.tile"
-  "${CASE}.mx${OCNRES}.maximum_snow_albedo.tile"
-  "${CASE}.mx${OCNRES}.snowfree_albedo.tile"
-  "${CASE}.mx${OCNRES}.soil_type.tile"
-  "${CASE}.mx${OCNRES}.vegetation_type.tile"
-  "${CASE}.mx${OCNRES}.substrate_temperature.tile"
-  "${CASE}.mx${OCNRES}.vegetation_greenness.tile"
-  "${CASE}.mx${OCNRES}.facsf.tile"
-)
-
-# Process orography files
-for file in "${oro_file_set[@]}"; do
-  for i in {1..6}; do
-    tile_file="${file}${i}.nc"
-    cpfs "${SOURCE_DIR}/${tile_file}" "${DATA}/"
-    chmod -R u+w "${DATA}/${tile_file}"
-  done
-done
-
-# Process surface files
-for file in "${sfc_file_set[@]}"; do
-  for i in {1..6}; do
-    tile_file="${file}${i}.nc"
-    cpfs "${SOURCE_DIR}/sfc/${tile_file}" "${DATA}/"
-    chmod -R u+w "${DATA}/${tile_file}"
-  done
-done
-################################################################################
-# Prepare the orography target files
-OROG_TARGET_FILES=$(for i in {1..6}; do
-    printf "\"${CASE}.mx${OCNRES}_oro_data.tile%d.nc\"" "${i}"
-    if [[ "${i}" -lt 6 ]]; then
-        printf ","
-    fi
-done)
 ################################################################################
 # add the namelist and run chgres
 cat << EOF > ./fort.41
 &config
-mosaic_file_target_grid="${MOSAIC_DESTINATION_FILE}"
-fix_dir_target_grid="${DATA}"
-orog_dir_target_grid="${DATA}"
-orog_files_target_grid=${OROG_TARGET_FILES}
-vcoord_file_target_grid="${HYBLEV_FILE}"
+mosaic_file_target_grid="./${CASE}_mosaic.nc"
+fix_dir_target_grid="./"
+orog_dir_target_grid="./"
+orog_files_target_grid="${CASE}.mx${OCNRES}_oro_data.tile1.nc","${CASE}.mx${OCNRES}_oro_data.tile2.nc","${CASE}.mx${OCNRES}_oro_data.tile3.nc","${CASE}.mx${OCNRES}_oro_data.tile4.nc","${CASE}.mx${OCNRES}_oro_data.tile5.nc","${CASE}.mx${OCNRES}_oro_data.tile6.nc"
+vcoord_file_target_grid="./global_hyblev.l${LEVS}.txt"
 mosaic_file_input_grid="NULL"
 orog_dir_input_grid="NULL"
 orog_files_input_grid="NULL"
-data_dir_input_grid="${DATA}"
+data_dir_input_grid="./"
 atm_files_input_grid="${ATM_FILE}"
 atm_core_files_input_grid="NULL"
 atm_tracer_files_input_grid="NULL"
@@ -115,7 +72,7 @@ wam_parm_file="NULL"
 cycle_year=${iy}
 cycle_mon=${im}
 cycle_day=${id}
-cycle_hour=${ih}
+cycle_hour=${cyc}
 convert_atm=.true.
 convert_sfc=.true.
 convert_nst=.true.
