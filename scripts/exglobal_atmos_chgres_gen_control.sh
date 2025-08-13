@@ -20,11 +20,10 @@ id="$(echo "${CDATE}" | cut -c7-8)"
 ih="$(echo "${CDATE}" | cut -c9-10)"
 export iy im id ih
 ################################################################################
-# Set up theinput and output directories
-export DESTINATION_DIR="${DATA}"
+# Set up input and output directories
 export SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
-export MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
-export HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
+export MOSAIC_DESTINATION_FILE="${DATA}/${CASE}_mosaic.nc"
+export HYBLEV_FILE="${DATA}/global_hyblev.l${LEVS}.txt"
 # uncomment when the correct files are available
 # export SFC_FILE="gdas.t18z.sfcf003.nc"
 # export ATM_FILE="gdas.t18z.atmf003.ensres.nc"
@@ -45,8 +44,8 @@ input_files=(
 )
 ###############################################################################
 for src in "${input_files[@]}"; do
-    cpfs "${src}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/$(basename "${src}")"
+    cpfs "${src}" "${DATA}/"
+    chmod -R u+w "${DATA}/$(basename "${src}")"
 done
 
 # Define orography file patterns
@@ -71,8 +70,8 @@ sfc_file_set=(
 for file in "${oro_file_set[@]}"; do
   for i in {1..6}; do
     tile_file="${file}${i}.nc"
-    cpfs "${SOURCE_DIR}/${tile_file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
+    cpfs "${SOURCE_DIR}/${tile_file}" "${DATA}/"
+    chmod -R u+w "${DATA}/${tile_file}"
   done
 done
 
@@ -80,8 +79,8 @@ done
 for file in "${sfc_file_set[@]}"; do
   for i in {1..6}; do
     tile_file="${file}${i}.nc"
-    cpfs "${SOURCE_DIR}/sfc/${tile_file}" "${DESTINATION_DIR}/"
-    chmod -R u+w "${DESTINATION_DIR}/${tile_file}"
+    cpfs "${SOURCE_DIR}/sfc/${tile_file}" "${DATA}/"
+    chmod -R u+w "${DATA}/${tile_file}"
   done
 done
 ################################################################################
@@ -94,15 +93,54 @@ OROG_TARGET_FILES=$(for i in {1..6}; do
 done)
 export OROG_TARGET_FILES
 ################################################################################
-# run the chgres script to change resolution of sfc and atm files
-export CONVERT_ATM=".true."
-export CONVERT_SFC=".true."
-"${HOMEgfs}/ush/gen_control_changres.sh"
-err=$?
-if [[ ${err} -ne 0 ]]; then
-  echo "ERROR: chgres run failed"
-  exit "${err}"
-fi
+# add the namelist and run chgres
+cat << EOF > ./fort.41
+&config
+mosaic_file_target_grid="${MOSAIC_DESTINATION_FILE}"
+fix_dir_target_grid="${DATA}"
+orog_dir_target_grid="${DATA}"
+orog_files_target_grid=${OROG_TARGET_FILES}
+vcoord_file_target_grid="${HYBLEV_FILE}"
+mosaic_file_input_grid="NULL"
+orog_dir_input_grid="NULL"
+orog_files_input_grid="NULL"
+data_dir_input_grid="${DATA}"
+atm_files_input_grid="${ATM_FILE}"
+atm_core_files_input_grid="NULL"
+atm_tracer_files_input_grid="NULL"
+sfc_files_input_grid="${SFC_FILE}"
+nst_files_input_grid="NULL"
+grib2_file_input_grid="NULL"
+geogrid_file_input_grid="NULL"
+varmap_file="NULL"
+wam_parm_file="NULL"
+cycle_year=${iy}
+cycle_mon=${im}
+cycle_day=${id}
+cycle_hour=${ih}
+convert_atm=.true.
+convert_sfc=.true.
+convert_nst=.true.
+input_type="gaussian_netcdf"
+tracers="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
+tracers_input="spfh","clwmr","o3mr","icmr","rwmr","snmr","grle"
+regional=0
+halo_bndy=0
+halo_blend=0
+sotyp_from_climo=.true.
+vgtyp_from_climo=.true.
+vgfrc_from_climo=.true.
+minmax_vgfrc_from_climo=.true.
+tg3_from_soil=.false.
+lai_from_climo=true.
+external_model="GFS"
+nsoill_out=4
+thomp_mp_climo_file="NULL"
+wam_cold_start=.false.
+/
+EOF
+
+eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${PGMOUT}"
 ################################################################################
 # Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
 if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]]; then
