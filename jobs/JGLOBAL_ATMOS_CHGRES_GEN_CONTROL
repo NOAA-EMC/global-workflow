@@ -13,13 +13,7 @@ MEMDIR="mem000" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 MEMDIR="mem000" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL
 ###############################################################
-# Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed
-if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]]; then
-  if ! mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"; then
-    echo "ERROR: Failed to create directory ${COMOUT_ATMOS_INPUT_MEM}"
-    exit 1
-  fi
-fi
+mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"
 ###############################################################
 # Run relevant script
 ${CHGRESFCSTSH:-${SCRgfs}/exglobal_atmos_chgres_gen_control.sh} && true
