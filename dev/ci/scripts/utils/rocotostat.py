@@ -189,7 +189,7 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
 
             if attempt < max_attempts:
                 if use_telescoping_delay:
-                    current_delay = min(sleep_duration * (TELESCOPING_DELAY_MULTIPLIER ** attempt), TELESCOPING_MAX_DELAY_SECONDS)
+                    current_delay = min(sleep_duration * (TELESCOPING_DELAY_MULTIPLIER ** (attempt - 1)), TELESCOPING_MAX_DELAY_SECONDS)
                 else:
                     current_delay = sleep_duration
 
