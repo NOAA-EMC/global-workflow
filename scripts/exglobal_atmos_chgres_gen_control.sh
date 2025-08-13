@@ -119,7 +119,5 @@ for i in {1..6}; do
   cpreq "${sfc_file}" "${COMOUT_ATMOS_INPUT_MEM}/sfc_data.tile${i}.nc"
 
 if [[ -f "gfs_ctrl.nc" ]]; then
-  cpfs "gfs_ctrl.nc" "${COMOUT_ATMOS_INPUT_MEM}/"
-fi
-exit "${err}"
+cpreq "gfs_ctrl.nc" "${COMOUT_ATMOS_INPUT_MEM}/"
 ################################################################################
