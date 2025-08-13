@@ -81,7 +81,7 @@ def get_user_thread_count():
             'utilization_pct': round((user_threads / process_limit * 100), 2) if process_limit > 0 else -1
         }
 
-    except Exception as e:
+    except (OSError, ProcessError) as e:
         logger.warning(f"Error getting user thread count: {e}")
         return {
             'user': 'unknown',
