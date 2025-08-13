@@ -27,11 +27,13 @@ if [[ ! -d "${SOURCE_DIR}" ]]; then
 fi
 ################################################################################
 # copy input files to DATA from the source directory
-# uncomment when the correct files are available
 cpfs "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
 cpfs "${SOURCE_DIR}/${CASE}_mosaic.nc" "${DATA}/"
+# uncomment and modify when the correct files are available
 # cpfs "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}" "${DATA}/"
 # cpfs "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}" "${DATA}/"
+# SFC_FILE="gdas.t18z.sfcf003.nc"
+# ATM_FILE="gdas.t18z.atmf003.ensres.nc"
 ###############################################################################
 # copy orography,surface, and ancillary files to DATA from the source directory
 for i in {1..6}; do
