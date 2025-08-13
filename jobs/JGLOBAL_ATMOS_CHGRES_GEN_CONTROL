@@ -1,10 +1,6 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_ic"
-##############################################
-# Calculate gPDY (previous day) and gcyc (previous cycle hour)
-PDY="${PDY:-$(date +%Y%m%d)}"
-cyc="${cyc:-00}"
 
 # gPDY: previous day in YYYYMMDD format
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
