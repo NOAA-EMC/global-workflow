@@ -47,8 +47,7 @@ case ${machine} in
     ;;
   "URSA")
               max_tasks_per_node=192
-              # shellcheck disable=SC2034
-              mem_node_max="384GB"
+              mem_node_max="360GB"
     ;;
   "GAEAC5")
               max_tasks_per_node=128
