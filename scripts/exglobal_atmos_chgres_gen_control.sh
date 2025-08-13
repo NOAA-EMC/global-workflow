@@ -9,7 +9,6 @@
 pwd=$(pwd)
 # Dependent input scripts and Executables
 CHGRESEXEC=${CHGRESEXEC:-${EXECufs}/chgres_cube}
-PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 DATA=${DATA:-${pwd}}
 ################################################################################
 # Dates
@@ -95,7 +94,7 @@ wam_cold_start=.false.
 /
 EOF
 
-eval "${APRUN_CHGRES}" "${CHGRESEXEC}" "${PGMOUT}"
+"${APRUN_CHGRES}" "${CHGRESEXEC}"
 ################################################################################
 # Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
 if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]]; then
