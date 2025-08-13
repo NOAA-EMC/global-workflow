@@ -18,15 +18,14 @@ iy="$(echo "${CDATE}" | cut -c1-4)"
 im="$(echo "${CDATE}" | cut -c5-6)"
 id="$(echo "${CDATE}" | cut -c7-8)"
 ih="$(echo "${CDATE}" | cut -c9-10)"
-export iy im id ih
 ################################################################################
 # Set up input and output directories
-export SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
-export MOSAIC_DESTINATION_FILE="${DATA}/${CASE}_mosaic.nc"
-export HYBLEV_FILE="${DATA}/global_hyblev.l${LEVS}.txt"
+SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
+MOSAIC_DESTINATION_FILE="${DATA}/${CASE}_mosaic.nc"
+HYBLEV_FILE="${DATA}/global_hyblev.l${LEVS}.txt"
 # uncomment when the correct files are available
-# export SFC_FILE="gdas.t18z.sfcf003.nc"
-# export ATM_FILE="gdas.t18z.atmf003.ensres.nc"
+# SFC_FILE="gdas.t18z.sfcf003.nc"
+# ATM_FILE="gdas.t18z.atmf003.ensres.nc"
 ################################################################################
 # Ensure the source directory exists
 if [[ ! -d "${SOURCE_DIR}" ]]; then
@@ -91,7 +90,6 @@ OROG_TARGET_FILES=$(for i in {1..6}; do
         printf ","
     fi
 done)
-export OROG_TARGET_FILES
 ################################################################################
 # add the namelist and run chgres
 cat << EOF > ./fort.41
