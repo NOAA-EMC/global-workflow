@@ -115,12 +115,8 @@ for i in {1..6}; do
   atm_file="out.atm.tile${i}.nc"
   sfc_file="out.sfc.tile${i}.nc"
   if [[ -f "${atm_file}" ]]; then
-    cpfs "${atm_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
-  fi
-  if [[ -f "${sfc_file}" ]]; then
-    cpfs "${sfc_file}" "${COMOUT_ATMOS_INPUT_MEM}/"
-  fi
-done
+  cpreq "${atm_file}" "${COMOUT_ATMOS_INPUT_MEM}/gfs_data.tile${i}.nc"
+  cpreq "${sfc_file}" "${COMOUT_ATMOS_INPUT_MEM}/sfc_data.tile${i}.nc"
 
 if [[ -f "gfs_ctrl.nc" ]]; then
   cpfs "gfs_ctrl.nc" "${COMOUT_ATMOS_INPUT_MEM}/"
