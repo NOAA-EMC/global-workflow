@@ -12,10 +12,8 @@ CHGRESEXEC="${HOMEgfs}/sorc/ufs_utils.fd/exec/chgres_cube"
 cpfs "${FIXgfs}/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
 cpfs "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/"
 # uncomment and modify when the correct files are available
-# cpfs "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}" "${DATA}/"
-# cpfs "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}" "${DATA}/"
-# SFC_FILE="gdas.t18z.sfcf003.nc"
-# ATM_FILE="gdas.t18z.atmf003.ensres.nc"
+# cpfs "${COMIN_ATMOS_HISTORY_MEM}/gdas.t18z.atmf003.ensres.nc" "${DATA}/atm_input.nc"
+# cpfs "${COMIN_ATMOS_HISTORY_MEM}/gdas.t18z.sfcf003.nc" "${DATA}/sfc_input.nc"
 ###############################################################################
 # copy orography,surface, and ancillary files to DATA from the source directory
 for i in {1..6}; do
@@ -48,10 +46,10 @@ cat << EOF > ./fort.41
   orog_dir_input_grid="NULL"
   orog_files_input_grid="NULL"
   data_dir_input_grid="./"
-  atm_files_input_grid="${ATM_FILE}"
+  atm_files_input_grid="./atm_input.nc"
   atm_core_files_input_grid="NULL"
   atm_tracer_files_input_grid="NULL"
-  sfc_files_input_grid="${SFC_FILE}"
+  sfc_files_input_grid="./sfc_input.nc"
   nst_files_input_grid="NULL"
   grib2_file_input_grid="NULL"
   geogrid_file_input_grid="NULL"
