@@ -55,7 +55,7 @@ cat << EOF > ./fort.41
   mosaic_file_target_grid="./${CASE}_mosaic.nc"
   fix_dir_target_grid="./"
   orog_dir_target_grid="./"
- 
+
  orog_files_target_grid="${CASE}.mx${OCNRES}_oro_data.tile1.nc","${CASE}.mx${OCNRES}_oro_data.tile2.nc","${CASE}.mx${OCNRES}_oro_data.tile3.nc","${CASE}.mx${OCNRES}_oro_data.tile4.nc","${CASE}.mx${OCNRES}_oro_data.tile5.nc","${CASE}.mx${OCNRES}_oro_data.tile6.nc"
   vcoord_file_target_grid="./global_hyblev.l${LEVS}.txt"
   mosaic_file_input_grid="NULL"
@@ -98,26 +98,15 @@ cat << EOF > ./fort.41
 EOF
 
 ${APRUN_CHGRES} "${CHGRESEXEC}"
-${APRUN_CHGRES} "${CHGRESEXEC}"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
   err_exit "chgres_cube failed to create cold start ICs, ABORT!"
 fi
-# Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
-if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]]; then
-  if ! mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"; then
-    echo "ERROR: Failed to create directory ${COMOUT_ATMOS_INPUT_MEM}"
-    exit 1
-  fi
-fi
-
+################################################################################
+# copy output files to com
 for i in {1..6}; do
-  atm_file="out.atm.tile${i}.nc"
-  sfc_file="out.sfc.tile${i}.nc"
-  if [[ -f "${atm_file}" ]]; then
-  cpreq "${atm_file}" "${COMOUT_ATMOS_INPUT_MEM}/gfs_data.tile${i}.nc"
-  cpreq "${sfc_file}" "${COMOUT_ATMOS_INPUT_MEM}/sfc_data.tile${i}.nc"
-
-if [[ -f "gfs_ctrl.nc" ]]; then
+  cpreq "out.atm.tile${i}.nc" "${COMOUT_ATMOS_INPUT_MEM}/gfs_data.tile${i}.nc"
+  cpreq "out.sfc.tile${i}.nc" "${COMOUT_ATMOS_INPUT_MEM}/sfc_data.tile${i}.nc"
+done
 cpreq "gfs_ctrl.nc" "${COMOUT_ATMOS_INPUT_MEM}/"
 ################################################################################
