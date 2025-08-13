@@ -98,7 +98,11 @@ cat << EOF > ./fort.41
 EOF
 
 ${APRUN_CHGRES} "${CHGRESEXEC}"
-################################################################################
+${APRUN_CHGRES} "${CHGRESEXEC}"
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+  err_exit "chgres_cube failed to create cold start ICs, ABORT!"
+fi
 # Ensure COMIN_ATMOS_INPUT_MEM exists, create if needed, then copy out.atm.tile{1..6}.nc (force overwrite)
 if [[ ! -d "${COMOUT_ATMOS_INPUT_MEM}" ]]; then
   if ! mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"; then
