@@ -25,7 +25,7 @@ export DESTINATION_DIR="${DATA}"
 export SOURCE_DIR="${HOMEgfs}/fix/orog/${CASE}"
 export MOSAIC_DESTINATION_FILE="${DESTINATION_DIR}/${CASE}_mosaic.nc"
 export HYBLEV_FILE="${DESTINATION_DIR}/global_hyblev.l${LEVS}.txt"
-# uncomment when the files are available
+# uncomment and include the correct files when available
 # export SFC_FILE="gdas.t18z.sfcf003.nc"
 # export ATM_FILE="gdas.t18z.atmf003.ensres.nc"
 ################################################################################
@@ -36,12 +36,12 @@ if [[ ! -d "${SOURCE_DIR}" ]]; then
 fi
 ################################################################################
 # List of input files to copy
-# uncomment when the files are available
+# uncomment when the correct files are available
 input_files=(
     "${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt"
     "${SOURCE_DIR}/${CASE}_mosaic.nc"
-#    "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
-#    "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}"
+    "${COMIN_ATMOS_HISTORY_MEM}/${SFC_FILE}"
+    "${COMIN_ATMOS_HISTORY_MEM}/${ATM_FILE}"
 )
 ###############################################################################
 for src in "${input_files[@]}"; do
