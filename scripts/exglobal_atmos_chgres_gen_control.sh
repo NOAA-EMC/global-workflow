@@ -51,10 +51,10 @@ cat << EOF > ./fort.41
   geogrid_file_input_grid="NULL"
   varmap_file="NULL"
   wam_parm_file="NULL"
-  cycle_year="$(date --utc -d "${PDY} ${cyc} -3 hours" +%Y)"
-  cycle_mon="$(date --utc -d "${PDY} ${cyc} -3 hours" +%m)"
-  cycle_day="$(date --utc -d "${PDY} ${cyc} -3 hours" +%d)"
-  cycle_hour="$(date --utc -d "${PDY} ${cyc} -3 hours" +%H)"
+  cycle_year=$(date --utc -d "${PDY} ${cyc} -3 hours" +%Y)
+  cycle_mon=$(date --utc -d "${PDY} ${cyc} -3 hours" +%m)
+  cycle_day=$(date --utc -d "${PDY} ${cyc} -3 hours" +%d)
+  cycle_hour=$(date --utc -d "${PDY} ${cyc} -3 hours" +%H)
   convert_atm=.true.
   convert_sfc=.true.
   convert_nst=.true.
