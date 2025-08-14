@@ -25,6 +25,7 @@ for i in {1..6}; do
   cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tile${i}.nc" "${DATA}/"
 done
 ################################################################################
+BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - $((assim_freq / 2)) hours")
 # add the namelist and run chgres
 cat << EOF > ./fort.41
 &config
