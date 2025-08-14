@@ -5,28 +5,24 @@
 # Script name:         exglobal_atmos_chgres_gen_control.sh
 # Script description:  Runs chgres on changing resolution of GEFS stage ic control member
 ################################################################################
-# Dependent input scripts and Executables
-CHGRESEXEC="${HOMEgfs}/sorc/ufs_utils.fd/exec/chgres_cube"
-################################################################################
 # copy input files to DATA from the source directory
-cpfs "${FIXgfs}/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
-cpfs "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/"
-# uncomment and modify when the correct files are available
-# cpfs "${COMIN_ATMOS_HISTORY_MEM}/gdas.t18z.atmf003.ensres.nc" "${DATA}/atm_input.nc"
-# cpfs "${COMIN_ATMOS_HISTORY_MEM}/gdas.t18z.sfcf003.nc" "${DATA}/sfc_input.nc"
+cpreq "${FIXgfs}/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
+cpreq "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/"
+cpreq "${ATM_FILE}" "${DATA}/atm_input.nc"
+cpreq "${SFC_FILE}" "${DATA}/sfc_input.nc"
 ###############################################################################
 # copy orography,surface, and ancillary files to DATA from the source directory
 for i in {1..6}; do
-  cpfs "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${i}.nc" "${DATA}/"
-  cpfs "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${i}.nc" "${DATA}/"
-  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tile${i}.nc" "${DATA}/"
-  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tile${i}.nc" "${DATA}/"
-  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tile${i}.nc" "${DATA}/"
-  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tile${i}.nc" "${DATA}/"
-  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tile${i}.nc" "${DATA}/"
-  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tile${i}.nc" "${DATA}/"
-  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tile${i}.nc" "${DATA}/"
-  cpfs "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tile${i}.nc" "${DATA}/"
+  cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${i}.nc" "${DATA}/"
+  cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${i}.nc" "${DATA}/"
+  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tile${i}.nc" "${DATA}/"
+  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tile${i}.nc" "${DATA}/"
+  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tile${i}.nc" "${DATA}/"
+  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tile${i}.nc" "${DATA}/"
+  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tile${i}.nc" "${DATA}/"
+  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tile${i}.nc" "${DATA}/"
+  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tile${i}.nc" "${DATA}/"
+  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tile${i}.nc" "${DATA}/"
 done
 ################################################################################
 # add the namelist and run chgres
@@ -55,10 +51,10 @@ cat << EOF > ./fort.41
   geogrid_file_input_grid="NULL"
   varmap_file="NULL"
   wam_parm_file="NULL"
-  cycle_year=${PDY:0:4}
-  cycle_mon=${PDY:4:2}
-  cycle_day=${PDY:6:2}
-  cycle_hour=${cyc}
+  cycle_year="$(date --utc -d "${PDY} ${cyc} -3 hours" +%Y)"
+  cycle_mon="$(date --utc -d "${PDY} ${cyc} -3 hours" +%m)"
+  cycle_day="$(date --utc -d "${PDY} ${cyc} -3 hours" +%d)"
+  cycle_hour="$(date --utc -d "${PDY} ${cyc} -3 hours" +%H)"
   convert_atm=.true.
   convert_sfc=.true.
   convert_nst=.true.
@@ -81,7 +77,7 @@ cat << EOF > ./fort.41
 /
 EOF
 
-${APRUN_CHGRES} "${CHGRESEXEC}"
+${APRUN_CHGRES} "${HOMEgfs}/sorc/ufs_utils.fd/exec/chgres_cube"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
   err_exit "chgres_cube failed to create cold start ICs, ABORT!"
