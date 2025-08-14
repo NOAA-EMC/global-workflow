@@ -39,7 +39,7 @@ datasets:
 
 {% if MODE == "cycled" %}
     # Determine if we will save restart ICs or not (only valid for cycled)
-    {% set save_warm_start_forecast, save_warm_start_cycled = ( False, False ) %}
+    {% set save_warm_start_forecast, save_warm_start_cycled = ( False, True ) %}
 
     {% if ARCH_CYC == cycle_HH | int %}
         # Save the forecast-only cycle ICs every ARCH_WARMICFREQ or ARCH_FCSTICFREQ days
