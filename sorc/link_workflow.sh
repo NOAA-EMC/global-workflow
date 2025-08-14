@@ -237,6 +237,17 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
 fi
 
 #------------------------------
+#--add SPOC parm and ush directory
+#------------------------------
+for target in ush parm; do
+  src="${HOMEgfs}/sorc/gdas.cd/spoc/dump/${target}"
+  if [[ -d "$src" ]]; then
+    cd "${HOMEgfs}/${target}" || exit 1
+    ${LINK_OR_COPY} "$src" "spoc"
+  fi
+done
+
+#------------------------------
 #--add GDASApp files
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
