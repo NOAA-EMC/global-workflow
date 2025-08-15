@@ -1,6 +1,6 @@
 # Paths
 DMPDIR: '/scratch3/NCEPDEV/global/role.glopara/dump'
-BASE_GIT: '/scratch3/NCEPDEV/global/role.glopara/git_hera'
+BASE_GIT: '/scratch3/NCEPDEV/global/role.glopara/git'
 BASE_DATA: '/scratch3/NCEPDEV/global/role.glopara/data'
 BASE_IC: '/scratch3/NCEPDEV/global/role.glopara/data/ICSDIR'
 AERO_INPUTS_DIR: '/scratch3/NCEPDEV/global/role.glopara/data/GEFS_ExtData/20250310'
@@ -16,8 +16,8 @@ COMINukmet: '/scratch3/NCEPDEV/global/role.glopara/data/external_gempak/ukmet'
 # BQS properties
 SCHEDULER: slurm
 QUEUE: batch
-PARTITION_BATCH: hera
-PARTITION_SERVICE: service
+PARTITION_BATCH: u1-compute
+PARTITION_SERVICE: u1-service
 # HPSS properties
 HPSS_PROJECT: emc-global
 ARCHCOM_TO: 'hpss'
