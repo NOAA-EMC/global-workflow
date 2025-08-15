@@ -71,7 +71,7 @@ ${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/ru
 #------------------------------
 case "${machine}" in
 "wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
-"hera") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
+"hera" | "ursa") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
 "orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
@@ -195,6 +195,11 @@ if [[ -s "atparse.bash" ]]; then
     rm -f "atparse.bash"
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
+
+# Temporarilly link load_gw_run_modules.sh to load_fv3gfs_modules.sh
+# TODO: Use load_gw_run_modules.sh everywhere
+cd "${HOMEgfs}/dev/ush" || exit 1
+${LINK_OR_COPY} "${HOMEgfs}/dev/ush/load_gw_run_modules.sh" load_fv3gfs_modules.sh
 
 # add ufs_utils parm dir
 if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
