@@ -65,11 +65,16 @@ if [[ "${verbose}" == "YES" ]]; then
    set -x
 fi
 
-# shellcheck disable=SC2155,SC2312
-HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+script_dir="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
+HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
+# Needs to be exported for gw_setup.sh
+export HOMEgfs
 
 echo "Sourcing global-workflow modules ..."
 source "${HOMEgfs}/dev/ush/gw_setup.sh"
+
+# Un-export after gw_setup.sh
+export -n HOMEgfs
 
 cd "${HOMEgfs}/sorc" || exit 1
 mkdir -p "${HOMEgfs}/sorc/logs" || exit 1

@@ -54,7 +54,7 @@ esac
 set +x
 source "${ROOT_DIR}/ush/module-setup.sh"
 module use "${ROOT_DIR}/modulefiles"
-module load "module_gwsetup.${MACHINE_ID}"
+module load "gw_setup.${MACHINE_ID}"
 set -x
 
 #########################################################

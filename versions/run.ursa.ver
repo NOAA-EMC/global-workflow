@@ -5,9 +5,8 @@ export stack_compiler_ver=2024.2.1
 export stack_mpi=intel-oneapi-mpi
 export stack_mpi_ver=2021.13
 
-spack_stack_env="ue-${stack_compiler}-2024.1.0"
-spack_stack_root="/apps/contrib/spack-stack"
+spack_stack_root="/contrib/spack-stack"
 
 source "${HOMEgfs:-}/versions/spack.ver"
 
-export intel_mkl_ver=2023.1.0
+export imagemagick_ver=7.1.1-29
