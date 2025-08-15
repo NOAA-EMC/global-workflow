@@ -52,10 +52,10 @@ cat << EOF > ./fort.41
   geogrid_file_input_grid="NULL"
   varmap_file="NULL"
   wam_parm_file="NULL"
-  cycle_year="${BDATE:0:4}"
-  cycle_mon="${BDATE:4:2}"
-  cycle_day="${BDATE:6:2}"
-  cycle_hour="${BDATE:8:2}"
+  cycle_year="${PDY:0:4}"
+  cycle_mon="${PDY:4:2}"
+  cycle_day="${PDY:6:2}"
+  cycle_hour="${cyc}"
   convert_atm=.true.
   convert_sfc=.true.
   convert_nst=.true.
