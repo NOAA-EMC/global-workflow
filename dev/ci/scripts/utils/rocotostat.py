@@ -15,30 +15,34 @@ from collections import Counter
 # ============================================================================
 
 # Rocoto command retry configuration
-ROCOTO_SUMMARY_MAX_ATTEMPTS = 3      # Maximum attempts for rocotostat --summary
-ROCOTO_SUMMARY_SLEEP_DURATION = 120  # Sleep duration (seconds) between summary attempts
+ROCOTO_SUMMARY_MAX_ATTEMPTS = 3        # Maximum attempts for rocotostat --summary
+ROCOTO_SUMMARY_SLEEP_DURATION = 120    # Sleep duration (seconds) between summary attempts
 
-ROCOTO_STATCOUNT_MAX_ATTEMPTS = 4    # Maximum attempts for rocotostat --all
-ROCOTO_STATCOUNT_SLEEP_DURATION = 120 # Sleep duration (seconds) between statcount attempts
+ROCOTO_STATCOUNT_MAX_ATTEMPTS = 4      # Maximum attempts for rocotostat --all
+ROCOTO_STATCOUNT_SLEEP_DURATION = 120  # Sleep duration (seconds) between statcount attempts
 
-ROCOTO_RETRY_MAX_ATTEMPTS = 2        # Maximum retry attempts for status checks
-ROCOTO_RETRY_SLEEP_DURATION = 120    # Sleep duration (seconds) between retry attempts
+ROCOTO_RETRY_MAX_ATTEMPTS = 2          # Maximum retry attempts for status checks
+ROCOTO_RETRY_SLEEP_DURATION = 120      # Sleep duration (seconds) between retry attempts
 
 # Telescoping delay configuration
-TELESCOPING_MAX_DELAY_SECONDS = 600  # Maximum delay cap for telescoping retries
-TELESCOPING_DELAY_MULTIPLIER = 2     # Base multiplier for exponential backoff
+TELESCOPING_MAX_DELAY_SECONDS = 600    # Maximum delay cap for telescoping retries
+TELESCOPING_DELAY_MULTIPLIER = 2       # Base multiplier for exponential backoff
 
 # Exit codes
-EXIT_CODE_STALLED = 3                # Exit code when workflow is stalled
+EXIT_CODE_STALLED = 3                  # Exit code when workflow is stalled
 
 # ============================================================================
 
-# Use the new stdout parameter to control whether logs appear on stdout
-# Default behavior: logs only go to file when ROCOTOSTAT_LOG_FILE is set
-logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"),
-                colored_log=False,
-                stdout=False,  # Disable stdout by default to keep logs only in file
-                logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE"))
+# This scrpit is a utility with unix style pipe-able side effects so
+# stdout True only if LOGGING_LEVEL is DEBUG, else False
+_log_level = os.environ.get("LOGGING_LEVEL", "INFO").upper()
+_stdout = _log_level == "DEBUG"
+logger = Logger(
+    level=_log_level,
+    colored_log=False,
+    stdout=_stdout,
+    logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE")
+)
 
 
 def get_user_thread_count():
@@ -75,7 +79,7 @@ def get_user_thread_count():
             'utilization_pct': round((user_threads / process_limit * 100), 2) if process_limit > 0 else -1
         }
 
-    except Exception as e:
+    except (OSError, ProcessError) as e:
         logger.warning(f"Error getting user thread count: {e}")
         return {
             'user': 'unknown',
@@ -183,7 +187,7 @@ def attempt_multiple_times(expression, max_attempts, sleep_duration=0,
 
             if attempt < max_attempts:
                 if use_telescoping_delay:
-                    current_delay = min(sleep_duration * (TELESCOPING_DELAY_MULTIPLIER ** attempt), TELESCOPING_MAX_DELAY_SECONDS)
+                    current_delay = min(sleep_duration * (TELESCOPING_DELAY_MULTIPLIER ** (attempt - 1)), TELESCOPING_MAX_DELAY_SECONDS)
                 else:
                     current_delay = sleep_duration
 
@@ -227,7 +231,8 @@ def input_args():
     parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
     parser.add_argument('-v', action='store_true', help='List the states and the number of jobs that are in each', required=False)
     parser.add_argument('--export', action='store_true', help='create and export list of the status values for bash', required=False)
-    parser.add_argument('--thread-logging', action='store_true', help='Enable thread count performance logging for monitoring system resource usage', required=False)
+    parser.add_argument('--thread-logging', action='store_true',
+                        help='Enable thread count performance logging for monitoring system resource usage', required=False)
 
     args = parser.parse_args()
 
