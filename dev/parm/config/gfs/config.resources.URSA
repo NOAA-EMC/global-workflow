@@ -25,7 +25,7 @@ case ${step} in
       "C1152")
         export threads_per_task=16
         ;;
-      *) 
+      *)
         ;;
     esac
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
@@ -57,10 +57,14 @@ case ${step} in
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
+  "aeroanlvar")
+    export tasks_per_node=48
+    ;;
+
   "marinebmat")
     case ${OCNRES} in
       "025")
-        tasks_per_node=$(( max_tasks_per_node / 4 )) 
+        tasks_per_node=$(( max_tasks_per_node / 4 ))
         ;;
       *)
         ;;
@@ -77,6 +81,6 @@ case ${step} in
         ;;
     esac
     ;;
-  *) 
+  *)
     ;;
 esac
