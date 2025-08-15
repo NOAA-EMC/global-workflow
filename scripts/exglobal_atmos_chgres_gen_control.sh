@@ -5,9 +5,6 @@
 # Script name:         exglobal_atmos_chgres_gen_control.sh
 # Script description:  Runs chgres on changing resolution of GEFS stage ic control member
 ################################################################################
-# Dependent input scripts and Executables
-CHGRESEXEC="${HOMEgfs}/sorc/ufs_utils.fd/exec/chgres_cube"
-################################################################################
 # copy input files to DATA from the source directory
 cpreq "${FIXgfs}/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
 cpreq "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/"
