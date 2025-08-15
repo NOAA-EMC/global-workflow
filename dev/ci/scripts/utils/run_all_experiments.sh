@@ -145,6 +145,8 @@ while IFS= read -r -d '' experiment_dir; do
         
         # Run the check script in background
         echo "Starting experiment ${pslot}..."
+        caseName="${pslot%_*-*}"
+        export ROCOTOSTAT_LOG_FILE="${RUNTESTS}/EXPDIR/${pslot}/logs/${caseName}_rocotostat.log"
         "${RUN_CHECK_SCRIPT}" "${TEST_DIR}" "${pslot}" "${SYSTEM_BUILD_DIR}" &
         
         # Store PID and experiment name
