@@ -81,6 +81,7 @@ class GEFSTasks(Tasks):
         task_name = f'{self.run}_gen_control_ic'
         task_dict = {'task_name': task_name,
                      'resources': resources,
+                     'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/dev/jobs/gen_control_ic.sh',
