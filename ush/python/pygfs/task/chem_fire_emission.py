@@ -43,10 +43,20 @@ class ChemFireEmissions(Task):
         self.historical = bool(self.task_config.get('AERO_EMIS_FIRE_HIST', 1))
         self.AERO_INPUTS_DIR = self.task_config.get('AERO_INPUTS_DIR', None)
         self.COMOUT_CHEM_INPUT = self.task_config.get('COMOUT_CHEM_INPUT', None)
-        nforecast_hours = self.task_config["FHMAX_GFS"]
-        self.start_date = self.task_config["PDY"]
-        self.end_date = self.start_date + to_timedelta(f'{nforecast_hours + 24}H')
+
+        # get the nforecast hours - gcdas will use FHMAX and gcafs will use FHMAX_GFS
+        if 'das' in self.task_config['RUN']:
+            nforecast_hours = self.task_config["FHMAX"]
+        else:
+            nforecast_hours = self.task_config["FHMAX_GFS"]
+
+        # Create start date based on SDATE - 12 hours
+        self.start_date = self.task_config["SDATE"]
+
+        # end date = SDATE + nforecast hours + 36
+        self.end_date = self.task_config["SDATE"] + to_timedelta(f'{nforecast_hours + 24}H')
         self.forecast_dates = list(rrule(freq=DAILY, dtstart=self.start_date, until=self.end_date))
+        logger.info(f"Forecast dates: {self.forecast_dates}")
 
     @logit(logger)
     def initialize(self) -> None:

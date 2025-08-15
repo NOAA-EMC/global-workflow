@@ -789,7 +789,6 @@ GOCART_predet(){
   # Create the ChemInput directory in the local run directory
   if [[ ! -d "${DATA}/ChemInput" ]]; then mkdir -p "${DATA}/ChemInput"; fi
 
-
   # Copy Fire Emission Files ChemInput directory
   local current
   local YYYYMMDDHH
@@ -809,22 +808,20 @@ GOCART_predet(){
       exit 1
     fi
 
-
     # Increment by 1 day
     current=$(date -d "${current:0:8} ${current:8:2} +1 day" +%Y%m%d%H)
   done
 
-
   # Copy NXS Emission Files ChemInput directory
   # NXS files are hourly, so we need to loop through each hour in the cycle
   current=$(date -d "${current_cycle_begin:0:8} ${current_cycle_begin:8:2}" +%Y%m%d%H)
-  cycleend=$(date -d "${current_cycle_end:0:8} ${current_cycle_end:8:2} +24 hour" +%Y%m%d%H)
+  cycleend=$(date -d "${current_cycle_end:0:8} ${current_cycle_end:8:2} +3 hour" +%Y%m%d%H)
   while [[ "${current}" -le "${cycleend}" ]]; do
     if ! YYYYMMDD=$(date -d "${current:0:8} ${current:8:2}:00:00" +%Y%m%d 2>/dev/null); then
       echo "FATAL ERROR: Invalid date string '${current}' in GOCART_predet, ABORT!"
       exit 1
     fi
-    local NXSFile="${COMIN_CHEM_INPUT}/${NXS_DIAG_PREFIX}.${YYYYMMDD}.nc"
+    local NXSFile="${COMIN_CHEM_INPUT}/${NEXUS_DIAG_PREFIX}.${YYYYMMDD}.nc"
     if [[ -f "${NXSFile}" ]]; then
       cpreq "${NXSFile}" "${DATA}/ChemInput/"
     else
@@ -834,7 +831,6 @@ GOCART_predet(){
     # Increment by 1 hour
     current=$(date -d "${current:0:8} ${current:8:2} +1 hour" +%Y%m%d%H)
   done
-
 
   # GOCART output times can't be computed here because they may depend on FHROT
 }

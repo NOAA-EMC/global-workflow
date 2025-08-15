@@ -4,6 +4,7 @@ import os
 import re
 import xarray as xr
 import subprocess
+import numpy as np
 import cftime
 from logging import getLogger
 from typing import Dict, Any, Union, List
@@ -41,11 +42,22 @@ class NEXUSEmissions(Task):
         super().__init__(config)
 
         self.task_config = AttrDict(config)
+
         self.AERO_INPUTS_DIR = self.task_config.get('AERO_INPUTS_DIR', None)
         self.COMOUT_CHEM_INPUT = self.task_config.get('COMOUT_CHEM_INPUT', None)
-        nforecast_hours = self.task_config["FHMAX_GFS"]
-        self.start_date = self.task_config["SDATE"] - to_timedelta('12H')
-        self.end_date = self.task_config["EDATE"] + to_timedelta('12H')
+
+        # get the nforecast hours - gcdas will use FHMAX and gcafs will use FHMAX_GFS
+        if 'das' in self.task_config['RUN']:
+            nforecast_hours = self.task_config["FHMAX"]
+        else:
+            nforecast_hours = self.task_config["FHMAX_GFS"]
+
+        # Create start date based on SDATE
+        self.start_date = self.task_config["SDATE"]
+        self.total_hrs = nforecast_hours + 2
+        self.end_date = self.task_config["SDATE"] + to_timedelta(f'{self.total_hrs}H')
+
+        # Create the forecast dates based on start_date and end_date
         frequency = self.task_config.get("NEXUS_DIAG_FREQ", "Hourly")
         if frequency == "Hourly":
             self.forecast_dates = list(rrule(freq=HOURLY, dtstart=self.start_date, until=self.end_date))
@@ -155,6 +167,8 @@ class NEXUSEmissions(Task):
             fname_final = f"{self.task_config.NEXUS_DIAG_PREFIX}.{d.strftime('%Y%m%d')}.nc"
             processed_nexus_files.append(fname)
             final_output_files.append(fname_final)
+        final_output_files = list(set(final_output_files))
+        logger.info(f"Final output files: {final_output_files}")
         self.processed_nexus_files = processed_nexus_files
         # render the NEXUS configuration files
         if not os.path.exists(nexus_config_dir):
@@ -310,9 +324,11 @@ class NEXUSEmissions(Task):
             raise WorkflowException("No 'units' attribute found for time variable.")
 
         # Convert time values to datetime objects
-        time_vals = time_var.values
+        time_vals = np.arange(len(files))
+        ds = ds.assign_coords(time=time_vals)
         time_dt = cftime.num2date(time_vals, units=time_units, calendar=time_calendar)
 
+        units_string = f"hours since {self.start_date.strftime('%Y-%m-%d %H:%M:%S')}"
         # Group indices by day
         from collections import defaultdict
         day_to_indices = defaultdict(list)
@@ -322,6 +338,7 @@ class NEXUSEmissions(Task):
         encoding = {var: {"zlib": True, "complevel": 4} for var in ds.data_vars}
         for day_str, indices in day_to_indices.items():
             daily_ds = ds.isel(time=indices)
+            daily_ds.time.attrs['units'] = units_string
             outname = f"{self.task_config.NEXUS_DIAG_PREFIX}.{day_str}.nc"
             daily_ds.to_netcdf(outname, format="NETCDF4", encoding=encoding)
             logger.info(f"Wrote daily output: {outname}")
