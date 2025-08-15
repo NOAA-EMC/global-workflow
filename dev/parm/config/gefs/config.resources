@@ -19,6 +19,7 @@ echo "BEGIN: config.resources"
 case ${machine} in
   "WCOSS2")   max_tasks_per_node=128;;
   "HERA")     max_tasks_per_node=40;;
+  "URSA")     max_tasks_per_node=192;;
   "ORION")    max_tasks_per_node=40;;
   "HERCULES") max_tasks_per_node=80;;
   "GAEAC5")   max_tasks_per_node=128;;
