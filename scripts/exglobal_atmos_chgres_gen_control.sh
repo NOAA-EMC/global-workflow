@@ -25,6 +25,8 @@ for i in {1..6}; do
   cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tile${i}.nc" "${DATA}/"
 done
 ################################################################################
+# date
+BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - $((assim_freq / 2)) hours")
 # add the namelist and run chgres
 cat << EOF > ./fort.41
 &config
@@ -51,10 +53,10 @@ cat << EOF > ./fort.41
   geogrid_file_input_grid="NULL"
   varmap_file="NULL"
   wam_parm_file="NULL"
-  cycle_year=${PDY:0:4}
-  cycle_mon=${PDY:4:2}
-  cycle_day=${PDY:6:2}
-  cycle_hour=${cyc}
+  cycle_year=${BDATE:0:4}
+  cycle_mon=${BDATE:4:2}
+  cycle_day=${BDATE:6:2}
+  cycle_hour=${BDATE:8:2}
   convert_atm=.true.
   convert_sfc=.true.
   convert_nst=.true.
