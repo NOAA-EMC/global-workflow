@@ -181,6 +181,9 @@ class GEFSTasks(Tasks):
         if self.app_config.gefstype in ['gefs-offline']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
+        elif self.app_config.gefstype in ['near-real-time']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
@@ -201,10 +204,6 @@ class GEFSTasks(Tasks):
         #
         tasks = []
         for member in [f"{mem:03d}" for mem in range(1, self.nmem + 1)]:
-            if self.app_config.gefstype in ['near-real-time']:
-                dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem{member}'}
-                dependencies.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
             efcsenvars = self.envars.copy()
             efcsenvars_dict = {'ENSMEM': f'{member}',
