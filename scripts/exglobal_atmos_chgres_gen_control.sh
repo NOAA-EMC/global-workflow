@@ -5,6 +5,9 @@
 # Script name:         exglobal_atmos_chgres_gen_control.sh
 # Script description:  Runs chgres on changing resolution of GEFS stage ic control member
 ################################################################################
+# Dependent input scripts and Executables
+CHGRESEXEC="${HOMEgfs}/sorc/ufs_utils.fd/exec/chgres_cube"
+################################################################################
 # copy input files to DATA from the source directory
 cpreq "${FIXgfs}/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
 cpreq "${FIXgfs}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/"
@@ -25,7 +28,6 @@ for i in {1..6}; do
   cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tile${i}.nc" "${DATA}/"
 done
 ################################################################################
-BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - $((assim_freq / 2)) hours")
 # add the namelist and run chgres
 cat << EOF > ./fort.41
 &config
@@ -52,10 +54,10 @@ cat << EOF > ./fort.41
   geogrid_file_input_grid="NULL"
   varmap_file="NULL"
   wam_parm_file="NULL"
-  cycle_year="${PDY:0:4}"
-  cycle_mon="${PDY:4:2}"
-  cycle_day="${PDY:6:2}"
-  cycle_hour="${cyc}"
+  cycle_year=${PDY:0:4}
+  cycle_mon=${PDY:4:2}
+  cycle_day=${PDY:6:2}
+  cycle_hour=${cyc}
   convert_atm=.true.
   convert_sfc=.true.
   convert_nst=.true.
