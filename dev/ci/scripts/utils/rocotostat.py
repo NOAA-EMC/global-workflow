@@ -34,13 +34,11 @@ EXIT_CODE_STALLED = 3                  # Exit code when workflow is stalled
 # ============================================================================
 
 # This scrpit is a utility with unix style pipe-able side effects so
-# stdout True only if LOGGING_LEVEL is DEBUG, else False
-_log_level = os.environ.get("LOGGING_LEVEL", "INFO").upper()
-_stdout = _log_level == "DEBUG"
+# logger is always set to file or it's suppresed
 logger = Logger(
-    level=_log_level,
+    level=os.environ.get("LOGGING_LEVEL", "DEGUG").upper(),
     colored_log=False,
-    stdout=_stdout,
+    stdout=False,  # Always write to file, not stdout
     logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE")
 )
 
@@ -381,8 +379,9 @@ if __name__ == '__main__':
     # Add the persistent default arguments
     rocotostat.add_default_arg(['-w', os.path.abspath(args.w.name), '-d', os.path.abspath(args.d.name)])
 
-    rocoto_status = rocoto_statcount(rocotostat, args.thread_logging)
-    rocoto_status.update(rocotostat_summary(rocotostat, args.thread_logging))
+    # --- PATCH: Pass thread_logging_enabled from args.thread_logging ---
+    rocoto_status = rocoto_statcount(rocotostat, thread_logging_enabled=args.thread_logging)
+    rocoto_status.update(rocotostat_summary(rocotostat, thread_logging_enabled=args.thread_logging))
 
     error_return = 0
     if is_done(rocoto_status):
@@ -391,7 +390,7 @@ if __name__ == '__main__':
         error_return = rocoto_status['FAIL'] + rocoto_status['DEAD']
         rocoto_state = 'FAIL'
     elif rocoto_status['UNAVAILABLE'] > 0 or rocoto_status['UNKNOWN'] > 0:
-        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat, args.thread_logging),
+        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat, thread_logging_enabled=args.thread_logging),
                                                ROCOTO_RETRY_MAX_ATTEMPTS,
                                                ROCOTO_RETRY_SLEEP_DURATION,
                                                ProcessError,
@@ -405,7 +404,7 @@ if __name__ == '__main__':
             error_return += rocoto_status['UNKNOWN']
             rocoto_state = 'UNKNOWN'
     elif is_stalled(rocoto_status):
-        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat, args.thread_logging),
+        rocoto_status = attempt_multiple_times(lambda: rocoto_statcount(rocotostat, thread_logging_enabled=args.thread_logging),
                                                ROCOTO_RETRY_MAX_ATTEMPTS,
                                                ROCOTO_RETRY_SLEEP_DURATION,
                                                ProcessError,
@@ -434,4 +433,5 @@ if __name__ == '__main__':
     # Log thread count at end
     log_thread_count("END", args.thread_logging)
 
+    sys.exit(error_return)
     sys.exit(error_return)
