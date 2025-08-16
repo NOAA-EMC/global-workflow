@@ -108,7 +108,6 @@ fi
 
 # Script location
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export ROCOTOSTAT_LOG_FILE="${RUNTESTS}/EXPDIR/${pslot}/logs/${caseName}_rocotostat.log"
 RUN_CHECK_SCRIPT="${SCRIPT_DIR}/../run_check_gitlab_ci.sh"
 
 # Validate run_check_gitlab_ci.sh exists

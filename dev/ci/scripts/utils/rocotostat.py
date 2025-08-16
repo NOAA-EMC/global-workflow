@@ -36,7 +36,7 @@ EXIT_CODE_STALLED = 3                  # Exit code when workflow is stalled
 # This scrpit is a utility with unix style pipe-able side effects so
 # logger is always set to file or it's suppresed
 logger = Logger(
-    level=os.environ.get("LOGGING_LEVEL", "DEGUG").upper(),
+    level=os.environ.get("LOGGING_LEVEL", "DEBUG").upper(),
     colored_log=False,
     stdout=False,  # Always write to file, not stdout
     logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE")
@@ -432,6 +432,4 @@ if __name__ == '__main__':
 
     # Log thread count at end
     log_thread_count("END", args.thread_logging)
-
-    sys.exit(error_return)
     sys.exit(error_return)

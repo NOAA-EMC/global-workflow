@@ -153,6 +153,9 @@ while true; do
   # Get job statistics
   echo "Gather Rocoto statistics"
   # shellcheck disable=SC2312 # We want to use the exit code of the command
+
+  caseName="${caseName:-${pslot%_*-*}}"
+  export ROCOTOSTAT_LOG_FILE="${RUNTESTS}/EXPDIR/${pslot}/logs/${caseName}_rocotostat.log"
   full_state=$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v --thread-logging)
   error_stat=$?
 
