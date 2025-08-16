@@ -247,6 +247,11 @@ while [[ ${#running[@]} -gt 0 ]]; do
     running_count=${#running[@]}
     done_count=$((completed_count + failed_count))
     echo "Progress: ${done_count}/${total} experiments finished (${completed_count} completed, ${failed_count} failed, ${running_count} running)"
+    if [[ ${done_count} == ${total} && ${running_count} -ne 0 ]]; then
+        echo "WARNING: all experiments have completed running but some PIDs are still outstanding .. cleaning up"
+        cleanup
+        break
+    fi
     
     # Run rocotometrics every 5 minutes
     current_time=$(date +%s)
