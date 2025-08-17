@@ -51,10 +51,10 @@ class ChemFireEmissions(Task):
             nforecast_hours = self.task_config["FHMAX_GFS"]
 
         # Create start date based on SDATE - 12 hours
-        self.start_date = self.task_config["SDATE"]
+        self.start_date = self.task_config["SDATE_GFS"]
 
         # end date = SDATE + nforecast hours + 24
-        self.end_date = self.task_config["SDATE"] + to_timedelta(f'{nforecast_hours + 24}H')
+        self.end_date = self.task_config["SDATE_GFS"] + to_timedelta(f'{nforecast_hours + 24}H')
         self.forecast_dates = list(rrule(freq=DAILY, dtstart=self.start_date, until=self.end_date))
         logger.info(f"Forecast dates: {self.forecast_dates}")
 
