@@ -33,9 +33,9 @@ SU_AIRCRAFT NA  Y Y %y4-%m2-%d2t12:00:00 none none none /dev/null
 SU_DMSO NA  Y Y %y4-%m2-%d2t12:00:00 none none conc         ExtData/MERRA2/sfc/DMSclim_sfcconcentration.x360_y181_t12.Lana2011.nc4
 
 # Aviation emissions during the three phases of flight
-SU_AVIATION_LTO NA  N Y F0 none none SO2_lto ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
-SU_AVIATION_CDS NA  N Y F0 none none SO2_cds ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
-SU_AVIATION_CRS NA  N Y F0 none none SO2_crs ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
+SU_AVIATION_LTO NA  Y Y %y4-%m2-%d2t12:00:00 none none so2_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.aviation_lto.x3600_y1800_t12.2010.nc4
+SU_AVIATION_CDS NA  Y Y %y4-%m2-%d2t12:00:00 none none so2_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.aviation_cds.x3600_y1800_t12.2010.nc4
+SU_AVIATION_CRS NA  Y Y %y4-%m2-%d2t12:00:00 none none so2_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.aviation_crs.x3600_y1800_t12.2010.nc4
 
 # H2O2, OH and NO3 mixing ratios
 # --------------------------------------------------------------
@@ -75,9 +75,9 @@ OC_SHIP    NA  N Y F0 none none OC_ship  ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
 OC_AIRCRAFT NA  N Y %y4-%m2-%d2t12:00:00 none none oc_aviation /dev/null
 
 # Aviation emissions during the three phases of flight
-OC_AVIATION_LTO NA  N Y F0 none none OC_lto ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
-OC_AVIATION_CDS NA  N Y F0 none none OC_cds ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
-OC_AVIATION_CRS NA  N Y F0 none none OC_crs ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
+OC_AVIATION_LTO NA  Y Y %y4-%m2-%d2t12:00:00 none none oc_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.aviation_lto.x3600_y1800_t12.2010.nc4
+OC_AVIATION_CDS NA  Y Y %y4-%m2-%d2t12:00:00 none none oc_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.aviation_cds.x3600_y1800_t12.2010.nc4
+OC_AVIATION_CRS NA  Y Y %y4-%m2-%d2t12:00:00 none none oc_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.aviation_crs.x3600_y1800_t12.2010.nc4
 
 # SOA production
 pSOA_ANTHRO_VOC NA Y Y %y4-%m2-%d2t12:00:00 none none biofuel /dev/null
@@ -100,9 +100,9 @@ BC_SHIP NA  N Y F0 none none BC_ship     ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
 BC_AIRCRAFT NA  N Y F0 none none bc_aviation /dev/null
 
 # Aviation emissions during the LTO, SDC and CRS phases of flight
-BC_AVIATION_LTO NA  N Y F0 none none BC_lto ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
-BC_AVIATION_CDS NA  N Y F0 none none BC_cds ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
-BC_AVIATION_CRS NA  N Y F0 none none BC_crs ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
+BC_AVIATION_LTO NA  Y Y %y4-%m2-%d2t12:00:00 none none bc_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.aviation_lto.x3600_y1800_t12.2010.nc4
+BC_AVIATION_CDS NA  Y Y %y4-%m2-%d2t12:00:00 none none bc_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.aviation_cds.x3600_y1800_t12.2010.nc4
+BC_AVIATION_CRS NA  Y Y %y4-%m2-%d2t12:00:00 none none bc_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.aviation_crs.x3600_y1800_t12.2010.nc4
 
 #============================================================================================================
 # BROWN CARBON

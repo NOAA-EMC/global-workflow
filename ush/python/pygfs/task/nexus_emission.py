@@ -2,6 +2,7 @@
 
 import os
 import re
+from collections import defaultdict
 import xarray as xr
 import subprocess
 import numpy as np
@@ -54,7 +55,7 @@ class NEXUSEmissions(Task):
 
         # Create start date based on SDATE
         self.start_date = self.task_config["SDATE"]
-        self.total_hrs = nforecast_hours + 2
+        self.total_hrs = nforecast_hours + 3
         self.end_date = self.task_config["SDATE"] + to_timedelta(f'{self.total_hrs}H')
 
         # Create the forecast dates based on start_date and end_date
@@ -305,43 +306,102 @@ class NEXUSEmissions(Task):
 
         logger.info("Concatenating processed NEXUS files...")
 
+        # sort the files even though they should be sorted already | safety check
         files = sorted(self.processed_nexus_files)
-        dsets = []
-        for f in files:
-            dsets.append(xr.open_dataset(f, decode_cf=False))
 
-        # Concatenate along time dimension
-        ds = xr.concat(dsets, dim="time")
+        for i in files:
 
-        # Convert raw time values to datetime objects using cftime
-        if 'time' not in ds.dims:
-            raise WorkflowException("No 'time' dimension found in NEXUS output dataset.")
+            if not os.path.exists(i):
+                logger.warning(f"NEXUS file not found: {i}")
+                continue
+            else:
+                logger.info(f"NEXUS file found: {i}")
 
-        time_var = ds['time']
-        time_units = time_var.attrs.get('units', None)
-        time_calendar = time_var.attrs.get('calendar', 'standard')
-        if time_units is None:
-            raise WorkflowException("No 'units' attribute found for time variable.")
+        for f, dates in zip(files, self.forecast_dates):
+            logger.info(f" - {f}, {dates}")
 
-        # Convert time values to datetime objects
-        time_vals = np.arange(len(files))
-        ds = ds.assign_coords(time=time_vals)
-        time_dt = cftime.num2date(time_vals, units=time_units, calendar=time_calendar)
+        # find the day indexes for each unique day
+        # this returns a dictionary
+        # example:
+        # {
+        #     datetime.date(2024, 1, 5): [0, 1, 3],
+        #     datetime.date(2024, 1, 6): [2]
+        # }
+        day_indexes = _get_day_indices(self.forecast_dates[:-1]) # hemco doesn't write out the last timestep
 
-        units_string = f"hours since {self.start_date.strftime('%Y-%m-%d %H:%M:%S')}"
-        # Group indices by day
-        from collections import defaultdict
-        day_to_indices = defaultdict(list)
-        for idx, dt in enumerate(time_dt):
-            day_to_indices[dt.strftime('%Y%m%d')].append(idx)
+        # now loop over each days
+        for date, indexes in day_indexes.items():
+            day_str = date.strftime('%Y%m%d')
+            logger.info(f"Processing NEXUS files for date: {date}")
 
-        encoding = {var: {"zlib": True, "complevel": 4} for var in ds.data_vars}
-        for day_str, indices in day_to_indices.items():
-            daily_ds = ds.isel(time=indices)
-            daily_ds.time.attrs['units'] = units_string
+            dsets = []
+            print(indexes, len(files))
+            for index in indexes:
+                # list files for log
+                logger.info(f" - {files[index]}, {index}")
+
+                # now concatenate the files per day
+                if os.path.exists(files[index]) is False:
+                    break
+                ds = xr.open_dataset(files[index], decode_cf=False)
+
+                # update time coordinate
+                ds = ds.assign_coords(time=('time',[index]))
+
+                # set time units to reference start-date
+                ds.time.attrs['units'] = self.start_date.strftime('hours since %Y-%m-%d %H:00:00')
+
+                # append
+                dsets.append(ds)
+
+            # concatenate all the files for this day
+            if dsets is None:
+                break
+            else:
+                ds = xr.concat(dsets, dim='time')
+
+            encoding = {var: {"zlib": True, "complevel": 2} for var in ds.data_vars}
             outname = f"{self.task_config.NEXUS_DIAG_PREFIX}.{day_str}.nc"
-            daily_ds.to_netcdf(outname, format="NETCDF4", encoding=encoding)
+            ds.to_netcdf(outname, format="NETCDF4", encoding=encoding)
             logger.info(f"Wrote daily output: {outname}")
+
+        # dsets = []
+        # for index, fname in enumerate(files):
+        #     dset = xr.open_dataset(fname,decode_cf=False)
+        #     dsets.append(dset.assign_coords(time=[index]))
+
+        # # Concatenate along time dimension
+        # ds = xr.concat(dsets, dim="time")
+        # ds.time.attrs['units'] = self.start_date.strftime('hours since %y-%m-%d %H:00:00')
+
+        # # Convert raw time values to datetime objects using cftime
+        # if 'time' not in ds.dims:
+        #     raise WorkflowException("No 'time' dimension found in NEXUS output dataset.")
+
+        # time_var = ds['time']
+        # time_units = time_var.attrs.get('units', None)
+        # time_calendar = time_var.attrs.get('calendar', 'standard')
+        # if time_units is None:
+        #     raise WorkflowException("No 'units' attribute found for time variable.")
+
+        # # Convert time values to datetime objects
+        # time_vals = np.arange(len(files))
+        # ds = ds.assign_coords(time=time_vals)
+        # time_dt = cftime.num2date(time_vals, units=time_units, calendar=time_calendar)
+
+        # # Group indices by day
+
+        # day_to_indices = defaultdict(list)
+        # for idx, dt in enumerate(time_dt):
+        #     day_to_indices[dt.strftime('%y%m%d')].append(idx)
+
+        # encoding = {var: {"zlib": True, "complevel": 4} for var in ds.data_vars}
+        # for day_str, indices in day_to_indices.items():
+        #     daily_ds = ds.isel(time=indices)
+        #     daily_ds.time.attrs['units'] = units_string
+        #     outname = f"{self.task_config.NEXUS_DIAG_PREFIX}.{day_str}.nc"
+        #     daily_ds.to_netcdf(outname, format="NETCDF4", encoding=encoding)
+        #     logger.info(f"Wrote daily output: {outname}")
 
         logger.info("NEXUS emission processing execute phase complete")
 
@@ -387,3 +447,13 @@ def _write_txt_file(content: str, file_path: Union[str, os.PathLike]) -> None:
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, 'w') as f:
         f.write(content)
+
+def _get_day_indices(date_list):
+    day_indices = {}
+    for idx, dt_obj in enumerate(date_list):
+        # Extract the date part (ignores time)
+        day = dt_obj.date()
+        if day not in day_indices:
+            day_indices[day] = []
+        day_indices[day].append(idx)
+    return day_indices
