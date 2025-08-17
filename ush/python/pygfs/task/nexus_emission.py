@@ -54,9 +54,9 @@ class NEXUSEmissions(Task):
             nforecast_hours = self.task_config["FHMAX_GFS"]
 
         # Create start date based on SDATE
-        self.start_date = self.task_config["SDATE"]
+        self.start_date = self.task_config["SDATE_GFS"]
         self.total_hrs = nforecast_hours + 3
-        self.end_date = self.task_config["SDATE"] + to_timedelta(f'{self.total_hrs}H')
+        self.end_date = self.task_config["SDATE_GFS"] + to_timedelta(f'{self.total_hrs}H')
 
         # Create the forecast dates based on start_date and end_date
         frequency = self.task_config.get("NEXUS_DIAG_FREQ", "Hourly")
@@ -328,7 +328,8 @@ class NEXUSEmissions(Task):
         #     datetime.date(2024, 1, 6): [2]
         # }
         day_indexes = _get_day_indices(self.forecast_dates[:-1]) # hemco doesn't write out the last timestep
-
+        from pprint import pprint
+        pprint(day_indexes)
         # now loop over each days
         for date, indexes in day_indexes.items():
             day_str = date.strftime('%Y%m%d')
