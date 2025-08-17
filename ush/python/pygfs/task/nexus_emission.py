@@ -328,8 +328,6 @@ class NEXUSEmissions(Task):
         #     datetime.date(2024, 1, 6): [2]
         # }
         day_indexes = _get_day_indices(self.forecast_dates[:-1]) # hemco doesn't write out the last timestep
-        from pprint import pprint
-        pprint(day_indexes)
         # now loop over each days
         for date, indexes in day_indexes.items():
             day_str = date.strftime('%Y%m%d')
@@ -449,12 +447,34 @@ def _write_txt_file(content: str, file_path: Union[str, os.PathLike]) -> None:
     with open(file_path, 'w') as f:
         f.write(content)
 
-def _get_day_indices(date_list):
-    day_indices = {}
-    for idx, dt_obj in enumerate(date_list):
-        # Extract the date part (ignores time)
-        day = dt_obj.date()
-        if day not in day_indices:
-            day_indices[day] = []
-        day_indices[day].append(idx)
-    return day_indices
+
+def _get_day_indices(datetimes):
+    """
+    Group indices of datetimes by day, including midnight in both days.
+
+    Parameters
+    ----------
+    datetimes : list of datetime.datetime
+        List of datetime objects.
+
+    Returns
+    -------
+    dict
+        Dictionary mapping datetime.datetime (at midnight) to list of indices.
+        Each day includes all hours from 00:00 of that day through 00:00 of the next day,
+        and the midnight index is included in both days.
+    """
+    from collections import defaultdict
+    from datetime import timedelta
+
+    grouped = defaultdict(list)
+
+    for idx, dt in enumerate(datetimes):
+        day_dt = dt.replace(hour=0, minute=0, second=0, microsecond=0)
+        grouped[day_dt].append(idx)
+        # If this is exactly midnight, also add to previous day
+        if dt.hour == 0 and dt.minute == 0 and dt.second == 0 and dt.microsecond == 0:
+            prev_day = day_dt - timedelta(days=1)
+            grouped[prev_day].append(idx)
+
+    return dict(grouped)
