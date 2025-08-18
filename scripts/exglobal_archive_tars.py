@@ -67,17 +67,20 @@ def main():
             for atardir_set in atardir_sets:
                 # Match dataset name to tarball type
                 dataset_name = atardir_set.get('name', '').upper()
-                if (dataset_name == tarball_type.upper() or 
-                    atardir_set.get('target', '').endswith(f'{tarball_type}.tar')):
+                if (
+                    dataset_name == tarball_type.upper() or
+                    atardir_set.get('target', '').endswith(f'{tarball_type}.tar')
+                ):
+
                     filtered_sets.append(atardir_set)
                     logger.info(f"Creating tarball for type: {tarball_type}")
                     break
-            
+
             if not filtered_sets:
                 logger.warning(f"No dataset found for tarball type: {tarball_type}")
                 logger.info(f"Available datasets: {[s.get('name', 'unknown') for s in atardir_sets]}")
                 return
-                
+
             atardir_sets = filtered_sets
 
         # Create the backup tarballs and store in ATARDIR
