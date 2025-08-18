@@ -5,10 +5,10 @@ import re
 import fnmatch
 import datetime
 import xarray as xr
+import numpy as np
 from logging import getLogger
 from typing import Dict, Any, Union, List
 from dateutil.rrule import DAILY, rrule
-
 from wxflow import (AttrDict,
                     parse_j2yaml,
                     FileHandler,
@@ -49,13 +49,21 @@ class ChemFireEmissions(Task):
             nforecast_hours = self.task_config["FHMAX"]
         else:
             nforecast_hours = self.task_config["FHMAX_GFS"]
+        logger.info(f"Number of forecast hours: {nforecast_hours}")
 
         # Create start date based on SDATE - 12 hours
         self.start_date = self.task_config["SDATE_GFS"]
+        logger.info(f"Start date: {self.start_date}")
 
         # end date = SDATE + nforecast hours + 24
-        self.end_date = self.task_config["SDATE_GFS"] + to_timedelta(f'{nforecast_hours + 24}H')
-        self.forecast_dates = list(rrule(freq=DAILY, dtstart=self.start_date, until=self.end_date))
+        self.end_date = self.task_config["SDATE_GFS"] + to_timedelta(f'{nforecast_hours + 36}H')
+        logger.info(f"End date: {self.end_date}")
+
+        # Calculate number of days spanned by start and end date (inclusive)
+        numdays = (self.end_date.date() - self.start_date.date()).days + 1
+        logger.info(f"Number of days in forecast period: {numdays}")
+
+        self.forecast_dates = list(rrule(freq=DAILY, dtstart=self.start_date, count=numdays))
         logger.info(f"Forecast dates: {self.forecast_dates}")
 
     @logit(logger)
