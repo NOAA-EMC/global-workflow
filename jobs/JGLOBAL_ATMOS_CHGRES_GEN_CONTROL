@@ -8,6 +8,8 @@ GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - $((assim_freq / 2)) hours")
 export BDATE
 
+export BDATE
+
 # Define COM directories
 # TODO: uncomment when testing for realtime
 #COMINgfs=$(compath.py "${envir}/gfs/${gfs_ver}")
