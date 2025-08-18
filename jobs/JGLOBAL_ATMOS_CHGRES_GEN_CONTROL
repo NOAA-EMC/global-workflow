@@ -11,6 +11,11 @@ MEMDIR="mem000" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 # Create COMOUT_ATMOS_INPUT_MEM
 mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"
 ###############################################################
+
+# Define the input ATM_FILE and SFC_FILE from GFS
+export ATM_FILE="${COMINgfs:-}/gfs.${gPDY}/${gcyc}/atmos/history/gfs.t${gcyc}.atmf003.nc"
+export SFC_FILE="${COMINgfs:-}/gfs.${gPDY}/${gcyc}/atmos/history/gfs.t${gcyc}.sfcf003.nc"
+###############################################################
 # Run relevant script
 ${CHGRESFCSTSH:-${SCRgfs}/exglobal_atmos_chgres_gen_control.sh} && true
 export err=$?
