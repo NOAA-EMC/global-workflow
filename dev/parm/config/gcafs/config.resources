@@ -28,7 +28,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "marineanlinit prepoceanobs marinebmat marineanlvar ocnanalecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
+    echo "marineanlinit prepoceanobs marinebmat marineanlvar marineanlecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
     exit 1
 
 fi
@@ -46,6 +46,10 @@ case ${machine} in
   "HERA")
               max_tasks_per_node=40
               mem_node_max="96GB"
+    ;;
+  "URSA")
+              max_tasks_per_node=192
+              mem_node_max="360GB"
     ;;
   "GAEAC5")
               max_tasks_per_node=128
@@ -590,7 +594,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
-  "ocnanalecen")
+  "marineanlecen")
     ntasks=16
     case ${OCNRES} in
       "025")

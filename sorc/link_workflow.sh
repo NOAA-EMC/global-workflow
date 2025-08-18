@@ -71,7 +71,7 @@ ${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/ru
 #------------------------------
 case "${machine}" in
 "wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
-"hera") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
+"hera" | "ursa") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
 "orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
@@ -160,9 +160,7 @@ done
 
 cd "${HOMEgfs}/scripts" || exit 8
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
-  declare -a gdas_scripts=(exglobal_prep_ocean_obs.py
-    exgdas_global_marine_analysis_ecen.py
-  )
+  declare -a gdas_scripts=(exglobal_prep_ocean_obs.py)
   for gdas_script in "${gdas_scripts[@]}"; do
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/scripts/${gdas_script}" .
   done
@@ -197,6 +195,11 @@ if [[ -s "atparse.bash" ]]; then
     rm -f "atparse.bash"
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
+
+# Temporarilly link load_gw_run_modules.sh to load_fv3gfs_modules.sh
+# TODO: Use load_gw_run_modules.sh everywhere
+cd "${HOMEgfs}/dev/ush" || exit 1
+${LINK_OR_COPY} "${HOMEgfs}/dev/ush/load_gw_run_modules.sh" load_fv3gfs_modules.sh
 
 # add ufs_utils parm dir
 if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
@@ -242,11 +245,12 @@ fi
 #--add GDASApp files
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
-  cd "${HOMEgfs}/ush" || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/soca"                              .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda"                              .
+  cd "${HOMEgfs}/ush/python" || exit 1
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/soca"  .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_json.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_yaml.py"    .
+  cd "${HOMEgfs}/ush" || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
   declare -a gdasapp_ocn_insitu_profile_platforms=("argo" "bathy" "glider" "marinemammal" "tesac" "xbtctd")

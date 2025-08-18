@@ -58,6 +58,7 @@
 {% set COMOUT_ATMOS_INPUT_MEM = COM_ATMOS_INPUT_TMPL | replace_tmpl(current_cycle_dict) %}
 {% set COMOUT_ATMOS_RESTART_PREV_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
 {% set COMOUT_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
+{% set COMOUT_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL | replace_tmpl(previous_cycle_dict) %}
 {% set COMOUT_ICE_ANALYSIS_MEM = COM_ICE_ANALYSIS_TMPL | replace_tmpl(current_cycle_dict) %}
 {% set COMOUT_ICE_RESTART_PREV_MEM = COM_ICE_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
 {% set COMOUT_OCEAN_RESTART_PREV_MEM = COM_OCEAN_RESTART_TMPL | replace_tmpl(previous_cycle_dict) %}
