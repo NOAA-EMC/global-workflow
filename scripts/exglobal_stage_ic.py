@@ -16,6 +16,7 @@ def main():
 
     # Instantiate the Stage object
     stage = Stage(config)
+    stage_archive = StageArchiveUtils(config)
 
     # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
@@ -39,6 +40,10 @@ def main():
             stage_dict[key] = stage.task_config[key]
         if "ENSMEM" in stage.task_config:
             stage_dict["ENSMEM"] = stage.task_config["ENSMEM"]
+
+    # Calculate cycle variables and add to stage_dict
+    cycle_variables = stage_archive.calculate_cycle_variables()
+    stage_dict.update(cycle_variables)
 
     # Stage ICs
     stage.execute_stage(stage_dict)
