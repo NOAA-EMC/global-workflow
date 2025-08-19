@@ -40,6 +40,9 @@ class AerosolBMatrix(Task):
         _res_anl = int(self.task_config['CASE_ANL'][1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
 
+        # fix ocnres
+        self.task_config.OCNRES = f"{self.task_config.OCNRES:03d}"
+
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
