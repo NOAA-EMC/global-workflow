@@ -202,7 +202,14 @@ function build () {
 
   source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
   # TODO: when it is safe to build the GDASApp on the compute nodes again, do so (issues #3933 and #3932)
-  "${HOMEgfs_}/sorc/build_gdas.sh" &  # Run in the background while the compute build is running
+  logs_dir="${HOMEgfs_}/sorc/logs"
+  if [[ ! -d "${logs_dir}" ]]; then
+    echo "Creating logs folder"
+    mkdir -p "${logs_dir}" || exit 1
+  fi
+  # Run in the background while the compute build is running
+  rm -f "${logs_dir}/build_gdas.log"
+  "${HOMEgfs_}/sorc/build_gdas.sh" > "${logs_dir}/build_gdas.log" 2>&1 &
   "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" gfs gcafs gefs sfs gsi
   # Wait for the GDASApp to finish building
   wait
