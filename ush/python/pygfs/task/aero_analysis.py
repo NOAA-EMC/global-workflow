@@ -126,7 +126,7 @@ class AerosolAnalysis(Task):
 
         # stage fix files
         logger.info(f"Staging JEDI fix files from {self.task_config.AERO_STAGE_JEDI_FIX_TMPL}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.AERO_STAGE_JEDI_FIX_TMPL}"), self.task_config)
+        jedi_fix_dict = parse_j2yaml(self.task_config.AERO_STAGE_JEDI_FIX_TMPL, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
