@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 set -x
 
-# shellcheck disable=SC2312
-_HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
-cd "${_HOMEgfs}/sorc" || exit 1
+# shellcheck disable=SC2312,SC2155
+readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+cd "${HOMEgfs_}/sorc" || exit 1
 
 # Default settings
 PDLIB="ON"
@@ -27,14 +27,14 @@ done
 
 # Determine machine and load modules
 set +x
-source "${_HOMEgfs}/sorc/ufs_model.fd/tests/detect_machine.sh"
-source "${_HOMEgfs}/sorc/ufs_model.fd/tests/module-setup.sh"
-module use "${_HOMEgfs}/sorc/ufs_model.fd/modulefiles"
+source "${HOMEgfs_}/sorc/ufs_model.fd/tests/detect_machine.sh"
+source "${HOMEgfs_}/sorc/ufs_model.fd/tests/module-setup.sh"
+module use "${HOMEgfs_}/sorc/ufs_model.fd/modulefiles"
 module load "ufs_${MACHINE_ID}.intel"
 set -x
 
 #Set WW3 directory
-cd "${_HOMEgfs}/sorc/ufs_model.fd/WW3" || exit 1
+cd "${HOMEgfs_}/sorc/ufs_model.fd/WW3" || exit 1
 WW3_DIR=$(pwd -P)
 export WW3_DIR
 
