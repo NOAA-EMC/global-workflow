@@ -18,7 +18,7 @@ run_with_container=YES
 
 HOMEDIR=${HOMEgfs}
 #img=ubuntu22.04-intel-ufs-env-v1.6.0.img
-img=ubuntu22.04-intel-ufs-env-v1.9.1.img
+img=ubuntu22.04-intel-ufs-env-v1.9.2.img
 if [[ ${MACHINE_ID} = ursa* ]] ; then
    container=/scratch4/NAGAPE/epic/${USER}/demo/${img}
    rundir=/scratch3/NAGAPE/epic/${USER}/run

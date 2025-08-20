@@ -11,9 +11,11 @@
 
 set -x
 
-gwhome=/contrib/Wei.Huang/src/global-workflow-cloud
-img=/contrib/Wei.Huang/container/ubuntu22.04-intel-ufs-env-v1.6.0.img
-cmd=${gwhome}/sorc/com.sh
+gwhome=/contrib/Wei.Huang/container/global-workflow-cloud
+img=/contrib/Wei.Huang/container/ubuntu22.04-intel-ufs-env-v1.9.2.img
+cmd=${gwhome}/dev/container/utils/compile-gw-in-container.sh
 
-singularity exec -B /contrib -B /lustre ${img} ${cmd}
+gw_sorc_dir=${gwhome}/sorc
+
+singularity exec -B /contrib ${img} ${cmd} ${gw_sorc_dir}
 

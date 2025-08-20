@@ -5,7 +5,7 @@ set -x
 HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 source "${HOMEgfs}/ush/detect_machine.sh"
 #sif=ubuntu22.04-intel-ufs-env-v1.6.0.img
-sif=ubuntu22.04-intel-ufs-env-v1.9.1.img
+sif=ubuntu22.04-intel-ufs-env-v1.9.2.img
 
 if [[ ${MACHINE_ID} = ursa* ]] ; then
    img=/scratch4/NAGAPE/epic/${USER}/demo/${sif}
