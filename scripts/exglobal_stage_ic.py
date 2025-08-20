@@ -2,7 +2,8 @@
 
 import os
 
-from pygfs.task.stage_ic import Stage, StageArchiveUtils
+from pygfs.task.stage_ic import Stage
+from pygfs.task.stage_archive import StageArchiveUtils
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit
 
 # Initialize root logger
