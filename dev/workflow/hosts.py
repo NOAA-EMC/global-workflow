@@ -51,7 +51,7 @@ class Host:
         if machine_id != 'UNKNOWN':
             if pw_csp != 'UNKNOWN':
                 self.machine = f"{pw_csp.upper()}PW"
-            return
+                return
 
         # Detect the machine since MACHINE_ID is not set
         if os.path.exists('/scratch3/NCEPDEV'):
