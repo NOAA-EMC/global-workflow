@@ -3,8 +3,8 @@
 source /usr/lmod/lmod/init/bash
 module use ${HOMEgfs}/sorc/gfs_utils.fd/modulefiles
 module load gfsutils_container.intel
-module load wgrib2
-module load prod_util
+module load wgrib2/3.6.0
+module load prod_util/2.1.1
 module list
 
 export I_MPI_TMPDIR=/tmp
@@ -25,8 +25,8 @@ export UTILROOT=${prod_util_ROOT}
 export WGRIB2=wgrib2
 
 # Scripts used
-INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/interp_atmos_master.sh"}
-INTERP_ATMOS_SFLUXSH=${INTERP_ATMOS_SFLUXSH:-"${USHgfs}/interp_atmos_sflux.sh"}
+INTERP_ATMOS_MASTERSH=${USHgfs}/container/interp_atmos_master.sh
+INTERP_ATMOS_SFLUXSH=${USHgfs}/container/interp_atmos_sflux.sh
 
 # Variables used in this job
 downset=${downset:-1}  # No. of groups of pressure grib2 products to create

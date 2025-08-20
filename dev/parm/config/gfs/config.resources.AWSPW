@@ -30,6 +30,7 @@ case ${step} in
 
   "atmos_products")
     export PARTITION_BATCH="highmemory"
+   #export PARTITION_BATCH="process"
     unset PARTITION_SERVICE
     max_tasks_per_node=24
     tasks_per_node=24
