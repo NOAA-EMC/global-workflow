@@ -822,6 +822,14 @@ CICE_out() {
       exit 25
       ;;
   esac
+  # Copy the Monthly Average output from SFS
+  if [[ "${RUN}" == sfs ]]; then
+    local files=$( ls -f ${DATAoutput}/CICE_OUTPUT/iceh.????-??.nc )
+    for f in ${files}; do
+        local f_name=$( basename ${f} )
+        ${NMV} ${f} ${COMOUT_ICE_HISTORY}/sfs.ice.t${SDATE}'.monthly_avg.'${f_name:5:4}-${f_name:10:2}'.nc'
+    done
+  fi
 }
 
 GOCART_rc() {

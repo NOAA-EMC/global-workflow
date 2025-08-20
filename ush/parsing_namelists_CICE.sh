@@ -73,6 +73,8 @@ local CICE_DIAGFREQ=$(( 86400 / DT_CICE ))  # frequency of diagnostic output in 
 if [[ "${RUN}" == "gefs" ]]; then
   local CICE_DIAGFREQ1=$((( FHOUT_ICE * 3600 )/ DT_CICE )) # Number of timesteps within FHOUT_ICE
   local CICE_HISTFREQ_N="0, 0, 0, ${CICE_DIAGFREQ1}, 1"
+elif [[ "${RUN}" == "sfs" ]]; then
+  local CICE_HISTFREQ_N="1, 0, ${FHOUT_ICE}, 0, 1"
 else
   local CICE_HISTFREQ_N="0, 0, ${FHOUT_ICE}, 0, 1"
 fi
@@ -124,7 +126,7 @@ local CICE_NPROC=${ntasks_cice6}
 local CICE_BLCKX=${block_size_x}
 local CICE_BLCKY=${block_size_y}
 local CICE_DECOMP=${processor_shape}
-# ice_prescribed_nml section 
+# ice_prescribed_nml section
 local CICE_PRESCRIBED="false"
 local MESH_DICE="none"
 local stream_files_dice="none"
