@@ -157,7 +157,7 @@ while [[ "${finished}" == "false" ]]; do
 done
 
 # Wait for the GDASApp to finish building
-if ps -p "${build_gdas_id}" >& /dev/null; then
+if [[ -n "${build_gdas_id+0}" ]] && ps -p "${build_gdas_id}" >& /dev/null; then
   echo "The GDASApp is still building locally.  Waiting for it to complete."
   wait "${build_gdas_id}"
   gdas_stat=$?
