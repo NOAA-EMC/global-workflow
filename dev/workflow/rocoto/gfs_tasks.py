@@ -1621,7 +1621,7 @@ class GFSTasks(Tasks):
 
         # Get the forecast hours for wave_postsbs
         dep_fhrs = self._get_forecast_hours(self.run, self._configs['atmos_products'])
-        dep_max_tasks = self._configs['atmos']['MAX_TASKS']
+        dep_max_tasks = self._configs['atmos_products']['MAX_TASKS']
         dep_fhr_var_dict = self.get_grouped_fhr_dict(fhrs=dep_fhrs, ngroups=dep_max_tasks)
 
         # Get the forecast hours for gempak
