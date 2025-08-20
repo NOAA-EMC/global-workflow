@@ -201,6 +201,11 @@ function cleanup_experiment() {
 function build () {
 
   source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
+  logs_dir="${HOMEgfs_}/sorc/logs"
+  if [[ ! -d "${logs_dir}" ]]; then
+    echo "Creating logs folder"
+    mkdir -p "${logs_dir}" || exit 1
+  fi
   "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" all
 
 }
