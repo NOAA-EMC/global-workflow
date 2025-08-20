@@ -9,6 +9,11 @@ unset "memory_${RUN}"
 step=$1
 
 case ${step} in
+  "prep")
+    export PARTITION_BATCH="process"
+    tasks_per_node=12
+    ;;
+
   "fcst" | "efcs" | "wavepostpnt")
     export PARTITION_BATCH="compute"
     unset PARTITION_SERVICE
