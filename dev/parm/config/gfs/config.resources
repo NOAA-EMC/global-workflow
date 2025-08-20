@@ -45,6 +45,10 @@ case ${machine} in
               max_tasks_per_node=40
               mem_node_max="96GB"
     ;;
+  "URSA")
+              max_tasks_per_node=192
+              mem_node_max="360GB"
+    ;;
   "GAEAC5")
               max_tasks_per_node=128
               mem_node_max="251GB"
@@ -1036,7 +1040,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
-    memory="5G"
+    memory="10G"
     ;;
 
   "vminmon")
