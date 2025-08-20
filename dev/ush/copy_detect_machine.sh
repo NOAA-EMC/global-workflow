@@ -6,8 +6,6 @@
 # Locate the head of the global-workflow repository
 # Start by getting the full path to this script
 
-# Test if HOMEgfs is defined.  If not, then try to determine it with git rev-parse
-_unset_homegfs="NO"
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 HOMEgfs_=$(cd "${script_dir}" && git rev-parse --show-toplevel)
 
