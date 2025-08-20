@@ -28,7 +28,31 @@
 ###################################################################
 
 # Set cycle variables
+# ------------------------
+{% set half_window = assim_freq // 2 %}
+{% set half_window_begin = (-half_window | string + "H") | to_timedelta %}
+{% set half_window_end = (half_window | string + "H") | to_timedelta %}
+{% if DOIAU and MODE == "cycled" %}
+    {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_begin) %}
+{% else %}
+    {% if REPLAY_ICS %}
+        {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_end) %}
+    {% else %}
+        {% set model_start_date_current_cycle = current_cycle %}
+    {% endif %}
+{% endif %}
 
+{% set current_cycle_YMD = current_cycle | to_YMD %}
+{% set current_cycle_HH = current_cycle | strftime("%H") %}
+{% set previous_cycle_YMD = previous_cycle | to_YMD %}
+{% set previous_cycle_HH = previous_cycle | strftime("%H") %}
+{% set p_prefix = previous_cycle | strftime("%Y%m%d.%H0000") %}
+{% set m_prefix = model_start_date_current_cycle | strftime("%Y%m%d.%H0000") %}
+
+# Set first/last mem for loop
+# ---------------------------
+{% set first_mem = 0 %}
+{% set last_mem = NMEM_ENS %}
 
 # Declare to-be-filled lists of member COM directories
 # ----------------------------------------------------

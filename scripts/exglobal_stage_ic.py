@@ -45,6 +45,8 @@ def main():
     # Calculate cycle variables and add to stage_dict
     cycle_variables = stage_archive.calculate_cycle_variables()
     stage_dict.update(cycle_variables)
+    member_variables = stage_archive.calculate_member_variables()
+    stage_dict.update(member_variables)
 
     # Stage ICs
     stage.execute_stage(stage_dict)
