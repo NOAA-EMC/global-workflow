@@ -105,6 +105,7 @@ class Host:
             self.machine = ""
 
             # Open the mountinfo file and check if /home is mounted to "home_ursa" or "home_hera"
+            # NOTE: the github runners do not have a /home directory, so self.machine will be unset
             with open('/proc/self/mountinfo') as f:
                 for line in f:
                     fields = line.strip().split()
@@ -116,10 +117,11 @@ class Host:
                         elif "ursa" in mount_source.lower():
                             self.machine = "URSA"
 
-            # If we couldn't determine from mountinfo, this might be an edge case
-            if not self.machine:
+            # TODO: When Hera is no longer used, remove this check and switch to Ursa.
+            # Check if this is the GitHub runner
+            if self.machine != 'HERA' and self.machine != 'URSA':
                 machine = socket.gethostname().upper()
-                print(f'Could not determine machine from mountinfo on host {machine}; defaulting to HERA.')
+                print(f'Detected host {machine}; assuming this is a GitHub runner.')
                 self.machine = 'HERA'
 
         elif os.path.exists('/work/noaa'):
