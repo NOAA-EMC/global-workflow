@@ -39,44 +39,6 @@ class Host:
         # The string representation of the Host object is the name of the machine
         return f"{self.machine}"
 
-    def _is_github_runner(self) -> bool:
-        """
-        Detect if running on a GitHub Actions runner.
-
-        Returns:
-            bool: True if running on GitHub Actions runner, False otherwise
-        """
-        # Primary indicators of GitHub Actions environment
-        github_env_vars = [
-            'GITHUB_ACTIONS',
-            'GITHUB_WORKFLOW',
-            'GITHUB_RUN_ID',
-            'RUNNER_NAME'
-        ]
-
-        # Check for GitHub Actions environment variables
-        if any(os.getenv(var) for var in github_env_vars):
-            return True
-
-        # Check for GitHub runner hostname patterns
-        hostname = socket.gethostname().lower()
-        github_hostname_patterns = [
-            'github',
-            'runner',
-            'fv-az',  # Azure-hosted GitHub runners
-            'actions'
-        ]
-
-        if any(pattern in hostname for pattern in github_hostname_patterns):
-            return True
-
-        # Check for GitHub runner user patterns
-        user = os.getenv('USER', '').lower()
-        if user in ['runner', 'github']:
-            return True
-
-        return False
-
     def detect(self) -> None:
         # Detect the machine name and store in self.machine
 
@@ -89,14 +51,6 @@ class Host:
         if machine_id != 'UNKNOWN':
             if pw_csp != 'UNKNOWN':
                 self.machine = f"{pw_csp.upper()}PW"
-            else:
-                self.machine = machine_id.upper()
-            return
-
-        # Check if this is a GitHub Actions runner first
-        if self._is_github_runner():
-            print('Detected GitHub Actions runner; defaulting to HERA configuration.')
-            self.machine = 'HERA'
             return
 
         # Detect the machine since MACHINE_ID is not set
@@ -140,11 +94,6 @@ class Host:
                 raise ValueError(
                     f'cloud service provider "{pw_csp}" is not supported.')
             self.machine = f"{pw_csp.upper()}PW"
-        else:
-            # Unknown environment - could be development or testing
-            machine = socket.gethostname().upper()
-            print(f'Unknown host environment detected on {machine}; defaulting to HERA configuration.')
-            self.machine = 'HERA'
 
         if self.machine not in Host.SUPPORTED_HOSTS:
             raise NotImplementedError('This machine is not a supported host.\n' +
