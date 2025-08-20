@@ -66,6 +66,7 @@ MACHINE_ID=${MACHINE:-${MACHINE_ID}}
 
 # If MACHINE_ID is no longer UNKNNOWN, return it
 if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
+  declare -rx MACHINE_ID
   return
 fi
 # Try searching based on paths since hostname may not match on compute nodes
@@ -109,4 +110,4 @@ else
   echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
 
-export MACHINE_ID
+declare -rx MACHINE_ID
