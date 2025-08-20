@@ -188,7 +188,6 @@ def main(*argv):
     # TODO restore the GDASApp when it can be built on compute nodes again and/or 'compute' builds are enabled on head nodes.
     #      See issue 3933
     if "gdas" in build_specs.build:
-        print("Skipping the compute-node build of GDASApp.  This is being built locally.")
         build_specs.build.pop("gdas")
 
     systems = user_inputs.systems.split() if "all" not in user_inputs.systems else ["all"]
