@@ -76,9 +76,6 @@ source "${HOMEgfs}/dev/ush/gw_setup.sh"
 # Un-export after gw_setup.sh
 export -n HOMEgfs
 
-# Copy the global workflow's detect_machine.sh to all submodules
-"${HOMEgfs}/dev/ush/copy_detect_machine.sh"
-
 cd "${HOMEgfs}/sorc" || exit 1
 mkdir -p "${HOMEgfs}/sorc/logs" || exit 1
 

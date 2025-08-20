@@ -24,6 +24,8 @@ while getopts ":dj:v" option; do
 done
 shift $((OPTIND-1))
 
+source "${HOMEgfs_}/sorc/ufs_model.fd/tests/detect_machine.sh"
+
 cd "${HOMEgfs_}/sorc/ufs_model.fd/FV3/upp/tests"
 # shellcheck disable=SC2086
 BUILD_JOBS=${BUILD_JOBS:-8} "${HOMEgfs_}/sorc/ufs_model.fd/FV3/upp/tests/compile_upp.sh" ${_opts}
