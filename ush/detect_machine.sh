@@ -108,3 +108,5 @@ elif [[ -d /data/prod ]]; then
 else
   echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
+
+export MACHINE_ID
