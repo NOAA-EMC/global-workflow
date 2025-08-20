@@ -110,7 +110,7 @@ if [[ ${systems} == "all" || ${systems} =~ "gdas" ]]; then
   echo "Building the GDASApp locally (on this node)"
   "${HOMEgfs}/sorc/build_gdas.sh" -j 20 >& "${HOMEgfs}/sorc/logs/build_gdas.log" &
   build_gdas_id=$!
-  build_ids+=(${build_gdas_id})
+  build_ids+=("${build_gdas_id}")
 fi
 
 "${HOMEgfs}/dev/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
