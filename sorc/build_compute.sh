@@ -76,6 +76,9 @@ source "${HOMEgfs}/dev/ush/gw_setup.sh"
 # Un-export after gw_setup.sh
 export -n HOMEgfs
 
+# Copy the global workflow's detect_machine.sh to all submodules
+"${HOMEgfs}/dev/ush/copy_detect_machine.sh"
+
 cd "${HOMEgfs}/sorc" || exit 1
 mkdir -p "${HOMEgfs}/sorc/logs" || exit 1
 
@@ -86,6 +89,16 @@ yaml="${HOMEgfs}/dev/workflow/build_opts.yaml"
 echo "Generating build.xml for building global-workflow programs on compute nodes ..."
 # Catch errors manually from here out
 set +e
+
+# Temporarily build the GDASApp on the head node
+# TODO remove this when all builds move to the head nodes and/or the GDASApp is able to build on all compute nodes again
+#      See GW issue 3933
+if [[ ${systems} == "all" || ${systems} =~ "gdas" ]]; then
+  echo "Building the GDASApp locally (on this node)"
+  "${HOMEgfs}/sorc/build_gdas.sh" -j 20 >& "${HOMEgfs}/sorc/logs/build_gdas.log" &
+  build_gdas_id=$!
+fi
+
 "${HOMEgfs}/dev/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
@@ -143,6 +156,16 @@ while [[ "${finished}" == "false" ]]; do
    fi
 done
 
+# Wait for the GDASApp to finish building
+if ps -p "${build_gdas_id}" >& /dev/null; then
+  echo "The GDASApp is still building locally.  Waiting for it to complete."
+  wait "${build_gdas_id}"
+  gdas_stat=$?
+  if [[ ${gdas_stat} -ne 0 ]]; then
+    echo "FATAL ERROR The GDASApp failed to build!  Check log in ${HOMEgfs}/sorc/logs/build_gdas.log"
+    exit 3
+  fi
+fi
 echo "All builds completed successfully!"
 
 exit 0

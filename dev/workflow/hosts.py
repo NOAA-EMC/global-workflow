@@ -64,12 +64,12 @@ class Host:
                 for line in f:
                     fields = line.strip().split()
                     mount_point = fields[4]
-                    if mount_point == "/home":
+                    if mount_point == "/apps":
                         mount_source = fields[9]
-                        if "hera" in mount_source.lower():
-                            self.machine = "HERA"
-                        elif "ursa" in mount_source.lower():
+                        if "ursa" in mount_source.lower():
                             self.machine = "URSA"
+                        elif "hera" in mount_source.lower():
+                            self.machine = "HERA"
 
             # TODO: When Hera is no longer used, remove this check and switch to Ursa.
             # Check if this is the GitHub runner

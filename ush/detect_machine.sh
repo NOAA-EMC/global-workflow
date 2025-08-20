@@ -80,11 +80,12 @@ elif [[ -d /mnt/lfs5 ]]; then
   MACHINE_ID=jet
 elif [[ -d /scratch3 ]]; then
   # We are on NOAA Hera or Ursa
-  mount=$(findmnt -n -o SOURCE /home) || true  # /home doesn't exist on the GitHub runners
-  # TODO: When Hera is no longer supported, assume `/scratch3` means we're on Ursa
+  mount=$(findmnt -n -o SOURCE /apps) || true  # /home doesn't exist on the GitHub runners
   if [[ ${mount} =~ "ursa" ]]; then
     MACHINE_ID=ursa
-  else
+  elif [[ ${mount} =~ "hera" ]]; then
+    MACHINE_ID=hera
+  else  # Assume we are on the GitHub runners, which mock Hera
     MACHINE_ID=hera
   fi
 elif [[ -d /work ]]; then
