@@ -126,7 +126,7 @@ function create_experiment () {
   local TAG="${2:-${pr_sha}}"
   cd "${HOMEgfs_}" || exit 1
   case=$(basename "${yaml_config}" .yaml) || true
-  
+
   echo "Using provided TAG: ${TAG} for pslot"
   export pslot=${case}_${TAG}
 
@@ -201,12 +201,18 @@ function cleanup_experiment() {
 function build () {
 
   source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
-  # TODO: when it's safe to build on C6 compute nodes again, do so
-  if [[ "${MACHINE_ID}" == "gaeac6" ]]; then
-    "${HOMEgfs_}/sorc/build_all.sh" -k all
-  else
-    "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" all
+  # TODO: when it is safe to build the GDASApp on the compute nodes again, do so (issues #3933 and #3932)
+  logs_dir="${HOMEgfs_}/sorc/logs"
+  if [[ ! -d "${logs_dir}" ]]; then
+    echo "Creating logs folder"
+    mkdir -p "${logs_dir}" || exit 1
   fi
+  # Run in the background while the compute build is running
+  rm -f "${logs_dir}/build_gdas.log"
+  "${HOMEgfs_}/sorc/build_gdas.sh" > "${logs_dir}/build_gdas.log" 2>&1 &
+  "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" gfs gcafs gefs sfs gsi
+  # Wait for the GDASApp to finish building
+  wait
 
 }
 

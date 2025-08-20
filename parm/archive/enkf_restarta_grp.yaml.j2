@@ -52,6 +52,13 @@ enkf_restarta_grp:
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
         {% endif %}
         {% endfor %}  # iaufhr in IAUFHRS
+        
+        # soil DA increments  
+        {% if DO_GSISOILDA %}
+        {% for iaufhr in IAUFHRS %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}sfci{{ '%03d' % iaufhr }}.nc"
+        {% endfor %}  # iaufhr in IAUFHRS
+        {% endif %}
 
         # Conventional data
         {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}

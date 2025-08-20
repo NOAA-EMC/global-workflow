@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 
+<<<<<<< HEAD
 # Ursa-specific job resources
 
 case ${step} in
@@ -36,6 +37,58 @@ case ${step} in
         ;;
       "C192" | "C96" | "C48")
         export threads_per_task=4
+=======
+# Hera-specific job resources
+
+case ${step} in
+  "fcst" | "efcs")
+    case "${CASE}" in
+      "C768")
+        export tasks_per_node=144
+        ;;
+      "C1152")
+        export tasks_per_node=144
+        ;;
+      *)
+        # Nothing to do for other resolutions
+        true
+        ;;
+    esac
+  ;;
+  "anal")
+    case ${CASE} in
+      "C768")
+        export threads_per_task=8
+        ;;
+      "C1152")
+        export threads_per_task=16
+        ;;
+      *)
+        ;;
+    esac
+    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
+        # Make ntasks a multiple of 16
+        if [[ "${RUN}" == "gdas" ]]; then
+            export ntasks=784
+        elif [[ "${RUN}" == "gfs" ]]; then
+            export ntasks=832
+        fi
+        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    fi
+    ;;
+
+  "eupd")
+    case "${CASE}" in
+      "C768")
+        export ntasks=80
+        export threads_per_task=20
+        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+        ;;
+      "C1152")
+        export ntasks=480
+        export threads_per_task=6
+        export tasks_per_node=8
+>>>>>>> 3e85a5aeaf2464f8640d9458bd419f736c3b0d65
         ;;
       *)
         ;;
@@ -43,6 +96,7 @@ case ${step} in
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
+<<<<<<< HEAD
   "ecen")
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then export threads_per_task=6; fi
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -59,6 +113,32 @@ case ${step} in
     tasks_per_node=20
     ;;
 
+=======
+  "aeroanlvar")
+    export tasks_per_node=48
+    ;;
+
+  "marinebmat")
+    case ${OCNRES} in
+      "025")
+        tasks_per_node=$(( max_tasks_per_node / 4 ))
+        ;;
+      *)
+        ;;
+    esac
+    ;;
+
+  "ocnanalecen")
+    case ${OCNRES} in
+      "025")
+        ntasks=288
+        tasks_per_node=12
+        ;;
+      *)
+        ;;
+    esac
+    ;;
+>>>>>>> 3e85a5aeaf2464f8640d9458bd419f736c3b0d65
   *)
     ;;
 esac

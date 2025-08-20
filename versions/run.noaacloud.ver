@@ -1,16 +1,15 @@
-export stack_intel_ver=2024.2.1
-export stack_impi_ver=2021.13
-export spack_env=1.9.2
+#!/usr/bin/env bash
+export stack_compiler=oneapi
+export stack_compiler_ver=2024.2.1
+
+export stack_mpi=intel-oneapi-mpi
+export stack_mpi_ver=2021.13
+
+spack_stack_root="/contrib/spack-stack-rocky8"
 
 source "${HOMEgfs:-}/versions/spack.ver"
-export spack_mod_path="/contrib/spack-stack-rocky8/spack-stack-${spack_env}/envs/ue-oneapi-2024.2.1/install/modulefiles/Core"
 
 export cdo_ver=2.3.0
-
-# modules updated in spack.ver for gsi-addon-dev-fms-2024.01
-export export esmf_ver=8.8.0
-
-export prepobs_run_ver=1.1.0
-export fit2obs_ver=1.1.7
-
 export perl_ver=5.38.0
+export mkl_ver=2024.2.1
+export imagemagick_ver=7.1.1-11

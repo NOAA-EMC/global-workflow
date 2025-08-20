@@ -22,10 +22,10 @@
 
 # Template matrices for case lists
 .hera_cases_matrix: &hera_cases
-  - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C96mx100_S2S", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S", "C96C48_ufs_hybatmDA"]
 
 .gaeac6_cases_matrix: &gaeac6_cases
-  - caseName: ["C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C48_S2SWA_gefs", "C96C48_hybatmsnowDA", "C48_S2SW", "C96_atm3DVar", "C48_ATM", "C48mx500_3DVarAOWCDA", "C96_gcafs_cycled"]
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S"]
 
 # Host: Hera - Standard Cases
 setup_experiments-hera:
@@ -81,27 +81,29 @@ run_experiments-gaeac6:
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
-# Host: Hera - Finalize
-finalize-hera:
-  extends: .finalize_template
+finalize_success-hera:
+  extends: .finalize_success_template
   variables:
     machine: hera
   tags:
     - hera
   needs:
-    - run_experiments-hera
+    - job: run_experiments-hera
+      optional: true
+  when: on_success
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhera\b|all/)
 
-# Host: Gaea C6 - Finalize
-finalize-gaeac6:
-  extends: .finalize_template
+finalize_success-gaeac6:
+  extends: .finalize_success_template
   variables:
     machine: gaeac6
   tags:
     - gaeac6
   needs:
-    - run_experiments-gaeac6
+    - job: run_experiments-gaeac6
+      optional: true
+  when: on_success
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 

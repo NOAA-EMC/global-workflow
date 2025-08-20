@@ -26,7 +26,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "marineanlinit prepoceanobs marinebmatinit marinebmat marineanlvar ocnanalecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
+    echo "marineanlinit prepoceanobs marinebmatinit marinebmat marineanlvar marineanlecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
     exit 1
 
 fi
@@ -39,38 +39,30 @@ case ${machine} in
   "WCOSS2")
               max_tasks_per_node=128
               # WCOSS2 nodes have 512GB of RAM, but only 500GB are reservable
-              # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
   "HERA")
               max_tasks_per_node=40
-              # shellcheck disable=SC2034
               mem_node_max="96GB"
     ;;
   "URSA")
-              export PARTITION_BATCH="u1-compute"
               max_tasks_per_node=192
-              # shellcheck disable=SC2034
-              mem_node_max="384GB"
+              mem_node_max="360GB"
     ;;
   "GAEAC5")
               max_tasks_per_node=128
-              # shellcheck disable=SC2034
               mem_node_max="251GB"
     ;;
   "GAEAC6")
               max_tasks_per_node=192
-              # shellcheck disable=SC2034
               mem_node_max="384GB"
     ;;
   "ORION")
               max_tasks_per_node=40
-              # shellcheck disable=SC2034
               mem_node_max="180GB"
     ;;
   "HERCULES")
               max_tasks_per_node=80
-              # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
   "AWSPW")
@@ -78,7 +70,6 @@ case ${machine} in
     npe_node_max=48
     max_tasks_per_node=48
     # TODO Supply a max mem/node value for AWS
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "AZUREPW")
@@ -86,7 +77,6 @@ case ${machine} in
     npe_node_max=36
     max_tasks_per_node=36
     # TODO Supply a max mem/node value for AZURE
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "GOOGLEPW")
@@ -94,7 +84,6 @@ case ${machine} in
     npe_node_max=30
     max_tasks_per_node=30
     # TODO Supply a max mem/node value for GOOGLE
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   *)
@@ -578,7 +567,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
-  "ocnanalecen")
+  "marineanlecen")
     ntasks=16
     walltime="00:10:00"
     case ${OCNRES} in
@@ -1046,7 +1035,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
-    memory="5G"
+    memory="10G"
     ;;
 
   "vminmon")

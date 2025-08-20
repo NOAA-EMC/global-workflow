@@ -621,7 +621,7 @@ class Archive(Task):
             logger.warning("WARNING: Skipping dataset YAML creation as no datasets were provided.")
             return
 
-        com_conf = self.task_config.COMOUT_CONF
+        com_conf = self.task_config.COMIN_CONF
 
         if group < 0:
             yaml_filename = "backup_tarballs.yaml"
