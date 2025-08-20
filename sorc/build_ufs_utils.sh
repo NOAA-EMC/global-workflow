@@ -22,7 +22,7 @@ while getopts ":j:dv" option; do
 done
 shift $((OPTIND-1))
 
-source "${HOMEgfs_}/sorc/ufs_model.fd/tests/detect_machine.sh"
+source "${HOMEgfs_}/ush/detect_machine.sh"
 
 CMAKE_OPTS="-DGFS=ON" \
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
