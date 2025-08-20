@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 set -eux
 
+# shellcheck disable=SC2155
+readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/.." && pwd -P)
+
 OPTIND=1
 while getopts ":j:dv" option; do
   case "${option}" in
@@ -22,6 +25,6 @@ shift $((OPTIND-1))
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
 BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
 BUILD_JOBS=${BUILD_JOBS:-8} \
-"./gsi_monitor.fd/ush/build.sh"
+"${HOMEgfs_}/sorc/gsi_monitor.fd/ush/build.sh"
 
 exit
