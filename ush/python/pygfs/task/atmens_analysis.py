@@ -112,14 +112,14 @@ class AtmEnsAnalysis(Task):
         Jedi.extract_tar_from_filehandler_dict(bias_dict)
 
         # stage CRTM fix files
-        logger.info(f"Staging CRTM fix files from {self.task_config.ATM_ENS_STAGE_CRTM_COEFF_TMPL}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.ATM_ENS_STAGE_CRTM_COEFF_TMPL}"), self.task_config)
+        logger.info(f"Staging CRTM fix files from {self.task_config.ATM_STAGE_CRTM_COEFF_TMPL}")
+        crtm_fix_dict = parse_j2yaml(self.task_config.ATM_STAGE_CRTM_COEFF_TMPL, self.task_config)
         FileHandler(crtm_fix_dict).sync()
         logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
 
         # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.ATM_ENS_STAGE_JEDI_FIX_TMPL}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.ATM_ENS_STAGE_JEDI_FIX_TMPL}"), self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.ATM_STAGE_JEDI_FIX_TMPL}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.ATM_STAGE_JEDI_FIX_TMPL, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 

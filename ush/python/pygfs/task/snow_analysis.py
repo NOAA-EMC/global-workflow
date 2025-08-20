@@ -105,7 +105,7 @@ class SnowAnalysis(Task):
 
         # stage backgrounds
         logger.info(f"Staging background files from {self.task_config.SNOW_DET_STAGE_BKG_TMPL}")
-        bkg_staging_dict = parse_j2yaml(self.task_config.SNOW_DET_STAGE_BKG_TMPL}"), self.task_config)
+        bkg_staging_dict = parse_j2yaml(self.task_config.SNOW_DET_STAGE_BKG_TMPL, self.task_config)
         FileHandler(bkg_staging_dict).sync()
         logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}")
 

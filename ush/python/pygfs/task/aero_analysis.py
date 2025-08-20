@@ -132,7 +132,7 @@ class AerosolAnalysis(Task):
 
         # stage files from COM and create working directories
         logger.info(f"Staging files prescribed from {self.task_config.AERO_DET_INITIALIZE_TMPL}")
-        aero_var_stage_dict = parse_j2yaml(self.task_config.AERO_DET_INITIALIZE_TMPL}"), self.task_config)
+        aero_var_stage_dict = parse_j2yaml(self.task_config.AERO_DET_INITIALIZE_TMPL, self.task_config)
         FileHandler(aero_var_stage_dict).sync()
         logger.debug(f"Staging from COM:\n{pformat(aero_var_stage_dict)}")
 

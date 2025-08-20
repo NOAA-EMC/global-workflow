@@ -119,13 +119,13 @@ class AtmAnalysis(Task):
 
         # stage CRTM fix files
         logger.info(f"Staging CRTM fix files from {self.task_config.ATM_STAGE_CRTM_COEFF_TMPL}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.ATM_STAGE_CRTM_COEFF_TMPL}"), self.task_config)
+        crtm_fix_dict = parse_j2yaml(self.task_config.ATM_STAGE_CRTM_COEFF_TMPL, self.task_config)
         FileHandler(crtm_fix_dict).sync()
         logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
 
         # stage fix files
         logger.info(f"Staging JEDI fix files from {self.task_config.ATM_STAGE_JEDI_FIX_TMPL}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.ATM_STAGE_JEDI_FIX_TMPL}"), self.task_config)
+        jedi_fix_dict = parse_j2yaml(self.task_config.ATM_STAGE_JEDI_FIX_TMPL, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
@@ -147,7 +147,7 @@ class AtmAnalysis(Task):
 
         # stage backgrounds
         logger.info(f"Staging background files from {self.task_config.ATM_DET_STAGE_BKG_TMPL}")
-        bkg_staging_dict = parse_j2yaml(self.task_config.ATM_DET_STAGE_BKG_TMPL}"), self.task_config)
+        bkg_staging_dict = parse_j2yaml(self.task_config.ATM_DET_STAGE_BKG_TMPL, self.task_config)
         FileHandler(bkg_staging_dict).sync()
         logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}")
 
