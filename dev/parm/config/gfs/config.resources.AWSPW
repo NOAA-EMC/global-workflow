@@ -11,6 +11,7 @@ step=$1
 case ${step} in
   "prep")
     export PARTITION_BATCH="process"
+    export ntasks=12
     tasks_per_node=12
     ;;
 
