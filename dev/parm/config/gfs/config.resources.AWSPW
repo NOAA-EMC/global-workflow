@@ -13,7 +13,6 @@ case ${step} in
     export PARTITION_BATCH="compute"
     unset PARTITION_SERVICE
     max_tasks_per_node=48
-    tasks_per_node=48
     ;;
 
   "anal")
