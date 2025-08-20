@@ -15,7 +15,7 @@ class Host:
     Gather Host specific information.
     """
 
-    SUPPORTED_HOSTS = ['HERA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
+    SUPPORTED_HOSTS = ['HERA', 'URSA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
                        'GAEAC5', 'GAEAC6', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
     def __init__(self, host=None):
@@ -55,8 +55,31 @@ class Host:
 
         # Detect the machine since MACHINE_ID is not set
         if os.path.exists('/scratch3/NCEPDEV'):
-            self.machine = 'HERA'
+            # Hera or Ursa
+            self.machine = ""
+
+            # Open the mountinfo file and check if /home is mounted to "home_ursa" or "home_hera"
+            # NOTE: the github runners do not have a /home directory, so self.machine will be unset
+            with open('/proc/self/mountinfo') as f:
+                for line in f:
+                    fields = line.strip().split()
+                    mount_point = fields[4]
+                    if mount_point == "/home":
+                        mount_source = fields[9]
+                        if "hera" in mount_source.lower():
+                            self.machine = "HERA"
+                        elif "ursa" in mount_source.lower():
+                            self.machine = "URSA"
+
+            # TODO: When Hera is no longer used, remove this check and switch to Ursa.
+            # Check if this is the GitHub runner
+            if self.machine != 'HERA' and self.machine != 'URSA':
+                machine = socket.gethostname().upper()
+                print(f'Detected host {machine}; assuming this is a GitHub runner.')
+                self.machine = 'HERA'
+
         elif os.path.exists('/work/noaa'):
+            # Orion or Hercules
             self.machine = socket.gethostname().split("-", 1)[0].upper()
         elif os.path.exists('/lfs/f1'):
             self.machine = 'WCOSS2'
