@@ -1,7 +1,8 @@
 #! /usr/bin/env bash
 set -eux
 
-cwd=$(pwd)
+# shellcheck disable=SC2155
+readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/.." && pwd -P)
 
 # Default settings
 APP="S2SWA"
@@ -33,10 +34,10 @@ while getopts ":da:fj:e:pvwy" option; do
   esac
 done
 
-cd "${cwd}/ufs_model.fd"
+cd "${HOMEgfs_}/sorc/ufs_model.fd"
 
-source "./tests/detect_machine.sh"
-source "./tests/module-setup.sh"
+source "${HOMEgfs_}/sorc/ufs_model.fd/tests/detect_machine.sh"
+source "${HOMEgfs_}/sorc/ufs_model.fd/tests/module-setup.sh"
 
 MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
 if [[ ${PDLIB:-"OFF"} = "ON" ]]; then
@@ -66,7 +67,7 @@ CLEAN_AFTER=NO
 # TODO: when ufs-weather-model#2716 is fixed, return to using tests/compile.sh
 if [[ "${MACHINE_ID}" == "wcoss2" && "${PARALLEL_RESTART}" == "NO" ]]; then
    set +x
-   module use modulefiles
+   module use "${HOMEgfs_}/sorc/ufs_model.fd/modulefiles"
    module load "ufs_wcoss2.intel"
    module list
    set -x
@@ -93,7 +94,7 @@ if [[ "${MACHINE_ID}" == "wcoss2" && "${PARALLEL_RESTART}" == "NO" ]]; then
       rm -rf "${BUILD_DIR}"
    fi
 else
-   BUILD_JOBS=${BUILD_JOBS:-8} ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_ID}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
+   BUILD_JOBS=${BUILD_JOBS:-8} "${HOMEgfs_}/sorc/ufs_model.fd/tests/compile.sh" "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_ID}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
 fi
 mv "./tests/fv3_${COMPILE_ID}.exe" "./tests/${EXEC_NAME}"
 if [[ ! -f "./tests/modules.ufs_model.lua" ]]; then mv "./tests/modules.fv3_${COMPILE_ID}.lua" "./tests/modules.ufs_model.lua"; fi

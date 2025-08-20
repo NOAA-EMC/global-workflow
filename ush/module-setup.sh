@@ -13,6 +13,16 @@ if [[ ${MACHINE_ID} = hera* ]] ; then
     module reset
     set -u
 
+elif [[ ${MACHINE_ID} = ursa* ]] ; then
+    # We are on NOAA Ursa
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /apps/lmod/lmod/init/bash
+    fi
+    export LMOD_SYSTEM_DEFAULT_MODULES=lmod
+    set +u
+    module reset
+    set -u
+
 elif [[ ${MACHINE_ID} = hercules* ]] ; then
     # We are on Hercules
     if ( ! eval module help > /dev/null 2>&1 ) ; then

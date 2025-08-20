@@ -28,6 +28,6 @@ shift $((OPTIND-1))
 BUILD_JOBS="${BUILD_JOBS:-8}" \
 WORKFLOW_BUILD="${WORKFLOW_BUILD:-"ON"}" \
 WORKFLOW_TESTS="${WORKFLOW_TESTS:-"OFF"}" \
-./gdas.cd/build.sh ${_opts} -f -w ${HOMEgfs_}
+"${HOMEgfs_}/sorc/gdas.cd/build.sh" ${_opts} -w ${HOMEgfs_}
 
 exit

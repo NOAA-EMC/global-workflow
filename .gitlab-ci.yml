@@ -123,6 +123,7 @@ include:
         git remote add github "${GW_REPO_URL}"
         git fetch github
         ${GH} pr checkout "${PR_NUMBER}"
+        git submodule update --init --recursive -j 8
       fi
 
       dev/ci/scripts/utils/ci_utils.sh build
