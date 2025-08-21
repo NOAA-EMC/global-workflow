@@ -155,7 +155,7 @@ class Stage(Task):
     @logit(logger)
     def calculate_member_com_paths_gfs(self) -> Dict[str, Any]:
         cycle_vars = self.calculate_cycle_variables()
-        com_dir_vars = {
+        com_dir_vars = AttrDict({
             'COMOUT_ATMOS_INPUT_MEM_list': [],
             'COMOUT_ATMOS_RESTART_PREV_MEM_list': [],
             'COMOUT_ATMOS_RESTART_MEM_list': [],
@@ -167,7 +167,7 @@ class Stage(Task):
             'COMOUT_MED_RESTART_PREV_MEM_list': [],
             'COMOUT_WAVE_RESTART_PREV_MEM_list': [],
             'COMOUT_CHEM_ANALYSIS_MEM_list': [],
-        }
+        })
 
         # Loop over members: for deterministic GFS, first_mem == last_mem == -1 (single pass)
         for mem in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
