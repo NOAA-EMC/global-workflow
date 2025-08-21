@@ -13,10 +13,10 @@ export SOCA_NINNER="{{ SOCA_NINNER }}"
 export DOMAIN_STACK_SIZE=116640000  #TODO: Make the stack size resolution dependent
 export MARINE_JCB_GDAS_OBS="${PARMgfs}/gdas/jcb-gdas/observations/marine"
 
-export MARINE_STAGE_FIX_TMPL="${PARMgfs}/gdas/marine/marine_stage_fix_${OCNRES}.yaml.j2"
-export MARINE_STAGE_UTILITIES_TMPL="${PARMgfs}/gdas/marine/marine_stage_utilities.yaml.j2"
+export STAGE_FIX_TMPL="${PARMgfs}/gdas/marine/marine_stage_fix_${OCNRES}.yaml.j2"
+export STAGE_UTILITIES_TMPL="${PARMgfs}/gdas/marine/marine_stage_utilities.yaml.j2"
 
-export MARINE_DET_STAGE_BKG_TMPL="${PARMgfs}/gdas/marine/marine_det_stage_bkg.yaml.j2"
-export MARINE_ENS_STAGE_BKG_TMPL="${PARMgfs}/gdas/marine/marine_ens_stage_bkg.yaml.j2"
+export STAGE_DET_BKG_TMPL="${PARMgfs}/gdas/marine/marine_det_stage_bkg.yaml.j2"
+export STAGE_ENS_BKG_TMPL="${PARMgfs}/gdas/marine/marine_ens_stage_bkg.yaml.j2"
 
 echo "END: config.marineanl"

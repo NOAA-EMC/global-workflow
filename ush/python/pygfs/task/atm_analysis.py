@@ -72,7 +72,7 @@ class AtmAnalysis(Task):
 
         # Create dictionary of Jedi objects
         expected_keys = ['atmanlvar', 'atmanlfv3inc']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_TMPL, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -118,21 +118,21 @@ class AtmAnalysis(Task):
             Jedi.extract_tar_from_filehandler_dict(bias_dict)
 
         # stage CRTM fix files
-        logger.info(f"Staging CRTM fix files from {self.task_config.ATM_STAGE_CRTM_COEFF_TMPL}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.ATM_STAGE_CRTM_COEFF_TMPL, self.task_config)
+        logger.info(f"Staging CRTM fix files from {self.task_config.STAGE_CRTM_COEFF_TMPL}")
+        crtm_fix_dict = parse_j2yaml(self.task_config.STAGE_CRTM_COEFF_TMPL, self.task_config)
         FileHandler(crtm_fix_dict).sync()
         logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
 
         # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.ATM_STAGE_JEDI_FIX_TMPL}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.ATM_STAGE_JEDI_FIX_TMPL, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_TMPL}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_TMPL, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # stage static background error files, otherwise it will assume ID matrix
         logger.info(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
         if self.task_config.STATICB_TYPE != 'identity':
-            berror_staging_dict = parse_j2yaml(self.task_config.ATM_DET_STAGE_BERROR_TMPL, self.task_config)
+            berror_staging_dict = parse_j2yaml(self.task_config.STAGE_BERROR_TMPL, self.task_config)
         else:
             berror_staging_dict = {}
         FileHandler(berror_staging_dict).sync()
@@ -141,13 +141,13 @@ class AtmAnalysis(Task):
         # stage ensemble files for use in hybrid background error
         if self.task_config.DOHYBVAR:
             logger.debug(f"Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
-            fv3ens_staging_dict = parse_j2yaml(self.task_config.ATM_DET_STAGE_FV3ENS_TMPL, self.task_config)
+            fv3ens_staging_dict = parse_j2yaml(self.task_config.STAGE_FV3ENS_TMPL, self.task_config)
             FileHandler(fv3ens_staging_dict).sync()
             logger.debug(f"Ensemble files:\n{pformat(fv3ens_staging_dict)}")
 
         # stage backgrounds
-        logger.info(f"Staging background files from {self.task_config.ATM_DET_STAGE_BKG_TMPL}")
-        bkg_staging_dict = parse_j2yaml(self.task_config.ATM_DET_STAGE_BKG_TMPL, self.task_config)
+        logger.info(f"Staging background files from {self.task_config.STAGE_BKG_TMPL}")
+        bkg_staging_dict = parse_j2yaml(self.task_config.STAGE_BKG_TMPL, self.task_config)
         FileHandler(bkg_staging_dict).sync()
         logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}")
 
