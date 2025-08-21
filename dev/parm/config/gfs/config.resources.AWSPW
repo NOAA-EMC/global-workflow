@@ -42,7 +42,6 @@ case ${step} in
   *)
     export PARTITION_BATCH="process"
     unset PARTITION_SERVICE
-    tasks_per_node=24
     ;;
 
 esac
