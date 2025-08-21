@@ -3,7 +3,6 @@
 import os
 
 from pygfs.task.stage_ic import Stage
-from pygfs.task.stage_archive import StageArchiveUtils
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit
 
 # Initialize root logger
@@ -17,8 +16,8 @@ def main():
 
     # Instantiate the Stage object
     stage = Stage(config)
-    stage_archive = StageArchiveUtils(config)
-
+    # Calculate cycle variables and add to stage_dict
+    stage_variables = stage.calculate_stage_archive_vars()
     # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
             'assim_freq', 'current_cycle', 'previous_cycle',
@@ -32,21 +31,15 @@ def main():
     for key in keys:
         # Make sure OCNRES is three digits
         if key == "OCNRES":
-            stage.task_config.OCNRES = f"{stage.task_config.OCNRES :03d}"
-        stage_dict[key] = stage.task_config[key]
+            stage_variables.OCNRES = f"{stage.task_config.OCNRES :03d}"
+        stage_dict[key] = stage_variables[key]
 
     # Also import all COM* directory and template variables
-    for key in stage.task_config.keys():
-        if key.startswith("COM"):
-            stage_dict[key] = stage.task_config[key]
-        if "ENSMEM" in stage.task_config:
-            stage_dict["ENSMEM"] = stage.task_config["ENSMEM"]
-
-    # Calculate cycle variables and add to stage_dict
-    cycle_variables = stage_archive.calculate_cycle_variables()
-    stage_dict.update(cycle_variables)
-    member_variables = stage_archive.calculate_member_variables()
-    stage_dict.update(member_variables)
+    for key in stage_variables.keys():
+        if key.startswith("COM") and key.endswith("_list"):
+            stage_dict[key] = stage_variables[key]
+        if "ENSMEM" in stage_variables:
+            stage_dict["ENSMEM"] = stage_variables["ENSMEM"]
 
     # Stage ICs
     stage.execute_stage(stage_dict)
