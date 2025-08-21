@@ -90,15 +90,18 @@ EOF
   fi
 
   # Create formatted GitHub comment
-  comment_body="🚫 **Experiment _${caseName}_ (FAILED on ${Machine} in GitLab Pipeline ID ${CI_PIPELINE_ID})**
-
+  comment_body=$(cat << EOF
+🚫 **Experiment _${caseName}_ (FAILED on ${Machine} in GitLab Pipeline ID ${CI_PIPELINE_ID})**
+  
 **In the directory:**
-```
-"${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}"
-```
-"${gist_message_section}"
+\`\`\`
+${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}
+\`\`\`
+${gist_message_section}
 
-_This failure was detected automatically by global-workflow's CI/CD Pipeline_" || true
+_This failure was detected automatically by global-workflow's CI/CD Pipeline_
+EOF
+  )
 
   # Post GitHub comment
   "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
