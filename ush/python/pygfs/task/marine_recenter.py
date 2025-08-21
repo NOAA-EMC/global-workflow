@@ -44,7 +44,7 @@ class MarineRecenter(Task):
 
         local_dict = AttrDict(
             {
-                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'soca'),
+                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
                 'MARINE_WINDOW_BEGIN': _window_begin,
                 'MARINE_WINDOW_END': _window_end,
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
@@ -78,8 +78,8 @@ class MarineRecenter(Task):
         """
 
         # stage fix files
-        logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
-        soca_fix_list = parse_j2yaml(self.task_config.SOCA_STAGE_FIX_TMPL, self.task_config)
+        logger.info(f"Staging SOCA fix files from {self.task_config.INPUT_FIX_DIR}")
+        soca_fix_list = parse_j2yaml(self.task_config.STAGE_FIX_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
         # prepare the MOM6 input.nml

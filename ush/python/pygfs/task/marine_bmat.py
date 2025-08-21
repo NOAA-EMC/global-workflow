@@ -53,7 +53,7 @@ class MarineBMat(Task):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'soca'),
+                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
                 'CALC_SCALE_EXEC': _calc_scale_exec,
                 'MARINE_WINDOW_BEGIN': _window_begin,
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
@@ -101,7 +101,7 @@ class MarineBMat(Task):
         """
 
         # stage fix files
-        logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
+        logger.info(f"Staging SOCA fix files from {self.task_config.INPUT_FIX_DIR}")
         soca_fix_list = parse_j2yaml(self.task_config.STAGE_FIX_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
@@ -115,7 +115,7 @@ class MarineBMat(Task):
         # stage backgrounds
         # TODO(G): Check ocean backgrounds dates for consistency
         logger.info(f"Staging SOCA backgrounds")
-        bkg_list = parse_j2yaml(self.task_config.DET_STAGE_BKG_TMPL, self.task_config)
+        bkg_list = parse_j2yaml(self.task_config.STAGE_DET_BKG_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
         # stage the soca utility yamls (fields and ufo mapping yamls)

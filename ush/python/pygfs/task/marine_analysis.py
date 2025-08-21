@@ -57,7 +57,7 @@ class MarineAnalysis(Task):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'soca'),
+                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
                 'MARINE_WINDOW_BEGIN': _window_begin,
                 'MARINE_WINDOW_END': _window_end,
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
@@ -81,7 +81,7 @@ class MarineAnalysis(Task):
 
         # Construct dictionary of JEDI objects, one for each JEDI application need for the analysis
         expected_keys = ['var', 'soca_incpostproc', 'soca_diag_stats']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_TMPL, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.DET_JEDI_CONFIG_TMPL, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self: Task) -> None:
@@ -108,7 +108,7 @@ class MarineAnalysis(Task):
         """
 
         # stage fix files
-        logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
+        logger.info(f"Staging SOCA fix files from {self.task_config.INPUT_FIX_DIR}")
         soca_fix_list = parse_j2yaml(self.task_config.STAGE_FIX_TMPL, self.task_config)
         FileHandler(soca_fix_list).sync()
 
@@ -134,7 +134,7 @@ class MarineAnalysis(Task):
 
         # stage the ocean and ice backgrounds for FGAT
         logger.info(f"Staging files needed for deterministic analysis from COM")
-        bkg_list = parse_j2yaml(self.task_config.STAGE_BKG_TMPL, self.task_config)
+        bkg_list = parse_j2yaml(self.task_config.STAGE_DET_BKG_TMPL, self.task_config)
         FileHandler(bkg_list).sync()
 
         # stage files and link directories from B-matrix job needed for deterministic analysis
