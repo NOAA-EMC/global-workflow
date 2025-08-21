@@ -149,6 +149,7 @@ class Stage(Task):
             "${YMD}": cycle_vars.previous_cycle_YMD,
             "${HH}": cycle_vars.previous_cycle_HH,
         }
+        print(f'cycle_vars_wer: {cycle_vars}')
         return cycle_vars
 
     @logit(logger)
@@ -205,6 +206,7 @@ class Stage(Task):
     @logit(logger)
     def calculate_member_com_paths_gefs(self) -> Dict[str, Any]:
         cycle_vars = self.calculate_cycle_variables()
+        print(f'cycle_vars_wer2: {cycle_vars}')
         com_dir_vars = {
             'COMOUT_ATMOS_INPUT_MEM_list': [],
             'COMOUT_ATMOS_RESTART_PREV_MEM_list': [],
