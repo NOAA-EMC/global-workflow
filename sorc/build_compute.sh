@@ -97,7 +97,7 @@ function cleanup() {
        kill "${pid}"
     fi
   done
-  exit 0
+  exit 1
 }
 
 trap cleanup TERM
@@ -108,7 +108,8 @@ trap cleanup ERR
 #      See GW issue 3933
 if [[ ${systems} == "all" || ${systems} =~ "gdas" ]]; then
   echo "Building the GDASApp locally (on this node)"
-  "${HOMEgfs}/sorc/build_gdas.sh" -j 20 >& "${HOMEgfs}/sorc/logs/build_gdas.log" &
+  gdas_build_log="${HOMEgfs}/sorc/logs/build_gdas.log"
+  "${HOMEgfs}/sorc/build_gdas.sh" -j 20 >& "${gdas_build_log}" &
   build_gdas_id=$!
   build_ids+=("${build_gdas_id}")
 fi
@@ -116,9 +117,7 @@ fi
 "${HOMEgfs}/dev/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
-  msg="FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
-  echo "${msg}"
-  echo "${msg}" > logs/error.logs
+  echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
   exit 1
 fi
 
@@ -127,11 +126,13 @@ runcmd="rocotorun -w ${build_xml} -d ${build_db} ${rocoto_verbose_opt}"
 
 finished=false
 ${runcmd}
+set -x
 echo "Monitoring builds on compute nodes"
 while [[ "${finished}" == "false" ]]; do
    sleep 1m
    ${runcmd}
-   state="$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")"
+
+   state="$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")" || true
    if [[ "${verbose_opt}" == "true" ]]; then
       echo "Rocoto is in state ${state}"
    else
@@ -145,8 +146,8 @@ while [[ "${finished}" == "false" ]]; do
    else
       msg="FATAL ERROR: ${BASH_SOURCE[0]} rocoto failed with state '${state}'"
       echo "${msg}"
-      rm -f logs/error.logs
-      echo "${msg}" > logs/error.logs
+      err_file="${PWD}/logs/error.logs"
+      rm -f "${err_file}"
       # Determine which build(s) failed
       stat_out="$(rocotostat -w "${build_xml}" -d "${build_db}")"
       echo "${stat_out}" > rocotostat.out
@@ -161,8 +162,8 @@ while [[ "${finished}" == "false" ]]; do
          if [[ "${line}" =~ "DEAD" || "${line}" =~ "UNKNOWN" ||
                "${line}" =~ "UNAVAILABLE" || "${line}" =~ "FAIL" ]]; then
             job=$(echo "${line}" | awk '{ print $2 }')
-            log_file="logs/${job}.log"
-            echo "${log_file}" >> logs/error.logs
+            log_file="${PWD}/logs/${job}.log"
+            echo "${log_file}" >> "${err_file}"
             echo "Rocoto reported that the build failed for ${job}"
          fi
       done < rocotostat.out
@@ -178,7 +179,9 @@ if [[ -n "${build_gdas_id+0}" ]]; then
   wait "${build_gdas_id}"
   gdas_stat=$?
   if [[ ${gdas_stat} -ne 0 ]]; then
-    echo "FATAL ERROR The GDASApp failed to build!  Check log in ${HOMEgfs}/sorc/logs/build_gdas.log"
+    echo "FATAL ERROR The GDASApp failed to build!  Check log in ${gdas_build_log}"
+    # Capture the error log in logs/error.logs
+    echo "${gdas_build_log}" >> "${err_file}"
     exit 3
   fi
 fi
