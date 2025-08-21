@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 sif=ubuntu22.04-intel-ufs-env-v1.9.2.img
 
 if [[ ${MACHINE_ID} = ursa* ]] ; then
-   img=/scratch4/NAGAPE/epic/${USER}/demo/${sif}
+   img=/scratch4/NAGAPE/epic/${USER}/containers/${sif}
    bindings="-B /scratch3 -B /scratch4"
 elif [[ ${MACHINE_ID} = gaea* ]] ; then
    img=/gpfs/f6/scratch/${USER}/container/${sif}

@@ -8,6 +8,12 @@
 #
 # Thank you for your contribution
 
+# overwrite MACHINE_ID if in container
+if [[ -d /opt/spack-stack && -v SINGULARITY_CONTAINER ]]; then
+  # We are in a container
+  MACHINE_ID=container
+fi
+
 # If the MACHINE_ID variable is set, skip this script.
 if [[ -n "${MACHINE_ID:-}" ]]; then
     return
