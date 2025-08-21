@@ -81,6 +81,7 @@ class GEFSTasks(Tasks):
         task_name = f'{self.run}_gen_control_ic'
         task_dict = {'task_name': task_name,
                      'resources': resources,
+                     'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/dev/jobs/gen_control_ic.sh',
@@ -176,22 +177,6 @@ class GEFSTasks(Tasks):
         return task
 
     def efcs(self):
-        dependencies = []
-        if self.app_config.gefstype in ['gefs-offline']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-        elif self.app_config.gefstype in ['near-real-time']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
-
-        if self.options['do_wave']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_aero_fcst']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
-
         num_fcst_segments = len(self.options['fcst_segments']) - 1
         resources = self.get_resource('efcs')
 
@@ -202,6 +187,23 @@ class GEFSTasks(Tasks):
         #
         tasks = []
         for member in [f"{mem:03d}" for mem in range(1, self.nmem + 1)]:
+            dependencies = []
+            if self.app_config.gefstype in ['gefs-offline']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+                dependencies.append(rocoto.add_dependency(dep_dict))
+            elif self.app_config.gefstype in ['near-real-time']:
+                # Only add the dependency for the current member
+                dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem{member}'}
+                dependencies.append(rocoto.add_dependency(dep_dict))
+
+            if self.options['do_wave']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
+                dependencies.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_aero_fcst']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
+                dependencies.append(rocoto.add_dependency(dep_dict))
+
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
             efcsenvars = self.envars.copy()
             efcsenvars_dict = {'ENSMEM': f'{member}',
