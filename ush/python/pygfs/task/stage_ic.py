@@ -58,7 +58,7 @@ class Stage(Task):
             FileHandler(stage_set[key]).sync()
 
     @logit(logger)
-    def calculate_cycle_variables(self) -> AttrDict:
+    def calculate_cycle_variables(self) -> Dict[str, Any]:
         """Calculate cycle variables from master YAML template logic
 
         This method replaces the Jinja template variables common across:
@@ -69,21 +69,11 @@ class Stage(Task):
 
         Returns
         -------
-        AttrDict
-          AttrDict containing calculated cycle variables with dot notation access
+        Dict[str, Any]
+          Dictionary containing calculated cycle variables
         """
-        # Initialize AttrDict for cycle variables
-        cycle_vars = AttrDict()
-        # Get basic configuration using AttrDict dot notation with defaults
-        cycle_vars.assim_freq = self.task_config.get('assim_freq', 6)
-        cycle_vars.current_cycle = self.task_config.get('current_cycle', None)
-        cycle_vars.previous_cycle = self.task_config.get('previous_cycle', None)
-        cycle_vars.DOIAU = self.task_config.get('DOIAU', False)
-        cycle_vars.MODE = self.task_config.get('MODE', 'forecast-only')
-        cycle_vars.REPLAY_ICS = self.task_config.get('REPLAY_ICS', False)
-        cycle_vars.RUN = self.task_config.get('RUN', 'gfs')
-        cycle_vars.NMEM_ENS = self.task_config.get('NMEM_ENS', 20)
-        cycle_vars.ROTDIR = self.task_config.get('ROTDIR', '')
+        # Initialize dictionary for cycle variables using direct reference (no deepcopy)
+        cycle_vars = self.task_config
 
         # Calculate half window variables - replaces {% set half_window = assim_freq // 2 %}
         cycle_vars.half_window = cycle_vars.assim_freq // 2
@@ -159,22 +149,25 @@ class Stage(Task):
             "${YMD}": cycle_vars.previous_cycle_YMD,
             "${HH}": cycle_vars.previous_cycle_HH,
         }
-
+        print(cycle_vars)
         return cycle_vars
 
     @logit(logger)
-    def calculate_stage_archive_vars(self) -> AttrDict:
+    def calculate_stage_archive_vars(self) -> Dict[str, Any]:
         """Dispatch to per-master calculator to build COM paths."""
         cycle_vars = self.calculate_cycle_variables()
 
         if cycle_vars.RUN == 'gefs':
             if cycle_vars.GEFSTYPE == 'gefs-real-time':
                 return self.calculate_member_com_paths_gefs_rt(cycle_vars)
-            return self.calculate_member_com_paths_gefs(cycle_vars)
+            elif cycle_vars.GEFSTYPE == 'gefs-offline':
+                return self.calculate_member_com_paths_gefs(cycle_vars)
         elif cycle_vars.RUN in ('gcafs', 'enkfgdas'):
             return self.calculate_member_com_paths_gcafs(cycle_vars)
-        else:
+        elif cycle_vars.RUN in ('gfs'):
             return self.calculate_member_com_paths_gfs(cycle_vars)
+        else:
+            raise ValueError(f"Unknown RUN type: {cycle_vars.RUN}")
 
     @logit(logger)
     def calculate_member_com_paths_gfs(self, cycle_vars: AttrDict) -> AttrDict:
@@ -273,7 +266,6 @@ class Stage(Task):
 
         return cycle_vars
 
-# ...existing code...
     @logit(logger)
     def calculate_member_com_paths_gefs_rt(self, cycle_vars: AttrDict) -> AttrDict:
         memdir = f"mem{int(getattr(cycle_vars, 'ENSMEM', 0)):03d}"
@@ -299,7 +291,7 @@ class Stage(Task):
         """GCAFS: build COMIN/COMOUT member lists using three cycle dicts:
         - current (RUN) for outputs
         - current (rRUN) for inputs
-        - previous (rRUN) for previous-cycle restarts
+        - previous (rRUN) for prev-cycle restarts
         """
         com_dir_vars = AttrDict({
             'COMIN_ATMOS_INPUT_MEM_list': [],
@@ -359,14 +351,14 @@ class Stage(Task):
         cycle_vars.update(com_dir_vars)
         return cycle_vars
 
-    def _replace_template_vars(self, template: str, var_dict: Dict[str, str]) -> str:
+    def _replace_template_vars(self, template: str, var_dict: Dict[str, Any]) -> str:
         """Replace template variables in string with actual values
 
         Parameters
         ----------
         template : str
           Template string with variables to replace
-        var_dict : Dict[str, str]
+        var_dict : Dict[str, Any]
           Dictionary of variable names and values
 
         Returns
@@ -377,4 +369,5 @@ class Stage(Task):
         result = template
         for var, value in var_dict.items():
             result = result.replace(var, value)
+        return result
         return result
