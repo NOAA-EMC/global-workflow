@@ -16,7 +16,7 @@ def main():
 
     # Instantiate the Stage object
     stage = Stage(config)
-    stage_variables = stage.calculate_cycle_variables()
+    stage_variables = stage.calculate_stage_vars()
 
     # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',

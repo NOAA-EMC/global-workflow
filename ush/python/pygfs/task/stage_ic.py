@@ -153,7 +153,8 @@ class Stage(Task):
         return cycle_vars
 
     @logit(logger)
-    def calculate_member_com_paths_gfs(self, cycle_vars: Dict[str, Any]) -> Dict[str, Any]:
+    def calculate_member_com_paths_gfs(self) -> Dict[str, Any]:
+        cycle_vars = self.calculate_cycle_variables()
         com_dir_vars = {
             'COMOUT_ATMOS_INPUT_MEM_list': [],
             'COMOUT_ATMOS_RESTART_PREV_MEM_list': [],
@@ -251,7 +252,8 @@ class Stage(Task):
         return cycle_vars
 
     @logit(logger)
-    def calculate_member_com_paths_gefs_rt(self, cycle_vars: AttrDict) -> AttrDict:
+    def calculate_member_com_paths_gefs_rt(self) -> Dict[str, Any]:
+        cycle_vars = self.calculate_cycle_variables()
         memdir = f"mem{int(getattr(cycle_vars, 'ENSMEM', 0)):03d}"
 
         current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
@@ -271,7 +273,8 @@ class Stage(Task):
         return cycle_vars
 
     @logit(logger)
-    def calculate_member_com_paths_gcafs(self, cycle_vars: AttrDict) -> AttrDict:
+    def calculate_member_com_paths_gcafs(self) -> Dict[str, Any]:
+        cycle_vars = self.calculate_cycle_variables()
         """GCAFS: build COMIN/COMOUT member lists using three cycle dicts:
         - current (RUN) for outputs
         - current (rRUN) for inputs
@@ -356,7 +359,7 @@ class Stage(Task):
         return result
 
     @logit(logger)
-    def calculate_stage_archive_vars(self) -> Dict[str, Any]:
+    def calculate_stage_vars(self) -> Dict[str, Any]:
         """Dispatch to per-master calculator to build COM paths."""
         cycle_vars = self.calculate_cycle_variables()
         run = getattr(cycle_vars, 'RUN', None)
@@ -365,7 +368,7 @@ class Stage(Task):
         if run == 'gefs':
             gefstype = getattr(cycle_vars, 'GEFSTYPE', None)
             if gefstype == 'gefs-real-time':
-                result = self.calculate_member_com_paths_gefs_rt(cycle_vars)
+                result = self.calculate_member_com_paths_gefs_rt()
             elif gefstype == 'gefs-offline':
                 result = self.calculate_member_com_paths_gefs()
             else:
@@ -373,9 +376,9 @@ class Stage(Task):
                     f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'. Expected: ['gefs-real-time','gefs-offline']"
                 )
         elif run in ('gcafs', 'enkfgdas'):
-            result = self.calculate_member_com_paths_gcafs(cycle_vars)
+            result = self.calculate_member_com_paths_gcafs()
         elif run == 'gfs':
-            result = self.calculate_member_com_paths_gfs(cycle_vars)
+            result = self.calculate_member_com_paths_gfs()
         else:
             raise ValueError(f"Unknown RUN type: {run}")
 
