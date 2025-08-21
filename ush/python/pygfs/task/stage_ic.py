@@ -149,29 +149,11 @@ class Stage(Task):
             "${YMD}": cycle_vars.previous_cycle_YMD,
             "${HH}": cycle_vars.previous_cycle_HH,
         }
-        print(cycle_vars)
         return cycle_vars
 
     @logit(logger)
-    def calculate_stage_archive_vars(self) -> Dict[str, Any]:
-        """Dispatch to per-master calculator to build COM paths."""
-        cycle_vars = self.calculate_cycle_variables()
-
-        if cycle_vars.RUN == 'gefs':
-            if cycle_vars.GEFSTYPE == 'gefs-real-time':
-                return self.calculate_member_com_paths_gefs_rt(cycle_vars)
-            elif cycle_vars.GEFSTYPE == 'gefs-offline':
-                return self.calculate_member_com_paths_gefs(cycle_vars)
-        elif cycle_vars.RUN in ('gcafs', 'enkfgdas'):
-            return self.calculate_member_com_paths_gcafs(cycle_vars)
-        elif cycle_vars.RUN in ('gfs'):
-            return self.calculate_member_com_paths_gfs(cycle_vars)
-        else:
-            raise ValueError(f"Unknown RUN type: {cycle_vars.RUN}")
-
-    @logit(logger)
-    def calculate_member_com_paths_gfs(self, cycle_vars: AttrDict) -> AttrDict:
-        com_dir_vars = AttrDict({
+    def calculate_member_com_paths_gfs(self, cycle_vars: Dict[str, Any]) -> Dict[str, Any]:
+        com_dir_vars = {
             'COMOUT_ATMOS_INPUT_MEM_list': [],
             'COMOUT_ATMOS_RESTART_PREV_MEM_list': [],
             'COMOUT_ATMOS_RESTART_MEM_list': [],
@@ -183,7 +165,7 @@ class Stage(Task):
             'COMOUT_MED_RESTART_PREV_MEM_list': [],
             'COMOUT_WAVE_RESTART_PREV_MEM_list': [],
             'COMOUT_CHEM_ANALYSIS_MEM_list': [],
-        })
+        }
 
         # Loop over members: for deterministic GFS, first_mem == last_mem == -1 (single pass)
         for mem in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
@@ -370,4 +352,29 @@ class Stage(Task):
         for var, value in var_dict.items():
             result = result.replace(var, value)
         return result
+
+    @logit(logger)
+    def calculate_stage_archive_vars(self) -> Dict[str, Any]:
+        """Dispatch to per-master calculator to build COM paths."""
+        cycle_vars = self.calculate_cycle_variables()
+        run = getattr(cycle_vars, 'RUN', None)
+        result = None
+
+        if run == 'gefs':
+            gefstype = getattr(cycle_vars, 'GEFSTYPE', None)
+            if gefstype == 'gefs-real-time':
+                result = self.calculate_member_com_paths_gefs_rt(cycle_vars)
+            elif gefstype == 'gefs-offline':
+                result = self.calculate_member_com_paths_gefs(cycle_vars)
+            else:
+                raise ValueError(
+                    f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'. Expected: ['gefs-real-time','gefs-offline']"
+                )
+        elif run in ('gcafs', 'enkfgdas'):
+            result = self.calculate_member_com_paths_gcafs(cycle_vars)
+        elif run == 'gfs':
+            result = self.calculate_member_com_paths_gfs(cycle_vars)
+        else:
+            raise ValueError(f"Unknown RUN type: {run}")
+
         return result
