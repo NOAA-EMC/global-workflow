@@ -367,7 +367,7 @@ class Stage(Task):
             if gefstype == 'gefs-real-time':
                 result = self.calculate_member_com_paths_gefs_rt(cycle_vars)
             elif gefstype == 'gefs-offline':
-                result = self.calculate_member_com_paths_gefs(cycle_vars)
+                result = self.calculate_member_com_paths_gefs()
             else:
                 raise ValueError(
                     f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'. Expected: ['gefs-real-time','gefs-offline']"
