@@ -12,7 +12,7 @@ case ${step} in
   "prep")
     export PARTITION_BATCH="process"
     export ntasks=12
-    tasks_per_node=12
+    export tasks_per_node=12
     ;;
 
   "fcst" | "efcs" | "wavepostpnt")
@@ -24,19 +24,19 @@ case ${step} in
     export is_exclusive="True"
     export PARTITION_BATCH="compute"
     export threads_per_task=1
-    tasks_per_node=48
+    export tasks_per_node=48
     ;;
 
   "sfcanl")
     export is_exclusive=False
     export PARTITION_BATCH="process"
-    tasks_per_node=${ntiles:-6}
+    export tasks_per_node=${ntiles:-6}
     ;;
 
   "analcalc" | "analdiag" | "upp")
     export is_exclusive=True
     export PARTITION_BATCH="compute"
-    tasks_per_node=48
+    export tasks_per_node=48
     ;;
 
   *)
@@ -45,5 +45,3 @@ case ${step} in
     ;;
 
 esac
-
-export tasks_per_node
