@@ -203,9 +203,9 @@ class Stage(Task):
         return cycle_vars
 
     @logit(logger)
-    def calculate_member_com_paths_gefs(self, cycle_vars: AttrDict) -> AttrDict:
-        """GEFS (offline): build COMOUT_* member lists like master_gefs.yaml.j2."""
-        com_dir_vars = AttrDict({
+    def calculate_member_com_paths_gefs(self) -> Dict[str, Any]:
+        cycle_vars = self.calculate_cycle_variables()
+        com_dir_vars = {
             'COMOUT_ATMOS_INPUT_MEM_list': [],
             'COMOUT_ATMOS_RESTART_PREV_MEM_list': [],
             'COMOUT_ATMOS_ANALYSIS_MEM_list': [],
@@ -215,7 +215,7 @@ class Stage(Task):
             'COMOUT_OCEAN_ANALYSIS_MEM_list': [],
             'COMOUT_MED_RESTART_PREV_MEM_list': [],
             'COMOUT_WAVE_RESTART_PREV_MEM_list': [],
-        })
+        }
 
         # Loop over ensemble members
         for mem in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
