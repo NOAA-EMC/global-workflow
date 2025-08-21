@@ -126,7 +126,6 @@ runcmd="rocotorun -w ${build_xml} -d ${build_db} ${rocoto_verbose_opt}"
 
 finished=false
 ${runcmd}
-set -x
 echo "Monitoring builds on compute nodes"
 while [[ "${finished}" == "false" ]]; do
    sleep 1m
