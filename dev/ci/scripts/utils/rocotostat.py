@@ -305,7 +305,7 @@ def rocoto_statcount(rocotostat, thread_logging_enabled=False):
                                                thread_logging_enabled=thread_logging_enabled)
     rocotostat_output = rocotostat_output.splitlines()[1:]
     rocotostat_output = [line.split()[0:4] for line in rocotostat_output if "======" not in line ]
-    rocotostat_output = [line for line in rocotostat_output if len(line) != 1]
+    rocotostat_output = [line for line in rocotostat_output if len(line) != 1 ]
 
     status_cases = ['SUCCEEDED', 'FAIL', 'DEAD', 'RUNNING', 'SUBMITTING', 'QUEUED', 'UNAVAILABLE', 'UNKNOWN']
 
