@@ -75,11 +75,11 @@ report_failure_to_github() {
 
       # Prepare markdown section for files links to gist for GitHub comment
       gist_message_section=$(cat <<EOF
-### 📋 Error Log Files:
+📋 Error Log Files:
 \`\`\`
 ${error_logs_markdown}
 \`\`\`
-### 🔗 View Error Logs:
+🔗 View Error Logs:
 ${gist_links}
 EOF
       )
@@ -91,11 +91,12 @@ EOF
 
   # Create formatted GitHub comment
   DATE=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
-  local comment_body="### 🚫 Experiment ${caseName} FAILED on ${Machine}
+  local comment_body="🚫 **Experiment _${caseName}_ (FAILED on ${Machine} in GitLab Pipeline ID ${CI_PIPELINE_ID})**
 
-  **GitLab Pipeline#:** ${CI_PIPELINE_ID}
-  **Workspace:** \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
-  **Timestamp:** ${DATE}
+  **In the directory:**
+  ```
+  ${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}
+  ```
   ${gist_message_section}
 
   _This failure was detected automatically by global-workflow's CI/CD Pipeline_" || true
@@ -144,28 +145,20 @@ rc=99
 set +e
 while true; do
 
-  echo "Run rocotorun."
+  echo "Gather Rocoto statistics for (${pslot} on ${MACHINE_ID^})"
   rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
 
   # Wait before running rocotostat
   sleep 60
 
-  # Get job statistics
-  echo "Gather Rocoto statistics"
-  # shellcheck disable=SC2312 # We want to use the exit code of the command
-
-  caseName="${pslot%_*}"
+  caseName="${pslot%_*-*}"  # caseName recovered from pslot: (caseName_<hash>-<pipeline ID> (eg. C48_ATM_90f10fc1-3517)
   export ROCOTOSTAT_LOG_FILE="${RUNTESTS}/EXPDIR/${pslot}/logs/${caseName}_rocotostat.log"
-  full_state=$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v --thread-logging)
+  source <("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -declare --thread-logging)
   error_stat=$?
 
-  # Assign bash values from -v side effects of the rocotostat.py utility
-  for state in CYCLES_TOTAL CYCLES_DONE SUCCEEDED FAIL DEAD; do
-    declare "${state}"="$(echo "${full_state}" | grep "${state}" | cut -d: -f2)" || true
-  done
-  ROCOTO_STATE=$(echo "${full_state}" | tail -1) || exit 1
-
-  echo -e "(${pslot} on ${MACHINE_ID^})\n\tTotal Cycles: ${CYCLES_TOTAL}\n\tNumber Cycles done: ${CYCLES_DONE}\n\tState: ${ROCOTO_STATE}"
+  echo -e "\tCompleted Cycles: ${CYCLES_COMPLETED}/${CYCLES_TOTAL}
+  \tCompleted Jobs  : ${JOBS_COMPLETED}/${JOBS_TOTAL}
+  \tState           : ${ROCOTO_STATE}"
 
   if [[ ${error_stat} -ne 0 ]]; then
     {
