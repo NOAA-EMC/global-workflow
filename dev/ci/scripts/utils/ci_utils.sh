@@ -183,21 +183,19 @@ function publish_logs_from_file() {
   # and publishes them using publish_logs.py. When more than one valid file is
   # found, call the python utility with --multiple --format github for gist
   # output formatting.
-  # Usage: publish_logs_from_file <ID> <dir_path> <list_file>
+  # Usage: publish_logs_from_file <ID> <list_file>
   local PR_header="$1"
-  local dir_path="$2"
-  local list_file="$3"
+  local list_file="$2"
   local files=()
 
   # Read the list file and build an array of existing full paths
   while IFS= read -r line || [[ -n "$line" ]]; do
     # skip empty lines
     [[ -z "${line// /}" ]] && continue
-    full_path="${dir_path}/${line}"
-    if [[ -f "${full_path}" ]]; then
-      files+=("${full_path}")
+    if [[ -f "${line}" ]]; then
+      files+=("${line}")
     else
-      echo "File ${full_path} does not exist"
+      echo "File ${line} does not exist"
     fi
   done < "${list_file}"
 

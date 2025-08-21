@@ -34,11 +34,13 @@ EXIT_CODE_STALLED = 3                  # Exit code when workflow is stalled
 # ============================================================================
 
 # This scrpit is a utility with unix style pipe-able side effects so
-# logger is always set to file or it's suppresed
+# stdout True only if LOGGING_LEVEL is DEBUG, else False
+_log_level = os.environ.get("LOGGING_LEVEL", "INFO").upper()
+_stdout = _log_level == "DEBUG"
 logger = Logger(
-    level=os.environ.get("LOGGING_LEVEL", "DEBUG").upper(),
+    level=_log_level,
     colored_log=False,
-    stdout=False,  # Always write to file, not stdout
+    stdout=_stdout,
     logfile_path=os.environ.get("ROCOTOSTAT_LOG_FILE")
 )
 
@@ -205,7 +207,7 @@ def input_args():
     Parse command-line arguments for rocotostat workflow analysis.
 
     This function configures and parses command-line arguments used to specify the Rocoto workflow XML document and database
-    file, along with optional flags for verbose output and bash export functionality. The function validates input files and
+    file, along with optional flags for verbose output and bash declare functionality. The function validates input files and
     returns a namespace object containing all parsed arguments for use throughout the rocotostat analysis process.
 
     Returns
@@ -228,7 +230,7 @@ def input_args():
     parser.add_argument('-d', help='database_file', metavar='Database File', type=FileType('r'), required=True)
     parser.add_argument('--verbose', action='store_true', help='List the states and the number of jobs that are in each', required=False)
     parser.add_argument('-v', action='store_true', help='List the states and the number of jobs that are in each', required=False)
-    parser.add_argument('--export', action='store_true', help='create and export list of the status values for bash', required=False)
+    parser.add_argument('--declare', action='store_true', help='create and declare list of the status values for bash', required=False)
     parser.add_argument('--thread-logging', action='store_true',
                         help='Enable thread count performance logging for monitoring system resource usage', required=False)
 
@@ -302,7 +304,7 @@ def rocoto_statcount(rocotostat, thread_logging_enabled=False):
                                                ProcessError,
                                                thread_logging_enabled=thread_logging_enabled)
     rocotostat_output = rocotostat_output.splitlines()[1:]
-    rocotostat_output = [line.split()[0:4] for line in rocotostat_output]
+    rocotostat_output = [line.split()[0:4] for line in rocotostat_output if "======" not in line ]
     rocotostat_output = [line for line in rocotostat_output if len(line) != 1]
 
     status_cases = ['SUCCEEDED', 'FAIL', 'DEAD', 'RUNNING', 'SUBMITTING', 'QUEUED', 'UNAVAILABLE', 'UNKNOWN']
@@ -311,6 +313,8 @@ def rocoto_statcount(rocotostat, thread_logging_enabled=False):
     status_counts = Counter(case for sublist in rocotostat_output for case in sublist)
     for case in status_cases:
         rocoto_status[case] = status_counts[case]
+    rocoto_status['JOBS_TOTAL'] = len(rocotostat_output)
+    rocoto_status['JOBS_DONE'] = status_counts['SUCCEEDED']
 
     return rocoto_status
 
@@ -424,9 +428,9 @@ if __name__ == '__main__':
             else:
                 print(f'Number of {status} : {rocoto_status[status]}')
 
-    if args.export:
+    if args.declare:
         for status in rocoto_status:
-            print(f'export {status}={rocoto_status[status]}')
+            print(f'declare {status}={rocoto_status[status]}')
     else:
         print(rocoto_state)
 
