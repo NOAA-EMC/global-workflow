@@ -6,7 +6,7 @@
 echo "BEGIN: config.gempak"
 
 # Maximum number of rocoto tasks per member
-export MAX_TASKS=25
+export MAX_TASKS=42
 
 # Get task specific resources
 source "${EXPDIR}/config.resources" gempak

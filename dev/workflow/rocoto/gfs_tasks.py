@@ -1381,9 +1381,9 @@ class GFSTasks(Tasks):
         # so we need to get the forecast hours for wave_postsbs and wave_gempak separately
 
         # Get the forecast hours for wave_postsbs
-        sbs_fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
-        sbs_max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
-        sbs_fhr_var_dict = self.get_grouped_fhr_dict(fhrs=sbs_fhrs, ngroups=sbs_max_tasks)
+        dep_fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
+        dep_max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        dep_fhr_var_dict = self.get_grouped_fhr_dict(fhrs=dep_fhrs, ngroups=dep_max_tasks)
 
         # Get the forecast hours for wave_gempak
         fhrs = self._get_forecast_hours(self.run, self._configs['wavegempak'], 'wave')
@@ -1391,7 +1391,7 @@ class GFSTasks(Tasks):
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
         # Get the right dependency labels for wave_gempak on wave_postsbs groups
-        fhr_var_dict = self.get_dep_fhr_label(fhr_var_dict, sbs_fhr_var_dict)
+        fhr_var_dict = self.get_dep_fhr_label(fhr_var_dict, dep_fhr_var_dict)
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs_#dep_fhr_label#'}
@@ -1615,14 +1615,27 @@ class GFSTasks(Tasks):
 
     def gempak(self):
 
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_prod_#fhr_label#'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        # gempak tasks depend on atmos_prod tasks
+        # atmos_prod runs on different forecast hours than gempak,
+        # so we need to get the forecast hours for atmos_prod and gempak separately
 
+        # Get the forecast hours for wave_postsbs
+        dep_fhrs = self._get_forecast_hours(self.run, self._configs['atmos_products'])
+        dep_max_tasks = self._configs['atmos_products']['MAX_TASKS']
+        dep_fhr_var_dict = self.get_grouped_fhr_dict(fhrs=dep_fhrs, ngroups=dep_max_tasks)
+
+        # Get the forecast hours for gempak
         fhrs = self._get_forecast_hours(self.run, self._configs['gempak'])
         max_tasks = self._configs['gempak']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Get the right dependency labels for gempak on atmos_prod groups
+        fhr_var_dict = self.get_dep_fhr_label(fhr_var_dict, dep_fhr_var_dict)
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_prod_#dep_fhr_label#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempak')
         # Adjust walltime based on the largest group
