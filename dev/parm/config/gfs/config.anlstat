@@ -9,6 +9,6 @@ echo "BEGIN: config.anlstat"
 source "${EXPDIR}/config.resources" anlstat
 
 export JEDI_CONFIG_TMPL="${PARMgfs}/gdas/anlstat/anlstat_jedi_config.yaml.j2"
-export ANLSTAT_BASE_CONFIG_TMPL="${PARMgfs}/gdas/anlstat/anlstat_base_config.yaml.j2"
+export BASE_CONFIG_TMPL="${PARMgfs}/gdas/anlstat/anlstat_base_config.yaml.j2"
 
 echo "END: config.anlstat"
