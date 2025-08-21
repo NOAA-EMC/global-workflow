@@ -189,7 +189,7 @@ function publish_logs_from_file() {
   local files=()
 
   # Read the list file and build an array of existing full paths
-  while IFS= read -r line || [[ -n "$line" ]]; do
+  while IFS= read -r line || [[ -n "${line}" ]]; do
     # skip empty lines
     [[ -z "${line// /}" ]] && continue
     if [[ -f "${line}" ]]; then
@@ -207,9 +207,9 @@ function publish_logs_from_file() {
 
     # For gist, if more than one file use --multiple --format github
     if (( ${#files[@]} > 1 )); then
-      URL="$(${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py --file "${files[@]}" --multiple --format github --gist "${PR_header}")"
+      URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[@]}" --multiple --format github --gist "${PR_header}")"
     else
-      URL="$(${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py --file "${files[0]}" --gist "${PR_header}")"
+      URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[0]}" --gist "${PR_header}")"
     fi
   fi
 

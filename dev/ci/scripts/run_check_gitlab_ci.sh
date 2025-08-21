@@ -90,14 +90,13 @@ EOF
   fi
 
   # Create formatted GitHub comment
-  DATE=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
-  local comment_body="🚫 **Experiment _${caseName}_ (FAILED on ${Machine} in GitLab Pipeline ID ${CI_PIPELINE_ID})**
+  comment_body="🚫 **Experiment _${caseName}_ (FAILED on ${Machine} in GitLab Pipeline ID ${CI_PIPELINE_ID})**
 
   **In the directory:**
   ```
   ${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}
   ```
-  ${gist_message_section}
+  "${gist_message_section}"
 
   _This failure was detected automatically by global-workflow's CI/CD Pipeline_" || true
 
@@ -153,7 +152,7 @@ while true; do
 
   caseName="${pslot%_*-*}"  # caseName recovered from pslot: (caseName_<hash>-<pipeline ID> (eg. C48_ATM_90f10fc1-3517)
   export ROCOTOSTAT_LOG_FILE="${RUNTESTS}/EXPDIR/${pslot}/logs/${caseName}_rocotostat.log"
-  source <("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -declare --thread-logging)
+  source <("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -declare --thread-logging) || true
   error_stat=$?
 
   echo -e "\tCompleted Cycles: ${CYCLES_COMPLETED}/${CYCLES_TOTAL}
