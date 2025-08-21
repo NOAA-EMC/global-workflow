@@ -35,6 +35,7 @@ case ${step} in
 
   "analcalc" | "analdiag" | "upp")
     export PARTITION_BATCH="compute"
+    tasks_per_node=48
     ;;
 
   *)
