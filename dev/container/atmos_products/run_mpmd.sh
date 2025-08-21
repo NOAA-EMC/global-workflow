@@ -28,7 +28,7 @@
 #
 ################################################################################
 
-#source "${USHgfs}/preamble.sh"
+set -x
 
 source /usr/lmod/lmod/init/bash
 module use ${HOMEgfs}/sorc/gfs_utils.fd/modulefiles
@@ -63,15 +63,14 @@ cat << EOF
   INFO: The proc_num corresponds to the line in '${mpmd_cmdfile}'
 EOF
 
-# [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
-
 # Redirect output from each process to its own stdout
 # Read the incoming cmdfile and create mpiexec usable cmdfile
 nm=0
 echo "#!/bin/bash" >> "${mpmd_cmdfile}"
 # shellcheck disable=SC2312
 while IFS= read -r line; do
-  echo "-n 1 ${line} > mpmd.${nm}.out" >> "${mpmd_cmdfile}"
+  echo "${line} > mpmd.${nm}.out" >> "${mpmd_cmdfile}"
+  echo "Line ${nm}: ${line}"
   ${line} > mpmd.${nm}.out &
   ((nm=nm+1))
 done < "${cmdfile}"
