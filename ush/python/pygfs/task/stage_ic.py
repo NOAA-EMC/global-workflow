@@ -3,7 +3,7 @@
 import os
 from logging import getLogger
 from typing import Any, Dict
-from datetime import datetime, timedelta
+from datetime import timedelta
 from wxflow import FileHandler, Task, logit, parse_j2yaml, AttrDict
 
 logger = getLogger(__name__.split('.')[-1])
