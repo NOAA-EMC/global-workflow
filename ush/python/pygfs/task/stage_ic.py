@@ -149,7 +149,6 @@ class Stage(Task):
             "${YMD}": cycle_vars.previous_cycle_YMD,
             "${HH}": cycle_vars.previous_cycle_HH,
         }
-        print(f'cycle_vars_wer: {cycle_vars}')
         return cycle_vars
 
     @logit(logger)
@@ -250,8 +249,6 @@ class Stage(Task):
             com_dir_vars['COMOUT_OCEAN_ANALYSIS_MEM_list'].append(comout_ocean_analysis)
             com_dir_vars['COMOUT_MED_RESTART_PREV_MEM_list'].append(comout_med_restart_prev)
             com_dir_vars['COMOUT_WAVE_RESTART_PREV_MEM_list'].append(comout_wave_restart_prev)
-
-            print(f'com_dir_vars: {com_dir_vars}')
 
         cycle_vars.update(com_dir_vars)
         return cycle_vars
