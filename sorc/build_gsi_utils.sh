@@ -22,6 +22,8 @@ while getopts ":j:dv" option; do
 done
 shift $((OPTIND-1))
 
+source "${HOMEgfs_}/ush/detect_machine.sh"
+
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
 BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
 BUILD_JOBS=${BUILD_JOBS:-8} \
