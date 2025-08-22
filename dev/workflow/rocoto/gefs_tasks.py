@@ -27,7 +27,7 @@ class GEFSTasks(Tasks):
 
     def gen_control_ic(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         resources = self.get_resource('gen_control_ic')
@@ -139,16 +139,17 @@ class GEFSTasks(Tasks):
         #   of a metatask of a metatask.
         #
         tasks = []
-        dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
-        dependencies.append(rocoto.add_dependency(dep_dict))
+        for member in [f"{mem:03d}" for mem in range(1, self.nmem + 1)]:
+            dependencies = []
+            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_wave']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_aero_fcst']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_wave']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
+                dependencies.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_aero_fcst']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
+                dependencies.append(rocoto.add_dependency(dep_dict))
 
             dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
