@@ -43,14 +43,14 @@
 {% set cyc_ranges = [(range(1, 31) | list), (range(21, 51) | list), (range(41, 71) | list), (range(61, 81) | list) + (range(1, 11) | list)] %}
 {% set m_index = (current_cycle_HH | int) // 6 %}
 # select the relevant member for each GEFS member from GFS outputs
-
+{% set ns = namespace(mem_list=[]) %}
 # Set first/last mem for loop
 # ---------------------------
 {% set first_mem = 0 %}
 {% set last_mem = NMEM_ENS %}
 
 {% for mem in range(first_mem, last_mem + 1) %}
-# memwer = {{ mem }}
+{% set ns.mem_list = ns.mem_list + [mem] %}
 # Construct member COM directory lists
 # ------------------------------------
 {% set current_cycle_dict = ({ '${ROTDIR}':ROTDIR,
@@ -94,3 +94,4 @@
 {% endif %}
 
 {% endfor %}
+mem_list_debug: {{ ns.mem_list }}
