@@ -49,7 +49,7 @@
 {% set first_mem = 0 %}
 {% set last_mem = NMEM_ENS %}
 
-{% for mem in range(2, last_mem + 1) %}
+{% for mem in range(first_mem, last_mem + 1) %}
 # memwer = {{ mem }}
 # Construct member COM directory lists
 # ------------------------------------
@@ -87,7 +87,7 @@
 {% include "atmosphere_cold_RT.yaml.j2" %}
 {% include "ocean_control_RT.yaml.j2" %}
 {% include "ice_control_RT.yaml.j2" %}
-{% else %}
+{% elif mem > 0 %}
 {% include "atmosphere_warm_RT.yaml.j2" %}
 {% include "ocean_RT.yaml.j2" %}
 {% include "ice_RT.yaml.j2" %}
