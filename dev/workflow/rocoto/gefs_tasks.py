@@ -27,7 +27,7 @@ class GEFSTasks(Tasks):
 
     def gen_control_ic(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         resources = self.get_resource('gen_control_ic')
