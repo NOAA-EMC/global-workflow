@@ -207,10 +207,9 @@ function publish_logs_from_file() {
 
     # For gist, if more than one file use --multiple --format github
     if (( ${#files[@]} > 1 )); then
-      URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[@]}" --multiple --format github --gist "${PR_header}")"
-    else
-      URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[0]}" --gist "${PR_header}")"
+      cmd_args="--multiple --format github"
     fi
+    URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[0]}" ${cmd_args:-} --gist "${PR_header}")"
   fi
 
   echo "${URL}"
