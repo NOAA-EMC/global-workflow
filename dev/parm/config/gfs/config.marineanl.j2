@@ -6,10 +6,10 @@
 echo "BEGIN: config.marineanl"
 
 # TODO: This should be sources in a config file specific to marine deterministic analysis
-#       and renamed to remove DET_
-export DET_JEDI_CONFIG_TMPL="${PARMgfs}/gdas/marine/marine_det_jedi_config.yaml.j2"
+#       and renamed to remove _DET
+export JEDI_CONFIG_TMPL_DET="${PARMgfs}/gdas/marine/marine_det_jedi_config.yaml.j2"
 
-export JCB_ALGO_YAML_VAR="{{ JCB_ALGO_YAML_VAR }}"
+export JCB_ALGO_TMPL_VAR="{{ JCB_ALGO_TMPL_VAR }}"
 
 export OBS_LIST_TMPL="{{ SOCA_OBS_LIST }}"
 export INPUT_FIX_DIR="{{ SOCA_INPUT_FIX_DIR }}"

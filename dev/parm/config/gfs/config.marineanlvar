@@ -9,6 +9,6 @@ echo "BEGIN: config.marineanlvar"
 . "${EXPDIR}/config.resources" marineanlvar
 
 export JEDI_CONFIG_TMPL="${PARMgfs}/gdas/marine/marine_det_jedi_config.yaml.j2"
-export JCB_ALGO_YAML_VAR="{{ JCB_ALGO_YAML_VAR }}"
+export JCB_ALGO_TMPL_VAR="{{ JCB_ALGO_TMPL_VAR }}"
 
 echo "END: config.marineanlvar"
