@@ -72,6 +72,8 @@ MACHINE_ID=${MACHINE:-${MACHINE_ID}}
 
 # If MACHINE_ID is no longer UNKNNOWN, return it
 if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
+  # TODO: make this read-only when UPP#1308 is addressed.
+  declare -x MACHINE_ID  # Should be -rx, but the UPP system needs Gaea C6 to be ID'd as "gaea"
   return
 fi
 # Try searching based on paths since hostname may not match on compute nodes
@@ -86,11 +88,12 @@ elif [[ -d /mnt/lfs5 ]]; then
   MACHINE_ID=jet
 elif [[ -d /scratch3 ]]; then
   # We are on NOAA Hera or Ursa
-  mount=$(findmnt -n -o SOURCE /home) || true  # /home doesn't exist on the GitHub runners
-  # TODO: When Hera is no longer supported, assume `/scratch3` means we're on Ursa
+  mount=$(findmnt -n -o SOURCE /apps) || true  # /home doesn't exist on the GitHub runners
   if [[ ${mount} =~ "ursa" ]]; then
     MACHINE_ID=ursa
-  else
+  elif [[ ${mount} =~ "hera" ]]; then
+    MACHINE_ID=hera
+  else  # Assume we are on the GitHub runners, which mock Hera
     MACHINE_ID=hera
   fi
 elif [[ -d /work ]]; then
@@ -113,3 +116,6 @@ elif [[ -d /data/prod ]]; then
 else
   echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
+
+# TODO: Make this read-only when UPP#1308 is addressed.
+declare -x MACHINE_ID  # Should be -rx, but the UPP system needs Gaea C6 to be ID'd as "gaea"
