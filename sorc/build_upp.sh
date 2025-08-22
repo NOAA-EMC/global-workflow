@@ -24,8 +24,16 @@ while getopts ":dj:v" option; do
 done
 shift $((OPTIND-1))
 
+source "${HOMEgfs_}/ush/detect_machine.sh"
+
+if [[ "${MACHINE_ID}" == "gaeac6" ]]; then
+  # The UPP does not recognise gaeac6 as a valid machine, so we need to set it to "gaea"
+  #    TODO: remove this stop-gap fix when UPP#1308 is addressed and that hash is brought into the GW.
+  export MACHINE_ID="gaea"
+fi
+
 cd "${HOMEgfs_}/sorc/ufs_model.fd/FV3/upp/tests"
 # shellcheck disable=SC2086
-BUILD_JOBS=${BUILD_JOBS:-8} "${HOMEgfs_}/sorc/ufs_model.fd/FV3/upp/tests/compile_upp.sh" ${_opts}
+BUILD_JOBS=${BUILD_JOBS:-8} bash -x "${HOMEgfs_}/sorc/ufs_model.fd/FV3/upp/tests/compile_upp.sh" ${_opts}
 
 exit 0
