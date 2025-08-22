@@ -496,7 +496,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
     "025")
       if [[ "${RUN}" = enkfgdas ]]; then
         ntasks_mom6=160
-      elif [[ "${RUN}" = *gdas ]]; then
+      elif [[ "${RUN}" = gdas ]]; then
         ntasks_mom6=100
       elif [[ "${RUN}" = *gfs ]]; then
         ntasks_mom6=240
