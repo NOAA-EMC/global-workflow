@@ -91,7 +91,11 @@ if [[ ! -d "${EXPDIR}" ]]; then
     ORIGINAL_DIR="$(pwd)"
     SCRIPT_DIR="$(dirname "${GENERATE_WORKFLOW_SCRIPT}")"
     cd "${SCRIPT_DIR}"
-    if ! ./generate_workflows.sh -GESC "${RUNTESTS}"; then
+    # Generate a unique tag for pslot from the git hash and a random number
+    GIT_HASH=$(git rev-parse --short HEAD)
+    RANDOM_NUM=$(printf "%04d" $((RANDOM % 10000)))
+    PSLOT_TAG="${GIT_HASH}-${RANDOM_NUM}"
+    if ! ./generate_workflows.sh -GESC "${RUNTESTS}" -t "${PSLOT_TAG}"; then
         echo "ERROR: Failed to generate workflows"
         exit 1
     fi
