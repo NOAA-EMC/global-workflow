@@ -11,6 +11,9 @@ case ${step} in
       "C1152")
         export tasks_per_node=144
         ;;
+      "C96")
+        export tasks_per_node=40
+        ;;  
       *)
         # Nothing to do for other resolutions
         true
@@ -55,6 +58,15 @@ case ${step} in
         ;;
     esac
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "atmanlvar" | "atmensanlsol")
+    export tasks_per_node=48
+    ;;
+
+  "atmensanlobs")
+    export tasks_per_node=24
+    export memory="240GB"
     ;;
 
   "aeroanlvar")
