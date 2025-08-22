@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+#shellcheck disable=SC2317
 
 set +x
 #------------------------------------
@@ -220,6 +221,21 @@ check_builds()
    done
    return 0
 }
+
+# Cleanup function to kill the GDASApp build on ctrl-c or non-clean exit
+function cleanup() {
+  echo "Exiting build script. Terminating subprocesses..."
+  for pid in "${build_ids[@]}"; do
+    if kill -0 "${pid}" 2>/dev/null; then # Check if process still exists
+       kill "${pid}"
+    fi
+  done
+  exit 0
+}
+
+trap cleanup ERR
+trap cleanup INT
+trap cleanup TERM
 
 builds_started=0
 # Now start looping through all of the jobs until everything is done
