@@ -1085,7 +1085,7 @@ case ${step} in
     case "${CASE}" in
       "C768")
         memory="200GB"
-	walltime="00:40:00"
+        walltime="00:40:00"
         ;;
       "C1152")
         memory="400GB"
