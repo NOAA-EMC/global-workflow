@@ -40,7 +40,9 @@
 {% set previous_cycle_HH = previous_cycle | strftime("%H") %}
 {% set p_prefix = previous_cycle | strftime("%Y%m%d.%H0000") %}
 {% set m_prefix = model_start_date_current_cycle | strftime("%Y%m%d.%H0000") %}
-
+{% set cyc_ranges = [(range(1, 31) | list), (range(21, 51) | list), (range(41, 71) | list), (range(61, 81) | list) + (range(1, 11) | list)] %}
+{% set m_index = (current_cycle_HH | int) // 6 %}
+# select the relevant member for each GEFS member from GFS outputs
 
 # Set first/last mem for loop
 # ---------------------------
@@ -76,12 +78,8 @@
 ###################################################################
 # Initial condition to stage - include components based on switches
 ###################################################################
-{% set m_index = (current_cycle_HH | int) // 6 %}
-
 {% if mem != 0 %}
 # GFS members (80)
-{% set cyc_ranges = [(range(1, 31) | list), (range(21, 51) | list), (range(41, 71) | list), (range(61, 81) | list) + (range(1, 11) | list)] %}
-# select the relevant member for each GEFS member from GFS outputs
 {% set gfs_member = cyc_ranges[m_index][(mem - 1)] %}
 {% endif %}
 
