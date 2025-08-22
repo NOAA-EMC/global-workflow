@@ -18,31 +18,11 @@ def main():
     stage = Stage(config)
     stage_variables = stage.calculate_stage_vars()
 
-    # Pull out all the configuration keys needed to run stage job
-    keys = ['RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
-            'assim_freq', 'current_cycle', 'previous_cycle',
-            'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR',
-            'OCNRES', 'waveGRD', 'ntiles', 'DOIAU',
-            'DO_JEDIOCNVAR', 'DO_STARTMEM_FROM_JEDIICE', 'm_prefix','p_prefix',
-            'REPLAY_ICS', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA', 'DO_AERO_ANL',
-            'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'first_mem', 'last_mem']
-
-    stage_dict = AttrDict()
-    for key in keys:
-        # Make sure OCNRES is three digits
-        if key == "OCNRES":
-            stage.task_config.OCNRES = f"{stage.task_config.OCNRES :03d}"
-        stage_dict[key] = stage.task_config[key]
-
-    # Also import all COM* directory and template variables
-    for key in stage_variables.keys():
-        if key.startswith("COM") and key.endswith("_list"):
-            stage_dict[key] = stage_variables[key]
-        if "ENSMEM" in stage_variables:
-            stage_dict["ENSMEM"] = stage_variables["ENSMEM"]
+    if "OCNRES" in stage_variables:
+        stage_variables["OCNRES"] = f"{stage_variables['OCNRES']:03d}"
 
     # Stage ICs
-    stage.execute_stage(stage_dict)
+    stage.execute_stage(stage_variables)
 
 
 if __name__ == '__main__':
