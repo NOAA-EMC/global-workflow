@@ -62,27 +62,25 @@ class Stage(Task):
         """Calculate cycle variables from master YAML template logic
 
         This method replaces the Jinja template variables common across:
-        - master_gfs.yaml.j2: Basic cycle logic for deterministic GFS
-        - master_gefs.yaml.j2: Ensemble cycle logic with member handling
-        - master_gefs_RT.yaml.j2: Real-time ensemble with modified restart logic
-        - master_gcafs.yaml.j2: Climate analysis cycle logic with restart RUN handling
+        - master_gfs.yaml.j2
+        - master_gefs.yaml.j2
+        - master_gefs_RT.yaml.j2
+        - master_gcafs.yaml.j2
 
         Returns
         -------
         Dict[str, Any]
           Dictionary containing calculated cycle variables
         """
-        # Initialize dictionary for cycle variables using direct reference (no deepcopy)
+        # Initialize a dictionary using config variables
         cycle_vars = self.task_config
 
-        # Calculate half window variables - replaces {% set half_window = assim_freq // 2 %}
+        # Calculate half window variables
         cycle_vars.half_window = cycle_vars.assim_freq // 2
-
-        # Calculate time deltas - replaces half_window_begin/end Jinja logic
         cycle_vars.half_window_begin = timedelta(hours=-cycle_vars.half_window)
         cycle_vars.half_window_end = timedelta(hours=cycle_vars.half_window)
 
-        # Calculate model start date for current cycle
+        # Calculate current cycle variables
         if cycle_vars.current_cycle:
             if cycle_vars.DOIAU and cycle_vars.MODE == "cycled":
                 cycle_vars.model_start_date_current_cycle = cycle_vars.current_cycle + cycle_vars.half_window_begin
@@ -92,7 +90,7 @@ class Stage(Task):
                 else:
                     cycle_vars.model_start_date_current_cycle = cycle_vars.current_cycle
 
-            # Calculate YMD and HH formats - replaces Jinja strftime operations
+            # Calculate YMD and HH formats
             cycle_vars.current_cycle_YMD = cycle_vars.current_cycle.strftime("%Y%m%d")
             cycle_vars.current_cycle_HH = cycle_vars.current_cycle.strftime("%H")
             cycle_vars.m_prefix = cycle_vars.model_start_date_current_cycle.strftime("%Y%m%d.%H0000")
@@ -125,7 +123,7 @@ class Stage(Task):
                 valid_types = ['gefs-offline', 'gefs-real-time']
                 raise ValueError(f"Invalid GEFSTYPE '{cycle_vars.GEFSTYPE}' for RUN '{cycle_vars.RUN}'. "
                                  f"Valid options are: {valid_types}")
-        else:  # Deterministic RUN (GFS, GCAFS deterministic)
+        else:  # Deterministic RUN (GFS and GCAFS)
             cycle_vars.first_mem = -1
             cycle_vars.last_mem = -1
 
@@ -135,8 +133,7 @@ class Stage(Task):
                 com_templates[k] = v
         cycle_vars.update(com_templates)
 
-        # Expose base and build simple cycle dictionaries
-        # Only update YMD and HH; RUN stays the same between current and previous
+        # Define cycle directories to update com paths
         cycle_vars.current_cycle_dict = {
             "${ROTDIR}": cycle_vars.ROTDIR,
             "${RUN}": cycle_vars.RUN,
@@ -168,10 +165,10 @@ class Stage(Task):
             'COMOUT_CHEM_ANALYSIS_MEM_list': [],
         }
 
-        # Loop over members: for deterministic GFS, first_mem == last_mem == -1 (single pass)
+        # Loop over members
         for mem in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
             memdir = f"mem{mem:03d}" if mem >= 0 else ''
-            # Build cur/prev by directly combining base dicts with MEMDIR
+            # Build current/previous com dirs
             current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
             prev_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir}
 
@@ -204,7 +201,7 @@ class Stage(Task):
         return cycle_vars
 
     @logit(logger)
-    def calculate_member_com_paths_gefs(self) -> Dict[str, Any]:
+    def calculate_member_com_paths_gefs_offline(self) -> Dict[str, Any]:
         cycle_vars = self.calculate_cycle_variables()
 
         com_dir_vars = {
@@ -296,7 +293,9 @@ class Stage(Task):
             'COMOUT_WAVE_RESTART_PREV_MEM_list': [],
         })
 
-        # Determine member iteration: enkfgdas loops, deterministic single pass with no memdir
+        # always use GDAS for now, fix once we have staged GCDAS/GCAFS ICs
+        cycle_vars.rRUN = "gdas"
+        # Determine member iteration: enkfgdas loops
         if cycle_vars.RUN == 'enkfgdas':
             mem_iter = range(1, cycle_vars.NMEM_ENS + 1)
         else:
@@ -355,10 +354,10 @@ class Stage(Task):
         str
           String with variables replaced
         """
-        result = template
+        replaced_com = template
         for var, value in var_dict.items():
-            result = result.replace(var, value)
-        return result
+            replaced_com = replaced_com.replace(var, value)
+        return replaced_com
 
     @logit(logger)
     def calculate_stage_vars(self) -> Dict[str, Any]:
@@ -372,7 +371,7 @@ class Stage(Task):
             if gefstype == 'gefs-real-time':
                 result = self.calculate_member_com_paths_gefs_rt()
             elif gefstype == 'gefs-offline':
-                result = self.calculate_member_com_paths_gefs()
+                result = self.calculate_member_com_paths_gefs_offline()
             else:
                 raise ValueError(
                     f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'. Expected: ['gefs-real-time','gefs-offline']"
