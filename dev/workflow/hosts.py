@@ -63,19 +63,19 @@ class Host:
                 for line in f:
                     fields = line.strip().split()
                     mount_point = fields[4]
-                    if mount_point == "/home":
-                        mount_source = fields[9]
-                        if "hera" in mount_source.lower():
-                            self.machine = "HERA"
-                        elif "ursa" in mount_source.lower():
+                    if mount_point.find("/home") >= 0:
+                        mount_source = fields[9].lower()
+                        if mount_source.find("ursa") >= 0:
                             self.machine = "URSA"
+                        elif mount_source.find("hera") >= 0:
+                            self.machine = "HERA"
 
             # TODO: When Hera is no longer used, remove this check and switch to Ursa.
             # Check if this is the GitHub runner
             if self.machine != 'HERA' and self.machine != 'URSA':
                 machine = socket.gethostname().upper()
                 print(f'Detected host {machine}; assuming this is a GitHub runner.')
-                self.machine = 'HERA'
+                self.machine = 'URSA'
 
         elif os.path.exists('/work/noaa'):
             # Orion or Hercules

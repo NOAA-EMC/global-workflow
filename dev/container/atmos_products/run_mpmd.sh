@@ -31,7 +31,7 @@
 set -x
 
 source /usr/lmod/lmod/init/bash
-module use ${HOMEgfs}/sorc/gfs_utils.fd/modulefiles
+module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
 module load gfsutils_container.intel
 module load wgrib2
 
@@ -51,7 +51,7 @@ fi
 export OMP_NUM_THREADS=1
 
 # Determine the number of MPMD processes from incoming ${cmdfile}
-nprocs=$(wc -l < "${cmdfile}")
+#nprocs=$(wc -l < "${cmdfile}")
 
 # Local MPMD file containing instructions to run in CFP
 mpmd_cmdfile="${DATA:-}/mpmd_cmdfile"
@@ -71,7 +71,7 @@ echo "#!/bin/bash" >> "${mpmd_cmdfile}"
 while IFS= read -r line; do
   echo "${line} > mpmd.${nm}.out" >> "${mpmd_cmdfile}"
   echo "Line ${nm}: ${line}"
-  ${line} > mpmd.${nm}.out &
+  ${line} > "mpmd.${nm}.out" &
   ((nm=nm+1))
 done < "${cmdfile}"
 chmod 755 "${mpmd_cmdfile}"

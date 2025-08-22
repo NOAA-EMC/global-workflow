@@ -2,14 +2,14 @@
 
 ###############################################################
 if [[ "$-" == *x* ]]; then
-    set_x=YES
+  set_x=YES
 else
-    set_x=NO
+  set_x=NO
 fi
 
 if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
-    echo "Loading modules quietly..."
-    set +x
+  echo "Loading modules quietly..."
+  set +x
 fi
 
 # Setup runtime environment by loading modules

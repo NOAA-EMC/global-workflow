@@ -1,43 +1,5 @@
 #! /usr/bin/env bash
 
-<<<<<<< HEAD
-# Ursa-specific job resources
-
-case ${step} in
-  "prep")
-    # Run on 7 nodes for memory requirement
-    tasks_per_node=2
-    ;;
-
-  "stage_ic")
-    tasks_per_node=1
-    export PARTITION_BATCH="u1-service"
-    ;;
-
-  "anal")
-    if [[ "${CASE}" == "C384" ]]; then
-      export ntasks=270
-      export threads_per_task=8
-      export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    fi
-    ;;
-
-  "atmanlvar" | "atmensanlobs" | "atmensanlsol")
-    export tasks_per_node=12
-    ;;
-
-  "eupd")
-    case "${CASE}" in
-      "C1152" | "C768")
-        export ntasks=80
-        export threads_per_task=20
-        ;;
-      "C384")
-        export ntasks=80
-        ;;
-      "C192" | "C96" | "C48")
-        export threads_per_task=4
-=======
 # Hera-specific job resources
 
 case ${step} in
@@ -88,7 +50,6 @@ case ${step} in
         export ntasks=480
         export threads_per_task=6
         export tasks_per_node=8
->>>>>>> 3e85a5aeaf2464f8640d9458bd419f736c3b0d65
         ;;
       *)
         ;;
@@ -96,24 +57,6 @@ case ${step} in
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-<<<<<<< HEAD
-  "ecen")
-    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then export threads_per_task=6; fi
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    ;;
-
-  "upp")
-    if (( "${CASE:1}" >= 768 )); then
-       # Run fewer tasks per node for memory
-       tasks_per_node=20
-    fi
-    ;;
-
-  "epos")
-    tasks_per_node=20
-    ;;
-
-=======
   "aeroanlvar")
     export tasks_per_node=48
     ;;
@@ -138,7 +81,6 @@ case ${step} in
         ;;
     esac
     ;;
->>>>>>> 3e85a5aeaf2464f8640d9458bd419f736c3b0d65
   *)
     ;;
 esac
