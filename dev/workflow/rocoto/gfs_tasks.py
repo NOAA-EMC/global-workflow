@@ -2218,42 +2218,71 @@ class GFSTasks(Tasks):
 
     def arch_tars(self):
         """Create individual archive tarball jobs for parallel execution"""
-        
+
+        # Split up the tarball_types based on the run and configuration options
         # Define all possible tarball types
-        tarball_types = ['gfsa', 'gfsb']
-        
-        # Add optional tarballs based on configuration
-        if self._configs['arch_tars'].get('ARCH_GAUSSIAN', 'YES') == 'YES':
-            tarball_types.extend(['gfs_flux', 'gfs_netcdfb', 'gfs_pgrb2b'])
+        if self.run == 'gfs':
+            tarball_types = ['gfsa', 'gfsb']
+
+            # Add optional tarballs based on configuration
+            if self._configs['arch_tars'].get('ARCH_GAUSSIAN', 'YES') == 'YES':
+                tarball_types.extend(['gfs_flux', 'gfs_netcdfb', 'gfs_pgrb2b'])
+                if self.app_config.mode == 'cycled':
+                    tarball_types.append('gfs_netcdfa')
+
+            if self.options['do_wave']:
+                tarball_types.append('gfswave')
+
+            if self.options['do_aero_fcst']:
+                tarball_types.append('chem')
+
+            if self.options['do_ocean']:
+                tarball_types.extend(['ocean_6hravg', 'ocean_grib2', 'gfs_flux_1p00'])
+
+            if self.options['do_ice']:
+                tarball_types.extend(['ice_6hravg', 'ice_grib2'])
+
+            if self.options['do_bufrsnd']:
+                tarball_types.append('gfs_downstream')
+
             if self.app_config.mode == 'cycled':
-                tarball_types.append('gfs_netcdfa')
-        
-        if self.options['do_wave']:
-            tarball_types.append('gfswave')
-        
-        if self.options['do_aero_fcst']:
-            tarball_types.append('chem')
-            
-        if self.options['do_ocean'] and self.run == 'gfs':
-            tarball_types.extend(['ocean_6hravg', 'ocean_grib2', 'gfs_flux_1p00'])
-            
-        if self.options['do_ice'] and self.run == 'gfs':
-            tarball_types.extend(['ice_6hravg', 'ice_grib2'])
-            
-        if self.options['do_bufrsnd']:
-            tarball_types.append('gfs_downstream')
-            
-        # Add restart archives (timing logic handled in template)
-        tarball_types.append('gfs_restarta')
+                # Add restart archives (timing logic handled in template)
+                tarball_types.append('gfs_restarta')
+                tarball_types.append('gfs_restartb')
+
+        elif self.run == 'gdas':
+            tarball_types = ['gdas']
+
+            if self.options['do_ice']:
+                tarball_types.append('gdasice')
+
+            if self.options['do_ocean']:
+                tarball_types.append('gdasocean')
+
+                if self.options['do_jediocnvar'] and self.app_config.mode == 'cycled':
+                    tarball_types.append('gdasocean_analysis')
+
+            if self.options['do_wave']:
+                tarball_types.append('gdaswave')
+                tarball_types.append('gdaswave_restart')
+
+            if self.app_config.mode == 'cycled':
+                # Add restart archives (timing logic handled in template)
+                tarball_types.append('gdas_restarta')
+                tarball_types.append('gdas_restartb')
+                if self.options['do_ice']:
+                    tarball_types.append('gdasice_restart')
+                if self.options['do_ocean']:
+                    tarball_types.append('gdasocean_restart')
 
         # Create a metatask that contains all the individual archive jobs
         dependencies = self._arch_tars_deps()
-        
+
         archenvars = self.envars.copy()
         archenvars.append(rocoto.create_envar(name='TARBALL_TYPE', value='#tartype#'))
 
         resources = self.get_resource('arch_tars')
-        
+
         task_name = f'{self.run}_arch_tar_#tartype#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
@@ -2265,7 +2294,7 @@ class GFSTasks(Tasks):
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
-        
+
         var_dict = {'tartype': ' '.join(tarball_types)}
         metatask_dict = {'task_name': f'{self.run}_arch_tars',
                          'var_dict': var_dict,
