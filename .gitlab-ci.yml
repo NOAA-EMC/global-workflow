@@ -155,24 +155,23 @@ include:
           echo "WARNING: GitHub CLI (gh) not found in after_script, trying to continue anyway"
         fi
 
-        local error_log_file="sorc/logs/error.logs"
+        error_log_file="sorc/logs/error.logs"
         if [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
           if [[ -f "${error_log_file}" ]]; then
-            pr_error_log_links=$(dev/ci/scripts/utils/ci_utils.sh publish_logs_from_file "PR_${PR_NUMBER}" $error_log_file)
+            pr_error_log_links=$(dev/ci/scripts/utils/ci_utils.sh publish_logs_from_file "PR_${PR_NUMBER}" "${error_log_file}")
+          else
+            pr_error_log_links="(no error.logs file found)"
           fi
 
-          local comment_body=$(cat <<EOF
-🚫 **Build _FAILED_ on ${Machine} in GitLab Pipeline ID ${CI_PIPELINE_ID})**
-In the directory:
-\`\`\`
-${GW_RUN_PATH}/sorc
-\`\`\`
-🔗 View Error Logs:
-${pr_error_log_links}
-
-_This failure was detected automatically by global-workflow's CI/CD Pipeline_
-EOF
-)
+          # Build multi-line PR comment body safely
+          printf -v comment_body '%s\n%s\n%s\n%s\n%s\n%s\n\n%s' \
+            "[FAILED] Build failed on ${Machine} in GitLab Pipeline ID ${CI_PIPELINE_ID}" \
+            "In the directory:" \
+            '```' \
+            "${GW_RUN_PATH}/sorc" \
+            '```' \
+            "View Error Logs:" \
+            "${pr_error_log_links}"
 
           echo "Posting failure comment to PR ${PR_NUMBER} on GitHub"
           ${GH} pr comment ${PR_NUMBER} --repo ${GW_REPO_URL} --body "${comment_body}" || true
