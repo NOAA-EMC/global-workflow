@@ -9,7 +9,7 @@ datasets:
 {% include TARBALL_TYPE ~ '.yaml.j2' %}
 {% endfilter %}
 
-# Archive the EXPDIR if requested and TARBALL_TYPE is gfsa
+# If EXPDIR archiving is requested, only pair it with the gfsa archive
 {% if TARBALL_TYPE is defined and TARBALL_TYPE == 'gfsa' and archive_expdir %}
 {% filter indent(width=4) %}
 {% include "expdir.yaml.j2" %}
