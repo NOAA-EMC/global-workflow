@@ -75,7 +75,6 @@ class Archive(Task):
         arcdir_j2yaml = os.path.join(archive_parm, f"{arch_dict.NET}_arcdir.yaml.j2")
 
         # Add the glob.glob function for capturing log filenames
-        # TODO remove this kludge once log filenames are explicit
         arch_dict['glob'] = glob.glob
 
         # Add the os.path.exists function to the dict for yaml parsing
@@ -108,11 +107,23 @@ class Archive(Task):
         if not os.path.isdir(arch_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
-        if arch_dict.RUN in ["gdas", "gfs"]:
+        # Only perform this if we are archiving tarball type gfsa or gdas
+        if arch_dict.TAR_TYPE in ["gfsa", "gdas"]:
 
             # Copy the cyclone track files and rename the experiments
             # TODO This really doesn't belong in archiving and should be moved elsewhere
             Archive._rename_cyclone_expt(arch_dict)
+
+        # If this is a restart tarball, determine if we need to archive it this cycle
+        if "restart" in arch_dict.TAR_TYPE:
+            arch_dict['arch_increments'] = self.arch_warm_start_increments(arch_dict)
+            arch_dict['arch_warm_ics'] = self.arch_warm_restart_ics(arch_dict)
+
+            # Based on TAR_TYPE and parameters, determine if we are archiving warm restarts or warm ICs
+            if not self._arch_restart(arch_dict):
+                logger.info(f"Skipping archiving of {arch_dict.TAR_TYPE} tarballs for cycle {arch_dict.current_cycle} "
+                            f"as no warm restarts or warm ICs are to be archived.")
+                return []
 
         archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
 
@@ -604,6 +615,118 @@ class Archive(Task):
             raise OSError(f"FATAL ERROR Unable to write git output to '{fname}'") from ose
 
         return
+
+    def _arch_warm_start_increments(self, arch_dict: Dict[str, Any]) -> Bool:
+        """
+        This method determines if warm restart increments are to be archived based on the
+        configuration settings ARCH_CYC (integer cycle number to archive on) and
+        ARCH_FCSTICFREQ (integer frequency in days) and the current cycle.
+        """
+
+        # Get the variables need to determine if warm restart increments should be archived
+
+        # Get the current cycle and the ARCH_CYC
+        cycle_HH = int(strftime(arch_dict.current_cycle, "%H"))
+        arch_cyc = arch_dict.ARCH_CYC
+        SDATE = arch_dict.SDATE
+
+        if cycle_HH != arch_cyc:
+            # Not the right cycle hour
+            return False
+
+        days_since_sdate = (arch_dict.current_cycle - SDATE).days
+        if arch_dict.ARCH_FCSTICFREQ > 0 and days_since_sdate % arch_dict.ARCH_FCSTICFREQ == 0:
+            # We are on the right cycle hour and the right day
+            return True
+
+        # Otherwise, do not archive warm restarts
+        return False
+
+    def _arch_warm_restart_ics(self, arch_dict: Dict[str, Any]) -> Bool:
+        """
+        This method determines if warm ICs are to be archived based on the
+        configuration settings ARCH_CYC (integer cycle number to archive on) and
+        ARCH_WARMICFREQ (integer frequency in days) and the current cycle.
+        """
+
+        # Get the variables need to determine if warm restart ICs should be archived
+        cycle_HH = int(strftime(arch_dict.current_cycle, "%H"))
+        SDATE = arch_dict.SDATE
+        RUN = arch_dict.RUN
+        assim_freq = arch_dict.assim_freq
+
+        # The GDAS and EnKFGDAS ICs always lag the forecast increments by assim_freq hours
+        if "gdas" in RUN:
+            arch_cyc = (arch_dict.ARCH_CYC - assim_freq) % 24
+        else:
+            arch_cyc = arch_dict.ARCH_CYC
+
+        if cycle_HH != arch_cyc:
+            # Not the right cycle hour
+            return False
+
+        days_since_sdate = (arch_dict.current_cycle - SDATE).days
+        if arch_dict.ARCH_WARMICFREQ > 0 and days_since_sdate % arch_dict.ARCH_WARMICFREQ == 0:
+            # We are on the right cycle hour and the right day
+            return True
+
+        # Otherwise, do not archive warm restarts
+        return False
+
+    def _arch_restart(self, arch_dict: Dict) -> bool:
+        """
+        This method determines if warm restarts or warm ICs are to be archived based on the
+        tar_type and the booleans arch_increments and arch_warm_ics.
+        """
+
+        # Get the variables needed to determine if warm restarts or warm ICs should be archived
+        tar_type = arch_dict.TAR_TYPE
+        run = arch_dict.RUN
+        arch_increments = arch_dict.get("arch_increments", False)
+        arch_warm_ics = arch_dict.get("arch_warm_ics", False)
+
+        # Restart archiving for gdas RUN
+        if run == "gdas":
+            # Always archive gdas ocean restarts (for GEFS)
+            if tar_type == "gdasocean_restart":
+                return True
+
+            # Archive warm atmosphere and ice increments if requested
+            elif (tar_type == "gdas_restarta" or tar_type == "gdasice_restart") and arch_increments:
+                return True
+
+            # Archive warm atmosphere ICs if requested
+            elif tar_type == "gdas_restartb" and arch_warm_ics:
+                return True
+
+            else:
+                # Nothing to do this cycle
+                return False
+
+        # Restart archiving for gfs RUN
+        elif run == "gfs":
+            # Always archive gfs atmosphere if increments are ICs are required
+            if (tar_type == "gfs_restarta") and arch_increments or arch_warm_ics:
+                return True
+            else:
+                # Nothing to do this cycle
+                return False
+
+        # For enkfgdas RUNs
+        elif run == "enkfgdas":
+            # Archive warm atmosphere increments if requested
+            if tar_type == "enkf_restarta_grp" and arch_increments:
+                return True
+            # Archive warm atmosphere ICs if requested
+            elif tar_type == "enkf_restartb_grp" and arch_warm_ics:
+                return True
+            else:
+                # Nothing to do this cycle
+                return False
+
+        # Otherwise, raise an NotImplementedError for the unsupported RUN
+        else:
+            raise NotImplementedError(f"FATAL ERROR: Unsupported RUN for archiving warm restarts: {run}.")
 
     @logit(logger)
     def _create_datasets_yaml(self, datasets, group=-1):
