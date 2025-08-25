@@ -27,6 +27,11 @@ case ${step} in
     export tasks_per_node=48
     ;;
 
+  "echgres")
+    export PARTITION_BATCH="compute"
+    export is_exclusive="True"
+    ;;
+
   "sfcanl")
     export is_exclusive="False"
     export PARTITION_BATCH="process"
