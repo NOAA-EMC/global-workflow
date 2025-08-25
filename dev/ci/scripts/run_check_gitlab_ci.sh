@@ -155,7 +155,7 @@ while true; do
 
   caseName="${pslot%_*-*}"  # caseName recovered from pslot: (caseName_<hash>-<pipeline ID> (eg. C48_ATM_90f10fc1-3517)
   export ROCOTOSTAT_LOG_FILE="${RUNTESTS}/EXPDIR/${pslot}/logs/${caseName}_rocotostat.log"
-  source <("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -declare --thread-logging) || true
+  source <("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --declare --thread-logging) || true
   error_stat=$?
 
   echo -e "\tCompleted Cycles: ${CYCLES_COMPLETED}/${CYCLES_TOTAL}
