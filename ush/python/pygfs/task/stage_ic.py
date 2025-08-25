@@ -58,6 +58,36 @@ class Stage(Task):
             FileHandler(stage_set[key]).sync()
 
     @logit(logger)
+    def execute_stage_all_members(self) -> None:
+        """
+        Wrapper to execute staging for each ensemble member (or control)
+        by invoking the existing execute_stage method once per member.
+
+        This preserves the original execute_stage implementation (which
+        currently loops itself) while providing a cleaner external loop.
+        Once execute_stage is refactored to handle a single member only,
+        this wrapper can remain unchanged.
+
+        Parameters
+        ----------
+        stage_dict : Dict[str, Any]
+            Base configuration dictionary (will not be mutated for each member run)
+
+        Returns
+        -------
+        Dict[str, Any]
+            Aggregated results keyed by member index plus 'aggregate'
+        """
+        # Derive cycle variables to obtain member bounds
+        cycle_vars = self.calculate_stage_vars()
+
+        for memdir in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
+            cycle_vars['memdir'] = memdir
+            # Execute staging for this member
+            self.execute_stage(cycle_vars)
+
+
+    @logit(logger)
     def calculate_cycle_variables(self) -> Dict[str, Any]:
         """Calculate cycle variables from master YAML template logic
 
@@ -204,50 +234,18 @@ class Stage(Task):
     def calculate_member_com_paths_gefs_offline(self) -> Dict[str, Any]:
         cycle_vars = self.calculate_cycle_variables()
 
-        com_dir_vars = {
-            'COMOUT_ATMOS_INPUT_MEM_list': [],
-            'COMOUT_ATMOS_RESTART_PREV_MEM_list': [],
-            'COMOUT_ATMOS_RESTART_MEM_list': [],
-            'COMOUT_ATMOS_ANALYSIS_MEM_list': [],
-            'COMOUT_ATMOS_HISTORY_MEM_list': [],
-            'COMOUT_ICE_ANALYSIS_MEM_list': [],
-            'COMOUT_ICE_RESTART_PREV_MEM_list': [],
-            'COMOUT_OCEAN_RESTART_PREV_MEM_list': [],
-            'COMOUT_OCEAN_ANALYSIS_MEM_list': [],
-            'COMOUT_MED_RESTART_PREV_MEM_list': [],
-            'COMOUT_WAVE_RESTART_PREV_MEM_list': [],
-        }
-        # Loop over ensemble members
-        for mem in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
-            memdir = f"mem{mem:03d}"
-            current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
-            previous_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir}
+        cycle_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(cycle_vars['COM_ATMOS_INPUT_TMPL'], current_cycle)
+        cycle_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(cycle_vars['COM_ATMOS_RESTART_TMPL'], previous_cycle)
+        cycle_vars['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(cycle_vars['COM_ATMOS_RESTART_TMPL'], current_cycle)
+        cycle_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(cycle_vars['COM_ATMOS_ANALYSIS_TMPL'], current_cycle)
+        cycle_vars['COMOUT_ATMOS_HISTORY_MEM'] = self._replace_template_vars(cycle_vars['COM_ATMOS_HISTORY_TMPL'], previous_cycle)
+        cycle_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(cycle_vars['COM_ICE_ANALYSIS_TMPL'], current_cycle)
+        cycle_vars['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(cycle_vars['COM_ICE_RESTART_TMPL'], previous_cycle)
+        cycle_vars['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(cycle_vars['COM_OCEAN_RESTART_TMPL'], previous_cycle)
+        cycle_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(cycle_vars['COM_OCEAN_ANALYSIS_TMPL'], current_cycle)
+        cycle_vars['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(cycle_vars['COM_MED_RESTART_TMPL'], previous_cycle)
+        cycle_vars['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(cycle_vars['COM_WAVE_RESTART_TMPL'], previous_cycle)
 
-            comout_atmos_input = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
-            comout_atmos_restart_prev = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
-            comout_atmos_restart = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle)
-            comout_atmos_analysis = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
-            comout_atmos_history = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_HISTORY_TMPL', ''), previous_cycle)
-            comout_ice_analysis = self._replace_template_vars(getattr(cycle_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
-            comout_ice_restart_prev = self._replace_template_vars(getattr(cycle_vars, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
-            comout_ocean_restart_prev = self._replace_template_vars(getattr(cycle_vars, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
-            comout_ocean_analysis = self._replace_template_vars(getattr(cycle_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
-            comout_med_restart_prev = self._replace_template_vars(getattr(cycle_vars, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
-            comout_wave_restart_prev = self._replace_template_vars(getattr(cycle_vars, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
-
-            com_dir_vars['COMOUT_ATMOS_INPUT_MEM_list'].append(comout_atmos_input)
-            com_dir_vars['COMOUT_ATMOS_RESTART_PREV_MEM_list'].append(comout_atmos_restart_prev)
-            com_dir_vars['COMOUT_ATMOS_RESTART_MEM_list'].append(comout_atmos_restart)
-            com_dir_vars['COMOUT_ATMOS_ANALYSIS_MEM_list'].append(comout_atmos_analysis)
-            com_dir_vars['COMOUT_ATMOS_HISTORY_MEM_list'].append(comout_atmos_history)
-            com_dir_vars['COMOUT_ICE_ANALYSIS_MEM_list'].append(comout_ice_analysis)
-            com_dir_vars['COMOUT_ICE_RESTART_PREV_MEM_list'].append(comout_ice_restart_prev)
-            com_dir_vars['COMOUT_OCEAN_RESTART_PREV_MEM_list'].append(comout_ocean_restart_prev)
-            com_dir_vars['COMOUT_OCEAN_ANALYSIS_MEM_list'].append(comout_ocean_analysis)
-            com_dir_vars['COMOUT_MED_RESTART_PREV_MEM_list'].append(comout_med_restart_prev)
-            com_dir_vars['COMOUT_WAVE_RESTART_PREV_MEM_list'].append(comout_wave_restart_prev)
-
-        cycle_vars.update(com_dir_vars)
         return cycle_vars
 
     @logit(logger)

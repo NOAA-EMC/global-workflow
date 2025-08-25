@@ -16,13 +16,12 @@ def main():
 
     # Instantiate the Stage object
     stage = Stage(config)
-    stage_variables = stage.calculate_stage_vars()
 
-    if "OCNRES" in stage_variables:
-        stage_variables["OCNRES"] = f"{stage_variables['OCNRES']:03d}"
+    if "OCNRES" in stage.task_config:
+        stage.task_config["OCNRES"] = f"{stage.task_config['OCNRES']:03d}"
 
     # Stage ICs
-    stage.execute_stage(stage_variables)
+    stage.execute_stage_all_members(stage.task_config)
 
 
 if __name__ == '__main__':
