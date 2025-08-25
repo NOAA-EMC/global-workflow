@@ -18,7 +18,7 @@ def main():
     stage = Stage(config)
 
     # Stage ICs
-    stage.execute_stage_all_members()
+    stage.calculate_stage_vars()
 
 
 if __name__ == '__main__':
