@@ -203,7 +203,7 @@ class Stage(Task):
     @logit(logger)
     def calculate_member_com_paths_gefs_offline(self, memdir) -> Dict[str, Any]:
         cycle_vars = self.calculate_cycle_variables()
-        cycle_vars['memdir'] = memdir
+        memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
         current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
         previous_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir}
 
