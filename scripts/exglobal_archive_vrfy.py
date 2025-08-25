@@ -28,7 +28,7 @@ def main():
     keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMgfs', 'REPLAY_ICS',
             'ARCDIR', 'MODE', 'DO_JEDIATMENS', 'DO_FIT2OBS', 'DO_JEDIATMVAR', 'FHMIN_GFS',
             'DO_JEDISNOWDA', 'DO_AERO_ANL', 'DO_PREP_OBS_AERO', 'NET', 'MODE', 'FHOUT_GFS',
-            'FHMAX_HF_GFS', 'FHOUT_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT', 'FHMAX_GFS']
+            'FHMAX_HF_GFS', 'FHOUT_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT', 'FHMAX_GFS', 'DO_GSISOILDA', 'DO_LAND_IAU']
 
     archive_dict = AttrDict()
     for key in keys:
