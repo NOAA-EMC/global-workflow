@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# Hera-specific job resources
+# Ursa-specific job resources
 
 case ${step} in
   "fcst" | "efcs")
@@ -11,6 +11,11 @@ case ${step} in
       "C1152")
         export tasks_per_node=144
         ;;
+      "C96")
+        if [[ "${RUN}" = "gcdas" ]]; then
+          export walltime="01:00:00"
+        fi	    
+        ;;  
       *)
         # Nothing to do for other resolutions
         true
