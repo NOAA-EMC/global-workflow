@@ -158,8 +158,8 @@ while true; do
   source <("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --declare --thread-logging) || true
   error_stat=$?
 
-  echo -e "\tCompleted Cycles: ${CYCLES_COMPLETED}/${CYCLES_TOTAL}
-  \tCompleted Jobs  : ${JOBS_COMPLETED}/${JOBS_TOTAL}
+  echo -e "\tCompleted Cycles: ${CYCLES_DONE}/${CYCLES_TOTAL}
+  \tCompleted Jobs  : ${JOBS_DONE}/${JOBS_TOTAL}
   \tState           : ${ROCOTO_STATE}"
 
   if [[ ${error_stat} -ne 0 ]]; then
