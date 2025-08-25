@@ -80,12 +80,13 @@ class Stage(Task):
         """
         # Derive cycle variables to obtain member bounds
         cycle_vars = self.calculate_stage_vars()
+        if "OCNRES" in cycle_vars:
+            cycle_vars["OCNRES"] = f"{cycle_vars['OCNRES']:03d}"
 
         for memdir in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
             cycle_vars['memdir'] = memdir
             # Execute staging for this member
             self.execute_stage(cycle_vars)
-
 
     @logit(logger)
     def calculate_cycle_variables(self) -> Dict[str, Any]:

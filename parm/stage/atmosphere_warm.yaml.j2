@@ -22,4 +22,3 @@ atmosphere_warm:
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.sfcanl_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_MEM }}"]
         {% endif %} # path_exists
         {% endfor %} # ntile
-

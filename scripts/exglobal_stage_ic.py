@@ -17,11 +17,8 @@ def main():
     # Instantiate the Stage object
     stage = Stage(config)
 
-    if "OCNRES" in stage.task_config:
-        stage.task_config["OCNRES"] = f"{stage.task_config['OCNRES']:03d}"
-
     # Stage ICs
-    stage.execute_stage_all_members(stage.task_config)
+    stage.execute_stage_all_members()
 
 
 if __name__ == '__main__':
