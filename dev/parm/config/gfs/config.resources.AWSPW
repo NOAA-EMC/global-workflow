@@ -48,6 +48,10 @@ case ${step} in
     export tasks_per_node=$(( ($ntasks + $NNODES - 1) / $NNODES ))
     ;;
 
+  "ediag")
+    export PARTITION_BATCH="compute"
+    ;;
+
   "upp")
     export PARTITION_BATCH="compute"
     export tasks_per_node=48
