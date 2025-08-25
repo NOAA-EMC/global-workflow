@@ -48,6 +48,14 @@ case ${step} in
     export tasks_per_node=$(( ($ntasks + $NNODES - 1) / $NNODES ))
     ;;
 
+  "eobs")
+    export PARTITION_BATCH="process"
+    # NOTE The number of tasks and cores used must be the same for eobs
+    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+    export threads_per_task=1
+    export tasks_per_node=20
+    ;;
+
   "ediag")
     export PARTITION_BATCH="compute"
     ;;
