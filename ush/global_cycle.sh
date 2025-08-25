@@ -235,6 +235,7 @@ zsea1=${zsea1:-0}
 zsea2=${zsea2:-0}
 MAX_TASKS_CY=${MAX_TASKS_CY:-99999}
 FRAC_GRID=${FRAC_GRID:-.false.}
+COUPLED=${COUPLED:-.false.}
 
 FNGLAC=${FNGLAC:-${FIXgfs}/am/global_glacier.2x2.grb}
 FNMXIC=${FNMXIC:-${FIXgfs}/am/global_maxice.2x2.grb}
@@ -325,7 +326,7 @@ cat << EOF > fort.36
   deltsfc=${DELTSFC},ialb=${IALB},use_ufo=${use_ufo},donst="${DONST}",
   do_sfccycle=${DO_SFCCYCLE},do_landincr=${DO_LANDINCR},isot=${ISOT},ivegsrc=${IVEGSRC},
   zsea1_mm=${zsea1},zsea2_mm=${zsea2},MAX_TASKS=${MAX_TASKS_CY},
-  frac_grid=${FRAC_GRID}
+  frac_grid=${FRAC_GRID},coupled=${COUPLED}
  /
 EOF
 

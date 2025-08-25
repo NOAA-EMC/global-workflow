@@ -8,6 +8,11 @@ echo "BEGIN: config.esfc"
 # Get task specific resources
 source "${EXPDIR}/config.resources" esfc
 
+# Run global_cycle in coupled mode
+if [[ "${DO_OCN}" == "YES" && "${DO_ICE}" == "YES" ]]; then
+  export COUPLED=".true."
+fi
+
 # With IAU only need surface analysis at start of IAU window.
 # Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at 
 # center of analysis window.  
