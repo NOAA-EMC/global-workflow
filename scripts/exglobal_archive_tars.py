@@ -41,7 +41,7 @@ def main():
             'IAUFHRS', 'DO_FIT2OBS', 'NET', 'FHOUT_HF_GFS', 'FHMAX_HF_GFS', 'REPLAY_ICS',
             'OFFSET_START_HOUR', 'ARCH_EXPDIR', 'EXPDIR', 'ARCH_EXPDIR_FREQ', 'ARCH_HASHES',
             'ARCH_DIFFS', 'SDATE', 'EDATE', 'HOMEgfs', 'DO_GEMPAK', 'DATASETS_YAML',
-            'WAVE_OUT_GRIDS', 'DO_GSISOILDA']
+            'WAVE_OUT_GRIDS', 'DO_GSISOILDA', 'DO_LAND_IAU']
 
     archive_dict = AttrDict()
     for key in keys:
