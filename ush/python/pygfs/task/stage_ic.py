@@ -58,37 +58,6 @@ class Stage(Task):
             FileHandler(stage_set[key]).sync()
 
     @logit(logger)
-    def execute_stage_all_members(self) -> None:
-        """
-        Wrapper to execute staging for each ensemble member (or control)
-        by invoking the existing execute_stage method once per member.
-
-        This preserves the original execute_stage implementation (which
-        currently loops itself) while providing a cleaner external loop.
-        Once execute_stage is refactored to handle a single member only,
-        this wrapper can remain unchanged.
-
-        Parameters
-        ----------
-        stage_dict : Dict[str, Any]
-            Base configuration dictionary (will not be mutated for each member run)
-
-        Returns
-        -------
-        Dict[str, Any]
-            Aggregated results keyed by member index plus 'aggregate'
-        """
-        # Derive cycle variables to obtain member bounds
-        cycle_vars = self.calculate_stage_vars()
-        if "OCNRES" in cycle_vars:
-            cycle_vars["OCNRES"] = f"{cycle_vars['OCNRES']:03d}"
-
-        for memdir in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
-            cycle_vars['memdir'] = memdir
-            # Execute staging for this member
-            self.execute_stage(cycle_vars)
-
-    @logit(logger)
     def calculate_cycle_variables(self) -> Dict[str, Any]:
         """Calculate cycle variables from master YAML template logic
 
@@ -232,8 +201,11 @@ class Stage(Task):
         return cycle_vars
 
     @logit(logger)
-    def calculate_member_com_paths_gefs_offline(self) -> Dict[str, Any]:
+    def calculate_member_com_paths_gefs_offline(self, memdir) -> Dict[str, Any]:
         cycle_vars = self.calculate_cycle_variables()
+        cycle_vars['memdir'] = memdir
+        current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
+        previous_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir}
 
         cycle_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(cycle_vars['COM_ATMOS_INPUT_TMPL'], current_cycle)
         cycle_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(cycle_vars['COM_ATMOS_RESTART_TMPL'], previous_cycle)
@@ -362,6 +334,8 @@ class Stage(Task):
     def calculate_stage_vars(self) -> Dict[str, Any]:
         """Dispatch to per-master calculator to build COM paths."""
         cycle_vars = self.calculate_cycle_variables()
+        if "OCNRES" in cycle_vars:
+            cycle_vars["OCNRES"] = f"{cycle_vars['OCNRES']:03d}"
         run = getattr(cycle_vars, 'RUN', None)
         result = None
 
@@ -370,7 +344,10 @@ class Stage(Task):
             if gefstype == 'gefs-real-time':
                 result = self.calculate_member_com_paths_gefs_rt()
             elif gefstype == 'gefs-offline':
-                result = self.calculate_member_com_paths_gefs_offline()
+                for memdir in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
+                    cycle_vars.update(self.calculate_member_com_paths_gefs_offline(memdir))
+                    # Execute staging for this member
+                    self.execute_stage(cycle_vars)
             else:
                 raise ValueError(
                     f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'. Expected: ['gefs-real-time','gefs-offline']"
