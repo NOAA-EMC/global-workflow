@@ -2215,7 +2215,6 @@ class GFSTasks(Tasks):
         return rocoto.create_dependency(dep_condition='and', dep=deps)
 
 
-
     def arch_tars(self):
         """Create individual archive tarball jobs for parallel execution"""
 

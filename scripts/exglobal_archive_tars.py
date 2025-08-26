@@ -54,7 +54,7 @@ def main():
         if key.startswith(("COM_", "COMIN_", "COMOUT_")):
             archive_dict[key] = archive.task_config.get(key)
 
-    pwd=os.getcwd()
+    pwd = os.getcwd()
     with chdir(config.ROTDIR):
         logger.debug(f"Changed working directory to {config.ROTDIR}")
 
@@ -71,6 +71,7 @@ def main():
         archive.clean()
 
     logger.info(f"Returned to working directory {pwd}")
+
 
 if __name__ == '__main__':
     main()
