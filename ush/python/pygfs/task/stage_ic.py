@@ -129,12 +129,6 @@ class Stage(Task):
             cycle_vars.first_mem = -1
             cycle_vars.last_mem = -1
 
-        com_templates = AttrDict()
-        for k, v in getattr(self, 'task_config', {}).items():
-            if isinstance(k, str) and k.startswith('COM_') and k.endswith('_TMPL'):
-                com_templates[k] = v
-        cycle_vars.update(com_templates)
-
         # Define cycle directories to update com paths
         cycle_vars.current_cycle_dict = {
             "${ROTDIR}": cycle_vars.ROTDIR,
