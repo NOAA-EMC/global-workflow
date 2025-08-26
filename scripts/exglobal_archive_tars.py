@@ -54,42 +54,23 @@ def main():
         if key.startswith(("COM_", "COMIN_", "COMOUT_")):
             archive_dict[key] = archive.task_config.get(key)
 
+    pwd=os.getcwd()
     with chdir(config.ROTDIR):
+        logger.debug(f"Changed working directory to {config.ROTDIR}")
 
         # Determine which archives to create
         atardir_sets = archive.configure_tars(archive_dict)
 
-        # Filter to specific tarball type if requested
-        tarball_type = archive_dict.get('TARBALL_TYPE')
-        if tarball_type:
-            # Filter the datasets to only include the requested tarball type
-            filtered_sets = []
-            for atardir_set in atardir_sets:
-                # Match dataset name to tarball type
-                dataset_name = atardir_set.get('name', '').upper()
-                if (
-                    dataset_name == tarball_type.upper() or
-                    atardir_set.get('target', '').endswith(f'{tarball_type}.tar')
-                ):
-
-                    filtered_sets.append(atardir_set)
-                    logger.info(f"Creating tarball for type: {tarball_type}")
-                    break
-
-            if not filtered_sets:
-                logger.warning(f"No dataset found for tarball type: {tarball_type}")
-                logger.info(f"Available datasets: {[s.get('name', 'unknown') for s in atardir_sets]}")
-                return
-
-            atardir_sets = filtered_sets
-
         # Create the backup tarballs and store in ATARDIR
         for atardir_set in atardir_sets:
+            logger.debug(f"Processing archive set: {atardir_set['name']}")
             archive.execute_backup_dataset(atardir_set)
 
         # Clean up any temporary files
+        logger.debug("Cleaning up temporary files and directories")
         archive.clean()
 
+    logger.info(f"Returned to working directory {pwd}")
 
 if __name__ == '__main__':
     main()
