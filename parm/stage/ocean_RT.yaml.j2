@@ -2,7 +2,7 @@ ocean_RT:
     mkdir:
         - "{{ COMOUT_OCEAN_RESTART_PREV_MEM }}"
         - "{{ COMOUT_OCEAN_ANALYSIS_MEM }}"
-    copy:
+    link_req:
     # select restart members files (80) specific to the cycle
         {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
         {% set restart_mem_path = ICSDIR ~ '/' ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(gfs_member)  ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.' %}
