@@ -101,9 +101,10 @@ class Stage(Task):
         if cycle_vars.previous_cycle:
             cycle_vars.previous_cycle_YMD = cycle_vars.previous_cycle.strftime("%Y%m%d")
             cycle_vars.previous_cycle_HH = cycle_vars.previous_cycle.strftime("%H")
+            cycle_vars.m_index = cycle_vars.current_cycle_HH // 6
             cycle_vars.p_prefix = cycle_vars.previous_cycle.strftime("%Y%m%d.%H0000")
 
-        # Set first/last mem for loop - application-specific logic
+        # application-specific logic and variables
         cycle_vars.rRUN = cycle_vars.RUN
         if cycle_vars.RUN in ['gfs', 'gcafs', 'enkfgdas']:
             cycle_vars.rRUN = "gdas"
@@ -115,6 +116,9 @@ class Stage(Task):
                 cycle_vars.first_mem = 0
                 cycle_vars.last_mem = cycle_vars.NMEM_ENS
             elif cycle_vars.GEFSTYPE == "gefs-real-time":
+                # select the relevant member for each GEFS member from GFS outputs
+                cycle_vars.cyc_ranges = [list(range(1, 31)), list(range(21, 51)), \
+                                         list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
                 cycle_vars.ENSMEM = self.task_config.get('ENSMEM', 0)
             else:
                 # Error handling for unknown GEFSTYPE
@@ -191,6 +195,8 @@ class Stage(Task):
     @logit(logger)
     def calculate_member_com_paths_gefs_rt(self, memdir) -> Dict[str, Any]:
         cycle_vars = self.calculate_cycle_variables()
+        if memdir != 0:
+            cycle_vars.gfs_member = cycle_vars.cyc_ranges[cycle_vars.m_index][(memdir - 1)]
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
         current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
         previous_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir}
@@ -279,4 +285,3 @@ class Stage(Task):
                 self.execute_stage(cycle_vars)
             else:
                 raise ValueError(f"Unknown RUN type: {run}")
-
