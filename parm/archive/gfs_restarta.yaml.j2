@@ -1,7 +1,3 @@
-# Only archive restart data if timing conditions are met
-{% if ARCH_CYC == cycle_HH | int %}
-    # Save the forecast-only cycle ICs every ARCH_WARMICFREQ or ARCH_FCSTICFREQ days
-    {% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 or (current_cycle - SDATE).days % ARCH_FCSTICFREQ == 0 %}
 gfs_restarta:
     {% set head = "gfs.t" + cycle_HH + "z." %}
     name: "GFS_RESTARTA"
@@ -25,5 +21,3 @@ gfs_restarta:
         - "{{ COMIN_ATMOS_INPUT | relpath(ROTDIR) }}/sfc_data.tile{{ i_tile }}.nc"
         {% endfor %}
         {% endif %}
-    {% endif %}
-{% endif %}
