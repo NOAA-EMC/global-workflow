@@ -3,7 +3,7 @@ atmosphere_cold_RT:
         - "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"
         - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
         - "{{ COMOUT_ATMOS_HISTORY_MEM }}"
-    copy:
+    link_req:
         {% set DIAU_cold_previous_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/analysis/atmos/gdas.t' ~ previous_cycle_HH ~ 'z.atma003.ensres.nc' %}
         {% set DIAU_cold_current_file = ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atminc.nc' %}
         {% set DIAU_current_file= ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atmanl.nc' %}

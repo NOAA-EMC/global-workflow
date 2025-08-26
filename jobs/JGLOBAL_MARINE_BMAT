@@ -28,7 +28,7 @@ ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
 export NMEM_ENS_MAX=${NMEM_ENS}
 if [[ "${RUN}" == "gfs"  && "${DOHYBVAR_OCN}" == "YES" ]]; then
    NMEM_ENS=${NMEM_ENS_GFS}
-   export mem_offset=$((ec_offset * cyc/6))
+   export mem_offset=$((ec_offset * cyc/assim_freq))
 else
    export mem_offset=0
 fi
