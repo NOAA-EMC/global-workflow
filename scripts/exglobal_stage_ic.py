@@ -12,10 +12,8 @@ logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True
 @logit(logger)
 def main():
 
-    config = cast_strdict_as_dtypedict(os.environ)
-
     # Instantiate the Stage object
-    stage = Stage(config)
+    stage = Stage(cast_strdict_as_dtypedict(os.environ))
 
     # Stage ICs
     stage.calculate_stage_vars()
