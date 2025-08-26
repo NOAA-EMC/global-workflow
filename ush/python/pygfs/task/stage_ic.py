@@ -106,19 +106,19 @@ class Stage(Task):
 
         # application-specific logic and variables
         cycle_vars.rRUN = cycle_vars.RUN
+        cycle_vars.last_mem = cycle_vars.NMEM_ENS
         if cycle_vars.RUN in ['gfs', 'gcafs', 'enkfgdas']:
             cycle_vars.rRUN = "gdas"
             cycle_vars.first_mem = 1
-            cycle_vars.last_mem = cycle_vars.NMEM_ENS
         elif cycle_vars.RUN in ['gefs']:  # GEFS Ensemble RUN (both regular and RT)
             cycle_vars.GEFSTYPE = self.task_config.get('GEFSTYPE', 'gefs-offline')
             if cycle_vars.GEFSTYPE == "gefs-offline":
                 cycle_vars.first_mem = 0
-                cycle_vars.last_mem = cycle_vars.NMEM_ENS
             elif cycle_vars.GEFSTYPE == "gefs-real-time":
                 # select the relevant member for each GEFS member from GFS outputs
                 cycle_vars.cyc_ranges = [list(range(1, 31)), list(range(21, 51)),
                                          list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
+                cycle_vars.first_mem = 0
                 cycle_vars.ENSMEM = self.task_config.get('ENSMEM', 0)
             else:
                 # Error handling for unknown GEFSTYPE
