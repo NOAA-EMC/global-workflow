@@ -107,21 +107,27 @@ class Archive(Task):
         if not os.path.isdir(arch_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
 
+        # Test if TARBALL_TYPE is defined.  If not, set to None.
+        # This variable is only used for gdas and gfs RUNs.
+        # TODO: Expand this to other RUNs.
+        if 'TARBALL_TYPE' not in arch_dict:
+            arch_dict['TARBALL_TYPE'] = None
+
         # Only perform this if we are archiving tarball type gfsa or gdas
-        if arch_dict.TAR_TYPE in ["gfsa", "gdas"]:
+        if arch_dict.TARBALL_TYPE and arch_dict.TARBALL_TYPE in ["gfsa", "gdas"]:
 
             # Copy the cyclone track files and rename the experiments
-            # TODO This really doesn't belong in archiving and should be moved elsewhere
+            # TODO: This really doesn't belong in archiving and should be moved elsewhere
             Archive._rename_cyclone_expt(arch_dict)
 
         # If this is a restart tarball, determine if we need to archive it this cycle
-        if "restart" in arch_dict.TAR_TYPE:
-            arch_dict['arch_increments'] = self.arch_warm_start_increments(arch_dict)
-            arch_dict['arch_warm_ics'] = self.arch_warm_restart_ics(arch_dict)
+        if arch_dict.TARBALL_TYPE is not None and "restart" in arch_dict.TARBALL_TYPE:
+            arch_dict['arch_increments'] = self._arch_warm_start_increments(arch_dict)
+            arch_dict['arch_warm_ics'] = self._arch_warm_restart_ics(arch_dict)
 
-            # Based on TAR_TYPE and parameters, determine if we are archiving warm restarts or warm ICs
+            # Based on TARBALL_TYPE and parameters, determine if we are archiving warm restarts or warm ICs
             if not self._arch_restart(arch_dict):
-                logger.info(f"Skipping archiving of {arch_dict.TAR_TYPE} tarballs for cycle {arch_dict.current_cycle} "
+                logger.info(f"Skipping archiving of {arch_dict.TARBALL_TYPE} tarballs for cycle {arch_dict.current_cycle} "
                             f"as no warm restarts or warm ICs are to be archived.")
                 return []
 
@@ -157,21 +163,31 @@ class Archive(Task):
         else:
             raise ValueError("FATAL ERROR: Invalid achiving method selected: {arch_dict.ARCHCOM_TO}")
 
-        # Determine if we are archiving the EXPDIR this cycle (always skip for ensembles)
-        if "enkf" not in arch_dict.RUN and arch_dict.ARCH_EXPDIR:
-            self.archive_expdir = self._archive_expdir(arch_dict)
-            arch_dict.archive_expdir = self.archive_expdir
-
-            if self.archive_expdir:
-                # If requested, get workflow hashes/statuses/diffs for EXPDIR archiving
-                if arch_dict.ARCH_HASHES or arch_dict.ARCH_DIFFS:
-                    self._pop_git_info(arch_dict)
-
         master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
+
+        # Determine if expdir archiving is requested this cycle (skip gfs/gdas ensembles)
+        if "enkf" in arch_dict.RUN:
+            arch_dict['archive_expdir'] = False
+        else:
+            arch_dict['archive_expdir'] = self._archive_expdir(arch_dict)
 
         parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml),
                                    arch_dict,
                                    allow_missing=False)
+
+        # Determine if we actually archiving the EXPDIR this cycle
+        # This will notify the cleanup function to remove the temporary copy
+        if arch_dict.archive_expdir:
+            # Check that "expdir" is in the set of archives to create
+            for dataset in parsed_sets.datasets.values():
+                if dataset.name == "EXPDIR":
+                    # If found, check if we should archive this cycle
+                    self.archive_expdir = True
+                    break
+
+            # If requested, get workflow hashes/statuses/diffs for EXPDIR archiving
+            if self.archive_expdir and (arch_dict.ARCH_HASHES or arch_dict.ARCH_DIFFS):
+                self._pop_git_info(arch_dict)
 
         atardir_sets = []
 
@@ -532,12 +548,15 @@ class Archive(Task):
         first_full = sdate
         if mode in ["cycled"]:
             first_full += assim_freq
+
         if current_cycle in [first_full, edate]:
             # Always save the first and last
             return True
+
         elif freq != 0 and (current_cycle - first_full).total_seconds() % freq == 0:
             # Otherwise, the frequency is in hours
             return True
+
         else:
             return False
 
@@ -616,7 +635,7 @@ class Archive(Task):
 
         return
 
-    def _arch_warm_start_increments(self, arch_dict: Dict[str, Any]) -> Bool:
+    def _arch_warm_start_increments(self, arch_dict: Dict[str, Any]) -> bool:
         """
         This method determines if warm restart increments are to be archived based on the
         configuration settings ARCH_CYC (integer cycle number to archive on) and
@@ -642,7 +661,7 @@ class Archive(Task):
         # Otherwise, do not archive warm restarts
         return False
 
-    def _arch_warm_restart_ics(self, arch_dict: Dict[str, Any]) -> Bool:
+    def _arch_warm_restart_ics(self, arch_dict: Dict[str, Any]) -> bool:
         """
         This method determines if warm ICs are to be archived based on the
         configuration settings ARCH_CYC (integer cycle number to archive on) and
@@ -680,7 +699,7 @@ class Archive(Task):
         """
 
         # Get the variables needed to determine if warm restarts or warm ICs should be archived
-        tar_type = arch_dict.TAR_TYPE
+        tar_type = arch_dict.TARBALL_TYPE
         run = arch_dict.RUN
         arch_increments = arch_dict.get("arch_increments", False)
         arch_warm_ics = arch_dict.get("arch_warm_ics", False)
@@ -776,6 +795,7 @@ class Archive(Task):
         if self.archive_expdir:
             temp_expdir_path = os.path.join(self.task_config.ROTDIR, "expdir." +
                                             to_YMDH(self.task_config.current_cycle))
+            logger.debug(f"Removing temporary EXPDIR copy at {temp_expdir_path}")
             rmdir(temp_expdir_path)
 
         return
