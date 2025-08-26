@@ -10,6 +10,7 @@ enkf_restarta_grp:
         {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
         {% set COMIN_OCEAN_RESTART_MEM = COMIN_OCEAN_RESTART_MEM_list[imem] %}
         {% set COMIN_ICE_RESTART_MEM = COMIN_ICE_RESTART_MEM_list[imem] %}
+        {% set COMIN_MED_RESTART_MEM = COMIN_MED_RESTART_MEM_list[imem] %}
 
         # Store bias data
         {% if not lobsdiag_forenkf %}
@@ -52,8 +53,8 @@ enkf_restarta_grp:
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
         {% endif %}
         {% endfor %}  # iaufhr in IAUFHRS
-        
-        # soil DA increments  
+
+        # soil DA increments
         {% if DO_GSISOILDA %}
         {% for iaufhr in IAUFHRS %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}sfci{{ '%03d' % iaufhr }}.nc"
@@ -79,6 +80,7 @@ enkf_restarta_grp:
         {% set rst_time = current_cycle | add_to_datetime(rst_delta) %}
         - "{{ COMIN_OCEAN_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.MOM.r*.nc"
         - "{{ COMIN_ICE_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.cice_model.res.nc"
+        - "{{ COMIN_MED_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.ufs.cpld.cpl.r.nc"
         {% endif %} # DOHYBVAR_OCN
 
         {% endfor %}  # first_group_mem to last_group_mem
