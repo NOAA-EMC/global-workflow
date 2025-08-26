@@ -11,7 +11,7 @@ arguments:
   nens: 30
   interval: 24
   start: cold
-  gefstype: near-real-time
+  gefstype: gefs-real-time
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2024112500

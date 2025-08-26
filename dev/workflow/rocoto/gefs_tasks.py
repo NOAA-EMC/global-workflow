@@ -85,7 +85,7 @@ class GEFSTasks(Tasks):
         if self.app_config.gefstype in ['gefs-offline']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
-        elif self.app_config.gefstype in ['near-real-time']:
+        elif self.app_config.gefstype in ['gefs-real-time']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_gen_control_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
