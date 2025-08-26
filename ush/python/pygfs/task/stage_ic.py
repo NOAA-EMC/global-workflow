@@ -270,7 +270,7 @@ class Stage(Task):
             if run == 'gefs':
                 gefstype = getattr(cycle_vars, 'GEFSTYPE', None)
                 if gefstype == 'gefs-real-time':
-                    self.calculate_member_com_paths_gefs_rt(memdir)
+                    cycle_vars.update(self.calculate_member_com_paths_gefs_rt(memdir))
                     self.execute_stage(cycle_vars)
                 elif gefstype == 'gefs-offline':
                     cycle_vars.update(self.calculate_member_com_paths_gefs_offline(memdir))
@@ -278,10 +278,10 @@ class Stage(Task):
                 else:
                     raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
             elif run in ('gcafs', 'enkfgdas'):
-                self.calculate_member_com_paths_gcafs(memdir)
+                cycle_vars.update(self.calculate_member_com_paths_gcafs(memdir))
                 self.execute_stage(cycle_vars)
             elif run == 'gfs':
-                self.calculate_member_com_paths_gfs(memdir)
+                cycle_vars.update(self.calculate_member_com_paths_gfs(memdir))
                 self.execute_stage(cycle_vars)
             else:
                 raise ValueError(f"Unknown RUN type: {run}")
