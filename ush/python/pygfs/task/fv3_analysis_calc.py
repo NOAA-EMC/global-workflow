@@ -70,7 +70,7 @@ class FV3AnalysisCalc(Task):
             expected_keys.append('aero_addincrement')
         if self.task_config.DO_JEDISNOWDA:
             expected_keys.append('snow_addincrement')
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_TMPL, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -100,14 +100,14 @@ class FV3AnalysisCalc(Task):
             self.jedi_dict['snow_addincrement'].initialize(self.task_config)
 
         # Stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_TMPL}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_TMPL, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # Stage background and increment files
         logger.info(f"Staging background and increment files from COM")
-        fh_dict = parse_j2yaml(self.task_config.INITIALIZE_TMPL, self.task_config)
+        fh_dict = parse_j2yaml(self.task_config.INITIALIZE_YAML, self.task_config)
         FileHandler(fh_dict).sync()
         logger.debug(f"Background and increment files:\n{pformat(fh_dict)}")
 

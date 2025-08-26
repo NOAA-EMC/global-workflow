@@ -77,7 +77,7 @@ class AerosolAnalysis(Task):
 
         # Create dictionary of Jedi objects
         expected_keys = ['aeroanlvar']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_TMPL, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -119,20 +119,20 @@ class AerosolAnalysis(Task):
                 logger.error(f"Bias correction files or directories do not exist:\n{pformat(bias_dict)}")
 
         # stage CRTM fix files
-        logger.info(f"Staging CRTM fix files from {self.task_config.STAGE_CRTM_COEFF_TMPL}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.STAGE_CRTM_COEFF_TMPL, self.task_config)
+        logger.info(f"Staging CRTM fix files from {self.task_config.STAGE_CRTM_COEFF_YAML}")
+        crtm_fix_dict = parse_j2yaml(self.task_config.STAGE_CRTM_COEFF_YAML, self.task_config)
         FileHandler(crtm_fix_dict).sync()
         logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
 
         # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_TMPL}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_TMPL, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # stage files from COM and create working directories
-        logger.info(f"Staging files prescribed from {self.task_config.INITIALIZE_TMPL}")
-        aero_var_stage_dict = parse_j2yaml(self.task_config.INITIALIZE_TMPL, self.task_config)
+        logger.info(f"Staging files prescribed from {self.task_config.INITIALIZE_YAML}")
+        aero_var_stage_dict = parse_j2yaml(self.task_config.INITIALIZE_YAML, self.task_config)
         FileHandler(aero_var_stage_dict).sync()
         logger.debug(f"Staging from COM:\n{pformat(aero_var_stage_dict)}")
 
@@ -195,8 +195,8 @@ class AerosolAnalysis(Task):
         satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
 
         # copy files back to COM
-        logger.info(f"Copying files to COM based on {self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL}")
-        aero_var_final_list = parse_j2yaml(self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL, self.task_config)
+        logger.info(f"Copying files to COM based on {self.task_config.AERO_FINALIZE_VARIATIONAL_YAML}")
+        aero_var_final_list = parse_j2yaml(self.task_config.AERO_FINALIZE_VARIATIONAL_YAML, self.task_config)
         FileHandler(aero_var_final_list).sync()
 
         # tar aerosol bias correction files to ROTDIR
@@ -235,22 +235,22 @@ class AerosolAnalysis(Task):
         self.add_fv3_increments(inc_template, bkg_template, incvars)
 
     @logit(logger)
-    def add_fv3_increments(self, inc_file_tmpl: str, bkg_file_tmpl: str, incvars: List) -> None:
+    def add_fv3_increments(self, inc_file_YAML: str, bkg_file_YAML: str, incvars: List) -> None:
         """Add cubed-sphere increments to cubed-sphere backgrounds
 
         Parameters
         ----------
-        inc_file_tmpl : str
+        inc_file_YAML : str
            template of the FV3 increment file of the form: 'filetype.tile{tilenum}.nc'
-        bkg_file_tmpl : str
+        bkg_file_YAML : str
            template of the FV3 background file of the form: 'filetype.tile{tilenum}.nc'
         incvars : List
            List of increment variables to add to the background
         """
 
         for itile in range(1, self.task_config.ntiles + 1):
-            inc_path = inc_file_tmpl.format(tilenum=itile)
-            bkg_path = bkg_file_tmpl.format(tilenum=itile)
+            inc_path = inc_file_YAML.format(tilenum=itile)
+            bkg_path = bkg_file_YAML.format(tilenum=itile)
             with Dataset(inc_path, mode='r') as incfile, Dataset(bkg_path, mode='a') as rstfile:
                 for vname in incvars:
                     increment = incfile.variables[vname][:]

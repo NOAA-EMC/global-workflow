@@ -64,7 +64,7 @@ class MarineRecenter(Task):
 
         # Construct dictionary of JEDI objects, one for each JEDI application need for the analysis
         expected_keys = ['gridgen', 'ens_handler']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_TMPL, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self):
@@ -79,7 +79,7 @@ class MarineRecenter(Task):
 
         # stage fix files
         logger.info(f"Staging SOCA fix files from {self.task_config.INPUT_FIX_DIR}")
-        soca_fix_list = parse_j2yaml(self.task_config.STAGE_FIX_TMPL, self.task_config)
+        soca_fix_list = parse_j2yaml(self.task_config.STAGE_FIX_YAML, self.task_config)
         FileHandler(soca_fix_list).sync()
 
         # prepare the MOM6 input.nml
@@ -87,16 +87,16 @@ class MarineRecenter(Task):
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
-        soca_utility_list = parse_j2yaml(self.task_config.STAGE_UTILITIES_TMPL, self.task_config)
+        soca_utility_list = parse_j2yaml(self.task_config.STAGE_UTILITIES_YAML, self.task_config)
         FileHandler(soca_utility_list).sync()
 
         # stage backgrounds
-        bkg_list = parse_j2yaml(self.task_config.STAGE_DET_BKG_TMPL, self.task_config)
+        bkg_list = parse_j2yaml(self.task_config.STAGE_DET_BKG_YAML, self.task_config)
         FileHandler(bkg_list).sync()
 
         # stage the ensemble members and CICE restarts
         logger.info("---------------- Stage ensemble members and CICE restarts")
-        soca_ens_list = parse_j2yaml(self.task_config.INITIALIZE_TMPL, self.task_config)
+        soca_ens_list = parse_j2yaml(self.task_config.INITIALIZE_YAML, self.task_config)
         FileHandler(soca_ens_list).sync()
 
         # initialize JEDI applications
@@ -135,5 +135,5 @@ class MarineRecenter(Task):
 
         # Save recentered increments and ensemble statistics
         logger.info("---------------- Save recentered increments and ensemble statistics")
-        soca_ens_list = parse_j2yaml(self.task_config.FINALIZE_TMPL, self.task_config)
+        soca_ens_list = parse_j2yaml(self.task_config.FINALIZE_YAML, self.task_config)
         FileHandler(soca_ens_list).sync()

@@ -74,12 +74,12 @@ class AnalysisStats(Task):
         # Expected keys are what must be included from the JEDI config file. We can
         # then loop through ob space list from scripts/exglobal_analysis_stats.py
         expected_keys = ['aero', 'atmos', 'snow']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_TMPL, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
         logger.info(f"Copying files to {self.task_config.DATA}/stats")
 
         # Extract info from stat config file
-        analysis_config_dict = parse_j2yaml(self.task_config.BASE_CONFIG_TMPL, self.task_config)
+        analysis_config_dict = parse_j2yaml(self.task_config.BASE_CONFIG_YAML, self.task_config)
 
         # Loop through a copy of ob space list
         for analysis in self.task_config.STAT_ANALYSES[:]:
@@ -168,7 +168,7 @@ class AnalysisStats(Task):
         None
         """
 
-        analysis_config_dict = parse_j2yaml(self.task_config.BASE_CONFIG_TMPL, self.task_config)
+        analysis_config_dict = parse_j2yaml(self.task_config.BASE_CONFIG_YAML, self.task_config)
 
         for analysis_dict in analysis_config_dict[jedi_dict_key]['obs spaces']:
             statfile = os.path.join(self.task_config.DATA, analysis_dict['output file'])

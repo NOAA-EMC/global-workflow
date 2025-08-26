@@ -69,7 +69,7 @@ class AerosolBMatrix(Task):
 
         # Create dictionary of Jedi objects
         expected_keys = ['aero_interpbkg', 'aero_diagb', 'aero_diffusion']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_TMPL, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self: Task) -> None:
@@ -91,13 +91,13 @@ class AerosolBMatrix(Task):
         """
 
         # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_TMPL}")
-        jedi_fix_list = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_TMPL, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
+        jedi_fix_list = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
         # stage files from COM and create working directories
-        logger.info(f"Staging files from COM and creating working directories {self.task_config.INITIALIZE_TMPL}")
-        aero_bmat_stage_list = parse_j2yaml(self.task_config.INITIALIZE_TMPL, self.task_config)
+        logger.info(f"Staging files from COM and creating working directories {self.task_config.INITIALIZE_YAML}")
+        aero_bmat_stage_list = parse_j2yaml(self.task_config.INITIALIZE_YAML, self.task_config)
         FileHandler(aero_bmat_stage_list).sync()
 
         # initialize JEDI applications
@@ -142,6 +142,6 @@ class AerosolBMatrix(Task):
 
         """
         # save files to COMOUT
-        logger.info(f"Saving files to COMOUT based on {self.task_config.AERO_BMATRIX_FINALIZE_TMPL}")
-        aero_bmat_finalize_list = parse_j2yaml(self.task_config.AERO_BMATRIX_FINALIZE_TMPL, self.task_config)
+        logger.info(f"Saving files to COMOUT based on {self.task_config.AERO_BMATRIX_FINALIZE_YAML}")
+        aero_bmat_finalize_list = parse_j2yaml(self.task_config.AERO_BMATRIX_FINALIZE_YAML, self.task_config)
         FileHandler(aero_bmat_finalize_list).sync()
