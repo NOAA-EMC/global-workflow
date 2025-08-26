@@ -117,7 +117,7 @@ class Stage(Task):
                 cycle_vars.last_mem = cycle_vars.NMEM_ENS
             elif cycle_vars.GEFSTYPE == "gefs-real-time":
                 # select the relevant member for each GEFS member from GFS outputs
-                cycle_vars.cyc_ranges = [list(range(1, 31)), list(range(21, 51)), \
+                cycle_vars.cyc_ranges = [list(range(1, 31)), list(range(21, 51)),
                                          list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
                 cycle_vars.ENSMEM = self.task_config.get('ENSMEM', 0)
             else:
