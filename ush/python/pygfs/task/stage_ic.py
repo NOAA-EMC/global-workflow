@@ -101,7 +101,7 @@ class Stage(Task):
         if cycle_vars.previous_cycle:
             cycle_vars.previous_cycle_YMD = cycle_vars.previous_cycle.strftime("%Y%m%d")
             cycle_vars.previous_cycle_HH = cycle_vars.previous_cycle.strftime("%H")
-            cycle_vars.m_index = cycle_vars.current_cycle_HH // 6
+            cycle_vars.m_index = cycle_vars.current_cycle.hour // 6
             cycle_vars.p_prefix = cycle_vars.previous_cycle.strftime("%Y%m%d.%H0000")
 
         # application-specific logic and variables
