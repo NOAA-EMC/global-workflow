@@ -76,7 +76,7 @@ class Stage(Task):
         cycle_vars = self.task_config
 
         if "OCNRES" in cycle_vars:
-            cycle_vars["OCNRES"] = f"{cycle_vars['OCNRES']:03d}"
+            cycle_vars.OCNRES = f"{int(cycle_vars.OCNRES):03d}"
         # Calculate half window variables
         cycle_vars.half_window = cycle_vars.assim_freq // 2
         cycle_vars.half_window_begin = timedelta(hours=-cycle_vars.half_window)
