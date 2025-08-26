@@ -267,6 +267,7 @@ class Stage(Task):
         cycle_vars = self.calculate_cycle_variables()
         run = getattr(cycle_vars, 'RUN', None)
         for memdir in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
+            cycle_vars.memdir = memdir
             if run == 'gefs':
                 gefstype = getattr(cycle_vars, 'GEFSTYPE', None)
                 if gefstype == 'gefs-real-time':
