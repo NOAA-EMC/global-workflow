@@ -73,7 +73,7 @@ cat > $link_model_script << EOF_LINK
 #!/bin/bash
 
 #Need these lines on AWS to run more than one node.
- export I_MPI_DEBUG=10
+#export I_MPI_DEBUG=10
 #export I_MPI_FABRICS=shm:ofi
 #export I_MPI_OFI_PROVIDER=tcp
 #export FI_PROVIDER=tcp
@@ -86,7 +86,20 @@ cat > $link_model_script << EOF_LINK
 #export SINGULARITY_DEBUG=0
 #unset SINGULARITY_DEBUG
 
+# --- MPI and Fabric Configuration ---
+# 1. Force Intel MPI to use Slurm's PMI2 library for job startup
+# for Ursa
+export I_MPI_PMI_LIBRARY=/apps/slurm/default/lib/libpmi2.so
+
+# 2. Set the OFI provider to Mellanox InfiniBand
+export FI_PROVIDER=mlx
+
+# 3. Disable problematic shared memory transports in UCX
+export UCX_TLS=^sm,cma
+# --- End of Configuration ---
+
  export LD_LIBRARY_PATH=$(dirname ${container})
+ set +x
  arg="\$@"
  singularity exec \\
  ${bindings} \\

@@ -209,10 +209,10 @@ else
       module load libjpeg
       module load craype-network-ucx
       module load cray-mpich-ucx
-      module load "module_base.${MACHINE_ID}"
+      module load "gw_run.${MACHINE_ID}"
       ;;
     "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud" | "ursa")
-      module load "module_base.${MACHINE_ID}"
+      module load "gw_run.${MACHINE_ID}"
       export UTILROOT=${prod_util_ROOT}
       ;;
     *)
@@ -222,7 +222,7 @@ else
 
   export err=$?
   if [[ ${err} -ne 0 ]]; then
-    echo "FATAL ERROR: Failed to load module_base.${MACHINE_ID}"
+    echo "FATAL ERROR: Failed to load gw_run.${MACHINE_ID}"
     exit 1
   fi
 

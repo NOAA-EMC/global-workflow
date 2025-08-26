@@ -471,30 +471,18 @@ fi
 if [[ "${_verbose}" == true ]]; then
     printf "Linking the workflow\n\n"
 fi
-if [[ "${_run_with_container}" == true ]]; then
-   if ! "${HOMEgfs}/sorc/link_workflow.sh" -r >& stdout; then
-      cat stdout
-      echo "link_workflow.sh failed!"
-      if [[ "${_set_email}" == true ]]; then
-         _stdout=$(cat stdout)
-         send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
-      fi
-      rm -f stdout
-      exit 9
-   fi
-else
-   if ! "${HOMEgfs}/sorc/link_workflow.sh" >& stdout; then
-      cat stdout
-      echo "link_workflow.sh failed!"
-      if [[ "${_set_email}" == true ]]; then
-         _stdout=$(cat stdout)
-         send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
-      fi
-      rm -f stdout
-      exit 9
-   fi
+if ! "${HOMEgfs}/sorc/link_workflow.sh" >& stdout; then
+    cat stdout
+    echo "link_workflow.sh failed!"
+    if [[ "${_set_email}" == true ]]; then
+       _stdout=$(cat stdout)
+       send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
+    fi
+    rm -f stdout
+    exit 9
 fi
 rm -f stdout
+unset HOMEgfs
 
 # Configure the environment for running create_experiment.py
 if [[ "${_verbose}" == true ]]; then

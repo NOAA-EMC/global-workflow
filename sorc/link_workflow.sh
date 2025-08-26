@@ -4,20 +4,17 @@
 
 HOMEgfs="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
 TRACE=NO source "${HOMEgfs}/ush/preamble.sh"
-_run_with_container=false
 
 function usage() {
   cat <<EOF
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-h][-o][-r][--nest]
+Usage: ${BASH_SOURCE[0]} [-h][-o][--nest]
   -h:
     Print this help message and exit
   -o:
     Configure for NCO (copy instead of link)
-  -r:
-    Configure run with container
 EOF
   exit 1
 }
@@ -26,16 +23,12 @@ RUN_ENVIR="emc"
 
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":hor-:" option; do
+while getopts ":ho-:" option; do
   case "${option}" in
   h) usage ;;
   o)
     echo "-o option received, configuring for NCO"
     RUN_ENVIR="nco"
-    ;;
-  r)
-    echo "-r option received, configuring run with container"
-    _run_with_container=true
     ;;
   -)
     if [[ "${OPTARG}" == "nest" ]]; then
@@ -320,14 +313,8 @@ for sys in "${model_systems[@]}"; do
   if [[ -s "${model_exe}" ]]; then
     rm -f "${model_exe}"
   fi
-  if [[ "$_run_with_container" == "true" ]]; then
-      if [[ -f "${HOMEgfs}/bin/${model_exe}" ]]; then
-        ${LINK_OR_COPY} "${HOMEgfs}/bin/${model_exe}" "${model_exe}"
-      fi
-  else
-      if [[ -f "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
-        ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
-      fi
+  if [[ -f "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
   fi
 done
 
