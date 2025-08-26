@@ -2,6 +2,8 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
+source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
+
 # Scripts used
 INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/interp_atmos_master.sh"}
 INTERP_ATMOS_SFLUXSH=${INTERP_ATMOS_SFLUXSH:-"${USHgfs}/interp_atmos_sflux.sh"}

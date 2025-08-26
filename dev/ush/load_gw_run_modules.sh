@@ -34,6 +34,71 @@ if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
 fi
 export PYTHONPATH
 
+if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
+  # if [[ ! -d ~/prod-util-2.1.1 ]]; then
+    # cp -r $prod_util_ROOT ~/prod-util-2.1.1
+  # fi
+
+ #if [[ "$PATH" =~ "prod-util" ]]; then
+    export PATH=~/prod-util-2.1.1/bin:$PATH
+ #fi
+  export FSYNC=~/prod-util-2.1.1/bin/fsync_file
+  export MDATE=~/prod-util-2.1.1/bin/mdate
+  export NDATE=~/prod-util-2.1.1/bin/ndate
+  export NHOUR=~/prod-util-2.1.1/bin/nhour
+
+  source /usr/lmod/lmod/init/bash
+  module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
+  module load gfsutils_container.intel
+  module load wgrib2
+else
+  source "${HOMEgfs}/ush/detect_machine.sh"
+  source "${HOMEgfs}/ush/module-setup.sh"
+
+  # Source versions file for runtime
+  source "${HOMEgfs}/versions/run.ver"
+
+  # Load our modules:
+  module use "${HOMEgfs}/modulefiles"
+
+  case "${MACHINE_ID}" in
+    "wcoss2")
+      module load cray-pals
+      module load cfp
+      module load libjpeg
+      module load craype-network-ucx
+      module load cray-mpich-ucx
+      module load "gw_run.${MACHINE_ID}"
+      ;;
+    "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud" | "ursa")
+      module load "gw_run.${MACHINE_ID}"
+      export UTILROOT=${prod_util_ROOT}
+      ;;
+    *)
+      echo "WARNING: UNKNOWN PLATFORM"
+      ;;
+  esac
+
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+    echo "FATAL ERROR: Failed to load gw_run.${MACHINE_ID}"
+    exit 1
+  fi
+
+  module load wgrib2
+  module load prod_util
+fi
+export WGRIB2=wgrib2
+
+# Turn on our settings
+export SHELLOPTS
+declare -xf set_strict
+declare -xf set_trace
+declare -xf postamble
+declare -xf err_exit
+set_strict
+set_trace
+
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
 unset ulimit_s

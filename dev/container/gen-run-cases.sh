@@ -17,12 +17,11 @@ run_with_container=YES
 #yamllist="C768_S2SW"
 
 HOMEDIR=${HOMEgfs}
-#img=ubuntu22.04-intel-ufs-env-v1.6.0.img
 img=ubuntu22.04-intel-ufs-env-v1.9.2.img
 if [[ ${MACHINE_ID} = ursa* ]] ; then
-   container=/scratch4/NAGAPE/epic/${USER}/demo/${img}
+   container=/scratch4/NAGAPE/epic/${USER}/containers/${img}
    rundir=/scratch3/NAGAPE/epic/${USER}/run
-   bindings="-B /scratch3 -B /scratch4"
+   bindings="-B /apps -B /scratch3 -B /scratch4"
    HPC_ACCOUNT=epic
 
    module load rocoto/1.3.7

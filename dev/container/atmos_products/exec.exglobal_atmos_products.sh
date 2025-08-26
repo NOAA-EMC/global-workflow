@@ -5,5 +5,5 @@
  singularity exec \
         BINDINGS \
         SIF \
-        HOMEgfs/ush/container/exglobal_atmos_products.sh $arg
+        HOMEgfs/scripts/exglobal_atmos_products.sh $arg
 
