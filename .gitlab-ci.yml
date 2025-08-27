@@ -163,7 +163,33 @@ include:
             pr_error_log_links="(no error.logs file found)"
           fi
 
-          # Build multi-line PR comment body safely
+          if [[ -f "${error_log_file}" && -s "${error_log_file}" ]]; then
+          local error_logs_for_gist=""
+          local error_logs_markdown=""
+
+          while IFS= read -r full_log_path; do
+            [[ -n "${full_log_path}" ]] || continue
+
+            if [[ -f "${full_log_path}" && -s "${full_log_path}" ]]; then
+              error_logs_for_gist="${error_logs_for_gist} ${full_log_path}"
+              error_logs_markdown=$(echo -e "${error_logs_markdown}\n${full_log_path}")
+            fi
+          done < "${error_log_file}"
+
+          comment_body=$(cat << EOF
+      🚫 **BUILD FAILED** on ${Machine}  (pipeline ID: ${CI_PIPELINE_ID})
+
+      In directory: \`${GW_HOMEgfs}\sorc`
+      Error log files:
+      \`\`\`
+      ${error_logs_markdown}
+      \`\`\`
+     🔗 View Error Logs: "${pr_error_log_links}"
+
+      _This failure was detected automatically by global-workflow's CI/CD Pipeline_
+      EOF
+        )
+      
           printf -v comment_body '%s\n%s\n%s\n%s\n%s\n%s\n\n%s' \
             "[FAILED] Build failed on ${Machine} in GitLab Pipeline ID ${CI_PIPELINE_ID}" \
             "In the directory:" \
