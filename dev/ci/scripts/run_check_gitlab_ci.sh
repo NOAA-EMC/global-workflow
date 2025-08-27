@@ -6,6 +6,22 @@ set -eu
 # Script description: script to check the status of an experiment as reported
 #                     by Rocoto
 #####################################################################################
+#
+# -----------------------------------------------------------------------------------
+# GitHub PR Failure Reporting
+# -----------------------------------------------------------------------------------
+# This script supports reporting failed experiment cases to GitHub PR feeds via the
+# report_failure_to_github() routine. For this to work, the following environment
+# variables must be set:
+#   - GH: Path to the GitHub CLI executable (e.g., 'gh')
+#   - PR_NUMBER: The pull request number to comment on
+#   - GW_REPO_URL: The GitHub repository URL (e.g., 'TerrenceMcGuinness-NOAA/global-workflow')
+#   - CI_PIPELINE_ID: The GitLab pipeline ID (used for context in the comment)
+#   - MACHINE_ID: The machine identifier (used for labeling)
+#
+# These variables are required for the script to post comments and update labels on the
+# relevant GitHub PR. If any are missing, PR reporting will be skipped for failed cases.
+# -----------------------------------------------------------------------------------
 
 TEST_DIR=${1:-${TEST_DIR:-?}}  # Location of the root of the testing directory
 pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this script
@@ -147,13 +163,14 @@ rc=99
 set +e
 while true; do
 
-  echo "Gather Rocoto statistics for (${pslot} on ${MACHINE_ID^})"
+  echo "running rocotorun for (${pslot} on ${MACHINE_ID^})"
   rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
 
-  # Wait before running rocotostat
+  # Wait a minute before running rocotostat
   sleep 60
 
   caseName="${pslot%_*-*}"  # caseName recovered from pslot: (caseName_<hash>-<pipeline ID> (eg. C48_ATM_90f10fc1-3517)
+  echo "Gather Rocoto statistics for (${caseName} on ${MACHINE_ID^})"
   export ROCOTOSTAT_LOG_FILE="${RUNTESTS}/EXPDIR/${pslot}/logs/${caseName}_rocotostat.log"
   source <("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --declare --thread-logging) || true
   error_stat=$?
@@ -167,7 +184,7 @@ while true; do
       echo "Experiment ${pslot} Terminated with ${FAIL} tasks failed and ${DEAD} dead at $(date)" || true
       echo "Experiment ${pslot} Terminated: *${ROCOTO_STATE}*"
     } | tee -a "${run_check_logfile}"
-    if [[ "${DEAD}" -ne 0 ]]; then
+    if [[ "${ROCOTO_STATE}" == "FAILED" ]]; then
       error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
       {
         echo "Error logs:"
