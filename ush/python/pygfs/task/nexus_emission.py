@@ -327,7 +327,7 @@ class NEXUSEmissions(Task):
         #     datetime.date(2024, 1, 5): [0, 1, 3],
         #     datetime.date(2024, 1, 6): [2]
         # }
-    day_indexes = _get_day_indices(self.forecast_dates[:-1])  # hemco doesn't write out the last timestep
+        day_indexes = _get_day_indices(self.forecast_dates[:-1])  # hemco doesn't write out the last timestep
         # now loop over each days
         for date, indexes in day_indexes.items():
             day_str = date.strftime('%Y%m%d')
