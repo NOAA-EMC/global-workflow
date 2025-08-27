@@ -166,7 +166,7 @@ class Stage(Task):
             elif case_vars.GEFSTYPE == "gefs-real-time":
                 # select the relevant member for each GEFS member from GFS outputs
                 case_vars.cyc_ranges = [list(range(1, 31)), list(range(21, 51)),
-                                         list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
+                                        list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
                 case_vars.first_mem = 0
             else:
                 # Error handling for unknown GEFSTYPE
