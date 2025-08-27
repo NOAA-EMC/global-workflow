@@ -45,16 +45,9 @@
 {% include "atmosphere_warm.yaml.j2" %}
 {% endfilter %}
 {% else %} # cold start
-    atmosphere_cold:
-        mkdir:
-            - "{{ COMOUT_ATMOS_INPUT_MEM }}"
-        link:
-            - ["{{ ICSDIR }}/{{ COMIN_ATMOS_INPUT_MEM | relpath(ROTDIR) }}/gfs_ctrl.nc", "{{ COMOUT_ATMOS_INPUT_MEM }}"]
-            {% for ftype in ["gfs_data", "sfc_data"] %}
-            {% for ntile in range(1, ntiles + 1) %}
-            - ["{{ ICSDIR }}/{{ COMIN_ATMOS_INPUT_MEM | relpath(ROTDIR) }}/{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_INPUT_MEM }}"]
-            {% endfor %} # ntile
-            {% endfor %} # ftype
+{% filter indent(width=4) %}
+{% include "atmosphere_cold.yaml.j2" %}
+{% endfilter %}
 {% endif %}
 
 {% if DO_NEST %}
