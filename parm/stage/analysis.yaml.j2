@@ -1,4 +1,4 @@
-{% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM_list[0] | relpath(ROTDIR)) %}
+{% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR)) %}
 analysis:
     mkdir:
         - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
