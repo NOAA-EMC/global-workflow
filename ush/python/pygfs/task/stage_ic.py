@@ -58,7 +58,36 @@ class Stage(Task):
             FileHandler(stage_set[key]).sync()
 
     @logit(logger)
-    def calculate_cycle_variables(self) -> Dict[str, Any]:
+    def calculate_case_specific_variables(self) -> Dict[str, Any]:
+        # application-specific logic and variables
+        cycle_vars = self.task_config
+        cycle_vars.rRUN = cycle_vars.RUN
+        cycle_vars.last_mem = cycle_vars.NMEM_ENS
+        if cycle_vars.RUN in ['gfs', 'gcafs', 'enkfgdas']:
+            cycle_vars.rRUN = "gdas"
+            cycle_vars.first_mem = 1
+        elif cycle_vars.RUN in ['gefs']:  # GEFS Ensemble RUN (both regular and RT)
+            cycle_vars.GEFSTYPE = self.task_config.get('GEFSTYPE', 'gefs-offline')
+            if cycle_vars.GEFSTYPE == "gefs-offline":
+                cycle_vars.first_mem = 0
+            elif cycle_vars.GEFSTYPE == "gefs-real-time":
+                # select the relevant member for each GEFS member from GFS outputs
+                cycle_vars.cyc_ranges = [list(range(1, 31)), list(range(21, 51)),
+                                         list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
+                cycle_vars.first_mem = 0
+            else:
+                # Error handling for unknown GEFSTYPE
+                valid_types = ['gefs-offline', 'gefs-real-time']
+                raise ValueError(f"Invalid GEFSTYPE '{cycle_vars.GEFSTYPE}' for RUN '{cycle_vars.RUN}'. "
+                                 f"Valid options are: {valid_types}")
+        else:  # Deterministic RUN (GFS and GCAFS)
+            cycle_vars.first_mem = -1
+            cycle_vars.last_mem = -1
+
+        return cycle_vars
+
+    @logit(logger)
+    def calculate_general_cycle_variables(self) -> Dict[str, Any]:
         """Calculate cycle variables from master YAML template logic
 
         This method replaces the Jinja template variables common across:
@@ -72,8 +101,8 @@ class Stage(Task):
         Dict[str, Any]
           Dictionary containing calculated cycle variables
         """
-        # Initialize a dictionary using config variables
-        cycle_vars = self.task_config
+        # Initialize a dictionary using case specific variables
+        cycle_vars = self.calculate_case_specific_variables()
 
         if "OCNRES" in cycle_vars:
             cycle_vars.OCNRES = f"{int(cycle_vars.OCNRES):03d}"
@@ -104,30 +133,6 @@ class Stage(Task):
             cycle_vars.m_index = cycle_vars.current_cycle.hour // 6
             cycle_vars.p_prefix = cycle_vars.previous_cycle.strftime("%Y%m%d.%H0000")
 
-        # application-specific logic and variables
-        cycle_vars.rRUN = cycle_vars.RUN
-        cycle_vars.last_mem = cycle_vars.NMEM_ENS
-        if cycle_vars.RUN in ['gfs', 'gcafs', 'enkfgdas']:
-            cycle_vars.rRUN = "gdas"
-            cycle_vars.first_mem = 1
-        elif cycle_vars.RUN in ['gefs']:  # GEFS Ensemble RUN (both regular and RT)
-            cycle_vars.GEFSTYPE = self.task_config.get('GEFSTYPE', 'gefs-offline')
-            if cycle_vars.GEFSTYPE == "gefs-offline":
-                cycle_vars.first_mem = 0
-            elif cycle_vars.GEFSTYPE == "gefs-real-time":
-                # select the relevant member for each GEFS member from GFS outputs
-                cycle_vars.cyc_ranges = [list(range(1, 31)), list(range(21, 51)),
-                                         list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
-                cycle_vars.first_mem = 0
-            else:
-                # Error handling for unknown GEFSTYPE
-                valid_types = ['gefs-offline', 'gefs-real-time']
-                raise ValueError(f"Invalid GEFSTYPE '{cycle_vars.GEFSTYPE}' for RUN '{cycle_vars.RUN}'. "
-                                 f"Valid options are: {valid_types}")
-        else:  # Deterministic RUN (GFS and GCAFS)
-            cycle_vars.first_mem = -1
-            cycle_vars.last_mem = -1
-
         # Define cycle directories to update com paths
         cycle_vars.current_cycle_dict = {
             "${ROTDIR}": cycle_vars.ROTDIR,
@@ -145,7 +150,7 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_member_com_paths_gfs(self, memdir) -> Dict[str, Any]:
-        cycle_vars = self.calculate_cycle_variables()
+        cycle_vars = self.calculate_general_cycle_variables()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
         current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
         previous_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir}
@@ -166,7 +171,7 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_member_com_paths_gefs_offline(self, memdir) -> Dict[str, Any]:
-        cycle_vars = self.calculate_cycle_variables()
+        cycle_vars = self.calculate_general_cycle_variables()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
         current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
         previous_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir}
@@ -187,7 +192,7 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_member_com_paths_gefs_rt(self, memdir) -> Dict[str, Any]:
-        cycle_vars = self.calculate_cycle_variables()
+        cycle_vars = self.calculate_general_cycle_variables()
         if memdir != 0:
             cycle_vars.gfs_member = cycle_vars.cyc_ranges[cycle_vars.m_index][(memdir - 1)]
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
@@ -209,7 +214,7 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_member_com_paths_gcafs(self, memdir) -> Dict[str, Any]:
-        cycle_vars = self.calculate_cycle_variables()
+        cycle_vars = self.calculate_general_cycle_variables()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
 
         # Three contexts:
@@ -257,7 +262,7 @@ class Stage(Task):
     @logit(logger)
     def calculate_stage_vars(self) -> None:
         """Dispatch to per-master calculator to build COM paths."""
-        cycle_vars = self.calculate_cycle_variables()
+        cycle_vars = self.calculate_general_cycle_variables()
         run = getattr(cycle_vars, 'RUN', None)
         for memdir in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
             cycle_vars.memdir = memdir
