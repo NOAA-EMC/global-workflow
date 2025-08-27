@@ -156,7 +156,7 @@ class Stage(Task):
         case_vars = self.task_config
         case_vars.rRUN = case_vars.RUN
         case_vars.last_mem = case_vars.NMEM_ENS
-        if case_vars.RUN in ['gfs', 'enkfgdas']:
+        if case_vars.RUN in ['gfs', 'enkfgdas', 'gcdas']:
             case_vars.rRUN = "gdas"
             case_vars.first_mem = 1
         elif case_vars.RUN in ['gefs']:  # GEFS Ensemble RUN (both regular and RT)
@@ -424,7 +424,7 @@ class Stage(Task):
                     self.execute_stage(stage_vars)
                 else:
                     raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
-            elif run in ('gcafs', 'enkfgdas'):
+            elif run in ('gcafs', 'enkfgdas', 'gcdas'):
                 stage_vars.update(self.calculate_member_com_paths_gcafs(memdir))
                 self.execute_stage(stage_vars)
             elif run == 'gfs':
