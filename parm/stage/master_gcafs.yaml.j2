@@ -29,6 +29,9 @@
 # Initial condition to stage - include components based on switches
 ###################################################################
 
+# always use GDAS for now, fix once we have staged GCDAS/GCAFS ICs
+{% set rRUN = "gdas" %}
+
 {% if MODE == "cycled" %}
 {% filter indent(width=4) %}
 {% include "analysis.yaml.j2" %}

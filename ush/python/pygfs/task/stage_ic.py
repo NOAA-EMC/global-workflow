@@ -63,7 +63,7 @@ class Stage(Task):
         case_vars = self.task_config
         case_vars.rRUN = case_vars.RUN
         case_vars.last_mem = case_vars.NMEM_ENS
-        if case_vars.RUN in ['gfs', 'gcafs', 'enkfgdas']:
+        if case_vars.RUN in ['gfs', 'enkfgdas']:
             case_vars.rRUN = "gdas"
             case_vars.first_mem = 1
         elif case_vars.RUN in ['gefs']:  # GEFS Ensemble RUN (both regular and RT)
