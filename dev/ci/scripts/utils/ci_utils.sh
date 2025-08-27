@@ -209,7 +209,7 @@ function publish_logs_from_file() {
     if (( ${#files[@]} > 1 )); then
       cmd_args="--multiple --format github"
     fi
-    URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[0]}" ${cmd_args:-} --gist "${PR_header}")"
+    URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[0]}" "${cmd_args:-}" --gist "${PR_header}")"
   fi
 
   echo "${URL}"
