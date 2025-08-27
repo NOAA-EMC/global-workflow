@@ -51,6 +51,7 @@ case ${step} in
     ;;
 
   "eobs")
+    walltime="00:20:00"
     export PARTITION_BATCH="process"
     # NOTE The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
@@ -61,6 +62,11 @@ case ${step} in
   "ediag")
     export is_exclusive="True"
     export PARTITION_BATCH="compute"
+    ;;
+
+  "eupd")
+    export threads_per_task=1
+    export tasks_per_node=48
     ;;
 
   "upp")
