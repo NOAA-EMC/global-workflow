@@ -181,7 +181,7 @@ while true; do
   \tCompleted Jobs  : ${JOBS_DONE}/${JOBS_TOTAL}
   \tState           : ${ROCOTO_STATE}"
 
-  if [[ ${ROCOTO_STATE} == "FAILED" ]]; then
+  if [[ ${ROCOTO_STATE} == "FAIL" ]]; then
     {
       echo "Experiment ${pslot} Terminated with ${FAIL} tasks failed and ${DEAD} dead at $(date)" || true
     } | tee -a "${run_check_logfile}"
@@ -195,7 +195,6 @@ while true; do
       echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/EXPDIR/${pslot}/${pslot}_error.logs"
       echo "${log}" >> "${RUNTESTS}/EXPDIR/${pslot}/${pslot}_fullpath_error.logs"
     done
-   fi
    
    # Report failure to GitHub if running in CI environment
    if [[ -n "${CI_PIPELINE_ID:-}" && -n "${PR_NUMBER:-}" && "${PR_NUMBER}" != "0" ]]; then
