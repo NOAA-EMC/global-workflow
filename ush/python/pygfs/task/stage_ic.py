@@ -150,94 +150,94 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_member_com_paths_gfs(self, memdir) -> Dict[str, Any]:
-        cycle_vars = self.calculate_general_cycle_variables()
+        com_vars = self.calculate_general_cycle_variables()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
-        current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
-        previous_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir}
+        current_cycle = {**com_vars.current_cycle_dict, "${MEMDIR}": memdir}
+        previous_cycle = {**com_vars.previous_cycle_dict, "${MEMDIR}": memdir}
 
-        cycle_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_CHEM_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_CHEM_ANALYSIS_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_CHEM_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_CHEM_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
 
-        return cycle_vars
+        return com_vars
 
     @logit(logger)
     def calculate_member_com_paths_gefs_offline(self, memdir) -> Dict[str, Any]:
-        cycle_vars = self.calculate_general_cycle_variables()
+        com_vars = self.calculate_general_cycle_variables()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
-        current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
-        previous_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir}
+        current_cycle = {**com_vars.current_cycle_dict, "${MEMDIR}": memdir}
+        previous_cycle = {**com_vars.previous_cycle_dict, "${MEMDIR}": memdir}
 
-        cycle_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ATMOS_HISTORY_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_HISTORY_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ATMOS_HISTORY_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_HISTORY_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
 
-        return cycle_vars
+        return com_vars
 
     @logit(logger)
     def calculate_member_com_paths_gefs_rt(self, memdir) -> Dict[str, Any]:
-        cycle_vars = self.calculate_general_cycle_variables()
+        com_vars = self.calculate_general_cycle_variables()
         if memdir != 0:
-            cycle_vars.gfs_member = cycle_vars.cyc_ranges[cycle_vars.m_index][(memdir - 1)]
+            com_vars.gfs_member = com_vars.cyc_ranges[com_vars.m_index][(memdir - 1)]
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
-        current_cycle = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
-        previous_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir}
+        current_cycle = {**com_vars.current_cycle_dict, "${MEMDIR}": memdir}
+        previous_cycle = {**com_vars.previous_cycle_dict, "${MEMDIR}": memdir}
 
-        cycle_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ATMOS_HISTORY_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_HISTORY_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
-        cycle_vars['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ATMOS_HISTORY_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_HISTORY_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
 
-        return cycle_vars
+        return com_vars
 
     @logit(logger)
     def calculate_member_com_paths_gcafs(self, memdir) -> Dict[str, Any]:
-        cycle_vars = self.calculate_general_cycle_variables()
+        com_vars = self.calculate_general_cycle_variables()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
 
         # Three contexts:
         # - current (RUN) for outputs
-        current_cycle_out = {**cycle_vars.current_cycle_dict, "${MEMDIR}": memdir}
+        current_cycle_out = {**com_vars.current_cycle_dict, "${MEMDIR}": memdir}
         # - current (rRUN) for inputs
-        current_cycle_in = {**current_cycle_out, "${RUN}": cycle_vars.rRUN}
+        current_cycle_in = {**current_cycle_out, "${RUN}": com_vars.rRUN}
         # - previous (rRUN) for prev-cycle restarts
-        previous_cycle = {**cycle_vars.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": cycle_vars.rRUN}
+        previous_cycle = {**com_vars.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": com_vars.rRUN}
 
-        cycle_vars['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_in)
-        cycle_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_out)
-        cycle_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle_out)
-        cycle_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle_out)
-        cycle_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle_out)
-        cycle_vars['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle_out)
-        cycle_vars['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
-        cycle_vars['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(cycle_vars, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_in)
+        com_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_out)
+        com_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle_out)
+        com_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle_out)
+        com_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle_out)
+        com_vars['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle_out)
+        com_vars['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
+        com_vars['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
 
-        return cycle_vars
+        return com_vars
 
     def _replace_template_vars(self, template: str, var_dict: Dict[str, Any]) -> str:
         """Replace template variables in string with actual values
