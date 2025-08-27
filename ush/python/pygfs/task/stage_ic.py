@@ -406,8 +406,10 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_stage_vars(self) -> None:
-        """Prepare all required staging variables used to
-          locate and sync files defined in the master YAML templates."""
+        """
+        Prepare all required staging variables used to
+        locate and sync files defined in the master YAML templates.
+        """
         stage_vars = self.calculate_general_cycle_variables()
         run = getattr(stage_vars, 'RUN', None)
         for memdir in range(stage_vars.first_mem, stage_vars.last_mem + 1):
