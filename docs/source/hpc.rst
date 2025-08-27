@@ -102,7 +102,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      -
      -
      - X
-     -
+     - X
      - X
    * - Hera
      - 2
