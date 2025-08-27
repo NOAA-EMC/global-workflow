@@ -140,7 +140,7 @@ class Stage(Task):
     @logit(logger)
     def calculate_case_specific_variables(self) -> Dict[str, Any]:
         """
-        Calculate case-specific variables from the task configuration.
+        Calculate case-specific variables needed for staging.
         - gfs
         - gefs
         - gcafs
