@@ -60,31 +60,31 @@ class Stage(Task):
     @logit(logger)
     def calculate_case_specific_variables(self) -> Dict[str, Any]:
         # application-specific logic and variables
-        cycle_vars = self.task_config
-        cycle_vars.rRUN = cycle_vars.RUN
-        cycle_vars.last_mem = cycle_vars.NMEM_ENS
-        if cycle_vars.RUN in ['gfs', 'gcafs', 'enkfgdas']:
-            cycle_vars.rRUN = "gdas"
-            cycle_vars.first_mem = 1
-        elif cycle_vars.RUN in ['gefs']:  # GEFS Ensemble RUN (both regular and RT)
-            cycle_vars.GEFSTYPE = self.task_config.get('GEFSTYPE', 'gefs-offline')
-            if cycle_vars.GEFSTYPE == "gefs-offline":
-                cycle_vars.first_mem = 0
-            elif cycle_vars.GEFSTYPE == "gefs-real-time":
+        case_vars = self.task_config
+        case_vars.rRUN = case_vars.RUN
+        case_vars.last_mem = case_vars.NMEM_ENS
+        if case_vars.RUN in ['gfs', 'gcafs', 'enkfgdas']:
+            case_vars.rRUN = "gdas"
+            case_vars.first_mem = 1
+        elif case_vars.RUN in ['gefs']:  # GEFS Ensemble RUN (both regular and RT)
+            case_vars.GEFSTYPE = self.task_config.get('GEFSTYPE', 'gefs-offline')
+            if case_vars.GEFSTYPE == "gefs-offline":
+                case_vars.first_mem = 0
+            elif case_vars.GEFSTYPE == "gefs-real-time":
                 # select the relevant member for each GEFS member from GFS outputs
-                cycle_vars.cyc_ranges = [list(range(1, 31)), list(range(21, 51)),
+                case_vars.cyc_ranges = [list(range(1, 31)), list(range(21, 51)),
                                          list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
-                cycle_vars.first_mem = 0
+                case_vars.first_mem = 0
             else:
                 # Error handling for unknown GEFSTYPE
                 valid_types = ['gefs-offline', 'gefs-real-time']
-                raise ValueError(f"Invalid GEFSTYPE '{cycle_vars.GEFSTYPE}' for RUN '{cycle_vars.RUN}'. "
+                raise ValueError(f"Invalid GEFSTYPE '{case_vars.GEFSTYPE}' for RUN '{case_vars.RUN}'. "
                                  f"Valid options are: {valid_types}")
         else:  # Deterministic RUN (GFS and GCAFS)
-            cycle_vars.first_mem = -1
-            cycle_vars.last_mem = -1
+            case_vars.first_mem = -1
+            case_vars.last_mem = -1
 
-        return cycle_vars
+        return case_vars
 
     @logit(logger)
     def calculate_general_cycle_variables(self) -> Dict[str, Any]:
