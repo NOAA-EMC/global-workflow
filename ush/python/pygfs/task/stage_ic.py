@@ -262,25 +262,25 @@ class Stage(Task):
     @logit(logger)
     def calculate_stage_vars(self) -> None:
         """Dispatch to per-master calculator to build COM paths."""
-        cycle_vars = self.calculate_general_cycle_variables()
-        run = getattr(cycle_vars, 'RUN', None)
-        for memdir in range(cycle_vars.first_mem, cycle_vars.last_mem + 1):
-            cycle_vars.memdir = memdir
+        stage_vars = self.calculate_general_cycle_variables()
+        run = getattr(stage_vars, 'RUN', None)
+        for memdir in range(stage_vars.first_mem, stage_vars.last_mem + 1):
+            stage_vars.memdir = memdir
             if run == 'gefs':
-                gefstype = getattr(cycle_vars, 'GEFSTYPE', None)
+                gefstype = getattr(stage_vars, 'GEFSTYPE', None)
                 if gefstype == 'gefs-real-time':
-                    cycle_vars.update(self.calculate_member_com_paths_gefs_rt(memdir))
-                    self.execute_stage(cycle_vars)
+                    stage_vars.update(self.calculate_member_com_paths_gefs_rt(memdir))
+                    self.execute_stage(stage_vars)
                 elif gefstype == 'gefs-offline':
-                    cycle_vars.update(self.calculate_member_com_paths_gefs_offline(memdir))
-                    self.execute_stage(cycle_vars)
+                    stage_vars.update(self.calculate_member_com_paths_gefs_offline(memdir))
+                    self.execute_stage(stage_vars)
                 else:
                     raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
             elif run in ('gcafs', 'enkfgdas'):
-                cycle_vars.update(self.calculate_member_com_paths_gcafs(memdir))
-                self.execute_stage(cycle_vars)
+                stage_vars.update(self.calculate_member_com_paths_gcafs(memdir))
+                self.execute_stage(stage_vars)
             elif run == 'gfs':
-                cycle_vars.update(self.calculate_member_com_paths_gfs(memdir))
-                self.execute_stage(cycle_vars)
+                stage_vars.update(self.calculate_member_com_paths_gfs(memdir))
+                self.execute_stage(stage_vars)
             else:
                 raise ValueError(f"Unknown RUN type: {run}")
