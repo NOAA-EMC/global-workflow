@@ -177,7 +177,7 @@ include:
           done < "${error_log_file}"
 
           comment_body=$(cat << EOF
-      🚫 **BUILD FAILED** on ${Machine}  (pipeline ID: ${CI_PIPELINE_ID})
+      **BUILD FAILED** on ${Machine}  (pipeline ID: ${CI_PIPELINE_ID})
 
       In directory: \`${GW_HOMEgfs}\sorc`
       Error log files:
@@ -188,18 +188,8 @@ include:
 
       _This failure was detected automatically by global-workflow's CI/CD Pipeline_
       EOF
-        )
+         )
       
-          printf -v comment_body '%s\n%s\n%s\n%s\n%s\n%s\n\n%s' \
-            "[FAILED] Build failed on ${Machine} in GitLab Pipeline ID ${CI_PIPELINE_ID}" \
-            "In the directory:" \
-            '```' \
-            "${GW_RUN_PATH}/sorc" \
-            '```' \
-            "View Error Logs:" \
-            "${pr_error_log_links}"
-
-          echo "Posting failure comment to PR ${PR_NUMBER} on GitHub"
           ${GH} pr comment ${PR_NUMBER} --repo ${GW_REPO_URL} --body "${comment_body}" || true
 
           echo "Updating GitHub labels for PR ${PR_NUMBER} failure on ${Machine}"
