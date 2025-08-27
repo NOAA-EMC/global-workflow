@@ -1,5 +1,85 @@
 #!/usr/bin/env python3
+"""
+Stage Initial Conditions (IC) Task
 
+Overview
+--------
+This module defines the Stage task responsible for constructing cycle- and
+member-specific COM (communication/output) directory path variables and
+staging (syncing) the required initial condition, analysis, and restart
+files into the experiment rotation directory (ROTDIR).
+
+High-Level Responsibilities
+---------------------------
+1. Create cycle variables for:
+   - GCAFS (cycled or forecast-only)
+   - GFS (deterministic and enkfgdas variant)
+   - GEFS (ensemble: real-time and offline modes)
+
+   1.1 Provide a method (calculate_general_cycle_variables) that computes
+       variables common to all supported applications (time windows, cycle
+       date strings, template substitution dictionaries, etc.).
+
+   1.2 Provide a method (calculate_case_specific_variables) that derives
+       application / RUN specific attributes (member indexing rules, GEFSTYPE
+       handling, replay / IAU window logic, etc.).
+
+2. Provide separate methods for populating member-level COM path variables:
+   - calculate_member_com_paths_gfs
+   - calculate_member_com_paths_gefs_offline
+   - calculate_member_com_paths_gefs_rt
+   - calculate_member_com_paths_gcafs
+
+Execution Flow
+--------------
+calculate_stage_vars():
+  * Calls calculate_general_cycle_variables() which internally calls
+    calculate_case_specific_variables().
+  * Iterates over ensemble members (or a single deterministic sentinel range).
+  * Dispatches to the appropriate per-application COM path calculator.
+  * Invokes execute_stage() to perform the actual file staging.
+
+Key Methods
+-----------
+calculate_case_specific_variables():
+  Establishes RUN-dependent settings (member ranges, GEFSTYPE logic, replay /
+  IAU offsets, and rRUN mapping for coupled cases).
+
+calculate_general_cycle_variables():
+  Builds on case-specific variables and computes:
+    - Half-window assimilation times
+    - Current / previous cycle formatted strings (YMD, HH)
+    - Model start date logic (IAU vs replay vs standard start)
+    - Template substitution dictionaries for current and previous cycles
+
+calculate_member_com_paths_*():
+  For a given member index, formats and injects member-specific COM directory
+  paths derived from template variables defined in the master configuration.
+
+execute_stage(stage_dict):
+  Renders a YAML (Jinja2) template describing required files, then synchronizes
+  (copies/links) those files into the ROTDIR.
+
+Extensibility Notes
+-------------------
+To add a new application:
+  1. Extend calculate_case_specific_variables() for RUN-specific member logic.
+  2. Implement a new calculate_member_com_paths_<app>() variant if COM path
+     semantics differ from existing cases.
+  3. Add dispatch logic inside calculate_stage_vars().
+
+Performance Considerations
+--------------------------
+The staging loop processes each member sequentially. If significant scaling
+issues arise for very large ensembles, a future enhancement could introduce
+parallelization or batched FileHandler operations.
+
+Logging
+-------
+All public operational methods are decorated with @logit(logger, ...),
+providing entry/exit logging.
+
+"""
 import os
 from logging import getLogger
 from typing import Any, Dict
@@ -59,6 +139,19 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_case_specific_variables(self) -> Dict[str, Any]:
+        """
+        Calculate case-specific variables from the task configuration.
+        - gfs
+        - gefs
+        - gcafs
+        - enkfgdas
+        - gdas
+
+        Returns
+        -------
+        Dict[str, Any]
+          Dictionary containing case-specific variables with metadata
+        """
         # application-specific logic and variables
         case_vars = self.task_config
         case_vars.rRUN = case_vars.RUN
@@ -99,7 +192,7 @@ class Stage(Task):
         Returns
         -------
         Dict[str, Any]
-          Dictionary containing calculated cycle variables
+          Dictionary containing calculated cycle variables with metadata
         """
         # Initialize a dictionary using case specific variables
         cycle_vars = self.calculate_case_specific_variables()
@@ -150,6 +243,19 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_member_com_paths_gfs(self, memdir) -> Dict[str, Any]:
+        """
+        Calculate member COM paths for GFS.
+
+        Parameters
+        ----------
+        memdir : int
+          The member directory number
+
+        Returns
+        -------
+        Dict[str, Any]
+          Dictionary containing member COM paths with metadata
+        """
         com_vars = self.calculate_general_cycle_variables()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
         current_cycle = {**com_vars.current_cycle_dict, "${MEMDIR}": memdir}
@@ -171,6 +277,19 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_member_com_paths_gefs_offline(self, memdir) -> Dict[str, Any]:
+        """
+        Calculate member COM paths for GEFS offline.
+
+        Parameters
+        ----------
+        memdir : int
+          The member directory number
+
+        Returns
+        -------
+        Dict[str, Any]
+          Dictionary containing member COM paths with metadata
+        """
         com_vars = self.calculate_general_cycle_variables()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
         current_cycle = {**com_vars.current_cycle_dict, "${MEMDIR}": memdir}
@@ -192,6 +311,19 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_member_com_paths_gefs_rt(self, memdir) -> Dict[str, Any]:
+        """
+        Calculate member COM paths for GEFS real-time.
+
+        Parameters
+        ----------
+        memdir : int
+          The member directory number
+
+        Returns
+        -------
+        Dict[str, Any]
+          Dictionary containing member COM paths with metadata
+        """
         com_vars = self.calculate_general_cycle_variables()
         if memdir != 0:
             com_vars.gfs_member = com_vars.cyc_ranges[com_vars.m_index][(memdir - 1)]
@@ -214,6 +346,19 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_member_com_paths_gcafs(self, memdir) -> Dict[str, Any]:
+        """
+        Calculate member COM paths for GCAFS.
+
+        Parameters
+        ----------
+        memdir : int
+          The member directory number
+
+        Returns
+        -------
+        Dict[str, Any]
+          Dictionary containing member COM paths with metadata
+        """
         com_vars = self.calculate_general_cycle_variables()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
 
@@ -261,7 +406,8 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_stage_vars(self) -> None:
-        """Dispatch to per-master calculator to build COM paths."""
+        """Prepare all required staging variables used to
+          locate and sync files defined in the master YAML templates."""
         stage_vars = self.calculate_general_cycle_variables()
         run = getattr(stage_vars, 'RUN', None)
         for memdir in range(stage_vars.first_mem, stage_vars.last_mem + 1):
