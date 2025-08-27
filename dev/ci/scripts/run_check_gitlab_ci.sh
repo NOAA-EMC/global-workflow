@@ -109,9 +109,10 @@ EOF
 
   # Create formatted GitHub comment
   comment_body=$(cat << EOF
-🚫 _${caseName}_ **FAILED** on ${Machine}
-GitLab Pipeline ID: ${CI_PIPELINE_ID})
+🚫 _${caseName}_ **FAILED** on ${Machine}  (pipeline ID: ${CI_PIPELINE_ID})
+
 In directory: \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
+
 ${gist_message_section}
 
 _This failure was detected automatically by global-workflow's CI/CD Pipeline_
