@@ -140,7 +140,7 @@ class Stage(Task):
     @logit(logger)
     def calculate_case_specific_variables(self) -> Dict[str, Any]:
         """
-        Calculate case-specific variables needed for staging.
+        Calculate case-specific variables needed for master YAML templates
         - gfs
         - gefs
         - gcafs
@@ -181,7 +181,7 @@ class Stage(Task):
 
     @logit(logger)
     def calculate_general_cycle_variables(self) -> Dict[str, Any]:
-        """Calculate cycle variables from master YAML template logic
+        """Calculate cycle variables needed for master YAML templates
 
         This method replaces the Jinja template variables common across:
         - master_gfs.yaml.j2
@@ -244,7 +244,7 @@ class Stage(Task):
     @logit(logger)
     def calculate_member_com_paths_gfs(self, memdir) -> Dict[str, Any]:
         """
-        Calculate member COM paths for GFS.
+        Calculate member COM paths for GFS
 
         Parameters
         ----------
@@ -278,7 +278,7 @@ class Stage(Task):
     @logit(logger)
     def calculate_member_com_paths_gefs_offline(self, memdir) -> Dict[str, Any]:
         """
-        Calculate member COM paths for GEFS offline.
+        Calculate member COM paths for GEFS offline
 
         Parameters
         ----------
@@ -312,7 +312,7 @@ class Stage(Task):
     @logit(logger)
     def calculate_member_com_paths_gefs_rt(self, memdir) -> Dict[str, Any]:
         """
-        Calculate member COM paths for GEFS real-time.
+        Calculate member COM paths for GEFS real-time
 
         Parameters
         ----------
@@ -347,7 +347,7 @@ class Stage(Task):
     @logit(logger)
     def calculate_member_com_paths_gcafs(self, memdir) -> Dict[str, Any]:
         """
-        Calculate member COM paths for GCAFS.
+        Calculate member COM paths for GCAFS
 
         Parameters
         ----------
