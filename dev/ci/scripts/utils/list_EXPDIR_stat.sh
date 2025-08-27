@@ -4,8 +4,6 @@
 # Run rocotostat.py for all pslot directories in EXPDIR
 # Usage: ./smile_rocotostat.sh /path/to/EXPDIR [optional switches]
 
-set -euo pipefail
-
 EXPDIR="${1:-}"
 EXTRA_SWITCHES="${2:-}"
 
@@ -26,7 +24,7 @@ for pslot_dir in "${EXPDIR}"/*; do
 
   if [[ -f "${xml_file}" && -f "${db_file}" ]]; then
     echo "Running rocotostat.py for ${pslot}..."
-    python3 "$(dirname "$0")/rocotostat.py" -w "${xml_file}" -d "${db_file}" ${EXTRA_SWITCHES}
+    "$(dirname "$0")/rocotostat.py" -w "${xml_file}" -d "${db_file}" ${EXTRA_SWITCHES}
   else
     echo "Skipping ${pslot}: missing ${pslot}.xml or ${pslot}.db"
   fi
