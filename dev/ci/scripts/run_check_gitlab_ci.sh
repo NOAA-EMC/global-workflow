@@ -94,12 +94,11 @@ report_failure_to_github() {
 
       # Prepare markdown section for files links to gist for GitHub comment
       gist_message_section=$(cat <<EOF
-📋 Error Log Files:
+Error Log Files:
 \`\`\`
 ${error_logs_markdown}
 \`\`\`
-🔗 View Error Logs:
-${gist_links}
+🔗 View Error Logs: ${gist_links}
 EOF
       )
     else
@@ -110,15 +109,17 @@ EOF
 
   # Create formatted GitHub comment
   comment_body=$(cat << EOF
-🚫 Experiment _${caseName}_ **FAILED** on ${Machine} in GitLab Pipeline ID ${CI_PIPELINE_ID}
+🚫 _${caseName}_ **FAILED** on ${Machine}
+GitLab Pipeline ID: ${CI_PIPELINE_ID})
 In directory: \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
 ${gist_message_section}
+
 _This failure was detected automatically by global-workflow's CI/CD Pipeline_
 EOF
   )
 
   # Post GitHub comment
-  cd "${HOMEgfs}
+  cd "${HOMEgfs}"
   "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
 
   # Move processed error log to prevent reprocessing
