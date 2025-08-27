@@ -26,8 +26,8 @@ while getopts ":j:a:dvw" option; do
 done
 
 # Determine machine and load modules
+source "${HOMEgfs_}/ush/detect_machine.sh"
 set +x
-source "${HOMEgfs_}/sorc/ufs_model.fd/tests/detect_machine.sh"
 source "${HOMEgfs_}/sorc/ufs_model.fd/tests/module-setup.sh"
 module use "${HOMEgfs_}/sorc/ufs_model.fd/modulefiles"
 module load "ufs_${MACHINE_ID}.intel"

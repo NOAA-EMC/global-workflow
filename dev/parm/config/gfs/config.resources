@@ -138,7 +138,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
-    memory="2GB"
+    memory="4GB"
     ;;
 
   "waveprep")
@@ -781,13 +781,13 @@ case ${step} in
     ntasks=20
     threads_per_task=1
     tasks_per_node=20
-    memory="90GB"
+    memory="150GB"
     ;;
 
   "sfcanl")
     walltime="00:20:00"
     ntasks=${ntiles:-6}
-    threads_per_task=1
+    threads_per_task=4
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
@@ -862,7 +862,9 @@ case ${step} in
     # TODO: Update reference when moved to ufs-weather-model RTD
     MEDTHREADS=${nthreads_mediator:-1}
     MEDPETS=${MEDPETS:-${FV3PETS}}
-    (( "${MEDPETS}" > 300 )) && MEDPETS=300
+    (( MEDPETS = FV3PETS ))
+    (( MEDTHREADS = FV3THREADS )) 
+    (( "${MEDPETS}" > 24000 )) && MEDPETS=1200
     export MEDPETS MEDTHREADS
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
@@ -1082,7 +1084,8 @@ case ${step} in
     tasks_per_node=1
     case "${CASE}" in
       "C768")
-        memory="80GB"
+        memory="200GB"
+        walltime="00:40:00"
         ;;
       "C1152")
         memory="400GB"

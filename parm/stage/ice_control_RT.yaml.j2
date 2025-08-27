@@ -1,7 +1,7 @@
 ice_control_RT:
     mkdir:
         - "{{ COMOUT_ICE_ANALYSIS_MEM }}"
-    copy:
+    link_req:
         {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
         {% set increment_file = ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/ice/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.cice_model_anl.res.nc' %}
         {% set increment_destination_path = COMOUT_ICE_ANALYSIS_MEM %}
