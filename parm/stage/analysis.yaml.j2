@@ -1,15 +1,8 @@
 {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM_list[0] | relpath(ROTDIR)) %}
 analysis:
     mkdir:
-        {% for mem in range(first_mem, last_mem + 1) %}
-        {% set imem = mem - first_mem %}
-        {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
         - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
-        {% endfor %}
     link_req:
-        {% for mem in range(first_mem, last_mem + 1) %}
-        {% set imem = mem - first_mem %}
-        {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
         {% if DO_JEDIATMVAR %}
         {% for itile in range(6) %}
         {% for ftype in ["atminc", "atmi009", "atmi003", "ratminc", "ratmi009", "ratmi003"] %}
@@ -36,12 +29,10 @@ analysis:
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endif %}
         {% endfor %}
-        {% if DO_LAND_IAU %}        
+        {% if DO_LAND_IAU %}
         {% for itile in range(1,7) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/sfc_inc.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endfor %}
-        {% endif %} 
-        {% endif %} 
-        
-        {% endfor %} # mem loop
+        {% endif %}
+        {% endif %}
 {% endif %}
