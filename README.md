@@ -28,8 +28,9 @@ The Global Workflow currently supports the following machines at the indicated t
 | HPC                                     | Tier | Notes                                                                      |
 | --------------------------------------- |:----:|:--------------------------------------------------------------------------:|
 | WCOSS2<br>NCO                           | 1    | GEFS testing is not regularly performed.                                   |
-| Hera<br>NOAA RDHPCS                     | 1    |                                                                            |
+| Ursa<br>NOAA RDHPCS                     | 1    | METplus verification and vminmon GSI-monitor jobs not supported.<br>GCAFS not yet supported. |
 | Hercules<br>MSU                         | 1    | Currently does not support the TC Tracker.                                 |
+| Hera<br>NOAA RDHPCS                     | 2    |                                                                            |
 | Orion<br>MSU                            | 2    | The GSI runs very slowly on Orion and the TC tracker is not supported.     |
 | Gaea C5/C6<br>RDHPCS                    | 3    | Currently non-operational following an OS upgrade.<br>Supported by EPIC.   |
 | AWS, GCP, Azure <br>NOAA Parallel Works | 3    | Supported by EPIC.                                                         |

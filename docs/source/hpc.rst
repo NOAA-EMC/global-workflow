@@ -90,8 +90,22 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - X   
      - X        
      - X
-   * - Hera    
+   * - Ursa    
      - 1   
+     - X     
+     - X     
+     - X
+     - X   
+     - X   
+     - X     
+     - X    
+     - 
+     - 
+     - X   
+     -        
+     - X
+   * - Hera    
+     - 2   
      - X     
      - X     
      - X
@@ -208,6 +222,7 @@ HPC helpdesks
 =============
 
 * WCOSS2: hpc.wcoss2-help@noaa.gov
+* Ursa: rdhpcs.ursa.help@noaa.gov
 * Hera: rdhpcs.hera.help@noaa.gov
 * Orion:  rdhpcs.orion.help@noaa.gov
 * Hercules:  rdhpcs.hercules.help@noaa.gov
