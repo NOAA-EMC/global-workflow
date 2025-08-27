@@ -83,7 +83,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - X
      - X
      - X
-     -
+     - X
      - X
      - X
      - X
@@ -91,6 +91,34 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - X
      - X
    * - Ursa
+     - 1
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     -
+     -
+     - X
+     - X
+     - X
+   * - Hercules
+     - 1
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     -
+     -
+     -
+     - X
+     - X
+     - X
+   * - Gaea C6
      - 1
      - X
      - X
@@ -118,20 +146,6 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - X
      - X
      - X
-   * - Hercules
-     - 1
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     -
-     - X
-     - X
-     - X
    * - Orion
      - 2
      - X
@@ -152,28 +166,14 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - X
      - X
      - X
-     - X
      -
      -
      -
      -
      -
-     - X
-     - X
-   * - Gaea C6
-     - 1
-     - X
-     - X
-     - X
-     - X
      -
      -
-     - X
      -
-     -
-     - X
-     - X
-     - X
    * - AWS (PW)
      - 3
      - X
