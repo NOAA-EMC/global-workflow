@@ -156,14 +156,13 @@ class Stage(Task):
         case_vars = self.task_config
         case_vars.rRUN = case_vars.RUN
         case_vars.last_mem = case_vars.NMEM_ENS
-        if case_vars.RUN in ['gfs']:
+        if case_vars.RUN in ['gfs', 'gcdas', 'enkfgdas']:
             case_vars.rRUN = "gdas"
         else:
             # RUN not gfs; leave rRUN unchanged and continue
             logger.debug("No rRUN remap applied: RUN='%s' (rRUN stays '%s')", case_vars.RUN, case_vars.rRUN)
 
-        if case_vars.RUN in ['enkfgdas', 'gcdas']:
-            case_vars.rRUN = "gdas"
+        if case_vars.RUN in ['enkfgdas']:
             case_vars.first_mem = 1
         elif case_vars.RUN in ['gefs']:  # GEFS Ensemble RUN (both regular and RT)
             case_vars.GEFSTYPE = self.task_config.get('GEFSTYPE', 'gefs-offline')
