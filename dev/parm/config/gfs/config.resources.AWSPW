@@ -69,6 +69,17 @@ case ${step} in
     export tasks_per_node=48
     ;;
 
+  "fit2obs")
+    case "${CASE}" in
+      "C1152")
+        export tasks_per_node=1
+	;;
+      *)
+        export tasks_per_node=3
+	;;
+    esac
+    ;;
+
   *)
     export PARTITION_BATCH="process"
     unset PARTITION_SERVICE
