@@ -152,16 +152,19 @@ class Stage(Task):
         Dict[str, Any]
           Dictionary containing case-specific variables with metadata
         """
-        # application-specific logic and variables
+        # Initialize a dictionary using task configuration
         case_vars = self.task_config
+        # assign rRUN to RUN
         case_vars.rRUN = case_vars.RUN
-        case_vars.last_mem = case_vars.NMEM_ENS
+        # case specific rRUN
         if case_vars.RUN in ['gfs', 'gcdas', 'enkfgdas']:
             case_vars.rRUN = "gdas"
         else:
             # RUN not gfs; leave rRUN unchanged and continue
             logger.debug("No rRUN remap applied: RUN='%s' (rRUN stays '%s')", case_vars.RUN, case_vars.rRUN)
 
+        # Assign last_mem and first_mem to run members
+        case_vars.last_mem = case_vars.NMEM_ENS
         if case_vars.RUN in ['enkfgdas']:
             case_vars.first_mem = 1
         elif case_vars.RUN in ['gefs']:  # GEFS Ensemble RUN (both regular and RT)
