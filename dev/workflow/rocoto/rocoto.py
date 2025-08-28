@@ -144,7 +144,12 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
     if partition is not None:
         strings.append(f'\t<partition>{partition}</partition>\n')
     strings.append(f'\t<walltime>{walltime}</walltime>\n')
-    strings.append(f'\t<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>\n')
+    # Construct resources string based on ppn, nodes, and threads
+    if nodes > 1 or threads > 1:
+        strings.append(f'\t<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>\n')
+    else:
+        strings.append(f'\t<cores>{ppn}</cores>\n')
+
     if memory is not None:
         strings.append(f'\t<memory>{memory}</memory>\n')
     if native is not None:
