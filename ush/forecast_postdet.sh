@@ -2,11 +2,13 @@
 
 # Disable variable not used warnings
 # shellcheck disable=SC2034
+# shellcheck disable=SC2178
 FV3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Entering for RUN = ${RUN}"
 
   echo "warm_start = ${warm_start}"
   echo "RERUN = ${RERUN}"
+
 
   #============================================================================
   # First copy initial conditions
@@ -326,6 +328,33 @@ EOF
       fi
     done
   fi
+  #============================================================================
+  restart_interval=${restart_interval:-${FHMAX}}
+  # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
+  # Convert restart interval into an explicit list for CMEPS/CICE/MOM6/WW3
+  # Note, this must be computed after determination IAU in forecast_det and fhrot.
+  if (( restart_interval == 0 )); then
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      FV3_RESTART_FH=$(( FHMAX + half_window ))
+    else
+      FV3_RESTART_FH=("${FHMAX}")
+    fi
+  else
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
+         local restart_interval_start=${restart_interval}
+         local restart_interval_end=${FHMAX}
+      else
+         local restart_interval_start=$(( restart_interval + half_window ))
+         local restart_interval_end=$(( FHMAX + half_window ))
+      fi
+    else
+      local restart_interval_start=${restart_interval}
+      local restart_interval_end=${FHMAX}
+    fi
+    FV3_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${restart_interval}" "${restart_interval_end}")"
+  fi
+  export FV3_RESTART_FH
   #============================================================================
 }
 
