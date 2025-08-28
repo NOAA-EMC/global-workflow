@@ -112,6 +112,21 @@ include:
   stage: build
   script:
     - |
+      # ====================================================================
+      # MAIN BUILD TEMPLATE SECTION
+      # ====================================================================
+      # This is the core build template that serves as the foundation for
+      # all Global Workflow CI/CD build processes across different machines
+      # and modalities (GFS, GEFS, SFS, GCAFS). This template provides:
+      #   - Environment setup and validation
+      #   - Git submodule management and PR checkout logic
+      #   - Build execution via ci_utils.sh
+      #   - Error handling and status reporting
+      #   - Artifact archival and cleanup procedures
+      # All machine-specific build jobs inherit from this template and
+      # customize behavior through variables and job-specific overrides.
+      # ====================================================================
+
       echo "Setting up build environment for ${machine^}..."
       echo "Using build directory ${GW_HOMEgfs}"
       git submodule status
