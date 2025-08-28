@@ -22,7 +22,7 @@ High-Level Responsibilities
 
    1.2 Provide a method (calculate_case_specific_variables) that derives
        application / RUN specific attributes (member indexing rules, GEFSTYPE
-       handling, replay / IAU window logic, etc.).
+       handling etc.).
 
 2. Provide separate methods for populating member-level COM path variables:
    - calculate_member_com_paths_gfs
