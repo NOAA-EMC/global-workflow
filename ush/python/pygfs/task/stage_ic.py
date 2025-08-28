@@ -159,7 +159,7 @@ class Stage(Task):
         if case_vars.RUN in ['gfs']:
             case_vars.rRUN = "gdas"
         else:
-        # RUN not gfs; leave rRUN unchanged and continue
+            # RUN not gfs; leave rRUN unchanged and continue
             logger.debug("No rRUN remap applied: RUN='%s' (rRUN stays '%s')", case_vars.RUN, case_vars.rRUN)
 
         if case_vars.RUN in ['enkfgdas', 'gcdas']:
