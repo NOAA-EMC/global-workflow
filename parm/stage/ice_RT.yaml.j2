@@ -1,7 +1,7 @@
 ice_RT:
     mkdir:
         - "{{ COMOUT_ICE_ANALYSIS_MEM }}"
-    copy:
+    link_req:
     # select restart members files (80) specific to the cycle
         {% set mid_cyc = ("%02d" | format(previous_cycle_HH | int + half_window)) ~ "0000" %}
         {% set increment_mem_path = ICSDIR ~ '/' ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(gfs_member)  ~ '/analysis/ice/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '.cice_model_anl.res.nc' %}
