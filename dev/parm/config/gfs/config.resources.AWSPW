@@ -16,20 +16,17 @@ case ${step} in
     ;;
 
   "fcst" | "efcs" | "wavepostpnt")
-    export PARTITION_BATCH="compute"
-    unset PARTITION_SERVICE
+    export tasks_per_nodes=48
     ;;
 
   "anal" | "analcalc" | "analdiag")
     export is_exclusive="True"
-    export PARTITION_BATCH="compute"
     export threads_per_task=1
     export tasks_per_node=48
     ;;
 
   "echgres")
     export is_exclusive="True"
-    export PARTITION_BATCH="compute"
     ;;
 
   "sfcanl")
@@ -61,7 +58,6 @@ case ${step} in
 
   "ediag")
     export is_exclusive="True"
-    export PARTITION_BATCH="compute"
     ;;
 
   "eupd")
@@ -70,7 +66,6 @@ case ${step} in
     ;;
 
   "upp")
-    export PARTITION_BATCH="compute"
     export tasks_per_node=48
     ;;
 
