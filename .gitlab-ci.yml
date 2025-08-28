@@ -29,8 +29,8 @@ stages:
   - finalize
 
 variables:
-  CI_DEBUG_TRACE: "false"    # Enable debug tracing for CI jobs
-  CI_DEBUG_SERVICES: "false" # Enable debug services for CI jobs
+  CI_DEBUG_TRACE: "true"    # Enable debug tracing for CI jobs
+  CI_DEBUG_SERVICES: "true" # Enable debug services for CI jobs
   PIPELINE_TYPE: pr_cases    # Default to PR Cases if not overwritten by GitLab Scheduled Pipelines
   RUN_ON_MACHINES: all       # Default to all machines (overwritten by triggers)
   # Set GFS_CI_RUN_TYPE=nightly in the GitLab Scheuled Pipelines
