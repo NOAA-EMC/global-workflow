@@ -179,21 +179,22 @@ include:
           fi
 
           if [[ -f "${error_log_file}" && -s "${error_log_file}" ]]; then
-          local error_logs_for_gist=""
-          local error_logs_markdown=""
+            local error_logs_for_gist=""
+            local error_logs_markdown=""
 
-          while IFS= read -r full_log_path; do
-            [[ -n "${full_log_path}" ]] || continue
+            while IFS= read -r full_log_path; do
+              [[ -n "${full_log_path}" ]] || continue
 
-            if [[ -f "${full_log_path}" && -s "${full_log_path}" ]]; then
-              error_logs_for_gist="${error_logs_for_gist} ${full_log_path}"
-              error_logs_markdown=$(echo -e "${error_logs_markdown}\n${full_log_path}")
-            fi
-          done < "${error_log_file}"
+              if [[ -f "${full_log_path}" && -s "${full_log_path}" ]]; then
+                error_logs_for_gist="${error_logs_for_gist} ${full_log_path}"
+                error_logs_markdown=$(echo -e "${error_logs_markdown}\n${full_log_path}")
+              fi
+            done < "${error_log_file}"
 
-          comment_body="**BUILD FAILED** on ${Machine} (pipeline ID: ${CI_PIPELINE_ID})\\n\\nIn directory: \\\`${GW_HOMEgfs}/sorc\\\`\\nError log files:\\n\\\`\\\`\\\`\\n${error_logs_markdown}\\n\\\`\\\`\\\`\\n🔗 View Error Logs: ${pr_error_log_links}\\n\\n_This failure was detected automatically by global-workflow's CI/CD Pipeline_"
-      
-          ${GH} pr comment ${PR_NUMBER} --repo ${GW_REPO_URL} --body "${comment_body}" || true
+            comment_body="**BUILD FAILED** on ${Machine} (pipeline ID: ${CI_PIPELINE_ID})\\n\\nIn directory: \\\`${GW_HOMEgfs}/sorc\\\`\\nError log files:\\n\\\`\\\`\\\`\\n${error_logs_markdown}\\n\\\`\\\`\\\`\\n🔗 View Error Logs: ${pr_error_log_links}\\n\\n_This failure was detected automatically by global-workflow's CI/CD Pipeline_"
+        
+            ${GH} pr comment ${PR_NUMBER} --repo ${GW_REPO_URL} --body "${comment_body}" || true
+          fi
 
           echo "Updating GitHub labels for PR ${PR_NUMBER} failure on ${Machine}"
           ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} \
