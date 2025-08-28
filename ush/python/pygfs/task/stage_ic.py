@@ -152,7 +152,7 @@ class Stage(Task):
         Dict[str, Any]
           Dictionary containing case-specific variables with metadata
         """
-        # Initialize a dictionary using task configuration
+        # Initialize a dictionary using configuration variables
         case_vars = self.task_config
         # assign rRUN to RUN
         case_vars.rRUN = case_vars.RUN
@@ -160,7 +160,7 @@ class Stage(Task):
         if case_vars.RUN in ['gfs', 'gcdas', 'enkfgdas']:
             case_vars.rRUN = "gdas"
         else:
-            # RUN not gfs; leave rRUN unchanged and continue
+            # RUN not gfs, gcdas, or enkfgdas; leave rRUN unchanged and continue
             logger.debug("No rRUN remap applied: RUN='%s' (rRUN stays '%s')", case_vars.RUN, case_vars.rRUN)
 
         # Assign last_mem and first_mem to run members
@@ -269,6 +269,7 @@ class Stage(Task):
         current_cycle = {**com_vars.current_cycle_dict, "${MEMDIR}": memdir}
         previous_cycle = {**com_vars.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": com_vars.rRUN}
 
+        com_vars['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
         com_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
         com_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
         com_vars['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle)
