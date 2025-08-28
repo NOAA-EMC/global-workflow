@@ -139,7 +139,7 @@ jobs:
 
           curl --verbose --request POST \
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=add_hercules_orion" \
+            --form "ref=develop" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
             --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
             --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
