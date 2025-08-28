@@ -2246,7 +2246,6 @@ class GFSTasks(Tasks):
             if self.app_config.mode == 'cycled':
                 # Add restart archives (timing logic handled in template)
                 tarball_types.append('gfs_restarta')
-                tarball_types.append('gfs_restartb')
 
         elif self.run == 'gdas':
             tarball_types = ['gdas']
