@@ -32,6 +32,7 @@ case ${step} in
   "sfcanl")
     export is_exclusive="False"
     export PARTITION_BATCH="process"
+    export threads_per_task=1 
     export tasks_per_node=${ntiles:-6}
     ;;
 
