@@ -72,6 +72,7 @@ class SnowEnsAnalysis(Task):
                 'snow_obsdatain_path': os.path.join(self.task_config.DATA, 'obs'),
                 'snow_obsdataout_path': os.path.join(self.task_config.DATA, 'diags'),
                 'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
+                'res': _res,
             }
         )
 
@@ -79,7 +80,7 @@ class SnowEnsAnalysis(Task):
         self.task_config = AttrDict(**self.task_config, **local_dict)
 
         # Create JEDI object dictionary
-        expected_keys = ['snowanlvar', 'esnowanlensmean']
+        expected_keys = ['scf_to_ioda', 'snowanlvar', 'esnowanlensmean']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
@@ -157,6 +158,20 @@ class SnowEnsAnalysis(Task):
             os.path.join(self.task_config.DATA, 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
+
+        # if 00z, do SCF preprocessing
+        if self.task_config.cyc == 0:
+            IMSmap_in = f"IMS_4km_to_.{self.task_config.res}.mx{self.task_config.OCNRES}.nc"
+            IMSmapout = f"IMS4km_to_FV3_mapping.{self.task_config._res}.mx{self.task_config.OCNRES}_oro_data.nc"
+            input_files = [
+                [os.path.join(self.task_config.COMIN_OBS, f"{self.task_config.OPREFIX}imssnow96.asc"),
+                 os.path.join(self.task_config.DATA, "obs",
+                              f"ims{to_julian(self.task_config.current_cycle)}_4km_v1.3.asc")],
+                [os.path.join(self.task_config.FIXgfs, "gdas", "obs", "ims", IMSmap_in),
+                 os.path.join(self.task_config.DATA, "obs", IMSmap_out)],
+            ]
+            FileHandler({'copy': input_files}).sync()
+            self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")

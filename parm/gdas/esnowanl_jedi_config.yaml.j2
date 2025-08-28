@@ -12,3 +12,9 @@ snowanlvar:
   jedi_args: ['fv3jedi', 'variational']  
   jcb_base_yaml: '{{ PARMgfs }}/gdas/snow/jcb-base.yaml.j2'
   jcb_algo_yaml: '{{ JCB_ALGO_YAML_VAR }}'
+scf_to_ioda:
+  rundir: '{{ DATA }}'
+  exe_src: '{{ EXECgfs }}/gdas_fv3jedi_scf_to_ioda.x'
+  mpi_cmd: '{{ APRUN_APPLY_INCR }}' # only use 6 tasks
+  jcb_base_yaml: '{{ PARMgfs }}/gdas/snow/jcb-base.yaml.j2'
+  jcb_algo: snow_ims_scf_preprocess
