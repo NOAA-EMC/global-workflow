@@ -372,21 +372,21 @@ class Stage(Task):
 
         # Three contexts:
         # - current (RUN) for outputs
-        current_cycle_out = {**com_vars.current_cycle_dict, "${MEMDIR}": memdir}
+        current_cycle_in = {**com_vars.current_cycle_dict, "${MEMDIR}": com_vars.rRUN}
         # - current (rRUN) for inputs
-        current_cycle_in = {**current_cycle_out, "${RUN}": com_vars.rRUN}
+        current_cycle = {**current_cycle_in, "${RUN}": memdir}
         # - previous (rRUN) for prev-cycle restarts
         previous_cycle = {**com_vars.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": com_vars.rRUN}
 
         com_vars['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_in)
-        com_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_out)
+        com_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
         com_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
-        com_vars['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle_out)
-        com_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle_out)
-        com_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle_out)
+        com_vars['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
+        com_vars['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
         com_vars['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
         com_vars['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
-        com_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle_out)
+        com_vars['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
         com_vars['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
         com_vars['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
 
