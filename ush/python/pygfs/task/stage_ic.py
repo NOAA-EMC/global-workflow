@@ -156,18 +156,24 @@ class Stage(Task):
         case_vars = self.task_config
         case_vars.rRUN = case_vars.RUN
         case_vars.last_mem = case_vars.NMEM_ENS
-        if case_vars.RUN in ['gfs', 'enkfgdas', 'gcdas']:
+        if case_vars.RUN in ['gfs']:
+            case_vars.rRUN = "gdas"
+        else:
+        # RUN not gfs; leave rRUN unchanged and continue
+            logger.debug("No rRUN remap applied: RUN='%s' (rRUN stays '%s')", case_vars.RUN, case_vars.rRUN)
+
+        if case_vars.RUN in ['enkfgdas', 'gcdas']:
             case_vars.rRUN = "gdas"
             case_vars.first_mem = 1
         elif case_vars.RUN in ['gefs']:  # GEFS Ensemble RUN (both regular and RT)
             case_vars.GEFSTYPE = self.task_config.get('GEFSTYPE', 'gefs-offline')
+            case_vars.first_mem = 0
             if case_vars.GEFSTYPE == "gefs-offline":
-                case_vars.first_mem = 0
+                pass
             elif case_vars.GEFSTYPE == "gefs-real-time":
                 # select the relevant member for each GEFS member from GFS outputs
                 case_vars.cyc_ranges = [list(range(1, 31)), list(range(21, 51)),
                                         list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
-                case_vars.first_mem = 0
             else:
                 # Error handling for unknown GEFSTYPE
                 valid_types = ['gefs-offline', 'gefs-real-time']
