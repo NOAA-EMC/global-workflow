@@ -34,7 +34,7 @@ gfswave:
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}spec.tar.gz"
 
         # Wave boundary point output
-        {% if DOBNDPNT_WAV %}
+        {% if DOBNDPNT_WAVE %}
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpbull.tar"
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpcbull.tar"
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibp.tar"
