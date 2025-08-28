@@ -265,7 +265,7 @@ class Stage(Task):
         com_vars = self.calculate_general_cycle_variables()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
         current_cycle = {**com_vars.current_cycle_dict, "${MEMDIR}": memdir}
-        previous_cycle = {**com_vars.previous_cycle_dict, "${MEMDIR}": memdir}
+        previous_cycle = {**com_vars.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": com_vars.rRUN}
 
         com_vars['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
         com_vars['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(com_vars, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
