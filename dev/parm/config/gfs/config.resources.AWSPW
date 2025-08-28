@@ -35,7 +35,7 @@ case ${step} in
     export tasks_per_node=${ntiles:-6}
     ;;
 
-  "epos")
+  "epos" | "ecen")
     export is_exclusive="False"
     export PARTITION_BATCH="process"
     export threads_per_task=1
