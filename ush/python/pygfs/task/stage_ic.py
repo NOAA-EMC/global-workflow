@@ -374,7 +374,7 @@ class Stage(Task):
         # - current (RUN) for outputs
         current_cycle_in = {**com_vars.current_cycle_dict, "${MEMDIR}": memdir, "${RUN}": com_vars.rRUN}
         # - current (rRUN) for inputs
-        current_cycle = {**com_vars.current_cycle_in, "${RUN}": com_vars.RUN}
+        current_cycle = {**current_cycle_in, "${RUN}": com_vars.RUN}
         # - previous (rRUN) for prev-cycle restarts
         previous_cycle = {**com_vars.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": com_vars.rRUN}
 
