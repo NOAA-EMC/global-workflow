@@ -87,6 +87,10 @@ include:
       echo "PIPELINE_TYPE: ${PIPELINE_TYPE}"
       echo "RUN_ON_MACHINES: ${RUN_ON_MACHINES}"
 
+      # This is needed to support PyGitHub not being in Spack-Stack 1.9
+      PYTHONPATH=${PYTHONPATH}:$HOME/.local/lib/python3.11/site-packages
+      echo "Updated PYTHONPATH: $PYTHONPATH"
+
       # Make sure GW_HOMEgfs is properly set and the directory exists
       if [ ! -d "${GW_HOMEgfs}" ]; then
         echo "ERROR: GW_HOMEgfs directory does not exist: ${GW_HOMEgfs}"
@@ -179,8 +183,8 @@ include:
           fi
 
           if [[ -f "${error_log_file}" && -s "${error_log_file}" ]]; then
-            local error_logs_for_gist=""
-            local error_logs_markdown=""
+            error_logs_for_gist=""
+            error_logs_markdown=""
 
             while IFS= read -r full_log_path; do
               [[ -n "${full_log_path}" ]] || continue
