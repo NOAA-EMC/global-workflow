@@ -80,6 +80,7 @@ case ${step} in
         export tasks_per_node=1
 	;;
       *)
+	export PARTITION_BATCH="process"
         export tasks_per_node=3
 	;;
     esac
