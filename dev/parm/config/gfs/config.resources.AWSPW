@@ -81,11 +81,15 @@ case ${step} in
 
     case "${CASE}" in
       "C1152")
-        export PARTITION_BATCH="compute"
         export tasks_per_node=1
         ;;
       "C768")
+        export PARTITION_BATCH="process"
         export tasks_per_node=1
+        ;;
+      *)
+        export PARTITION_BATCH="process"
+        export tasks_per_node=3
         ;;
     esac
     ;;
