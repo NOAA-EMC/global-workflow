@@ -184,7 +184,7 @@ include:
             pr_error_log_links="(no error.logs file found)"
           fi
 
-          if [[ -f "${error_log_file}" && -s "${error_log_file}" ]]; then
+          if [[ -s "${error_log_file}" ]]; then
             error_logs_for_gist=""
             error_logs_markdown=""
 
