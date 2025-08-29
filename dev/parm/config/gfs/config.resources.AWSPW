@@ -42,10 +42,10 @@ case ${step} in
     export threads_per_task=1
 
     # Set ntasks to number of ens members and distribute tasks evenly across nodes
-    export ntasks=${NMEM_ENS}
+    export ntasks="${NMEM_ENS}"
     max_tasks_per_node=24
-    NNODES=$(( ($ntasks + $max_tasks_per_node - 1) / $max_tasks_per_node ))
-    export tasks_per_node=$(( ($ntasks + $NNODES - 1) / $NNODES ))
+    NNODES=$(( (ntasks + max_tasks_per_node - 1) / max_tasks_per_node ))
+    export tasks_per_node=$(( (ntasks + NNODES - 1) / NNODES ))
     ;;
 
   "eobs")
