@@ -519,7 +519,7 @@ $NLN $ESIASI           iasibufrears
 $NLN $IASIDB           iasibufr_db
 $NLN $AMSREBF          amsrebufr
 $NLN $AMSR2BF          amsr2bufr
-$NLN $GMI1CRBF         gmibufr   
+# $NLN $GMI1CRBF         gmibufr *Temporarily commented out pending bug fix*  
 $NLN $SAPHIRBF         saphirbufr
 $NLN $SEVIRIBF         seviribufr
 $NLN $CRISBF           crisbufr
