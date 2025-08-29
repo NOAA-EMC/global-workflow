@@ -76,9 +76,6 @@ case ${step} in
     ;;
 
   "fit2obs")
-    export PARTITION_BATCH="process"
-    export tasks_per_node=3
-
     case "${CASE}" in
       "C1152")
         export tasks_per_node=1
