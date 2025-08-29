@@ -98,7 +98,7 @@ Error Log Files:
 \`\`\`
 ${error_logs_markdown}
 \`\`\`
-🔗 View Error Logs: ${gist_links}
+View Error Logs: ${gist_links}
 EOF
       )
     else
@@ -109,7 +109,7 @@ EOF
 
   # Create formatted GitHub comment
   comment_body=$(cat << EOF
-🚫 _${caseName}_ **FAILED** on ${Machine}  (pipeline ID: ${CI_PIPELINE_ID})
+_${caseName}_ **FAILED** on ${Machine}  (pipeline ID: ${CI_PIPELINE_ID})
 
 In directory: \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
 
