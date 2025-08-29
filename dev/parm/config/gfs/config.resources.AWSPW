@@ -16,13 +16,13 @@ case ${step} in
     ;;
 
   "fcst" | "efcs" | "wavepostpnt")
-    export tasks_per_nodes=48
+    export tasks_per_nodes=${max_tasks_per_node}
     ;;
 
   "anal" | "analcalc" | "analdiag")
     export is_exclusive="True"
     export threads_per_task=1
-    export tasks_per_node=48
+    export tasks_per_node=${max_tasks_per_node}
     ;;
 
   "echgres")
@@ -63,7 +63,7 @@ case ${step} in
 
   "eupd")
     export threads_per_task=1
-    export tasks_per_node=48
+    export tasks_per_node=${max_tasks_per_node}
     ;;
 
   "esfc")
@@ -72,7 +72,7 @@ case ${step} in
     ;;
 
   "upp")
-    export tasks_per_node=48
+    export tasks_per_node=${max_tasks_per_node}
     ;;
 
   "fit2obs")
