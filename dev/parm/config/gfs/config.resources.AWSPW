@@ -80,16 +80,18 @@ case ${step} in
       "C1152")
         export tasks_per_node=1
 	;;
+
       "C768")
         export PARTITION_BATCH="process"
 	export tasks_per_node=1
 	;;
+
       *)
 	export PARTITION_BATCH="process"
         export tasks_per_node=3
 	;;
+
     esac
-    ;;
 
   *)
     export PARTITION_BATCH="process"
