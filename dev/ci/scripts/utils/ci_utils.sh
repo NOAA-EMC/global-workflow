@@ -191,7 +191,9 @@ function publish_logs_from_file() {
   # Read the list file and build an array of existing full paths
   while IFS= read -r line || [[ -n "${line}" ]]; do
     # skip empty lines
-    [[ -z "${line// /}" ]] && continue
+    if [[ -z "${line// /}" ]]; then
+        continue
+    fi
     if [[ -f "${line}" ]]; then
       files+=("${line}")
     else
