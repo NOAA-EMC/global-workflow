@@ -182,7 +182,7 @@ B1AVHAM=${B1AVHAM:-${COMIN_OBS}/${OPREFIX}avcsam.tm00.bufr_d${OSUFFIX}}
 B1AVHPM=${B1AVHPM:-${COMIN_OBS}/${OPREFIX}avcspm.tm00.bufr_d${OSUFFIX}}
 HDOB=${HDOB:-${COMIN_OBS}/${OPREFIX}hdob.tm00.bufr_d${OSUFFIX}}
 SAILDRONE=${SAILDRONE:-${COMIN_OBS}/${OPREFIX}saldrn.tm00.bufr_d${OSUFFIX}}
-GSBBF=${GSBBF:-${COMIN_OBS}/${OPREFIX}gsbprf.tm00.bufr_d${OSUFFIX}}
+GSBBF=${GSBBF:-${COMIN_OBS}/${OPREFIX}gsbpfl.tm00.bufr_d${OSUFFIX}}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
@@ -519,7 +519,7 @@ $NLN $ESIASI           iasibufrears
 $NLN $IASIDB           iasibufr_db
 $NLN $AMSREBF          amsrebufr
 $NLN $AMSR2BF          amsr2bufr
-$NLN $GMI1CRBF         gmibufr   
+# $NLN $GMI1CRBF         gmibufr *Temporarily commented out pending bug fix*  
 $NLN $SAPHIRBF         saphirbufr
 $NLN $SEVIRIBF         seviribufr
 $NLN $CRISBF           crisbufr
