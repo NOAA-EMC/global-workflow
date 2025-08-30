@@ -43,9 +43,9 @@ sed -e "s?HOMEgfs?${HOMEgfs}?g" \
    ${HOMEgfs}/dev/container/atmos_products/exec.exglobal_atmos_products.sh > ${HOMEgfs}/exec/exglobal_atmos_products.sh
    chmod +x ${HOMEgfs}/exec/exglobal_atmos_products.sh
 
-for fl in exglobal_atmos_products.sh interp_atmos_master.sh  interp_atmos_sflux.sh run_mpmd.sh
-do
-   cp ${HOMEgfs}/dev/container/atmos_products/${fl} ${HOMEgfs}/ush/container/.
-   chmod +x ${HOMEgfs}/ush/container/${fl}
-done
+#for fl in exglobal_atmos_products.sh interp_atmos_master.sh  interp_atmos_sflux.sh run_mpmd.sh
+#do
+#   cp ${HOMEgfs}/dev/container/atmos_products/${fl} ${HOMEgfs}/ush/container/.
+#   chmod +x ${HOMEgfs}/ush/container/${fl}
+#done
 

@@ -34,7 +34,11 @@ if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
 fi
 export PYTHONPATH
 
-if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
+source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEgfs}/ush/module-setup.sh"
+
+#if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
+if [[ "$MACHINE_ID" == "container" ]]; then
   # if [[ ! -d ~/prod-util-2.1.1 ]]; then
     # cp -r $prod_util_ROOT ~/prod-util-2.1.1
   # fi
@@ -52,9 +56,6 @@ if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
   module load gfsutils_container.intel
   module load wgrib2
 else
-  source "${HOMEgfs}/ush/detect_machine.sh"
-  source "${HOMEgfs}/ush/module-setup.sh"
-
   # Source versions file for runtime
   source "${HOMEgfs}/versions/run.ver"
 

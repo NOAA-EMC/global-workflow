@@ -177,7 +177,7 @@ trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 source "${HOMEgfs}/ush/bash_utils.sh"
 
 # Decide if run with container
-export RUN_WITH_CONTAINER=NO
+export RUN_WITH_CONTAINER=YES
 
 # Turn on our settings
 export SHELLOPTS

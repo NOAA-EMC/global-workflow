@@ -77,6 +77,8 @@
 # Main body starts here
 #######################
 
+set +x
+
 # include all subroutines. Executions later.
 source "${USHgfs}/forecast_predet.sh" 	# include functions for variable definition
 source "${USHgfs}/forecast_det.sh"  # include functions for run type determination
@@ -84,6 +86,8 @@ source "${USHgfs}/forecast_postdet.sh"	# include functions for variables after r
 source "${USHgfs}/parsing_ufs_configure.sh"	 # include functions for ufs_configure processing
 
 source "${USHgfs}/atparse.bash"  # include function atparse for parsing @[XYZ] templated files
+
+set +x
 
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
