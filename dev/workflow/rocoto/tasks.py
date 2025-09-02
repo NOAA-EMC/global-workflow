@@ -503,9 +503,6 @@ class Tasks:
             if task_constraint:
                 native += ' --constraint=' + task_constraint
 
-        else:
-            raise NotImplementedError(f"Scheduler type '{scheduler}' has not been implemented!")
-
         # Finally, construct and return the task resource dictionary
         task_resource = {'account': account,
                          'walltime': walltime,
@@ -514,7 +511,6 @@ class Tasks:
                          'ppn': ppn,
                          'threads': threads,
                          'memory': memory,
-                         'scheduler': scheduler,
                          'native': native,
                          'queue': task_queue,
                          'partition': task_partition}
