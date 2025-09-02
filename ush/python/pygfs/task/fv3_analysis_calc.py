@@ -107,9 +107,8 @@ class FV3AnalysisCalc(Task):
 
         # Stage background and increment files
         logger.info(f"Staging background and increment files from COM")
-        fh_dict = parse_j2yaml(self.task_config.INITIALIZE_YAML, self.task_config)
+        fh_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
         FileHandler(fh_dict).sync()
-        logger.debug(f"Background and increment files:\n{pformat(fh_dict)}")
 
     @logit(logger)
     def execute(self) -> None:

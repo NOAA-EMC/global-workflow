@@ -96,8 +96,8 @@ class MarineRecenter(Task):
 
         # stage the ensemble members and CICE restarts
         logger.info("---------------- Stage ensemble members and CICE restarts")
-        soca_ens_list = parse_j2yaml(self.task_config.INITIALIZE_YAML, self.task_config)
-        FileHandler(soca_ens_list).sync()
+        stage_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
+        FileHandler(stage_dict).sync()
 
         # initialize JEDI applications
         logger.info(f"Initializing SOCA gridgen application")
@@ -135,5 +135,5 @@ class MarineRecenter(Task):
 
         # Save recentered increments and ensemble statistics
         logger.info("---------------- Save recentered increments and ensemble statistics")
-        soca_ens_list = parse_j2yaml(self.task_config.FINALIZE_YAML, self.task_config)
-        FileHandler(soca_ens_list).sync()
+        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
+        FileHandler(save_dict).sync()

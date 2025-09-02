@@ -14,6 +14,8 @@ export layout_y_analcalc_fv3jedi=2
 # Get task specific resources
 . "${EXPDIR}/config.resources" analcalc_fv3jedi
 
+export STAGE_JEDI_FIX_YAML="${PARMgfs}/gdas/atm/atm_stage_jedi_fix.yaml.j2"
+export STAGE_YAML="${PARMgfs}/gdas/analcalc/analcalc_stage.yaml.j2"
 export JEDI_CONFIG_YAML="${PARMgfs}/gdas/analcalc/analcalc_jedi_config.yaml.j2"
 
 if [[ ${DOHYBVAR} = "YES" ]]; then
@@ -21,9 +23,5 @@ if [[ ${DOHYBVAR} = "YES" ]]; then
 else
     export CASE_ANL=${CASE}
 fi
-
-export STAGE_JEDI_FIX_YAML="${PARMgfs}/gdas/atm/atm_stage_jedi_fix.yaml.j2"
-
-export INITIALIZE_YAML="${PARMgfs}/gdas/analcalc/analcalc_initialize.yaml.j2"
 
 echo "END: config.analcalc_fv3jedi"

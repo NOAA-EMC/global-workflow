@@ -114,8 +114,8 @@ class MarineLETKF(Analysis):
         jcb_config = {**jcb_base_config, **stageconfig}
 
         # stage letkf-specific files
-        letkf_stage_list = parse_j2yaml(self.task_config.INITIALIZE_YAML, jcb_config)
-        FileHandler(letkf_stage_list).sync()
+        stage_dict = parse_j2yaml(self.task_config.STAGE_YAML, jcb_config)
+        FileHandler(stage_dict).sync()
 
         # stage ensemble background files
         soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.STAGE_ENS_BKG_YAML, stageconfig)
@@ -232,5 +232,5 @@ class MarineLETKF(Analysis):
         yamls_to_copy = []
         yamls_to_copy.append([letkfsaveconf.letkf_yaml_file, os.path.join(letkfsaveconf.COMOUT_CONF, 'soca_letkf.yaml')])
         FileHandler({'copy': yamls_to_copy}).sync()
-        letkf_save_list = parse_j2yaml(self.task_config.FINALIZE_YAML, letkfsaveconf)
-        FileHandler(letkf_save_list).sync()
+        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, letkfsaveconf)
+        FileHandler(save_dict).sync()

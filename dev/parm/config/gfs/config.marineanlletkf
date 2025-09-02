@@ -10,8 +10,9 @@ echo "BEGIN: config.marineanlletkf"
 
 export LETKF_EXEC="${EXECgfs}/gdas.x"
 export LETKF_YAML_YAML="${PARMgfs}/gdas/marine/letkf/letkf.yaml.j2"
-export INITIALIZE_YAML="${PARMgfs}/gdas/marine/marine_ens_initialize.yaml.j2"
-export FINALIZE_YAML="${PARMgfs}/gdas/marine/marine_ens_finalize.yaml.j2"
+
+export STAGE_YAML="${PARMgfs}/gdas/marine/marine_ens_stage.yaml.j2"
+export SAVE_YAML="${PARMgfs}/gdas/marine/marine_ens_save.yaml.j2"
 
 export GRIDGEN_EXEC="${EXECgfs}/gdas_soca_gridgen.x"
 export GRIDGEN_YAML="${HOMEgfs}/sorc/gdas.cd/parm/jcb-gdas/algorithm/marine/soca_gridgen.yaml.j2"

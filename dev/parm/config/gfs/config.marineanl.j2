@@ -7,7 +7,6 @@ echo "BEGIN: config.marineanl"
 
 # TODO: This should be sources in a config file specific to marine deterministic analysis
 #       and renamed to remove _DET
-export JEDI_CONFIG_YAML_DET="${PARMgfs}/gdas/marine/marine_det_jedi_config.yaml.j2"
 
 export JCB_ALGO_YAML_VAR="{{ JCB_ALGO_YAML_VAR }}"
 
@@ -19,9 +18,9 @@ export NINNER="{{ SOCA_NINNER }}"
 export DOMAIN_STACK_SIZE=116640000  #TODO: Make the stack size resolution dependent
 export MARINE_JCB_GDAS_OBS="${PARMgfs}/gdas/jcb-gdas/observations/marine"
 
+export JEDI_CONFIG_YAML_DET="${PARMgfs}/gdas/marine/marine_det_jedi_config.yaml.j2"
 export STAGE_FIX_YAML="${PARMgfs}/gdas/marine/marine_stage_fix_${OCNRES}.yaml.j2"
 export STAGE_UTILITIES_YAML="${PARMgfs}/gdas/marine/marine_stage_utilities.yaml.j2"
-
 export STAGE_DET_BKG_YAML="${PARMgfs}/gdas/marine/marine_det_stage_bkg.yaml.j2"
 export STAGE_ENS_BKG_YAML="${PARMgfs}/gdas/marine/marine_ens_stage_bkg.yaml.j2"
 

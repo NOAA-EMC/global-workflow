@@ -221,5 +221,5 @@ class MarineBMat(Task):
 
         # Save output files to COM
         logger.info(f"Copy files to ROTDIR")
-        soca_finalize_list = parse_j2yaml(self.task_config.FINALIZE_YAML, self.task_config)
-        FileHandler(soca_finalize_list).sync()
+        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
+        FileHandler(save_dict).sync()

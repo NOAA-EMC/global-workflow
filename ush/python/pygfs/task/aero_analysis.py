@@ -131,10 +131,9 @@ class AerosolAnalysis(Task):
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # stage files from COM and create working directories
-        logger.info(f"Staging files prescribed from {self.task_config.INITIALIZE_YAML}")
-        aero_var_stage_dict = parse_j2yaml(self.task_config.INITIALIZE_YAML, self.task_config)
-        FileHandler(aero_var_stage_dict).sync()
-        logger.debug(f"Staging from COM:\n{pformat(aero_var_stage_dict)}")
+        logger.info(f"Staging files prescribed from {self.task_config.STAGE_YAML}")
+        stage_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
+        FileHandler(stage_dict).sync()
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
@@ -195,9 +194,9 @@ class AerosolAnalysis(Task):
         satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
 
         # copy files back to COM
-        logger.info(f"Copying files to COM based on {self.task_config.AERO_FINALIZE_VARIATIONAL_YAML}")
-        aero_var_final_list = parse_j2yaml(self.task_config.AERO_FINALIZE_VARIATIONAL_YAML, self.task_config)
-        FileHandler(aero_var_final_list).sync()
+        logger.info(f"Copying files to COM based on {self.task_config.SAVE_YAML}")
+        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
+        FileHandler(save_dict).sync()
 
         # tar aerosol bias correction files to ROTDIR
         logger.info(f"Creating aerosol bias correction tar file {aertar}")

@@ -139,8 +139,8 @@ class MarineAnalysis(Task):
 
         # stage files and link directories from B-matrix job needed for deterministic analysis
         logger.info(f"Staging files needed for deterministic analysis from COM")
-        soca_files_list = parse_j2yaml(self.task_config.INITIALIZE_YAML, self.task_config)
-        FileHandler(soca_files_list).sync()
+        stage_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
+        FileHandler(stage_dict).sync()
 
         # assert that dates of the history files are correct
         mdau.test_hist_date('./INPUT/MOM.res.nc', self.task_config.MARINE_WINDOW_BEGIN)
@@ -198,8 +198,8 @@ class MarineAnalysis(Task):
 
         # Save output files to COM
         logger.info(f"Copy files to ROTDIR")
-        soca_finalize_list = parse_j2yaml(self.task_config.FINALIZE_YAML, self.task_config)
-        FileHandler(soca_finalize_list).sync()
+        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
+        FileHandler(save_dict).sync()
 
         # Save obs diag statistics to COM (success is optional)
         logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
