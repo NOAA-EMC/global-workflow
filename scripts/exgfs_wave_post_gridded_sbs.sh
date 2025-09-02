@@ -21,6 +21,7 @@
 #
 ###############################################################################
 
+source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 source "${USHgfs}/wave_domain_grid.sh"
 
 DOGRI_WAV=${DOGRI_WAV:-"NO"}  # Interpolate to a grid

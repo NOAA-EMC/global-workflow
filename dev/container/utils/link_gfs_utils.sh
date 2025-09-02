@@ -60,7 +60,7 @@ source /usr/lmod/lmod/init/bash
 module purge
 module use ${HOMEgfs}/sorc/gfs_utils.fd/modulefiles
 module load gfsutils_container.intel
-module load wgrib2/2.0.8
+module load wgrib2/3.6.0
 
 arg="\$@"
 ${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${model}.x \$arg
@@ -97,7 +97,7 @@ source /usr/lmod/lmod/init/bash
 module purge
 module use ${HOMEgfs}/sorc/gfs_utils.fd/modulefiles
 module load gfsutils_container.intel
-module load wgrib2/2.0.8
+module load wgrib2/3.6.0
 
 arg="\$@"
 ${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${nm}.x \$arg
