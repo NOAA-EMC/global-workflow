@@ -58,13 +58,19 @@ rm -f ${run_model_script}
 cat > $run_model_script << EOF_MODEL
 #!/bin/bash
 
-# Set OMP_NUM_THREADS to 1 to avoid oversubscription when doing MPMD
-export OMP_NUM_THREADS=1
+source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 
-source /usr/lmod/lmod/init/bash
-module purge
-module use ${HOMEgfs}/sorc/ufs_model.fd/modulefiles
-module load ufs_container.intel
+# --- MPI and Fabric Configuration ---
+# 1. Force Intel MPI to use Slurm's PMI2 library for job startup
+# for Ursa
+export I_MPI_PMI_LIBRARY=/apps/slurm/default/lib/libpmi2.so
+
+# 2. Set the OFI provider to Mellanox InfiniBand
+export FI_PROVIDER=mlx
+
+# 3. Disable problematic shared memory transports in UCX
+export UCX_TLS=^sm,cma
+# --- End of Configuration ---
 
 arg="\$@"
 ${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x \$arg
@@ -79,27 +85,10 @@ case "${machineid}" in
   ursa)
 cat > $link_model_script << EOF_URSA
 #!/bin/bash
-# --- MPI and Fabric Configuration ---
-# 1. Force Intel MPI to use Slurm's PMI2 library for job startup
-# for Ursa
-#export I_MPI_PMI_LIBRARY=/apps/slurm/default/lib/libpmi2.so
-
-# 2. Set the OFI provider to Mellanox InfiniBand
-export FI_PROVIDER=mlx
-
-# 3. Disable problematic shared memory transports in UCX
-export UCX_TLS=^sm,cma
-# --- End of Configuration ---
-
-HOST_SLURM_PATH=/apps/slurm/default
-HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2
-
  export LD_LIBRARY_PATH=$(dirname ${container})
  set +x
  arg="\$@"
  singularity exec \\
-    --bind \${HOST_SLURM_PATH}:\${HOST_SLURM_PATH} \\
-    --bind \${HOST_MPI_PATH}:\${HOST_MPI_PATH} \\
     ${bindings} \\
     ${container} \\
     ${run_model_script} \$arg

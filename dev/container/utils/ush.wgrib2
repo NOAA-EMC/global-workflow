@@ -1,9 +1,6 @@
 #!/bin/bash
 
-source /usr/lmod/lmod/init/bash
-module purge
-module use HOMEgfs/modulefiles
-module load module_gwsetup.container
+source HOMEgfs/dev/ush/load_gw_run_modules.sh
 
 module load wgrib2/3.6.0
 
@@ -46,8 +43,6 @@ while [[ "$#" -gt 0 ]]; do
     esac
     shift # Consume the option/argument
 done
-
-#/opt/spack-stack/spack-stack-1.6.0/envs/unified-env/install/intel/2021.10.0/wgrib2-2.0.8-bq36dgw/bin/wgrib2 $arg
 
 if [[ "$has_ftime" == "true" ]]; then
     echo "new_arg: $new_arg"
