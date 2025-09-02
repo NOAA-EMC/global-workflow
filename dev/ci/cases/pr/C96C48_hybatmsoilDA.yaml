@@ -1,0 +1,24 @@
+experiment:
+  net: gfs
+  mode: cycled
+
+arguments:
+  pslot: {{ 'pslot' | getenv }}
+  app: ATM
+  resdetatmos: 96
+  resensatmos: 48
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808/
+  idate: 2022051506
+  edate: 2022051518
+  nens: 20
+  interval: 6
+  start: warm
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/atmsoilDA_defaults_ci.yaml
+
+skip_ci_on_hosts:
+  - orion
+  - hercules
+  - gaeac5
+  - awsepicglobalworkflow
