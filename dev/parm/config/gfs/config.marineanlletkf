@@ -9,7 +9,7 @@ echo "BEGIN: config.marineanlletkf"
 . "${EXPDIR}/config.resources" marineanlletkf
 
 export LETKF_EXEC="${EXECgfs}/gdas.x"
-export LETKF_YAML_YAML="${PARMgfs}/gdas/marine/letkf/letkf.yaml.j2"
+export LETKF_YAML="${PARMgfs}/gdas/marine/letkf/letkf.yaml.j2"
 
 export STAGE_YAML="${PARMgfs}/gdas/marine/marine_ens_stage.yaml.j2"
 export SAVE_YAML="${PARMgfs}/gdas/marine/marine_ens_save.yaml.j2"

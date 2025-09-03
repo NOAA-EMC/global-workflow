@@ -70,7 +70,7 @@ class EnsembleRecenter(Task):
 
         # Create dictionary of Jedi objects
         expected_keys = ['correction_increment', 'ensemble_recenter']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_TMPL, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -97,14 +97,14 @@ class EnsembleRecenter(Task):
         self.jedi_dict['ensemble_recenter'].initialize(self.task_config)
 
         # Stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_TMPL}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_TMPL, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # Stage background and increment files
-        logger.info(f"Staging background and increment files from {self.task_config.INITIALIZE_TMPL}")
-        fh_dict = parse_j2yaml(self.task_config.INITIALIZE_TMPL, self.task_config)
+        logger.info(f"Staging background and increment files from {self.task_config.STAGE_YAML}")
+        fh_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
         FileHandler(fh_dict).sync()
         logger.debug(f"JEDI background and increment files:\n{pformat(fh_dict)}")
 

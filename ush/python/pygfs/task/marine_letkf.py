@@ -73,7 +73,7 @@ class MarineLETKF(Analysis):
         logger.info("initialize")
 
         # make directories and stage ensemble background files
-        soca_fix_stage_list = parse_j2yaml(self.task_config.STAGE_FIX_TMPL, self.task_config)
+        soca_fix_stage_list = parse_j2yaml(self.task_config.STAGE_FIX_YAML, self.task_config)
         FileHandler(soca_fix_stage_list).sync()
         stageconfig = AttrDict()
         keys = ['app_path_observations',
@@ -154,7 +154,7 @@ class MarineLETKF(Analysis):
 
         # make the letkf.yaml
         # TODO (AFE) switch to fully JCB version
-        letkf_yaml = parse_j2yaml(self.task_config.LETKF_YAML_TMPL, jcb_config)
+        letkf_yaml = parse_j2yaml(self.task_config.LETKF_YAML, jcb_config)
         letkf_yaml.observations.observers = obs_to_use
         letkf_yaml.save(self.task_config.letkf_yaml_file)
 
