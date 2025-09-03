@@ -32,10 +32,10 @@ if [[ ! -v HOMEgfs || ! -v container || ! -v bindings ]]; then
    exit -1
 fi
 
-echo "HOMEgfs: $HOMEgfs"
-echo "container: $container"
-echo "bindings: $bindings"
-echo "Verbose: $verbose"
+# echo "HOMEgfs: $HOMEgfs"
+# echo "container: $container"
+# echo "bindings: $bindings"
+# echo "Verbose: $verbose"
 
 sed -e "s?HOMEgfs?${HOMEgfs}?g" \
     -e "s?SIF?${container}?g" \

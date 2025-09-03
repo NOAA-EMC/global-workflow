@@ -60,6 +60,18 @@ cat > $run_model_script << EOF_MODEL
 
 source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 
+arg="\$@"
+${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x \$arg
+EOF_MODEL
+
+link_model_script=${HOMEgfs}/exec/${model}.x
+rm -f ${link_model_script}
+
+case "${machineid}" in
+  ursa)
+cat > $link_model_script << EOF_URSA
+#!/bin/bash
+
 # --- MPI and Fabric Configuration ---
 # 1. Force Intel MPI to use Slurm's PMI2 library for job startup
 # for Ursa
@@ -72,28 +84,21 @@ export FI_PROVIDER=mlx
 export UCX_TLS=^sm,cma
 # --- End of Configuration ---
 
-arg="\$@"
-${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x \$arg
-EOF_MODEL
+HOST_SLURM_PATH=/apps/slurm/default
+HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2/opt/compiler
 
-chmod 755 $run_model_script
-
-link_model_script=${HOMEgfs}/exec/${model}.x
-rm -f ${link_model_script}
-
-case "${machineid}" in
-  ursa)
-cat > $link_model_script << EOF_URSA
-#!/bin/bash
  export LD_LIBRARY_PATH=$(dirname ${container})
  set +x
  arg="\$@"
  singularity exec \\
+    --bind \${HOST_SLURM_PATH}:\${HOST_SLURM_PATH} \\
+    --bind \${HOST_MPI_PATH}:\${HOST_MPI_PATH} \\
     ${bindings} \\
     ${container} \\
     ${run_model_script} \$arg
 EOF_URSA
     ;;
+
   gaea*)
 cat > $link_model_script << EOF_GAEA
 #!/bin/bash
@@ -112,6 +117,7 @@ cat > $link_model_script << EOF_GAEA
     ${run_model_script} \$arg
 EOF_GAEA
     ;;
+
   noaacloud)
 cat > $link_model_script << EOF_NOAACLOUD
 #!/bin/bash
@@ -127,13 +133,12 @@ cat > $link_model_script << EOF_NOAACLOUD
  set +x
  arg="\$@"
  singularity exec \\
-    --bind \${HOST_SLURM_PATH}:\${HOST_SLURM_PATH} \\
-    --bind \${HOST_MPI_PATH}:\${HOST_MPI_PATH} \\
     ${bindings} \\
     ${container} \\
     ${run_model_script} \$arg
 EOF_NOAACLOUD
     ;;
+
   *)
 cat > $link_model_script << EOF_LINK
 #!/bin/bash
@@ -146,7 +151,9 @@ cat > $link_model_script << EOF_LINK
     ${run_model_script} \$arg
 EOF_LINK
     ;;
+
 esac
 
+chmod 755 $run_model_script
 chmod 755 $link_model_script
 

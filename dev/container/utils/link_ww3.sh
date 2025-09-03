@@ -37,11 +37,11 @@ if [[ ! -v HOMEgfs || ! -v container || ! -v type ]]; then
    exit -1
 fi
 
-echo "HOMEgfs: $HOMEgfs"
-echo "container: $container"
-echo "bindings: $bindings"
-echo "type: $type"
-echo "Verbose: $verbose"
+# echo "HOMEgfs: $HOMEgfs"
+# echo "container: $container"
+# echo "bindings: $bindings"
+# echo "type: $type"
+# echo "Verbose: $verbose"
 
 if [[ "$verbose" == "true" ]]; then
    set -x

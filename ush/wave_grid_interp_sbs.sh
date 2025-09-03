@@ -22,7 +22,14 @@
 
 # 0.a Basic modes of operation
 
-source ${HOMEgfs}/dev/ush/load_gw_run_modules.sh
+source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
+
+if [[ ${MACHINE_ID} == container ]] ; then
+    # We are in a container
+     export PATH=${PATH}:~/prod-util-2.1.1/bin
+else
+    module load prod_util
+fi
 
 grdID=$1
 valid_time=$2
