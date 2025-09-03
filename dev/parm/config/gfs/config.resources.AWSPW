@@ -3,40 +3,97 @@
 
 # AWS-specific job resources
 
-export is_exclusive="True"
 unset memory
 unset "memory_${RUN}"
-export threads_per_task=1
 
 step=$1
 
 case ${step} in
+  "prep")
+    export PARTITION_BATCH="process"
+    export ntasks=12
+    export tasks_per_node=12
+    ;;
+
   "fcst" | "efcs" | "wavepostpnt")
-    export PARTITION_BATCH="compute"
-    unset PARTITION_SERVICE
-    max_tasks_per_node=48
-    tasks_per_node=48
+    export tasks_per_nodes=${max_tasks_per_node}
     ;;
 
-  "anal")
-    export PARTITION_BATCH="compute"
-    max_tasks_per_node=48
-    tasks_per_node=48
+  "anal" | "analcalc" | "analdiag")
+    export is_exclusive="True"
+    export threads_per_task=1
+    export tasks_per_node=${max_tasks_per_node}
     ;;
 
-  "analcalc" | "analdiag" | "upp")
-    export PARTITION_BATCH="compute"
-    max_tasks_per_node=48
+  "echgres")
+    export is_exclusive="True"
+    ;;
+
+  "sfcanl")
+    export is_exclusive="False"
+    export PARTITION_BATCH="process"
+    export threads_per_task=1 
+    export tasks_per_node=${ntiles:-6}
+    ;;
+
+  "epos" | "ecen")
+    export is_exclusive="False"
+    export PARTITION_BATCH="process"
+    export threads_per_task=1
+
+    # Set ntasks to number of ens members and distribute tasks evenly across nodes
+    export ntasks="${NMEM_ENS}"
+    max_tasks_per_node=24
+    NNODES=$(( (ntasks + max_tasks_per_node - 1) / max_tasks_per_node ))
+    export tasks_per_node=$(( (ntasks + NNODES - 1) / NNODES ))
+    ;;
+
+  "eobs")
+    walltime="00:20:00"
+    export PARTITION_BATCH="process"
+    # NOTE The number of tasks and cores used must be the same for eobs
+    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+    export threads_per_task=1
+    export tasks_per_node=20
+    ;;
+
+  "ediag")
+    export is_exclusive="True"
+    ;;
+
+  "eupd")
+    export threads_per_task=1
+    export tasks_per_node=${max_tasks_per_node}
+    ;;
+
+  "esfc")
+    export is_exclusive="True"
+    export tasks_per_node=40
+    ;;
+
+  "upp")
+    export tasks_per_node=${max_tasks_per_node}
+    ;;
+
+  "fit2obs")
+    case "${CASE}" in
+      "C1152")
+        export tasks_per_node=1
+        ;;
+      "C768")
+        export PARTITION_BATCH="process"
+        export tasks_per_node=1
+        ;;
+      *)
+        export PARTITION_BATCH="process"
+        export tasks_per_node=3
+        ;;
+    esac
     ;;
 
   *)
     export PARTITION_BATCH="process"
     unset PARTITION_SERVICE
-    max_tasks_per_node=24
-    tasks_per_node=24
     ;;
 
 esac
-
-export max_tasks_per_node
-export tasks_per_node
