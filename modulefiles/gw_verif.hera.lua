@@ -1,9 +1,7 @@
 help([[
-Load environment to run GFS on Hera
+Load environment to run EMC_verif-global on Hera
 ]])
 
--- Test that HOMEgfs is set.
--- If not, load_gw_run_modules.sh was not sourced to load this module.
 prepend_path("MODULEPATH", "/contrib/spack-stack/spack-stack-1.6.0/envs/gsi-addon-dev-fms-2024.01/install/modulefiles/Core")
 load("stack-intel")
 load("stack-python")
@@ -13,6 +11,4 @@ load("metplus/3.1.1")
 load("grib-util")
 load("wgrib2")
 
-whatis("Description: GFS run environment")
-
-load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
+whatis("Description: EMC_verif-global run environment")
