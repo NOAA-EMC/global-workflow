@@ -58,3 +58,7 @@ soil_moisture_factor: 1
 soil_drylimit_factor: 1.75
 vertical_to_horizontal_flux_ratio_limit: 2.e-04
 drag_partition_option: 2
+
+# SettlingSolver options
+# Options: 'gocart' or 'ufs'
+settling_scheme: 'ufs'

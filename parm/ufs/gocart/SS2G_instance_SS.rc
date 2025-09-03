@@ -48,4 +48,6 @@ fwet_ice: 1.0 1.0 1.0 1.0 1.0
 fwet_snow: 1.0 1.0 1.0 1.0 1.0
 fwet_rain: 1.0 1.0 1.0 1.0 1.0
 
-
+# SettlingSolver options
+# Options: 'gocart' or 'ufs'
+settling_scheme: 'ufs'
