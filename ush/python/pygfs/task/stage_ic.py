@@ -4,10 +4,8 @@ Stage Initial Conditions (IC) Task
 
 Overview
 --------
-This module defines the Stage task responsible for constructing cycle- and
-member-specific COM (communication/output) directory path variables and
-staging (syncing) the required initial condition, analysis, and restart
-files into the experiment rotation directory (ROTDIR).
+This module constructs cycle and member-specific COM directory path variables
+required for initial conditions for the Stage IC task.
 
 High-Level Responsibilities
 ---------------------------
@@ -29,15 +27,6 @@ High-Level Responsibilities
    - calculate_member_com_paths_gefs_offline
    - calculate_member_com_paths_gefs_rt
    - calculate_member_com_paths_gcafs
-
-Execution Flow
---------------
-calculate_stage_vars():
-  * Calls calculate_general_cycle_variables() which internally calls
-    calculate_case_specific_variables().
-  * Iterates over ensemble members (or a single deterministic sentinel range).
-  * Dispatches to the appropriate per-application COM path calculator.
-  * Invokes execute_stage() to perform the actual file staging.
 
 Key Methods
 -----------
