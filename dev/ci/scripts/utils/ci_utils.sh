@@ -204,8 +204,7 @@ function publish_logs_from_file() {
   local URL=""
   if (( ${#files[@]} )); then
     # First, upload to repo (retain original behavior) if desired
-    # shellcheck disable=SC2027,SC2086
-    ${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py --file "${files[@]}" --repo ${PR_header} > /dev/null || true
+    "${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[@]}" --repo "${PR_header}" > /dev/null || true
 
     # For gist, if more than one file use --multiple --format github
     if (( ${#files[@]} > 1 )); then
