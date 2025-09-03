@@ -153,7 +153,7 @@ class Stage(Task):
             logger.debug("No rRUN remap applied: RUN='%s' (rRUN stays '%s')", case_vars.RUN, case_vars.rRUN)
 
         # START_ICE_FROM_ANA logic (only if DO_ICE is True)
-        if getattr(case_vars, "DO_ICE", True):
+        if getattr(case_vars, "DO_ICE", False):
             case_vars.START_ICE_FROM_ANA = False
             if getattr(case_vars, "DO_JEDIOCNVAR", False) and case_vars.RUN == "gdas":
                 case_vars.START_ICE_FROM_ANA = True
