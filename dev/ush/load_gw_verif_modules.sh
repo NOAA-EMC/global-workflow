@@ -63,8 +63,8 @@ case "${MACHINE_ID}" in
   target_module="gw_verif.${MACHINE_ID}"
   ;;
 *)
-  echo "FATAL ERROR: UNKNOWN/UNSUPPORTED PLATFORM: '${MACHINE_ID}'"
-  exit 1
+  echo "WARNING: UNKNOWN/UNSUPPORTED PLATFORM: '${MACHINE_ID}'"
+  target_module="gw_run.${MACHINE_ID}"
   ;;
 esac
 
