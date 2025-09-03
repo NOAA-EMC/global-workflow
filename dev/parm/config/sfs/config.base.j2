@@ -133,7 +133,6 @@ export DO_EXTRACTVARS="{{ DO_EXTRACTVARS }}" # Option to process and extract a s
 export DO_AERO_FCST="NO"
 export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO" # The SFS buoys file does not currently have any boundary points
-export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
@@ -311,18 +310,16 @@ if [[ "${EXP_WARM_START}" = ".true." ]]; then
   fi
 fi
 
+#Soil DA. Stage ic and archive tasks look for these configs
+export DO_GSISOILDA="NO"
+export DO_LAND_IAU=".false."
+
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
 if [[ ${DONST} = "YES" ]]; then export FNTSFA="        "; fi
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
-
-# Make the nsstbufr file on the fly or use the GDA version
-export MAKE_NSSTBUFR="{{ MAKE_NSSTBUFR }}"
-
-# Make the aircraft prepbufr file on the fly or use the GDA version
-export MAKE_ACFTBUFR="{{ MAKE_ACFTBUFR }}"
 
 # Verification options
 export DO_METP="NO"         # Run METPLUS jobs - set METPLUS settings in config.metp

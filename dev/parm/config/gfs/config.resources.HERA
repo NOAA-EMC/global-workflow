@@ -17,6 +17,11 @@ case ${step} in
     fi
     ;;
 
+  "anlstat")
+    memory="96GB"
+    ;;
+
+
   "atmanlvar" | "atmensanlobs" | "atmensanlsol")
     export tasks_per_node=12
     ;;

@@ -15,6 +15,17 @@ export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 export TROPCYQCRELOSH="${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh"
 export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
+# Allow users to control the generation or use of either operational or
+# their processed prepbufr, prepbufr.acft_profiles, nsstbufr files
+export MAKE_PREPBUFR="YES"  # Generate prepbufr, etc. files by executing obsproc
+if [[ "${MAKE_PREPBUFR^^}" != "YES" ]]; then
+  export USE_PREPBUFR_FROM_OPS="YES"  # Copy operational prepbufr, etc files
+  if [[ "${USE_PREPBUFR_FROM_OPS^^}" != "YES" ]]; then
+    # Location of user processed prepbufr, etc files
+    export PREPBUFR_DIR="${DMPDIR:-}"  # Replace DMPDIR with the location of processed files
+  fi
+fi
+
 # Adjust observation error for GFS v16 parallels
 #
 #   NOTE:  Remember to set OBERROR in config.anal as PRVT is set below
