@@ -70,7 +70,7 @@ def main():
         logger.debug("Cleaning up temporary files and directories")
         archive.clean()
 
-    logger.info(f"Returned to working directory {pwd}")
+    logger.info(f"Returned to working directory {os.getcwd()}")
 
 
 if __name__ == '__main__':
