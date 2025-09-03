@@ -179,9 +179,11 @@ while true; do
   \tCompleted Jobs  : ${JOBS_DONE}/${JOBS_TOTAL}
   \tState           : ${ROCOTO_STATE}"
 
-  if [[ ${ROCOTO_STATE} == "FAIL" ]]; then
+  # Creative BASH string inclusion check - treat failure_states as a pseudo-list
+  failure_states="FAIL UNAVAILABLE UNKNOWN STALLED"
+  if [[ " ${failure_states} " =~ " ${ROCOTO_STATE} " ]]; then
     {
-      echo "Experiment ${pslot} Terminated with ${FAIL} tasks failed and ${DEAD} dead at $(date)" || true
+      echo "Experiment ${pslot} Terminated with state ${ROCOTO_STATE}: ${FAIL} tasks failed, ${DEAD} dead at $(date)" || true
     } | tee -a "${run_check_logfile}"
     error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
     {
