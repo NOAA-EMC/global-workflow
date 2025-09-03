@@ -144,16 +144,8 @@ class SnowAnalysis(Task):
 
         # if 00z, do SCF preprocessing
         if self.task_config.cyc == 0:
-            IMSmap_in = f"IMS_4km_to_{self.task_config.CASE}.mx{self.task_config.OCNRES}.nc"
-            IMSmap_out = f"IMS4km_to_FV3_mapping.{self.task_config.CASE}.mx{self.task_config.OCNRES}_oro_data.nc"
-            input_files = [
-                [os.path.join(self.task_config.COMIN_OBS, f"{self.task_config.OPREFIX}imssnow96.asc"),
-                 os.path.join(self.task_config.DATA, "obs",
-                              f"ims{to_julian(self.task_config.current_cycle)}_4km_v1.3.asc")],
-                [os.path.join(self.task_config.FIXgfs, "gdas", "obs", "ims", IMSmap_in),
-                 os.path.join(self.task_config.DATA, "obs", IMSmap_out)],
-            ]
-            FileHandler({'copy': input_files}).sync()
+            ims_scf_to_ioda_staging_dict = parse_j2yaml(self.task_config.SNOW_IMS_STAGE_TMPL, self.task_config)
+            FileHandler(ims_scf_to_ioda_staging_dict).sync()
             self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
 
         # initialize JEDI variational application
