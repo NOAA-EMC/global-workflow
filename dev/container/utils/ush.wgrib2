@@ -1,9 +1,6 @@
 #!/bin/bash
 
-source /usr/lmod/lmod/init/bash
-module purge
-module use HOMEgfs/modulefiles
-module load module_gwsetup.container
+source "HOMEgfs/dev/ush/load_gw_run_modules.sh"
 
 module load wgrib2/3.6.0
 
