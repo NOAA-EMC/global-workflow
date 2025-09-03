@@ -428,7 +428,7 @@ class GCAFSTasks(Tasks):
 
     def aeroanlgenb(self):
         """
-        Create a task for generating aerosol background fields.
+        Create a task for generating aerosol background error files.
 
         This task generates the background fields required for aerosol analysis.
 
