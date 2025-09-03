@@ -5,7 +5,7 @@ host_override:  # over-ride options for host
     walltime_ratio: 1.5  # Uniformly adjust the wallclock by this factor (builds are slower on head nodes)
     build:
       gdas:
-        memory: "30G"
+        memory: "60G"
         cores: 8
         walltime: "02:30:00"
 systems:
