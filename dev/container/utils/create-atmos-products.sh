@@ -32,20 +32,14 @@ if [[ ! -v HOMEgfs || ! -v container || ! -v bindings ]]; then
    exit -1
 fi
 
-echo "HOMEgfs: $HOMEgfs"
-echo "container: $container"
-echo "bindings: $bindings"
-echo "Verbose: $verbose"
+# echo "HOMEgfs: $HOMEgfs"
+# echo "container: $container"
+# echo "bindings: $bindings"
+# echo "Verbose: $verbose"
 
 sed -e "s?HOMEgfs?${HOMEgfs}?g" \
     -e "s?SIF?${container}?g" \
     -e "s?BINDINGS?${bindings}?g" \
    ${HOMEgfs}/dev/container/atmos_products/exec.exglobal_atmos_products.sh > ${HOMEgfs}/exec/exglobal_atmos_products.sh
    chmod +x ${HOMEgfs}/exec/exglobal_atmos_products.sh
-
-#for fl in exglobal_atmos_products.sh interp_atmos_master.sh  interp_atmos_sflux.sh run_mpmd.sh
-#do
-#   cp ${HOMEgfs}/dev/container/atmos_products/${fl} ${HOMEgfs}/ush/container/.
-#   chmod +x ${HOMEgfs}/ush/container/${fl}
-#done
 

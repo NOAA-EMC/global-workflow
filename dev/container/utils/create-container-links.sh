@@ -32,10 +32,10 @@ if [[ ! -v HOMEgfs || ! -v container || ! -v bindings ]]; then
    exit -1
 fi
 
-echo "HOMEgfs: $HOMEgfs"
-echo "container: $container"
-echo "bindings: $bindings"
-echo "Verbose: $verbose"
+# echo "HOMEgfs: $HOMEgfs"
+# echo "container: $container"
+# echo "bindings: $bindings"
+# echo "Verbose: $verbose"
 
 ${HOMEgfs}/dev/container/utils/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t gfs
 ${HOMEgfs}/dev/container/utils/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t sfs

@@ -2,6 +2,7 @@
 
 verbose=false
 bindings="-B /scratch3 -B /scratch4"
+machineid="ursa"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -21,6 +22,10 @@ while [ "$#" -gt 0 ]; do
       model="$2"
       shift 2
       ;;
+    -M|--MACHINE_ID)
+      machineid="$2"
+      shift 2
+      ;;
     -v|--verbose)
       verbose=true
       shift
@@ -32,15 +37,16 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-if [[ ! -v HOMEgfs || ! -v container || ! -v model ]]; then
+if [[ ! -v HOMEgfs || ! -v container || ! -v model || ! -v MACHINE_ID ]]; then
    echo "Usage: link_model.sh -H/-HOMEgfs gw-home-dir -c/--container full-path-container-image \\"
-   echo "                     -m/--model name_model  -b/--bindings -B dirname [-B dirname1 [...]] [-v]"
+   echo "                     -m/--model name_model -M/MACHINE_ID MACHINE_ID -b/--bindings [...]] [-v]"
    exit -1
 fi
 
 #echo "HOMEgfs: $HOMEgfs"
 #echo "model: $model"
 #echo "Verbose: $verbose"
+#echo "machineid: $machineid"
 
 if [[ "$verbose" == "true" ]]; then
    set -x
@@ -58,12 +64,12 @@ arg="\$@"
 ${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x \$arg
 EOF_MODEL
 
-chmod 755 $run_model_script
-
 link_model_script=${HOMEgfs}/exec/${model}.x
 rm -f ${link_model_script}
 
-cat > $link_model_script << EOF_LINK
+case "${machineid}" in
+  ursa)
+cat > $link_model_script << EOF_URSA
 #!/bin/bash
 
 # --- MPI and Fabric Configuration ---
@@ -78,14 +84,75 @@ export FI_PROVIDER=mlx
 export UCX_TLS=^sm,cma
 # --- End of Configuration ---
 
+HOST_SLURM_PATH=/apps/slurm/default
+HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2/opt/compiler
+
  export LD_LIBRARY_PATH=$(dirname ${container})
  set +x
  arg="\$@"
  singularity exec \\
- ${bindings} \\
- ${container} \\
- ${run_model_script} \$arg
-EOF_LINK
+    --bind \${HOST_SLURM_PATH}:\${HOST_SLURM_PATH} \\
+    --bind \${HOST_MPI_PATH}:\${HOST_MPI_PATH} \\
+    ${bindings} \\
+    ${container} \\
+    ${run_model_script} \$arg
+EOF_URSA
+    ;;
 
+  gaea*)
+cat > $link_model_script << EOF_GAEA
+#!/bin/bash
+#export SINGULARITY_ENABLE_OVERLAY=try
+#export SINGULARITY_DISABLE_OVERLAY=yes
+#export SINGULARITY_DEBUG=10
+#export SINGULARITY_DEBUG=0
+#unset SINGULARITY_DEBUG
+
+ export LD_LIBRARY_PATH=$(dirname ${container})
+ set +x
+ arg="\$@"
+ singularity exec \\
+    ${bindings} \\
+    ${container} \\
+    ${run_model_script} \$arg
+EOF_GAEA
+    ;;
+
+  noaacloud)
+cat > $link_model_script << EOF_NOAACLOUD
+#!/bin/bash
+
+#Need these lines on AWS to run more than one node.
+#export I_MPI_DEBUG=10
+ export I_MPI_FABRICS=shm:ofi
+ export I_MPI_OFI_PROVIDER=tcp
+ export FI_PROVIDER=tcp
+ export FI_TCP_IFACE=eth0
+
+ export LD_LIBRARY_PATH=$(dirname ${container})
+ set +x
+ arg="\$@"
+ singularity exec \\
+    ${bindings} \\
+    ${container} \\
+    ${run_model_script} \$arg
+EOF_NOAACLOUD
+    ;;
+
+  *)
+cat > $link_model_script << EOF_LINK
+#!/bin/bash
+ export LD_LIBRARY_PATH=$(dirname ${container})
+ set +x
+ arg="\$@"
+ singularity exec \\
+    ${bindings} \\
+    ${container} \\
+    ${run_model_script} \$arg
+EOF_LINK
+    ;;
+esac
+
+chmod 755 $run_model_script
 chmod 755 $link_model_script
 
