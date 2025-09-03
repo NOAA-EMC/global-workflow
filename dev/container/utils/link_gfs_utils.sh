@@ -56,11 +56,13 @@ do
    cat > $run_model_script << EOF_MODEL
 #!/bin/bash
 
-source /usr/lmod/lmod/init/bash
-module purge
-module use ${HOMEgfs}/sorc/gfs_utils.fd/modulefiles
-module load gfsutils_container.intel
-module load wgrib2/2.0.8
+#source /usr/lmod/lmod/init/bash
+#module purge
+#module use ${HOMEgfs}/sorc/gfs_utils.fd/modulefiles
+#module load gfsutils_container.intel
+
+source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
+module load wgrib2/3.6.0
 
 arg="\$@"
 ${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${model}.x \$arg
@@ -91,13 +93,9 @@ do
 
    cat > $direct_model_script << EOF_DIRECT
 #!/bin/bash
-#!/bin/bash
 
-source /usr/lmod/lmod/init/bash
-module purge
-module use ${HOMEgfs}/sorc/gfs_utils.fd/modulefiles
-module load gfsutils_container.intel
-module load wgrib2/2.0.8
+source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
+module load wgrib2/3.6.0
 
 arg="\$@"
 ${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${nm}.x \$arg

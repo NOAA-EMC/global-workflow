@@ -17,6 +17,23 @@ ulimit_s=$( ulimit -S -s )
 
 source "${HOMEgfs}/ush/preamble.sh"
 
+# Find module command and purge:
+source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEgfs}/ush/module-setup.sh"
+
+case "$${MACHINE_ID}" in
+  container)
+    source /usr/lmod/lmod/init/bash
+    ;;
+  *)
+    source /apps/lmod/lmod/init/bash
+    ;;
+esac
+
+module purge
+module use ${HOMEgfs}/sorc/ufs_model.fd/modulefiles
+module load ufs_${MACHINE_ID}.intel
+
 # If this function exists in the environment, run it; else set -x if it was set on entering this script
 ftype=$(type -t set_trace || echo "")
 if [[ "${ftype}" == "function" ]]; then
