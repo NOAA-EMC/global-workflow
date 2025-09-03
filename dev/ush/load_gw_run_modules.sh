@@ -21,12 +21,14 @@ source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
-case "$${MACHINE_ID}" in
+echo "MACHINE_ID: ${MACHINE_ID}"
+
+case "${MACHINE_ID}" in
   container)
     source /usr/lmod/lmod/init/bash
     ;;
   *)
-    source /apps/lmod/lmod/init/bash
+    # source /apps/lmod/lmod/init/bash
     ;;
 esac
 

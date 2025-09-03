@@ -52,13 +52,7 @@ rm -f ${run_model_script}
 cat > $run_model_script << EOF_MODEL
 #!/bin/bash
 
-# Set OMP_NUM_THREADS to 1 to avoid oversubscription when doing MPMD
-export OMP_NUM_THREADS=1
-
-source /usr/lmod/lmod/init/bash
-module purge
-module use ${HOMEgfs}/sorc/ufs_model.fd/modulefiles
-module load ufs_container.intel
+source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 
 arg="\$@"
 ${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x \$arg
@@ -71,20 +65,6 @@ rm -f ${link_model_script}
 
 cat > $link_model_script << EOF_LINK
 #!/bin/bash
-
-#Need these lines on AWS to run more than one node.
-#export I_MPI_DEBUG=10
-#export I_MPI_FABRICS=shm:ofi
-#export I_MPI_OFI_PROVIDER=tcp
-#export FI_PROVIDER=tcp
-#export FI_TCP_IFACE=eth0
-
-#For GaeaC6
-#export SINGULARITY_ENABLE_OVERLAY=try
-#export SINGULARITY_DISABLE_OVERLAY=yes
-#export SINGULARITY_DEBUG=10
-#export SINGULARITY_DEBUG=0
-#unset SINGULARITY_DEBUG
 
 # --- MPI and Fabric Configuration ---
 # 1. Force Intel MPI to use Slurm's PMI2 library for job startup
