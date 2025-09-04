@@ -202,7 +202,7 @@ function publish_logs_from_file() {
   done < "${list_file}"
 
   local URL=""
-  if (( ${#files[@]} )); then
+  if (( ${#files[@]} > 0 )); then
     # First, upload to repo (retain original behavior) if desired
     "${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[@]}" --repo "${PR_header}" > /dev/null || true
 
