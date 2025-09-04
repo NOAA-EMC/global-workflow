@@ -5,7 +5,6 @@
 
 echo "BEGIN: config.marineanlfinal"
 
-export SAVE_YAML="${PARMgfs}/gdas/marine/marine_det_save.yaml.j2"
 
 # Get task specific resources
 . "${EXPDIR}/config.resources" marineanlfinal
