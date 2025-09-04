@@ -22,10 +22,16 @@
 
 # Template matrices for case lists
 .hera_cases_matrix: &hera_cases
-  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S", "C96C48_ufs_hybatmDA"]
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_ufs_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S"]
 
 .gaeac6_cases_matrix: &gaeac6_cases
   - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S"]
+
+.orion_cases_matrix: &orion_cases
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C96C48_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S"]
+
+.hercules_cases_matrix: &hercules_cases
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S"]
 
 # Host: Hera - Standard Cases
 setup_experiments-hera:
@@ -81,6 +87,60 @@ run_experiments-gaeac6:
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
+# Host: Orion - Standard Cases
+setup_experiments-orion:
+  extends: .setup_experiment_template
+  variables:
+    machine: orion
+  tags:
+    - orion
+  parallel:
+    matrix: *orion_cases
+  needs:
+    - build-orion
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\borion\b|all/)
+
+run_experiments-orion:
+  extends: .run_experiments_template
+  variables:
+    machine: orion
+  tags:
+    - orion
+  parallel:
+    matrix: *orion_cases
+  needs:
+    - setup_experiments-orion
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\borion\b|all/)
+
+# Host: Hercules - Standard Cases
+setup_experiments-hercules:
+  extends: .setup_experiment_template
+  variables:
+    machine: hercules
+  tags:
+    - hercules
+  parallel:
+    matrix: *hercules_cases
+  needs:
+    - build-hercules
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
+
+run_experiments-hercules:
+  extends: .run_experiments_template
+  variables:
+    machine: hercules
+  tags:
+    - hercules
+  parallel:
+    matrix: *hercules_cases
+  needs:
+    - setup_experiments-hercules
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
+
 finalize_success-hera:
   extends: .finalize_success_template
   variables:
@@ -106,6 +166,32 @@ finalize_success-gaeac6:
   when: on_success
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
+
+finalize_success-orion:
+  extends: .finalize_success_template
+  variables:
+    machine: orion
+  tags:
+    - orion
+  needs:
+    - job: run_experiments-orion
+      optional: true
+  when: on_success
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\borion\b|all/)
+
+finalize_success-hercules:
+  extends: .finalize_success_template
+  variables:
+    machine: hercules
+  tags:
+    - hercules
+  needs:
+    - job: run_experiments-hercules
+      optional: true
+  when: on_success
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
 
 # =======================================
 # CTests configurations by host
@@ -144,6 +230,30 @@ setup_ctests-gaeac6:
   rules:
     - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
 
+setup_ctests-orion:
+  extends: .setup_ctests_template
+  stage: setup_tests
+  tags:
+    - orion
+  variables:
+    machine: orion
+  needs:
+    - build-orion
+  rules:
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\borion\b|all/)
+
+setup_ctests-hercules:
+  extends: .setup_ctests_template
+  stage: setup_tests
+  tags:
+    - hercules
+  variables:
+    machine: hercules
+  needs:
+    - build-hercules
+  rules:
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
+
 # Host: Hera - CTests
 run_ctests-hera:
   extends: .ctests_cases_template
@@ -163,6 +273,26 @@ run_ctests-gaeac6:
     - setup_ctests-gaeac6
   rules:
     - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
+
+# Host: Orion - CTests
+run_ctests-orion:
+  extends: .ctests_cases_template
+  tags:
+    - orion
+  needs:
+    - setup_ctests-orion
+  rules:
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\borion\b|all/)
+
+# Host: Hercules - CTests
+run_ctests-hercules:
+  extends: .ctests_cases_template
+  tags:
+    - hercules
+  needs:
+    - setup_ctests-hercules
+  rules:
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
 
 # =======================================
 # Common build configurations by host
@@ -187,4 +317,24 @@ build-gaeac6:
     - gaeac6
   rules:
     - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
+    - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
+
+build-orion:
+  extends: .build_template
+  variables:
+    machine: orion
+  tags:
+    - orion
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\borion\b|all/)
+    - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
+
+build-hercules:
+  extends: .build_template
+  variables:
+    machine: hercules
+  tags:
+    - hercules
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
     - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
