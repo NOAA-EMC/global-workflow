@@ -36,7 +36,7 @@ done
 
 cd "${HOMEgfs_}/sorc/ufs_model.fd"
 
-source "${HOMEgfs_}/sorc/ufs_model.fd/tests/detect_machine.sh"
+source "${HOMEgfs_}/ush/detect_machine.sh"
 source "${HOMEgfs_}/sorc/ufs_model.fd/tests/module-setup.sh"
 
 MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
