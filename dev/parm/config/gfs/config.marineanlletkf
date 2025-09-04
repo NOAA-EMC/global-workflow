@@ -6,7 +6,7 @@
 echo "BEGIN: config.marineanlletkf"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" marineanlletkf
+source "${EXPDIR}/config.resources" marineanlletkf
 
 export LETKF_EXEC="${EXECgfs}/gdas.x"
 export LETKF_YAML="${PARMgfs}/gdas/marine/letkf/letkf.yaml.j2"
