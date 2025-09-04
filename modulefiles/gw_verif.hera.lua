@@ -9,6 +9,7 @@ load("stack-intel-oneapi-mpi")
 load("met/9.1.3")
 load("metplus/3.1.1")
 load("grib-util")
+load("prod_util")
 load("wgrib2")
 
 whatis("Description: EMC_verif-global run environment")
