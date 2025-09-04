@@ -1,29 +1,52 @@
 #!/usr/bin/bash
 
+#########################################################################
+# config.orion - Platform-specific configuration for Orion
+#
+# This file contains environment variables used by CI/CD scripts,
+# directories, and settings specific to the Orion platform.
+#########################################################################
+
 # Main CI root directory
 export GFS_CI_ROOT=/work2/noaa/global/${USER}/GFS_CI_CD/ORION
-# ICSDIR root directory used on the create_experment.py command line
+
+# ICSDIR root directory - Contains initial condition data
+# Used by create_experiment.py for setting up test cases
 export ICSDIR_ROOT=/work/noaa/global/glopara/data/ICSDIR
+
+#########################################################################
+# Jenkins configuration settings
+#########################################################################
 
 # JENKINS launch directory for agent
 export JENKINS_AGENT_LAUNCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+
 # JENKINS internal working directories for CI jobs (not for users use)
+# Where Jenkins stores temporary files during CI job execution
 export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
+
 # NOTE: JENKINS custom_workspace directory where CI jobs are run
 # /work2/noaa/global/role-global/GFS_CI_CD/ORION/CI
 # is defined in the Jenkinsfile
 
-# CI BASH test directories
-export GFS_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
+#########################################################################
+# GitLab CI configuration
+# These variables are referenced directly by launch_gitlab_runner.sh
+#########################################################################
 
-#########################################################################
-# CTest functional test directories for pre-staged input data
-#########################################################################
-# TODO GITLAB not supported on Orion yet
-# export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
-# export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
+# Used in the 'register' step of launch_gitlab_runner.sh for --url parameter
+export GITLAB_URL=https://vlab.noaa.gov/gitlab-community
+export GITLAB_RUNNER_NAME="RDHPCS Orion"
+
+# Directory for GitLab builds
+# Used in launch_gitlab_runner.sh for the --builds-dir parameter
+# This works with --custom_build_dir-enabled=true to allow GIT_CLONE_PATH override
+# from .gitlab-ci.yml to specify exact clone locations within this directory
+export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
+
+# Directory for GitLab runner used by launch_gitlab_runner.sh
+# This is where runner state/config files are stored (--working-directory parameter)
+export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
 
 # HPC account which overides the default account
 export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
-export max_concurrent_cases=5
-export max_concurrent_pr=4
