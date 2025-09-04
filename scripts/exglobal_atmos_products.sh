@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 
 # Scripts used

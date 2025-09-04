@@ -2,19 +2,21 @@
 
 source /usr/lmod/lmod/init/bash
 module purge
-module use HOMEgfs/modulefiles
-module load gw_setup.container
+module use HOMEgfs/sorc/gfs_utils.fd/modulefiles
+module load gfsutils_container.intel
 
-module list
+#module list
 
 module load python
 module load py-netcdf4
 module load py-xarray
 module load py-f90nml
 module load py-numpy
+module load py-jinja2
+module load py-pyyaml
 # module load py-python-dateutil/2.8.2
 
-module list
+#module list
 
 wxflowPATH="HOMEgfs/ush/python:HOMEgfs/sorc/wxflow/src"
 export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}HOMEgfs/ush:${wxflowPATH}"

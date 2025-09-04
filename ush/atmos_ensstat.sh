@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
+
 grid=${1}
 fhr3=${2}
 grid_type=${3:-''}
