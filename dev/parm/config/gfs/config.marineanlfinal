@@ -7,5 +7,5 @@ echo "BEGIN: config.marineanlfinal"
 
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" marineanlfinal
+source "${EXPDIR}/config.resources" marineanlfinal
 echo "END: config.marineanlfinal"
