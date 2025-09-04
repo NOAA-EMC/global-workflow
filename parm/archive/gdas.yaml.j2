@@ -157,7 +157,9 @@ gdas:
         # Raw netCDF forecasts
         - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ fhr3 }}.nc"
         {% if fhr != 0 %}
+        {% if DOHYBVAR %}
         - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ fhr3 }}.ensres.nc"
+        {% endif %}
         {% endif %}
         - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ fhr3 }}.nc"
         {% endfor %}
