@@ -181,7 +181,7 @@ while true; do
 
   # Creative BASH string inclusion check - treat failure_states as a pseudo-list
   failure_states="FAIL UNAVAILABLE UNKNOWN STALLED"
-  if [[ "${failure_states}" =~ ${ROCOTO_STATE} ]]; then
+  if [[ " ${failure_states} " =~ " ${ROCOTO_STATE} " ]]; then
     {
       echo "Experiment ${pslot} Terminated with state ${ROCOTO_STATE}: ${FAIL} tasks failed, ${DEAD} dead at $(date)" || true
     } | tee -a "${run_check_logfile}"
