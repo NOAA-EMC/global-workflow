@@ -53,7 +53,6 @@ class MarineBMat(Task):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
                 'CALC_SCALE_EXEC': _calc_scale_exec,
                 'MARINE_WINDOW_BEGIN': _window_begin,
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,

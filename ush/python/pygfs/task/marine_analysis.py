@@ -57,7 +57,7 @@ class MarineAnalysis(Task):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
+                'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
                 'MARINE_WINDOW_BEGIN': _window_begin,
                 'MARINE_WINDOW_END': _window_end,
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
@@ -128,7 +128,7 @@ class MarineAnalysis(Task):
         FileHandler(obs_list).sync()
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
-        logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
+        logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMmarine}")
         soca_utility_list = parse_j2yaml(self.task_config.STAGE_UTILITIES_YAML, self.task_config)
         FileHandler(soca_utility_list).sync()
 

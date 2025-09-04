@@ -54,7 +54,7 @@ class MarineLETKF(Analysis):
         self.task_config.mom_input_nml = os.path.join(self.task_config.DATA, 'mom_input.nml')
         self.task_config.obs_dir = os.path.join(self.task_config.DATA, 'obs')
         self.task_config.ENSPERT_RELPATH = _enspert_relpath
-        self.task_config.PARMsoca = os.path.join(self.task_config.PARMgfs, 'gdas', 'marine')
+        self.task_config.PARMmarine = os.path.join(self.task_config.PARMgfs, 'gdas', 'marine')
         self.task_config.app_path_observations = self.task_config.MARINE_JCB_GDAS_OBS
         self.task_config.letkf_app = "true"
         self.task_config.OPREFIX = f"{self.task_config.RUN.replace('enkf','')}.t{self.task_config.cyc:02d}z."
@@ -108,7 +108,7 @@ class MarineLETKF(Analysis):
         for key in keys:
             stageconfig[key] = self.task_config[key]
 
-        jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'jcb-base.yaml.j2')
+        jcb_base_yaml = os.path.join(self.task_config.PARMmarine, 'jcb-base.yaml.j2')
         jcb_base_config = parse_j2yaml(path=jcb_base_yaml, data=stageconfig)
 
         jcb_config = {**jcb_base_config, **stageconfig}
