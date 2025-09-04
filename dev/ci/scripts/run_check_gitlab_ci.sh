@@ -5,6 +5,7 @@ set -eu
 #####################################################################################
 # Script description: script to check the status of an experiment as reported
 #                     by Rocoto and report failures to GitHub PR if applicable
+# no-op for testing CI environment
 #####################################################################################
 
 
