@@ -179,8 +179,8 @@ while true; do
   \tCompleted Jobs  : ${JOBS_DONE}/${JOBS_TOTAL}
   \tState           : ${ROCOTO_STATE}"
 
-  # Creative BASH string inclusion check - treat failure_states as a pseudo-list
   failure_states="FAIL UNAVAILABLE UNKNOWN STALLED"
+  # shellcheck disable=SC2076  # We want literal string matching, not regex
   if [[ " ${failure_states} " =~ " ${ROCOTO_STATE} " ]]; then
     {
       echo "Experiment ${pslot} Terminated with state ${ROCOTO_STATE}: ${FAIL} tasks failed, ${DEAD} dead at $(date)" || true
