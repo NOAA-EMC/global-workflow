@@ -179,8 +179,7 @@ aero_fcst_runs="gdas" # When to run aerosol forecast: gdas, gfs, or both
 aero_anl_runs="gdas gfs" # When to run aerosol analysis: gdas, gfs, or both
 export DO_AERO_FCST="NO"
 export DO_AERO_ANL="NO"
-export DOBNDPNT_WAVE="YES"
-export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
+export DOBNDPNT_WAVE="YES" # Option to create point outputs for downstream boundary points 
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
