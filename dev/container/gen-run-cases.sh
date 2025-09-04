@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set +x
+set -x
 
 HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 source "${HOMEgfs}/ush/detect_machine.sh"
@@ -8,8 +8,8 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 run_with_container=YES
 
  casetype=pr
-#yamllist="C48_ATM"
- yamllist="C48_S2SW"
+ yamllist="C48_ATM"
+#yamllist="C48_S2SW"
 #yamllist="C48_S2SWA_gefs"
 #yamllist="C96mx100_S2S"
 
@@ -65,7 +65,7 @@ if [[ "${run_with_container}" == "YES" ]]; then
     	-v -R
 
    ${HOMEDIR}/dev/container/utils/create-atmos-products.sh -H ${HOMEDIR} -c ${container} -b "${bindings}"
-   ${HOMEDIR}/dev/container/utils/create-container-links.sh -H ${HOMEDIR} -c ${container} -b "${bindings}"
+   ${HOMEDIR}/dev/container/utils/create-container-links.sh -H ${HOMEDIR} -c ${container} -b "${bindings}" -M ${MACHINE_ID}
 else
    TOPICDIR=${TOPICDIR} \
    RUNTESTS=${rundir} \

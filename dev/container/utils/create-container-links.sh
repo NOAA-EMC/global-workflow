@@ -20,6 +20,10 @@ while [ "$#" -gt 0 ]; do
       verbose=true
       shift
       ;;
+    -M|--MACHINE_ID)
+      machineid="$2"
+      shift 2
+      ;;
     *)
       echo "Unknown option: $1"
       exit 1
@@ -27,8 +31,8 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-if [[ ! -v HOMEgfs || ! -v container || ! -v bindings ]]; then
-   echo "Usage: create-container-links.sh -H/--HOMEgfs gw-home-dir -c/--container container-fullpath -b/--bindings list-of-binding-dirs [-v]"
+if [[ ! -v HOMEgfs || ! -v container || ! -v bindings || ! -v MACHINE_ID ]]; then
+   echo "Usage: create-container-links.sh -H/--HOMEgfs gw-home-dir -c/--container container-fullpath -b/--bindings -M|--MACHINE_ID list-of-binding-dirs [-v]"
    exit -1
 fi
 
@@ -41,9 +45,9 @@ ${HOMEgfs}/dev/container/utils/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${b
 ${HOMEgfs}/dev/container/utils/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t sfs
 ${HOMEgfs}/dev/container/utils/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t gefs
 
-${HOMEgfs}/dev/container/utils/link_model.sh -H ${HOMEgfs} -c ${container} -m gfs_model -b "${bindings}"
-${HOMEgfs}/dev/container/utils/link_model.sh -H ${HOMEgfs} -c ${container} -m sfs_model -b "${bindings}"
-${HOMEgfs}/dev/container/utils/link_model.sh -H ${HOMEgfs} -c ${container} -m gefs_model -b "${bindings}"
+${HOMEgfs}/dev/container/utils/link_model.sh -H ${HOMEgfs} -c ${container} -m gfs_model -b "${bindings}" -M ${machineid}
+${HOMEgfs}/dev/container/utils/link_model.sh -H ${HOMEgfs} -c ${container} -m sfs_model -b "${bindings}" -M ${machineid}
+${HOMEgfs}/dev/container/utils/link_model.sh -H ${HOMEgfs} -c ${container} -m gefs_model -b "${bindings}" -M ${machineid}
 
 ${HOMEgfs}/dev/container/utils/link_gfs_utils.sh -H ${HOMEgfs} -c ${container} -b "${bindings}"
 ${HOMEgfs}/dev/container/utils/link_ufs_utils.sh -H ${HOMEgfs} -c ${container} -b "${bindings}"
