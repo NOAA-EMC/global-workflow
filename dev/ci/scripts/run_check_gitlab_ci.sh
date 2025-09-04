@@ -135,6 +135,7 @@ EOF
 # Source modules and setup logging
 echo "Source modules."
 source "${HOMEgfs}/dev/ush/gw_setup.sh"
+PYTHONPATH=${PYTHONPATH}:$HOME/.local/lib/python3.11/site-packages
 
 # cd into the experiment directory
 echo "cd ${RUNTESTS}/EXPDIR/${pslot}"
