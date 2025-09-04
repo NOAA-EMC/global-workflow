@@ -123,6 +123,7 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
     native = resources_dict.get('native', None)
     memory = resources_dict.get('memory', None)
     nodes = resources_dict.get('nodes', 1)
+    scheduler = resources_dict.get('scheduler', 'unknown')
     ppn = resources_dict.get('ppn', 1)
     threads = resources_dict.get('threads', 1)
     log = task_dict.get('log', 'demo.log')
@@ -144,7 +145,12 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
     if partition is not None:
         strings.append(f'\t<partition>{partition}</partition>\n')
     strings.append(f'\t<walltime>{walltime}</walltime>\n')
-    strings.append(f'\t<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>\n')
+    # Construct resources string based on ppn, nodes, and threads
+    if nodes > 1 or threads > 1 or scheduler == "pbspro":
+        strings.append(f'\t<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>\n')
+    else:
+        strings.append(f'\t<cores>{ppn}</cores>\n')
+
     if memory is not None:
         strings.append(f'\t<memory>{memory}</memory>\n')
     if native is not None:

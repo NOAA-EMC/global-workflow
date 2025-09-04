@@ -28,13 +28,13 @@ gfswave:
         - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
         {% endfor %}
 
-        # Wave bulletins
+        # Wave point output
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}bull.tar"
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}cbull.tar"
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}spec.tar.gz"
 
-        # Wave IBP bulletins
-        {% if DOIBP_WAV %}
+        # Wave boundary point output
+        {% if DOBNDPNT_WAVE %}
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpbull.tar"
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibpcbull.tar"
         - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}ibp.tar"
