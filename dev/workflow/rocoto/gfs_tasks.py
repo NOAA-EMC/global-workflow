@@ -866,7 +866,11 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_hybvar_ocn']:
+        # if DOHYBVAR_OCN: "YES" and EUPD_CYC: "both"
+        if self.options['do_hybvar_ocn'] and \
+                (('gfs' in self.app_config.ens_runs and
+                 'gdas' in self.app_config.ens_runs) or
+                 self.run == "gdas"):
             dep_dict = {'type': 'task', 'name': f'enkf{self.run}_marineanlecen'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_mergensst']:
