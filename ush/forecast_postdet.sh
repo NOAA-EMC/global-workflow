@@ -694,7 +694,9 @@ MOM6_out() {
   # Copy MOM_input from DATA to COMOUT_CONF after the forecast is run (and successfull)
   cpfs "${DATA}/INPUT/MOM_input" "${COMOUT_CONF}/ufs.MOM_input"
   # Copy runtime configuration of MOM: MOM_parameter_doc.all that was used in the forecast
-  cpfs "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" "${COMOUT_CONF}/MOM_parameter_doc.all"
+  if [[ -f "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" ]]; then
+    cpfs "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" "${COMOUT_CONF}/MOM_parameter_doc.all"
+  fi
   
   # Create a list of MOM6 restart files
   # Coarser than 1/2 degree has a single MOM restart
