@@ -19,7 +19,7 @@ run_with_container=YES
 HOMEDIR=${HOMEgfs}
 img=ubuntu22.04-intel-ufs-env-v1.9.2.img
 if [[ ${MACHINE_ID} = ursa* ]] ; then
-   container=/scratch4/NAGAPE/epic/${USER}/containers/${img}
+   container=/scratch3/NCEPDEV/nems/role.epic/containers/${img}
    rundir=/scratch3/NAGAPE/epic/${USER}/run
    bindings="-B /scratch3 -B /scratch4"
    HPC_ACCOUNT=epic
@@ -27,7 +27,7 @@ if [[ ${MACHINE_ID} = ursa* ]] ; then
    module load rocoto/1.3.7
    rocotocmd=`which rocotorun`
 elif [[ ${MACHINE_ID} = gaea* ]] ; then
-   container=/gpfs/f6/scratch/${USER}/container/${img}
+   container=/gpfs/f6/scratch/Wei.Huang/container/${img}
    rundir=/gpfs/f6/scratch/${USER}/run
    bindings="-B /gpfs/f6/scratch -B /ncrc/home1/${USER}"
    HPC_ACCOUNT=bil-fire8
@@ -35,9 +35,9 @@ elif [[ ${MACHINE_ID} = gaea* ]] ; then
    rocotocmd=/autofs/ncrc-svm1_home2/Christopher.W.Harrop/rocoto-1.3.7/bin/rocotorun
 elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    TOPICDIR=/bucket/global-workflow-shared-data/ICSDIR
-   container=/contrib/${USER}/container/${img}
-   rundir=/lustre/${USER}/ss191/run
-   STMP=/lustre/${USER}/ss191/stmp
+   container=/contrib/container/${img}
+   rundir=/lustre/${USER}/run
+   STMP=/lustre/${USER}/stmp
    bindings="--env \"I_MPI_FABRICS=ofi:shm,I_MPI_DEBUG=6\" -B /apps/slurm/default/lib/libpmi2.so -B /contrib -B /lustre -B /bucket"
    HPC_ACCOUNT=${USER}
 
