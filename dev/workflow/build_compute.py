@@ -77,6 +77,7 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.resources.nodes = 1
     task_dict.resources.ntasks = task_spec.cores
     task_dict.resources.ppn = task_spec.cores
+    task_dict.resources.scheduler = host_spec.scheduler
     task_dict.resources.threads = 1
 
     return task_dict
