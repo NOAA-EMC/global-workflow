@@ -10,22 +10,6 @@ class GEFSTasks(Tasks):
 
     def stage_ic(self):
 
-        stage_ic_map = {'gefs-offline': self._offline_stage_ic,
-                        'near-real-time': self._rt_stage_ic}
-        # Check if gefstype is valid
-        if self.app_config.gefstype not in stage_ic_map:
-            if not isinstance(self.app_config.gefstype, str):
-                raise TypeError(f'gefstype must be a string')
-            raise NotImplementedError(f'{self.app_config.gefstype} is not a valid type.\n'
-                                      f'Currently supported GEFS types are:\n'
-                                      f'{" | ".join(stage_ic_map.keys())}')
-        # Call the appropriate method based on gefstype
-        task = stage_ic_map[self.app_config.gefstype]()
-
-        return task
-
-    def _offline_stage_ic(self):
-
         resources = self.get_resource('stage_ic')
         task_name = f'{self.run}_stage_ic'
         task_dict = {'task_name': task_name,
@@ -41,46 +25,16 @@ class GEFSTasks(Tasks):
 
         return task
 
-    def _rt_stage_ic(self):
-
-        resources = self.get_resource('stage_ic')
-        stage_ic_envars = self.envars.copy()
-        stage_ic_dict = {'ENSMEM': '#member#',
-                         'MEMDIR': 'mem#member#'}
-
-        for key, value in stage_ic_dict.items():
-            stage_ic_envars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        task_name = f'{self.run}_stage_ic_mem#member#'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'envars': stage_ic_envars,
-                     'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/dev/jobs/stage_ic.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': f'{self.run}_stage_ic',
-                                'task_dict': task_dict,
-                                'var_dict': member_var_dict
-                                }
-
-        task = rocoto.create_task(member_metatask_dict)
-
-        return task
-
     def gen_control_ic(self):
         dependencies = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem000'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
         dependencies.append(rocoto.add_dependency(dep_dict))
 
         resources = self.get_resource('gen_control_ic')
         task_name = f'{self.run}_gen_control_ic'
         task_dict = {'task_name': task_name,
                      'resources': resources,
+                     'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/dev/jobs/gen_control_ic.sh',
@@ -176,22 +130,6 @@ class GEFSTasks(Tasks):
         return task
 
     def efcs(self):
-        dependencies = []
-        if self.app_config.gefstype in ['gefs-offline']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-        elif self.app_config.gefstype in ['near-real-time']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic_mem#member#'}
-
-        if self.options['do_wave']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_aero_fcst']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
-
         num_fcst_segments = len(self.options['fcst_segments']) - 1
         resources = self.get_resource('efcs')
 
@@ -202,6 +140,18 @@ class GEFSTasks(Tasks):
         #
         tasks = []
         for member in [f"{mem:03d}" for mem in range(1, self.nmem + 1)]:
+            dependencies = []
+            dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+
+            if self.options['do_wave']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_wave_init'}
+                dependencies.append(rocoto.add_dependency(dep_dict))
+            if self.options['do_aero_fcst']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
+                dependencies.append(rocoto.add_dependency(dep_dict))
+
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
             efcsenvars = self.envars.copy()
             efcsenvars_dict = {'ENSMEM': f'{member}',

@@ -40,31 +40,31 @@ source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
 case "${MACHINE_ID}" in
-"hera" | "orion" | "hercules" | "wcoss2" | "gaeac5" | "gaeac6")
-  #TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
-  if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
-    export LMOD_TMOD_FIND_FIRST=yes
-    # TODO: Add path to GDASApp libraries and cray-mpich as temporary patches
-    # TODO: Remove LD_LIBRARY_PATH lines as soon as permanent solutions are available
-    export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEgfs}/sorc/gdas.cd/build/lib"
-    export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/cray/pe/mpich/8.1.19/ofi/intel/19.0/lib"
-  fi
-  module load "${MODS}/${MACHINE_ID}"
-  export err=$?
-  if [[ ${err} -ne 0 ]]; then
-    echo "FATAL ERROR: Failed to load ${MODS}/${MACHINE_ID}"
-    exit 1
-  fi
-  ncdump=$(command -v ncdump)
-  NETCDF=$(echo "${ncdump}" | cut -d " " -f 3)
-  export NETCDF
-  ;;
-"acorn")
-  echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
-  ;;
-*)
-  echo "WARNING: UNKNOWN PLATFORM"
-  ;;
+  ("hera" | "orion" | "hercules" | "wcoss2" | "gaeac5" | "gaeac6" | "ursa")
+    #TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
+    if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+      export LMOD_TMOD_FIND_FIRST=yes
+      # TODO: Add path to GDASApp libraries and cray-mpich as temporary patches
+      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEgfs}/sorc/gdas.cd/build/lib"
+      # TODO: Remove LD_LIBRARY_PATH line as soon as permanent solution is available
+      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/cray/pe/mpich/8.1.29/ofi/intel/2022.1/lib"
+    fi
+    module load "${MODS}/${MACHINE_ID}"
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+      echo "FATAL ERROR: Failed to load ${MODS}/${MACHINE_ID}"
+      exit 1
+    fi
+    ncdump=$( command -v ncdump )
+    NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
+    export NETCDF
+    ;;
+  ("acorn")
+    echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
+    ;;
+  *)
+    echo "WARNING: UNKNOWN PLATFORM"
+    ;;
 esac
 
 module list

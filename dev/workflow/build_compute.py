@@ -77,6 +77,7 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.resources.nodes = 1
     task_dict.resources.ntasks = task_spec.cores
     task_dict.resources.ppn = task_spec.cores
+    task_dict.resources.scheduler = host_spec.scheduler
     task_dict.resources.threads = 1
 
     return task_dict
@@ -183,6 +184,12 @@ def main(*argv):
     # Retrieve build specificatiosn from user provided yaml
     user_yaml_dict = AttrDict(parse_yaml(user_inputs.yaml))
     build_specs = get_build_specs(user_yaml_dict, host_specs)
+
+    # Temporarily prevent the GDASApp from building on the compute node
+    # TODO restore the GDASApp when it can be built on compute nodes again and/or 'compute' builds are enabled on head nodes.
+    #      See issue 3933
+    if "gdas" in build_specs.build:
+        build_specs.build.pop("gdas")
 
     systems = user_inputs.systems.split() if "all" not in user_inputs.systems else ["all"]
 
