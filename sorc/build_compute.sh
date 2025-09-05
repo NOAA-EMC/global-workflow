@@ -65,11 +65,16 @@ if [[ "${verbose}" == "YES" ]]; then
    set -x
 fi
 
-# shellcheck disable=SC2155,SC2312
-HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+script_dir="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
+HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
+# Needs to be exported for gw_setup.sh
+export HOMEgfs
 
 echo "Sourcing global-workflow modules ..."
 source "${HOMEgfs}/dev/ush/gw_setup.sh"
+
+# Un-export after gw_setup.sh
+export -n HOMEgfs
 
 cd "${HOMEgfs}/sorc" || exit 1
 mkdir -p "${HOMEgfs}/sorc/logs" || exit 1
@@ -81,12 +86,38 @@ yaml="${HOMEgfs}/dev/workflow/build_opts.yaml"
 echo "Generating build.xml for building global-workflow programs on compute nodes ..."
 # Catch errors manually from here out
 set +e
+
+# Temporarily build the GDASApp on the head node
+# Cleanup function to kill the GDASApp build on ctrl-c or non-clean exit
+build_ids=()
+function cleanup() {
+  echo "Exiting build script. Terminating subprocesses..."
+  for pid in "${build_ids[@]}"; do
+    if kill -0 "${pid}" 2>/dev/null; then # Check if process still exists
+       kill "${pid}"
+    fi
+  done
+  exit 1
+}
+
+trap cleanup TERM
+trap cleanup INT
+trap cleanup ERR
+
+# TODO remove this when all builds move to the head nodes and/or the GDASApp is able to build on all compute nodes again
+#      See GW issue 3933
+if [[ ${systems} == "all" || ${systems} =~ "gdas" ]]; then
+  echo "Building the GDASApp locally (on this node)"
+  gdas_build_log="${HOMEgfs}/sorc/logs/build_gdas.log"
+  "${HOMEgfs}/sorc/build_gdas.sh" -j 20 >& "${gdas_build_log}" &
+  build_gdas_id=$!
+  build_ids+=("${build_gdas_id}")
+fi
+
 "${HOMEgfs}/dev/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
-  msg="FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
-  echo "${msg}"
-  echo "${msg}" > logs/error.logs
+  echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
   exit 1
 fi
 
@@ -95,11 +126,12 @@ runcmd="rocotorun -w ${build_xml} -d ${build_db} ${rocoto_verbose_opt}"
 
 finished=false
 ${runcmd}
-echo "Running builds on compute nodes"
+echo "Monitoring builds on compute nodes"
 while [[ "${finished}" == "false" ]]; do
    sleep 1m
    ${runcmd}
-   state="$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")"
+
+   state="$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")" || true
    if [[ "${verbose_opt}" == "true" ]]; then
       echo "Rocoto is in state ${state}"
    else
@@ -113,8 +145,8 @@ while [[ "${finished}" == "false" ]]; do
    else
       msg="FATAL ERROR: ${BASH_SOURCE[0]} rocoto failed with state '${state}'"
       echo "${msg}"
-      rm -f logs/error.logs
-      echo "${msg}" > logs/error.logs
+      err_file="${PWD}/logs/error.logs"
+      rm -f "${err_file}"
       # Determine which build(s) failed
       stat_out="$(rocotostat -w "${build_xml}" -d "${build_db}")"
       echo "${stat_out}" > rocotostat.out
@@ -129,15 +161,29 @@ while [[ "${finished}" == "false" ]]; do
          if [[ "${line}" =~ "DEAD" || "${line}" =~ "UNKNOWN" ||
                "${line}" =~ "UNAVAILABLE" || "${line}" =~ "FAIL" ]]; then
             job=$(echo "${line}" | awk '{ print $2 }')
-            log_file="logs/${job}.log"
-            echo "${log_file}" >> logs/error.logs
+            log_file="${PWD}/logs/${job}.log"
+            echo "${log_file}" >> "${err_file}"
             echo "Rocoto reported that the build failed for ${job}"
          fi
       done < rocotostat.out
-      exit 2
+
+      # Kill the GDASApp build if it is still running
+      cleanup
    fi
 done
 
+# Wait for the GDASApp to finish building
+if [[ -n "${build_gdas_id+0}" ]]; then
+  echo "Compute builds have completed successfully, but the GDASApp is still building locally.  Waiting for it to complete."
+  wait "${build_gdas_id}"
+  gdas_stat=$?
+  if [[ ${gdas_stat} -ne 0 ]]; then
+    echo "FATAL ERROR The GDASApp failed to build!  Check log in ${gdas_build_log}"
+    # Capture the error log in logs/error.logs
+    echo "${gdas_build_log}" >> "${err_file}"
+    exit 3
+  fi
+fi
 echo "All builds completed successfully!"
 
 exit 0

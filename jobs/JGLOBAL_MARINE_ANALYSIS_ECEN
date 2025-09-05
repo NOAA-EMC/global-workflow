@@ -30,7 +30,7 @@ RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL
 
 export NMEM_ENS_MAX=${NMEM_ENS}
-if [[ "${RUN}" == "gfs" ]]; then
+if [[ "${RUN}" == "enkfgfs" ]]; then
    NMEM_ENS=${NMEM_ENS_GFS}
 fi
 

@@ -3,7 +3,7 @@
 ######################################
 {% set offset_td = "+6H" | to_timedelta %}
 {% set background_time = current_cycle | add_to_datetime(offset_td) %}
-{% set ftype_list = ['fv_core.res', 'fv_tracer.res'] %}
+{% set ftype_list = ['fv_core.res', 'fv_tracer.res', 'sfc_data'] %}
 ######################################
 # create working directories
 ######################################
@@ -29,6 +29,7 @@ copy:
 {% for ftype in ftype_list %}
   {% for tile in range(1, ntiles+1) %}
 - ["{{ COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) }}/{{ background_time | to_fv3time }}.{{ ftype }}.tile{{ tile }}.nc", "{{ DATA }}/bkg/{{ background_time | to_fv3time }}.{{ ftype }}.tile{{ tile }}.nc"]
+- ["{{ FIXorog }}/{{ CASE }}/{{ CASE }}.mx{{ OCNRES }}_oro_data.tile{{ tile }}.nc", "{{ DATA }}/bkg/{{ CASE }}.mx{{ OCNRES }}_oro_data.tile{{ tile }}.nc" ]
   {% endfor %}
 {% endfor %}
 ######################################

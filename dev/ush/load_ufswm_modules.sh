@@ -27,10 +27,12 @@ if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
   module load craype-network-ucx
   module load cray-mpich-ucx
   module load python/3.8.6
+  module load wgrib2
 else
   export UTILROOT=${prod_util_ROOT}
+  source "${HOMEgfs}/versions/run.ver"
+  module load "wgrib2/${wgrib2_ver}"
 fi
-module load wgrib2
 export WGRIB2=wgrib2
 
 module list
@@ -38,7 +40,7 @@ unset MACHINE_ID
 
 # Set up the PYTHONPATH to include wxflow from HOMEgfs
 if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
-  PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
+  PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
 fi
 
 # Add HOMEgfs/ush/python to PYTHONPATH

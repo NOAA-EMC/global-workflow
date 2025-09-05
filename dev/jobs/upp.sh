@@ -18,7 +18,7 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
   set +x
   source "${HOMEgfs}/ush/module-setup.sh"
   module use "${HOMEgfs}/sorc/ufs_model.fd/FV3/upp/modulefiles"
-  module load "${MACHINE_ID}"
+  module load "${MACHINE_ID}_intel"
   module load prod_util
   module load cray-pals
   module load cfp
@@ -44,7 +44,9 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
 else
   source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
   status=$?
-  if (( status != 0 )); then exit "${status}"; fi
+  if [[ ${status} -ne 0 ]]; then
+     exit "${status}";
+  fi
 fi
 
 export job="upp"

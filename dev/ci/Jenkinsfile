@@ -6,9 +6,9 @@ def HOMEgfs_dev = 'none'
 def CI_CASES = ''
 def GH = 'none'
 // Map of the machine names (MACHINE_ID) to the Jenkins Node names
-def NodeName = [hera: 'Hera-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaeac5: 'GaeaC5', gaeac6: 'Gaeac6-EMC']
+def NodeName = [hera: 'Hera-EMC', ursa: 'Ursa-EMC', orion: 'Orion-EMC', hercules: 'Hercules-EMC', gaeac5: 'GaeaC5', gaeac6: 'Gaeac6-EMC']
 // Location of the custom workspaces for each machine in the CI system.  They are persistent for each iteration of the PR.
-def custom_workspace = [hera: '/scratch3/NCEPDEV/global/glopara/CI/HERA', orion: '/work2/noaa/global/role-global/GFS_CI_CD/ORION/CI', hercules: '/work2/noaa/global/role-global/GFS_CI_CD/HERCULES/CI', gaeac5: '/gpfs/f5/epic/proj-shared/global/CI', gaeac6: '/gpfs/f6/drsa-precip3/world-shared/global/CI']
+def custom_workspace = [hera: '/scratch3/NCEPDEV/global/role.glopara/CI/HERA', ursa: '/scratch3/NCEPDEV/global/role.glopara/CI/URSA', orion: '/work2/noaa/global/role-global/GFS_CI_CD/ORION/CI', hercules: '/work2/noaa/global/role-global/GFS_CI_CD/HERCULES/CI', gaeac5: '/gpfs/f5/epic/proj-shared/global/CI', gaeac6: '/gpfs/f6/drsa-precip3/world-shared/global/CI']
 def repo_url = 'git@github.com:NOAA-EMC/global-workflow.git'
 
 def STATUS = 'Passed'
@@ -87,7 +87,7 @@ pipeline {
                     Machine = machine[0].toUpperCase() + machine.substring(1)
                     echo "Getting Common Workspace for ${Machine}"
                     ws("${custom_workspace[machine]}/${env.CHANGE_ID}") {
-                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'hercules-emc', 'hera-emc', 'orion-emc', 'gaeaC5', 'gaeaC6-emc'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
+                        properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'hercules-emc', 'hera-emc', 'ursa-emc', 'orion-emc', 'gaeaC5', 'gaeaC6-emc'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
                         CUSTOM_WORKSPACE = "${WORKSPACE}"
                         HOMEgfs = "${CUSTOM_WORKSPACE}/global-workflow"

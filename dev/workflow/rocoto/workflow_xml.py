@@ -2,7 +2,6 @@
 
 import os
 import stat
-from distutils.spawn import find_executable
 from datetime import datetime
 from collections import OrderedDict
 from typing import Dict
@@ -157,10 +156,12 @@ class RocotoXML(ABC):
         """
 
         # No point creating a crontab if rocotorun is not available.
-        rocotoruncmd = find_executable('rocotorun')
-        if rocotoruncmd is None:
+        rocotorun = which('rocotorun')
+        if rocotorun is None:
             print('Failed to find rocotorun, crontab will not be created')
             return
+
+        rocotoruncmd = rocotorun.command
 
         rocotorunstr = f'{rocotoruncmd} -d {self.expdir}/{self.pslot}.db -w {self.expdir}/{self.pslot}.xml'
         cronintstr = f'*/{cronint} * * * *'

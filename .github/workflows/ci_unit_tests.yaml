@@ -31,8 +31,9 @@ jobs:
       id: install-pydeps
       run: |
         python -m pip install --upgrade pip
+        sed -i '/^wxflow[>=<].*/d' global-workflow/dev/workflow/requirements.txt
         python -m pip install -r global-workflow/dev/workflow/requirements.txt
-        pip install pytest pytest-cov wget
+        pip install pytest pytest-cov pytest-mock wget
 
     - name: Cache Rocoto
       id: cache-rocoto
@@ -62,9 +63,9 @@ jobs:
         sudo chmod -R a+w /scratch3/NCEPDEV
         source rocoto-${{ env.ROCOTO_VERSION }}/rocoto_path.sh
         cd global-workflow/sorc
-        git submodule update --init -j 2 ufs_model.fd gsi_monitor.fd
+        git submodule update --init -j 2 ufs_model.fd gsi_monitor.fd wxflow
         ./link_workflow.sh
-
+        export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${PWD}/wxflow/src"
         # Create test data directory for unit tests
         mkdir -p ../dev/ci/scripts/unittests/test_data
         echo "Creating test directories and files for CI tests"

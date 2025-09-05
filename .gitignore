@@ -98,6 +98,7 @@ parm/regrid_sfc
 #--------------------------------------------
 sorc/build.xml
 sorc/build.db
+sorc/build.db-journal
 sorc/build_lock.db
 sorc/rocotostat.out
 sorc/*log
@@ -173,6 +174,7 @@ ush/python/ufsda
 ush/python/soca
 ush/python/gen_bufr2ioda_json.py
 ush/python/gen_bufr2ioda_yaml.py
+dev/ush/load_fv3gfs_modules.sh
 # ush log file
 ush/fetch-fix-data.log
 

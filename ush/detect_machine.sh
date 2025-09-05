@@ -33,6 +33,10 @@ case $(hostname -f) in
   hfe1[0-2]) MACHINE_ID=hera ;; ### hera10-12
   hecflow01) MACHINE_ID=hera ;; ### heraecflow01
 
+  ufe0[1-9]) MACHINE_ID=ursa ;; ### ursa01-09
+  ufe1[0-6]) MACHINE_ID=ursa ;; ### ursa10-16
+  uecflow01) MACHINE_ID=ursa ;; ### ursaecflow01
+
   s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
 
   fe[1-8]) MACHINE_ID=jet ;; ### jet01-8
@@ -62,9 +66,10 @@ MACHINE_ID=${MACHINE:-${MACHINE_ID}}
 
 # If MACHINE_ID is no longer UNKNNOWN, return it
 if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
+  # TODO: make this read-only when UPP#1308 is addressed.
+  declare -x MACHINE_ID  # Should be -rx, but the UPP system needs Gaea C6 to be ID'd as "gaea"
   return
 fi
-
 # Try searching based on paths since hostname may not match on compute nodes
 if [[ -d /lfs/h3 ]]; then
   # We are on NOAA Cactus or Dogwood
@@ -76,12 +81,19 @@ elif [[ -d /mnt/lfs5 ]]; then
   # We are on NOAA Jet
   MACHINE_ID=jet
 elif [[ -d /scratch3 ]]; then
-  # We are on NOAA Hera
-  MACHINE_ID=hera
+  # We are on NOAA Hera or Ursa
+  mount=$(findmnt -n -o SOURCE /apps) || true  # /home doesn't exist on the GitHub runners
+  if [[ ${mount} =~ "ursa" ]]; then
+    MACHINE_ID=ursa
+  elif [[ ${mount} =~ "hera" ]]; then
+    MACHINE_ID=hera
+  else  # Assume we are on the GitHub runners, which mock Hera
+    MACHINE_ID=hera
+  fi
 elif [[ -d /work ]]; then
   # We are on MSU Orion or Hercules
   mount=$(findmnt -n -o SOURCE /home)
-  if [[ ${mount} =~ "hercules" ]]; then
+  if [[ -n "${mount+0}" && ${mount} =~ "hercules" ]]; then
     MACHINE_ID=hercules
   else
     MACHINE_ID=orion
@@ -98,3 +110,6 @@ elif [[ -d /data/prod ]]; then
 else
   echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
+
+# TODO: Make this read-only when UPP#1308 is addressed.
+declare -x MACHINE_ID  # Should be -rx, but the UPP system needs Gaea C6 to be ID'd as "gaea"

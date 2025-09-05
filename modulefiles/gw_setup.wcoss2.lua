@@ -6,6 +6,9 @@ prepend_path("MODULEPATH", "/apps/ops/test/nco/modulefiles/core")
 load(pathJoin("rocoto","1.3.5"))
 load(pathJoin("PrgEnv-intel"))
 load(pathJoin("intel","19.1.3.304"))
-load(pathJoin("python", "3.8.6"))
+load(pathJoin("python", "3.12.0"))
+
+prepend_path("MODULEPATH", "/apps/dev/modulefiles")
+load(pathJoin("ve","gw","1.0"))
 
 whatis("Description: GFS run setup environment")
