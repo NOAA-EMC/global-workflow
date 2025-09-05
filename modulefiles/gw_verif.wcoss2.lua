@@ -11,11 +11,13 @@ load(pathJoin("cfp", (os.getenv("cfp_ver") or "None")))
 setenv("USE_CFP","YES")
 
 -- Use Python 3.8.6 for verification
-load(pathJoin("python", 3.8.6)
+load(pathJoin("python", '3.8.6'))
 
-load(pathJoin("hdf5-D", (os.getenv("hdf5_ver") or "None")))
-load(pathJoin("pnetcdf-D", (os.getenv("pnetcdf_ver") or "None")))
-load(pathJoin("netcdf-D", (os.getenv("netcdf_ver") or "None")))
+load(pathJoin("libjpeg", (os.getenv("libjpeg_ver") or "None")))
+
+-- MET was build with these versions of HDF5 and netCDF
+load(pathJoin("hdf5", '1.10.6'))
+load(pathJoin("netcdf", '4.7.4'))
 
 -- The cray library path for C MPI libraries (needed by C-only programs using netCDF)
 local cray_lib_path=os.getenv("CRAY_LD_LIBRARY_PATH") or ""
