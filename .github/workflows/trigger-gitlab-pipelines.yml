@@ -24,6 +24,14 @@ on:
         description: 'Gaea C6'
         type: boolean
         default: true
+      orion:
+        description: 'Orion'
+        type: boolean
+        default: false
+      hercules:
+        description: 'Hercules'
+        type: boolean
+        default: false
       # Add more machines by directly using their names as input IDs
 
 jobs:
