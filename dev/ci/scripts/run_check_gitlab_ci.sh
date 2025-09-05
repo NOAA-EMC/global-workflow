@@ -4,8 +4,9 @@ set -eu
 
 #####################################################################################
 # Script description: script to check the status of an experiment as reported
-#                     by Rocoto
+#                     by Rocoto and report failures to GitHub PR if applicable
 #####################################################################################
+
 
 TEST_DIR=${1:-${TEST_DIR:-?}}  # Location of the root of the testing directory
 pslot=${2:-${pslot:-?}}        # Name of the experiment being tested by this script
@@ -24,6 +25,24 @@ SYSTEM_BUILD_DIR=${3:-"global-workflow"}  # Name of the system build directory, 
 #         └── ${pslot}
 # Two system build directories created at build time gfs, and gdas
 # TODO: Make this configurable (for now all scripts run from gfs for CI at runtime)
+
+# -----------------------------------------------------------------------------------
+# GitHub PR Failure Reporting
+# -----------------------------------------------------------------------------------
+# This script supports reporting failed experiment cases to GitHub PR feeds via the
+# report_failure_to_github() routine. For this to work, the following environment
+# variables must be set:
+#   - GH: Path to the GitHub CLI executable (e.g., 'gh')
+#   - PR_NUMBER: The pull request number to comment on
+#   - GW_REPO_URL: The GitHub repository URL (e.g., 'NOAA-EMC/global-workflow')
+#   - CI_PIPELINE_ID: The GitLab pipeline ID (used for context in the comment)
+#   - MACHINE_ID: The machine identifier (used for labeling)
+#
+# These variables are required for the script to post comments and update labels on the
+# relevant GitHub PR. If any are missing, PR reporting will be skipped for failed cases.
+# -----------------------------------------------------------------------------------
+
+
 HOMEgfs="${TEST_DIR}/${SYSTEM_BUILD_DIR}"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 run_check_logfile="${RUNTESTS}/ci-run_check.log"
@@ -75,12 +94,11 @@ report_failure_to_github() {
 
       # Prepare markdown section for files links to gist for GitHub comment
       gist_message_section=$(cat <<EOF
-### 📋 Error Log Files:
+Error Log Files:
 \`\`\`
 ${error_logs_markdown}
 \`\`\`
-### 🔗 View Error Logs:
-${gist_links}
+View Error Logs: ${gist_links}
 EOF
       )
     else
@@ -90,17 +108,19 @@ EOF
   fi
 
   # Create formatted GitHub comment
-  DATE=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
-  local comment_body="### 🚫 Experiment ${caseName} FAILED on ${Machine}
+  comment_body=$(cat << EOF
+_${caseName}_ **FAILED** on ${Machine}  (pipeline ID: ${CI_PIPELINE_ID})
 
-  **GitLab Pipeline#:** ${CI_PIPELINE_ID}
-  **Workspace:** \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
-  **Timestamp:** ${DATE}
-  ${gist_message_section}
+In directory: \`${GW_RUN_PATH}/RUNTESTS/EXPDIR/${pslot}\`
 
-  _This failure was detected automatically by global-workflow's CI/CD Pipeline_" || true
+${gist_message_section}
+
+_This failure was detected automatically by global-workflow's CI/CD Pipeline_
+EOF
+  )
 
   # Post GitHub comment
+  cd "${HOMEgfs}"
   "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
 
   # Move processed error log to prevent reprocessing
@@ -144,42 +164,37 @@ rc=99
 set +e
 while true; do
 
-  echo "Run rocotorun."
+  echo "running rocotorun for (${pslot} on ${MACHINE_ID^})"
   rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
 
-  # Wait before running rocotostat
+  # Wait a minute before running rocotostat
   sleep 60
 
-  # Get job statistics
-  echo "Gather Rocoto statistics"
-  # shellcheck disable=SC2312 # We want to use the exit code of the command
-  full_state=$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
-  error_stat=$?
+  caseName="${pslot%_*-*}"  # caseName recovered from pslot: (caseName_<hash>-<pipeline ID> (eg. C48_ATM_90f10fc1-3517)
+  echo "Gather Rocoto statistics for (${caseName} on ${MACHINE_ID^})"
+  export ROCOTOSTAT_LOG_FILE="${RUNTESTS}/EXPDIR/${pslot}/logs/${caseName}_rocotostat.log"
+  source <("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --declare --thread-logging) || true
 
-  for state in CYCLES_TOTAL CYCLES_DONE SUCCEEDED FAIL DEAD; do
-    declare "${state}"="$(echo "${full_state}" | grep "${state}" | cut -d: -f2)" || true
-  done
-  ROCOTO_STATE=$(echo "${full_state}" | tail -1) || exit 1
+  echo -e "\tCompleted Cycles: ${CYCLES_DONE}/${CYCLES_TOTAL}
+  \tCompleted Jobs  : ${JOBS_DONE}/${JOBS_TOTAL}
+  \tState           : ${ROCOTO_STATE}"
 
-  echo -e "(${pslot} on ${MACHINE_ID^})\n\tTotal Cycles: ${CYCLES_TOTAL}\n\tNumber Cycles done: ${CYCLES_DONE}\n\tState: ${ROCOTO_STATE}"
-
-  if [[ ${error_stat} -ne 0 ]]; then
+  failure_states="FAIL UNAVAILABLE UNKNOWN STALLED"
+  # shellcheck disable=SC2076  # We want literal string matching, not regex
+  if [[ " ${failure_states} " =~ " ${ROCOTO_STATE} " ]]; then
     {
-      echo "Experiment ${pslot} Terminated with ${FAIL} tasks failed and ${DEAD} dead at $(date)" || true
-      echo "Experiment ${pslot} Terminated: *${ROCOTO_STATE}*"
+      echo "Experiment ${pslot} Terminated with state ${ROCOTO_STATE}: ${FAIL} tasks failed, ${DEAD} dead at $(date)" || true
     } | tee -a "${run_check_logfile}"
-    if [[ "${DEAD}" -ne 0 ]]; then
-      error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
-      {
-        echo "Error logs:"
-        echo "${error_logs}"
-      } | tee -a  "${run_check_logfile}"
-      rm -f "${RUNTESTS}/${pslot}_error.logs"
-      for log in ${error_logs}; do
-        echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/EXPDIR/${pslot}/${pslot}_error.logs"
-        echo "${log}" >> "${RUNTESTS}/EXPDIR/${pslot}/${pslot}_fullpath_error.logs"
-      done
-   fi
+    error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
+    {
+      echo "Error logs:"
+      echo "${error_logs}"
+    } | tee -a  "${run_check_logfile}"
+    rm -f "${RUNTESTS}/EXPDIR/${pslot}/${pslot}_error.logs"
+    for log in ${error_logs}; do
+      echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/EXPDIR/${pslot}/${pslot}_error.logs"
+      echo "${log}" >> "${RUNTESTS}/EXPDIR/${pslot}/${pslot}_fullpath_error.logs"
+    done
    
    # Report failure to GitHub if running in CI environment
    if [[ -n "${CI_PIPELINE_ID:-}" && -n "${PR_NUMBER:-}" && "${PR_NUMBER}" != "0" ]]; then
