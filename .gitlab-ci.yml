@@ -87,6 +87,11 @@ include:
       echo "PIPELINE_TYPE: ${PIPELINE_TYPE}"
       echo "RUN_ON_MACHINES: ${RUN_ON_MACHINES}"
 
+      # TODO We need to add local python env to support PyGitHub not being in Spack-Stack 1.9
+      # this should be part of the spack environment setup in Spack-Stack 2.x
+      PYTHONPATH=${PYTHONPATH}:$HOME/.local/lib/python3.11/site-packages
+      echo "Updated PYTHONPATH: $PYTHONPATH"
+
       # Make sure GW_HOMEgfs is properly set and the directory exists
       if [ ! -d "${GW_HOMEgfs}" ]; then
         echo "ERROR: GW_HOMEgfs directory does not exist: ${GW_HOMEgfs}"
@@ -112,6 +117,21 @@ include:
   stage: build
   script:
     - |
+      # ====================================================================
+      # MAIN BUILD TEMPLATE SECTION
+      # ====================================================================
+      # This is the core build template that serves as the foundation for
+      # all Global Workflow CI/CD build processes across different machines
+      # and modalities (GFS, GEFS, SFS, GCAFS). This template provides:
+      #   - Environment setup and validation
+      #   - Git submodule management and PR checkout logic
+      #   - Build execution via ci_utils.sh
+      #   - Error handling and status reporting
+      #   - Artifact archival and cleanup procedures
+      # All machine-specific build jobs inherit from this template and
+      # customize behavior through variables and job-specific overrides.
+      # ====================================================================
+
       echo "Setting up build environment for ${machine^}..."
       echo "Using build directory ${GW_HOMEgfs}"
       git submodule status
@@ -129,7 +149,7 @@ include:
       dev/ci/scripts/utils/ci_utils.sh build
       build_status=$?
 
-      if [[ ${build_status} -ne 0 ]]; then
+      if [[ ${build_status} -ne 0 || -f logs/error.logs ]]; then
         echo "Build failed with exit code ${build_status}"
         # Mark the build as failed, but don't update labels here - let after_script handle it
         exit 1
@@ -145,6 +165,7 @@ include:
   after_script:
     - |
       echo "After script is running for job ${CI_JOB_NAME} on ${machine} with status ${CI_JOB_STATUS}"
+      export GW_HOMEgfs="${GIT_CLONE_PATH}"
       if [[ ${CI_JOB_STATUS} == "failed" ]]; then
         Machine="${machine^}"
         echo "Job failed, performing cleanup actions for ${Machine}"
@@ -155,7 +176,32 @@ include:
           echo "WARNING: GitHub CLI (gh) not found in after_script, trying to continue anyway"
         fi
 
+        error_log_file="sorc/logs/error.logs"
         if [[ "${GFS_CI_RUN_TYPE}" == "pr_cases" && "${PR_NUMBER}" != 0 ]]; then
+          if [[ -f "${error_log_file}" ]]; then
+            pr_error_log_links=$(dev/ci/scripts/utils/ci_utils.sh publish_logs_from_file "PR_${PR_NUMBER}" "${error_log_file}")
+          else
+            pr_error_log_links="(no error.logs file found)"
+          fi
+
+          if [[ -s "${error_log_file}" ]]; then
+            error_logs_for_gist=""
+            error_logs_markdown=""
+
+            while IFS= read -r full_log_path; do
+              [[ -n "${full_log_path}" ]] || continue
+
+              if [[ -f "${full_log_path}" && -s "${full_log_path}" ]]; then
+                error_logs_for_gist="${error_logs_for_gist} ${full_log_path}"
+                error_logs_markdown=$(echo -e "${error_logs_markdown}\n${full_log_path}")
+              fi
+            done < "${error_log_file}"
+
+            comment_body=$(printf "**BUILD FAILED** on %s (pipeline ID: %s)\n\nIn directory: \`%s/sorc\`\n\n**Error log files:**\n\`\`\`\n%s\n\`\`\`\n\n [View Error Logs](%s)\n\n_This failure was detected automatically by global-workflow's CI/CD Pipeline_" "${Machine}" "${CI_PIPELINE_ID}" "${GW_HOMEgfs}" "${error_logs_markdown}" "${pr_error_log_links}")
+        
+            "${GH}"" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
+          fi
+
           echo "Updating GitHub labels for PR ${PR_NUMBER} failure on ${Machine}"
           ${GH} pr edit ${PR_NUMBER} --repo ${GW_REPO_URL} \
             --add-label "CI-${Machine}-Failed" \
