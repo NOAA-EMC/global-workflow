@@ -866,7 +866,11 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_hybvar_ocn']:
+        # if DOHYBVAR_OCN: "YES" and EUPD_CYC: "both"
+        if self.options['do_hybvar_ocn'] and \
+                (('gfs' in self.app_config.ens_runs and
+                 'gdas' in self.app_config.ens_runs) or
+                 self.run == "gdas"):
             dep_dict = {'type': 'task', 'name': f'enkf{self.run}_marineanlecen'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_mergensst']:
@@ -2123,7 +2127,8 @@ class GFSTasks(Tasks):
 
         return task
 
-    def arch_tars(self):
+    def _arch_tars_deps(self):
+        """Common dependencies for all archive tarball jobs"""
         deps = []
         if self.app_config.mode in ['cycled']:
             if self.run in ['gfs']:
@@ -2211,14 +2216,79 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
 
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        return rocoto.create_dependency(dep_condition='and', dep=deps)
+
+    def arch_tars(self):
+        """Create individual archive tarball jobs for parallel execution"""
+
+        # Split up the tarball_types based on the run and configuration options
+        # Define all possible tarball types
+        if self.run == 'gfs':
+            tarball_types = ['gfsa', 'gfsb']
+
+            # Add optional tarballs based on configuration
+            if self._configs['arch_tars'].get('ARCH_GAUSSIAN', True):
+                tarball_types.extend(['gfs_flux', 'gfs_netcdfb', 'gfs_pgrb2b'])
+                if self.app_config.mode == 'cycled':
+                    tarball_types.append('gfs_netcdfa')
+
+            if self.options['do_wave']:
+                tarball_types.append('gfswave')
+
+            if self.options['do_aero_fcst']:
+                tarball_types.append('chem')
+
+            if self.options['do_ocean']:
+                tarball_types.extend(['ocean_6hravg', 'ocean_grib2', 'gfs_flux_1p00'])
+
+            if self.options['do_ice']:
+                tarball_types.extend(['ice_6hravg', 'ice_grib2'])
+
+            if self.options['do_bufrsnd']:
+                tarball_types.append('gfs_downstream')
+
+            if self.app_config.mode == 'cycled':
+                # Add restart archives (timing logic handled in template)
+                tarball_types.append('gfs_restarta')
+
+        elif self.run == 'gdas':
+            tarball_types = ['gdas']
+
+            if self.options['do_ice']:
+                tarball_types.append('gdasice')
+
+            if self.options['do_ocean']:
+                tarball_types.append('gdasocean')
+
+                if self.options['do_jediocnvar'] and self.app_config.mode == 'cycled':
+                    tarball_types.append('gdasocean_analysis')
+
+            if self.options['do_wave']:
+                tarball_types.append('gdaswave')
+                tarball_types.append('gdaswave_restart')
+
+            if self.app_config.mode == 'cycled':
+                # Add restart archives (timing logic handled in template)
+                tarball_types.append('gdas_restarta')
+                tarball_types.append('gdas_restartb')
+                if self.options['do_ice']:
+                    tarball_types.append('gdasice_restart')
+                if self.options['do_ocean']:
+                    tarball_types.append('gdasocean_restart')
+
+        # Create a metatask that contains all the individual archive jobs
+        dependencies = self._arch_tars_deps()
+
+        archenvars = self.envars.copy()
+        archenvars.append(rocoto.create_envar(name='TARBALL_TYPE', value='#tartype#'))
 
         resources = self.get_resource('arch_tars')
-        task_name = f'{self.run}_arch_tars'
+
+        task_name = f'{self.run}_arch_tar_#tartype#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': archenvars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/dev/jobs/arch_tars.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -2226,14 +2296,19 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        var_dict = {'tartype': ' '.join(tarball_types)}
+        metatask_dict = {'task_name': f'{self.run}_arch_tars',
+                         'var_dict': var_dict,
+                         'task_dict': task_dict
+                         }
 
+        task = rocoto.create_task(metatask_dict)
         return task
 
     # Globus transfer for HPSS archiving
     def globus_arch(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_arch_tars'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -2405,7 +2480,7 @@ class GFSTasks(Tasks):
                 if self.options['do_globusarch']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
                 else:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_arch_tars'}
 
                 deps.append(rocoto.add_dependency(dep_dict))
 

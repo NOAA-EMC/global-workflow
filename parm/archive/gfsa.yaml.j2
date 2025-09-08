@@ -13,6 +13,9 @@ gfsa:
 
         # UFS configuration
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.input.nml"
+        {% if DO_OCN %}
+        - "{{ COMIN_CONF | relpath(ROTDIR) }}/MOM_parameter_doc.all"
+        {% endif %}
 
         {% if MODE == "cycled" %}
         # Analysis GRIB2 (gridded) data
