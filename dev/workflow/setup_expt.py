@@ -599,7 +599,7 @@ def get_ocean_resolution(resdetatmos):
     """
     atmos_to_ocean_map = {
         1152: 0.25, 768: 0.25, 384: 0.25,
-        192: 1.0,
+        192: 0.25,
         96: 5.0, 48: 5.0}
     try:
         return atmos_to_ocean_map[resdetatmos]

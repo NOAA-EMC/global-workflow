@@ -56,10 +56,7 @@ fi
 module use "${HOMEgfs}/modulefiles"
 
 case "${MACHINE_ID}" in
-"wcoss2")
-  target_module="gw_run.${MACHINE_ID}"
-  ;;
-"hera")
+"wcoss2" | "hera")
   target_module="gw_verif.${MACHINE_ID}"
   ;;
 *)
