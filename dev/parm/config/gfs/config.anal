@@ -48,8 +48,10 @@ export OZINFO=${FIXgfs}/gsi/global_ozinfo.txt
 export SATINFO=${FIXgfs}/gsi/global_satinfo.txt
 export OBERROR=${FIXgfs}/gsi/prepobs_errtable.global
 
+# Use 2m diagnostic for screen level obs
+export hofx_2m_sfcfile=".true."
+
 if [[ ${DO_GSISOILDA} = "YES" ]]; then
-    export hofx_2m_sfcfile=".true."
     export reducedgrid=".false." # not possible for sfc analysis, Jeff Whitaker says it's not useful anyway
     # NOTE: convinfo here will be over-written by date-specific files below.
     export CONVINFO=${FIXgfs}/gsi/global_convinfo_2mObs.txt
