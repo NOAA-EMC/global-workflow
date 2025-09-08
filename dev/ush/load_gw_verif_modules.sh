@@ -56,19 +56,21 @@ fi
 module use "${HOMEgfs}/modulefiles"
 
 case "${MACHINE_ID}" in
-"wcoss2" | "ursa" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
-  target_module="gw_run.${MACHINE_ID}"
-  module load "${target_module}"
-  export err=$?
-  if [[ ${err} -ne 0 ]]; then
-    echo "FATAL ERROR: Failed to load ${target_module}"
-    exit 1
-  fi
+"wcoss2" | "hera")
+  target_module="gw_verif.${MACHINE_ID}"
   ;;
 *)
-  echo "WARNING: UNKNOWN PLATFORM"
+  echo "WARNING: UNKNOWN/UNSUPPORTED PLATFORM: '${MACHINE_ID}'"
+  target_module="gw_run.${MACHINE_ID}"
   ;;
 esac
+
+module load "${target_module}"
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+  echo "FATAL ERROR: Failed to load ${target_module}"
+  exit 1
+fi
 
 module list
 
@@ -82,7 +84,7 @@ fi
 
 # Set up the PYTHONPATH to include wxflow from HOMEgfs
 if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
-  PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
+  PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
 fi
 
 # Add HOMEgfs/ush/python to PYTHONPATH
