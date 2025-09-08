@@ -499,6 +499,8 @@ else
    fi
 fi
 
+# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
+# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
 if [[ "${machine}" == "URSA" ]]; then
     export DO_METP=NO
 fi
