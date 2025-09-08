@@ -18,6 +18,7 @@ load("py-jinja2")
 load("py-pyyaml")
 load("py-numpy")
 load("git-lfs")
+load("gh")
 
 unload("cray-libsci")
 
