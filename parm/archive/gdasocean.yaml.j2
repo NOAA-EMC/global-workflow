@@ -11,3 +11,4 @@ gdasocean:
         - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}inst.f{{ '%03d' % fhr }}.nc"
         {% endfor %}
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.MOM_input'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/MOM_parameter_doc.all'
