@@ -2227,7 +2227,7 @@ class GFSTasks(Tasks):
             tarball_types = ['gfsa', 'gfsb']
 
             # Add optional tarballs based on configuration
-            if self._configs['arch_tars'].get('ARCH_GAUSSIAN', 'YES') == 'YES':
+            if self._configs['arch_tars'].get('ARCH_GAUSSIAN', True):
                 tarball_types.extend(['gfs_flux', 'gfs_netcdfb', 'gfs_pgrb2b'])
                 if self.app_config.mode == 'cycled':
                     tarball_types.append('gfs_netcdfa')
