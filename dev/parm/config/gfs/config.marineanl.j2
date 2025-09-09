@@ -5,23 +5,23 @@
 
 echo "BEGIN: config.marineanl"
 
-export JEDI_CONFIG_YAML_ANALYSIS="${PARMgfs}/gdas/soca_analysis_jedi_config.yaml.j2"
+# TODO: This should be sourced in a config file specific to marine deterministic analysis
+#       and renamed to remove _DET
+
 export JCB_ALGO_YAML_VAR="{{ JCB_ALGO_YAML_VAR }}"
 
-export MARINE_OBS_YAML_DIR="${PARMgfs}/gdas/soca/obs/config"
-export MARINE_OBS_LIST_YAML="{{ SOCA_OBS_LIST }}"
-export SOCA_INPUT_FIX_DIR="{{ SOCA_INPUT_FIX_DIR }}"
-export SOCA_ANL_GEOM="{{ SOCA_ANL_GEOM }}"
-export SOCA_NINNER="{{ SOCA_NINNER }}"
+export OBS_LIST_YAML="{{ SOCA_OBS_LIST }}"
+export INPUT_FIX_DIR="{{ SOCA_INPUT_FIX_DIR }}"
+export ANL_GEOM="{{ SOCA_ANL_GEOM }}"
+export NINNER="{{ SOCA_NINNER }}"
+
 export DOMAIN_STACK_SIZE=116640000  #TODO: Make the stack size resolution dependent
-export SOCA_ENS_BKG_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_ens_bkg_stage.yaml.j2"
-export SOCA_FIX_YAML_TMPL="${PARMgfs}/gdas/soca/soca_fix_stage_${OCNRES}.yaml.j2"
-export MARINE_UTILITY_YAML_TMPL="${PARMgfs}/gdas/soca/soca_utils_stage.yaml.j2"
-export MARINE_ENSDA_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/ensda/stage_ens_mem.yaml.j2"
-export MARINE_DET_STAGE_BKG_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_bkg_stage.yaml.j2"
-export MARINE_DET_STAGE_FILES_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_files_stage.yaml.j2"
-export MARINE_DET_FINALIZE_YAML_TMPL="${PARMgfs}/gdas/soca/soca_det_finalize.yaml.j2"
-export MARINE_JCB_GDAS_ALGO="${PARMgfs}/gdas/jcb-gdas/algorithm/marine"
 export MARINE_JCB_GDAS_OBS="${PARMgfs}/gdas/jcb-gdas/observations/marine"
+
+export JEDI_CONFIG_YAML_DET="${PARMgfs}/gdas/marine/marine_det_jedi_config.yaml.j2"
+export STAGE_FIX_YAML="${PARMgfs}/gdas/marine/marine_stage_fix_${OCNRES}.yaml.j2"
+export STAGE_UTILITIES_YAML="${PARMgfs}/gdas/marine/marine_stage_utilities.yaml.j2"
+export STAGE_DET_BKG_YAML="${PARMgfs}/gdas/marine/marine_det_stage_bkg.yaml.j2"
+export STAGE_ENS_BKG_YAML="${PARMgfs}/gdas/marine/marine_ens_stage_bkg.yaml.j2"
 
 echo "END: config.marineanl"
