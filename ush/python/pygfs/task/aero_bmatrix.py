@@ -91,14 +91,14 @@ class AerosolBMatrix(Task):
         """
 
         # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_list = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
+        jedi_fix_list = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_list).sync()
 
-        # stage backgrounds
-        logger.info(f"Staging backgrounds prescribed from {self.task_config.AERO_BMATRIX_STAGE_TMPL}")
-        aero_bmat_stage_list = parse_j2yaml(self.task_config.AERO_BMATRIX_STAGE_TMPL, self.task_config)
-        FileHandler(aero_bmat_stage_list).sync()
+        # stage files from COM and create working directories
+        logger.info(f"Staging files from COM and creating working directories {self.task_config.STAGE_YAML}")
+        stage_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
+        FileHandler(stage_dict).sync()
 
         # initialize JEDI applications
         self.jedi_dict['aero_interpbkg'].initialize(self.task_config)
@@ -142,6 +142,6 @@ class AerosolBMatrix(Task):
 
         """
         # save files to COMOUT
-        logger.info(f"Saving files to COMOUT based on {self.task_config.AERO_BMATRIX_FINALIZE_TMPL}")
-        aero_bmat_finalize_list = parse_j2yaml(self.task_config.AERO_BMATRIX_FINALIZE_TMPL, self.task_config)
-        FileHandler(aero_bmat_finalize_list).sync()
+        logger.info(f"Saving files to COMOUT based on {self.task_config.SAVE_YAML}")
+        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
+        FileHandler(save_dict).sync()
