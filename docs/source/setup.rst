@@ -77,7 +77,7 @@ where:
    * ``$IDATE`` is the initial start date of your run (first cycle date in ``YYYYMMDDCC``)
    * ``$EDATE`` is the ending date of your run (``YYYYMMDDCC``) and is the last cycle that will complete [default: ``$IDATE``]
    * ``$PSLOT`` is the name of your experiment [default: ``test``]
-   * ``$CONFIGDIR`` is the path to the ``/config`` folder under the copy of the system you're using [default: ``$TOP_OF_CLONE/dev/parm/config/``]
+   * ``$CONFIGDIR`` is the path to the ``/config`` folder under the copy of the system you're using [default: ``$TOP_OF_CLONE/dev/parm/config/$NET``]
    * ``$RESDETATMOS`` is the resolution of the atmosphere component of the system (i.e. 768 for C768) [default: ``384``]
    * ``$RESDETOCEAN`` is the resolution of the ocean component of the system (i.e. 0.25 for 1/4 degree) [default: ``0.``; determined based on atmosphere resolution]
    * ``$INTERVAL_GFS`` is the forecast interval in hours [default: ``6``]
