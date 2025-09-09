@@ -11,6 +11,7 @@ from logging import getLogger
 from typing import Dict, Any, Union, List
 from dateutil.rrule import DAILY, HOURLY, rrule
 from jinja2 import Environment, FileSystemLoader
+from pprint import pprint 
 from wxflow import (AttrDict,
                     FileHandler,
                     parse_j2yaml,
@@ -43,6 +44,7 @@ class NEXUSEmissions(Task):
         super().__init__(config)
 
         self.task_config = AttrDict(config)
+        pprint(self.task_config)
 
         self.AERO_INPUTS_DIR = self.task_config.get('AERO_INPUTS_DIR', None)
         self.COMOUT_CHEM_INPUT = self.task_config.get('COMOUT_CHEM_INPUT', None)
@@ -54,9 +56,13 @@ class NEXUSEmissions(Task):
             nforecast_hours = self.task_config["FHMAX_GFS"]
 
         # Create start date based on SDATE
-        self.start_date = self.task_config["SDATE_GFS"]
+        self.start_date = self.task_config["CDATE"]
         self.total_hrs = nforecast_hours + 3
-        self.end_date = self.task_config["SDATE_GFS"] + to_timedelta(f'{self.total_hrs}H')
+        self.end_date = self.task_config["CDATE"] + to_timedelta(f'{self.total_hrs}H')
+
+        logger.info(f'SDATE_GFS: {self.start_date}')
+        logger.info(f'nforecast_hours: {nforecast_hours}')
+        logger.info(f'Computed end_date: {self.end_date} (total_hrs={self.total_hrs})')
 
         # Create the forecast dates based on start_date and end_date
         frequency = self.task_config.get("NEXUS_DIAG_FREQ", "Hourly")
