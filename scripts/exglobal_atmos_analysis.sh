@@ -293,20 +293,58 @@ fi
 # GSI Fix files
 BERROR=${BERROR:-${FIXgfs}/gsi/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
 SATANGL=${SATANGL:-${FIXgfs}/gsi/global_satangbias.txt}
-SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
+#SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
 RADCLOUDINFO=${RADCLOUDINFO:-${FIXgfs}/gsi/cloudy_radiance_info.txt}
 ATMSFILTER=${ATMSFILTER:-${FIXgfs}/gsi/atms_beamwidth.txt}
 ANAVINFO=${ANAVINFO:-${FIXgfs}/gsi/global_anavinfo.l${LEVS}.txt}
-CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
+#CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
 vqcdat=${vqcdat:-${FIXgfs}/gsi/vqctp001.dat}
 INSITUINFO=${INSITUINFO:-${FIXgfs}/gsi/global_insituinfo.txt}
-OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
+#OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
 PCPINFO=${PCPINFO:-${FIXgfs}/gsi/global_pcpinfo.txt}
 AEROINFO=${AEROINFO:-${FIXgfs}/gsi/global_aeroinfo.txt}
 SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
 HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
 OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
 BLACKLST=${BLACKLST:-${FIXgfs}/gsi/rejectlist_global.txt}
+
+# Get historical fix files
+if [[ -z "$CONVINFO" ]]; then
+   CONVINFO=$(ls -1 ${FIXgfs}/gsi/gfsv17_historical/global_convinfo.txt.* 2>/dev/null \
+       | awk -F. -v d="$date" '$3 < d' \
+       | sort -t. -k3,3 \
+       | tail -n 1)
+fi 
+
+if [[ -f "$CONVINFO" ]]; then
+   CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
+fi
+echo "Selected CONVINFO: $CONVINFO"
+
+if [[ -z "$OZINFO" ]]; then
+   OZINFO=$(ls -1 ${FIXgfs}/gsi/gfsv17_historical/global_ozinfo.txt.* 2>/dev/null \
+       | awk -F. -v d="$date" '$3 < d' \
+       | sort -t. -k3,3 \
+       | tail -n 1)
+fi 
+
+if [[ -f "$OZINFO" ]]; then
+   OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
+fi
+echo "Selected OZINFO: $OZINFO"
+
+if [[ -z "$SATINFO" ]]; then
+   SATINFO=$(ls -1 ${FIXgfs}/gsi/gfsv17_historical/global_satinfo.txt.* 2>/dev/null \
+       | awk -F. -v d="$date" '$3 < d' \
+       | sort -t. -k3,3 \
+       | tail -n 1)
+fi 
+
+if [[ -f "$SATINFO" ]]; then
+   SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
+fi
+echo "Selected SATINFO: $SATINFO"
+
 
 # GSI namelist
 SETUP=${SETUP:-""}
