@@ -61,6 +61,8 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - Coupled
        GEFS
      - Coupled
+       GCAFS
+     - Coupled
        SFS
      - GSI
        DA
@@ -90,10 +92,12 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - X
      - X
      - X
+     - X
    * - Ursa
      - 1
      - X
      - X
+     -
      - X
      - X
      - X
@@ -102,12 +106,13 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      -
      -
      - X
-     - X
+     -
      - X
    * - Hercules
      - 1
      - X
      - X
+     -
      - X
      - X
      - X
@@ -116,7 +121,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      -
      -
      - X
-     - X
+     -
      - X
    * - Gaea C6
      - 1
@@ -127,13 +132,15 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - X
      - X
      - X
+     - X
      -
      -
      - X
-     - X
+     -
      - X
    * - Hera
-     - 2
+     - 1
+     - X
      - X
      - X
      - X
@@ -150,6 +157,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 2
      - X
      - X
+     -
      - X
      - X
      - X
@@ -158,26 +166,13 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      -
      -
      - X
+     -
      - X
-     - X
-   * - Gaea C5
-     - 3
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
    * - AWS (PW)
      - 3
      - X
      - X
+     -
      - X
      - X
      -
@@ -192,6 +187,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 3
      - X
      - X
+     -
      - X
      -
      -
@@ -206,6 +202,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 3
      - X
      - X
+     -
      - X
      -
      -
