@@ -47,11 +47,11 @@ if [[ "$verbose" == "true" ]]; then
    set -x
 fi
 
-if [[ "$type" == "gfs" ]]; then
+#if [[ "$type" == "gfs" ]]; then
    pdlib=pdlib_ON
-else
-   pdlib=pdlib_OFF
-fi
+#else
+#   pdlib=pdlib_OFF
+#fi
 
 for nm in gint grib grid ounf ounp outf outp prep prnc
 do
