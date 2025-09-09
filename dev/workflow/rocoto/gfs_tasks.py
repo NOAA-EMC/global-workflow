@@ -1279,7 +1279,7 @@ class GFSTasks(Tasks):
 
         wave_grid = self._configs['base']['waveGRD']
         history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
-        history_file = f'{self.run}.wave.t@Hz.{wave_grid}.f#fhr3_last#.log'
+        history_file = f'{self.run}.t@Hz.{wave_grid}.f#fhr3_last#.log'
 
         deps = []
         dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}'}
@@ -1331,7 +1331,7 @@ class GFSTasks(Tasks):
         # The job runs on forecast hours up to FHMAX_WAV_IBP
         fhmax_wav_ibp = self._configs[name_in]['FHMAX_WAV_IBP']
         history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
-        history_file = f'{self.run}.wave.t@Hz.points.f{fhmax_wav_ibp:03d}.log'
+        history_file = f'{self.run}.t@Hz.points.f{fhmax_wav_ibp:03d}.log'
 
         deps = []
         dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}'}

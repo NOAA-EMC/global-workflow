@@ -498,7 +498,7 @@ WW3_postdet() {
   cd "${cwd}" || exit 1
 
   # Link output files
-  local wavprfx="${RUN}.wave.t${cyc}z"
+  local wavprfx="${RUN}.t${cyc}z"
   ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
 
   # Loop for gridded output (uses FHINC)
@@ -697,7 +697,7 @@ MOM6_out() {
   if [[ -f "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" ]]; then
     cpfs "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" "${COMOUT_CONF}/MOM_parameter_doc.all"
   fi
-  
+
   # Create a list of MOM6 restart files
   # Coarser than 1/2 degree has a single MOM restart
   local mom6_restart_files mom6_restart_file restart_file
