@@ -1,0 +1,193 @@
+#!/bin/bash
+set -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+configs="base anal"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env anal
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export COMPONENT=${COMPONENT:-atmos}
+export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+GDATE=$($NDATE -$assim_freq $CDATE)
+gPDY=$(echo $GDATE | cut -c1-8)
+gcyc=$(echo $GDATE | cut -c9-10)
+GDUMP=${GDUMP:-"gdas"}
+
+export OPREFIX="${CDUMP}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
+export APREFIX="${CDUMP}.t${cyc}z."
+export GSUFFIX=${GSUFFIX:-$SUFFIX}
+export ASUFFIX=${ASUFFIX:-$SUFFIX}
+
+
+if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
+    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$GDUMP.$gPDY/$gcyc/$COMPONENT}
+else
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+    export COMIN_OBS="$DMPDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+    export COMIN_GES_OBS="$DMPDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
+fi
+mkdir -m 775 -p $COMOUT
+# COMIN_GES and COMIN_GES_ENS are used in script
+export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
+export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
+
+
+export ATMGES="$COMIN_GES/${GPREFIX}atmf006${GSUFFIX}"
+if [ ! -f $ATMGES ]; then
+    echo "FATAL ERROR: FILE MISSING: ATMGES = $ATMGES"
+    exit 1
+fi
+
+
+# Get LEVS
+if [ ${GSUFFIX} = ".nc" ]; then
+    export LEVS=$($NCLEN $ATMGES pfull) 
+    status=$?
+else
+    export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
+    status=$?
+fi
+[[ $status -ne 0 ]] && exit $status
+
+
+if [ $DOHYBVAR = "YES" ]; then
+    export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean$GSUFFIX"
+    if [ ! -f $ATMGES_ENSMEAN ]; then
+        echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = $ATMGES_ENSMEAN"
+        exit 2
+    fi
+fi
+
+
+# Link observational data
+export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
+if [ ! -f $PREPQC ]; then
+    echo "WARNING: Global PREPBUFR FILE $PREPQC MISSING"
+fi
+export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
+export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
+[[ $DONST = "YES" ]] && export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
+
+
+# Update surface fields with global_cycle
+export DOGCYCLE=${DOGCYCLE:-"YES"}
+
+
+# Generate Gaussian surface analysis
+export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
+
+
+# Copy fix file for obsproc
+if [ $RUN = "gfs" ]; then
+    mkdir -p $ROTDIR/fix
+    cp $FIXgsi/prepobs_errtable.global $ROTDIR/fix/
+fi
+
+
+###############################################################
+# Run relevant script
+env
+echo "HAS BEGUN on $(hostname)"
+$LOGSCRIPT
+
+
+${ANALYSISSH:-$SCRgfs/exglobal_atmos_analysis.sh}
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Send Alerts
+##############################################
+if [ $SENDDBN = YES -a $RUN = gdas ] ; then
+    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias $job $COMOUT/${APREFIX}abias
+    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias_pc $job $COMOUT/${APREFIX}abias_pc
+    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias_air $job $COMOUT/${APREFIX}abias_air
+fi
+
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+
+echo "ENDED NORMALLY."
+
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

@@ -1,5 +1,5 @@
-export version=v16.3.25
-export gfs_ver=v16.3.25
+export version=v16.3.26
+export gfs_ver=v16.3.26
 export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
 export nam_ver=v4.2
@@ -35,7 +35,7 @@ export util_shared_ver=1.4.0
 export grib_util_ver=1.2.3
 export wgrib2_ver=2.0.7
 
-export crtm_ver=2.4.0.1
+export crtm_ver=2.4.0.2
 
 export g2tmpl_ver=1.9.1
 export bacio_ver=2.4.1
@@ -47,6 +47,7 @@ export g2_ver=3.4.5
 export zlib_ver=1.2.11
 export sp_ver=2.3.3
 export ip_ver=3.3.3
+export ncdiag_ver=1.1.1
 
 export cmdaccel_ver=1.1
 

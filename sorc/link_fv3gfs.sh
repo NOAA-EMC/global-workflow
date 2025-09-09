@@ -91,42 +91,10 @@ cd ${pwd}/../util               ||exit 8
         $LINK ../sorc/ufs_utils.fd/util/$file .
     done
 
-
-#------------------------------
-#--add GSI/EnKF file
-#------------------------------
-cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS        .
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC   .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_ANALYSIS_DIAG     .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SELECT_OBS         .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_DIAG               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_UPDATE             .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_ECEN               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SFC                .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_CHGRES_FORENKF    .
-cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh       .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis_calc.sh  .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_diag.sh                 .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_select_obs.sh        .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_update.sh            .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_ecen.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_sfc.sh               .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_fcst.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_post.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_atmos_chgres_forenkf.sh   .
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi
 cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gsi.fd/ush/gsi_utils.py        .
-    $LINK ../sorc/gsi.fd/ush/calcanl_gfs.py      .
-    $LINK ../sorc/gsi.fd/ush/calcinc_gfs.py      .
-    $LINK ../sorc/gsi.fd/ush/getncdimlen         .
-
 
 #------------------------------
 #--add DA Monitor file
@@ -135,42 +103,21 @@ cd ${pwd}/../fix                ||exit 8
     [[ -d gdas ]] && rm -rf gdas
     mkdir -p gdas
     cd gdas
-    $LINK ../../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt            .
-    $LINK ../../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt           .
-    $LINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_base.tar            .
-    $LINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_satype.txt          .
-    $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_base.tar         .
-    $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_satype.txt       .
-    $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_scaninfo.txt     .
-cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas/jobs/JGDAS_ATMOS_VMINMON               .
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs/jobs/JGFS_ATMOS_VMINMON                 .
-    $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon/jobs/JGDAS_ATMOS_VERFOZN               .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon/jobs/JGDAS_ATMOS_VERFRAD            .
+    $LINK ../../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt            .
+    $LINK ../../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt           .
+    $LINK ../../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_base.tar            .
+    $LINK ../../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_satype.txt          .
+    $LINK ../../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_base.tar         .
+    $LINK ../../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_satype.txt       .
+    $LINK ../../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_scaninfo.txt     .
 cd ${pwd}/../parm               ||exit 8
     [[ -d mon ]] && rm -rf mon
     mkdir -p mon
     cd mon
-    $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm            da_mon.parm
-    $LINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon/parm/gdas_oznmon.parm               .
-cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas/scripts/exgdas_atmos_vminmon.sh        .
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs/scripts/exgfs_atmos_vminmon.sh          .
-    $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon/scripts/exgdas_atmos_verfozn.sh        .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon/scripts/exgdas_atmos_verfrad.sh     .
+    $LINK ../../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm            da_mon.parm
+    $LINK ../../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/parm/gdas_oznmon.parm               .
 cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_costs.pl     .
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_gnorms.pl    .
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_reduct.pl    .
-    $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared/ush/ozn_xtrct.sh                     .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_diag_ck.sh             .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_err_rpt.sh             .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_angle.sh          .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcoef.sh          .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcor.sh           .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_time.sh           .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/ush/rstprod.sh                    .
-
+    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/data_extract/ush/radmon_err_rpt.sh             .
 
 #------------------------------
 #--link executables
@@ -195,12 +142,21 @@ for ufs_utilsexe in \
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
-for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
-    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x enkf.x gsi.x \
-    interp_inc.x ncdiag_cat_serial.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
-    radmon_bcoef.x radmon_bcor.x radmon_time.x recentersigp.x;do
+for monexe in oznmon_horiz.x oznmon_time.x radmon_angle.x \
+    radmon_bcoef.x radmon_bcor.x radmon_time.x;do
+    [[ -s $monexe ]] && rm -f $monexe
+    $LINK ../sorc/gsi_monitor.fd/install/bin/$monexe .
+done
+
+for gsiexe in enkf.x gsi.x; do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
+done
+
+for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
+    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x interp_inc.x recentersigp.x; do
+    [[ -s $gsiexe ]] && rm -f $gsiexe
+    $LINK ../sorc/gsi_utils.fd/install/bin/$gsiexe .
 done
 
 for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do
@@ -244,22 +200,22 @@ cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/src/ncdiag                                                               ncdiag_cat.fd
 
     [[ -d oznmon_horiz.fd ]] && rm -rf oznmon_horiz.fd
-    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd             oznmon_horiz.fd
+    $SLINK gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd             oznmon_horiz.fd
 
     [[ -d oznmon_time.fd ]] && rm -rf oznmon_time.fd
-    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd              oznmon_time.fd
+    $SLINK gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd              oznmon_time.fd
 
     [[ -d radmon_angle.fd ]] && rm -rf radmon_angle.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd           radmon_angle.fd
+    $SLINK gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd           radmon_angle.fd
 
     [[ -d radmon_bcoef.fd ]] && rm -rf radmon_bcoef.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd         radmon_bcoef.fd
+    $SLINK gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd         radmon_bcoef.fd
 
     [[ -d radmon_bcor.fd ]] && rm -rf radmon_bcor.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd          radmon_bcor.fd
+    $SLINK gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd          radmon_bcor.fd
 
     [[ -d radmon_time.fd ]] && rm -rf radmon_time.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd          radmon_time.fd
+    $SLINK gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd          radmon_time.fd
 
     [[ -d recentersigp.fd ]] && rm -rf recentersigp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd

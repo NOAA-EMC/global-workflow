@@ -31,9 +31,11 @@ load(pathJoin("prod_util", os.getenv("prod_util_ver")))
 load(pathJoin("grib_util", os.getenv("grib_util_ver")))
 load(pathJoin("bufr_dump", os.getenv("bufr_dump_ver")))
 load(pathJoin("util_shared", os.getenv("util_shared_ver")))
+load(pathJoin("ncdiag", os.getenv("ncdiag_ver")))
 load(pathJoin("crtm", os.getenv("crtm_ver")))
 load(pathJoin("g2tmpl", os.getenv("g2tmpl_ver")))
 load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
+load(pathJoin("ncdiag", os.getenv("ncdiag_ver")))
 
 load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
 

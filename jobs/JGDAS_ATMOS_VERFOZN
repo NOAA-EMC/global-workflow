@@ -1,0 +1,120 @@
+#!/bin/sh
+#############################################################
+# Set up environment for GDAS Ozone Monitor job
+#############################################################
+set -xa
+echo `date` $0 `date -u` begin
+export PS4='$SECONDS + '
+
+###############################
+# Specify NET, RUN, and COMPONENT name
+##############################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gdas}
+export COMPONENT=${COMPONENT:-atmos}
+
+###########################################################
+# obtain unique process id (pid) and make temp directories
+###########################################################
+export pid=$$
+export outid=${outid:-"LL$job"}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+
+export OZNMON_SUFFIX=${OZNMON_SUFFIX:-${NET}}
+
+mkdir -p ${DATA}
+cd ${DATA}
+
+
+####################################
+# Determine Job Output Name on System
+####################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+export cycle=t${cyc}z
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+setpdy.sh
+. ./PDY
+
+
+#---------------------------------------------
+# Specify Execution Areas
+#
+export HOMEgfs_ozn=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export HOMEgdas_ozn=${HOMEgfs_ozn:-${NWROOT}/gfs.${gfs_ver}}
+export PARMgdas_ozn=${PARMgfs_ozn:-$HOMEgfs_ozn/parm/mon}
+export SCRgdas_ozn=${SCRgfs_ozn:-$HOMEgfs_ozn/scripts}
+export FIXgdas_ozn=${FIXgfs_ozn:-$HOMEgfs_ozn/fix/gdas}
+
+export HOMEoznmon=${HOMEoznmon:-${HOMEgfs_ozn}}
+export EXECoznmon=${EXECoznmon:-$HOMEoznmon/exec}
+export FIXoznmon=${FIXoznmon:-${HOMEoznmon}/fix}
+export USHoznmon=${USHoznmon:-$HOMEoznmon/ush}
+
+
+#-----------------------------------
+# source the parm file
+#
+.  ${PARMgdas_ozn}/gdas_oznmon.parm
+
+
+#############################################
+#  determine PDY and cyc for previous cycle
+#############################################
+
+cdate=`${NDATE} -6 ${PDY}${cyc}`
+echo 'pdate = ${pdate}'
+
+export P_PDY=`echo ${cdate} | cut -c1-8`
+export p_cyc=`echo ${cdate} | cut -c9-10`
+
+#---------------------------------------------
+# OZN_TANKDIR - WHERE OUTPUT DATA WILL RESIDE
+#
+export OZN_TANKDIR=${OZN_TANKDIR:-$(compath.py ${envir}/${NET}/${gfs_ver})}
+export TANKverf_ozn=${TANKverf_ozn:-${OZN_TANKDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}/oznmon}
+export TANKverf_oznM1=${TANKverf_oznM1:-${OZN_TANKDIR}/${RUN}.${P_PDY}/${p_cyc}/${COMPONENT}/oznmon}
+export COM_IN=${COM_IN:-$(compath.py ${envir}/${NET}/${gfs_ver})}
+export COMIN=${COMIN:-${COM_IN}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+
+if [[ ! -d ${TANKverf_ozn} ]]; then
+   mkdir -p -m 775 ${TANKverf_ozn}
+fi
+ 
+#---------------------------------------
+#  set up validation file
+#
+if [[ ${VALIDATE_DATA} -eq 1 ]]; then
+   export ozn_val_file=${ozn_val_file:-${FIXgdas_ozn}/gdas_oznmon_base.tar}
+fi
+
+#---------------------------------------
+# Set necessary environment variables
+#
+export OZN_AREA=${OZN_AREA:-glb}
+export oznstat=${oznstat:-$COMIN/gdas.t${cyc}z.oznstat}
+
+
+#-------------------------------------------------------
+# Execute the script.
+#
+${OZNMONSH:-${SCRgdas_ozn}/exgdas_atmos_verfozn.sh} ${PDY} ${cyc}
+err=$?
+[[ $err -ne 0 ]] && exit $err
+
+
+################################
+# Remove the Working Directory
+################################
+KEEPDATA=${KEEPDATA:-YES}
+cd $DATAROOT
+if [ ${KEEPDATA} = NO ] ; then
+  rm -rf $DATA
+fi
+
+date
+

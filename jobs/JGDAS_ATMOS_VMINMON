@@ -1,0 +1,104 @@
+#!/bin/sh
+###########################################################
+# GDAS Minimization Monitor (MinMon) job
+###########################################################
+set -xa
+echo `date` $0 `date -u` begin
+export PS4='$SECONDS + '
+
+###############################
+# Specify NET, RUN, and COMPONENT name
+##############################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gdas}
+export COMPONENT=${COMPONENT:-atmos}
+
+###########################################################
+# obtain unique process id (pid) and make temp directories
+###########################################################
+export pid=$$
+export outid=${outid:-"LL$job"}
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+########################################################### 
+# obtain unique process id (pid) and make temp directories
+###########################################################
+export MINMON_SUFFIX=${MINMON_SUFFIX:-${NET}}
+export m_job=${m_job:-${MINMON_SUFFIX}_mmDE}
+
+
+##############################################
+# Specify Package Areas
+##############################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export SCRgfs=${SCRgfs:-$HOMEgfs/scripts}
+
+export M_FIXgdas=${M_FIXgdas:-$HOMEgfs/fix/gdas}
+
+export HOMEminmon=${HOMEminmon:-${HOMEgfs}}
+export EXECminmon=${EXECminmon:-$HOMEminmon/exec}
+export USHminmon=${USHminmon:-$HOMEminmon/ush}
+
+
+#############################################
+# Run setpdy and initialize PDY variables
+#############################################
+export cycle=t${cyc}z
+setpdy.sh
+. ./PDY
+
+
+#############################################
+#  determine PDY and cyc for previous cycle
+#############################################
+
+cdate=`${NDATE} -6 ${PDY}${cyc}`
+echo 'pdate = ${pdate}'
+
+export P_PDY=`echo ${cdate} | cut -c1-8`
+export p_cyc=`echo ${cdate} | cut -c9-10`
+
+
+#############################################
+# TANKverf - WHERE OUTPUT DATA WILL RESIDE
+#############################################
+export COM_IN=${COM_IN:-$(compath.py ${envir}/${NET}/${gfs_ver})}
+
+export M_TANKverf=${M_TANKverf:-${COM_IN}/${RUN}.${PDY}/${cyc}/${COMPONENT}/minmon}
+export M_TANKverfM1=${M_TANKverfM1:-${COM_IN}/${RUN}.${P_PDY}/${p_cyc}/${COMPONENT}/minmon}
+
+export COMIN=${COMIN:-$COM_IN/${RUN}.${PDY}/${cyc}/$COMPONENT}
+
+mkdir -p -m 775 $M_TANKverf
+
+
+
+########################################
+# Set necessary environment variables
+########################################
+export CYCLE_INTERVAL=6
+export gsistat=${gsistat:-${COMIN}/gdas.t${cyc}z.gsistat}
+
+
+########################################################
+# Execute the script.
+${GMONSH:-$SCRgfs/exgdas_atmos_vminmon.sh} ${PDY} ${cyc}
+err=$?
+[[ $err -ne 0 ]] && exit $err
+
+
+################################
+# Remove the Working Directory
+################################
+KEEPDATA=${KEEPDATA:-NO}
+cd ${DATAROOT}
+
+if [ ${KEEPDATA} = NO ] ; then
+  rm -rf ${DATA}
+fi
+
+
