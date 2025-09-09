@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+from typing import Dict
+from applications.applications import AppConfig
+from wxflow import to_timedelta
+from abc import ABC, abstractmethod
+from hosts import Host
+from logging import getLogger
+
+logger = getLogger(__name__.split('.')[-1])
+
+
+class WorkflowSuite(ABC):
+
+    def __init__(self, app_config: AppConfig, workflow_config: Dict) -> None:
+
+        self._app_config = app_config
+        self.workflow_config = workflow_config
+
+        # Use the first config.base (sourced with an arbitrary RUN)
+        self._base = self._app_config.configs[next(iter(self._app_config.configs))]['base']
+        self._base['interval_gdas'] = to_timedelta(f'{self._base["assim_freq"]}H')
+        self._base['interval_gfs'] = to_timedelta(f'{self._base["INTERVAL_GFS"]}H')
+
+        # Collect info needed to write an scrontab file
+        self.host_info = Host().info
+        self.use_scrontab = self.host_info.get("USE_SCRONTAB", False)
+        # Add ACCOUNT to host_info, with that from config.base
+        self.host_info.ACCOUNT = self._base['ACCOUNT']
+        self.HOMEgfs = self._base['HOMEgfs']
+        self.expdir = self._base['EXPDIR']
+        self.pslot = self._base['PSLOT']
+
+    @abstractmethod
+    def get_cycledefs(self):
+        pass
+
+    @abstractmethod
+    def write(self):
+        pass

@@ -9,6 +9,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from applications.application_factory import app_config_factory
 from rocoto.rocoto_xml_factory import rocoto_xml_factory
+from ecflow.ecflow_suite_factory import ecflow_suite_factory
 from wxflow import Configuration, Logger, logit
 
 
@@ -114,9 +115,15 @@ def main(*argv):
     # Configure the application
     app_config = app_config_factory.create(f'{net}_{mode}', cfg)
 
-    # Create Rocoto Tasks and Assemble them into an XML
-    xml = rocoto_xml_factory.create(f'{net}_{mode}', app_config, rocoto_param_dict)
-    xml.write()
+    # Call the appropriate workflow engine factory
+    ENGINE_MAP = {
+        'rocoto': rocoto_xml_factory,
+        'ecflow': ecflow_suite_factory,
+    }
+
+    # Create the XML (Rocoto) or Suite (ecFlow) object
+    workflow = ENGINE_MAP[workflow_engine].create(f'{net}_{mode}', app_config, workflow_param_dict)
+    workflow.write()
 
 
 if __name__ == '__main__':
