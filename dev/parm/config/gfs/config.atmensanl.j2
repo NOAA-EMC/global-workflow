@@ -12,11 +12,10 @@ export JCB_ALGO_YAML_FV3INC="{{ JCB_ALGO_YAML_FV3INC }}"
 
 export INTERP_METHOD='barycentric'
 
-export CRTM_FIX_YAML="${PARMgfs}/gdas/atm_crtm_coeff.yaml.j2"
-export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
-
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/atmensanl_jedi_config.yaml.j2"
-export LGETKF_BKG_STAGING_YAML="${PARMgfs}/gdas/staging/atm_lgetkf_bkg.yaml.j2"
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/atm/atm_ens_jedi_config.yaml.j2"
+export STAGE_CRTM_COEFF_YAML="${PARMgfs}/gdas/atm/atm_stage_crtm_coeff.yaml.j2"
+export STAGE_JEDI_FIX_YAML="${PARMgfs}/gdas/atm/atm_stage_jedi_fix.yaml.j2"
+export STAGE_BKG_YAML="${PARMgfs}/gdas/atm/atm_ens_stage_bkg.yaml.j2"
 
 export layout_x_atmensanl="{{ LAYOUT_X_ATMENSANL }}"
 export layout_y_atmensanl="{{ LAYOUT_Y_ATMENSANL }}"

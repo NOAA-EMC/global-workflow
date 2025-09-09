@@ -18,6 +18,7 @@ load("py-jinja2")
 load("py-pyyaml")
 load("py-numpy")
 load("git-lfs")
+prepend_path("MODULEPATH", "/ncrc/proj/epic/spack-stack/c6/spack-stack-1.9.2/envs/ue-intel-2023.2.0/install/modulefiles/gcc/12.3.0")
 load("gh")
 
 unload("cray-libsci")
