@@ -231,8 +231,12 @@ fi
 #--add GDASApp parm directory
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
-  cd "${HOMEgfs}/parm/gdas" || exit 1
-  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas" "jcb-algorithms" "stat")
+  cd "${HOMEgfs}/parm" || exit 1
+  if [[ ! -d gdas ]]; then
+      mkdir -p gdas
+  fi
+  cd gdas || exit 1
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
   for comp in "${gdasapp_comps[@]}"; do
     if [[ -d "${comp}" ]]; then
         rm -rf "${comp}"
