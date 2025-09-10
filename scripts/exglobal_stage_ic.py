@@ -16,7 +16,7 @@ def main():
     stage = Stage(cast_strdict_as_dtypedict(os.environ))
 
     # Stage ICs
-    stage.calculate_stage_vars()
+    stage.execute_stage(stage.calculate_stage_vars())
 
 
 if __name__ == '__main__':
