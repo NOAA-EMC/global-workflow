@@ -2,7 +2,7 @@
 HPC Settings and Help
 #####################
 
-Running the GFS configurations (or almost any global workflow configuration except the coarsest) is a resource intensive exercise. This page discusses recommended HPC environmental settings and contact information in case you need assistance from a particular HPC helpdesk. While most of the documentation is based on supported NOAA platforms, the learnings here can hopefully apply to other platforms. 
+Running the GFS configurations (or almost any global workflow configuration except the coarsest) is a resource intensive exercise. This page discusses recommended HPC environmental settings and contact information in case you need assistance from a particular HPC helpdesk. While most of the documentation is based on supported NOAA platforms, the learnings here can hopefully apply to other platforms.
 
 ====================================
 Minimum system software requirements
@@ -61,6 +61,8 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - Coupled
        GEFS
      - Coupled
+       GCAFS
+     - Coupled
        SFS
      - GSI
        DA
@@ -76,131 +78,140 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
        Verification
      - HPSS
        Archiving
-   * - WCOSS2  
+   * - WCOSS2
      - 1
-     - X     
-     - X     
      - X
-     - X   
-     - X     
-     - 
-     - X    
-     - X  
-     - X 
-     - X   
-     - X        
      - X
-   * - Hera    
-     - 1   
-     - X     
-     - X     
      - X
-     - X   
-     - X   
-     - X     
-     - X    
-     - X  
-     - 
-     - X   
-     - X        
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+   * - Ursa
+     - 1
+     - X
+     - X
+     -
+     - X
+     - X
+     - X
+     - X
+     - X
+     -
+     -
+     - X
+     -
      - X
    * - Hercules
-     - 1   
-     - X     
-     - X     
-     - X
-     - X   
-     - X     
-     - X     
-     - 
-     - 
-     - 
-     - X   
-     - X        
-     - X
-   * - Orion   
-     - 2   
-     - X     
-     - X     
-     - X
-     - X   
-     - X     
-     - 
-     - X    
-     - 
-     - 
-     - X   
-     - X        
-     - X
-   * - Gaea C5 
-     - 3   
-     - X     
-     - X     
-     - X
-     - X   
-     - X     
-     - 
-     - 
-     - 
-     - 
-     - 
+     - 1
      - X
      - X
-   * - Gaea C6 
-     - 1   
-     - X     
-     - X     
-     - X
-     - X   
      -
-     - 
-     - X
-     - 
-     - 
      - X
      - X
+     - X
+     - X
+     -
+     -
+     -
+     - X
+     -
+     - X
+   * - Gaea C6
+     - 1
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     -
+     -
+     - X
+     -
+     - X
+   * - Hera
+     - 1
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     -
+     - X
+     - X
+     - X
+   * - Orion
+     - 2
+     - X
+     - X
+     -
+     - X
+     - X
+     - X
+     -
+     - X
+     -
+     -
+     - X
+     -
      - X
    * - AWS (PW)
-     - 3   
-     - X     
-     - X     
+     - 3
      - X
-     - X   
-     - 
-     - 
-     - 
-     - 
-     - 
-     - 
-     - 
+     - X
+     -
+     - X
+     - X
+     -
+     -
+     -
+     -
+     -
+     -
+     -
      -
    * - GCP (PW)
-     - 3   
-     - X     
-     - X     
+     - 3
      - X
-     - 
-     - 
-     - 
-     - 
-     - 
-     - 
-     - 
-     - 
+     - X
      -
-   * - Azure   
-     - 3   
-     - X     
-     - X     
      - X
-     - 
-     - 
-     - 
-     - 
-     - 
-     - 
-     - 
-     - 
+     -
+     -
+     -
+     -
+     -
+     -
+     -
+     -
+     -
+   * - Azure
+     - 3
+     - X
+     - X
+     -
+     - X
+     -
+     -
+     -
+     -
+     -
+     -
+     -
+     -
      -
 
 =============
@@ -208,6 +219,7 @@ HPC helpdesks
 =============
 
 * WCOSS2: hpc.wcoss2-help@noaa.gov
+* Ursa: rdhpcs.ursa.help@noaa.gov
 * Hera: rdhpcs.hera.help@noaa.gov
 * Orion:  rdhpcs.orion.help@noaa.gov
 * Hercules:  rdhpcs.hercules.help@noaa.gov

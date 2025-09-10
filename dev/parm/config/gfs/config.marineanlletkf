@@ -6,12 +6,13 @@
 echo "BEGIN: config.marineanlletkf"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" marineanlletkf
+source "${EXPDIR}/config.resources" marineanlletkf
 
-export MARINE_LETKF_EXEC="${EXECgfs}/gdas.x"
-export MARINE_LETKF_YAML_TMPL="${PARMgfs}/gdas/soca/letkf/letkf.yaml.j2"
-export MARINE_LETKF_STAGE_YAML_TMPL="${PARMgfs}/gdas/soca/letkf/letkf_stage.yaml.j2"
-export MARINE_LETKF_SAVE_YAML_TMPL="${PARMgfs}/gdas/soca/letkf/letkf_save.yaml.j2"
+export LETKF_EXEC="${EXECgfs}/gdas.x"
+export LETKF_YAML="${PARMgfs}/gdas/marine/letkf/letkf.yaml.j2"
+
+export STAGE_YAML="${PARMgfs}/gdas/marine/marine_ens_stage.yaml.j2"
+export SAVE_YAML="${PARMgfs}/gdas/marine/marine_ens_save.yaml.j2"
 
 export GRIDGEN_EXEC="${EXECgfs}/gdas_soca_gridgen.x"
 export GRIDGEN_YAML="${HOMEgfs}/sorc/gdas.cd/parm/jcb-gdas/algorithm/marine/soca_gridgen.yaml.j2"
