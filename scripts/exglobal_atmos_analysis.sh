@@ -309,46 +309,49 @@ OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
 BLACKLST=${BLACKLST:-${FIXgfs}/gsi/rejectlist_global.txt}
 
 # Get historical fix files
-if [[ -z "$CONVINFO" ]]; then
-   CONVINFO=$(ls -1 ${FIXgfs}/gsi/gfsv17_historical/global_convinfo.txt.* 2>/dev/null \
+if [[ -z "${CONVINFO}" ]]; then
+   CONVINFO=$(find "${FIXgfs}/gsi/gfsv17_historical/" -maxdepth 1 -name "global_convinfo.txt.*" 2>/dev/null \
     | awk -F. -v d="${PDY}${cyc}" '{ts=$NF} ts<=d {print ts, $0}' \
     | sort -n \
     | tail -n1 \
-    | cut -d' ' -f2-
+    | cut -d' ' -f2- \
+    || true
     )
 fi 
-if [[ -z "$CONVINFO" ]]; then
-	CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
+if [[ -z "${CONVINFO}" ]]; then
+    CONVINFO="${FIXgfs}/gsi/global_convinfo.txt"
 fi
-echo "Selected CONVINFO: $CONVINFO"
+echo "Selected CONVINFO: ${CONVINFO}"
 
-if [[ -z "$OZINFO" ]]; then
-   OZINFO=$(ls -1 ${FIXgfs}/gsi/gfsv17_historical/global_ozinfo.txt.* 2>/dev/null \
+if [[ -z "${OZINFO}" ]]; then
+   OZINFO=$(find "${FIXgfs}/gsi/gfsv17_historical/" -maxdepth 1 -name "global_ozinfo.txt.*" 2>/dev/null \
        | awk -F. -v d="${PDY}${cyc}" '{ts=$NF} ts<=d {print ts, $0}' \
        | sort -n \
        | tail -n1 \
-       | cut -d' ' -f2-
+       | cut -d' ' -f2- \
+       || true
     )
 fi 
 
-if [[ -z "$OZINFO" ]]; then
-   OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
+if [[ -z "${OZINFO}" ]]; then
+   OZINFO="${FIXgfs}/gsi/global_ozinfo.txt"
 fi
-echo "Selected OZINFO: $OZINFO"
+echo "Selected OZINFO: ${OZINFO}"
 
-if [[ -z "$SATINFO" ]]; then
-   SATINFO=$(ls -1 ${FIXgfs}/gsi/gfsv17_historical/global_satinfo.txt.* 2>/dev/null \
+if [[ -z "${SATINFO}" ]]; then
+   SATINFO=$(find "${FIXgfs}/gsi/gfsv17_historical/" -maxdepth 1 -name "global_satinfo.txt.*" 2>/dev/null \
        | awk -F. -v d="${PDY}${cyc}" '{ts=$NF} ts<=d {print ts, $0}' \
        | sort -n \
        | tail -n1 \
-       | cut -d' ' -f2-
+       | cut -d' ' -f2- \
+       || true
     )
 fi 
 
-if [[ -z "$SATINFO" ]]; then
-   SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
+if [[ -z "${SATINFO}" ]]; then
+   SATINFO="${FIXgfs}/gsi/global_satinfo.txt"
 fi
-echo "Selected SATINFO: $SATINFO"
+echo "Selected SATINFO: ${SATINFO}"
 
 # GSI namelist
 SETUP=${SETUP:-""}
