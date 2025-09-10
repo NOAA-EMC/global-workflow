@@ -155,7 +155,7 @@ fi
 
 # 3.b Clean up the rest
 
-cd "${workdir}"
+cd "${workdir}" || exit 1
 rm -rf "${specdir}_${buoy}"
 
 # End of ww3_outp_spec.sh ---------------------------------------------------- #
