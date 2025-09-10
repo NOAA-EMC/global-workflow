@@ -42,7 +42,7 @@ valid_time=$(date -u -d "${PDY} ${cyc} + ${FORECAST_HOUR} hours" "+%Y%m%d%H")
 
 # Copy model definition files
 for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
-  cpreq "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
+  cpreq "${COMIN_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
 done
 
 # Copy model forecast data to DATA
