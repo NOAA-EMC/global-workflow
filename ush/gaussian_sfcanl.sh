@@ -134,7 +134,7 @@ export pgm=$PGM
 $LOGSCRIPT
 
 gcycle_dates=("${PDY}${cyc}")
-if [[ "${DOIAU:-}" == "YES" ]]; then  # Create Gaussian sfcanl files at beginning of window
+if [[ "${DOIAU:-}" == "YES" ]]; then  # Create Gaussian sfcanl file at beginning of window
   half_window=$(( assim_freq / 2 ))
   BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
   gcycle_dates+=("${BDATE}")
@@ -143,7 +143,6 @@ fi
 for hr in "${!gcycle_dates[@]}"; do
 
 gcycle_date=${gcycle_dates[hr]}
-
 
 if [[ ! -d "${DATA}/gausfcanl_${gcycle_date:8:2}" ]]; then
    mkdir -p "${DATA}/gausfcanl_${gcycle_date:8:2}" 
