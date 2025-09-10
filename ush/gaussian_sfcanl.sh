@@ -133,6 +133,7 @@ export PGM=$GAUSFCANLEXE
 export pgm=$PGM
 $LOGSCRIPT
 
+gcycle_dates=("${PDY}${cyc}")
 if [[ "${DOIAU:-}" == "YES" ]]; then  # Create Gaussian sfcanl files at beginning of window
   half_window=$(( assim_freq / 2 ))
   BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
