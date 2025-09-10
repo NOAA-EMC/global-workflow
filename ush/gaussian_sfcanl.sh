@@ -73,7 +73,7 @@
 #                  ${FIXWGTS}
 #                  ${FIXgfs}/am/global_hyblev.l65.txt
 #
-#     input data : ${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile*.nc
+#     input data : ${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile*.nc
 #
 #     output data: $PGMOUT
 #                  $PGMERR
@@ -133,10 +133,27 @@ export PGM=$GAUSFCANLEXE
 export pgm=$PGM
 $LOGSCRIPT
 
+if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
+  half_window=$(( assim_freq / 2 ))
+  BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
+  gcycle_dates+=("${BDATE}")
+fi
+
+for hr in "${!gcycle_dates[@]}"; do
+
+gcycle_date=${gcycle_dates[hr]}
+
+
+if [[ ! -d "${DATA}/gausfcanl_${gcycle_date:8:2}" ]]; then
+   mkdir -p "${DATA}/gausfcanl_${gcycle_date:8:2}" 
+fi
+
+cd "${DATA}/gausfcanl_${gcycle_date:8:2}"
+
 iy=${PDY:0:4}
 im=${PDY:4:2}
 id=${PDY:6:2}
-ih=${cyc}
+ih=${gcycle_date:8:2}
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 
@@ -144,12 +161,12 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 ${NLN} "${FIXWGTS}" "./weights.nc"
 
 # input analysis tiles (with nst records)
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile1.nc" "./anal.tile1.nc"
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile2.nc" "./anal.tile2.nc"
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile3.nc" "./anal.tile3.nc"
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile4.nc" "./anal.tile4.nc"
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile5.nc" "./anal.tile5.nc"
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile6.nc" "./anal.tile6.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile1.nc" "./anal.tile1.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile2.nc" "./anal.tile2.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile3.nc" "./anal.tile3.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile4.nc" "./anal.tile4.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile5.nc" "./anal.tile5.nc"
+${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile6.nc" "./anal.tile6.nc"
 
 # input orography tiles
 ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile1.nc" "./orog.tile1.nc"
@@ -162,7 +179,7 @@ ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile6.nc" "./orog.tile6.
 ${NLN} "${SIGLEVEL}" "./vcoord.txt"
 
 # output gaussian global surface analysis files
-${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc" "./sfc.gaussian.analysis.file"
+${NLN} "${COMOUT_ATMOS_ANALYSIS}/${RUN}.t${gcycle_date:8:2}z.sfcanl.nc" "./sfc.gaussian.analysis.file"
 
 # Namelist uses booleans now
 if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
@@ -187,6 +204,10 @@ if [[ ${err} -ne 0 ]]; then
    echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status!"
    exit "${err}"
 fi
+
+cd ..
+
+done
 
 ################################################################################
 #  Postprocessing
