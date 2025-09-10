@@ -69,7 +69,7 @@ All public operational methods are decorated with @logit(logger, ...),
 providing entry/exit logging.
 
 """
-import os, copy
+import os
 from logging import getLogger
 from typing import Any, Dict
 from datetime import timedelta
@@ -105,7 +105,7 @@ class Stage(Task):
         if self.task_config.RUN in ['gfs', 'gcdas', 'enkfgdas']:
             self.task_config.rRUN = "gdas"
         else:
-        # RUN not gfs, gcdas, or enkfgdas; leave rRUN unchanged and continue
+            # RUN not gfs, gcdas, or enkfgdas; leave rRUN unchanged and continue
             logger.debug("No rRUN remap applied: RUN='%s' (rRUN stays '%s')", self.task_config.RUN, self.task_config.rRUN)
 
         if "OCNRES" in self.task_config:
@@ -207,7 +207,7 @@ class Stage(Task):
             elif self.task_config.GEFSTYPE == "gefs-real-time":
                 # select the relevant member for each GEFS member from GFS outputs
                 self.task_config.cyc_ranges = [list(range(1, 31)), list(range(21, 51)),
-                                        list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
+                                               list(range(41, 71)), list(range(61, 81)) + list(range(1, 11))]
             else:
                 # Error handling for unknown GEFSTYPE
                 valid_types = ['gefs-offline', 'gefs-real-time']
@@ -237,18 +237,30 @@ class Stage(Task):
         current_cycle_mem_dict = {**self.task_config.current_cycle_dict, "${MEMDIR}": memdir}
         previous_cycle_mem_dict = {**self.task_config.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": self.task_config.rRUN}
 
-        self.task_config['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle_mem_dict)
-        self.task_config['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ICE_RESTART_TMPL', ''), previous_cycle_mem_dict)
-        self.task_config['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle_mem_dict)
-        self.task_config['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_MED_RESTART_TMPL', ''), previous_cycle_mem_dict)
-        self.task_config['COMOUT_CHEM_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_CHEM_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle_mem_dict)
+        self.task_config['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_mem_dict)
+        self.task_config['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_mem_dict)
+        self.task_config['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle_mem_dict)
+        self.task_config['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle_mem_dict)
+        self.task_config['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
+        self.task_config['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
+        self.task_config['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_ICE_RESTART_TMPL', ''), previous_cycle_mem_dict)
+        self.task_config['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle_mem_dict)
+        self.task_config['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
+        self.task_config['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_MED_RESTART_TMPL', ''), previous_cycle_mem_dict)
+        self.task_config['COMOUT_CHEM_ANALYSIS_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_CHEM_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
+        self.task_config['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(
+            getattr(self.task_config, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle_mem_dict)
 
     @logit(logger)
     def calculate_member_com_paths_gefs_offline(self, memdir) -> None:
