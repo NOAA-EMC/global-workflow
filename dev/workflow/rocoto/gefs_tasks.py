@@ -599,7 +599,7 @@ class GEFSTasks(Tasks):
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars
+                     'envars': self.envars,
                      'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/dev/jobs/wave_stat_pnt.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
