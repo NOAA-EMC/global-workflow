@@ -552,10 +552,6 @@ class GEFSTasks(Tasks):
 
         fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'], 'wave')
 
-        # When using replay, output does not start until hour 3
-        is_replay = self._configs['wavepostsbs']['REPLAY_ICS']
-        if is_replay:
-            fhrs = [fhr for fhr in fhrs if fhr not in [0, 1, 2]]
 
         max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
