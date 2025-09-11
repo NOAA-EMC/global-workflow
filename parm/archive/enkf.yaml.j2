@@ -42,6 +42,17 @@ enkf:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_{{ step }}.log"
         {% endfor %}
 
+        # Ensemble resolution
+        {% if is_gdas %}
+        {% if DOHYBVAR %}
+        {% if DOIAU %}
+        {% for fhr in range(3, fhmax + 1, 3) %}
+        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head |replace('enkf','')}}atmf{{ '%03d' % fhr }}.ensres.nc"
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+        {% endif %}
+
         # Ensemble mean and spread
         {% if is_gdas %}
         {% for fhr in range(3, fhmax + 1, 3) %}
