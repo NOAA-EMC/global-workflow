@@ -48,18 +48,15 @@ class AtmDetAnalysis(AtmAnalysis):
             _BERROR_YAML="atmosphere_background_error_static_${self.task_config.STATICB_TYPE}"
 
         # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
+        self.task_config.update(AttrDict(
             {
                 'BERROR_YAML': _BERROR_YAML,
             }
-        )
-
-        # Extend task_config with local_dict
-        self.task_config = AttrDict(**self.task_config, **local_dict)
+        ))
 
         # Create dictionary of Jedi objects
         expected_keys = ['atmanlvar', 'atmanlfv3inc']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -102,11 +99,8 @@ class AtmDetAnalysis(AtmAnalysis):
             Jedi.extract_tar_from_filehandler_dict(bias_dict)
 
         # initialize JEDI variational application
-        logger.info(f"Initializing JEDI variational DA application")
+        logger.info(f"Initializing JEDI applications")
         self.jedi_dict['atmanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
-
-        # initialize JEDI FV3 increment conversion application
-        logger.info(f"Initializing JEDI FV3 increment conversion application")
         self.jedi_dict['atmanlfv3inc'].initialize(self.task_config)
 
     @logit(logger)

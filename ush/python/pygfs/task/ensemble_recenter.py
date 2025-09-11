@@ -43,18 +43,15 @@ class EnsembleRecenter(AtmAnalysis):
             _iau_times_iso.append(to_isotime(_window_begin + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2))
 
         # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
+        self.task_config.update(AttrDict(
             {
                 'iau_times_iso': _iau_times_iso
             }
         )
 
-        # Extend task_config with local_dict
-        self.task_config = AttrDict(**self.task_config, **local_dict)
-
         # Create dictionary of Jedi objects
         expected_keys = ['correction_increment', 'ensemble_recenter']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -75,22 +72,14 @@ class EnsembleRecenter(AtmAnalysis):
         None
         """
 
+        # Stage files from COM
+        logger.info(f"Staging files from COM")
+        FileHandler(self.task_config.stage).sync()
+        
         # Initialize JEDI ensemble increment recentering application
-        logger.info(f"Initializing JEDI ensemble recentering applications")
+        logger.info(f"Initializing JEDI applications")
         self.jedi_dict['correction_increment'].initialize(self.task_config)
         self.jedi_dict['ensemble_recenter'].initialize(self.task_config)
-
-        # Stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_dict).sync()
-        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
-
-        # Stage background and increment files
-        logger.info(f"Staging background and increment files from {self.task_config.STAGE_YAML}")
-        fh_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
-        FileHandler(fh_dict).sync()
-        logger.debug(f"JEDI background and increment files:\n{pformat(fh_dict)}")
 
     @logit(logger)
     def execute(self) -> None:
@@ -130,41 +119,6 @@ class EnsembleRecenter(AtmAnalysis):
         None
         """
 
-        fh_dict = {'copy': []}
-
-        # create template dictionaries
-        template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
-        tmpl_inc_dict = {
-            'ROTDIR': self.task_config.ROTDIR,
-            'RUN': self.task_config.RUN,
-            'YMD': to_YMD(self.task_config.current_cycle),
-            'HH': self.task_config.current_cycle.strftime('%H')
-        }
-
-        # Copy increments to COM
-        for imem in range(1, self.task_config.NMEM_ENS + 1):
-            memchar = f"mem{imem:03d}"
-            tmpl_inc_dict['MEMDIR'] = memchar
-            incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
-            for fh in self.task_config.IAUFHRS:
-                hr = format(fh, '03')
-                for itile in range(6):
-                    src = os.path.join(self.task_config.DATA, memchar,
-                                       f"{self.task_config.APREFIX_ENS}cubed_sphere_grid_ratmi{hr}.tile{itile+1}.nc")
-                    if fh == 6:
-                        dest = os.path.join(incdir,
-                                            f"{self.task_config.APREFIX_ENS}cubed_sphere_grid_ratminc.tile{itile+1}.nc")
-                    else:
-                        dest = incdir
-                    fh_dict['copy'].append([src, dest])
-
-        # Copy YAMLs to COM
-        for app_name in self.jedi_dict.keys():
-            src = os.path.join(self.task_config.DATA,
-                               f"{app_name}.yaml")
-            dest = os.path.join(self.task_config.COMOUT_CONF,
-                                f"{self.task_config.APREFIX_ENS}{app_name}.yaml")
-            fh_dict['copy'].append([src, dest])
-
-        # Sync file handler
-        FileHandler(fh_dict).sync()
+         # Save output files to COM
+        logger.info(f"Saving output files to COM")
+        FileHandler(self.task_config.stage).sync()

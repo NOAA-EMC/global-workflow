@@ -44,18 +44,15 @@ class AtmEnsAnalysis(AtmAnalysis):
         super().__init__(config)
 
         # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
+        self.task_config.update(AttrDict(
             {
                 # Currently empty, but could be used in the future
             }
         )
 
-        # Extend task_config with local_dict
-        self.task_config = AttrDict(**self.task_config, **local_dict)
-
         # Create dictionary of JEDI objects
         expected_keys = ['atmensanlobs', 'atmensanlsol', 'atmensanlfv3inc', 'atmensanlletkf']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -80,58 +77,17 @@ class AtmEnsAnalysis(AtmAnalysis):
         None
         """
 
-        # stage observations
-        logger.info(f"Staging list of observation files")
-        obs_dict = self.jedi_dict['atmensanlobs'].render_jcb(self.task_config, 'atm_obs_staging')
-        FileHandler(obs_dict).sync()
-        logger.debug(f"Observation files:\n{pformat(obs_dict)}")
-
-        # stage bias corrections
-        logger.info(f"Staging list of bias correction files")
-        bias_dict = self.jedi_dict['atmensanlobs'].render_jcb(self.task_config, 'atm_bias_staging')
-        bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
-        FileHandler(bias_dict).sync()
-        logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+        # Stage files from COM
+        logger.info(f"Staging files from COM")
+        FileHandler(self.task_config.stage).sync()
 
         # extract bias corrections
         Jedi.extract_tar_from_filehandler_dict(bias_dict)
 
-        # stage CRTM fix files
-        logger.info(f"Staging CRTM fix files from {self.task_config.STAGE_CRTM_COEFF_YAML}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.STAGE_CRTM_COEFF_YAML, self.task_config)
-        FileHandler(crtm_fix_dict).sync()
-        logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
-
-        # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_dict).sync()
-        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
-
-        # stage backgrounds
-        logger.info(f"Stage ensemble member background files")
-        bkg_staging_dict = parse_j2yaml(self.task_config.STAGE_BKG_YAML, self.task_config)
-        FileHandler(bkg_staging_dict).sync()
-        logger.debug(f"Ensemble member background files:\n{pformat(bkg_staging_dict)}")
-
-        # need output dir for diags and anl
-        logger.debug("Create empty output [anl, diags] directories to receive output from executable")
-        newdirs = [
-            os.path.join(self.task_config.DATA, 'anl'),
-            os.path.join(self.task_config.DATA, 'diags'),
-        ]
-        FileHandler({'mkdir': newdirs}).sync()
-
-        # initialize JEDI LETKF observer application
+        # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")
         self.jedi_dict['atmensanlobs'].initialize(self.task_config, clean_empty_obsspaces=True)
-
-        # initialize JEDI LETKF solver application
-        logger.info(f"Initializing JEDI LETKF solver application")
         self.jedi_dict['atmensanlsol'].initialize(self.task_config)
-
-        # initialize JEDI FV3 increment conversion application
-        logger.info(f"Initializing JEDI FV3 increment conversion application")
         self.jedi_dict['atmensanlfv3inc'].initialize(self.task_config)
 
     @logit(logger)
