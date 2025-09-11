@@ -241,7 +241,6 @@ class OceanIceProducts(Task):
         logger.info("Generate index file")
 
         wgrib2_cmd = os.environ.get("WGRIB2", None)
-        print('wgrib2_cmd:', wgrib2_cmd)
 
         grbfile = f"{config.component}.{grid}.grib2"
         grbfidx = f"{grbfile}.idx"
@@ -251,7 +250,6 @@ class OceanIceProducts(Task):
             return
 
         logger.info(f"Creating index file for {grbfile}")
-        print('which(wgrib2):', which("wgrib2"))
         exec_cmd = which("wgrib2") if wgrib2_cmd is None else Executable(wgrib2_cmd)
         exec_cmd.add_default_arg("-s")
         try:

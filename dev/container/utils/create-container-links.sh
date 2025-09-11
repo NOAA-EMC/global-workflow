@@ -2,7 +2,7 @@
 
 verbose=false
 
-while [ "$#" -gt 0 ]; do
+while [[ "$#" -gt 0 ]]; do
   case "$1" in
     -H|--HOMEgfs)
       HOMEgfs="$2"
@@ -36,10 +36,12 @@ if [[ ! -v HOMEgfs || ! -v container || ! -v bindings || ! -v MACHINE_ID ]]; the
    exit -1
 fi
 
-# echo "HOMEgfs: $HOMEgfs"
-# echo "container: $container"
-# echo "bindings: $bindings"
-# echo "Verbose: $verbose"
+if [[ "${verbose}" == "true" ]]; then
+   echo "HOMEgfs: $HOMEgfs"
+   echo "container: $container"
+   echo "bindings: $bindings"
+   echo "Verbose: $verbose"
+fi
 
 ${HOMEgfs}/dev/container/utils/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t gfs
 ${HOMEgfs}/dev/container/utils/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t sfs

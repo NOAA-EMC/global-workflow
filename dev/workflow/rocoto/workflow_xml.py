@@ -158,10 +158,19 @@ class RocotoXML(ABC):
         # No point creating a crontab if rocotorun is not available.
         rocotorun = which('rocotorun')
         if rocotorun is None:
-            print('Failed to find rocotorun, crontab will not be created')
-            return
+            try:
+                if ('rocotorun' in self.rocoto_config.keys()):
+                    rocotoruncmd = self.rocoto_config['rocotorun']
+                else:
+                    rocotoruncmd = '/apps/rocoto/default/bin/rocotorun'
+                os.path.exists(rocotoruncmd)
+            except Exception as ee:
+                raise Exception("Could not find the rocotorun executable. Make sure you have the module loaded!: ") from ee
 
-        rocotoruncmd = rocotorun.command
+            version = rocotoruncmd.split('/')[-3]
+        else:
+            version = rocotorun("--version", output=str, error=str).split()[-1].strip()
+            rocotoruncmd = rocotorun.command
 
         rocotorunstr = f'{rocotoruncmd} -d {self.expdir}/{self.pslot}.db -w {self.expdir}/{self.pslot}.xml'
         cronintstr = f'*/{cronint} * * * *'

@@ -5,11 +5,11 @@ set -x
 HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
-run_with_container=YES
+run_with_container="YES"
 
- casetype=pr
- yamllist="C48_ATM"
-#yamllist="C48_S2SW"
+ casetype="pr"
+#yamllist="C48_ATM"
+ yamllist="C48_S2SW"
 #yamllist="C48_S2SWA_gefs"
 #yamllist="C96mx100_S2S"
 
@@ -26,6 +26,10 @@ if [[ ${MACHINE_ID} = ursa* ]] ; then
 
    module load rocoto/1.3.7
    rocotocmd=`which rocotorun`
+
+   if [[ "${run_with_container}" == "YES" ]]; then
+      cp ${HOMEgfs}/env/URSA.env.container ${HOMEgfs}/env/URSA.env
+   fi
 elif [[ ${MACHINE_ID} = gaea* ]] ; then
    container=/gpfs/f6/scratch/Wei.Huang/container/${img}
    rundir=/gpfs/f6/scratch/${USER}/run
@@ -33,6 +37,9 @@ elif [[ ${MACHINE_ID} = gaea* ]] ; then
    HPC_ACCOUNT=bil-fire8
 
    rocotocmd=/autofs/ncrc-svm1_home2/Christopher.W.Harrop/rocoto-1.3.7/bin/rocotorun
+   if [[ "${run_with_container}" == "YES" ]]; then
+      cp ${HOMEgfs}/env/GAEAC6.env.container ${HOMEgfs}/env/GAEAC6.env
+   fi
 elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    TOPICDIR=/bucket/global-workflow-shared-data/ICSDIR
    container=/contrib/container/${img}

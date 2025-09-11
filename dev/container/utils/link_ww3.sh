@@ -2,7 +2,7 @@
 
 verbose=false
 
-while [ "$#" -gt 0 ]; do
+while [[ "$#" -gt 0 ]]; do
   case "$1" in
     -H|--HOMEgfs)
       HOMEgfs="$2"
