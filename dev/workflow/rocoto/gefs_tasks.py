@@ -594,19 +594,17 @@ class GEFSTasks(Tasks):
     def wave_stat_pnt(self):
 
         deps = []
-        metatask = f'{self.run}_wave_stat'
-        dep_dict = {'type': 'metatask', 'name': metatask}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_stat'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dependencies = rocoto.create_dependency(dep=deps)
 
-        wave_stat_pnt_envars = self.envars.copy()
-        resources = self.get_resource('wave_stat')
+        resources = self.get_resource('wave_stat_pnt')
 
         task_name = f'{self.run}_wave_stat_pnt'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': wave_stat_pnt_envars,
+                     'envars': self.envars
                      'cycledef': self.run,
                      'command': f'{self.HOMEgfs}/dev/jobs/wave_stat_pnt.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -678,7 +676,7 @@ class GEFSTasks(Tasks):
         if self.options['do_wave']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_stat_pnt'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_wave_stat_pnt'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_extractvars']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_extractvars'}
@@ -717,7 +715,7 @@ class GEFSTasks(Tasks):
         if self.options['do_wave']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_stat_pnt'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_wave_stat_pnt'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_extractvars']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_extractvars'}
