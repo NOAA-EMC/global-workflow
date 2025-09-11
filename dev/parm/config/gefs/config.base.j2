@@ -128,7 +128,6 @@ export APP="{{ APP }}"
 export DO_ATM="YES"
 export DO_COUPLED="NO"
 export DO_WAVE="NO"
-export DO_WAVE_STAT="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_EXTRACTVARS="{{ DO_EXTRACTVARS }}" # Option to process and extract a subset of products to save on disk
@@ -199,7 +198,6 @@ case "${APP}" in
 
     if [[ "${APP}" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
-        export DO_WAVE_STAT="YES"
     fi
     ;;
   *)
