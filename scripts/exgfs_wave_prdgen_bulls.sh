@@ -26,7 +26,7 @@
  export cyc=${cyc:-00}
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
- export pgm="ave prdgen"
+ export pgm="wave prdgen"
 
 # 0.b Date and time stuff
  export date=${PDY}
