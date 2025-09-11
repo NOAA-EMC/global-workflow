@@ -53,7 +53,7 @@ case ${step} in
     export memory="4096M"
     ;;
 
-  "wave_stat")
+  "wave_stat" | "wave_stat_pnt")
     export walltime="00:15:00"
     export ntasks=12
     export threads_per_task=1
