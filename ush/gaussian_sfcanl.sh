@@ -205,7 +205,7 @@ if [[ ${err} -ne 0 ]]; then
    exit "${err}"
 fi
 
-cd ..
+cd "${DATA}"
 
 done
 
