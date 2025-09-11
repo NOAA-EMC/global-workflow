@@ -858,10 +858,10 @@ CICE_out() {
   # Copy the Monthly Average output from SFS
   if [[ "${RUN}" == sfs ]]; then
     local files f_name
-    files="$( ls -f ${DATAoutput}/CICE_OUTPUT/iceh.????-??.nc )"
+    files=$( ls -f "${DATAoutput}/CICE_OUTPUT/iceh.????-??.nc" )
     for f in ${files}; do
-        f_name="$( basename ${f} )"
-        ${NMV} ${f} "${COMOUT_ICE_HISTORY}/sfs.ice.t${SDATE}'.monthly_avg.'${f_name:5:4}-${f_name:10:2}'.nc'"
+        f_name=$( basename "${f}" )
+        ${NMV} "${f}" "${COMOUT_ICE_HISTORY}/sfs.ice.t${SDATE}'.monthly_avg.'${f_name:5:4}-${f_name:10:2}'.nc'"
     done
   fi
 }
