@@ -42,8 +42,6 @@ cat << EOF
                          ****************************
                                     ${PDY} ${cycle}
 
-Starting at : $(date)
-
    AWIPS grib fields
    Wave  Grids       : ${grids}
 EOF
