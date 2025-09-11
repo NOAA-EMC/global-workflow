@@ -13,12 +13,13 @@ from wxflow import (AttrDict, FileHandler, Task,
                     parse_j2yaml,
                     logit,
                     Template, TemplateConstants)
+from pygfs.task.atm_analysis import AtmAnalysis
 from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AtmEnsAnalysis(Task):
+class AtmEnsAnalysis(AtmAnalysis):
     """
     Class for JEDI-based global atmens analysis tasks
     """
@@ -42,26 +43,10 @@ class AtmEnsAnalysis(Task):
         """
         super().__init__(config)
 
-        _res = int(self.task_config.CASE_ENS[1:])
-        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
-
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'npx_ges': _res + 1,
-                'npy_ges': _res + 1,
-                'npz_ges': self.task_config.LEVS - 1,
-                'npz': self.task_config.LEVS - 1,
-                'ATM_WINDOW_BEGIN': _window_begin,
-                'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
-                'OPREFIX': f"{self.task_config.EUPD_CYC}.t{self.task_config.cyc:02d}z.",
-                'APREFIX': f"{self.task_config.RUN.replace('enkf', '')}.t{self.task_config.cyc:02d}z.",
-                'APREFIX_ENS': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'atm_obsdatain_path': f"./obs/",
-                'atm_obsdataout_path': f"./diags/",
-                'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
+                # Currently empty, but could be used in the future
             }
         )
 

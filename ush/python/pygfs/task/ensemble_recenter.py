@@ -4,16 +4,17 @@ from datetime import timedelta
 from logging import getLogger
 import os
 from pprint import pformat
-from pygfs.jedi import Jedi
 from wxflow import (AttrDict, FileHandler, Task, Executable, Template, TemplateConstants,
                     add_to_datetime, to_timedelta, to_isotime, to_YMD,
                     parse_j2yaml,
                     logit)
+from pygfs.task.atm_analysis import AtmAnalysis
+from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class EnsembleRecenter(Task):
+class EnsembleRecenter(AtmAnalysis):
     """
     Class for JEDI-based ensemble increment recentering
     """
@@ -37,10 +38,6 @@ class EnsembleRecenter(Task):
         """
         super().__init__(config)
 
-        _res = int(self.task_config.CASE[1:])
-        _res_anl = int(self.task_config.CASE_ANL[1:])
-        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
-
         _iau_times_iso = []
         for hour in self.task_config.IAUFHRS:
             _iau_times_iso.append(to_isotime(_window_begin + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2))
@@ -48,19 +45,6 @@ class EnsembleRecenter(Task):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'npx_ges': _res + 1,
-                'npy_ges': _res + 1,
-                'npz_ges': self.task_config.LEVS - 1,
-                'npz': self.task_config.LEVS - 1,
-                'npx_anl': _res_anl + 1,
-                'npy_anl': _res_anl + 1,
-                'npz_anl': self.task_config.LEVS - 1,
-                'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
-                'ATM_WINDOW_BEGIN': _window_begin,
-                'APREFIX': f"{self.task_config.RUN.replace('enkf', '')}.t{self.task_config.cyc:02d}z.",
-                'APREFIX_ENS': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'iau_times_iso': _iau_times_iso
             }
         )

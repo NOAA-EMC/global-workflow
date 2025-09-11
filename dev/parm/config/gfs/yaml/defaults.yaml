@@ -29,6 +29,7 @@ base:
   NMEM_ENS_GFS_OFFSET: 20
 
 atmanl:
+  OBS_LIST_YAML: "${PARMgfs}/gdas/atm/atm_obs_list.yaml.j2"
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"
   JCB_ALGO_YAML_FV3INC: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar-fv3inc.yaml.j2"
   STATICB_TYPE: "gsibec"
@@ -38,6 +39,7 @@ atmanl:
   IO_LAYOUT_Y: 1
 
 atmensanl:
+  OBS_LIST_YAML: "${PARMgfs}/gdas/atm/atm_obs_list.yaml.j2"
   JCB_ALGO_YAML_LETKF: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf.yaml.j2"
   JCB_ALGO_YAML_OBS: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_observer.yaml.j2"
   JCB_ALGO_YAML_SOL: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_solver.yaml.j2"
