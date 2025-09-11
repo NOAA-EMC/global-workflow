@@ -306,12 +306,12 @@ EOF
         local hhmmss_substring=${FV3_OUTPUT_FH_hhmmss/" ${FH3}-"*/} # Extract substring that contains all lead times up to the one space before target lead HHH-MM-SS
         local hhmmss_substring_len=$(( ${#hhmmss_substring} + 1 )) # Get the size of the substring and add 1 to account for space
         local f_hhmmss=${FV3_OUTPUT_FH_hhmmss:${hhmmss_substring_len}:9} # extract HHH-MM-SS for target lead time
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${f_hhmmss}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${f_hhmmss}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${f_hhmmss}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${f_hhmmss}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${f_hhmmss}"
       else
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
         if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
           ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
@@ -697,7 +697,7 @@ MOM6_out() {
   if [[ -f "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" ]]; then
     cpfs "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" "${COMOUT_CONF}/MOM_parameter_doc.all"
   fi
-  
+
   # Create a list of MOM6 restart files
   # Coarser than 1/2 degree has a single MOM restart
   local mom6_restart_files mom6_restart_file restart_file
