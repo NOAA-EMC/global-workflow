@@ -319,7 +319,7 @@ EOF
           fi
         fi
       if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grb2"    "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2"    "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
         ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
         if [[ "${DO_NEST:-NO}" == "YES" ]]; then
           ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
