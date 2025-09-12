@@ -680,7 +680,8 @@ class GFSTasks(Tasks):
     def prepoceanobs(self):
 
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
-        dmpdir = self._base["DMPDIR"]
+        self._prepoceanobs = self.app_config.configs[next(iter(self.app_config.configs))]['prepoceanobs']
+        dmpdir = self._prepoceanobs["DMPDIR"]
 
         deps = []
         data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
