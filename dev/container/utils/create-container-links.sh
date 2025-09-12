@@ -33,7 +33,7 @@ done
 
 if [[ ! -v HOMEgfs || ! -v container || ! -v bindings || ! -v MACHINE_ID ]]; then
    echo "Usage: create-container-links.sh -H/--HOMEgfs gw-home-dir -c/--container container-fullpath -b/--bindings -M|--MACHINE_ID list-of-binding-dirs [-v]"
-   exit -1
+   exit 11
 fi
 
 if [[ "${verbose}" == "true" ]]; then

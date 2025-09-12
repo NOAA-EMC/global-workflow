@@ -29,7 +29,7 @@ done
 
 if [[ ! -v HOMEgfs || ! -v container ]]; then
    echo "Usage: link_model.sh -H/-HOMEgfs gw-home-dir -c/--container full-path-container-image -b/--bindings -B dirname [-B dirname1 [...]] [-v]"
-   exit -1
+   exit 11
 fi
 
 #echo "HOMEgfs: $HOMEgfs"
