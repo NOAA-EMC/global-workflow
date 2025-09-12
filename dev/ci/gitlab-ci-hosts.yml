@@ -236,7 +236,7 @@ finalize_success-ursa:
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
 
-# =======================================)
+# =======================================
 
 # =======================================
 # CTests configurations by host
