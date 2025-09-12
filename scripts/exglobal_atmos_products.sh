@@ -174,12 +174,12 @@ done  # for (( nset=1 ; nset <= downset ; nset++ ))
 #---------------------------------------------------------------
 
 # Create the index file for the sflux master, if it exists.
-FLUX_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2"
+FLUX_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}sflux.${fhr3}.grib2"
 if [[ -s "${FLUX_FILE}" ]]; then
   ${WGRIB2} -s "${FLUX_FILE}" > "${FLUX_FILE}.idx"
 fi
 
-# Section creating slfux grib2 interpolated products
+# Section creating sflux grib2 interpolated products
 # Create 1-degree sflux grib2 output
 # move to COM and index it
 if [[ "${FLXGF:-}" == "YES" ]]; then
