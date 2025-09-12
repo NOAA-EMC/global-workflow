@@ -22,16 +22,19 @@
 
 # Template matrices for case lists
 .hera_cases_matrix: &hera_cases
-  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_ufs_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S"]
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48_ufs_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S"]
 
 .gaeac6_cases_matrix: &gaeac6_cases
-  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S"]
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S"]
 
 .orion_cases_matrix: &orion_cases
   - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C96C48_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S"]
 
 .hercules_cases_matrix: &hercules_cases
   - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S"]
+
+.ursa_cases_matrix: &ursa_cases
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48_ufs_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S"]
 
 # Host: Hera - Standard Cases
 setup_experiments-hera:
@@ -141,6 +144,33 @@ run_experiments-hercules:
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
 
+# Host: Ursa - Standard Cases
+setup_experiments-ursa:
+  extends: .setup_experiment_template
+  variables:
+    machine: ursa
+  tags:
+    - ursa
+  parallel:
+    matrix: *ursa_cases
+  needs:
+    - build-ursa
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
+
+run_experiments-ursa:
+  extends: .run_experiments_template
+  variables:
+    machine: ursa
+  tags:
+    - ursa
+  parallel:
+    matrix: *ursa_cases
+  needs:
+    - setup_experiments-ursa
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
+
 finalize_success-hera:
   extends: .finalize_success_template
   variables:
@@ -192,6 +222,21 @@ finalize_success-hercules:
   when: on_success
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
+
+finalize_success-ursa:
+  extends: .finalize_success_template
+  variables:
+    machine: ursa
+  tags:
+    - ursa
+  needs:
+    - job: run_experiments-ursa
+      optional: true
+  when: on_success
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
+
+# =======================================
 
 # =======================================
 # CTests configurations by host
@@ -254,6 +299,18 @@ setup_ctests-hercules:
   rules:
     - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
 
+setup_ctests-ursa:
+  extends: .setup_ctests_template
+  stage: setup_tests
+  tags:
+    - ursa
+  variables:
+    machine: ursa
+  needs:
+    - build-ursa
+  rules:
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
+
 # Host: Hera - CTests
 run_ctests-hera:
   extends: .ctests_cases_template
@@ -293,6 +350,16 @@ run_ctests-hercules:
     - setup_ctests-hercules
   rules:
     - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
+
+# Host: Ursa - CTests
+run_ctests-ursa:
+  extends: .ctests_cases_template
+  tags:
+    - ursa
+  needs:
+    - setup_ctests-ursa
+  rules:
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
 
 # =======================================
 # Common build configurations by host
@@ -337,4 +404,12 @@ build-hercules:
     - hercules
   rules:
     - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
-    - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
+
+build-ursa:
+  extends: .build_template
+  variables:
+    machine: ursa
+  tags:
+    - ursa
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)

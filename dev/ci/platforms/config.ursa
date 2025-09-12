@@ -8,7 +8,9 @@
 #########################################################################
 
 # Main CI root directory - Base directory for all CI/CD operations
-export GFS_CI_ROOT=/scratch3/NCEPDEV/global/role.glopara/GFS_CI_CD
+# Note: Ursa is cross mounted with Hera so its name is added in the
+# main path to establish a unique path
+export GFS_CI_ROOT=/scratch3/NCEPDEV/global/role.glopara/GFS_CI_CD/URSA
 
 # ICSDIR root directory - Contains initial condition data
 # Used by create_experiment.py for setting up test cases
@@ -37,8 +39,8 @@ export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
 #########################################################################
 
 # Used in the 'register' step of launch_gitlab_runner.sh for --url parameter
-export GITLAB_URL=https://vlab.noaa.gov/gitlab-licensed
-export GITLAB_RUNNER_NAME="RDHPCS Ursa"
+export GITLAB_URL=https://vlab.noaa.gov/gitlab-community
+export GITLAB_RUNNER_NAME="RDHPCS Ursa Runner"
 
 # Directory for GitLab builds
 # Used in launch_gitlab_runner.sh for the --builds-dir parameter
@@ -64,4 +66,4 @@ export max_concurrent_cases=5
 export max_concurrent_pr=4
 
 # HPC account which overides the default account
-export HPC_ACCOUNT=fv3-cpu
+export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}

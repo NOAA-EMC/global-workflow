@@ -24,6 +24,3 @@ CHGRP_CMD: 'chgrp rstprod' # TODO: This is not yet supported.
 # Features
 SUPPORTED_RESOLUTIONS: ['C48', 'C96', 'C192', 'C384', 'C768'] # TODO: Test and support all cubed-sphere resolutions.
 DO_ARCHCOM: 'NO'
-DO_TRACKER: 'NO'
-DO_GENESIS: 'NO'
-DO_METP: 'NO'
