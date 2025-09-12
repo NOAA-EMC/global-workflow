@@ -37,7 +37,7 @@ fi
 # Section creating pressure grib2 interpolated products
 
 # Files needed by ${INTERP_ATMOS_MASTERSH}
-MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.grb2${fhr3}"
+MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.f${fhr3}.grib2"
 
 # Get inventory from ${MASTER_FILE} that matches patterns from ${paramlista}
 # Extract this inventory from ${MASTER_FILE} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
