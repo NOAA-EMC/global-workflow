@@ -403,7 +403,7 @@ build-hercules:
   tags:
     - hercules
   rules:
-    - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
+    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bhercules\b|all/)
 
 build-ursa:
   extends: .build_template
@@ -412,4 +412,4 @@ build-ursa:
   tags:
     - ursa
   rules:
-    - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
+    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
