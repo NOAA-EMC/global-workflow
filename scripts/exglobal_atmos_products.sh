@@ -174,7 +174,7 @@ done  # for (( nset=1 ; nset <= downset ; nset++ ))
 #---------------------------------------------------------------
 
 # Create the index file for the sflux master, if it exists.
-FLUX_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
+FLUX_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2"
 if [[ -s "${FLUX_FILE}" ]]; then
   ${WGRIB2} -s "${FLUX_FILE}" > "${FLUX_FILE}.idx"
 fi

@@ -35,7 +35,7 @@ _COMROOT_/gfs/_SHORTVER_/gfs._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/gfs.
 + /??/atmos/gfs.t??z.sfcanl.nc
 + /??/atmos/gfs.t??z.master.grb2f*
 + /??/atmos/gfs.t??z.pgrb2.0p25.f*
-+ /??/atmos/gfs.t??z.sfluxgrbf*
++ /??/atmos/gfs.t??z.sflux.f*
 + /??/atmos/gfs.t??z.gcip.f00.grib2
 + /??/atmos/gfs.t??z.atmf000.nc
 + /??/atmos/gfs.t??z.atmf003.nc
