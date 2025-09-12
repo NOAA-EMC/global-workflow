@@ -255,8 +255,8 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
       if (( FORECAST_HOUR % 3 == 0 )); then
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF"           "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm${fhr3}.nc"
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF"           "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc${fhr3}.nc"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2.idx"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2.idx"
       fi
     elif [[ "${RUN}" == "gfs" ]]; then
 
@@ -265,9 +265,9 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc${fhr3}.nc"
       fi
 
-      if [[ -s "${COMIN_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr3}.grib2" ]]; then
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2.idx"
+      if [[ -s "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2" ]]; then
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2.idx"
       fi
     elif [[ "${RUN}" == "gcafs" ]]; then
 
@@ -276,9 +276,9 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}sfc${fhr3}.nc"
       fi
 
-      if [[ -s "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr3}.grib2" ]]; then
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrb${fhr3}.grib2.idx"
+      if [[ -s "${COM_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2" ]]; then
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2.idx"
       fi
     fi
 
