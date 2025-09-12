@@ -51,6 +51,15 @@ gdas:
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
 
+            # Grab surface analysis data.
+            # If IAU is on, grab the beginning of the window.
+            {% if DOIAU %}
+            {% set offset_td = "-3H" | to_timedelta %}
+            {% set offset_dt = current_cycle | add_to_datetime(offset_td) %}
+            {% set offset_HH = offset_dt | strftime("%H") %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ offset_HH }}z.sfcanl.nc"
+            {% endif %}
+
             {% if DOHYBVAR %}
         # Ensemble analysis residual
             {% if not DO_JEDIATMVAR %}
