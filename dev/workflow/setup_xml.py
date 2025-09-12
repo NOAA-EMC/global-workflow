@@ -101,8 +101,7 @@ def main(*argv):
     check_expdir(user_inputs.expdir, base['EXPDIR'])
 
     # Check if "HOMEDIR","STMP","PTMP" dirrctories are writable
-   #dir_keys = ["HOMEDIR", "STMP", "PTMP"]
-    dir_keys = ["STMP", "PTMP"]
+    dir_keys = ["HOMEDIR", "STMP", "PTMP"]
     for dk in dir_keys:
         check_dir_writable(base[dk])
         if not check_dir_writable(base[dk]):
