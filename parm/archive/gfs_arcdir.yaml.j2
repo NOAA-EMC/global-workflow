@@ -87,8 +87,8 @@
     # GFS Fit2Obs data
     {% set fit2obs_files = [] %}
     {% for fhr in range(0, FHMAX_FITS + 1, 6) %}
-        {% set sfcfile = "/" + head + "sfcf" + '%03d'|format(fhr) + ".nc" %}
-        {% set sigfile = "/" + head + "atmf" + '%03d'|format(fhr) + ".nc" %}
+        {% set sfcfile = "/" + head + "sfc.f" + '%03d'|format(fhr) + ".nc" %}
+        {% set sigfile = "/" + head + "atm.f" + '%03d'|format(fhr) + ".nc" %}
         {% do fit2obs_files.append([COMIN_ATMOS_HISTORY ~ "/" ~ sfcfile,
                                     VFYARC ~ "/" ~ RUN ~ "." ~ cycle_YMD ~ "/" ~ cycle_HH ~ "/" ~ sfcfile ]) %}
         {% do fit2obs_files.append([COMIN_ATMOS_HISTORY ~ "/" ~ sigfile,
