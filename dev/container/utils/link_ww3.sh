@@ -2,7 +2,7 @@
 
 verbose=false
 
-while [ "$#" -gt 0 ]; do
+while [[ "$#" -gt 0 ]]; do
   case "$1" in
     -H|--HOMEgfs)
       HOMEgfs="$2"
@@ -34,7 +34,7 @@ done
 if [[ ! -v HOMEgfs || ! -v container || ! -v type ]]; then
    echo "Usage: link_model.sh -H/-HOMEgfs gw-home-dir -c/--container full-path-container-image \\"
         "                     -b/--bindings -B dirname [-B dirname1 [...]] -t/--type [gfs|sfs|gefs] [-v]"
-   exit -1
+   exit 11
 fi
 
 if [[ "$verbose" == "true" ]]; then

@@ -2,7 +2,7 @@
 
 verbose=false
 
-while [ "$#" -gt 0 ]; do
+while [[ "$#" -gt 0 ]]; do
   case "$1" in
     -H|--HOMEgfs)
       HOMEgfs="$2"
@@ -29,13 +29,15 @@ done
 
 if [[ ! -v HOMEgfs || ! -v container || ! -v bindings ]]; then
    echo "Usage: create-container-links.sh -H/--HOMEgfs gw-home-dir -c/--container container-fullpath -b/--bindings list-of-binding-dirs [-v]"
-   exit -1
+   exit 11
 fi
 
-# echo "HOMEgfs: $HOMEgfs"
-# echo "container: $container"
-# echo "bindings: $bindings"
-# echo "Verbose: $verbose"
+if [[ "${verbose}" == "true" ]]; then
+   echo "Verbose: $verbose"
+   echo "HOMEgfs: $HOMEgfs"
+   echo "container: $container"
+   echo "bindings: $bindings"
+fi
 
 sed -e "s?HOMEgfs?${HOMEgfs}?g" \
     -e "s?SIF?${container}?g" \

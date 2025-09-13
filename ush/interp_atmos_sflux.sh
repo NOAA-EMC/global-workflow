@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${USHgfs}/preamble.sh"
+source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 
 # This script takes in a master flux file and creates interpolated flux files at various interpolated resolutions
 # Generate 0.25 / 0.5 / 1 degree interpolated grib2 flux files for each input sflux grib2 file

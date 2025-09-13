@@ -109,7 +109,7 @@ trap cleanup ERR
 if [[ ${systems} == "all" || ${systems} =~ "gdas" ]]; then
   echo "Building the GDASApp locally (on this node)"
   gdas_build_log="${HOMEgfs}/sorc/logs/build_gdas.log"
-  "${HOMEgfs}/sorc/build_gdas.sh" -j 20 >& "${gdas_build_log}" &
+  "${HOMEgfs}/sorc/build_gdas.sh" -j 12 >& "${gdas_build_log}" &
   build_gdas_id=$!
   build_ids+=("${build_gdas_id}")
 fi

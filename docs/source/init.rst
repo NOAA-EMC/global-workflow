@@ -48,7 +48,7 @@ Cold-start atmosphere-only cycled C96 deterministic C48 enkf (80 members) ICs ar
 
 ::
 
-   Hera: /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR/C96C48
+   Ursa/Hera: /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR/C96C48
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C96C48
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C96C48
    AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C96C48
@@ -108,7 +108,7 @@ Warm-start cycled w/ coupled (S2S) model C48 atmosphere C48 enkf (80 members) 5 
 
 ::
 
-   Hera: /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR/C48C48mx500
+   Ursa/Hera: /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR/C48C48mx500
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C48C48mx500
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48C48mx500
    AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C48C48mx500
@@ -213,22 +213,6 @@ Start date = 2021032312
                └── ocean
                    └── gdas.t12z.ocninc.nc
 
-.. _staged_ics_prototype:
-
-*********
-Prototype
-*********
-
-Forecast-only P8 prototype initial conditions are made available to users on supported platforms in the following locations:
-
-::
-
-    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED
-    HERA: /scratch1/NCEPDEV/climate/role.ufscpara/IC
-    ORION/Hercules: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
-
-These locations are known within the workflow via paths set in ``parm/config/config.coupled_ic``.
-
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Prepare Initial Conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -252,8 +236,7 @@ Not yet supported. See the UFS_UTILS documentation on the gdas_init utility to g
 ---------------------
 Forecast-only coupled
 ---------------------
-Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Sample copies of initial conditions from the prototype runs are currently maintained on Hera, Orion/Hercules, and WCOSS2. The locations used are determined by ``parm/config/config.stage_ic``.
-Note however, that due to the rapid changes in the model configuration, some staged initial conditions may not work.
+Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Sample copies of initial conditions from the prototype runs are currently maintained on Ursa, Orion/Hercules, and WCOSS2 for CI testing.  The paths on each machine can be found in ``dev/ci/platforms/config.<host>``.
 
 .. _forecastonly-atmonly:
 

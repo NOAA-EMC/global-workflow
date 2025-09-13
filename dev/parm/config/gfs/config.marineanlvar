@@ -6,6 +6,9 @@
 echo "BEGIN: config.marineanlvar"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" marineanlvar
+source "${EXPDIR}/config.resources" marineanlvar
+
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/marine/marine_det_jedi_config.yaml.j2"
+export JCB_ALGO_YAML_VAR="{{ JCB_ALGO_YAML_VAR }}"
 
 echo "END: config.marineanlvar"

@@ -11,6 +11,9 @@ load(pathJoin("cfp", (os.getenv("cfp_ver") or "None")))
 setenv("USE_CFP","YES")
 
 load(pathJoin("python", (os.getenv("python_ver") or "None")))
+prepend_path("MODULEPATH", "/apps/dev/modulefiles")
+load(pathJoin("ve","gw", (os.getenv("gw_ve_ver") or "None")))
+
 load(pathJoin("gempak", (os.getenv("gempak_ver") or "None")))
 load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
 load(pathJoin("libjpeg", (os.getenv("libjpeg_ver") or "None")))

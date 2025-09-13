@@ -84,15 +84,11 @@ def update_configs(host, inputs):
 
     # Combine host.info and inputs_dict into a single dict, add some additional keys
     host_plus_inputs_dict = AttrDict(host.info, **inputs_dict_remapped)
-
     host_plus_inputs_dict.HOMEgfs = _top
     host_plus_inputs_dict.MACHINE = str(host).upper()
 
     # Read in the YAML file
     yaml_path = inputs.yaml
-
-    if yaml_path.find('/opt/global-workflow-cloud') >= 0:
-        yaml_path = yaml_path.replace('/opt/global-workflow-cloud', host_plus_inputs_dict.HOMEgfs)
     if not os.path.exists(yaml_path):
         raise FileNotFoundError(f'YAML file does not exist, check path: {yaml_path}')
     yaml_dict = parse_j2yaml(yaml_path, host_plus_inputs_dict)
@@ -603,7 +599,7 @@ def get_ocean_resolution(resdetatmos):
     """
     atmos_to_ocean_map = {
         1152: 0.25, 768: 0.25, 384: 0.25,
-        192: 1.0,
+        192: 0.25,
         96: 5.0, 48: 5.0}
     try:
         return atmos_to_ocean_map[resdetatmos]
