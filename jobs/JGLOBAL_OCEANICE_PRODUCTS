@@ -15,9 +15,7 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMOUT_${COMPONENT^^}_NETCDF":"C
 ###############################################################
 # Run exglobal script
 if [ "$RUN_WITH_CONTAINER" == "YES" ]; then
-    export WGRIB2=${HOMEgfs}/ush/container/run_wgrib2.sh
     ${HOMEgfs}/exec/run_python.sh ${SCRgfs}/exglobal_oceanice_products.py -c -v
-    export WGRIB2=${HOMEgfs}/exec/run_wgrib2.sh
 else
     "${SCRgfs}/exglobal_oceanice_products.py" && true
 fi

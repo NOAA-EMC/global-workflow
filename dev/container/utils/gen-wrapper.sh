@@ -32,11 +32,6 @@ if [[ ! -v HOMEgfs || ! -v container ]]; then
    exit -1
 fi
 
-# echo "HOMEgfs: $HOMEgfs"
-# echo "container: $container"
-# echo "bindings: $bindings"
-# echo "Verbose: $verbose"
-
 if [[ "$verbose" == "true" ]]; then
    set -x
 fi
@@ -49,18 +44,15 @@ do
          targetdir=${HOMEgfs}/${dnm}/container
     fi
     mkdir -p ${targetdir}
-    for fnm in python wgrib2
-    do
-        sourcef=${HOMEgfs}/dev/container/utils/${dnm}.${fnm}
-        targetf=${targetdir}/run_${fnm}.sh
+    sourcef=${HOMEgfs}/dev/container/utils/${dnm}.python
+    targetf=${targetdir}/run_python.sh
 
-        sed -e "s?HOMEgfs?${HOMEgfs}?g" \
-            -e "s?SIF?${container}?g" \
-            -e "s?BINDINGS?${bindings}?g" \
+    sed -e "s?HOMEgfs?${HOMEgfs}?g" \
+        -e "s?SIF?${container}?g" \
+        -e "s?BINDINGS?${bindings}?g" \
 	    ${sourcef} > ${targetf}
 
-        chmod 755 ${targetf}
-    done
+    chmod 755 ${targetf}
 done
 
 sed -i 's/RUN_WITH_CONTAINER=NO/RUN_WITH_CONTAINER=YES/g' ${HOMEgfs}/ush/preamble.sh

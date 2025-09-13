@@ -43,11 +43,6 @@ if [[ ! -v HOMEgfs || ! -v container || ! -v model || ! -v MACHINE_ID ]]; then
    exit -1
 fi
 
-#echo "HOMEgfs: $HOMEgfs"
-#echo "model: $model"
-#echo "Verbose: $verbose"
-#echo "machineid: $machineid"
-
 if [[ "$verbose" == "true" ]]; then
    set -x
 fi
