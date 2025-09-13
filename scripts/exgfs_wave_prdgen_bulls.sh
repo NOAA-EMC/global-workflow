@@ -6,7 +6,7 @@
 #  WW3 wave model.                                                            #
 #                                                                             #
 # COM inputs:                                                                 #
-#  - ${COMIN_WAVE_STATION}/${RUN}.wave.${cycle}.cbull_tar                     #
+#  - ${COMIN_WAVE_STATION}/${RUN}.${cycle}.cbull_tar                          #
 # COM outputs:                                                                #
 #  - ${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave                        #
 #                                                                             #
@@ -47,7 +47,7 @@ EOF
  echo "   Copying bulletins from ${COMIN_WAVE_STATION}"
 
 # 1.a Link the input file and untar it
- BullIn="${COMIN_WAVE_STATION}/${RUN}.wave.${cycle}.cbull.tar"
+ BullIn="${COMIN_WAVE_STATION}/${RUN}.${cycle}.cbull.tar"
  if [[ -f "${BullIn}" ]]; then
    cpreq "${BullIn}" "cbull.tar"
  else
@@ -95,7 +95,7 @@ EOF
  echo '   Looping over buoys ... \n'
 
  for bull in ${bulls}; do
-   fname="${RUN}.wave.${bull}.cbull"
+   fname="${RUN}.${bull}.cbull"
    oname="awipsbull.${bull}.${cycle}.${RUN}.wave"
    headr=$(grep "b${bull}=" awipsbull.data | sed 's/=/ /g' |  awk '{ print $3}')
    echo "Processing ${bull} (${headr} ${oname}) ..."
@@ -137,9 +137,7 @@ fi
 # --------------------------------------------------------------------------- #
 # 4.  Clean up
 
-  set -v
-  rm -f "${RUN}".wave.*.cbull  awipsbull.data
-  set +v
+  rm -f "${RUN}".*.cbull awipsbull.data
 
 # --------------------------------------------------------------------------- #
 # 5.  Ending output
