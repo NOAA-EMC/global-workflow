@@ -15,7 +15,6 @@
 # The CI_PIPELINE_SOURCE variable (set by GitLab) is when the pipeline is triggered
 # by a GitHub action. This is used to determine whether to run CTests (trigger) or
 # standard cases (!trigger).
-# no-op This is a no operation for running a pipeline selftest 
 
 # =======================================
 # Standard Cases configurations by host
