@@ -20,7 +20,7 @@ class RocotoXML(WorkflowSuite, ABC):
 
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
 
-        super(WorkflowSuite, self).__init__(app_config, rocoto_config)
+        super().__init__(app_config, rocoto_config)
 
         # Get sections need to construct the XML
         self.preamble = self._get_preamble()

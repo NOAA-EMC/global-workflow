@@ -18,4 +18,4 @@ class EcFlowSuite(WorkflowSuite, ABC):
 
     def __init__(self, app_config: AppConfig, ecflow_config: Dict) -> None:
 
-        super(WorkflowSuite, self).__init__(app_config, ecflow_config)
+        super().__init__(app_config, ecflow_config)

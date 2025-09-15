@@ -25,11 +25,11 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
     ----------
     app_config : AppConfig
         Application configuration object containing GFS settings
-    workflow_config : Dict
+    ecflow_config : Dict
         Dictionary containing ecFlow-specific configuration
     """
 
-    def __init__(self, app_config: AppConfig, workflow_config: Dict) -> None:
+    def __init__(self, app_config: AppConfig, ecflow_config: Dict) -> None:
         """
         Initialize GFS forecast-only ecFlow generator.
 
@@ -37,8 +37,13 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         ----------
         app_config : AppConfig
             Application configuration object containing GFS settings
-        workflow_config : Dict
+        ecflow_config : Dict
             Dictionary containing ecFlow-specific configuration
         """
-        super().__init__(app_config, workflow_config)
+        super().__init__(app_config, ecflow_config)
 
+    def get_cycledefs(self):
+        pass
+
+    def write(self):
+        pass

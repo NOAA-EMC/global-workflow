@@ -15,7 +15,13 @@ class WorkflowSuite(ABC):
     def __init__(self, app_config: AppConfig, workflow_config: Dict) -> None:
 
         self._app_config = app_config
-        self.workflow_config = workflow_config
+        self.workflow_engine = workflow_config.get("workflow_engine", None)
+        if self.workflow_engine in ["rocoto"]:
+            self.rocoto_config = workflow_config
+        elif self.workflow_engine in ["ecflow"]:
+            self.ecflow_config = workflow_config
+        else:
+            raise ValueError(f"Unsupported workflow_engine: {self.workflow_engine}")
 
         # Use the first config.base (sourced with an arbitrary RUN)
         self._base = self._app_config.configs[next(iter(self._app_config.configs))]['base']
