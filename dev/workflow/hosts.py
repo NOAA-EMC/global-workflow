@@ -23,8 +23,8 @@ class Host:
         if host is not None:
             if host not in Host.SUPPORTED_HOSTS:
                 raise NotImplementedError(f'{host} is not a supported host.\n' +
-                                        'Currently supported hosts are:\n' +
-                                        f'{" | ".join(Host.SUPPORTED_HOSTS)}')
+                                          'Currently supported hosts are:\n' +
+                                          f'{" | ".join(Host.SUPPORTED_HOSTS)}')
             self.machine = host
         # Otherwise, detect the host.
         else:
@@ -55,7 +55,6 @@ class Host:
             else:
                 self.machine = f"{machine_id.upper()}"
             return
-
 
         # Detect the machine since MACHINE_ID is not set
         if os.path.exists('/scratch3/NCEPDEV'):
@@ -103,8 +102,8 @@ class Host:
 
         # If we are here, we have not been able to detect a valid host
         raise NotImplementedError('Unable to detect a supported host.\n' +
-                                    'Currently supported hosts are:\n' +
-                                    f'{" | ".join(Host.SUPPORTED_HOSTS)}')
+                                  'Currently supported hosts are:\n' +
+                                  f'{" | ".join(Host.SUPPORTED_HOSTS)}')
 
     @property
     def _get_info(self) -> dict:
