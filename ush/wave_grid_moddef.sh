@@ -53,7 +53,7 @@
   fi
 
   if [[ -f mod_def.ww3 ]];then
-    cpfs "mod_def.ww3" "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin"
+    cpfs "mod_def.ww3" "${COMOUT_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${grdID}.bin"
     mv "mod_def.ww3" "../mod_def.${grdID}"
   else
     echo "FATAL ERROR: Mod def file not created for ${grdID}"

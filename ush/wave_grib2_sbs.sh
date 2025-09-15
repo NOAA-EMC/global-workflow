@@ -52,7 +52,7 @@ com_dir="${!com_varname}"
 mkdir -p "${com_dir}"
 
 # Verify if grib2 file exists from interrupted run
-outfile="${RUN}.wave.t${cyc}z.${grid_region}.${grid_res}.f${FH3}.grib2"
+outfile="${RUN}.t${cyc}z.${grid_region}.${grid_res}.f${FH3}.grib2"
 
 # Check if outfile exists in COM
 if [[ -s "${com_dir}/${outfile}" ]] && [[ -s "${com_dir}/${outfile}.idx" ]]; then
@@ -132,7 +132,7 @@ if [[ "${grdID}" == "${WAV_SUBGRBSRC}" ]]; then
     subgrbref=$(echo ${!subgrb} | cut -d " " -f 1-20)
     subgrbnam=$(echo ${!subgrb} | cut -d " " -f 21)
     subgrbres=$(echo ${!subgrb} | cut -d " " -f 22)
-    subfnam="${RUN}.wave.t${cyc}z.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
+    subfnam="${RUN}.t${cyc}z.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
 
     ${COPYGB2} -g "${subgrbref}" -i0 -x "${outfile}" "${subfnam}"
     ${WGRIB2} -s "${subfnam}" > "${subfnam}.idx"
