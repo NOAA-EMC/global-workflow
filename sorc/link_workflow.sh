@@ -411,7 +411,7 @@ if [[ -d ufs_model.fd ]]; then
   if [[ -d upp.fd ]]; then
       rm -rf upp.fd
   fi
-  ${LINK} ufs_model.fd/FV3/upp upp.fd
+  ${LINK} ufs_model.fd/UFSATM/upp upp.fd
 fi
 
 if [[ -d gsi_enkf.fd ]]; then
