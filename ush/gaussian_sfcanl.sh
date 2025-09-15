@@ -73,7 +73,7 @@
 #                  ${FIXWGTS}
 #                  ${FIXgfs}/am/global_hyblev.l65.txt
 #
-#     input data : ${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile*.nc
+#     input data : ${COMIN_ATMOS_RESTART}/${gcycle_date:0:8}.${gcycle_date:8:2}0000.sfcanl_data.tile*.nc
 #
 #     output data: $PGMOUT
 #                  $PGMERR
@@ -150,9 +150,9 @@ for hr in "${!gcycle_dates[@]}"; do
 
   cd "${DATA}/gausfcanl_${gcycle_date:8:2}"
 
-  iy=${PDY:0:4}
-  im=${PDY:4:2}
-  id=${PDY:6:2}
+  iy=${gcycle_date:0:4}
+  im=${gcycle_date:4:2}
+  id=${gcycle_date:6:2}
   ih=${gcycle_date:8:2}
 
   export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
@@ -161,12 +161,12 @@ for hr in "${!gcycle_dates[@]}"; do
   ${NLN} "${FIXWGTS}" "./weights.nc"
 
   # input analysis tiles (with nst records)
-  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile1.nc" "./anal.tile1.nc"
-  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile2.nc" "./anal.tile2.nc"
-  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile3.nc" "./anal.tile3.nc"
-  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile4.nc" "./anal.tile4.nc"
-  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile5.nc" "./anal.tile5.nc"
-  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile6.nc" "./anal.tile6.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${gcycle_date:0:8}.${gcycle_date:8:2}0000.sfcanl_data.tile1.nc" "./anal.tile1.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${gcycle_date:0:8}.${gcycle_date:8:2}0000.sfcanl_data.tile2.nc" "./anal.tile2.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${gcycle_date:0:8}.${gcycle_date:8:2}0000.sfcanl_data.tile3.nc" "./anal.tile3.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${gcycle_date:0:8}.${gcycle_date:8:2}0000.sfcanl_data.tile4.nc" "./anal.tile4.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${gcycle_date:0:8}.${gcycle_date:8:2}0000.sfcanl_data.tile5.nc" "./anal.tile5.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${gcycle_date:0:8}.${gcycle_date:8:2}0000.sfcanl_data.tile6.nc" "./anal.tile6.nc"
 
   # input orography tiles
   ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile1.nc" "./orog.tile1.nc"
