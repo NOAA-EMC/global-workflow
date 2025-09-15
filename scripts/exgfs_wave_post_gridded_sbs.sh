@@ -42,11 +42,11 @@ valid_time=$(date -u -d "${PDY} ${cyc} + ${FORECAST_HOUR} hours" "+%Y%m%d%H")
 
 # Copy model definition files
 for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
-  cpreq "${COMIN_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
+  cpreq "${COMIN_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
 done
 
 # Copy model forecast data to DATA
-cpreq "${COMIN_WAVE_HISTORY}/${RUN}.wave.t${cyc}z.${waveGRD}.f${fhr3}.bin" "./out_grd.${waveGRD}"
+cpreq "${COMIN_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "./out_grd.${waveGRD}"
 
 # Check for input templates for grib2 products (copying will be done in the grib2 script)
 if [[ "${DOGRB_WAV}" == "YES" ]]; then
@@ -129,7 +129,7 @@ fi
 # TODO: Should this check be over all waveInterpGRD and wavePostGRD?
 com_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
 com_dir=${!com_varname}
-gribchk="${RUN}.wave.t${cyc}z.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
+gribchk="${RUN}.t${cyc}z.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
 if [[ ! -s "${com_dir}/${gribchk}" ]]; then
   export err=2
   err_exit "'${gribchk}' not generated in this job"

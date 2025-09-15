@@ -1,5 +1,5 @@
 gfswave:
-    {% set head = "gfs.wave.t" + cycle_HH + "z." %}
+    {% set head = "gfs.t" + cycle_HH + "z." %}
 
     name: "GFSWAVE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfswave.tar"
@@ -17,7 +17,7 @@ gfswave:
 
         {% for fh in range(0, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
         # NOTE This is as explicit as possible without major logic to parse wavepostGRD.
-        #      Matches files of the form "gfs.wave.tCCz.<region>.<res>.fHHH.grib2".
+        #      Matches files of the form "gfs.tCCz.<region>.<res>.fHHH.grib2".
         - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
         - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
         {% endfor %}
