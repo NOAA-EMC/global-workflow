@@ -17,7 +17,7 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
   set +x
   source "${HOMEgfs}/ush/module-setup.sh"
-  module use "${HOMEgfs}/sorc/ufs_model.fd/FV3/upp/modulefiles"
+  module use "${HOMEgfs}/sorc/ufs_model.fd/UFSATM/upp/modulefiles"
   module load "${MACHINE_ID}_intel"
   module load prod_util
   module load cray-pals
