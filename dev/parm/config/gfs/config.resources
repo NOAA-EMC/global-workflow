@@ -574,6 +574,14 @@ case ${step} in
 
   "marineanlecen")
     walltime="00:10:00"
+    # Decide how many ensemble members to process per MPI task (has to be divisor of NMEM_ENS).
+    if (( NMEM_ENS >= 10 && NMEM_ENS % 5 == 0 )); then
+      export NMEM_ENS_PER_MPI=5
+    elif (( NMEM_ENS % 2 == 0 )); then
+      export NMEM_ENS_PER_MPI=2
+    else
+      export NMEM_ENS_PER_MPI=1
+    fi
     case ${OCNRES} in
       "025")
         ntasks=$(( 12 * NMEM_ENS / NMEM_ENS_PER_MPI ))
