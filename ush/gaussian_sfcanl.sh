@@ -124,7 +124,7 @@ export REDERR=${REDERR:-'2>'}
 ${INISCRIPT:-}
 pwd=$(pwd)
 if [[ ! -d "${COMOUT_ATMOS_ANALYSIS}" ]]; then
-   mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
+  mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 fi
 
 ################################################################################
@@ -142,50 +142,50 @@ fi
 
 for hr in "${!gcycle_dates[@]}"; do
 
-gcycle_date=${gcycle_dates[hr]}
+  gcycle_date=${gcycle_dates[hr]}
 
-if [[ ! -d "${DATA}/gausfcanl_${gcycle_date:8:2}" ]]; then
-   mkdir -p "${DATA}/gausfcanl_${gcycle_date:8:2}" 
-fi
+  if [[ ! -d "${DATA}/gausfcanl_${gcycle_date:8:2}" ]]; then
+    mkdir -p "${DATA}/gausfcanl_${gcycle_date:8:2}" 
+  fi
 
-cd "${DATA}/gausfcanl_${gcycle_date:8:2}"
+  cd "${DATA}/gausfcanl_${gcycle_date:8:2}"
 
-iy=${PDY:0:4}
-im=${PDY:4:2}
-id=${PDY:6:2}
-ih=${gcycle_date:8:2}
+  iy=${PDY:0:4}
+  im=${PDY:4:2}
+  id=${PDY:6:2}
+  ih=${gcycle_date:8:2}
 
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
+  export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 
-# input interpolation weights
-${NLN} "${FIXWGTS}" "./weights.nc"
+  # input interpolation weights
+  ${NLN} "${FIXWGTS}" "./weights.nc"
 
-# input analysis tiles (with nst records)
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile1.nc" "./anal.tile1.nc"
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile2.nc" "./anal.tile2.nc"
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile3.nc" "./anal.tile3.nc"
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile4.nc" "./anal.tile4.nc"
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile5.nc" "./anal.tile5.nc"
-${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile6.nc" "./anal.tile6.nc"
+  # input analysis tiles (with nst records)
+  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile1.nc" "./anal.tile1.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile2.nc" "./anal.tile2.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile3.nc" "./anal.tile3.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile4.nc" "./anal.tile4.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile5.nc" "./anal.tile5.nc"
+  ${NLN} "${COMIN_ATMOS_RESTART}/${PDY}.${gcycle_date:8:2}0000.sfcanl_data.tile6.nc" "./anal.tile6.nc"
 
-# input orography tiles
-${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile1.nc" "./orog.tile1.nc"
-${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile2.nc" "./orog.tile2.nc"
-${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile3.nc" "./orog.tile3.nc"
-${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile4.nc" "./orog.tile4.nc"
-${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile5.nc" "./orog.tile5.nc"
-${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile6.nc" "./orog.tile6.nc"
+  # input orography tiles
+  ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile1.nc" "./orog.tile1.nc"
+  ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile2.nc" "./orog.tile2.nc"
+  ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile3.nc" "./orog.tile3.nc"
+  ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile4.nc" "./orog.tile4.nc"
+  ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile5.nc" "./orog.tile5.nc"
+  ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile6.nc" "./orog.tile6.nc"
 
-${NLN} "${SIGLEVEL}" "./vcoord.txt"
+  ${NLN} "${SIGLEVEL}" "./vcoord.txt"
 
-# output gaussian global surface analysis files
-${NLN} "${COMOUT_ATMOS_ANALYSIS}/${RUN}.t${gcycle_date:8:2}z.sfcanl.nc" "./sfc.gaussian.analysis.file"
+  # output gaussian global surface analysis files
+  ${NLN} "${COMOUT_ATMOS_ANALYSIS}/${RUN}.t${gcycle_date:8:2}z.sfcanl.nc" "./sfc.gaussian.analysis.file"
 
-# Namelist uses booleans now
-if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
+  # Namelist uses booleans now
+  if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
 
-# Executable namelist
-cat <<EOF > fort.41
+  # Executable namelist
+  cat <<EOF > fort.41
  &setup
   yy=${iy},
   mm=${im},
@@ -197,13 +197,13 @@ cat <<EOF > fort.41
  /
 EOF
 
-${APRUNSFC} "${GAUSFCANLEXE}"
+  ${APRUNSFC} "${GAUSFCANLEXE}"
 
-export err=$?
-if [[ ${err} -ne 0 ]]; then
-   echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status!"
-   exit "${err}"
-fi
+  export err=$?
+  if [[ ${err} -ne 0 ]]; then
+    echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status!"
+    exit "${err}"
+  fi
 
 done
 
