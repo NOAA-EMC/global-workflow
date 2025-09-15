@@ -10,7 +10,7 @@ experiment:
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808/
   idate: 2022051506
   edate: 2022051518
-  nens: 20
+  nens: 2
   interval: 6
   start: warm
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/atmsoilDA_defaults_ci.yaml
