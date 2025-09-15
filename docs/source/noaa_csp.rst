@@ -66,7 +66,7 @@ Click the blue box indicated by the red arrow to login.
 As shown in :numref:`Figure %s <login2>`, Fill the ``Username / Email`` box with your username or NOAA email (usually in "FirstName.LastName" format).
 Note that the ``Username or email`` query field is case-sensitive.
 Then enter the respective ``Pin + RSA`` combination using the same RSA token application used
-for access to other RDHPCS machines (e.g., Hera, Gaea).
+for access to other RDHPCS machines (e.g., Ursa/Hera, Gaea).
 
 .. _login2:
 
@@ -105,7 +105,7 @@ Next, click "Fork latest" as shown in the red-circle in :numref:`Figure %s<fork-
    :align: center
 
    Fork Instance From Marketplace
-   
+
 Please provide a unique name in the "New compute node" field for the instance
 (see the box pointer by the red arrow in :numref:`Figure %s <create-fork>`).
 Best practices suggest one that is clear, concise, and relevant to the application.
@@ -185,7 +185,7 @@ This will create a ``/lustre`` filesystem template after clicking on the red squ
    :align: center
 
    Define Lustre Attributes
-	   
+
 After creating the template, we need to fill in information for this ``/lustre`` filesystem.
 To do so, go to the NOAA PW website, and click *Lustre* on the left side panel, as
 indicated by red arrow 1 in :numref:`Figure %s <check-lustre>`. Then select the filesystem defined by *Resource name* in :numref:`Figure %s above <define-lustre>`,
