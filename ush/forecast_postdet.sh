@@ -498,8 +498,7 @@ WW3_postdet() {
   cd "${cwd}" || exit 1
 
   # Link output files
-  local wavprfx="${RUN}.wave.t${cyc}z"
-  ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
+  ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
 
   # Loop for gridded output (uses FHINC)
   local fhr fhr3 FHINC
@@ -512,8 +511,8 @@ WW3_postdet() {
   while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
     fhr3=$(printf '%03d' "${fhr}")
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
 
     if [[ ${fhr} -ge ${FHMAX_HF_WAV} ]]; then
       fhinc=${FHOUT_WAV}
@@ -527,8 +526,8 @@ WW3_postdet() {
   while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
     fhr3=$(printf '%03d' "${fhr}")
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.points.f${fhr3}.nc"  "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc"  "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
 
     fhr=$((fhr + fhinc))
   done
@@ -697,7 +696,7 @@ MOM6_out() {
   if [[ -f "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" ]]; then
     cpfs "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" "${COMOUT_CONF}/MOM_parameter_doc.all"
   fi
-  
+
   # Create a list of MOM6 restart files
   # Coarser than 1/2 degree has a single MOM restart
   local mom6_restart_files mom6_restart_file restart_file
