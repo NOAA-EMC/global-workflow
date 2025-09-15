@@ -31,10 +31,6 @@ class RocotoXML(WorkflowSuite, ABC):
         self.tasks = '\n'.join(task_list)
         self.footer = self._get_workflow_footer()
 
-        # If we are running scrontab, check if the rocotorc file has the right entries
-        if self.use_scrontab:
-            self._check_rocotorc()
-
         # Construct the XML
         self.xml = self._assemble_xml()
 
@@ -160,8 +156,12 @@ class RocotoXML(WorkflowSuite, ABC):
 
         # Construct the crontab or scrontab
         if self.use_scrontab:
+
+            # If we are running scrontab, check if the rocotorc file has the right entries
+            self._check_rocotorc()
+
             # The slurm crontab needs an SCRON entry that calls a script
-            # envery n minutes.  That script will actually run rocoto.
+            # every n minutes.  That script will actually run rocoto.
             account = self.host_info.ACCOUNT
             partition = self.host_info.get("PARTITION_CRON", None) or self.host_info.PARTITION_SERVICE
             log_dir = os.path.join(self.expdir, "logs")

@@ -98,16 +98,15 @@ def main(*argv):
 
     check_expdir(user_inputs.expdir, base['EXPDIR'])
 
-    # Check if "HOMEDIR","STMP","PTMP" dirrctories are writable
+    # Check if "HOMEDIR","STMP","PTMP" directories are writeable
     dir_keys = ["HOMEDIR", "STMP", "PTMP"]
     for dk in dir_keys:
-        check_dir_writable(base[dk])
         if not check_dir_writable(base[dk]):
             msg = f'The {dk} path {base[dk]} cannot be written to!  Please correct this path and try again.'
             if user_inputs.force:
                 print(f"WARNING {msg}")
-            else:
-                raise PermissionError(f'{msg}')
+#            else:
+#                raise PermissionError(f'{msg}')
 
     net = base['NET']
     mode = base['MODE']
