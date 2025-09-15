@@ -8,7 +8,9 @@
 #########################################################################
 
 # Main CI root directory - Base directory for all CI/CD operations
-export GFS_CI_ROOT=/scratch3/NCEPDEV/global/role.glopara/GFS_CI_CD
+# Note: Hera is cross mounted with Ursa so its name is added in the
+# main path to establish a unique path
+export GFS_CI_ROOT=/scratch3/NCEPDEV/global/role.glopara/GFS_CI_CD/HERA
 
 # ICSDIR root directory - Contains initial condition data
 # Used by create_experiment.py for setting up test cases
