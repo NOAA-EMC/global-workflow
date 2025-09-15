@@ -163,8 +163,8 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   # Move to COM and index the product grib files
   for grid in "${grids[@]}"; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    cpfs "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}"
-    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}pgrb2${grp}.${grid}.${fhr3}.idx"
+    cpfs "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pres_a${grp}.${grid}.${fhr3}"
+    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}pres_a${grp}.${grid}.${fhr3}.idx"
   done
 
   echo "Finished processing nset = ${nset}"
@@ -176,7 +176,7 @@ done  # for (( nset=1 ; nset <= downset ; nset++ ))
 # Create the index file for the sflux master, if it exists.
 FLUX_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}sflux.${fhr3}.grib2"
 if [[ -s "${FLUX_FILE}" ]]; then
-  ${WGRIB2} -s "${FLUX_FILE}" > "${FLUX_FILE}.idx"
+  ${WGRIB2} -s "${FLUX_FILE}" > "${FLUX_FILE}.grib2.idx"
 fi
 
 # Section creating sflux grib2 interpolated products
@@ -198,8 +198,8 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
   IFS=':' read -ra grids <<< "${grid_string}"
   for grid in "${grids[@]}"; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    cpfs "sflux_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}"
-    ${WGRIB2} -s "sflux_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.idx"
+    cpfs "sflux_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.grib2"
+    ${WGRIB2} -s "sflux_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.grib2.idx"
   done
 fi
 
@@ -208,7 +208,7 @@ if [[ "${WGNE:-}" == "YES" ]]; then
   grp=""  # TODO: this should be "a" when we eventually rename the pressure grib2 files per EE2 convention
   if [[ ${FORECAST_HOUR} -gt 0 && ${FORECAST_HOUR} -le ${FHMAX_WGNE} ]]; then
     # TODO: 597 is the message number for APCP in GFSv16.  GFSv17 may change this as more messages are added. This can be controlled via config.atmos_products
-    ${WGRIB2} "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pgrb2${grp}.0p25.${fhr3}" -d "${APCP_MSG:-597}" -grib "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}"
+    ${WGRIB2} "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a${grp}.0p25.${fhr3}.grib2" -d "${APCP_MSG:-597}" -grib "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}"
   fi
 fi
 
@@ -217,25 +217,25 @@ fi
 # Start sending DBN alerts
 # Everything below this line is for sending files to DBN (SENDDBN=YES)
 if [[ "${SENDDBN:-}" == "YES" ]]; then
-  "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25"       "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.${fhr3}"
-  "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX"  "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.${fhr3}.idx"
+  "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25"       "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2"
+  "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX"  "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2.idx"
   if [[ "${RUN}" == "gfs" ]]; then
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25"      "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.${fhr3}"
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.${fhr3}.idx"
-    if [[ -s "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.${fhr3}" ]]; then
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5"       "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.${fhr3}"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5_WIDX"  "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.${fhr3}.idx"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5"      "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.${fhr3}"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.${fhr3}.idx"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25"      "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2.idx"
+    if [[ -s "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2" ]]; then
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5"       "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5_WIDX"  "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2.idx"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5"      "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2.idx"
     fi
-    if [[ -s "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}" ]]; then
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0"       "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0_WIDX"  "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}.idx"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0"      "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.${fhr3}"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.${fhr3}.idx"
+    if [[ -s "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2" ]]; then
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0"       "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0_WIDX"  "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1P0.${fhr3}.grib2.idx"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0"      "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1P0.${fhr3}.grib2"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1P0.${fhr3}.grib2.idx"
     fi
-    if [[ "${WGNE:-}" == "YES" && -s "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}" ]] ; then
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WGNE" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}"
+    if [[ "${WGNE:-}" == "YES" && -s "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2" ]] ; then
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WGNE" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2"
     fi
   fi
 
@@ -244,14 +244,14 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_MSC_sfcanl" "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}sfc${fhr3}.nc"
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SA"         "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}atm${fhr3}.nc"
 
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGA_GB2"      "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}"
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGA_GB2_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}.idx"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGA_GB2"      "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGA_GB2_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2.idx"
 
   else  # forecast hours f000, f003, f006, etc.
 
     if [[ "${RUN}" == "gdas" ]]; then
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB_GB2"        "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB_GB2_WIDX"   "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.${fhr3}.idx"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB_GB2"        "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB_GB2_WIDX"   "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2.idx"
       if (( FORECAST_HOUR % 3 == 0 )); then
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF"           "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm${fhr3}.nc"
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF"           "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc${fhr3}.nc"
