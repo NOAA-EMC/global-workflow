@@ -97,8 +97,8 @@
 ################################################################################
 
 CASE=${CASE:-C768}
-CASE_HIST=${CASE_HIST:-C768}
-resh=$(echo $CASE_HIST | cut -c2-)
+CASE_HIST=${CASE_HIST:-${CASE}}
+resh=${CASE_HIST:1}
 LONB_CASE=$((resh*4))
 LATB_CASE=$((resh*2))
 LONB_SFC=${LONB_SFC:-$LONB_CASE}
