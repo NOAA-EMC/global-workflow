@@ -1,8 +1,6 @@
 experiment:
   net: gfs
   mode: cycled
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: ATM
   resdetatmos: 96
@@ -21,3 +19,13 @@ arguments:
 skip_ci_on_hosts:
   - awsepicglobalworkflow
   - gaeac5
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
+  ecflow:
+    dummy: 1

@@ -16,7 +16,7 @@ Error: "ImportError" message when running setup script
 
 Example::
 
-   $ ./setup_xml.py /path/to/your/experiment/directory
+   $ ./setup_workflow.py /path/to/your/experiment/directory
    /usr/bin/env: python3: No such file or directory
 
 **Cause:** Missing python module in your environment
