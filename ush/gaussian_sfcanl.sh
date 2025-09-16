@@ -122,7 +122,6 @@ export REDERR=${REDERR:-'2>'}
 ################################################################################
 #  Preprocessing
 ${INISCRIPT:-}
-pwd=$(pwd)
 if [[ ! -d "${COMOUT_ATMOS_ANALYSIS}" ]]; then
   mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 fi
