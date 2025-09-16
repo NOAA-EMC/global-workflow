@@ -59,7 +59,7 @@ def input_args(*argv):
     ecflow_parser = subparsers.add_parser('ecflow',
                                           help='Use EcFlow workflow engine',
                                           formatter_class=ArgumentDefaultsHelpFormatter)
-    ecflow_parser.add_argument('--verbosity', help='verbosity level of ecFlow', type=int,
+    ecflow_parser.add_argument('--verbosity', help='verbosity level of ecflow', type=int,
                                default=10, required=False)
 
     return parser.parse_args(argv[0][0] if len(argv[0]) else None)
@@ -118,8 +118,8 @@ def main(*argv):
             msg = f'The {dk} path {base[dk]} cannot be written to!  Please correct this path and try again.'
             if user_inputs.force:
                 print(f"WARNING {msg}")
-#            else:
-#                raise PermissionError(f'{msg}')
+            else:
+                raise PermissionError(f'{msg}')
 
     net = base['NET']
     mode = base['MODE']
