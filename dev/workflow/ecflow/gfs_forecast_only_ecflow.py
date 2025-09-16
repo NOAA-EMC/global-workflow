@@ -3,7 +3,7 @@
 """
 GFS forecast-only ecflow generator module.
 
-This module provides functionality to generate Rocoto XML workflow configurations
+This module provides functionality to generate ecflow suite configurations
 for GFS forecast-only runs. It handles cycle definitions and specific task configurations
 needed for the GFS workflow.
 """
@@ -16,9 +16,9 @@ from typing import Dict
 
 class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
     """
-    Rocoto XML generator for GFS forecast-only workflows.
+    ecFlow suite generator for GFS forecast-only workflows.
 
-    This class handles the generation of Rocoto XML configuration for GFS
+    This class handles the generation of ecFlow suite configuration for GFS
     forecast-only mode, including cycle definitions and workflow scheduling.
 
     Parameters

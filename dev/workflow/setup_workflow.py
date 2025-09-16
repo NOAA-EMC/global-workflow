@@ -6,7 +6,6 @@ Entry point for setting up workflow (Rocoto XML or EcFlow) for all applications 
 import os
 from logging import getLogger
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from pprint import pprint
 
 from applications.application_factory import app_config_factory
 from rocoto.rocoto_xml_factory import rocoto_xml_factory
@@ -145,7 +144,6 @@ def main(*argv):
     }
 
     # Create the XML (Rocoto) or Suite (ecFlow) object
-    pprint(workflow_config)
     workflow = ENGINE_MAP[workflow_engine].create(f'{net}_{mode}', app_config, workflow_config)
     workflow.write()
 
