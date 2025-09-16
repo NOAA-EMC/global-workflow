@@ -182,4 +182,3 @@ class AtmAnalysis(FV3Analysis):
         # Save files from COM
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.save).sync()
-        
