@@ -155,7 +155,7 @@ if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
    export SATINFO="generate"
    export CONVINFO="generate"
    export OZINFO="generate"
-   export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_reanl_nasa_ozone.txt"
+   export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_reanl_ncep_ozone.txt"
 else
    export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_ops.txt"
 fi
