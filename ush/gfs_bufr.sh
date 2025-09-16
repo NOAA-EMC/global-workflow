@@ -45,16 +45,18 @@ else
    bufrflag=".false."
 fi
 
-# check if read in bufr_ij_gfs_${CASE_HIST}.txt 
+# check if read in bufr_ij_gfs_${CASE}.txt 
 
-if [[ -s "${PARMgfs}/product/bufr_ij_gfs_${CASE_HIST}.txt"  ]]; then
-  # use predetermined grid point(i,j) in bufr_gfs_${CASE_HIST}.txt 
-  ${NLN} "${PARMgfs}/product/bufr_ij_gfs_${CASE_HIST}.txt" fort.7
+export CASE=${CASE_HIST:-${CASE}}
+
+if [[ -s "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt"  ]]; then
+  # use predetermined grid point(i,j) in bufr_gfs_${CASE}.txt 
+  ${NLN} "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" fort.7
   np1=0
 else
   # find the nearest neighbor grid point(i,j) in the code
   np1=1
-  echo "No bufr_ij_gfs_${CASE_HIST}.txt For CASE_HIST ${CASE_HIST}"
+  echo "No bufr_ij_gfs_${CASE}.txt For CASE ${CASE}"
   echo "Find the nearest neighbor grid (i,j) in the code"
 fi   
 
