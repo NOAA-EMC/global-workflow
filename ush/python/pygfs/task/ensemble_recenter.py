@@ -77,7 +77,7 @@ class EnsembleRecenter(FV3Analysis):
         # Stage files from COM
         logger.info(f"Staging files from COM")
         FileHandler(self.task_config.stage).sync()
-        
+
         # Initialize JEDI ensemble increment recentering application
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['correction_increment'].initialize(self.task_config)
@@ -121,6 +121,6 @@ class EnsembleRecenter(FV3Analysis):
         None
         """
 
-         # Save output files to COM
+        # Save output files to COM
         logger.info(f"Saving output files to COM")
         FileHandler(self.task_config.stage).sync()

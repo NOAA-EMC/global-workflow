@@ -48,11 +48,11 @@ class AtmAnalysis(FV3Analysis):
             _res_anl = int(self.task_config.CASE[1:])
 
         _localization_type = 'bump'
-        
+
         if self.task_config.DOHYBVAR:
-            _BERROR_YAML=f"atmosphere_background_error_hybrid_{self.task_config.STATICB_TYPE}_{_localization_type}"
+            _BERROR_YAML = f"atmosphere_background_error_hybrid_{self.task_config.STATICB_TYPE}_{_localization_type}"
         else:
-            _BERROR_YAML=f"atmosphere_background_error_static_{self.task_config.STATICB_TYPE}"
+            _BERROR_YAML = f"atmosphere_background_error_static_{self.task_config.STATICB_TYPE}"
 
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
@@ -105,7 +105,7 @@ class AtmAnalysis(FV3Analysis):
         for ob in self.task_config.observations:
             if ob in self.task_config.bias_files and not self.task_config.bias_files[ob] in bias_file_list:
                 bias_file_list.append(self.task_config.bias_files[ob])
-                Jedi.extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')   
+                Jedi.extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')
 
         # Initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")
@@ -182,3 +182,4 @@ class AtmAnalysis(FV3Analysis):
         # Save files from COM
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.save).sync()
+        

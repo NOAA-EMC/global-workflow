@@ -2,9 +2,9 @@
 
 from logging import getLogger
 from typing import Any, Dict
-from wxflow import (AttrDict, Task, 
+from wxflow import (AttrDict, Task,
                     add_to_datetime, to_timedelta, to_isotime,
-                    parse_j2yaml, 
+                    parse_j2yaml,
                     logit)
 
 logger = getLogger(__name__.split('.')[-1])
