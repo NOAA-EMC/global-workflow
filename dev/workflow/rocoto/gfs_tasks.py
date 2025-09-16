@@ -680,12 +680,19 @@ class GFSTasks(Tasks):
     def prepoceanobs(self):
 
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
+        dmpdir = self._configs['prepoceanobs']["DMPDIR"]
 
         deps = []
         data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/{self.run}.t@Hz.obsforge_marine_status.log'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/insitu/{self.run}.t@Hz.obsforge_marine_bufr_status.log'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('prepoceanobs')
         task_name = f'{self.run}_prepoceanobs'
@@ -1279,7 +1286,7 @@ class GFSTasks(Tasks):
 
         wave_grid = self._configs['base']['waveGRD']
         history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
-        history_file = f'{self.run}.wave.t@Hz.{wave_grid}.f#fhr3_last#.log'
+        history_file = f'{self.run}.t@Hz.{wave_grid}.f#fhr3_last#.log'
 
         deps = []
         dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}'}
@@ -1331,7 +1338,7 @@ class GFSTasks(Tasks):
         # The job runs on forecast hours up to FHMAX_WAV_IBP
         fhmax_wav_ibp = self._configs[name_in]['FHMAX_WAV_IBP']
         history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
-        history_file = f'{self.run}.wave.t@Hz.points.f{fhmax_wav_ibp:03d}.log'
+        history_file = f'{self.run}.t@Hz.points.f{fhmax_wav_ibp:03d}.log'
 
         deps = []
         dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}'}

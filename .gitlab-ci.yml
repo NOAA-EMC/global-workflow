@@ -199,7 +199,7 @@ include:
 
             comment_body=$(printf "**BUILD FAILED** on %s (pipeline ID: %s)\n\nIn directory: \`%s/sorc\`\n\n**Error log files:**\n\`\`\`\n%s\n\`\`\`\n\n [View Error Logs](%s)\n\n_This failure was detected automatically by global-workflow's CI/CD Pipeline_" "${Machine}" "${CI_PIPELINE_ID}" "${GW_HOMEgfs}" "${error_logs_markdown}" "${pr_error_log_links}")
         
-            "${GH}"" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
+            "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
           fi
 
           echo "Updating GitHub labels for PR ${PR_NUMBER} failure on ${Machine}"
