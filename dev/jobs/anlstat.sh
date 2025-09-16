@@ -4,7 +4,7 @@ set -x
 
 ###############################################################
 # Source UFSDA workflow modules
-. "${HOMEgfs}/ush/load_ufsda_modules.sh"
+source "${HOMEgfs}/dev/ush/load_ufsda_modules.sh"
 err=$?
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR Failed to load UFSDA modules!"

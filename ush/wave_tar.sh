@@ -151,14 +151,12 @@ EOF
 
   err=$?
 
-  if  [[ ${err} -ne 0 ]]
-  then
+  if  [[ ${err} -ne 0 ]]; then
     echo 'FATAL ERROR: TAR COPY FAILED *** '
     exit 4
   fi
 
-  if [[ "${SENDDBN}" = 'YES' ]]
-  then
+  if [[ "${SENDDBN}" == "YES" ]]; then
     echo "   Alerting TAR file as ${COMOUT_WAVE_STATION}/${file_name}"
     "${DBNROOT}/bin/dbn_alert MODEL" "${alertName}_WAVE_TAR" "${job}" \
       "${COMOUT_WAVE_STATION}/${file_name}"

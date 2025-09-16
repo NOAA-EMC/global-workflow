@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 set -eux
 
+# shellcheck disable=SC2155
+readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+
 OPTIND=1
 _opts="-f "  # forces a clean build
 while getopts ":j:dv" option; do
@@ -20,11 +23,13 @@ while getopts ":j:dv" option; do
 done
 shift $((OPTIND-1))
 
+source "${HOMEgfs_}/ush/detect_machine.sh"
+
 # double quoting opts will not work since it is a string of options
 # shellcheck disable=SC2086
 BUILD_JOBS="${BUILD_JOBS:-8}" \
 WORKFLOW_BUILD="${WORKFLOW_BUILD:-"ON"}" \
 WORKFLOW_TESTS="${WORKFLOW_TESTS:-"OFF"}" \
-./gdas.cd/build.sh ${_opts} -f
+"${HOMEgfs_}/sorc/gdas.cd/build.sh" ${_opts} -w ${HOMEgfs_}
 
 exit

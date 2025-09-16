@@ -32,7 +32,7 @@
 # Additionally, there are a couple of optional settings that
 #   can be set before calling the script:
 #   - $EXPDIR       : Override the default $EXPDIR
-#                     [default: ${HOMEgfs}/parm/config]
+#                     [default: ${HOMEgfs}/dev/parm/config]
 #   - $DATA         : Override the default $DATA location
 #                     [default: ${DATAROOT}/${jobid}]
 #   - $WIPE_DATA    : Set whether to delete any existing $DATA
@@ -101,7 +101,7 @@ source ./PDY || true
 #############################
 # Source relevant config files
 #############################
-export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
+export EXPDIR="${EXPDIR:-${HOMEgfs}/dev/parm/config}"
 for config in "${configs[@]:-''}"; do
     source "${EXPDIR}/config.${config}" && true
     export err=$?

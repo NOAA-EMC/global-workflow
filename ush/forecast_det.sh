@@ -26,6 +26,8 @@ UFS_det(){
     IAU_OFFSET=0
     model_start_date_current_cycle=${current_cycle}
 
+    DO_LAND_IAU=".false."           
+
     # It is still possible that a restart is available from a previous forecast attempt
     # So we have to continue checking for restarts
   fi

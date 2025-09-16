@@ -23,8 +23,8 @@ def main():
             'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR',
             'OCNRES', 'waveGRD', 'ntiles', 'DOIAU',
             'DO_JEDIOCNVAR', 'DO_STARTMEM_FROM_JEDIICE',
-            'REPLAY_ICS', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA',
-            'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES']
+            'REPLAY_ICS', 'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA', 'DO_AERO_ANL',
+            'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'DO_GSISOILDA', 'DO_LAND_IAU']
 
     stage_dict = AttrDict()
     for key in keys:
@@ -37,6 +37,8 @@ def main():
     for key in stage.task_config.keys():
         if key.startswith("COM"):
             stage_dict[key] = stage.task_config[key]
+        if "ENSMEM" in stage.task_config:
+            stage_dict["ENSMEM"] = stage.task_config["ENSMEM"]
 
     # Stage ICs
     stage.execute_stage(stage_dict)

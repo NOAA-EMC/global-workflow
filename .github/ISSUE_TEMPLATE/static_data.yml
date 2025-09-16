@@ -3,7 +3,8 @@ description: Request static data be added or updated
 labels: ["Static Data Mgmt"]
 projects: ["NOAA-EMC/41"]
 assignees:
-  - KateFriedman-NOAA
+  - DavidHuber-NOAA
+  - aerorahul 
 
 body:
   - type: dropdown

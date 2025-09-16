@@ -11,7 +11,8 @@ INPUTS
 ---------
 This script requires the following environment variables be set beforehand:
 
-CDATE:        Initial time in YYYYMMDDHH format
+PDY:          Initial time in YYYYMMDD format
+cyc:          Initial time in HH format
 INTERVAL_GFS: Forecast cadence (frequency) in hours
 FHMAX_GFS:    Forecast length in hours
 RUN:          Forecast phase (gfs or gdas). Currently always expected to be gfs.
@@ -75,7 +76,8 @@ tiles = list(map(lambda t: "tile{t}".format(t=t), range(1, n_tiles + 1)))
 
 def main() -> None:
     # Read in environment variables and make sure they exist
-    cdate = get_env_var("CDATE")
+    pdy = get_env_var("PDY")
+    cyc = get_env_var("cyc")
     incr = int(get_env_var('INTERVAL_GFS'))
     fcst_length = int(get_env_var('FHMAX_GFS'))
     run = get_env_var("RUN")
@@ -88,7 +90,7 @@ def main() -> None:
     merge_script = merge_script_pattern.format(ush_gfs=ush_gfs)
     tracer_list_file = tracer_list_file_pattern.format(parm_gfs=parm_gfs)
 
-    time = datetime.strptime(cdate, "%Y%m%d%H")
+    time = datetime.strptime(f"{pdy}{cyc}", "%Y%m%d%H")
     atm_source_path = time.strftime(atm_base_pattern.format(**locals()))
 
     if (debug):

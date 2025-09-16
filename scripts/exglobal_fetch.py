@@ -14,25 +14,34 @@ def main():
 
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the Fetch object
-    fetch = Fetch(config)
+    fetch_tmpl_list = []
+    if "FETCH_YAML_TMPL_LIST" in config.keys():
+        fetch_tmpl_list = config["FETCH_YAML_TMPL_LIST"]
+    else:
+        fetch_tmpl_list.append(config['FETCH_YAML_TMPL'])
 
-    # Pull out all the configuration keys needed to run the fetch step
-    keys = ['current_cycle', 'previous_cycle', 'RUN', 'PDY', 'PARMgfs', 'PSLOT', 'ROTDIR',
-            'FETCH_YAML_TMPL', 'FETCHDIR', 'ntiles', 'DATAROOT', 'waveGRD']
+    # Loop over all templates and create a Fetch object for each
+    for fetch_yaml_tmpl in fetch_tmpl_list:
+        config['FETCH_YAML_TMPL'] = fetch_yaml_tmpl
+        # Instantiate the Fetch object
+        fetch = Fetch(config)
 
-    fetch_dict = AttrDict()
-    for key in keys:
-        fetch_dict[key] = fetch.task_config.get(key)
-        if fetch_dict[key] is None:
-            print(f"Warning: key ({key}) not found in task_config!")
+        # Pull out all the configuration keys needed to run the fetch step
+        keys = ['current_cycle', 'previous_cycle', 'RUN', 'PDY', 'PARMgfs', 'PSLOT', 'ROTDIR',
+                'FETCH_YAML_TMPL', 'FETCHDIR', 'ntiles', 'DATA', 'DATAROOT', 'waveGRD', 'gdas_version']
 
-    # Determine which archives to retrieve from HPSS
-    # Read the input YAML file to get the list of tarballs on tape
-    fetchdir_set = fetch.configure(fetch_dict)
+        fetch_dict = AttrDict()
+        for key in keys:
+            fetch_dict[key] = fetch.task_config.get(key)
+            if fetch_dict[key] is None:
+                print(f"Warning: key ({key}) not found in task_config!")
 
-    # Pull the data from tape or locally and store the specified destination
-    fetch.execute_pull_data(fetchdir_set)
+        # Determine which archives to retrieve from HPSS
+        # Read the input YAML file to get the list of tarballs on tape
+        fetchdir_set = fetch.configure(fetch_dict)
+
+        # Pull the data from tape or locally and store the specified destination
+        fetch.execute_pull_data(fetchdir_set)
 
 
 if __name__ == '__main__':

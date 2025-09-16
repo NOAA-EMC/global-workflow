@@ -23,17 +23,15 @@
 pwd=$(pwd)
 
 # Base variables
-CDATE=${CDATE:-"2001010100"}
 rCDUMP=${rCDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-BDATE=$(${NDATE} -3 ${CDATE})
-PDY=$(echo ${CDATE} | cut -c1-8)
-cyc=$(echo ${CDATE} | cut -c9-10)
-bPDY=$(echo ${BDATE} | cut -c1-8)
-bcyc=$(echo ${BDATE} | cut -c9-10)
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 3 hours")
+bPDY=${BDATE:0:8}
+bcyc=${BDATE:8:2}
 
 # Utilities
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
@@ -52,6 +50,10 @@ cnvw_option=${cnvw_option:-".false."}
 # Observation usage options
 cao_check=${cao_check:-".true."}
 ta2tb=${ta2tb:-".true."}
+optconv=${optconv:-0.06}
+AIRS_CADS=${AIRS_CADS:-".false."}
+IASI_CADS=${IASI_CADS:-".false."}
+CRIS_CADS=${CRIS_CADS:-".false."}
 
 # Diagnostic files options
 netcdf_diag=${netcdf_diag:-".true."}
@@ -76,12 +78,6 @@ export CHGRESINCEXEC=${CHGRESINCEXEC:-${EXECgfs}/interp_inc.x}
 CHGRESEXEC=${CHGRESEXEC:-${EXECgfs}/enkf_chgres_recenter.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
 CALCINCPY=${CALCINCPY:-${USHgfs}/calcinc_gfs.py}
-
-# OPS flags
-RUN=${RUN:-""}
-SENDECF=${SENDECF:-"NO"}
-SENDDBN=${SENDDBN:-"NO"}
-export gesenvir=${gesenvir:-${envir}}
 
 export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 export ignore_2mQM=${ignore_2mQM:-".false."}
@@ -119,7 +115,7 @@ ESIASI=${ESIASI:-${COMIN_OBS}/${OPREFIX}esiasi.tm00.bufr_d${OSUFFIX}}
 IASIDB=${IASIDB:-${COMIN_OBS}/${OPREFIX}iasidb.tm00.bufr_d${OSUFFIX}}
 AMSREBF=${AMSREBF:-${COMIN_OBS}/${OPREFIX}amsre.tm00.bufr_d${OSUFFIX}}
 AMSR2BF=${AMSR2BF:-${COMIN_OBS}/${OPREFIX}amsr2.tm00.bufr_d${OSUFFIX}}
-GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}} # GMI temporarily disabled due to array overflow.
+GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}} 
 SAPHIRBF=${SAPHIRBF:-${COMIN_OBS}/${OPREFIX}saphir.tm00.bufr_d${OSUFFIX}}
 SEVIRIBF=${SEVIRIBF:-${COMIN_OBS}/${OPREFIX}sevcsr.tm00.bufr_d${OSUFFIX}}
 AHIBF=${AHIBF:-${COMIN_OBS}/${OPREFIX}ahicsr.tm00.bufr_d${OSUFFIX}}
@@ -155,6 +151,8 @@ OMPSNMEFFNC=${OMPSNMEFFNC:-${COMIN_OBS}/OMPSNM.${PDY}_${cyc}z.nc}
 OMPSNPNC=${OMPSNPNC:-${COMIN_OBS}/OMPSNP.${PDY}_${cyc}z.nc}
 OMPSLPNC=${OMPSLPNC:-${COMIN_OBS}/OMPS-LPoz-Vis.${PDY}_${cyc}z.nc}
 MLS55NC=${MLS55NC:-${COMIN_OBS}/MLS-v5.0-oz.${PDY}_${cyc}z.nc}
+SAILDRONE=${SAILDRONE:-${COMIN_OBS}/${OPREFIX}saldrn.tm00.bufr_d${OSUFFIX}}
+GSBBF=${GSBBF:-${COMIN_OBS}/${OPREFIX}gsbprf.tm00.bufr_d${OSUFFIX}}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
@@ -484,10 +482,10 @@ ${NLN} ${B1HRS3}           hirs3bufr
 ${NLN} ${B1HRS4}           hirs4bufr
 ${NLN} ${ESAMUA}           amsuabufrears
 ${NLN} ${ESAMUB}           amsubbufrears
-#$NLN $ESMHS            mhsbufrears
+#$NLN  $ESMHS              mhsbufrears
 ${NLN} ${AMUADB}           amsuabufr_db
 ${NLN} ${AMUBDB}           amsubbufr_db
-#$NLN $MHSDB            mhsbufr_db
+#$NLN  $MHSDB              mhsbufr_db
 ${NLN} ${SBUVBF}           sbuvbufr
 ${NLN} ${OMPSNPBF}         ompsnpbufr
 ${NLN} ${OMPSLPBF}         ompslpbufr
@@ -503,7 +501,7 @@ ${NLN} ${ESIASI}           iasibufrears
 ${NLN} ${IASIDB}           iasibufr_db
 ${NLN} ${AMSREBF}          amsrebufr
 ${NLN} ${AMSR2BF}          amsr2bufr
-#${NLN} ${GMI1CRBF}         gmibufr # GMI temporarily disabled due to array overflow.
+${NLN} ${GMI1CRBF}         gmibufr
 ${NLN} ${SAPHIRBF}         saphirbufr
 ${NLN} ${SEVIRIBF}         seviribufr
 ${NLN} ${CRISBF}           crisbufr
@@ -525,6 +523,8 @@ ${NLN} ${AHIBF}            ahibufr
 ${NLN} ${ABIBF}            abibufr
 ${NLN} ${HDOB}             hdobbufr
 ${NLN} ${SSTVIIRS}         sstviirs
+${NLN} ${SAILDRONE}        sdbufr
+${NLN} ${GSBBF}            wbbufr
 
 # NASA ozone (netcdf) from NNJA
 ${NLN} ${OMIEFFNC}    omieffnc
@@ -794,7 +794,7 @@ cat > gsiparm.anl << EOF
   lobsdiag_forenkf=${lobsdiag_forenkf},
   write_fv3_incr=${write_fv3_increment},
   nhr_anal=${IAUFHRS},
-  ta2tb=${ta2tb},
+  ta2tb=${ta2tb},optconv=${optconv},
   ${WRITE_INCR_ZERO}
   ${WRITE_ZERO_STRAT}
   ${WRITE_STRAT_EFOLD}
@@ -829,7 +829,7 @@ cat > gsiparm.anl << EOF
 /
 &OBSQC
   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-  use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.false.,nvqc=.true.,
+  use_poq7=.true.,qc_noirjaco3_pole=.false.,vqc=.false.,nvqc=.true.,
   aircraft_t_bc=.true.,biaspredt=1.0e5,upd_aircraft=.true.,cleanup_tail=.true.,
   tcp_width=70.0,tcp_ermax=7.35,airs_cads=${AIRS_CADS},cris_cads=${CRIS_CADS},
   iasi_cads=${IASI_CADS},blacklst=.true.,
@@ -870,7 +870,7 @@ ${OBS_INPUT_TABLE}
 /
 &SINGLEOB_TEST
   maginnov=0.1,magoberr=0.1,oneob_type='t',
-  oblat=45.,oblon=180.,obpres=1000.,obdattim=${CDATE},
+  oblat=45.,oblon=180.,obpres=1000.,obdattim=${PDY}${cyc},
   obhourset=0.,
   ${SINGLEOB}
 /
@@ -954,7 +954,7 @@ cd "${pwd}" || exit 1
 if [[ ${SENDECF} == "YES" && "${RUN}" != "enkf" ]]; then
    ecflow_client --event release_fcst
 fi
-echo "${rCDUMP} ${CDATE} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt"
+echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt"
 
 ################################################################################
 

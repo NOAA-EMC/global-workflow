@@ -35,9 +35,6 @@ NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 # Executables
 ENKFEXEC=${ENKFEXEC:-${EXECgfs}/enkf.x}
 
-# Cycling and forecast hour specific parameters
-CDATE=${CDATE:-"2001010100"}
-
 # Filenames.
 GPREFIX=${GPREFIX:-""}
 APREFIX=${APREFIX:-""}
@@ -364,6 +361,7 @@ cat > enkf.nml << EOFnml
    sattypes_rad(77)= 'viirs-m_j2',    dsis(77)= 'viirs-m_j2',
    sattypes_rad(78)= 'atms_n21',      dsis(78)= 'atms_n21',
    sattypes_rad(79)= 'cris-fsr_n21',  dsis(79)= 'cris-fsr_n21',
+   sattypes_rad(80)= 'abi_g19',       dsis(80)= 'abi_g19',
    ${SATOBS_ENKF}
 /
 &ozobs_enkf

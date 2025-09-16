@@ -25,7 +25,7 @@
 # natges, natgm3, natgm2, natgm1, natgp1, natgp2, natgp3, natcur,
 # nsfges, nsfgm3, nsfgm2, nsfgm1, nsfgp1, nsfgp2, nsfgp3, nsfcur,
 # nstcur, nflges, nflgp3
-# Specify option "-v valid" for the valid date wanted (default $CDATE).
+# Specify option "-v valid" for the valid date wanted (default $PDY$cyc).
 # Currently, the valid hours specified must be a multiple of 3.
 # Either 2-digit or 4-digit years are currently allowed.
 # Specify positional argument to be the file to which to copy the guess.
@@ -34,13 +34,12 @@
 # or the guess could not be found; a message is written to standard error in
 # this case, but neither a file copy nor a standard output write will be done.
 # The file returned is guaranteed to exist and be readable.
-# The script uses the utility commands NDATE and NHOUR.
+# The script uses the utility command NHOUR.
 #
 # Example 1. Copy the production sigma guess for 1998100100 to the file sges.
 #  getges.sh -e prod -t sigges -v 1998100100 sges 
 #
 # Example 2. Assign the pressure grib guess for the date 1998100121.
-#  export CDATE=1998100121
 #  export XLFUNIT_12="$(getges.sh -qt pgbges||echo /dev/null)"
 #
 # Example 3. Get the PRX pgb analysis or the best valid guess at 1998100112.
@@ -89,7 +88,7 @@ fhour=any                        # default forecast hour
 quiet=YES                        # default quiet mode
 resol=high                       # default resolution
 typef=sigges                     # default filetype
-valid=${CDATE:-'?'}              # default valid date
+valid=${PDY}${cyc}               # default valid date
 err=0
 
 while getopts n:e:f:qr:t:v: opt;do
@@ -107,7 +106,7 @@ done
 shift $(($OPTIND-1))
 gfile=$1
 if [[ -z $valid ]];then
- echo "$0: either -v option or environment variable CDATE must be set" >&2
+ echo "$0: either -v option or environment variables PDY and cyc must be set" >&2
 elif [[ $# -gt 1 ]];then
  echo "$0: too many positional arguments" >&2
 elif [[ $err -ne 0 ]];then
@@ -144,7 +143,7 @@ if [[ $gfile = '?' || $# -gt 1 || $err -ne 0 || -z $valid ||\
   echo "           nstcur, nflges, nflgp3," >&2
  elif [[ $valid = '?' ]];then
   echo "         valid is the valid date in yyyymmddhh or yymmddhh form" >&2
-  echo "         (default is environmental variable CDATE)" >&2
+  echo "         (default is environmental variable $PDY$cyc)" >&2
  elif [[ $gfile = '?' ]];then
   echo "         gfile is the guess file to write" >&2
   echo "         (default is to write the guess file name to stdout)" >&2
@@ -1314,10 +1313,6 @@ if [[ $valid -lt 20000000 ]];then
  echo '*          Please use full a 4-digit year in this utility. *' >&2
  echo '************************************************************' >&2
 fi
-if [[ $($NDATE 0 $valid 2>/dev/null) != $valid ]];then
- echo getges.sh: invalid date $valid >&2
- exit 2
-fi
 if [[ -z "$geslist" ]];then
  echo getges.sh: filetype $typef or resolution $resol not recognized >&2
  exit 2
@@ -1374,7 +1369,7 @@ while [[ $fh -le $fhend ]];do
  ghp1=$fhp1;[[ $ghp1 -lt 100 ]]&&ghp1=0$ghp1
  ghp2=$fhp2;[[ $ghp2 -lt 100 ]]&&ghp2=0$ghp2
  ghp3=$fhp3;[[ $ghp3 -lt 100 ]]&&ghp3=0$ghp3
- id=$($NDATE -$fh $valid)
+ id=$(date --utc +%Y%m%d%H -d "${valid:0:8} ${valid:8:2} - ${fh} hours")
 
  day=$(echo $id | xargs | cut -c8)
  cyc=$(echo $id | xargs | rev | cut -c1-2 | rev)
@@ -1407,10 +1402,10 @@ fi
 #-------------------------------------------------------------------------------
 # Either copy guess to a file or write guess name to standard output.
 if [[ -z "$gfile" ]];then
- echo $ges
+ echo ${ges}
  err=$?
 else
- cp $ges $gfile
+ cp ${ges} ${gfile}
  err=$?
 fi
 

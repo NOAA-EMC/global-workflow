@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import glob
 import gzip
 import tarfile
 from logging import getLogger
@@ -78,7 +79,7 @@ class AnalysisStats(Task):
         logger.info(f"Copying files to {self.task_config.DATA}/stats")
 
         # Extract info from stat config file
-        analysis_config_dict = parse_j2yaml(self.task_config.STAT_BASE_CONFIG_YAML, self.task_config)
+        analysis_config_dict = parse_j2yaml(self.task_config.BASE_CONFIG_YAML, self.task_config)
 
         # Loop through a copy of ob space list
         for analysis in self.task_config.STAT_ANALYSES[:]:
@@ -155,6 +156,7 @@ class AnalysisStats(Task):
         This method will finalize the analysis statistics job using JEDI.
         This includes:
         - copying stat files to specified outdir
+        - tar and gzip stat files
 
         Parameters
         ----------
@@ -166,7 +168,7 @@ class AnalysisStats(Task):
         None
         """
 
-        analysis_config_dict = parse_j2yaml(self.task_config.STAT_BASE_CONFIG_YAML, self.task_config)
+        analysis_config_dict = parse_j2yaml(self.task_config.BASE_CONFIG_YAML, self.task_config)
 
         for analysis_dict in analysis_config_dict[jedi_dict_key]['obs spaces']:
             statfile = os.path.join(self.task_config.DATA, analysis_dict['output file'])
@@ -182,3 +184,17 @@ class AnalysisStats(Task):
                 'copy_opt': [[statfile, dest]]
             }
             FileHandler(stat_copy).sync()
+
+        # path of output tar statfile
+        iodastatzipfile = os.path.join(outdir, f"{self.task_config.APREFIX}{jedi_dict_key}_iodastat.tgz")
+
+        logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
+
+        # get list of iodastat files to put in tarball
+        iodastatfiles = glob.glob(os.path.join(outdir, '*output*nc'))
+
+        logger.info(f"Gathering {len(iodastatfiles)} ioda-stat files to {iodastatzipfile}")
+
+        with tarfile.open(iodastatzipfile, "w|gz") as archive:
+            for targetfile in iodastatfiles:
+                archive.add(targetfile, arcname=os.path.basename(targetfile))

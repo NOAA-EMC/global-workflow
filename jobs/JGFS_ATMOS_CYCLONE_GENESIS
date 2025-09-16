@@ -7,21 +7,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "genesis" -c "base genesis"
 ##############################################
 export cmodel=${RUN}
 
-####################################
-# SENDDBN  - Issue DBNet Client Calls
-####################################
-export SENDDBN=${SENDDBN:-NO}
-export SENDECF=${SENDECF:-NO}
-
-####################################
-# Specify Execution Areas
-####################################
-export HOMEens_tracker=${HOMEens_tracker:-${PACKAGEROOT}/ens_tracker.${ens_tracker_ver}}
-export EXECens_tracker=${EXECens_tracker:-${HOMEens_tracker}/exec}
-export FIXens_tracker=${FIXens_tracker:-${HOMEens_tracker}/fix}
-export USHens_tracker=${USHens_tracker:-${HOMEens_tracker}/ush}
-export SCRIPTens_tracker=${SCRIPTens_tracker:-${HOMEens_tracker}/scripts}
-
 ##############################################
 # Define COM directories
 ##############################################

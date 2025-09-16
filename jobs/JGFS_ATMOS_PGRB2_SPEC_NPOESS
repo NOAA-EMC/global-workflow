@@ -9,16 +9,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "npoess" -c "base npoess"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
-###################################
-# Specify NET and RUN Name and model
-####################################
-export model=${model:-gfs}
-
 ##############################################
 # Define COM directories
 ##############################################
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL \

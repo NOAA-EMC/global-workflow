@@ -5,9 +5,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawi
 ###################################
 # Set COM Paths
 ###################################
-export SENDDBN_NTC=${SENDDBN_NTC:-YES}
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_WAVE_STATION:COM_WAVE_STATION_TMPL \

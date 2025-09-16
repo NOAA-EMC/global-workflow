@@ -71,7 +71,7 @@ ${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/ru
 #------------------------------
 case "${machine}" in
 "wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
-"hera") FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
+"hera" | "ursa") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
 "orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
@@ -160,17 +160,11 @@ done
 
 cd "${HOMEgfs}/scripts" || exit 8
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
-  declare -a gdas_scripts=(exglobal_prep_ocean_obs.py
-    exgdas_global_marine_analysis_ecen.py
-  )
+  declare -a gdas_scripts=(exglobal_prep_ocean_obs.py)
   for gdas_script in "${gdas_scripts[@]}"; do
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/scripts/${gdas_script}" .
   done
 fi
-cd "${HOMEgfs}/ush" || exit 8
-for file in global_cycle_driver.sh global_cycle.sh; do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/ush/${file}" .
-done
 
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
@@ -202,6 +196,19 @@ if [[ -s "atparse.bash" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
 
+# Temporarilly link load_gw_run_modules.sh to load_fv3gfs_modules.sh
+# TODO: Use load_gw_run_modules.sh everywhere
+cd "${HOMEgfs}/dev/ush" || exit 1
+${LINK_OR_COPY} "${HOMEgfs}/dev/ush/load_gw_run_modules.sh" load_fv3gfs_modules.sh
+
+# add ufs_utils parm dir
+if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
+  cd "${HOMEgfs}/parm" || exit 1
+  mkdir -p regrid_sfc
+  cd regrid_sfc || exit 1
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/parm/regrid_sfc/regrid.nml_tmpl" .
+fi
+
 #------------------------------
 #--add GDASApp fix directory
 #------------------------------
@@ -224,8 +231,12 @@ fi
 #--add GDASApp parm directory
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
-  cd "${HOMEgfs}/parm/gdas" || exit 1
-  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas" "jcb-algorithms" "stat")
+  cd "${HOMEgfs}/parm" || exit 1
+  if [[ ! -d gdas ]]; then
+      mkdir -p gdas
+  fi
+  cd gdas || exit 1
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
   for comp in "${gdasapp_comps[@]}"; do
     if [[ -d "${comp}" ]]; then
         rm -rf "${comp}"
@@ -238,11 +249,12 @@ fi
 #--add GDASApp files
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
-  cd "${HOMEgfs}/ush" || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/soca"                              .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda"                              .
+  cd "${HOMEgfs}/ush/python" || exit 1
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/soca"  .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_json.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_yaml.py"    .
+  cd "${HOMEgfs}/ush" || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
   declare -a gdasapp_ocn_insitu_profile_platforms=("argo" "bathy" "glider" "marinemammal" "tesac" "xbtctd")
@@ -376,34 +388,19 @@ if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd/install" ]]; then
   done
 fi
 
-# GDASApp
-if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
-  declare -a JEDI_EXE=("gdas.x"
-    "gdas_soca_gridgen.x"
-    "gdas_soca_error_covariance_toolbox.x"
-    "gdas_fv3jedi_error_covariance_toolbox.x"
-    "gdas_soca_setcorscales.x"
-    "gdas_soca_diagb.x"
-    "fv3jedi_plot_field.x"
-    "gdasapp_chem_diagb.x"
-    "fv3jedi_fv3inc.x"
-    "fv3jedi_correction_increment.x"
-    "fv3jedi_ensemble_add_increment.x"
-    "gdas_ens_handler.x"
-    "gdas_incr_handler.x"
-    "gdas_obsprovider2ioda.x"
-    "gdas_socahybridweights.x"
-    "gdassoca_obsstats.x"
-    "gdasapp_land_ensrecenter.x"
-    "bufr2ioda.x"
-    "calcfIMS.exe"
-    "apply_incr.exe")
-  for gdasexe in "${JEDI_EXE[@]}"; do
-    if [[ -s "${gdasexe}" ]]; then
-        rm -f "${gdasexe}"
-    fi
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/${gdasexe}" .
-  done
+# GDASApp executables
+if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
+  cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas*           ./
+  cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/bufr2ioda.x"     ./gdas_bufr2ioda.x
+  cp -f  "${HOMEgfs}/sorc/gdas.cd/install/bin/calcfIMS.exe"   ./gdas_calcfIMS.x
+  cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe"  ./gdas_apply_incr.x
+fi
+
+# GDASApp libraries
+if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
+  if [[ ! -d "${HOMEgfs}/lib" ]]; then mkdir "${HOMEgfs}/lib" || exit 1; fi
+  cd "${HOMEgfs}/lib" || exit 1
+  cp -af "${HOMEgfs}/sorc/gdas.cd/install/lib/." ./
 fi
 
 #------------------------------
@@ -414,7 +411,7 @@ if [[ -d ufs_model.fd ]]; then
   if [[ -d upp.fd ]]; then
       rm -rf upp.fd
   fi
-  ${LINK} ufs_model.fd/FV3/upp upp.fd
+  ${LINK} ufs_model.fd/UFSATM/upp upp.fd
 fi
 
 if [[ -d gsi_enkf.fd ]]; then

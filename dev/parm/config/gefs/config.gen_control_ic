@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.gen_control_ic ##########
+# Gen Control IC specific
+
+echo "BEGIN: config.gen_control_ic"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" gen_control_ic
+
+echo "END: config.gen_control_ic"

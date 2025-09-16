@@ -124,7 +124,7 @@ export BASE_ENV="${HOMEgfs}/env"
 export SDATE="{{ SDATE }}"
 export EDATE="{{ EDATE }}"
 export EXP_WARM_START="{{ EXP_WARM_START }}"
-export assim_freq=6
+export assim_freq="{{ assim_freq }}" # Assimilation frequency in hours
 export PSLOT="{{ PSLOT }}"
 export EXPDIR="{{ EXPDIR }}/${PSLOT}"
 export ROTDIR="{{ COMROOT }}/${PSLOT}"
@@ -154,6 +154,7 @@ export SENDSDM=${SENDSDM:-"NO"}
 export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
+export SENDAWIP=${SENDAWIP:-"NO"}
 
 # APP settings
 export APP="{{ APP }}"
@@ -178,12 +179,11 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 DO_AERO="NO"
 export DO_PREP_OBS_AERO="NO"
-aero_anl_runs="gdas gcdas" # When to run aerosol analysis: gdas, gfs, or both
+aero_anl_runs="{{ AERO_ANL_RUNS }}" # When to run aerosol analysis: gcdas, gcafs or both
 export DO_AERO_FCST="YES"
 export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO"
 export DO_CHEM_WARMSTART="YES"
-export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
@@ -267,6 +267,7 @@ if [[ "${DO_AERO}" == "YES" ]]; then
     export DO_AERO_ANL="YES"
   fi
   export DO_AERO_FCST="YES"
+  export USE_AERO_ANL="{{ USE_AERO_ANL }}" # Use aerosol analysis in forecast
 fi
 
 # Surface cycle update frequency
@@ -279,11 +280,11 @@ fi
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
-export FHMAX=9
+export FHMAX="{{ FHMAX }}"
 export FHOUT=3           # Will be changed to 1 in config.base if (DOHYBVAR set to NO and l4densvar set to false)
 export FHOUT_OCN=3
 export FHOUT_ICE=3
-export FHOUT_AERO=3
+export FHOUT_AERO="{{ FHOUT_AERO }}"
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
 export EUPD_CYC="{{ EUPD_CYC }}"
@@ -305,6 +306,7 @@ export FHOUT_OCN_GFS=6
 export FHOUT_ICE_GFS=6
 export FHMIN_WAV=0
 export FHOUT_WAV=3
+export FHOUT_WAV_GFS=3
 export FHMAX_HF_WAV=120
 export FHOUT_HF_WAV=1
 export FHMAX_WAV=${FHMAX:-9}
@@ -363,6 +365,7 @@ export imp_physics=8
 # DA engine
 export DO_JEDIATMVAR="{{ DO_JEDIATMVAR }}"
 export DO_JEDIATMENS="{{ DO_JEDIATMENS }}"
+export DO_JEDIAEROVAR="{{ DO_JEDIAEROVAR }}"
 export DO_JEDIOCNVAR="{{ DO_JEDIOCNVAR }}"
 export DO_JEDISNOWDA="{{ DO_JEDISNOWDA }}"
 export DO_MERGENSST="{{ DO_MERGENSST }}"
@@ -408,11 +411,17 @@ fi
 # Generate post-processing ensemble spread files
 export ENKF_SPREAD="YES"
 
+#Soil DA and whether it is (land) IAU
+export DO_GSISOILDA="{{ DO_GSISOILDA }}"
+export DO_LAND_IAU="{{ DO_LAND_IAU }}"
+export LSOIL_INCR=2
+
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
   export IAUFHRS="6,"
+  export DO_LAND_IAU=".false."
 fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6,"; fi
@@ -427,9 +436,11 @@ fi
 
 export restart_interval_enkfgfs=${restart_interval_enkfgdas}
 
-export restart_interval_gdas="3"
-
-export DO_GSISOILDA="{{ DO_GSISOILDA }}"
+if [[ "${DOIAU}" == "YES" || "${DO_AERO_ANL}" == "YES" ]]; then
+  export restart_interval_gdas="3"
+else
+  export restart_interval_gdas="6"
+fi
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
@@ -437,12 +448,6 @@ if [[ "${DONST}" = "YES" ]]; then export FNTSFA="        "; fi
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
-
-# Make the nsstbufr file on the fly or use the GDA version
-export MAKE_NSSTBUFR="{{ MAKE_NSSTBUFR }}"
-
-# Make the aircraft prepbufr file on the fly or use the GDA version
-export MAKE_ACFTBUFR="{{ MAKE_ACFTBUFR }}"
 
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
@@ -490,7 +495,7 @@ if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
    export DO_VMINMON="NO"     # GSI minimization monitoring
    export DO_ANLSTAT="YES"    # JEDI-based analysis statistics
 else
-   if [[ ${DO_AERO} = "YES" || ${DO_JEDIOCNVAR} = "YES" || ${DO_JEDISNOWDA} = "YES " ]]; then
+   if [[ ${DO_AERO_ANL} = "YES" || ${DO_JEDIOCNVAR} = "YES" || ${DO_JEDISNOWDA} = "YES" ]]; then
      export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
    fi
 fi

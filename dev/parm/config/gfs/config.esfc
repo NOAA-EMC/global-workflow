@@ -8,6 +8,11 @@ echo "BEGIN: config.esfc"
 # Get task specific resources
 source "${EXPDIR}/config.resources" esfc
 
+# Run global_cycle in coupled mode
+if [[ "${DO_OCN}" == "YES" && "${DO_ICE}" == "YES" ]]; then
+  export COUPLED=".true."
+fi
+
 # With IAU only need surface analysis at start of IAU window.
 # Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at 
 # center of analysis window.  
@@ -28,9 +33,12 @@ fi
 
 # set up soil analysis
 if [[ ${DO_GSISOILDA} == "YES" ]]; then
-    export GCYCLE_DO_SOILINCR=".true."
+    if [[ "${DO_LAND_IAU}" = ".true." ]]; then 
+        export GCYCLE_DO_SOILINCR=".false."
+    else
+        export GCYCLE_DO_SOILINCR=".true."
+    fi
     export GCYCLE_INTERP_LANDINCR=".false."
-    export LSOIL_INCR=2
     export REGRID_EXEC="${HOMEgfs}/exec/regridStates.x"
 fi
 

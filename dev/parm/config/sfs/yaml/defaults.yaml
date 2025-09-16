@@ -23,6 +23,7 @@ base:
   USE_ATM_ENS_PERTURB_FILES: "NO"
   DO_TEST_MODE: "NO"
 fcst:
+  CHECK_LAND_RESTART_OROG: "YES"
   reforecast: "YES"
   FHZERO: 24
   TYPE: "hydro"

@@ -48,7 +48,7 @@ Cold-start atmosphere-only cycled C96 deterministic C48 enkf (80 members) ICs ar
 
 ::
 
-   Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
+   Ursa/Hera: /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR/C96C48
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C96C48
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C96C48
    AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C96C48
@@ -57,7 +57,7 @@ Start date = 2021122018
 
 ::
 
-   -bash-4.2$ tree /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48/
+   -bash-4.2$ tree /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR/C96C48/
    |-- enkfgdas.20211220
    |   `-- 18
    |       |-- mem### (where ### = 001 -> 080)
@@ -108,7 +108,7 @@ Warm-start cycled w/ coupled (S2S) model C48 atmosphere C48 enkf (80 members) 5 
 
 ::
 
-   Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48C48mx500
+   Ursa/Hera: /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR/C48C48mx500
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C48C48mx500
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48C48mx500
    AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C48C48mx500
@@ -120,7 +120,7 @@ Start date = 2021032312
 
 ::
 
-   -bash-4.2$  tree /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48C48mx500
+   -bash-4.2$  tree /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR/C48C48mx500
    ├── enkfgdas.20210323
    │   ├── 06
    │   │   ├── mem001
@@ -213,22 +213,6 @@ Start date = 2021032312
                └── ocean
                    └── gdas.t12z.ocninc.nc
 
-.. _staged_ics_prototype:
-
-*********
-Prototype
-*********
-
-Forecast-only P8 prototype initial conditions are made available to users on supported platforms in the following locations:
-
-::
-
-    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED
-    HERA: /scratch1/NCEPDEV/climate/role.ufscpara/IC
-    ORION/Hercules: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
-
-These locations are known within the workflow via paths set in ``parm/config/config.coupled_ic``.
-
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Prepare Initial Conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -252,8 +236,7 @@ Not yet supported. See the UFS_UTILS documentation on the gdas_init utility to g
 ---------------------
 Forecast-only coupled
 ---------------------
-Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Sample copies of initial conditions from the prototype runs are currently maintained on Hera, Orion/Hercules, and WCOSS2. The locations used are determined by ``parm/config/config.stage_ic``.
-Note however, that due to the rapid changes in the model configuration, some staged initial conditions may not work.
+Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Sample copies of initial conditions from the prototype runs are currently maintained on Ursa, Orion/Hercules, and WCOSS2 for CI testing.  The paths on each machine can be found in ``dev/ci/platforms/config.<host>``.
 
 .. _forecastonly-atmonly:
 
@@ -390,7 +373,7 @@ For forecast-only there are two tarballs to pull
 
 ...where ``GFSVER`` is the version of the GFS (e.g. "16.3").
 
-2. File #2 (for prior cycle GDATE=SDATE-06):
+2. File #2 (for prior cycle SDATE-06):
 
 ::
 
@@ -398,7 +381,7 @@ For forecast-only there are two tarballs to pull
 
 ...where ``GFSVER`` is the version of the GFS (e.g. "16.3").
 
-For cycled mode there 18 tarballs to pull (9 for SDATE and 9 for GDATE (SDATE-06)):
+For cycled mode there 18 tarballs to pull (9 for SDATE and 9 for prior cycle (SDATE-06)):
 
 ::
 
@@ -432,16 +415,16 @@ Recent pre-implementation parallel series was for GFS v16 (implemented March 202
 * **What dates have warm-start files saved?** Unfortunately the frequency changed enough during the runs that it’s not easy to provide a definitive list easily.
 * **What files?** All warm-starts are saved in separate tarballs which include “restart” in the name. You need to pull the entirety of each tarball, all files included in the restart tarballs are needed.
 * **Where are these tarballs?** See below for the location on HPSS for each v16 pre-implementation parallel.
-* **What tarballs do I need to grab for my experiment?** Tarballs from two cycles are required. The tarballs are listed below, where $CDATE is your starting cycle and $GDATE is one cycle prior.
+* **What tarballs do I need to grab for my experiment?** Tarballs from two cycles are required. The tarballs are listed below, where $PDY$cyc is your starting cycle and $gPDY$gcyc is one cycle prior.
 
   - Forecast-only
-    + ../$CDATE/gfs_restarta.tar
-    + ../$GDATE/gdas_restartb.tar
+    + ../$PDY$cyc/gfs_restarta.tar
+    + ../$gPDY$gcyc/gdas_restartb.tar
   - Cycled w/EnKF
-    + ../$CDATE/gdas_restarta.tar
-    + ../$CDATE/enkfgdas_restarta_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
-    + ../$GDATE/gdas_restartb.tar
-    + ../$GDATE/enkfgdas_restartb_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
+    + ../$PDY$cyc/gdas_restarta.tar
+    + ../$PDY$cyc/enkfgdas_restarta_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
+    + ../$gPDY$gcyc/gdas_restartb.tar
+    + ../$gPDY$gcyc/enkfgdas_restartb_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
 
 * **Where do I put the warm-start initial conditions?** Extraction should occur right inside your ROTDIR. You may need to rename the enkf folder (enkf.gdas.$PDY -> enkfgdas.$PDY).
 

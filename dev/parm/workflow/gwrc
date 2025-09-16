@@ -1,0 +1,11 @@
+# User specific customizations for global-workflow
+# A value of 'default' will inherit from the host specific yaml
+# jinja templates are allowed, only os.environ is available for
+# realizing the templated variables
+user:
+  ACCOUNT: {{ 'HPC_ACCOUNT' | getenv }}
+  HOMEDIR: 'default'
+  STMP: 'default'
+  PTMP: 'default'
+  NOSCRUB: 'default'
+  HPSS_PROJECT: 'default'

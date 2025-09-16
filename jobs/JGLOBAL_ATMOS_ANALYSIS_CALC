@@ -13,10 +13,8 @@ export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-# shellcheck disable=
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"

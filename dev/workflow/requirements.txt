@@ -2,3 +2,4 @@ numpy>=1.23
 jinja2>=3.0
 pyyaml>=6.0
 pycodestyle>=2.12
+wxflow>=0.2.0

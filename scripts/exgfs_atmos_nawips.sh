@@ -70,8 +70,8 @@ case ${grid} in
 esac
 
 source_var="COMIN_ATMOS_GRIB_${grid_in}"
-export GRIBIN="${!source_var}/${model}.${cycle}.pgrb2.${grid_in}.f${fhr3}"
-GRIBIN_chk="${!source_var}/${model}.${cycle}.pgrb2.${grid_in}.f${fhr3}.idx"
+export GRIBIN="${!source_var}/${RUN}.${cycle}.pgrb2.${grid_in}.f${fhr3}"
+GRIBIN_chk="${!source_var}/${RUN}.${cycle}.pgrb2.${grid_in}.f${fhr3}.idx"
 
 if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
   export err=7
@@ -119,13 +119,18 @@ if [[ ${err} -ne 0 ]]; then
    err_exit
 fi
 
+"${GEMEXE}/gpend"
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+   err_exit "${GEMEXE}/gpend failed!"
+fi
+
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
+
 if [[ ${SENDDBN} == "YES" ]] ; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
       "${destination}/${GEMGRD}"
 fi
 cd "${DATA_RUN}" || exit 1
-
-"${GEMEXE}/gpend"
 
 ############################### END OF SCRIPT #######################

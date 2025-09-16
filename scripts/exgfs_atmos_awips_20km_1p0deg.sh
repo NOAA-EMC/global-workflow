@@ -192,7 +192,7 @@ for GRID in conus ak prico pac 003; do
       # Distribute Data
       ##############################
 
-      if [[ "${SENDDBN}" == 'YES' || "${SENDAWIP}" == 'YES' ]]; then
+      if [[ "${SENDDBN}" == "YES" || "${SENDAWIP}" == "YES" ]]; then
           "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
 				     "${COMOUT_ATMOS_WMO}/grib2.awpgfs${fcsthr}.${GRID}"
       else
@@ -222,7 +222,7 @@ for GRID in conus ak prico pac 003; do
       # Distribute Data
       ##############################
 
-      if [[ "${SENDDBN}" = 'YES' || "${SENDAWIP}" = 'YES' ]]; then
+      if [[ "${SENDDBN}" == "YES" || "${SENDAWIP}" == "YES" ]]; then
           "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" \
           "${COMOUT_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthr}"
       else

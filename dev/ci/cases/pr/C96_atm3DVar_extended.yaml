@@ -1,15 +1,14 @@
 experiment:
-  system: gfs
+  net: gfs
   mode: cycled
 
 arguments:
-  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: ATM
   resdetatmos: 96
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250327
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
   idate: 2021122018
   edate: 2021122118
   nens: 0
@@ -19,6 +18,7 @@ arguments:
 
 skip_ci_on_hosts:
   - hera
+  - ursa
   - gaeac5
   - gaeac6
   - orion

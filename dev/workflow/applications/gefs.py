@@ -74,6 +74,9 @@ class GEFSAppConfig(AppConfig):
         options = self.run_options[run]
         configs = ['stage_ic', 'fcst', 'atmos_products']
 
+        if options['do_gefs_real_time']:
+            configs += ['gen_control_ic']
+
         if options['do_bufrsnd']:
             configs += ['postsnd']
 
@@ -82,6 +85,8 @@ class GEFSAppConfig(AppConfig):
 
         if options['nens'] > 0:
             configs += ['efcs', 'atmos_ensstat']
+            if options['do_awips']:
+                configs += ['awips']
 
         if options['do_wave']:
             configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
@@ -141,6 +146,9 @@ class GEFSAppConfig(AppConfig):
         options = self.run_options[self.run]
         tasks = ['stage_ic']
 
+        if options['do_gefs_real_time']:
+            tasks += ['gen_control_ic']
+
         if options['do_wave']:
             tasks += ['waveinit']
 
@@ -162,6 +170,8 @@ class GEFSAppConfig(AppConfig):
 
         if options['nens'] > 0:
             tasks += ['atmos_ensstat']
+            if options['do_awips']:
+                tasks += ['awips']
 
         if options['do_ocean']:
             tasks += ['ocean_prod']

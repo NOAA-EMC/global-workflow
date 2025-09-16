@@ -5,13 +5,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 ############################################
 # Set up model and cycle specific variables
 ############################################
-export model=${model:-gfs}
 export GRIB=${GRIB:-pgrb2f}
 export EXT=""
 export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GFS_GEMPAK}
-
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 # For half-degree P Grib files
 export DO_HD_PGRB=${DO_HD_PGRB:-YES}

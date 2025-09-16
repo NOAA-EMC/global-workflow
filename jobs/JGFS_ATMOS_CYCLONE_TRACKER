@@ -4,28 +4,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "tracker" -c "base tracker"
 
 export COMPONENT="atmos"
 
-
-##############################################
-# Set variables used in the exglobal script
-##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-
-
-####################################
-# SENDDBN  - Issue DBNet Client Calls
-####################################
-export SENDDBN=${SENDDBN:-NO}
-export SENDECF=${SENDECF:-NO}
-
-####################################
-# Specify Execution Areas
-####################################
-export HOMEens_tracker=${HOMEens_tracker:-${PACKAGEROOT}/ens_tracker.${ens_tracker_ver}}
-export EXECens_tracker=${EXECens_tracker:-${HOMEens_tracker}/exec}
-export FIXens_tracker=${FIXens_tracker:-${HOMEens_tracker}/fix}
-export USHens_tracker=${USHens_tracker:-${HOMEens_tracker}/ush}
-
-
 ##############################################
 # Define COM and Data directories
 ##############################################
@@ -77,7 +55,7 @@ fi
 #------------------------------------------------
 
 machine=${machine:-$(echo ${SITE})}
-${USHens_tracker}/extrkr_gfs.sh "${loopnum}" "${cmodel}" "${CDATE}" "${pert}" "${DATA}"
+${USHens_tracker}/extrkr_gfs.sh "${loopnum}" "${cmodel}" "${PDY}${cyc}" "${pert}" "${DATA}"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

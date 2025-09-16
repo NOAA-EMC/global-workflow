@@ -2,37 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "genesis_fsu" -c "base genesis_fsu"
 
-# Hack to temporary skip this as the tracker has not been build
-#   on Hercules Rocky 9 yet
-# TODO: Remove this after tracker has been built for Rocky 9 #2639
-if [[ "${machine}" == 'HERCULES' ]]; then exit 0; fi
-
-export COMPONENT="atmos"
-
-
-##############################################
-# Set variables used in the exglobal script
-##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-
-
-####################################
-# SENDDBN  - Issue DBNet Client Calls
-####################################
-export SENDDBN=${SENDDBN:-NO}
-export SENDECF=${SENDECF:-NO}
-
-####################################
-# Specify Execution Areas
-####################################
-export HOMEens_tracker=${HOMEens_tracker:-${PACKAGEROOT}/ens_tracker.${ens_tracker_ver}}
-export EXECens_tracker=${EXECens_tracker:-${HOMEens_tracker}/exec}
-export FIXens_tracker=${FIXens_tracker:-${HOMEens_tracker}/fix}
-export USHens_tracker=${USHens_tracker:-${HOMEens_tracker}/ush}
-export SCRIPTens_tracker=${SCRIPTens_tracker:-${HOMEens_tracker}/scripts}
-export BINens_tracker=${BINens_tracker:-${HOMEens_tracker}/ush/FSUgenesisPY/bin}
-export PYTHONPATH=${USHens_tracker}/FSUgenesisPY:${PYTHONPATH}
-
 ##############################################
 # Define COM and Data directories
 ##############################################

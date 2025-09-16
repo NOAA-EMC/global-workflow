@@ -33,7 +33,7 @@ def input_args(*argv):
     parser.add_argument('--account', help='HPC account to use', required=True)
     parser.add_argument('--yaml', help='Input YAML file',
                         type=str, required=False, default='build_opts.yaml')
-    parser.add_argument('--systems', help='System(s) to build (options: gfs, gefs, sfs, gsi, gdas, or all)', required=False, default='gfs')
+    parser.add_argument('--systems', help='System(s) to build (options: gfs, gefs, sfs, gcafs, gsi, gdas, or all)', required=False, default='gfs')
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)
 
@@ -77,6 +77,7 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.resources.nodes = 1
     task_dict.resources.ntasks = task_spec.cores
     task_dict.resources.ppn = task_spec.cores
+    task_dict.resources.scheduler = host_spec.scheduler
     task_dict.resources.threads = 1
 
     return task_dict
@@ -184,6 +185,12 @@ def main(*argv):
     user_yaml_dict = AttrDict(parse_yaml(user_inputs.yaml))
     build_specs = get_build_specs(user_yaml_dict, host_specs)
 
+    # Temporarily prevent the GDASApp from building on the compute node
+    # TODO restore the GDASApp when it can be built on compute nodes again and/or 'compute' builds are enabled on head nodes.
+    #      See issue 3933
+    if "gdas" in build_specs.build:
+        build_specs.build.pop("gdas")
+
     systems = user_inputs.systems.split() if "all" not in user_inputs.systems else ["all"]
 
     # Determine systems to build
@@ -206,7 +213,7 @@ def main(*argv):
 
     # Start building the XML
     strings = ['<?xml version="1.0"?>',
-               '<!DOCTYPE workflow', '[', ']>',
+               '<!DOCTYPE workflow', '[', '<!ENTITY PSLOT "build">', ']>',
                f'<workflow realtime="F" scheduler="{host_specs.scheduler}" cyclethrottle="1" taskthrottle="25">',
                f'\t<log verbosity="10">{HOMEgfs}/sorc/logs/build.log</log>',
                '\t<cycledef group="build">190001010000 190001010000 24:00:00</cycledef>',

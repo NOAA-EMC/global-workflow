@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck disable=SC2034
 
 ########## config.resources ##########
 # Set resource information for job tasks
@@ -18,6 +19,7 @@ echo "BEGIN: config.resources"
 case ${machine} in
   "WCOSS2")   max_tasks_per_node=128;;
   "HERA")     max_tasks_per_node=40;;
+  "URSA")     max_tasks_per_node=192;;
   "ORION")    max_tasks_per_node=40;;
   "HERCULES") max_tasks_per_node=80;;
   "GAEAC5")   max_tasks_per_node=128;;
@@ -49,6 +51,14 @@ case ${step} in
     export tasks_per_node=1
     export threads_per_task=1
     export memory="4096M"
+    ;;
+
+  "gen_control_ic")
+    export walltime="00:15:00"
+    export ntasks=12
+    export tasks_per_node=12
+    export threads_per_task=1
+    export memory="500GB"
     ;;
 
   "waveinit")
@@ -252,6 +262,14 @@ case ${step} in
     export tasks_per_node=1
     export threads_per_task=1
     export memory="96GB"
+    ;;
+
+  "awips")
+    export walltime="03:30:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="3GB"
     ;;
 
   "wavepostsbs")

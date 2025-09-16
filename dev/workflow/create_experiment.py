@@ -90,7 +90,7 @@ if __name__ == '__main__':
     testconf = parse_j2yaml(path=user_inputs.yaml, data=data)
 
     # Create a list of arguments to setup_expt.py
-    setup_expt_args = [testconf.experiment.system, testconf.experiment.mode]
+    setup_expt_args = [testconf.experiment.net, testconf.experiment.mode]
     for kk, vv in testconf.arguments.items():
         setup_expt_args.append(f"--{kk}")
         setup_expt_args.append(str(vv))

@@ -15,6 +15,15 @@ gdas_restarta:
         {% for iaufhr in IAUFHRS if iaufhr != 6 %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iaufhr }}.nc"
         {% endfor %}
+        
+        # Soil DA increments
+        {% if DO_GSISOILDA %}
+        {% if DO_LAND_IAU %}    #regridded tiles for land iau
+        {% for itile in range(1,7) %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/sfc_inc.tile{{ itile }}.nc"
+        {% endfor %}
+        {% endif %}
+        {% endif %}
 
         # Surface analysis tiles
         {% if DOHYBVAR and DOIAU %}

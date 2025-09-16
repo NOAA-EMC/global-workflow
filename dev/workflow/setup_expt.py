@@ -12,6 +12,7 @@ and configures the experiment based on user inputs and host capabilities.
 import os
 import shutil
 from logging import getLogger
+from typing import Dict
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, ArgumentTypeError
 
 from hosts import Host
@@ -134,12 +135,12 @@ def map_inputs_to_configs(inputs):
             "COMROOT": inputs.comroot,
             "EXP_WARM_START": warm_start_map[inputs.start],
             "MODE": inputs.mode,
+            "GEFSTYPE": inputs.gefstype,
             "INTERVAL_GFS": inputs.interval,
             "SDATE_GFS": to_YMDH(inputs.sdate_gfs),
             "APP": inputs.app,
             "NMEM_ENS": getattr(inputs, 'nens', 0),
             "ICSDIR": inputs.icsdir,
-            "ACCOUNT": inputs.account,
         })
     except Exception as ee:
         raise Exception("Error in constructing dictionary from user inputs, check inputs: ") from ee
@@ -223,6 +224,9 @@ def input_args(*argv):
         argparse.ArgumentParser
             Parser with added arguments
         """
+
+        default_gwrc = os.path.join(os.getenv('HOME', ''), '.gwrc')
+
         parser.add_argument('--pslot', help='parallel experiment name',
                             type=str, required=False, default='test')
         parser.add_argument('--resdetatmos', help='atmosphere resolution of the deterministic model forecast',
@@ -236,10 +240,11 @@ def input_args(*argv):
         parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                             required=True, type=lambda dd: to_datetime(dd))
         parser.add_argument('--edate', help='end date experiment', required=False, type=lambda dd: to_datetime(dd))
-        parser.add_argument('--account', help='HPC account to use; default is host-dependent', required=False, default=os.getenv('HPC_ACCOUNT'))
+        parser.add_argument('--gwrc', help='location of user configuration .gwrc yaml', required=False, default=default_gwrc, type=str)
         parser.add_argument('--interval', help='frequency of forecast (in hours); must be a multiple of 6 or 0 for no forecasts',
                             type=_validate_interval, required=False, default=6)
         parser.add_argument('--icsdir', help='full path to user initial condition directory', type=str, required=False, default='')
+        parser.add_argument('--gefstype', help='type of the gefs experiment: near-real-time or gefs-offline', type=str, required=False, default='')
         parser.add_argument('--overwrite', help='overwrite previously created experiment (if it exists)',
                             action='store_true', required=False)
         return parser
@@ -395,6 +400,29 @@ def input_args(*argv):
                             default=os.path.join(_top, 'dev/parm/config/gcafs/yaml/defaults.yaml'))
         return parser
 
+    # GCAFS cycled arguments
+    def _gcafs_cycled_args(parser):
+        """
+        Add GCAFS-specific arguments to parser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+
+        Returns
+        -------
+        argparse.ArgumentParser
+            Parser with added arguments
+        """
+        parser.add_argument('--start', help='restart mode: warm or cold', type=str,
+                            choices=['warm', 'cold'], required=False, default='cold')
+        parser.add_argument('--configdir', help=SUPPRESS, type=str, required=False,
+                            default=os.path.join(_top, 'dev/parm/config/gcafs'))
+        parser.add_argument('--yaml', help='Defaults to substitute from', type=str, required=False,
+                            default=os.path.join(_top, 'dev/parm/config/gcafs/yaml/defaults.yaml'))
+        return parser
+
     description = """
         Setup files and directories to start a GFS parallel.\n
         Create EXPDIR, copy config files.\n
@@ -405,11 +433,11 @@ def input_args(*argv):
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     # Set up sub-parsers for various modes of experimentation
-    sysparser = parser.add_subparsers(dest='system')
-    gfs = sysparser.add_parser('gfs', help='arguments for GFS')
-    gefs = sysparser.add_parser('gefs', help='arguments for GEFS')
-    sfs = sysparser.add_parser('sfs', help='arguments for SFS')
-    gcafs = sysparser.add_parser('gcafs', help='arguments for GCAFS')
+    netparser = parser.add_subparsers(dest='net')
+    gfs = netparser.add_parser('gfs', help='arguments for GFS')
+    gefs = netparser.add_parser('gefs', help='arguments for GEFS')
+    sfs = netparser.add_parser('sfs', help='arguments for SFS')
+    gcafs = netparser.add_parser('gcafs', help='arguments for GCAFS')
 
     gfsmodeparser = gfs.add_subparsers(dest='mode')
     gfscycled = gfsmodeparser.add_parser('cycled', help='arguments for cycled mode')
@@ -423,9 +451,10 @@ def input_args(*argv):
 
     gcafsmodeparser = gcafs.add_subparsers(dest='mode')
     gcafsforecasts = gcafsmodeparser.add_parser('forecast-only', help='arguments for forecast-only mode')
+    gcafscycled = gcafsmodeparser.add_parser('cycled', help='arguments for cycled mode')
 
     # Common arguments across all modes
-    for subp in [gfscycled, gfsforecasts, gefsforecasts, sfsforecasts, gcafsforecasts]:
+    for subp in [gfscycled, gfsforecasts, gefsforecasts, sfsforecasts, gcafsforecasts, gcafscycled]:
         subp = _common_args(subp)
 
     # GFS-only arguments
@@ -433,7 +462,7 @@ def input_args(*argv):
         subp = _gfs_args(subp)
 
     # ensemble-only arguments
-    for subp in [gfscycled, gefsforecasts, sfsforecasts]:
+    for subp in [gfscycled, gefsforecasts, sfsforecasts, gcafscycled]:
         subp = _any_ensemble_args(subp)
 
     # GFS/GEFS forecast-only additional arguments
@@ -441,7 +470,7 @@ def input_args(*argv):
         subp = _any_forecast_args(subp)
 
     # cycled mode additional arguments
-    for subp in [gfscycled]:
+    for subp in [gfscycled, gcafscycled]:
         subp = _gfs_cycled_args(subp)
 
     # GEFS forecast-only arguments
@@ -453,7 +482,7 @@ def input_args(*argv):
         subp = _sfs_args(subp)
 
     # GCAFS arguments
-    for subp in [gcafsforecasts]:
+    for subp in [gcafsforecasts, gcafscycled]:
         subp = _gcafs_args(subp)
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)
@@ -570,12 +599,46 @@ def get_ocean_resolution(resdetatmos):
     """
     atmos_to_ocean_map = {
         1152: 0.25, 768: 0.25, 384: 0.25,
-        192: 1.0,
+        192: 0.25,
         96: 5.0, 48: 5.0}
     try:
         return atmos_to_ocean_map[resdetatmos]
     except KeyError:
         raise KeyError(f"Ocean resolution for {resdetatmos} is not implemented")
+
+
+def update_host_info_with_user_gwrc(host_info: Dict, gwrc: Dict) -> Dict:
+    """
+    Update the host information with values from the users .gwrc file.
+
+    Parameters
+    ----------
+    host_info : Dict
+        Host.info attribute to update
+    gwrc : Dict
+        Parsed .gwrc file containing user configuration
+
+    Returns
+    -------
+    host_info_out : Dict
+        Updated dictionary with user settings
+    """
+
+    # Make a copy of the host info to avoid modifying the original
+    host_info_out = host_info.copy()
+
+    # Set default account if not defined in gwrc
+    host_info_out.ACCOUNT = 'UNDEFINED'
+
+    for key, value in gwrc.items():
+        if hasattr(host_info_out, key):
+            if value != 'default':
+                logger.info(f"Updating host info: {key} = {value}")
+                setattr(host_info_out, key, value)
+        else:
+            logger.warning(f"Invalid key '{key}' in .gwrc not found in host info; skipping.")
+
+    return host_info_out
 
 
 @logit(logger, name='setup_expt.main')
@@ -595,12 +658,17 @@ def main(*argv):
 
     user_inputs = input_args(*argv)
     host = Host()
+    if os.path.exists(user_inputs.gwrc):
+        gwrc_file = user_inputs.gwrc
+        logger.info(f'Using user configuration file: {gwrc_file}')
+    else:
+        logger.warning(f'User configuration file does not exist: {user_inputs.gwrc}, use repository defaults')
+        gwrc_file = os.path.join(_top, 'dev/parm/workflow/gwrc')
+    gwrc_dict = parse_j2yaml(gwrc_file, os.environ)
+
+    host.info = update_host_info_with_user_gwrc(host.info, gwrc_dict.user)
 
     validate_user_request(host, user_inputs)
-
-    # Update the default host account if the user supplied one
-    if user_inputs.account is not None:
-        host.info.ACCOUNT = user_inputs.account
 
     # Determine ocean resolution if not provided
     if user_inputs.resdetocean <= 0:

@@ -24,7 +24,7 @@ The build_all.sh script can be used to build all required components of the glob
 
 ::
 
-   ./build_all.sh [gfs] [gefs] [sfs] [gsi] [gdas] [all]
+   ./build_all.sh [gfs] [gefs] [sfs] [gcafs] [gsi] [gdas] [all]
 
 For example, to run GFS experiments with GSI DA, execute:
 
@@ -58,7 +58,13 @@ To run SFS (forecast-only) execute:
 
 This builds the same components as GEFS, except the UFS model is built in hydrostatic mode.
 
-Once the building is complete, link workflow artifacts such as executables, configuration files, and scripts via
+To run GCAFS execute:
+
+::
+
+   ./build_all.sh gcafs gdas
+
+This builds everything you need to run GCAFS in forecast-only or cycled mode.
 
 ::
 
@@ -129,7 +135,7 @@ Under the ``/sorc`` folder is a script to build all components called ``build_al
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
 
-  Lastly, pass to build_all.sh a list of systems to build.  This includes `gfs`, `gefs`, `sfs`, `gsi`, `gdas`, and `all`.
+  Lastly, pass to build_all.sh a list of systems to build.  This includes `gfs`, `gefs`, `sfs`, `gcafs`, `gsi`, `gdas`, and `all`.
 
 For examples of how to use this script, see :ref:`build examples <build_examples>`.
 

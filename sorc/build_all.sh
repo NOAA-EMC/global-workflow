@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+#shellcheck disable=SC2317
 
 set +x
 #------------------------------------
@@ -87,7 +88,7 @@ system_builds=(
    ["gcafs"]="ufs_gcafs gfs_utils ufs_utils upp"
    ["gsi"]="gsi_enkf gsi_monitor gsi_utils"
    ["gdas"]="gdas gsi_monitor gsi_utils"
-   ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils"
+   ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ufs_gcafs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils"
 )
 
 logs_dir="${HOMEgfs}/sorc/logs"
@@ -112,7 +113,7 @@ build_opts=(
     ["ufs_gfs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gfs_exec}"
     ["ufs_gefs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -w -e ${_gefs_exec}"
     ["ufs_sfs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -y -e ${_sfs_exec}"
-    ["ufs_gcafs"]="${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gcafs_exec}"
+    ["ufs_gcafs"]="-a ATMAERO ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gcafs_exec}"
     ["upp"]="${_build_debug}"
     ["ww3_gfs"]="${_verbose_opt} ${_build_debug}"
     ["ww3_gefs"]="-w ${_verbose_opt} ${_build_debug}"
@@ -220,6 +221,21 @@ check_builds()
    done
    return 0
 }
+
+# Cleanup function to kill the GDASApp build on ctrl-c or non-clean exit
+function cleanup() {
+  echo "Exiting build script. Terminating subprocesses..."
+  for pid in "${build_ids[@]}"; do
+    if kill -0 "${pid}" 2>/dev/null; then # Check if process still exists
+       kill "${pid}"
+    fi
+  done
+  exit 0
+}
+
+trap cleanup ERR
+trap cleanup INT
+trap cleanup TERM
 
 builds_started=0
 # Now start looping through all of the jobs until everything is done

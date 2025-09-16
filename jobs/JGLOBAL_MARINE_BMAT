@@ -1,8 +1,9 @@
 #!/bin/bash
 
-
-export DATAjob="${DATAROOT}/${RUN}marineanalysis.${PDY:-}${cyc}"
-export DATA="${DATAjob}/${jobid}"
+export WIPE_DATA="NO"
+export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
+# DATA is pre-populated by the MARINE_BMAT_INIT job
+export DATA="${DATAjob}/marinebmat"
 # Create the directory to hold ensemble perturbations
 export DATAens="${DATAjob}/ensdata"
 export DATAstaticb="${DATAjob}/staticb"
@@ -23,6 +24,15 @@ gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
+ec_offset=${NMEM_ENS_GFS_OFFSET:-20} 
+export NMEM_ENS_MAX=${NMEM_ENS}
+if [[ "${RUN}" == "gfs"  && "${DOHYBVAR_OCN}" == "YES" ]]; then
+   NMEM_ENS=${NMEM_ENS_GFS}
+   export mem_offset=$((ec_offset * cyc/assim_freq))
+else
+   export mem_offset=0
+fi
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
@@ -38,10 +48,12 @@ RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
    COMOUT_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
-   COMOUT_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
+   COMOUT_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL \
+   COMOUT_CONF:COM_CONF_TMPL
 
-mkdir -p "${COMOUT_OCEAN_BMATRIX}"
-mkdir -p "${COMOUT_ICE_BMATRIX}"
+mkdir -m 775 -p "${COMOUT_OCEAN_BMATRIX}"
+mkdir -m 775 -p "${COMOUT_ICE_BMATRIX}"
+mkdir -m 775 -p "${COMOUT_CONF}"
 
 ###############################################################
 # Run relevant script

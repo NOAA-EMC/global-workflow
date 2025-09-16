@@ -26,7 +26,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "marineanlinit prepoceanobs marinebmat marineanlvar ocnanalecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
+    echo "marineanlinit prepoceanobs marinebmatinit marinebmat marineanlvar marineanlecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
     exit 1
 
 fi
@@ -39,32 +39,30 @@ case ${machine} in
   "WCOSS2")
               max_tasks_per_node=128
               # WCOSS2 nodes have 512GB of RAM, but only 500GB are reservable
-              # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
   "HERA")
               max_tasks_per_node=40
-              # shellcheck disable=SC2034
               mem_node_max="96GB"
+    ;;
+  "URSA")
+              max_tasks_per_node=192
+              mem_node_max="360GB"
     ;;
   "GAEAC5")
               max_tasks_per_node=128
-              # shellcheck disable=SC2034
               mem_node_max="251GB"
     ;;
   "GAEAC6")
               max_tasks_per_node=192
-              # shellcheck disable=SC2034
               mem_node_max="384GB"
     ;;
   "ORION")
               max_tasks_per_node=40
-              # shellcheck disable=SC2034
               mem_node_max="180GB"
     ;;
   "HERCULES")
               max_tasks_per_node=80
-              # shellcheck disable=SC2034
               mem_node_max="500GB"
     ;;
   "AWSPW")
@@ -72,7 +70,6 @@ case ${machine} in
     npe_node_max=48
     max_tasks_per_node=48
     # TODO Supply a max mem/node value for AWS
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "AZUREPW")
@@ -80,7 +77,6 @@ case ${machine} in
     npe_node_max=36
     max_tasks_per_node=36
     # TODO Supply a max mem/node value for AZURE
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "GOOGLEPW")
@@ -88,13 +84,11 @@ case ${machine} in
     npe_node_max=30
     max_tasks_per_node=30
     # TODO Supply a max mem/node value for GOOGLE
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   "CONTAINER")
     max_tasks_per_node=1
     # TODO Supply a max mem/node value for a container
-    # shellcheck disable=SC2034
     mem_node_max=""
     ;;
   *)
@@ -144,7 +138,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
-    memory="2GB"
+    memory="4GB"
     ;;
 
   "waveprep")
@@ -187,7 +181,7 @@ case ${step} in
     ;;
 
   "wavepostbndpntbll")
-    walltime="00:10:00"
+    walltime="00:15:00"
     ntasks=2
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -518,6 +512,14 @@ case ${step} in
     memory="48GB"
     ;;
 
+  "marinebmatinit")
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=${max_tasks_per_node}
+    memory="24GB"
+    ;;
+
   "marinebmat")
     npes=16
     ntasks=16
@@ -570,7 +572,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
-  "ocnanalecen")
+  "marineanlecen")
     ntasks=16
     walltime="00:10:00"
     case ${OCNRES} in
@@ -779,13 +781,13 @@ case ${step} in
     ntasks=20
     threads_per_task=1
     tasks_per_node=20
-    memory="90GB"
+    memory="150GB"
     ;;
 
   "sfcanl")
     walltime="00:20:00"
     ntasks=${ntiles:-6}
-    threads_per_task=1
+    threads_per_task=4
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
     ;;
@@ -860,7 +862,9 @@ case ${step} in
     # TODO: Update reference when moved to ufs-weather-model RTD
     MEDTHREADS=${nthreads_mediator:-1}
     MEDPETS=${MEDPETS:-${FV3PETS}}
-    (( "${MEDPETS}" > 300 )) && MEDPETS=300
+    (( MEDPETS = FV3PETS ))
+    (( MEDTHREADS = FV3THREADS )) 
+    (( "${MEDPETS}" > 24000 )) && MEDPETS=1200
     export MEDPETS MEDTHREADS
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
@@ -1038,7 +1042,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
-    memory="5G"
+    memory="10G"
     ;;
 
   "vminmon")
@@ -1080,7 +1084,8 @@ case ${step} in
     tasks_per_node=1
     case "${CASE}" in
       "C768")
-        memory="80GB"
+        memory="200GB"
+        walltime="00:40:00"
         ;;
       "C1152")
         memory="400GB"
@@ -1368,7 +1373,7 @@ case ${step} in
 
   "gempak")
     # Walltime is per forecast hour; will be multipled by group size
-    walltime="00:30:00"
+    walltime="00:05:00"
     threads_per_task=1
     if [[ "${RUN}" = *gdas ]]; then
       ntasks=2

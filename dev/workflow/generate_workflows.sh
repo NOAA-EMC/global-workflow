@@ -43,7 +43,9 @@ function _usage() {
 
     -S Run all valid SFS cases in the specified YAML directory.
 
-    NOTES on -G, -E, and -S:
+    -C Run all valid GCAFS cases in the specified YAML directory.
+
+    NOTES on -G, -E, -S and -C:
          - Valid cases are determined by the experiment:system key as
            well as the skip_ci_on_hosts list in each YAML.
 
@@ -91,6 +93,7 @@ _specified_yaml_dir=false
 _run_all_gfs=false
 _run_all_gefs=false
 _run_all_sfs=false
+_run_all_gcafs=false
 _hpc_account=""
 _set_account=false
 _update_cron=false
@@ -107,7 +110,7 @@ _auto_del=false
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-   while getopts ":H:bDuy:Y:GESA:ce:t:vVdh" option; do
+   while getopts ":H:bDuy:Y:GESCA:ce:t:vVdh" option; do
       case "${option}" in
         H)
            HOMEgfs="${OPTARG}"
@@ -132,6 +135,7 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
         G) _run_all_gfs=true ;;
         E) _run_all_gefs=true ;;
         S) _run_all_sfs=true ;;
+        C) _run_all_gcafs=true ;;
         c) _update_cron=true ;;
         e) _email="${OPTARG}" && _set_email=true ;;
         t) _tag="_${OPTARG}" ;;
@@ -206,7 +210,7 @@ function delete_dir() {
 }
 
 if [[ -z "${_runtests}" ]]; then
-   echo "Mising run directory (RUNTESTS) argument/environment variable."
+   echo "Missing run directory (RUNTESTS) argument/environment variable."
    sleep 2
    _usage
    exit 3
@@ -241,16 +245,17 @@ else
    fi
 fi
 
-# Empty the _yaml_list array if -G, -E, and/or -S were selected
+# Empty the _yaml_list array if -G, -E, -S and/or -C were selected
 if [[ "${_run_all_gfs}" == "true" || \
       "${_run_all_gefs}" == "true" || \
+      "${_run_all_gcafs}" == "true" || \
       "${_run_all_sfs}" == "true" ]]; then
 
-   # Raise an error if the user specified a yaml list and any of -G -E -S
+   # Raise an error if the user specified a yaml list and any of -G -E -S -C
    if [[ "${_specified_yaml_list}" == "true" ]]; then
       echo "Ambiguous case selection."
       echo "Please select which tests to run explicitly with -y \"list of tests\" or"
-      echo "by specifying -G (all GFS), -E (all GEFS), and/or -S (all SFS), but not both."
+      echo "by specifying -G (all GFS), -E (all GEFS), -C (all GCAFS) and/or -S (all SFS), but not both."
       exit 3
    fi
 
@@ -280,8 +285,7 @@ function select_all_yamls()
    # YAMLs in that list that are not for the specified system and issue warnings when
    # doing so.
 
-   _system="${1}"
-   _SYSTEM="${_system^^}"
+   _net="${1}"
 
    # Bash cannot return an array from a function and any edits are descoped at
    # the end of the function, so use a nameref instead.
@@ -290,12 +294,12 @@ function select_all_yamls()
    if [[ "${_specified_yaml_list}" == false ]]; then
       # Start over with an empty _yaml_list
       _nameref_yaml_list=()
-      printf "Running all %s cases in %s\n\n" "${_SYSTEM}" "${_yaml_dir}"
+      printf "Running all %s cases in %s\n\n" "${_net^^}" "${_yaml_dir}"
       _yaml_count=0
 
       for _full_path in "${_yaml_dir}/"*.yaml; do
          # Skip any YAML that isn't supported
-         if ! grep -l "system: *${_system}" "${_full_path}" >& /dev/null ; then continue; fi
+         if ! grep -l "net: *${_net}" "${_full_path}" >& /dev/null ; then continue; fi
 
          # Select only cases for the specified system
          _yaml=$(basename "${_full_path}")
@@ -310,7 +314,7 @@ function select_all_yamls()
 
       if [[ ${_yaml_count} -eq 0 ]]; then
          read -r -d '' _message << EOM
-            "No YAMLs or ${_SYSTEM} were found in the directory (${_yaml_dir})!"
+            "No YAMLs or ${_net^^} were found in the directory (${_yaml_dir})!"
             "Please check the directory/YAMLs and try again"
 EOM
          echo "${_message}"
@@ -323,9 +327,9 @@ EOM
       # Check if the specified yamls are for the specified system
       for i in "${!_nameref_yaml_list}"; do
          _yaml="${_nameref_yaml_list[${i}]}"
-         _found=$(grep -l "system: *${system}" "${_yaml_dir}/${_yaml}.yaml")
+         _found=$(grep -l "net: *${_net}" "${_yaml_dir}/${_yaml}.yaml")
          if [[ -z "${_found}" ]]; then
-            echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_SYSTEM} system"
+            echo "WARNING: the yaml file ${_yaml_dir}/${_yaml}.yaml is not designed for the ${_net^^} system"
             echo "Removing this yaml from the set of cases to run"
             unset '_nameref_yaml_list[${i}]'
             # Sleep 2 seconds to give the user a moment to react
@@ -363,6 +367,41 @@ if [[ "${_run_all_sfs}" == "true" ]]; then
    _yaml_list=("${_yaml_list[@]}" "${_sfs_yaml_list[@]}")
 fi
 
+# Check if running all GCAFS cases
+if [[ "${_run_all_gcafs}" == "true" ]]; then
+   _build_flags="${_build_flags} gcafs gdas "
+
+   declare -a _gfs_yaml_list
+   select_all_yamls "gcafs" "_gcafs_yaml_list"
+   _yaml_list=("${_yaml_list[@]}" "${_gcafs_yaml_list[@]}")
+fi
+
+# Update submodules if requested
+if [[ "${_update_submods}" == "true" ]]; then
+   printf "Updating submodules\n\n"
+   _git_cmd="git submodule update --init --recursive -j 10"
+   if [[ "${_verbose}" == true ]]; then
+      ${_git_cmd}
+   else
+      if ! ${_git_cmd} 2> stderr 1> stdout; then
+         cat stdout stderr
+         read -r -d '' _message << EOM
+The git command (${_git_cmd}) failed with a non-zero status
+Messages from git:
+EOM
+         _newline=$'\n'
+         _message="${_message}${_newline}$(cat stdout stderr)"
+         if [[ "${_set_email}" == true ]]; then
+            send_email "${_message}"
+         fi
+         echo "${_message}"
+         rm -f stdout stderr
+         exit 8
+      fi
+      rm -f stdout stderr
+   fi
+fi
+
 # Loading modules sometimes raises unassigned errors, so disable checks
 set +u
 if [[ "${_verbose}" == "true" ]]; then
@@ -398,32 +437,6 @@ fi
 # If _yaml_dir is not set, set it to $HOMEgfs/dev/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
    _yaml_dir="${HOMEgfs}/dev/ci/cases/pr"
-fi
-
-# Update submodules if requested
-if [[ "${_update_submods}" == "true" ]]; then
-   printf "Updating submodules\n\n"
-   _git_cmd="git submodule update --init --recursive -j 10"
-   if [[ "${_verbose}" == true ]]; then
-      ${_git_cmd}
-   else
-      if ! ${_git_cmd} 2> stderr 1> stdout; then
-         cat stdout stderr
-         read -r -d '' _message << EOM
-The git command (${_git_cmd}) failed with a non-zero status
-Messages from git:
-EOM
-         _newline=$'\n'
-         _message="${_message}${_newline}$(cat stdout stderr)"
-         if [[ "${_set_email}" == true ]]; then
-            send_email "${_message}"
-         fi
-         echo "${_message}"
-         rm -f stdout stderr
-         exit 8
-      fi
-      rm -f stdout stderr
-   fi
 fi
 
 # Build the system if requested

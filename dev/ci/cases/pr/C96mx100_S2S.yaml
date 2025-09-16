@@ -1,9 +1,8 @@
 experiment:
-  system: sfs
+  net: sfs
   mode: forecast-only
 
 arguments:
-  account: {{ 'HPC_ACCOUNT' | getenv }}
   idate: 1994050100
   edate: 1994050100
   pslot: {{ 'pslot' | getenv }}

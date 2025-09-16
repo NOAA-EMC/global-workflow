@@ -4,8 +4,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostbndpntbll" -c "base wave wave
 
 export COMPONENT="wave"
 
-export CDATE=${PDY}${cyc}
-
 export MP_PULSE=0
 
 # Set COM Paths

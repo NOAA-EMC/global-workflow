@@ -1,0 +1,13 @@
+#!/bin/bash
+
+########## config.marinebmatinit ##########
+# configuration for the marine B-matrix
+
+echo "BEGIN: config.marinebmatinit"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" marinebmatinit
+
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/marine/marine_bmat_jedi_config.yaml.j2"
+
+echo "END: config.marinebmatinit"

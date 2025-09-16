@@ -7,5 +7,6 @@ base:
   USE_ATM_ENS_PERTURB_FILES: "NO"
   DO_BUFRSND: "NO"
   DO_GEMPAK: "NO"
+  DO_AWIPS: "NO"
 ocn:
   MOM6_INTERP_ICS: "NO"

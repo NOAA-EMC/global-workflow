@@ -126,7 +126,7 @@ function create_experiment () {
   local TAG="${2:-${pr_sha}}"
   cd "${HOMEgfs_}" || exit 1
   case=$(basename "${yaml_config}" .yaml) || true
-  
+
   echo "Using provided TAG: ${TAG} for pslot"
   export pslot=${case}_${TAG}
 
@@ -177,6 +177,45 @@ function publish_logs() {
     echo "${URL}"
 }
 
+function publish_logs_from_file() {
+  # publish_logs_from_file
+  # Reads a file that lists relative file names (one per line) under a directory
+  # and publishes them using publish_logs.py. When more than one valid file is
+  # found, call the python utility with --multiple --format github for gist
+  # output formatting.
+  # Usage: publish_logs_from_file <ID> <list_file>
+  local PR_header="$1"
+  local list_file="$2"
+  local files=()
+
+  # Read the list file and build an array of existing full paths
+  while IFS= read -r line || [[ -n "${line}" ]]; do
+    # skip empty lines
+    if [[ -z "${line// /}" ]]; then
+        continue
+    fi
+    if [[ -f "${line}" ]]; then
+      files+=("${line}")
+    else
+      echo "File ${line} does not exist"
+    fi
+  done < "${list_file}"
+
+  local URL=""
+  if (( ${#files[@]} > 0 )); then
+    # First, upload to repo (retain original behavior) if desired
+    "${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[@]}" --repo "${PR_header}" > /dev/null || true
+
+    # For gist, if more than one file use --multiple --format github
+    if (( ${#files[@]} > 1 )); then
+      cmd_args="--multiple --format github"
+    fi
+    URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[0]}" "${cmd_args:-}" --gist "${PR_header}")"
+  fi
+
+  echo "${URL}"
+}
+
 function cleanup_experiment() {
 
     local EXPDIR="$1"
@@ -201,13 +240,28 @@ function cleanup_experiment() {
 function build () {
 
   source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
-  # TODO: when it's safe to build on C6 compute nodes again, do so
-  if [[ "${MACHINE_ID}" == "gaeac6" ]]; then
-    "${HOMEgfs_}/sorc/build_all.sh" -k all
-  else
-    "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" all
+  logs_dir="${HOMEgfs_}/sorc/logs"
+  if [[ ! -d "${logs_dir}" ]]; then
+    echo "Creating logs folder"
+    mkdir -p "${logs_dir}" || exit 1
   fi
+  "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" all
 
+}
+
+function delete_dataroot() {
+
+  _runtests="${1}"
+  _pslot="${2}"
+
+   # shellcheck disable=SC2312
+   eval "$(PDY=0 cyc=0 source "${_runtests}/EXPDIR/${_pslot}/config.base" >& /dev/null; echo _dataroot="${STMP}/RUNDIRS/${_pslot}")"
+   if [[ -d "${_dataroot}" ]]; then
+      echo "A previous DATAROOT exists for ${_pslot} in ${_dataroot} and is being deleted."
+      rm -rf "${_dataroot}"
+  else
+      echo "DATAROOT is not present for ${_pslot} in ${_dataroot}, nothing done."
+  fi
 }
 
 # --- Dispatch logic ---

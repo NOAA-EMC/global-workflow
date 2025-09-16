@@ -1,9 +1,8 @@
 experiment:
-  system: gefs
+  net: gefs
   mode: forecast-only
 
 arguments:
-  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: S2SWA
   resdetatmos: 48
@@ -12,6 +11,7 @@ arguments:
   nens: 2
   interval: 24
   start: cold
+  gefstype: gefs-offline
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2021032312

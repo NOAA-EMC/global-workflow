@@ -1,0 +1,17 @@
+aero:
+    mkdir:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_CHEM_ANALYSIS_MEM = COMOUT_CHEM_ANALYSIS_MEM_list[imem] %}
+        - "{{ COMOUT_CHEM_ANALYSIS_MEM }}"
+        {% endfor %}
+    link_req:
+        {% for mem in range(first_mem, last_mem + 1) %}
+        {% set imem = mem - first_mem %}
+        {% set COMOUT_CHEM_ANALYSIS_MEM = COMOUT_CHEM_ANALYSIS_MEM_list[imem] %}
+        {% for ftype in ["aero_varbc_params.tar"] %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_CHEM_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_CHEM_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_CHEM_ANALYSIS_MEM }}"]
+        {% endif %}
+        {% endfor %}
+        {% endfor %} # mem loop

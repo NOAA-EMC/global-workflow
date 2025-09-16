@@ -150,6 +150,7 @@ export SENDSDM=${SENDSDM:-"NO"}
 export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
+export SENDAWIP=${SENDAWIP:-"NO"}
 
 # APP settings
 export APP="{{ APP }}"
@@ -178,8 +179,7 @@ aero_fcst_runs="gdas" # When to run aerosol forecast: gdas, gfs, or both
 aero_anl_runs="gdas gfs" # When to run aerosol analysis: gdas, gfs, or both
 export DO_AERO_FCST="NO"
 export DO_AERO_ANL="NO"
-export DOBNDPNT_WAVE="YES"
-export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
+export DOBNDPNT_WAVE="YES" # Option to create point outputs for downstream boundary points 
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
@@ -298,19 +298,23 @@ breakpnts="{{ FCST_BREAKPOINTS }}"
 export FCST_SEGMENTS="${FHMIN_GFS},${breakpnts:+${breakpnts},}${FHMAX_GFS}"
 export FHOUT_GFS=3 # 3 for ops
 export FHMAX_HF_GFS="{{ FHMAX_HF_GFS }}"
+export FHMAX_HF_GFS=$(( FHMAX_HF_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_HF_GFS ))
 export FHOUT_HF_GFS=1
+
+# Wave output and frequency
+export FHMIN_WAV=0
+export FHOUT_WAV=1
+export FHMAX_WAV=${FHMAX:-9}
+export FHMAX_WAV=$(( FHMAX_WAV > FHMAX ? FHMAX : FHMAX_WAV ))
+export FHOUT_WAV_GFS=3
+export FHMAX_WAV_GFS=${FHMAX_GFS}
+export FHOUT_HF_WAV=1
+export FHMAX_HF_WAV=${FHMAX_HF_GFS:-120}
+export FHMAX_HF_WAV=$(( FHMAX_HF_WAV > FHMAX_WAV_GFS ? FHMAX_WAV_GFS : FHMAX_HF_WAV ))
+
+# Ocean and ice output and frequency
 export FHOUT_OCN_GFS=6
 export FHOUT_ICE_GFS=6
-export FHMIN_WAV=0
-export FHOUT_WAV=3
-export FHMAX_HF_WAV=120
-export FHOUT_HF_WAV=1
-export FHMAX_WAV=${FHMAX:-9}
-export FHMAX_WAV_GFS=${FHMAX_GFS}
-export FHMAX_HF_GFS=$(( FHMAX_HF_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_HF_GFS ))
-export FHMAX_WAV=$(( FHMAX_WAV > FHMAX ? FHMAX : FHMAX_WAV ))
-export FHMAX_WAV_GFS=$(( FHMAX_WAV_GFS > FHMAX_GFS ? FHMAX_GFS : FHMAX_WAV_GFS ))
-export FHMAX_HF_WAV=$(( FHMAX_HF_WAV > FHMAX_WAV_GFS ? FHMAX_WAV_GFS : FHMAX_HF_WAV ))
 
 # TODO: Change gempak to use standard out variables (#2348)
 export ILPOST=${FHOUT_HF_GFS}           # gempak output frequency up to F120
@@ -408,11 +412,17 @@ fi
 # Generate post-processing ensemble spread files
 export ENKF_SPREAD="YES"
 
+#Soil DA and whether it is (land) IAU
+export DO_GSISOILDA="{{ DO_GSISOILDA }}"
+export DO_LAND_IAU="{{ DO_LAND_IAU }}"
+export LSOIL_INCR=2
+
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
   export IAUFHRS="6,"
+  export DO_LAND_IAU=".false."
 fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6,"; fi
@@ -433,20 +443,12 @@ else
   export restart_interval_gdas="6"
 fi
 
-export DO_GSISOILDA="{{ DO_GSISOILDA }}"
-
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
 if [[ "${DONST}" = "YES" ]]; then export FNTSFA="        "; fi
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
-
-# Make the nsstbufr file on the fly or use the GDA version
-export MAKE_NSSTBUFR="{{ MAKE_NSSTBUFR }}"
-
-# Make the aircraft prepbufr file on the fly or use the GDA version
-export MAKE_ACFTBUFR="{{ MAKE_ACFTBUFR }}"
 
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
@@ -494,9 +496,15 @@ if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
    export DO_VMINMON="NO"     # GSI minimization monitoring
    export DO_ANLSTAT="YES"    # JEDI-based analysis statistics
 else
-   if [[ ${DO_AERO} = "YES" || ${DO_JEDIOCNVAR} = "YES" || ${DO_JEDISNOWDA} = "YES " ]]; then
+   if [[ "${DO_AERO}" = "YES" || "${DO_JEDIOCNVAR}" = "YES" || "${DO_JEDISNOWDA}" = "YES" ]]; then
      export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
    fi
+fi
+
+# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
+# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
+if [[ "${machine}" == "URSA" || "${machine}" == "GAEAC6" || "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
+    export DO_METP=NO
 fi
 
 # If starting ICs that are not at cycle hour

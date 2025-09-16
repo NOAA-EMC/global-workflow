@@ -2,11 +2,12 @@
 
 set -ex
 
-machine=${1:-${machine:-"HERA"}}
+machine=${1:-${machine:-"URSA"}}
 machine=$(echo $machine | tr '[a-z]' '[A-Z]')
 
-if [ $machine = "HERA" ]; then
-    doxygen=/usr/bin/doxygen
+if [ $machine = "URSA" ]; then
+    module load doxygen/1.11.0
+    doxygen=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/doxygen-1.11.0-foxxc5vusekhwlyzozxdhgggmykepebg/bin/doxygen
 elif [ $machine = "ORION" ]; then
     doxygen=/bin/doxygen
 else

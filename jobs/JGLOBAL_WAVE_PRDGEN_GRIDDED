@@ -6,9 +6,6 @@ source "${USHgfs}/wave_domain_grid.sh"
 ###################################
 # Set COM Paths
 ###################################
-export SENDDBN_NTC=${SENDDBN_NTC:-YES}
-export SENDDBN=${SENDDBN:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \

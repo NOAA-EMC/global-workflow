@@ -69,7 +69,7 @@ for (( current_date=first_date; current_date <= last_date; \
 done
 
 # Remove archived gaussian files used for Fit2Obs in $VFYARC that are
-# $FHMAX_FITS plus a delta before $CDATE. Touch existing archived
+# $FHMAX_FITS plus a delta before ${PDY}${cyc}. Touch existing archived
 # gaussian files to prevent the files from being removed by automatic
 # scrubber present on some machines.
 

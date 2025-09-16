@@ -1,9 +1,8 @@
 experiment:
-  system: gfs
+  net: gfs
   mode: forecast-only
 
 arguments:
-  account: {{ 'HPC_ACCOUNT' | getenv }}
   pslot: {{ 'pslot' | getenv }}
   app: S2SW
   resdetatmos: 1152

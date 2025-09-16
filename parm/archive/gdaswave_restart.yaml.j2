@@ -3,4 +3,6 @@ gdaswave_restart:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave_restart.tar"
     required:
         # TODO explicitly name the wave restart files to archive
+        # NOTE: there are 2 restart files, one is needed to be saved at the same time as restartb is saved
+        #  The other which is +6 from the cycle date is needed every cycle for downstream jobs
         - "{{ COMIN_WAVE_RESTART | relpath(ROTDIR) }}/*"
