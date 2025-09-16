@@ -45,8 +45,6 @@ if [[ -e "${pgmout}" ]]; then
   cat "${pgmout}"
 fi
 
-exit 0
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
@@ -54,6 +52,5 @@ cd "${DATAROOT}" || exit 1
 if [[ "${KEEPDATA:-NO}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

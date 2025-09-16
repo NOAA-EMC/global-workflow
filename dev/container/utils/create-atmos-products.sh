@@ -33,15 +33,15 @@ if [[ ! -v HOMEgfs || ! -v container || ! -v bindings ]]; then
 fi
 
 if [[ "${verbose}" == "true" ]]; then
-   echo "Verbose: $verbose"
-   echo "HOMEgfs: $HOMEgfs"
-   echo "container: $container"
-   echo "bindings: $bindings"
+   echo "Verbose: ${verbose}"
+   echo "HOMEgfs: ${HOMEgfs}"
+   echo "container: ${container}"
+   echo "bindings: ${bindings}"
 fi
 
 sed -e "s?HOMEgfs?${HOMEgfs}?g" \
     -e "s?SIF?${container}?g" \
     -e "s?BINDINGS?${bindings}?g" \
-   ${HOMEgfs}/dev/container/utils/exec.exglobal_atmos_products.sh > ${HOMEgfs}/exec/exglobal_atmos_products.sh
-   chmod +x ${HOMEgfs}/exec/exglobal_atmos_products.sh
+   "${HOMEgfs}/dev/container/utils/exec.exglobal_atmos_products.sh" > "${HOMEgfs}/exec/exglobal_atmos_products.sh"
+   chmod +x "${HOMEgfs}/exec/exglobal_atmos_products.sh"
 

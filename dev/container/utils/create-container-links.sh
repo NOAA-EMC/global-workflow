@@ -37,20 +37,20 @@ if [[ ! -v HOMEgfs || ! -v container || ! -v bindings || ! -v MACHINE_ID ]]; the
 fi
 
 if [[ "${verbose}" == "true" ]]; then
-   echo "HOMEgfs: $HOMEgfs"
-   echo "container: $container"
-   echo "bindings: $bindings"
-   echo "Verbose: $verbose"
+   echo "HOMEgfs: ${HOMEgfs}"
+   echo "container: ${container}"
+   echo "bindings: ${bindings}"
+   echo "Verbose: ${verbose}"
 fi
 
-${HOMEgfs}/dev/container/utils/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t gfs
-${HOMEgfs}/dev/container/utils/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t sfs
-${HOMEgfs}/dev/container/utils/link_ww3.sh -H ${HOMEgfs} -c ${container} -b "${bindings}" -t gefs
+"${HOMEgfs}/dev/container/utils/link_ww3.sh" -H "${HOMEgfs}" -c "${container}" -b "${bindings}" -t gfs
+"${HOMEgfs}/dev/container/utils/link_ww3.sh" -H "${HOMEgfs}" -c "${container}" -b "${bindings}" -t sfs
+"${HOMEgfs}/dev/container/utils/link_ww3.sh" -H "${HOMEgfs}" -c "${container}" -b "${bindings}" -t gefs
 
-${HOMEgfs}/dev/container/utils/link_model.sh -H ${HOMEgfs} -c ${container} -m gfs_model -b "${bindings}" -M ${machineid}
-${HOMEgfs}/dev/container/utils/link_model.sh -H ${HOMEgfs} -c ${container} -m sfs_model -b "${bindings}" -M ${machineid}
-${HOMEgfs}/dev/container/utils/link_model.sh -H ${HOMEgfs} -c ${container} -m gefs_model -b "${bindings}" -M ${machineid}
+"${HOMEgfs}/dev/container/utils/link_model.sh" -H "${HOMEgfs}" -c "${container}" -m gfs_model -b "${bindings}" -M "${machineid}"
+"${HOMEgfs}/dev/container/utils/link_model.sh" -H "${HOMEgfs}" -c "${container}" -m sfs_model -b "${bindings}" -M "${machineid}"
+"${HOMEgfs}/dev/container/utils/link_model.sh" -H "${HOMEgfs}" -c "${container}" -m gefs_model -b "${bindings}" -M "${machineid}"
 
-${HOMEgfs}/dev/container/utils/link_gfs_utils.sh -H ${HOMEgfs} -c ${container} -b "${bindings}"
-${HOMEgfs}/dev/container/utils/link_ufs_utils.sh -H ${HOMEgfs} -c ${container} -b "${bindings}"
+"${HOMEgfs}/dev/container/utils/link_gfs_utils.sh" -H "${HOMEgfs}" -c "${container}" -b "${bindings}"
+"${HOMEgfs}/dev/container/utils/link_ufs_utils.sh" -H "${HOMEgfs}" -c "${container}" -b "${bindings}"
 
