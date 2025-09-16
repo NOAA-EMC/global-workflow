@@ -152,11 +152,6 @@ for hr in "${!gcycle_dates[@]}"; do
 
   cd "${DATA}/gausfcanl_${gcycle_date:8:2}"
 
-  iy=${gcycle_date:0:4}
-  im=${gcycle_date:4:2}
-  id=${gcycle_date:6:2}
-  ih=${gcycle_date:8:2}
-
   # input interpolation weights
   ${NLN} "${FIXWGTS}" "./weights.nc"
 
@@ -187,10 +182,10 @@ for hr in "${!gcycle_dates[@]}"; do
   # Executable namelist
   cat <<EOF > fort.41
  &setup
-  yy=${iy},
-  mm=${im},
-  dd=${id},
-  hh=${ih},
+  yy=${gcycle_date:0:4},
+  mm=${gcycle_date:4:2},
+  dd=${gcycle_date:6:2},
+  hh=${gcycle_date:8:2},
   igaus=${LONB_SFC},
   jgaus=${LATB_SFC},
   donst=${do_nst},
