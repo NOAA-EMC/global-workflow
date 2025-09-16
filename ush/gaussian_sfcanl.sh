@@ -196,7 +196,7 @@ EOF
 
   export err=$?
   if [[ ${err} -ne 0 ]]; then
-    echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status!"
+    echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status processing ${gcycle_date}!"
     exit "${err}"
   fi
 
