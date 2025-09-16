@@ -53,7 +53,7 @@ class MarineBMat(Task):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'soca'),
+                'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
                 'CALC_SCALE_EXEC': _calc_scale_exec,
                 'MARINE_WINDOW_BEGIN': _window_begin,
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
@@ -75,7 +75,7 @@ class MarineBMat(Task):
         # Create dictionary of Jedi objects
         expected_keys = ['gridgen', 'soca_diagb', 'soca_parameters_diffusion_vt', 'soca_setcorscales',
                          'soca_parameters_diffusion_hz', 'soca_ensb', 'soca_ensweights', 'soca_chgres']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML_BMAT, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self: Task) -> None:
@@ -101,8 +101,8 @@ class MarineBMat(Task):
         """
 
         # stage fix files
-        logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
-        soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
+        logger.info(f"Staging SOCA fix files from {self.task_config.INPUT_FIX_DIR}")
+        soca_fix_list = parse_j2yaml(self.task_config.STAGE_FIX_YAML, self.task_config)
         FileHandler(soca_fix_list).sync()
 
         # prepare the deterministic MOM6 input.nml
@@ -115,12 +115,12 @@ class MarineBMat(Task):
         # stage backgrounds
         # TODO(G): Check ocean backgrounds dates for consistency
         logger.info(f"Staging SOCA backgrounds")
-        bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
+        bkg_list = parse_j2yaml(self.task_config.STAGE_DET_BKG_YAML, self.task_config)
         FileHandler(bkg_list).sync()
 
         # stage the soca utility yamls (fields and ufo mapping yamls)
         logger.info(f"Staging SOCA utility yaml files")
-        soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
+        soca_utility_list = parse_j2yaml(self.task_config.STAGE_UTILITIES_YAML, self.task_config)
         FileHandler(soca_utility_list).sync()
 
         # initialize vtscales python script
@@ -141,7 +141,7 @@ class MarineBMat(Task):
         # stage ensemble members for the hybrid background error
         if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
             logger.debug(f"Stage ensemble members for the hybrid background error")
-            letkf_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, self.task_config)
+            letkf_stage_list = parse_j2yaml(self.task_config.STAGE_ENS_BKG_YAML, self.task_config)
             FileHandler(letkf_stage_list).sync()
 
         # create the symbolic link to the static B-matrix directory
@@ -221,5 +221,5 @@ class MarineBMat(Task):
 
         # Save output files to COM
         logger.info(f"Copy files to ROTDIR")
-        soca_finalize_list = parse_j2yaml(self.task_config.MARINE_BMAT_FINALIZE_YAML_TMPL, self.task_config)
-        FileHandler(soca_finalize_list).sync()
+        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
+        FileHandler(save_dict).sync()

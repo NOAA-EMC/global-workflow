@@ -39,7 +39,7 @@ class MarineLETKF(Analysis):
 
         _half_assim_freq = to_timedelta(f"{self.task_config.assim_freq}H") / 2
         _letkf_yaml_file = 'letkf.yaml'
-        _letkf_exec_args = [self.task_config.MARINE_LETKF_EXEC,
+        _letkf_exec_args = [self.task_config.LETKF_EXEC,
                             'soca',
                             'localensembleda',
                             _letkf_yaml_file]
@@ -54,7 +54,7 @@ class MarineLETKF(Analysis):
         self.task_config.mom_input_nml = os.path.join(self.task_config.DATA, 'mom_input.nml')
         self.task_config.obs_dir = os.path.join(self.task_config.DATA, 'obs')
         self.task_config.ENSPERT_RELPATH = _enspert_relpath
-        self.task_config.PARMsoca = os.path.join(self.task_config.PARMgfs, 'gdas', 'soca')
+        self.task_config.PARMmarine = os.path.join(self.task_config.PARMgfs, 'gdas', 'marine')
         self.task_config.app_path_observations = self.task_config.MARINE_JCB_GDAS_OBS
         self.task_config.letkf_app = "true"
         self.task_config.OPREFIX = f"{self.task_config.RUN.replace('enkf','')}.t{self.task_config.cyc:02d}z."
@@ -73,7 +73,7 @@ class MarineLETKF(Analysis):
         logger.info("initialize")
 
         # make directories and stage ensemble background files
-        soca_fix_stage_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
+        soca_fix_stage_list = parse_j2yaml(self.task_config.STAGE_FIX_YAML, self.task_config)
         FileHandler(soca_fix_stage_list).sync()
         stageconfig = AttrDict()
         keys = ['app_path_observations',
@@ -108,23 +108,23 @@ class MarineLETKF(Analysis):
         for key in keys:
             stageconfig[key] = self.task_config[key]
 
-        jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'jcb-base.yaml.j2')
+        jcb_base_yaml = os.path.join(self.task_config.PARMmarine, 'jcb-base.yaml.j2')
         jcb_base_config = parse_j2yaml(path=jcb_base_yaml, data=stageconfig)
 
         jcb_config = {**jcb_base_config, **stageconfig}
 
         # stage letkf-specific files
-        letkf_stage_list = parse_j2yaml(self.task_config.MARINE_LETKF_STAGE_YAML_TMPL, jcb_config)
-        FileHandler(letkf_stage_list).sync()
+        stage_dict = parse_j2yaml(self.task_config.STAGE_YAML, jcb_config)
+        FileHandler(stage_dict).sync()
 
         # stage ensemble background files
-        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.MARINE_ENSDA_STAGE_BKG_YAML_TMPL, stageconfig)
+        soca_ens_bkg_stage_list = parse_j2yaml(self.task_config.STAGE_ENS_BKG_YAML, stageconfig)
         FileHandler(soca_ens_bkg_stage_list).sync()
 
         # "observations" is expected by later JCB code to populate it with config info,
-        jcb_config['observations'] = parse_j2yaml(self.task_config.MARINE_OBS_LIST_YAML, jcb_config)['observations']
+        jcb_config['observations'] = parse_j2yaml(self.task_config.OBS_LIST_YAML, jcb_config)['observations']
 
-        obsconfigfile = os.path.join(self.task_config['PARMgfs'], 'gdas/soca/obs/obs_list_base_yaml.j2')
+        obsconfigfile = os.path.join(self.task_config['PARMgfs'], 'gdas/marine/obs/obs_list_base.yaml.j2')
         jcb_config['observations'] = parse_j2yaml(obsconfigfile, jcb_config)
 
         # get the list of expected observation files
@@ -154,7 +154,7 @@ class MarineLETKF(Analysis):
 
         # make the letkf.yaml
         # TODO (AFE) switch to fully JCB version
-        letkf_yaml = parse_j2yaml(self.task_config.MARINE_LETKF_YAML_TMPL, jcb_config)
+        letkf_yaml = parse_j2yaml(self.task_config.LETKF_YAML, jcb_config)
         letkf_yaml.observations.observers = obs_to_use
         letkf_yaml.save(self.task_config.letkf_yaml_file)
 
@@ -210,7 +210,7 @@ class MarineLETKF(Analysis):
         keys = ['current_cycle', 'DATA', 'NMEM_ENS', 'WINDOW_BEGIN', 'GDUMP_ENS',
                 'PARMgfs', 'ROTDIR', 'COM_OCEAN_LETKF_TMPL', 'COM_ICE_LETKF_TMPL',
                 'COMOUT_OCEAN_LETKF', 'COMOUT_ICE_LETKF', 'WINDOW_MIDDLE',
-                'MARINE_OBS_LIST_YAML', 'COMOUT_CONF', 'letkf_yaml_file']
+                'OBS_LIST_YAML', 'COMOUT_CONF', 'letkf_yaml_file']
         for key in keys:
             letkfsaveconf[key] = self.task_config[key]
 
@@ -232,5 +232,5 @@ class MarineLETKF(Analysis):
         yamls_to_copy = []
         yamls_to_copy.append([letkfsaveconf.letkf_yaml_file, os.path.join(letkfsaveconf.COMOUT_CONF, 'soca_letkf.yaml')])
         FileHandler({'copy': yamls_to_copy}).sync()
-        letkf_save_list = parse_j2yaml(self.task_config.MARINE_LETKF_SAVE_YAML_TMPL, letkfsaveconf)
-        FileHandler(letkf_save_list).sync()
+        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, letkfsaveconf)
+        FileHandler(save_dict).sync()

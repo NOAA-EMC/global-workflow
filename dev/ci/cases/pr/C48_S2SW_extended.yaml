@@ -15,6 +15,7 @@ arguments:
 
 skip_ci_on_hosts:
   - hera
+  - ursa
   - gaeac5
   - gaeac6
   - orion
