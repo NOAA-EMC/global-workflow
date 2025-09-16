@@ -181,14 +181,14 @@ EOFdiag
                      ${CATEXEC} -o "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}" "${prefix}${type}_${loop}"*
                   fi
                fi
-               echo "diag_${type}_${string}.${PDY}${cyc}*" >> ${diaglist[n]}
+               echo "diag_${type}_${string}.${PDY}${cyc}*" >> "${diaglist[n]}"
                numfile[n]=$(expr ${numfile[n]} + 1)
             elif [[ ${count} -eq 1 ]]; then
-                cat ${prefix}${type}_${loop}* > "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}"
+                cat "${prefix}${type}_${loop}"* > "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}"
                 if [[ "${DIAG_COMPRESS}" == "YES" ]]; then
                    ${COMPRESS} "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}"
                 fi
-                echo diag_${type}_${string}.${PDY}${cyc}* >> ${diaglist[n]}
+                echo "diag_${type}_${string}.${PDY}${cyc}"* >> "${diaglist[n]}"
                 numfile[n]=$(expr "${numfile[n]}" + 1)
             fi
          done
@@ -203,7 +203,7 @@ EOFdiag
    if [[ "${DIAG_COMPRESS}" == "YES" && "${USE_CFP}" == "NO" ]]; then
       echo $(date) START "${COMPRESS}" diagnostic files >&2
       # shellcheck disable=SC2086
-      for file in $(ls diag_*${PDY}${cyc}${DIAG_SUFFIX}); do
+      for file in "diag_"*"${PDY}${cyc}${DIAG_SUFFIX}"; do
          ${COMPRESS} "${file}"
       done
       echo "$(date) END ${COMPRESS} diagnostic files" >&2
