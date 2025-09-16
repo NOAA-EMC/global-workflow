@@ -197,13 +197,14 @@ EOF
   export err=$?
   if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status processing ${gcycle_date}!"
-    exit "${err}"
+    # Since we are in "${DATA}/gausfcanl_${gcycle_date:8:2}", we need to step out
+    cd "${DATA}" || exit "${err}"
   fi
 
 done
 
 ################################################################################
 #  Postprocessing
-cd "${pwd}" || exit
+cd "${DATA}" || exit
 
 exit 0
