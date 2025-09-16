@@ -24,4 +24,4 @@ do
         echo "date not found for ${sat}"
         exit 1
     fi
-done < <(grep -v '^ *#' satellites)
+done < <(grep -v '^ *#' satellites || true)
