@@ -6,5 +6,5 @@
  singularity exec \
         BINDINGS \
         SIF \
-	HOMEgfs/ush/container/run_python.sh $arg
+	HOMEgfs/ush/container/run_python.sh "${arg}"
 

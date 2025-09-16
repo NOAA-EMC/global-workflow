@@ -24,7 +24,7 @@ export PREFIX="${RUN}.t${cyc}z."
 
 ###############################################################
 # Run exglobal script
-if [ "$RUN_WITH_CONTAINER" == "YES" ]; then
+if [[ "${RUN_WITH_CONTAINER}" == "YES" ]]; then
   "${HOMEgfs}/exec/exglobal_atmos_products.sh" && true
 else
   "${SCRgfs}/exglobal_atmos_products.sh" && true
@@ -37,8 +37,6 @@ fi
 ##############################################
 # End JOB SPECIFIC work
 ##############################################
-
-exit 0
 
 ##############################################
 # Final processing

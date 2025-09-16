@@ -23,5 +23,5 @@ export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}HOMEgfs/ush:${wxflowPATH}"
 
 arg="$@"
 
-python $arg
+python ${arg}
 

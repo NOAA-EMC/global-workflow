@@ -5,7 +5,7 @@ export stack_compiler_ver=2024.2.0
 export stack_mpi=intel-oneapi-mpi
 export stack_mpi_ver=2021.13
 
-spack_stack_root="/opt/spack-stack//spack-stack-1.9.2"
+export spack_stack_root="/opt/spack-stack//spack-stack-1.9.2"
 
 source "${HOMEgfs:-}/versions/spack.ver"
 
