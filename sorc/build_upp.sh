@@ -32,8 +32,8 @@ if [[ "${MACHINE_ID}" == "gaeac6" ]]; then
   export MACHINE_ID="gaea"
 fi
 
-cd "${HOMEgfs_}/sorc/ufs_model.fd/FV3/upp/tests"
+cd "${HOMEgfs_}/sorc/ufs_model.fd/UFSATM/upp/tests"
 # shellcheck disable=SC2086
-BUILD_JOBS=${BUILD_JOBS:-8} bash -x "${HOMEgfs_}/sorc/ufs_model.fd/FV3/upp/tests/compile_upp.sh" ${_opts}
+BUILD_JOBS=${BUILD_JOBS:-8} bash -x "${HOMEgfs_}/sorc/ufs_model.fd/UFSATM/upp/tests/compile_upp.sh" ${_opts}
 
 exit 0

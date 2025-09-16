@@ -31,6 +31,3 @@ CHGRP_CMD: 'chgrp rstprod'
 # Features
 SUPPORTED_RESOLUTIONS: ['C384', 'C192', 'C96', 'C48']
 DO_ARCHCOM: 'NO'
-DO_TRACKER: 'NO'
-DO_GENESIS: 'NO'
-DO_METP: 'NO'

@@ -32,6 +32,10 @@ on:
         description: 'Hercules'
         type: boolean
         default: false
+      ursa:
+        description: 'Ursa'
+        type: boolean
+        default: false
       # Add more machines by directly using their names as input IDs
 
 jobs:
