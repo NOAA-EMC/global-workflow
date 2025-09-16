@@ -24,7 +24,6 @@ case ${machine} in
   "HERCULES") max_tasks_per_node=80;;
   "GAEAC5")   max_tasks_per_node=128;;
   "GAEAC6")   max_tasks_per_node=192;;
-  "URSA")     max_tasks_per_node=192;;
   "AWSPW")
     export PARTITION_BATCH="compute"
     max_tasks_per_node=48

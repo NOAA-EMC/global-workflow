@@ -538,24 +538,37 @@ echo "Running create_experiment.py for ${#_yaml_list[@]} cases"
 if [[ "${_verbose}" == true ]]; then
    printf "Selected cases: %s\n\n" "${_yaml_list[*]}"
 fi
+echo "$0 check part 1"
 for _case in "${_yaml_list[@]}"; do
    if [[ "${_verbose}" == false ]]; then
       echo "${_case}"
    fi
    _pslot="${_case}${_tag}"
+   echo "$0 check part 1.1"
    if [[ "${_run_with_container}" == "true" ]]; then
        if [[ "${_has_rocotorun}" == "true" ]]; then
+           echo "$0 check part 1.1.1"
            _create_exp_cmd="../../exec/run_python.sh ./create_experiment.py -y ${_yaml_dir}/${_case}.yaml -r ${_rocotorun_fullpath} --overwrite"
+           echo "$0 check part 1.1.2"
        else
+           echo "$0 check part 1.2.1"
            _create_exp_cmd="../../exec/run_python.sh ./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+           echo "$0 check part 1.2.2"
        fi
    else
+       echo "$0 check part 1.3.1"
        _create_exp_cmd="./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
+       echo "$0 check part 1.3.2"
    fi
+   echo "$0 check part 1.4"
    if [[ "${_verbose}" == true ]]; then
+      echo "$0 check part 1.4.1"
       pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd}
+      echo "$0 check part 1.4.1.2"
    else
+      echo "$0 check part 1.4.2"
       if ! pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd} 2> stderr 1> stdout; then
+         echo "$0 check part 1.4.2"
          _output=$(cat stdout stderr)
          _message="The create_experiment command (${_create_exp_cmd}) failed with a non-zero status.  Output:"
          _message="${_message}"$'\n'"${_output}"
@@ -566,9 +579,11 @@ for _case in "${_yaml_list[@]}"; do
          rm -f stdout stderr
          exit 12
       fi
+      echo "$0 check part 1.4.3"
       rm -f stdout stderr
    fi
 
+   echo "$0 check part 1.5"
    # Check if DATAROOT is already present; eval will return just DATAROOT from the sourcing
    # shellcheck disable=SC2312
    eval "$(PDY=0 cyc=0 source "${_runtests}/EXPDIR/${_pslot}/config.base" >& /dev/null; echo _dataroot="${STMP}/RUNDIRS/${_pslot}")"
@@ -587,6 +602,7 @@ for _case in "${_yaml_list[@]}"; do
       fi
    fi
 
+   echo "$0 check part 1.6"
    # Check if this experiment is using cron or scron
    cron_file="${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
    scron_sh_file="${_runtests}/EXPDIR/${_pslot}/${_pslot}.scron.sh"
@@ -612,6 +628,7 @@ for _case in "${_yaml_list[@]}"; do
       grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
    fi
 done
+echo "$0 check part 2"
 echo
 
 # Update the cron

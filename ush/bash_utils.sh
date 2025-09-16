@@ -111,7 +111,7 @@ function wait_for_file() {
 }
  
 function cpreq() {
-    cp "$*"
+    cp $*
     if [[ "$?" -ne "0" ]]; then
         err_exit "'cp $*' was not successful."
     fi
@@ -142,10 +142,13 @@ function cpfs() {
     #   >&2 echo "WARNING: ${FSYNC} $cpdstfile.cptmp failed."
     #fi
 
-    mv ${cpdstfile}.cptmp ${cpdstfile}
-    if [[ "$?" -ne "0" ]] ; then
-       err_exit "${cpdstfile}.cptmp is missing or was not moved successfully."
-    fi
+   #mv "${cpdstfile}.cptmp" ${cpdstfile}
+   #if [[ "$?" -ne "0" ]] ; then
+   #   err_exit "${cpdstfile}.cptmp is missing or was not moved successfully."
+   #fi
+   if ! mv "${cpdstfile}.cptmp" "${cpdstfile}"; then
+       err_exit "Failed to rename '${cpdstfile}.cptmp' to '${cpdstfile}'."
+   fi
 }
 
 # shellcheck disable=
