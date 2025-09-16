@@ -142,9 +142,9 @@ fi
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 
-for hr in "${!gcycle_dates[@]}"; do
+for ii in "${!gcycle_dates[@]}"; do
 
-  gcycle_date=${gcycle_dates[hr]}
+  gcycle_date=${gcycle_dates[ii]}
 
   if [[ ! -d "${DATA}/gausfcanl_${gcycle_date:8:2}" ]]; then
     mkdir -p "${DATA}/gausfcanl_${gcycle_date:8:2}" 
