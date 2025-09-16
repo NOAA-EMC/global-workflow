@@ -64,11 +64,11 @@ EOF_MODEL
 
    cat > "${link_model_script}" << EOF_LINK
 #!/bin/bash
- LD_LIBRARY_PATH=$(dirname $container)
+ LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
  singularity exec ${bindings} ${container} ${run_model_script} "\$@"
 EOF_LINK
 
-   chmod 755 "$link_model_script"
+   chmod 755 "${link_model_script}"
 done
 

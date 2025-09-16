@@ -81,7 +81,7 @@ export UCX_TLS=^sm,cma
 HOST_SLURM_PATH=/apps/slurm/default
 HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2/opt/compiler
 
- LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
  singularity exec \\
     --bind \${HOST_SLURM_PATH}:\${HOST_SLURM_PATH} \\
@@ -101,7 +101,7 @@ cat > "${link_model_script}" << EOF_GAEA
 #export SINGULARITY_DEBUG=0
 #unset SINGULARITY_DEBUG
 
- LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
  set +x
  singularity exec \\
@@ -122,7 +122,7 @@ cat > "${link_model_script}" << EOF_NOAACLOUD
  export FI_PROVIDER=tcp
  export FI_TCP_IFACE=eth0
 
- LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
  set +x
  singularity exec \\
@@ -135,7 +135,7 @@ EOF_NOAACLOUD
   *)
 cat > "${link_model_script}" << EOF_LINK
 #!/bin/bash
- LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
  set +x
  singularity exec \\

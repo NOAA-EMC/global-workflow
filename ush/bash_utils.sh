@@ -112,7 +112,7 @@ function wait_for_file() {
  
 function cpreq() {
     if ! cp "$@"; then
-        err_exit "The copy $@ operation failed."
+        err_exit "The copy $* operation failed."
     fi
 }
  
@@ -130,9 +130,7 @@ function cpfs() {
        cpdstfile=$2
     fi
 
-    cp "$1" "${cpdstfile}.cptmp"
-
-    if [[ "$?" -ne "0" ]] ; then
+    if ! cp "$1" "${cpdstfile}.cptmp"; then
        err_exit "$1 is missing or was not copied successfully."
     fi
 

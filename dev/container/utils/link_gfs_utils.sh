@@ -68,7 +68,7 @@ EOF_MODEL
 
    cat > "${link_model_script}" << EOF_LINK
 #!/bin/bash
- LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
  singularity exec "${bindings}" "${container}" "${run_model_script}" "\$@"
 EOF_LINK
@@ -76,20 +76,17 @@ EOF_LINK
    chmod 755 "${link_model_script}"
 done
 
-for nm in ocnicepost
-do
-   direct_model_script=${HOMEgfs}/exec/${nm}.x
-   rm -f "${direct_model_script}"
+direct_model_script=${HOMEgfs}/exec/ocnicepost.x
+rm -f "${direct_model_script}"
 
-   cat > "${direct_model_script}" << EOF_DIRECT
+cat > "${direct_model_script}" << EOF_DIRECT
 #!/bin/bash
 
 source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 module load wgrib2/3.6.0
 
-${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${nm}.x "\$@"
+${HOMEgfs}/sorc/gfs_utils.fd/install/bin/ocnicepost.x "\$@"
 EOF_DIRECT
 
-   chmod 755 "${direct_model_script}"
-done
+chmod 755 "${direct_model_script}"
 
