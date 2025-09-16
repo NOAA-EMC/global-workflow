@@ -31,8 +31,8 @@ case "${MACHINE_ID}" in
 esac
 
 module purge
-module use ${HOMEgfs}/sorc/ufs_model.fd/modulefiles
-module load ufs_${MACHINE_ID}.intel
+module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
+module load "ufs_${MACHINE_ID}.intel"
 
 # If this function exists in the environment, run it; else set -x if it was set on entering this script
 ftype=$(type -t set_trace || echo "")

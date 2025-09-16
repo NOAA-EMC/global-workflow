@@ -53,7 +53,11 @@ fi
 
 mkdir -p "${rundir}"
 
-cd "${HOMEDIR}/dev/workflow"
+# cd "${HOMEDIR}/dev/workflow" || exit 1
+if ! cd "${HOMEDIR}/dev/workflow"; then
+  echo "Error: Could not change to the workflow directory. Aborting." >&2
+  exit 1
+fi
 
 if [[ "${run_with_container}" == "YES" ]]; then
    "${HOMEDIR}/dev/container/utils/gen-wrapper.sh" -H "${HOMEDIR}" -c "${container}" -b "${bindings}" -v

@@ -50,7 +50,7 @@ fi
 run_model_script=${HOMEgfs}/ush/container/run_${model}.sh
 rm -f "${run_model_script}"
 
-cat > ${run_model_script} << EOF_MODEL
+cat > "${run_model_script}" << EOF_MODEL
 #!/bin/bash
 
 source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
@@ -59,11 +59,11 @@ ${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x "\$@"
 EOF_MODEL
 
 link_model_script=${HOMEgfs}/exec/${model}.x
-rm -f ${link_model_script}
+rm -f "${link_model_script}"
 
 case "${machineid}" in
   ursa)
-cat > ${link_model_script} << EOF_URSA
+cat > "${link_model_script}" << EOF_URSA
 #!/bin/bash
 
 # --- MPI and Fabric Configuration ---
@@ -93,7 +93,7 @@ EOF_URSA
     ;;
 
   gaea*)
-cat > ${link_model_script} << EOF_GAEA
+cat > "${link_model_script}" << EOF_GAEA
 #!/bin/bash
 #export SINGULARITY_ENABLE_OVERLAY=try
 #export SINGULARITY_DISABLE_OVERLAY=yes
@@ -101,18 +101,18 @@ cat > ${link_model_script} << EOF_GAEA
 #export SINGULARITY_DEBUG=0
 #unset SINGULARITY_DEBUG
 
- export LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname ${container})
+ export LD_LIBRARY_PATH
  set +x
- arg="\$@"
  singularity exec \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} \$arg
+    ${run_model_script} "\$@"
 EOF_GAEA
     ;;
 
   noaacloud)
-cat > ${link_model_script} << EOF_NOAACLOUD
+cat > "${link_model_script}" << EOF_NOAACLOUD
 #!/bin/bash
 
 #Need these lines on AWS to run more than one node.
@@ -122,31 +122,31 @@ cat > ${link_model_script} << EOF_NOAACLOUD
  export FI_PROVIDER=tcp
  export FI_TCP_IFACE=eth0
 
- export LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname ${container})
+ export LD_LIBRARY_PATH
  set +x
- arg="\$@"
  singularity exec \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} \$arg
+    ${run_model_script} "\$@"
 EOF_NOAACLOUD
     ;;
 
   *)
-cat > ${link_model_script} << EOF_LINK
+cat > "${link_model_script}" << EOF_LINK
 #!/bin/bash
- export LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname ${container})
+ export LD_LIBRARY_PATH
  set +x
- arg="\$@"
  singularity exec \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} \$arg
+    ${run_model_script} "\$@"
 EOF_LINK
     ;;
 
 esac
 
-chmod 755 ${run_model_script}
-chmod 755 ${link_model_script}
+chmod 755 "${run_model_script}"
+chmod 755 "${link_model_script}"
 

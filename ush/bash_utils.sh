@@ -111,9 +111,8 @@ function wait_for_file() {
 }
  
 function cpreq() {
-    cp $*
-    if [[ "$?" -ne "0" ]]; then
-        err_exit "'cp $*' was not successful."
+    if ! cp "$@"; then
+        err_exit "The copy $@ operation failed."
     fi
 }
  
@@ -125,13 +124,13 @@ function cpfs() {
 
     if [[ "$2" = '.' || "$2" = './' ]]; then
        cpdstfile=${PWD:?}/$(basename "$1")
-    elif [ -d "$2" ]; then
+    elif [[ -d "$2" ]]; then
        cpdstfile=${2%/}/$(basename "$1")
     else
        cpdstfile=$2
     fi
 
-    cp "$1" ${cpdstfile}.cptmp
+    cp "$1" "${cpdstfile}.cptmp"
 
     if [[ "$?" -ne "0" ]] ; then
        err_exit "$1 is missing or was not copied successfully."
