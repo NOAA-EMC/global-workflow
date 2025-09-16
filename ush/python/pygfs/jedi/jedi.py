@@ -181,13 +181,13 @@ class Jedi:
 
     @staticmethod
     @logit(logger)
-    def get_jedi_dict(jedi_config_yaml: str, task_config: AttrDict, expected_block_names: Optional[list] = None):
+    def get_jedi_dict(jedi_config_dict: dict, task_config: AttrDict, expected_block_names: Optional[list] = None):
         """Get dictionary of Jedi objects from YAML specifying their configuration dictionaries
 
         Parameters
         ----------
-        jedi_config_yaml : str
-            path to YAML specifying configuration dictionaries for Jedi objects
+        jedi_config_dict : dict
+            dictionary parsed from a J2-YAML file specifying configuration dictionaries for JEDI objects
         task_config : str
             attribute-dictionary of all configuration variables associated with a GDAS task
         expected_block_names (optional) : str
@@ -200,9 +200,6 @@ class Jedi:
 
         # Initialize dictionary of Jedi objects
         jedi_dict = AttrDict()
-
-        # Parse J2-YAML file for dictionary of JEDI configuration dictionaries
-        jedi_config_dict = parse_j2yaml(jedi_config_yaml, task_config)
 
         # Loop through dictionary of Jedi configuration dictionaries
         for block_name in jedi_config_dict:
@@ -325,33 +322,33 @@ class Jedi:
 
                 # Extract tarball
                 logger.info(f"Extract files from {tar_file}")
-                extract_tar(tar_file)
+                Jedi.extract_tar(tar_file)
 
+    @staticmethod
+    @logit(logger)
+    def extract_tar(tar_file: str) -> None:
+        """Extract files from a tarball
 
-@logit(logger)
-def extract_tar(tar_file: str) -> None:
-    """Extract files from a tarball
+        This method extract files from a tarball
 
-    This method extract files from a tarball
+        Parameters
+        ----------
+        tar_file
+            path/name of tarball
 
-    Parameters
-    ----------
-    tar_file
-        path/name of tarball
+        Returns
+        ----------
+        None
+        """
 
-    Returns
-    ----------
-    None
-    """
-
-    # extract files from tar file
-    tar_path = os.path.dirname(tar_file)
-    try:
-        with tarfile.open(tar_file, "r") as tarball:
-            tarball.extractall(path=tar_path)
-            logger.info(f"Extract {tarball.getnames()}")
-    except Exception as e:
-        raise WorkflowException(f"An error occurred while extracting {tar_file}:\n{e}") from e
+        # extract files from tar file
+        tar_path = os.path.dirname(tar_file)
+        try:
+            with tarfile.open(tar_file, "r") as tarball:
+                tarball.extractall(path=tar_path)
+                logger.info(f"Extract {tarball.getnames()}")
+        except Exception as e:
+            raise WorkflowException(f"An error occurred while extracting {tar_file}:\n{e}") from e
 
 
 @logit(logger)

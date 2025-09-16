@@ -8,13 +8,13 @@ from wxflow import (AttrDict, FileHandler, Task, Executable, Template, TemplateC
                     add_to_datetime, to_timedelta, to_isotime, to_YMD,
                     parse_j2yaml,
                     logit)
-from pygfs.task.atm_analysis import AtmAnalysis
+from pygfs.task.fv3_analysis import FV3Analysis
 from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class EnsembleRecenter(AtmAnalysis):
+class EnsembleRecenter(FV3Analysis):
     """
     Class for JEDI-based ensemble increment recentering
     """
@@ -38,16 +38,18 @@ class EnsembleRecenter(AtmAnalysis):
         """
         super().__init__(config)
 
-        _iau_times_iso = []
-        for hour in self.task_config.IAUFHRS:
-            _iau_times_iso.append(to_isotime(_window_begin + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2))
+        _res = int(self.task_config.CASE[1:])
+        _res_anl = int(self.task_config.CASE_ENS[1:])
 
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
-                'iau_times_iso': _iau_times_iso
+                'npx_ges': _res + 1,
+                'npy_ges': _res + 1,
+                'npx_anl': _res_anl + 1,
+                'npy_anl': _res_anl + 1,
             }
-        )
+        ))
 
         # Create dictionary of Jedi objects
         expected_keys = ['correction_increment', 'ensemble_recenter']

@@ -13,13 +13,13 @@ from wxflow import (AttrDict, FileHandler, Task,
                     parse_j2yaml,
                     logit,
                     Template, TemplateConstants)
-from pygfs.task.atm_analysis import AtmAnalysis
+from pygfs.task.fv3_analysis import FV3Analysis
 from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AtmEnsAnalysis(AtmAnalysis):
+class AtmEnsAnalysis(FV3Analysis):
     """
     Class for JEDI-based global atmens analysis tasks
     """
@@ -43,11 +43,16 @@ class AtmEnsAnalysis(AtmAnalysis):
         """
         super().__init__(config)
 
+        _res = int(self.task_config.CASE_ENS[1:])
+
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
-                # Currently empty, but could be used in the future
-            }
+                'npx_ges': _res + 1,
+                'npy_ges': _res + 1,
+                'observations': parse_j2yaml(self.task_config.OBS_LIST_YAML, self.task_config)['observations'],
+                'bias_files': parse_j2yaml(self.task_config.BIAS_FILES_YAML, self.task_config)['bias_files'],
+            })
         )
 
         # Create dictionary of JEDI objects
@@ -81,8 +86,13 @@ class AtmEnsAnalysis(AtmAnalysis):
         logger.info(f"Staging files from COM")
         FileHandler(self.task_config.stage).sync()
 
-        # extract bias corrections
-        Jedi.extract_tar_from_filehandler_dict(bias_dict)
+        # Extract bias corrections from tar files
+        logger.info(f"Extracting bias corrections from tar files")
+        bias_file_list = []
+        for ob in self.task_config.observations:
+            if ob in self.task_config.bias_files and not self.task_config.bias_files[ob] in bias_file_list:
+                bias_file_list.append(self.task_config.bias_files[ob])
+                Jedi.extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")
@@ -142,76 +152,28 @@ class AtmEnsAnalysis(AtmAnalysis):
         None
         """
 
-        # ---- tar up diags
-        # path of output tar statfile
-        atmensstat = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX_ENS}atmensstat")
+        # Set paths of output tar files
+        diagtar = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX_ENS}atmensstat")
 
-        # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
+        # Get lists of files to put in tarballs
+        diaglist = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
 
-        logger.info(f"Compressing {len(diags)} diag files to {atmensstat}.gz")
-
-        # gzip the files first
-        logger.debug(f"Gzipping {len(diags)} diag files")
-        for diagfile in diags:
+        # Compress diag files
+        logger.info(f"Compressing {len(diaglist)} diag files")
+        for diagfile in diaglist:
             with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
                 f_out.writelines(f_in)
 
-        # open tar file for writing
-        logger.debug(f"Creating tar file {atmensstat} with {len(diags)} gzipped diag files")
-        with tarfile.open(atmensstat, "w") as archive:
-            for diagfile in diags:
+        # Create tarball of compressed diag files in COM
+        logger.debug(f"Creating tarball {diagtar} with {len(diaglist)} compressed diag files")
+        with tarfile.open(diagtar, "w") as archive:
+            for diagfile in diaglist:
                 diaggzip = f"{diagfile}.gz"
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
-        # get list of yamls to cop to ROTDIR
-        yamls = glob.glob(os.path.join(self.task_config.DATA, '*atmens*yaml'))
-
-        # copy full YAML from executable to ROTDIR
-        for src in yamls:
-            logger.info(f"Copying {src} to {self.task_config.COMOUT_CONF}")
-            yaml_base = os.path.splitext(os.path.basename(src))[0]
-            dest_yaml_name = f"{self.task_config.APREFIX_ENS}{yaml_base}.yaml"
-            dest = os.path.join(self.task_config.COMOUT_CONF, dest_yaml_name)
-            logger.debug(f"Copying {src} to {dest}")
-            yaml_copy = {
-                'copy': [[src, dest]]
-            }
-            FileHandler(yaml_copy).sync()
-
-        # create template dictionaries
-        template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
-        tmpl_inc_dict = {
-            'ROTDIR': self.task_config.ROTDIR,
-            'RUN': self.task_config.RUN,
-            'YMD': to_YMD(self.task_config.current_cycle),
-            'HH': self.task_config.current_cycle.strftime('%H')
-        }
-
-        # copy ensemble mean analysis to comrot
-        logger.info("Copy ensemble mean analysis")
-        fh_dict = {'copy': [[f"{self.task_config.DATA}/anl/{self.task_config.APREFIX_ENS}cubed_sphere_grid_atmanl.ensmean.nc",
-                             f"{self.task_config.COMOUT_ATMOS_ANALYSIS_ENS}"]]}
-        FileHandler(fh_dict).sync()
-
-        # copy FV3 atm increment to comrot directory
-        logger.info("Copy UFS model readable atm increment file")
-
-        # loop over ensemble members
-        inc_copy = {'copy': []}
-        for imem in range(1, self.task_config.NMEM_ENS + 1):
-            memchar = f"mem{imem:03d}"
-
-            # create output path for member analysis increment
-            tmpl_inc_dict['MEMDIR'] = memchar
-            incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
-            src = os.path.join(self.task_config.DATA, 'anl', memchar,
-                               f"{self.task_config.APREFIX_ENS}cubed_sphere_grid_atminc.nc")
-            dest = incdir
-            inc_copy['copy'].append([src, dest])
-
-        logger.debug(f"Copying increments")
-        FileHandler(inc_copy).sync()
+        # Save files from COM
+        logger.info(f"Saving files to COM")
+        FileHandler(self.task_config.save).sync()
 
     def clean(self):
         super().clean()

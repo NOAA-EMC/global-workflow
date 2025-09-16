@@ -10,18 +10,18 @@ from typing import Any, Dict
 from wxflow import (AttrDict, FileHandler,
                     add_to_datetime, to_timedelta,
                     parse_j2yaml,
-                    logit)
-from pygfs.task.atm_analysis import AtmAnalysis
+                    logit, save_as_yaml)
+from pygfs.task.fv3_analysis import FV3Analysis
 from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AtmDetAnalysis(AtmAnalysis):
+class AtmAnalysis(FV3Analysis):
     """
     Class for JEDI-based global atm deterministic analysis tasks
     """
-    @logit(logger, name="AtmDetAnalysis")
+    @logit(logger, name="AtmAnalysis")
     def __init__(self, config: Dict[str, Any]):
         """Constructor global atm analysis task
 
@@ -41,15 +41,28 @@ class AtmDetAnalysis(AtmAnalysis):
         """
         super().__init__(config)
 
-        _localization_type = 'bump'
+        _res = int(self.task_config.CASE[1:])
         if self.task_config.DOHYBVAR:
-            _BERROR_YAML="atmosphere_background_error_hybrid_${self.task_config.STATICB_TYPE}_${_localization_type}"
+            _res_anl = int(self.task_config.CASE_ENS[1:])
         else:
-            _BERROR_YAML="atmosphere_background_error_static_${self.task_config.STATICB_TYPE}"
+            _res_anl = int(self.task_config.CASE[1:])
+
+        _localization_type = 'bump'
+        
+        if self.task_config.DOHYBVAR:
+            _BERROR_YAML=f"atmosphere_background_error_hybrid_{self.task_config.STATICB_TYPE}_{_localization_type}"
+        else:
+            _BERROR_YAML=f"atmosphere_background_error_static_{self.task_config.STATICB_TYPE}"
 
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
+                'npx_ges': _res + 1,
+                'npy_ges': _res + 1,
+                'npx_anl': _res_anl + 1,
+                'npy_anl': _res_anl + 1,
+                'observations': parse_j2yaml(self.task_config.OBS_LIST_YAML, self.task_config)['observations'],
+                'bias_files': parse_j2yaml(self.task_config.BIAS_FILES_YAML, self.task_config)['bias_files'],
                 'BERROR_YAML': _BERROR_YAML,
             }
         ))
@@ -88,17 +101,13 @@ class AtmDetAnalysis(AtmAnalysis):
 
         # Extract bias corrections from tar files
         logger.info(f"Extracting bias corrections from tar files")
-        if bias_dict['copy'] is None:
-            logger.info(f"No bias correction files to stage")
-        else:
-            bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
-            FileHandler(bias_dict).sync()
-            logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+        bias_file_list = []
+        for ob in self.task_config.observations:
+            if ob in self.task_config.bias_files and not self.task_config.bias_files[ob] in bias_file_list:
+                bias_file_list.append(self.task_config.bias_files[ob])
+                Jedi.extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')   
 
-            # extract bias corrections
-            Jedi.extract_tar_from_filehandler_dict(bias_dict)
-
-        # initialize JEDI variational application
+        # Initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['atmanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
         self.jedi_dict['atmanlfv3inc'].initialize(self.task_config)
@@ -138,84 +147,38 @@ class AtmDetAnalysis(AtmAnalysis):
         None
         """
 
-        # ---- tar up diags
-        # path of output tar statfile
-        atmstat = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atmstat")
+        # Set paths of output tar files
+        diagtar = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atmstat")
+        radtar = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}rad_varbc_params.tar")
 
-        # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
+        # Get lists of files to put in tarballs
+        diaglist = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
+        satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
+        tlaplist = glob.glob(os.path.join(self.task_config.DATA, 'obs', '*tlapse.txt'))
 
-        logger.info(f"Compressing {len(diags)} diag files to {atmstat}.gz")
-
-        # gzip the files first
-        logger.debug(f"Gzipping {len(diags)} diag files")
-        for diagfile in diags:
+        # Compress diag files
+        logger.info(f"Compressing {len(diaglist)} diag files")
+        for diagfile in diaglist:
             with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
                 f_out.writelines(f_in)
 
-        # open tar file for writing
-        logger.debug(f"Creating tar file {atmstat} with {len(diags)} gzipped diag files")
-        with tarfile.open(atmstat, "w") as archive:
-            for diagfile in diags:
+        # Create tarball of compressed diag files in COM
+        logger.debug(f"Creating tarball {diagtar} with {len(diaglist)} compressed diag files")
+        with tarfile.open(diagtar, "w") as archive:
+            for diagfile in diaglist:
                 diaggzip = f"{diagfile}.gz"
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
-        # get list of yamls to copy to ROTDIR
-#        yamls = glob.glob(os.path.join(self.task_config.DATA, '*atm*yaml'))
-
-        # copy full YAML from executable to ROTDIR
-#        for src in yamls:
-#            yaml_base = os.path.splitext(os.path.basename(src))[0]
-#            dest_yaml_name = f"{self.task_config.APREFIX}{yaml_base}.yaml"
-#            dest = os.path.join(self.task_config.COMOUT_CONF, dest_yaml_name)
-#            logger.debug(f"Copying {src} to {dest}")
-#            yaml_copy = {
-#                'copy': [[src, dest]]
-#            }
-#            FileHandler(yaml_copy).sync()
-
-        # path of output radiance bias correction tarfile
-        bfile = f"{self.task_config.APREFIX}rad_varbc_params.tar"
-        radtar = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, bfile)
-
-        # rename and copy tlapse radiance bias correction files from obs to bc
-        tlapobs = glob.glob(os.path.join(self.task_config.DATA, 'obs', '*tlapse.txt'))
-        copylist = []
-        for tlapfile in tlapobs:
-            obsfile = os.path.basename(tlapfile).split('.', 2)
-            newfile = f"{self.task_config.APREFIX}{obsfile[2]}"
-            copylist.append([tlapfile, os.path.join(self.task_config.DATA, 'bc', newfile)])
-        tlapse_dict = {
-            'copy': copylist
-        }
-        FileHandler(tlapse_dict).sync()
-
-        # get lists of radiance bias correction files to add to tarball
-        satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
-        tlaplist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*tlapse.txt'))
-
-        # tar radiance bias correction files to ROTDIR
-        logger.info(f"Creating radiance bias correction tar file {radtar}")
+        # Create tarball of radiance bias correction files
+        logger.info(f"Creating radiance bias correction tarball {radtar}")
         with tarfile.open(radtar, 'w') as radbcor:
+            logger.info(f"Adding {radbcor.getnames()}")
             for satfile in satlist:
                 radbcor.add(satfile, arcname=os.path.basename(satfile))
             for tlapfile in tlaplist:
-                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile))
-            logger.info(f"Add {radbcor.getnames()}")
+                # Change OPREFIX to APREFIX in tlapse file name when adding to tarball
+                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.task_config.OPREFIX, self.task_config.APREFIX)))
 
-        # Copy FV3 atm increment to comrot directory
-#        logger.info("Copy UFS model readable atm increment file")
-#        inc_copy = {'copy': []}
-#        for itile in range(6):
-#            src = os.path.join(self.task_config.DATA, "anl",
-#                               f"{self.task_config.APREFIX}cubed_sphere_grid_atminc.tile{itile+1}.nc")
-#            dest = self.task_config.COMOUT_ATMOS_ANALYSIS
-#            inc_copy['copy'].append([src, dest])
-
-#        # copy increments
-#        src_list, dest_list = zip(*inc_copy['copy'])
-#        logger.debug(f"Copying {src_list}\nto {dest_list}")
-#        FileHandler(inc_copy).sync()
-
-    def clean(self):
-        super().clean()
+        # Save files from COM
+        logger.info(f"Saving files to COM")
+        FileHandler(self.task_config.save).sync()
