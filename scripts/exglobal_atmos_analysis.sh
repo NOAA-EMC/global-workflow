@@ -723,8 +723,8 @@ EOFunzip
            nm=$((nm+1))
          fi
       else
-         fname=$(echo ${diag_file} | cut -d'.' -f1)
-         date=$(echo ${diag_file} | cut -d'.' -f2)
+         fname=$(echo "${diag_file}" | cut -d'.' -f1)
+         date=$(echo "${diag_file}" | cut -d'.' -f2)
          ${UNCOMPRESS} "${diag_file}"
          fnameges=$(echo "${fname}"|sed 's/_ges//g')
          ${NMV} "${fname}.${date}${DIAG_SUFFIX}" "${fnameges}"
