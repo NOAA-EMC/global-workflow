@@ -48,9 +48,12 @@ fix/wave
 # Ignore parm file symlinks
 #--------------------------
 parm/gdas/aero
+parm/gdas/analcalc
+parm/gdas/anlstat
 parm/gdas/atm
 parm/gdas/io
 parm/gdas/ioda
+parm/gdas/marine
 parm/gdas/snow
 parm/gdas/soca
 parm/gdas/stat
