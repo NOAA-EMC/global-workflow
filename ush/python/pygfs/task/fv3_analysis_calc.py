@@ -70,7 +70,8 @@ class FV3AnalysisCalc(Task):
             expected_keys.append('aero_addincrement')
         if self.task_config.DO_JEDISNOWDA:
             expected_keys.append('snow_addincrement')
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        jedi_config_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
+        self.jedi_dict = Jedi.get_jedi_dict(jedi_config_dict, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:

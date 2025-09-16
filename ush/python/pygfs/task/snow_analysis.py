@@ -81,7 +81,8 @@ class SnowAnalysis(Task):
 
         # Create JEDI object dictionary
         expected_keys = ['scf_to_ioda', 'snowanlvar']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        jedi_config_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
+        self.jedi_dict = Jedi.get_jedi_dict(jedi_config_dict, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
