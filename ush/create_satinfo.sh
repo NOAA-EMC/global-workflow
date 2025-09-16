@@ -5,7 +5,7 @@ date_in=$1
 echo '!sensor/instr/sat      chan iuse  error  error_cld  ermax   var_b    var_pg  icld_det icloud iaerosol'
 # loop over satellites
 cd "${BUILD_GSINFO_DIR}/satinfo" || exit 1
-grep -v '^ *#' satellites | while IFS= read -r sat 
+while IFS= read -r sat 
 do
     # find matching date
     usedate=""
@@ -24,4 +24,4 @@ do
         echo "date not found for ${sat}"
         exit 1
     fi
-done
+done < <(grep -v '^ *#' satellites)
