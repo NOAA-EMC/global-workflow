@@ -118,21 +118,21 @@ class AtmAnalysis(Task):
             Jedi.extract_tar_from_filehandler_dict(bias_dict)
 
         # stage CRTM fix files
-        logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
+        logger.info(f"Staging CRTM fix files from {self.task_config.STAGE_CRTM_COEFF_YAML}")
+        crtm_fix_dict = parse_j2yaml(self.task_config.STAGE_CRTM_COEFF_YAML, self.task_config)
         FileHandler(crtm_fix_dict).sync()
         logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
 
         # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # stage static background error files, otherwise it will assume ID matrix
         logger.info(f"Stage files for STATICB_TYPE {self.task_config.STATICB_TYPE}")
         if self.task_config.STATICB_TYPE != 'identity':
-            berror_staging_dict = parse_j2yaml(self.task_config.BERROR_STAGING_YAML, self.task_config)
+            berror_staging_dict = parse_j2yaml(self.task_config.STAGE_BERROR_YAML, self.task_config)
         else:
             berror_staging_dict = {}
         FileHandler(berror_staging_dict).sync()
@@ -141,13 +141,13 @@ class AtmAnalysis(Task):
         # stage ensemble files for use in hybrid background error
         if self.task_config.DOHYBVAR:
             logger.debug(f"Stage ensemble files for DOHYBVAR {self.task_config.DOHYBVAR}")
-            fv3ens_staging_dict = parse_j2yaml(self.task_config.FV3ENS_STAGING_YAML, self.task_config)
+            fv3ens_staging_dict = parse_j2yaml(self.task_config.STAGE_FV3ENS_YAML, self.task_config)
             FileHandler(fv3ens_staging_dict).sync()
             logger.debug(f"Ensemble files:\n{pformat(fv3ens_staging_dict)}")
 
         # stage backgrounds
-        logger.info(f"Staging background files from {self.task_config.VAR_BKG_STAGING_YAML}")
-        bkg_staging_dict = parse_j2yaml(self.task_config.VAR_BKG_STAGING_YAML, self.task_config)
+        logger.info(f"Staging background files from {self.task_config.STAGE_BKG_YAML}")
+        bkg_staging_dict = parse_j2yaml(self.task_config.STAGE_BKG_YAML, self.task_config)
         FileHandler(bkg_staging_dict).sync()
         logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}")
 

@@ -119,22 +119,21 @@ class AerosolAnalysis(Task):
                 logger.error(f"Bias correction files or directories do not exist:\n{pformat(bias_dict)}")
 
         # stage CRTM fix files
-        logger.info(f"Staging CRTM fix files from {self.task_config.CRTM_FIX_YAML}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.CRTM_FIX_YAML, self.task_config)
+        logger.info(f"Staging CRTM fix files from {self.task_config.STAGE_CRTM_COEFF_YAML}")
+        crtm_fix_dict = parse_j2yaml(self.task_config.STAGE_CRTM_COEFF_YAML, self.task_config)
         FileHandler(crtm_fix_dict).sync()
         logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
 
         # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # stage files from COM and create working directories
-        logger.info(f"Staging files prescribed from {self.task_config.AERO_STAGE_VARIATIONAL_TMPL}")
-        aero_var_stage_dict = parse_j2yaml(self.task_config.AERO_STAGE_VARIATIONAL_TMPL, self.task_config)
-        FileHandler(aero_var_stage_dict).sync()
-        logger.debug(f"Staging from COM:\n{pformat(aero_var_stage_dict)}")
+        logger.info(f"Staging files prescribed from {self.task_config.STAGE_YAML}")
+        stage_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
+        FileHandler(stage_dict).sync()
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
@@ -195,9 +194,9 @@ class AerosolAnalysis(Task):
         satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
 
         # copy files back to COM
-        logger.info(f"Copying files to COM based on {self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL}")
-        aero_var_final_list = parse_j2yaml(self.task_config.AERO_FINALIZE_VARIATIONAL_TMPL, self.task_config)
-        FileHandler(aero_var_final_list).sync()
+        logger.info(f"Copying files to COM based on {self.task_config.SAVE_YAML}")
+        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
+        FileHandler(save_dict).sync()
 
         # tar aerosol bias correction files to ROTDIR
         logger.info(f"Creating aerosol bias correction tar file {aertar}")
@@ -230,27 +229,27 @@ class AerosolAnalysis(Task):
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + increment_template)
         bkg_template = os.path.join(self.task_config.DATA, 'anl', restart_template)
         # get list of increment vars
-        incvars_list_path = os.path.join(self.task_config['PARMgfs'], 'gdas', 'aeroanl_inc_vars.yaml')
+        incvars_list_path = os.path.join(self.task_config['PARMgfs'], 'gdas', 'aero', 'aero_det_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)['incvars']
         self.add_fv3_increments(inc_template, bkg_template, incvars)
 
     @logit(logger)
-    def add_fv3_increments(self, inc_file_tmpl: str, bkg_file_tmpl: str, incvars: List) -> None:
+    def add_fv3_increments(self, inc_file_YAML: str, bkg_file_YAML: str, incvars: List) -> None:
         """Add cubed-sphere increments to cubed-sphere backgrounds
 
         Parameters
         ----------
-        inc_file_tmpl : str
+        inc_file_YAML : str
            template of the FV3 increment file of the form: 'filetype.tile{tilenum}.nc'
-        bkg_file_tmpl : str
+        bkg_file_YAML : str
            template of the FV3 background file of the form: 'filetype.tile{tilenum}.nc'
         incvars : List
            List of increment variables to add to the background
         """
 
         for itile in range(1, self.task_config.ntiles + 1):
-            inc_path = inc_file_tmpl.format(tilenum=itile)
-            bkg_path = bkg_file_tmpl.format(tilenum=itile)
+            inc_path = inc_file_YAML.format(tilenum=itile)
+            bkg_path = bkg_file_YAML.format(tilenum=itile)
             with Dataset(inc_path, mode='r') as incfile, Dataset(bkg_path, mode='a') as rstfile:
                 for vname in incvars:
                     increment = incfile.variables[vname][:]
