@@ -108,8 +108,8 @@ FV3_postdet() {
   # Check for consistency
   # TODO: the checker has a --fatal option, which is not used here.  This needs to be decided how to handle.
   if [[ "${CHECK_LAND_RESTART_OROG:-NO}" == "YES" ]]; then
-    if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
-       ${USHgfs}/../exec/run_python.sh \
+    if [[ "${RUN_WITH_CONTAINER}" == "YES" ]]; then
+       "${USHgfs}/../exec/run_python.sh" \
        "${USHgfs}/check_land_input_orography.py" \
         --input_dir "${DATA}/INPUT" --orog_dir "${DATA}/INPUT"
     else

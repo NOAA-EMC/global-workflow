@@ -19,7 +19,7 @@ EXSCRIPT=${PREP_EMISSIONS_PY:-${SCRgfs}/exglobal_prep_emissions.py}
 
 # Execute staging
 if [[ "${RUN_WITH_CONTAINER}" == "YES" ]]; then
-    "${HOMEgfs}/exec/run_python.sh" ${EXSCRIPT} && true
+    "${HOMEgfs}/exec/run_python.sh" "${EXSCRIPT}" && true
 else
     ${EXSCRIPT} && true
 fi

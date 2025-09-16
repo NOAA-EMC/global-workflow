@@ -1,21 +1,18 @@
 #!/bin/bash
 #SBATCH --job-name=compile
-#SBATCH --account=$USER
+#SBATCH --account=epic
 #SBATCH --qos=batch
-##SBATCH --partition=compute
-#SBATCH --partition=process
+#SBATCH --partition=u1-compute
 #SBATCH -t 04:15:00
 #SBATCH --nodes=1
+#SBATCH --ntasks=24
 #SBATCH -o compile.%J.log
-#SBATCH --exclusive
 
-set -x
-
-gwhome=/contrib/Wei.Huang/container/global-workflow-cloud
-img=/contrib/Wei.Huang/container/ubuntu22.04-intel-ufs-env-v1.9.2.img
+gwhome=/scratch4/NAGAPE/epic/Wei.Huang/src/container/global-workflow-cloud
 cmd=${gwhome}/dev/container/utils/compile-gw-in-container.sh
+img=/scratch3/NCEPDEV/nems/role.epic/containers/ubuntu22.04-intel-ufs-env-v1.9.2.img
 
 gw_sorc_dir=${gwhome}/sorc
 
-singularity exec -B /contrib ${img} ${cmd} ${gw_sorc_dir}
+singularity exec -B /scratch3 -B /scratch4 "${img}" "${cmd}" "${gw_sorc_dir}"
 

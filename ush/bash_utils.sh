@@ -111,27 +111,27 @@ function wait_for_file() {
 }
  
 function cpreq() {
-    cp $*
-    if [[ "$?" -ne "0" ]] ; then
-    err_exit "'cp $*' was not successful."
+    cp "$*"
+    if [[ "$?" -ne "0" ]]; then
+        err_exit "'cp $*' was not successful."
     fi
 }
  
 function cpfs() {
-    if [ "$#" -ne "2" ]; then
+    if [[ "$#" -ne "2" ]]; then
        echo "This script requires two arguments: a source file and a destination file path."
        exit 16
     fi
 
-    if [[ "$2" = '.' -o "$2" = './' ]]; then
-       cpdstfile=${PWD:?}/$(basename $1)
-    elif [ -d $2 ]; then
-       cpdstfile=${2%/}/$(basename $1)
+    if [[ "$2" = '.' || "$2" = './' ]]; then
+       cpdstfile=${PWD:?}/$(basename "$1")
+    elif [ -d "$2" ]; then
+       cpdstfile=${2%/}/$(basename "$1")
     else
        cpdstfile=$2
     fi
 
-    cp $1 $cpdstfile.cptmp
+    cp "$1" ${cpdstfile}.cptmp
 
     if [[ "$?" -ne "0" ]] ; then
        err_exit "$1 is missing or was not copied successfully."
@@ -142,9 +142,9 @@ function cpfs() {
     #   >&2 echo "WARNING: ${FSYNC} $cpdstfile.cptmp failed."
     #fi
 
-    mv $cpdstfile.cptmp $cpdstfile
+    mv ${cpdstfile}.cptmp ${cpdstfile}
     if [[ "$?" -ne "0" ]] ; then
-       err_exit "$cpdstfile.cptmp is missing or was not moved successfully."
+       err_exit "${cpdstfile}.cptmp is missing or was not moved successfully."
     fi
 }
 
