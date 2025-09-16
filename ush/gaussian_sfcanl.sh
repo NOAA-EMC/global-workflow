@@ -140,6 +140,8 @@ if [[ "${DOIAU:-}" == "YES" ]]; then  # Create Gaussian sfcanl file at beginning
   gcycle_dates+=("${BDATE}")
 fi
 
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
+
 for hr in "${!gcycle_dates[@]}"; do
 
   gcycle_date=${gcycle_dates[hr]}
@@ -154,8 +156,6 @@ for hr in "${!gcycle_dates[@]}"; do
   im=${gcycle_date:4:2}
   id=${gcycle_date:6:2}
   ih=${gcycle_date:8:2}
-
-  export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 
   # input interpolation weights
   ${NLN} "${FIXWGTS}" "./weights.nc"
