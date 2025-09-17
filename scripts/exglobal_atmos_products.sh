@@ -163,8 +163,8 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   # Move to COM and index the product grib files
   for grid in "${grids[@]}"; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    cpfs "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pres_${grp}.${grid}.${fhr3}"
-    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}pres_${grp}.${grid}.${fhr3}.idx"
+    cpfs "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pres_a${grp}.${grid}.${fhr3}"
+    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}pres_a${grp}.${grid}.${fhr3}.idx"
   done
 
   echo "Finished processing nset = ${nset}"
