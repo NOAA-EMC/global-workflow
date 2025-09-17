@@ -5,11 +5,12 @@ from logging import getLogger
 import netCDF4 as nc
 import os
 from pprint import pformat
-from pygfs.jedi import Jedi
 from wxflow import (AttrDict, FileHandler, Task,
                     parse_j2yaml,
                     to_timedelta, add_to_datetime, to_fv3time, to_isotime,
                     logit)
+from pygfs.jedi import Jedi
+from pygfs.task.fv3_analysis import FV3Analysis
 
 logger = getLogger(__name__.split('.')[-1])
 

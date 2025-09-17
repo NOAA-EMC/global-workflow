@@ -123,4 +123,4 @@ class EnsembleRecenter(FV3Analysis):
 
         # Save output files to COM
         logger.info(f"Saving output files to COM")
-        FileHandler(self.task_config.stage).sync()
+        FileHandler(self.task_config.save).sync()
