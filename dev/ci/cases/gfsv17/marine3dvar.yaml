@@ -17,6 +17,7 @@ base:
 
 prepoceanobs:
   use_exp_obs: "YES"
+  # will not work for realtime or retros
   dmpdir_exp: "${BASE_DATA}/experimental_obs"
 
 marineanl:
