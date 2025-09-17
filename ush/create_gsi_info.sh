@@ -6,7 +6,7 @@
 #   <date>: date string to match
 #   [use2mobs]: (optional, only for conv) YES or NO
 
-set -e
+set -eu
 # Inherit set -e inside of the get_usedate function below
 shopt -s inherit_errexit
 type_in=${1:-}
@@ -26,7 +26,7 @@ fi
 get_usedate() {
   usedate=""
   # Loop over files matching date pattern.
-  for datex in [12][0-9][0-9][0-9]*; do
+  for datex in [1-2][0-9][0-9][0-9]*; do
     # Skip for loop if there are no matches.
     if [[ ! -e "${datex}" ]]; then
       continue
@@ -75,6 +75,10 @@ case "${type_in}" in
     cd "${BUILD_GSINFO_DIR}/ozinfo" || exit 1
     usedate=$(get_usedate)
     if [[ ${usedate} != "" ]]; then
+      # Header lines
+      echo '! For mls data, pressure and obs errors are pulled from bufr, so not listed here' >> "${info_file}"
+      echo '! sens/instr/sat lev  use pressure gross   obs    b_oz  pg_oz' >> "${info_file}"
+      echo '!                                  error  error variational qc' >> "${info_file}"
       cat "${usedate}" >> "${info_file}"
     else
       echo "ERROR: No valid ozone info was found!"
