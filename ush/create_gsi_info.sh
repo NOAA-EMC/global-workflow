@@ -7,7 +7,8 @@
 #   [use2mobs]: (optional, only for conv) YES or NO
 
 set -e
-
+# Inherit set -e inside of the get_usedate function below
+shopt -s inherit_errexit
 type_in=${1:-}
 date_in=${2:-}
 use2mobs=${3:-NO}
