@@ -43,7 +43,7 @@ fi
 export PYTHONPATH
 
 # Source versions file for runtime
-source "${HOMEgfs}/versions/run.ver"
+source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
 # Load our modules:
 module use "${HOMEgfs}/modulefiles"
 
@@ -62,7 +62,12 @@ case "${MACHINE_ID}" in
     ;;
   "container")
     source /usr/lmod/lmod/init/bash
-    module load "gw_run.${MACHINE_ID}"
+   #source "${HOMEgfs}/versions/run.container.ver"
+   #module use "${HOMEgfs}/modulefiles"
+   #module load gw_run.container
+    module purge
+    module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
+    module load gfsutils_container.intel
     export UTILROOT=${prod_util_ROOT}
     ;;
   *)

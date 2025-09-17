@@ -9,7 +9,6 @@ export spack_stack_root="/opt/spack-stack//spack-stack-1.9.2"
 
 source "${HOMEgfs:-}/versions/spack.ver"
 
-export cdo_ver=2.3.0
 export perl_ver=5.38.0
 export mkl_ver=2024.2.1
-export imagemagick_ver=7.1.1-11
+#export imagemagick_ver=7.1.1-11

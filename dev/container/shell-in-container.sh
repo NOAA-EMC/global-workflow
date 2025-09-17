@@ -17,5 +17,5 @@ elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    bindings="-B /contrib -B /lustre -B /bucket"
 fi
 
-singularity shell -e "${bindings}" "${img}"
+singularity shell -e ${bindings} "${img}"
 
