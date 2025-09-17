@@ -27,13 +27,6 @@ body:
       required: true
 
   - type: textarea
-    id: requirements
-    attributes:
-      label: What are the requirements for the new functionality?
-    validations:
-      required: true
-
-  - type: textarea
     id: criteria
     attributes:
       label: Acceptance Criteria
