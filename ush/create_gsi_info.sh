@@ -84,7 +84,7 @@ case "${type_in}" in
   sat)
     cd "${BUILD_GSINFO_DIR}/satinfo" || exit 1
     # Read in the satellite list, ignoring comment lines and the readme
-    satellite_list=$(egrep -v '^ *#|readme' satellites)
+    satellite_list=$(grep -Ev '^ *#|readme' satellites)
     if [[ -z "${satellite_list}" ]]; then
       echo "ERROR: No satellites found in the satellite file list!"
       exit 1
