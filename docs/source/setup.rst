@@ -19,7 +19,7 @@ Experiment Setup
 Scripts that will be used:
 
    * ``dev/workflow/setup_expt.py``
-   * ``dev/workflow/setup_xml.py``
+   * ``dev/workflow/setup_workflow.py``
 
 ****************************************
 Step 1: Set user settings
@@ -152,18 +152,20 @@ This step sets up the files needed by the Workflow Manager/Driver. At this momen
 
 ::
 
-   ./setup_xml.py $EXPDIR/$PSLOT
+   ./setup_workflow.py $EXPDIR/$PSLOT rocoto|ecflow
 
 Example:
 
 ::
 
-   ./setup_xml.py /some_safe_disk_area/Joe.Schmo/expdir/test
+   ./setup_workflow.py /some_safe_disk_area/Joe.Schmo/expdir/test rocoto
 
-Additional options for setting up Rocoto are available with `setup_xml.py -h` that allow users to change the number of failed tries, number of concurrent cycles and tasks as well as Rocoto's verbosity levels.
+Additional options for setting up Rocoto or ecFlow are available with `setup_workflow.py -h` that allow users to change the number of failed tries, number of concurrent cycles and tasks as well as verbosity levels.
+
+Presently, only the Rocoto workflow engine is supported.  EcFlow capabilities are a work in progress.
 
 ****************************************
 Step 5: Confirm files from setup scripts
 ****************************************
 
-You will now have a rocoto xml file in your ``$EXPDIR`` (``$PSLOT.xml``) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun setup_xml.py script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.
+You will now have a rocoto xml file in your ``$EXPDIR`` (``$PSLOT.xml``) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun setup_workflow.py script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.

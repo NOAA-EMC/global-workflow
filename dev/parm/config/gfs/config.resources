@@ -526,7 +526,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=480
-        memory="256GB"
+        memory="${mem_node_max}"
         ;;
       "050")  ntasks=16;;
       "100")  ntasks=16;;
@@ -547,7 +547,7 @@ case ${step} in
     case ${OCNRES} in
       "025")
         ntasks=480
-        memory="256GB"
+        memory="${mem_node_max}"
         ;;
       "050")
         ntasks=16
@@ -573,30 +573,36 @@ case ${step} in
     ;;
 
   "marineanlecen")
-    ntasks=16
     walltime="00:10:00"
+    # Decide how many ensemble members to process per MPI task (has to be divisor of NMEM_ENS).
+    if (( NMEM_ENS >= 10 && NMEM_ENS % 5 == 0 )); then
+      export NMEM_ENS_PER_MPI=5
+    elif (( NMEM_ENS % 2 == 0 )); then
+      export NMEM_ENS_PER_MPI=2
+    else
+      export NMEM_ENS_PER_MPI=1
+    fi
     case ${OCNRES} in
       "025")
-        ntasks=256
-        if [[ "${NMEM_ENS}" -gt 30 ]]; then
-          memory="500GB"
-          walltime="01:30:00"
-        else
-          ntasks=40
-          memory="256GB"
-        fi
+        ntasks=$(( 12 * NMEM_ENS / NMEM_ENS_PER_MPI ))
+        memory="${mem_node_max}"
+        walltime="00:40:00"
+        tasks_per_node=$(( max_tasks_per_node / 4 ))
         ;;
       "050")
-        ntasks=16
+        ntasks=$(( 2 * NMEM_ENS / NMEM_ENS_PER_MPI ))
         memory="96GB"
+        tasks_per_node=$(( max_tasks_per_node / 2 ))
         ;;
       "100")
-        ntasks=16
+        ntasks=$(( 2 * NMEM_ENS / NMEM_ENS_PER_MPI ))
         memory="96GB"
+        tasks_per_node=$(( max_tasks_per_node / 2 ))
         ;;
       "500")
-        ntasks=16
+        ntasks=$(( 2 * NMEM_ENS / NMEM_ENS_PER_MPI ))
         memory="24GB"
+        tasks_per_node=$(( max_tasks_per_node / 2 ))
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
@@ -605,7 +611,6 @@ case ${step} in
 
     export is_exclusive=True
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
   "marineanlletkf")
