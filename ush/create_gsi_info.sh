@@ -76,9 +76,11 @@ case "${type_in}" in
     usedate=$(get_usedate)
     if [[ ${usedate} != "" ]]; then
       # Header lines
-      echo '! For mls data, pressure and obs errors are pulled from bufr, so not listed here' >> "${info_file}"
-      echo '! sens/instr/sat lev  use pressure gross   obs    b_oz  pg_oz' >> "${info_file}"
-      echo '!                                  error  error variational qc' >> "${info_file}"
+      {
+        echo '! For mls data, pressure and obs errors are pulled from bufr, so not listed here'
+        echo '! sens/instr/sat lev  use pressure gross   obs    b_oz  pg_oz'
+        echo '!                                  error  error variational qc'
+      } >> "${info_file}"
       cat "${usedate}" >> "${info_file}"
     else
       echo "ERROR: No valid ozone info was found!"
