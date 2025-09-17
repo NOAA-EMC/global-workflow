@@ -220,19 +220,19 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
   "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25"       "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2"
   "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX"  "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2.idx"
   if [[ "${RUN}" == "gfs" ]]; then
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25"      "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2"
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2.idx"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25"      "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_b.0p25.${fhr3}.grib2"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_b.0p25.${fhr3}.grib2.idx"
     if [[ -s "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2" ]]; then
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5"       "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5_WIDX"  "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2.idx"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5"      "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2.idx"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5"      "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_b.0p50.${fhr3}.grib2"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_b.0p50.${fhr3}.grib2.idx"
     fi
     if [[ -s "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2" ]]; then
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0"       "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0_WIDX"  "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1P0.${fhr3}.grib2.idx"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0"      "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1P0.${fhr3}.grib2"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1P0.${fhr3}.grib2.idx"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0"      "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_b.1P0.${fhr3}.grib2"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_b.1P0.${fhr3}.grib2.idx"
     fi
     if [[ "${WGNE:-}" == "YES" && -s "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2" ]] ; then
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WGNE" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2"
