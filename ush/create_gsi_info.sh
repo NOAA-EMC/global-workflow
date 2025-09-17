@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Generic script to create convinfo, ozinfo, or satinfo for a given date.
 # Usage:
-#   ./create_info.sh <type> <date> [use2mobs]
+#   ./create_gsi_info.sh <type> <date> [use2mobs]
 #   <type>: conv, oz, or sat
 #   <date>: date string to match
 #   [use2mobs]: (optional, only for conv) YES or NO
