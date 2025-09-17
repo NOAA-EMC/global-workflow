@@ -40,14 +40,14 @@ get_usedate() {
   echo "${usedate}"
 }
 
+# Get the starting directory
+starting_dir="${DATA:-${PWD}}"
+
 # Filename to write the info to
-info_file="${PWD}/${type_in}info"
+info_file="${starting_dir}/${type_in}info"
 if [[ -f "${info_file}" ]]; then
   rm -f "${info_file}"
 fi
-
-# Get the starting directory
-starting_dir=${PWD}
 
 case "${type_in}" in
   conv)
