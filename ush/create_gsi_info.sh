@@ -58,7 +58,7 @@ case "${type_in}" in
       if [[ ${use2mobs} == "YES" ]]; then
         # Turn on 2m t,q obs over land
         sed -e "s/t        181    0   -1/t        181    0    1/g" \
-            -e "s/t        183   -1   -1/t        183    0    1/g" \
+            -e "s/t        183   -1   -1/t        183   -1    1/g" \
             -e "s/t        187    0   -1/t        187    0    1/g" \
             -e "s/q        181    0   -1/q        181    0    1/g" \
             -e "s/q        183    0   -1/q        183    0    1/g" \
