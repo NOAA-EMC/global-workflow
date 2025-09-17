@@ -145,10 +145,8 @@ for ii in "${!gcycle_dates[@]}"; do
 
   gcycle_date=${gcycle_dates[ii]}
 
-  if [[ ! -d "${DATA}/gausfcanl_${gcycle_date:8:2}" ]]; then
-    mkdir -p "${DATA}/gausfcanl_${gcycle_date:8:2}" 
-  fi
-
+  rm -rf "${DATA}/gausfcanl_${gcycle_date:8:2}"
+  mkdir -p "${DATA}/gausfcanl_${gcycle_date:8:2}"
   cd "${DATA}/gausfcanl_${gcycle_date:8:2}"
 
   # input interpolation weights
