@@ -35,7 +35,7 @@ _COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVE
 + /18/atmos/gdas.t??z.atmf006.ensmean.nc
 + /18/atmos/gdas.t??z.atmf009.ensmean.nc
 - *
-E
+W
 # This directory is a good candidate for compression
 #Z
 _COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/enkfgdas._PDY_/
@@ -46,7 +46,7 @@ _COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_
 + /18/atmos/gdas.t??z.atmf006.ensmean.nc
 + /18/atmos/gdas.t??z.atmf009.ensmean.nc
 - *
-E
+W
 # This directory is a good candidate for compression
 #Z
 
