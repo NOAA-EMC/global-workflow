@@ -12,17 +12,16 @@ export layout_x_ecen_fv3jedi=1
 export layout_y_ecen_fv3jedi=1
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" ecen_fv3jedi
+source "${EXPDIR}/config.resources" ecen_fv3jedi
 
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/atm_ecen_jedi_config.yaml.j2"
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/atm/atm_ecen_jedi_config.yaml.j2"
+export STAGE_JEDI_FIX_YAML="${PARMgfs}/gdas/atm/atm_stage_jedi_fix.yaml.j2"
+export STAGE_YAML="${PARMgfs}/gdas/atm/atm_ecen_stage.yaml.j2"
 
 if [[ ${DOHYBVAR} = "YES" ]]; then
     export CASE_ANL=${CASE_ENS}
 else
     export CASE_ANL=${CASE}
 fi
-
-export JEDI_FIX_YAML="${PARMgfs}/gdas/atm_jedi_fix.yaml.j2"
-export JEDI_BKG_INC_YAML="${PARMgfs}/gdas/staging/atm_ecen.yaml.j2"
 
 echo "END: config.ecen_fv3jedi"

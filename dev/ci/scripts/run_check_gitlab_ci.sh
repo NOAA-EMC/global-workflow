@@ -135,6 +135,9 @@ EOF
 # Source modules and setup logging
 echo "Source modules."
 source "${HOMEgfs}/dev/ush/gw_setup.sh"
+# TODO We need to add local python env to support PyGitHub
+PYTHONPATH="${PYTHONPATH}:$(python3 -m site --user-site)" || true
+echo "Updated PYTHONPATH: ${PYTHONPATH}"
 
 # cd into the experiment directory
 echo "cd ${RUNTESTS}/EXPDIR/${pslot}"
