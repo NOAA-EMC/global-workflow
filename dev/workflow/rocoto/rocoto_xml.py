@@ -6,36 +6,21 @@ from datetime import datetime
 from collections import OrderedDict
 from typing import Dict
 from applications.applications import AppConfig
+from workflow_suite import WorkflowSuite
 from rocoto.workflow_tasks import get_wf_tasks
-from wxflow import to_timedelta, which, mkdir
+from wxflow import which, mkdir
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
-from hosts import Host
 from logging import getLogger
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class RocotoXML(ABC):
+class RocotoXML(WorkflowSuite, ABC):
 
     def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
 
-        self._app_config = app_config
-        self.rocoto_config = rocoto_config
-
-        # Use the first config.base (sourced with an arbitrary RUN)
-        self._base = self._app_config.configs[next(iter(self._app_config.configs))]['base']
-        self._base['interval_gdas'] = to_timedelta(f'{self._base["assim_freq"]}H')
-        self._base['interval_gfs'] = to_timedelta(f'{self._base["INTERVAL_GFS"]}H')
-
-        # Collect info needed to write an scrontab file
-        self.host_info = Host().info
-        self.use_scrontab = self.host_info.get("USE_SCRONTAB", False)
-        # Add ACCOUNT to host_info, with that from config.base
-        self.host_info.ACCOUNT = self._base['ACCOUNT']
-        self.HOMEgfs = self._base['HOMEgfs']
-        self.expdir = self._base['EXPDIR']
-        self.pslot = self._base['PSLOT']
+        super().__init__(app_config, rocoto_config)
 
         # Get sections need to construct the XML
         self.preamble = self._get_preamble()
@@ -45,10 +30,6 @@ class RocotoXML(ABC):
         task_list = get_wf_tasks(app_config)
         self.tasks = '\n'.join(task_list)
         self.footer = self._get_workflow_footer()
-
-        # If we are running scrontab, check if the rocotorc file has the right entries
-        if self.use_scrontab:
-            self._check_rocotorc()
 
         # Construct the XML
         self.xml = self._assemble_xml()
@@ -175,8 +156,12 @@ class RocotoXML(ABC):
 
         # Construct the crontab or scrontab
         if self.use_scrontab:
+
+            # If we are running scrontab, check if the rocotorc file has the right entries
+            self._check_rocotorc()
+
             # The slurm crontab needs an SCRON entry that calls a script
-            # envery n minutes.  That script will actually run rocoto.
+            # every n minutes.  That script will actually run rocoto.
             account = self.host_info.ACCOUNT
             partition = self.host_info.get("PARTITION_CRON", None) or self.host_info.PARTITION_SERVICE
             log_dir = os.path.join(self.expdir, "logs")
