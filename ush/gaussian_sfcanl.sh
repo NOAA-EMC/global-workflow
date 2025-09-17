@@ -77,7 +77,7 @@
 #
 #     output data: $PGMOUT
 #                  $PGMERR
-#                  $COMOUT/${APREFIX}sfcanl.nc
+#                  $COMOUT/${APREFIX}sfc${ahr}.nc
 #
 # Remarks:
 #
@@ -133,10 +133,12 @@ export pgm=$PGM
 $LOGSCRIPT
 
 gcycle_dates=("${PDY}${cyc}")
+ahrs=("anl")
 if [[ "${DOIAU:-}" == "YES" ]]; then  # Create Gaussian sfcanl file at beginning of window
   half_window=$(( assim_freq / 2 ))
   BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
   gcycle_dates+=("${BDATE}")
+  ahrs+=("a$(printf "%03d" "${half_window}")")
 fi
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
@@ -144,6 +146,7 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 for ii in "${!gcycle_dates[@]}"; do
 
   gcycle_date=${gcycle_dates[ii]}
+  ahr=${ahrs[ii]}
 
   rm -rf "${DATA}/gausfcanl_${gcycle_date:8:2}"
   mkdir -p "${DATA}/gausfcanl_${gcycle_date:8:2}"
@@ -171,7 +174,7 @@ for ii in "${!gcycle_dates[@]}"; do
   ${NLN} "${SIGLEVEL}" "./vcoord.txt"
 
   # output gaussian global surface analysis files
-  ${NLN} "${COMOUT_ATMOS_ANALYSIS}/${RUN}.t${gcycle_date:8:2}z.sfcanl.nc" "./sfc.gaussian.analysis.file"
+  ${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}sfc${ahr}.nc" "./sfc.gaussian.analysis.file"
 
   # Namelist uses booleans now
   if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
