@@ -50,8 +50,6 @@ class AtmEnsAnalysis(FV3Analysis):
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
-                'observations': parse_j2yaml(self.task_config.OBS_LIST_YAML, self.task_config)['observations'],
-                'bias_files': parse_j2yaml(self.task_config.BIAS_FILES_YAML, self.task_config)['bias_files'],
             })
         )
 

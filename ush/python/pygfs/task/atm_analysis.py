@@ -61,8 +61,6 @@ class AtmAnalysis(FV3Analysis):
                 'npy_ges': _res + 1,
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
-                'observations': parse_j2yaml(self.task_config.OBS_LIST_YAML, self.task_config)['observations'],
-                'bias_files': parse_j2yaml(self.task_config.BIAS_FILES_YAML, self.task_config)['bias_files'],
                 'BERROR_YAML': _BERROR_YAML,
             }
         ))
