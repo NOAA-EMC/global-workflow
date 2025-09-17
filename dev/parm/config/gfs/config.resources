@@ -763,7 +763,7 @@ case ${step} in
     fi
     export is_exclusive=True
     memory="48GB"
-    if [[ "${CASE_HIST}" == "C384" || "${CASE_HIST}" == "C768" || "${CASE_HIST}" == "C1152" ]]; then
+    if [[ "${CASE:1}" -ge 384 ]]; then
        memory="${mem_node_max}"
     fi
     ;;
