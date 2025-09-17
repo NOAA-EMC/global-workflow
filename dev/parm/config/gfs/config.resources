@@ -686,7 +686,7 @@ case ${step} in
   "anal")
     if [[ "${RUN}" = *gdas ]]; then
       walltime="01:20:00"
-      case ${CASE_HIST} in
+      case ${CASE} in
         "C1152" | "C768")
           ntasks=780
           threads_per_task=5
@@ -701,12 +701,12 @@ case ${step} in
           threads_per_task=5
           ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE_HIST}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
       esac
     elif [[ "${RUN}" = *gfs ]]; then
       walltime="01:20:00"
-      case ${CASE_HIST} in
+      case ${CASE} in
         "C1152" | "C768")
           ntasks=825
           threads_per_task=5
@@ -720,7 +720,7 @@ case ${step} in
           threads_per_task=5
           ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE_HIST}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
       esac
     fi
@@ -768,7 +768,7 @@ case ${step} in
     fi
     export is_exclusive=True
     memory="48GB"
-    if [[ "${CASE:1}" -ge 384 ]]; then
+    if [[ "${CASE}" == "C384" || "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
        memory="${mem_node_max}"
     fi
     ;;
@@ -994,9 +994,9 @@ case ${step} in
     ;;
 
   "upp")
-    case "${CASE_HIST}" in
+    case "${CASE}" in
       "C48" | "C96")
-        ntasks=${CASE_HIST:1}
+        ntasks=${CASE:1}
       ;;
       "C192" | "C384" | "C768")
         ntasks=120
@@ -1007,12 +1007,12 @@ case ${step} in
         memory="${mem_node_max}"
       ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE_HIST}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
       ;;
     esac
     tasks_per_node=${ntasks}
-    if [[ "${CASE_HIST}" == "C1152" ]]; then
+    if [[ "${CASE}" == "C1152" ]]; then
         tasks_per_node=40
     fi
 
@@ -1087,7 +1087,7 @@ case ${step} in
     ntasks=3
     threads_per_task=1
     tasks_per_node=1
-    case "${CASE_HIST}" in
+    case "${CASE}" in
       "C768")
         memory="200GB"
         walltime="00:40:00"
@@ -1245,12 +1245,12 @@ case ${step} in
   "eobs")
     walltime="00:15:00"
 
-    case ${CASE_HIST} in
+    case ${CASE} in
       "C1152" | "C768")       ntasks=200;;
       "C384")                 ntasks=100;;
       "C192" | "C96" | "C48") ntasks=40;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE_HIST}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
@@ -1278,7 +1278,7 @@ case ${step} in
 
   "eupd")
     walltime="00:45:00"
-    case "${CASE_HIST}" in
+    case "${CASE}" in
       "C1152" | "C768")
         ntasks=480
         threads_per_task=6
@@ -1292,7 +1292,7 @@ case ${step} in
         threads_per_task=2
         ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE_HIST}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
         exit 4
         ;;
     esac
@@ -1304,7 +1304,7 @@ case ${step} in
     walltime="00:20:00"
     ntasks=80
     threads_per_task=4
-    if [[ "${CASE_HIST}" == "C384" || "${CASE_HIST}" == "C192" || "${CASE_HIST}" == "C96" || "${CASE_HIST}" == "C48" ]]; then
+    if [[ "${CASE}" == "C384" || "${CASE}" == "C192" || "${CASE}" == "C96" || "${CASE}" == "C48" ]]; then
       threads_per_task=2
     fi
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -1324,7 +1324,7 @@ case ${step} in
 
   "epos")
     walltime="00:15:00"
-    if [[ "${CASE_HIST}" == "C768" || "${CASE_HIST}" == "C1152" ]]; then
+    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
         walltime="00:25:00"
     fi
     ntasks=80
@@ -1338,7 +1338,7 @@ case ${step} in
     walltime="02:00:00"
     export ntasks=141
     export ntasks_postsndcfp=9
-    case "${CASE_HIST}" in
+    case "${CASE}" in
       "C768")
         tasks_per_node=21
         threads_per_task=6

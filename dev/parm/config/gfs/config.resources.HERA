@@ -10,7 +10,7 @@ case ${step} in
     ;;
 
   "anal")
-    if [[ "${CASE_HIST}" == "C384" ]]; then
+    if [[ "${CASE}" == "C384" ]]; then
       export ntasks=270
       export threads_per_task=8
       export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
@@ -32,7 +32,7 @@ case ${step} in
     ;;
   
   "eupd")
-    case "${CASE_HIST}" in
+    case "${CASE}" in
       "C1152" | "C768")
         export ntasks=80
         export threads_per_task=20
@@ -50,12 +50,12 @@ case ${step} in
     ;;
 
   "ecen")
-    if [[ "${CASE_HIST}" == "C768" || "${CASE_HIST}" == "C1152" ]]; then export threads_per_task=6; fi
+    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then export threads_per_task=6; fi
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "upp")
-    if (( "${CASE_HIST:1}" >= 768 )); then
+    if (( "${CASE:1}" >= 768 )); then
        # Run fewer tasks per node for memory
        tasks_per_node=20
     fi
