@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Entry point for setting up Rocoto XML for all applications in global-workflow
+Entry point for setting up workflow (Rocoto XML or EcFlow) for all applications in global-workflow
 """
 
 import os
@@ -19,12 +19,12 @@ logger = getLogger(__name__)
 # @logit(logger)
 def input_args(*argv):
     """
-    Method to collect user arguments for `setup_xml.py`
+    Method to collect user arguments for `setup_workflow.py`
     """
 
     description = """
         Sources configuration files based on application and
-        creates "$PSLOT.xml" for use with Rocoto.
+        creates workflow files for use with Rocoto or EcFlow.
         """
 
     parser = ArgumentParser(description=description,
@@ -33,17 +33,31 @@ def input_args(*argv):
     # Common arguments across all modes
     parser.add_argument('expdir', help='full path to experiment directory containing config files',
                         type=str, default=os.environ['PWD'])
-
-    parser.add_argument('--maxtries', help='maximum number of retries', type=int,
-                        default=2, required=False)
-    parser.add_argument('--cyclethrottle', help='maximum number of concurrent cycles', type=int,
-                        default=3, required=False)
-    parser.add_argument('--taskthrottle', help='maximum number of concurrent tasks', type=int,
-                        default=25, required=False)
-    parser.add_argument('--verbosity', help='verbosity level of Rocoto', type=int,
-                        default=10, required=False)
     parser.add_argument('--force', help='raise warnings instead of errors when possible',
                         action='store_true', dest="force")
+
+    # Create subparsers for workflow engines
+    subparsers = parser.add_subparsers(dest='workflow', required=True,
+                                       help='workflow engine to use')
+
+    # Rocoto subparser
+    rocoto_parser = subparsers.add_parser('rocoto',
+                                          help='Use Rocoto workflow engine',
+                                          formatter_class=ArgumentDefaultsHelpFormatter)
+    rocoto_parser.add_argument('--maxtries', help='maximum number of retries', type=int,
+                               default=2, required=False)
+    rocoto_parser.add_argument('--cyclethrottle', help='maximum number of concurrent cycles', type=int,
+                               default=3, required=False)
+    rocoto_parser.add_argument('--taskthrottle', help='maximum number of concurrent tasks', type=int,
+                               default=25, required=False)
+    rocoto_parser.add_argument('--verbosity', help='verbosity level of Rocoto', type=int,
+                               default=10, required=False)
+
+    # EcFlow subparser
+    ecflow_parser = subparsers.add_parser('ecflow',
+                                          help='Use EcFlow workflow engine',
+                                          formatter_class=ArgumentDefaultsHelpFormatter)
+    # EcFlow specific arguments can be added here in the future
 
     return parser.parse_args(argv[0][0] if len(argv[0]) else None)
 
@@ -82,14 +96,26 @@ def check_dir_writable(dir_path):
             return False
 
 
-@logit(logger, name="setup_xml.main")
+@logit(logger, name="setup_workflow.main")
 def main(*argv):
 
     user_inputs = input_args(argv)
-    rocoto_param_dict = {'maxtries': user_inputs.maxtries,
-                         'cyclethrottle': user_inputs.cyclethrottle,
-                         'taskthrottle': user_inputs.taskthrottle,
-                         'verbosity': user_inputs.verbosity}
+
+    # Handle workflow engine selection
+    if user_inputs.workflow == 'ecflow':
+        logger.info("EcFlow workflow engine selected")
+        logger.error("EcFlow workflow is not yet implemented. Please use Rocoto for now.")
+        raise NotImplementedError("EcFlow workflow is not yet implemented")
+
+    logger.info("Rocoto workflow engine selected")
+
+    # Build rocoto parameter dictionary - only available when rocoto is selected
+    rocoto_param_dict = {}
+    if user_inputs.workflow == 'rocoto':
+        rocoto_param_dict = {'maxtries': user_inputs.maxtries,
+                             'cyclethrottle': user_inputs.cyclethrottle,
+                             'taskthrottle': user_inputs.taskthrottle,
+                             'verbosity': user_inputs.verbosity}
 
     cfg = Configuration(user_inputs.expdir)
 

@@ -1,8 +1,6 @@
 experiment:
   net: gefs
   mode: forecast-only
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2SWA
   resdetatmos: 48
@@ -20,3 +18,13 @@ arguments:
 
 skip_ci_on_hosts:
   - None
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
+  ecflow:
+    dummy: 1
