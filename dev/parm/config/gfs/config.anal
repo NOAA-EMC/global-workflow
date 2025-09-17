@@ -156,6 +156,8 @@ if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
    export CONVINFO="generate"
    export OZINFO="generate"
    export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_reanl_ncep_ozone.txt"
+   # Use 2m observations when constructing conventional obs info file
+   export BUILD_2M_OBS="NO"
 else
    export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_ops.txt"
 fi
