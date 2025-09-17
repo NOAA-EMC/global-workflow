@@ -156,6 +156,12 @@ if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
    export CONVINFO="generate"
    export OZINFO="generate"
    export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_reanl_ncep_ozone.txt"
+   if [[ "${PDY}${cyc}" -lt "2022052712" ]]; then
+      # use NASA ozone files for reanalysis before 2022052712
+      export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_reanl_nasa_ozone.txt"
+   else # after 2022052712 use NCEP ozone bufr with hoices from gfsv17_historical
+      export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_reanl_ncep_ozone.txt"
+   fi
    # Use 2m observations when constructing conventional obs info file
    export BUILD_2M_OBS="NO"
 else

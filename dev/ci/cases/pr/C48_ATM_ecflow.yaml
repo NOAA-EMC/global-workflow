@@ -1,32 +1,30 @@
 experiment:
   net: gfs
-  mode: cycled
+  mode: forecast-only
   pslot: {{ 'pslot' | getenv }}
   app: ATM
-  resdetatmos: 96
-  resensatmos: 48
+  resdetatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
-  idate: 2021122012
-  edate: 2021122100
-  nens: 2
-  interval: 24
-  start: cold
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/atmsnowDA_defaults_ci.yaml
+  idate: 2021032312
+  edate: 2021032312
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
 
 skip_ci_on_hosts:
-  - orion
+  - hera
+  - ursa
   - gaeac5
+  - gaeac6
+  - orion
   - hercules
   - awsepicglobalworkflow
+  - wcoss2
 
 workflow:
-  engine: rocoto
+  engine: rocoto  # TODO: change to ecflow soon
   rocoto:
     maxtries: 2
     cyclethrottle: 3
     taskthrottle: 25
-    verbosity: 2
   ecflow:
     dummy: 1

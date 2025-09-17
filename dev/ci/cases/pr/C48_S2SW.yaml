@@ -1,8 +1,6 @@
 experiment:
   net: gfs
   mode: forecast-only
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2SW
   resdetatmos: 48
@@ -12,3 +10,13 @@ arguments:
   idate: 2021032312
   edate: 2021032312
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
+  ecflow:
+    dummy: 1
