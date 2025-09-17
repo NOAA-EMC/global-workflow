@@ -7,6 +7,14 @@ assignees:
   - aerorahul
 
 body:
+  - type: markdown
+    attributes:
+      description: |
+        Process:
+        - Stage data on Ursa or WCOSS2
+        - Make sure permissions are set properly (global read access)
+        - CMs will push data and ask for verification
+
   - type: checkboxes
     attributes:
       label: Type of static data
