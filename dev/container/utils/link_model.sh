@@ -53,7 +53,9 @@ rm -f "${run_model_script}"
 cat > "${run_model_script}" << EOF_MODEL
 #!/bin/bash
 
-source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
+source /usr/lmod/lmod/init/bash
+module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
+module load ufs_container.intel
 
 ${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x "\$@"
 EOF_MODEL

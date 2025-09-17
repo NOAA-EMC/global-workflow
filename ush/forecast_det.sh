@@ -17,8 +17,10 @@ UFS_det(){
     # Ensure cold start ICs are present when warm start is not set
     # TODO: add checks for other cold start ICs as well
     if [[ ! -f "${COMIN_ATMOS_INPUT}/gfs_ctrl.nc" ]]; then
-      echo "FATAL ERROR: Cold start ICs are missing from '${COMIN_ATMOS_INPUT}'"
-      exit 1
+      if [[ ! -L "${COMIN_ATMOS_INPUT}/gfs_ctrl.nc" ]]; then
+        echo "FATAL ERROR: Cold start ICs are missing from '${COMIN_ATMOS_INPUT}'"
+        exit 1
+      fi
     fi
 
     # Since warm start is false, we cannot do IAU
