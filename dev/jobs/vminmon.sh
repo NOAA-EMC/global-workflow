@@ -4,9 +4,11 @@ set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
+source "${HOMEgfs}/dev/ush/load_gw_gsi_modules.sh"
 status=$?
-(( status != 0 )) && exit "${status}"
+if [[ status -ne 0 ]]; then
+  exit "${status}"
+fi
 
 export job="vminmon"
 export jobid="${job}.$$"

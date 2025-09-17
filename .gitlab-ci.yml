@@ -47,6 +47,9 @@ variables:
   PR_NUMBER: 0 # PR number is set by GitHub Actions
                # when the pipeline is triggered from a PR
 
+workflow:
+  name: "PR ${PR_NUMBER} - ${RUN_ON_MACHINES} (${GFS_CI_RUN_TYPE})"
+
 # Include specialized pipeline configuration files
 include:
   - local: 'dev/ci/gitlab-ci-ctests.yml'  # CTest framework configuration
