@@ -666,8 +666,8 @@ if [[ ${DOHYBVAR} == "YES" && ${l4densvar} == ".true." && ${lwrite4danl} == ".tr
    ${NLN} "${ATMA09}"   siga09
    ${NLN} "${ATMI09}"   sigi09.nc
 fi
-${NLN} ${ABIAS}"    satbias_out
-${NLN} ${ABIASPC}"  satbias_pc.out
+${NLN} "${ABIAS}"    satbias_out
+${NLN} "${ABIASPC}"  satbias_pc.out
 ${NLN} ${ABIASAIR} aircftbias_out
 
 if [[ ${DONST} == "YES" ]]; then
