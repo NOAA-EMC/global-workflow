@@ -17,7 +17,6 @@ base:
 
 prepoceanobs:
   use_exp_obs: "YES"
-    #  dmpdir_exp: /scratch3/NCEPDEV/da/common/
   dmpdir_exp: "${BASE_DATA}/experimental_obs"
 
 
