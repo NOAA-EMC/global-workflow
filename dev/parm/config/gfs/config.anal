@@ -161,6 +161,13 @@ if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
    else # after 2022052712 use NCEP ozone bufr with hoices from gfsv17_historical
       export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_reanl_ncep_ozone.txt"
    fi
+
+   # Use 2m observations when constructing conventional obs info file
+   if [[ ${DO_GSISOILDA} == "YES" ]]; then
+      export BUILD_2M_OBS="YES"
+   else
+      export BUILD_2M_OBS="NO"
+   fi
 else
    export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_ops.txt"
 fi
