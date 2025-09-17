@@ -26,7 +26,7 @@ fi
 get_usedate() {
   usedate=""
   # Loop over files matching date pattern.
-  for datex in [1-2]*; do
+  for datex in [12][0-9][0-9][0-9]*; do
     # Skip for loop if there are no matches.
     if [[ ! -e "${datex}" ]]; then
       continue
