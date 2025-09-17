@@ -24,7 +24,6 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # transferred.
 
-#_COMROOT_/gfs/_SHORTVER_/gfs._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/gfs._PDY_/
 _COMROOT_/gfs/_SHORTVER_/gfs._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/gfs._PDY_/
 + /??/
 + /??/atmos/
@@ -64,7 +63,6 @@ _COMROOT_/gfs/_SHORTVER_/gfs._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/gfs.
 + /??/atmos/gfs.t??z.sfcf045.nc
 + /??/atmos/gfs.t??z.sfcf048.nc
 - *
-E
-# This directory is a good candidate for compression
-#Z
+W
+# E is not needed since no restricted data is mirrored by this job
 
