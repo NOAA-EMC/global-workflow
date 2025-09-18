@@ -114,7 +114,7 @@ output_files:
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f066.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f066.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f069.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f069.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f072.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f072.nc]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f075.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atmf075.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f075.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f075.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f078.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f078.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f081.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f081.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f084.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.f084.nc]

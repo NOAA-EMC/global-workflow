@@ -54,9 +54,9 @@
 ##
 ## Data output (location, name)
 ##	If quilting=true and output grid is gaussian grid:
-##	   1. atmf data, $memdir/${RUN}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
-##	   2. sfcf data, $memdir/${RUN}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
-##	   3. logf data, $memdir/${RUN}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
+##	   1. atmf data, $memdir/${RUN}.t${cyc}z.atm.f${FH3}.$OUTPUT_FILE
+##	   2. sfcf data, $memdir/${RUN}.t${cyc}z.sfc.f${FH3}.$OUTPUT_FILE
+##	   3. logf data, $memdir/${RUN}.t${cyc}z.log.f${FH3}.$OUTPUT_FILE
 ##	If quilting=false and output grid is not gaussian grid:
 ##           1. NGGPS2D, $memdir/nggps2d.tile${n}.nc
 ##	   2. NGGPS3D, $memdir/nggps3d.tile${n}.nc
