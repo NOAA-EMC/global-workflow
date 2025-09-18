@@ -13,13 +13,13 @@ from wxflow import (AttrDict, FileHandler, Task,
                     parse_j2yaml,
                     logit,
                     Template, TemplateConstants)
-from pygfs.task.fv3_analysis import FV3Analysis
+from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AtmEnsAnalysis(FV3Analysis):
+class AtmEnsAnalysis(Analysis):
     """
     Class for JEDI-based global atmens analysis tasks
     """

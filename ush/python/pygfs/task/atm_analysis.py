@@ -11,13 +11,13 @@ from wxflow import (AttrDict, FileHandler,
                     add_to_datetime, to_timedelta,
                     parse_j2yaml,
                     logit, save_as_yaml)
-from pygfs.task.fv3_analysis import FV3Analysis
+from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AtmAnalysis(FV3Analysis):
+class AtmAnalysis(Analysis):
     """
     Class for JEDI-based global atm deterministic analysis tasks
     """

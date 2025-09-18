@@ -10,12 +10,12 @@ from wxflow import (AttrDict, FileHandler, Task,
                     to_timedelta, add_to_datetime, to_fv3time, to_isotime,
                     logit)
 from pygfs.jedi import Jedi
-from pygfs.task.fv3_analysis import FV3Analysis
+from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class FV3AnalysisCalc(FV3Analysis):
+class FV3AnalysisCalc(Analysis):
     """
     Class for analysis calculation
     """

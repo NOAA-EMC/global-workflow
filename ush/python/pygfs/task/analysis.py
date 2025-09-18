@@ -12,7 +12,7 @@ from wxflow import (AttrDict, Task,
 logger = getLogger(__name__.split('.')[-1])
 
 
-class FV3Analysis(Task):
+class Analysis(Task):
     """
     General class for JEDI-based global FV3 analysis tasks
     """

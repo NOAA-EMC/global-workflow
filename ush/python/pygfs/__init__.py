@@ -2,7 +2,6 @@
 import os
 
 from .task.analysis import Analysis
-from .task.fv3_analysis import FV3Analysis
 from .task.aero_emissions import AerosolEmissions
 from .task.aero_analysis import AerosolAnalysis
 from .task.aero_bmatrix import AerosolBMatrix

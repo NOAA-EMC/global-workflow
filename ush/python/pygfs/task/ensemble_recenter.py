@@ -8,13 +8,13 @@ from wxflow import (AttrDict, FileHandler, Task, Executable, Template, TemplateC
                     add_to_datetime, to_timedelta, to_isotime, to_YMD,
                     parse_j2yaml,
                     logit)
-from pygfs.task.fv3_analysis import FV3Analysis
+from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class EnsembleRecenter(FV3Analysis):
+class EnsembleRecenter(Analysis):
     """
     Class for JEDI-based ensemble increment recentering
     """
