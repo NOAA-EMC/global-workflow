@@ -258,7 +258,6 @@ class ChemFireEmissions(Task):
         elif self.task_config.AERO_EMIS_FIRE.lower() == 'qfed':
             # Process QFED files for each forecast date
             processed_files.extend(self._process_qfed_files(workdir))
-        
         else:
             logger.warning(f"Unknown AERO_EMIS_FIRE type: {self.task_config.AERO_EMIS_FIRE}")
             raise WorkflowException(f"Unsupported AERO_EMIS_FIRE type: {self.task_config.AERO_EMIS_FIRE}")
