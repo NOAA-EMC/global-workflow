@@ -30,5 +30,3 @@ workflow:
     cyclethrottle: 3
     taskthrottle: 75
     verbosity: 2
-  ecflow:
-    dummy: 1
