@@ -11,6 +11,7 @@ experiment:
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
 
 skip_ci_on_hosts:
+  - wcoss2
   - hera
   - ursa
   - gaeac5
@@ -18,13 +19,8 @@ skip_ci_on_hosts:
   - orion
   - hercules
   - awsepicglobalworkflow
-  - wcoss2
 
 workflow:
-  engine: rocoto  # TODO: change to ecflow soon
-  rocoto:
-    maxtries: 2
-    cyclethrottle: 3
-    taskthrottle: 25
+  engine: ecflow
   ecflow:
-    dummy: 1
+    verbosity: 1
