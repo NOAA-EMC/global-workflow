@@ -1304,7 +1304,7 @@ case ${step} in
     walltime="00:20:00"
     ntasks=80
     threads_per_task=4
-    if [[ "${CASE}" == "C384" || "${CASE}" == "C192" || "${CASE}" == "C96" || "${CASE}" == "C48" ]]; then
+    if [[ "${CASE:1}" -le 384 ]]; then
       threads_per_task=2
     fi
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
