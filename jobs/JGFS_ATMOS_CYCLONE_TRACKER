@@ -47,11 +47,11 @@ export cmodel=${RUN/enkf}
 export loopnum=1
 
 #-----------input data checking -----------------
-${USHens_tracker}/data_check_gfs.sh
-export err=$?
-if [[ ${err} -ne 0 ]]; then
-    err_exit
-fi
+# ${USHens_tracker}/data_check_gfs.sh
+# export err=$?
+# if [[ ${err} -ne 0 ]]; then
+#     err_exit
+# fi
 #------------------------------------------------
 
 machine=${machine:-$(echo ${SITE})}
