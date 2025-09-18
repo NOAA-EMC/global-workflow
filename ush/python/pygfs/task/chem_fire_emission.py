@@ -467,9 +467,6 @@ class ChemFireEmissions(Task):
                     files_found.append(full_path)
                     logger.debug(f"Found exact QFED file: {full_path}")
 
-                if not os.path.exists(full_path):
-                    logger.warning(f"File not found: {full_path}")
-
         if not files_found:
             logger.warning(f"No QFED files found for dates {date_strings} and variables {vars}")
 
