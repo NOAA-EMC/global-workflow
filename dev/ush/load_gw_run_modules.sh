@@ -68,7 +68,6 @@ case "${MACHINE_ID}" in
     module purge
     module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
     module load gfsutils_container.intel
-    export UTILROOT=${prod_util_ROOT}
     ;;
   *)
     echo "WARNING: UNKNOWN PLATFORM"
@@ -81,8 +80,8 @@ if [[ ${err} -ne 0 ]]; then
   exit 1
 fi
 
-# module load wgrib2
-# module load prod_util
+module load wgrib2
+module load prod_util
 export WGRIB2=wgrib2
 
 # Turn on our settings
