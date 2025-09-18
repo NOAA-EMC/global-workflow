@@ -17,7 +17,7 @@ if [[ ${DOHYBVAR} = "YES" ]]; then
     export CASE_ANL=${CASE_ENS}
     export BERROR_YAML="atmosphere_background_error_hybrid_${STATICB_TYPE}_${LOCALIZATION_TYPE}"
 else
-    export CASE_ANL=${CASE_HIST}
+    export CASE_ANL=${CASE}
     export BERROR_YAML="atmosphere_background_error_static_${STATICB_TYPE}"
 fi
 
