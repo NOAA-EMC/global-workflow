@@ -8,7 +8,7 @@ for GFS forecast-only runs. It handles cycle definitions and specific task confi
 needed for the GFS workflow.
 """
 
-from rocoto.workflow_xml import RocotoXML
+from rocoto.rocoto_xml import RocotoXML
 from applications.applications import AppConfig
 from wxflow import to_timedelta, timedelta_to_HMS
 from typing import Dict
