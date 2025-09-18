@@ -143,7 +143,8 @@ class SnowAnalysis(Task):
         FileHandler({'mkdir': newdirs}).sync()
 
         # if 00z, do SCF preprocessing
-        if self.task_config.cyc == 0:
+        infile = f'{self.task_config.COMIN_OBS}/{self.task_config.OPREFIX}imssnow96.asc'
+        if self.task_config.cyc == 0 and os.path.exists(infile):
             ims_scf_to_ioda_staging_dict = parse_j2yaml(self.task_config.STAGE_IMS_SCF2IODA_YAML, self.task_config)
             FileHandler(ims_scf_to_ioda_staging_dict).sync()
             self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
@@ -168,7 +169,9 @@ class SnowAnalysis(Task):
         None
         """
 
-        self.jedi_dict[jedi_dict_key].execute()
+        infile = f'{self.task_config.DATA}/{jedi_dict_key}.yaml'
+        if os.path.exists(infile):
+            self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
     def finalize(self) -> None:
