@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import os
-import tarfile
 from logging import getLogger
 from typing import List, Dict, Any, Optional
 from pprint import pformat
@@ -266,89 +264,6 @@ class Jedi:
             # If no observers left in list, raise error
             if observers == []:
                 raise WorkflowException(f"No observers found in JEDI input config")
-
-    @staticmethod
-    @logit(logger)
-    def remove_redundant(input_list: List) -> List:
-        """Remove reduncancies from list with possible redundant, non-mutable elements
-
-        Parameters
-        ----------
-        input_list : List
-            List with possible redundant, non-mutable elements
-
-        Returns
-        ----------
-        output_list : List
-            Input list but with redundancies removed
-        """
-
-        output_list = []
-        for item in input_list:
-            if item not in output_list:
-                output_list.append(item)
-
-        return output_list
-
-    @staticmethod
-    @logit(logger)
-    def extract_tar_from_filehandler_dict(filehandler_dict) -> None:
-        """Extract tarballs from FileHandler input dictionary
-
-        This method extracts files from tarballs specified in a FileHander
-        input dictionary for the 'copy' action.
-
-        Parameters
-        ----------
-        filehandler_dict
-            Input dictionary for FileHandler
-
-        Returns
-        ----------
-        None
-        """
-
-        for item in filehandler_dict['copy']:
-            # Use the filename from the destination entry if it's a file path
-            # Otherwise, it's a directory, so use the source entry filename
-            if os.path.isfile(item[1]):
-                filename = os.path.basename(item[1])
-            else:
-                filename = os.path.basename(item[0])
-
-            # Check if file is a tar ball
-            if os.path.splitext(filename)[1] == '.tar':
-                tar_file = f"{os.path.dirname(item[1])}/{filename}"
-
-                # Extract tarball
-                logger.info(f"Extract files from {tar_file}")
-                Jedi.extract_tar(tar_file)
-
-    @staticmethod
-    @logit(logger)
-    def extract_tar(tar_file: str) -> None:
-        """Extract files from a tarball
-
-        This method extract files from a tarball
-
-        Parameters
-        ----------
-        tar_file
-            path/name of tarball
-
-        Returns
-        ----------
-        None
-        """
-
-        # extract files from tar file
-        tar_path = os.path.dirname(tar_file)
-        try:
-            with tarfile.open(tar_file, "r") as tarball:
-                tarball.extractall(path=tar_path)
-                logger.info(f"Extract {tarball.getnames()}")
-        except Exception as e:
-            raise WorkflowException(f"An error occurred while extracting {tar_file}:\n{e}") from e
 
 
 @logit(logger)

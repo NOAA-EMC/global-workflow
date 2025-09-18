@@ -52,8 +52,10 @@ class FV3AnalysisCalc(FV3Analysis):
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
+                'npz_ges': self.task_config.LEVS - 1,
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
+                'npz_anl': self.task_config.LEVS - 1,
             }
         )
 

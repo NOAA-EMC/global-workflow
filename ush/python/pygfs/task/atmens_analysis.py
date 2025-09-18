@@ -50,6 +50,7 @@ class AtmEnsAnalysis(FV3Analysis):
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
+                'npz_ges': self.task_config.LEVS - 1,
             })
         )
 
@@ -90,7 +91,7 @@ class AtmEnsAnalysis(FV3Analysis):
         for ob in self.task_config.observations:
             if ob in self.task_config.bias_files and not self.task_config.bias_files[ob] in bias_file_list:
                 bias_file_list.append(self.task_config.bias_files[ob])
-                Jedi.extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')
+                FV3Analysis.extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")
@@ -150,24 +151,9 @@ class AtmEnsAnalysis(FV3Analysis):
         None
         """
 
-        # Set paths of output tar files
-        diagtar = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX_ENS}atmensstat")
-
-        # Get lists of files to put in tarballs
-        diaglist = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
-
-        # Compress diag files
-        logger.info(f"Compressing {len(diaglist)} diag files")
-        for diagfile in diaglist:
-            with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
-                f_out.writelines(f_in)
-
-        # Create tarball of compressed diag files in COM
-        logger.debug(f"Creating tarball {diagtar} with {len(diaglist)} compressed diag files")
-        with tarfile.open(diagtar, "w") as archive:
-            for diagfile in diaglist:
-                diaggzip = f"{diagfile}.gz"
-                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
+        # Compress and tar diag files in COM directory
+        self.tar_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS,
+                            f"{self.task_config.APREFIX_ENS}atmstat")
 
         # Save files from COM
         logger.info(f"Saving files to COM")

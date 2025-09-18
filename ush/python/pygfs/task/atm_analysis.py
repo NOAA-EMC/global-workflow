@@ -48,7 +48,6 @@ class AtmAnalysis(FV3Analysis):
             _res_anl = int(self.task_config.CASE[1:])
 
         _localization_type = 'bump'
-
         if self.task_config.DOHYBVAR:
             _BERROR_YAML = f"atmosphere_background_error_hybrid_{self.task_config.STATICB_TYPE}_{_localization_type}"
         else:
@@ -59,8 +58,10 @@ class AtmAnalysis(FV3Analysis):
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
+                'npz_ges': self.task_config.LEVS - 1,
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
+                'npz_anl': self.task_config.LEVS - 1,
                 'BERROR_YAML': _BERROR_YAML,
             }
         ))
@@ -103,7 +104,7 @@ class AtmAnalysis(FV3Analysis):
         for ob in self.task_config.observations:
             if ob in self.task_config.bias_files and not self.task_config.bias_files[ob] in bias_file_list:
                 bias_file_list.append(self.task_config.bias_files[ob])
-                Jedi.extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')
+                FV3Analysis.extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')
 
         # Initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")
@@ -145,37 +146,13 @@ class AtmAnalysis(FV3Analysis):
         None
         """
 
-        # Set paths of output tar files
-        diagtar = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atmstat")
-        radtar = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}rad_varbc_params.tar")
+        # Compress and tar diag files in COM directory
+        self.tar_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS,
+                            f"{self.task_config.APREFIX}atmstat")
 
-        # Get lists of files to put in tarballs
-        diaglist = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
-        satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
-        tlaplist = glob.glob(os.path.join(self.task_config.DATA, 'obs', '*tlapse.txt'))
-
-        # Compress diag files
-        logger.info(f"Compressing {len(diaglist)} diag files")
-        for diagfile in diaglist:
-            with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
-                f_out.writelines(f_in)
-
-        # Create tarball of compressed diag files in COM
-        logger.debug(f"Creating tarball {diagtar} with {len(diaglist)} compressed diag files")
-        with tarfile.open(diagtar, "w") as archive:
-            for diagfile in diaglist:
-                diaggzip = f"{diagfile}.gz"
-                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
-
-        # Create tarball of radiance bias correction files
-        logger.info(f"Creating radiance bias correction tarball {radtar}")
-        with tarfile.open(radtar, 'w') as radbcor:
-            logger.info(f"Adding {radbcor.getnames()}")
-            for satfile in satlist:
-                radbcor.add(satfile, arcname=os.path.basename(satfile))
-            for tlapfile in tlaplist:
-                # Change OPREFIX to APREFIX in tlapse file name when adding to tarball
-                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.task_config.OPREFIX, self.task_config.APREFIX)))
+        # Tar radiative bias correction files into COM directory
+        self.tar_radiative_bias_corrections(self.task_config.COMOUT_ATMOS_ANALYSIS,
+                                            f"{self.task_config.APREFIX}rad_varbc_params.tar")
 
         # Save files from COM
         logger.info(f"Saving files to COM")
