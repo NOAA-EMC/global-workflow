@@ -110,7 +110,7 @@ include:
       fi
 
       # Configure GitLab native GitHub integration
-      if [[ -n "${GITHUB_COMMIT_SHA:-}" && "${PR_NUMBER}" != "0" ]]; then
+      if [[ -n "${GITHUB_COMMIT_SHA:-}" && ${PR_NUMBER} -ne 0 ]]; then
         echo "Configuring GitLab native GitHub integration for commit: ${GITHUB_COMMIT_SHA}"
         export CI_COMMIT_SHA="${GITHUB_COMMIT_SHA}"
         echo "GitLab will report status to GitHub for this commit"
