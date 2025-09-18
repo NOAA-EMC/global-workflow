@@ -19,11 +19,11 @@ if __name__ == '__main__':
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Instantiate the emissions pre-processing task
-    emissions = ChemFireEmissions(config)
-    emissions.initialize()
-    emissions.configure()
-    emissions.execute()
-    emissions.finalize()
+    fireemis = ChemFireEmissions(config)
+    fireemis.initialize()
+    fireemis.configure()
+    fireemis.execute()
+    fireemis.finalize()
 
     nxsemis = NEXUSEmissions(config)
     nxsemis.initialize()

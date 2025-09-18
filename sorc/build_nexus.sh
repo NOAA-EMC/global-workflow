@@ -1,6 +1,14 @@
 #! /usr/bin/env bash
 set -eux
 
+usage() {
+  echo "Usage: $0 [-d] [-j <jobs>] [-v]"
+  echo "  -d        Build in debug mode"
+  echo "  -j <jobs> Number of parallel build jobs"
+  echo "  -v        Verbose build output"
+  exit 1
+}
+
 # shellcheck disable=SC2155
 readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
 

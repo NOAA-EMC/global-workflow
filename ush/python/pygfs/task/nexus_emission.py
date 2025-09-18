@@ -151,7 +151,8 @@ class NEXUSEmissions(Task):
             'NEXUS_NZ',
             'NEXUS_XMIN',
             'NEXUS_XMAX',
-            'NEXUS_YMIN'
+            'NEXUS_YMIN',
+            'NEXUS_YMAX'
         ]
         for param in required_grid_params:
             if not self.task_config.get(param, None):
@@ -339,7 +340,6 @@ class NEXUSEmissions(Task):
             logger.info(f"Processing NEXUS files for date: {date}")
 
             dsets = []
-            print(indexes, len(files))
             for index in indexes:
                 # list files for log
                 logger.info(f" - {files[index]}, {index}")
@@ -368,44 +368,6 @@ class NEXUSEmissions(Task):
             outname = f"{self.task_config.NEXUS_DIAG_PREFIX}.{day_str}.nc"
             ds.to_netcdf(outname, format="NETCDF4", encoding=encoding)
             logger.info(f"Wrote daily output: {outname}")
-
-        # dsets = []
-        # for index, fname in enumerate(files):
-        #     dset = xr.open_dataset(fname,decode_cf=False)
-        #     dsets.append(dset.assign_coords(time=[index]))
-
-        # # Concatenate along time dimension
-        # ds = xr.concat(dsets, dim="time")
-        # ds.time.attrs['units'] = self.start_date.strftime('hours since %y-%m-%d %H:00:00')
-
-        # # Convert raw time values to datetime objects using cftime
-        # if 'time' not in ds.dims:
-        #     raise WorkflowException("No 'time' dimension found in NEXUS output dataset.")
-
-        # time_var = ds['time']
-        # time_units = time_var.attrs.get('units', None)
-        # time_calendar = time_var.attrs.get('calendar', 'standard')
-        # if time_units is None:
-        #     raise WorkflowException("No 'units' attribute found for time variable.")
-
-        # # Convert time values to datetime objects
-        # time_vals = np.arange(len(files))
-        # ds = ds.assign_coords(time=time_vals)
-        # time_dt = cftime.num2date(time_vals, units=time_units, calendar=time_calendar)
-
-        # # Group indices by day
-
-        # day_to_indices = defaultdict(list)
-        # for idx, dt in enumerate(time_dt):
-        #     day_to_indices[dt.strftime('%y%m%d')].append(idx)
-
-        # encoding = {var: {"zlib": True, "complevel": 4} for var in ds.data_vars}
-        # for day_str, indices in day_to_indices.items():
-        #     daily_ds = ds.isel(time=indices)
-        #     daily_ds.time.attrs['units'] = units_string
-        #     outname = f"{self.task_config.NEXUS_DIAG_PREFIX}.{day_str}.nc"
-        #     daily_ds.to_netcdf(outname, format="NETCDF4", encoding=encoding)
-        #     logger.info(f"Wrote daily output: {outname}")
 
         logger.info("NEXUS emission processing execute phase complete")
 

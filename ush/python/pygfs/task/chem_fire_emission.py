@@ -51,11 +51,11 @@ class ChemFireEmissions(Task):
             nforecast_hours = self.task_config["FHMAX_GFS"]
         logger.info(f"Number of forecast hours: {nforecast_hours}")
 
-        # Create start date based on SDATE - 12 hours
+        # Create start date based on SDATE
         self.start_date = self.task_config["SDATE_GFS"]
         logger.info(f"Start date: {self.start_date}")
 
-        # end date = SDATE + nforecast hours + 24
+        # end date = SDATE + nforecast hours + 36
         self.end_date = self.task_config["SDATE_GFS"] + to_timedelta(f'{nforecast_hours + 36}H')
         logger.info(f"End date: {self.end_date}")
 
@@ -258,6 +258,10 @@ class ChemFireEmissions(Task):
         elif self.task_config.AERO_EMIS_FIRE.lower() == 'qfed':
             # Process QFED files for each forecast date
             processed_files.extend(self._process_qfed_files(workdir))
+        
+        else:
+            logger.warning(f"Unknown AERO_EMIS_FIRE type: {self.task_config.AERO_EMIS_FIRE}")
+            raise WorkflowException(f"Unsupported AERO_EMIS_FIRE type: {self.task_config.AERO_EMIS_FIRE}")
 
         # Add processed files to task_config
         outdict = {'processed_files': processed_files}
