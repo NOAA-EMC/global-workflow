@@ -4,7 +4,7 @@ from logging import getLogger
 import os
 import tarfile
 from typing import Any, Dict
-from wxflow import (AttrDict, Task,
+from wxflow import (AttrDict, Task, WorkflowException,
                     add_to_datetime, to_timedelta, to_isotime,
                     parse_j2yaml,
                     logit)
@@ -14,9 +14,9 @@ logger = getLogger(__name__.split('.')[-1])
 
 class Analysis(Task):
     """
-    General class for JEDI-based global FV3 analysis tasks
+    General class for JEDI-based global analysis tasks
     """
-    @logit(logger, name="FV3Analysis")
+    @logit(logger, name="Analysis")
     def __init__(self, config: Dict[str, Any]):
         """Constructor global atm analysis task
 
