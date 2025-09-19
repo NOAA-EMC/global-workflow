@@ -1,8 +1,6 @@
 experiment:
   net: gfs
   mode: cycled
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2S
   resdetatmos: 384
@@ -18,3 +16,11 @@ arguments:
   #icsdir: /work/noaa/da/gvernier/ensda/ictest/1440x1080x75/
   icsdir: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/prepics/hybrid-test/
   yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/marinehyb.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
