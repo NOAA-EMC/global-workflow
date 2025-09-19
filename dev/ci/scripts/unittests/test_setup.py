@@ -58,12 +58,12 @@ def test_setup_expt():
             os.environ.pop('HPC_ACCOUNT', None)
 
 
-def test_setup_xml():
+def test_setup_workflow():
 
-    setup_xml_script = Executable(os.path.join(HOMEgfs, "dev/workflow/setup_xml.py"))
-    setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
-    setup_xml_script()
-    assert (setup_xml_script.returncode == 0)
+    setup_workflow_script = Executable(os.path.join(HOMEgfs, "dev/workflow/setup_workflow.py"))
+    cmd_args = [f"{RUNDIR}/{pslot}", "rocoto"]
+    setup_workflow_script(*cmd_args)
+    assert (setup_workflow_script.returncode == 0)
 
     # Get the account value from the config file
     cfg = Configuration(f"{RUNDIR}/{pslot}")
@@ -74,25 +74,19 @@ def test_setup_xml():
         contents = file.read()
     assert contents.count(account_value) > 5
 
-    rmtree(RUNDIR)
+    rmtree(RUNDIR)  # TODO: should this be cleaned here or at end of all tests?
 
 
-def test_setup_xml_fail_config_env_cornercase():
+def test_setup_workflow_fail_config_env_cornercase(tmp_path):
 
-    script_content = ('''#!/usr/bin/env bash
-export HOMEgfs=foobar
-../../../workflow/setup_xml.py "${1}"\n
-''')
-
-    with open('run_setup_xml.sh', 'w') as file:
-        file.write(script_content)
-    os.chmod('run_setup_xml.sh', 0o755)
+    setup_workflow_script = Executable(os.path.join(HOMEgfs, "dev/workflow/setup_workflow.py"))
+    cmd_args = [f"{RUNDIR}/{pslot}", "rocoto"]
+    env = os.environ.copy()
+    env['HOMEgfs'] = 'foobar'  # Intentionally incorrect to trigger failure
 
     try:
-        setup_xml_script = Executable(os.path.join(HOMEgfs, "dev/ci/scripts/tests/run_setup_xml.sh"))
-        setup_xml_script.add_default_arg(f"{RUNDIR}/{pslot}")
-        setup_xml_script()
-        assert (setup_xml_script.returncode == 0)
+        setup_workflow_script(*cmd_args, env=env)
+        assert (setup_workflow_script.returncode == 0)
 
         cfg = Configuration(f"{RUNDIR}/{pslot}")
         base = cfg.parse_config('config.base')
@@ -108,13 +102,13 @@ export HOMEgfs=foobar
     except ProcessError as e:
         # We expect this fail becuse ACCOUNT=fv3-cpu in config.base and environment
         pass
+
     except Exception as e:
         # If an exception occurs, pass the test with a custom message
         pytest.fail(f"Expected exception occurred: {e}")
 
     finally:
         # Cleanup code to ensure it runs regardless of test outcome
-        os.remove('run_setup_xml.sh')
         try:
             rmtree(RUNDIR)
         except FileNotFoundError:

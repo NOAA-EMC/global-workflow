@@ -1,8 +1,6 @@
 experiment:
   net: gfs
   mode: cycled
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2SW
   resdetatmos: 1152
@@ -20,3 +18,11 @@ arguments:
   #edate: 2023061600
   #icsdir: /lfs/h2/emc/da/noscrub/catherine.thomas/ICS/C1152C384/2023041506
   yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
