@@ -1,8 +1,6 @@
 experiment:
   net: gfs
   mode: cycled
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2S
   resdetatmos: 384
@@ -20,3 +18,11 @@ arguments:
   # NOTE this directory is read-only
   icsdir: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/prepics/hybrid-test/
   yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/marine3dvar.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
