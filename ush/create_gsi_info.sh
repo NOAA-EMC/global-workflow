@@ -85,7 +85,7 @@ build_info_file() {
 
     usedate=$(get_usedate)
 
-    cd "${info_file}" || exit 1
+    cd "${build_dir}" || exit 1
 
     if [[ ${usedate} != "" ]]; then
       cat "${sat}/${usedate}" >> "${info_file}"
