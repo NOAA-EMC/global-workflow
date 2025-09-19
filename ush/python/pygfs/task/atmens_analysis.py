@@ -1,20 +1,10 @@
 #!/usr/bin/env python3
 
-import os
-import glob
-import gzip
-import tarfile
 from logging import getLogger
-from pprint import pformat
-from typing import Dict, Any
-
-from wxflow import (AttrDict, FileHandler, Task,
-                    add_to_datetime, to_timedelta, to_YMD,
-                    parse_j2yaml,
-                    logit,
-                    Template, TemplateConstants)
 from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
+from typing import Dict, Any
+from wxflow import AttrDict, FileHandler, parse_j2yaml, logit
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -51,8 +41,12 @@ class AtmEnsAnalysis(Analysis):
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
+                'npz': self.task_config.LEVS - 1,
             })
         )
+
+        # Extend task_config with content of config yaml for this task
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of JEDI objects
         expected_keys = ['atmensanlobs', 'atmensanlsol', 'atmensanlfv3inc', 'atmensanlletkf']
@@ -87,11 +81,7 @@ class AtmEnsAnalysis(Analysis):
 
         # Extract bias corrections from tar files
         logger.info(f"Extracting bias corrections from tar files")
-        bias_file_list = []
-        for ob in self.task_config.observations:
-            if ob in self.task_config.bias_files and not self.task_config.bias_files[ob] in bias_file_list:
-                bias_file_list.append(self.task_config.bias_files[ob])
-                FV3Analysis.extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')
+        self.untar_bias_corrections()
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")
@@ -158,6 +148,3 @@ class AtmEnsAnalysis(Analysis):
         # Save files from COM
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.save).sync()
-
-    def clean(self):
-        super().clean()

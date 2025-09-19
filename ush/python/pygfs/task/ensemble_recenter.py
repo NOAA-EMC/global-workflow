@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
 
-from datetime import timedelta
 from logging import getLogger
-import os
-from pprint import pformat
-from wxflow import (AttrDict, FileHandler, Task, Executable, Template, TemplateConstants,
-                    add_to_datetime, to_timedelta, to_isotime, to_YMD,
-                    parse_j2yaml,
-                    logit)
 from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
+from typing import Dict, Any
+from wxflow import AttrDict, FileHandler, parse_j2yaml, logit
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -19,7 +14,7 @@ class EnsembleRecenter(Analysis):
     Class for JEDI-based ensemble increment recentering
     """
     @logit(logger, name="EnsembleRecenter")
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, Any]):
         """Constructor for atmospheric ensemble increment recentering task
 
         This method will construct an ensemble increment recentering task
@@ -50,8 +45,12 @@ class EnsembleRecenter(Analysis):
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
                 'npz_anl': self.task_config.LEVS - 1,
+                'npz': self.task_config.LEVS - 1,
             }
         ))
+
+        # Extend task_config with content of config yaml for this task
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of Jedi objects
         expected_keys = ['correction_increment', 'ensemble_recenter']

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import glob
+import gzip
 from logging import getLogger
 import os
 import tarfile
@@ -67,9 +69,6 @@ class Analysis(Task):
             }
         ))
 
-        # Extend task_config with content of config yaml for this task
-        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
-
     def initialize(self) -> None:
         self.initialize()
 
@@ -79,11 +78,31 @@ class Analysis(Task):
     def finalize(self) -> None:
         super.finalize()
 
-    def clean(self):
+    def clean(self) -> None:
         super().clean()
 
     @logit(logger)
-    def tar_diag_files(self, comout, tarball_name):
+    def untar_bias_corrections(self) -> None:
+        """Extract bias correction files from tarballs
+        This method will extract bias correction files from tarballs
+        
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        bias_file_list = []
+        for ob in self.task_config.observations:
+            if ob in self.task_config.bias_files and not self.task_config.bias_files[ob] in bias_file_list:
+                bias_file_list.append(self.task_config.bias_files[ob])
+                extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')
+
+    @logit(logger)
+    def tar_diag_files(self, comout: str, tarball_name: str) -> None:
         """Compress and tar diag files into COM directory
 
         Parameters
@@ -117,7 +136,8 @@ class Analysis(Task):
                 diaggzip = f"{diagfile}.gz"
                 archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
-    def tar_radiative_bias_corrections(self, comout, tarball_name):
+    @logit(logger)
+    def tar_radiative_bias_corrections(self, comout: str, tarball_name: str) -> None:
         """Tar radiative bias correction files and into COM directory
 
         Parameters
@@ -133,7 +153,7 @@ class Analysis(Task):
         """
 
         # Set paths of output tar files
-        radtar = os.path.join(comout, tarball_name")
+        radtar = os.path.join(comout, tarball_name)
 
         # Get lists of files to put in tarballs
         satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
@@ -149,28 +169,28 @@ class Analysis(Task):
                 # Change OPREFIX to APREFIX in tlapse file name when adding to tarball
                 radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.task_config.OPREFIX, self.task_config.APREFIX)))
 
-    @staticmethod
-    @logit(logger)
-    def extract_tar(tar_file: str) -> None:
-        """Extract files from a tarball
 
-        This method extract files from a tarball
+@logit(logger)
+def extract_tar(tar_file: str) -> None:
+    """Extract files from a tarball
 
-        Parameters
-        ----------
-        tar_file
-            path/name of tarball
+    This method extract files from a tarball
 
-        Returns
-        ----------
-        None
-        """
+    Parameters
+    ----------
+    tar_file
+        path/name of tarball
 
-        # extract files from tar file
-        tar_path = os.path.dirname(tar_file)
-        try:
-            with tarfile.open(tar_file, "r") as tarball:
-                tarball.extractall(path=tar_path)
-                logger.info(f"Extract {tarball.getnames()}")
-        except Exception as e:
-            raise WorkflowException(f"An error occurred while extracting {tar_file}:\n{e}") from e
+    Returns
+    ----------
+    None
+    """
+
+    # extract files from tar file
+    tar_path = os.path.dirname(tar_file)
+    try:
+        with tarfile.open(tar_file, "r") as tarball:
+            tarball.extractall(path=tar_path)
+            logger.info(f"Extract {tarball.getnames()}")
+    except Exception as e:
+        raise WorkflowException(f"An error occurred while extracting {tar_file}:\n{e}") from e

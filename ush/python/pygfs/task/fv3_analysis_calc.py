@@ -4,13 +4,10 @@ from datetime import datetime
 from logging import getLogger
 import netCDF4 as nc
 import os
-from pprint import pformat
-from wxflow import (AttrDict, FileHandler, Task,
-                    parse_j2yaml,
-                    to_timedelta, add_to_datetime, to_fv3time, to_isotime,
-                    logit)
 from pygfs.jedi import Jedi
 from pygfs.task.analysis import Analysis
+from typing import Dict, Any
+from wxflow import AttrDict, FileHandler, to_fv3time, parse_j2yaml, logit
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -20,7 +17,7 @@ class FV3AnalysisCalc(Analysis):
     Class for analysis calculation
     """
     @logit(logger, name="FV3AnalysisCalc")
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, Any]):
         """Constructor for analysis calculation task
 
         This method will construct an analysis calculation
@@ -45,10 +42,8 @@ class FV3AnalysisCalc(Analysis):
         else:
             _res_anl = int(self.task_config.CASE[1:])
 
-        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
-
         # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
+        self.task_config.update(AttrDict(
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
@@ -56,11 +51,12 @@ class FV3AnalysisCalc(Analysis):
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
                 'npz_anl': self.task_config.LEVS - 1,
+                'npz': self.task_config.LEVS - 1,
             }
-        )
+        ))
 
-        # Extend task_config with local_dict
-        self.task_config = AttrDict(**self.task_config, **local_dict)
+        # Extend task_config with content of config yaml for this task
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of Jedi objects
         expected_keys = ['atm_addincrement']

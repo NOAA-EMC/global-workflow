@@ -1,18 +1,10 @@
 #!/usr/bin/env python3
 
-import os
-import glob
-import gzip
-import tarfile
 from logging import getLogger
-from pprint import pformat
-from typing import Any, Dict
-from wxflow import (AttrDict, FileHandler,
-                    add_to_datetime, to_timedelta,
-                    parse_j2yaml,
-                    logit, save_as_yaml)
 from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
+from typing import Any, Dict
+from wxflow import AttrDict, FileHandler, parse_j2yaml, logit
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -62,9 +54,13 @@ class AtmAnalysis(Analysis):
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
                 'npz_anl': self.task_config.LEVS - 1,
+                'npz': self.task_config.LEVS - 1,
                 'BERROR_YAML': _BERROR_YAML,
             }
         ))
+
+        # Extend task_config with content of config yaml for this task
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of Jedi objects
         expected_keys = ['atmanlvar', 'atmanlfv3inc']
@@ -100,11 +96,7 @@ class AtmAnalysis(Analysis):
 
         # Extract bias corrections from tar files
         logger.info(f"Extracting bias corrections from tar files")
-        bias_file_list = []
-        for ob in self.task_config.observations:
-            if ob in self.task_config.bias_files and not self.task_config.bias_files[ob] in bias_file_list:
-                bias_file_list.append(self.task_config.bias_files[ob])
-                FV3Analysis.extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')
+        self.untar_bias_corrections()
 
         # Initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")
