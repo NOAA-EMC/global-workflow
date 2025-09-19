@@ -152,7 +152,7 @@ jobs:
           # Pass GitHub commit SHA to GitLab for native GitHub integration
           curl --verbose --request POST \
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
-            --form "ref=github_intergration" \
+            --form "ref=develop" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
             --form "variables[GITHUB_COMMIT_SHA]=${{ env.PR_HEAD_SHA }}" \
             --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
