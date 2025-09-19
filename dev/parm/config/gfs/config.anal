@@ -163,11 +163,8 @@ if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
    fi
 
    # Use 2m observations when constructing conventional obs info file
-   if [[ ${DO_GSISOILDA} == "YES" ]]; then
-      export BUILD_2M_OBS="YES"
-   else
-      export BUILD_2M_OBS="NO"
-   fi
+   export BUILD_2M_OBS="${BUILD_2M_OBS:-${DO_GSISOILDA}"
+
 else
    export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_ops.txt"
 fi
