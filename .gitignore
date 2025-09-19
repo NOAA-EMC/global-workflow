@@ -59,6 +59,7 @@ parm/gdas/soca
 parm/gdas/stat
 parm/gdas/jcb-gdas
 parm/gdas/jcb-algorithms
+parm/gsinfo
 parm/monitor
 parm/post/nam_micro_lookup.dat
 parm/post/optics_luts_DUST.dat
