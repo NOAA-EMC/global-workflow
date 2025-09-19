@@ -150,7 +150,7 @@ ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
 cd "${HOMEgfs}/parm/post" || exit 1
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" .
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/nam_micro_lookup.dat" .
-for dir in gfs gefs sfs
+for dir in gfs gefs sfs gcafs
 do
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
 done
