@@ -21,6 +21,10 @@
     {% if DO_AERO_ANL %}
         {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat.tgz",
                                     ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
+        {% do det_anl_files.append([COMIN_CHEM_GRIB ~ "/" ~ head ~ "aeroanl.grib2",
+                                      ARCDIR ~ "/aeroanl." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
+        {% do det_anl_files.append([COMIN_CHEM_GRIB ~ "/" ~ head ~ "aeroanl.grib2.idx",
+                                      ARCDIR ~ "/aeroanl." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2.idx"]) %}
     {% endif %}
 
     {% if DO_PREP_OBS_AERO == True %}
