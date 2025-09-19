@@ -176,7 +176,7 @@ done  # for (( nset=1 ; nset <= downset ; nset++ ))
 # Create the index file for the sflux master, if it exists.
 FLUX_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}sflux.${fhr3}.grib2"
 if [[ -s "${FLUX_FILE}" ]]; then
-  ${WGRIB2} -s "${FLUX_FILE}" > "${FLUX_FILE}.grib2.idx"
+  ${WGRIB2} -s "${FLUX_FILE}" > "${FLUX_FILE}.idx"
 fi
 
 # Section creating sflux grib2 interpolated products
