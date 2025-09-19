@@ -239,10 +239,14 @@ fi
 #------------------------------
 #--add SPOC parm and ush directory
 #------------------------------
-for target in ush parm; do
-  src="${HOMEgfs}/sorc/gdas.cd/spoc/dump/${target}"
+sources=("config" "scripts")
+targets=("parm" "ush")
+for i in "${!sources[@]}"; do
+  src="${HOMEgfs}/sorc/gdas.cd/spoc/dump/${sources[$i]}"
+  dst="${HOMEgfs}/${targets[$i]}"
+
   if [[ -d "${src}" ]]; then
-    cd "${HOMEgfs}/${target}" || exit 1
+    cd "$dst" || exit 1
     ${LINK_OR_COPY} "${src}" "spoc"
   fi
 done
