@@ -87,7 +87,7 @@
 #                                             match cycle time of guess file (avoids
 #                                             wasting time chekcing for files that
 #                                             can never exist).
-#          2021 April       Melchior      Adpated getges_nc.sh to test that atmf NetCDF
+#          2021 April       Melchior      Adpated getges_nc.sh to test that atm.f NetCDF
 #                                         guess file is actually completed (checking
 #                                         logf file) prior to committing to cp'ing the
 #                                         file to sgesprep. This primarily impacts
@@ -317,28 +317,28 @@ if [[ "$netwk" = "gdas" ]];then
    fhinc=06
    ;;
   natges) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$gh.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$gh.nc'
    ;;
   natgm3) geslist='
    $COMINgdas/gdas.t${cyc}z.atm.f$ghm3.nc'
    ;;
   natgm2) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm2.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm2.nc'
    ;;
   natgm1) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm1.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm1.nc'
    ;;
   natgp1) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp1.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp1.nc'
    ;;
   natgp2) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp2.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp2.nc'
    ;;
   natgp3) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp3.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp3.nc'
    ;;
   natcur) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$gh.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$gh.nc'
    getlist00='
    $COMINgdas/gdas.t${cyc}z.atmanl.nc'
    fhbeg=00
@@ -596,7 +596,7 @@ elif [[ "$netwk" = "gfs" ]];then
  fhend=384
  case $typef in
   natges) geslist='
-   $COMINgfs/gfs.t${cyc}z.atmf$gh.nc'
+   $COMINgfs/gfs.t${cyc}z.atm.f$gh.nc'
    ;;
   pgbcur) geslist='
    $COMINgfs/gfs.t${cyc}z.pgrbf$fh'
@@ -637,7 +637,7 @@ elif [[ "$netwk" = "gfs" ]];then
    fhinc=06
    ;;
   natcur) geslist='
-   $COMINgfs/gfs.t${cyc}z.atmf$gh.nc'
+   $COMINgfs/gfs.t${cyc}z.atm.f$gh.nc'
    getlist00='
    $COMINgfs/gfs.t${cyc}z.atmanl.nc'
    fhbeg=00
@@ -1183,50 +1183,50 @@ elif [[ "$netwk" = "global" ]];then
    fhinc=06
    ;;
   natges) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$gh.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$gh.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$gh.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$gh.nc'
    ((vhr=$valid%100))
    if [[ $(($vhr % 3)) -ne 0 ]]; then
       fhinc=01
    fi
    ;;
   natgm3) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm3.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghm3.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm3.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghm3.nc'
    ;;
   natgm2) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$ghm2.nc
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm2.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$ghm2.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghm2.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$ghm2.nc
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm2.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$ghm2.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghm2.nc'
    ;;
   natgm1) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$ghm1.nc
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm1.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$ghm1.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghm1.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$ghm1.nc
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm1.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$ghm1.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghm1.nc'
    ;;
   natgp1) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$ghp1.nc
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp1.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$ghp1.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghp1.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$ghp1.nc
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp1.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$ghp1.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghp1.nc'
    ;;
   natgp2) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$ghp2.nc
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp2.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$ghp2.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghp2.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$ghp2.nc
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp2.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$ghp2.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghp2.nc'
    ;;
   natgp3) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp3.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghp3.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp3.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghp3.nc'
    ;;
   natcur) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$gh.nc
-   $COMINgdas/gdas.t${cyc}z.atmf$gh.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$gh.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$gh.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$gh.nc
+   $COMINgdas/gdas.t${cyc}z.atm.f$gh.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$gh.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$gh.nc'
    getlist00='
    $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmanl.nc
    $COMINgdas/gdas.t${cyc}z.atmanl.nc
