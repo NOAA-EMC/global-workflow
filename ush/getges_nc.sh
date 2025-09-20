@@ -335,7 +335,7 @@ if [[ "$netwk" = "gdas" ]];then
    $COMINgdas/gdas.t${cyc}z.atmf$ghp2.nc'
    ;;
   natgp3) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp3.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp3.nc'
    ;;
   natcur) geslist='
    $COMINgdas/gdas.t${cyc}z.atmf$gh.nc'
@@ -1219,8 +1219,8 @@ elif [[ "$netwk" = "global" ]];then
    $COMINgfs/gfs.t${cyc}z.atmf$ghp2.nc'
    ;;
   natgp3) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp3.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghp3.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp3.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghp3.nc'
    ;;
   natcur) geslist='
    $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$gh.nc
