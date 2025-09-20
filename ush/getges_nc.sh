@@ -1409,7 +1409,7 @@ while [[ $fh -le $fhend ]];do
  [[ $fh -lt 10 ]]&&fh=0$fh
 done
 if [[ $fh -gt $fhend ]];then
- echo getges.sh: unable to find $netwk.$envir.$typef.$resol.$valid >&2
+ echo getges_nc.sh: unable to find $netwk.$envir.$typef.$resol.$valid >&2
  exit 8
 fi
 
