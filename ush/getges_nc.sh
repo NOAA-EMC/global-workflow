@@ -317,7 +317,7 @@ if [[ "$netwk" = "gdas" ]];then
    fhinc=06
    ;;
   natges) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$gh.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$gh.nc'
    ;;
   natgm3) geslist='
    $COMINgdas/gdas.t${cyc}z.atm.f$ghm3.nc'
@@ -1183,8 +1183,8 @@ elif [[ "$netwk" = "global" ]];then
    fhinc=06
    ;;
   natges) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$gh.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$gh.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$gh.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$gh.nc'
    ((vhr=$valid%100))
    if [[ $(($vhr % 3)) -ne 0 ]]; then
       fhinc=01
