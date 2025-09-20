@@ -19,7 +19,7 @@
 # sfcges, sfcgm3, sfcgm2, sfcgm1, sfcgp1, sfcgp2, sfcgp3,
 # biascr, satang, satcnt, gesfil
 # pgbges, pgiges, pgbgm6, pgigm6, pgbgm3, pgigm3, pgbgp3, pgigp3,
-# sigcur, sfccur, pgbcur, pgicur, prepqc, tcvg12, tcvges, tcvitl, 
+# sigcur, sfccur, pgbcur, pgicur, prepqc, tcvg12, tcvges, tcvitl,
 # enggrb, enggri, icegrb, icegri, snogrb, snogrb_high, snogri, sstgrb, sstgri.
 # natges, natgm3, natgm2, natgm1, natgp1, natgp2, natgp3, natcur,
 # nsfges, nsfgm3, nsfgm2, nsfgm1, nsfgp1, nsfgp2, nsfgp3, nsfcur,
@@ -36,7 +36,7 @@
 # The script uses the utility commands NDATE and NHOUR.
 #
 # Example 1. Copy the production sigma guess for 1998100100 to the file sges.
-#  getges.sh -e prod -t sigges -v 1998100100 sges 
+#  getges.sh -e prod -t sigges -v 1998100100 sges
 #
 # Example 2. Assign the pressure grib guess for the date 1998100121.
 #  export CDATE=1998100121
@@ -86,7 +86,7 @@
 #                                             suffix cycle time directory does not
 #                                             match cycle time of guess file (avoids
 #                                             wasting time chekcing for files that
-#                                             can never exist). 
+#                                             can never exist).
 #          2021 April       Melchior      Adpated getges_nc.sh to test that atmf NetCDF
 #                                         guess file is actually completed (checking
 #                                         logf file) prior to committing to cp'ing the
@@ -178,7 +178,7 @@ if [[ $gfile = '?' || $# -gt 1 || $err -ne 0 || -z $valid ||\
   echo "         gfile is the guess file to write" >&2
   echo "         (default is to write the guess file name to stdout)" >&2
  else
-  echo "         (Note: set a given option to '?' for more details)" >&2 
+  echo "         (Note: set a given option to '?' for more details)" >&2
  fi
  exit 1
 fi
@@ -188,7 +188,7 @@ if [[ $envir != prod && $envir != test && $envir != para && $envir != dump && $e
  envir=prod
  echo '************************************************************' >&2
  echo '* WARNING: Using "-e" is deprecated in this case.          *' >&2
- echo '*          Please use "-n" instead.                        *' >&2       
+ echo '*          Please use "-n" instead.                        *' >&2
  echo '************************************************************' >&2
 fi
 if [[ "$netwk" = "namopl" || "$resol" = "namopl" ]];then
@@ -208,13 +208,13 @@ if [[ $typef = enggrb ]];then
  typef=icegrb
  echo '************************************************************' >&2
  echo '* WARNING: Using "-t enggrb" is now deprecated.            *' >&2
- echo '*          Please use "-t icegrb".                         *' >&2       
+ echo '*          Please use "-t icegrb".                         *' >&2
  echo '************************************************************' >&2
 elif [[ $typef = enggri ]];then
  typef=icegri
  echo '************************************************************' >&2
  echo '* WARNING: Using "-t enggri" is now deprecated.            *' >&2
- echo '*          Please use "-t icegri".                         *' >&2       
+ echo '*          Please use "-t icegri".                         *' >&2
  echo '************************************************************' >&2
 fi
 
@@ -244,26 +244,26 @@ if [[ "$netwk" = "gdas" ]];then
    $COMINgdas/gdas.t${cyc}z.radstat'
    ;;
   pgbges) geslist='
-   $COMINgdas/gdas.t${cyc}z.pgrbh$fh 
+   $COMINgdas/gdas.t${cyc}z.pgrbh$fh
    $COMINgdas/gdas.t${cyc}z.pgrbf$fh'
    ;;
   pg2ges) geslist='
    $COMINgdas/gdas.t${cyc}z.pgrb2.0p25.f$gh'
    ;;
   pgbgm6) geslist='
-   $COMINgdas/gdas.t${cyc}z.pgrbh$fhm6 
+   $COMINgdas/gdas.t${cyc}z.pgrbh$fhm6
    $COMINgdas/gdas.t${cyc}z.pgrbf$fhm6'
    ;;
   pgbgm3) geslist='
-   $COMINgdas/gdas.t${cyc}z.pgrbh$fhm3 
+   $COMINgdas/gdas.t${cyc}z.pgrbh$fhm3
    $COMINgdas/gdas.t${cyc}z.pgrbf$fhm3'
    ;;
   pgbgp3) geslist='
-   $COMINgdas/gdas.t${cyc}z.pgrbh$fhp3 
+   $COMINgdas/gdas.t${cyc}z.pgrbh$fhp3
    $COMINgdas/gdas.t${cyc}z.pgrbf$fhp3'
    ;;
   pgbcur) geslist='
-   $COMINgdas/gdas.t${cyc}z.pgrbh$fh 
+   $COMINgdas/gdas.t${cyc}z.pgrbh$fh
    $COMINgdas/gdas.t${cyc}z.pgrbf$fh'
    fhbeg=00
    ;;
@@ -320,7 +320,7 @@ if [[ "$netwk" = "gdas" ]];then
    $COMINgdas/gdas.t${cyc}z.atmf$gh.nc'
    ;;
   natgm3) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm3.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm3.nc'
    ;;
   natgm2) geslist='
    $COMINgdas/gdas.t${cyc}z.atmf$ghm2.nc'
@@ -466,35 +466,35 @@ elif [[ "$netwk" = "cfs-cdas" ]];then
    $COMINcfs_cdas/cdas1.t${cyc}z.sfluxgrbf$fhp3'
    ;;
   pgbges) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbh$fh 
+   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbh$fh
    $COMINcfs_cdas/cdas1.t${cyc}z.pgrbf$fh'
    ;;
   pgiges) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbih$fh 
+   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbih$fh
    $COMINcfs_cdas/cdas1.t${cyc}z.pgrbif$fh'
    ;;
   pgbgm6) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbh$fhm6 
+   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbh$fhm6
    $COMINcfs_cdas/cdas1.t${cyc}z.pgrbf$fhm6'
    ;;
   pgigm6) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbih$fhm6 
+   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbih$fhm6
    $COMINcfs_cdas/cdas1.t${cyc}z.pgrbif$fhm6'
    ;;
   pgbgm3) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbh$fhm3 
+   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbh$fhm3
    $COMINcfs_cdas/cdas1.t${cyc}z.pgrbf$fhm3'
    ;;
   pgigm3) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbih$fhm3 
+   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbih$fhm3
    $COMINcfs_cdas/cdas1.t${cyc}z.pgrbif$fhm3'
    ;;
   pgbgp3) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbh$fhp3 
+   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbh$fhp3
    $COMINcfs_cdas/cdas1.t${cyc}z.pgrbf$fhp3'
    ;;
   pgigp3) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbih$fhp3 
+   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbih$fhp3
    $COMINcfs_cdas/cdas1.t${cyc}z.pgrbif$fhp3'
    ;;
   sigcur) geslist='
@@ -510,12 +510,12 @@ elif [[ "$netwk" = "cfs-cdas" ]];then
    fhbeg=00
    ;;
   pgbcur) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbh$fh 
+   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbh$fh
    $COMINcfs_cdas/cdas1.t${cyc}z.pgrbf$fh'
    fhbeg=00
    ;;
   pgicur) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbih$fh 
+   $COMINcfs_cdas/cdas1.t${cyc}z.pgrbih$fh
    $COMINcfs_cdas/cdas1.t${cyc}z.pgrbif$fh'
    fhbeg=00
    ;;

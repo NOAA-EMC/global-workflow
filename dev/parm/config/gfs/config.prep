@@ -9,11 +9,12 @@ echo "BEGIN: config.prep"
 source "${EXPDIR}/config.resources" prep
 
 export cdate10=${PDY}${cyc}
-
+dev\parm\config\gfs\config.prep
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 export TROPCYQCRELOSH="${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh"
 export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
+export GETGUESprep=${GETGESprep:-"${USHgfs}/getges_nc.sh"}
 
 # Allow users to control the generation or use of either operational or
 # their processed prepbufr, prepbufr.acft_profiles, nsstbufr files
