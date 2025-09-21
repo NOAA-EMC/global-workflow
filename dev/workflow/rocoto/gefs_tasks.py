@@ -517,7 +517,7 @@ class GEFSTasks(Tasks):
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
         resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
 
-        task_name = f'{self.run}_wave_post_grid_mem#member#_#fhr_label#'
+        task_name = f'{self.run}_wavepostsbs_mem#member#_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -529,12 +529,12 @@ class GEFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        fhr_metatask_dict = {'task_name': f'{self.run}_wave_post_grid_#member#',
+        fhr_metatask_dict = {'task_name': f'{self.run}_wavepostsbs_#member#',
                              'task_dict': task_dict,
                              'var_dict': fhr_var_dict}
 
         member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
-        member_metatask_dict = {'task_name': f'{self.run}_wave_post_grid',
+        member_metatask_dict = {'task_name': f'{self.run}_wavepostsbs',
                                 'task_dict': fhr_metatask_dict,
                                 'var_dict': member_var_dict}
 
@@ -543,17 +543,26 @@ class GEFSTasks(Tasks):
         return task
 
     def wave_stat(self):
+
+        # Get the forecast hours for wave_postsbs
+        dep_fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
+        dep_max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        dep_fhr_var_dict = self.get_grouped_fhr_dict(fhrs=dep_fhrs, ngroups=dep_max_tasks)
+
+        # Get the forecast hours for wave_stat
+        fhrs = self._get_forecast_hours('gefs', self._configs['wave_stat'], 'wave')
+        max_tasks = self._configs['wave_stat']['MAX_TASKS']
+        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Get the right dependency labels for wave_stat on wave_postsbs groups
+        fhr_var_dict = self.get_dep_fhr_label(fhr_var_dict, dep_fhr_var_dict)
+
         deps = []
         for member in range(0, self.nmem + 1):
-            task = f'{self.run}_wave_post_grid_mem{member:03d}_#fhr_label#'
+            task = f'{self.run}_wavepostsbs_mem{member:03d}_#fhr_label#'
             dep_dict = {'type': 'task', 'name': task}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        fhrs = self._get_forecast_hours('gefs', self._configs['wavepostsbs'], 'wave')
-
-        max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
-        fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
         wave_stat_envars = self.envars.copy()
         postenvar_dict = {'FHR_LIST': '#fhr_list#'}
@@ -614,7 +623,7 @@ class GEFSTasks(Tasks):
     def extractvars(self):
         deps = []
         if self.options['do_wave']:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid_#member#'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs_#member#'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ocean']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod_#member#'}
@@ -669,7 +678,7 @@ class GEFSTasks(Tasks):
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave']:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_wave_stat_pnt'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -708,7 +717,7 @@ class GEFSTasks(Tasks):
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave']:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_wave_stat_pnt'}
             deps.append(rocoto.add_dependency(dep_dict))
