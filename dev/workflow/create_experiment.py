@@ -6,7 +6,7 @@ yaml file for the arguments to the two scripts below in ${HOMEgfs}/dev/workflow
 where ${HOMEgfs} is determined from the location of this script.
 
  ${HOMEgfs}/dev/workflow/setup_expt.py
- ${HOMEgfs}/dev/workflow/setup_xml.py
+ ${HOMEgfs}/dev/workflow/setup_workflow.py
 
 The yaml file are simply the arguments for these two scripts.
 After this scripts runs the experiment is ready for launch.
@@ -33,7 +33,7 @@ from pathlib import Path
 from wxflow import AttrDict, parse_j2yaml, Logger, logit
 
 import setup_expt
-import setup_xml
+import setup_workflow
 
 
 _here = os.path.dirname(__file__)
@@ -91,7 +91,10 @@ if __name__ == '__main__':
 
     # Create a list of arguments to setup_expt.py
     setup_expt_args = [testconf.experiment.net, testconf.experiment.mode]
-    for kk, vv in testconf.arguments.items():
+
+    # Process experiment arguments (now in experiment section, excluding net and mode)
+    experiment_args = {k: v for k, v in testconf.experiment.items() if k not in ['net', 'mode']}
+    for kk, vv in experiment_args.items():
         setup_expt_args.append(f"--{kk}")
         setup_expt_args.append(str(vv))
 
@@ -102,15 +105,32 @@ if __name__ == '__main__':
     logger.debug(f"setup_expt.py {' '.join(setup_expt_args)}")
     setup_expt.main(setup_expt_args)
 
-    # Create a list of arguments to setup_xml.py
+    # Create a list of arguments to setup_workflow.py
     experiment_dir = Path.absolute(Path.joinpath(
-        Path(testconf.arguments.expdir), Path(testconf.arguments.pslot)))
+        Path(testconf.experiment.expdir), Path(testconf.experiment.pslot)))
 
-    setup_xml_args = [str(experiment_dir)]
+    setup_workflow_args = [str(experiment_dir)]
+
+    # Add workflow engine as positional argument (defaults to rocoto if not specified)
+    workflow_engine = 'rocoto'  # default
+    if hasattr(testconf, 'workflow') and hasattr(testconf.workflow, 'engine'):
+        workflow_engine = testconf.workflow.engine
+
+    setup_workflow_args.append(workflow_engine)
+
+    # Add rocoto-specific parameters if workflow engine is rocoto and they are specified
+    if workflow_engine == 'rocoto' and hasattr(testconf, 'workflow') and hasattr(testconf.workflow, 'rocoto'):
+        rocoto_config = testconf.workflow.rocoto
+        if hasattr(rocoto_config, 'maxtries'):
+            setup_workflow_args.extend(['--maxtries', str(rocoto_config.maxtries)])
+        if hasattr(rocoto_config, 'cyclethrottle'):
+            setup_workflow_args.extend(['--cyclethrottle', str(rocoto_config.cyclethrottle)])
+        if hasattr(rocoto_config, 'taskthrottle'):
+            setup_workflow_args.extend(['--taskthrottle', str(rocoto_config.taskthrottle)])
 
     if user_inputs.force:
-        setup_xml_args.append("--force")
+        setup_workflow_args.append("--force")
 
-    logger.info(f"Call: setup_xml.main()")
-    logger.debug(f"setup_xml.py {' '.join(setup_xml_args)}")
-    setup_xml.main(setup_xml_args)
+    logger.info(f"Call: setup_workflow.main()")
+    logger.debug(f"setup_workflow.py {' '.join(setup_workflow_args)}")
+    setup_workflow.main(setup_workflow_args)
