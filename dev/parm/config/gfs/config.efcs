@@ -43,8 +43,8 @@ if [[ ${RUN} == "enkfgfs" ]]; then
 fi
 
 # Use serial I/O for ensemble (lustre?)
-export OUTPUT_FILETYPE_ATM="netcdf"
-export OUTPUT_FILETYPE_SFC="netcdf"
+#export OUTPUT_FILETYPE_ATM="netcdf"
+#export OUTPUT_FILETYPE_SFC="netcdf"
 
 # Turn off inline UPP for EnKF forecast
 export WRITE_DOPOST=".false."
