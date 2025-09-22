@@ -36,13 +36,13 @@ input_files:
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile5.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile5.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile6.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile6.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.aoc_9km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.aoc_9km.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.at_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.at_10m.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.ep_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.ep_10m.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.glo_30m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.glo_30m.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.gnh_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.gnh_10m.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.gsh_15m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.gsh_15m.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.uglo_100km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.uglo_100km.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.wc_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.wave.t{{ cyc }}z.mod_def.wc_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.at_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.at_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.ep_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.ep_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.glo_30m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.glo_30m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.gnh_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.gnh_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.gsh_15m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.gsh_15m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.uglo_100km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.uglo_100km.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.wc_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfst{{ cyc }}z.mod_def.wc_10m.bin]
 
 
 
