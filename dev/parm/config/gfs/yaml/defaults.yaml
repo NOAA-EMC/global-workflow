@@ -63,8 +63,6 @@ marineanl:
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/marine/jcb-prototype_3dfgat.yaml.j2"
 
 prepoceanobs:
-  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
-  OBSPREP_YAML: "${PARMgfs}/gdas/marine/obsprep/obsprep_config.yaml"
   use_exp_obs: "YES"
   dmpdir_exp: "${BASE_DATA}/experimental_obs"
 

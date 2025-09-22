@@ -1,8 +1,6 @@
 experiment:
   net: gcafs
   mode: cycled
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: ATMA
   resdetatmos: 96
@@ -15,3 +13,11 @@ arguments:
   interval: 12
   start: cold
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gcafs_cycled_defaults_ci.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
