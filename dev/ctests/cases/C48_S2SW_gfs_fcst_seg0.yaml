@@ -390,7 +390,6 @@ output_files:
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f108.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f108.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f114.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f114.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f120.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f120.nc]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.log.uglo_100km.{{ PDY }}{{ cyc }}, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.log.uglo_100km.{{ PDY }}{{ cyc }}]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f000.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f000.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f001.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f001.nc]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f002.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f002.nc]
