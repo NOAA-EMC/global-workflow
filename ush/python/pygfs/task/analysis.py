@@ -50,7 +50,7 @@ class Analysis(Task):
         if 'BIAS_FILES_YAML' in self.task_config:
             _bias_files = parse_j2yaml(self.task_config.BIAS_FILES_YAML, self.task_config)['bias_files']
         else:
-            _bias_files = {}
+            _bias_files = AttrDict
 
         # Extend task_config with variables that are repeatedly used across this class
         self.task_config.update(AttrDict(
