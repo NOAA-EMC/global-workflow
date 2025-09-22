@@ -14,13 +14,9 @@ case ${step} in
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
         export threads_per_task=8
         # Make ntasks a multiple of 16
-        if [[ "${RUN}" = *gdas ]]; then
-          ntasks=784
-        elif [[ "${RUN}" = *gfs ]]; then
-          ntasks=832
-        fi
-        export ntasks_gdas=784
-        export ntasks_gfs=832
+        export ntasks=1200
+        export ntasks_gdas=1200
+        export ntasks_gfs=1200
         export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
@@ -45,7 +41,11 @@ case ${step} in
   "eupd")
     case "${CASE}" in
       "C1152" | "C768" | "C384")
-        export ntasks=315
+	if [[ "${RUN}" = *gdas ]]; then
+          export ntasks=315
+        elif [[ "${RUN}" = *gfs ]]; then
+          export ntasks=135
+        fi
         export threads_per_task=14
         ;;
       *)
