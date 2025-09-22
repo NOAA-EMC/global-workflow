@@ -8,7 +8,7 @@ echo "BEGIN: config.anlstat"
 # Get task specific resources
 source "${EXPDIR}/config.resources" anlstat
 
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/anlstat_jedi_config.yaml.j2"
-export STAT_BASE_CONFIG_YAML="${PARMgfs}/gdas/stat_base_config.yaml.j2"
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/anlstat/anlstat_jedi_config.yaml.j2"
+export BASE_CONFIG_YAML="${PARMgfs}/gdas/anlstat/anlstat_base_config.yaml.j2"
 
 echo "END: config.anlstat"

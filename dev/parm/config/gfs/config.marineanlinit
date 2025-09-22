@@ -5,6 +5,10 @@
 
 echo "BEGIN: config.marineanlinit"
 
+
 # Get task specific resources
-. "${EXPDIR}/config.resources" marineanlinit
+source "${EXPDIR}/config.resources" marineanlinit
+
+export STAGE_YAML="${PARMgfs}/gdas/marine/marine_det_stage.yaml.j2"
+
 echo "END: config.marineanlinit"

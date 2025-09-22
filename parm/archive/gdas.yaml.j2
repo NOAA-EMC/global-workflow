@@ -27,9 +27,6 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlvar.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlfinal.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlchkpt.log"
-                {% if DOHYBVAR_OCN %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_ocnanalecen.log"
-                {% endif %}
             {% endif %}
             {% if DO_AERO_ANL %}
         - "logs/{{ cycle_YMDH }}/gdas_aeroanlgenb.log"
@@ -72,8 +69,8 @@ gdas:
 
         # Analysis state
             {% if DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanlvar.yaml"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanlfv3inc.yaml"
+        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}atmanlvar.yaml"
+        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}atmanlfv3inc.yaml"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
             {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"

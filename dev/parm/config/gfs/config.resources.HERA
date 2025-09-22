@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck disable=SC2034
 
 # Hera-specific job resources
 
@@ -15,6 +16,11 @@ case ${step} in
       export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
+
+  "anlstat")
+    memory="96GB"
+    ;;
+
 
   "atmanlvar" | "atmensanlobs" | "atmensanlsol")
     export tasks_per_node=12

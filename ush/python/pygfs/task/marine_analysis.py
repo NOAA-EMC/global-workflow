@@ -38,7 +38,7 @@ class MarineAnalysis(Task):
         """
 
         super().__init__(config)
-        _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'soca', 'calc_scales.py')
+        _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'python', 'soca', 'calc_scales.py')
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
@@ -57,7 +57,7 @@ class MarineAnalysis(Task):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-                'PARMsoca': os.path.join(self.task_config.PARMgfs, 'gdas', 'soca'),
+                'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
                 'MARINE_WINDOW_BEGIN': _window_begin,
                 'MARINE_WINDOW_END': _window_end,
                 'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
@@ -81,7 +81,7 @@ class MarineAnalysis(Task):
 
         # Construct dictionary of JEDI objects, one for each JEDI application need for the analysis
         expected_keys = ['var', 'soca_incpostproc', 'soca_diag_stats']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML_ANALYSIS, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML_DET, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self: Task) -> None:
@@ -108,8 +108,8 @@ class MarineAnalysis(Task):
         """
 
         # stage fix files
-        logger.info(f"Staging SOCA fix files from {self.task_config.SOCA_INPUT_FIX_DIR}")
-        soca_fix_list = parse_j2yaml(self.task_config.SOCA_FIX_YAML_TMPL, self.task_config)
+        logger.info(f"Staging SOCA fix files from {self.task_config.INPUT_FIX_DIR}")
+        soca_fix_list = parse_j2yaml(self.task_config.STAGE_FIX_YAML, self.task_config)
         FileHandler(soca_fix_list).sync()
 
         # prepare the deterministic MOM6 input.nml
@@ -128,19 +128,19 @@ class MarineAnalysis(Task):
         FileHandler(obs_list).sync()
 
         # stage the soca utility yamls (gridgen, fields and ufo mapping yamls)
-        logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMsoca}")
-        soca_utility_list = parse_j2yaml(self.task_config.MARINE_UTILITY_YAML_TMPL, self.task_config)
+        logger.info(f"Staging SOCA utility yaml files from {self.task_config.PARMmarine}")
+        soca_utility_list = parse_j2yaml(self.task_config.STAGE_UTILITIES_YAML, self.task_config)
         FileHandler(soca_utility_list).sync()
 
         # stage the ocean and ice backgrounds for FGAT
         logger.info(f"Staging files needed for deterministic analysis from COM")
-        bkg_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_BKG_YAML_TMPL, self.task_config)
+        bkg_list = parse_j2yaml(self.task_config.STAGE_DET_BKG_YAML, self.task_config)
         FileHandler(bkg_list).sync()
 
         # stage files and link directories from B-matrix job needed for deterministic analysis
         logger.info(f"Staging files needed for deterministic analysis from COM")
-        soca_files_list = parse_j2yaml(self.task_config.MARINE_DET_STAGE_FILES_YAML_TMPL, self.task_config)
-        FileHandler(soca_files_list).sync()
+        stage_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
+        FileHandler(stage_dict).sync()
 
         # assert that dates of the history files are correct
         mdau.test_hist_date('./INPUT/MOM.res.nc', self.task_config.MARINE_WINDOW_BEGIN)
@@ -157,7 +157,10 @@ class MarineAnalysis(Task):
 
         # This method is a bit of a hack that will be removed in the future when the anlstat
         # job fully replaces the SOCA obs_diag_stats application
-        self.initialize_obs_stats()
+        try:
+            self.initialize_obs_stats()
+        except Exception as e:
+            logger.warning(f"Failed to initialize observation statistics: {e}")
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -194,12 +197,16 @@ class MarineAnalysis(Task):
         """
 
         # Save output files to COM
-        logger.info(f"Copy files from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
-        soca_finalize_list = parse_j2yaml(self.task_config.MARINE_DET_FINALIZE_YAML_TMPL, self.task_config)
-        FileHandler(soca_finalize_list).sync()
+        logger.info(f"Copy files to ROTDIR")
+        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
+        FileHandler(save_dict).sync()
 
-        # Save obs diag statistics to COM
-        diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
+        # Save obs diag statistics to COM (success is optional)
+        logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
+        try:
+            diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
+        except Exception as e:
+            logger.warning(f"Failed to render JCB template, 'soca_diags_finalize': {e}")
         FileHandler(diags_list).sync()
 
     @logit(logger)

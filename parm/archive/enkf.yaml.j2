@@ -34,10 +34,24 @@ enkf:
               {% set steps = ["eobs", "eupd"] %}
            {% endif %}
         {% endif %}
+        {% if DOHYBVAR_OCN %}
+          {% set steps = steps + ["marineanlecen"] %}
+        {% endif %}
 
         {% for step in steps %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_{{ step }}.log"
         {% endfor %}
+
+        # Ensemble resolution
+        {% if is_gdas %}
+        {% if DOHYBVAR %}
+        {% if DOIAU %}
+        {% for fhr in range(3, fhmax + 1, 3) %}
+        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head |replace('enkf','')}}atmf{{ '%03d' % fhr }}.ensres.nc"
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+        {% endif %}
 
         # Ensemble mean and spread
         {% if is_gdas %}
@@ -52,29 +66,33 @@ enkf:
 
         # Ensemble mean state
         {% if not DO_JEDIATMENS %}
-        {% set da_files = ["enkfstat",
-                           "gsistat.ensmean",
-                           "cnvstat.ensmean",
-                           "oznstat.ensmean",
-                           "radstat.ensmean"] %}
+        {% set da_stat_files = ["enkfstat",
+                                "gsistat.ensmean",
+                                "cnvstat.ensmean",
+                                "oznstat.ensmean",
+                                "radstat.ensmean"] %}
+        {% set da_conf_files = [] %}
         {% else %}
         {% if lobsdiag_forenkf %}
-        {% set da_files = ["atmensanlobs.yaml",
-                           "atmensanlsol.yaml",
-                           "atmensanlfv3inc.yaml",
-                           "correction_increment.yaml",
-                           "ensemble_recenter.yaml",
-                           "atmensstat"] %}
+        {% set da_stat_files = [] %}
+        {% set da_conf_files = ["atmensanlobs.yaml",
+                                "atmensanlsol.yaml",
+                                "atmensanlfv3inc.yaml",
+                                "correction_increment.yaml",
+                                "ensemble_recenter.yaml"] %}
         {% else %}
-        {% set da_files = ["atmensanlletkf.yaml",
-                           "atmensanlfv3inc.yaml",
-                           "correction_increment.yaml",
-                           "ensemble_recenter.yaml",
-                           "atmensstat"] %}
+        {% set da_stat_files = ["atmensstat"]%}
+        {% set da_conf_files = ["atmensanlletkf.yaml",
+                                "atmensanlfv3inc.yaml",
+                                "correction_increment.yaml",
+                                "ensemble_recenter.yaml"] %}
         {% endif %}
         {% endif %}
-        {% for file in da_files %}
+        {% for file in da_stat_files %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
+        {% endfor %}
+        {% for file in da_conf_files %}
+        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}{{ file }}"
         {% endfor %}
 
         {% if DO_JEDISNOWDA %}

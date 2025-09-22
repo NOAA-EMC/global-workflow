@@ -1,85 +1,16 @@
-# Set variables/lists needed to parse the enkf templates
+# Set variables/lists needed to parse the templates
 {% set cycle_HH = current_cycle | strftime("%H") %}
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 
-# Determine which data to archive
+# Archive specific tarball type based on TARBALL_TYPE variable
 datasets:
-# Always archive atmosphere forecast/analysis data
 {% filter indent(width=4) %}
-{% include "gfsa.yaml.j2" %}
-{% include "gfsb.yaml.j2" %}
+{% include TARBALL_TYPE ~ '.yaml.j2' %}
 {% endfilter %}
 
-{% if ARCH_GAUSSIAN %}
-    # Archive Gaussian data
-    {% filter indent(width=4) %}
-{% include "gfs_flux.yaml.j2" %}
-{% include "gfs_netcdfb.yaml.j2" %}
-{% include "gfs_pgrb2b.yaml.j2" %}
-    {% endfilter %}
-    {% if MODE == "cycled" %}
-        # Archive Gaussian analysis data
-        {% filter indent(width=4) %}
-{% include "gfs_netcdfa.yaml.j2" %}
-        {% endfilter %}
-    {% endif %}
-{% endif %}
-
-{% if DO_WAVE %}
-    # Wave forecasts
-    {% filter indent(width=4) %}
-{% include "gfswave.yaml.j2" %}
-    {% endfilter %}
-{% endif %}
-
-{% if DO_AERO_FCST %}
-    # Aerosol forecasts
-    {% filter indent(width=4) %}
-{% include "chem.yaml.j2" %}
-    {% endfilter %}
-{% endif %}
-
-{% if DO_OCN %}
-    # Ocean forecasts
-    {% filter indent(width=4) %}
-{% include "ocean_6hravg.yaml.j2" %}
-{% include "ocean_grib2.yaml.j2" %}
-{% include "gfs_flux_1p00.yaml.j2" %}
-    {% endfilter %}
-{% endif %}
-
-{% if DO_ICE %}
-    # Ice forecasts
-    {% filter indent(width=4) %}
-{% include "ice_6hravg.yaml.j2" %}
-{% include "ice_grib2.yaml.j2" %}
-    {% endfilter %}
-{% endif %}
-
-{% if DO_BUFRSND %}
-    # Downstream BUFR soundings
-    {% filter indent(width=4) %}
-{% include "gfs_downstream.yaml.j2" %}
-    {% endfilter %}
-{% endif %}
-
-# Determine if we will save restart ICs or not
-{% if ARCH_CYC == cycle_HH | int %}
-    # Save the forecast-only cycle ICs every ARCH_WARMICFREQ or ARCH_FCSTICFREQ days
-    {% if (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 %}
-        {% filter indent(width=4) %}
-{% include "gfs_restarta.yaml.j2" %}
-        {% endfilter %}
-    {% elif (current_cycle - SDATE).days % ARCH_FCSTICFREQ == 0 %}
-        {% filter indent(width=4) %}
-{% include "gfs_restarta.yaml.j2" %}
-        {% endfilter %}
-    {% endif %}
-{% endif %}
-
-# Archive the EXPDIR if requested
-{% if archive_expdir %}
+# If EXPDIR archiving is requested, only pair it with the gfsa archive
+{% if TARBALL_TYPE is defined and TARBALL_TYPE == 'gfsa' and archive_expdir %}
 {% filter indent(width=4) %}
 {% include "expdir.yaml.j2" %}
 {% endfilter %}

@@ -18,6 +18,7 @@ from .task.oceanice_products import OceanIceProducts
 from .task.gfs_forecast import GFSForecast
 from .utils import marine_da_utils
 from .task.fetch import Fetch
+from .task.marine_recenter import MarineRecenter
 
 __docformat__ = "restructuredtext"
 __version__ = "0.1.0"

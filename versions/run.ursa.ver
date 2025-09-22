@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+export stack_compiler=oneapi
+export stack_compiler_ver=2024.2.1
+
+export stack_mpi=intel-oneapi-mpi
+export stack_mpi_ver=2021.13
+
+spack_stack_root="/contrib/spack-stack"
+
+source "${HOMEgfs:-}/versions/spack.ver"
+
+export imagemagick_ver=7.1.1-29

@@ -210,7 +210,7 @@ function delete_dir() {
 }
 
 if [[ -z "${_runtests}" ]]; then
-   echo "Mising run directory (RUNTESTS) argument/environment variable."
+   echo "Missing run directory (RUNTESTS) argument/environment variable."
    sleep 2
    _usage
    exit 3
@@ -376,6 +376,32 @@ if [[ "${_run_all_gcafs}" == "true" ]]; then
    _yaml_list=("${_yaml_list[@]}" "${_gcafs_yaml_list[@]}")
 fi
 
+# Update submodules if requested
+if [[ "${_update_submods}" == "true" ]]; then
+   printf "Updating submodules\n\n"
+   _git_cmd="git submodule update --init --recursive -j 10"
+   if [[ "${_verbose}" == true ]]; then
+      ${_git_cmd}
+   else
+      if ! ${_git_cmd} 2> stderr 1> stdout; then
+         cat stdout stderr
+         read -r -d '' _message << EOM
+The git command (${_git_cmd}) failed with a non-zero status
+Messages from git:
+EOM
+         _newline=$'\n'
+         _message="${_message}${_newline}$(cat stdout stderr)"
+         if [[ "${_set_email}" == true ]]; then
+            send_email "${_message}"
+         fi
+         echo "${_message}"
+         rm -f stdout stderr
+         exit 8
+      fi
+      rm -f stdout stderr
+   fi
+fi
+
 # Loading modules sometimes raises unassigned errors, so disable checks
 set +u
 if [[ "${_verbose}" == "true" ]]; then
@@ -411,32 +437,6 @@ fi
 # If _yaml_dir is not set, set it to $HOMEgfs/dev/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
    _yaml_dir="${HOMEgfs}/dev/ci/cases/pr"
-fi
-
-# Update submodules if requested
-if [[ "${_update_submods}" == "true" ]]; then
-   printf "Updating submodules\n\n"
-   _git_cmd="git submodule update --init --recursive -j 10"
-   if [[ "${_verbose}" == true ]]; then
-      ${_git_cmd}
-   else
-      if ! ${_git_cmd} 2> stderr 1> stdout; then
-         cat stdout stderr
-         read -r -d '' _message << EOM
-The git command (${_git_cmd}) failed with a non-zero status
-Messages from git:
-EOM
-         _newline=$'\n'
-         _message="${_message}${_newline}$(cat stdout stderr)"
-         if [[ "${_set_email}" == true ]]; then
-            send_email "${_message}"
-         fi
-         echo "${_message}"
-         rm -f stdout stderr
-         exit 8
-      fi
-      rm -f stdout stderr
-   fi
 fi
 
 # Build the system if requested

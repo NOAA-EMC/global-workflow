@@ -3,7 +3,7 @@
 set -x
 
 # Source FV3GFS workflow modules
-. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
 status=$?
 if [[ "${status}" -ne 0 ]]; then
     exit "${status}"

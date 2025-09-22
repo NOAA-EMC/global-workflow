@@ -1,14 +1,12 @@
 experiment:
   net: gfs
   mode: cycled
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: ATM
   resdetatmos: 96
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250327
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
   idate: 2021122018
   edate: 2021122106
   nens: 0
@@ -20,3 +18,11 @@ skip_ci_on_hosts:
   - gaeac5
   - wcoss2
   - awsepicglobalworkflow
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2

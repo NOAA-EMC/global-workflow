@@ -36,7 +36,7 @@ export JENKINS_WORK_DIR="${GFS_CI_ROOT}/Jenkins/workspace"
 #########################################################################
 
 # Used in the 'register' step of launch_gitlab_runner.sh for --url parameter
-export GITLAB_URL=https://vlab.noaa.gov/gitlab-licensed
+export GITLAB_URL=https://vlab.noaa.gov/gitlab-community
 export GITLAB_RUNNER_NAME="RDHPCS Gaea C6"
 
 # Directory for GitLab builds

@@ -58,8 +58,8 @@ To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\
 The above script creates directories <b>\c EXPDIR</b> and <b>\c ROTDIR</b>. It will make links for initial conditions from a location provided via the <b>\c --icsdir</b> argument for a chosen resolution for the control <b>\c --resdetatmos</b> and the ensemble <b>\c --resensatmos</b>. Experiment name is controlled by the input argument <b>\c --pslot</b>. The script will ask user input in case any of the directories already exist. It will copy experiment configuration files into the <b>\c EXPDIR</b> from <b>\c CONFIGDIR</b>.
 
 Sample initial conditions for a few resolutions are available at:<br>
-<b>Hera:</b> TODO: /path/here/for/initial/conditions<br>
-<b>Orion:</b> TODO: /path/here/for/initial/conditions<br>
+<b>Ursa/Hera:</b> /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR<br>
+<b>Orion/Hercules:</b> /work2/noaa/global/role_glopara/data/ICSDIR<br>
 
 Next step is for the user to go through the individual config files (atleast <b>\c config.base</b>) and customize the experiment configuration based on user needs. A stock configuration will be provided at a later stage, but it is imperative that the user understand the steps involved in the system.
 
