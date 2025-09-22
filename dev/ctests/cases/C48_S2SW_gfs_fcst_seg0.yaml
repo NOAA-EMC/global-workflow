@@ -554,4 +554,3 @@ output_files:
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f118.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f118.bin]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f119.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f119.bin]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f120.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f120.bin]
- 
