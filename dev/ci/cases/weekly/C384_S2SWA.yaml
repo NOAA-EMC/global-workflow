@@ -1,8 +1,6 @@
 experiment:
   net: gfs
   mode: forecast-only
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2SWA
   resdetatmos: 384
@@ -12,6 +10,14 @@ arguments:
   idate: 2016070100
   edate: 2016070100
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
 
 # ICs are not currently available for this test.
 skip_ci_on_hosts:

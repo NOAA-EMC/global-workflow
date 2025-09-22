@@ -26,9 +26,9 @@ case ${step} in
     # update ntasks to 80 and threads_per_task to 20
     case ${CASE} in
       "C768")
-        export ntasks=80
-        export threads_per_task=20
-        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+        export ntasks=480
+        export threads_per_task=10
+        export tasks_per_node=10
         ;;
       "C1152")
         export ntasks=480
@@ -43,7 +43,7 @@ case ${step} in
   "anal")
     case ${CASE} in
       "C768")
-        export threads_per_task=8
+        export threads_per_task=16
         ;;
       "C1152")
         export threads_per_task=16

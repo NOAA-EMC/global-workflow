@@ -1,8 +1,6 @@
 experiment:
   net: gfs
   mode: cycled
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2S
   resdetatmos: 384
@@ -15,8 +13,13 @@ arguments:
   idate: 2021063018
   edate: 2021070306
   # NOTE: this directory is read-only
-  #icsdir: /scratch1/NCEPDEV/climate/Jessica.Meixner/cycling/IC_2021063000_V2
-  #icsdir: /work/noaa/da/gvernier/ensda/ictest/1440x1080x75/
-  # NOTE this directory is read-only
-  icsdir: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/prepics/hybrid-test/
+  icsdir: 
   yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/marine3dvar.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
