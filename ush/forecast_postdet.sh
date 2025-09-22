@@ -335,7 +335,7 @@ EOF
   # Note, this must be computed after determination IAU in forecast_det and fhrot.
   if (( restart_interval == 0 )); then
     if [[ "${DOIAU:-NO}" == "YES" ]]; then
-      FV3_RESTART_FH=$(( FHMAX + half_window ))
+      FV3_RESTART_FH=$(( FHMAX + assim_freq ))
     else
       FV3_RESTART_FH=("${FHMAX}")
     fi
@@ -345,8 +345,8 @@ EOF
          local restart_interval_start=${restart_interval}
          local restart_interval_end=${FHMAX}
       else
-         local restart_interval_start=$(( restart_interval + half_window ))
-         local restart_interval_end=$(( FHMAX + half_window ))
+         local restart_interval_start=$(( restart_interval + assim_freq ))
+         local restart_interval_end=$(( FHMAX + assim_freq ))
       fi
     else
       local restart_interval_start=${restart_interval}
