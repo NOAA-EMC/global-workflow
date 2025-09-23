@@ -586,7 +586,7 @@ case ${step} in
       "025")
         ntasks=$(( 12 * NMEM_ENS / NMEM_ENS_PER_MPI ))
         memory="${mem_node_max}"
-        walltime="00:40:00"
+        walltime="00:45:00"
         tasks_per_node=$(( max_tasks_per_node / 4 ))
         ;;
       "050")
@@ -1314,7 +1314,7 @@ case ${step} in
     ;;
 
   "esfc")
-    walltime="01:00:00"
+    walltime="01:15:00"
     ntasks=80
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))

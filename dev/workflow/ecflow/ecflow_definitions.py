@@ -1896,7 +1896,7 @@ class EcfFamily(ecflow.Family, EcfRoot):
         None
         """
         if parents:
-            folder_path = f"{ecfhome}/{suite}/{parents.replace('>','/')}/{self.name()}"
+            folder_path = f"{ecfhome}/{suite}/{parents.replace('>', '/')}/{self.name()}"
         else:
             folder_path = f"{ecfhome}/{suite}/{self.name()}"
         if not os.path.exists(folder_path):
@@ -1974,7 +1974,7 @@ class EcfTask(ecflow.Task, EcfRoot):
         search_script = f"{self.template}.ecf" if self.template is not \
             None else script_name
         if parents:
-            script_path = f"{ecfhome}/{suite}/{parents.replace('>','/')}/{script_name}"
+            script_path = f"{ecfhome}/{suite}/{parents.replace('>', '/')}/{script_name}"
         else:
             script_path = f"{ecfhome}/{suite}/{script_name}"
         for root, dirs, files in os.walk(self.scriptrepo):
