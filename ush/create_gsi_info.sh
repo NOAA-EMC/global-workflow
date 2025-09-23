@@ -1,22 +1,27 @@
 #!/usr/bin/env bash
 # Generic script to create convinfo, ozinfo, or satinfo for a given date.
 # Usage:
-#   ./create_gsi_info.sh <type> <date> [use2mobs]
+#   ./create_gsi_info.sh <type> <date> <directory> [use2mobs]
 #   <type>: conv, oz, or sat
 #   <date>: date string to match
+#   <directory>: directory to write the info file into
 #   [use2mobs]: (optional, only for conv) YES or NO
 
 set -eu
 # Inherit set -e inside of the get_usedate function below
 shopt -s inherit_errexit
+
+# Input arguments
 type_in=${1:-}
 date_in=${2:-}
-use2mobs=${3:-NO}
+dir_in=${3:-}
+use2mobs=${4:-NO}
 
-if [[ -z "${type_in}" || -z "${date_in}" ]]; then
-  echo "Usage: ${0} <type> <date> [use2mobs]"
+if [[ -z "${type_in}" || -z "${date_in}" || -z "${dir_in}" ]]; then
+  echo "Usage: ${0} <type> <date> <directory> [use2mobs]"
   echo "  <type>: conv, oz, or sat"
   echo "  <date>: date string to match"
+  echo "  <directory>: where to write the new GSI info files into"
   echo "  [use2mobs]: (optional, only for conv, whether to use 2m observations) YES or NO"
   exit 1
 fi
