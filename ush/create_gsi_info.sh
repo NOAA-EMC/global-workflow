@@ -49,7 +49,7 @@ get_usedate() {
 starting_dir="${PWD}"
 
 # Filename to write the info to
-info_file="${starting_dir}/${type_in}info"
+info_file="${dir_in}/${type_in}info"
 if [[ -f "${info_file}" ]]; then
   rm -f "${info_file}"
 fi
