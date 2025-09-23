@@ -2386,9 +2386,17 @@ class GFSTasks(Tasks):
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
                 deps.append(rocoto.add_dependency(dep_dict))
+            if self.run in ['enkfgdas'] and self._base["INTERVAL_GFS"] == 6:
+                dep_dict = {'type': 'task', 'name': 'gfs_fcst_seg0', 'offset':
+                            f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
+                deps.append(rocoto.add_dependency(dep_dict))
 
         else:
             if self.app_config.mode in ['cycled']:
+                if self.run in ['gdas'] and self._base["INTERVAL_GFS"] == 6:
+                    dep_dict = {'type': 'task', 'name': 'gfs_fcst_seg0', 'offset':
+                                f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
+                    deps.append(rocoto.add_dependency(dep_dict))
                 if self.run in ['gfs']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
                     deps.append(rocoto.add_dependency(dep_dict))
