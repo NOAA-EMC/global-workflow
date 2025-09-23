@@ -17,10 +17,11 @@ base:
 
 prepoceanobs:
   use_exp_obs: "YES"
-  dmpdir_exp: /scratch3/NCEPDEV/da/common/
+  # will not work for realtime or retros
+  dmpdir_exp: "${BASE_DATA}/experimental_obs"
 
 marineanl:
   SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
   SOCA_ANL_GEOM: {{ HOMEgfs }}/fix/gdas/soca/720x540x75/soca
-  SOCA_OBS_LIST: {{ HOMEgfs }}/parm/gdas/marine/obs/obs_list.yaml.j2
+  SOCA_OBS_LIST: {{ HOMEgfs }}/parm/gdas/marine/obs/obs_list_gfsv17.yaml.j2
   SOCA_NINNER: 100

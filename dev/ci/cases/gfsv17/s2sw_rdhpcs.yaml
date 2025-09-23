@@ -25,10 +25,10 @@ base:
 
 prepoceanobs:
   use_exp_obs: "YES"
-  # retro 
-  # dmpdir_exp: /lfs/h2/emc/da/noscrub/common_obsForge
-  # realtime
-  dmpdir_exp: /lfs/h2/emc/da/noscrub/mindo.choi/MARINE_obs/COMROOT/realtime
+  # gaea
+  dmpdir_exp: /gpfs/f6/gfs-cpu/world-shared/Mindo.Choi/common_obsForge
+  # ursa
+  # dmpdir_exp: /scratch3/NCEPDEV/da/common_obsForge
 
 marineanl:
   SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca            

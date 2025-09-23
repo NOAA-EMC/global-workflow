@@ -13,8 +13,7 @@ experiment:
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2021063018
   edate: 2021070306
-  #icsdir: /work/noaa/da/gvernier/ensda/ictest/1440x1080x75/
-  icsdir: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/prepics/hybrid-test/
+  icsdir: 
   yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/marinehyb.yaml
 
 workflow:
