@@ -2383,7 +2383,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'cycleexist',
                     'offset': f"{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_next_fcst_seg = rocoto.create_dependency(dep_condition='and', dep=deps))
+        dep_next_fcst_seg = rocoto.create_dependency(dep_condition='and', dep=deps)
         deps = []
         if 'enkf' in self.run:
             dep_dict = {'type': 'task', 'name': f'{self.run}_earc_vrfy'}
