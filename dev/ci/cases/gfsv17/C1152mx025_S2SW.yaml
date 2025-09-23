@@ -13,10 +13,7 @@ experiment:
   expdir: /lfs/h2/emc/global/noscrub/emc.global/RETRO_GFSv17/expdir
   idate: 2024111506
   edate: 2025011600
-  icsdir: /lfs/h2/emc/physics/noscrub/ruiyu.sun/ICs/RETROs/GFSv17_RETRO_warmATmic_withlandNspread_N_oceanicewave
-  #idate: 2023041506
-  #edate: 2023061600
-  #icsdir: /lfs/h2/emc/da/noscrub/catherine.thomas/ICS/C1152C384/2023041506
+  icsdir: /lfs/h2/emc/ptmp/emc.global/RETRO_GFSv17/IC/v2
   yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw.yaml
 
 workflow:
