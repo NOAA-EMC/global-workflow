@@ -2381,7 +2381,7 @@ class GFSTasks(Tasks):
                     f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'cycleexist', 'condition': 'not',
-                    'offset': f"{timedelta_to_HMS(self._base['interval_gdas'])}"}
+                    'offset': f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
         deps = []
