@@ -150,6 +150,7 @@ class ChemFireEmissions(Task):
             logger.info(f'Processing forecast emissions for {self.start_date}')
 
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
+                gbbepx_vars = ["co", "nox", "so2", "nh3", "bc", "oc"]
                 files = self._find_gbbepx_files(
                     self.start_date,
                    gbbepx_vars,
