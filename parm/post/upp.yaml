@@ -23,8 +23,8 @@ analysis:
       - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfcanl.nc", "{{ DATA }}/{{ flux_filename }}"]
   data_out:
     copy:
-      - ["{{ DATA }}/GFSPRS.GrbF00", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.grb2anl"]
-      - ["{{ DATA }}/GFSPRS.GrbF00.idx", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.grb2ianl"]
+      - ["{{ DATA }}/GFSPRS.GrbF00", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.anl.grib2"]
+      - ["{{ DATA }}/GFSPRS.GrbF00.idx", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.anl.grib2.idx"]
 
 forecast:
   config:

@@ -1127,7 +1127,7 @@ class GFSTasks(Tasks):
 
         atm_master_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_MASTER_TMPL"])
         deps = []
-        data = f'{atm_master_path}/{self.run}.t@Hz.master.grb2anl'
+        data = f'{atm_master_path}/{self.run}.t@Hz.master.anl.grib2'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
