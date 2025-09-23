@@ -43,7 +43,6 @@ class NEXUSEmissions(Task):
         super().__init__(config)
 
         self.task_config = AttrDict(config)
-        pprint(self.task_config)
 
         self.AERO_INPUTS_DIR = self.task_config.get('AERO_INPUTS_DIR', None)
         self.COMOUT_CHEM_INPUT = self.task_config.get('COMOUT_CHEM_INPUT', None)
@@ -301,7 +300,6 @@ class NEXUSEmissions(Task):
         if not os.path.exists(self.task_config.DATA):
             raise WorkflowException(f"Working directory does not exist: {self.task_config.DATA}")
 
-        # pprint(self.task_config)
         exe = Executable(self.task_config.launcher)
         arg_list = ['--ntasks',
                     str(1),
