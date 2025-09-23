@@ -356,7 +356,7 @@ class ChemFireEmissions(Task):
                     match_found = False
 
                     # Try pattern 1 with s/e/c date format
-                    pattern1 = r".*s(\d{8}).*e(\d{8}).*c(\d{8}).*\.nc"
+                    pattern1 = r"GBBEPx-all01GRID.*_s(\d{8}).*_e(\d{8}).*\.nc"
                     match = re.match(pattern1, file_name)
                     if match:
                         start_date = match.group(1)
