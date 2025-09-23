@@ -65,7 +65,7 @@ case "${type_in}" in
         cat "${usedate}" >> "${info_file}"
       fi
     else
-      echo "ERROR: No valid conventional info was found!"
+      echo "FATAL ERROR: No valid conventional info was found!"
       exit 1
     fi
     ;;
@@ -81,7 +81,7 @@ case "${type_in}" in
       } >> "${info_file}"
       cat "${usedate}" >> "${info_file}"
     else
-      echo "ERROR: No valid ozone info was found!"
+      echo "FATAL ERROR: No valid ozone info was found!"
       exit 1
     fi
     ;;
@@ -90,7 +90,7 @@ case "${type_in}" in
     # Read in the satellite list, ignoring comment lines and the readme
     satellite_list=$(grep -Ev '^ *#|readme' satellites)
     if [[ -z "${satellite_list}" ]]; then
-      echo "ERROR: No satellites found in the satellite file list!"
+      echo "FATAL ERROR: No satellites found in the satellite file list!"
       exit 1
     fi
 
@@ -101,7 +101,7 @@ case "${type_in}" in
       usedate=""
       # Check that the satellite directory exists
       if [[ ! -d "${sat}" ]]; then
-        echo "ERROR: Directory ${sat} does not exist!"
+        echo "FATAL ERROR: Directory ${sat} does not exist!"
         exit 1
       fi
 
@@ -114,13 +114,13 @@ case "${type_in}" in
       if [[ ${usedate} != "" ]]; then
         cat "${sat}/${usedate}" >> "${info_file}"
       else
-        echo "ERROR: No valid satellite info was found for satellite target '${sat}'!"
+        echo "FATAL ERROR: No valid satellite info was found for satellite target '${sat}'!"
         exit 1
       fi
     done <<< "${satellite_list}"
     ;;
   *)
-    echo "ERROR: Unknown info file type: '${type_in}'. Must be one of: conv, oz, sat"
+    echo "FATAL ERROR: Unknown info file type: '${type_in}'. Must be one of: conv, oz, sat"
     exit 2
     ;;
 esac
