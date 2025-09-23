@@ -149,7 +149,7 @@ class ChemFireEmissions(Task):
 
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
                 self.task_config['AERO_EMIS_FIRE_DIR'] = self.task_config.get('AERO_EMIS_FIRE_NRT_DIR', None)
-                files = self._find_gbbepx_files(
+                files = self._find_gbbepx_nrt_fires(
                     self.start_date,
                     version=self.task_config.AERO_EMIS_FIRE_VERSION
                 )
@@ -309,6 +309,54 @@ class ChemFireEmissions(Task):
         years = set(date.year for date in self.forecast_dates)
         return months, years
 
+
+    @logit(logger)
+    def _find_gbbepx_nrt_fires(self, emis_file_dir):
+        """Find GBBEPx NRT fire files in the specified directory.
+
+        Parameters
+        ----------
+        emis_file_dir : str
+            Directory to search for GBBEPx NRT fire files
+
+        Returns
+        -------
+        List[str]
+            List of found GBBEPx NRT fire files
+
+        Notes
+        -----
+        Searches for files matching the pattern "GBBEPx-all01GRID_v4r0_blend_sYYYYMMDD000000_eYYYYMMDD235959_cYYYYMMDDHHMMSS.nc"
+        where YYYYMMDD represents the date components.
+        """
+        logger.info(f'Finding GBBEPx NRT fire files in {emis_file_dir}')
+
+        if not os.path.exists(emis_file_dir):
+            logger.warning(f"Directory does not exist: {emis_file_dir}")
+            return []
+
+        all_files = os.listdir(emis_file_dir)
+        matching_files = []
+
+        # Look for pattern: "GBBEPx-all01GRID_v4r0_blend_s202302240000000_e202302242359590_c202302250134090.nc"
+        pattern = r"GBBEPx-all01GRID.*_s(\d{8}).*_e(\d{8}).*\.nc"
+
+        if all_files is None:
+            logger.warning(f"No files found in directory: {emis_file_dir}")
+            logger.warning(f'Checking the previous date')
+            emis_file_dir = emis_file_dir.replace(self.start_date.strftime('%Y/%m'), (self.start_date - datetime.timedelta(days=1)).strftime('%Y/%m'))
+            if not os.path.exists(emis_file_dir):
+                logger.warning(f"Directory does not exist: {emis_file_dir}")
+                return []
+        for file_name in all_files:
+            match = re.match(pattern, file_name)
+            if match:
+                full_path = os.path.join(emis_file_dir, file_name)
+                matching_files.append(full_path)
+                logger.debug(f"Found GBBEPx NRT fire file: {full_path}")
+
+        return matching_files
+    
     @logit(logger)
     def _find_gbbepx_files(self, dates, version='v5r0'):
         """Find GBBEPx files for the given date
@@ -339,7 +387,7 @@ class ChemFireEmissions(Task):
         # Find all possible files
         for mon in months:
             try:
-                emis_file_dir = os.path.join(self.task_config.AERO_EMIS_FIRE_DIR, version, mon)
+                emis_file_dir = self.task_config.AERO_EMIS_FIRE_DIR
                 if not os.path.exists(emis_file_dir):
                     logger.warning(f"Directory does not exist: {emis_file_dir}")
                     continue
