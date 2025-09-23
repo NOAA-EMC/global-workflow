@@ -32,6 +32,7 @@ RUN=${RUN_local} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_OBS:COM_OBS_TMPL \
     COMOUT_OBS:COM_OBS_TMPL \
     COMINobsproc:COM_OBSPROC_TMPL \
+    COMINobsforge:COM_OBSFORGE_TMPL \
     COMIN_TCVITAL:COM_TCVITAL_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
@@ -43,6 +44,13 @@ mkdir -p "${COMOUT_OBS}"
 ###############################################################
 # Copy dump files to ROTDIR
 "${HOMEgfs}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
+status=$?
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
+
+# Copy IODA files to ROTDIR
+"${HOMEgfs}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
