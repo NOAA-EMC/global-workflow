@@ -144,10 +144,11 @@ class ChemFireEmissions(Task):
                                                   aero_emis_fire_dir=AERO_EMIS_FIRE_DIR)
                 files_found.extend(files)
             logger.info(f'Found {len(files_found)} files for historical period')
-        else:
+        else: # NRT Forecast emisssions
             logger.info(f'Processing forecast emissions for {self.start_date}')
 
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
+                self.task_config['AERO_EMIS_FIRE_DIR'] = self.task_config.get('AERO_EMIS_FIRE_NRT_DIR', None)
                 files = self._find_gbbepx_files(
                     self.start_date,
                     version=self.task_config.AERO_EMIS_FIRE_VERSION
