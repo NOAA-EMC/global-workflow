@@ -115,7 +115,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['anal', 'analdiag', 'analcalc']
 
         if options['do_jediocnvar']:
-            configs += ['prepoceanobs', 'marineanlinit', 'marinebmatinit', 'marinebmat', 'marineanlvar']
+            configs += ['marineanlinit', 'marinebmatinit', 'marinebmat', 'marineanlvar']
             if options['do_letkf_ocn']:
                 configs += ['marineanlletkf']
             if options['do_hybvar']:
@@ -192,8 +192,6 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_aero_anl']:
             configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-            if options['do_prep_obs_aero']:
-                configs += ['prepobsaero']
 
         if options['do_jedisnowda']:
             configs += ['snowanl']
@@ -255,7 +253,7 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['anal', 'analcalc']
 
                 if options['do_jediocnvar']:
-                    task_names[run] += ['prepoceanobs', 'marineanlinit', 'marinebmatinit', 'marinebmat', 'marineanlvar', 'marineanlchkpt', 'marineanlfinal']
+                    task_names[run] += ['marineanlinit', 'marinebmatinit', 'marinebmat', 'marineanlvar', 'marineanlchkpt', 'marineanlfinal']
 
                 task_names[run] += ['sfcanl']
 
@@ -282,9 +280,6 @@ class GFSCycledAppConfig(AppConfig):
 
                 if options['do_aero_anl']:
                     task_names[run] += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-
-                    if options['do_prep_obs_aero']:
-                        task_names[run] += ['prepobsaero']
 
                 # Staging is gdas-specific
                 if run == 'gdas':
