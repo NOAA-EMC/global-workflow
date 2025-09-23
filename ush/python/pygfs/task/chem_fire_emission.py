@@ -152,7 +152,7 @@ class ChemFireEmissions(Task):
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
                 files = self._find_gbbepx_files(
                     self.start_date,
-                    self.task_config.gbbepx_vars,
+                   gbbepx_vars,
                     version=self.task_config.AERO_EMIS_FIRE_VERSION,
                     vars=["co", "nox", "so2", "nh3", "bc", "oc"]
                 )
