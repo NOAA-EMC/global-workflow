@@ -46,7 +46,7 @@ get_usedate() {
 }
 
 # Get the starting directory
-starting_dir="${DATA:-${PWD}}"
+starting_dir="${PWD}"
 
 # Filename to write the info to
 info_file="${starting_dir}/${type_in}info"
