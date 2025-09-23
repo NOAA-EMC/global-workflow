@@ -132,9 +132,7 @@ class ChemFireEmissions(Task):
             files_found = []
             for dates in self.forecast_dates:
                 if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
-                    gbbepx_vars = ["co", "nox", "so2", "nh3", "bc", "oc"]
                     files = self._find_gbbepx_files(dates,
-                                                    gbbepx_vars,
                                                     version=self.task_config.AERO_EMIS_FIRE_VERSION,
                                                     aero_emis_fire_dir=AERO_EMIS_FIRE_DIR)
                 elif self.task_config.AERO_EMIS_FIRE.lower() == 'qfed':
@@ -150,12 +148,9 @@ class ChemFireEmissions(Task):
             logger.info(f'Processing forecast emissions for {self.start_date}')
 
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
-                gbbepx_vars = ["co", "nox", "so2", "nh3", "bc", "oc"]
                 files = self._find_gbbepx_files(
                     self.start_date,
-                   gbbepx_vars,
-                    version=self.task_config.AERO_EMIS_FIRE_VERSION,
-                    vars=["co", "nox", "so2", "nh3", "bc", "oc"]
+                    version=self.task_config.AERO_EMIS_FIRE_VERSION
                 )
             elif self.task_config.AERO_EMIS_FIRE.lower() == 'qfed':
                 # Get QFED variables with safe defaults
