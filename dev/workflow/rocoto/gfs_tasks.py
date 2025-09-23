@@ -2377,6 +2377,14 @@ class GFSTasks(Tasks):
     # Cleanup
     def cleanup(self):
         deps = []
+        dep_dict = {'type': 'task', 'name': 'gfs_fcst_seg0', 'offset':
+                    f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'cycleexist', 'condition': 'not',
+                    'offset': f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
+        deps = []
         if 'enkf' in self.run:
             dep_dict = {'type': 'task', 'name': f'{self.run}_earc_vrfy'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -2386,6 +2394,8 @@ class GFSTasks(Tasks):
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
                 deps.append(rocoto.add_dependency(dep_dict))
+            if self.run in ['enkfgdas'] and self._base["INTERVAL_GFS"] == 6:
+                deps.append(dep_next_fcst_seg)
 
         else:
             if self.app_config.mode in ['cycled']:
@@ -2396,6 +2406,8 @@ class GFSTasks(Tasks):
                         dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                         deps.append(rocoto.add_dependency(dep_dict))
                 elif self.run in ['gdas']:
+                    if self._base["INTERVAL_GFS"] == 6:
+                        deps.append(dep_next_fcst_seg)
                     dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
                     deps.append(rocoto.add_dependency(dep_dict))
                     if self.options['do_fit2obs']:
