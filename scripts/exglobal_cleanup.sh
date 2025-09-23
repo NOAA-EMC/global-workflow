@@ -39,7 +39,7 @@ function remove_files() {
     find_exclude_string="${find_exclude_string[*]/%-or}"
     # Remove all regular files that do not match
     # shellcheck disable=SC2086
-    if [ -n "${find_exclude_string}" ]; then
+    if [[ -n "${find_exclude_string}" ]]; then
     # String is non-empty → use exclusion
        find "${directory}" -type f -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
     else
@@ -49,7 +49,7 @@ function remove_files() {
 
     # Remove all symlinks that do not match
     # shellcheck disable=SC2086
-    if [ -n "${find_exclude_string}" ]; then
+    if [[ -n "${find_exclude_string}" ]]; then
     # String is non-empty → use exclusion
        find "${directory}" -type l -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
     else
