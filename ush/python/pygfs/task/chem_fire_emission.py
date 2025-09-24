@@ -156,10 +156,10 @@ class ChemFireEmissions(Task):
             tmp_dict = {'current_cycle': self.start_date,
                          'AERO_EMIS_FIRE_NRT_DIR': self.task_config.get('AERO_EMIS_FIRE_NRT_DIR', None)
                         }
-            self.render_template(tmp_dict)
+            yaml_config = self.render_template(tmp_dict)
 
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
-                self.task_config['AERO_EMIS_FIRE_DIR'] = self.task_config.get('NRT_DIRECTORY', None)
+                self.task_config['AERO_EMIS_FIRE_DIR'] = yaml_config.fire_emission.config['NRT_DIRECTORY']
                 files_found = self._find_gbbepx_nrt_fires(self.task_config.AERO_EMIS_FIRE_VERSION)
             elif self.task_config.AERO_EMIS_FIRE.lower() == 'qfed':
                 # Get QFED variables with safe defaults
@@ -867,5 +867,5 @@ class ChemFireEmissions(Task):
             logger.debug(f'Parsing YAML template: {yaml_template}')
             yaml_config = parse_j2yaml(yaml_template, tmpl_dict)
 
-        self.task_config = AttrDict(**self.task_config, **yaml_config)
+        return yaml_config
 
