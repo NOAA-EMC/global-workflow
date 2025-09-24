@@ -161,7 +161,7 @@ class ChemFireEmissions(Task):
 
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
                 self.task_config['AERO_EMIS_FIRE_DIR'] = yaml_config.fire_emission.config['NRT_DIRECTORY']
-                files_found = self._find_gbbepx_nrt_fires(self.task_config.AERO_EMIS_FIRE_VERSION)
+                files_found = self._find_gbbepx_nrt_fires(yaml_config.fire_emission.config['NRT_DIRECTORY'])
                 logger.info(f'Found {len(files_found)} GBBEPx NRT files for {self.start_date}' )
                 logger.info(f"files found: {files_found}")
             elif self.task_config.AERO_EMIS_FIRE.lower() == 'qfed':
@@ -322,7 +322,7 @@ class ChemFireEmissions(Task):
 
 
     @logit(logger)
-    def _find_gbbepx_nrt_fires(self, emis_file_dir):
+    def _find_gbbepx_nrt_fires(self, NRT_DIRECTORY: str) -> List[str]:
         """Find GBBEPx NRT fire files in the specified directory.
 
         Parameters
@@ -340,15 +340,15 @@ class ChemFireEmissions(Task):
         Searches for files matching the pattern "GBBEPx-all01GRID_v4r0_blend_sYYYYMMDD000000_eYYYYMMDD235959_cYYYYMMDDHHMMSS.nc"
         where YYYYMMDD represents the date components.
         """
-        logger.info(f'Finding GBBEPx NRT fire files in {emis_file_dir}')
+        logger.info(f'Finding GBBEPx NRT fire files in {NRT_DIIRECTORY}')
 
         if not os.path.exists(emis_file_dir):
-            logger.warning(f"Directory does not exist: {emis_file_dir}")
+            logger.warning(f"Directory does not exist: {NRT_DIRECTORY}")
             return []
 
-        all_files = os.listdir(emis_file_dir)
+        all_files = os.listdir(NRT_DIRECTORY)
         matching_files = []
-        logger.debug(f"Searching in directory: {emis_file_dir}")
+        logger.debug(f"Searching in directory: {NRT_DIRECTORY}")
         logger.debug(f"Total files in directory: {len(all_files)} files")
         logger.debug(f"Files found in directory: {all_files}")
         # Look for pattern: "GBBEPx-all01GRID_v4r0_blend_s202302240000000_e202302242359590_c202302250134090.nc"
