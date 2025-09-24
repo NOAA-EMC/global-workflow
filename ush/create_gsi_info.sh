@@ -2,12 +2,13 @@
 
 # Generic script to create convinfo, ozinfo, or satinfo for a given date.
 # Usage:
-#   ./create_gsi_info.sh <type> <date> [use2mobs]
+#   ./create_gsi_info.sh <type> <date> <directory> [use2mobs]
 #   <type>: conv, oz, or sat
 #   <date>: date string to match
-#   <dir>: directory where the info file will be created
+#   <directory>: directory to write the info file into
 #   [use2mobs]: (optional, only for conv) YES or NO
 
+# Input arguments
 type_in=${1:-}
 date_in=${2:-}
 write_dir=${3:-}
@@ -17,7 +18,7 @@ if [[ -z "${type_in}" || -z "${date_in}" || -z "${write_dir}" ]]; then
   echo "Usage: ${0} <type> <date> [use2mobs]"
   echo "  <type>: conv, oz, or sat"
   echo "  <date>: date string to match"
-  echo "  <dir>: directory where the info file will be created"
+  echo "  <directory>: where to write the new GSI info files into"
   echo "  [use2mobs]: (optional, only for conv, whether to use 2m observations) YES or NO"
   exit 1
 fi
@@ -125,7 +126,6 @@ case "${type_in}" in
     ;;
 
   sat)
-
     # Header line
     echo '!sensor/instr/sat      chan iuse  error  error_cld  ermax   var_b    var_pg  icld_det icloud iaerosol' >> "${info_file}"
     build_info_file
