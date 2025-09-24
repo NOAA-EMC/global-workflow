@@ -758,7 +758,7 @@ class ChemFireEmissions(Task):
                     # this assumes a daily frequency
                     ds = ds.assign_coords(time=[index]) # set time dimension to index (zero for the first date, 1 for the second, etc)
                     # Save the processed dataset
-                    outfile_name = f"FIRE_EMIS_{self.start_date.strftime('%Y%m%d')}.nc"
+                    outfile_name = f"FIRE_EMIS_{forecast_date.strftime('%Y%m%d')}.nc"
                     outfile = os.path.join(workdir, outfile_name)
                     comp = dict(zlib=True, complevel=2)
                     encoding = {var: comp for var in ds.data_vars}
