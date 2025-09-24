@@ -756,7 +756,7 @@ class ChemFireEmissions(Task):
                     logger.info(f"Setting time for forecast date: {forecast_date}")
                     # Set time coordinate to the forecast date index (0, 1, 2, ...)
                     # this assumes a daily frequency
-                    ds = ds.assign_coords(time=[index]) # set time dimension to index (zero for the first date, 1 for the second, etc)
+                    # ds = ds.assign_coords(time=[index]) # set time dimension to index (zero for the first date, 1 for the second, etc)
                     # Save the processed dataset
                     outfile_name = f"FIRE_EMIS_{forecast_date.strftime('%Y%m%d')}.nc"
                     outfile = os.path.join(workdir, outfile_name)
