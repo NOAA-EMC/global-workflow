@@ -341,9 +341,9 @@ class ChemFireEmissions(Task):
         Searches for files matching the pattern "GBBEPx-all01GRID_v4r0_blend_sYYYYMMDD000000_eYYYYMMDD235959_cYYYYMMDDHHMMSS.nc"
         where YYYYMMDD represents the date components.
         """
-        logger.info(f'Finding GBBEPx NRT fire files in {NRT_DIIRECTORY}')
+        logger.info(f'Finding GBBEPx NRT fire files in {NRT_DIRECTORY}')
 
-        if not os.path.exists(emis_file_dir):
+        if not os.path.exists(NRT_DIRECTORY):
             logger.warning(f"Directory does not exist: {NRT_DIRECTORY}")
             return []
 
