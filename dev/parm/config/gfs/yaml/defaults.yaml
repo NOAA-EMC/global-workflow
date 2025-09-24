@@ -62,6 +62,10 @@ marineanl:
   SOCA_NINNER: 100
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/marine/jcb-prototype_3dfgat.yaml.j2"
 
+prepoceanobs:
+  use_exp_obs: "YES"
+  dmpdir_exp: "${BASE_DATA}/experimental_obs"
+
 fcst:
   CHECK_LAND_RESTART_OROG: "YES"
 

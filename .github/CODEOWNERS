@@ -74,6 +74,7 @@ jobs/JGLOBAL_MARINE_* @guillaumevernieres @AndrewEichmann-NOAA
 jobs/JGLOBAL_OCEANICE_PRODUCTS @GwenChen-NOAA @AminIlia-NOAA @ChristopherHill-NOAA
 jobs/JGLOBAL_OFFLINE_ATMOS_ANALYSIS @CoryMartin-NOAA
 jobs/JGLOBAL_PREP_EMISSIONS @bbakernoaa
+jobs/JGLOBAL_PREP_OCEAN_OBS @guillaumevernieres @AndrewEichmann-NOAA
 jobs/JGLOBAL_*SNOW* @jiaruidong2017
 jobs/JGLOBAL_STAGE_IC @DavidHuber-NOAA @aerorahul
 jobs/JGLOBAL_WAVE_* @JessicaMeixner-NOAA @sbanihash

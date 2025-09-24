@@ -115,7 +115,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['anal', 'analdiag', 'analcalc']
 
         if options['do_jediocnvar']:
-            configs += ['marineanlinit', 'marinebmatinit', 'marinebmat', 'marineanlvar']
+            configs += ['prepoceanobs', 'marineanlinit', 'marinebmatinit', 'marinebmat', 'marineanlvar']
             if options['do_letkf_ocn']:
                 configs += ['marineanlletkf']
             if options['do_hybvar']:
@@ -253,7 +253,7 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['anal', 'analcalc']
 
                 if options['do_jediocnvar']:
-                    task_names[run] += ['marineanlinit', 'marinebmatinit', 'marinebmat', 'marineanlvar', 'marineanlchkpt', 'marineanlfinal']
+                    task_names[run] += ['prepoceanobs', 'marineanlinit', 'marinebmatinit', 'marinebmat', 'marineanlvar', 'marineanlchkpt', 'marineanlfinal']
 
                 task_names[run] += ['sfcanl']
 
