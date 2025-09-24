@@ -15,7 +15,7 @@ write_dir=${3:-}
 use2mobs=${4:-NO}
 
 if [[ -z "${type_in}" || -z "${date_in}" || -z "${write_dir}" ]]; then
-  echo "Usage: ${0} <type> <date> [use2mobs]"
+  echo "Usage: ${0} <type> <date> <directory> [use2mobs]"
   echo "  <type>: conv, oz, or sat"
   echo "  <date>: date string to match"
   echo "  <directory>: where to write the new GSI info files into"
