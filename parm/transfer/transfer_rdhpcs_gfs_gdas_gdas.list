@@ -52,9 +52,9 @@ _COMROOT_/gfs/_SHORTVER_/gdas._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/gda
 + /??/atmos/
 + /??/atmos/gdas.t??z*tcvitals*
 + /??/atmos/gdas.*bufr*
-+ /??/atmos/gdas.t??z.abias_pc
-+ /??/atmos/gdas.t??z.abias_air
-+ /??/atmos/gdas.t??z.abias
++ /??/atmos/gdas.t??z.abias_pc.txt
++ /??/atmos/gdas.t??z.abias_air.txt
++ /??/atmos/gdas.t??z.abias.txt
 + /??/atmos/gdas.t??z.sfcf*.nc
 + /??/atmos/gdas.t??z.engicegrb
 + /??/atmos/gdas.t??z.atmf0*.nc

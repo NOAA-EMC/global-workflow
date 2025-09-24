@@ -74,9 +74,9 @@ export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}atmanl.nc"
 export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}atminc.nc"
 
 # Guess Bias correction coefficients related to control
-export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias
-export GBIASPC=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc
-export GBIASAIR=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air
+export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias.txt
+export GBIASPC=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc.txt
+export GBIASAIR=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air.txt
 export GRADSTAT=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat
 
 # Bias correction coefficients related to ensemble mean
