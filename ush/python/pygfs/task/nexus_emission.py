@@ -300,15 +300,8 @@ class NEXUSEmissions(Task):
         if not os.path.exists(self.task_config.DATA):
             raise WorkflowException(f"Working directory does not exist: {self.task_config.DATA}")
 
-        exe = Executable(self.task_config.launcher)
-        if 'mpiexec' in self.task_config.launcher:
-            arg_list = ['-n', str(1), 'nexus.x', '-c', self.task_config.NEXUS_CONFIG_NAME]
-        else:
-            arg_list = ['--ntasks',
-                        str(1),
-                        'nexus.x',
-                        '-c',
-                        self.task_config.NEXUS_CONFIG_NAME]
+        exe = Executable(self.task_config.APRUN)
+        arg_list = [ 'nexus.x', '-c',  self.task_config.NEXUS_CONFIG_NAME]
         exe(*arg_list, output='stdout', error='stderr')
 
         logger.info("Concatenating processed NEXUS files...")
