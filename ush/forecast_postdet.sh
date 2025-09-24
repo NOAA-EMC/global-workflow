@@ -740,6 +740,15 @@ MOM6_out() {
       exit 25
       ;;
   esac
+   # Copy the Monthly Average ocean output from SFS
+   if [[ "${RUN}" == sfs ]]; then
+     local files f_name
+     files=$( ls -f "${DATAoutput}/MOM6_OUTPUT/ocn_????_??.nc" )
+     for f in ${files}; do
+         f_name=$( basename "${f}" )
+         ${NMV} "${f}" "${COMOUT_OCEAN_HISTORY}/sfs.ocean.t${SDATE}'.monthly_avg.'${f_name:4:4}-${f_name:9:2}'.nc'"
+     done
+   fi
 }
 
 CICE_postdet() {
