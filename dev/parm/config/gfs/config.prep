@@ -9,7 +9,6 @@ echo "BEGIN: config.prep"
 source "${EXPDIR}/config.resources" prep
 
 export cdate10=${PDY}${cyc}
-dev\parm\config\gfs\config.prep
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 export TROPCYQCRELOSH="${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh"

@@ -6,7 +6,7 @@ atmosphere_cold_RT:
     link_req:
         {% set DIAU_cold_previous_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/analysis/atmos/gdas.t' ~ previous_cycle_HH ~ 'z.atma003.ensres.nc' %}
         {% set DIAU_cold_current_file = ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atminc.nc' %}
-        {% set DIAU_current_file= ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atmanl.nc' %}
+        {% set DIAU_current_file= ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atm.anl.nc' %}
         {% set atm_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/model/atmos/history/gdas.t' ~ previous_cycle_HH ~ 'z.atmf003.ensres.nc' %}
         {% set surface_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/model/atmos/history/gdas.t' ~ previous_cycle_HH ~ 'z.sfcf003.nc' %}
         {% set current_path = COMOUT_ATMOS_ANALYSIS_MEM %}
