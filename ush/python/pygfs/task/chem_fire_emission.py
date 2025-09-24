@@ -746,8 +746,7 @@ class ChemFireEmissions(Task):
         logger.info(f"Processing GBBEPx files for {len(self.forecast_dates)} forecast dates")
         processed_files = []
 
-        historical = self.task_config.get('historical', True)
-        if not historical: # only one file to process for multiple dates (need to change time in each file)
+        if not self.historical: # only one file to process for multiple dates (need to change time in each file)
             logger.info("Non-historical GBBEPx processing - only one file expected")
             if self.task_config.rawfiles:
                 logger.info(f"Processing single GBBEPx file: {self.task_config.rawfiles[0]}")
