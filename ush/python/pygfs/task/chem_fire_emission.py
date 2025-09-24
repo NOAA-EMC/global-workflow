@@ -345,7 +345,9 @@ class ChemFireEmissions(Task):
 
         all_files = os.listdir(emis_file_dir)
         matching_files = []
-
+        logger.debug(f"Searching in directory: {emis_file_dir}")
+        logger.debug(f"Total files in directory: {len(all_files)} files")
+        logger.debug(f"Files found in directory: {all_files}")
         # Look for pattern: "GBBEPx-all01GRID_v4r0_blend_s202302240000000_e202302242359590_c202302250134090.nc"
         pattern = r"GBBEPx-all01GRID.*_s(\d{8}).*_e(\d{8}).*\.nc"
 
