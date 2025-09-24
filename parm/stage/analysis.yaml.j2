@@ -18,27 +18,38 @@ analysis:
         {% endif %}
         {% endfor %}
         {% endfor %}
-        {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt", "rad_varbc_params.tar"] %}
+        {% for ftype in ["abias", "abias_air", "abias_int", "abias_pc"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.txt"]
         {% endif %}
         {% endfor %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.rad_varbc_params.tar") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.rad_varbc_params.tar", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.rad_varbc_params.tar"]
+        {% endif %}
         {% else %}
-        {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt", "atminc.nc", "atmi009.nc", "atmi003.nc", "radstat", "ratminc.nc", "ratmi009.nc", "ratmi003.nc", "rad_varbc_params.tar"] %}
+        {% for ftype in ["abias", "abias_air", "abias_int", "abias_pc"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.txt"]
         {% endif %}
         {% endfor %}
+        {% for ftype in ["atminc.nc", "atmi009.nc", "atmi003.nc", "radstat", "ratminc.nc", "ratmi009.nc", "ratmi003.nc"] %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}"]
+        {% endif %}
+        {% endfor %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.rad_varbc_params.tar") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.rad_varbc_params.tar", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.rad_varbc_params.tar"]
+        {% endif %}
         {% endif %}
         {% if DO_GSISOILDA %}
         {% for ftype in ["sfci003.nc", "sfci006.nc", "sfci009.nc"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}"]
         {% endif %}
         {% endfor %}
         {% if DO_LAND_IAU %}
         {% for itile in range(1,7) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/sfc_inc.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/sfc_inc.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/sfc_inc.tile{{ itile }}.nc"]
         {% endfor %}
         {% endif %}
         {% endif %}

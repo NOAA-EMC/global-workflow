@@ -41,7 +41,7 @@
         {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "atmstat",
                                     ARCDIR ~ "/atmstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% else %}
-        {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "gsistat",
+        {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "gsistat.txt",
                                     ARCDIR ~ "/gsistat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% endif %}
 
