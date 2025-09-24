@@ -144,6 +144,7 @@ class ChemFireEmissions(Task):
                                                   aero_emis_fire_dir=AERO_EMIS_FIRE_DIR)
                 files_found.extend(files)
             logger.info(f'Found {len(files_found)} files for historical period')
+            self.task_config["AERO_EMIS_FIRE_DIR"] = AERO_EMIS_FIRE_DIR
         else:
             #===============================================
             #  # NRT Forecast emisssions
