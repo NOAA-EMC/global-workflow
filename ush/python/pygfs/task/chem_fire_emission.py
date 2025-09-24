@@ -154,7 +154,7 @@ class ChemFireEmissions(Task):
             # GBBEPx NRT files are in a different directory structure
             # Render the template with the current cycle to get the correct path 
             tmp_dict = {'current_cycle': self.start_date,
-                         'AERO_EMIS_FIRE_NRT_DIR': self.task_config.get('AERO_EMIS_FIRE_NRT_DIR', None)
+                         'AERO_EMIS_FIRE_NRT_DIR': self.task_config.AERO_EMIS_FIRE_NRT_DIR
                         }
             yaml_config = self.render_template(tmp_dict)
 
