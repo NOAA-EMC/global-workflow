@@ -87,7 +87,7 @@ class FV3AnalysisCalc(Analysis):
 
         # Stage files from COM
         logger.info(f"Staging files from COM")
-        FileHandler(self.task_config.stage).sync()
+        FileHandler(self.task_config.data_in).sync()
 
         # Initialize GDASApp JEDI addincrement application
         logger.info(f"Initializing GDASApp JEDI addincrement applications")
@@ -172,7 +172,7 @@ class FV3AnalysisCalc(Analysis):
 
         # Save files from COM
         logger.info(f"Saving files to COM")
-        FileHandler(self.task_config.save).sync()
+        FileHandler(self.task_config.data_out).sync()
 
 
 @logit(logger)

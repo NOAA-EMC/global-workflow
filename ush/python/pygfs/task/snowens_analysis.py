@@ -9,7 +9,8 @@ import gzip
 import tarfile
 import numpy as np
 from netCDF4 import Dataset
-
+from pygfs.task.analysis import Analysis
+from pygfs.jedi import Jedi
 from wxflow import (AttrDict,
                     FileHandler,
                     to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime,
@@ -17,16 +18,14 @@ from wxflow import (AttrDict,
                     rm_p, cp,
                     parse_j2yaml, save_as_yaml,
                     Jinja,
-                    Task,
                     logit,
                     Executable,
                     WorkflowException)
-from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class SnowEnsAnalysis(Task):
+class SnowEnsAnalysis(Analysis):
     """
     Class for JEDI-based global snow ensemble analysis tasks
     """
@@ -63,7 +62,8 @@ class SnowEnsAnalysis(Task):
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
                 'CASE': self.task_config.CASE_ENS,
-                'OCNRES': f"{self.task_config.OCNRES:03d}"
+                'OCNRES': f"{self.task_config.OCNRES:03d}",
+                'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
             }
         ))
 
@@ -72,8 +72,7 @@ class SnowEnsAnalysis(Task):
 
         # Create JEDI object dictionary
         expected_keys = ['scf_to_ioda', 'snowanlvar', 'esnowanlensmean']
-        jedi_config_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
-        self.jedi_dict = Jedi.get_jedi_dict(jedi_config_dict, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -100,18 +99,6 @@ class SnowEnsAnalysis(Task):
         # Stage files from COM
         logger.info(f"Staging files from COM")
         FileHandler(self.task_config.data_in).sync()
-
-        # note JEDI will try to read the orog files for each member, let's just symlink
-        logger.info("Linking orography files for each member")
-        oro_files = glob.glob(os.path.join(self.task_config.DATA, 'orog', 'ens', '*'))
-        for mem in range(1, self.task_config.NMEM_ENS + 1):
-            dest = os.path.join(self.task_config.DATA, 'bkg', f"mem{mem:03}")
-            for oro_file in oro_files:
-                os.symlink(oro_file, os.path.join(dest, os.path.basename(oro_file)))
-        # need to symlink orography files for the ensmean too
-        dest = os.path.join(self.task_config.DATA, 'bkg', 'ensmean')
-        for oro_file in oro_files:
-            os.symlink(oro_file, os.path.join(dest, os.path.basename(oro_file))))
 
         # Initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
@@ -174,7 +161,7 @@ class SnowEnsAnalysis(Task):
         if self.task_config.DOIAU:
             logger.info("Copying increments to beginning of window")
             template_in = f'snowinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
-            template_out = f'snowinc.{to_fv3time(self.task_config.SNOW_WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
+            template_out = f'snowinc.{to_fv3time(self.task_config.WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
             inclist = []
             for itile in range(1, self.task_config.ntiles + 1):
                 filename_in = template_in.format(tilenum=itile)
@@ -187,7 +174,7 @@ class SnowEnsAnalysis(Task):
         bkgtimes = []
         if self.task_config.DOIAU:
             # need both beginning and middle of window
-            bkgtimes.append(self.task_config.SNOW_WINDOW_BEGIN)
+            bkgtimes.append(self.task_config.WINDOW_BEGIN)
         bkgtimes.append(self.task_config.current_cycle)
 
         # loop over members

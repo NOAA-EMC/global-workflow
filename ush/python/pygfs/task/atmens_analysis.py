@@ -77,7 +77,7 @@ class AtmEnsAnalysis(Analysis):
 
         # Stage files from COM
         logger.info(f"Staging files from COM")
-        FileHandler(self.task_config.stage).sync()
+        FileHandler(self.task_config.data_in).sync()
 
         # Extract bias corrections from tar files
         logger.info(f"Extracting bias corrections from tar files")
@@ -147,4 +147,4 @@ class AtmEnsAnalysis(Analysis):
 
         # Save files from COM
         logger.info(f"Saving files to COM")
-        FileHandler(self.task_config.save).sync()
+        FileHandler(self.task_config.data_out).sync()

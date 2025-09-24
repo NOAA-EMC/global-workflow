@@ -22,7 +22,7 @@ from wxflow import (AttrDict, Executable, FileHandler, WorkflowException,
 logger = getLogger(__name__.split('.')[-1])
 
 
-class SnowAnalysis(Task):
+class SnowAnalysis(Analysis):
     """
     Class for JEDI-based global snow analysis tasks
     """
@@ -56,7 +56,8 @@ class SnowAnalysis(Task):
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
-                'OCNRES': f"{self.task_config.OCNRES:03d}"
+                'OCNRES': f"{self.task_config.OCNRES:03d}",
+                'snow_bkg_path': os.path.join('.', 'bkg/'),
             }
         ))
 
@@ -65,8 +66,7 @@ class SnowAnalysis(Task):
 
         # Create JEDI object dictionary
         expected_keys = ['scf_to_ioda', 'snowanlvar']
-        jedi_config_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
-        self.jedi_dict = Jedi.get_jedi_dict(jedi_config_dict, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
