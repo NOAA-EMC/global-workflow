@@ -56,8 +56,8 @@ class ChemFireEmissions(Task):
         self.start_date = self.task_config["CDATE"]
         logger.info(f"Start date: {self.start_date}")
 
-        # end date = SDATE + nforecast hours + 36
-        self.end_date = self.task_config["CDATE"] + to_timedelta(f'{nforecast_hours + 36}H')
+        # end date = SDATE + nforecast hours + 24
+        self.end_date = self.task_config["CDATE"] + to_timedelta(f'{nforecast_hours + 24}H')
         logger.info(f"End date: {self.end_date}")
 
         # Calculate number of days spanned by start and end date (inclusive)
@@ -750,9 +750,12 @@ class ChemFireEmissions(Task):
         if not historical: # only one file to process for multiple dates (need to change time in each file)
             logger.info("Non-historical GBBEPx processing - only one file expected")
             if self.task_config.rawfiles:
+                logger.info(f"Processing single GBBEPx file: {self.task_config.rawfiles[0]}")
                 ds = self.GBBEPx_to_COARDS(self.task_config.rawfiles[0])
 
                 for index, forecast_date in enumerate(self.forecast_dates):
+                    logger.info(f"Setting time for forecast date: {forecast_date}")
+                    # Set time coordinate to the forecast date
                     ds['time'] = index # set time dimension to index (zero for the first date, 1 for the second, etc)
                     # Save the processed dataset
                     outfile_name = f"FIRE_EMIS_{self.start_date.strftime('%Y%m%d')}.nc"
