@@ -20,17 +20,16 @@ class Host:
 
     def __init__(self, host=None):
 
-        if host is not None and host not in Host.SUPPORTED_HOSTS:
-            raise NotImplementedError(f'{host} is not a supported host.\n' +
-                                      'Currently supported hosts are:\n' +
-                                      f'{" | ".join(Host.SUPPORTED_HOSTS)}')
-        # If Host is instantiated with "host", use it
-        elif host is not None:
+        if host is not None:
+            if host not in Host.SUPPORTED_HOSTS:
+                raise NotImplementedError(f'{host} is not a supported host.\n' +
+                                          'Currently supported hosts are:\n' +
+                                          f'{" | ".join(Host.SUPPORTED_HOSTS)}')
             self.machine = host
         # Otherwise, detect the host.
         else:
             # Detect the host if not provided
-            self.detect() if host is None else host
+            self.detect()
 
         self.info = self._get_info
         self.scheduler = self.info['SCHEDULER']
@@ -42,6 +41,8 @@ class Host:
     def detect(self) -> None:
         # Detect the machine name and store in self.machine
 
+        self.machine = None
+
         machine_id = os.getenv('MACHINE_ID', 'UNKNOWN')
         pw_csp = os.getenv('PW_CSP', 'UNKNOWN')
         container = os.getenv('SINGULARITY_NAME', None)
@@ -51,13 +52,13 @@ class Host:
         if machine_id != 'UNKNOWN':
             if pw_csp != 'UNKNOWN':
                 self.machine = f"{pw_csp.upper()}PW"
-                return
+            else:
+                self.machine = f"{machine_id.upper()}"
+            return
 
         # Detect the machine since MACHINE_ID is not set
         if os.path.exists('/scratch3/NCEPDEV'):
             # Hera or Ursa
-            self.machine = ""
-
             # Open the mountinfo file and check if /home is mounted to "home_ursa" or "home_hera"
             # NOTE: the github runners do not have a /home directory, so self.machine will be unset
             with open('/proc/self/mountinfo') as f:
@@ -89,18 +90,20 @@ class Host:
             self.machine = 'GAEAC6'
         elif container is not None:
             self.machine = 'CONTAINER'
-        elif pw_csp is not None:
+        elif pw_csp != "UNKNOWN":
             if pw_csp.lower() not in ['azure', 'aws', 'google']:
                 raise ValueError(
                     f'cloud service provider "{pw_csp}" is not supported.')
             self.machine = f"{pw_csp.upper()}PW"
 
-        if self.machine not in Host.SUPPORTED_HOSTS:
-            raise NotImplementedError('This machine is not a supported host.\n' +
-                                      'Currently supported hosts are:\n' +
-                                      f'{" | ".join(Host.SUPPORTED_HOSTS)}')
+        if self.machine is not None:
+            print(f"Detected host as '{self.machine}'")
+            return
 
-        return
+        # If we are here, we have not been able to detect a valid host
+        raise NotImplementedError('Unable to detect a supported host.\n' +
+                                  'Currently supported hosts are:\n' +
+                                  f'{" | ".join(Host.SUPPORTED_HOSTS)}')
 
     @property
     def _get_info(self) -> dict:

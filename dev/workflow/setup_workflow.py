@@ -9,7 +9,8 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from applications.application_factory import app_config_factory
 from rocoto.rocoto_xml_factory import rocoto_xml_factory
-from wxflow import Configuration, Logger, logit
+from ecflow.ecflow_suite_factory import ecflow_suite_factory
+from wxflow import AttrDict, Configuration, Logger, logit
 
 
 # Setup the logger
@@ -57,7 +58,8 @@ def input_args(*argv):
     ecflow_parser = subparsers.add_parser('ecflow',
                                           help='Use EcFlow workflow engine',
                                           formatter_class=ArgumentDefaultsHelpFormatter)
-    # EcFlow specific arguments can be added here in the future
+    ecflow_parser.add_argument('--verbosity', help='verbosity level of ecflow', type=int,
+                               default=10, required=False)
 
     return parser.parse_args(argv[0][0] if len(argv[0]) else None)
 
@@ -100,22 +102,7 @@ def check_dir_writable(dir_path):
 def main(*argv):
 
     user_inputs = input_args(argv)
-
-    # Handle workflow engine selection
-    if user_inputs.workflow == 'ecflow':
-        logger.info("EcFlow workflow engine selected")
-        logger.error("EcFlow workflow is not yet implemented. Please use Rocoto for now.")
-        raise NotImplementedError("EcFlow workflow is not yet implemented")
-
-    logger.info("Rocoto workflow engine selected")
-
-    # Build rocoto parameter dictionary - only available when rocoto is selected
-    rocoto_param_dict = {}
-    if user_inputs.workflow == 'rocoto':
-        rocoto_param_dict = {'maxtries': user_inputs.maxtries,
-                             'cyclethrottle': user_inputs.cyclethrottle,
-                             'taskthrottle': user_inputs.taskthrottle,
-                             'verbosity': user_inputs.verbosity}
+    workflow_engine = user_inputs.workflow
 
     cfg = Configuration(user_inputs.expdir)
 
@@ -123,10 +110,9 @@ def main(*argv):
 
     check_expdir(user_inputs.expdir, base['EXPDIR'])
 
-    # Check if "HOMEDIR","STMP","PTMP" dirrctories are writable
+    # Check if "HOMEDIR","STMP","PTMP" directories are writeable
     dir_keys = ["HOMEDIR", "STMP", "PTMP"]
     for dk in dir_keys:
-        check_dir_writable(base[dk])
         if not check_dir_writable(base[dk]):
             msg = f'The {dk} path {base[dk]} cannot be written to!  Please correct this path and try again.'
             if user_inputs.force:
@@ -140,9 +126,26 @@ def main(*argv):
     # Configure the application
     app_config = app_config_factory.create(f'{net}_{mode}', cfg)
 
-    # Create Rocoto Tasks and Assemble them into an XML
-    xml = rocoto_xml_factory.create(f'{net}_{mode}', app_config, rocoto_param_dict)
-    xml.write()
+    # Build workflow parameter dictionary - only available when rocoto is selected
+    workflow_config = AttrDict()
+    workflow_config.workflow_engine = workflow_engine
+    if workflow_engine == "rocoto":
+        workflow_config.maxtries = user_inputs.maxtries
+        workflow_config.cyclethrottle = user_inputs.cyclethrottle
+        workflow_config.taskthrottle = user_inputs.taskthrottle
+        workflow_config.verbosity = user_inputs.verbosity
+    elif workflow_engine == "ecflow":
+        workflow_config.verbosity = user_inputs.verbosity
+
+    # Call the appropriate workflow engine factory
+    ENGINE_MAP = {
+        "rocoto": rocoto_xml_factory,
+        "ecflow": ecflow_suite_factory,
+    }
+
+    # Create the XML (Rocoto) or Suite (ecFlow) object
+    workflow = ENGINE_MAP[workflow_engine].create(f'{net}_{mode}', app_config, workflow_config)
+    workflow.write()
 
 
 if __name__ == '__main__':
