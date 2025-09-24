@@ -118,19 +118,18 @@ class GCAFSTasks(Tasks):
         dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSPROC_TMPL"],
                                                        {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
 
-        gfs_enkf = True if self.options['do_hybvar'] and 'gfs' in self.app_config.ens_runs else False
-
         deps = []
 
-        dep_dict = {'type': 'metatask', 'name': 'gdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'gcdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_hist_path}/gdas.t@Hz.atmf009.nc'
+        data = f'{atm_hist_path}/gcdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
+        # TODO: @CoryMartin-NOAA make this depend on a different file for AOD
         data = f'{dump_path}/{self.run}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'gdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        dep_dict = {'type': 'metatask', 'name': 'gcdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_prep_sfc']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep_sfc'}
@@ -138,8 +137,6 @@ class GCAFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = self.run
-        if self.run in ['gfs'] and gfs_enkf and self._base['INTERVAL_GFS'] != 6:
-            cycledef = 'gdas'
 
         resources = self.get_resource('prep')
         task_name = f'{self.run}_prep'
