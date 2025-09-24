@@ -301,7 +301,7 @@ if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd/fix/build_gsinfo" ]]; then
 
   cd gsinfo || exit 1
 
-  for dir in convinfo satinfo ozinfo obs_input; do
+  for dir in convinfo satinfo ozinfo obs_input hirs_fix; do
     if [[ -d "${dir}" ]]; then
         rm -rf "${dir}"
     fi
