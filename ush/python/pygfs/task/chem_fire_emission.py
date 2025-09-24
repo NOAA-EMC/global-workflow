@@ -561,6 +561,8 @@ class ChemFireEmissions(Task):
         # Check longitude range and monotonicity
         if not (f.lon.diff('lon') > 0).all():
             raise WorkflowException("Longitude values must be strictly increasing")
+        f.lon.attrs['standard_name'] = 'longitude'
+        f.lon.attrs['axis'] = 'X'
 
         # Ensure longitude is in [-180, 180] range
         f['lon'] = xr.where(f.lon > 180, f.lon - 360, f.lon)
@@ -587,6 +589,8 @@ class ChemFireEmissions(Task):
                 f[v].attrs.update({'units': '-', 'long_name': 'percent_of_clouds_in_grid_cell'})
             elif v == 'NumSensor':
                 f[v].attrs['units'] = '-'
+            if 'coordinates' in f[v].attrs:
+                del f[v].attrs['coordinates']
 
         # Set global attributes
         f.attrs.update({'format': 'NetCDF', 'title': 'GBBEPx Fire Emissions'})
