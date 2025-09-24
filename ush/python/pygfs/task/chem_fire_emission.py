@@ -144,13 +144,22 @@ class ChemFireEmissions(Task):
                                                   aero_emis_fire_dir=AERO_EMIS_FIRE_DIR)
                 files_found.extend(files)
             logger.info(f'Found {len(files_found)} files for historical period')
-        else: # NRT Forecast emisssions
+        else:
+            #===============================================
+            #  # NRT Forecast emisssions
+            #===============================================
             logger.info(f'Processing forecast emissions for {self.start_date}')
 
+            # GBBEPx NRT files are in a different directory structure
+            # Render the template with the current cycle to get the correct path 
+            tmp_dict = {'current_cycle': self.start_date,
+                         'AERO_EMIS_FIRE_NRT_DIR': self.task_config.get('AERO_EMIS_FIRE_NRT_DIR', None)
+                        }
+            self.render_template(tmp_dict)
+
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
-                self.task_config['AERO_EMIS_FIRE_DIR'] = self.task_config.get('AERO_EMIS_FIRE_NRT_DIR', None)
+                self.task_config['AERO_EMIS_FIRE_DIR'] = self.task_config.get('NRT_DIRECTORY', None)
                 files = self._find_gbbepx_nrt_fires(
-                    self.start_date,
                     version=self.task_config.AERO_EMIS_FIRE_VERSION
                 )
             elif self.task_config.AERO_EMIS_FIRE.lower() == 'qfed':
@@ -832,3 +841,32 @@ class ChemFireEmissions(Task):
                 logger.warning(f"No QFED files found for date {date_str}")
 
         return processed_files
+
+
+    @logit(logger) 
+    def render_template(self, tmp_dict: Dict()) -> None:
+        """Render the YAML template and set up task configuration.
+
+        This method performs the following steps:
+        1. Loads and parses the YAML template file using Jinja2
+        2. Fills in configuration parameters using environment variables and task attributes
+        3. Updates the task configuration with the rendered YAML content
+        
+        Parameters
+        ----------
+        tmp_dict : Dict
+            Dictionary containing template variables and their values
+
+        """
+        logger.info("Rendering YAML template")
+        # Parse template and update task configuration
+        yaml_template = os.path.join(self.task_config.HOMEgfs, 'parm', 'chem', 'fire_emission.yaml.j2')
+        if not os.path.exists(yaml_template):
+            logger.warning(f"Template file not found: {yaml_template}, using default configuration")
+            yaml_config = {'fire_emission': {}}
+        else:
+            logger.debug(f'Parsing YAML template: {yaml_template}')
+            yaml_config = parse_j2yaml(yaml_template, tmpl_dict)
+
+        self.task_config = AttrDict(**self.task_config, **yaml_config)
+

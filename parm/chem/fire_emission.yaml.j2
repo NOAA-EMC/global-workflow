@@ -1,3 +1,4 @@
+{% set cycle_YMD = current_cycle | to_YMD %}
 fire_emission:
   config:
     apply_quality_control: True
@@ -10,6 +11,7 @@ fire_emission:
       {% for gvar in fire_vars %}
       - "{{ gvar }}"
       {% endfor %}
+    NRT_DIRECTORY: "{{ AERO_EMIS_FIRE_NRT_DIR }}/{{cycle_YMD}}/firewx"
   data_in:
     mkdir:
       - "{{ DATA }}"
