@@ -1,5 +1,6 @@
 # Paths
 DMPDIR: '${DATA_MOUNT:-/bucket}/dump'
+IODADIR: '' #TODO: This does not yet exist.
 BASE_GIT: '/contrib/git'
 BASE_DATA: '/bucket/global-workflow-shared-data'
 BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'

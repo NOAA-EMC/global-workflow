@@ -98,9 +98,12 @@ class GFSTasks(Tasks):
 
         dump_suffix = self._base["DUMP_SUFFIX"]
         dmpdir = self._base["DMPDIR"]
+        iodadir = self._base["IODADIR"]
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
         dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSPROC_TMPL"],
                                                        {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
+        ioda_path = self._template_to_rocoto_cycstring(self._base["COM_OBSFORGE_TMPL"],
+                                                       {'IODADIR': iodadir, 'DUMP_SUFFIX': dump_suffix})
 
         gfs_enkf = True if self.options['do_hybvar'] and 'gfs' in self.app_config.ens_runs else False
 
@@ -113,6 +116,18 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dump_path}/{self.run}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
+        if self.options['do_jediatmvar']:
+            data = f'{ioda_path}/chem/{self.run}.t@Hz.obsforge_atmos_bufr_status.log'
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jediocnvar']:
+            data = f'{ioda_path}/chem/{self.run}.t@Hz.obsforge_marine_status.log'
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_aero_anl']:
+            data = f'{ioda_path}/chem/{self.run}.t@Hz.obsforge_aod_status.log'
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'gdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))

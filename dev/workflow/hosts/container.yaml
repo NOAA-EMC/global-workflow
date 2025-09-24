@@ -1,5 +1,6 @@
 # Paths
 DMPDIR: '/home/${USER}'
+IODADIR: '' #TODO: This does not yet exist.
 BASE_GIT: ''
 PACKAGEROOT: ''
 HOMEDIR: '/home/${USER}'

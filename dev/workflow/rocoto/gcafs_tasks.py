@@ -113,10 +113,10 @@ class GCAFSTasks(Tasks):
     def prep(self):
 
         dump_suffix = self._base["DUMP_SUFFIX"]
-        dmpdir = self._base["DMPDIR"]
-        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
-        dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSPROC_TMPL"],
-                                                       {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
+        iodadir = self._base["IODADIR"]
+        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gcdas'})
+        ioda_path = self._template_to_rocoto_cycstring(self._base["COM_OBSFORGE_TMPL"],
+                                                       {'IODADIR': iodadir, 'DUMP_SUFFIX': dump_suffix})
 
         deps = []
 
@@ -125,8 +125,7 @@ class GCAFSTasks(Tasks):
         data = f'{atm_hist_path}/gcdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
-        # TODO: @CoryMartin-NOAA make this depend on a different file for AOD
-        data = f'{dump_path}/{self.run}.t@Hz.updated.status.tm00.bufr_d'
+        data = f'{ioda_path}/chem/{self.run}.t@Hz.obsforge_aod_status.log'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'gcdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
