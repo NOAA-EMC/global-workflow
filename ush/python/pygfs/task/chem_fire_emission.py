@@ -193,7 +193,7 @@ class ChemFireEmissions(Task):
         tmpl_dict = {
             'DATA': self.task_config.DATA,
             'COMOUT_CHEM_INPUT': self.task_config.COMOUT_CHEM_INPUT,
-            'AERO_EMIS_FIRE_DIR': AERO_EMIS_FIRE_DIR,
+            'AERO_EMIS_FIRE_DIR': self.task_config.AERO_EMIS_FIRE_DIR,
             'AERO_EMIS_FIRE_VERSION': self.task_config.AERO_EMIS_FIRE_VERSION,
             'historical': self.historical,
             'forecast_dates': self.task_config.get('forecast_dates', []),
