@@ -44,7 +44,7 @@ SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
 CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
 OZNSTAT=${OZNSTAT:-${APREFIX}oznstat}
-RADSTAT=${RADSTAT:-${APREFIX}radstat}
+RADSTAT=${RADSTAT:-${APREFIX}radstat.txt}
 ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
 
 # Namelist parameters
@@ -184,7 +184,7 @@ for imem in $(seq 1 ${NMEM_ENS}); do
       COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
    mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
-   
+
    for FHR in ${nfhrs}; do
       ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
