@@ -39,7 +39,7 @@ gfsa:
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}atmanlfv3inc.yaml"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
         {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat.txt"
         {% endif %}
         {% if DO_AERO_ANL %}
         - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat.tgz"

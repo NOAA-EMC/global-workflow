@@ -36,9 +36,9 @@ enkf_grp:
         {% endfor %}  # iaufhr in IAUFHRS
         {% endif %}
         {% endif %}
-        
-        # soil DA increments 
-        {% if is_gdas %} 
+
+        # soil DA increments
+        {% if is_gdas %}
         {% if DO_GSISOILDA %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}sfci006.nc"
         {% endif %}

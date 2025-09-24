@@ -205,10 +205,10 @@ Start date = 2021032312
        └── 12
            └── analysis
                ├── atmos
-               │   ├── gdas.t12z.abias
-               │   ├── gdas.t12z.abias_air
-               │   ├── gdas.t12z.abias_int
-               │   ├── gdas.t12z.abias_pc
+               │   ├── gdas.t12z.abias.txt
+               │   ├── gdas.t12z.abias_air.txt
+               │   ├── gdas.t12z.abias_int.txt
+               │   ├── gdas.t12z.abias_pc.txt
                │   └── gdas.t12z.radstat
                └── ocean
                    └── gdas.t12z.ocninc.nc
