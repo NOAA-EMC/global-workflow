@@ -161,6 +161,8 @@ class ChemFireEmissions(Task):
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
                 self.task_config['AERO_EMIS_FIRE_DIR'] = yaml_config.fire_emission.config['NRT_DIRECTORY']
                 files_found = self._find_gbbepx_nrt_fires(self.task_config.AERO_EMIS_FIRE_VERSION)
+                logger.info(f'Found {len(files_found)} GBBEPx NRT files for {self.start_date}' )
+                logger.info(f"files found: {files_found}")
             elif self.task_config.AERO_EMIS_FIRE.lower() == 'qfed':
                 # Get QFED variables with safe defaults
                 qfed_vars = self.task_config.get('qfed_vars', ["co", "nox", "so2", "nh3", "bc", "oc"])
