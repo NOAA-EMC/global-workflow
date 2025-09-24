@@ -80,6 +80,10 @@ jobs/JGLOBAL_*SNOW* @jiaruidong2017
 jobs/JGLOBAL_STAGE_IC @DavidHuber-NOAA @aerorahul
 jobs/JGLOBAL_WAVE_* @JessicaMeixner-NOAA @sbanihash
 
+# System-specific modules
+modulefiles/gw_gsi_wcoss2.lua @RussTreadon-NOAA @CoryMartin-NOAA
+modulefiles/gw_gsi_wcoss2.lua @RussTreadon-NOAA @CoryMartin-NOAA
+
 # scripts
 scripts/exgdas_aero_analysis_generate_bmatrix.py @CoryMartin-NOAA
 scripts/exgdas_atmos_chgres_forenkf.sh @RussTreadon-NOAA @CoryMartin-NOAA
@@ -170,6 +174,8 @@ ush/interp_atmos_sflux.sh @aerorahul @WenMeng-NOAA
 ush/jjob_header.sh
 ush/link_crtm_fix.sh
 ush/load_fv3gfs_modules.sh @aerorahul
+ush/load_gw_run_modules.sh @aerorahul @DavidHuber-NOAA
+ush/load_gw_gsi_modules.sh @aerorahul @DavidHuber-NOAA @RussTreadon-NOAA
 ush/load_ufsda_modules.sh @aerorahul @CoryMartin-NOAA
 ush/load_ufswm_modules.sh @aerorahul @JessicaMeixner-NOAA
 ush/merge_fv3_aerosol_tile.py

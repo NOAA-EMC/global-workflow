@@ -1,8 +1,6 @@
 experiment:
   net: gfs
   mode: cycled
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: ATM
   resdetatmos: 96
@@ -12,7 +10,7 @@ arguments:
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808/
   idate: 2022051506
   edate: 2022051518
-  nens: 20
+  nens: 2
   interval: 6
   start: warm
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/atmsoilDA_defaults_ci.yaml
@@ -22,3 +20,11 @@ skip_ci_on_hosts:
   - hercules
   - gaeac5
   - awsepicglobalworkflow
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
