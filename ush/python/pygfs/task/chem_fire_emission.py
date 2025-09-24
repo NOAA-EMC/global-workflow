@@ -159,6 +159,7 @@ class ChemFireEmissions(Task):
                         }
             yaml_config = self.render_template(tmp_dict)
             pprint(yaml_config)
+            pprint(yaml_config.fire_emission.config.NRT_DIRECTORY)
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
                 self.task_config['AERO_EMIS_FIRE_DIR'] = yaml_config.fire_emission.config.NRT_DIRECTORY
                 files_found = self._find_gbbepx_nrt_fires(yaml_config.fire_emission.config.NRT_DIRECTORY)
