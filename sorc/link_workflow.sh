@@ -290,9 +290,9 @@ if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd" ]]; then
   # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm" .
 fi
 
-#------------------------------
+#-------------------------------------------
 #--Add GSI conv, sat, and oz info parm files
-#------------------------------
+#-------------------------------------------
 if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd/fix/build_gsinfo" ]]; then
 
   cd "${HOMEgfs}/parm" || exit 1
@@ -301,7 +301,7 @@ if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd/fix/build_gsinfo" ]]; then
 
   cd gsinfo || exit 1
 
-  for dir in convinfo satinfo ozinfo; do
+  for dir in convinfo satinfo ozinfo obs_input; do
     if [[ -d "${dir}" ]]; then
         rm -rf "${dir}"
     fi
