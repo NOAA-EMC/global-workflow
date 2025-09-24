@@ -356,16 +356,16 @@ class ChemFireEmissions(Task):
         pattern = r"GBBEPx-all01GRID.*_s(\d{8}).*_e(\d{8}).*\.nc"
 
         if all_files is None:
-            logger.warning(f"No files found in directory: {emis_file_dir}")
+            logger.warning(f"No files found in directory: {NRT_DIRECTORY}")
             logger.warning(f'Checking the previous date')
-            emis_file_dir = emis_file_dir.replace(self.start_date.strftime('%Y/%m'), (self.start_date - datetime.timedelta(days=1)).strftime('%Y/%m'))
-            if not os.path.exists(emis_file_dir):
-                logger.warning(f"Directory does not exist: {emis_file_dir}")
+            NRT_DIRECTORY = NRT_DIRECTORY.replace(self.start_date.strftime('%Y/%m'), (self.start_date - datetime.timedelta(days=1)).strftime('%Y/%m'))
+            if not os.path.exists(NRT_DIRECTORY):
+                logger.warning(f"Directory does not exist: {NRT_DIRECTORY}")
                 return []
         for file_name in all_files:
             match = re.match(pattern, file_name)
             if match:
-                full_path = os.path.join(emis_file_dir, file_name)
+                full_path = os.path.join(NRT_DIRECTORY, file_name)
                 matching_files.append(full_path)
                 logger.debug(f"Found GBBEPx NRT fire file: {full_path}")
 
