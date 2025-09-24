@@ -844,7 +844,7 @@ class ChemFireEmissions(Task):
 
 
     @logit(logger) 
-    def render_template(self, tmp_dict: Dict[str, Any]) -> None:
+    def render_template(self, tmpl_dict: Dict[str, Any]) -> None:
         """Render the YAML template and set up task configuration.
 
         This method performs the following steps:
