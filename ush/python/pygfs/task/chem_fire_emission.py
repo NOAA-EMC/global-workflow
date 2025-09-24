@@ -41,6 +41,7 @@ class ChemFireEmissions(Task):
         super().__init__(config)
 
         self.historical = bool(self.task_config.get('AERO_EMIS_FIRE_HIST', 1))
+        logger.info(f"Historical emissions flag: {self.historical}")
         self.AERO_INPUTS_DIR = self.task_config.get('AERO_INPUTS_DIR', None)
         self.COMOUT_CHEM_INPUT = self.task_config.get('COMOUT_CHEM_INPUT', None)
 
