@@ -166,7 +166,7 @@ ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile6.nc" "./orog.tile6.
 ${NLN} "${SIGLEVEL}" "./vcoord.txt"
 
 # output gaussian global surface analysis files
-${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc" "./sfc.gaussian.analysis.file"
+${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}sfc.anl.nc" "./sfc.gaussian.analysis.file"
 
 # Namelist uses booleans now
 if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
