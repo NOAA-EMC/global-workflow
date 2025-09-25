@@ -46,6 +46,7 @@ variables:
   RUNNER_AFTER_SCRIPT_TIMEOUT: 8h
   PR_NUMBER: 0 # PR number is set by GitHub Actions
                # when the pipeline is triggered from a PR
+  GITHUB_COMMIT_SHA: "" # GitHub commit SHA for native GitLab integration
 
 workflow:
   name: "PR ${PR_NUMBER} - ${RUN_ON_MACHINES} (${GFS_CI_RUN_TYPE})"
@@ -106,6 +107,15 @@ include:
       if [[ ! -x "${GH}" ]]; then
         echo "ERROR: GitHub CLI (gh) not found or not executable. Please install it."
         exit 1
+      fi
+
+      # Configure GitLab native GitHub integration
+      if [[ -n "${GITHUB_COMMIT_SHA:-}" && ${PR_NUMBER} -ne 0 ]]; then
+        echo "Configuring GitLab native GitHub integration for commit: ${GITHUB_COMMIT_SHA}"
+        export CI_COMMIT_SHA="${GITHUB_COMMIT_SHA}"
+        echo "GitLab will report status to GitHub for this commit"
+      else
+        echo "Using GitLab default commit SHA for status reporting"
       fi
 
 # Common build template for all modalities
