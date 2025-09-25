@@ -81,7 +81,7 @@ class OfflineAnalysis(Task):
         fcst_file_in = os.path.join(self.task_config.COMIN_ATMOS_HISTORY_PREV,
                                     f"{self.task_config.GPREFIX}atmf006.nc")
         files_to_copy.append([fcst_file_in, os.path.join(self.task_config.DATA, "atmges_mem001")])
-        anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}atmanl.nc")
+        anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}atm.anl.nc")
         files_to_copy.append([anl_file_in, os.path.join(self.task_config.DATA, "atmanl.input.nc")])
         # sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}sfcanl.nc")
         # files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
