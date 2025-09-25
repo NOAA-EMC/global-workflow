@@ -122,7 +122,7 @@ class ChemFireEmissions(Task):
             logger.info(f'Using AERO_INPUTS_DIR: {aero_inputs_dir}')
             logger.info(f'Using AERO_EMIS_FIRE: {aero_emis_fire}')
             logger.info(f'Using AERO_EMIS_FIRE_VERSION: {aero_emis_fire_version}')
-            
+
             fire_emission_template = os.path.join(self.task_config.HOMEgfs, 'parm', 'chem', 'fire_emission.yaml.j2')
             if not os.path.exists(fire_emission_template):
                 raise WorkflowException(f"Fire emission template file not found: {fire_emission_template}")
@@ -871,7 +871,6 @@ class ChemFireEmissions(Task):
 
         return processed_files
 
-
     @logit(logger)
     def render_template(self, tmpl_dict: Dict[str, Any]) -> None:
         """Render the YAML template and set up task configuration.
@@ -880,7 +879,7 @@ class ChemFireEmissions(Task):
         1. Loads and parses the YAML template file using Jinja2
         2. Fills in configuration parameters using environment variables and task attributes
         3. Updates the task configuration with the rendered YAML content
-        
+
         Parameters
         ----------
         tmp_dict : Dict

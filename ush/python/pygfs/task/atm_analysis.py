@@ -272,7 +272,7 @@ class AtmAnalysis(Task):
         inc_copy = {'copy': []}
         for itile in range(6):
             src = os.path.join(self.task_config.DATA, "anl",
-                               f"{self.task_config.APREFIX}cubed_sphere_grid_atminc.tile{itile+1}.nc")
+                               f"{self.task_config.APREFIX}cubed_sphere_grid_atminc.tile{itile + 1}.nc")
             dest = self.task_config.COMOUT_ATMOS_ANALYSIS
             inc_copy['copy'].append([src, dest])
 

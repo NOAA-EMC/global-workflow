@@ -310,7 +310,7 @@ class NEXUSEmissions(Task):
             raise WorkflowException(f"Working directory does not exist: {self.task_config.DATA}")
 
         exe = Executable(self.task_config.APRUN)
-        arg_list = [ './nexus.x', '-c',  self.task_config.NEXUS_CONFIG_NAME]
+        arg_list = ['./nexus.x', '-c', self.task_config.NEXUS_CONFIG_NAME]
         exe(*arg_list, output='stdout', error='stderr')
 
         logger.info("Concatenating processed NEXUS files...")
