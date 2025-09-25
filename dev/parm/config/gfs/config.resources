@@ -994,9 +994,11 @@ case ${step} in
     ;;
 
   "upp")
-    case "${CASE}" in
+    #ntasks cannot be greater than $CASE_HIST      
+    #define resources based on $CASE_HIST for upp
+    case "${CASE_HIST}" in
       "C48" | "C96")
-        ntasks=${CASE:1}
+        ntasks=${CASE_HIST:1}
       ;;
       "C192" | "C384" | "C768")
         ntasks=120
@@ -1007,12 +1009,12 @@ case ${step} in
         memory="${mem_node_max}"
       ;;
       *)
-        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE_HIST}"
         exit 4
       ;;
     esac
     tasks_per_node=${ntasks}
-    if [[ "${CASE}" == "C1152" ]]; then
+    if [[ "${CASE_HIST}" == "C1152" ]]; then
         tasks_per_node=40
     fi
 
@@ -1304,7 +1306,7 @@ case ${step} in
     walltime="00:20:00"
     ntasks=80
     threads_per_task=4
-    if [[ "${CASE}" == "C384" || "${CASE}" == "C192" || "${CASE}" == "C96" || "${CASE}" == "C48" ]]; then
+    if [[ "${CASE:1}" -le 384 ]]; then
       threads_per_task=2
     fi
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
