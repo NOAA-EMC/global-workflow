@@ -68,7 +68,7 @@ fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
 # Deterministic analysis and increment files
-export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}sfcanl.nc"
+export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}sfc.anl.nc"
 export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}dtf.anl.nc"
 export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}atm.anl.nc"
 export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}atminc.nc"
