@@ -12,7 +12,7 @@ analysis:
         {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
         {% if DO_JEDIATMVAR %}
         {% for itile in range(6) %}
-        {% for ftype in ["atminc", "atmi009", "atmi003", "ratminc", "ratmi009", "ratmi003"] %}
+        {% for ftype in ["atm.increment", "atm.i009", "atm.i003", "ratminc", "ratmi009", "ratmi003"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.cubed_sphere_grid_" ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.cubed_sphere_grid_{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endif %}
@@ -32,7 +32,7 @@ analysis:
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.txt"]
         {% endif %}
         {% endfor %}
-        {% for ftype in ["atminc.nc", "atmi009.nc", "atmi003.nc", "ratminc.nc", "ratmi009.nc", "ratmi003.nc"] %}
+        {% for ftype in ["atm.increment.nc", "atm.i009.nc", "atm.i003.nc", "ratminc.nc", "ratmi009.nc", "ratmi003.nc"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}"]
         {% endif %}

@@ -10,7 +10,7 @@ gfs_netcdfa:
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc"
         {% endfor %}
         {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atm.increment.nc"
         {% endif %}
         {% for iauhr in IAUFHRS if iauhr != 6 %}
         {% if DO_JEDIATMVAR %}

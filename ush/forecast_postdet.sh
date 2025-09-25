@@ -128,9 +128,9 @@ FV3_postdet() {
       if (( MEMBER == 0 )); then
         inc_files=()
       else
-        inc_files=("atminc.nc")
+        inc_files=("atm.increment.nc")
         read_increment=".true."
-        res_latlon_dynamics="atminc.nc"
+        res_latlon_dynamics="atm.increment.nc"
       fi
       increment_file_on_native_grid=".false."
       local increment_file
@@ -193,9 +193,9 @@ EOF
             done
           else
             if (( iaufhr == 6 )); then
-              inc_file="atminc.nc"
+              inc_file="atm.increment.nc"
             else
-              inc_file="atmi$(printf %03i "${iaufhr}").nc"
+              inc_file="atm.i$(printf %03i "${iaufhr}").nc"
             fi
             inc_files+=("${inc_file}")
             IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
@@ -211,8 +211,8 @@ EOF
           increment_file_on_native_grid=".true."
           res_latlon_dynamics="atminc"
         else
-          inc_files=("atminc.nc")
-          res_latlon_dynamics="atminc.nc"
+          inc_files=("atm.increment.nc")
+          res_latlon_dynamics="atm.increment.nc"
           increment_file_on_native_grid=".false."
         fi
         if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then

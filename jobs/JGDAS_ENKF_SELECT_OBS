@@ -71,7 +71,7 @@ export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}sfc.anl.nc"
 export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}dtf.anl.nc"
 export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}atm.anl.nc"
-export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}atminc.nc"
+export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}atm.increment.nc"
 
 # Guess Bias correction coefficients related to control
 export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias.txt

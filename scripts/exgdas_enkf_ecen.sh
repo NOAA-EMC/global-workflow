@@ -123,9 +123,9 @@ for imem in $(seq 1 ${NMEM_ENS}); do
    fi
    mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
    if [[ ${FHR} -eq 6 ]]; then
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atminc.nc" "./atminc_${memchar}"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atm.increment.nc" "./atminc_${memchar}"
    else
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atmi00${FHR}.nc" "./atminc_${memchar}"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atm.i00${FHR}.nc" "./atminc_${memchar}"
    fi
    if [[ ${RECENTER_ENKF} = "YES" ]]; then
       if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
