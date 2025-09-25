@@ -251,11 +251,11 @@ fi
 sources=("config" "scripts")
 targets=("parm" "ush")
 for i in "${!sources[@]}"; do
-  src="${HOMEgfs}/sorc/gdas.cd/spoc/dump/${sources[$i]}"
-  dst="${HOMEgfs}/${targets[$i]}"
+  src="${HOMEgfs}/sorc/gdas.cd/spoc/dump/${sources[${i}]}"
+  dst="${HOMEgfs}/${targets[${i}]}"
 
   if [[ -d "${src}" ]]; then
-    cd "$dst" || exit 1
+    cd "${dst}" || exit 1
     ${LINK_OR_COPY} "${src}" "spoc"
   fi
 done
