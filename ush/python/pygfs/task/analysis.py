@@ -38,10 +38,11 @@ class Analysis(Task):
         super().__init__(config)
 
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
+        _next_cycle = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H"))
 
-        _iau_times_iso = []
+        _iau_times = []
         for hour in self.task_config.IAUFHRS:
-            _iau_times_iso.append(to_isotime(_window_begin + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2))
+            _iau_times.append(_window_begin + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
         if 'OBS_LIST_YAML' in self.task_config:
             _observations = parse_j2yaml(self.task_config.OBS_LIST_YAML, self.task_config)['observations']
@@ -57,13 +58,15 @@ class Analysis(Task):
             {
                 'WINDOW_BEGIN': _window_begin,
                 'WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
+                'next_cycle': _next_cycle,
                 'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
                 'OPREFIX': f"{self.task_config.RUN.replace('enkf','')}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN.replace('enkf','')}.t{self.task_config.cyc:02d}z.",
                 'APREFIX_ENS': f"enkf{self.task_config.RUN.replace('enkf','')}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
                 'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'iau_times_iso': _iau_times_iso,
+                'OCNRES': f"{self.task_config.OCNRES:03d}",
+                'iau_times': _iau_times,
                 'observations': _observations,
                 'bias_files': _bias_files,
             }
