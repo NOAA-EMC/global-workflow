@@ -26,7 +26,7 @@ def calcinc_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, IAUHrs,
             if fh == 6:
                 gsi_utils.link_file('sigf06', 'atmges_mem' + format(nFH, '03'))
                 gsi_utils.link_file('siganl', 'atmanl_mem' + format(nFH, '03'))
-                gsi_utils.link_file(ComOut + '/' + APrefix + 'atminc.nc', 'atminc_mem' + format(nFH, '03'))
+                gsi_utils.link_file(ComOut + '/' + APrefix + 'atm.increment.nc', 'atminc_mem' + format(nFH, '03'))
             else:
                 gsi_utils.link_file('sigf' + format(fh, '02'), 'atmges_mem' + format(nFH, '03'))
                 gsi_utils.link_file('siga' + format(fh, '02'), 'atmanl_mem' + format(nFH, '03'))
