@@ -251,7 +251,7 @@ fi
 sources=("config" "scripts")
 targets=("parm" "ush")
 for i in "${!sources[@]}"; do
-  src="${HOMEgfs}/sorc/gdas.cd/spoc/dump/${sources[${i}]}"
+  src="${HOMEgfs}/sorc/gdas.cd/sorc/spoc/dump/${sources[${i}]}"
   dst="${HOMEgfs}/${targets[${i}]}"
 
   if [[ -d "${src}" ]]; then
