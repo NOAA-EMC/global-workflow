@@ -5,7 +5,7 @@ host_override:  # over-ride options for host
     walltime_ratio: 1.5  # Uniformly adjust the wallclock by this factor (builds are slower on head nodes)
     build:
       gdas:
-        memory: "30G"
+        memory: "60G"
         cores: 8
         walltime: "02:30:00"
 systems:
@@ -56,7 +56,7 @@ build:
   sfs_model:
     command: "./build_ufs.sh -y -e sfs_model.x"
     cores: 12
-    walltime: "00:40:00"
+    walltime: "00:50:00"
 
   gcafs_model:
     command: "./build_ufs.sh -a ATMAERO -e gcafs_model.x"
@@ -96,4 +96,4 @@ build:
   gdas:
     command: "./build_gdas.sh"
     cores: 40
-    walltime: "01:30:00"
+    walltime: "01:45:00"

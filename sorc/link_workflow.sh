@@ -71,7 +71,7 @@ ${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/ru
 #------------------------------
 case "${machine}" in
 "wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
-"hera") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
+"hera" | "ursa") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
 "orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
 "gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
@@ -196,6 +196,11 @@ if [[ -s "atparse.bash" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
 
+# Temporarilly link load_gw_run_modules.sh to load_fv3gfs_modules.sh
+# TODO: Use load_gw_run_modules.sh everywhere
+cd "${HOMEgfs}/dev/ush" || exit 1
+${LINK_OR_COPY} "${HOMEgfs}/dev/ush/load_gw_run_modules.sh" load_fv3gfs_modules.sh
+
 # add ufs_utils parm dir
 if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
   cd "${HOMEgfs}/parm" || exit 1
@@ -226,8 +231,12 @@ fi
 #--add GDASApp parm directory
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
-  cd "${HOMEgfs}/parm/gdas" || exit 1
-  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas" "jcb-algorithms" "stat")
+  cd "${HOMEgfs}/parm" || exit 1
+  if [[ ! -d gdas ]]; then
+      mkdir -p gdas
+  fi
+  cd gdas || exit 1
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
   for comp in "${gdasapp_comps[@]}"; do
     if [[ -d "${comp}" ]]; then
         rm -rf "${comp}"
@@ -417,7 +426,7 @@ if [[ -d ufs_model.fd ]]; then
   if [[ -d upp.fd ]]; then
       rm -rf upp.fd
   fi
-  ${LINK} ufs_model.fd/FV3/upp upp.fd
+  ${LINK} ufs_model.fd/UFSATM/upp upp.fd
 fi
 
 if [[ -d gsi_enkf.fd ]]; then
