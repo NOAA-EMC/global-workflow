@@ -1,24 +1,20 @@
 #!/usr/bin/env python3
 
 import os
-import re
 from collections import defaultdict
 import xarray as xr
-import subprocess
-import numpy as np
-import cftime
 from logging import getLogger
 from typing import Dict, Any, Union, List
 from dateutil.rrule import DAILY, HOURLY, rrule
-from jinja2 import Environment, FileSystemLoader
 from wxflow import (AttrDict,
                     FileHandler,
                     parse_j2yaml,
                     logit,
                     Task,
+                    JInja,
                     to_timedelta,
                     WorkflowException,
-                    Executable, which)
+                    Executable)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -229,40 +225,53 @@ class NEXUSEmissions(Task):
         logger.info(f"NEXUS input directory linked to {self.task_config.DATA}")
 
         # Render NEXUS Grid File
-        file_loader = FileSystemLoader(self.task_config.NEXUS_CONFIG_DIR)
-        env = Environment(loader=file_loader)
-        nexus_grid_template = env.get_template(f"{self.task_config.NEXUS_GRID_NAME}.j2")
-        self.task_config.NEXUS_GRID_TEMPLATE = nexus_grid_template.render(tmpl_dict)
+        nexus_grid_template = os.path.join(self.task_config.NEXUS_CONFIG_DIR, f"{self.task_config.NEXUS_GRID_NAME}.j2")
+        logger.info(f"Rendering NEXUS grid file using template: {nexus_grid_template}")
+        if not os.path.exists(nexus_grid_template):
+            raise WorkflowException(f"NEXUS grid template file not found: {nexus_grid_template}")
+        j2_renderer = Jinja(nexus_grid_template, tmpl_dict)
         outfile = os.path.join(self.task_config.DATA, self.task_config.NEXUS_GRID_NAME)
-        _write_txt_file(self.task_config.NEXUS_GRID_TEMPLATE, outfile)
+        j2_renderer.save(outfile)
         logger.info(f"NEXUS grid file rendered successfully: written to {outfile}")
 
         # Render NEXUS Config File
-        nexus_config_template = env.get_template(f"{self.task_config.NEXUS_CONFIG_NAME}.j2")
-        self.task_config.NEXUS_CONFIG_TEMPLATE = nexus_config_template.render(tmpl_dict)
+        nexus_config_template = os.path.join(self.task_config.NEXUS_CONFIG_DIR, f"{self.task_config.NEXUS_CONFIG_NAME}.j2")
+        logger.info(f"Rendering NEXUS config file using template: {nexus_config_template}")
+        if not os.path.exists(nexus_config_template):
+            raise WorkflowException(f"NEXUS config template file not found: {nexus_config_template}")
+        j2_renderer = Jinja(nexus_config_template, tmpl_dict)
         outfile = os.path.join(self.task_config.DATA, self.task_config.NEXUS_CONFIG_NAME)
-        _write_txt_file(self.task_config.NEXUS_CONFIG_TEMPLATE, outfile)
+        j2_renderer.save(outfile)
         logger.info(f"NEXUS config file rendered successfully: written to {outfile}")
 
         # Render NEXUS Time File
-        nexus_time_template = env.get_template(f"{self.task_config.NEXUS_TIME_NAME}.j2")
-        self.task_config.NEXUS_TIME_TEMPLATE = nexus_time_template.render(tmpl_dict)
+        nexus_time_template = os.path.join(self.task_config.NEXUS_CONFIG_DIR, f"{self.task_config.NEXUS_TIME_NAME}.j2")
+        logger.info(f"Rendering NEXUS time file using template: {nexus_time_template}")
+        if not os.path.exists(nexus_time_template):
+            raise WorkflowException(f"NEXUS time template file not found: {nexus_time_template}")
+        j2_renderer = Jinja(nexus_time_template, tmpl_dict)
         outfile = os.path.join(self.task_config.DATA, self.task_config.NEXUS_TIME_NAME)
-        _write_txt_file(self.task_config.NEXUS_TIME_TEMPLATE, outfile)
+        j2_renderer.save(outfile)
         logger.info(f"NEXUS time file rendered successfully: written to {outfile}")
 
         # Render NEXUS Diag File
-        nexus_diag_template = env.get_template(f"{self.task_config.NEXUS_DIAG_NAME}.j2")
-        self.task_config.NEXUS_DIAG_TEMPLATE = nexus_diag_template.render(tmpl_dict)
+        nexus_diag_template = os.path.join(self.task_config.NEXUS_CONFIG_DIR, f"{self.task_config.NEXUS_DIAG_NAME}.j2")
+        logger.info(f"Rendering NEXUS diag file using template: {nexus_diag_template}")
+        if not os.path.exists(nexus_diag_template):
+            raise WorkflowException(f"NEXUS diag template file not found: {nexus_diag_template}")
+        j2_renderer = Jinja(nexus_diag_template, tmpl_dict)
         outfile = os.path.join(self.task_config.DATA, self.task_config.NEXUS_DIAG_NAME)
-        _write_txt_file(self.task_config.NEXUS_DIAG_TEMPLATE, outfile)
+        j2_renderer.save(outfile)
         logger.info(f"NEXUS diag file rendered successfully: written to {outfile}")
 
         # Render NEXUS Spec File
-        nexus_spec_template = env.get_template(f"{self.task_config.NEXUS_SPEC_NAME}.j2")
-        self.task_config.NEXUS_SPEC_TEMPLATE = nexus_spec_template.render(tmpl_dict)
+        nexus_spec_template = os.path.join(self.task_config.NEXUS_CONFIG_DIR, f"{self.task_config.NEXUS_SPEC_NAME}.j2")
+        logger.info(f"Rendering NEXUS spec file using template: {nexus_spec_template}")
+        if not os.path.exists(nexus_spec_template):
+            raise WorkflowException(f"NEXUS spec template file not found: {nexus_spec_template}")
+        j2_renderer = Jinja(nexus_spec_template, tmpl_dict)
         outfile = os.path.join(self.task_config.DATA, self.task_config.NEXUS_SPEC_NAME)
-        _write_txt_file(self.task_config.NEXUS_SPEC_TEMPLATE, outfile)
+        j2_renderer.save(outfile)
         logger.info(f"NEXUS spec file rendered successfully: written to {outfile}")
 
     @logit(logger)

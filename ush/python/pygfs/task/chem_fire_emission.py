@@ -122,6 +122,10 @@ class ChemFireEmissions(Task):
             logger.info(f'Using AERO_INPUTS_DIR: {aero_inputs_dir}')
             logger.info(f'Using AERO_EMIS_FIRE: {aero_emis_fire}')
             logger.info(f'Using AERO_EMIS_FIRE_VERSION: {aero_emis_fire_version}')
+            
+            fire_emission_template = os.path.join(self.task_config.HOMEgfs, 'parm', 'chem', 'fire_emission.yaml.j2')
+            if not os.path.exists(fire_emission_template):
+                raise WorkflowException(f"Fire emission template file not found: {fire_emission_template}")
 
             AERO_EMIS_FIRE_DIR = os.path.join(aero_inputs_dir,
                                               "nexus",
@@ -147,21 +151,20 @@ class ChemFireEmissions(Task):
             logger.info(f'Found {len(files_found)} files for historical period')
             self.task_config["AERO_EMIS_FIRE_DIR"] = AERO_EMIS_FIRE_DIR
         else:
-            #===============================================
-            #  # NRT Forecast emisssions
-            #===============================================
+            # ===============================================
+            # NRT Forecast emissions
+            # ===============================================
             logger.info(f'Processing forecast emissions for {self.start_date}')
 
             # GBBEPx NRT files are in a different directory structure
-            # Render the template with the current cycle to get the correct path 
+            # Render the template with the current cycle to get the correct path
             tmp_dict = {'current_cycle': self.start_date,
-                         'FIRE_EMIS_NRT_DIR': self.task_config.FIRE_EMIS_NRT_DIR
-                        }
+                        'FIRE_EMIS_NRT_DIR': self.task_config.FIRE_EMIS_NRT_DIR}
             yaml_config = self.render_template(tmp_dict)
             if self.task_config.AERO_EMIS_FIRE.lower() == 'gbbepx':
                 self.task_config['AERO_EMIS_FIRE_DIR'] = yaml_config.fire_emission.config.NRT_DIRECTORY
                 files_found = self._find_gbbepx_nrt_fires(yaml_config.fire_emission.config.NRT_DIRECTORY)
-                logger.info(f'Found {len(files_found)} GBBEPx NRT files for {self.start_date}' )
+                logger.info(f'Found {len(files_found)} GBBEPx NRT files for {self.start_date}')
                 logger.info(f"files found: {files_found}")
             elif self.task_config.AERO_EMIS_FIRE.lower() == 'qfed':
                 # Get QFED variables with safe defaults
@@ -319,7 +322,6 @@ class ChemFireEmissions(Task):
         years = set(date.year for date in self.forecast_dates)
         return months, years
 
-
     @logit(logger)
     def _find_gbbepx_nrt_fires(self, NRT_DIRECTORY: str) -> List[str]:
         """Find GBBEPx NRT fire files in the specified directory.
@@ -368,7 +370,7 @@ class ChemFireEmissions(Task):
                 logger.debug(f"Found GBBEPx NRT fire file: {full_path}")
 
         return matching_files
-    
+
     @logit(logger)
     def _find_gbbepx_files(self, dates, version='v5r0'):
         """Find GBBEPx files for the given date
@@ -411,7 +413,6 @@ class ChemFireEmissions(Task):
                 # Look for both file patterns:
                 # Pattern 1: "GBBEPx-all01GRID_v4r0_blend_s202302240000000_e202302242359590_c202302250134090.nc"
                 # Pattern 2: "GBBEPx_all01GRID.emissions_v004_20150716.nc"
-
                 for file_name in all_files:
                     match_found = False
 
@@ -750,7 +751,7 @@ class ChemFireEmissions(Task):
         logger.info(f"Processing GBBEPx files for {len(self.forecast_dates)} forecast dates")
         processed_files = []
 
-        if not self.historical: # only one file to process for multiple dates (need to change time in each file)
+        if not self.historical:  # only one file to process for multiple dates (need to change time in each file)
             logger.info("Non-historical GBBEPx processing - only one file expected")
             if self.task_config.rawfiles:
                 logger.info(f"Processing single GBBEPx file: {self.task_config.rawfiles[0]}")
@@ -768,41 +769,40 @@ class ChemFireEmissions(Task):
                     logger.info(f"Processed emission file saved to {outfile}")
                     processed_files.append(outfile)
                     ds.close()
-                else:
-                    logger.warning("No raw GBBEPx files found for non-historical processing")
-                return processed_files
-            
-        for forecast_date,date_file in zip(self.forecast_dates, self.task_config.rawfiles):
-            date_str = forecast_date.strftime('%Y%m%d')
-            logger.info(f"Processing GBBEPx files for date {date_str}")
-
-            # Filter files for this date - implement date filtering if needed
-            date_files = []
-            for file in self.task_config.rawfiles:
-                # Add logic here to filter files by date if needed
-                date_files.append(file)
-
-            if date_file:
-                # Process files for this date
-                ds = self.GBBEPx_to_COARDS(date_file)  # Use the first file for this date
-
-                # Create output filename with date
-                outfile_name = f"FIRE_EMIS_{date_str}.nc"
-                outfile = os.path.join(workdir, outfile_name)
-
-                # Save the processed dataset
-                comp = dict(zlib=True, complevel=2)
-                encoding = {var: comp for var in ds.data_vars}
-                ds.to_netcdf(outfile, encoding=encoding)
-                logger.info(f"Processed emission file saved to {outfile}")
-
-                # Add to processed files list
-                processed_files.append(outfile)
-
-                # Close dataset
-                ds.close()
             else:
-                logger.warning(f"No GBBEPx files found for date {date_str}")
+                logger.warning("No raw GBBEPx files found for non-historical processing")
+        else:
+            for forecast_date, date_file in zip(self.forecast_dates, self.task_config.rawfiles):
+                date_str = forecast_date.strftime('%Y%m%d')
+                logger.info(f"Processing GBBEPx files for date {date_str}")
+
+                # Filter files for this date - implement date filtering if needed
+                date_files = []
+                for file in self.task_config.rawfiles:
+                    # Add logic here to filter files by date if needed
+                    date_files.append(file)
+
+                if date_file:
+                    # Process files for this date
+                    ds = self.GBBEPx_to_COARDS(date_file)  # Use the first file for this date
+
+                    # Create output filename with date
+                    outfile_name = f"FIRE_EMIS_{date_str}.nc"
+                    outfile = os.path.join(workdir, outfile_name)
+
+                    # Save the processed dataset
+                    comp = dict(zlib=True, complevel=2)
+                    encoding = {var: comp for var in ds.data_vars}
+                    ds.to_netcdf(outfile, encoding=encoding)
+                    logger.info(f"Processed emission file saved to {outfile}")
+
+                    # Add to processed files list
+                    processed_files.append(outfile)
+
+                    # Close dataset
+                    ds.close()
+                else:
+                    logger.warning(f"No GBBEPx files found for date {date_str}")
 
         return processed_files
 
@@ -872,7 +872,7 @@ class ChemFireEmissions(Task):
         return processed_files
 
 
-    @logit(logger) 
+    @logit(logger)
     def render_template(self, tmpl_dict: Dict[str, Any]) -> None:
         """Render the YAML template and set up task configuration.
 
@@ -896,6 +896,4 @@ class ChemFireEmissions(Task):
         else:
             logger.debug(f'Parsing YAML template: {yaml_template}')
             yaml_config = parse_j2yaml(yaml_template, tmpl_dict)
-
         return yaml_config
-

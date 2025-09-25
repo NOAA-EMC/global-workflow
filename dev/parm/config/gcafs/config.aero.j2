@@ -1,32 +1,46 @@
 #! /usr/bin/env bash
 
+#================================================================================
 # UFS-Aerosols settings
 # This configuration file sets up environment variables for aerosol modeling in the UFS (Unified Forecast System) Aerosols component.
 # It configures aerosol inputs, diagnostics, emissions, and the NEXUS emissions preprocessor for GCAFS (Global Coupled Aerosol Forecast System).
 # Used in GFS (Global Forecast System) workflows for initializing and running aerosol simulations in FV3 (Finite-Volume Cubed-Sphere) dynamical core.
+#================================================================================
+echo "BEGIN: config.aero"
 
 #================================================================================
 # 1. Aerosol settings
 #================================================================================
 # General settings for aerosol tracers, diagnostics, and scavenging in the GOCART (Goddard Chemistry Aerosol Radiation and Transport) model.
 # These are used in the atmospheric model to handle aerosol transport, chemistry, and interaction with radiation/cloud processes.
-export AERO_INPUTS_DIR="{{ AERO_INPUTS_DIR }}"
+
 # Base directory for aerosol input data files (e.g., initial conditions, climatologies).
 # This path is mounted or staged in the workflow and referenced by the model for reading aerosol fields.
+#---------------------------------------------------------------------------------------------------
+export AERO_INPUTS_DIR="{{ AERO_INPUTS_DIR }}"
+# Temporary comment until we sync between machines
+#export AERO_INPUTS_DIR="/lfs/h2/emc/lam/noscrub/barry.baker/gcafs/GCAFS" # WCOSS2 path for GCAFS external data
+#export AERO_INPUTS_DIR="/gpfs/f6/bil-fire3/world-shared/Emissions/GEFS_ExtData # GAEA C6 path for GCAFS external data
 
-#-----------------------------------------------
+#-------------------------------------------------
 # Diag Table and Field Table for GOCART aerosols
-#-----------------------------------------------
+#-------------------------------------------------
+
 # Configuration files defining diagnostic outputs and field registrations for aerosol variables in GOCART.
 # diag_table.aero: Specifies which aerosol fields to output and at what frequency (used by FMS diagnostics).
 # field_table.aero: Registers prognostic/diagnostic tracers with the FV3 dynamical core (e.g., for advection, diffusion).
+#---------------------------------------------------------------------------------------------------
 export AERO_DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table.aero"
 export AERO_FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table.aero"
 
+#================================================================================
 # Aerosol configuration
-export AERO_CONFIG_DIR="${PARMgfs}/ufs/gocart"
+#================================================================================
+
 # Directory containing GOCART-specific namelists, parameters, and runtime configs (e.g., namelist.aero).
 # Loaded during model initialization to set aerosol scheme parameters like time steps, vertical levels.
+#---------------------------------------------------------------------------------------------------
+export AERO_CONFIG_DIR="${PARMgfs}/ufs/gocart"
 
 # Aerosol convective scavenging factors (list of string array elements)
 # Element syntax: '<tracer_name>:<factor>'. Use <tracer_name> = * to set default factor for all aerosol tracers
@@ -34,11 +48,13 @@ export AERO_CONFIG_DIR="${PARMgfs}/ufs/gocart"
 # Used in the convection scheme (e.g., SAS or NF_CONV) to compute in-cloud scavenging rates for each tracer.
 # * = default for unspecified tracers; specific gases like SO2 have lower factors due to solubility.
 # Scavenging factors are set to 0 (no scavenging) if unset
+#---------------------------------------------------------------------------------------------------
 export fscav_aero="'*:0.3','so2:0.0','msa:0.0','dms:0.0','nh3:0.4','nh4:0.6','bc1:0.6','bc2:0.6','oc1:0.4','oc2:0.4','dust1:0.6','dust2:0.6', 'dust3:0.6','dust4:0.6','dust5:0.6','seas1:0.5','seas2:0.5','seas3:0.5','seas4:0.5','seas5:0.5'"
-#
+
 # Number of diagnostic aerosol tracers (default: 0)
 # Specifies how many additional diagnostic (non-prognostic) aerosol tracers to include in the model output.
 # Used in GOCART to control verbosity of diagnostics; higher values add more fields for analysis/post-processing.
+#---------------------------------------------------------------------------------------------------
 export dnats_aero=2
 
 #================================================================================
@@ -52,11 +68,13 @@ export dnats_aero=2
 # gbbepx: Global Biomass Burning Emissions Product (alternative).
 # none: Disable fire emissions.
 # Used in prep_emissions scripts to fetch/interpolate data to model grid.
+#---------------------------------------------------------------------------------------------------
 export AERO_EMIS_FIRE="qfed"
 export AERO_EMIS_FIRE_VERSION="061"
 
 # Version of the selected fire emissions dataset (e.g., for QFEDv2.5, version 061).
 # Determines which historical or NRT files to load from input directories.
+#---------------------------------------------------------------------------------------------------
 export AERO_EMIS_FIRE_HIST=1 # Use historical fire emissions | 1 = true 0 = false
 
 # Flag to enable historical (climatological) fire emissions instead of NRT for testing/spin-up.
@@ -64,6 +82,7 @@ export AERO_EMIS_FIRE_HIST=1 # Use historical fire emissions | 1 = true 0 = fals
 # Path to near-real-time (NRT) fire emissions data, updated daily (e.g., from satellites like MODIS).
 # On WCOSS2, points to DCOM (Data Communication) root for operational runs; empty for testing.
 # Processed by scripts like exglobal_prep_emissions.py to generate input files for GOCART.
+#---------------------------------------------------------------------------------------------------
 export FIRE_EMIS_NRT_DIR="" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
 
 
@@ -84,6 +103,7 @@ export NEXUS_CONFIG="{{ NEXUS_CONFIG | default('gocart') }}" # Options: gocart, 
 
 # Runtime choice of NEXUS config variant; defaults to gocart for standard aerosol tracers.
 # Overrides via Jinja2 templating in workflow (e.g., for different chemistry schemes).
+#---------------------------------------------------------------------------------------------------
 export NEXUS_CONFIG_DIR="${PARMgfs}/chem/nexus/${NEXUS_CONFIG}" # Directory containing NEXUS configuration files
 
 # NEXUS Inputs
@@ -92,9 +112,12 @@ export NEXUS_CONFIG_DIR="${PARMgfs}/chem/nexus/${NEXUS_CONFIG}" # Directory cont
 # export NEXUS_INPUT_DIR="${AERO_INPUTS_DIR}/nexus"
 # Directory for static/dynamic input data used by NEXUS (e.g., emission inventories, masks, meteo fields).
 # Currently hardcoded for development; will use shared AERO_INPUTS_DIR in production for consistency.
-export NEXUS_INPUT_DIR="/gpfs/f6/bil-fire3/world-shared/Emissions/GEFS_ExtData/nexus"
 # Specific path for GCAFS external data on this filesystem.
 # Contains emission datasets (e.g., CEDS2019/2024, HTAPv2, CAMS) processed by NEXUS.
+#---------------------------------------------------------------------------------------------------
+export NEXUS_INPUT_DIR=${AERO_INPUTS_DIR}/nexus
+
+
 
 #--------------------------
 # NEXUS Time Step (seconds)
@@ -102,6 +125,7 @@ export NEXUS_INPUT_DIR="/gpfs/f6/bil-fire3/world-shared/Emissions/GEFS_ExtData/n
 # Temporal resolution for emission interpolation in NEXUS (e.g., hourly outputs).
 # Must align with model coupling time; used in HEMCO time management for diurnal/seasonal scaling.
 # 3600s = 1 hour; adjustable for finer/coarser emission updates (e.g., 1800s for sub-hourly).
+#---------------------------------------------------------------------------------------------------
 export NEXUS_TSTEP="{{ NEXUS_TSTEP | default(3600) }}" # Default NEXUS time step in seconds
 
 #------------------
@@ -110,18 +134,31 @@ export NEXUS_TSTEP="{{ NEXUS_TSTEP | default(3600) }}" # Default NEXUS time step
 # Defines the emission grid for NEXUS processing (0.5x0.5 degree global lat-lon).
 # Emissions are interpolated from this grid to the FV3 cubed-sphere grid during prep.
 # Number of longitude points (1440 for 0.25-degree resolution; here 1440 ~0.25deg).
+#-----------------------------------------------------
 export NEXUS_NX="{{ NEXUS_NX | default(1440) }}"
+
 # Number of latitude points (720 for 0.25-degree).
+#--------------------------------------------------
 export NEXUS_NY="{{ NEXUS_NY | default(720) }}"
+
 # Western boundary longitude (global coverage).
+#-------------------------------------------------
 export NEXUS_XMIN="{{ NEXUS_XMIN | default(-180.0) }}"
+
 # Eastern boundary longitude.
+#--------------------------------------------------
 export NEXUS_XMAX="{{ NEXUS_XMAX | default(180.0) }}"
+
 # Southern boundary latitude.
+#--------------------------------------------------
 export NEXUS_YMIN="{{ NEXUS_YMIN | default(-90.0) }}"
+
 # Northern boundary latitude.
+#---------------------------------------------------
 export NEXUS_YMAX="{{ NEXUS_YMAX | default(90.0) }}"
+
 # Number of vertical levels (1 for surface emissions; higher for vertical profiles if needed).
+#--------------------------------------------------
 export NEXUS_NZ="{{ NEXUS_NZ | default(1) }}"
 
 #-------------------

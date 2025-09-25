@@ -3,7 +3,7 @@
 #
 
 aerosol_radBands_optics_file: ExtData/optics/opticsBands_SU.v1_3.RRTMG.nc
-aerosol_monochromatic_optics_file: ExtData/monochromatic/optics_SU.v1_3.nc
+aerosol_monochromatic_optics_file: ExtData/monochromatic/optics_SU.v1_5.nc
 
 nbins: 4
 
