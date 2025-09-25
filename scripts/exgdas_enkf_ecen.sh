@@ -116,7 +116,7 @@ for imem in $(seq 1 ${NMEM_ENS}); do
    ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atmf00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
    if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
       if [[ ${FHR} -eq 6 ]]; then
-         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atmanl.nc" "./atmanl_${memchar}"
+         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atm.anl.nc" "./atmanl_${memchar}"
       else
          ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atma00${FHR}.nc" "./atmanl_${memchar}"
       fi
@@ -236,7 +236,7 @@ if [[ ${RECENTER_ENKF} = "YES" ]]; then
 
    # GSI EnVar analysis
    if [[ ${FHR} -eq 6 ]]; then
-     ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atmanl.nc"
+     ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atm.anl.nc"
      ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atmanl.ensres.nc"
    else
      ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atma00${FHR}.nc"

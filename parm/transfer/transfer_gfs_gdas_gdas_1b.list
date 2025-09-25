@@ -31,7 +31,7 @@ _COMROOT_/gfs/_SHORTVER_/gdas._PDY_/
 + /??/atmos/*atmf008*
 + /??/atmos/*atmf009*
 + /??/atmos/*atmg*
-+ /??/atmos/*atmanl*
++ /??/atmos/*atm.anl*
 - /??/atmos/*
 - *
 
@@ -44,7 +44,7 @@ _COMROOT_/gfs/_SHORTVER_/gdas._PDYm1_/
 + /??/atmos/*atmf008*
 + /??/atmos/*atmf009*
 + /??/atmos/*atmg*
-+ /??/atmos/*atmanl*
++ /??/atmos/*atm.anl*
 - /??/atmos/*
 - *
 

@@ -198,7 +198,7 @@ for imem in $(seq 1 ${NMEM_ENS}); do
       fi
       if [[ ${FHR} -eq 6 ]]; then
          if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atmanl.nc" \
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atm.anl.nc" \
                "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          else
             ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atminc.nc" \
