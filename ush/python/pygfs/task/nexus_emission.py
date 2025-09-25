@@ -11,7 +11,7 @@ from wxflow import (AttrDict,
                     parse_j2yaml,
                     logit,
                     Task,
-                    JInja,
+                    Jinja,
                     to_timedelta,
                     WorkflowException,
                     Executable)
