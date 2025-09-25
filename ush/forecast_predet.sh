@@ -217,6 +217,7 @@ FV3_predet(){
   # changeable parameters
   # dycore definitions
   res="${CASE:1}"
+  resh="${CASE_HIST:1}"
   resp=$((res+1))
   npx=${resp}
   npy=${resp}
@@ -229,12 +230,16 @@ FV3_predet(){
   LONB_CASE=$((4*res))
   LATB_CASE=$((2*res))
 
+  JCAP_CASE_HIST=$((2*resh-2))
+  LONB_CASE_HIST=$((4*resh))
+  LATB_CASE_HIST=$((2*resh))
+
   JCAP=${JCAP:-${JCAP_CASE}}
   LONB=${LONB:-${LONB_CASE}}
   LATB=${LATB:-${LATB_CASE}}
 
-  LONB_IMO=${LONB_IMO:-${LONB_CASE}}
-  LATB_JMO=${LATB_JMO:-${LATB_CASE}}
+  LONB_IMO=${LONB_IMO:-${LONB_CASE_HIST}}
+  LATB_JMO=${LATB_JMO:-${LATB_CASE_HIST}}
 
   # NSST Options
   # nstf_name contains the NSST related parameters

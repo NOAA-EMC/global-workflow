@@ -47,6 +47,8 @@ fi
 
 # check if read in bufr_ij_gfs_${CASE}.txt 
 
+export CASE=${CASE_HIST:-${CASE}}
+
 if [[ -s "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt"  ]]; then
   # use predetermined grid point(i,j) in bufr_gfs_${CASE}.txt 
   ${NLN} "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" fort.7
