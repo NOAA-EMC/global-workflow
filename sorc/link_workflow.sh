@@ -249,7 +249,7 @@ fi
 #--add SPOC parm and ush directory
 #------------------------------
 sources=("config" "scripts")
-targets=("parm" "ush")
+targets=("parm/gdas" "ush")
 for i in "${!sources[@]}"; do
   src="${HOMEgfs}/sorc/gdas.cd/sorc/spoc/dump/${sources[${i}]}"
   dst="${HOMEgfs}/${targets[${i}]}"
