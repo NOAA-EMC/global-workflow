@@ -340,17 +340,17 @@ fi
 # Set 4D-EnVar specific variables
 if [[ ${DOHYBVAR} == "YES" && ${l4densvar} == ".true." && ${lwrite4danl} == ".true." ]]; then
    ATMA03=${ATMA03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma003.nc}
-   ATMI03=${ATMI03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi003.nc}
+   ATMI03=${ATMI03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i003.nc}
    ATMA04=${ATMA04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma004.nc}
-   ATMI04=${ATMI04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi004.nc}
+   ATMI04=${ATMI04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i004.nc}
    ATMA05=${ATMA05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma005.nc}
-   ATMI05=${ATMI05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi005.nc}
+   ATMI05=${ATMI05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i005.nc}
    ATMA07=${ATMA07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma007.nc}
-   ATMI07=${ATMI07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi007.nc}
+   ATMI07=${ATMI07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i007.nc}
    ATMA08=${ATMA08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma008.nc}
-   ATMI08=${ATMI08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi008.nc}
+   ATMI08=${ATMI08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i008.nc}
    ATMA09=${ATMA09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma009.nc}
-   ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi009.nc}
+   ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i009.nc}
 fi
 
 ##############################################################
@@ -566,9 +566,9 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
 	      COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
       for fhr in ${fhrs}; do
-         ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}atmf0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
+         ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}atm.f0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
          if [[ ${cnvw_option} == ".true." ]]; then
-            ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}sfcf0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${memchar}
+            ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}sfc.f0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${memchar}
          fi
       done
    done
