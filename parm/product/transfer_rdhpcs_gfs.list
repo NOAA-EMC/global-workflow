@@ -29,8 +29,8 @@ com/gfs/_ENVIR_/gfs._PDY_/ /scratch4/NCEPDEV/rstprod/com/gfs/_ENVIR_/gfs._PDY_/
 + /gfs.t??z.engicegrb
 + /gfs.t??z.snogrb
 + /gfs.t??z.*tcvitals*tm00
-+ /gfs.t??z.atmanl.nemsio
-+ /gfs.t??z.sfcanl.nemsio
++ /gfs.t??z.atm.anl.nemsio
++ /gfs.t??z.sfc.anl.nemsio
 + /gfs.t??z.master.grb2f*
 + /gfs.t??z.pgrb2.0p25.f*
 + /gfs.t??z.sflux.f*

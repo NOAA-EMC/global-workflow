@@ -80,7 +80,7 @@
 #
 #     output data: $PGMOUT
 #                  $PGMERR
-#                  $COMOUT/${APREFIX}sfcanl.nc
+#                  $COMOUT/${APREFIX}sfc.anl.nc
 #
 # Remarks:
 #

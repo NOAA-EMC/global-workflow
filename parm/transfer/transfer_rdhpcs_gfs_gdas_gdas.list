@@ -41,7 +41,7 @@ _COMROOT_/gfs/_SHORTVER_/gdas._PDYm1_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/g
 + /??/atmos/gdas.t??z.atmges.nc
 + /??/atmos/gdas.t??z.atmgm3.nc
 + /??/atmos/gdas.t??z.atmgp3.nc
-+ /??/atmos/gdas.t??z.sfcanl.nc
++ /??/atmos/gdas.t??z.sfc.anl.nc
 - *
 E
 # This directory is a good candidate for compression
