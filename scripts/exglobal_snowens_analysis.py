@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # stage ensemble mean backgrounds
 
     # Process IMS snow cover (if applicable)
-    if snow_anl.task_config.DO_IMS_SCF:
+    if snow_ens_anl.task_config.DO_IMS_SCF:
         snow_ens_anl.execute('scf_to_ioda')
 
     # Execute JEDI snow analysis

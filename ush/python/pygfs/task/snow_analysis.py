@@ -151,7 +151,7 @@ class SnowAnalysis(Task):
             FileHandler(ims_scf_to_ioda_staging_dict).sync()
             self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
             # Check if file exists
-            ims_file = ims_scf_to_ioda_staging_dict['copy'][0][1]
+            ims_file = ims_scf_to_ioda_staging_dict['copy_opt'][0][1]
             if os.path.exists(ims_file):
                 self.task_config.DO_IMS_SCF = True
 
