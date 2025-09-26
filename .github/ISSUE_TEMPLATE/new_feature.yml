@@ -20,9 +20,12 @@ body:
     id: description
     attributes:
       label: What new functionality do you need?
-      placeholder: Provide a concise description of the problem to be addressed by this new feature. Please be clear what parts of the problem are considered to be in-scope and out-of-scope.  Consider including:
-        - What are the requirements for the new functionality?
-        - Are there any links to related issues, discussions, or resources that provide additional context?
+      description: |
+        Provide a concise description of the problem to be addressed by this new feature. Please be clear what parts of the problem are considered to be in-scope and out-of-scope.
+
+        Consider including:
+          * What are the requirements for the new functionality?
+          * Are there any links to related issues, discussions, or resources that provide additional context?
     validations:
       required: true
 
