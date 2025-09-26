@@ -342,26 +342,31 @@ class ChemFireEmissions(Task):
         where YYYYMMDD represents the date components.
         """
         logger.info(f'Finding GBBEPx NRT fire files in {NRT_DIRECTORY}')
+        dates_to_look_for = range(0, 3)  # today and two previous days
+
+        for find_date_index in dates_to_look_for:
+            find_date = self.start_date - datetime.timedelta(days=find_date_index)
+            logger.info(f'Looking for files for date: {find_date.strftime("%Y%m%d")}')
+            NRT_DIRECTORY = NRT_DIRECTORY.replace(self.start_date.strftime('%Y%m%d'),
+                                                  find_date.strftime('%Y%m%d'))
+            if not os.path.exists(NRT_DIRECTORY):
+                logger.warning(f"Directory does not exist: {NRT_DIRECTORY}")
+                continue
+            else:
+                break
 
         if not os.path.exists(NRT_DIRECTORY):
-            logger.warning(f"Directory does not exist: {NRT_DIRECTORY}")
+            logger.error(f"Could not find a valid NRT_DIRECTORY for GBBEPx files")
             return []
 
         all_files = os.listdir(NRT_DIRECTORY)
         matching_files = []
-        logger.debug(f"Searching in directory: {NRT_DIRECTORY}")
+        logger.info(f"Searching in directory: {NRT_DIRECTORY}")
         logger.debug(f"Total files in directory: {len(all_files)} files")
         logger.debug(f"Files found in directory: {all_files}")
         # Look for pattern: "GBBEPx-all01GRID_v4r0_blend_s202302240000000_e202302242359590_c202302250134090.nc"
         pattern = r"GBBEPx-all01GRID.*_s(\d{8}).*_e(\d{8}).*\.nc"
 
-        if all_files is None:
-            logger.warning(f"No files found in directory: {NRT_DIRECTORY}")
-            logger.warning(f'Checking the previous date')
-            NRT_DIRECTORY = NRT_DIRECTORY.replace(self.start_date.strftime('%Y/%m'), (self.start_date - datetime.timedelta(days=1)).strftime('%Y/%m'))
-            if not os.path.exists(NRT_DIRECTORY):
-                logger.warning(f"Directory does not exist: {NRT_DIRECTORY}")
-                return []
         for file_name in all_files:
             match = re.match(pattern, file_name)
             if match:
