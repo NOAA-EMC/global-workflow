@@ -53,11 +53,11 @@ class ChemFireEmissions(Task):
         logger.info(f"Number of forecast hours: {nforecast_hours}")
 
         # Create start date based on SDATE
-        self.start_date = self.task_config["CDATE"]
+        self.start_date = self.task_config["CDATE"] - to_timedelta('24H')  # include previous day
         logger.info(f"Start date: {self.start_date}")
 
-        # end date = SDATE + nforecast hours + 24
-        self.end_date = self.task_config["CDATE"] + to_timedelta(f'{nforecast_hours + 24}H')
+        # end date = SDATE + nforecast hours + 36
+        self.end_date = self.task_config["CDATE"] + to_timedelta(f'{nforecast_hours + 36}H')
         logger.info(f"End date: {self.end_date}")
 
         # Calculate number of days spanned by start and end date (inclusive)
@@ -567,8 +567,6 @@ class ChemFireEmissions(Task):
         # Check longitude range and monotonicity
         if not (f.lon.diff('lon') > 0).all():
             raise WorkflowException("Longitude values must be strictly increasing")
-        f.lon.attrs['standard_name'] = 'longitude'
-        f.lon.attrs['axis'] = 'X'
 
         # Ensure longitude is in [-180, 180] range
         f['lon'] = xr.where(f.lon > 180, f.lon - 360, f.lon)
@@ -767,15 +765,15 @@ class ChemFireEmissions(Task):
                     # Set time dimension to index for days since (0, 1, 2, ..., nforecast_dates -1)
                     ds = ds.assign(time=[float(index)])
                     ds.time.attrs['long_name'] = 'time'
-                    ds.time.attrs['units'] = f'days since {self.start_date.strftime("%Y-%m-%d 00:00:00")}'
-                    ds.time.attrs['calendar'] = 'gregorian'
+                    ds.time.attrs['units'] = f'days since {self.start_date.strftime("%Y-%m-%d 12:00:00")}'
+                    ds.time.attrs['time_increment'] = 240000  # 24 hours in HHMMSS format
 
                     # Save the processed dataset
                     outfile_name = f"FIRE_EMIS_{forecast_date.strftime('%Y%m%d')}.nc"
                     outfile = os.path.join(workdir, outfile_name)
                     comp = dict(zlib=True, complevel=2)
                     encoding = {var: comp for var in ds.data_vars}
-                    ds.to_netcdf(outfile, encoding=encoding)
+                    ds.to_netcdf(outfile, encoding=encoding, unlimited_dims=['time'])
                     logger.info(f"Processed emission file saved to {outfile}")
                     processed_files.append(outfile)
                     ds.close()
@@ -803,7 +801,7 @@ class ChemFireEmissions(Task):
                     # Save the processed dataset
                     comp = dict(zlib=True, complevel=2)
                     encoding = {var: comp for var in ds.data_vars}
-                    ds.to_netcdf(outfile, encoding=encoding)
+                    ds.to_netcdf(outfile, encoding=encoding, unlimited_dims=['time'])
                     logger.info(f"Processed emission file saved to {outfile}")
 
                     # Add to processed files list
