@@ -2,7 +2,7 @@
 DMPDIR: '/bucket/dump'
 BASE_GIT: '/contrib/git'
 BASE_DATA: '/bucket/global-workflow-shared-data'
-BASE_IC: '/bucket/ICSDIR'
+BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
 AERO_INPUTS_DIR: '/contrib/global-workflow-shared-data/data/GEFS_ExtData/20250310'
 PACKAGEROOT: '' #TODO: This does not yet exist.
 HOMEDIR: '/contrib/${USER}'
