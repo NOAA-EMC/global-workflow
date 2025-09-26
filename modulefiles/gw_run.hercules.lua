@@ -25,4 +25,6 @@ load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 prepend_path("MODULEPATH", pathJoin("/work2/noaa/global/role-global/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
+setenv("CRTM_FIX","/work2/noaa/global/role-global/fix/crtm/v2.4.0.2")
+
 whatis("Description: GFS run environment")
