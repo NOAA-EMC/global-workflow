@@ -18,4 +18,12 @@ export FV3INC_JEDI_TEST_YAML="{{ FV3INC_JEDI_TEST_YAML }}"
 export TASK_CONFIG_YAML="${PARMgfs}/gdas/atm/atm_det_config.yaml.j2"
 export BIAS_FILES_YAML="${PARMgfs}/gdas/atm/atm_bias_files.yaml.j2"
 
+export LOCALIZATION_TYPE="bump"
+
+if [[ ${DOHYBVAR} = "YES" ]]; then
+    export CASE_ANL=${CASE_ENS}
+else
+    export CASE_ANL=${CASE}
+fi
+
 echo "END: config.atmanl"

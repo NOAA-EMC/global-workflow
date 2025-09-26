@@ -34,14 +34,10 @@ class AtmAnalysis(Analysis):
         super().__init__(config)
 
         _res = int(self.task_config.CASE[1:])
-        if self.task_config.DOHYBVAR:
-            _res_anl = int(self.task_config.CASE_ENS[1:])
-        else:
-            _res_anl = int(self.task_config.CASE[1:])
+        _res_anl = int(self.task_config.CASE_ANL[1:])
 
-        _localization_type = 'bump'
         if self.task_config.DOHYBVAR:
-            _BERROR_YAML = f"atmosphere_background_error_hybrid_{self.task_config.STATICB_TYPE}_{_localization_type}"
+            _BERROR_YAML = f"atmosphere_background_error_hybrid_{self.task_config.STATICB_TYPE}_{self.task_config.LOCALIZATION_TYPE}"
         else:
             _BERROR_YAML = f"atmosphere_background_error_static_{self.task_config.STATICB_TYPE}"
 

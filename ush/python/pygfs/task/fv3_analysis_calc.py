@@ -37,10 +37,7 @@ class FV3AnalysisCalc(Analysis):
         super().__init__(config)
 
         _res = int(self.task_config.CASE[1:])
-        if self.task_config.DOHYBVAR:
-            _res_anl = int(self.task_config.CASE_ENS[1:])
-        else:
-            _res_anl = int(self.task_config.CASE[1:])
+        _res_anl = int(self.task_config['CASE_ANL'][1:])
 
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
