@@ -98,7 +98,7 @@ class Analysis(Task):
     def untar_bias_corrections(self) -> None:
         """Extract bias correction files from tarballs
         This method will extract bias correction files from tarballs
-        
+
         Parameters
         ----------
         None

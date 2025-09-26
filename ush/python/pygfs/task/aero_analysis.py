@@ -52,7 +52,7 @@ class AerosolAnalysis(Analysis):
 
         _bkg_times = []
         for hour in self.task_config.aero_bkg_times:
-            _bkg_times.append( self.task_config.WINDOW_BEGIN + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2 )
+            _bkg_times.append(self.task_config.WINDOW_BEGIN + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(

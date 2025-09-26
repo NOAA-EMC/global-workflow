@@ -21,6 +21,7 @@ export BIAS_FILES_YAML="${PARMgfs}/gdas/atm/atm_bias_files.yaml.j2"
 export LOCALIZATION_TYPE="bump"
 
 if [[ ${DOHYBVAR} = "YES" ]]; then
+    # shellcheck disable=SC2153
     export CASE_ANL=${CASE_ENS}
 else
     export CASE_ANL=${CASE}
