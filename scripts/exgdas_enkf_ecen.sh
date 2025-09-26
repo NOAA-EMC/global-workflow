@@ -237,10 +237,10 @@ if [[ ${RECENTER_ENKF} = "YES" ]]; then
    # GSI EnVar analysis
    if [[ ${FHR} -eq 6 ]]; then
      ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atm.anl.nc"
-     ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atmanl.ensres.nc"
+     ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atm.ensres.anl.nc"
    else
      ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atma00${FHR}.nc"
-     ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atma00${FHR}.ensres.nc"
+     ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atma.ensres.f00${FHR}.nc"
    fi
 
    # if we already have a ensemble resolution GSI analysis then just link to it

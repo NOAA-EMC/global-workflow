@@ -54,13 +54,13 @@ gdas:
             {% if DOHYBVAR %}
         # Ensemble analysis residual
             {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.ensres.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atm.ensres.anl.nc"
             {% endif %}
                 {% if DOIAU %}
         # Ensemble IAU analysis residuals
                     {% for fhr in IAUFHRS if fhr != 6 %}
                        {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % fhr }}.ensres.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atma.ensres.f{{ '%03d' % fhr }}.nc"
                        {% endif %}
                     {% endfor %}
                 {% endif %}
