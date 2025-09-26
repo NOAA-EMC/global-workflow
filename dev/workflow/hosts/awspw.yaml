@@ -18,7 +18,7 @@ PARTITION_SERVICE: process
 # HPSS properties
 HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
 ARCHCOM_TO: 'local'
-ATARDIR: '/bucket/archive' # TODO: This will not yet work from AWS.
+ATARDIR: '/bucket/archive/${PSLOT}' # TODO: This will not yet work from AWS.
 CHGRP_RSTPROD: 'NO' #TODO: rstprod group not yet supported.
 CHGRP_CMD: 'echo' # TODO: This is not yet supported.
 # Features
