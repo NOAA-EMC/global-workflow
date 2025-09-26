@@ -64,7 +64,7 @@ fi
 
 # 1.a.3 File check
 for grdID in "${grdALL[@]}"; do
-  if [[ -f "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" ]]; then
+  if [[ -f "${COMOUT_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${grdID}.bin" ]]; then
     echo "INFO: mod_def.${grdID} succesfully created/copied"
   else
     export err=3
@@ -78,7 +78,7 @@ if [[ "${NET}" == "gefs" && ${NMEM_ENS} -gt 0 ]]; then
     MEMDIR="mem${mem}" YMD="${PDY}" HH="${cyc}" declare_from_tmpl COMOUT_WAVE_PREP_MEM:COM_WAVE_PREP_TMPL
     mkdir -p "${COMOUT_WAVE_PREP_MEM}"
     for grdID in "${grdALL[@]}"; do
-      cpfs "${COMOUT_WAVE_PREP}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin" "${COMOUT_WAVE_PREP_MEM}/${RUN}.wave.t${cyc}z.mod_def.${grdID}.bin"
+      cpfs "${COMOUT_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${grdID}.bin" "${COMOUT_WAVE_PREP_MEM}/${RUN}.t${cyc}z.mod_def.${grdID}.bin"
     done
   done
 fi
