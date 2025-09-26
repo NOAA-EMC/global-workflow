@@ -118,12 +118,18 @@ AddJJOBTest(
 
 AddJJOBTest(
   CASE "C48_S2SW"
-  JOB "gfs_oceanice_prod"
+  JOB "gfs_ice_prod_f006"
   TEST_DATE "2021032312"
 )
 
 AddJJOBTest(
   CASE "C48_S2SW"
+  JOB "gfs_ocean_prod_f006"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW_gefs"
   JOB "gefs_fcst_mem001"
   TEST_DATE "2021032312"
 )
