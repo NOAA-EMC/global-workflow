@@ -310,6 +310,10 @@ class NEXUSEmissions(Task):
             raise WorkflowException(f"Working directory does not exist: {self.task_config.DATA}")
 
         exe = Executable(self.task_config.APRUN)
+
+        if not exe.is_exe_available('nexus.x'):
+            raise WorkflowException("NEXUS preprocessor executable 'nexus.x' not found in PATH")
+
         arg_list = ['./nexus.x', '-c', self.task_config.NEXUS_CONFIG_NAME]
         exe(*arg_list, output='stdout', error='stderr')
 
