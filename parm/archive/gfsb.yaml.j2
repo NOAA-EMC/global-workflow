@@ -13,8 +13,8 @@ gfsb:
 
         # GRIB2 orecast data
         {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-        - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}"
-        - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p50.f{{ '%03d' % fhr }}.idx"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ '%03d' % fhr }}.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pres_a.0p50.f{{ '%03d' % fhr }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pres_a.0p50.f{{ '%03d' % fhr }}.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ '%03d' % fhr }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ '%03d' % fhr }}.grib2.idx"
         {% endfor %}

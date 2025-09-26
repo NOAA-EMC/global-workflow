@@ -1514,13 +1514,13 @@ class GFSTasks(Tasks):
 
         atmos_prod_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_GRIB_GRID_TMPL"], {'RUN': self.run, 'GRID': '0p25'})
         deps = []
-        data = f'{atmos_prod_path}/{self.run}.t@Hz.pgrb2.0p25.f006'
+        data = f'{atmos_prod_path}/{self.run}.t@Hz.pres_a.0p25.f006.grib2'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atmos_prod_path}/{self.run}.t@Hz.pgrb2.0p25.f012'
+        data = f'{atmos_prod_path}/{self.run}.t@Hz.pres_a.0p25.f012.grib2'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atmos_prod_path}/{self.run}.t@Hz.pgrb2.0p25.f024'
+        data = f'{atmos_prod_path}/{self.run}.t@Hz.pres_a.0p25.f024.grib2'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
