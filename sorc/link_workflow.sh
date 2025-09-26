@@ -422,6 +422,7 @@ fi
 
 # NEXUS executable
 if [[ -d "${HOMEgfs}/sorc/nexus.fd/build/bin" ]]; then
+  cd "${HOMEgfs}/exec" || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/build/bin/nexus" nexus.x
 fi
 
