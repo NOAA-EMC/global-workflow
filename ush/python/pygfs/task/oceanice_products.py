@@ -66,24 +66,24 @@ class OceanIceProducts(Task):
 
         # TODO: This is a bit of a hack, but it works for now
         # FIXME: find a better way to provide the averaging period
-        avg_period = f"{forecast_hour - interval:03d}-{forecast_hour:03d}"
+        avg_period = f"{forecast_hour-interval:03d} - {forecast_hour:03d}"
 
-    # Extend task_config with localdict
-    localdict = AttrDict(
-        {'component': self.task_config.COMPONENT,
-         'forecast_hour': forecast_hour,
-         'valid_datetime': valid_datetime,
-         'avg_period': avg_period,
-         'model_grid': model_grid,
-         'interval': interval,
-         'product_grids': self.VALID_PRODUCT_GRIDS[model_grid]}
-    )
-    self.task_config = AttrDict(**self.task_config, **localdict)
+        # Extend task_config with localdict
+        localdict = AttrDict(
+            {'component': self.task_config.COMPONENT,
+             'forecast_hour': forecast_hour,
+             'valid_datetime': valid_datetime,
+             'avg_period': avg_period,
+             'model_grid': model_grid,
+             'interval': interval,
+             'product_grids': self.VALID_PRODUCT_GRIDS[model_grid]}
+        )
+        self.task_config = AttrDict(**self.task_config, **localdict)
 
-    # Read the oceanice_products.yaml file for common configuration
-    logger.info(f"Read the ocean ice products configuration yaml file {self.task_config.OCEANICEPRODUCTS_CONFIG}")
-    self.task_config.oceanice_yaml = parse_j2yaml(self.task_config.OCEANICEPRODUCTS_CONFIG, self.task_config)
-    logger.debug(f"oceanice_yaml:\n{pformat(self.task_config.oceanice_yaml)}")
+        # Read the oceanice_products.yaml file for common configuration
+        logger.info(f"Read the ocean ice products configuration yaml file {self.task_config.OCEANICEPRODUCTS_CONFIG}")
+        self.task_config.oceanice_yaml = parse_j2yaml(self.task_config.OCEANICEPRODUCTS_CONFIG, self.task_config)
+        logger.debug(f"oceanice_yaml:\n{pformat(self.task_config.oceanice_yaml)}")
 
     @staticmethod
     @logit(logger)
