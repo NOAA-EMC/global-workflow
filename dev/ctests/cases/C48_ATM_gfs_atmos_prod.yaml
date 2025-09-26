@@ -49,10 +49,10 @@ input_files:
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile6.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile6.nc]
 
         # Atmosphere history files needed for post-processing (from forecast job)
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/atmf000.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/atmf000.nc]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/atmf003.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/atmf003.nc]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/sfcf000.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/sfcf000.nc]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/sfcf003.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/sfcf003.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/atmf000.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atmf000.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/atmf000.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atmf003.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/sfcf000.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.sfcf000.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/sfcf000.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.sfcf003.nc]
 
 output_files:
     cmpfiles:
