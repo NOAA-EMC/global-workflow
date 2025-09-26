@@ -42,8 +42,8 @@ APREFIX=${APREFIX:-""}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
-CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
-OZNSTAT=${OZNSTAT:-${APREFIX}oznstat}
+CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat.tar}
+OZNSTAT=${OZNSTAT:-${APREFIX}oznstat.tar}
 RADSTAT=${RADSTAT:-${APREFIX}radstat.txt}
 ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
 
