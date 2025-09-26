@@ -13,7 +13,7 @@ case ${step} in
         ;;
       "C96")
         if [[ "${RUN}" = "gcdas" ]]; then
-          export walltime="01:00:00"
+          export walltime="01:30:00"
         fi	    
         ;;  
       *)
