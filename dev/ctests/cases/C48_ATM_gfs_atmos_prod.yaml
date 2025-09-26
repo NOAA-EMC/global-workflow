@@ -1,0 +1,81 @@
+{% set H_offset = '-6H' %}
+{% set H_timedelta = H_offset | to_timedelta %}
+{% set TEST_DATE_offset = TEST_DATE | add_to_datetime(H_timedelta) %}
+
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set cyc_offset = TEST_DATE_offset | strftime('%H') %}
+
+{% set PDY = TEST_DATE | to_YMD %}
+{% set PDY_offset = TEST_DATE_offset | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+
+# =============================================================================
+# C48_ATM Atmospheric Products Test Case
+# =============================================================================
+# This test validates the JGLOBAL_ATMOS_PRODUCTS job for the C48_ATM configuration.
+# It tests the generation of atmospheric GRIB2 products at multiple resolutions.
+#
+# Source Logic: scripts/exglobal_atmos_products.sh
+# - Creates pgrb2 files at 0.25, 0.50, 1.00 degree resolutions (lines 200-203)
+# - Generates flux files and index files for each grid (lines 201-202)
+# - Produces WGNE products for forecast hours <= FHMAX_WGNE (lines 208-212)
+#
+# Configuration: dev/parm/config/gfs/config.atmos_products
+# - Sets downset=2 for GFS runs, FHOUT_PGBS=3 for supplemental products
+# =============================================================================
+
+input_files:
+    mkdir:
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00
+
+    copy:
+        # Input atmosphere restart files for forecast
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile1.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile1.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile2.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile2.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile3.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile3.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile4.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile4.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile5.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile5.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile6.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_data.tile6.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile1.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile1.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile2.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile2.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile3.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile3.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile4.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile4.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile5.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile5.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile6.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/sfc_data.tile6.nc]
+
+        # Atmosphere history files needed for post-processing (from forecast job)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/atmf000.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/atmf000.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/atmf003.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/atmf003.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/sfcf000.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/sfcf000.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/sfcf003.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/sfcf003.nc]
+
+output_files:
+    cmpfiles:
+        # Output atmospheric GRIB2 products at multiple resolutions for f000
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f000, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f000]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f000.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f000.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f000, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f000]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f000.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f000.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f000, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f000]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f000.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f000.idx]
+
+        # Output atmospheric GRIB2 products at multiple resolutions for f003
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f003]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f003.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f003.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f003]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f003.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f003.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f003]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f003.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f003.idx]
+
+        # Surface flux files for each grid
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.flux.0p25.f000, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.flux.0p25.f000]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.flux.0p25.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25/gfs.t{{ cyc }}z.flux.0p25.f003]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.flux.0p50.f000, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.flux.0p50.f000]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.flux.0p50.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50/gfs.t{{ cyc }}z.flux.0p50.f003]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f000, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f000]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f003]

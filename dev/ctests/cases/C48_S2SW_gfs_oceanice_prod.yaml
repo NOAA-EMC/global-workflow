@@ -1,0 +1,82 @@
+{% set H_offset = '-6H' %}
+{% set H_timedelta = H_offset | to_timedelta %}
+{% set TEST_DATE_offset = TEST_DATE | add_to_datetime(H_timedelta) %}
+
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set cyc_offset = TEST_DATE_offset | strftime('%H') %}
+
+{% set PDY = TEST_DATE | to_YMD %}
+{% set PDY_offset = TEST_DATE_offset | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+
+# =============================================================================
+# C48_S2SW Ocean/Ice Products Test Case
+# =============================================================================
+# This test validates the JGLOBAL_OCEANICE_PRODUCTS job for the C48_S2SW
+# configuration at forecast hour f006. It tests both ocean and ice product
+# generation using the coupled Sea-to-Sea-to-Wave (S2SW) system.
+#
+# Source Logic: scripts/exglobal_oceanice_products.py
+# - Uses pygfs.task.oceanice_products.OceanIceProducts class (lines 18, 32-48)
+# - Processes both ocean and ice components via COMPONENT env var (line 23)
+# - Creates GRIB2 products on multiple grids via product_grids (line 34-42)
+# - Generates native netCDF subsets (line 44-45)
+#
+# Configuration: parm/post/oceanice_products_gfs.yaml
+# - Ocean: Creates grib2 files and native netCDF subsets (lines 23-50)
+# - Ice: Creates grib2 files and native netCDF subsets (lines 52-79)
+# - Both use same interpolation grids and subset variables
+# =============================================================================
+
+input_files:
+    mkdir:
+        - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ice/restart
+        - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ocean/restart
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p25
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p50
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/1p00
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/netcdf
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p25
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p50
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/1p00
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/netcdf
+
+    copy:
+        # Ice restart files needed for initialization
+        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/ice/restart/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/ice/restart/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc]
+
+        # Ocean restart files needed for initialization
+        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/ocean/restart/{{ PDY }}.{{ cyc }}0000.MOM.res.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/ocean/restart/{{ PDY }}.{{ cyc }}0000.MOM.res.nc]
+
+        # Ocean history files from forecast (6-hour averaged output for f006)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f006.nc]
+
+        # Ice history files from forecast (6-hour averaged output for f006)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history/gfs.ice.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history/gfs.ice.t{{ cyc }}z.6hr_avg.f006.nc]
+
+output_files:
+    cmpfiles:
+        # Ocean GRIB2 products at multiple resolutions for f006
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2.idx]
+
+        # Ocean native netCDF products
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/netcdf/gfs.ocean.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/netcdf/gfs.ocean.t{{ cyc }}z.native.f006.nc]
+
+        # Ice GRIB2 products at multiple resolutions for f006
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2.idx]
+
+        # Ice native netCDF products
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc]
