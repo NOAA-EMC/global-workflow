@@ -112,7 +112,7 @@ AddJJOBTest(
 
 AddJJOBTest(
   CASE "C48_ATM"
-  JOB "gfs_atmos_prod"
+  JOB "gfs_atmos_prod_f000-f002"
   TEST_DATE "2021032312"
 )
 
