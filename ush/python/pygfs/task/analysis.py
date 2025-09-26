@@ -42,9 +42,9 @@ class Analysis(Task):
         _next_cycle = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H"))
 
         # Get specific assimilation times within the assimulation window
-        _iau_times = []
+        _iau_times_iso = []
         for hour in self.task_config.IAUFHRS:
-            _iau_times.append(_window_begin + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2)
+            _iau_times_iso.append(to_isotime(_window_begin + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2))
 
         # Get observations list from obs list yaml
         if 'OBS_LIST_YAML' in self.task_config:
@@ -76,7 +76,7 @@ class Analysis(Task):
                 'GPREFIX': f"{_da_prefix}.t{self.task_config.previous_cycle.hour:02d}z.",
                 'GPREFIX_ENS': f"enkf{_da_prefix}.t{self.task_config.previous_cycle.hour:02d}z.",
                 'OCNRES': f"{self.task_config.OCNRES:03d}",
-                'iau_times': _iau_times,
+                'iau_times_iso': _iau_times_iso,
                 'observations': _observations,
                 'bias_files': _bias_files,
             }

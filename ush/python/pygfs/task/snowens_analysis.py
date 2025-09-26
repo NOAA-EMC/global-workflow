@@ -62,7 +62,6 @@ class SnowEnsAnalysis(Analysis):
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
                 'CASE': self.task_config.CASE_ENS,
-                'OCNRES': f"{self.task_config.OCNRES:03d}",
                 'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
             }
         ))

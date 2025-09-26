@@ -56,7 +56,6 @@ class SnowAnalysis(Analysis):
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
-                'OCNRES': f"{self.task_config.OCNRES:03d}",
                 'snow_bkg_path': os.path.join('.', 'bkg/'),
             }
         ))
