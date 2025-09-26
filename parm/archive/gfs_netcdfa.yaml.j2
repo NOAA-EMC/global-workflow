@@ -24,5 +24,5 @@ gfs_netcdfa:
     optional:
         {% if not DO_JEDIATMVAR %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtf.anl.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}done.anl.txt"
         {% endif %}
