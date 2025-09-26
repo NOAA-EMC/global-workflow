@@ -136,9 +136,9 @@ for imem in $(seq 1 ${NMEM_ENS}); do
          fi
      else
          if [[ ${FHR} -eq 6 ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}ratminc.nc" "./ratminc_${memchar}"
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}ratm.increment.nc" "./ratminc_${memchar}"
          else
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}ratmi00${FHR}.nc" "./ratminc_${memchar}"
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}ratm.i00${FHR}.nc" "./ratminc_${memchar}"
          fi
      fi
    fi

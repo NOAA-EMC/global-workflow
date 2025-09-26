@@ -31,7 +31,7 @@ _COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVE
 + /12/
 + /12/atmos/
 + /12/atmos/mem???/
-+ /12/atmos/mem???/gdas.t??z.ratminc.nc
++ /12/atmos/mem???/gdas.t??z.ratm.increment.nc
 + /12/atmos/gdas.t??z.ensmean.atm.f006.nc
 + /12/atmos/gdas.t??z.ensmean.atm.f009.nc
 - *
@@ -42,7 +42,7 @@ _COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_
 + /12/
 + /12/atmos/
 + /12/atmos/mem???/
-+ /12/atmos/mem???/gdas.t??z.ratminc.nc
++ /12/atmos/mem???/gdas.t??z.ratm.increment.nc
 + /12/atmos/gdas.t??z.ensmean.atm.f006.nc
 + /12/atmos/gdas.t??z.ensmean.atm.f009.nc
 - *
