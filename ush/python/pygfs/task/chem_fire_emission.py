@@ -766,6 +766,10 @@ class ChemFireEmissions(Task):
                     logger.info(f"Setting time for forecast date: {forecast_date}")
                     # Set time dimension to index for days since (0, 1, 2, ..., nforecast_dates -1)
                     ds = ds.assign(time=[float(index)])
+                    ds.time.attrs['long_name'] = 'time'
+                    ds.time.attrs['units'] = f'days since {self.start_date.strftime("%Y-%m-%d 00:00:00")}'
+                    ds.time.attrs['calendar'] = 'gregorian'
+
                     # Save the processed dataset
                     outfile_name = f"FIRE_EMIS_{forecast_date.strftime('%Y%m%d')}.nc"
                     outfile = os.path.join(workdir, outfile_name)
