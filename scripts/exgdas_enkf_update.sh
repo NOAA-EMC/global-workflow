@@ -45,7 +45,7 @@ GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean.txt}
 CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat.tar}
 OZNSTAT=${OZNSTAT:-${APREFIX}oznstat.tar}
 RADSTAT=${RADSTAT:-${APREFIX}radstat.txt}
-ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
+ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat.txt}
 
 # Namelist parameters
 USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"NO"}
