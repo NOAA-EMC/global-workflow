@@ -314,7 +314,7 @@ class NEXUSEmissions(Task):
         if os.path.exists("nexus.x") is False:
             raise WorkflowException("NEXUS preprocessor executable 'nexus.x' not found in PATH")
 
-        arg_list = ['nexus.x', '-c', self.task_config.NEXUS_CONFIG_NAME]
+        arg_list = ['./nexus.x', '-c', self.task_config.NEXUS_CONFIG_NAME]
         exe(*arg_list, output='stdout', error='stderr')
 
         logger.info("Concatenating processed NEXUS files...")
