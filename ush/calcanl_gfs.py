@@ -46,7 +46,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                     gsi_utils.copy_file(ExecAnl, CalcAnlDir + '/calc_anl.x')
                     gsi_utils.link_file(RunDir + '/siginc.nc', CalcAnlDir + '/siginc.nc.06')
                     gsi_utils.link_file(ComOut + '/' + APrefix + 'atm.ensres.anl.nc', CalcAnlDir + '/anl.ensres.06')
-                    gsi_utils.link_file(ComIn_Ges + '/' + GPrefix + 'atmf006.ensres.nc', CalcAnlDir + '/ges.ensres.06')
+                    gsi_utils.link_file(ComIn_Ges + '/' + GPrefix + 'enres.atm.f006.nc', CalcAnlDir + '/ges.ensres.06')
                     gsi_utils.link_file(RunDir + '/sigf06', CalcAnlDir + '/ges.06')
             else:
                 if os.path.isfile('sigi' + format(fh, '02') + '.nc'):
@@ -81,7 +81,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                                         CalcAnlDir6 + '/anl.ensres.' + format(fh, '02'))
                     gsi_utils.link_file(RunDir + '/sigi' + format(fh, '02') + '.nc',
                                         CalcAnlDir6 + '/siginc.nc.' + format(fh, '02'))
-                    gsi_utils.link_file(ComIn_Ges + '/' + GPrefix + 'atmf' + format(fh, '03') + '.ensres.nc',
+                    gsi_utils.link_file(ComIn_Ges + '/' + GPrefix + 'ensres.atm.f' + format(fh, '03') + '.nc',
                                         CalcAnlDir6 + '/ges.ensres.' + format(fh, '02'))
 
     else:
@@ -100,8 +100,8 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             gsi_utils.make_dir(CalcAnlDir)
         gsi_utils.copy_file(ExecAnl, CalcAnlDir + '/calc_anl.x')
         gsi_utils.link_file(RunDir + '/siginc.nc', CalcAnlDir + '/siginc.nc.06')
-        gsi_utils.link_file(ComOut + '/' + APrefix + 'atmanl.ensres.nc', CalcAnlDir + '/anl.ensres.06')
-        gsi_utils.link_file(ComIn_Ges + '/' + GPrefix + 'atmf006.ensres.nc', CalcAnlDir + '/ges.ensres.06')
+        gsi_utils.link_file(ComOut + '/' + APrefix + 'atm.ensres.anl.nc', CalcAnlDir + '/anl.ensres.06')
+        gsi_utils.link_file(ComIn_Ges + '/' + GPrefix + 'ensres.atm.f006.nc', CalcAnlDir + '/ges.ensres.06')
 
     # get dimension information from background and increment files
     AnlDims = gsi_utils.get_ncdims('siginc.nc')

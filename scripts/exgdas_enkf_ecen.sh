@@ -170,9 +170,9 @@ if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
 else
    # Link ensemble mean increment
    if [[ ${FHR} -eq 6 ]]; then
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atminc.ensmean.nc" "./atminc_ensmean"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atm.increment.ensmean.nc" "./atminc_ensmean"
    else
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atmi00${FHR}.ensmean.nc" "./atminc_ensmean"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atmi.ensmean.f00${FHR}.nc" "./atminc_ensmean"
    fi
 
    # Compute ensemble mean increment
@@ -192,8 +192,8 @@ else
    fi
 
    # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
-   if [[ -s "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}atmf00${FHR}.ensmean.nc" ]]; then
-       ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}atmf00${FHR}.ensmean.nc" "./atmges_ensmean"
+   if [[ -s "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" ]]; then
+       ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" "./atmges_ensmean"
    else
        DATAPATH="./"
        ATMGESNAME="atmges"

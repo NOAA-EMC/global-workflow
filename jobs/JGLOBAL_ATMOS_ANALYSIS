@@ -53,7 +53,7 @@ if [[ ${err} -ne 0 ]]; then
 fi
 
 if [ ${DOHYBVAR} = "YES" ]; then
-    export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc"
+    export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}ensmean.atm.f006.nc"
     if [ ! -f ${ATMGES_ENSMEAN} ]; then
         export err=2
         err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"

@@ -47,7 +47,7 @@ enkf:
         {% if DOHYBVAR %}
         {% if DOIAU %}
         {% for fhr in range(3, fhmax + 1, 3) %}
-        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head |replace('enkf','')}}atmf{{ '%03d' % fhr }}.ensres.nc"
+        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head |replace('enkf','')}}ensres.atm.f{{ '%03d' % fhr }}.nc"
         {% endfor %}
         {% endif %}
         {% endif %}
@@ -56,10 +56,10 @@ enkf:
         # Ensemble mean and spread
         {% if is_gdas %}
         {% for fhr in range(3, fhmax + 1, 3) %}
-        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensmean.nc"
-        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfcf{{ '%03d' % fhr }}.ensmean.nc"
+        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}.ensmean.atm.f{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}.ensmean.sfc.f{{ '%03d' % fhr }}.nc"
         {% if ENKF_SPREAD %}
-        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmf{{ '%03d' % fhr }}.ensspread.nc"
+        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}.ensspread.atmf{{ '%03d' % fhr }}.nc"
         {% endif %}
         {% endfor %}
         {% endif %}
@@ -67,10 +67,10 @@ enkf:
         # Ensemble mean state
         {% if not DO_JEDIATMENS %}
         {% set da_stat_files = ["enkfstat",
-                                "gsistat.ensmean",
-                                "cnvstat.ensmean",
-                                "oznstat.ensmean",
-                                "radstat.ensmean"] %}
+                                "gsistat.ensmean.tar",
+                                "cnvstat.ensmean.tar",
+                                "oznstat.ensmean.tar",
+                                "radstat.ensmean.tar"] %}
         {% set da_conf_files = [] %}
         {% else %}
         {% if lobsdiag_forenkf %}
@@ -109,13 +109,13 @@ enkf:
         {% if do_calc_increment %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmanl.ensmean.nc"
         {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atminc.ensmean.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}increment.ensmean.nc"
         {% endif %}
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atmanl.ensmean.nc"
         {% endif %}
-        
-        # soil DA increments  
+
+        # soil DA increments
         {% if DO_GSISOILDA %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfci006.nc"
         {% endif %}
@@ -131,15 +131,15 @@ enkf:
         {% else %}
         {% if not DO_JEDIATMENS %}
         # Store increments
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmi{{ '%03d' % fhr }}.ensmean.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmi.ensmean.f{{ '%03d' % fhr }}.nc"
         {% endif %}
         {% endif %}
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atma{{ '%03d' % fhr }}.ensmean.nc"
         {% endif %}
 
-        # soil DA increments  
-        {% if DO_GSISOILDA %} 
+        # soil DA increments
+        {% if DO_GSISOILDA %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfci{{ '%03d' % fhr }}.nc"
         {% endif %}
 

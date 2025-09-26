@@ -41,7 +41,7 @@ APREFIX=${APREFIX:-""}
 
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
-GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
+GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean.txt}
 CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat.tar}
 OZNSTAT=${OZNSTAT:-${APREFIX}oznstat.tar}
 RADSTAT=${RADSTAT:-${APREFIX}radstat.txt}
@@ -90,7 +90,7 @@ hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 
 ################################################################################
 
-ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}atm.f006.ensmean.nc"
+ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.atm.f006.nc"
 LONB_ENKF=${LONB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_xt)} # get LONB_ENKF
 LATB_ENKF=${LATB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_yt)} # get LATB_ENFK
 LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" pfull)} # get LEVS_ENFK
@@ -143,9 +143,9 @@ COMOUT_ATMOS_ANALYSIS=\$2
 flist="${CNVSTAT} ${OZNSTAT} ${RADSTAT}"
 for ftype in \$flist; do
    if [[ "\${memchar}" == "ensmean" ]]; then
-      fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype}.ensmean
+      fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype}.ensmean.tar
    else
-      fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype}
+      fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype}.tar
    fi
    tar -xvf \$fname
 done
@@ -164,7 +164,7 @@ if [[ "${USE_CFP}" == "YES" ]]; then
    fi
 else
    for ftype in ${flist}; do
-      fname="${COMIN_ATMOS_ANALYSIS_STAT}/${ftype}.ensmean"
+      fname="${COMIN_ATMOS_ANALYSIS_STAT}/${ftype}.ensmean.tar"
       tar -xvf "${fname}"
    done
 fi
@@ -223,14 +223,14 @@ done
 # Ensemble mean guess
 for FHR in ${nfhrs}; do
 
-   ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}atmf00${FHR}.ensmean.nc" \
+   ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.atm.f00${FHR}.nc" \
       "sfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
    if [[ "${cnvw_option}" == ".true." ]]; then
-      ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}sfcf00${FHR}.ensmean.nc" \
+      ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.sfc.f00${FHR}.nc" \
          "sfgsfc_${PDY}${cyc}_fhr0${FHR}_ensmean"
    fi
    if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-      ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}sfcf00${FHR}.ensmean.nc" \
+      ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.sfc.f00${FHR}.nc" \
          "bfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
       ${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${APREFIX}sfci00${FHR}.nc" \
          "sfcincr_${PDY}${cyc}_fhr0${FHR}_ensmean"
