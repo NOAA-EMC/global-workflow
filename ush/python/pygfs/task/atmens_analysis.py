@@ -42,6 +42,7 @@ class AtmEnsAnalysis(Analysis):
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
+                'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
             })
         )
 

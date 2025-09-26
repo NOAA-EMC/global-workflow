@@ -37,21 +37,32 @@ class Analysis(Task):
         """
         super().__init__(config)
 
+        # Get assimilation window times
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _next_cycle = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H"))
 
+        # Get specific assimilation times within the assimulation window
         _iau_times = []
         for hour in self.task_config.IAUFHRS:
             _iau_times.append(_window_begin + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
+        # Get observations list from obs list yaml
         if 'OBS_LIST_YAML' in self.task_config:
             _observations = parse_j2yaml(self.task_config.OBS_LIST_YAML, self.task_config)['observations']
         else:
             _observations = []
+
+        # Get bias correction dict from bias files yaml
         if 'BIAS_FILES_YAML' in self.task_config:
             _bias_files = parse_j2yaml(self.task_config.BIAS_FILES_YAML, self.task_config)['bias_files']
         else:
             _bias_files = AttrDict
+
+        # Set prefix needed for GPREFIX, depedning on the model
+        if self.task_config.NET == 'gcafs':
+            _da_prefix = 'gcdas'
+        else:
+            _da_prefix = 'gdas'
 
         # Extend task_config with variables that are repeatedly used across this class
         self.task_config.update(AttrDict(
@@ -59,12 +70,11 @@ class Analysis(Task):
                 'WINDOW_BEGIN': _window_begin,
                 'WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'next_cycle': _next_cycle,
-                'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
                 'OPREFIX': f"{self.task_config.RUN.replace('enkf','')}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN.replace('enkf','')}.t{self.task_config.cyc:02d}z.",
                 'APREFIX_ENS': f"enkf{self.task_config.RUN.replace('enkf','')}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'GPREFIX': f"{_da_prefix}.t{self.task_config.previous_cycle.hour:02d}z.",
+                'GPREFIX_ENS': f"enkf{_da_prefix}.t{self.task_config.previous_cycle.hour:02d}z.",
                 'OCNRES': f"{self.task_config.OCNRES:03d}",
                 'iau_times': _iau_times,
                 'observations': _observations,

@@ -47,7 +47,7 @@ class AerosolBMatrix(Analysis):
                 'npz_anl': self.task_config['LEVS'] - 1,
                 'npz': self.task_config.LEVS - 1,
                 'BERROR_YAML': f'aero_background_error_static_{self.task_config.STATICB_TYPE}',
-                'BERROR_DATA_DIR': f'{FIXgfs}/gdas/aero/clim_b',
+                'BERROR_DATA_DIR': f'{self.task_config.FIXgfs}/gdas/aero/clim_b',
                 'AERO_BMATRIX_RESCALE_YAML': 'aero_gen_bmatrix_rescale_default.yaml.j2',
             }
         ))
@@ -57,11 +57,10 @@ class AerosolBMatrix(Analysis):
 
         # Create dictionary of Jedi objects
         expected_keys = ['aero_interpbkg', 'aero_diagb', 'aero_diffusion']
-        jedi_config_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
-        self.jedi_dict = Jedi.get_jedi_dict(jedi_config_dict, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
-    def initialize(self: Task) -> None:
+    def initialize(self) -> None:
         """Initialize a global aerosol B-matrix
 
         This method will initialize a global aerosol B-Matrix.

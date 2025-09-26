@@ -4,12 +4,12 @@ import os
 from logging import getLogger
 from netCDF4 import Dataset
 from typing import Dict, List
+from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
 from wxflow import (
     AttrDict,
     FileHandler,
-    to_fv3time,
-    Task,
+    to_fv3time, to_timedelta,
     YAMLFile, parse_j2yaml,
     logit
 )
@@ -18,7 +18,7 @@ import numpy as np
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AerosolAnalysis(Task):
+class AerosolAnalysis(Analysis):
     """
     Class for JEDI-based global aerosol analysis tasks
     """
@@ -50,6 +50,10 @@ class AerosolAnalysis(Task):
         else:
             _anl_time = self.task_config.current_cycle
 
+        _bkg_times = []
+        for hour in self.task_config.aero_bkg_times:
+            _bkg_times.append(self.task_config.WINDOW_BEGIN + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H")/2 )
+
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
             {
@@ -62,17 +66,18 @@ class AerosolAnalysis(Task):
                 'npz': self.task_config.LEVS - 1,
                 'BKG_TSTEP': "PT3H",  # FGAT
                 'BERROR_YAML': f'aero_background_error_static_{self.task_config.STATICB_TYPE}',
+                'AERO_BMATRIX_RESCALE_YAML': 'aero_gen_bmatrix_rescale_default.yaml.j2',
                 'anl_time': _anl_time,
+                'bkg_times': _bkg_times,
             }
-        )
+        ))
 
         # Extend task_config with content of config yaml for this task
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of Jedi objects
         expected_keys = ['aeroanlvar']
-        jedi_config_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
-        self.jedi_dict = Jedi.get_jedi_dict(jedi_config_dict, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:

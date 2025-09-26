@@ -55,6 +55,7 @@ class AtmAnalysis(Analysis):
                 'npy_anl': _res_anl + 1,
                 'npz_anl': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
+                'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
                 'BERROR_YAML': _BERROR_YAML,
             }
         ))
