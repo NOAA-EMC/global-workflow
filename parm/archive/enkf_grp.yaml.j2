@@ -30,6 +30,10 @@ enkf_grp:
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
+        {% for iaufhr in IAUFHRS if iaufhr != 6 %}
+        {% set iaufhr = iaufhr %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
+        {% endfor %}  # iaufhr in IAUFHRS
         {% endif %}
         {% endif %}
         

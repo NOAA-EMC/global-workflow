@@ -107,14 +107,14 @@ class SnowEnsAnalysis(Task):
         """
 
         # stage backgrounds
-        logger.info(f"Staging background files from {self.task_config.SNOW_ENS_STAGE_TMPL}")
-        bkg_staging_dict = parse_j2yaml(self.task_config.SNOW_ENS_STAGE_TMPL, self.task_config)
+        logger.info(f"Staging background files from {self.task_config.STAGE_BKG_YAML}")
+        bkg_staging_dict = parse_j2yaml(self.task_config.STAGE_BKG_YAML, self.task_config)
         FileHandler(bkg_staging_dict).sync()
         logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}")
 
         # stage orography
-        logger.info(f"Staging orography files from {self.task_config.SNOW_OROG_STAGE_TMPL}")
-        orog_staging_dict = parse_j2yaml(self.task_config.SNOW_OROG_STAGE_TMPL, self.task_config)
+        logger.info(f"Staging orography files from {self.task_config.STAGE_OROG_YAML}")
+        orog_staging_dict = parse_j2yaml(self.task_config.STAGE_OROG_YAML, self.task_config)
         FileHandler(orog_staging_dict).sync()
         logger.debug(f"Orography files:\n{pformat(orog_staging_dict)}")
         # note JEDI will try to read the orog files for each member, let's just symlink
@@ -136,19 +136,19 @@ class SnowEnsAnalysis(Task):
         logger.debug(f"Observation files:\n{pformat(obs_dict)}")
 
         # stage GTS bufr2ioda mapping YAML files
-        logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.GTS_SNOW_STAGE_YAML}")
-        gts_mapping_list = parse_j2yaml(self.task_config.GTS_SNOW_STAGE_YAML, self.task_config)
+        logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.STAGE_GTS_YAML}")
+        gts_mapping_list = parse_j2yaml(self.task_config.STAGE_GTS_YAML, self.task_config)
         FileHandler(gts_mapping_list).sync()
 
         # stage FV3-JEDI fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.JEDI_FIX_YAML, self.task_config)
+        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
+        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
         FileHandler(jedi_fix_dict).sync()
         logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
 
         # staging B error files
         logger.info("Stage files for static background error")
-        berror_staging_dict = parse_j2yaml(self.task_config.BERROR_STAGING_YAML, self.task_config)
+        berror_staging_dict = parse_j2yaml(self.task_config.STAGE_BERROR_YAML, self.task_config)
         FileHandler(berror_staging_dict).sync()
         logger.debug(f"Background error files:\n{pformat(berror_staging_dict)}")
 
@@ -162,7 +162,7 @@ class SnowEnsAnalysis(Task):
 
         # if 00z, do SCF preprocessing
         if self.task_config.cyc == 0:
-            ims_scf_to_ioda_staging_dict = parse_j2yaml(self.task_config.SNOW_IMS_STAGE_TMPL, self.task_config)
+            ims_scf_to_ioda_staging_dict = parse_j2yaml(self.task_config.STAGE_IMS_SCF2IODA_YAML, self.task_config)
             FileHandler(ims_scf_to_ioda_staging_dict).sync()
             self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
 

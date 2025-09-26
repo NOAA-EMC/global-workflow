@@ -46,6 +46,10 @@ variables:
   RUNNER_AFTER_SCRIPT_TIMEOUT: 8h
   PR_NUMBER: 0 # PR number is set by GitHub Actions
                # when the pipeline is triggered from a PR
+  GITHUB_COMMIT_SHA: "" # GitHub commit SHA for native GitLab integration
+
+workflow:
+  name: "PR ${PR_NUMBER} - ${RUN_ON_MACHINES} (${GFS_CI_RUN_TYPE})"
 
 # Include specialized pipeline configuration files
 include:
@@ -103,6 +107,15 @@ include:
       if [[ ! -x "${GH}" ]]; then
         echo "ERROR: GitHub CLI (gh) not found or not executable. Please install it."
         exit 1
+      fi
+
+      # Configure GitLab native GitHub integration
+      if [[ -n "${GITHUB_COMMIT_SHA:-}" && ${PR_NUMBER} -ne 0 ]]; then
+        echo "Configuring GitLab native GitHub integration for commit: ${GITHUB_COMMIT_SHA}"
+        export CI_COMMIT_SHA="${GITHUB_COMMIT_SHA}"
+        echo "GitLab will report status to GitHub for this commit"
+      else
+        echo "Using GitLab default commit SHA for status reporting"
       fi
 
 # Common build template for all modalities
@@ -199,7 +212,7 @@ include:
 
             comment_body=$(printf "**BUILD FAILED** on %s (pipeline ID: %s)\n\nIn directory: \`%s/sorc\`\n\n**Error log files:**\n\`\`\`\n%s\n\`\`\`\n\n [View Error Logs](%s)\n\n_This failure was detected automatically by global-workflow's CI/CD Pipeline_" "${Machine}" "${CI_PIPELINE_ID}" "${GW_HOMEgfs}" "${error_logs_markdown}" "${pr_error_log_links}")
         
-            "${GH}"" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
+            "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
           fi
 
           echo "Updating GitHub labels for PR ${PR_NUMBER} failure on ${Machine}"

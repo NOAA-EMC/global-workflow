@@ -19,7 +19,7 @@ Experiment Setup
 Scripts that will be used:
 
    * ``dev/workflow/setup_expt.py``
-   * ``dev/workflow/setup_xml.py``
+   * ``dev/workflow/setup_workflow.py``
 
 ****************************************
 Step 1: Set user settings
@@ -77,7 +77,7 @@ where:
    * ``$IDATE`` is the initial start date of your run (first cycle date in ``YYYYMMDDCC``)
    * ``$EDATE`` is the ending date of your run (``YYYYMMDDCC``) and is the last cycle that will complete [default: ``$IDATE``]
    * ``$PSLOT`` is the name of your experiment [default: ``test``]
-   * ``$CONFIGDIR`` is the path to the ``/config`` folder under the copy of the system you're using [default: ``$TOP_OF_CLONE/dev/parm/config/``]
+   * ``$CONFIGDIR`` is the path to the ``/config`` folder under the copy of the system you're using [default: ``$TOP_OF_CLONE/dev/parm/config/$NET``]
    * ``$RESDETATMOS`` is the resolution of the atmosphere component of the system (i.e. 768 for C768) [default: ``384``]
    * ``$RESDETOCEAN`` is the resolution of the ocean component of the system (i.e. 0.25 for 1/4 degree) [default: ``0.``; determined based on atmosphere resolution]
    * ``$INTERVAL_GFS`` is the forecast interval in hours [default: ``6``]
@@ -152,18 +152,20 @@ This step sets up the files needed by the Workflow Manager/Driver. At this momen
 
 ::
 
-   ./setup_xml.py $EXPDIR/$PSLOT
+   ./setup_workflow.py $EXPDIR/$PSLOT rocoto|ecflow
 
 Example:
 
 ::
 
-   ./setup_xml.py /some_safe_disk_area/Joe.Schmo/expdir/test
+   ./setup_workflow.py /some_safe_disk_area/Joe.Schmo/expdir/test rocoto
 
-Additional options for setting up Rocoto are available with `setup_xml.py -h` that allow users to change the number of failed tries, number of concurrent cycles and tasks as well as Rocoto's verbosity levels.
+Additional options for setting up Rocoto or ecFlow are available with `setup_workflow.py -h` that allow users to change the number of failed tries, number of concurrent cycles and tasks as well as verbosity levels.
+
+Presently, only the Rocoto workflow engine is supported.  EcFlow capabilities are a work in progress.
 
 ****************************************
 Step 5: Confirm files from setup scripts
 ****************************************
 
-You will now have a rocoto xml file in your ``$EXPDIR`` (``$PSLOT.xml``) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun setup_xml.py script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.
+You will now have a rocoto xml file in your ``$EXPDIR`` (``$PSLOT.xml``) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun setup_workflow.py script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.

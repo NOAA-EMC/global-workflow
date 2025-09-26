@@ -57,6 +57,15 @@ case ${step} in
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
+  "atmanlvar" | "atmensanlsol")
+    export tasks_per_node=48
+    ;;
+
+  "atmensanlobs")
+    export tasks_per_node=24
+    export memory="240GB"
+    ;;
+
   "aeroanlvar")
     export tasks_per_node=48
     ;;

@@ -79,7 +79,7 @@ class AnalysisStats(Task):
         logger.info(f"Copying files to {self.task_config.DATA}/stats")
 
         # Extract info from stat config file
-        analysis_config_dict = parse_j2yaml(self.task_config.STAT_BASE_CONFIG_YAML, self.task_config)
+        analysis_config_dict = parse_j2yaml(self.task_config.BASE_CONFIG_YAML, self.task_config)
 
         # Loop through a copy of ob space list
         for analysis in self.task_config.STAT_ANALYSES[:]:
@@ -168,7 +168,7 @@ class AnalysisStats(Task):
         None
         """
 
-        analysis_config_dict = parse_j2yaml(self.task_config.STAT_BASE_CONFIG_YAML, self.task_config)
+        analysis_config_dict = parse_j2yaml(self.task_config.BASE_CONFIG_YAML, self.task_config)
 
         for analysis_dict in analysis_config_dict[jedi_dict_key]['obs spaces']:
             statfile = os.path.join(self.task_config.DATA, analysis_dict['output file'])
