@@ -36,7 +36,7 @@ After setting up the experiment, build the workflow XML and launch it:
 
 .. code-block:: bash
 
-   ./setup_xml.py /path/to/exp/my_gcafs_run
+   ./setup_workflow.py /path/to/exp/my_gcafs_run
    cd /path/to/exp/my_gcafs_run
    rocotorun -w gcafs.xml -d gcafs.db
 

@@ -8,7 +8,7 @@ for GFS cycled runs with data assimilation. It handles cycle definitions for bot
 the analysis (GDAS) and medium-range forecast (GFS) components of the workflow.
 """
 
-from rocoto.workflow_xml import RocotoXML
+from rocoto.rocoto_xml import RocotoXML
 from applications.applications import AppConfig
 from wxflow import to_timedelta, timedelta_to_HMS
 from typing import Dict
