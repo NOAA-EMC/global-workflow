@@ -1,8 +1,6 @@
 experiment:
   net: gfs
   mode: cycled
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2SW
   resdetatmos: 1152
@@ -19,4 +17,12 @@ arguments:
   icsdir: /gpfs/f6/drsa-precip3/world-shared/role.glopara/data/ICSDIR/retro_ICs
   #msu
   #icsdir: /work2/noaa/global/role-global/data/ICSDIR/retro_ICs
-  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw.yaml
+  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw_rdhpcs.yaml
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
+

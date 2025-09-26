@@ -18,7 +18,7 @@ fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
 cpreq "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" "${DATA}/"
 
-grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'aoc_9km gnh_10m gsh_15m'}} 
+grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'aoc_9km gnh_10m gsh_15m'}}
 
 # Create a template for the GEMPAK control file
 rm -f "${DATA}/gempak.parm.tmpl"
@@ -77,12 +77,12 @@ for grid in ${grids}; do
 
   com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
   com_dir=${!com_varname}
-  GRIBIN="${RUN}.wave.${cycle}.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
+  GRIBIN="${RUN}.${cycle}.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
   cpreq "${com_dir}/${GRIBIN}" "./${GRIBIN}"
 
   nagrib_file="${GRIBIN}"
   if [[ "${GRDREGION}.${GRDRES}" = "global.0p25" ]]; then
-    nagrib_file="${RUN}.wave.${cycle}.global.${gridIDout}.${fhr3}.grib2"
+    nagrib_file="${RUN}.${cycle}.global.${gridIDout}.${fhr3}.grib2"
     ${WGRIB2} -lola 0:720:0.5 -90:361:0.5 "${nagrib_file}" grib "${GRIBIN}"
     export err=$?
     if [[ ${err} -ne 0 ]]; then
