@@ -11,7 +11,7 @@ case ${step} in
   "fcst" | "efcs")
     case "${CASE}" in
       "C768")
-        export tasks_per_node=144
+        export tasks_per_node=180
         ;;
       "C1152")
         export tasks_per_node=144
