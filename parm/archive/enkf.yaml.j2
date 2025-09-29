@@ -59,7 +59,7 @@ enkf:
         - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}.ensmean.atm.f{{ '%03d' % fhr }}.nc"
         - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}.ensmean.sfc.f{{ '%03d' % fhr }}.nc"
         {% if ENKF_SPREAD %}
-        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}.ensspread.atmf{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}.ensspread.atm.f{{ '%03d' % fhr }}.nc"
         {% endif %}
         {% endfor %}
         {% endif %}
