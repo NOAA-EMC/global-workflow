@@ -10,4 +10,14 @@ source "${EXPDIR}/config.resources" wavegempak
 
 export GEMPAK_GRIDS='aoc_9km gnh_10m gsh_15m'
 
+# Maximum number of tasks for wavegempak
+export MAX_TASKS=25
+
+# Wave gempak output is every 3 hours till hour 72 and then every 6 hours till hour 180
+export FHOUT_HF_WAV=3
+export FHMAX_HF_WAV=72
+export FHOUT_WAV=6
+export FHOUT_WAV_GFS=${FHOUT_WAV}
+export FHMAX_GFS=180  # Note: This is the maximum forecast hour for GFS wave gempak output
+
 echo "END: config.wavegempak"

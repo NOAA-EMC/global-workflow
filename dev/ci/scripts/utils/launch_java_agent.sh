@@ -89,7 +89,7 @@ rm -f "${LOG}"
 
 HOMEgfs="${HOMEgfs_}" source "${HOMEgfs_}/ush/module-setup.sh"
 module use "${HOMEgfs_}/modulefiles"
-module load "module_gwsetup.${MACHINE_ID}"
+module load "gw_setup.${MACHINE_ID}"
 
 if [[ ${MACHINE_ID} == "noaacloud" ]]; then
   source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"

@@ -12,7 +12,7 @@ export COPY_FINAL_RESTARTS="NO" # Toggle to copy restarts from the end of GFS/GE
 string="--fv3 ${CASE}"
 [[ "${DO_OCN}" == "YES" ]] && string="${string} --mom6 ${OCNRES}"
 [[ "${DO_ICE}" == "YES" ]] && string="${string} --cice6 ${ICERES}"
-[[ "${DO_WAVE}" == "YES" ]] && string="${string} --ww3 ${waveGRD// /;}"
+[[ "${DO_WAVE}" == "YES" ]] && string="${string} --ww3 ${waveGRD}"
 [[ "${DO_AERO_FCST}" == "YES" ]] && string="${string} --gocart"
 # We are counting on $string being multiple arguments
 # shellcheck disable=SC2086
@@ -82,7 +82,7 @@ fi
 
 
 # -- uGWD.v1, for suite FV3_GFS_v17 and FV3_GFS_v17p8b etc
-if (( gwd_opt == 2 )); then
+if [[ ${gwd_opt} -eq 2 ]]; then
 
     #--used for UFS p7 and p8a
     #export  knob_ugwp_version=1
@@ -198,7 +198,7 @@ case ${imp_physics} in
             export dddmp=0.1
         else
             export dddmp=0.
-	    fi
+      fi
         export d4_bg=0.12
         ;;
     11) # GFDL
@@ -220,10 +220,10 @@ case ${imp_physics} in
         export nord=2
         export d4_bg=0.12
         if [[ "${TYPE}" == "nh"* ]]; then
-            export dddmp=0.1
+          export dddmp=0.1
         else
-            export dddmp=0.
-	    fi
+          export dddmp=0.
+        fi
         ;;
     *) echo "Unknown microphysics option, ABORT!" ;;
 esac
@@ -272,6 +272,10 @@ else
 fi
 
 export reforecast="{{ reforecast }}"
+
+# This is used to ensure that the orography in the land restart file matches the orography
+export CHECK_LAND_RESTART_OROG="{{ CHECK_LAND_RESTART_OROG }}"
+
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst

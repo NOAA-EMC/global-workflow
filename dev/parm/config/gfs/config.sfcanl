@@ -8,6 +8,11 @@ echo "BEGIN: config.sfcanl"
 # Get task specific resources
 source "${EXPDIR}/config.resources" sfcanl
 
+# Run global_cycle in coupled mode
+if [[ "${DO_OCN}" == "YES" && "${DO_ICE}" == "YES" ]]; then
+   export COUPLED=".true."
+fi
+
 # Turn off NST in JEDIATMVAR
 if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"

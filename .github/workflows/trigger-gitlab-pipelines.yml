@@ -1,0 +1,170 @@
+name: Trigger GitLab Pipelines
+
+on:
+  # Only allow manual triggering by admins/maintainers
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to test (use 0 for develop branch)'
+        required: true
+        type: string
+      pipeline_type:
+        description: 'Pipeline Type'
+        required: true
+        type: choice
+        options:
+          - 'PR Cases'
+          - 'CTests'
+        default: 'PR Cases'
+      hera:
+        description: 'Hera'
+        type: boolean
+        default: false
+      gaeac6:
+        description: 'Gaea C6'
+        type: boolean
+        default: true
+      orion:
+        description: 'Orion'
+        type: boolean
+        default: false
+      hercules:
+        description: 'Hercules'
+        type: boolean
+        default: false
+      ursa:
+        description: 'Ursa'
+        type: boolean
+        default: false
+      # Add more machines by directly using their names as input IDs
+
+jobs:
+  check-permissions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if user has permissions
+        id: check
+        run: |
+          # Get authorized users from GitHub variables
+          AUTHORIZED_USERS="${{ vars.AUTHORIZED_GITLAB_TRIGGER_USERS }}"
+          
+          # Check if current user is in the authorized list
+          if [[ "$AUTHORIZED_USERS" == *"${{ github.actor }}"* ]]; then
+            echo "User ${{ github.actor }} is authorized to run this workflow"
+            echo "authorized=true" >> ${GITHUB_OUTPUT}
+          else
+            echo "User ${{ github.actor }} is not authorized to run this workflow"
+            echo "authorized=false" >> ${GITHUB_OUTPUT}
+            exit 1
+          fi
+    # For teams, you would need to use the GitHub GraphQL API with a token that has read:org scope
+
+  trigger-gitlab-pipeline:
+    needs: check-permissions
+    runs-on: ubuntu-latest
+    environment: gitlab-trigger-environment
+    steps:
+      - name: Set up parameters
+        id: setup
+        env:
+          GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        run: |
+          # Set PR number
+          PR_NUM="${{ github.event.inputs.pr_number }}"
+          if [[ "${PR_NUM}" != "0" ]]; then
+            if ! gh pr view "${PR_NUM}" --repo "${{ vars.GW_REPO_URL }}" >/dev/null 2>&1; then
+              echo "PR ${PR_NUM} not found"
+              exit 1
+            fi
+            # Get the PR head commit SHA for GitLab GitHub integration
+            PR_HEAD_SHA=$(gh pr view "${PR_NUM}" --repo "${{ vars.GW_REPO_URL }}" --json headRefOid --jq '.headRefOid')
+            echo "Found PR ${PR_NUM} with HEAD SHA: ${PR_HEAD_SHA}"
+          else
+            # For develop branch, use the current commit SHA
+            PR_HEAD_SHA="${{ github.sha }}"
+            echo "Using develop branch SHA: ${PR_HEAD_SHA}"
+          fi
+          echo "PR_NUM=${PR_NUM}" >> ${GITHUB_ENV}
+          echo "PR_HEAD_SHA=${PR_HEAD_SHA}" >> ${GITHUB_ENV}
+
+          # Set pipeline type based on selection
+          case "${{ github.event.inputs.pipeline_type }}" in
+            "PR Cases")
+              PIPELINE_TYPE="pr_cases"
+              ;;
+            "CTests")
+              PIPELINE_TYPE="ctests"
+              ;;
+            *)
+              echo "Invalid pipeline type: ${{ github.event.inputs.pipeline_type }}"
+              exit 1
+              ;;
+          esac
+          echo "PIPELINE_TYPE=${PIPELINE_TYPE}" >> ${GITHUB_ENV}
+
+          
+          # ---------------------------------------------------------------
+          # Machine Selection Logic
+          # This section builds the machine list based on user inputs
+          # The list is then passed to the GitLab pipeline to RUN_ON_MACHINES
+          # ---------------------------------------------------------------
+          
+          # Build machine list from inputs that are set to 'true'
+          MACHINES=""
+          INPUTS=$(jq -r 'to_entries[] | select(.key != "pr_number" and .key != "pipeline_type") | "\(.key)=\(.value)"' <<< '${{ toJson(github.event.inputs) }}')
+
+          while read -r input; do
+            # Skip empty lines
+            if [[ -z "$input" ]]; then
+              continue
+            fi
+
+            # Extract machine name and boolean value
+            MACHINE=$(echo "${input}" | cut -d= -f1)
+            VALUE=$(echo "${input}" | cut -d= -f2)
+            
+            # Add machine to list if checkbox is true
+            if [[ "${VALUE}" == "true" ]]; then
+              if [[ -n "${MACHINES}" ]]; then
+                MACHINES="${MACHINES} ${MACHINE}"
+              else
+                MACHINES="${MACHINE}"
+              fi
+            fi
+          done <<< "${INPUTS}"
+          
+          # If no machines selected, default to "all"
+          if [[ -z "${MACHINES}" ]]; then
+            MACHINES="all"
+            echo "No specific machines selected, defaulting to 'all'"
+          fi
+          
+          echo "Selected machines: ${MACHINES}"
+          echo "MACHINES=${MACHINES}" >> "${GITHUB_ENV}"
+          
+      - name: Trigger GitLab Pipeline
+        env:
+          GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        run: |
+          # Important note: This token should be a proper GitLab Pipeline Trigger token
+          # created via Settings > CI/CD > Pipeline triggers in your GitLab project
+
+          # Pass GitHub commit SHA to GitLab for native GitHub integration
+          curl --verbose --request POST \
+            --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
+            --form "ref=develop" \
+            --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
+            --form "variables[GITHUB_COMMIT_SHA]=${{ env.PR_HEAD_SHA }}" \
+            --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
+            --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
+            --form "variables[PIPELINE_TYPE]=${{ env.PIPELINE_TYPE }}" \
+            ${{ vars.GITLAB_TRIGGER_URL }}
+
+          # Add labels for each machine in the list
+          if [[ "${{ env.PR_NUM }}" != "0" ]]; then
+            # Use GitHub CLI to add labels to the PR
+            for MACHINE in ${{ env.MACHINES }}; do
+              echo "Adding CI Ready label for machine: ${MACHINE}"
+              gh pr edit ${{ env.PR_NUM }} --repo ${{ vars.GW_REPO_URL }} --add-label "CI-${MACHINE^}-Ready"
+            done
+          fi

@@ -2,11 +2,13 @@
 
 # Disable variable not used warnings
 # shellcheck disable=SC2034
+# shellcheck disable=SC2178
 FV3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Entering for RUN = ${RUN}"
 
   echo "warm_start = ${warm_start}"
   echo "RERUN = ${RERUN}"
+
 
   #============================================================================
   # First copy initial conditions
@@ -74,9 +76,10 @@ FV3_postdet() {
           break
         fi
       done
+
       # If aerosol analysis is to be done, replace fv_tracer with aeroanl_fv_tracer
       # restart files from current cycle (if found)
-      if [[ ${DO_AERO_FCST} == "YES" ]]; then
+      if [[ "${DO_AERO_FCST}" == "YES" ]]; then
         local nn
         local use_anl_aero="YES"
         for (( nn = 1; nn <= ntiles; nn++ )); do
@@ -87,7 +90,7 @@ FV3_postdet() {
             break
           fi
         done
-        if [[ ${use_anl_aero} == "YES" ]]; then
+        if [[ "${use_anl_aero}" == "YES" ]]; then
           for (( nn = 1; nn <= ntiles; nn++ )); do
             rm -f "${DATA}/INPUT/fv_tracer.res.tile${nn}.nc"
             cpreq "${COMIN_TRACER_RESTART}/${restart_date:0:8}.${restart_date:8:2}0000.aeroanl_fv_tracer.res.tile${nn}.nc" \
@@ -96,10 +99,23 @@ FV3_postdet() {
         fi # if [[ ${use_anl_aero} == "YES" ]]; then
 
       fi # [[ ${DO_AERO_FCST} == "YES" ]]; then
-      
+
     fi  # if [[ "${RERUN}" == "YES" ]]; then
 
   fi  # if [[ "${warm_start}" == ".true." ]]; then
+
+  # Regardless of warm_start or not, the sfc_data and orography files should be consistent
+  # Check for consistency
+  # TODO: the checker has a --fatal option, which is not used here.  This needs to be decided how to handle.
+  if [[ "${CHECK_LAND_RESTART_OROG:-NO}" == "YES" ]]; then
+    "${USHgfs}/check_land_input_orography.py" \
+      --input_dir "${DATA}/INPUT" --orog_dir "${DATA}/INPUT"
+    err=$?
+    if [[ ${err} -ne 0 ]]; then
+      echo "FATAL ERROR: check_land_input_orography.py returned error code ${err}, ABORT!"
+      exit "${err}"
+    fi
+  fi
 
   #============================================================================
   # Determine increment files when doing cold start
@@ -226,7 +242,7 @@ EOF
         cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
       done
 
-      # Land IAU increments: sfc_inc in FV3 grid, all timesteps in one file per tile 
+      # Land IAU increments: sfc_inc in FV3 grid, all timesteps in one file per tile
       if [[ ${DO_LAND_IAU} = ".true." ]]; then
         local TN sfc_increment_file
         for TN in $(seq 1 "${ntiles}"); do
@@ -290,28 +306,55 @@ EOF
         local hhmmss_substring=${FV3_OUTPUT_FH_hhmmss/" ${FH3}-"*/} # Extract substring that contains all lead times up to the one space before target lead HHH-MM-SS
         local hhmmss_substring_len=$(( ${#hhmmss_substring} + 1 )) # Get the size of the substring and add 1 to account for space
         local f_hhmmss=${FV3_OUTPUT_FH_hhmmss:${hhmmss_substring_len}:9} # extract HHH-MM-SS for target lead time
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${f_hhmmss}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${f_hhmmss}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${f_hhmmss}"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${f_hhmmss}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${f_hhmmss}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${f_hhmmss}"
       else
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc" "atmf${FH3}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc" "sfcf${FH3}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "log.atm.f${FH3}"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
         if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "cubed_sphere_grid_atmf${FH3}.nc"
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "cubed_sphere_grid_sfcf${FH3}.nc"
+          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
+          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
+          fi
         fi
-      fi
       if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}" "GFSPRS.GrbF${FH2}"
-        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}"
-        if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-          ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.nest.grb2f${FH3}" "GFSPRS.GrbF${FH2}.nest02"
-          ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.nest.sfluxgrbf${FH3}.grib2" "GFSFLX.GrbF${FH2}.nest02"
+        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}"    "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+        if [[ "${DO_NEST:-NO}" == "YES" ]]; then
+          ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
+          ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2"  "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
         fi
       fi
     done
   fi
+  #============================================================================
+  restart_interval=${restart_interval:-${FHMAX}}
+  # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
+  # Convert restart interval into an explicit list for CMEPS/CICE/MOM6/WW3
+  # Note, this must be computed after determination IAU in forecast_det and fhrot.
+  if (( restart_interval == 0 )); then
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      FV3_RESTART_FH=$(( FHMAX + assim_freq ))
+    else
+      FV3_RESTART_FH=("${FHMAX}")
+    fi
+  else
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+      if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
+         local restart_interval_start=${restart_interval}
+         local restart_interval_end=${FHMAX}
+      else
+         local restart_interval_start=$(( restart_interval + assim_freq ))
+         local restart_interval_end=$(( FHMAX + assim_freq ))
+      fi
+    else
+      local restart_interval_start=${restart_interval}
+      local restart_interval_end=${FHMAX}
+    fi
+    FV3_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${restart_interval}" "${restart_interval_end}")"
+  fi
+  export FV3_RESTART_FH
   #============================================================================
 }
 
@@ -391,9 +434,8 @@ FV3_out() {
 # shellcheck disable=SC2034
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
-  local ww3_grid first_ww3_restart_out ww3_restart_file
   # Copy initial condition files:
-  local restart_date restart_dir seconds
+  local restart_date restart_dir
   if [[ "${RERUN}" == "YES" ]]; then
     restart_date="${RERUN_DATE}"
     restart_dir="${DATArestart}/WW3_RESTART"
@@ -404,71 +446,76 @@ WW3_postdet() {
 
   echo "Copying WW3 restarts for 'RUN=${RUN}' at '${restart_date}' from '${restart_dir}'"
 
-  #First check to see if netcdf restart exists:
-  local ww3_binary_restart_file ww3_netcdf_restart_file
-  ww3_binary_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
-  ww3_netcdf_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
-  if [[ -s "${ww3_netcdf_restart_file}" ]]; then
+  local ww3_restart_file ww3_restart_dest_file seconds
+  seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
+  ww3_restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3"
+  ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}"
+  if [[ -s "${ww3_restart_file}.nc" ]]; then  # First check to see if netcdf restart exists:
     export WW3_restart_from_binary=false
-    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
-    local ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
-    cpreq "${ww3_netcdf_restart_file}" "${DATA}/${ww3_restart_dest_file}"
-  elif [[ -s "${ww3_binary_restart_file}" ]]; then
-    # found binary ww3 restart file
+    cpreq "${ww3_restart_file}.nc" "${DATA}/${ww3_restart_dest_file}.nc"
+  elif [[ -s "${ww3_restart_file}" ]]; then  # If not, check to see if binary restart exists:
     export WW3_restart_from_binary=true
-    seconds=$(to_seconds "${restart_date:8:2}0000")  # convert HHMMSS to seconds
-    local ww3_restart_dest_file="ufs.cpld.ww3.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}"
-    cpreq "${ww3_binary_restart_file}" "${DATA}/${ww3_restart_dest_file}"
+    cpreq "${ww3_restart_file}" "${DATA}/${ww3_restart_dest_file}"
   else
-    if [[ "${RERUN}" == "YES" ]] || [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
+    if [[ "${RERUN}" == "YES" ]] || [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then  # The || part requires CMEPS_postdet to be called before WW3_postdet
       # In the case of a RERUN, the WW3 restart file is required
       # In the case of runtype=continue, if no wave restart when using PIO, the model will fail
-      echo "FATAL ERROR: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for RERUN='${RERUN}' or runtype=continue, ABORT!"
+      echo "FATAL ERROR: WW3 binary | netcdf restart file '${ww3_restart_file}' | '${ww3_restart_file}.nc' not found for RERUN='${RERUN}' or runtype=continue, ABORT!"
       exit 1
     else
       export WW3_restart_from_binary=false
-      echo "WARNING: WW3 binary | netcdf restart file '${ww3_binary_restart_file}' | '${ww3_netcdf_restart_file}' not found for warm_start='${warm_start}', will start from rest!"
+      echo "WARNING: WW3 binary | netcdf restart file '${ww3_restart_file}' | '${ww3_restart_file}.nc' not found for warm_start='${warm_start}', will start from rest!"
     fi
   fi
 
+  local first_ww3_restart_out
   first_ww3_restart_out=$(date --utc -d "${restart_date:0:8} ${restart_date:8:2} + ${restart_interval} hours" +%Y%m%d%H)
   if [[ "${DOIAU:-NO}" == "YES" ]]; then
     first_ww3_restart_out=$(date --utc -d "${first_ww3_restart_out:0:8} ${first_ww3_restart_out:8:2} + ${half_window} hours" +%Y%m%d%H)
   fi
 
-  # Link restart files
+  # Link restart files to their expected names in DATArestart/WW3_RESTART
+  # TODO: Have the UFSWM write out the WW3 restart files in the expected format of 'YYYYMMDD.HHmmSS.restart.ww3.nc'
+  local cwd vdate ww3_ufs_restart_file ww3_netcdf_restart_file
+  cwd="${PWD}"
+  cd "${DATArestart}/WW3_RESTART" || exit 1
   for (( vdate = first_ww3_restart_out; vdate <= forecast_end_cycle;
          vdate = $(date --utc -d "${vdate:0:8} ${vdate:8:2} + ${restart_interval} hours" +%Y%m%d%H) )); do
     seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
-    ww3_restart_ufs_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"
-    ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"
-    ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${ww3_restart_ufs_file}"
+    ww3_ufs_restart_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"  # UFS restart file name
+    ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"  # WW3 restart file name in COM
+    ${NLN} "${ww3_netcdf_restart_file}" "${ww3_ufs_restart_file}"
   done
 
-  # TO DO: link GEFS restart for next cycle IC
+  # TODO: link GEFS restart for next cycle IC
   #if [[ "${RUN}" == "gefs" ]]; then
   #  vdate=${model_start_date_next_cycle}
   #  seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
-  #  ww3_restart_ufs_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"
+  #  ww3_ufs_restart_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"
   #  ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"
-  #  ${NLN} "${DATArestart}/WW3_RESTART/${ww3_netcdf_restart_file}" "${ww3_restart_ufs_file}"
+  #  ${NLN} "${ww3_netcdf_restart_file}" "${ww3_ufs_restart_file}"
   #fi
+  cd "${cwd}" || exit 1
 
   # Link output files
-  local wavprfx="${RUN}.wave.t${cyc}z"
-  ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
+  ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
 
   # Loop for gridded output (uses FHINC)
-  local fhr fhr3 vdate FHINC ww3_grid
+  local fhr fhr3 FHINC
   fhr=${FHMIN_WAV}
-  fhinc=${FHOUT_WAV}
-  while (( fhr <= FHMAX_WAV )); do
+  if [[ ${FHMAX_HF_WAV} -gt 0 && ${FHOUT_HF_WAV} -gt 0 && ${fhr} -lt ${FHMAX_HF_WAV} ]]; then
+    fhinc=${FHOUT_HF_WAV}
+  else
+    fhinc=${FHOUT_WAV}
+  fi
+  while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
     fhr3=$(printf '%03d' "${fhr}")
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.${waveGRD}.f${fhr3}.bin" "${DATA}/${vdate}.out_grd.ww3"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
 
-    if (( FHMAX_HF_WAV > 0 && FHOUT_HF_WAV > 0 && fhr < FHMAX_HF_WAV )); then
-      fhinc=${FHOUT_HF_WAV}
+    if [[ ${fhr} -ge ${FHMAX_HF_WAV} ]]; then
+      fhinc=${FHOUT_WAV}
     fi
     fhr=$((fhr + fhinc))
   done
@@ -476,10 +523,11 @@ WW3_postdet() {
   # Loop for point output (uses DTPNT)
   fhr=${FHMIN_WAV}
   fhinc=${FHINCP_WAV}
-  while (( fhr <= FHMAX_WAV )); do
+  while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
     fhr3=$(printf '%03d' "${fhr}")
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.points.f${fhr3}.nc" "${DATA}/${vdate}.out_pnt.ww3.nc"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc"  "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
 
     fhr=$((fhr + fhinc))
   done
@@ -509,7 +557,7 @@ WW3_out() {
   fi
 
   # Copy restarts for next cycle for RUN=gdas|gefs
-  #TO DO: GEFS needs to be added here
+  # TODO: GEFS needs to be added here
   if [[ "${RUN}" == "gdas" ]]; then
     local restart_date restart_file
     restart_date="${model_start_date_next_cycle}"
@@ -607,7 +655,7 @@ MOM6_postdet() {
           source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
         fi
         dest_file="${RUN}.ocean.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-        ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATA}/MOM6_OUTPUT/${source_file}"
+        ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
 
         last_fhr=${fhr}
 
@@ -620,7 +668,7 @@ MOM6_postdet() {
       for fhr in ${MOM6_OUTPUT_FH}; do
         fhr3=$(printf %03i "${fhr}")
         vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-        ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.inst.f${fhr3}.nc" "${DATA}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
+        ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
       done
       ;;
     *)
@@ -644,6 +692,10 @@ MOM6_out() {
 
   # Copy MOM_input from DATA to COMOUT_CONF after the forecast is run (and successfull)
   cpfs "${DATA}/INPUT/MOM_input" "${COMOUT_CONF}/ufs.MOM_input"
+  # Copy runtime configuration of MOM: MOM_parameter_doc.all that was used in the forecast
+  if [[ -f "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" ]]; then
+    cpfs "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" "${COMOUT_CONF}/MOM_parameter_doc.all"
+  fi
 
   # Create a list of MOM6 restart files
   # Coarser than 1/2 degree has a single MOM restart
@@ -720,9 +772,9 @@ CICE_postdet() {
   local vdate seconds vdatestr fhr fhr3 interval last_fhr
   seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000")  # convert HHMMSS to seconds
   vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
-  ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.ic.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+  ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
 
-  # Link CICE forecast output files from DATA/CICE_OUTPUT to COM
+  # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM
   local source_file dest_file
   for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
@@ -756,7 +808,7 @@ CICE_postdet() {
         exit 10
     esac
 
-    ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATA}/CICE_OUTPUT/${source_file}"
+    ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
 
     last_fhr=${fhr}
   done
@@ -954,7 +1006,7 @@ CMEPS_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CMEPS mediator"
 
   case ${RUN} in
-    gdas|enkfgdas|enkfgfs) # Copy restarts for the next cycle to COM for RUN=gdas|enkfgdas|enkfgfs
+    gdas|enkfgdas|enkfgfs) # Copy restarts for the next cycle to COM
       local restart_date
       restart_date="${model_start_date_next_cycle}"
       echo "Copying mediator restarts for 'RUN=${RUN}' at ${restart_date}"
@@ -968,7 +1020,7 @@ CMEPS_out() {
         echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
       fi
       ;;
-    gfs|gefs|sfs|gcafs) # Copy mediator restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
+    gfs|gefs|sfs|gcafs) # Copy mediator restarts at the end of the forecast segment
       if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
         echo "Copying mediator restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
         local seconds source_file target_file

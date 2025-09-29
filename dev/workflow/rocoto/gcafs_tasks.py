@@ -904,13 +904,7 @@ class GCAFSTasks(Tasks):
         fhout_ice_gfs = self._configs['base']['FHOUT_ICE_GFS']
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'},
-                         'ocean': {'config': 'oceanice_products',
-                                   'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr3_next#.nc'},
-                         'ice': {'config': 'oceanice_products',
-                                 'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr3_last#.nc'}}
+                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -1044,11 +1038,11 @@ class GCAFSTasks(Tasks):
                 dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch_vrfy', 'condition': 'not'}
                 deps2.append(rocoto.add_dependency(dep_dict))
                 for lookback2 in range(1, lookback):
-                    offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback2}H'))
+                    offset = timedelta_to_HMS(-to_timedelta(f'{6 * lookback2}H'))
                     dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
                     deps2.append(rocoto.add_dependency(dep_dict))
 
-                offset = timedelta_to_HMS(-to_timedelta(f'{6*lookback}H'))
+                offset = timedelta_to_HMS(-to_timedelta(f'{6 * lookback}H'))
                 dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy', 'offset': offset}
                 deps2.append(rocoto.add_dependency(dep_dict))
                 deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))

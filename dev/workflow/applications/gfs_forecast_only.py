@@ -220,9 +220,10 @@ class GFSForecastOnlyAppConfig(AppConfig):
             tasks += ['ice_prod']
 
         if options['do_wave']:
+            tasks += ['wavepostsbs']
             if options['do_wave_bnd']:
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
-            tasks += ['wavepostsbs', 'wavepostpnt']
+            tasks += ['wavepostpnt']
             if options['do_gempak']:
                 tasks += ['wavegempak']
             if options['do_awips']:

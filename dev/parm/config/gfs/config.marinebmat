@@ -6,6 +6,9 @@
 echo "BEGIN: config.marinebmat"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" marinebmat
+source "${EXPDIR}/config.resources" marinebmat
+
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/marine/marine_bmat_jedi_config.yaml.j2"
+export SAVE_YAML="${PARMgfs}/gdas/marine/marine_bmat_save.yaml.j2"
 
 echo "END: config.marinebmat"

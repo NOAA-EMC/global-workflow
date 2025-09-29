@@ -5,7 +5,7 @@
 # shellcheck disable=SC2034
 FV3_model_configure(){
 
-local restile=${CASE:1}
+local restile=${CASE_HIST:1}
 
 # Prepare local variables for use in model_configure.IN from UFSWM
 # The ones already defined are left commented as a reminder
@@ -57,7 +57,7 @@ local OUTPUT_FH=${FV3_OUTPUT_FH_NML}
 local IAU_OFFSET=${IAU_OFFSET:-0}
 
 #set FV3 output directory:
-local FV3ATM_OUTPUT_DIR="./"
+local FV3ATM_OUTPUT_DIR="./FV3ATM_OUTPUT"
 
 # Ensure the template exists
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then

@@ -48,9 +48,12 @@ fix/wave
 # Ignore parm file symlinks
 #--------------------------
 parm/gdas/aero
+parm/gdas/analcalc
+parm/gdas/anlstat
 parm/gdas/atm
 parm/gdas/io
 parm/gdas/ioda
+parm/gdas/marine
 parm/gdas/snow
 parm/gdas/soca
 parm/gdas/stat
@@ -98,6 +101,7 @@ parm/regrid_sfc
 #--------------------------------------------
 sorc/build.xml
 sorc/build.db
+sorc/build.db-journal
 sorc/build_lock.db
 sorc/rocotostat.out
 sorc/*log
@@ -143,7 +147,6 @@ sorc/ocnicepost.fd
 #------------------------------
 # jobs symlinks
 # scripts symlinks
-scripts/exgdas_global_marine_analysis_ecen.py
 scripts/exglobal_prep_ocean_obs.py
 # ush symlinks
 ush/bufr2ioda_insitu_profile_argo.py
@@ -160,21 +163,22 @@ ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_filter_topo.sh
 ush/fv3gfs_make_grid.sh
 ush/fv3gfs_make_orog.sh
-ush/gen_bufr2ioda_json.py
-ush/gen_bufr2ioda_yaml.py
 ush/bufr2ioda_insitu_profile*.py
 ush/bufr2ioda_insitu_surface*.py
 ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle_driver.sh
 ush/jediinc2fv3.py
-ush/ufsda
-ush/soca
 ush/imsfv3_scf2ioda.py
 ush/atparse.bash
 ush/run_bufr2ioda.py
 ush/bufr2ioda_insitu*
 ush/container
+ush/python/ufsda
+ush/python/soca
+ush/python/gen_bufr2ioda_json.py
+ush/python/gen_bufr2ioda_yaml.py
+dev/ush/load_fv3gfs_modules.sh
 # ush log file
 ush/fetch-fix-data.log
 

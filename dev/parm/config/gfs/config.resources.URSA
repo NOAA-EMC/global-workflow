@@ -3,39 +3,53 @@
 # Ursa-specific job resources
 
 case ${step} in
-  "prep")
-    # Run on 7 nodes for memory requirement
-    tasks_per_node=2
-    ;;
-
-  "stage_ic")
-    tasks_per_node=1
-    export PARTITION_BATCH="u1-service"
-    ;;
-
+  "fcst" | "efcs")
+    case "${CASE}" in
+      "C768")
+        export tasks_per_node=144
+        ;;
+      "C1152")
+        export tasks_per_node=144
+        ;;
+      *)
+        # Nothing to do for other resolutions
+        true
+        ;;
+    esac
+  ;;
   "anal")
-    if [[ "${CASE}" == "C384" ]]; then
-      export ntasks=270
-      export threads_per_task=8
-      export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    case ${CASE} in
+      "C768")
+        export threads_per_task=8
+        ;;
+      "C1152")
+        export threads_per_task=16
+        ;;
+      *)
+        ;;
+    esac
+    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
+        # Make ntasks a multiple of 16
+        if [[ "${RUN}" == "gdas" ]]; then
+            export ntasks=784
+        elif [[ "${RUN}" == "gfs" ]]; then
+            export ntasks=832
+        fi
+        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
-    ;;
-
-  "atmanlvar" | "atmensanlobs" | "atmensanlsol")
-    export tasks_per_node=12
     ;;
 
   "eupd")
     case "${CASE}" in
-      "C1152" | "C768")
+      "C768")
         export ntasks=80
         export threads_per_task=20
+        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
         ;;
-      "C384")
-        export ntasks=80
-        ;;
-      "C192" | "C96" | "C48")
-        export threads_per_task=4
+      "C1152")
+        export ntasks=480
+        export threads_per_task=6
+        export tasks_per_node=8
         ;;
       *)
         ;;
@@ -43,22 +57,39 @@ case ${step} in
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "ecen")
-    if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then export threads_per_task=6; fi
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+  "atmanlvar" | "atmensanlsol")
+    export tasks_per_node=48
     ;;
 
-  "upp")
-    if (( "${CASE:1}" >= 768 )); then
-       # Run fewer tasks per node for memory
-       tasks_per_node=20
-    fi
+  "atmensanlobs")
+    export tasks_per_node=24
+    export memory="240GB"
     ;;
 
-  "epos")
-    tasks_per_node=20
+  "aeroanlvar")
+    export tasks_per_node=48
     ;;
 
+  "marinebmat")
+    case ${OCNRES} in
+      "025")
+        tasks_per_node=$(( max_tasks_per_node / 4 ))
+        ;;
+      *)
+        ;;
+    esac
+    ;;
+
+  "ocnanalecen")
+    case ${OCNRES} in
+      "025")
+        ntasks=288
+        tasks_per_node=12
+        ;;
+      *)
+        ;;
+    esac
+    ;;
   *)
     ;;
 esac

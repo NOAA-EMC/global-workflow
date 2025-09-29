@@ -184,7 +184,6 @@ export DO_AERO_FCST="YES"
 export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO"
 export DO_CHEM_WARMSTART="YES"
-export DOIBP_WAV="NO" # Option to create point outputs from input boundary points
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
@@ -205,6 +204,7 @@ export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it
 export LEVS=128
 export CASE="{{ CASE_CTL }}"
 export CASE_ENS="{{ CASE_ENS }}"
+export CASE_HIST="{{ CASE_HIST | default('${CASE}') }}"
 export OCNRES="{{ OCNRES }}"
 export ICERES="${OCNRES}"
 
@@ -449,12 +449,6 @@ if [[ "${DONST}" = "YES" ]]; then export FNTSFA="        "; fi
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
-
-# Make the nsstbufr file on the fly or use the GDA version
-export MAKE_NSSTBUFR="{{ MAKE_NSSTBUFR }}"
-
-# Make the aircraft prepbufr file on the fly or use the GDA version
-export MAKE_ACFTBUFR="{{ MAKE_ACFTBUFR }}"
 
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','rwmr_inc','snmr_inc','grle_inc'"
