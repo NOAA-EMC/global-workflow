@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.wave_stat ##########
+# Wave steps specific
+
+echo "BEGIN: config.wave_stat"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" wave_stat
+
+# Maximum number of rocoto tasks per member
+export MAX_TASKS=25
+
+echo "END: config.wave_stat"

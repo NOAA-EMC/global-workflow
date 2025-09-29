@@ -1,0 +1,25 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "wave_stat_pnt" -c "base wave wave_stat_pnt"
+
+# Set COM Paths
+
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMOUT_WAVE_STATION_ENS:COM_WAVE_STATION_TMPL
+if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
+  mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"
+fi
+
+# Execute the Script
+#"${SCRgfs}/exgefs_wave_stat_pnt.sh"
+export err=$?
+err_chk
+##########################################
+## Remove the Temporary working directory
+###########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" != "YES" ]]; then
+  rm -rf "${DATA}"
+fi
+
+exit 0
