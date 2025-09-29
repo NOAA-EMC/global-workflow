@@ -267,7 +267,7 @@ else
 fi
 
 # Get dimension information based on CASE
-res=$(echo ${CASE} | cut -c2-)
+res=${CASE_HIST:1}
 JCAP_CASE=$((res*2-2))
 LATB_CASE=$((res*2))
 LONB_CASE=$((res*4))
@@ -375,7 +375,7 @@ ${NLN} ${RADCLOUDINFO} cloudy_radiance_info.txt
 ${NLN} ${ATMSFILTER}   atms_beamwidth.txt
 ${NLN} ${ANAVINFO}     anavinfo
 if [[ ${CONVINFO} == "generate" ]]; then
-   ${USHgfs}/create_gsi_info.sh conv "${PDY}${cyc}" "${DATA}" "${BUILD_2M_OBS}"
+   ${USHgfs}/create_gsi_info.sh conv "${PDY}${cyc}" "${DATA}" "${USE_2M_OBS}"
 else
    ${NLN} "${CONVINFO}"     convinfo
 fi
