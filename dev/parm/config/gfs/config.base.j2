@@ -200,6 +200,7 @@ export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it
 export LEVS=128
 export CASE="{{ CASE_CTL }}"
 export CASE_ENS="{{ CASE_ENS }}"
+export CASE_HIST="{{ CASE_HIST | default('${CASE}') }}"
 export OCNRES="{{ OCNRES }}"
 export ICERES="${OCNRES}"
 

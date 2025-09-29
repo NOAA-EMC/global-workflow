@@ -12,7 +12,7 @@ ic_versions['C96']=20250808
 ic_versions['C96C48']=20250808
 
 # GEFS
-ic_versions['C96mx100']=20240610
+ic_versions['C96mx100']=20250808
 
 ic_versions['C384C192']=20240610
 ic_versions['C384mx025']=20241120
