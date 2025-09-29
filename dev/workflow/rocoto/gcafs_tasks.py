@@ -715,10 +715,6 @@ class GCAFSTasks(Tasks):
         dep = rocoto.add_dependency(dep_dict)
         dependencies = rocoto.create_dependency(dep=dep)
 
-        if self.options['do_aero_fcst']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-
         if self.options['use_aero_anl']:
             dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
@@ -728,6 +724,11 @@ class GCAFSTasks(Tasks):
         if self.run in ['gcdas']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             dependencies.append(rocoto.add_dependency(dep_dict))
+
+            if self.options['do_aero_fcst']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
+                dependencies.append(rocoto.add_dependency(dep_dict))
+
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
         cycledef = 'gcdas_half,gcdas' if self.run in ['gcdas'] else self.run
