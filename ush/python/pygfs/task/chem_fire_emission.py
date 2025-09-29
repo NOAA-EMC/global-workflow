@@ -554,7 +554,7 @@ class ChemFireEmissions(Task):
         """
         logger.info(f"Converting {fname} to COARDS format")
         f = xr.open_dataset(fname, decode_cf=False)
-
+        f = f[['OC', 'BC', 'SO2', 'NOx', 'CO', 'NH3']]
         # Handle time dimension
         if 'Time' in f.dims:
             f = f.rename({"Time": 'time'})
@@ -578,6 +578,16 @@ class ChemFireEmissions(Task):
 
         f.lon.attrs.update({'long_name': 'Longitude', 'units': 'degrees_east'})
         f.lat.attrs.update({'long_name': 'Latitude', 'units': 'degrees_north'})
+
+        # remove unnessicary attributes
+        del f['lat'].attrs['valid_range']
+        del f['lat'].attrs['scale_factor']
+        del f['lat'].attrs['add_offset']
+        del f['lat'].attrs['_FillValue']
+        del f['time'].attrs['begin_date']
+        del f['time'].attrs['begin_time']
+        del f['time'].attrs['time_increment']
+        del f['time'].attrs['calendar']
 
         # Remove Element dimension if present
         if 'Element' in f.dims:
@@ -763,15 +773,14 @@ class ChemFireEmissions(Task):
                 for index, forecast_date in enumerate(self.forecast_dates):
                     logger.info(f"Setting time for forecast date: {forecast_date}")
                     # Set time dimension to index for days since (0, 1, 2, ..., nforecast_dates -1)
-                    ds = ds.assign(time=[float(index)])
+                    # ds = ds.assign(time=[float(index)])
                     ds.time.attrs['long_name'] = 'time'
-                    ds.time.attrs['units'] = f'days since {self.start_date.strftime("%Y-%m-%d 12:00:00")}'
-                    ds.time.attrs['time_increment'] = 240000  # 24 hours in HHMMSS format
+                    ds.time.attrs['units'] = f'minutes since {forecast_date.strftime("%Y-%m-%d 12:00:00")}'
 
                     # Save the processed dataset
                     outfile_name = f"FIRE_EMIS_{forecast_date.strftime('%Y%m%d')}.nc"
                     outfile = os.path.join(workdir, outfile_name)
-                    comp = dict(zlib=True, complevel=2)
+                    comp = dict(zlib=True, complevel=2, _FillValue=0.0)
                     encoding = {var: comp for var in ds.data_vars}
                     ds.to_netcdf(outfile, encoding=encoding, unlimited_dims=['time'])
                     logger.info(f"Processed emission file saved to {outfile}")
