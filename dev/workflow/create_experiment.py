@@ -134,9 +134,9 @@ if __name__ == '__main__':
         setup_workflow_args.append("--force")
 
     if user_inputs.rocotorun is not None:
-        setup_xml_args.append("--rocotorun")
-        setup_xml_args.append(user_inputs.rocotorun)
+        setup_workflow_args.append("--rocotorun")
+        setup_workflow_args.append(user_inputs.rocotorun)
 
     logger.info(f"Call: setup_workflow.main()")
     logger.debug(f"setup_workflow.py {' '.join(setup_workflow_args)}")
-    setup_xml.main(setup_xml_args)
+    setup_workflow.main(setup_workflow_args)
