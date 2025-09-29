@@ -1,6 +1,6 @@
 #====== BIOMASS BURNING EMISSIONS =======================================
 
-# QFED
+# GBBEPx
 #--------------------------------------------------------------------------------------------------------------------------------
 SU_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 SO2 ChemInput/FIRE_EMIS_%y4%m2%d2.nc
 OC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 OC ChemInput/FIRE_EMIS_%y4%m2%d2.nc
