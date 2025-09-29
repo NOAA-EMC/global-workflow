@@ -49,6 +49,14 @@ class SnowAnalysis(Analysis):
 
         _res = int(self.task_config['CASE'][1:])
 
+        # if 00z, do SCF preprocessing
+        _ims_file = os.path.join(self.task_config.FIXgfs, 'gdas', 'obs', 'ims',
+                                 f'IMS_4km_to_{self.task_config.CASE}.mx{self.task_config.OCNRES}.nc'),
+        if task_config.cyc == 0 and os.path.exists(_ims_file):
+            _DO_IMS_SCF = True
+        else:
+            _DO_IMS_SCF = False
+
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
             {
@@ -57,6 +65,8 @@ class SnowAnalysis(Analysis):
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
                 'snow_bkg_path': os.path.join('.', 'bkg/'),
+                _ims_file: _ims_file,
+                'DO_IMS_SCF': _DO_IMS_SCF, # Boolean to decide if IMS snow cover processing is done
             }
         ))
 
@@ -93,13 +103,11 @@ class SnowAnalysis(Analysis):
         logger.info(f"Staging files from COM")
         FileHandler(self.task_config.data_in).sync()
 
-        # if 00z, do initialize application for SCF preprocessing
-        if self.task_config.cyc == 0:
-            self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
-
         # initialize JEDI variational application
-        logger.info(f"Initializing JEDI variational DA application")
+        logger.info(f"Initializing JEDI applications")
         self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=False)
+        if self.task_config.DO_IMS_SCF:
+            self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:

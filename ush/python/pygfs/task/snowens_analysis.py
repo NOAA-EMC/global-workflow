@@ -52,7 +52,13 @@ class SnowEnsAnalysis(Analysis):
 
         _res = int(self.task_config['CASE_ENS'][1:])
 
-        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
+        # if 00z, do SCF preprocessing
+        _ims_file = os.path.join(self.task_config.FIXgfs, 'gdas', 'obs', 'ims',
+                                 f'IMS_4km_to_{self.task_config.CASE}.mx{self.task_config.OCNRES}.nc'),
+        if task_config.cyc == 0 and os.path.exists(_ims_file):
+            _DO_IMS_SCF = True
+        else:
+            _DO_IMS_SCF = False
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
@@ -63,6 +69,7 @@ class SnowEnsAnalysis(Analysis):
                 'npz': self.task_config.LEVS - 1,
                 'CASE': self.task_config.CASE_ENS,
                 'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
+                'DO_IMS_SCF': False, # Boolean to decide if IMS snow cover processing is done
             }
         ))
 
@@ -103,7 +110,7 @@ class SnowEnsAnalysis(Analysis):
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=False)
         self.jedi_dict['esnowanlensmean'].initialize(self.task_config)
-        if self.task_config.cyc == 0:
+        if self.task_config.DO_IMS_SCF:
             self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
 
     @logit(logger)
