@@ -780,7 +780,7 @@ class ChemFireEmissions(Task):
                     # Save the processed dataset
                     outfile_name = f"FIRE_EMIS_{forecast_date.strftime('%Y%m%d')}.nc"
                     outfile = os.path.join(workdir, outfile_name)
-                    comp = dict(zlib=True, complevel=2, _FillValue=0.0)
+                    comp = dict(zlib=True, complevel=2, _FillValue=None)
                     encoding = {var: comp for var in ds.data_vars}
                     ds.to_netcdf(outfile, encoding=encoding, unlimited_dims=['time'])
                     logger.info(f"Processed emission file saved to {outfile}")
