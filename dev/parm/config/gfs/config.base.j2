@@ -179,7 +179,7 @@ aero_fcst_runs="gdas" # When to run aerosol forecast: gdas, gfs, or both
 aero_anl_runs="gdas gfs" # When to run aerosol analysis: gdas, gfs, or both
 export DO_AERO_FCST="NO"
 export DO_AERO_ANL="NO"
-export DOBNDPNT_WAVE="YES" # Option to create point outputs for downstream boundary points 
+export DOBNDPNT_WAVE="YES" # Option to create point outputs for downstream boundary points
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
@@ -381,7 +381,7 @@ export l4densvar=".true."
 export lwrite4danl=".true."
 export DO_CALC_INCREMENT="NO"
 export USE_BUILD_GSINFO="NO"
-export BUILD_GSINFO_DIR="${FIXgfs}/gsi/fix/build_gsinfo"
+export BUILD_GSINFO_DIR="${PARMgfs}/gsinfo"
 
 # Early-cycle EnKF parameters
 export NMEM_ENS_GFS="{{ NMEM_ENS_GFS }}"

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 # Generic script to create convinfo, ozinfo, or satinfo for a given date.
 # Usage:
 #   ./create_gsi_info.sh <type> <date> <directory> [use2mobs]
@@ -7,17 +8,13 @@
 #   <directory>: directory to write the info file into
 #   [use2mobs]: (optional, only for conv) YES or NO
 
-set -eu
-# Inherit set -e inside of the get_usedate function below
-shopt -s inherit_errexit
-
 # Input arguments
 type_in=${1:-}
 date_in=${2:-}
-dir_in=${3:-}
+write_dir=${3:-}
 use2mobs=${4:-NO}
 
-if [[ -z "${type_in}" || -z "${date_in}" || -z "${dir_in}" ]]; then
+if [[ -z "${type_in}" || -z "${date_in}" || -z "${write_dir}" ]]; then
   echo "Usage: ${0} <type> <date> <directory> [use2mobs]"
   echo "  <type>: conv, oz, or sat"
   echo "  <date>: date string to match"
@@ -28,6 +25,7 @@ fi
 
 # Function to get the most recent data available for the target obs.
 # If an empty string is returned, this represents an error.
+# Assumes the variable date_in is set.
 get_usedate() {
   usedate=""
   # Loop over files matching date pattern.
@@ -48,16 +46,59 @@ get_usedate() {
 # Get the starting directory
 starting_dir="${PWD}"
 
+# Get the build directory
+build_dir="${BUILD_GSINFO_DIR}/${type_in}info"
+cd "${build_dir}" || exit 1
+
+# Get the list of satellites available
+if [[ "${type_in}" != "conv" ]]; then
+  if [[ ! -f satellites ]]; then
+    echo "FATAL ERROR: Satellite list file 'satellites' not found in ${build_dir}!"
+    exit 1
+  fi
+
+  satellite_list=$(grep -Ev '^ *#|readme' satellites)
+
+  if [[ -z "${satellite_list}" ]]; then
+    echo "FATAL ERROR: No satellites found in the satellite file list!"
+    exit 1
+  fi
+fi
+
 # Filename to write the info to
-info_file="${dir_in}/${type_in}info"
+info_file="${write_dir}/${type_in}info"
 if [[ -f "${info_file}" ]]; then
   rm -f "${info_file}"
 fi
 
+# Function to cycle through the list of satellites (oz or sat) and build the info file.
+build_info_file() {
+  while IFS= read -r sat
+  do
+    usedate=""
+    # Check that the satellite directory exists
+    if [[ ! -d "${sat}" ]]; then
+      echo "FATAL ERROR: Directory ${sat} does not exist!"
+      exit 1
+    fi
+
+    cd "${sat}" || exit 1
+
+    usedate=$(get_usedate)
+
+    cd "${build_dir}" || exit 1
+
+    if [[ ${usedate} != "" ]]; then
+      cat "${sat}/${usedate}" >> "${info_file}"
+    else
+      echo "FATAL ERROR: No valid satellite info was found for satellite target '${sat}'!"
+      exit 1
+    fi
+  done <<< "${satellite_list}"
+}
+
 case "${type_in}" in
   conv)
-    cd "${BUILD_GSINFO_DIR}/convinfo" || exit 1
-
     usedate=$(get_usedate)
     if [[ ${usedate} != "" ]]; then
       if [[ ${use2mobs} == "YES" ]]; then
@@ -75,54 +116,19 @@ case "${type_in}" in
     fi
     ;;
   oz)
-    cd "${BUILD_GSINFO_DIR}/ozinfo" || exit 1
-    usedate=$(get_usedate)
-    if [[ ${usedate} != "" ]]; then
-      # Header lines
-      {
-        echo '! For mls data, pressure and obs errors are pulled from bufr, so not listed here'
-        echo '! sens/instr/sat lev  use pressure gross   obs    b_oz  pg_oz'
-        echo '!                                  error  error variational qc'
-      } >> "${info_file}"
-      cat "${usedate}" >> "${info_file}"
-    else
-      echo "FATAL ERROR: No valid ozone info was found!"
-      exit 1
-    fi
+    # Header lines
+    {
+      echo '! For mls data, pressure and obs errors are pulled from bufr, so not listed here'
+      echo '! sens/instr/sat lev  use pressure gross   obs    b_oz  pg_oz'
+      echo '!                                  error  error variational qc'
+    } >> "${info_file}"
+    build_info_file
     ;;
-  sat)
-    cd "${BUILD_GSINFO_DIR}/satinfo" || exit 1
-    # Read in the satellite list, ignoring comment lines and the readme
-    satellite_list=$(grep -Ev '^ *#|readme' satellites)
-    if [[ -z "${satellite_list}" ]]; then
-      echo "FATAL ERROR: No satellites found in the satellite file list!"
-      exit 1
-    fi
 
+  sat)
     # Header line
     echo '!sensor/instr/sat      chan iuse  error  error_cld  ermax   var_b    var_pg  icld_det icloud iaerosol' >> "${info_file}"
-    while IFS= read -r sat
-    do
-      usedate=""
-      # Check that the satellite directory exists
-      if [[ ! -d "${sat}" ]]; then
-        echo "FATAL ERROR: Directory ${sat} does not exist!"
-        exit 1
-      fi
-
-      cd "${sat}" || exit 1
-
-      usedate=$(get_usedate)
-
-      cd "${BUILD_GSINFO_DIR}/satinfo" || exit 1
-
-      if [[ ${usedate} != "" ]]; then
-        cat "${sat}/${usedate}" >> "${info_file}"
-      else
-        echo "FATAL ERROR: No valid satellite info was found for satellite target '${sat}'!"
-        exit 1
-      fi
-    done <<< "${satellite_list}"
+    build_info_file
     ;;
   *)
     echo "FATAL ERROR: Unknown info file type: '${type_in}'. Must be one of: conv, oz, sat"

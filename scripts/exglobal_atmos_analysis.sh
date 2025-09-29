@@ -93,10 +93,10 @@ OSCATBF=${OSCATBF:-${COMIN_OBS}/${OPREFIX}oscatw.tm00.bufr_d${OSUFFIX}}
 RAPIDSCATBF=${RAPIDSCATBF:-${COMIN_OBS}/${OPREFIX}rapidscatw.tm00.bufr_d${OSUFFIX}}
 GSNDBF=${GSNDBF:-${COMIN_OBS}/${OPREFIX}goesnd.tm00.bufr_d${OSUFFIX}}
 GSNDBF1=${GSNDBF1:-${COMIN_OBS}/${OPREFIX}goesfv.tm00.bufr_d${OSUFFIX}}
-B1HRS2=${B1HRS2:-${COMIN_OBS}/${OPREFIX}1bhrs2.tm00.bufr_d${OSUFFIX}} 
+B1HRS2=${B1HRS2:-${COMIN_OBS}/${OPREFIX}1bhrs2.tm00.bufr_d${OSUFFIX}}
 B1MSU=${B1MSU:-${COMIN_OBS}/${OPREFIX}1bmsu.tm00.bufr_d${OSUFFIX}}
-B1HRS3=${B1HRS3:-${COMIN_OBS}/${OPREFIX}1bhrs3.tm00.bufr_d${OSUFFIX}} 
-B1HRS4=${B1HRS4:-${COMIN_OBS}/${OPREFIX}1bhrs4.tm00.bufr_d${OSUFFIX}} 
+B1HRS3=${B1HRS3:-${COMIN_OBS}/${OPREFIX}1bhrs3.tm00.bufr_d${OSUFFIX}}
+B1HRS4=${B1HRS4:-${COMIN_OBS}/${OPREFIX}1bhrs4.tm00.bufr_d${OSUFFIX}}
 B1AMUA=${B1AMUA:-${COMIN_OBS}/${OPREFIX}1bamua.tm00.bufr_d${OSUFFIX}}
 B1AMUB=${B1AMUB:-${COMIN_OBS}/${OPREFIX}1bamub.tm00.bufr_d${OSUFFIX}}
 AQUAAMUA=${AQUAAMUA:-${COMIN_OBS}/${OPREFIX}aquaamua.tm00.bufr_d${OSUFFIX}}
@@ -367,7 +367,7 @@ fi
 ${NLN} ${BERROR}       berror_stats
 ${NLN} ${SATANGL}      satbias_angle
 if [[ ${SATINFO} == "generate" ]]; then
-   ${USHgfs}/create_gsi_info.sh sat "${PDY}${cyc}"
+   ${USHgfs}/create_gsi_info.sh sat "${PDY}${cyc}" "${DATA}"
 else
    ${NLN} ${SATINFO}      satinfo
 fi
@@ -375,14 +375,14 @@ ${NLN} ${RADCLOUDINFO} cloudy_radiance_info.txt
 ${NLN} ${ATMSFILTER}   atms_beamwidth.txt
 ${NLN} ${ANAVINFO}     anavinfo
 if [[ ${CONVINFO} == "generate" ]]; then
-   ${USHgfs}/create_gsi_info.sh conv "${PDY}${cyc}" "${USE_2M_OBS}"
+   ${USHgfs}/create_gsi_info.sh conv "${PDY}${cyc}" "${DATA}" "${USE_2M_OBS}"
 else
    ${NLN} "${CONVINFO}"     convinfo
 fi
 ${NLN} "${vqcdat}"       vqctp001.dat
 ${NLN} "${INSITUINFO}"   insituinfo
 if [[ ${OZINFO} == "generate" ]]; then
-   ${USHgfs}/create_gsi_info.sh oz "${PDY}${cyc}"
+   ${USHgfs}/create_gsi_info.sh oz "${PDY}${cyc}" "${DATA}"
 else
    ${NLN} "${OZINFO}"       ozinfo
 fi
