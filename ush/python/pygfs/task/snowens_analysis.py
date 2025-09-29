@@ -84,6 +84,9 @@ class SnowEnsAnalysis(Task):
         expected_keys = ['scf_to_ioda', 'snowanlvar', 'esnowanlensmean']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
 
+        # Boolean to decide if IMS snow cover processing is done
+        self.task_config.DO_IMS_SCF = False
+
     @logit(logger)
     def initialize(self) -> None:
         """Initialize a global snow ensemble analysis
@@ -165,6 +168,10 @@ class SnowEnsAnalysis(Task):
             ims_scf_to_ioda_staging_dict = parse_j2yaml(self.task_config.STAGE_IMS_SCF2IODA_YAML, self.task_config)
             FileHandler(ims_scf_to_ioda_staging_dict).sync()
             self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
+            # Check if file exists
+            ims_file = ims_scf_to_ioda_staging_dict['copy_opt'][0][1]
+            if os.path.exists(ims_file):
+                self.task_config.DO_IMS_SCF = True
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
