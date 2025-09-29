@@ -375,7 +375,7 @@ ${NLN} ${RADCLOUDINFO} cloudy_radiance_info.txt
 ${NLN} ${ATMSFILTER}   atms_beamwidth.txt
 ${NLN} ${ANAVINFO}     anavinfo
 if [[ ${CONVINFO} == "generate" ]]; then
-   ${USHgfs}/create_gsi_info.sh conv "${PDY}${cyc}" "${BUILD_2M_OBS}"
+   ${USHgfs}/create_gsi_info.sh conv "${PDY}${cyc}" "${USE_2M_OBS}"
 else
    ${NLN} "${CONVINFO}"     convinfo
 fi
