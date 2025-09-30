@@ -43,5 +43,6 @@ sed -e "s?HOMEgfs?${HOMEgfs}?g" \
     -e "s?SIF?${container}?g" \
     -e "s?BINDINGS?${bindings}?g" \
    "${HOMEgfs}/dev/container/utils/exec.exglobal_atmos_products.sh" > "${HOMEgfs}/exec/exglobal_atmos_products.sh"
-   chmod +x "${HOMEgfs}/exec/exglobal_atmos_products.sh"
+
+chmod +x "${HOMEgfs}/exec/exglobal_atmos_products.sh"
 

@@ -1,0 +1,35 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "wave_stat" -c "base wave wave_stat"
+source  "${USHgfs}/wave_domain_grid.sh"
+
+# Set COM Paths
+
+for grid in ${wavepostGRD}; do
+  process_grdID "${grid}"
+  prod_dir_grid="COMOUT_WAVE_GRID_${grid}"
+  MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    "${prod_dir_grid}:COM_WAVE_GRID_TMPL"
+  if [[ ! -d "${!prod_dir_grid}" ]]; then
+    mkdir -m 775 -p "${!prod_dir_grid}"
+  fi
+done
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMOUT_WAVE_STATION_ENS:COM_WAVE_STATION_TMPL
+if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
+  mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"
+fi
+
+# Execute the Script
+#"${SCRgfs}/exgefs_wave_stat.sh"
+export err=$?
+err_chk
+##########################################
+## Remove the Temporary working directory
+###########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" != "YES" ]]; then
+  rm -rf "${DATA}"
+fi
+ 
+exit 0

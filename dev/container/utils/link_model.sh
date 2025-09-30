@@ -73,13 +73,6 @@ cat > "${link_model_script}" << EOF_URSA
 # for Ursa
 export I_MPI_PMI_LIBRARY=/apps/slurm/default/lib/libpmi2.so
 
-# 2. Set the OFI provider to Mellanox InfiniBand
-export FI_PROVIDER=mlx
-
-# 3. Disable problematic shared memory transports in UCX
-export UCX_TLS=^sm,cma
-# --- End of Configuration ---
-
 HOST_SLURM_PATH=/apps/slurm/default
 HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2/opt/compiler
 

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# Hera-specific job resources
+# Ursa-specific job resources
 
 case ${step} in
   "fcst" | "efcs")
