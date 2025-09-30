@@ -14,6 +14,7 @@ load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
 load(pathJoin("mkl", (os.getenv("mkl_ver") or "None")))
 
 load("gw_run.common")
+load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None"))) -- TODO: Remove once wgrib2 is loaded in gw_run.common
 
 prepend_path("MODULEPATH", pathJoin("/contrib/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))

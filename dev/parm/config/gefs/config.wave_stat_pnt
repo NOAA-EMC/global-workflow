@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.wave_stat_pnt ##########
+# Wave steps specific
+
+echo "BEGIN: config.wave_stat_pnt"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" wave_stat_pnt
+
+echo "END: config.wave_stat_pnt"
