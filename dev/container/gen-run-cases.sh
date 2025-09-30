@@ -44,7 +44,8 @@ elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    TOPICDIR=/bucket/global-workflow-shared-data/ICSDIR
    container=/contrib/containers/${img}
    rundir=/lustre/${USER}/run
-   bindings="--env \"I_MPI_FABRICS=ofi:shm,I_MPI_DEBUG=6\" -B /apps/slurm/default/lib/libpmi2.so -B /contrib -B /lustre -B /bucket"
+   bindings="--env \"I_MPI_FABRICS=shm:ofi,I_MPI_DEBUG=6\" -B /apps/slurm/default/lib/libpmi2.so -B /contrib -B /lustre -B /bucket"
+  #bindings="-B /apps/slurm/default/lib/libpmi2.so -B /contrib -B /lustre -B /bucket"
    HPC_ACCOUNT=${USER}
 
    module load rocoto/1.3.7

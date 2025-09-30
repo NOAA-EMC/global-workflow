@@ -72,6 +72,12 @@ cat > "${link_model_script}" << EOF_URSA
 # 1. Force Intel MPI to use Slurm's PMI2 library for job startup
 # for Ursa
 export I_MPI_PMI_LIBRARY=/apps/slurm/default/lib/libpmi2.so
+#Need these lines on AWS to run more than one node.
+ export I_MPI_DEBUG=10
+ export I_MPI_FABRICS=shm:ofi
+ export I_MPI_OFI_PROVIDER=tcp
+ export FI_PROVIDER=tcp
+ export FI_TCP_IFACE=eth0
 
 # 2. Set the OFI provider to Mellanox InfiniBand
 export FI_PROVIDER=mlx

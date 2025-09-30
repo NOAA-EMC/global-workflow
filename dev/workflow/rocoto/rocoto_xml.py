@@ -137,8 +137,8 @@ class RocotoXML(WorkflowSuite, ABC):
         """
 
         # No point creating a crontab if rocotorun is not available.
-        rocotorun = which('rocotorun')
-        if rocotorun is None:
+        rocotoruncmd = find_executable('rocotorun')
+        if rocotoruncmd is None:
             try:
                 if ('rocotorun' in self.rocoto_config.keys()):
                     rocotoruncmd = self.rocoto_config['rocotorun']
@@ -146,7 +146,8 @@ class RocotoXML(WorkflowSuite, ABC):
                     rocotoruncmd = '/apps/rocoto/default/bin/rocotorun'
                 os.path.exists(rocotoruncmd)
             except Exception as ee:
-                raise Exception("Could not find the rocotorun executable. Make sure you have the module loaded!: ") from ee
+                raise Exception("Failed to find rocotorun, crontab will not be created: ") from ee
+                return
 
             version = rocotoruncmd.split('/')[-3]
         else:

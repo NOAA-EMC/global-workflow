@@ -104,11 +104,6 @@ def check_dir_writable(dir_path):
 def main(*argv):
 
     user_inputs = input_args(argv)
-    rocoto_param_dict = {'maxtries': user_inputs.maxtries,
-                         'cyclethrottle': user_inputs.cyclethrottle,
-                         'taskthrottle': user_inputs.taskthrottle,
-                         'rocotorun': user_inputs.rocotorun,
-                         'verbosity': user_inputs.verbosity}
     workflow_engine = user_inputs.workflow
 
     cfg = Configuration(user_inputs.expdir)

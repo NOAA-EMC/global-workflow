@@ -10,6 +10,33 @@ fi
 ulimit_s=$(ulimit -S -s)
 
 source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEgfs}/ush/module-setup.sh"
+
+module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
+module load "ufs_${MACHINE_ID}.intel"
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+  echo "FATAL ERROR: Failed to load ufs_${MACHINE_ID}.intel"
+  exit 1
+fi
+module load prod_util
+if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
+  module load cray-pals
+  module load cfp
+  module load libjpeg
+  module load craype-network-ucx
+  module load cray-mpich-ucx
+  module load python/3.8.6
+  module load wgrib2
+else
+  export UTILROOT=${prod_util_ROOT}
+  source "${HOMEgfs}/versions/run.ver"
+  module load "wgrib2/${wgrib2_ver}"
+fi
+export WGRIB2=wgrib2
+
+module list
 unset MACHINE_ID
 
 # Add HOMEgfs/ush/python to PYTHONPATH
