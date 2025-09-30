@@ -263,9 +263,9 @@ class Jedi:
             observers.clear()
             observers.extend(cleaned_observers)
 
-            # If no observers left in list, raise error
+            # Warn if no observers left in list
             if observers == []:
-                raise WorkflowException(f"No observers found in JEDI input config")
+                logger.warning(f"No observers found in JEDI input config")
 
     @staticmethod
     @logit(logger)
