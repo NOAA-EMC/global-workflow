@@ -30,9 +30,13 @@ if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
   module load python/3.8.6
   module load wgrib2
 else
+  if [[ "${MACHINE_ID}" = "container" ]]; then
+    module load wgrib2
+  else
+    source "${HOMEgfs}/versions/run.ver"
+    module load "wgrib2/${wgrib2_ver}"
+  fi
   export UTILROOT=${prod_util_ROOT}
-  source "${HOMEgfs}/versions/run.ver"
-  module load "wgrib2/${wgrib2_ver}"
 fi
 export WGRIB2=wgrib2
 

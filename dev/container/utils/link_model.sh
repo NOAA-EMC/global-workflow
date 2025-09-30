@@ -72,19 +72,6 @@ cat > "${link_model_script}" << EOF_URSA
 # 1. Force Intel MPI to use Slurm's PMI2 library for job startup
 # for Ursa
 export I_MPI_PMI_LIBRARY=/apps/slurm/default/lib/libpmi2.so
-#Need these lines on AWS to run more than one node.
- export I_MPI_DEBUG=10
- export I_MPI_FABRICS=shm:ofi
- export I_MPI_OFI_PROVIDER=tcp
- export FI_PROVIDER=tcp
- export FI_TCP_IFACE=eth0
-
-# 2. Set the OFI provider to Mellanox InfiniBand
-export FI_PROVIDER=mlx
-
-# 3. Disable problematic shared memory transports in UCX
-export UCX_TLS=^sm,cma
-# --- End of Configuration ---
 
 HOST_SLURM_PATH=/apps/slurm/default
 HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2/opt/compiler

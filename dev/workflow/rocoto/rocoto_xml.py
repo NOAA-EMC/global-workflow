@@ -137,8 +137,8 @@ class RocotoXML(WorkflowSuite, ABC):
         """
 
         # No point creating a crontab if rocotorun is not available.
-        rocotoruncmd = find_executable('rocotorun')
-        if rocotoruncmd is None:
+        rocotorun = which('rocotorun')
+        if rocotorun is None:
             try:
                 if ('rocotorun' in self.rocoto_config.keys()):
                     rocotoruncmd = self.rocoto_config['rocotorun']
