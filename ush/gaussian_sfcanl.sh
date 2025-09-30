@@ -142,6 +142,9 @@ im=${PDY:4:2}
 id=${PDY:6:2}
 ih=${cyc}
 
+imp_physics=${imp_physics:-'8'}
+landsfcmdl=${landsfcmdl:-'2'}
+
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 
 # input interpolation weights
@@ -181,6 +184,8 @@ cat <<EOF > fort.41
   igaus=${LONB_SFC},
   jgaus=${LATB_SFC},
   donst=${do_nst},
+  imp_physics=${imp_physics},
+  landsfcmdl=${landsfcmdl},
  /
 EOF
 
