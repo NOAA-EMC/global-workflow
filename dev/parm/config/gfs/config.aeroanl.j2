@@ -23,18 +23,14 @@ export STATICB_TYPE='diffusion'
 export BERROR_YAML="aero_background_error_static_${STATICB_TYPE}"
 export BERROR_DATA_DIR="${FIXgfs}/gdas/aero/clim_b"
 
-export CRTM_FIX_YAML="${PARMgfs}/gdas/aero_crtm_coeff.yaml.j2"
-export JEDI_FIX_YAML="${PARMgfs}/gdas/aero_jedi_fix.yaml.j2"
-
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/aeroanl_jedi_config.yaml.j2"
-
-export AERO_STAGE_VARIATIONAL_TMPL="${PARMgfs}/gdas/aero_stage_variational.yaml.j2"
-export AERO_FINALIZE_VARIATIONAL_TMPL="${PARMgfs}/gdas/aero_finalize_variational.yaml.j2"
+export JEDI_CONFIG_YAML="${PARMgfs}/gdas/aero/aero_det_jedi_config.yaml.j2"
+export STAGE_CRTM_COEFF_YAML="${PARMgfs}/gdas/aero/aero_stage_crtm_coeff.yaml.j2"
+export STAGE_JEDI_FIX_YAML="${PARMgfs}/gdas/aero/aero_stage_jedi_fix.yaml.j2"
+export STAGE_YAML="${PARMgfs}/gdas/aero/aero_det_stage.yaml.j2"
+export SAVE_YAML="${PARMgfs}/gdas/aero/aero_det_save.yaml.j2"
 
 export io_layout_x="{{ IO_LAYOUT_X }}"
 export io_layout_y="{{ IO_LAYOUT_Y }}"
-
-export JEDIEXE="${EXECgfs}/gdas.x"
 
 if [[ "${DOIAU}" == "YES" ]]; then
   export aero_bkg_times="3,6,9"

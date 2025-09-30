@@ -177,6 +177,45 @@ function publish_logs() {
     echo "${URL}"
 }
 
+function publish_logs_from_file() {
+  # publish_logs_from_file
+  # Reads a file that lists relative file names (one per line) under a directory
+  # and publishes them using publish_logs.py. When more than one valid file is
+  # found, call the python utility with --multiple --format github for gist
+  # output formatting.
+  # Usage: publish_logs_from_file <ID> <list_file>
+  local PR_header="$1"
+  local list_file="$2"
+  local files=()
+
+  # Read the list file and build an array of existing full paths
+  while IFS= read -r line || [[ -n "${line}" ]]; do
+    # skip empty lines
+    if [[ -z "${line// /}" ]]; then
+        continue
+    fi
+    if [[ -f "${line}" ]]; then
+      files+=("${line}")
+    else
+      echo "File ${line} does not exist"
+    fi
+  done < "${list_file}"
+
+  local URL=""
+  if (( ${#files[@]} > 0 )); then
+    # First, upload to repo (retain original behavior) if desired
+    "${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[@]}" --repo "${PR_header}" > /dev/null || true
+
+    # For gist, if more than one file use --multiple --format github
+    if (( ${#files[@]} > 1 )); then
+      cmd_args="--multiple --format github"
+    fi
+    URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[0]}" "${cmd_args:-}" --gist "${PR_header}")"
+  fi
+
+  echo "${URL}"
+}
+
 function cleanup_experiment() {
 
     local EXPDIR="$1"

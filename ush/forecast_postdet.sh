@@ -108,8 +108,8 @@ FV3_postdet() {
   # Check for consistency
   # TODO: the checker has a --fatal option, which is not used here.  This needs to be decided how to handle.
   if [[ "${CHECK_LAND_RESTART_OROG:-NO}" == "YES" ]]; then
-    if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
-       ${USHgfs}/../exec/run_python.sh \
+    if [[ "${RUN_WITH_CONTAINER}" == "YES" ]]; then
+       "${USHgfs}/../exec/run_python.sh" \
        "${USHgfs}/check_land_input_orography.py" \
         --input_dir "${DATA}/INPUT" --orog_dir "${DATA}/INPUT"
     else
@@ -341,7 +341,7 @@ EOF
   # Note, this must be computed after determination IAU in forecast_det and fhrot.
   if (( restart_interval == 0 )); then
     if [[ "${DOIAU:-NO}" == "YES" ]]; then
-      FV3_RESTART_FH=$(( FHMAX + half_window ))
+      FV3_RESTART_FH=$(( FHMAX + assim_freq ))
     else
       FV3_RESTART_FH=("${FHMAX}")
     fi
@@ -351,8 +351,8 @@ EOF
          local restart_interval_start=${restart_interval}
          local restart_interval_end=${FHMAX}
       else
-         local restart_interval_start=$(( restart_interval + half_window ))
-         local restart_interval_end=$(( FHMAX + half_window ))
+         local restart_interval_start=$(( restart_interval + assim_freq ))
+         local restart_interval_end=$(( FHMAX + assim_freq ))
       fi
     else
       local restart_interval_start=${restart_interval}
@@ -504,8 +504,7 @@ WW3_postdet() {
   cd "${cwd}" || exit 1
 
   # Link output files
-  local wavprfx="${RUN}.wave.t${cyc}z"
-  ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
+  ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
 
   # Loop for gridded output (uses FHINC)
   local fhr fhr3 FHINC
@@ -518,8 +517,8 @@ WW3_postdet() {
   while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
     fhr3=$(printf '%03d' "${fhr}")
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
 
     if [[ ${fhr} -ge ${FHMAX_HF_WAV} ]]; then
       fhinc=${FHOUT_WAV}
@@ -533,8 +532,8 @@ WW3_postdet() {
   while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
     fhr3=$(printf '%03d' "${fhr}")
     vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.points.f${fhr3}.nc"  "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${wavprfx}.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc"  "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
 
     fhr=$((fhr + fhinc))
   done
@@ -699,6 +698,10 @@ MOM6_out() {
 
   # Copy MOM_input from DATA to COMOUT_CONF after the forecast is run (and successfull)
   cpfs "${DATA}/INPUT/MOM_input" "${COMOUT_CONF}/ufs.MOM_input"
+  # Copy runtime configuration of MOM: MOM_parameter_doc.all that was used in the forecast
+  if [[ -f "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" ]]; then
+    cpfs "${DATA}/MOM6_OUTPUT/MOM_parameter_doc.all" "${COMOUT_CONF}/MOM_parameter_doc.all"
+  fi
 
   # Create a list of MOM6 restart files
   # Coarser than 1/2 degree has a single MOM restart

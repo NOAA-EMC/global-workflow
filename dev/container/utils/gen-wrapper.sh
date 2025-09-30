@@ -2,7 +2,7 @@
 
 verbose=false
 
-while [ "$#" -gt 0 ]; do
+while [[ "$#" -gt 0 ]]; do
   case "$1" in
     -H|--HOMEgfs)
       HOMEgfs="$2"
@@ -28,40 +28,32 @@ while [ "$#" -gt 0 ]; do
 done
 
 if [[ ! -v HOMEgfs || ! -v container ]]; then
-   echo "Usage: link_model.sh -H/-HOMEgfs gw-home-dir -c/--container full-path-container-image -b/--bindings "-B dirname [-B dirname1 [...]]" [-v]"
-   exit -1
+   echo "Usage: link_model.sh -H/-HOMEgfs gw-home-dir -c/--container full-path-container-image -b/--bindings -B dirname [-B dirname1 [...]] [-v]"
+   exit 11
 fi
 
-# echo "HOMEgfs: $HOMEgfs"
-# echo "container: $container"
-# echo "bindings: $bindings"
-# echo "Verbose: $verbose"
-
-if [[ "$verbose" == "true" ]]; then
+if [[ "${verbose}" == "true" ]]; then
    set -x
 fi
 
 for dnm in exec ush
 do
-    if [[ "$dnm" == "exec" ]]; then
+    if [[ "${dnm}" == "exec" ]]; then
          targetdir=${HOMEgfs}/${dnm}
     else
          targetdir=${HOMEgfs}/${dnm}/container
     fi
-    mkdir -p ${targetdir}
-    for fnm in python wgrib2
-    do
-        sourcef=${HOMEgfs}/dev/container/utils/${dnm}.${fnm}
-        targetf=${targetdir}/run_${fnm}.sh
+    mkdir -p "${targetdir}"
+    sourcef=${HOMEgfs}/dev/container/utils/${dnm}.python
+    targetf=${targetdir}/run_python.sh
 
-        sed -e "s?HOMEgfs?${HOMEgfs}?g" \
-            -e "s?SIF?${container}?g" \
-            -e "s?BINDINGS?${bindings}?g" \
-	    ${sourcef} > ${targetf}
+    sed -e "s?HOMEgfs?${HOMEgfs}?g" \
+        -e "s?SIF?${container}?g" \
+        -e "s?BINDINGS?${bindings}?g" \
+	   "${sourcef}" > "${targetf}"
 
-        chmod 755 ${targetf}
-    done
+    chmod 755 "${targetf}"
 done
 
-sed -i 's/RUN_WITH_CONTAINER=NO/RUN_WITH_CONTAINER=YES/g' ${HOMEgfs}/ush/preamble.sh
+sed -i 's/RUN_WITH_CONTAINER=NO/RUN_WITH_CONTAINER=YES/g' "${HOMEgfs}/ush/preamble.sh"
 

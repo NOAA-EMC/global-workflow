@@ -17,24 +17,8 @@ ulimit_s=$( ulimit -S -s )
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-# Find module command and purge:
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
-
-echo "MACHINE_ID: ${MACHINE_ID}"
-
-case "${MACHINE_ID}" in
-  container)
-    source /usr/lmod/lmod/init/bash
-    ;;
-  *)
-    # source /apps/lmod/lmod/init/bash
-    ;;
-esac
-
-module purge
-module use ${HOMEgfs}/sorc/ufs_model.fd/modulefiles
-module load ufs_${MACHINE_ID}.intel
 
 # If this function exists in the environment, run it; else set -x if it was set on entering this script
 ftype=$(type -t set_trace || echo "")
@@ -49,65 +33,52 @@ wxflowPATH="${HOMEgfs}/ush/python"
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush:${wxflowPATH}"
 # Set up the PYTHONPATH to include wxflow from HOMEgfs
 if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
-  PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
+  PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
 fi
 export PYTHONPATH
 
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/ush/module-setup.sh"
+echo "MACHINE_ID: ${MACHINE_ID}"
 
-#if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
-if [[ "$MACHINE_ID" == "container" ]]; then
-  # if [[ ! -d ~/prod-util-2.1.1 ]]; then
-    # cp -r $prod_util_ROOT ~/prod-util-2.1.1
-  # fi
+case "${MACHINE_ID}" in
+  "wcoss2")
+    # Source versions file for runtime
+    source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
+    # Load our modules:
+    module use "${HOMEgfs}/modulefiles"
+    module load cray-pals
+    module load cfp
+    module load libjpeg
+    module load craype-network-ucx
+    module load cray-mpich-ucx
+    module load "gw_run.${MACHINE_ID}"
+    ;;
+  "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud" | "ursa")
+    # Source versions file for runtime
+    source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
+    # Load our modules:
+    module use "${HOMEgfs}/modulefiles"
+    module load "gw_run.${MACHINE_ID}"
+    export UTILROOT=${prod_util_ROOT}
+    ;;
+  "container")
+    source /usr/lmod/lmod/init/bash
+    module purge
+    module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
+    module load gfsutils_container.intel
+    ;;
+  *)
+    echo "WARNING: UNKNOWN PLATFORM"
+    ;;
+esac
 
- #if [[ "$PATH" =~ "prod-util" ]]; then
-    export PATH=~/prod-util-2.1.1/bin:$PATH
- #fi
-  export FSYNC=~/prod-util-2.1.1/bin/fsync_file
-  export MDATE=~/prod-util-2.1.1/bin/mdate
-  export NDATE=~/prod-util-2.1.1/bin/ndate
-  export NHOUR=~/prod-util-2.1.1/bin/nhour
-
-  source /usr/lmod/lmod/init/bash
-  module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
-  module load gfsutils_container.intel
-  module load wgrib2
-else
-  # Source versions file for runtime
-  source "${HOMEgfs}/versions/run.ver"
-
-  # Load our modules:
-  module use "${HOMEgfs}/modulefiles"
-
-  case "${MACHINE_ID}" in
-    "wcoss2")
-      module load cray-pals
-      module load cfp
-      module load libjpeg
-      module load craype-network-ucx
-      module load cray-mpich-ucx
-      module load "gw_run.${MACHINE_ID}"
-      ;;
-    "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud" | "ursa")
-      module load "gw_run.${MACHINE_ID}"
-      export UTILROOT=${prod_util_ROOT}
-      ;;
-    *)
-      echo "WARNING: UNKNOWN PLATFORM"
-      ;;
-  esac
-
-  export err=$?
-  if [[ ${err} -ne 0 ]]; then
-    echo "FATAL ERROR: Failed to load gw_run.${MACHINE_ID}"
-    exit 1
-  fi
-
-  module load wgrib2
-  module load prod_util
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+  echo "FATAL ERROR: Failed to load gw_run.${MACHINE_ID}"
+  exit 1
 fi
+
+module load wgrib2
+module load prod_util
 export WGRIB2=wgrib2
 
 # Turn on our settings

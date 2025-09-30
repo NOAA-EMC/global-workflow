@@ -1,8 +1,6 @@
 experiment:
   net: gcafs
   mode: cycled
-
-arguments:
   pslot: {{ 'pslot' | getenv }}
   app: ATMA
   resdetatmos: 96
@@ -21,3 +19,12 @@ skip_ci_on_hosts:
   - gaeac5
   - hercules
   - awsepicglobalworkflow
+  - ursa
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2

@@ -14,6 +14,9 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
   COMIN_SNOW_ANALYSIS_ENSSTAT:COM_SNOW_ANALYSIS_TMPL \
   COMIN_CONF:COM_CONF_TMPL
 
+RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
+
 if [[ ! -d ${COMIN_CONF} ]]; then mkdir -p "${COMIN_CONF}"; fi
 
 ###############################################################

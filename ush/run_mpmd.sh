@@ -33,8 +33,7 @@ source "${USHgfs}/preamble.sh"
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
-#if [[ "$RUN_WITH_CONTAINER" == "YES" ]]; then
-if [[ "$MACHINE_ID" == "container" ]]; then
+if [[ "${MACHINE_ID}" == "container" ]]; then
   source /usr/lmod/lmod/init/bash
   module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
   module load gfsutils_container.intel

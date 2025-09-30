@@ -4,7 +4,7 @@ verbose=false
 bindings="-B /scratch3 -B /scratch4"
 machineid="ursa"
 
-while [ "$#" -gt 0 ]; do
+while [[ "$#" -gt 0 ]]; do
   case "$1" in
     -H|--HOMEgfs)
       HOMEgfs="$2"
@@ -40,36 +40,32 @@ done
 if [[ ! -v HOMEgfs || ! -v container || ! -v model || ! -v MACHINE_ID ]]; then
    echo "Usage: link_model.sh -H/-HOMEgfs gw-home-dir -c/--container full-path-container-image \\"
    echo "                     -m/--model name_model -M/MACHINE_ID MACHINE_ID -b/--bindings [...]] [-v]"
-   exit -1
+   exit 11
 fi
 
-#echo "HOMEgfs: $HOMEgfs"
-#echo "model: $model"
-#echo "Verbose: $verbose"
-#echo "machineid: $machineid"
-
-if [[ "$verbose" == "true" ]]; then
+if [[ "${verbose}" == "true" ]]; then
    set -x
 fi
 
 run_model_script=${HOMEgfs}/ush/container/run_${model}.sh
-rm -f ${run_model_script}
+rm -f "${run_model_script}"
 
-cat > $run_model_script << EOF_MODEL
+cat > "${run_model_script}" << EOF_MODEL
 #!/bin/bash
 
-source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
+source /usr/lmod/lmod/init/bash
+module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
+module load ufs_container.intel
 
-arg="\$@"
-${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x \$arg
+${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x "\$@"
 EOF_MODEL
 
 link_model_script=${HOMEgfs}/exec/${model}.x
-rm -f ${link_model_script}
+rm -f "${link_model_script}"
 
 case "${machineid}" in
   ursa)
-cat > $link_model_script << EOF_URSA
+cat > "${link_model_script}" << EOF_URSA
 #!/bin/bash
 
 # --- MPI and Fabric Configuration ---
@@ -77,30 +73,22 @@ cat > $link_model_script << EOF_URSA
 # for Ursa
 export I_MPI_PMI_LIBRARY=/apps/slurm/default/lib/libpmi2.so
 
-# 2. Set the OFI provider to Mellanox InfiniBand
-export FI_PROVIDER=mlx
-
-# 3. Disable problematic shared memory transports in UCX
-export UCX_TLS=^sm,cma
-# --- End of Configuration ---
-
 HOST_SLURM_PATH=/apps/slurm/default
 HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2/opt/compiler
 
- export LD_LIBRARY_PATH=$(dirname ${container})
- set +x
- arg="\$@"
+ LD_LIBRARY_PATH=$(dirname "${container}")
+ export LD_LIBRARY_PATH
  singularity exec \\
     --bind \${HOST_SLURM_PATH}:\${HOST_SLURM_PATH} \\
     --bind \${HOST_MPI_PATH}:\${HOST_MPI_PATH} \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} \$arg
+    ${run_model_script} "\$@"
 EOF_URSA
     ;;
 
   gaea*)
-cat > $link_model_script << EOF_GAEA
+cat > "${link_model_script}" << EOF_GAEA
 #!/bin/bash
 #export SINGULARITY_ENABLE_OVERLAY=try
 #export SINGULARITY_DISABLE_OVERLAY=yes
@@ -108,18 +96,18 @@ cat > $link_model_script << EOF_GAEA
 #export SINGULARITY_DEBUG=0
 #unset SINGULARITY_DEBUG
 
- export LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname "${container}")
+ export LD_LIBRARY_PATH
  set +x
- arg="\$@"
  singularity exec \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} \$arg
+    ${run_model_script} "\$@"
 EOF_GAEA
     ;;
 
   noaacloud)
-cat > $link_model_script << EOF_NOAACLOUD
+cat > "${link_model_script}" << EOF_NOAACLOUD
 #!/bin/bash
 
 #Need these lines on AWS to run more than one node.
@@ -129,31 +117,31 @@ cat > $link_model_script << EOF_NOAACLOUD
  export FI_PROVIDER=tcp
  export FI_TCP_IFACE=eth0
 
- export LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname "${container}")
+ export LD_LIBRARY_PATH
  set +x
- arg="\$@"
  singularity exec \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} \$arg
+    ${run_model_script} "\$@"
 EOF_NOAACLOUD
     ;;
 
   *)
-cat > $link_model_script << EOF_LINK
+cat > "${link_model_script}" << EOF_LINK
 #!/bin/bash
- export LD_LIBRARY_PATH=$(dirname ${container})
+ LD_LIBRARY_PATH=$(dirname "${container}")
+ export LD_LIBRARY_PATH
  set +x
- arg="\$@"
  singularity exec \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} \$arg
+    ${run_model_script} "\$@"
 EOF_LINK
     ;;
 
 esac
 
-chmod 755 $run_model_script
-chmod 755 $link_model_script
+chmod 755 "${run_model_script}"
+chmod 755 "${link_model_script}"
 

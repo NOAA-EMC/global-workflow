@@ -92,9 +92,9 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   tmpfile="tmpfile${grp}_${fhr3}"
 
   # shellcheck disable=SC2312
- #ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
-  ${WGRIB2} "${tmpfile}" > wgrib2.log
-  ncount=$(cat wgrib2.log | wc -l)
+  ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
+ #${WGRIB2} "${tmpfile}" > wgrib2.log
+ #ncount=$(cat wgrib2.log | wc -l)
   if [[ ${nproc} -gt ${ncount} ]]; then
     echo "WARNING: Total no. of available processors '${nproc}' exceeds no. of records '${ncount}' in ${tmpfile}"
     echo "Reduce nproc to ${ncount} (or less) to not waste resources"

@@ -2,14 +2,14 @@
 
 verbose=false
 
-while [ "$#" -gt 0 ]; do
+while [[ "$#" -gt 0 ]]; do
   case "$1" in
     -H|--HOMEgfs)
       HOMEgfs="$2"
       shift 2
       ;;
-    -b|--binding)
-      binding="$2"
+    -b|--bindings)
+      bindings="$2"
       shift 2
       ;;
     -c|--container)
@@ -28,16 +28,11 @@ while [ "$#" -gt 0 ]; do
 done
 
 if [[ ! -v HOMEgfs || ! -v container ]]; then
-   echo "Usage: link_model.sh -H/-HOMEgfs gw-home-dir -c/--container full-path-container-image -b/--bindings -B dirname [-B dirname1 [...]] [-v]"
-   exit -1
+   echo "Usage: link_model.sh -H/-HOMEgfs gw-home-dir -c/--container full-path-container-image -b/--bindings [-v]"
+   exit 11
 fi
 
-#echo "HOMEgfs: $HOMEgfs"
-#echo "container: $container"
-#echo "bindings: $bindings"
-#echo "Verbose: $verbose"
-
-if [[ "$verbose" == "true" ]]; then
+if [[ "${verbose}" == "true" ]]; then
    set -x
 fi
 
@@ -46,9 +41,9 @@ do
    model=${nm}
 
    run_model_script=${HOMEgfs}/ush/container/run_${model}.sh
-   rm -f ${run_model_script}
+   rm -f "${run_model_script}"
 
-   cat > $run_model_script << EOF_MODEL
+   cat > "${run_model_script}" << EOF_MODEL
 #!/bin/bash
 
 source /usr/lmod/lmod/init/bash
@@ -56,25 +51,24 @@ module purge
 module use ${HOMEgfs}/sorc/ufs_utils.fd/modulefiles
 module load build.container.intel
 
-arg="\$@"
-${HOMEgfs}/sorc/ufs_utils.fd/exec/${model} \$arg
+${HOMEgfs}/sorc/ufs_utils.fd/exec/${model} "\$@"
 EOF_MODEL
 
-   chmod 755 $run_model_script
+   chmod 755 "${run_model_script}"
 
   #link_model_script=${HOMEgfs}/exec/${model}
   #rm -f ${link_model_script}
 
    link_model_script=${HOMEgfs}/exec/${model}
-   rm -f ${link_model_script}
+   rm -f "${link_model_script}"
 
-   cat > $link_model_script << EOF_LINK
+   cat > "${link_model_script}" << EOF_LINK
 #!/bin/bash
- export LD_LIBRARY_PATH=$(dirname $container)
- arg="\$@"
- singularity exec ${bindings} ${container} ${run_model_script} \$arg
+ LD_LIBRARY_PATH=$(dirname "${container}")
+ export LD_LIBRARY_PATH
+ singularity exec ${bindings} ${container} ${run_model_script} "\$@"
 EOF_LINK
 
-   chmod 755 $link_model_script
+   chmod 755 "${link_model_script}"
 done
 

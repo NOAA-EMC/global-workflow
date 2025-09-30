@@ -1,8 +1,6 @@
 experiment:
   net: sfs
   mode: forecast-only
-
-arguments:
   idate: 1994050100
   edate: 1994050100
   pslot: {{ 'pslot' | getenv }}
@@ -14,9 +12,17 @@ arguments:
   nens: 2
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20250808
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/sfs_defaults.yaml
 
 skip_ci_on_hosts:
   - gaeac5
   - awsepicglobalworkflow
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2

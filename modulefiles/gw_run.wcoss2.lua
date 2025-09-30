@@ -11,6 +11,9 @@ load(pathJoin("cfp", (os.getenv("cfp_ver") or "None")))
 setenv("USE_CFP","YES")
 
 load(pathJoin("python", (os.getenv("python_ver") or "None")))
+prepend_path("MODULEPATH", "/apps/dev/modulefiles")
+load(pathJoin("ve","gw", (os.getenv("gw_ve_ver") or "None")))
+
 load(pathJoin("gempak", (os.getenv("gempak_ver") or "None")))
 load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
 load(pathJoin("libjpeg", (os.getenv("libjpeg_ver") or "None")))
@@ -23,10 +26,6 @@ load(pathJoin("hdf5-D", (os.getenv("hdf5_ver") or "None")))
 load(pathJoin("pnetcdf-D", (os.getenv("pnetcdf_ver") or "None")))
 load(pathJoin("netcdf-D", (os.getenv("netcdf_ver") or "None")))
 load(pathJoin("esmf-D", (os.getenv("esmf_ver") or "None")))
-
--- The cray library path for C MPI libraries (needed by C-only programs using netCDF)
-local cray_lib_path=os.getenv("CRAY_LD_LIBRARY_PATH") or ""
-prepend_path("LD_LIBRARY_PATH", cray_lib_path)
 
 load(pathJoin("nco", (os.getenv("nco_ver") or "None")))
 load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
