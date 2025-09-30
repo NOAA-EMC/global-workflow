@@ -72,7 +72,7 @@ function(AddJJOBTest)
                        "${novals}" "${singlevals}" "${multivals}"
                         ${ARGN})
 
-  set(TEST_NAME ${ARG_CASE}_${ARG_JOB})
+  set(TEST_NAME ${ARG_CASE}-${ARG_JOB})
   set(CASE_PATH ${HOMEgfs}/dev/ci/cases/pr)
   set(CASE_YAML ${CASE_PATH}/${ARG_CASE}.yaml)
 
@@ -105,14 +105,20 @@ AddJJOBTest(
 )
 
 AddJJOBTest(
-  CASE "C48_S2SW"
-  JOB "gfs_fcst_seg0"
+  CASE "C48_ATM"
+  JOB "gfs_atmos_prod_f000-f002"
   TEST_DATE "2021032312"
 )
 
 AddJJOBTest(
   CASE "C48_ATM"
-  JOB "gfs_atmos_prod_f000-f002"
+  JOB "gfs_atmos_prod_f003-f005"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_fcst_seg0"
   TEST_DATE "2021032312"
 )
 
@@ -130,6 +136,6 @@ AddJJOBTest(
 
 AddJJOBTest(
   CASE "C48_S2SW_gefs"
-  JOB "gefs_fcst_mem001"
+  JOB "gefs_fcst_mem001_seg0"
   TEST_DATE "2021032312"
 )
