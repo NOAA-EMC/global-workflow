@@ -9,7 +9,9 @@
 # Author:        George Gayno       Org: NP23         Date: 2018-01-30
 #
 # Abstract: This script makes a global gaussian grid surface analysis from
-#           fv3gfs surface analysis tiles
+#           fv3gfs surface analysis tiles.  The gaussian grid resolution is
+#           the gaussian equivalent of the history file resolution (may be
+#           different than restart resolution).
 #
 # Script history log:
 # 2018-01-30  Gayno  initial script
@@ -18,7 +20,8 @@
 # Usage:  gaussian_sfcanl.sh
 #
 #   Imported Shell Variables:
-#     CASE          Model resolution.  Defaults to C768.
+#     CASE          Forecast model and restart resolution.  Defaults to C768.
+#     CASE_HIST     History file output resolution.  Defaults to $CASE.
 #     DONST         Process NST fields when 'yes'.  Default is 'no'.
 #     OUTPUT_FILE   Output gaussian analysis file format.  Default is "nemsio"
 #                   Set to "netcdf" for netcdf output file
@@ -97,9 +100,10 @@
 ################################################################################
 
 CASE=${CASE:-C768}
-res=$(echo $CASE | cut -c2-)
-LONB_CASE=$((res*4))
-LATB_CASE=$((res*2))
+CASE_HIST=${CASE_HIST:-${CASE}}
+resh=${CASE_HIST:1}
+LONB_CASE=$((resh*4))
+LATB_CASE=$((resh*2))
 LONB_SFC=${LONB_SFC:-$LONB_CASE}
 LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
