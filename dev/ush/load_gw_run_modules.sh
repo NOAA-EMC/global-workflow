@@ -17,12 +17,7 @@ ulimit_s=$( ulimit -S -s )
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-# Find module command and purge:
-#if [[ "${RUN_WITH_CONTAINER}" == "YES" ]]; then
-#  MACHINE_ID=container
-#else
-  source "${HOMEgfs}/ush/detect_machine.sh"
-#fi
+source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
 # If this function exists in the environment, run it; else set -x if it was set on entering this script
@@ -42,13 +37,14 @@ if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
 fi
 export PYTHONPATH
 
-# Source versions file for runtime
-source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
-# Load our modules:
-module use "${HOMEgfs}/modulefiles"
+echo "MACHINE_ID: ${MACHINE_ID}"
 
 case "${MACHINE_ID}" in
   "wcoss2")
+    # Source versions file for runtime
+    source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
+    # Load our modules:
+    module use "${HOMEgfs}/modulefiles"
     module load cray-pals
     module load cfp
     module load libjpeg
@@ -57,14 +53,15 @@ case "${MACHINE_ID}" in
     module load "gw_run.${MACHINE_ID}"
     ;;
   "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud" | "ursa")
+    # Source versions file for runtime
+    source "${HOMEgfs}/versions/run.${MACHINE_ID}.ver"
+    # Load our modules:
+    module use "${HOMEgfs}/modulefiles"
     module load "gw_run.${MACHINE_ID}"
     export UTILROOT=${prod_util_ROOT}
     ;;
   "container")
     source /usr/lmod/lmod/init/bash
-   #source "${HOMEgfs}/versions/run.container.ver"
-   #module use "${HOMEgfs}/modulefiles"
-   #module load gw_run.container
     module purge
     module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
     module load gfsutils_container.intel
