@@ -231,12 +231,8 @@ fi
 #--add GDASApp parm directory
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
-  cd "${HOMEgfs}/parm" || exit 1
-  if [[ ! -d gdas ]]; then
-      mkdir -p gdas
-  fi
-  cd gdas || exit 1
-  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
+  cd "${HOMEgfs}/parm/gdas" || exit 1
+  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soca" "jcb-gdas" "jcb-algorithms" "stat")
   for comp in "${gdasapp_comps[@]}"; do
     if [[ -d "${comp}" ]]; then
         rm -rf "${comp}"
@@ -244,21 +240,6 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/${comp}" .
   done
 fi
-
-#------------------------------
-#--add SPOC parm and ush directory
-#------------------------------
-sources=("config" "scripts")
-targets=("parm/gdas" "ush")
-for i in "${!sources[@]}"; do
-  src="${HOMEgfs}/sorc/gdas.cd/sorc/spoc/dump/${sources[${i}]}"
-  dst="${HOMEgfs}/${targets[${i}]}"
-
-  if [[ -d "${src}" ]]; then
-    cd "${dst}" || exit 1
-    ${LINK_OR_COPY} "${src}" "spoc"
-  fi
-done
 
 #------------------------------
 #--add GDASApp files

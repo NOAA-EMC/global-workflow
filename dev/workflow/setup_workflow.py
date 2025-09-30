@@ -55,6 +55,8 @@ def input_args(*argv):
                                default=25, required=False)
     rocoto_parser.add_argument('--verbosity', help='verbosity level of Rocoto', type=int,
                                default=10, required=False)
+    rocoto_parser.add_argument('--rocotorun', help='rocotorun fullpath', type=str,
+                               default=None, required=False)
 
     # EcFlow subparser
     ecflow_parser = subparsers.add_parser('ecflow',
