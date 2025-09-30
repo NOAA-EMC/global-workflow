@@ -29,6 +29,7 @@ input_files:
     mkdir:
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/master
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p25
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/0p50
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/atmos/grib2/1p00
