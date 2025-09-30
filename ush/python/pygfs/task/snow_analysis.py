@@ -51,8 +51,9 @@ class SnowAnalysis(Analysis):
 
         # if 00z, do SCF preprocessing
         _ims_file = os.path.join(self.task_config.FIXgfs, 'gdas', 'obs', 'ims',
-                                 f'IMS_4km_to_{self.task_config.CASE}.mx{self.task_config.OCNRES}.nc'),
-        if task_config.cyc == 0 and os.path.exists(_ims_file):
+                                 f'IMS_4km_to_{self.task_config.CASE}.mx{self.task_config.OCNRES}.nc')
+        logger.info(f"Checking for IMS file: {_ims_file}")
+        if self.task_config.cyc == 0 and os.path.exists(_ims_file):
             _DO_IMS_SCF = True
         else:
             _DO_IMS_SCF = False
@@ -65,7 +66,7 @@ class SnowAnalysis(Analysis):
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
                 'snow_bkg_path': os.path.join('.', 'bkg/'),
-                _ims_file: _ims_file,
+                'ims_file': _ims_file,
                 'DO_IMS_SCF': _DO_IMS_SCF, # Boolean to decide if IMS snow cover processing is done
             }
         ))

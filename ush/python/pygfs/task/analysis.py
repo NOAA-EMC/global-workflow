@@ -180,7 +180,7 @@ class Analysis(Task):
                 radbcor.add(satfile, arcname=os.path.basename(satfile))
             for tlapfile in tlaplist:
                 # Change OPREFIX to APREFIX in tlapse file name when adding to tarball
-                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.task_config.OPREFIX, self.task_config.APREFIX)))
+                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.task_config.GPREFIX, self.task_config.APREFIX)))
 
 
 @logit(logger)
