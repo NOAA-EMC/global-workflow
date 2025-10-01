@@ -35,14 +35,14 @@ input_files:
         - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ocean/restart
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p25
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p50
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/1p00
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/netcdf
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p25
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p50
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/1p00
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/netcdf
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/0p25
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/0p50
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/1p00
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/netcdf
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p25
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p50
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/1p00
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf
 
     copy:
         # Ice restart files needed for initialization
@@ -60,23 +60,23 @@ input_files:
 output_files:
     cmpfiles:
         # Ocean GRIB2 products at multiple resolutions for f006
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2.idx]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2.idx]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/0p25/gfs.ocean.t{{ cyc }}z.0p25.f006.grib2.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/0p50/gfs.ocean.t{{ cyc }}z.0p50.f006.grib2.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/1p00/gfs.ocean.t{{ cyc }}z.1p00.f006.grib2.idx]
 
         # Ocean native netCDF products
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/netcdf/gfs.ocean.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ocean/netcdf/gfs.ocean.t{{ cyc }}z.native.f006.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/netcdf/gfs.ocean.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/netcdf/gfs.ocean.t{{ cyc }}z.native.f006.nc]
 
         # Ice GRIB2 products at multiple resolutions for f006
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2.idx]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2.idx]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2.idx]
 
         # Ice native netCDF products
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc]
