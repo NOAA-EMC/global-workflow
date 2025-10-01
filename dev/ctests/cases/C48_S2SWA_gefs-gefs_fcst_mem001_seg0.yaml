@@ -30,10 +30,10 @@
 
 input_files:
     mkdir:
-        - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/atmos/input/mem001
-        - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ice/restart/mem001
-        - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ocean/restart/mem001
-        - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/wave/restart/mem001
+        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/atmos/input/mem001
+        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/ice/restart/mem001
+        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/ocean/restart/mem001
+        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/wave/restart/mem001
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/input/mem001
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/history/mem001
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ocean/history/mem001
@@ -46,28 +46,28 @@ input_files:
 
     copy:
         # Ensemble member 001 atmosphere initial conditions
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_ctrl.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_ctrl.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile1.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile1.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile2.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile2.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile3.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile3.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile4.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile4.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile5.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile5.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile6.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile6.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile1.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile1.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile2.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile2.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile3.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile3.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile4.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile4.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile5.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile5.nc]
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile6.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile6.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_ctrl.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_ctrl.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile1.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile1.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile2.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile2.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile3.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile3.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile4.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile4.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile5.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile5.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile6.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile6.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile1.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile1.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile2.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile2.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile3.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile3.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile4.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile4.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile5.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile5.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile6.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile6.nc]
 
         # Ensemble member 001 ice restart files
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/ice/restart/mem001/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/ice/restart/mem001/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/ice/restart/mem001/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/ice/restart/mem001/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc]
 
         # Ensemble member 001 ocean restart files
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/ocean/restart/mem001/{{ PDY }}.{{ cyc }}0000.MOM.res.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/ocean/restart/mem001/{{ PDY }}.{{ cyc }}0000.MOM.res.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/ocean/restart/mem001/{{ PDY }}.{{ cyc }}0000.MOM.res.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/ocean/restart/mem001/{{ PDY }}.{{ cyc }}0000.MOM.res.nc]
 
         # Ensemble member 001 wave restart files
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/wave/restart/mem001/{{ PDY }}.{{ cyc }}0000.restart.ww3, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/wave/restart/mem001/{{ PDY }}.{{ cyc }}0000.restart.ww3]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/wave/restart/mem001/{{ PDY }}.{{ cyc }}0000.restart.ww3, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/wave/restart/mem001/{{ PDY }}.{{ cyc }}0000.restart.ww3]
 
 output_files:
     cmpfiles:
