@@ -135,7 +135,7 @@ AddJJOBTest(
 )
 
 AddJJOBTest(
-  CASE "C48_S2SW_gefs"
+  CASE "C48_S2SWA_gefs"
   JOB "gefs_fcst_mem001_seg0"
   TEST_DATE "2021032312"
 )
