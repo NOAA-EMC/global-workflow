@@ -12,29 +12,32 @@ analysis:
         {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
         {% if DO_JEDIATMVAR %}
         {% for itile in range(6) %}
-        {% for ftype in ["atm.increment", "atm.i009", "atm.i003", "ratm.increment", "ratm.i009", "ratm.i003"] %}
+        {% for ftype in ["atminc", "atmi009", "atmi003", "ratminc", "ratmi009", "ratmi003"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.cubed_sphere_grid_" ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.cubed_sphere_grid_{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endif %}
         {% endfor %}
         {% endfor %}
-        {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt"] %}
+        {% for ftype in ["abias", "abias_air", "abias_int", "abias_pc"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.txt"]
         {% endif %}
         {% endfor %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.rad_varbc_params.tar") %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.rad_varbc_params.tar", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.rad_varbc_params.tar"]
         {% endif %}
         {% else %}
-        {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt", "radstat.tar"] %}
+        {% for ftype in ["abias", "abias_air", "abias_int", "abias_pc"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.txt"]
         {% endif %}
         {% endfor %}
-        {% for ftype in ["atm.increment.nc", "atm.i009.nc", "atm.i003.nc", "ratm.increment.nc", "ratm.i009.nc", "ratm.i003.nc"] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}"]
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.radstat") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.radstat", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.radstat.tar"]
+        {% endif %}
+        {% for source_ftype, dest_ftype in [("atminc.nc", "atm.increment.nc"), ("atmi009.nc", "atm.i009.nc"), ("atmi003.nc", "atm.i003.nc"), ("ratminc.nc", "ratm.increment.nc"), ("ratmi009.nc", "ratm.i009.nc"), ("ratmi003.nc", "ratm.i003.nc")] %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ source_ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ source_ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ dest_ftype }}"]
         {% endif %}
         {% endfor %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.rad_varbc_params.tar") %}
