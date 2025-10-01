@@ -52,11 +52,6 @@ CYCLE              TASK                    JOBID       STATE
 202103231200       gfs_ice_prod_f006       16851001    SUCCEEDED
 ```
 
-**Test Case Split (October 1, 2025):**
-- ❌ **OLD:** `C48_S2SW-gfs_oceanice_prod.yaml` (combined both components)
-- ✅ **NEW:** `C48_S2SW-gfs_ocean_prod_f006.yaml` (ocean only, this file)
-- ✅ **NEW:** `C48_S2SW-gfs_ice_prod_f006.yaml` (ice only, separate file)
-
 ---
 
 ## File Breakdown
