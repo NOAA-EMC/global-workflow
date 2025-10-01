@@ -67,7 +67,7 @@ class SnowAnalysis(Analysis):
                 'npz': self.task_config.LEVS - 1,
                 'snow_bkg_path': os.path.join('.', 'bkg/'),
                 'ims_file': _ims_file,
-                'DO_IMS_SCF': _DO_IMS_SCF, # Boolean to decide if IMS snow cover processing is done
+                'DO_IMS_SCF': _DO_IMS_SCF,  # Boolean to decide if IMS snow cover processing is done
             }
         ))
 
