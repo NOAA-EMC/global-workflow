@@ -214,10 +214,19 @@ class MarineBMat(Task):
 
         # TODO(AFE) the two renames are to accomodate yaml settings in var task, which should changed
         # ocean diag B
-        os.rename(os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
-                  os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.nc"))
-        os.rename(os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
-                  os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc"))
+        os.rename(os.path.join(self.task_config.DATAstaticb,
+                  f"ocn.bkgerr_parametric_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
+                  os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_parametric_stddev.nc"))
+        os.rename(os.path.join(self.task_config.DATAstaticb,
+                  f"ice.bkgerr_parametric_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
+                  os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_parametric_stddev.nc"))
+        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
+            os.rename(os.path.join(self.task_config.DATAstaticb,
+                      f"ocn.bkgerr_ens_stddev.incr.{self.task_config.MARINE_WINDOW_BEGIN_ISO}.nc"),
+                      os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_ens_stddev.nc"))
+            os.rename(os.path.join(self.task_config.DATAstaticb,
+                      f"ice.bkgerr_ens_stddev.incr.{self.task_config.MARINE_WINDOW_BEGIN_ISO}.nc"),
+                      os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_ens_stddev.nc"))
 
         # Save output files to COM
         logger.info(f"Copy files to ROTDIR")
