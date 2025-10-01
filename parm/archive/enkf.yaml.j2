@@ -107,7 +107,7 @@ enkf:
         # 6-hr analysis/increment
         {% if not DO_JEDIATMENS %}
         {% if do_calc_increment %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atmanl.ensmean.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}atm.ensmean.anl.nc"
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}increment.ensmean.nc"
         {% endif %}
