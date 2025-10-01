@@ -180,7 +180,7 @@ output_files:
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f099.txt, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f099.txt]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f102.txt, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f102.txt]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f105.txt, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f105.txt]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.logf108.txt, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.logf108.txt]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f108.txt, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f108.txt]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f111.txt, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f111.txt]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f114.txt, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f114.txt]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f117.txt, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history/gfs.t{{ cyc }}z.atm.log.f117.txt]
