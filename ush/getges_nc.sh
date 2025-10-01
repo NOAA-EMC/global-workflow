@@ -232,16 +232,16 @@ if [[ "$netwk" = "gdas" ]];then
  fhend=12
  case $typef in
   biascr) geslist='
-   $COMINgdas/gdas.t${cyc}z.abias'
+   $COMINgdas/gdas.t${cyc}z.abias.txt'
    ;;
   biascr_pc) geslist='
-   $COMINgdas/gdas.t${cyc}z.abias_pc'
+   $COMINgdas/gdas.t${cyc}z.abias_pc.txt'
    ;;
   biascr_air) geslist='
-   $COMINgdas/gdas.t${cyc}z.abias_air'
+   $COMINgdas/gdas.t${cyc}z.abias_air.txt'
    ;;
   radstat) geslist='
-   $COMINgdas/gdas.t${cyc}z.radstat'
+   $COMINgdas/gdas.t${cyc}z..tar'
    ;;
   pgbges) geslist='
    $COMINgdas/gdas.t${cyc}z.pgrbh$fh
@@ -446,7 +446,7 @@ elif [[ "$netwk" = "cfs-cdas" ]];then
    $COMINcfs_cdas/cdas1.t${cyc}z.bf$fhp3'
    ;;
   biascr) geslist='
-   $COMINcfs_cdas/cdas1.t${cyc}z.abias'
+   $COMINcfs_cdas/cdas1.t${cyc}z.abias.txt'
    ;;
   satang) geslist='
    $COMINcfs_cdas/cdas1.t${cyc}z.satang'
@@ -712,7 +712,7 @@ elif [[ "$netwk" = "cdas" ]];then
    $COMINcdas/cdas.t${cyc}z.bf$fhp3'
    ;;
   biascr) geslist='
-   $COMINcdas/cdas.t${cyc}z.abias'
+   $COMINcdas/cdas.t${cyc}z.abias.txt'
    ;;
   satang) geslist='
    $COMINcdas/cdas.t${cyc}z.satang'
@@ -873,7 +873,7 @@ elif [[ "$netwk" = "cdc" ]];then
    $COMINcdc/cdas.t${cyc}z.bf$fhp3'
    ;;
   biascr) geslist='
-   $COMINcdc/cdas.t${cyc}z.abias'
+   $COMINcdc/cdas.t${cyc}z.abias.txt'
    ;;
   satang) geslist='
    $COMINcdc/cdas.t${cyc}z.satang'
@@ -995,10 +995,10 @@ elif [[ "$netwk" = "global" ]];then
  GETGES_NWG=${GETGES_NWG:-${COMROOT:?}/nwges}
  case $typef in
   biascr) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.abias
-   $COMINgdas/gdas.t${cyc}z.abias
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.abias
-   $COMINgfs/gfs.t${cyc}z.abias'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.abias.txt
+   $COMINgdas/gdas.t${cyc}z.abias.txt
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.abias.txt
+   $COMINgfs/gfs.t${cyc}z.abias.txt'
    fhbeg=06
    fhinc=06
    ;;
