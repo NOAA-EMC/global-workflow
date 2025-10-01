@@ -147,7 +147,7 @@ done
 if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
    # Link ensemble mean analysis
    if [[ ${FHR} -eq 6 ]]; then
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atmanl.ensmean.nc" "./atmanl_ensmean"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atm.enres.anl.nc" "./atmanl_ensmean"
    else
       ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atma00${FHR}.ensmean.nc" "./atmanl_ensmean"
    fi

@@ -19,8 +19,8 @@ mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"
 ###############################################################
 
 # Define the input ATM_FILE and SFC_FILE from GFS
-export ATM_FILE="${COMINgfs:-}/gfs.${GDATE:0:8}/${GDATE:8:2}/atmos/history/gfs.t${GDATE:8:2}.atmf003.nc"
-export SFC_FILE="${COMINgfs:-}/gfs.${GDATE:0:8}/${GDATE:8:2}/atmos/history/gfs.t${GDATE:8:2}.sfcf003.nc"
+export ATM_FILE="${COMINgfs:-}/gfs.${GDATE:0:8}/${GDATE:8:2}/atmos/history/gfs.t${GDATE:8:2}.atm.f003.nc"
+export SFC_FILE="${COMINgfs:-}/gfs.${GDATE:0:8}/${GDATE:8:2}/atmos/history/gfs.t${GDATE:8:2}.sfc.f003.nc"
 ###############################################################
 # Run relevant script
 ${CHGRESFCSTSH:-${SCRgfs}/exglobal_atmos_chgres_gen_control.sh} && true

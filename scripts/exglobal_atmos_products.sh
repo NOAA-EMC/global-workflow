@@ -208,7 +208,7 @@ if [[ "${WGNE:-}" == "YES" ]]; then
   grp="a"
   if [[ ${FORECAST_HOUR} -gt 0 && ${FORECAST_HOUR} -le ${FHMAX_WGNE} ]]; then
     # TODO: 597 is the message number for APCP in GFSv16.  GFSv17 may change this as more messages are added. This can be controlled via config.atmos_products
-    ${WGRIB2} "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2" -d "${APCP_MSG:-597}" -grib "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}"
+    ${WGRIB2} "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2" -d "${APCP_MSG:-597}" -grib "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2"
   fi
 fi
 

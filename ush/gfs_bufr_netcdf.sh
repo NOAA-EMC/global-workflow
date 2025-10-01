@@ -14,7 +14,7 @@
 #             Change to read flux file fields in gfs_bufr
 #             so remove excution of gfs_flux
 # 2018-03-22 Guang Ping Lou: Making it works for either 1 hourly or 3 hourly output
-# 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS 
+# 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS
 # 2018-05-30  Guang Ping Lou: Make sure all files are available.
 # 2019-10-10  Guang Ping Lou: Read in NetCDF files
 # echo "History: February 2003 - First implementation of this utility script"
@@ -29,7 +29,7 @@ fi
 
 hh=$FSTART
 while  test $hh -le $FEND
-do  
+do
    hh=$( expr $hh + $FINT )
    if test $hh -lt 10
    then
@@ -67,9 +67,9 @@ hh=$FSTART
    fi
 
 sleep_interval=10
-max_tries=360   
+max_tries=360
 while  test $hh -le $FEND
-do  
+do
    if test $hh -lt 100
    then
       hh2=0$hh
@@ -83,7 +83,7 @@ do
    fi
 
 #------------------------------------------------------------------
-   ${NLN} $COMIN/${RUN}.${cycle}.atmf${hh2}.nc sigf${hh}
+   ${NLN} $COMIN/${RUN}.${cycle}.atm.f${hh2}.nc sigf${hh}
    ${NLN} $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nc flxf${hh}
 
    hh=$( expr $hh + $FINT )
@@ -91,7 +91,7 @@ do
    then
       hh=0$hh
    fi
-done  
+done
 
 #  define input BUFR table file.
 ${NLN} ${PARMgfs}/product/bufr_gfs_${CLASS}.tbl fort.1

@@ -143,14 +143,14 @@ class FV3AnalysisCalc(Task):
         logger.info(f"Inserting analysis variables into atmospheric analysis file")
         insert_analysis_variables(self.task_config.current_cycle,
                                   f"atmanl.{auxgrid_time_str}.nc4",
-                                  f"{self.task_config.GPREFIX}atmf006.nc")
+                                  f"{self.task_config.GPREFIX}atm.f006.nc")
 
         # Aerosols
         if self.task_config.DO_AERO_ANL:
             logger.info(f"Inserting analysis variables into aerosol analysis file")
             insert_analysis_variables(self.task_config.current_cycle,
                                       f"aeroanl.{auxgrid_time_str}.nc4",
-                                      f"{self.task_config.GPREFIX}atmf006.nc")
+                                      f"{self.task_config.GPREFIX}atm.f006.nc")
 
         # Snow
         if self.task_config.DO_JEDISNOWDA:

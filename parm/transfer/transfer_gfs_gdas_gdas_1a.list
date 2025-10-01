@@ -27,13 +27,13 @@
 _COMROOT_/gfs/_SHORTVER_/gdas._PDY_/
 + /??/
 + /??/atmos/
-+ /??/atmos/*atmf000*
-+ /??/atmos/*atmf001*
-+ /??/atmos/*atmf002*
-+ /??/atmos/*atmf003*
-+ /??/atmos/*atmf004*
-+ /??/atmos/*atmf005*
-+ /??/atmos/*atmf006*
++ /??/atmos/*atm.f000*
++ /??/atmos/*atm.f001*
++ /??/atmos/*atm.f002*
++ /??/atmos/*atm.f003*
++ /??/atmos/*atm.f004*
++ /??/atmos/*atm.f005*
++ /??/atmos/*atm.f006*
 - /??/atmos/*
 - *
 
@@ -42,13 +42,13 @@ B 100
 _COMROOT_/gfs/_SHORTVER_/gdas._PDYm1_/
 + /??/
 + /??/atmos/
-+ /??/atmos/*atmf000*
-+ /??/atmos/*atmf001*
-+ /??/atmos/*atmf002*
-+ /??/atmos/*atmf003*
-+ /??/atmos/*atmf004*
-+ /??/atmos/*atmf005*
-+ /??/atmos/*atmf006*
++ /??/atmos/*atm.f000*
++ /??/atmos/*atm.f001*
++ /??/atmos/*atm.f002*
++ /??/atmos/*atm.f003*
++ /??/atmos/*atm.f004*
++ /??/atmos/*atm.f005*
++ /??/atmos/*atm.f006*
 - /??/atmos/*
 - *
 

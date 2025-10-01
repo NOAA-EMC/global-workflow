@@ -255,35 +255,35 @@ Operations/production output location on HPSS: /NCEPPROD/hpssprod/runhistory/rh 
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
 | v12 ops        |   gfs.t. ``hh`` z.sanl          | com_gfs_prod_gfs. ``yyyymmddhh`` .anl.tar                                   | gfs. ``yyyymmdd`` /``hh``      |
 |                |                                 |                                                                             |                                |
-|                |   gfs.t. ``hh`` z.sfcanl        |                                                                             |                                |
+|                |   gfs.t. ``hh`` z.sfc.anl        |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
 | v13 ops        |   gfs.t. ``hh`` z.sanl          | com2_gfs_prod_gfs. ``yyyymmddhh`` .anl.tar                                  | gfs. ``yyyymmdd`` /``hh``      |
 |                |                                 |                                                                             |                                |
-|                |   gfs.t. ``hh`` z.sfcanl        |                                                                             |                                |
+|                |   gfs.t. ``hh`` z.sfc.anl        |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
-| v14 ops        |   gfs.t. ``hh`` z.atmanl.nemsio | gpfs_hps_nco_ops_com_gfs_prod_gfs. ``yyyymmddhh`` .anl.tar                  | gfs. ``yyyymmdd`` /``hh``      |
+| v14 ops        |   gfs.t. ``hh`` z.atm.anl.nemsio | gpfs_hps_nco_ops_com_gfs_prod_gfs. ``yyyymmddhh`` .anl.tar                  | gfs. ``yyyymmdd`` /``hh``      |
 |                |                                 |                                                                             |                                |
-|                |   gfs.t. ``hh`` z.sfcanl.nemsio |                                                                             |                                |
+|                |   gfs.t. ``hh`` z.sfc.anl.nemsio |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
-| v15 ops        |   gfs.t. ``hh`` z.atmanl.nemsio | gpfs_dell1_nco_ops_com_gfs_prod_gfs. ``yyyymmdd`` _ ``hh`` .gfs_nemsioa.tar | gfs. ``yyyymmdd`` /``hh``      |
+| v15 ops        |   gfs.t. ``hh`` z.atm.anl.nemsio | gpfs_dell1_nco_ops_com_gfs_prod_gfs. ``yyyymmdd`` _ ``hh`` .gfs_nemsioa.tar | gfs. ``yyyymmdd`` /``hh``      |
 |                |                                 |                                                                             |                                |
-| pre-2020022600 |   gfs.t. ``hh`` z.sfcanl.nemsio |                                                                             |                                |
+| pre-2020022600 |   gfs.t. ``hh`` z.sfc.anl.nemsio |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
-| v15 ops        |   gfs.t. ``hh`` z.atmanl.nemsio | com_gfs_prod_gfs. ``yyyymmdd`` _ ``hh`` .gfs_nemsioa.tar                    | gfs. ``yyyymmdd`` /``hh``      |
+| v15 ops        |   gfs.t. ``hh`` z.atm.anl.nemsio | com_gfs_prod_gfs. ``yyyymmdd`` _ ``hh`` .gfs_nemsioa.tar                    | gfs. ``yyyymmdd`` /``hh``      |
 |                |                                 |                                                                             |                                |
-|                |   gfs.t. ``hh`` z.sfcanl.nemsio |                                                                             |                                |
+|                |   gfs.t. ``hh`` z.sfc.anl.nemsio |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
-| v16 retro      |   gfs.t. ``hh`` z.atmanl.nc     | gfs_netcdfa.tar*                                                            | gfs. ``yyyymmdd`` /``hh``/atmos|
+| v16 retro      |   gfs.t. ``hh`` z.atm.anl.nc     | gfs_netcdfa.tar*                                                            | gfs. ``yyyymmdd`` /``hh``/atmos|
 |                |                                 |                                                                             |                                |
-|                |   gfs.t. ``hh`` z.sfcanl.nc     |                                                                             |                                |
+|                |   gfs.t. ``hh`` z.sfc.anl.nc     |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
 | v16.0[1] ops   |   gfs.t. ``hh`` z.atmanl.nc     | com_gfs_prod_gfs. ``yyyymmdd`` _ ``hh`` .gfs_nca.tar                        | gfs. ``yyyymmdd`` /``hh``/atmos|
 |                |                                 |                                                                             |                                |
-|                |   gfs.t. ``hh`` z.sfcanl.nc     |                                                                             |                                |
+|                |   gfs.t. ``hh`` z.sfc.anl.nc     |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
-| v16.2[3]+ ops  |   gfs.t. ``hh`` z.atmanl.nc     | com_gfs\_ ``gfs_ver`` _gfs. ``yyyymmdd`` _ ``hh`` .gfs_nca.tar              | gfs. ``yyyymmdd`` /``hh``/atmos|
+| v16.2[3]+ ops  |   gfs.t. ``hh`` z.atm.anl.nc     | com_gfs\_ ``gfs_ver`` _gfs. ``yyyymmdd`` _ ``hh`` .gfs_nca.tar              | gfs. ``yyyymmdd`` /``hh``/atmos|
 |                |                                 |                                                                             |                                |
-|                |   gfs.t. ``hh`` z.sfcanl.nc     |                                                                             |                                |
+|                |   gfs.t. ``hh`` z.sfc.anl.nc     |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
 
 For HPSS path, see retrospective table in :ref:`pre-production parallel section <retrospective>` below

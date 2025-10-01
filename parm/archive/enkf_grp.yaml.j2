@@ -12,8 +12,8 @@ enkf_grp:
         # Forecast data
         {% if is_gdas %}
         {% for fhr in range(3, 10, 3) %}
-        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % fhr }}.nc"
-        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf{{ "%03d" % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atm.f{{ "%03d" % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfc.f{{ "%03d" % fhr }}.nc"
         {% endfor %}
         {% endif %}
 

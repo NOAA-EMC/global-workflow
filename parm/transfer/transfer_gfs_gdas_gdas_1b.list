@@ -27,9 +27,9 @@
 _COMROOT_/gfs/_SHORTVER_/gdas._PDY_/
 + /??/
 + /??/atmos/
-+ /??/atmos/*atmf007*
-+ /??/atmos/*atmf008*
-+ /??/atmos/*atmf009*
++ /??/atmos/*atm.f007*
++ /??/atmos/*atm.f008*
++ /??/atmos/*atm.f009*
 + /??/atmos/*atmg*
 + /??/atmos/*atm.anl*
 - /??/atmos/*
@@ -40,9 +40,9 @@ B 100
 _COMROOT_/gfs/_SHORTVER_/gdas._PDYm1_/
 + /??/
 + /??/atmos/
-+ /??/atmos/*atmf007*
-+ /??/atmos/*atmf008*
-+ /??/atmos/*atmf009*
++ /??/atmos/*atm.f007*
++ /??/atmos/*atm.f008*
++ /??/atmos/*atm.f009*
 + /??/atmos/*atmg*
 + /??/atmos/*atm.anl*
 - /??/atmos/*

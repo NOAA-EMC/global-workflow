@@ -31,19 +31,19 @@ com/gfs/_ENVIR_/gfs._PDY_/ /scratch4/NCEPDEV/rstprod/com/gfs/_ENVIR_/gfs._PDY_/
 + /gfs.t??z.*tcvitals*tm00
 + /gfs.t??z.atm.anl.nemsio
 + /gfs.t??z.sfc.anl.nemsio
-+ /gfs.t??z.master.grb2f*
-+ /gfs.t??z.pgrb2.0p25.f*
++ /gfs.t??z.master.f*.grib2
++ /gfs.t??z.pres_a.0p25.f*
 + /gfs.t??z.sflux.f*
-+ /gfs.t??z.atmf???.nemsio
-+ /gfs.t??z.sfcf024.nemsio
-+ /gfs.t??z.sfcf027.nemsio
-+ /gfs.t??z.sfcf030.nemsio
-+ /gfs.t??z.sfcf033.nemsio
-+ /gfs.t??z.sfcf036.nemsio
-+ /gfs.t??z.sfcf039.nemsio
-+ /gfs.t??z.sfcf042.nemsio
-+ /gfs.t??z.sfcf045.nemsio
-+ /gfs.t??z.sfcf048.nemsio
++ /gfs.t??z.atm.f???.nemsio
++ /gfs.t??z.sfc.f024.nemsio
++ /gfs.t??z.sfc.f027.nemsio
++ /gfs.t??z.sfc.f030.nemsio
++ /gfs.t??z.sfc.f033.nemsio
++ /gfs.t??z.sfc.f036.nemsio
++ /gfs.t??z.sfc.f039.nemsio
++ /gfs.t??z.sfc.f042.nemsio
++ /gfs.t??z.sfc.f045.nemsio
++ /gfs.t??z.sfc.f048.nemsio
 - *
 E
 # This directory is a good candidate for compression
