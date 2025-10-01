@@ -102,12 +102,6 @@ elif [[ ${MACHINE_ID} = "noaacloud" ]]; then
     # We are on NOAA Cloud
     module purge
 
-elif [[ ${MACHINE_ID} == container ]] ; then
-    # We are in a container
-    # Always source the lmod init script to override the system module paths and instead use the container modules
-    source /usr/lmod/lmod/init/bash
-    module purge
-
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi

@@ -31,7 +31,12 @@ if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
   module load wgrib2
 else
   if [[ "${MACHINE_ID}" = "container" ]]; then
+    source /usr/lmod/lmod/init/bash
+    module purge
+    module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
+    module load gfsutils_container.intel
     module load wgrib2
+    module load prod_util
   else
     source "${HOMEgfs}/versions/run.ver"
     module load "wgrib2/${wgrib2_ver}"
