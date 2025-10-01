@@ -59,13 +59,9 @@ class AtmEnsAnalysis(Analysis):
 
         This method will initialize a global atmens analysis.
         This includes:
-        - initialize JEDI LETKF observer and FV3 increment converter applications
-        - staging observation files
-        - staging bias correction files
-        - staging CRTM fix files
-        - staging FV3-JEDI fix files
-        - staging model backgrounds
-        - creating output directories
+        - stage input files from COM and create output directories
+        - extract bias corrections from tar files
+        - initialize JEDI applications
 
         Parameters
         ----------
@@ -130,8 +126,8 @@ class AtmEnsAnalysis(Analysis):
 
         This method will finalize a global atmens analysis using JEDI.
         This includes:
-        - tar output diag files and place in ROTDIR
-        - copy the generated YAML file from initialize to the ROTDIR
+        - compress and tar output diag files and place in COM
+        - save output files and YAMLs to COM
 
         Parameters
         ----------

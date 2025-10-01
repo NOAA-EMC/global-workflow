@@ -85,14 +85,9 @@ class AerosolAnalysis(Analysis):
 
         This method will initialize a global aerosol analysis using JEDI.
         This includes:
-        - initialize JEDI applications
-        - staging observation files
-        - staging bias correction files
-        - staging CRTM fix files
-        - staging FV3-JEDI fix files
-        - staging B error files
-        - staging model backgrounds
-        - creating output directories
+        - stage input files from COM and create output directories
+        - extract bias corrections from tar files
+        - initialize JEDI application
         """
 
         # Stage files from COM
@@ -129,11 +124,10 @@ class AerosolAnalysis(Analysis):
 
         This method will finalize a global aerosol analysis using JEDI.
         This includes:
-        - tarring up output diag files and place in ROTDIR
-        - copying the generated YAML file from initialize to the ROTDIR
-        - copying the guess files to the ROTDIR
-        - applying the increments to the original RESTART files
-        - moving the increment files to the ROTDIR
+        - apply increments to the original RESTART files
+        - compress and tar output diag files in COM
+        - tar radiative bias correction files in COM
+        - save output files and YAMLs to COM
 
         """
 

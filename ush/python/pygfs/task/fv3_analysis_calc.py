@@ -69,9 +69,8 @@ class FV3AnalysisCalc(Analysis):
 
         This method will initialize the analysis calculation task.
         This includes:
-        - initializing the JEDI addincrement application
-        - staging JEDI fix files
-        - staging backgrounds and increments
+        - stage input files from COM and create output directories
+        - initialize JEDI applications
 
         Parameters
         ----------
@@ -149,7 +148,8 @@ class FV3AnalysisCalc(Analysis):
 
         This method will finalize the analysis calculation task.
         This includes:
-        - Move analysis files to the comrot directory
+        - write analysis log file
+        - save output files and YAMLs to COM
 
         Parameters
         ----------

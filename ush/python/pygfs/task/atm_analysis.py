@@ -69,14 +69,9 @@ class AtmAnalysis(Analysis):
 
         This method will initialize a global atm analysis.
         This includes:
+        - stage input files from COM and create output directories
+        - extract bias corrections from tar files
         - initialize JEDI applications
-        - staging observation files
-        - staging bias correction files
-        - staging CRTM fix files
-        - staging FV3-JEDI fix files
-        - staging B error files
-        - staging model backgrounds
-        - creating output directories
 
         Parameters
         ----------
@@ -88,7 +83,7 @@ class AtmAnalysis(Analysis):
         """
 
         # Stage files from COM
-        logger.info(f"Staging files from COM")
+        logger.info(f"Staging files from COM and creating output directories")
         FileHandler(self.task_config.data_in).sync()
 
         # Extract bias corrections from tar files
@@ -122,9 +117,9 @@ class AtmAnalysis(Analysis):
 
         This method will finalize a global atm analysis using JEDI.
         This includes:
-        - tar output diag files and place in ROTDIR
-        - copy the generated YAML file from initialize to the ROTDIR
-        - copy the updated bias correction files to ROTDIR
+        - compress and tar output diag files in COM
+        - tar radiative bias correction files and place in COM
+        - save output files and YAMLs to COM
 
         Parameters
         ----------

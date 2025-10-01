@@ -84,12 +84,8 @@ class SnowAnalysis(Analysis):
 
         This method will initialize a global snow analysis.
         This includes:
-        - initialize JEDI application
-        - staging model backgrounds
-        - staging observation files
-        - staging FV3-JEDI fix files
-        - staging B error files
-        - creating output directories
+        - stage input files from COM and create output directories
+        - initialize JEDI applications
 
         Parameters
         ----------
@@ -101,7 +97,7 @@ class SnowAnalysis(Analysis):
         """
 
         # Stage files from COM
-        logger.info(f"Staging files from COM")
+        logger.info(f"Staging files from COM and creating output directories")
         FileHandler(self.task_config.data_in).sync()
 
         # initialize JEDI variational application
@@ -132,10 +128,8 @@ class SnowAnalysis(Analysis):
     def finalize(self) -> None:
         """Performs closing actions of the Snow analysis task
         This method:
-        - tar and gzip the output diag files and place in COM/
-        - copy the generated YAML file from initialize to the COM/
-        - copy the analysis files to the COM/
-        - copy the increment files to the COM/
+        - compress and tar output diag files in COM
+        - save output files and YAMLs to COM
 
         Parameters
         ----------

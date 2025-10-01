@@ -65,9 +65,8 @@ class AerosolBMatrix(Analysis):
 
         This method will initialize a global aerosol B-Matrix.
         This includes:
-        - staging the determinstic backgrounds
-        - staging fix files
-        - initializing the JEDI applications
+        - stage input files from COM and create output directories
+        - initialize JEDI applications
 
         Parameters
         ----------
@@ -120,8 +119,7 @@ class AerosolBMatrix(Analysis):
 
         This method will finalize a global aerosol bmatrix using JEDI.
         This includes:
-        - copying the bmatrix files to COM
-        - copying YAMLs to COM
+        - save output files and YAMLs to COM
 
         """
 

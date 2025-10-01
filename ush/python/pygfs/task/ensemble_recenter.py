@@ -62,9 +62,8 @@ class EnsembleRecenter(Analysis):
 
         This method will initialize the ensemble increment recentering task.
         This includes:
-        - initializing the JEDI recentering application
-        - staging JEDI fix files
-        - staging backgrounds and increments
+        - stage input files from COM and create output directories
+        - initialize JEDI applications
 
         Parameters
         ----------
@@ -111,7 +110,7 @@ class EnsembleRecenter(Analysis):
 
         This method will finalize the ensemble increment recentering task.
         This includes:
-        - Move correction increment files to the comrot directory
+        - save output files and YAMLs to COM
 
         Parameters
         ----------
