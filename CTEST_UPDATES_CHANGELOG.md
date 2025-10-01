@@ -1,4 +1,121 @@
+````markdown
 # CTest Framework Updates Changelog
+
+## 2025-10-01 (Part 5) - Fixed Ensemble Test Directory Structure (gdas → gefs)
+
+### Summary
+Corrected directory structure in `C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml` to use `gefs` directories instead of `gdas` directories. The YAML file was referencing `gdas.{{ PDY }}/{{ cyc_offset }}/` for input files, but the actual C48_S2SWA_gefs case uses only `gefs.{{ PDY }}/{{ cyc }}/` structure.
+
+### Root Cause Analysis
+**Directory Structure Discovery:**
+User provided disk listing showing actual structure on HERA:
+```bash
+$ ls /scratch3/.../COMROOT/C48_S2SWA_gefs_388b1fe3-4737/
+gefs.20210323/
+
+$ ls gefs.20210323/
+06/  12/
+
+$ ls gefs.20210323/06/
+mem000/  mem001/  mem002/
+
+$ ls gefs.20210323/06/mem001/
+model/  (contains: atmos/ ice/ ocean/ wave/)
+```
+
+**Key Finding:** No `gdas` directories exist in the C48_S2SWA_gefs case - only `gefs` structure.
+
+**CMakeLists.txt Reference (line 138):**
+```cmake
+CASE "C48_S2SWA_gefs"  # Correctly references gefs case
+```
+
+**YAML File Issue:**
+Lines 33-36: Created `gdas.{{ PDY }}/{{ cyc_offset }}/model/*/mem001/` directories
+Lines 49-67: Copied from `gdas.{{ PDY }}/06/model/*/mem001/` source paths
+
+### Changes Made
+
+#### C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml
+
+**Updated mkdir section (lines 33-36):**
+```yaml
+# Before:
+- {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/atmos/input/mem001
+- {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ice/restart/mem001
+- {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ocean/restart/mem001
+- {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/wave/restart/mem001
+
+# After:
+- {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/atmos/input/mem001
+- {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/ice/restart/mem001
+- {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/ocean/restart/mem001
+- {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/wave/restart/mem001
+```
+
+**Updated copy section (lines 49-67):**
+All 17 input file copy statements changed from `gdas.{{ PDY }}/06/` to `gefs.{{ PDY }}/06/`:
+- 13 atmosphere initial condition files (gfs_ctrl.nc, gfs_data.tile[1-6].nc, sfc_data.tile[1-6].nc)
+- 1 ice restart file ({{ PDY }}.{{ cyc }}0000.cice_model.res.nc)
+- 1 ocean restart file ({{ PDY }}.{{ cyc }}0000.MOM.res.nc)
+- 1 wave restart file ({{ PDY }}.{{ cyc }}0000.restart.ww3)
+
+**Verification Command:**
+```bash
+$ grep -n "gdas" C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml
+(No results - all gdas references successfully removed)
+```
+
+### Ensemble Member Directory Structure
+
+**Correct Structure:**
+```
+gefs.20210323/
+├── 06/
+│   ├── mem000/
+│   │   └── model/
+│   │       ├── atmos/input/  (IC files: gfs_*.nc, sfc_data.tile*.nc)
+│   │       ├── ice/restart/  (CICE restart)
+│   │       ├── ocean/restart/ (MOM6 restart)
+│   │       └── wave/restart/  (WW3 restart)
+│   ├── mem001/
+│   └── mem002/
+└── 12/
+    ├── mem000/
+    │   ├── conf/
+    │   ├── model/
+    │   │   ├── atmos/  (output: history/, restart/)
+    │   │   ├── chem/
+    │   │   ├── ice/    (output: history/, restart/)
+    │   │   ├── med/
+    │   │   ├── ocean/  (output: history/, restart/)
+    │   │   └── wave/   (output: history/, restart/)
+    │   └── products/
+    ├── mem001/
+    └── mem002/
+```
+
+### Impact
+- **Before**: Test would fail during staging because source files at `gdas.{{ PDY }}/06/` do not exist
+- **After**: Test correctly references `gefs.{{ PDY }}/06/` matching actual disk structure
+- **Pattern**: Similar to earlier `products/` path fix - YAML must match actual COM structure
+- **Validation**: Ready for testing with correct directory references
+
+### Related Configuration
+This aligns with GEFS ensemble workflow where:
+- Ensemble members are organized under `gefs.` prefix, not `gdas.`
+- Each member (mem000, mem001, mem002, ...) has its own subdirectory
+- Input files come from earlier cycle's `gefs` output, not GDAS analysis
+- Directory structure is consistent across all ensemble members
+
+### Testing Recommendations
+1. Run: `ctest -R "C48_S2SWA_gefs.*validate" --verbose`
+2. Verify staging finds all input files at correct `gefs.20210323/06/` paths
+3. Confirm test execution creates proper `gefs.20210323/12/` output structure
+4. Expected test duration: 2-3 seconds (similar to ocean/ice tests)
+5. Expected outputs: 11 files (5 atmos, 2 ocean, 2 ice, 2 wave)
+
+---
 
 ## 2025-10-01 (Part 4) - Fixed Expected Output Files for FHOUT_PGBS Behavior
 
@@ -461,5 +578,123 @@ All CTest validation test cases have been reviewed and corrected. The primary is
 1. **Directory Path Structure**: Missing `products/` prefix in output paths
 2. **Forecast Hour Expectations**: Incorrect forecast hours not matching `FHR_LIST` configuration and `FHOUT_PGBS` behavior
 3. **Test Case Organization**: Combined ocean/ice test did not match actual workflow structure with separate parallel metatasks
+4. **GEFS Ensemble Test**: Complete rebuild as output-only validation (Part 6)
 
 These fixes ensure CTest validation tests accurately reflect the actual workflow product generation patterns, directory structures, and task organization used in operational and experimental runs.
+
+---
+
+## Part 6: GEFS Ensemble Complete Rebuild as Output-Only Test (2025-01-XX)
+
+### Initial Issue Discovered
+The C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml test case was using incorrect directory references. The PR test case `C48_S2SWA_gefs` creates directories under `gefs.{PDY}/{cyc}/`, but the CTest validation file was looking for files under `gdas.{PDY}/{cyc}/`.
+
+### Investigation Process - Phase 1: Directory Path Fix
+Created verification script to check actual file locations on disk:
+```bash
+dev/ci/scripts/verify_ensemble_files.sh
+```
+
+Changed all 21 directory references from `gdas` to `gefs` paths.
+
+**Result**: Script revealed **0 of 26 files found** - ALL FILES MISSING
+
+### Investigation Process - Phase 2: Disk Structure Analysis
+Created comprehensive investigation scripts:
+```bash
+dev/ci/scripts/investigate_gefs_structure.sh   # 10-path directory exploration
+dev/ci/scripts/find_all_mem001_files.sh        # Complete file listing with counts
+```
+
+**Critical Discoveries**:
+- **06Z mem001**: 0 files (completely empty directory)
+- **12Z mem001**: 913 files total (all OUTPUT files, no input directory)
+- Actual disk structure: `gefs.20210323/12/mem001/model/{atmos,ocean,ice,wave}/history/`
+
+### Root Cause Analysis
+**Fundamental misunderstanding of CTest architecture**:
+1. GEFS is configured as **forecast-only** with **cold start**
+2. The `stage_ic` job runs SEPARATELY in the nightly pipeline before forecast jobs
+3. CTest framework ONLY stages files from nightly stable run outputs at:
+   ```
+   /scratch3/.../RUNTESTS/COMROOT/C48_S2SWA_gefs_*/
+   ```
+4. Tests should NOT look for IC files - they validate forecast OUTPUTS only
+5. Similar pattern to `C48_S2SW-gfs_fcst_seg0.yaml` (also has no input staging)
+
+### Solution: Complete Rebuild as Output-Only Test
+Completely replaced the YAML file with output-only validation approach:
+
+**Removed**:
+- All input file staging (copy section with 16 files)
+- Offset cycle references (cyc_offset, PDY_offset, H_offset)
+- Input/restart directory mkdir statements
+
+**Kept/Updated**:
+- 4 mkdir statements for OUTPUT directories only:
+  - `gefs.{{ PDY }}/{{ cyc }}/mem001/model/{atmos,ocean,ice,wave}/history/`
+- 24 cmpfiles for forecast segment 0 validation:
+  - **18 atmosphere files**: atmf/sfcf for f000, f006, f012, f018, f024, f030, f036, f042, f048
+  - **2 ocean files**: 24hr_avg for f024, f048
+  - **2 ice files**: 24hr_avg for f024, f048  
+  - **2 wave files**: points for f006, f048
+
+**Format Improvements**:
+- Clean single-spacing (no double spacing)
+- Comprehensive header documentation
+- Clear comments explaining S2SWA, seg0, and output-only approach
+
+### Forecast Segment 0 Output Pattern
+Based on actual disk files from 12Z mem001 investigation:
+- **Atmosphere**: Every 6 hours (f000-f048) = 9 forecast hours × 2 files (atmf/sfcf) = 18 files
+- **Ocean**: 24-hour averages only (f024, f048) = 2 files
+- **Ice**: 24-hour averages only (f024, f048) = 2 files
+- **Wave**: Hourly points but testing f006 and f048 = 2 files
+- **Total validation files**: 24 files
+
+### Directory Structure Context
+GEFS ensemble member directory structure (12Z cycle only):
+```
+gefs.20210323/
+└── 12/
+    └── mem001/
+        └── model/
+            ├── atmos/history/  # 63 files (atmf/sfcf f000-f120 + master)
+            ├── ocean/history/  # 5 files (24hr_avg f024-f120)
+            ├── ice/history/    # 6 files (24hr_avg f024-f120)
+            └── wave/history/   # 485 files (points f000-f120 hourly)
+```
+
+**Note**: 06Z mem001 directory exists but contains ZERO files (cold start means no prior cycle).
+
+### File Statistics
+- **Old YAML**: 146 lines, 16 input files + 10 output files = 26 validations
+- **New YAML**: 66 lines, 0 input files + 24 output files = 24 validations
+- **Line reduction**: 55% smaller, cleaner, more maintainable
+- **Validation coverage**: Increased from 10 to 24 output files
+
+### Verification Commands
+```bash
+# File was completely replaced
+wc -l C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml
+# Output: 66 lines
+
+# No input file staging
+grep -c "copy:" C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml
+# Output: 0
+
+# Correct number of validations  
+grep -c "^\s*-\s*\[{{" C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml
+# Output: 24
+
+# No gdas references
+grep -c "gdas" C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml
+# Output: 0
+
+# Correct mkdir count
+grep "mkdir:" -A 5 C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml | grep -c "DST_DIR"
+# Output: 4
+```
+
+### Testing Status
+The test case now follows the proven output-only validation pattern used by `C48_S2SW-gfs_fcst_seg0.yaml`. This is the 6th and final test in the CTest suite. Expected validation time: 2-3 seconds (like ocean/ice tests). Once this test passes, the complete CTest framework will be ready with 100% pass rate (6/6 tests).

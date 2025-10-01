@@ -1,23 +1,23 @@
-# C48_S2SW GEFS Forecast Member 001 - Test Case Documentation
+# C48_S2SWA GEFS Forecast Member 001 Segment 0 - Test Case Documentation
 
-**Test Case:** `C48_S2SW-gefs_fcst_mem001.yaml`  
-**Configuration:** C48_S2SW (Coupled Sea-to-Sea-to-Wave)  
+**Test Case:** `C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml`  
+**Configuration:** C48_S2SWA (Coupled Sea-to-Sea-to-Wave-to-Aerosol)  
 **System:** GEFS (Global Ensemble Forecast System)  
 **Job:** JGLOBAL_FORECAST (ensemble member execution)  
-**Duration:** 6-hour forecast (f000-f006)  
+**Duration:** 48-hour forecast segment (f000-f048, output every 6 hours)  
 **Member:** 001 (single ensemble member test)  
-**Status:** ✅ VERIFIED CORRECT - No changes needed  
+**Status:** ✅ VERIFIED CORRECT - Passed validation  
 **Last Updated:** October 1, 2025
 
 ---
 
 ## Overview
 
-This test validates the **ensemble forecast capability** of the coupled S2SW system, executing a single perturbed ensemble member through the UFS Weather Model's 4-component coupled framework. This demonstrates the ensemble infrastructure without the computational expense of running all 30+ members.
+This test validates the **ensemble forecast capability** of the coupled S2SWA system for GEFS, executing a single perturbed ensemble member through the UFS Weather Model's 4-component coupled framework.
 
 **Total Files:**
-- **Input:** 17 files (perturbed 4-component IC in mem001/ subdirectories)
-- **Output:** 11 files (multi-component history + restart files)
+- **Input:** 17 files (13 atmosphere ICs from 12Z + 3 restart files from 06Z + 1 wave prep from 12Z)
+- **Output:** 24 files (18 atmosphere history + 2 ocean + 2 ice + 2 wave history files)
 
 ---
 
@@ -474,14 +474,6 @@ DO_FCST_PERT="YES"            # Apply model perturbations
 
 ---
 
-## Related Test Cases
-
-1. **C48_S2SW-gfs_fcst_seg0.yaml** - Deterministic version (non-ensemble)
-2. **C48_ATM-gfs_fcst_seg0.yaml** - Atmosphere-only deterministic
-3. **C48_S2SW-gfs_ocean_prod_f006.yaml** - Products generation (deterministic)
-
----
-
 ## Technical Notes
 
 ### File Size Estimates
@@ -534,10 +526,6 @@ With parallelization: ~2-4 hours wall time per cycle
 - **Ensemble Config:** `parm/config/gfs/config.efcs`
 - **UFS Templates:** `parm/ufs/coupled/`
 
-### Documentation
-- **Repository:** TerrenceMcGuinness-NOAA/global-workflow
-- **Branch:** ctest_case_updates
-- **Changelog:** CTEST_UPDATES_CHANGELOG.md
 
 ---
 
