@@ -10,83 +10,84 @@
 {% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
 {% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
 
-# =============================================================================
-# C48_S2SW GEFS Forecast Member 001 Test Case
-# =============================================================================
-# This test validates the JGLOBAL_FORECAST job for GEFS ensemble member 001
-# in the C48_S2SW configuration. It tests the coupled Sea-to-Sea-to-Wave
-# forecast system with ensemble perturbations.
-#
-# Source Logic: jobs/JGLOBAL_FORECAST
-# - Sets ensemble member specific directories: DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}" (line 4)
-# - Uses ensemble configuration: source jjob_header.sh -e "efcs" -c "base fcst efcs" (line 6)
-# - Creates restart and output directories for ensemble member (lines 14-17)
-#
-# Execution: scripts/exglobal_forecast.sh
-# - Runs UFS coupled model with atmosphere, ocean, ice, and wave components
-# - Generates forecast output files for all model components
-# - Uses ensemble-specific restart conditions and perturbations
-# =============================================================================
-
 input_files:
     mkdir:
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/atmos/input/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/ice/restart/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/ocean/restart/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/model/wave/restart/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/input/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/history/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ocean/history/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ice/history/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/wave/history/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/restart/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ocean/restart/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ice/restart/mem001
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/wave/restart/mem001
+        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input
+        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ice/restart
+        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ocean/restart
+        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/wave/restart
 
     copy:
-        # Ensemble member 001 atmosphere initial conditions
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_ctrl.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_ctrl.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile1.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile1.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile2.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile2.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile3.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile3.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile4.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile4.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile5.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile5.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile6.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/gfs_data.tile6.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile1.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile1.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile2.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile2.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile3.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile3.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile4.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile4.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile5.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile5.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile6.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/atmos/input/mem001/sfc_data.tile6.nc]
-
-        # Ensemble member 001 ice restart files
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/ice/restart/mem001/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/ice/restart/mem001/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc]
-
-        # Ensemble member 001 ocean restart files
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/ocean/restart/mem001/{{ PDY }}.{{ cyc }}0000.MOM.res.nc, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/ocean/restart/mem001/{{ PDY }}.{{ cyc }}0000.MOM.res.nc]
-
-        # Ensemble member 001 wave restart files
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/06/model/wave/restart/mem001/{{ PDY }}.{{ cyc }}0000.restart.ww3, {{ DST_DIR }}/gefs.{{ PDY }}/06/model/wave/restart/mem001/{{ PDY }}.{{ cyc }}0000.restart.ww3]
+        # Atmosphere initial conditions (13 files)
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_ctrl.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_ctrl.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile1.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile1.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile2.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile2.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile3.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile3.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile4.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile4.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile5.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile5.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile6.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile6.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile1.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile1.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile2.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile2.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile3.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile3.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile4.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile4.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile5.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile5.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile6.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile6.nc]
+        
+        # Ice restart (1 file)
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ice/restart/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ice/restart/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc]
+        
+        # Ocean restart (1 file)
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ocean/restart/{{ PDY }}.{{ cyc }}0000.MOM.res.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ocean/restart/{{ PDY }}.{{ cyc }}0000.MOM.res.nc]
+        
+        # Wave restart (1 file)
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/wave/restart/{{ PDY }}.{{ cyc }}0000.restart.ww3,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/wave/restart/{{ PDY }}.{{ cyc }}0000.restart.ww3]
 
 output_files:
     cmpfiles:
-        # Atmosphere forecast output for ensemble member 001
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/history/mem001/atmf006.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/history/mem001/atmf006.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/history/mem001/sfcf006.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/history/mem001/sfcf006.nc]
+        # Atmosphere forecast history files (18 files: atmf + sfcf at f000-f048 every 6 hours)
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf000.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf000.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf000.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf000.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf006.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf006.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf006.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf006.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf012.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf012.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf012.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf012.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf018.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf018.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf018.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf018.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf024.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf024.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf024.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf024.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf030.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf030.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf030.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf030.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf036.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf036.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf036.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf036.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf042.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf042.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf042.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf042.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf048.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.atmf048.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf048.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfcf048.nc]
 
-        # Ocean forecast output for ensemble member 001
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ocean/history/mem001/gefs.ocean.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ocean/history/mem001/gefs.ocean.t{{ cyc }}z.6hr_avg.f006.nc]
+        # Ocean forecast history files (2 files: 24hr averages at f024 and f048)
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.ocean.t{{ cyc }}z.24hr_avg.f024.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.ocean.t{{ cyc }}z.24hr_avg.f024.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.ocean.t{{ cyc }}z.24hr_avg.f048.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.ocean.t{{ cyc }}z.24hr_avg.f048.nc]
 
-        # Ice forecast output for ensemble member 001
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ice/history/mem001/gefs.ice.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ice/history/mem001/gefs.ice.t{{ cyc }}z.6hr_avg.f006.nc]
+        # Ice forecast history files (2 files: 24hr averages at f024 and f048)
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.ice.t{{ cyc }}z.24hr_avg.f024.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.ice.t{{ cyc }}z.24hr_avg.f024.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.ice.t{{ cyc }}z.24hr_avg.f048.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.ice.t{{ cyc }}z.24hr_avg.f048.nc]
 
-        # Wave forecast output for ensemble member 001
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/wave/history/mem001/gefs.wave.t{{ cyc }}z.glo_30m.f006.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/wave/history/mem001/gefs.wave.t{{ cyc }}z.glo_30m.f006.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/wave/history/mem001/gefs.wave.t{{ cyc }}z.at_10m.f006.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/wave/history/mem001/gefs.wave.t{{ cyc }}z.at_10m.f006.nc]
-
-        # Restart files for next cycle
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/restart/mem001/{{ PDY }}.{{ cyc }}0000.coupler.res, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/restart/mem001/{{ PDY }}.{{ cyc }}0000.coupler.res]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/restart/mem001/{{ PDY }}.{{ cyc }}0000.fv_core.res.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/atmos/restart/mem001/{{ PDY }}.{{ cyc }}0000.fv_core.res.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ocean/restart/mem001/{{ PDY }}.{{ cyc }}0000.MOM.res.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ocean/restart/mem001/{{ PDY }}.{{ cyc }}0000.MOM.res.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ice/restart/mem001/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/model/ice/restart/mem001/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc]
+        # Wave forecast history files (2 files: points output at f006 and f048)
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/history/gefs.t{{ cyc }}z.points.f006.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/history/gefs.t{{ cyc }}z.points.f006.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/history/gefs.t{{ cyc }}z.points.f048.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/history/gefs.t{{ cyc }}z.points.f048.nc]
