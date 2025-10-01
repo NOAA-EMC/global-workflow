@@ -15,15 +15,25 @@
 # =============================================================================
 # This test validates the JGLOBAL_ATMOS_PRODUCTS job for the C48_ATM configuration.
 # It tests the generation of atmospheric GRIB2 products at multiple resolutions.
+# This task processes FHR_LIST="0,1,2" (forecast hours 0, 1, and 2 in one job)
 #
 # Source Logic: scripts/exglobal_atmos_products.sh
-# - Creates pgrb2 files at 0.25, 0.50, 1.00 degree resolutions (lines 200-203)
-# - Generates flux files and index files for each grid (lines 201-202)
-# - Produces WGNE products for forecast hours <= FHMAX_WGNE (lines 208-212)
+# - Creates pgrb2 files at 0.25 degree for ALL forecast hours (lines 48-50)
+# - Supplemental products (0.50, 1.00 degree) only when FORECAST_HOUR % FHOUT_PGBS == 0 (lines 18-35)
+# - With FHOUT_PGBS=3: 0p50 and 1p00 products only at f000, f003, f006, etc.
+# - Flux files generated at 1p00 grid for ALL forecast hours (lines 176-203)
+# - WGNE products for forecast hours <= FHMAX_WGNE (lines 208-212)
 #
 # Configuration: dev/parm/config/gfs/config.atmos_products
 # - Sets downset=2 for GFS runs, FHOUT_PGBS=3 for supplemental products
 # =============================================================================
+
+# Expected Output Files:
+# - 0p25 grid: pgrb2/pgrb2b/idx for f000, f001, f002 (all hours)
+# - 0p50 grid: pgrb2/pgrb2b/idx for f000 only (FHOUT_PGBS=3)
+# - 1p00 grid: pgrb2/pgrb2b/idx + flux/idx for f000 only pgrb2, but flux for all hours
+# =============================================================================
+
 
 input_files:
     mkdir:
@@ -79,18 +89,18 @@ output_files:
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f000, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f000]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f000.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f000.idx]
 
-        # Output atmospheric GRIB2 products at multiple resolutions for f003
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f003]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f003.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f003.idx]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f003]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f003.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p50/gfs.t{{ cyc }}z.pgrb2.0p50.f003.idx]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f003]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f003.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.pgrb2.1p00.f003.idx]
+        # Output atmospheric GRIB2 products for f001 (0p25 only - supplemental grids not at FHOUT_PGBS intervals)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f001, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f001]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f001.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f001.idx]
 
-        # Surface flux files for each grid
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.flux.0p25.f000, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.flux.0p25.f000]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.flux.0p25.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.flux.0p25.f003]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p50/gfs.t{{ cyc }}z.flux.0p50.f000, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p50/gfs.t{{ cyc }}z.flux.0p50.f000]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p50/gfs.t{{ cyc }}z.flux.0p50.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p50/gfs.t{{ cyc }}z.flux.0p50.f003]
+        # Output atmospheric GRIB2 products for f002 (0p25 only - supplemental grids not at FHOUT_PGBS intervals)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f002, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f002]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f002.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/0p25/gfs.t{{ cyc }}z.pgrb2.0p25.f002.idx]
+
+        # Surface flux files - generated at 1p00 grid for ALL forecast hours
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f000, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f000]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f003, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f003]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f000.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f000.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f001, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f001]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f001.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f001.idx]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f002, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f002]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f002.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/grib2/1p00/gfs.t{{ cyc }}z.flux.1p00.f002.idx]
