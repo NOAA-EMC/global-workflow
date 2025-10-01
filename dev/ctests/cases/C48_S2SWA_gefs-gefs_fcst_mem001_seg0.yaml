@@ -12,40 +12,11 @@
 
 input_files:
     mkdir:
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ice/restart
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ocean/restart
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/wave/restart
 
     copy:
-        # Atmosphere initial conditions (13 files)
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_ctrl.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_ctrl.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile1.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile1.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile2.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile2.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile3.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile3.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile4.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile4.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile5.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile5.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile6.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/gfs_data.tile6.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile1.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile1.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile2.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile2.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile3.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile3.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile4.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile4.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile5.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile5.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile6.nc,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/atmos/input/sfc_data.tile6.nc]
-        
         # Ice restart (1 file)
         - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ice/restart/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc,
            {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ice/restart/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc]
