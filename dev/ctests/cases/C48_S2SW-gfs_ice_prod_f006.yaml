@@ -24,21 +24,20 @@
 #
 # Source Logic: scripts/exglobal_oceanice_products.py
 # - Uses pygfs.task.oceanice_products.OceanIceProducts class
-# - Creates GRIB2 products on 0p25, 0p50, 1p00 grids
+# - Creates GRIB2 products on 5p00 grid (mx500 model resolution)
 # - Generates native netCDF subsets
 #
 # Configuration: parm/post/oceanice_products_gfs.yaml
 # - Ice section (lines 52-79): GRIB2 + native netCDF
 # - Uses 6-hour averaged ice history files as input
+# - Product grid determined by model_grid (mx500 → 5p00)
 # =============================================================================
 
 input_files:
     mkdir:
         - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ice/restart
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p25
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p50
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/1p00
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf
 
     copy:
@@ -50,13 +49,9 @@ input_files:
 
 output_files:
     cmpfiles:
-        # Ice GRIB2 products at multiple resolutions for f006
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p25/gfs.ice.t{{ cyc }}z.0p25.f006.grib2.idx]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/0p50/gfs.ice.t{{ cyc }}z.0p50.f006.grib2.idx]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/1p00/gfs.ice.t{{ cyc }}z.1p00.f006.grib2.idx]
+        # Ice GRIB2 products at 5.0 degree resolution for f006 (mx500 model grid)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2.idx]
 
         # Ice native netCDF products
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc]
