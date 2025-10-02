@@ -35,7 +35,7 @@ source "${HOMEgfs}"/ush/module-setup.sh
 
 if [[ "$MACHINE_ID" == "container" ]]; then
   source /usr/lmod/lmod/init/bash
-  module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
+  module use "${HOMEgfs}"/sorc/gfs_utils.fd/modulefiles
   module load gfsutils_container.intel
   module load prod_util
   module load wgrib2
