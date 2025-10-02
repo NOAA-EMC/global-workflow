@@ -212,7 +212,7 @@ class MarineBMat(Task):
         None
         """
 
-        # TODO(AFE) the two renames are to accomodate yaml settings in var task, which should changed
+        # TODO(AFE) the following should probably be a jinja template
         # ocean diag B
         os.rename(os.path.join(self.task_config.DATAstaticb,
                   f"ocn.bkgerr_parametric_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
