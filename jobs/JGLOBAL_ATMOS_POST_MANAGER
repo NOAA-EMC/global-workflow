@@ -4,7 +4,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
 
-
 ####################################
 # Specify NET and RUN Name and model
 ####################################
@@ -26,4 +25,3 @@ if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 ########################################################
-

@@ -8,10 +8,10 @@ export COMPONENT="atmos"
 # Define COM and Data directories
 ##############################################
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL \
-  COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL
+    COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL \
+    COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL
 YMD=${PDY} HH=${cyc} GRID="0p25" declare_from_tmpl -rx \
-  COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
+    COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
 
 if [[ ! -d "${COMOUT_ATMOS_TRACK}" ]]; then mkdir -p "${COMOUT_ATMOS_TRACK}"; fi
 
@@ -30,8 +30,8 @@ if [[ "${RUN_ENVIR}" == "nco" ]]; then
     export COMOUTatcf=${COMROOTp1}/nhc/${envir}/atcf
     mkdir -m 775 -p "${COMOUThur}" "${COMOUTatcf}"
 else
-#    export COMOUThur=$COMOUT
-#    export COMOUTatcf=$COMOUT
+    #    export COMOUThur=$COMOUT
+    #    export COMOUTatcf=$COMOUT
     export COMOUThur=${DATA}
     export COMOUTatcf=${DATA}
 fi
@@ -43,7 +43,7 @@ fi
 #############################################################
 # Execute the script
 export pert="p01"
-export cmodel=${RUN/enkf}
+export cmodel=${RUN/enkf/}
 export loopnum=1
 
 #-----------input data checking -----------------
@@ -60,7 +60,6 @@ if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 
-
 #  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
 #      sed s:AVNX:GFSO:g \
 #    > ${COMOUT}/gfso.t${cyc}z.cyclone.trackatcfunix
@@ -72,8 +71,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -83,6 +82,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

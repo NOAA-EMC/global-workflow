@@ -2,11 +2,10 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
-export rCDUMP=${RUN/enkf}
+export rCDUMP=${RUN/enkf/}
 export COMPONENT="atmos"
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 
@@ -27,8 +26,8 @@ export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMIN_OBS:COM_OBS_TMPL \
-	COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+    COMIN_OBS:COM_OBS_TMPL \
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
@@ -61,7 +60,6 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
     fi
 fi
 
-
 # Link observational data
 export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
 if [[ ! -f ${PREPQC} ]]; then
@@ -79,7 +77,6 @@ if [[ ${RUN} == "gfs" ]]; then
     cpreq "${FIXgfs}/gsi/prepobs_errtable.global" "${ROTDIR}/fix/"
 fi
 
-
 ###############################################################
 # Run relevant script
 
@@ -92,12 +89,11 @@ fi
 ##############################################
 # Send Alerts
 ##############################################
-if [[ "${SENDDBN}" == "YES" ]] && [[ "${RUN}" == "gdas" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]] && [[ "${RUN}" == "gdas" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias "${job}" "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias"
     "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias_pc "${job}" "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc"
     "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias_air "${job}" "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air"
 fi
-
 
 ##############################################
 # End JOB SPECIFIC work
@@ -106,8 +102,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -117,6 +113,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0
