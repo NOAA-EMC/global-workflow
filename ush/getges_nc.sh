@@ -241,7 +241,7 @@ if [[ "$netwk" = "gdas" ]];then
    $COMINgdas/gdas.t${cyc}z.abias_air.txt'
    ;;
   radstat) geslist='
-   $COMINgdas/gdas.t${cyc}z..tar'
+   $COMINgdas/gdas.t${cyc}z.radstat.tar'
    ;;
   pgbges) geslist='
    $COMINgdas/gdas.t${cyc}z.pgrbh$fh
@@ -323,51 +323,51 @@ if [[ "$netwk" = "gdas" ]];then
    $COMINgdas/gdas.t${cyc}z.atm.f$ghm3.nc'
    ;;
   natgm2) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm2.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm2.nc'
    ;;
   natgm1) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm1.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm1.nc'
    ;;
   natgp1) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp1.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp1.nc'
    ;;
   natgp2) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp2.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp2.nc'
    ;;
   natgp3) geslist='
    $COMINgdas/gdas.t${cyc}z.atm.f$ghp3.nc'
    ;;
   natcur) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$gh.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.f$gh.nc'
    getlist00='
-   $COMINgdas/gdas.t${cyc}z.atmanl.nc'
+   $COMINgdas/gdas.t${cyc}z.atm.anl.nc'
    fhbeg=00
    ;;
   nsfges) geslist='
-   $COMINgdas/gdas.t${cyc}z.sfcf$gh.nc'
+   $COMINgdas/gdas.t${cyc}z.sfc.f$gh.nc'
    ;;
   nsfgm3) geslist='
-   $COMINgdas/gdas.t${cyc}z.sfcf$ghm3.nc'
+   $COMINgdas/gdas.t${cyc}z.sfc.f$ghm3.nc'
    ;;
   nsfgm2) geslist='
-   $COMINgdas/gdas.t${cyc}z.sfcf$ghm2.nc'
+   $COMINgdas/gdas.t${cyc}z.sfc.f$ghm2.nc'
    ;;
   nsfgm1) geslist='
-   $COMINgdas/gdas.t${cyc}z.sfcf$ghm1.nc'
+   $COMINgdas/gdas.t${cyc}z.sfc.f$ghm1.nc'
    ;;
   nsfgp1) geslist='
-   $COMINgdas/gdas.t${cyc}z.sfcf$ghp1.nc'
+   $COMINgdas/gdas.t${cyc}z.sfc.f$ghp1.nc'
    ;;
   nsfgp2) geslist='
-   $COMINgdas/gdas.t${cyc}z.sfcf$ghp2.nc'
+   $COMINgdas/gdas.t${cyc}z.sfc.f$ghp2.nc'
    ;;
   nsfgp3) geslist='
-   $COMINgdas/gdas.t${cyc}z.sfcf$ghp3.nc'
+   $COMINgdas/gdas.t${cyc}z.sfc.f$ghp3.nc'
    ;;
   nsfcur) geslist='
-   $COMINgdas/gdas.t${cyc}z.sfcf$gh.nc'
+   $COMINgdas/gdas.t${cyc}z.sfc.f$gh.nc'
    getlist00='
-   $COMINgdas/gdas.t${cyc}z.sfcanl.nc'
+   $COMINgdas/gdas.t${cyc}z.sfc.anl.nc'
    fhbeg=00
    ;;
   nstcur) geslist='
@@ -1195,97 +1195,97 @@ elif [[ "$netwk" = "global" ]];then
    $COMINgfs/gfs.t${cyc}z.atm.f$ghm3.nc'
    ;;
   natgm2) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$ghm2.nc
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm2.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$ghm2.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghm2.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$ghm2.nc
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm2.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$ghm2.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghm2.nc'
    ;;
   natgm1) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$ghm1.nc
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm1.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$ghm1.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghm1.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$ghm1.nc
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm1.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$ghm1.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghm1.nc'
    ;;
   natgp1) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$ghp1.nc
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp1.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$ghp1.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghp1.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$ghp1.nc
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp1.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$ghp1.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghp1.nc'
    ;;
   natgp2) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$ghp2.nc
-   $COMINgdas/gdas.t${cyc}z.atmf$ghp2.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$ghp2.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$ghp2.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$ghp2.nc
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghp2.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$ghp2.nc
+   $COMINgfs/gfs.t${cyc}z.atm.f$ghp2.nc'
    ;;
   natgp3) geslist='
    $COMINgdas/gdas.t${cyc}z.atm.f$ghp3.nc
    $COMINgfs/gfs.t${cyc}z.atm.f$ghp3.nc'
    ;;
   natcur) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$gh.nc
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$gh.nc
    $COMINgdas/gdas.t${cyc}z.atmf$gh.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$gh.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$gh.nc
    $COMINgfs/gfs.t${cyc}z.atmf$gh.nc'
    getlist00='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmanl.nc
-   $COMINgdas/gdas.t${cyc}z.atmanl.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmanl.nc
-   $COMINgfs/gfs.t${cyc}z.atmanl.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.anl.nc
+   $COMINgdas/gdas.t${cyc}z.atm.anl.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.anl.nc
+   $COMINgfs/gfs.t${cyc}z.atm.anl.nc'
    fhbeg=00
    ;;
   nsfges) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfcf$gh.nc
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfc.f$gh.nc
    $COMINgdas/gdas.t${cyc}z.sfcf$gh.nc
    $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfcf$gh.nc
    $COMINgfs/gfs.t${cyc}z.sfcf$gh.nc'
    ;;
   nsfgm3) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfcf$ghm3.nc
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfc.f$ghm3.nc
    $COMINgdas/gdas.t${cyc}z.sfcf$ghm3.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfcf$ghm3.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfc.f$ghm3.nc
    $COMINgfs/gfs.t${cyc}z.sfcf$ghm3.nc'
    ;;
   nsfgm2) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfcf$ghm2.nc
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfc.f$ghm2.nc
    $COMINgdas/gdas.t${cyc}z.sfcf$ghm2.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfcf$ghm2.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfc.f$ghm2.nc
    $COMINgfs/gfs.t${cyc}z.sfcf$ghm2.nc'
    ;;
   nsfgm1) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfcf$ghm1.nc
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfc.f$ghm1.nc
    $COMINgdas/gdas.t${cyc}z.sfcf$ghm1.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfcf$ghm1.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfc.f$ghm1.nc
    $COMINgfs/gfs.t${cyc}z.sfcf$ghm1.nc'
    ;;
   nsfgp1) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfcf$ghp1.nc
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfc.f$ghp1.nc
    $COMINgdas/gdas.t${cyc}z.sfcf$ghp1.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfcf$ghp1.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfc.f$ghp1.nc
    $COMINgfs/gfs.t${cyc}z.sfcf$ghp1.nc'
    ;;
   nsfgp2) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfcf$ghp2.nc
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfc.f$ghp2.nc
    $COMINgdas/gdas.t${cyc}z.sfcf$ghp2.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfcf$ghp2.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfc.f$ghp2.nc
    $COMINgfs/gfs.t${cyc}z.sfcf$ghp2.nc'
    ;;
   nsfgp3) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfcf$ghp3.nc
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfc.f$ghp3.nc
    $COMINgdas/gdas.t${cyc}z.sfcf$ghp3.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfcf$ghp3.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfc.f$ghp3.nc
    $COMINgfs/gfs.t${cyc}z.sfcf$ghp3.nc'
    ;;
   nsfcur) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfcf$gh.nc
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfc.f$gh.nc
    $COMINgdas/gdas.t${cyc}z.sfcf$gh.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfcf$gh.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfc.f$gh.nc
    $COMINgfs/gfs.t${cyc}z.sfcf$gh.nc'
    getlist00='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfcanl.nc
-   $COMINgdas/gdas.t${cyc}z.sfcanl.nc
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfcanl.nc
-   $COMINgfs/gfs.t${cyc}z.sfcanl.nc'
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.sfc.anl.nc
+   $COMINgdas/gdas.t${cyc}z.sfc.anl.nc
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.sfc.anl.nc
+   $COMINgfs/gfs.t${cyc}z.sfc.anl.nc'
    fhbeg=00
    ;;
   nstcur) geslist='
