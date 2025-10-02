@@ -28,10 +28,10 @@
 #
 ################################################################################
 
-source "${USHgfs}/preamble.sh"
+source "${USHgfs}"/preamble.sh
 
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/ush/module-setup.sh"
+source "${HOMEgfs}"/ush/detect_machine.sh
+source "${HOMEgfs}"/ush/module-setup.sh
 
 if [[ "$MACHINE_ID" == "container" ]]; then
   source /usr/lmod/lmod/init/bash
