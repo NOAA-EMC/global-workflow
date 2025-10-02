@@ -25,7 +25,7 @@ def main():
             logger.info(f"key ({key}) not found in archive.task_config!")
 
     # Pull out all the configuration keys needed to run the rest of archive steps
-    keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
+    keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY', 'cyc',
             'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_PREP_OBS_AERO',
             'PARMgfs', 'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'PSLOT',
             'DO_JEDISNOWDA', 'DO_ARCHCOM', 'ARCHCOM_TO', 'ROTDIR', 'ARCH_WARMICFREQ',
@@ -54,7 +54,6 @@ def main():
         if key.startswith(("COM_", "COMIN_", "COMOUT_")):
             archive_dict[key] = archive.task_config.get(key)
 
-    pwd = os.getcwd()
     with chdir(config.ROTDIR):
         logger.debug(f"Changed working directory to {config.ROTDIR}")
 
