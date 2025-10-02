@@ -261,7 +261,7 @@ This creates directory structures for **both cycles** in the test environment.
 
 ---
 
-## Usage
+## Running the tests
 
 ### CMake Configuration
 
