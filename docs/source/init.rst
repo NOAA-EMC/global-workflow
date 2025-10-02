@@ -96,7 +96,7 @@ Start date = 2021122018
                |-- gdas.t18z.abias.txt
                |-- gdas.t18z.abias_air.txt
                |-- gdas.t18z.abias_pc.txt
-               `-- gdas.t18z.radstat.txt
+               `-- gdas.t18z.radstat.tar
 
 .. _staged_ics_cycled_coupled:
 
@@ -209,7 +209,7 @@ Start date = 2021032312
                │   ├── gdas.t12z.abias_air.txt
                │   ├── gdas.t12z.abias_int.txt
                │   ├── gdas.t12z.abias_pc.txt
-               │   └── gdas.t12z.radstat.txt
+               │   └── gdas.t12z.radstat.tar
                └── ocean
                    └── gdas.t12z.ocninc.nc
 

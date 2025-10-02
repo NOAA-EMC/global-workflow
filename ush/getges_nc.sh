@@ -145,7 +145,7 @@ fi
 if [[ $gfile = '?' || $# -gt 1 || $err -ne 0 || -z $valid ||\
       $netwk = '?' || $envir = '?' || $fhour = '?' || $resol = '?' ||\
       $typef = '?' || $valid = '?' ]];then
- echo "Usage: getges.sh [-n network] [-e environment] [-f fhour] [-q] [-r resolution]" >&2
+ echo "Usage: getges_nc.sh [-n network] [-e environment] [-f fhour] [-q] [-r resolution]" >&2
  echo "                 [-t filetype] [-v valid] [gfile]" >&2
  if [[ $netwk = '?' ]];then
   echo "         network choices:" >&2

@@ -36,7 +36,7 @@ _COMROOT_/gfs/_SHORTVER_/gdas._PDYm1_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/g
 + /??/atmos/gdas.t??z.sfc.f*.nc
 + /??/atmos/gdas.t??z.engicegrb
 + /??/atmos/gdas.t??z.atm.f0*.nc
-+ /??/atmos/gdas.t??z.radstat.txt
++ /??/atmos/gdas.t??z.radstat.tar
 + /??/atmos/gdas.t??z.atm.anl.nc
 + /??/atmos/gdas.t??z.atmges.nc
 + /??/atmos/gdas.t??z.atmgm3.nc
@@ -58,7 +58,7 @@ _COMROOT_/gfs/_SHORTVER_/gdas._PDY_/ _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/gda
 + /??/atmos/gdas.t??z.sfc.f*.nc
 + /??/atmos/gdas.t??z.engicegrb
 + /??/atmos/gdas.t??z.atm.f0*.nc
-+ /??/atmos/gdas.t??z.radstat.txt
++ /??/atmos/gdas.t??z.radstat.tar
 + /??/atmos/gdas.t??z.atm.anl.nc
 + /??/atmos/gdas.t??z.atmges.nc
 + /??/atmos/gdas.t??z.atmgm3.nc

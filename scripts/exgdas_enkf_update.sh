@@ -44,7 +44,7 @@ SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean.txt}
 CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat.tar}
 OZNSTAT=${OZNSTAT:-${APREFIX}oznstat.tar}
-RADSTAT=${RADSTAT:-${APREFIX}radstat.txt}
+RADSTAT=${RADSTAT:-${APREFIX}radstat.tar}
 ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat.txt}
 
 # Namelist parameters
