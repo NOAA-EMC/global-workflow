@@ -18,7 +18,8 @@ The CTest framework consists of the following scripts:
 
 ### How Input Files Are Staged
 
-CTest creates **self-contained test environments** for each job. All required input files must be staged into the test's EXPDIR before execution. These input files come from **nightly stable baseline runs** of complete workflow cases.
+CTest creates **self-contained test environments** for each job. All required input files must be staged into the test's COMROOT  before execution. These input files come from **nightly stable baseline runs** of complete workflow cases.
+
 
 ### Source Directory Configuration
 
