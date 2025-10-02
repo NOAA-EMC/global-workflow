@@ -29,7 +29,7 @@ fi
 
 ########################################################
 # Execute the script.
-${SCRgfs}/exgfs_atmos_postsnd.sh && true
+"${SCRgfs}/exgfs_atmos_postsnd.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
@@ -42,8 +42,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 ##########################################

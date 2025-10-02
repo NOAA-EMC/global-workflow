@@ -50,7 +50,7 @@ if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
 fi
 
-LEVS=$(${NCLEN} ${ATMGES} pfull) && true
+LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
 export err=$?
 set_strict
 
@@ -122,7 +122,7 @@ fi
 # Send Alerts
 ##############################################
 if [[ "${SENDDBN}" == "YES" ]] ; then
-   ${DBNROOT}/bin/dbn_alert MODEL ENKF1_MSC_gsistat ${job} ${GSISTAT}
+   "${DBNROOT}/bin/dbn_alert" MODEL ENKF1_MSC_gsistat "${job}" "${GSISTAT}"
 fi
 
 

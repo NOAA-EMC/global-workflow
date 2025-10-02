@@ -11,7 +11,7 @@ export DO_RELOCATE=${DO_RELOCATE:-NO}           # Turn on tropical cyclone reloc
 
 export tmmark=tm00
 export ARCHSYND=${ROTDIR}/syndat  # this location is unique, do not change
-if [ ! -d ${ARCHSYND} ]; then mkdir -p ${ARCHSYND}; fi
+if [[ ! -d "${ARCHSYND}" ]]; then mkdir -p "${ARCHSYND}"; fi
 
 export HOMENHC=${HOMENHC:-/lfs/h1/ops/prod/dcom/nhc/atcf/ncep}
 
@@ -44,8 +44,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 ##########################################

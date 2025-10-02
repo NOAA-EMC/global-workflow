@@ -38,7 +38,7 @@ MEMDIR="ensstat" RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.ensmean.nc"
-if [ ! -f ${ATMGES_ENSMEAN} ]; then
+if [[ ! -f "${ATMGES_ENSMEAN}" ]]; then
     export err=1
     err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
 fi
@@ -86,7 +86,7 @@ export SETUP_INVOBS="passive_bc=.false.,${SETUP_INVOBS}"
 # Ensure clean stat tarballs for ensemble mean
 for fstat in ${CNVSTAT} ${OZNSTAT} ${RADSTAT}; do
     if [[ -f "${fstat}" ]]; then
-        rm -f ${fstat}
+        rm -f "${fstat}"
     fi
 done
 
@@ -108,7 +108,7 @@ fi
 # Final processing
 ##############################################
 if [[ -e "${pgmout}" ]] ; then
-  cat ${pgmout}
+  cat "${pgmout}"
 fi
 
 ##########################################
