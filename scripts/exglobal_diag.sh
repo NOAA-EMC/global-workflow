@@ -36,7 +36,7 @@ binary_diag=${binary_diag:-".false."}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-RADSTAT=${RADSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}radstat.txt}
+RADSTAT=${RADSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}radstat.tar}
 PCPSTAT=${PCPSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}pcpstat}
 CNVSTAT=${CNVSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat.tar}
 OZNSTAT=${OZNSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat.tar}
