@@ -150,6 +150,7 @@ export OPS_RES="C768" # Do not change
 export LEVS=128
 export CASE="{{ CASE_CTL }}"  # CASE is required in GEFS to determine ocean/ice/wave resolutions
 export CASE_ENS="{{ CASE_ENS }}"
+export CASE_HIST="{{ CASE_HIST | default('${CASE}') }}"
 export OCNRES="{{ OCNRES }}"
 export ICERES="${OCNRES}"
 # These are the currently recommended grid-combinations
