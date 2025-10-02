@@ -58,7 +58,7 @@ export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias.txt
 export GBIASPC=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc.txt
 export GBIASAIR=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air.txt
-export GRADSTAT=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat.txt
+export GRADSTAT=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat.tar
 
 # Bias correction coefficients related to ensemble mean
 export ABIAS="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias.txt"
