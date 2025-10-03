@@ -186,10 +186,10 @@ for imem in $(seq 1 ${NMEM_ENS}); do
    mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
 
    for FHR in ${nfhrs}; do
-      ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc" \
+      ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atm.f00${FHR}${ENKF_SUFFIX}.nc" \
          "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       if [[ "${hofx_2m_sfcfile}" == ".true." ]]; then
-         ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfcf00${FHR}${ENKF_SUFFIX}.nc" \
+         ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfc.f00${FHR}${ENKF_SUFFIX}.nc" \
              "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
       if [[ "${cnvw_option}" == ".true." ]]; then
