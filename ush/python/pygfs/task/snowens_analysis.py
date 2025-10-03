@@ -69,7 +69,7 @@ class SnowEnsAnalysis(Analysis):
                 'CASE': self.task_config.CASE_ENS,
                 'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
                 'ims_file': _ims_file,
-                'DO_IMS_SCF': _DO_IMS_SCF ,  # Boolean to decide if IMS snow cover processing is done
+                'DO_IMS_SCF': _DO_IMS_SCF,  # Boolean to decide if IMS snow cover processing is done
             }
         ))
 
