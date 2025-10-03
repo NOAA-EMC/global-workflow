@@ -276,6 +276,8 @@ class NEXUSEmissions(Task):
 
         #create a directory in the self.task_config.DATA/Restarts
         os.makedirs(os.path.join(self.task_config.DATA, 'Restarts'), exist_ok=True)
+        logger.info(f"Created Restarts directory: {os.path.join(self.task_config.DATA, 'Restarts')}")
+
 
     @logit(logger)
     def execute(self) -> None:
