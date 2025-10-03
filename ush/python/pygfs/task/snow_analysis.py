@@ -50,8 +50,7 @@ class SnowAnalysis(Analysis):
         _res = int(self.task_config['CASE'][1:])
 
         # if 00z, do SCF preprocessing
-        _ims_file = os.path.join(self.task_config.FIXgfs, 'gdas', 'obs', 'ims',
-                                 f'IMS_4km_to_{self.task_config.CASE}.mx{self.task_config.OCNRES}.nc')
+        _ims_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}imssnow96.asc')
         logger.info(f"Checking for IMS file: {_ims_file}")
         if self.task_config.cyc == 0 and os.path.exists(_ims_file):
             _DO_IMS_SCF = True

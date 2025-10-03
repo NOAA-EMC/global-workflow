@@ -53,8 +53,7 @@ class SnowEnsAnalysis(Analysis):
         _res = int(self.task_config['CASE_ENS'][1:])
 
         # if 00z, do SCF preprocessing
-        _ims_file = os.path.join(self.task_config.FIXgfs, 'gdas', 'obs', 'ims',
-                                 f'IMS_4km_to_{self.task_config.CASE}.mx{self.task_config.OCNRES}.nc')
+        _ims_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}imssnow96.asc')
         if self.task_config.cyc == 0 and os.path.exists(_ims_file):
             _DO_IMS_SCF = True
         else:
@@ -69,7 +68,8 @@ class SnowEnsAnalysis(Analysis):
                 'npz': self.task_config.LEVS - 1,
                 'CASE': self.task_config.CASE_ENS,
                 'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
-                'DO_IMS_SCF': False,  # Boolean to decide if IMS snow cover processing is done
+                'ims_file': _ims_file,
+                'DO_IMS_SCF': _DO_IMS_SCF ,  # Boolean to decide if IMS snow cover processing is done
             }
         ))
 
