@@ -274,6 +274,9 @@ class NEXUSEmissions(Task):
         j2_renderer.save(outfile)
         logger.info(f"NEXUS spec file rendered successfully: written to {outfile}")
 
+        #create a directory in the self.task_config.DATA/Restarts
+        os.makedirs(os.path.join(self.task_config.DATA, 'Restarts'), exist_ok=True)
+
     @logit(logger)
     def execute(self) -> None:
         """Run NEXUS emission preprocessor based on configuration.
