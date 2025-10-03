@@ -44,6 +44,9 @@ ctest
 # Run tests for a specific configuration case
 ctest -L C48_ATM
 
+# Run test for a specific JJOB
+cest -L C48_ATM-gfs_atmos_prod_f000-f002
+
 # Run a specific test with verbose output
 ctest -R test_C48_ATM-gfs_fcst_seg0_execute -V
 
@@ -149,8 +152,8 @@ output_files:
 
 ```bash
 cd build
-cmake ../..
-ctest -R test_C48_ATM-gfs_analysis_execute -V
+cmake ../../..
+ctest -L C48_S2SW -j 3
 ```
 
 ## Naming Convention
