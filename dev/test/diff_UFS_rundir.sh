@@ -106,7 +106,7 @@ done
 
 # NetCDF Files
 files=""
-files="${files} $(basename_list '' "${dirA}"/atmf*.nc "${dirA}"/sfcf*.nc)"
+files="${files} $(basename_list '' "${dirA}"/atm.f*.nc "${dirA}"/sfc.f*.nc)"
 if [[ -d "${dirA}/history" ]]; then
 	files="$(basename_list 'history/' "${dirA}"/history/*.nc)"
 fi
