@@ -212,21 +212,9 @@ class MarineBMat(Task):
         None
         """
 
-        # TODO(AFE) the following should probably be a jinja template
-        # ocean diag B
-        os.rename(os.path.join(self.task_config.DATAstaticb,
-                  f"ocn.bkgerr_parametric_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
-                  os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_parametric_stddev.nc"))
-        os.rename(os.path.join(self.task_config.DATAstaticb,
-                  f"ice.bkgerr_parametric_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
-                  os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_parametric_stddev.nc"))
-        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
-            os.rename(os.path.join(self.task_config.DATAstaticb,
-                      f"ocn.bkgerr_ens_stddev.incr.{self.task_config.MARINE_WINDOW_BEGIN_ISO}.nc"),
-                      os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_ens_stddev.nc"))
-            os.rename(os.path.join(self.task_config.DATAstaticb,
-                      f"ice.bkgerr_ens_stddev.incr.{self.task_config.MARINE_WINDOW_BEGIN_ISO}.nc"),
-                      os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_ens_stddev.nc"))
+        logger.info(f"Copying background error files to new filenames")
+        bkgerr_list = parse_j2yaml(self.task_config.COPY_BMAT_BKGERR_YAML, self.task_config)
+        FileHandler(bkgerr_list).sync()
 
         # Save output files to COM
         logger.info(f"Copy files to ROTDIR")
