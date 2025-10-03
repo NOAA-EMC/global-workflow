@@ -596,7 +596,7 @@ elif [[ "$netwk" = "gfs" ]];then
  fhend=384
  case $typef in
   natges) geslist='
-   $COMINgfs/gfs.t${cyc}z.atmf$gh.nc'
+   $COMINgfs/gfs.t${cyc}z.atm.f$gh.nc'
    ;;
   pgbcur) geslist='
    $COMINgfs/gfs.t${cyc}z.pgrbf$fh'
@@ -637,7 +637,7 @@ elif [[ "$netwk" = "gfs" ]];then
    fhinc=06
    ;;
   natcur) geslist='
-   $COMINgfs/gfs.t${cyc}z.atmf$gh.nc'
+   $COMINgfs/gfs.t${cyc}z.atm.f$gh.nc'
    getlist00='
    $COMINgfs/gfs.t${cyc}z.atmanl.nc'
    fhbeg=00
@@ -1224,9 +1224,9 @@ elif [[ "$netwk" = "global" ]];then
    ;;
   natcur) geslist='
    $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$gh.nc
-   $COMINgdas/gdas.t${cyc}z.atmf$gh.nc
+   $COMINgdas/gdas.t${cyc}z.atm.f$gh.nc
    $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$gh.nc
-   $COMINgfs/gfs.t${cyc}z.atmf$gh.nc'
+   $COMINgfs/gfs.t${cyc}z.atm.f$gh.nc'
    getlist00='
    $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.anl.nc
    $COMINgdas/gdas.t${cyc}z.atm.anl.nc

@@ -157,7 +157,7 @@ class FV3AnalysisCalc(Task):
             logger.info(f"Inserting analysis variables into snow analysis file")
             insert_analysis_variables(self.task_config.current_cycle,
                                       f"snowanl.{auxgrid_time_str}.nc4",
-                                      f"{self.task_config.GPREFIX}sfcf006.nc")
+                                      f"{self.task_config.GPREFIX}sfc.f006.nc")
 
     @logit(logger)
     def finalize(self) -> None:
