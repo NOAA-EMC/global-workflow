@@ -46,7 +46,7 @@ mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006${GSUFFIX}"
 if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     export err=1
-    err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
+    err_exit "FILE MISSING: ATMGES_ENSMEAN == ${ATMGES_ENSMEAN}"
 fi
 
 LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
@@ -61,7 +61,7 @@ if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
 export TCVITL="${COMIN_OBS}/${APREFIX_DET}syndata.tcvitals.tm00"
-if [[ ${DONST} = "YES" ]]; then
+if [[ ${DONST} == "YES" ]]; then
     export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"

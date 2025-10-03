@@ -38,4 +38,4 @@ if [[ "${RUN_GRID2GRID_STEP1}" == "YES" || "${RUN_GRID2OBS_STEP1}" == "YES" || "
     fi
 fi
 
-if [[ ${KEEPDATA:-"NO"} = "NO" ]]; then rm -rf "${DATAROOT}"; fi # TODO: This should be $DATA
+if [[ ${KEEPDATA:-"NO"} == "NO" ]]; then rm -rf "${DATAROOT}"; fi # TODO: This should be $DATA

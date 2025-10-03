@@ -38,7 +38,7 @@ MEMDIR="ensstat" RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.ensmean.nc"
 if [[ ! -f "${ATMGES_ENSMEAN}" ]]; then
     export err=1
-    err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
+    err_exit "FILE MISSING: ATMGES_ENSMEAN == ${ATMGES_ENSMEAN}"
 fi
 
 # Link observational data
@@ -47,7 +47,7 @@ if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
 export TCVITL="${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00"
-if [[ ${DONST} = "YES" ]]; then
+if [[ ${DONST} == "YES" ]]; then
     export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"

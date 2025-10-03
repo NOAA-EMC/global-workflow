@@ -37,7 +37,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
 if [[ ! -f "${ATMGES}" ]]; then
     export err=1
-    err_exit "FILE MISSING: ATMGES = ${ATMGES}"
+    err_exit "FILE MISSING: ATMGES == ${ATMGES}"
 fi
 
 # Get LEVS
