@@ -44,10 +44,7 @@ MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.grb2${fhr3}"
 # Get inventory from ${MASTER_FILE} that matches patterns from ${paramlista}
 # Extract this inventory from ${MASTER_FILE} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
 # shellcheck disable=SC2312
-${WGRIB2} "${MASTER_FILE}" > wgrib2.log
-grep -F -f "${paramlista}" wgrib2.log > grep.res
-${WGRIB2} -i -grib "tmpfile_${fhr3}" "${MASTER_FILE}" < grep.res
-
+${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlista}" | ${WGRIB2} -i -grib "tmpfile_${fhr3}" "${MASTER_FILE}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
    err_exit "wgrib2 failed to create intermediate grib2 file from ${MASTER_FILE} using ${paramlista}"
@@ -93,8 +90,6 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
 
   # shellcheck disable=SC2312
   ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
- #${WGRIB2} "${tmpfile}" > wgrib2.log
- #ncount=$(cat wgrib2.log | wc -l)
   if [[ ${nproc} -gt ${ncount} ]]; then
     echo "WARNING: Total no. of available processors '${nproc}' exceeds no. of records '${ncount}' in ${tmpfile}"
     echo "Reduce nproc to ${ncount} (or less) to not waste resources"
@@ -115,8 +110,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
     # grep returns 1 if no match is found, so temporarily turn off exit on non-zero rc
     set +e
     # shellcheck disable=SC2312
-    ${WGRIB2} -d "${last}" "${tmpfile}" > wgrib2.log
-    grep -E -i "ugrd|ustm|uflx|u-gwd|land|maxuw" wgrib2.log
+    ${WGRIB2} -d "${last}" "${tmpfile}" | grep -E -i "ugrd|ustm|uflx|u-gwd|land|maxuw"
     rc=$?
     set_strict
     if [[ ${rc} == 0 ]]; then  # Matched the grep

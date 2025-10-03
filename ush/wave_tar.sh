@@ -24,10 +24,10 @@
 #
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
-
+  source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 # 0.a Basic modes of operation
 
-  cd "${DATA}"
+  cd "${DATA}" || exit 1
   echo "Making TAR FILE"
 
   alertName=$(echo $RUN|tr [a-z] [A-Z])
@@ -165,7 +165,7 @@ EOF
 # --------------------------------------------------------------------------- #
 # 4.  Final clean up
 
-cd "${DATA}"
+cd "${DATA}" || exit 5
 
 if [[ ${KEEPDATA:-NO} == "NO" ]]; then
   set -v

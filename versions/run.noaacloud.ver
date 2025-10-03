@@ -13,3 +13,4 @@ export cdo_ver=2.3.0
 export perl_ver=5.38.0
 export mkl_ver=2024.2.1
 export imagemagick_ver=7.1.1-11
+export ens_tracker_ver=v1.2.1.2
