@@ -164,7 +164,7 @@ if [[ "${USE_CFP}" == "YES" ]]; then
    fi
 else
    for ftype in ${flist}; do
-      fname="${COMIN_ATMOS_ANALYSIS_STAT}/${ftype}.ensmean.tar"
+      fname="${COMIN_ATMOS_ANALYSIS_STAT}/${ftype}"
       tar -xvf "${fname}"
    done
 fi
