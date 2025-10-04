@@ -24,7 +24,7 @@ if __name__ == '__main__':
     snow_anl.initialize()
 
     # Process SNOCVR and SNOMAD (if applicable)
-    if snow_anl.task_config.DO_SNOCVR_SNOMAD == True:
+    if snow_anl.task_config.DO_SNOCVR_SNOMAD:
         snow_anl.prepare_SNOCVR_SNOMAD()
 
     # Process IMS snow cover (if applicable)
