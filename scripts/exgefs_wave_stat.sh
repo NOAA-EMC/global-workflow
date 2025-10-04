@@ -47,12 +47,12 @@ EOF
 #
 # 0.a System-specific settings
 #
-nens=$NMEM_ENS
+nens=${NMEM_ENS}
 nens=${nens:?Parameter npert required for ensemble statistics}
-nmembn=`expr ${nens} + 1`
+nmembn=$(( nens + 1 ))
 #
 export membn=""
-for i in $(seq -f "%03g" 0 $nens); do membn="$membn $i"; done
+for i in $(seq -f "%03g" 0 ${nens}); do membn="$membn $i"; done
 
 #
 # 0.b Define model grid
@@ -103,14 +103,14 @@ inc=$FHOUT_HF_WAV
 ftype="mem"
       
 ngrib=$(( $ngrib + 1 ))
-for me in $membn; do
+for me in ${membn}; do
   ENSTAG=${ftype}${me}
   cpfile=${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/${grdNAME}/${RUN}.${cycle}.${grdNAME}.f${fhr3}.grib2
   if [ -s "${cpfile}" ] ; then
     ln -s  "$cpfile"  ./${RUN}.${cycle}.${ENSTAG}.${grdNAME}.f${fhr3}.grib2
   else
     export err=2
-    err_exit "No $cpfile copied."
+    err_exit "No ${cpfile} copied."
   fi
 done
 
@@ -127,10 +127,10 @@ while [ ${iparam} -le ${nparam} ]
 do
   nip=${arrpar[$iparam-1]}
   echo $nip
-  prepar=`echo $nip | rev | cut -c2- | rev` #Part prefix (assumes 1 digit index)
-  paridx=`echo $nip | rev | cut -c-1`
+  prepar=`echo ${nip} | rev | cut -c2- | rev` #Part prefix (assumes 1 digit index)
+  paridx=`echo ${nip} | rev | cut -c-1`
   npart=0
-  case $prepar in
+  case ${prepar} in
     HTSG)   nnip=${nip} ; snip=hs ;;
     PERP)   nnip=${nip} ; snip=tp ;;
     ICE)   nnip=${nip} ; snip=ice ;;
@@ -149,14 +149,14 @@ do
     *)       nnip= ;;
   esac
 
-  inc=$FHOUT_HF_WAV
+  inc=${FHOUT_HF_WAV}
   if [ ${iparam} -eq 3 ] ||[ ${iparam} -eq 4 ] || [ ${iparam} -eq 5 ] || \
      [ ${iparam} -eq 10 ] || [ ${iparam} -eq 15 ] || [ ${iparam} -eq 16 ] ||
      [ ${iparam} -eq 17 ] || [ ${iparam} -eq 18 ] || [ ${iparam} -eq 21 ]
   then
-     echo "Parameter $snip not yet available for stats"
+     echo "Parameter ${snip} not yet available for stats"
   else
-    for me in $membn; do
+    for me in ${membn}; do
       ENSTAG=${ftype}${me}
       infile=${RUN}.${cycle}.${ENSTAG}.${grdNAME}.f${fhr3}.grib2
       outfile=${nnip}_${me}.t${cyc}z.${grdNAME}.f${fhr3}.grib2
@@ -208,7 +208,7 @@ done
 
 # 2.c Execute poe or serial command files
 
-echo " INFO: Generating $nmembn hourly to ${FHMAX_WAV}h wave ensembles stats files "
+echo " INFO: Generating ${nmembn} hourly to ${FHMAX_WAV}h wave ensembles stats files "
 
 "${HOMEgfs}/ush/run_mpmd.sh" cmdfile
 export err=$?
@@ -225,7 +225,7 @@ iparam=1
 while [ ${iparam} -le ${nparam} ]
 do
   nip=${arrpar[$iparam-1]}
-  case $nip in
+  case ${nip} in
     HTSGW)   stypes='mean spread prob' ; snip=hs ;;
     PERPW)   stypes='mean spread prob' ; snip=tp ;;
     ICEC)    stypes='mean spread prob' ; snip=ice ;;
@@ -261,7 +261,7 @@ do
 # 2.e Cleanup base parameter files per member
     rm -f ${nip}_??.t${cyc}z.grib2
 
-    for stype in $stypes; do
+    for stype in ${stypes}; do
       ingrib=${snip}_${stype}.${fhr3}.grib2
       outgrib=${RUN}.t${cyc}z.${stype}.${grdNAME}.f${fhr3}.grib2
       echo "$WGRIB2  ./${par_dir}/${valid_time}/${ingrib} -append -grib ./${outgrib} " >> ${stype}.ncmdfile
@@ -270,7 +270,7 @@ do
 
   fi
   iparam=$((iparam + 1))
-  echo "IPARAM: $iparam"
+  echo "IPARAM: ${iparam}"
 done
 
 chmod 744 mean.ncmdfile
@@ -332,11 +332,11 @@ ifile=0
 while [ ${ibuoy} -le ${nbuoys} ]
 do
   bline=`sed ''$ibuoy'!d' buoy.file`
-  blat=`echo $bline | awk '{print $2}'`
-  blon=`echo $bline | awk '{print $1}'`
-  bnom=`echo $bline | awk '{print $3}' | sed "s/'//g"`
+  blat=`echo ${bline} | awk '{print $2}'`
+  blon=`echo ${bline} | awk '{print $1}'`
+  bnom=`echo ${bline} | awk '{print $3}' | sed "s/'//g"`
 
-  echo "$HOMEgfs/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} ${FORECAST_HOUR} 2>&1 | tee  bull_${bnom}.out" >> ${fcmdnow}
+  echo "${HOMEgfs}/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} ${FORECAST_HOUR} 2>&1 | tee  bull_${bnom}.out" >> ${fcmdnow}
 
   ibuoy=`expr ${ibuoy} + 1`
   ifile=`expr ${ifile} + 1`
@@ -397,9 +397,9 @@ while [ ${ibuoy} -le ${nbuoys} ]
 do
 
   bline=`sed ''$ibuoy'!d' buoy.file`
-  blat=`echo $bline | awk '{print $2}'`
-  blon=`echo $bline | awk '{print $1}'`
-  bnom=`echo $bline | awk '{print $3}' | sed "s/'//g"`
+  blat=`echo ${bline} | awk '{print $2}'`
+  blon=`echo ${bline} | awk '{print $1}'`
+  bnom=`echo ${bline} | awk '{print $3}' | sed "s/'//g"`
 
   if [ ! -s ${RUN}.${bnom}.f${fhr3}.bull ]
   then
@@ -437,7 +437,7 @@ do
     fi
   else
     export err=6
-    err_exit "ERROR: $modIE fcst $date $cycle: ${fcopy} not fouund."
+    err_exit "ERROR: ${modIE} fcst ${date} ${cycle}: ${fcopy} not fouund."
   fi
 done
 
@@ -452,7 +452,7 @@ if [ -s "$bcopy_station" ] && [ -s "$bcopy_bull" ]; then
   cp -f ${bcopy_bull}  "${COMOUT_WAVE_STATION_ENS}"
 else
   export err=6
-  err_exit "$modIE fcst $date $cycle: ${bcopy_station} and ${bcopy_bull} not fouund."
+  err_exit "${modIE} fcst ${date} ${cycle}: ${bcopy_station} and ${bcopy_bull} not fouund."
 fi
 
 echo "$job completed normally"
