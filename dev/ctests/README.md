@@ -26,13 +26,13 @@ mkdir -p build
 cd build
 
 # Configure using environment variables from config.$MACHINE_ID
-cmake ../..
+cmake ../../..
 
 # Or configure with explicit command-line options
 cmake -DHPC_ACCOUNT=myaccount \
       -DSTAGED_CTESTS=/path/to/baselines/RUNTESTS \
       -DICSDIR_ROOT=/path/to/ics \
-      ../..
+      ../../..:w
 ```
 
 ### Run Tests
