@@ -69,6 +69,7 @@ class SnowAnalysis(Task):
                 'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'snow_prepobs_path': os.path.join(self.task_config.DATA, 'prep'),
                 'snow_obsdatain_path': os.path.join(self.task_config.DATA, 'obs'),
                 'snow_obsdataout_path': os.path.join(self.task_config.DATA, 'diags'),
                 'snow_bkg_path': os.path.join('.', 'bkg/'),
@@ -82,6 +83,82 @@ class SnowAnalysis(Task):
         # Create JEDI object dictionary
         expected_keys = ['scf_to_ioda', 'snowanlvar']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+
+        # Boolean to decide if SNOCVR and SNOMAD processing is done
+        self.task_config.DO_SNOCVR_SNOMAD = False
+
+    @logit(logger)
+    def prepare_SNOCVR_SNOMAD(self) -> None:
+        """Prepare the combined SNOCVR and SNOMAD data for a global snow analysis
+
+        This includes:
+        - creating combined SNOCVR and SNOMAD snowdepth data in IODA format.
+
+        Parameters
+        ----------
+        self : Analysis
+            Instance of the SnowAnalysis object
+
+        Returns
+        ----------
+        None
+        """
+
+        # create a temporary dict of all keys needed in this method
+        localconf = AttrDict()
+        keys = ['DATA', 'PARMgfs', 'COMIN_OBS', 'OPREFIX','snow_prepobs_path']
+        for key in keys:
+            localconf[key] = self.task_config[key]
+
+        # Read and render the prep_snocvr_snomad.yaml.j2
+        logger.info(f"Reading {self.task_config.PREP_SNOCVR_SNOMAD_YAML}")
+        prep_snocvr_snomad_config = parse_j2yaml(self.task_config.PREP_SNOCVR_SNOMAD_YAML, localconf)
+        logger.debug(f"{self.task_config.PREP_SNOCVR_SNOMAD_YAML}:\n{pformat(prep_snocvr_snomad_config)}")
+
+        # define these locations in gdas/snow/prep/prep_ghcn.yaml.j2
+        logger.info("Copying SNOCVR and SNOMAD obs to DATA")
+        FileHandler(prep_snocvr_snomad_config.stage).sync()
+
+        # Execute obsBuilder to create the combined snocvr and snomad in IODA format
+        logger.info("Create the combined snocvr and snomad data in IODA format")
+
+        input_snocvr = f'{localconf.OPREFIX}snocvr.tm00.bufr_d'
+        input_snomad = f'{localconf.OPREFIX}snomad.tm00.bufr_d'
+        output_file = f'{localconf.OPREFIX}snocvr_snomad.tm00.nc'
+        if os.path.exists(f"{os.path.join(localconf.DATA, output_file)}"):
+            rm_p(output_file)
+
+        logger.info("Link OBSBUILDER into DATA/")
+        exe_src = self.task_config.OBSBUILDER
+        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+
+        exe = Executable(exe_dest)
+        if os.path.exists(input_snocvr):
+            exe.add_default_arg(["--input_snocvr", f"{os.path.join(localconf.DATA, input_snocvr)}"])
+        exe.add_default_arg(["--output", f"{os.path.join(localconf.DATA, output_file)}"])
+        if os.path.exists(input_snomad):
+            exe.add_default_arg(["--input_snomad", f"{os.path.join(localconf.DATA, input_snomad)}"])
+        try:
+            logger.debug(f"Executing {exe}")
+            exe()
+        except OSError:
+            logger.exception(f"Failed to execute {exe}")
+            raise
+        except Exception as err:
+            logger.exception(f"An error occured during execution of {exe}")
+            raise WorkflowException(f"An error occured during execution of {exe}") from err
+
+        # Ensure the IODA snow depth GHCN file is produced by the IODA converter
+        # If so, copy to DATA/obs/
+        if not os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
+            logger.exception(f"{self.task_config.OBSBUILDER} failed to produce {output_file}")
+            raise FileNotFoundError(f"{os.path.join(localconf.DATA, output_file)}")
+        else:
+            logger.info(f"Copy {output_file} successfully generated")
+            FileHandler(prep_snocvr_snomad_config.netcdf).sync()
 
     @logit(logger)
     def initialize(self) -> None:
@@ -142,8 +219,15 @@ class SnowAnalysis(Task):
         ]
         FileHandler({'mkdir': newdirs}).sync()
 
+        # Check if SNOMAD file exists
+        snocvr_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d')
+        snomad_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snomad.tm00.bufr_d')
+        if os.path.exists(snocvr_file) or os.path.exists(snomad_file):
+            self.task_config.DO_SNOCVR_SNOMAD = True
+
         # if 00z, do SCF preprocessing
-        if self.task_config.cyc == 0:
+        infile = os.path.join(self.task_config.COMIN_OBS,f'{self.task_config.OPREFIX}imssnow96.asc')
+        if self.task_config.cyc == 0 and os.path.exists(infile):
             ims_scf_to_ioda_staging_dict = parse_j2yaml(self.task_config.STAGE_IMS_SCF2IODA_YAML, self.task_config)
             FileHandler(ims_scf_to_ioda_staging_dict).sync()
             self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
@@ -168,7 +252,9 @@ class SnowAnalysis(Task):
         None
         """
 
-        self.jedi_dict[jedi_dict_key].execute()
+        infile = os.path.join(self.task_config.DATA,f'{jedi_dict_key}.yaml')
+        if os.path.exists(infile):
+            self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
     def finalize(self) -> None:

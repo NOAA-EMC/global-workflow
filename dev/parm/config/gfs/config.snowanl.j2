@@ -19,6 +19,10 @@ export STAGE_BERROR_YAML="${PARMgfs}/gdas/snow/snow_stage_berror.yaml.j2"
 export STAGE_GTS_YAML="${PARMgfs}/gdas/snow/obs/config/bufr2ioda_mapping.yaml.j2"
 export STAGE_IMS_SCF2IODA_YAML="${PARMgfs}/gdas/snow/snow_stage_ims_scf2ioda.yaml.j2"
 
+export PREP_SNOCVR_SNOMAD_YAML="${PARMgfs}/gdas/snow/prep/prep_snocvr_snomad.yaml.j2"
+export OBSBUILDER="${USHgfs}/bufr_snocvr_snomad.py"
+export PYTHONPATH=${HOMEgfs}/lib/python3.11/site-packages:${PYTHONPATH}
+
 export io_layout_x="{{ IO_LAYOUT_X }}"
 export io_layout_y="{{ IO_LAYOUT_Y }}"
 

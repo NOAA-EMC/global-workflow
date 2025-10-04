@@ -23,6 +23,10 @@ if __name__ == '__main__':
     # Initialize JEDI 2DVar snow analysis
     snow_anl.initialize()
 
+    # Process SNOCVR and SNOMAD (if applicable)
+    if snow_anl.task_config.DO_SNOCVR_SNOMAD == True:
+        snow_anl.prepare_SNOCVR_SNOMAD()
+
     # Process IMS snow cover (if applicable)
     if snow_anl.task_config.cyc == 0:
         snow_anl.execute('scf_to_ioda')
