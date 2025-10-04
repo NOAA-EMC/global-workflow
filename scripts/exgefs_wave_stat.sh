@@ -47,12 +47,16 @@ EOF
 #
 # 0.a System-specific settings
 #
-nens=${NMEM_ENS}
-nens=${nens:?Parameter npert required for ensemble statistics}
+nens=${NMEM_ENS:?Parameter NMEM_ENS required for ensemble statistics}
 nmembn=$(( nens + 1 ))
 #
-export membn=""
-for i in $(seq -f "%03g" 0 ${nens}); do membn="$membn $i"; done
+# Initialize the array
+membn_array=()
+
+# Populate the array (the seq output is split by whitespace and added to the array)
+for i in $(seq -f "%03g" 0 "$nens"); do
+    membn_array+=("$i")
+done
 
 #
 # 0.b Define model grid
@@ -77,10 +81,12 @@ valid_time=$(date -u -d "${PDY} ${cyc} + ${FORECAST_HOUR} hours" "+%Y%m%d%H")
 ymdh_init=$(date -u -d "${valid_time:0:8} ${valid_time:8:2} - ${WAVHINDH} hours" "+%Y%m%d%H")
 
 fcmdnow=cmdfile.${fhr3}
-mkdir output_${ymdh_init}
-cd output_${ymdh_init}
+
+mkdir -p "output_${ymdh_init}" # Use -p to avoid errors if it already exists
+cd "output_${ymdh_init}" || exit 1
+
 rm -f ${fcmdnow}
-touch ${fcmdnow}
+touch "${fcmdnow}"
 
 # 0.d Parameter selection and deployment of arrays
 #
@@ -88,8 +94,11 @@ ASWELL=(SWELL1 SWELL2 SWELL3) # Indices of HS from partitions
 ASWPER=(SWPER1 SWPER2 SWPER3) # Indices of PERIODS from partitions
 #  (should be same as ASWELL)
 ASWDIR=(SWDIR1 SWDIR2 SWDIR3) # Indices of PERIODS from partitions
-export arrpar=(HTSGW PERPW ICEC IMWF MWSPER DIRPW WVHGT WVPER WVDIR WWSDIR WIND WDIR ${ASWELL[@]} ${ASWDIR[@]} ${ASWPER[@]})
-export nparam=`echo ${arrpar[@]} | wc -w`
+export arrpar=(HTSGW PERPW ICEC IMWF MWSPER DIRPW WVHGT WVPER WVDIR WWSDIR WIND WDIR "${ASWELL[@]}" "${ASWDIR[@]}" "${ASWPER[@]}")
+
+nparam=$(echo "${arrpar[@]}" | wc -w)
+
+export nparam
 
 #
 # 1. Get Input files for current script 
@@ -102,12 +111,12 @@ ngrib=0
 inc=$FHOUT_HF_WAV
 ftype="mem"
       
-ngrib=$(( $ngrib + 1 ))
+ngrib=$(( ngrib + 1 ))
 for me in ${membn}; do
   ENSTAG=${ftype}${me}
   cpfile=${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/${grdNAME}/${RUN}.${cycle}.${grdNAME}.f${fhr3}.grib2
   if [ -s "${cpfile}" ] ; then
-    ln -s  "$cpfile"  ./${RUN}.${cycle}.${ENSTAG}.${grdNAME}.f${fhr3}.grib2
+    ln -s  "$cpfile"  "./${RUN}.${cycle}.${ENSTAG}.${grdNAME}.f${fhr3}.grib2"
   else
     export err=2
     err_exit "No ${cpfile} copied."
@@ -122,13 +131,12 @@ rm -f cmdfile cmdfile.$
 iparam=1
 
 # Number of expected extracted files if nparam * nmembn
-nef=`expr ${nparam} \* ${nmembn}`
-while [ ${iparam} -le ${nparam} ]
+while [[ "${iparam}" -le "${nparam}" ]]
 do
   nip=${arrpar[$iparam-1]}
   echo $nip
-  prepar=`echo ${nip} | rev | cut -c2- | rev` #Part prefix (assumes 1 digit index)
-  paridx=`echo ${nip} | rev | cut -c-1`
+  prepar=${nip%?} #Part prefix (assumes 1 digit index)
+  paridx=${nip: -1}
   npart=0
   case ${prepar} in
     HTSG)   nnip=${nip} ; snip=hs ;;
@@ -150,9 +158,9 @@ do
   esac
 
   inc=${FHOUT_HF_WAV}
-  if [ ${iparam} -eq 3 ] ||[ ${iparam} -eq 4 ] || [ ${iparam} -eq 5 ] || \
-     [ ${iparam} -eq 10 ] || [ ${iparam} -eq 15 ] || [ ${iparam} -eq 16 ] ||
-     [ ${iparam} -eq 17 ] || [ ${iparam} -eq 18 ] || [ ${iparam} -eq 21 ]
+  if [[ "${iparam}" -eq 3  || "${iparam}" -eq 4  ||  "${iparam}" -eq 5  || \
+      "${iparam}" -eq 10  || "${iparam}" -eq 15  ||  "${iparam}" -eq 16 || \
+      "${iparam}" -eq 17  || "${iparam}" -eq 18  ||  "${iparam}" -eq 21 ]]
   then
      echo "Parameter ${snip} not yet available for stats"
   else
@@ -162,20 +170,20 @@ do
       outfile=${nnip}_${me}.t${cyc}z.${grdNAME}.f${fhr3}.grib2
       wgfileout=wgrib_${nnip}_${me}.out
       if [ "${npart}" = "0" ]; then
-        echo " $WGRIB2 -match ${nip} -match surface ${infile} -grib ${outfile} 2>&1 |tee ${wgfileout}" >> ${fcmdnow}
+        echo " $WGRIB2 -match ${nip} -match surface ${infile} -grib ${outfile} 2>&1 |tee ${wgfileout}" >> "${fcmdnow}"
       else
-        echo " $WGRIB2 -match ${prepar} -match \"${paridx} in sequence\" ${infile} -grib ${outfile} 2>&1 | tee ${wgfileout}" >> ${fcmdnow}
+        echo " $WGRIB2 -match ${prepar} -match \"${paridx} in sequence\" ${infile} -grib ${outfile} 2>&1 | tee ${wgfileout}" >> "${fcmdnow}"
       fi
     done    #for members
   fi
-  iparam=`expr ${iparam} + 1`
+  iparam=$(( iparam + 1 ))
 done    #for parameters
 # END all loops
 
 # 2.c Execute poe or serial command files
 
-echo " INFO: Generating $nmembn hourly to ${FHMAX_WAV}h wave ensembles stats files "
-"${HOMEgfs}/ush/run_mpmd.sh" $fcmdnow && true
+echo " INFO: Generating ${nmembn} hourly to ${FHMAX_WAV}h wave ensembles stats files "
+"${HOMEgfs}/ush/run_mpmd.sh" ${fcmdnow} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
   err_exit "run_mpmd.sh failed!"
@@ -188,14 +196,14 @@ fi
 # 2.b Populate command files with stats wave_ens_stats.sh calls
 #
 rm -f cmdmfile cmdfile.$ cmdmprog
-rm -f ${fcmdnow}
+rm -f "${fcmdnow}"
 iparam=1
-while [ ${iparam} -le ${nparam} ]
+while [[ "${iparam}" -le "${nparam}" ]]
 do
   nip=${arrpar[$iparam-1]}
-  if [ ${iparam} -eq 3 ] ||[ ${iparam} -eq 4 ] || [ ${iparam} -eq 5 ] || \
-     [ ${iparam} -eq 10 ] || [ ${iparam} -eq 15 ] || [ ${iparam} -eq 16 ] ||
-     [ ${iparam} -eq 17 ] || [ ${iparam} -eq 18 ] || [ ${iparam} -eq 21 ]
+  if [[ "${iparam}" -eq 3  || "${iparam}" -eq 4  ||  "${iparam}" -eq 5  || \
+      "${iparam}" -eq 10  ||  "${iparam}" -eq 15  ||  "${iparam}" -eq 16  || \
+      "${iparam}" -eq 17  ||  "${iparam}" -eq 18  ||  "${iparam}" -eq 21 ]]
   then
     echo " Parameter $nip not yet available in grib2 library "
   else
@@ -203,7 +211,7 @@ do
     echo "nip ngrib FORECAST_HOUR: ${nip}, ${ngrib}, ${FORECAST_HOUR}"
     echo " ${HOMEgfs}/ush/wave_ens_stat.sh ${nip} ${ngrib} ${FORECAST_HOUR} 1 ${grdNAME} " >> cmdfile
   fi
-  iparam=`expr ${iparam} + 1`
+  iparam=(( ${iparam} + 1))
 done
 
 # 2.c Execute poe or serial command files
@@ -251,10 +259,10 @@ do
   esac
 
   par_dir=tmp_${nip}
-
-  if [ ${iparam} -eq 3 ] ||[ ${iparam} -eq 4 ] || [ ${iparam} -eq 5 ] || \
-     [ ${iparam} -eq 10 ] || [ ${iparam} -eq 15 ] || [ ${iparam} -eq 16 ] ||
-     [ ${iparam} -eq 17 ] || [ ${iparam} -eq 18 ] || [ ${iparam} -eq 21 ]
+  
+  if [[ "${iparam}" -eq 3  || "${iparam}" -eq 4  ||  "${iparam}" -eq 5  || \
+      "${iparam}" -eq 10  ||  "${iparam}" -eq 15  ||  "${iparam}" -eq 16  || \
+      "${iparam}" -eq 17  ||  "${iparam}" -eq 18  ||  "${iparam}" -eq 21 ]]
   then
     echo " Parameter $nip not yet available in grib2 library "
   else
@@ -277,9 +285,9 @@ chmod 744 mean.ncmdfile
 chmod 744 spread.ncmdfile
 chmod 744 prob.ncmdfile
 
-echo " INFO: Generating $nmembn hourly to ${FHMAX_WAV}h wave ensembles stats files "
+echo " INFO: Generating ${nmembn} hourly to ${FHMAX_WAV}h wave ensembles stats files "
 
-for stype in $stypes; do
+for stype in ${stypes}; do
   ./${stype}.ncmdfile
   export err=$?
   if [[ ${err} -ne 0 ]]; then
@@ -304,7 +312,7 @@ fi
 
 sed '/\$/d' buoy_file.data | sed '/STOPSTRING/d ' > buoy.file
 
-nbuoys=`cat buoy.file | wc -l`
+nbuoys=$(wc -l < buoy.file)
 
 # 3.b Command file set-up
 rm -f cmdfile cmdfile.$
@@ -338,8 +346,8 @@ do
 
   echo "${HOMEgfs}/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} ${FORECAST_HOUR} 2>&1 | tee  bull_${bnom}.out" >> ${fcmdnow}
 
-  ibuoy=`expr ${ibuoy} + 1`
-  ifile=`expr ${ifile} + 1`
+  (( ibuoy = ibuoy + 1 ))
+  (( ifile = ifile + 1 ))
 
 done
 
@@ -359,12 +367,12 @@ if [ ${CFP_MP:-"NO"} = "NO" ]; then
     else
       if [ "$ifirst" = 'yes' ]; then
 	echo "#!/bin/sh" > cmdmfile.$nfile
-        echo " ${DATA}/output_${ymdh_init}/cmdmfile.$nfile" >> cmdmprog
-	chmod 744 "cmdmfile.$nfile"
+        echo " ${DATA}/output_${ymdh_init}/cmdmfile.${nfile}" >> cmdmprog
+	chmod 744 "cmdmfile.${nfile}"
       fi
-      echo $line >> "cmdmfile.$nfile"
+      echo $line >> "cmdmfile.${nfile}"
       nfile=$(( nfile + 1 ))
-      if [ "$nfile" -eq "$NTASKS" ]; then
+      if [ "${nfile}" -eq "${NTASKS}" ]; then
         nfile=0
         ifirst='no'
       fi
@@ -393,7 +401,7 @@ MEMDIR="ensstat"  YMD=${PDY} HH=${cyc} declare_from_tmpl COMOUT_WAVE_STATION_ENS
 
 ibuoy=1
 # 3.f Check for errors
-while [ ${ibuoy} -le ${nbuoys} ]
+while (( ibuoy <= nbuoys ))
 do
 
   bline=`sed ''$ibuoy'!d' buoy.file`
@@ -409,7 +417,7 @@ do
     echo -e "\n Bulletin file ${RUN}.${bnom}.${fhr3}.bull generated succesfully.\n"
     rm -f bull_${bnom}.out
   fi
-  ibuoy=`expr ${ibuoy} + 1`
+  ibuoy=$(( ibuoy + 1 ))
 done
 
 tar cf ${RUN}.t${cyc}z.f${fhr3}.bull_tar ${RUN}.*.f*.bull
@@ -425,12 +433,12 @@ MEMDIR="ensstat" GRID=${wavepostGRD} YMD=${PDY} HH=${cyc} declare_from_tmpl COMO
 for stype in mean spread prob
 do
   fcopy=${RUN}.t${cyc}z.${stype}.${grdNAME}.f${fhr3}.grib2
-  if [ -s ${fcopy} ]
+  if [[ -s ${fcopy} ]]
   then
     echo "   Copying ${fcopy} to ensstat and ALERT if SENDDBN=YES"
     cp -f ${fcopy}  "${COMOUT_WAVE_GRID_ENS}"
 # 2.g Alert DBN
-    if [ "$SENDDBN" = 'YES' ]
+    if [[ "$SENDDBN" = 'YES' ]]
     then
       MODCOM=$(echo ${NET}_${COMPONENT} | tr '[a-z]' '[A-Z]')
       $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job ${ROTDIR}/${RUN}.${PDY}/${cyc}/${ENSTAG}/products/wave/gridded/${fcopy}
@@ -446,7 +454,7 @@ done
 #
 bcopy_station=${RUN}.t${cyc}z.f${fhr3}.station_tar
 bcopy_bull=${RUN}.t${cyc}z.f${fhr3}.bull_tar
-if [ -s "$bcopy_station" ] && [ -s "$bcopy_bull" ]; then
+if [[ -s "$bcopy_station" ]] && [[ -s "$bcopy_bull" ]]; then
   echo "   Copying tar files to ensstat"
   cp -f ${bcopy_station}  "${COMOUT_WAVE_STATION_ENS}"
   cp -f ${bcopy_bull}  "${COMOUT_WAVE_STATION_ENS}"
