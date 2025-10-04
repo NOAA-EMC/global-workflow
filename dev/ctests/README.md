@@ -32,7 +32,7 @@ cmake ../../..
 cmake -DHPC_ACCOUNT=myaccount \
       -DSTAGED_CTESTS=/path/to/baselines/RUNTESTS \
       -DICSDIR_ROOT=/path/to/ics \
-      ../../..:w
+      ../../..
 ```
 
 ### Run Tests
