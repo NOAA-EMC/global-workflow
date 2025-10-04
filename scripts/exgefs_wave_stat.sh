@@ -133,8 +133,8 @@ iparam=1
 # Number of expected extracted files if nparam * nmembn
 while [[ "${iparam}" -le "${nparam}" ]]
 do
-  nip=${arrpar[$iparam-1]}
-  echo $nip
+  nip=${arrpar[$((iparam - 1))]}
+  echo ${nip}
   prepar=${nip%?} #Part prefix (assumes 1 digit index)
   paridx=${nip: -1}
   npart=0
@@ -200,7 +200,7 @@ rm -f "${fcmdnow}"
 iparam=1
 while [[ "${iparam}" -le "${nparam}" ]]
 do
-  nip=${arrpar[$iparam-1]}
+  nip=${arrpar[$((iparam - 1))]}
   if [[ "${iparam}" -eq 3  || "${iparam}" -eq 4  ||  "${iparam}" -eq 5  || \
       "${iparam}" -eq 10  ||  "${iparam}" -eq 15  ||  "${iparam}" -eq 16  || \
       "${iparam}" -eq 17  ||  "${iparam}" -eq 18  ||  "${iparam}" -eq 21 ]]
@@ -211,7 +211,7 @@ do
     echo "nip ngrib FORECAST_HOUR: ${nip}, ${ngrib}, ${FORECAST_HOUR}"
     echo " ${HOMEgfs}/ush/wave_ens_stat.sh ${nip} ${ngrib} ${FORECAST_HOUR} 1 ${grdNAME} " >> cmdfile
   fi
-  iparam=(( ${iparam} + 1))
+  iparam=$(( iparam + 1))
 done
 
 # 2.c Execute poe or serial command files
@@ -230,9 +230,9 @@ fi
 
 iparam=1
 
-while [ ${iparam} -le ${nparam} ]
+while [[ "${iparam}" -le "${nparam}" ]]
 do
-  nip=${arrpar[$iparam-1]}
+  nip=${arrpar[$((iparam - 1))]}
   case ${nip} in
     HTSGW)   stypes='mean spread prob' ; snip=hs ;;
     PERPW)   stypes='mean spread prob' ; snip=tp ;;
@@ -288,7 +288,7 @@ chmod 744 prob.ncmdfile
 echo " INFO: Generating ${nmembn} hourly to ${FHMAX_WAV}h wave ensembles stats files "
 
 for stype in ${stypes}; do
-  ./${stype}.ncmdfile
+  "./${stype}.ncmdfile"
   export err=$?
   if [[ ${err} -ne 0 ]]; then
     err_exit "${stype}.ncmdfile failed!"
@@ -360,13 +360,13 @@ if [ ${CFP_MP:-"NO"} = "NO" ]; then
   iline=1
   ifirst='yes'
   nlines=$( wc -l ${fcmdnow} | awk '{print $1}' )
-  while [ $iline -le $nlines ]; do
+  while [ ${iline} -le ${nlines} ]; do
     line=$( sed -n ''$iline'p' ${fcmdnow} )
     if [ -z "$line" ]; then
       break
     else
       if [ "$ifirst" = 'yes' ]; then
-	echo "#!/bin/sh" > cmdmfile.$nfile
+	echo "#!/bin/sh" > "cmdmfile.$nfile"
         echo " ${DATA}/output_${ymdh_init}/cmdmfile.${nfile}" >> cmdmprog
 	chmod 744 "cmdmfile.${nfile}"
       fi
