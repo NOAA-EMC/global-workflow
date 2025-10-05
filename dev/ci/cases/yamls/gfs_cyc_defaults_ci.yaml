@@ -22,6 +22,7 @@ base:
   NMEM_ENS_GFS: 2
   NMEM_ENS_GFS_OFFSET: 0
   DO_TEST_MODE: "NO"
+  CASE_HIST: "C48"
 
 marineanl:
   SOCA_NINNER: 1

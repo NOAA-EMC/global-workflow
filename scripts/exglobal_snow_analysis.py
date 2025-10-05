@@ -28,7 +28,7 @@ if __name__ == '__main__':
         snow_anl.prepare_SNOCVR_SNOMAD()
 
     # Process IMS snow cover (if applicable)
-    if snow_anl.task_config.cyc == 0:
+    if snow_anl.task_config.DO_IMS_SCF:
         snow_anl.execute('scf_to_ioda')
 
     # Execute JEDI snow analysis
