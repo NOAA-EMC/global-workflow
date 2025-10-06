@@ -9,15 +9,15 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowanl" -c "base esnowanl"
 # shellcheck disable=SC2153
 GDUMP="gdas"
 export GDUMP
-CDUMP=${RUN/enkf}
+CDUMP=${RUN/enkf/}
 export CDUMP
 
 export NMEM_ENS_MAX=${NMEM_ENS}
 if [[ "${RUN}" == "enkfgfs" ]]; then
-   NMEM_ENS=${NMEM_ENS_GFS}
-   export mem_offset=$((NMEM_ENS_GFS_OFFSET * cyc/assim_freq))
+    NMEM_ENS=${NMEM_ENS_GFS}
+    export mem_offset=$((NMEM_ENS_GFS_OFFSET * cyc / assim_freq))
 else
-   export mem_offset=0
+    export mem_offset=0
 fi
 ##############################################
 # Begin JOB SPECIFIC work
@@ -36,8 +36,7 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
     mkdir -p "${COMOUT_SNOW_ANALYSIS}"
 done
 
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -x\
-    COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -x COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
 
 mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
@@ -58,8 +57,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
