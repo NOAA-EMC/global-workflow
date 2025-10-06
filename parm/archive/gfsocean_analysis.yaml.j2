@@ -1,7 +1,7 @@
-gdasocean_analysis:
-    {% set head = "gdas.t" + cycle_HH + "z." %}
-    name: "GDASOCEAN_ANALYSIS"
-    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_analysis.tar"
+gfsocean_analysis:
+    {% set head = "gfs.t" + cycle_HH + "z." %}
+    name: "GFSOCEAN_ANALYSIS"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfsocean_analysis.tar"
     required:
         {% if DOIAU %}
         {% set anl_delta = "-3H" | to_timedelta %}
@@ -22,20 +22,9 @@ gdasocean_analysis:
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_ens_stddev.nc'
         - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_ens_stddev.nc'
 
-        # ensemble background error
-        {% if NMEM_ENS > 2 %}
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.ens_weights.nc'
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.ens_weights.nc'
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.recentering_error.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.recentering_error.nc'
-        {% for diag_type in ["ssh_steric_stddev", "ssh_unbal_stddev", "ssh_total_stddev", "steric_explained_variance"] %}
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.{{ diag_type }}.nc'
-        {% endfor %}
-        {% endif %}
-
         # runtime configs
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/*.yaml'
-    optional:
+    optional:        
         # obs space diags
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/{{ head }}ocn.*.stats.csv'
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/*.nc'
