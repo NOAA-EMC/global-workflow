@@ -34,14 +34,14 @@ GRID=1p00 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMIN_ATMOS_GEMPAK_1p00:CO
 
 GRID="meta" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_META:COM_ATMOS_GEMPAK_TMPL"
 if [[ ! -d "${COMOUT_ATMOS_GEMPAK_META}" ]]; then
-  mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_META}"
+    mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_META}"
 fi
 
-if (( cyc%12 == 0 )); then
-  GRID="gif" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_GIF:COM_ATMOS_GEMPAK_TMPL"
-  if [[ ! -d "${COMOUT_ATMOS_GEMPAK_GIF}" ]]; then
-    mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_GIF}"
-  fi
+if ((cyc % 12 == 0)); then
+    GRID="gif" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_GIF:COM_ATMOS_GEMPAK_TMPL"
+    if [[ ! -d "${COMOUT_ATMOS_GEMPAK_GIF}" ]]; then
+        mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_GIF}"
+    fi
 fi
 
 export COMINecmwf="${COMINecmwf:-$(compath.py "${envir}/ecmwf/${ecmwf_ver}")/ecmwf}"
@@ -54,27 +54,27 @@ export pgmout=OUTPUT.$$
 "${HOMEgfs}/gempak/ush/gdas_meta_na.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-  err_exit
+    err_exit
 fi
 
 "${HOMEgfs}/gempak/ush/gdas_meta_loop.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-  err_exit
+    err_exit
 fi
 
 if [[ "${cyc}" == '06' ]]; then
-  "${HOMEgfs}/gempak/ush/gdas_ecmwf_meta_ver.sh" && true
-  export err=$?
-  if [[ ${err} -ne 0 ]]; then
-    err_exit
-  fi
+    "${HOMEgfs}/gempak/ush/gdas_ecmwf_meta_ver.sh" && true
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit
+    fi
 
-  "${HOMEgfs}/gempak/ush/gdas_ukmet_meta_ver.sh" && true
-  export err=$?
-  if [[ ${err} -ne 0 ]]; then
-    err_exit
-  fi
+    "${HOMEgfs}/gempak/ush/gdas_ukmet_meta_ver.sh" && true
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit
+    fi
 fi
 ########################################################
 
@@ -84,25 +84,25 @@ fi
 
 ########################################################
 # Execute the script.
-if (( cyc%12 == 0 )); then
-  "${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh" && true
+if ((cyc % 12 == 0)); then
+    "${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh" && true
 fi
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-  err_exit
+    err_exit
 fi
 ########################################################
 
 ############################################
 # print exec I/O output
 ############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [[ "${KEEPDATA}" != "YES" ]] ; then
-  rm -rf "${DATA}"
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
 fi

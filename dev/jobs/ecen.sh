@@ -7,7 +7,7 @@ set -x
 source "${HOMEgfs}/dev/ush/load_gw_gsi_modules.sh"
 status=$?
 if [[ ${status} -ne 0 ]]; then
-  exit "${status}"
+    exit "${status}"
 fi
 
 ###############################################################
@@ -32,6 +32,5 @@ done
 
 ###############################################################
 # Exit out cleanly
-
 
 exit 0

@@ -11,7 +11,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmiodaobs" -c "base prepatmiodao
 ##############################################
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMOUT_OBS:COM_OBS_TMPL
+    COMOUT_OBS:COM_OBS_TMPL
 
 ###############################################################
 # Run relevant script
@@ -20,7 +20,7 @@ ${EXSCRIPT} "${PDY}${cyc}" "${RUN}" "${DMPDIR}" "${PARMgfs}/gdas/ioda/bufr2ioda"
 export err=$?
 set +x
 if [[ ${err} -ne 0 ]]; then
-  err_exit "Error executing ${EXSCRIPT}"
+    err_exit "Error executing ${EXSCRIPT}"
 fi
 set_trace
 
@@ -32,7 +32,7 @@ set_trace
 # Final processing
 ##############################################
 if [[ -e "${pgmout}" ]]; then
-  cat "${pgmout}"
+    cat "${pgmout}"
 fi
 
 exit 0

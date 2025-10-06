@@ -2,12 +2,10 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal analdiag"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
-
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -19,12 +17,12 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
-export OPREFIX="${RUN/enkf}.t${cyc}z."
+export OPREFIX="${RUN/enkf/}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 
 ###############################################################
@@ -42,8 +40,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -53,6 +51,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

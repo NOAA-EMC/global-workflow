@@ -58,11 +58,11 @@ jobs/JGLOBAL_*ARCH* @DavidHuber-NOAA
 jobs/JGLOBAL_ATMENS_ANALYSIS_* @RussTreadon-NOAA @CoryMartin-NOAA @DavidNew-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS @RussTreadon-NOAA @CatherineThomas-NOAA
 jobs/JGLOBAL_ATMOS_ANALYSIS_CALC @RussTreadon-NOAA @CatherineThomas-NOAA @CoryMartin-NOAA
-jobs/JGLOBAL_ATMOS_PREP_SFC @GeorgeGayno-NOAA
+jobs/JGLOBAL_ATMOS_PREP_SFC @BrianCurtis-NOAA
 jobs/JGLOBAL_ATMOS_ENSSTAT
 jobs/JGLOBAL_ATMOS_POST_MANAGER
 jobs/JGLOBAL_ATMOS_PRODUCTS @WenMeng-NOAA
-jobs/JGLOBAL_ATMOS_SFCANL @GeorgeGayno-NOAA
+jobs/JGLOBAL_ATMOS_SFCANL @BrianCurtis-NOAA
 jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
 jobs/JGLOBAL_ATMOS_UPP @WenMeng-NOAA
 jobs/JGLOBAL_ATMOS_VMINMON @EdwardSafford-NOAA
@@ -71,7 +71,7 @@ jobs/JGLOBAL_CLEANUP @DavidHuber-NOAA
 jobs/JGLOBAL_EXTRACTVARS @EricSinsky-NOAA
 jobs/JGLOBAL_FORECAST @aerorahul
 jobs/JGLOBAL_MARINE_* @guillaumevernieres @AndrewEichmann-NOAA
-jobs/JGLOBAL_OCEANICE_PRODUCTS @GwenChen-NOAA @AminIlia-NOAA @ChristopherHill-NOAA
+jobs/JGLOBAL_OCEANICE_PRODUCTS @GwenChen-NOAA @sbanihash @ChristopherHill-NOAA
 jobs/JGLOBAL_OFFLINE_ATMOS_ANALYSIS @CoryMartin-NOAA
 jobs/JGLOBAL_PREP_EMISSIONS @bbakernoaa
 jobs/JGLOBAL_PREP_OBS_AERO @CoryMartin-NOAA
@@ -121,7 +121,7 @@ scripts/exglobal_atmos_analysis*.sh @RussTreadon-NOAA @CoryMartin-NOAA
 scripts/exglobal_atmos_ensstat.sh @RussTreadon-NOAA
 scripts/exglobal_atmos_pmgr.sh
 scripts/exglobal_atmos_products.sh @WenMeng-NOAA
-scripts/exglobal_atmos_sfcanl.sh @GeorgeGayno-NOAA
+scripts/exglobal_atmos_sfcanl.sh @BrianCurtis-NOAA
 scripts/exglobal_atmos_tropcy_qc_reloc.sh
 scripts/exglobal_atmos_upp.py @WenMeng-NOAA
 scripts/exglobal_atmos_vminmon.sh @EdwardSafford-NOAA
@@ -133,11 +133,11 @@ scripts/exglobal_forecast.sh @aerorahul
 scripts/exglobal_marine_analysis_* @guillaumevernieres @AndrewEichmann-NOAA
 scripts/exglobal_marinebmat_initialize.py @guillaumevernieres @AndrewEichmann-NOAA
 scripts/exglobal_marinebmat.py @guillaumevernieres @AndrewEichmann-NOAA
-scripts/exglobal_oceanice_products.py @GwenChen-NOAA @AminIlia-NOAA @ChristopherHill-NOAA
+scripts/exglobal_oceanice_products.py @GwenChen-NOAA @sbanihash @ChristopherHill-NOAA
 scripts/exglobal_offline_atmos_analysis.py @CoryMartin-NOAA
 scripts/exglobal_prep_emissions.py @bbakernoaa
 scripts/exglobal_prep_obs_aero.py @CoryMartin-NOAA
-scripts/exglobal_prep_sfc.sh @GeorgeGayno-NOAA
+scripts/exglobal_prep_sfc.sh @BrianCurtis-NOAA
 scripts/exglobal_prep_snow_obs.py @jiaruidong2017
 scripts/exglobal_snow_analysis.py @jiaruidong2017
 scripts/exglobal_stage_ic.py @DavidHuber-NOAA @aerorahul
@@ -156,7 +156,7 @@ ush/forecast_det.sh @aerorahul
 ush/forecast_postdet.sh @aerorahul
 ush/forecast_predet.sh @aerorahul
 ush/fv3gfs_remap_weights.sh
-ush/gaussian_sfcanl.sh @GeorgeGayno-NOAA
+ush/gaussian_sfcanl.sh @BrianCurtis-NOAA
 ush/getdump.sh @DavidHuber-NOAA @aerorahul 
 ush/getges.sh @DavidHuber-NOAA @aerorahul 
 ush/getgfsnctime @CoryMartin-NOAA
@@ -166,7 +166,7 @@ ush/gfs_bufr.sh @BoCui-NOAA
 ush/gfs_bufr_netcdf.sh @BoCui-NOAA
 ush/gfs_sndp.sh @BoCui-NOAA
 ush/gfs_truncate_enkf.sh @CoryMartin-NOAA
-ush/global_cycle.sh @GeorgeGayno-NOAA
+ush/global_cycle.sh @BrianCurtis-NOAA
 ush/global_savefits.sh
 ush/gsi_utils.py @CoryMartin-NOAA
 ush/interp_atmos_master.sh @aerorahul @WenMeng-NOAA
@@ -192,8 +192,8 @@ ush/parsing_namelists_MOM6.sh @aerorahul @junwang-noaa @jiandewang
 ush/parsing_namelists_WW3.sh @aerorahul @JessicaMeixner-NOAA @sbanihash
 ush/parsing_ufs_configure.sh @aerorahul @junwang-noaa
 ush/preamble.sh
-ush/prep_sfc_ice_blend.sh @GeorgeGayno-NOAA
-ush/prep_sfc_snow.sh @GeorgeGayno-NOAA
+ush/prep_sfc_ice_blend.sh @BrianCurtis-NOAA
+ush/prep_sfc_snow.sh @BrianCurtis-NOAA
 ush/product_functions.sh @aerorahul
 ush/radmon_*.sh @EdwardSafford-NOAA
 ush/rstprod.sh @DavidHuber-NOAA
@@ -223,7 +223,7 @@ ush/python/pygfs/task/gfs_forecast.py @aerorahul
 ush/python/pygfs/task/marine_analysis.py @guillaumevernieres @AndrewEichmann-NOAA
 ush/python/pygfs/task/marine_bmat.py @guillaumevernieres @AndrewEichmann-NOAA
 ush/python/pygfs/task/marine_letkf.py @guillaumevernieres @AndrewEichmann-NOAA
-ush/python/pygfs/task/oceanice_products.py @aerorahul @GwenChen-NOAA @AminIlia-NOAA @ChristopherHill-NOAA
+ush/python/pygfs/task/oceanice_products.py @aerorahul @GwenChen-NOAA @sbanihash @ChristopherHill-NOAA
 ush/python/pygfs/task/offline_analysis.py @CoryMartin-NOAA
 ush/python/pygfs/task/snow_analysis.py @jiaruidong2017
 ush/python/pygfs/task/snowens_analysis.py @jiaruidong2017
