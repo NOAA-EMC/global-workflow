@@ -205,14 +205,14 @@ case "${MODULE_TYPE}" in
             target_module="gw_run.${MACHINE_ID}"
             ;;
           *)
-            echo "WARNING: UNKNOWN PLATFORM"
+            echo "WARNING: UNKNOWN PLATFORM: '${MACHINE_ID}'"
             ;;
         esac
         ;;
 
       "setup")
         case "${MACHINE_ID}" in
-          "wcoss2" | "ursa" | "hera" | "orion" | "hercules" | "gaeac6" | "noaacloud")
+          "wcoss2" | "ursa" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
             target_module="gw_setup.${MACHINE_ID}"
             ;;
           *)
