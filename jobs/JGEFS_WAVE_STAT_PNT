@@ -5,9 +5,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "wave_stat_pnt" -c "base wave wave_sta
 # Set COM Paths
 
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMOUT_WAVE_STATION_ENS:COM_WAVE_STATION_TMPL
+    COMOUT_WAVE_STATION_ENS:COM_WAVE_STATION_TMPL
 if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
-  mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"
+    mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"
 fi
 
 # Execute the Script
@@ -19,7 +19,7 @@ err_chk
 ###########################################
 cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" != "YES" ]]; then
-  rm -rf "${DATA}"
+    rm -rf "${DATA}"
 fi
 
 exit 0

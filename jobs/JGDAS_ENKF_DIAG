@@ -2,7 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs analdiag ediag"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -19,15 +18,15 @@ export GDUMP_ENS="enkf${GDUMP}"
 
 export CASE=${CASE_ENS}
 
-export OPREFIX="${RUN/enkf}.t${cyc}z."
+export OPREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
 GPREFIX_DET="${GDUMP}.t${gcyc}z."
 
-RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMIN_OBS:COM_OBS_TMPL
+RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_OBS:COM_OBS_TMPL
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_OBS_PREV:COM_OBS_TMPL \
@@ -36,11 +35,10 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 MEMDIR="ensstat" RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
-
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.ensmean.nc"
-if [ ! -f ${ATMGES_ENSMEAN} ]; then
+if [[ ! -f "${ATMGES_ENSMEAN}" ]]; then
     export err=1
-    err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
+    err_exit "FILE MISSING: ATMGES_ENSMEAN == ${ATMGES_ENSMEAN}"
 fi
 
 # Link observational data
@@ -49,8 +47,8 @@ if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
 export TCVITL="${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00"
-if [[ ${DONST} = "YES" ]]; then
-   export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
+if [[ ${DONST} == "YES" ]]; then
+    export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
@@ -86,10 +84,9 @@ export SETUP_INVOBS="passive_bc=.false.,${SETUP_INVOBS}"
 # Ensure clean stat tarballs for ensemble mean
 for fstat in ${CNVSTAT} ${OZNSTAT} ${RADSTAT}; do
     if [[ -f "${fstat}" ]]; then
-        rm -f ${fstat}
+        rm -f "${fstat}"
     fi
 done
-
 
 ###############################################################
 # Run relevant script
@@ -107,8 +104,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -118,6 +115,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

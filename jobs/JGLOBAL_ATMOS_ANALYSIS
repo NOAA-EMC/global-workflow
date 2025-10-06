@@ -2,11 +2,10 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
-export rCDUMP=${RUN/enkf}
+export rCDUMP=${RUN/enkf/}
 export COMPONENT="atmos"
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 
@@ -27,8 +26,8 @@ export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMIN_OBS:COM_OBS_TMPL \
-	COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+    COMIN_OBS:COM_OBS_TMPL \
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
@@ -40,26 +39,26 @@ MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
 export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
-if [ ! -f ${ATMGES} ]; then
+if [[ ! -f "${ATMGES}" ]]; then
     export err=1
-    err_exit "FILE MISSING: ATMGES = ${ATMGES}"
+    err_exit "FILE MISSING: ATMGES == ${ATMGES}"
 fi
 
 # Get LEVS
-export LEVS=$(${NCLEN} ${ATMGES} pfull) && true
+export LEVS
+LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 
-if [ ${DOHYBVAR} = "YES" ]; then
+if [[ "${DOHYBVAR}" == "YES" ]]; then
     export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc"
-    if [ ! -f ${ATMGES_ENSMEAN} ]; then
+    if [[ ! -f "${ATMGES_ENSMEAN}" ]]; then
         export err=2
-        err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
+        err_exit "FILE MISSING: ATMGES_ENSMEAN == ${ATMGES_ENSMEAN}"
     fi
 fi
-
 
 # Link observational data
 export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
@@ -67,17 +66,16 @@ if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
 export TCVITL="${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00"
-if [[ ${DONST} = "YES" ]]; then
+if [[ ${DONST} == "YES" ]]; then
     export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
 # Copy fix file for obsproc  # TODO: Why is this necessary?
-if [[ ${RUN} = "gfs" ]]; then
-    mkdir -p ${ROTDIR}/fix
-    cpreq ${FIXgfs}/gsi/prepobs_errtable.global ${ROTDIR}/fix/
+if [[ ${RUN} == "gfs" ]]; then
+    mkdir -p "${ROTDIR}/fix"
+    cpreq "${FIXgfs}/gsi/prepobs_errtable.global" "${ROTDIR}/fix/"
 fi
-
 
 ###############################################################
 # Run relevant script
@@ -91,12 +89,11 @@ fi
 ##############################################
 # Send Alerts
 ##############################################
-if [[ "${SENDDBN}" == "YES" ]] && [[ "${RUN}" == "gdas" ]] ; then
-    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias ${job} ${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias
-    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias_pc ${job} ${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc
-    ${DBNROOT}/bin/dbn_alert MODEL GDAS_MSC_abias_air ${job} ${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air
+if [[ "${SENDDBN}" == "YES" ]] && [[ "${RUN}" == "gdas" ]]; then
+    "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias "${job}" "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias"
+    "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias_pc "${job}" "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc"
+    "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias_air "${job}" "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air"
 fi
-
 
 ##############################################
 # End JOB SPECIFIC work
@@ -105,8 +102,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -116,6 +113,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0
