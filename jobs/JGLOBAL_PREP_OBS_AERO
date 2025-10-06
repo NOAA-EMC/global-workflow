@@ -9,7 +9,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prepobsaero" -c "base prepobsaero"
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 YMD=${PDY} HH=${cyc} RUN='gdas' declare_from_tmpl -rx COMIN_OBSPROC:COM_OBSPROC_TMPL
 
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
@@ -31,8 +30,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################

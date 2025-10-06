@@ -24,7 +24,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 export oznstat="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.oznstat"
 export TANKverf_ozn=${TANKverf_ozn:-${COMOUT_ATMOS_OZNMON}}
 
-if [[ ! -d ${TANKverf_ozn} ]]; then mkdir -p ${TANKverf_ozn} ; fi
+if [[ ! -d ${TANKverf_ozn} ]]; then mkdir -p "${TANKverf_ozn}"; fi
 
 #-------------------------------------------------------
 # Execute the script.

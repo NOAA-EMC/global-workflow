@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Use ${DATAROOT/enkf} because DATAjob is created by a gdas_marineanlinit job
-export DATAjob="${DATAROOT/enkf}/marineanalysis.${PDY:-}${cyc}"
+export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlletkf"
 export DATAens="${DATAjob}/ensdata"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
@@ -22,26 +22,26 @@ export GDUMP_ENS="enkf${GDUMP}"
 
 ec_offset=${NMEM_ENS_GFS_OFFSET:-20}
 export NMEM_ENS_MAX=${NMEM_ENS}
-if [[ "${RUN/enkf}" == "gfs"  && "${DOHYBVAR_OCN}" == "YES" ]]; then
-   NMEM_ENS=${NMEM_ENS_GFS}
-   export mem_offset=$((ec_offset * cyc/assim_freq))
+if [[ "${RUN/enkf/}" == "gfs" && "${DOHYBVAR_OCN}" == "YES" ]]; then
+    NMEM_ENS=${NMEM_ENS_GFS}
+    export mem_offset=$((ec_offset * cyc / assim_freq))
 else
-   export mem_offset=0
+    export mem_offset=0
 fi
 
 RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-  COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-  COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
 
 RUN="${GDUMP}" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMIN_OBS:COM_OBS_TMPL \
+    COMIN_OBS:COM_OBS_TMPL
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMOUT_OCEAN_LETKF:COM_OCEAN_LETKF_TMPL \
-  COMOUT_ICE_LETKF:COM_ICE_LETKF_TMPL
+    COMOUT_OCEAN_LETKF:COM_OCEAN_LETKF_TMPL \
+    COMOUT_ICE_LETKF:COM_ICE_LETKF_TMPL
 
 YMD=${PDY} HH=${cyc} MEMDIR="ensstat" declare_from_tmpl -rx \
-  COMOUT_CONF:COM_CONF_TMPL
+    COMOUT_CONF:COM_CONF_TMPL
 
 if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 ##############################################
@@ -65,15 +65,15 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 # Use ${DATAROOT/enkf} because DATAjob is created by a gdas_marineanlinit job
-cd "${DATAROOT/enkf}" && true
+cd "${DATAROOT/enkf/}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

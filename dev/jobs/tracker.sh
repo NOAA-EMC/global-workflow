@@ -6,7 +6,7 @@ set -x
 # Source FV3GFS workflow modules
 source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
 status=$?
-(( status != 0 )) && exit "${status}"
+((status != 0)) && exit "${status}"
 
 export job="tracker"
 export jobid="${job}.$$"
