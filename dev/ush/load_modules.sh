@@ -169,59 +169,15 @@ case "${MODULE_TYPE}" in
     module use "${HOMEgfs}/modulefiles"
 
     # Determine target module based on type and machine
-    target_module=""
-    case "${MODULE_TYPE}" in
-      "gsi")
-        case "${MACHINE_ID}" in
-          "wcoss2")
-            target_module="gw_gsi.${MACHINE_ID}"
-            ;;
-          "hera" | "orion" | "hercules" | "gaeac6" | "ursa" | "noaacloud")
-            echo "INFO: gw_gsi module not available for ${MACHINE_ID}, falling back to gw_run"
-            target_module="gw_run.${MACHINE_ID}"
-            ;;
-          *)
-            echo "FATAL ERROR: UNSUPPORTED PLATFORM: '${MACHINE_ID}'"
-            exit 2
-            ;;
-        esac
-        ;;
-
-      "verif")
-        case "${MACHINE_ID}" in
-          "wcoss2" | "hera")
-            target_module="gw_verif.${MACHINE_ID}"
-            ;;
-          *)
-            echo "WARNING: gw_verif module not available for ${MACHINE_ID}, falling back to gw_run"
-            target_module="gw_run.${MACHINE_ID}"
-            ;;
-        esac
-        ;;
-
-      "run")
-        case "${MACHINE_ID}" in
-          "wcoss2" | "ursa" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
-            target_module="gw_run.${MACHINE_ID}"
-            ;;
-          *)
-            echo "WARNING: UNKNOWN PLATFORM: '${MACHINE_ID}'"
-            ;;
-        esac
-        ;;
-
-      "setup")
-        case "${MACHINE_ID}" in
-          "wcoss2" | "ursa" | "hera" | "orion" | "hercules" | "gaeac5" | "gaeac6" | "noaacloud")
-            target_module="gw_setup.${MACHINE_ID}"
-            ;;
-          *)
-            echo "WARNING: gw_setup module not available for ${MACHINE_ID}, falling back to gw_run"
-            target_module="gw_run.${MACHINE_ID}"
-            ;;
-        esac
-        ;;
-    esac
+    target_module="gw_${MODULE_TYPE}.${MACHINE_ID}"
+    
+    # Check if the target module file exists, fall back to gw_run if not
+    if ! module is-avail "${target_module}" 2>/dev/null; then
+      if [[ "${MODULE_TYPE}" != "run" ]]; then
+        echo "INFO: ${target_module} module not available, falling back to gw_run.${MACHINE_ID}"
+      fi
+      target_module="gw_run.${MACHINE_ID}"
+    fi
 
     if [[ -n "${target_module}" ]]; then
       module load "${target_module}"
@@ -230,6 +186,9 @@ case "${MODULE_TYPE}" in
         echo "FATAL ERROR: Failed to load ${target_module}"
         exit 1
       fi
+    else
+      echo "FATAL ERROR: Could not determine target module for MODULE_TYPE='${MODULE_TYPE}' and MACHINE_ID='${MACHINE_ID}'"
+      exit 1
     fi
 
     module list
