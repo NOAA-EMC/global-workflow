@@ -8,10 +8,10 @@ export COMPONENT="atmos"
 # Define COM and Data directories
 ##############################################
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL \
-  COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL
+    COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL \
+    COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL
 YMD=${PDY} HH=${cyc} GRID="0p25" declare_from_tmpl -rx \
-  COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
+    COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
 
 if [[ ! -d "${COMOUT_ATMOS_TRACK}" ]]; then mkdir -p "${COMOUT_ATMOS_TRACK}"; fi
 
@@ -25,13 +25,13 @@ export COMOUT=${COMOUT_ATMOS_TRACK}
 export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 export COMINgenvit=${COMIN_ATMOS_GENESIS}
 
-if [ ${RUN_ENVIR} = "nco" ]; then
+if [[ "${RUN_ENVIR}" == "nco" ]]; then
     export COMOUThur=${COMROOTp1}/hur/${envir}/global
     export COMOUTatcf=${COMROOTp1}/nhc/${envir}/atcf
-    mkdir -m 775 -p ${COMOUThur} ${COMOUTatcf}
+    mkdir -m 775 -p "${COMOUThur}" "${COMOUTatcf}"
 else
-#    export COMOUThur=$COMOUT
-#    export COMOUTatcf=$COMOUT
+    #    export COMOUThur=$COMOUT
+    #    export COMOUTatcf=$COMOUT
     export COMOUThur=${DATA}
     export COMOUTatcf=${DATA}
 fi
@@ -43,24 +43,22 @@ fi
 #############################################################
 # Execute the script
 export pert="p01"
-export cmodel=${RUN/enkf}
+export cmodel=${RUN/enkf/}
 export loopnum=1
 
 #-----------input data checking -----------------
-${USHens_tracker}/data_check_gfs.sh
+"${USHens_tracker}/data_check_gfs.sh"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 #------------------------------------------------
 
-machine=${machine:-$(echo ${SITE})}
-${USHens_tracker}/extrkr_gfs.sh "${loopnum}" "${cmodel}" "${PDY}${cyc}" "${pert}" "${DATA}"
+"${USHens_tracker}/extrkr_gfs.sh" "${loopnum}" "${cmodel}" "${PDY}${cyc}" "${pert}" "${DATA}"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
-
 
 #  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
 #      sed s:AVNX:GFSO:g \
@@ -73,8 +71,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -84,6 +82,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

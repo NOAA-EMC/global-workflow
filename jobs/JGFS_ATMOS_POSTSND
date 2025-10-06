@@ -11,10 +11,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
 ##############################
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-  COMOUT_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
-  COMOUT_ATMOS_WMO:COM_ATMOS_WMO_TMPL \
-  COMOUT_ATMOS_GEMPAK:COM_ATMOS_GEMPAK_TMPL
+    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
+    COMOUT_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
+    COMOUT_ATMOS_WMO:COM_ATMOS_WMO_TMPL \
+    COMOUT_ATMOS_GEMPAK:COM_ATMOS_GEMPAK_TMPL
 
 if [[ ! -d "${COMOUT_ATMOS_BUFR}" ]]; then
     mkdir -p "${COMOUT_ATMOS_BUFR}"
@@ -26,10 +26,9 @@ if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then
     mkdir -p "${COMOUT_ATMOS_WMO}"
 fi
 
-
 ########################################################
 # Execute the script.
-${SCRgfs}/exgfs_atmos_postsnd.sh && true
+"${SCRgfs}/exgfs_atmos_postsnd.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
@@ -42,8 +41,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -54,6 +53,4 @@ if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
 
-
 exit 0
-

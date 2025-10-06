@@ -2,21 +2,19 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal echgres"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-export APREFIX="${RUN/enkf}.t${cyc}z."
+export APREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
 
-RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
     COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
@@ -38,8 +36,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -49,6 +47,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

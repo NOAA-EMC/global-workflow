@@ -10,16 +10,16 @@ export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GDAS_GEMPAK}
 # Define COM directories
 ##############################################
 for grid in 0p25 1p00; do
-  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
 for grid in 0p25 1p00; do
-  prod_dir="COMOUT_ATMOS_GEMPAK_${grid}"
-  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_${grid}:COM_ATMOS_GEMPAK_TMPL"
+    prod_dir="COMOUT_ATMOS_GEMPAK_${grid}"
+    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_${grid}:COM_ATMOS_GEMPAK_TMPL"
 
-  if [[ ! -d "${!prod_dir}" ]] ; then
-    mkdir -m 775 -p "${!prod_dir}"
-  fi
+    if [[ ! -d "${!prod_dir}" ]]; then
+        mkdir -m 775 -p "${!prod_dir}"
+    fi
 done
 
 ########################################################
@@ -47,13 +47,13 @@ fi
 ############################################
 # print exec I/O output
 ############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [[ "${KEEPDATA}" != "YES" ]] ; then
-  rm -rf "${DATA}"
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
 fi

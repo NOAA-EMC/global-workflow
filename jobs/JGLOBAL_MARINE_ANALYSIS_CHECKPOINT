@@ -5,7 +5,6 @@ export DATAens="${DATAjob}/ensdata"
 export DATA="${DATAjob}/marineanlvar"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlchkpt" -c "base marineanl marineanlchkpt"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -31,8 +30,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 exit 0
