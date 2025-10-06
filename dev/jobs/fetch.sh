@@ -16,5 +16,4 @@ export jobid="${job}.$$"
 "${HOMEgfs}/jobs/JGLOBAL_FETCH"
 status=$?
 
-
 exit "${status}"

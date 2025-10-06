@@ -3,6 +3,7 @@
 source "${HOMEgfs}/ush/jjob_header.sh" -e "waveprep" -c "base wave waveprep"
 
 # Set rtofs PDY
+# shellcheck disable=SC2153
 export RPDY=${PDY}
 
 export MP_PULSE=0
@@ -12,14 +13,14 @@ export CDO=${CDO_ROOT}/bin/cdo
 
 # Set COM Paths
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMIN_OBS:COM_OBS_TMPL \
-	COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-	COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
-	COMINrtofs:COM_RTOFS_TMPL
+    COMIN_OBS:COM_OBS_TMPL \
+    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+    COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
+    COMINrtofs:COM_RTOFS_TMPL
 if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
 
 # Execute the Script
-${SCRgfs}/exgfs_wave_prep.sh && true
+"${SCRgfs}/exgfs_wave_prep.sh" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
@@ -33,6 +34,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0
