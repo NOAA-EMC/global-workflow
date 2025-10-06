@@ -222,7 +222,7 @@ class SnowAnalysis(Task):
         ]
         FileHandler({'mkdir': newdirs}).sync()
 
-        # Check if SNOMAD file exists
+        # Check if SNOCVR or SNOMAD file exists
         snocvr_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d')
         snomad_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snomad.tm00.bufr_d')
         if os.path.exists(snocvr_file) or os.path.exists(snomad_file):
