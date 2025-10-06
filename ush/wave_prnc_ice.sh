@@ -139,7 +139,7 @@ EOF
   fi
 
   echo "   Saving ice.ww3 as ${COMOUT_WAVE_PREP}/${icefile}"
-  cp ice.ww3 "${COMOUT_WAVE_PREP}/${icefile}"
+  cpfs ice.ww3 "${COMOUT_WAVE_PREP}/${icefile}"
   rm -f ice.ww3
 
 # --------------------------------------------------------------------------- #

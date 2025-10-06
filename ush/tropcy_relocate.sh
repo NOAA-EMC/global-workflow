@@ -348,7 +348,7 @@ to center relocation date/time;"
       if [ $fhr = "0"  ]; then
          "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${run_date}" \
           -t "${stype}" > "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
-         cp "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
+         cpfs "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
           "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
       fi
       set +x
@@ -391,7 +391,7 @@ done
 if [ -f ${tstsp}syndata.tcvitals.$tmmark ]; then
    cp ${tstsp}syndata.tcvitals.$tmmark tcvitals.now
 else
-   cp "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" "tcvitals.now"
+   cpreq "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" "tcvitals.now"
 fi
 
 
@@ -430,7 +430,7 @@ RELOCATION PROCESSING"
 
    echo "NO RECORDS to process" > "${COMOUT_OBS}/${RUN}.${cycle}.tropcy_relocation_status.${tmmark}"
    if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}" ]]; then
-      cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+      cpfs "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
    fi
 else
 
@@ -570,8 +570,8 @@ else
    rm -f RELOCATE_GES cmd
 
 
-   cp "rel_inform1" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-   cp "tcvitals" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+   cpfs "rel_inform1" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+   cpfs "tcvitals" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
    if [[ "${SENDDBN}" == "YES" ]]; then
        if test "$RUN" = "gdas1"
        then
