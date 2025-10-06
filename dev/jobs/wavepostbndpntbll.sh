@@ -5,7 +5,7 @@ set -x
 ###############################################################
 echo
 echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
-#source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh
+#source "${HOMEgfs}/dev/ush/load_modules.sh" run
 source "${HOMEgfs}/dev/ush/load_modules.sh" ufswm
 err=$?
 if [[ "${err}" -ne 0 ]]; then
