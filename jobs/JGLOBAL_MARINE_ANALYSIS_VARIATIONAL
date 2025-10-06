@@ -10,11 +10,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlvar" -c "base marineanl mari
 # Set variables used in the script
 ##############################################
 
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
 
 ###############################################################
 # Run relevant script
@@ -33,8 +31,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 exit 0

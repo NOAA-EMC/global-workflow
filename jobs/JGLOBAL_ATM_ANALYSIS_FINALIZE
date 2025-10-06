@@ -8,15 +8,14 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfinal" -c "base atmanl atmanlfi
 # Set variables used in the script
 ##############################################
 
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-   COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-   COMOUT_CONF:COM_CONF_TMPL
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+    COMOUT_CONF:COM_CONF_TMPL
 
 mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 mkdir -m 775 -p "${COMOUT_CONF}"
@@ -38,8 +37,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
