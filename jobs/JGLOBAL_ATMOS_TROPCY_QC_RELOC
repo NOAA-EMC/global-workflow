@@ -11,7 +11,7 @@ export DO_RELOCATE=${DO_RELOCATE:-NO}        # Turn on tropical cyclone relocati
 
 export tmmark=tm00
 export ARCHSYND=${ROTDIR}/syndat # this location is unique, do not change
-if [[ ! -d "${ARCHSYND}" ]]; then mkdir -p "${ARCHSYND}"; fi
+mkdir -p "${ARCHSYND}"
 
 export HOMENHC=${HOMENHC:-/lfs/h1/ops/prod/dcom/nhc/atcf/ncep}
 
@@ -21,9 +21,7 @@ export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}} # path to tropical cyclone record
 # Define COM directories
 ##############################################
 declare_from_tmpl COMOUT_OBS:COM_OBS_TMPL
-if [[ ! -d "${COMOUT_OBS}" ]]; then
-    mkdir -p "${COMOUT_OBS}"
-fi
+mkdir -p "${COMOUT_OBS}"
 
 export CRES=${CASE_HIST:1}
 export LATB=$((CRES * 2))

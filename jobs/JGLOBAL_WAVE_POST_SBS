@@ -9,7 +9,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
     COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
 
-if [[ ! -d "${COMOUT_WAVE_GRID}" ]]; then mkdir -p "${COMOUT_WAVE_GRID}"; fi
+mkdir -p "${COMOUT_WAVE_GRID}"
 
 if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
     for grdID in ${wavepostGRD} ${waveinterpGRD}; do
@@ -18,7 +18,7 @@ if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
             "COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
         out_dir_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
         out_dir=${!out_dir_varname}
-        if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
+        mkdir -p "${out_dir}"
     done
 else
     echo "Both wavepostGRD and waveinterpGRD are empty. No grids to process."

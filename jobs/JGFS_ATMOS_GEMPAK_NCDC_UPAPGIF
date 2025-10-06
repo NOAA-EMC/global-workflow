@@ -11,7 +11,7 @@ export MP_TIMEOUT=2000
 # Set up model and cycle specific variables
 export MODEL=GFS
 export fend=384
-if ((fend > FHMAX_GFS)); then
+if [[ "${fend}" -gt "${FHMAX_GFS}" ]]; then
     export fend="${FHMAX_GFS}"
 fi
 
