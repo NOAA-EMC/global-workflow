@@ -41,9 +41,6 @@ input_files:
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf
 
     copy:
-        # Ice restart files needed for initialization
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/ice/restart/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/ice/restart/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc]
-
         # Ice history files from forecast (6-hour averaged output for f006)
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history/gfs.ice.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history/gfs.ice.t{{ cyc }}z.6hr_avg.f006.nc]
 

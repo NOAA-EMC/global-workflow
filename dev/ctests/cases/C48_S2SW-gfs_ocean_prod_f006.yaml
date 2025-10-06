@@ -41,9 +41,6 @@ input_files:
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/netcdf
 
     copy:
-        # Ocean restart files needed for initialization
-        - [{{ SRC_DIR }}/gdas.{{ PDY }}/06/model/ocean/restart/{{ PDY }}.{{ cyc }}0000.MOM.res.nc, {{ DST_DIR }}/gdas.{{ PDY }}/06/model/ocean/restart/{{ PDY }}.{{ cyc }}0000.MOM.res.nc]
-
         # Ocean history files from forecast (6-hour averaged output for f006)
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f006.nc]
 
