@@ -59,7 +59,7 @@ case "${MACHINE_ID}" in
 "wcoss2")
   target_module="gw_gsi.${MACHINE_ID}"
   ;;
-"hera" | "orion" | "hercules" | "gaeac6" | "ursa")
+"hera" | "orion" | "hercules" | "gaeac6" | "ursa" | "noaacloud")
   target_module="gw_run.${MACHINE_ID}"
   ;;
 *)
