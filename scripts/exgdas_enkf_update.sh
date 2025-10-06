@@ -143,7 +143,7 @@ COMOUT_ATMOS_ANALYSIS=\$2
 flist="${CNVSTAT} ${OZNSTAT} ${RADSTAT}"
 for ftype in \$flist; do
    if [[ "\${memchar}" == "ensmean" ]]; then
-      fname=\${COMOUT_ATMOS_ANALYSIS}/\ensmean.\${ftype%.tar}.tar
+      fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype%.tar}.ensmean.tar
    else
       fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype}
    fi
