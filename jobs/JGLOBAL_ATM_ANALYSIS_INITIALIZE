@@ -18,11 +18,11 @@ GDUMP="gdas"
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-   COMIN_OBS:COM_OBS_TMPL
+    COMIN_OBS:COM_OBS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-   COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
-   COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+    COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
+    COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
 mkdir -m 775 -p "${COMIN_ATMOS_ANALYSIS_PREV}"
 
@@ -43,8 +43,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 exit 0

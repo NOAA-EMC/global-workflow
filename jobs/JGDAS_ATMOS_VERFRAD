@@ -29,7 +29,7 @@ export radstat="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat"
 export TANKverf_rad=${TANKverf_rad:-${COMOUT_ATMOS_RADMON}}
 export TANKverf_radM1=${TANKverf_radM1:-${COMIN_ATMOS_RADMON_PREV}}
 
-if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p ${TANKverf_rad} ; fi
+if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p "${TANKverf_rad}"; fi
 
 ########################################################
 # Execute the script.

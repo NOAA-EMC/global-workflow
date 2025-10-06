@@ -16,7 +16,7 @@ export COMPONENT="atmos"
 GRID="0p25" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT:COM_ATMOS_WMO_TMPL
 if [[ ! -d "${COMOUT}" ]]; then
-  mkdir -m 775 -p "${COMOUT}"
+    mkdir -m 775 -p "${COMOUT}"
 fi
 
 ########################################################
@@ -24,21 +24,20 @@ fi
 "${SCRgfs}/exgfs_atmos_fbwind.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-  err_exit
+    err_exit
 fi
 ########################################################
 
 ############################################
 # print exec I/O output
 ############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [[ "${KEEPDATA}" != "YES" ]] ; then
-  rm -rf "${DATA}"
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
 fi
-
