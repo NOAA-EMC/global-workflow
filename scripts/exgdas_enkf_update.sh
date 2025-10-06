@@ -42,9 +42,9 @@ APREFIX=${APREFIX:-""}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean.txt}
-CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
-OZNSTAT=${OZNSTAT:-${APREFIX}oznstat}
-RADSTAT=${RADSTAT:-${APREFIX}radstat}
+CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat.tar}
+OZNSTAT=${OZNSTAT:-${APREFIX}oznstat.tar}
+RADSTAT=${RADSTAT:-${APREFIX}radstat.tar}
 ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat.txt}
 
 # Namelist parameters
@@ -143,9 +143,9 @@ COMOUT_ATMOS_ANALYSIS=\$2
 flist="${CNVSTAT} ${OZNSTAT} ${RADSTAT}"
 for ftype in \$flist; do
    if [[ "\${memchar}" == "ensmean" ]]; then
-      fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype}.ensmean.tar
+      fname=\${COMOUT_ATMOS_ANALYSIS}/\ensmean.\${ftype%.tar}.tar
    else
-      fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype}.tar
+      fname=\${COMOUT_ATMOS_ANALYSIS}/\${ftype}
    fi
    tar -xvf \$fname
 done

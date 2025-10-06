@@ -2,8 +2,8 @@ copy:
 - ['{{ COMIN_OBS }}/{{OPREFIX}}imssnow96.asc', '{{ DATA }}/obs/ims{{ current_cycle | to_julian }}_4km_v1.3.asc']
 - ['{{ FIXgfs }}/gdas/obs/ims/IMS_4km_to_{{ CASE }}.mx{{ OCNRES }}.nc', '{{ DATA }}/obs/IMS4km_to_FV3_mapping.{{ CASE }}.mx{{ OCNRES }}_oro_data.nc']
 copy:
-- ["{{ COMIN_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}atmf006.nc", "{{ DATA }}"]
-- ["{{ COMIN_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}sfcf006.nc", "{{ DATA }}"]
+- ["{{ COMIN_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}atm.f006.nc", "{{ DATA }}"]
+- ["{{ COMIN_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}sfc.f006.nc", "{{ DATA }}"]
 - ["{{ COMIN_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_atmf006.nc", "{{ DATA }}"]
 - ["{{ COMIN_ATMOS_HISTORY_PREV }}/{{ GPREFIX }}cubed_sphere_grid_sfcf006.nc", "{{ DATA }}"]
 {% for itile in range(6) %}
