@@ -42,9 +42,9 @@ APREFIX=${APREFIX:-""}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean.txt}
-CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat.tar}
-OZNSTAT=${OZNSTAT:-${APREFIX}oznstat.tar}
-RADSTAT=${RADSTAT:-${APREFIX}radstat.tar}
+CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
+OZNSTAT=${OZNSTAT:-${APREFIX}oznstat}
+RADSTAT=${RADSTAT:-${APREFIX}radstat}
 ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat.txt}
 
 # Namelist parameters
@@ -164,7 +164,7 @@ if [[ "${USE_CFP}" == "YES" ]]; then
    fi
 else
    for ftype in ${flist}; do
-      fname="${COMIN_ATMOS_ANALYSIS_STAT}/${ftype}"
+      fname="${COMIN_ATMOS_ANALYSIS_STAT}/${ftype}.tar"
       tar -xvf "${fname}"
    done
 fi
