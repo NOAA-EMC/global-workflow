@@ -6,30 +6,27 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
 # Begin JOB SPECIFIC work
 ##############################################
 
-export PROCESS_TROPCY=${PROCESS_TROPCY:-YES}    # Turn on tropical cyclone tcvitals QC proc. if YES
-export DO_RELOCATE=${DO_RELOCATE:-NO}           # Turn on tropical cyclone relocation proc. if YES
+export PROCESS_TROPCY=${PROCESS_TROPCY:-YES} # Turn on tropical cyclone tcvitals QC proc. if YES
+export DO_RELOCATE=${DO_RELOCATE:-NO}        # Turn on tropical cyclone relocation proc. if YES
 
 export tmmark=tm00
-export ARCHSYND=${ROTDIR}/syndat  # this location is unique, do not change
-if [ ! -d ${ARCHSYND} ]; then mkdir -p ${ARCHSYND}; fi
+export ARCHSYND=${ROTDIR}/syndat # this location is unique, do not change
+mkdir -p "${ARCHSYND}"
 
 export HOMENHC=${HOMENHC:-/lfs/h1/ops/prod/dcom/nhc/atcf/ncep}
 
-export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}}   # path to tropical cyclone record database
+export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}} # path to tropical cyclone record database
 
 ##############################################
 # Define COM directories
 ##############################################
 declare_from_tmpl COMOUT_OBS:COM_OBS_TMPL
-if [[ ! -d "${COMOUT_OBS}" ]]; then
-  mkdir -p "${COMOUT_OBS}"
-fi
+mkdir -p "${COMOUT_OBS}"
 
 export CRES=${CASE_HIST:1}
-export LATB=$((CRES*2))
-export LONB=$((CRES*4))
-export BKGFREQ=1                                # for hourly relocation
-
+export LATB=$((CRES * 2))
+export LONB=$((CRES * 4))
+export BKGFREQ=1 # for hourly relocation
 
 ##############################################
 # Run relevant script
@@ -44,8 +41,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -55,6 +52,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

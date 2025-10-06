@@ -9,26 +9,26 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
     COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
 
-if [[ ! -d "${COMOUT_WAVE_GRID}" ]]; then mkdir -p "${COMOUT_WAVE_GRID}"; fi
+mkdir -p "${COMOUT_WAVE_GRID}"
 
 if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
-  for grdID in ${wavepostGRD} ${waveinterpGRD}; do
-    process_grdID "${grdID}"
-    YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-        "COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
-    out_dir_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
-    out_dir=${!out_dir_varname}
-    if [[ ! -d "${out_dir}" ]]; then mkdir -p "${out_dir}"; fi
-  done
+    for grdID in ${wavepostGRD} ${waveinterpGRD}; do
+        process_grdID "${grdID}"
+        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
+            "COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+        out_dir_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
+        out_dir=${!out_dir_varname}
+        mkdir -p "${out_dir}"
+    done
 else
-  echo "Both wavepostGRD and waveinterpGRD are empty. No grids to process."
+    echo "Both wavepostGRD and waveinterpGRD are empty. No grids to process."
 fi
 
 # Execute the Script
 "${SCRgfs}/exgfs_wave_post_gridded_sbs.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-  err_exit "ex-script of gridded wave post failed!"
+    err_exit "ex-script of gridded wave post failed!"
 fi
 
 ##########################################
@@ -36,7 +36,7 @@ fi
 ##########################################
 cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" != "YES" ]]; then
-  rm -rf "${DATA}"
+    rm -rf "${DATA}"
 fi
 
 exit 0

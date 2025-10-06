@@ -1,7 +1,6 @@
 #!/bin/bash
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base marineanl prepoceanobs"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -22,7 +21,6 @@ if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 
-
 ##############################################
 # End JOB SPECIFIC work
 ##############################################
@@ -30,8 +28,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -39,7 +37,7 @@ fi
 ##########################################
 cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
-  rm -rf "${DATA}"
+    rm -rf "${DATA}"
 fi
 
 exit 0

@@ -5,9 +5,9 @@ source "${USHgfs}/wave_domain_grid.sh"
 
 # Set COM Paths
 for grid in '0p25' '0p50' '1p00'; do
-  prod_dir="COMIN_ATMOS_GRIB_${grid}"
-  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
-  if [[ ! -d "${!prod_dir}" ]]; then mkdir -p "${!prod_dir}"; fi
+    prod_dir="COMIN_ATMOS_GRIB_${grid}"
+    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+    mkdir -p "${!prod_dir}"
 done
 
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
@@ -24,17 +24,17 @@ YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
     "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
 
 if [[ "${DO_ATM}" == "YES" ]]; then
-  if [[ ! -d "${ARC_RFCST_PROD_ATMOS_F2D}" ]]; then mkdir -p "${ARC_RFCST_PROD_ATMOS_F2D}"; fi
-  if [[ ! -d "${ARC_RFCST_PROD_ATMOS_F3D}" ]]; then mkdir -p "${ARC_RFCST_PROD_ATMOS_F3D}"; fi
+    mkdir -p "${ARC_RFCST_PROD_ATMOS_F2D}"
+    mkdir -p "${ARC_RFCST_PROD_ATMOS_F3D}"
 fi
 if [[ "${DO_OCN}" == "YES" ]]; then
-  if [[ ! -d "${ARC_RFCST_PROD_OCN}" ]]; then mkdir -p "${ARC_RFCST_PROD_OCN}"; fi
+    mkdir -p "${ARC_RFCST_PROD_OCN}"
 fi
 if [[ "${DO_ICE}" == "YES" ]]; then
-  if [[ ! -d "${ARC_RFCST_PROD_ICE}" ]]; then mkdir -p "${ARC_RFCST_PROD_ICE}"; fi
+    mkdir -p "${ARC_RFCST_PROD_ICE}"
 fi
 if [[ "${DO_WAVE}" == "YES" ]]; then
-  if [[ ! -d "${ARC_RFCST_PROD_WAV}" ]]; then mkdir -p "${ARC_RFCST_PROD_WAV}"; fi
+    mkdir -p "${ARC_RFCST_PROD_WAV}"
 fi
 
 # Execute the Script

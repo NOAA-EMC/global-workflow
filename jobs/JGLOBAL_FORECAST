@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 
-if (( 10#${ENSMEM:-0} > 0 )); then
-  export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
-  export DATA="${DATAjob}/${jobid}"
-  source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+if ((10#${ENSMEM:-0} > 0)); then
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+    export DATA="${DATAjob}/${jobid}"
+    source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 else
-  export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
-  export DATA="${DATAjob}/${jobid}"
-  source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
+    export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+    export DATA="${DATAjob}/${jobid}"
+    source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 fi
 
 # Create the directory to hold restarts and output from the model in stmp
@@ -36,69 +36,68 @@ declare -rx gcyc="${GDATE:8:2}"
 
 # Construct COM variables from templates (see config.com)
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-  COMIN_ATMOS_INPUT:COM_ATMOS_INPUT_TMPL \
-  COMOUT_CONF:COM_CONF_TMPL \
-  COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
-  COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
-  COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-  COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
+    COMIN_ATMOS_INPUT:COM_ATMOS_INPUT_TMPL \
+    COMOUT_CONF:COM_CONF_TMPL \
+    COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
+    COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
+    COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
+    COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
 
 RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-  COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+    COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
 # GCAFS/GCDAS uses an offline atmospheric analysis
 if [[ "${RUN}" =~ "gcafs" ]] || [[ "${RUN}" =~ "gcdas" ]]; then
-  YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+    YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
+        COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 else
-  # other runs use their own atmospheric analysis
-  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+    # other runs use their own atmospheric analysis
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+        COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 fi
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
-  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-    COMOUT_WAVE_RESTART:COM_WAVE_RESTART_TMPL \
-    COMOUT_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL
-  RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-    COMIN_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+        COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+        COMOUT_WAVE_RESTART:COM_WAVE_RESTART_TMPL \
+        COMOUT_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL
+    RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+        COMIN_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
 fi
 
 if [[ "${DO_OCN}" == "YES" ]]; then
-  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMIN_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
-    COMIN_OCEAN_INPUT:COM_OCEAN_INPUT_TMPL \
-    COMOUT_MED_RESTART:COM_MED_RESTART_TMPL \
-    COMOUT_OCEAN_RESTART:COM_OCEAN_RESTART_TMPL \
-    COMOUT_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL
-  RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-    COMIN_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL \
-    COMIN_MED_RESTART_PREV:COM_MED_RESTART_TMPL
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+        COMIN_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
+        COMIN_OCEAN_INPUT:COM_OCEAN_INPUT_TMPL \
+        COMOUT_MED_RESTART:COM_MED_RESTART_TMPL \
+        COMOUT_OCEAN_RESTART:COM_OCEAN_RESTART_TMPL \
+        COMOUT_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL
+    RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+        COMIN_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL \
+        COMIN_MED_RESTART_PREV:COM_MED_RESTART_TMPL
 fi
 
 if [[ "${DO_ICE}" == "YES" ]]; then
-  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMIN_ICE_INPUT:COM_ICE_INPUT_TMPL \
-    COMIN_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
-    COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL \
-    COMOUT_ICE_HISTORY:COM_ICE_HISTORY_TMPL
-  RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-    COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+        COMIN_ICE_INPUT:COM_ICE_INPUT_TMPL \
+        COMIN_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
+        COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL \
+        COMOUT_ICE_HISTORY:COM_ICE_HISTORY_TMPL
+    RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+        COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
 fi
 
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
-  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMOUT_CHEM_HISTORY:COM_CHEM_HISTORY_TMPL
-  YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
-    COMIN_TRACER_RESTART:COM_ATMOS_RESTART_TMPL
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+        COMOUT_CHEM_HISTORY:COM_CHEM_HISTORY_TMPL
+    YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
+        COMIN_TRACER_RESTART:COM_ATMOS_RESTART_TMPL
 fi
-
 
 ###############################################################
 # Run relevant exglobal script
 ###############################################################
-"${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}" && true  # The && true prevents the shell from exiting when set -e
+"${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
@@ -107,12 +106,12 @@ fi
 # Send DBN alerts for EnKF
 # TODO: Should these be in post manager instead?
 if [[ "${RUN}" =~ "enkf" ]] && [[ "${SENDDBN:-}" == YES ]]; then
-  for (( fhr = FHOUT; fhr <= FHMAX; fhr + FHOUT )); do
-    if (( fhr % 3 == 0 )); then
-      fhr3=$(printf %03i "${fhr}")
-      "${DBNROOT}/bin/dbn_alert" MODEL GFS_ENKF "${job}" "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${fhr3}.nc"
-    fi
-  done
+    for ((fhr == FHOUT; fhr <= FHMAX; fhr + FHOUT)); do
+        if ((fhr % 3 == 0)); then
+            fhr3=$(printf %03i "${fhr}")
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_ENKF "${job}" "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${fhr3}.nc"
+        fi
+    done
 fi
 
 ##############################################
@@ -122,8 +121,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -132,15 +131,15 @@ fi
 cd "${DATAROOT}" || true
 # do not remove DATAjob. It contains DATAoutput
 if [[ "${KEEPDATA}" == "NO" ]]; then
-  rm -rf "${DATA}"
+    rm -rf "${DATA}"
 
-  # Determine if this is the last segment
-  commas="${FCST_SEGMENTS//[^,]}"
-  n_segs=${#commas}
-  if (( n_segs - 1 == ${FCST_SEGMENT:-0} )); then
-    # Only delete temporary restarts if it is the last segment
-    rm -rf "${DATArestart}"
-  fi
+    # Determine if this is the last segment
+    commas="${FCST_SEGMENTS//[^,]/}"
+    n_segs=${#commas}
+    if ((n_segs - 1 == ${FCST_SEGMENT:-0})); then
+        # Only delete temporary restarts if it is the last segment
+        rm -rf "${DATArestart}"
+    fi
 fi
 
 exit 0

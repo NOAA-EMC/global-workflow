@@ -2,7 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
@@ -13,26 +12,25 @@ export GDATE
 
 BKG_RUN="gdas"
 if [[ "${RUN}" == "gcafs" || "${RUN}" == "gcdas" ]]; then
-  BKG_RUN="gcdas"
+    BKG_RUN="gcdas"
 fi
 
 RUN=${BKG_RUN} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
-  COMIN_OBS_PREV:COM_OBS_TMPL \
-  COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+    COMIN_OBS_PREV:COM_OBS_TMPL \
+    COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMIN_OBS:COM_OBS_TMPL \
-  COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-  COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
+    COMIN_OBS:COM_OBS_TMPL \
+    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+    COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
+    COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
 
 RUN="enkfgdas" MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMIN_ATMOS_ENKF_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+    COMIN_ATMOS_ENKF_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
 
 mkdir -p "${COMOUT_ATMOS_RESTART}"
-
 
 ###############################################################
 # Run relevant script
@@ -50,17 +48,16 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}"
+cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0
