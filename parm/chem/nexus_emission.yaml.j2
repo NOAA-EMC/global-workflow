@@ -12,4 +12,4 @@ nexus_emission:
       {% for fileout in FINAL_OUTPUT %}
       - ["{{ DATA }}/{{ fileout }}", "{{ COMOUT_CHEM_INPUT }}/"]
       {% endfor %}
-      - ["{{ DATA }}/{{ RestartFile }}", "{{ COMOUT_CHEM_RESTART }}/"]
+      - ["{{ DATA }}/Restarts/{{ RestartFile }}", "{{ COMOUT_CHEM_RESTART }}/"]
