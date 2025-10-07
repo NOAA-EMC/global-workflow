@@ -31,7 +31,6 @@ export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NCLEN=${NCLEN:-"${USHgfs}/getncdimlen"}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
-APRUNCFP=${APRUNCFP:-""}
 
 # Diagnostic files options
 netcdf_diag=${netcdf_diag:-".true."}
