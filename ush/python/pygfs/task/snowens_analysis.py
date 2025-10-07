@@ -152,11 +152,10 @@ class SnowEnsAnalysis(Task):
             logger.exception(f"An error occured during execution of {exe}")
             raise WorkflowException(f"An error occured during execution of {exe}") from err
 
-        # Ensure the IODA snow depth GHCN file is produced by the IODA converter
-        # If so, copy to DATA/obs/
+        # Ensure the IODA snow depth SNOCVR+SNOMAD file is produced by the obsBuilder
+        # If so, copy to DATA/prep/
         if not os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
-            logger.exception(f"{self.task_config.OBSBUILDER} failed to produce {output_file}")
-            raise FileNotFoundError(f"{os.path.join(localconf.DATA, output_file)}")
+            logger.warning(f"{output_file} not produced - continuing without it.")
         else:
             logger.info(f"Copy {output_file} successfully generated")
             FileHandler(prep_snocvr_snomad_config.netcdf).sync()
