@@ -11,7 +11,7 @@ if [[ -d "${DATAfcst}" ]]; then rm -rf "${DATAfcst}"; fi
 rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 ###############################################################
 
-if [[ "${CLEANUP_COM:-YES}" == NO ]] ; then
+if [[ "${CLEANUP_COM:-YES}" == NO ]]; then
     exit 0
 fi
 
@@ -36,33 +36,33 @@ function remove_files() {
         find_exclude_string+="${find_exclude_string} -name ${exclude} -or"
     done
     # Chop off any trailing or
-    find_exclude_string="${find_exclude_string[*]/%-or}"
+    find_exclude_string="${find_exclude_string[*]/%-or/}"
     # Remove all regular files that do not match
     # shellcheck disable=SC2086
     if [[ -n "${find_exclude_string}" ]]; then
-    # String is non-empty → use exclusion
-       find "${directory}" -type f -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
+        # String is non-empty → use exclusion
+        find "${directory}" -type f -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
     else
-    # String is empty → no exclusion
-       find "${directory}" -type f -ignore_readdir_race -delete
+        # String is empty → no exclusion
+        find "${directory}" -type f -ignore_readdir_race -delete
     fi
 
     # Remove all symlinks that do not match
     # shellcheck disable=SC2086
     if [[ -n "${find_exclude_string}" ]]; then
-    # String is non-empty → use exclusion
-       find "${directory}" -type l -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
+        # String is non-empty → use exclusion
+        find "${directory}" -type l -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
     else
-    # String is empty → no exclusion
-       find "${directory}" -type l -ignore_readdir_race -delete
+        # String is empty → no exclusion
+        find "${directory}" -type l -ignore_readdir_race -delete
     fi
 
     # Remove any empty directories
     find "${directory}" -type d -empty -delete
 }
 
-for (( current_date=first_date; current_date <= last_date; \
-  current_date=$(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours") )); do
+for ((current_date = first_date; current_date <= last_date;  \
+current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours"))); do
     current_PDY="${current_date:0:8}"
     current_cyc="${current_date:8:2}"
     rtofs_dir="${ROTDIR}/rtofs.${current_PDY}"
@@ -77,7 +77,7 @@ for (( current_date=first_date; current_date <= last_date; \
                 IFS=", " read -r -a exclude_list <<< "${exclude_string:-}"
                 remove_files "${COMOUT_TOP}" "${exclude_list[@]:-}"
             fi
-            if [[ -d "${rtofs_dir}" ]] && (( current_date < last_rtofs )); then rm -rf "${rtofs_dir}" ; fi
+            if [[ -d "${rtofs_dir}" ]] && ((current_date < last_rtofs)); then rm -rf "${rtofs_dir}"; fi
         fi
     fi
 done
@@ -96,7 +96,7 @@ if [[ "${RUN}" == "gfs" ]]; then
     fi
 
     touch_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_FITS} hours")
-    while (( touch_date < "${PDY}${cyc}" )); do
+    while ((touch_date < "${PDY}${cyc}")); do
         touch_PDY="${touch_date:0:8}"
         touch_cyc="${touch_date:8:2}"
         touch_dir="${ROTDIR}/vrfyarch/${RUN}.${touch_PDY}/${touch_cyc}"
@@ -110,7 +110,7 @@ fi
 # Remove $RUN.$rPDY for the older of GDATE or RDATE
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RMOLDSTD:-120} hours")
 RDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_GFS} hours")
-if (( GDATE < RDATE )); then
+if ((GDATE < RDATE)); then
     RDATE=${GDATE}
 fi
 deletion_target="${ROTDIR}/${RUN}.${RDATE:0:8}"
