@@ -220,17 +220,10 @@ ush/python/pygfs/task/atm_analysis.py @DavidNew-NOAA @RussTreadon-NOAA
 ush/python/pygfs/task/atmens_analysis.py @DavidNew-NOAA @RussTreadon-NOAA
 ush/python/pygfs/task/bmatrix.py @DavidNew-NOAA
 ush/python/pygfs/task/gfs_forecast.py @aerorahul
-<<<<<<< HEAD
 ush/python/pygfs/task/marine_analysis.py @guillaumevernieres @AndrewEichmann-NOAA @DavidNew-NOAA
 ush/python/pygfs/task/marine_bmat.py @guillaumevernieres @AndrewEichmann-NOAA @DavidNew-NOAA
 ush/python/pygfs/task/marine_letkf.py @guillaumevernieres @AndrewEichmann-NOAA @DavidNew-NOAA
-ush/python/pygfs/task/oceanice_products.py @aerorahul @GwenChen-NOAA @AminIlia-NOAA @ChristopherHill-NOAA
-=======
-ush/python/pygfs/task/marine_analysis.py @guillaumevernieres @AndrewEichmann-NOAA
-ush/python/pygfs/task/marine_bmat.py @guillaumevernieres @AndrewEichmann-NOAA
-ush/python/pygfs/task/marine_letkf.py @guillaumevernieres @AndrewEichmann-NOAA
-ush/python/pygfs/task/oceanice_products.py @aerorahul @JesseMeng-NOAA @ChristopherHill-NOAA
->>>>>>> develop
+ush/python/pygfs/task/oceanice_products.py @aerorahul @JesseMeng-NOAA @ChristopherHill-NOAA @DavidNew-NOAA
 ush/python/pygfs/task/offline_analysis.py @CoryMartin-NOAA
 ush/python/pygfs/task/snow_analysis.py @jiaruidong2017 @DavidNew-NOAA
 ush/python/pygfs/task/snowens_analysis.py @jiaruidong2017 @DavidNew-NOAA
