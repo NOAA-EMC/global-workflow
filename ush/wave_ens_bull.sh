@@ -40,9 +40,9 @@ bfhr=$4
 
 #
 #
-BULLdir=${bnom}_bull
-rm -rf $BULLdir
-mkdir -p $BULLdir
+BULLdir="${bnom}_bull"
+rm -rf "$BULLdir"
+mkdir -p "$BULLdir"
 err=$?
 if [ "$err" != '0' ]
 then
@@ -54,7 +54,7 @@ cd ${BULLdir}
 #  Output file names
 #
 
-fhr3=$(printf %03i ${bfhr})
+fhr3=$(printf %03i "${bfhr}")
 bfil="${RUN}.${bnom}.f${fhr3}.bull"
 tfil="${RUN}.${bnom}.f${fhr3}.ts"
 #
@@ -63,12 +63,12 @@ tfil="${RUN}.${bnom}.f${fhr3}.ts"
 #  Interpolate from gribfile at model res to high resolution at buoy location
 # (wgrib2 + IPOLATES -> bi-linear)
 #
-$WGRIB2 ../gribfile -new_grid_winds earth \
+${WGRIB2} ../gribfile -new_grid_winds earth \
        -new_grid_interpolation bilinear -new_grid latlon \
-       ${blon}:2:.01 ${blat}:2:.01 grbint.${bnom} \
-        2>&1 | tee  buoy_interp.out
+       "${blon}:2:.01" "${blat}:2:.01" grbint.${bnom} \
+        2>&1 | tee  "buoy_interp.out"
 #
-if ! [ -f grbint.${bnom} ]
+if ! [ -f "grbint.${bnom}" ]
 then
   set +x
   export err=2
@@ -114,9 +114,9 @@ tlen=`echo ${hsb[@]} | wc -w`
 #
 # Check for error in reading parameters from interpolated file
 #
-if [ ! $vald ] || [ ! valt ] || [ ! hsb ] || [ ! hspb ] || [ ! tpb ] || \
-     [ ! tspb ] || [ ! ub ] || [ ! usb ] || [ ! p1b ] || [ ! p2b ] || \
-     [ ! p3b ] || [ ! p4b ] || [ ! p5b ] || [ ! p6b ]
+if [ ! ${vald} ] || [ ! ${valt}] || [ ! ${hsb} ] || [ ! ${hspb} ] || [ ! ${tpb}] || \
+     [ ! ${tspb} ] || [ !${ub} ] || [ ! ${usb} ] || [ ! ${p1b} ] || [ ! ${p2b} ] || \
+     [ ! ${p3b} ] || [ ! ${p4b} ] || [ ! ${p5b} ] || [ ! ${p6b} ]
 then
   set +x
   export err=3
@@ -126,8 +126,8 @@ fi
 # Warning if any parameter has UNDEF value
 #
 UNDF=9.999e+20
-UNDFCHK=`echo ${hsb[@]} ${hspb[@]} ${tpb[@]} ${tspb[@]} ${ub[@]} ${usb[@]} \
-      ${p1b[@]} ${p2b[@]} ${p3b[@]} ${p4b[@]} ${p5b[@]} ${p6b[@]}`
+UNDFCHK=$(echo "${hsb[@]}" "${hspb[@]}" "${tpb[@]}" "${tspb[@]}" "${ub[@]}" "${usb[@]}" \
+	"${p1b[@]}" "${p2b[@]}" "${p3b[@]}" "${p4b[@]}" "${p5b[@]}" "${p6b[@]}")
 if [ `echo $UNDFCHK | grep $UNDF | cut -c1` ]
 then
   set +x

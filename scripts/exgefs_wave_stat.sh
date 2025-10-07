@@ -54,7 +54,7 @@ nmembn=$(( nens + 1 ))
 membn_array=()
 
 # Populate the array (the seq output is split by whitespace and added to the array)
-for i in $(seq -f "%03g" 0 "$nens"); do
+for i in $(seq -f "%03g" 0 "${nens}"); do
     membn_array+=("$i")
 done
 
@@ -344,7 +344,7 @@ do
   blon=`echo ${bline} | awk '{print $1}'`
   bnom=`echo ${bline} | awk '{print $3}' | sed "s/'//g"`
 
-  echo "${HOMEgfs}/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} ${FORECAST_HOUR} 2>&1 | tee  bull_${bnom}.out" >> ${fcmdnow}
+  echo "${HOMEgfs}/ush/wave_ens_bull.sh ${blon} ${blat} ${bnom} ${FORECAST_HOUR} 2>&1 | tee  bull_${bnom}.out" >> "${fcmdnow}"
 
   (( ibuoy = ibuoy + 1 ))
   (( ifile = ifile + 1 ))
@@ -404,7 +404,7 @@ ibuoy=1
 while (( ibuoy <= nbuoys ))
 do
 
-  bline=`sed ''$ibuoy'!d' buoy.file`
+  bline=$(sed "${ibuoy}!d" buoy.file)
   blat=`echo ${bline} | awk '{print $2}'`
   blon=`echo ${bline} | awk '{print $1}'`
   bnom=`echo ${bline} | awk '{print $3}' | sed "s/'//g"`

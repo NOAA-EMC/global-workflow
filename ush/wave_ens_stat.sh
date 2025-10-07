@@ -113,16 +113,16 @@ esac
 #
 # set $seton
 
-rm -f mean.t${cyc}z.grib2 spread.t${cyc}z.grib2 prob.t${cyc}z.grib2
+rm -f "mean.t${cyc}z.grib2" "spread.t${cyc}z.grib2" "prob.t${cyc}z.grib2"
 
 nmemb=${nmembn}
-nmembm1=`expr ${nmemb} - 1`
+nmembm1=$(( nmemb - 1 ))
 
   
 #
 # 1.a Create list of combined ensemble member numbers (starting from 00 = NCEP control run)
 #
-memb=`seq -w 0 ${nmembm1}`
+memb=$(seq -w 0 "${nmembm1}")
 
 export memid=""
 for i in $(seq -f "%02g" 0 $nmembm1); do memid="$memid $i"; done
@@ -131,50 +131,51 @@ fhr3=$(printf %03i ${fhr})
 valid_time=$(date -u -d "${PDY} ${cyc} + ${fhr} hours" "+%Y%m%d%H")
 ymdh_init=$(date -u -d "${valid_time:0:8} ${valid_time:8:2} - ${WAVHINDH} hours" "+%Y%m%d%H")
 
-mkdir ${valid_time}
-cd ${valid_time}
+mkdir "${valid_time}"
+cd "${valid_time}" || exit 1
 
 #
-rm -f wave_stat.inp data_*
+rm -f "wave_stat.inp" "data_*" 
 #
 # 1.b Loop through members
 nme=0
 #    while [ ${nme} -lt ${nmemb} ]
-for im in $memid
-do
-  infile=../../${para}_0${im}.t${cyc}z.${grdname}.f${fhr3}.grib2
+for im in ${memid}; do
+  infile="../../${para}_0${im}.t${cyc}z.${grdname}.f${fhr3}.grib2"
   echo "infile: ${infile}"
   if [ "${im}" = "00" ]
   then
 
 # 1.b.1 Generate input file for wave_stat
-    echo $CDATE $fhr3 $nnip $parcode  > wave_stat.inp
-    echo ${nmemb}                 >> wave_stat.inp
-    echo $memid                    >> wave_stat.inp
-    echo ${scale[@]} | wc -w           >> wave_stat.inp
-    echo ${scale[@]}                   >> wave_stat.inp
+    {
+    echo "${CDATE} ${fhr3} ${nnip} ${parcode}"
+    echo "${nmemb}"
+    echo "$memid"
+    echo "${scale[@]}" 
+    echo "${scale[@]}"             
+}>> wave_stat.inp
 
 # 1.b.2 Get grid dimension for input grib file and pass to fortran code
     nlola=`$WGRIB2 ${infile} -grid -d 1 | sed 's/(/ /g' | sed 's/)/ /g' | sed '2!d' | awk '{print $3,$5}'`
     rdlon=`$WGRIB2 ${infile} -grid -d 1 | sed 's/(/ /g' | sed 's/)/ /g' | sed '4!d' | awk '{print $2,$4,$6}'`
     rdlat=`$WGRIB2 ${infile} -grid -d 1 | sed 's/(/ /g' | sed 's/)/ /g' | sed '3!d' | awk '{print $2,$4,$6}'`
-    echo ${nlola}       >> wave_stat.inp
-    echo ${rdlon}       >> wave_stat.inp
-    echo ${rdlat}       >> wave_stat.inp
+    echo "${nlola}"       >> wave_stat.inp
+    echo "${rdlon}"       >> wave_stat.inp
+    echo "${rdlat}"       >> wave_stat.inp
   fi
 
 # 1.b.3 Create binary file for input to wave_stat FORTRAN executable
-  $WGRIB2 $infile  -vt -match ${ymdh_init} -bin data_${im}
+  $WGRIB2 "$infile"  -vt -match "${ymdh_init}" -bin "data_${im}"
   ok1=$?
 
 # 1.b.4 Check for errors
-  if [ $ok1 -ne 0 ] ; then
-    echo " *** ERROR : para=$para, im=$im, ok1=$ok1"
+  if [[ $ok1 -ne 0 ]] ; then
+    echo " *** ERROR : para=${para}, im=${im}, ok1=${ok1}"
     exit
   fi
-  echo data_$im       >> wave_stat.inp
+  echo data_${im}       >> wave_stat.inp
 
-  nme=`expr ${nme} + 1`
+  nme=$(expr "${nme}" + 1)
       
 done
 
@@ -186,15 +187,15 @@ rm -f mean_out spread_out prob_out test_out
     ${EXECgfs}/wave_stat.x  < wave_stat.inp >>$pgmout 2>&1
 #
 # 1.d Check for errors and move output files to tagged grib2 parameter-hour files
-if [ ! -f mean_out ]
+if [[ ! -f mean_out ]]
 then
   set +x
   export err=1
   err_exit "ABNORMAL EXIT: ERR mean_out not gerenerated for ${nnip} $fhr3."
 else
-  mv -f mean_out    ${nnip}_mean.$fhr3.grib2
+  mv -f mean_out    ${nnip}_mean.${fhr3}.grib2
 fi
-if [ ! -f spread_out ]
+if [[ ! -f spread_out ]]
 then
   set +x
   export err=1
@@ -204,14 +205,14 @@ else
 fi
 
 nscale=`echo ${ascale[@]} | wc -w`
-if [ ${nscale} -gt 1 ]
+if [[ ${nscale} -gt 1 ]]
 then
-  if [ ! -f prob_out ]
+  if [[ ! -f prob_out ]]
   then
     export err=1
-    err_exit "ABNORMAL EXIT: ERR prob_out not gerenerated for ${nnip} $fhr3."
+    err_exit "ABNORMAL EXIT: ERR prob_out not gerenerated for ${nnip} ${fhr3}."
   else
-    mv -f prob_out  ${nnip}_prob.$fhr3.grib2
+    mv -f prob_out  "${nnip}_prob.${fhr3}.grib2"
   fi
 fi
 
