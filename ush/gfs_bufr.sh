@@ -79,13 +79,13 @@ EOF
 #---------------------------------------------------------
 # Make sure all files are available:
 
-filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
+filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.log.f${fhr}.${logfm}"
 if [[ -z ${filename} ]]; then
   echo "FATAL ERROR: COULD NOT LOCATE logf${fhr} file"
   exit 2
 fi
 
-filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr_p}.${logfm}"
+filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.log.f${fhr_p}.${logfm}"
 if [[ -z ${filename} ]]; then
   echo "FATAL ERROR: COULD NOT LOCATE logf${fhr_p} file"
   exit 2

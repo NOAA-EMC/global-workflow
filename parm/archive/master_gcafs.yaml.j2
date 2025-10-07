@@ -27,7 +27,7 @@ datasets:
             {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
             - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ '%03d' % fhr }}.grib2"
             - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ '%03d' % fhr }}.grib2.idx"
-            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.log.f{{ '%03d' % fhr }}.txt"
+            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}log.f{{ '%03d' % fhr }}.txt"
             {% endfor %}
             # GRIB2 forecast data
             {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
