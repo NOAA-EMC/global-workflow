@@ -308,51 +308,6 @@ HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
 OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
 BLACKLST=${BLACKLST:-${FIXgfs}/gsi/rejectlist_global.txt}
 
-# Get historical fix files
-if [[ -z "${CONVINFO}" ]]; then
-   CONVINFO=$(find "${FIXgfs}/gsi/gfsv17_historical/" -maxdepth 1 -name "global_convinfo.txt.*" 2>/dev/null \
-    | awk -F. -v d="${PDY}${cyc}" '{ts=$NF} ts<=d {print ts, $0}' \
-    | sort -n \
-    | tail -n1 \
-    | cut -d' ' -f2- \
-    || true
-    )
-fi 
-if [[ -z "${CONVINFO}" ]]; then
-    CONVINFO="${FIXgfs}/gsi/global_convinfo.txt"
-fi
-echo "Selected CONVINFO: ${CONVINFO}"
-
-if [[ -z "${OZINFO}" ]]; then
-   OZINFO=$(find "${FIXgfs}/gsi/gfsv17_historical/" -maxdepth 1 -name "global_ozinfo.txt.*" 2>/dev/null \
-       | awk -F. -v d="${PDY}${cyc}" '{ts=$NF} ts<=d {print ts, $0}' \
-       | sort -n \
-       | tail -n1 \
-       | cut -d' ' -f2- \
-       || true
-    )
-fi 
-
-if [[ -z "${OZINFO}" ]]; then
-   OZINFO="${FIXgfs}/gsi/global_ozinfo.txt"
-fi
-echo "Selected OZINFO: ${OZINFO}"
-
-if [[ -z "${SATINFO}" ]]; then
-   SATINFO=$(find "${FIXgfs}/gsi/gfsv17_historical/" -maxdepth 1 -name "global_satinfo.txt.*" 2>/dev/null \
-       | awk -F. -v d="${PDY}${cyc}" '{ts=$NF} ts<=d {print ts, $0}' \
-       | sort -n \
-       | tail -n1 \
-       | cut -d' ' -f2- \
-       || true
-    )
-fi 
-
-if [[ -z "${SATINFO}" ]]; then
-   SATINFO="${FIXgfs}/gsi/global_satinfo.txt"
-fi
-echo "Selected SATINFO: ${SATINFO}"
-
 # GSI namelist
 SETUP=${SETUP:-""}
 GRIDOPTS=${GRIDOPTS:-""}
