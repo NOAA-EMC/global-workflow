@@ -4,7 +4,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
 
-
 ####################################
 # Specify NET and RUN Name and model
 ####################################
@@ -20,10 +19,9 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY
 
 ########################################################
 # Execute the script.
-${SCRgfs}/exglobal_atmos_pmgr.sh && true
+"${SCRgfs}/exglobal_atmos_pmgr.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 ########################################################
-

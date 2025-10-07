@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DATAjob="${DATAROOT/enkf}/marineanalysis.${PDY:-}${cyc}"
+export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlecen"
 export DATAens="${DATAjob}/ensdata"
 
@@ -17,21 +17,21 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-   COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-   COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
 
 YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_OCEAN_HISTORY_ENS_PREV:COM_OCEAN_HISTORY_TMPL \
     COMIN_ICE_HISTORY_ENS_PREV:COM_ICE_HISTORY_TMPL
 
 RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-   COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
-   COMIN_ICE_RESTART:COM_ICE_RESTART_TMPL \
-   COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL
+    COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
+    COMIN_ICE_RESTART:COM_ICE_RESTART_TMPL \
+    COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL
 
 export NMEM_ENS_MAX=${NMEM_ENS}
 if [[ "${RUN}" == "enkfgfs" ]]; then
-   NMEM_ENS=${NMEM_ENS_GFS}
+    NMEM_ENS=${NMEM_ENS_GFS}
 fi
 
 ##############################################
@@ -55,14 +55,14 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT/enkf}" && true
+cd "${DATAROOT/enkf/}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

@@ -11,10 +11,10 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \
     COMOUT_WAVE_WMO:COM_WAVE_WMO_TMPL
 
-if [[ ! -d ${COMOUT_WAVE_WMO} ]]; then mkdir -p "${COMOUT_WAVE_WMO}"; fi
+mkdir -p "${COMOUT_WAVE_WMO}"
 
 if [[ -n "${GEMPAK_GRIDS}" ]]; then
-    for grdID in ${GEMPAK_GRIDS}; do 
+    for grdID in ${GEMPAK_GRIDS}; do
         process_grdID "${grdID}"
         YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
             "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
@@ -26,7 +26,7 @@ fi
 ###################################
 # Execute the Script
 ###################################
-${SCRgfs}/exgfs_wave_prdgen_gridded.sh && true
+"${SCRgfs}/exgfs_wave_prdgen_gridded.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
@@ -36,8 +36,8 @@ fi
 # Remove temp directories
 ###################################
 cd "${DATAROOT}" || true
-if [ "${KEEPDATA}" != "YES" ]; then
-  rm -rf "${DATA}"
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
 fi
 
 exit 0
