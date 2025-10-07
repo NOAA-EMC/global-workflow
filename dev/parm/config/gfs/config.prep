@@ -9,6 +9,7 @@ echo "BEGIN: config.prep"
 source "${EXPDIR}/config.resources" prep
 
 export cdate10=${PDY}${cyc}
+
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 export TROPCYQCRELOSH="${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh"
