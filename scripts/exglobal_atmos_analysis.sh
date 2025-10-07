@@ -171,9 +171,9 @@ GRADSTAT=${GRADSTAT:-${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}radstat.tar}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-SFCANL=${SFCANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}sfc.anl.nc}
-DTFANL=${DTFANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}dtf.anl.nc}
-ATMANL=${ATMANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.anl.nc}
+SFCANL=${SFCANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.sfc.nc}
+DTFANL=${DTFANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.dtf.nc}
+ATMANL=${ATMANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.nc}
 ABIAS=${ABIAS:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias.txt}
 ABIASPC=${ABIASPC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc.txt}
 ABIASAIR=${ABIASAIR:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air.txt}
@@ -185,7 +185,7 @@ CNVSTAT=${CNVSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat.tar}
 OZNSTAT=${OZNSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat.tar}
 
 # Increment files
-ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.increment.nc}
+ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.nc}
 
 # Obs diag
 RUN_SELECT=${RUN_SELECT:-"NO"}
@@ -339,18 +339,18 @@ fi
 
 # Set 4D-EnVar specific variables
 if [[ ${DOHYBVAR} == "YES" && ${l4densvar} == ".true." && ${lwrite4danl} == ".true." ]]; then
-   ATMA03=${ATMA03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma003.nc}
-   ATMI03=${ATMI03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i003.nc}
-   ATMA04=${ATMA04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma004.nc}
-   ATMI04=${ATMI04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i004.nc}
-   ATMA05=${ATMA05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma005.nc}
-   ATMI05=${ATMI05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i005.nc}
-   ATMA07=${ATMA07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma007.nc}
-   ATMI07=${ATMI07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i007.nc}
-   ATMA08=${ATMA08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma008.nc}
-   ATMI08=${ATMI08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i008.nc}
-   ATMA09=${ATMA09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma009.nc}
-   ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.i009.nc}
+   ATMA03=${ATMA03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i003.nc}
+   ATMI03=${ATMI03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i003.nc}
+   ATMA04=${ATMA04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i004.nc}
+   ATMI04=${ATMI04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i004.nc}
+   ATMA05=${ATMA05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i005.nc}
+   ATMI05=${ATMI05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i005.nc}
+   ATMA07=${ATMA07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i007.nc}
+   ATMI07=${ATMI07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i007.nc}
+   ATMA08=${ATMA08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i008.nc}
+   ATMI08=${ATMI08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i008.nc}
+   ATMA09=${ATMA09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i009.nc}
+   ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i009.nc}
 fi
 
 ##############################################################
@@ -549,7 +549,7 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
    # Link ensemble members
    mkdir -p ensemble_data
 
-   ENKF_SUFFIX="s"
+   ENKF_SUFFIX="smooth"
    if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
        ENKF_SUFFIX=""
    fi
@@ -566,7 +566,7 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
 	      COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
       for fhr in ${fhrs}; do
-         ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}atm.f0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
+         ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}.${ENKF_SUFFIX}.atm.f0${fhr}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
          if [[ ${cnvw_option} == ".true." ]]; then
             ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}sfc.f0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${memchar}
          fi
@@ -1034,7 +1034,7 @@ cd "${pwd}" || exit 1
 if [[ ${SENDECF} == "YES" && "${RUN}" != "enkf" ]]; then
    ecflow_client --event release_fcst
 fi
-echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}done.anl.txt"
+echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.done.txt"
 
 ################################################################################
 

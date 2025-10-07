@@ -125,7 +125,7 @@ else
 fi
 
 if [[ "${DONST}" == "YES" ]]; then
-  export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}dtf.anl.nc}
+  export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}anl.dtf.nc}
 else
   export NST_FILE="NULL"
 fi
@@ -157,7 +157,7 @@ export MAX_TASKS_CY=$NMEM_ENS
 
 if [[ "$DOIAU" == "YES" ]]; then
     # Update surface restarts at beginning of window when IAU is ON
-    # For now assume/hold dtf.anl.nc is valid at beginning of window.
+    # For now assume/hold anl.dtf.nc is valid at beginning of window.
 
     for n in $(seq 1 $ntiles); do
 

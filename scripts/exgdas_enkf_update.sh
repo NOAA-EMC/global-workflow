@@ -198,23 +198,23 @@ for imem in $(seq 1 ${NMEM_ENS}); do
       fi
       if [[ ${FHR} -eq 6 ]]; then
          if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atm.anl.nc" \
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}anl.atm.nc" \
                "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          else
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atm.increment.nc" \
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.nc" \
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
       else
          if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atma00${FHR}.nc" \
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}anl.atm.i00${FHR}.nc" \
                "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          else
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}atm.i00${FHR}.nc" \
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc" \
                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
          fi
       fi
       if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-          ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}sfci00${FHR}.nc" \
+          ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${FHR}.nc" \
            "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
    done
@@ -232,7 +232,7 @@ for FHR in ${nfhrs}; do
    if [[ "${DO_GSISOILDA}" == "YES" ]]; then
       ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.sfc.f00${FHR}.nc" \
          "bfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
-      ${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${APREFIX}sfci00${FHR}.nc" \
+      ${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${APREFIX}increment.sfc.i00${FHR}.nc" \
          "sfcincr_${PDY}${cyc}_fhr0${FHR}_ensmean"
    fi
 done

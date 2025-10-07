@@ -757,10 +757,10 @@ class GCAFSTasks(Tasks):
 
         atm_anl_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
         deps = []
-        data = f'{atm_anl_path}/{self.run}.t@Hz.atm.anl.nc'
+        data = f'{atm_anl_path}/{self.run}.t@Hz.anl.atm.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_anl_path}/{self.run}.t@Hz.sfc.anl.nc'
+        data = f'{atm_anl_path}/{self.run}.t@Hz.anl.sfc.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_anl_path}/{self.run}.t@Hz.done.txt'

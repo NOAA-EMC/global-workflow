@@ -36,12 +36,12 @@ analysis:
         {% else %}
 
         {% for source_ftype, dest_ftype in [
-            ("atminc.nc", "atm.increment.nc"),
-            ("atmi009.nc", "atm.i009.nc"),
-            ("atmi003.nc", "atm.i003.nc"),
-            ("ratminc.nc", "ratm.increment.nc"),
-            ("ratmi009.nc", "ratm.i009.nc"),
-            ("ratmi003.nc", "ratm.i003.nc"),
+            ("atminc.nc", "increment.atm.nc"),
+            ("atmi009.nc", "increment.atm.i009.nc"),
+            ("atmi003.nc", "increment.atm.i003.nc"),
+            ("ratminc.nc", "recenter.increment.atm.nc"),
+            ("ratmi009.nc", "recenter.increment.atm.i009.nc"),
+            ("ratmi003.nc", "recenter.increment.atm.i003.nc"),
             ("abias", "abias.txt"),
             ("radstat", "radstat.tar"),
             ("abias_air", "abias_air.txt"),
@@ -66,7 +66,7 @@ analysis:
 
         {% if DO_LAND_IAU %}
         {% for itile in range(1,7) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/sfc_inc.tile{{ itile }}.nc",
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc",
            "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endfor %}
         {% endif %}

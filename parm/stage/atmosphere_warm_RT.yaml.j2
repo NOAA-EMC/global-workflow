@@ -11,7 +11,7 @@ atmosphere_warm_RT:
         {% set increment_destination_path = COMOUT_ATMOS_ANALYSIS_MEM %}
 
         # Include increment files
-        {% for ftype in ["ratm.i003.nc", "ratm.i009.nc", "ratm.increment.nc"] %}
+        {% for ftype in ["recenter.atm.i003.nc", "recenter.atm.i009.nc", "recenter.increment.atm.nc"] %}
             {% set file = increment_mem_path ~ ftype %}
         - ["{{ file }}", "{{ increment_destination_path }}"]
         {% endfor %}

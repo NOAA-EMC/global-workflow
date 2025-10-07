@@ -118,27 +118,27 @@ for imem in $(seq 1 ${NMEM_ENS}); do
       if [[ ${FHR} -eq 6 ]]; then
          ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atm.anl.nc" "./atmanl_${memchar}"
       else
-         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atma00${FHR}.nc" "./atmanl_${memchar}"
+         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}anl.atm.i00${FHR}.nc" "./atmanl_${memchar}"
       fi
    fi
    mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
    if [[ ${FHR} -eq 6 ]]; then
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atm.increment.nc" "./atminc_${memchar}"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}increment.atm.nc" "./atminc_${memchar}"
    else
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atm.i00${FHR}.nc" "./atminc_${memchar}"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}increment.atm.i00${FHR}.nc" "./atminc_${memchar}"
    fi
    if [[ ${RECENTER_ENKF} = "YES" ]]; then
       if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
          if [[ ${FHR} -eq 6 ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}ratmanl.nc" "./ratmanl_${memchar}"
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recenter.anl.atm.nc" "./ratmanl_${memchar}"
          else
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}ratma00${FHR}.nc" "./ratmanl_${memchar}"
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recenter.anl.i00${FHR}.nc" "./ratmanl_${memchar}"
          fi
      else
          if [[ ${FHR} -eq 6 ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}ratm.increment.nc" "./ratminc_${memchar}"
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recenter.increment.atm.nc" "./ratminc_${memchar}"
          else
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}ratm.i00${FHR}.nc" "./ratminc_${memchar}"
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recenter.increment.atm.i00${FHR}.nc" "./ratminc_${memchar}"
          fi
      fi
    fi
@@ -147,9 +147,9 @@ done
 if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
    # Link ensemble mean analysis
    if [[ ${FHR} -eq 6 ]]; then
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atm.ensres.anl.nc" "./atmanl_ensmean"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensres.anl.atm.nc" "./atmanl_ensmean"
    else
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atma00${FHR}.ensmean.nc" "./atmanl_ensmean"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean.anl.atm.i00${FHR}.nc" "./atmanl_ensmean"
    fi
 
    # Compute ensemble mean analysis
@@ -170,9 +170,9 @@ if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
 else
    # Link ensemble mean increment
    if [[ ${FHR} -eq 6 ]]; then
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atm.increment.ensmean.nc" "./atminc_ensmean"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean.increment.atm.nc" "./atminc_ensmean"
    else
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}atmi.ensmean.f00${FHR}.nc" "./atminc_ensmean"
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean.increment.atm.i00${FHR}.nc" "./atminc_ensmean"
    fi
 
    # Compute ensemble mean increment
@@ -236,11 +236,11 @@ if [[ ${RECENTER_ENKF} = "YES" ]]; then
 
    # GSI EnVar analysis
    if [[ ${FHR} -eq 6 ]]; then
-     ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atm.anl.nc"
-     ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atm.ensres.anl.nc"
+     ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}anl.atm.nc"
+     ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}ensres.anl.atm.nc"
    else
-     ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atma00${FHR}.nc"
-     ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}atma.ensres.f00${FHR}.nc"
+     ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}anl.atm.i00${FHR}.nc"
+     ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}ensres.anl.atm.i00${FHR}.nc"
    fi
 
    # if we already have a ensemble resolution GSI analysis then just link to it
