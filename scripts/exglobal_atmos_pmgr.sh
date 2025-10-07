@@ -9,8 +9,8 @@
 hour=0
 
 case "${RUN}" in
-    gfs) TEND=384;;
-    gdas) TEND=9;;
+    gfs) TEND=384 ;;
+    gdas) TEND=9 ;;
     *)
         err_exit "Run ${RUN} not supported at this time"
         ;;
@@ -20,9 +20,9 @@ declare -a posthours
 while [[ "${hour}" -le "${TEND}" ]]; do
     posthours+=("${hour}")
     if [[ ${hour} -lt 120 ]]; then
-        hour=$((hour+1))
+        hour=$((hour + 1))
     else
-        hour=$((hour+3))
+        hour=$((hour + 3))
     fi
 done
 

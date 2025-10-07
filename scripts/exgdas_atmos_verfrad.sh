@@ -58,9 +58,9 @@ echo satype_file = "${satype_file}"
 #  the cycle being processed is 00z.
 #------------------------------------------------------------------
 if [[ ${cyc} = "00" ]]; then
-   use_tankdir=${TANKverf_radM1}
+    use_tankdir=${TANKverf_radM1}
 else
-   use_tankdir=${TANKverf_rad}
+    use_tankdir=${TANKverf_rad}
 fi
 
 echo satype_file = "${satype_file}"

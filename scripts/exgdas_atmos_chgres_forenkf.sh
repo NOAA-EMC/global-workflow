@@ -75,9 +75,9 @@ USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
 
 if [[ "${DOHYBVAR}" == "YES" ]]; then
-   l_hyb_ens=.true.
-   export l4densvar=${l4densvar:-".false."}
-   export lwrite4danl=${lwrite4danl:-".false."}
+    l_hyb_ens=.true.
+    export l4densvar=${l4densvar:-".false."}
+    export lwrite4danl=${lwrite4danl:-".false."}
 else
     echo "DOHYBVAR != YES, this script will exit without regridding deterministic forecast"
     exit 0

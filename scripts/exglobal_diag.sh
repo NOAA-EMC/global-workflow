@@ -88,10 +88,10 @@ if [[ "${GENDIAG}" == "YES" ]]; then
     diagfile[2]="${OZNSTAT}"
     diagfile[3]="${RADSTAT}"
 
-   numfile[0]=0
-   numfile[1]=0
-   numfile[2]=0
-   numfile[3]=0
+    numfile[0]=0
+    numfile[1]=0
+    numfile[2]=0
+    numfile[3]=0
 
     # Set diagnostic file prefix based on lrun_subdirs variable
     if [[ "${lrun_subdirs}" == ".true." ]]; then
@@ -100,8 +100,8 @@ if [[ "${GENDIAG}" == "YES" ]]; then
         prefix="pe*"
     fi
 
-        rm -f "${DATA}/diag.sh" "${DATA}/mp_diag.sh"
-        cat > "${DATA}/diag.sh" << EOFdiag
+    rm -f "${DATA}/diag.sh" "${DATA}/mp_diag.sh"
+    cat > "${DATA}/diag.sh" << EOFdiag
 #!/bin/sh
 lrun_subdirs=\$1
 binary_diag=\$2
@@ -127,7 +127,7 @@ if [[ "\${DIAG_COMPRESS}" == "YES" ]]; then
    ${COMPRESS} "\${file}"
 fi
 EOFdiag
-        chmod 755 "${DATA}/diag.sh"
+    chmod 755 "${DATA}/diag.sh"
 
     # Collect diagnostic files as a function of loop and type.
     # Loop over first and last outer loops to generate innovation
@@ -149,7 +149,7 @@ EOFdiag
         esac
         # shellcheck disable=SC2312
         echo "$(date) START loop ${string}" >&2
-        for (( n=0; n<${#diagtype[@]}; n++ )); do
+        for ((n = 0; n < ${#diagtype[@]}; n++)); do
             for type in ${diagtype[n]}; do
                 # shellcheck disable=SC2312
                 count=$(find ./ -name "${prefix}${type}_${loop}*" -type f -printf '.' | wc -c)
@@ -200,7 +200,7 @@ EOFdiag
     if [[ "${DIAG_TARBALL}" == "YES" ]]; then
         # shellcheck disable=SC2312
         echo "$(date) START tar diagnostic files" >&2
-        for (( n=0; n<${#diagtype[@]}; n++ )); do
+        for ((n = 0; n < ${#diagtype[@]}; n++)); do
             TAROPTS="-uvf"
             if [[ ! -s "${diagfile[n]}" ]]; then
                 TAROPTS="-cvf"

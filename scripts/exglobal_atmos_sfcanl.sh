@@ -81,8 +81,7 @@ if [[ ! -f "${FNSNOA}" ]] || [[ ! -f "${FNSNOG}" ]]; then
     export FNSNOA=" "
     export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
 # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
-elif [[ "$(${WGRIB} -4yr "${FNSNOA}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')" -le \
-        "$(${WGRIB} -4yr "${FNSNOG}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')" ]]; then
+elif [[ "$(${WGRIB} -4yr "${FNSNOA}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')" -le "$(${WGRIB} -4yr "${FNSNOG}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')" ]]; then
     export FNSNOA=" "
     export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
 else

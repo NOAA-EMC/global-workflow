@@ -226,7 +226,7 @@ USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"YES"}
 LONB=${LONB:-$(${NCLEN} "${ATMGES}" grid_xt)} # get LONB
 LATB=${LATB:-$(${NCLEN} "${ATMGES}" grid_yt)} # get LATB
 LEVS=${LEVS:-$(${NCLEN} "${ATMGES}" pfull)}   # get LEVS
-JCAP=${JCAP:--9999}                         # there is no jcap in these files
+JCAP=${JCAP:--9999}                           # there is no jcap in these files
 if [[ "${JCAP}" -eq -9999 && "${LATB}" -ne -9999 ]]; then
     JCAP=$((LATB - 2))
 fi
@@ -242,7 +242,7 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
     LONB_ENKF=${LONB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_xt)} # get LONB_ENKF
     LATB_ENKF=${LATB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_yt)} # get LATB_ENFK
     LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" pfull)}   # get LATB_ENFK
-    JCAP_ENKF=${JCAP_ENKF:--9999}                                 # again, no jcap in the netcdf files
+    JCAP_ENKF=${JCAP_ENKF:--9999}                                   # again, no jcap in the netcdf files
     NLON_ENKF=${NLON_ENKF:-${LONB_ENKF}}
     NLAT_ENKF=${NLAT_ENKF:-$((LATB_ENKF + 2))}
     if [[ ${JCAP_ENKF} -eq -9999 && ${LATB_ENKF} -ne -9999 ]]; then
@@ -674,7 +674,7 @@ if [[ "${USE_RADSTAT}" == "YES" ]]; then
    fnameges=\$(echo \$fname | sed 's/_ges//g')
    ${NMV} \$fname.\$fdate\$diag_suffix \$fnameges
 EOFunzip
-    
+
     chmod 755 "${DATA}/unzip.sh"
 
     #shellcheck disable=SC2312
