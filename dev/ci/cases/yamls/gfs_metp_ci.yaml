@@ -2,4 +2,4 @@ defaults:
   !INC {{ HOMEgfs }}/dev/parm/config/gfs/yaml/defaults.yaml
 base:
   DO_TEST_MODE: "NO"
-  DO_METP: "NO"
+  DO_METP: "YES"
