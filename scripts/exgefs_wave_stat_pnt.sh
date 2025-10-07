@@ -51,7 +51,7 @@ valid_time=$(date -u -d "${PDY} ${cyc}" "+%Y%m%d%H")
 ymdh_init=$(date -u -d "${valid_time:0:8} ${valid_time:8:2} - ${WAVHINDH} hours" "+%Y%m%d%H")
 
 mkdir output_${ymdh_init}
-cd output_${ymdh_init}
+cd output_${ymdh_init} || exit
 
 STATION_TAR="./${RUN}.t${cyc}z.station_tar"
 BULL_TAR="./${RUN}.t${cyc}z.bull_tar"
