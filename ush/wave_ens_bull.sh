@@ -110,12 +110,12 @@ p6b=(`$WGRIB2 grbint.${bnom} -match HTSGW -match 'prob >9' \
 #
 # Length of parameter vectors
 #
-tlen=`echo ${hsb[@]} | wc -w`
+tlen=$(echo "${hsb[@]}" | wc -w)
 #
 # Check for error in reading parameters from interpolated file
 #
 if [ ! ${vald} ] || [ ! ${valt} ] || [ ! ${hsb} ] || [ ! ${hspb} ] || [ ! ${tpb} ] || \
-     [ ! ${tspb} ] || [ !${ub} ] || [ ! ${usb} ] || [ ! ${p1b} ] || [ ! ${p2b} ] || \
+     [ ! ${tspb} ] || [ ! ${ub} ] || [ ! ${usb} ] || [ ! ${p1b} ] || [ ! ${p2b} ] || \
      [ ! ${p3b} ] || [ ! ${p4b} ] || [ ! ${p5b} ] || [ ! ${p6b} ]
 then
   set +x
