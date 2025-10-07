@@ -179,7 +179,6 @@ ush/python/soca
 ush/python/gen_bufr2ioda_json.py
 ush/python/gen_bufr2ioda_yaml.py
 ush/spoc
-dev/ush/load_fv3gfs_modules.sh
 # ush log file
 ush/fetch-fix-data.log
 
