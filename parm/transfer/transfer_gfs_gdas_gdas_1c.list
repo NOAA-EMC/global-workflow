@@ -25,18 +25,18 @@
 # tranatmferred.
 
 _COMROOT_/gfs/_SHORTVER_/gdas._PDY_/
-- /??/atmos/*atm.f000*
-- /??/atmos/*atm.f001*
-- /??/atmos/*atm.f002*
-- /??/atmos/*atm.f003*
-- /??/atmos/*atm.f004*
-- /??/atmos/*atm.f005*
-- /??/atmos/*atm.f006*
-- /??/atmos/*atm.f007*
-- /??/atmos/*atm.f008*
-- /??/atmos/*atm.f009*
+- /??/atmos/*atmf000*
+- /??/atmos/*atmf001*
+- /??/atmos/*atmf002*
+- /??/atmos/*atmf003*
+- /??/atmos/*atmf004*
+- /??/atmos/*atmf005*
+- /??/atmos/*atmf006*
+- /??/atmos/*atmf007*
+- /??/atmos/*atmf008*
+- /??/atmos/*atmf009*
 - /??/atmos/*atmg*
-- /??/atmos/*atm.anl*
+- /??/atmos/*atmanl*
 + /*
 + /??/
 + /??/atmos/
@@ -45,18 +45,18 @@ _COMROOT_/gfs/_SHORTVER_/gdas._PDY_/
 B 100
 
 _COMROOT_/gfs/_SHORTVER_/gdas._PDYm1_/
-- /??/atmos/*atm.f000*
-- /??/atmos/*atm.f001*
-- /??/atmos/*atm.f002*
-- /??/atmos/*atm.f003*
-- /??/atmos/*atm.f004*
-- /??/atmos/*atm.f005*
-- /??/atmos/*atm.f006*
-- /??/atmos/*atm.f007*
-- /??/atmos/*atm.f008*
-- /??/atmos/*atm.f009*
+- /??/atmos/*atmf000*
+- /??/atmos/*atmf001*
+- /??/atmos/*atmf002*
+- /??/atmos/*atmf003*
+- /??/atmos/*atmf004*
+- /??/atmos/*atmf005*
+- /??/atmos/*atmf006*
+- /??/atmos/*atmf007*
+- /??/atmos/*atmf008*
+- /??/atmos/*atmf009*
 - /??/atmos/*atmg*
-- /??/atmos/*atm.anl*
+- /??/atmos/*atmanl*
 + /*
 + /??/
 + /??/atmos/
