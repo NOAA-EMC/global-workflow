@@ -212,7 +212,7 @@ class MarineBMat(Task):
         None
         """
 
-       logger.info(f"Copying background error files to new filenames")
+        logger.info(f"Copying background error files to new filenames")
         bkgerr_list = parse_j2yaml(self.task_config.COPY_BMAT_BKGERR_YAML, self.task_config)
         FileHandler(bkgerr_list).sync()
 
