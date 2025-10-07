@@ -42,7 +42,7 @@ RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -r \
 
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
-export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}ensmean.atm.f006.nc"
+export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}.atm.f006.nc"
 if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     export err=1
     err_exit "FILE MISSING: ATMGES_ENSMEAN == ${ATMGES_ENSMEAN}"
