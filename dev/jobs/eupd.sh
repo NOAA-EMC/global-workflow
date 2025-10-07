@@ -18,5 +18,4 @@ export jobid="${job}.$$"
 "${HOMEgfs}/jobs/JGDAS_ENKF_UPDATE"
 status=$?
 
-
 exit "${status}"

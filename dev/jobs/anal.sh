@@ -18,5 +18,4 @@ export jobid="${job}.$$"
 "${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALYSIS"
 status=$?
 
-
 exit "${status}"

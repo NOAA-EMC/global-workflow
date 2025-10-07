@@ -28,7 +28,7 @@ mkdir -p "${COMOUT_OBS}"
 "${SCRgfs}/exglobal_prep_sfc.sh"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-   err_exit "Surface observation preparation failed!"
+    err_exit "Surface observation preparation failed!"
 fi
 
 ##############################################
@@ -39,7 +39,7 @@ fi
 # Final processing
 ##############################################
 if [[ -e "${pgmout}" ]]; then
-  cat "${pgmout}"
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -49,6 +49,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

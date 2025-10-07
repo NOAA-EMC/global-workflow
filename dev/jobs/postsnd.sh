@@ -5,7 +5,7 @@ set -x
 source "${HOMEgfs}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
-  exit "${status}"
+    exit "${status}"
 fi
 
 export job="postsnd"

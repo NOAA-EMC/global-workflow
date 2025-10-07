@@ -6,7 +6,7 @@ set -x
 # Source UFSDA workflow modules
 source "${HOMEgfs}/dev/ush/load_modules.sh" run
 status=$?
-(( status !=  0 )) && exit "${status}"
+((status != 0)) && exit "${status}"
 
 export job="prep_emissions"
 export jobid="${job}.$$"
