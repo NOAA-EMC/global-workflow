@@ -11,7 +11,7 @@ export EXT=""
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_GOES:COM_ATMOS_GOES_TMPL
 GRID=0p25 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_0p25:COM_ATMOS_GEMPAK_TMPL"
 if [[ ! -d "${COMOUT_ATMOS_GEMPAK_0p25}" ]]; then
-  mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_0p25}"
+    mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_0p25}"
 fi
 
 #################################################################
@@ -52,13 +52,13 @@ cd "${DATA}" || exit 1
 ############################################
 # print exec I/O output
 ############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [[ "${KEEPDATA}" != "YES" ]] ; then
-  rm -rf "${DATA}"
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
 fi

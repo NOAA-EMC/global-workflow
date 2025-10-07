@@ -35,7 +35,7 @@ export JYYYY=${PDY:0:4}
 
 # Do not fail on errors or unassigned variables in external code
 set +eu
-${SCRIPTens_tracker}/exgfs_tc_genesis.sh && true
+"${SCRIPTens_tracker}/exgfs_tc_genesis.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
@@ -46,8 +46,8 @@ set_strict
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -57,6 +57,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

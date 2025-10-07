@@ -2,13 +2,11 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_earc" -c "base globus earc_groups"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMIN_CONF:COM_CONF_TMPL
-
+    COMIN_CONF:COM_CONF_TMPL
 
 ###############################################################
 # Run globus script
@@ -28,15 +26,14 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
-
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || true
-[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+[[ ${KEEPDATA} == "NO" ]] && rm -rf "${DATA}"
 
 exit 0

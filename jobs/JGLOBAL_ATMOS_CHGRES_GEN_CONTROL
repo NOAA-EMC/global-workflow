@@ -36,5 +36,4 @@ if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
 
-
 exit 0

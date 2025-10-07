@@ -76,8 +76,16 @@ jobs:
               echo "PR ${PR_NUM} not found"
               exit 1
             fi
+            # Get the PR head commit SHA for GitLab GitHub integration
+            PR_HEAD_SHA=$(gh pr view "${PR_NUM}" --repo "${{ vars.GW_REPO_URL }}" --json headRefOid --jq '.headRefOid')
+            echo "Found PR ${PR_NUM} with HEAD SHA: ${PR_HEAD_SHA}"
+          else
+            # For develop branch, use the current commit SHA
+            PR_HEAD_SHA="${{ github.sha }}"
+            echo "Using develop branch SHA: ${PR_HEAD_SHA}"
           fi
           echo "PR_NUM=${PR_NUM}" >> ${GITHUB_ENV}
+          echo "PR_HEAD_SHA=${PR_HEAD_SHA}" >> ${GITHUB_ENV}
 
           # Set pipeline type based on selection
           case "${{ github.event.inputs.pipeline_type }}" in
@@ -141,10 +149,12 @@ jobs:
           # Important note: This token should be a proper GitLab Pipeline Trigger token
           # created via Settings > CI/CD > Pipeline triggers in your GitLab project
 
+          # Pass GitHub commit SHA to GitLab for native GitHub integration
           curl --verbose --request POST \
             --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
             --form "ref=develop" \
             --form "variables[PR_NUMBER]=${{ env.PR_NUM }}" \
+            --form "variables[GITHUB_COMMIT_SHA]=${{ env.PR_HEAD_SHA }}" \
             --form "variables[GW_REPO_URL]=${{ vars.GW_REPO_URL }}" \
             --form "variables[RUN_ON_MACHINES]=${{ env.MACHINES }}" \
             --form "variables[PIPELINE_TYPE]=${{ env.PIPELINE_TYPE }}" \
