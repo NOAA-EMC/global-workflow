@@ -2,22 +2,21 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_tars" -c "base arch_tars earc_tars earc_groups"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMIN_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL \
-  COMIN_ATMOS_HISTORY_ENSSTAT:COM_ATMOS_HISTORY_TMPL \
-  COMIN_ICE_ANALYSIS_ENSSTAT:COM_ICE_ANALYSIS_TMPL \
-  COMIN_OCEAN_ANALYSIS_ENSSTAT:COM_OCEAN_ANALYSIS_TMPL \
-  COMIN_SNOW_ANALYSIS_ENSSTAT:COM_SNOW_ANALYSIS_TMPL \
-  COMIN_CONF:COM_CONF_TMPL
+    COMIN_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL \
+    COMIN_ATMOS_HISTORY_ENSSTAT:COM_ATMOS_HISTORY_TMPL \
+    COMIN_ICE_ANALYSIS_ENSSTAT:COM_ICE_ANALYSIS_TMPL \
+    COMIN_OCEAN_ANALYSIS_ENSSTAT:COM_OCEAN_ANALYSIS_TMPL \
+    COMIN_SNOW_ANALYSIS_ENSSTAT:COM_SNOW_ANALYSIS_TMPL \
+    COMIN_CONF:COM_CONF_TMPL
 
-RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
+RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
-if [[ ! -d ${COMIN_CONF} ]]; then mkdir -p "${COMIN_CONF}"; fi
+mkdir -p "${COMIN_CONF}"
 
 ###############################################################
 # Run archive script
@@ -44,15 +43,17 @@ set_strict
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
-
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
+cd "${DATAROOT}" || (
+    echo "${DATAROOT} does not exist. ABORT!"
+    exit 1
+)
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

@@ -7,7 +7,7 @@ set -x
 source "${HOMEgfs}/dev/ush/load_gw_gsi_modules.sh"
 status=$?
 if [[ ${status} -ne 0 ]]; then
-  exit "${status}"
+    exit "${status}"
 fi
 
 export job="echgres"
@@ -17,6 +17,5 @@ export jobid="${job}.$$"
 # Execute the JJOB
 "${HOMEgfs}/jobs/JGDAS_ATMOS_CHGRES_FORENKF"
 status=$?
-
 
 exit "${status}"
