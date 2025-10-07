@@ -11,9 +11,9 @@ local stack_intel_ver=os.getenv("stack_intel_ver") or "2023.2.0"
 local python_ver=os.getenv("python_ver") or "3.11.7"
 local cmake_ver=os.getenv("cmake_ver") or "3.27.9"
 
-load(pathJoin("cmake", cmake_ver))
 load(pathJoin("stack-intel", stack_intel_ver))
 load(pathJoin("python", python_ver))
+load(pathJoin("cmake", cmake_ver))
 load("py-jinja2")
 load("py-pyyaml")
 load("py-numpy")
