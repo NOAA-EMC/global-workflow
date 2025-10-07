@@ -212,12 +212,9 @@ class MarineBMat(Task):
         None
         """
 
-        # TODO(AFE) the two renames are to accomodate yaml settings in var task, which should changed
-        # ocean diag B
-        os.rename(os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
-                  os.path.join(self.task_config.DATAstaticb, f"ocn.bkgerr_stddev.nc"))
-        os.rename(os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.incr.{self.task_config.MARINE_WINDOW_END_ISO}.nc"),
-                  os.path.join(self.task_config.DATAstaticb, f"ice.bkgerr_stddev.nc"))
+        logger.info(f"Copying background error files to new filenames")
+        bkgerr_list = parse_j2yaml(self.task_config.COPY_BMAT_BKGERR_YAML, self.task_config)
+        FileHandler(bkgerr_list).sync()
 
         # Save output files to COM
         logger.info(f"Copy files to ROTDIR")

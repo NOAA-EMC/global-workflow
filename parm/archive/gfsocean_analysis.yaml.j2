@@ -19,8 +19,8 @@ gfsocean_analysis:
         {% endfor %}
 
         # static background error
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_ens_stddev.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_ens_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_parametric_stddev.nc'
+        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_parametric_stddev.nc'
 
         # runtime configs
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/*.yaml'

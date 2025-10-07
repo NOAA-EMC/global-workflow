@@ -11,8 +11,8 @@ export MP_TIMEOUT=2000
 # Set up model and cycle specific variables
 export MODEL=GFS
 export fend=384
-if (( fend > FHMAX_GFS )); then
-  export fend="${FHMAX_GFS}"
+if [[ "${fend}" -gt "${FHMAX_GFS}" ]]; then
+    export fend="${FHMAX_GFS}"
 fi
 
 # set increment to 6 hours  --  3 hours is available.
@@ -29,10 +29,10 @@ GRID=1p00 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMIN_ATMOS_GEMPAK_1p00:CO
 
 # Declare COMOUT_ATMOS_GEMPAK_GIF and COMOUT_ATMOS_GEMPAK_UPPER_AIR
 for grid in gif upper_air; do
-  _GRID="${grid^^}"
-  gempak_dir="COMOUT_ATMOS_GEMPAK_${_GRID}"
-  GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${gempak_dir}:COM_ATMOS_GEMPAK_TMPL"
-  if [[ ! -d "${!gempak_dir}" ]]; then mkdir -m 775 -p "${!gempak_dir}"; fi
+    _GRID="${grid^^}"
+    gempak_dir="COMOUT_ATMOS_GEMPAK_${_GRID}"
+    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${gempak_dir}:COM_ATMOS_GEMPAK_TMPL"
+    if [[ ! -d "${!gempak_dir}" ]]; then mkdir -m 775 -p "${!gempak_dir}"; fi
 done
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_WMO:COM_ATMOS_WMO_TMPL
@@ -52,13 +52,13 @@ fi
 ############################################
 # print exec I/O output
 ############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [[ "${KEEPDATA}" != "YES" ]] ; then
-  rm -rf "${DATA}"
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
 fi

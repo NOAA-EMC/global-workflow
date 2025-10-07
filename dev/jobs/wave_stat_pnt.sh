@@ -4,7 +4,7 @@
 source "${HOMEgfs}/dev/ush/load_ufswm_modules.sh"
 err=$?
 if [[ "${err}" -ne 0 ]]; then
-  exit "${err}"
+    exit "${err}"
 fi
 
 export job="wave_stat_pnt"
@@ -17,8 +17,7 @@ echo "=============== START TO RUN WAVESTAT PNT ==============="
 "${HOMEgfs}/jobs/JGEFS_WAVE_STAT_PNT"
 err=$?
 if [[ "${err}" -ne 0 ]]; then
-  exit "${err}"
+    exit "${err}"
 fi
 
 exit 0
-
