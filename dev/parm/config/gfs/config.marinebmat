@@ -10,5 +10,6 @@ source "${EXPDIR}/config.resources" marinebmat
 
 export JEDI_CONFIG_YAML="${PARMgfs}/gdas/marine/marine_bmat_jedi_config.yaml.j2"
 export SAVE_YAML="${PARMgfs}/gdas/marine/marine_bmat_save.yaml.j2"
+export COPY_BMAT_BKGERR_YAML="${PARMgfs}/gdas/marine/marine_bmat_copy_bkgerr.yaml.j2"
 
 echo "END: config.marinebmat"
