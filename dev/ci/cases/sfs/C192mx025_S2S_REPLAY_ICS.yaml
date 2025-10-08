@@ -5,15 +5,15 @@ experiment:
   edate: 1994050100
   pslot: {{ 'pslot' | getenv }}
   app: S2S
-  resdetatmos: 96
-  resensatmos: 96
-  resdetocean: 1
+  resdetatmos: 192
+  resensatmos: 192
+  resdetocean: 0.25
   start: 'cold'
   nens: 10
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/sfs_full.yaml
+  icsdir: {{ 'TOPICDIR' | getenv }}/REPLAY/C192mx025
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/sfs_full_C192mx025_REPLAY_ICS.yaml
 
 workflow:
   engine: rocoto

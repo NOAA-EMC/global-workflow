@@ -120,6 +120,8 @@ UFS_det(){
          exit 1
       fi
 
+      NST_SPINUP=0
+      nstf_name="${NST_MODEL},${NST_SPINUP},${NST_RESV},${ZSEA1},${ZSEA2}"
       warm_start=".true."
       echo "All restarts found for '${RERUN_DATE}', RERUN='${RERUN}', warm_start='${warm_start}'"
       break

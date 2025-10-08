@@ -254,6 +254,8 @@ export FSICS="0"
 # Write more variables to output
 if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
   export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_replay"
+elif [[ "${RUN}" == "sfs" ]]; then
+  export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_sfs"
 else
   export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
 fi

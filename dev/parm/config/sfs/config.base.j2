@@ -157,10 +157,10 @@ case "${CASE}" in
     "C48")
         export waveGRD='glo_500'
         ;;
-    "C96" | "C192")
+    "C96")
         export waveGRD='glo_100'
         ;;
-    "C384")
+    "C192" | "C384")
         export waveGRD='glo_025'
         ;;
     "C768" | "C1152")
@@ -328,7 +328,8 @@ export DO_FIT2OBS="NO"      # Run fit to observations package
 
 # Archiving options
 export HPSSARCH="{{ HPSSARCH }}"        # save data to HPSS archive
-export LOCALARCH="{{ LOCALARCH }}"        # save data to local archive
+export LOCALARCH="{{ LOCALARCH }}"      # save data to local archive
+export ARCHCOM_TO="{{ ARCHCOM_TO }}"    # where to save data
 if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
    echo "Both HPSS and local archiving selected.  Please choose one or the other."
    exit 3

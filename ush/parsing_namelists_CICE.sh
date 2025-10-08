@@ -124,7 +124,7 @@ local CICE_NPROC=${ntasks_cice6}
 local CICE_BLCKX=${block_size_x}
 local CICE_BLCKY=${block_size_y}
 local CICE_DECOMP=${processor_shape}
-# ice_prescribed_nml section 
+# ice_prescribed_nml section
 local CICE_PRESCRIBED="false"
 local MESH_DICE="none"
 local stream_files_dice="none"

@@ -19,8 +19,8 @@ base:
   FHOUT_ICE_GFS: 24
   HPSSARCH: "NO"
   LOCALARCH: "NO"
-  USE_OCN_ENS_PERTURB_FILES: "NO"
-  USE_ATM_ENS_PERTURB_FILES: "NO"
+  USE_OCN_ENS_PERTURB_FILES: "YES"
+  USE_ATM_ENS_PERTURB_FILES: "YES"
   DO_TEST_MODE: "NO"
 fcst:
   CHECK_LAND_RESTART_OROG: "YES"
@@ -30,6 +30,9 @@ fcst:
   MONO: "mono"
 ocn:
   MOM6_INTERP_ICS: "NO"
+nsst:
+  NST_SPINUP: 0
+
 # config.aero has just a system-specific path to add.
 # This is handled by the setup_expt.py, but it has to be told to write to it.
 aero: {}

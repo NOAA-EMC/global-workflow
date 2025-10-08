@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic ocn"
 
 # Execute staging
 "${SCRgfs}/exglobal_stage_ic.py"
