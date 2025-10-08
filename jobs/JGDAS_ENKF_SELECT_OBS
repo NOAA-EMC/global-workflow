@@ -2,7 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -17,40 +16,40 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
-export OPREFIX="${RUN/enkf}.t${cyc}z."
+export OPREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
-APREFIX_DET="${RUN/enkf}.t${cyc}z."
+APREFIX_DET="${RUN/enkf/}.t${cyc}z."
 GPREFIX_DET="${GDUMP}.t${gcyc}z."
 
 export GSUFFIX=".ensmean.nc"
 
 # Generate COM variables from templates
-RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMIN_OBS:COM_OBS_TMPL
+RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_OBS:COM_OBS_TMPL
 MEMDIR='ensstat' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-	COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 declare -rx COMOUT_ATMOS_ANALYSIS_ENS="${COMOUT_ATMOS_ANALYSIS}"
 
-RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -r \
-	COMOUT_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
+RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -r \
+    COMOUT_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
 MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
     COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
 RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -r \
-	COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
+    COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
 
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006${GSUFFIX}"
 if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     export err=1
-    err_exit "FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
+    err_exit "FILE MISSING: ATMGES_ENSMEAN == ${ATMGES_ENSMEAN}"
 fi
 
-LEVS=$(${NCLEN} ${ATMGES} pfull) && true
+LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
 export err=$?
 set_strict
 
@@ -62,8 +61,8 @@ if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
 export TCVITL="${COMIN_OBS}/${APREFIX_DET}syndata.tcvitals.tm00"
-if [[ ${DONST} = "YES" ]]; then
-   export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
+if [[ ${DONST} == "YES" ]]; then
+    export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
@@ -108,7 +107,6 @@ for fstat in ${CNVSTAT} ${OZNSTAT} ${RADSTAT}; do
     fi
 done
 
-
 ###############################################################
 # Run relevant script
 
@@ -121,10 +119,9 @@ fi
 ##############################################
 # Send Alerts
 ##############################################
-if [[ "${SENDDBN}" == "YES" ]] ; then
-   ${DBNROOT}/bin/dbn_alert MODEL ENKF1_MSC_gsistat ${job} ${GSISTAT}
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" MODEL ENKF1_MSC_gsistat "${job}" "${GSISTAT}"
 fi
-
 
 ##############################################
 # End JOB SPECIFIC work
@@ -133,8 +130,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -144,6 +141,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0
