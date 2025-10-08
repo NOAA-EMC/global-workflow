@@ -177,7 +177,17 @@ trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 source "${HOMEgfs}/ush/bash_utils.sh"
 
 # Decide if run with container
-export RUN_WITH_CONTAINER=NO
+export RUN_WITH_CONTAINER=YES
+
+if [[ "${RUN_WITH_CONTAINER}" == "YES" ]]; then
+    # if within container, will run python executbale inside container,
+    # also need to tell some scripts that it is run in container, with "-c" option.
+    export PYCMD="${HOMEgfs}"/exec/run_python.sh
+    export PYEXTRAARGS=" -c -v"
+else
+    export PYCMD=python
+    export PYEXTRAARGS=""
+fi
 
 # Turn on our settings
 export SHELLOPTS

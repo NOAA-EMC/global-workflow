@@ -36,24 +36,42 @@ if [[ "${verbose}" == "true" ]]; then
    set -x
 fi
 
-for dnm in exec ush
-do
-    if [[ "${dnm}" == "exec" ]]; then
-         targetdir=${HOMEgfs}/${dnm}
-    else
-         targetdir=${HOMEgfs}/${dnm}/container
-    fi
-    mkdir -p "${targetdir}"
-    sourcef=${HOMEgfs}/dev/container/utils/${dnm}.python
-    targetf=${targetdir}/run_python.sh
+exec_python_script="${HOMEgfs}"/exec/run_python.sh 
 
-    sed -e "s?HOMEgfs?${HOMEgfs}?g" \
-        -e "s?SIF?${container}?g" \
-        -e "s?BINDINGS?${bindings}?g" \
-	   "${sourcef}" > "${targetf}"
+cat > "${exec_python_script}" << EOF_EXEC_PYTHON
+#!/bin/bash
+ LD_LIBRARY_PATH=\$(dirname "${container}")
+ export LD_LIBRARY_PATH
 
-    chmod 755 "${targetf}"
-done
+ singularity exec \\
+        ${bindings} \\
+        ${container} \\
+        ${HOMEgfs}/ush/container/run_python.sh "\$@"
+EOF_EXEC_PYTHON
+
+run_python_script="${HOMEgfs}"/ush/container/run_python.sh
+
+cat > "${run_python_script}" << EOF_RUN_PYTHON
+#!/bin/bash
+
+source /usr/lmod/lmod/init/bash
+module purge
+module use "${HOMEgfs}"/sorc/gfs_utils.fd/modulefiles
+module load gfsutils_container.intel
+module load python
+module load py-netcdf4
+module load py-xarray
+module load py-f90nml
+module load py-numpy
+module load py-jinja2
+module load py-pyyaml
+
+wxflowPATH=${HOMEgfs}/ush/python:${HOMEgfs}/sorc/wxflow/src
+export PYTHONPATH=\${PYTHONPATH:+\${PYTHONPATH}:}${HOMEgfs}/ush:\${wxflowPATH}
+
+python "\$@"
+EOF_RUN_PYTHON
 
 sed -i 's/RUN_WITH_CONTAINER=NO/RUN_WITH_CONTAINER=YES/g' "${HOMEgfs}/ush/preamble.sh"
-
+chmod +x "${exec_python_script}"
+chmod +x "${run_python_script}"
