@@ -111,7 +111,7 @@ done
 # There is only a single NSST analysis at the middle of the window
 # For now use/assume it is the same at the beginning of the window if doing IAU
 if [[ "${DONST}" == "YES" ]]; then
-  cpreq "${COMIN_ATMOS_ANALYSIS}/${APREFIX}dtf.anl.nc" "${DATA}/dtfanl"
+  cpreq "${COMIN_ATMOS_ANALYSIS}/${APREFIX}anl.dtf.nc" "${DATA}/dtfanl"
   export NST_FILE="dtfanl"
 else
   export NST_FILE="NULL"

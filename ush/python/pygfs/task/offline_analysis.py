@@ -81,7 +81,7 @@ class OfflineAnalysis(Task):
         fcst_file_in = os.path.join(self.task_config.COMIN_ATMOS_HISTORY_PREV,
                                     f"{self.task_config.GPREFIX}atm.f006.nc")
         files_to_copy.append([fcst_file_in, os.path.join(self.task_config.DATA, "atmges_mem001")])
-        anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}atm.anl.nc")
+        anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}anl.atm.nc")
         files_to_copy.append([anl_file_in, os.path.join(self.task_config.DATA, "atmanl.input.nc")])
         # sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}sfcanl.nc")
         # files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
@@ -201,9 +201,9 @@ class OfflineAnalysis(Task):
         """
         output_files = []
         output_files.append([os.path.join(self.task_config.DATA, 'atmanl_mem001'),
-                             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atm.anl.nc")])
+                             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}anl.atm.nc")])
         output_files.append([os.path.join(self.task_config.DATA, 'atminc_mem001'),
-                             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}atm.increment.nc")])
+                             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}increment.atm.nc")])
         FileHandler({'copy': output_files}).sync()
         # these files are for the surface analysis
         transfer_files = []
@@ -213,6 +213,6 @@ class OfflineAnalysis(Task):
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}seaice.5min.blend.grb")])
         transfer_files.append([os.path.join(self.task_config.COMIN_OBSPROC, f"{self.task_config.APREFIX_IN}snogrb_t1534.3072.1536"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}snogrb_t1534.3072.1536")])
-        transfer_files.append([os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}dtf.anl.nc"),
-                               os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}dtf.anl.nc")])
+        transfer_files.append([os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}anl.dtf.nc"),
+                               os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.APREFIX}anl.dtf.nc")])
         FileHandler({'copy': transfer_files}).sync()

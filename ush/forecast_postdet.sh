@@ -128,9 +128,9 @@ FV3_postdet() {
       if (( MEMBER == 0 )); then
         inc_files=()
       else
-        inc_files=("atm.increment.nc")
+        inc_files=("increment.atm.nc")
         read_increment=".true."
-        res_latlon_dynamics="atm.increment.nc"
+        res_latlon_dynamics="increment.atm.nc"
       fi
       increment_file_on_native_grid=".false."
       local increment_file
@@ -184,18 +184,18 @@ EOF
           if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
             for tile in {1..6}; do
               if (( iaufhr == 6 )); then
-                inc_file="atminc.tile${tile}.nc"
+                inc_file="increment.atm.tile${tile}.nc"
               else
-                inc_file="atmi$(printf %03i "${iaufhr}").tile${tile}.nc"
+                inc_file="increment.atm.i$(printf %03i "${iaufhr}").tile${tile}.nc"
               fi
               inc_files+=("${inc_file}")
               IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
             done
           else
             if (( iaufhr == 6 )); then
-              inc_file="atm.increment.nc"
+              inc_file="increment.atm.nc"
             else
-              inc_file="atm.i$(printf %03i "${iaufhr}").nc"
+              inc_file="increment.atm.i$(printf %03i "${iaufhr}").nc"
             fi
             inc_files+=("${inc_file}")
             IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
@@ -206,13 +206,21 @@ EOF
       else  # "${DOIAU}" == "NO"
         read_increment=".true."
 
+        # JEDI writes increment files in the cubed-sphere grid, denoted by cs_
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
-          inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
+          inc_files=( \
+                     "increment.cs_atm.tile1.nc" \
+                     "increment.cs_atm.tile2.nc" \
+                     "increment.cs_atm.tile3.nc" \
+                     "increment.cs_atm.tile4.nc" \
+                     "increment.cs_atm.tile5.nc" \
+                     "increment.cs_atm.tile6.nc" \
+                     )
           increment_file_on_native_grid=".true."
           res_latlon_dynamics="atminc"
         else
-          inc_files=("atm.increment.nc")
-          res_latlon_dynamics="atm.increment.nc"
+          inc_files=("increment.atm.nc")
+          res_latlon_dynamics="increment.atm.nc"
           increment_file_on_native_grid=".false."
         fi
         if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
@@ -230,14 +238,10 @@ EOF
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
-          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
+        if [[ "${RUN}" == "gcafs" ]]; then
+          increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
         else
-          if [[ "${RUN}" == "gcafs" ]]; then
-            increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
-          else
-            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
-          fi
+          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
         fi
         cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
       done
@@ -246,12 +250,12 @@ EOF
       if [[ ${DO_LAND_IAU} = ".true." ]]; then
         local TN sfc_increment_file
         for TN in $(seq 1 "${ntiles}"); do
-          sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/sfc_inc.tile${TN}.nc"
+          sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/increment.tile${TN}.sfc.nc"
           if [[ ! -f "${sfc_increment_file}" ]]; then
             echo "FATAL ERROR: DO_LAND_IAU=${DO_LAND_IAU}, but missing increment file ${sfc_increment_file}, ABORT!"
             exit 1
           else
-            cpreq "${sfc_increment_file}" "${DATA}/INPUT/sfc_inc.tile${TN}.nc"
+            cpreq "${sfc_increment_file}" "${DATA}/INPUT/increment.tile${TN}.sfc.nc"
           fi
         done
 
@@ -314,10 +318,10 @@ EOF
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
         if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
-          fi
+          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cs_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
+          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cs_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
         fi
+      fi
       if [[ "${WRITE_DOPOST}" == ".true." ]]; then
         ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2"    "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
         ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"

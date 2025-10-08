@@ -181,9 +181,9 @@ class FV3AnalysisCalc(Task):
         src_prefix = f"{self.task_config.DATA}/{self.task_config.GPREFIX}"
         dest_prefix = f"{self.task_config.COMOUT_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
         fh_dict['copy'].append([f"{src_prefix}atm.f006.nc",
-                                f"{dest_prefix}atm.anl.nc"])
+                                f"{dest_prefix}anl.atm.nc"])
         fh_dict['copy'].append([f"{src_prefix}sfc.f006.nc",
-                                f"{dest_prefix}sfc.anl.nc"])
+                                f"{dest_prefix}anl.sfc.nc"])
 
         # Copy YAMLs to COM
         for app_name in self.jedi_dict.keys():

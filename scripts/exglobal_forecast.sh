@@ -31,7 +31,7 @@
 ## 		1. restart file except sfc_data, $gmemdir/RESTART/$PDY.$cyc.*.nc
 ##		2. sfcanl_data, $memdir/RESTART/$PDY.$cyc.*.nc
 ##		3. coupler_res, $gmemdir/RESTART/$PDY.$cyc.coupler.res
-##		4. increment file, $memdir/${RUN}.t${cyc}z.atm.increment.nc
+##		4. increment file, $memdir/${RUN}.t${cyc}z.increment.atm.nc
 ##			OR $DATA/INPUT/fv3_increment.nc
 ##	Cold start files:
 ##		1. initial condition, $memdir/INPUT/*.nc
