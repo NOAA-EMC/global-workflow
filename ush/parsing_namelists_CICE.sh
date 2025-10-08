@@ -73,8 +73,6 @@ local CICE_DIAGFREQ=$(( 86400 / DT_CICE ))  # frequency of diagnostic output in 
 if [[ "${RUN}" == "gefs" ]]; then
   local CICE_DIAGFREQ1=$((( FHOUT_ICE * 3600 )/ DT_CICE )) # Number of timesteps within FHOUT_ICE
   local CICE_HISTFREQ_N="0, 0, 0, ${CICE_DIAGFREQ1}, 1"
-elif [[ "${RUN}" == "sfs" ]]; then
-  local CICE_HISTFREQ_N="1, 0, ${FHOUT_ICE}, 0, 1"
 else
   local CICE_HISTFREQ_N="0, 0, ${FHOUT_ICE}, 0, 1"
 fi
