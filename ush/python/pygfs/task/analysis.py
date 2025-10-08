@@ -116,7 +116,7 @@ class Analysis(Task):
                 if os.path.exists(bias_file_path):
                     extract_tar(bias_file_path)
                 else:
-                    logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped") 
+                    logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped")
 
     @logit(logger)
     def tar_diag_files(self, comout: str, tarball_name: str) -> None:
