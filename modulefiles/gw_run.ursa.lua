@@ -13,7 +13,7 @@ end
 load("gw_run.common")
 load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))
 
-prepend_path("MODULEPATH", pathJoin("/scratch3/NCEPDEV/global/role.glopara/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/scratch3/NCEPDEV/global/David.Huber/PREP/prepobs_rename/modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
 prepend_path("MODULEPATH", pathJoin("/scratch3/NCEPDEV/global/role.glopara/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
