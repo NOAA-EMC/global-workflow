@@ -56,6 +56,7 @@ parm/gdas/ioda
 parm/gdas/marine
 parm/gdas/snow
 parm/gdas/soca
+parm/gdas/spoc
 parm/gdas/stat
 parm/gdas/jcb-gdas
 parm/gdas/jcb-algorithms
@@ -177,7 +178,7 @@ ush/python/ufsda
 ush/python/soca
 ush/python/gen_bufr2ioda_json.py
 ush/python/gen_bufr2ioda_yaml.py
-dev/ush/load_fv3gfs_modules.sh
+ush/spoc
 # ush log file
 ush/fetch-fix-data.log
 
