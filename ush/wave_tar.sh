@@ -27,25 +27,23 @@
 
 # 0.a Basic modes of operation
 
-  cd "${DATA}"
-  echo "Making TAR FILE"
+cd "${DATA}"
+echo "Making TAR FILE"
 
-  alertName=$(echo $RUN|tr [a-z] [A-Z])
-
+alertName=$(echo $RUN | tr [a-z] [A-Z])
 
 # 0.b Check if type set
 
-  if [[ "$#" -lt '3' ]]
-  then
+if [[ "$#" -lt '3' ]]; then
     echo 'FATAL ERROR: VARIABLES IN ww3_tar.sh NOT SET'
     exit 1
-  else
+else
     ID=$1
     type=$2
     nb=$3
-  fi
+fi
 
-  cat << EOF
+cat << EOF
 
 +--------------------------------+
 !         Make tar file          |
@@ -55,112 +53,104 @@
    Number of files : $3
 EOF
 
-  filext=$type
-  if [[ "$type" == "ibp" ]]; then
-     filext='spec'
-  fi
-  if [[ "$type" == "ibpbull" ]]; then
-     filext='bull'
-  fi
-  if [[ "$type" == "ibpcbull" ]]; then
-     filext='cbull'
-  fi
+filext=$type
+if [[ "$type" == "ibp" ]]; then
+    filext='spec'
+fi
+if [[ "$type" == "ibpbull" ]]; then
+    filext='bull'
+fi
+if [[ "$type" == "ibpcbull" ]]; then
+    filext='cbull'
+fi
 
-  rm -rf TAR_${filext}_$ID
-  mkdir  TAR_${filext}_$ID
+rm -rf TAR_${filext}_$ID
+mkdir TAR_${filext}_$ID
 # this directory is used only for error capturing
 
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [[ -z "${COMOUT_WAVE_STATION+x}" || -z "${SENDDBN+x}" || -z "${STA_DIR+x}" ]]; then
+if [[ -z "${COMOUT_WAVE_STATION+x}" || -z "${SENDDBN+x}" || -z "${STA_DIR+x}" ]]; then
     echo 'FATAL ERROR: EXPORTED VARIABLES IN ww3_tar.sh NOT SET'
     exit 2
-  fi
+fi
 
 # --------------------------------------------------------------------------- #
 # 2.  Generate tar file (spectral files are compressed)
 
-  printf "\n   Making tar file ..."
+printf "\n   Making tar file ..."
 
-  countMAX=5
-  tardone='no'
-  sleep_interval=10
+countMAX=5
+tardone='no'
+sleep_interval=10
 
-  while [[ "${tardone}" = "no" ]]
-  do
+while [[ "${tardone}" = "no" ]]; do
 
     nf=$(find . -maxdepth 1 -type f -name "*.$filext" | wc -l)
-    nbm2=$(( $nb - 2 ))
-    if [[ ${nf} -ge ${nbm2} ]]
-    then
+    nbm2=$(($nb - 2))
+    if [[ ${nf} -ge ${nbm2} ]]; then
 
-      tar -cf "${ID}.${type}.tar" ./*."${filext}"
-      err=$?
+        tar -cf "${ID}.${type}.tar" ./*."${filext}"
+        err=$?
 
-      if  [[ ${err} -ne 0 ]]
-      then
-        echo 'FATAL ERROR: TAR CREATION FAILED *** '
-        exit 3
-      fi
+        if [[ ${err} -ne 0 ]]; then
+            echo 'FATAL ERROR: TAR CREATION FAILED *** '
+            exit 3
+        fi
 
-      filename="${ID}.${type}.tar"
-      if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}" ; then
-        echo "FATAL ERROR: File ${filename} not found after waiting $(( sleep_interval * (countMAX + 1) )) secs"
-        exit 3
-      fi
+        filename="${ID}.${type}.tar"
+        if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}"; then
+            echo "FATAL ERROR: File ${filename} not found after waiting $((sleep_interval * (countMAX + 1))) secs"
+            exit 3
+        fi
 
-      if [[ -f "${ID}.${type}.tar" ]]
-      then
-        tardone='yes'
-      fi
+        if [[ -f "${ID}.${type}.tar" ]]; then
+            tardone='yes'
+        fi
     fi
 
-  done
+done
 
-  if [[ "${tardone}" == 'no' ]]
-  then
+if [[ "${tardone}" == 'no' ]]; then
     echo 'FATAL ERROR: TAR CREATION FAILED *** '
     exit 3
-  fi
+fi
 
-  if [[ "${type}" == 'spec' ]]
-  then
-    if [[ -s "${ID}.${type}.tar" ]]
-    then
-      file_name="${ID}.${type}.tar.gz"
-      /usr/bin/gzip -c "${ID}.${type}.tar" > "${file_name}"
-      err=$?
+if [[ "${type}" == 'spec' ]]; then
+    if [[ -s "${ID}.${type}.tar" ]]; then
+        file_name="${ID}.${type}.tar.gz"
+        /usr/bin/gzip -c "${ID}.${type}.tar" > "${file_name}"
+        err=$?
 
-      if  [[ ${err} -ne 0 ]]
-      then
-        echo 'FATAL ERROR: SPECTRAL TAR COMPRESSION FAILED *** '
-        exit 4
-      fi
+        if [[ ${err} -ne 0 ]]; then
+            echo 'FATAL ERROR: SPECTRAL TAR COMPRESSION FAILED *** '
+            exit 4
+        fi
     fi
-  else
+else
     file_name="${ID}.${type}.tar"
-  fi
+fi
 
 # --------------------------------------------------------------------------- #
 # 3.  Move data to /com
 
-  echo "   Moving tar file ${file_name} to ${COMOUT_WAVE_STATION} ..."
+echo "   Moving tar file ${file_name} to ${COMOUT_WAVE_STATION} ..."
 
-  cpfs "${file_name}" "${COMOUT_WAVE_STATION}/."
+cpfs "${file_name}" "${COMOUT_WAVE_STATION}/."
 
-  err=$?
+err=$?
 
-  if  [[ ${err} -ne 0 ]]; then
+if [[ ${err} -ne 0 ]]; then
     echo 'FATAL ERROR: TAR COPY FAILED *** '
     exit 4
-  fi
+fi
 
-  if [[ "${SENDDBN}" == "YES" ]]; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     echo "   Alerting TAR file as ${COMOUT_WAVE_STATION}/${file_name}"
     "${DBNROOT}/bin/dbn_alert MODEL" "${alertName}_WAVE_TAR" "${job}" \
-      "${COMOUT_WAVE_STATION}/${file_name}"
-  fi
+        "${COMOUT_WAVE_STATION}/${file_name}"
+fi
 
 # --------------------------------------------------------------------------- #
 # 4.  Final clean up
@@ -168,9 +158,9 @@ EOF
 cd "${DATA}"
 
 if [[ ${KEEPDATA:-NO} == "NO" ]]; then
-  set -v
-  rm -rf  ${STA_DIR}/${type}
-  set +v
+    set -v
+    rm -rf ${STA_DIR}/${type}
+    set +v
 fi
 
 # End of ww3_tar.sh ----------------------------------------------------- #

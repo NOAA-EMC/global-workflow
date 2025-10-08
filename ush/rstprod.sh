@@ -3,7 +3,7 @@
 #---------------------------------------------------------
 #  rstprod.sh
 #
-#  Restrict data from select sensors and satellites 
+#  Restrict data from select sensors and satellites
 #---------------------------------------------------------
 
 # Restrict select sensors and satellites

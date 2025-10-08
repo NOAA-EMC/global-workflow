@@ -14,7 +14,7 @@
 #             Change to read flux file fields in gfs_bufr
 #             so remove excution of gfs_flux
 # 2018-03-22 Guang Ping Lou: Making it works for either 1 hourly or 3 hourly output
-# 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS 
+# 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS
 # 2018-05-30  Guang Ping Lou: Make sure all files are available.
 # 2019-10-10  Guang Ping Lou: Read in NetCDF files
 # 2024-03-03 Bo Cui: Add options to use different bufr table for different resolution NetCDF files
@@ -31,34 +31,34 @@ workdir="${5}"
 cd "${workdir}" || exit 2
 
 if [[ "${F00FLAG}" == "YES" ]]; then
-   f00flag=".true."
+    f00flag=".true."
 else
-   f00flag=".false."
+    f00flag=".false."
 fi
 
 export pgm="gfs_bufr.x"
 #. prep_step
 
 if [[ "${MAKEBUFR}" == "YES" ]]; then
-   bufrflag=".true."
+    bufrflag=".true."
 else
-   bufrflag=".false."
+    bufrflag=".false."
 fi
 
-# check if read in bufr_ij_gfs_${CASE}.txt 
+# check if read in bufr_ij_gfs_${CASE}.txt
 
 export CASE=${CASE_HIST:-${CASE}}
 
-if [[ -s "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt"  ]]; then
-  # use predetermined grid point(i,j) in bufr_gfs_${CASE}.txt 
-  ${NLN} "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" fort.7
-  np1=0
+if [[ -s "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" ]]; then
+    # use predetermined grid point(i,j) in bufr_gfs_${CASE}.txt
+    ${NLN} "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" fort.7
+    np1=0
 else
-  # find the nearest neighbor grid point(i,j) in the code
-  np1=1
-  echo "No bufr_ij_gfs_${CASE}.txt For CASE ${CASE}"
-  echo "Find the nearest neighbor grid (i,j) in the code"
-fi   
+    # find the nearest neighbor grid point(i,j) in the code
+    np1=1
+    echo "No bufr_ij_gfs_${CASE}.txt For CASE ${CASE}"
+    echo "Find the nearest neighbor grid (i,j) in the code"
+fi
 
 ##fformat="netcdf"
 
@@ -81,14 +81,14 @@ EOF
 
 filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
 if [[ -z ${filename} ]]; then
-  echo "FATAL ERROR: COULD NOT LOCATE logf${fhr} file"
-  exit 2
+    echo "FATAL ERROR: COULD NOT LOCATE logf${fhr} file"
+    exit 2
 fi
 
 filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr_p}.${logfm}"
 if [[ -z ${filename} ]]; then
-  echo "FATAL ERROR: COULD NOT LOCATE logf${fhr_p} file"
-  exit 2
+    echo "FATAL ERROR: COULD NOT LOCATE logf${fhr_p} file"
+    exit 2
 fi
 
 #------------------------------------------------------------------
@@ -100,17 +100,16 @@ ${NLN} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr_p}.${atmfm}" "flxf${fhr
 ${NLN} "${PARMgfs}/product/bufr_gfs_${CLASS}.tbl" fort.1
 ${NLN} "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
 
-
 #------------------------------------------------------------------
 "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${fhr}"
 
 export err=$?
 
 if [[ ${err} -ne 0 ]]; then
-   echo "WARNING GFS postsnd job error, Please check files "
-   echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${fhr}.${atmfm}"
-   echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr}.${atmfm}"
-   exit "${err}"
+    echo "WARNING GFS postsnd job error, Please check files "
+    echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atmf${fhr}.${atmfm}"
+    echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfcf${fhr}.${atmfm}"
+    exit "${err}"
 fi
 
 exit 0

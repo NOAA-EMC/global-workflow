@@ -102,13 +102,13 @@
 CASE=${CASE:-C768}
 CASE_HIST=${CASE_HIST:-${CASE}}
 resh=${CASE_HIST:1}
-LONB_CASE=$((resh*4))
-LATB_CASE=$((resh*2))
+LONB_CASE=$((resh * 4))
+LATB_CASE=$((resh * 2))
 LONB_SFC=${LONB_SFC:-$LONB_CASE}
 LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
 LEVS=${LEVS:-64}
-LEVSP1=$(($LEVS+1))
+LEVSP1=$(($LEVS + 1))
 FIXWGTS=${FIXWGTS:-${FIXorog}/${CASE}/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
 
 #  Filenames.
@@ -128,7 +128,7 @@ export REDERR=${REDERR:-'2>'}
 ${INISCRIPT:-}
 pwd=$(pwd)
 if [[ ! -d "${COMOUT_ATMOS_ANALYSIS}" ]]; then
-   mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
+    mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 fi
 
 ################################################################################
@@ -172,7 +172,7 @@ ${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc" "./sfc.gaussian.analysis.f
 if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
 
 # Executable namelist
-cat <<EOF > fort.41
+cat << EOF > fort.41
  &setup
   yy=${iy},
   mm=${im},
@@ -190,8 +190,8 @@ ${APRUNSFC} "${GAUSFCANLEXE}"
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-   echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status!"
-   exit "${err}"
+    echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status!"
+    exit "${err}"
 fi
 
 ################################################################################

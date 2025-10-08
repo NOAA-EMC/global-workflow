@@ -21,8 +21,8 @@ CASE_IN=${CASE_IN:-${CASE_ENS}}
 LFHR=${LFHR:-6}
 
 # get resolutions
-LONB_CASE_IN=$((4*${CASE_IN:1}))
-LATB_CASE_IN=$((2*${CASE_IN:1}))
+LONB_CASE_IN=$((4 * ${CASE_IN:1}))
+LATB_CASE_IN=$((2 * ${CASE_IN:1}))
 
 ntiles=6
 
@@ -30,13 +30,13 @@ APREFIX_ENS="enkfgdas.t${cyc}z."
 
 LSOIL_INCR=${LSOIL_INCR:-2}
 
-export n_vars=$(( LSOIL_INCR*2 ))
+export n_vars=$((LSOIL_INCR * 2))
 
 soil_incr_vars=""
-for vi in $( seq 1 "${LSOIL_INCR}" ); do
+for vi in $(seq 1 "${LSOIL_INCR}"); do
     soil_incr_vars=${soil_incr_vars}'"soilt'${vi}'_inc"',
 done
-for vi in $( seq 1 "${LSOIL_INCR}" ); do
+for vi in $(seq 1 "${LSOIL_INCR}"); do
     soil_incr_vars=${soil_incr_vars}'"slc'${vi}'_inc"',
 done
 
@@ -52,35 +52,35 @@ export jres=${LATB_CASE_IN}
 export ireso=${CASE_OUT:1}
 export jreso=${CASE_OUT:1}
 
-regrid_nml_tmpl="${PARMgfs}/regrid_sfc/regrid.nml_tmpl" 
+regrid_nml_tmpl="${PARMgfs}/regrid_sfc/regrid.nml_tmpl"
 
 # input, fixed files
 cpreq "${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
-      "${DATA}/gaussian_scrip.nc"
+    "${DATA}/gaussian_scrip.nc"
 
 # output, fixed files
 cpreq "${FIXorog}/${CASE_OUT}/${CASE_OUT}_mosaic.nc" \
-      "${DATA}/${CASE_OUT}_mosaic.nc"
+    "${DATA}/${CASE_OUT}_mosaic.nc"
 
 for n in $(seq 1 "${ntiles}"); do
     cpreq "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc" \
-          "${DATA}/vegetation_type.tile${n}.nc"
+        "${DATA}/vegetation_type.tile${n}.nc"
     cpreq "${FIXorog}/${CASE_OUT}/${CASE_OUT}_grid.tile${n}.nc" \
-          "${DATA}/${CASE_OUT}_grid.tile${n}.nc"
+        "${DATA}/${CASE_OUT}_grid.tile${n}.nc"
 done
 
-if (( LFHR >= 0 )); then
+if ((LFHR >= 0)); then
     soilinc_fhrs=("${LFHR}")
-else # construct restart times for deterministic member
-    soilinc_fhrs=("${assim_freq}") # increment file at middle of window
-    if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
-        half_window=$(( assim_freq / 2 ))
+else                                     # construct restart times for deterministic member
+    soilinc_fhrs=("${assim_freq}")       # increment file at middle of window
+    if [[ "${DOIAU:-}" == "YES" ]]; then # Update surface restarts at beginning of window
+        half_window=$((assim_freq / 2))
         soilinc_fhrs+=("${half_window}")
     fi
 fi
 
 for imem in $(seq 1 "${NMEM_REGRID}"); do
-    if (( NMEM_REGRID > 1 )); then
+    if ((NMEM_REGRID > 1)); then
         cmem=$(printf %03i "${imem}")
         memchar="mem${cmem}"
 
@@ -100,16 +100,16 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
         cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-               "${DATA}/enkfgdas.sfci00${FHR}.nc"
+            "${DATA}/enkfgdas.sfci00${FHR}.nc"
 
         ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
+            cpfs "${DATA}/sfci.tile${n}.nc" "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
         done
-    done 
+    done
 
-    if [[ "${DO_LAND_IAU}" = ".true." ]]; then 
+    if [[ "${DO_LAND_IAU}" = ".true." ]]; then
 
         export add_time_dim=".true."
         export time_list="${IAUFHRS}"
@@ -119,23 +119,22 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 
         for FHI in "${landifhrs[@]}"; do
             cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHI}.nc" \
-                  "${DATA}/enkfgdas.sfci00${FHI}.nc"
+                "${DATA}/enkfgdas.sfci00${FHI}.nc"
         done
-        
+
         export pgm="${REGRID_EXEC}"
-	      ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
-	      export err=$?
-	      if [[ ${err} -ne 0 ]]; then
-	          err_exit "${pgm} failed, ABORT!"
-	      fi
+        ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "${pgm} failed, ABORT!"
+        fi
 
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
+            cpfs "${DATA}/sfci.tile${n}.nc" "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
         done
-	    
+
     fi
 
 done
 
 exit 0
-

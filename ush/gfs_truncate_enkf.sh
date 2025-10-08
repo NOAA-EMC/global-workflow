@@ -49,4 +49,3 @@ export ERR=$rc
 export err=$ERR
 
 exit $err
-
