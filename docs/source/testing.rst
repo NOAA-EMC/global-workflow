@@ -2,7 +2,7 @@
 Testing Global Workflow Jobs
 ############################
 
-The Global Workflow includes a comprehensive CTest framework for testing individual Rocoto workflow jobs (JJOBS) independently from the full workflow system. This framework enables developers to validate job behavior, verify outputs, and perform rapid development iterations without running complete workflow cycles.
+The Global Workflow includes a comprehensive CTest framework for testing individual Rocoto workflow jobs (JJOBS) independently from the full workflow system. This framework enables developers to validate job behavior, verify outputs, and perform rapid development iterations without running complete workflow cycles (see `README.md <https://github.com/NOAA-EMC/global-workflow/tree/develop/dev/ctests#readme>` for quick start guidelines).
 
 **********
 Overview
