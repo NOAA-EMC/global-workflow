@@ -77,7 +77,7 @@ DTFANL=${DTFANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.dtf.nc}
 ATMANL=${ATMANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.nc}
 
 # Increment files
-ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atm.increment.nc}
+ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.nc}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
