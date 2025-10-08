@@ -112,7 +112,11 @@ class Analysis(Task):
         for ob in self.task_config.observations:
             if ob in self.task_config.bias_files and not self.task_config.bias_files[ob] in bias_file_list:
                 bias_file_list.append(self.task_config.bias_files[ob])
-                extract_tar(f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}')
+                bias_file_path = f'{self.task_config.DATA}/obs/{self.task_config.GPREFIX}{self.task_config.bias_files[ob]}'
+                if os.path.exists(bias_file_path):
+                    extract_tar(bias_file_path)
+                else:
+                    logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped") 
 
     @logit(logger)
     def tar_diag_files(self, comout: str, tarball_name: str) -> None:
