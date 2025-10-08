@@ -4,10 +4,10 @@ set -x
 
 ###############################################################
 # Source GSI workflow modules
-source "${HOMEgfs}/dev/ush/load_gw_gsi_modules.sh"
+source "${HOMEgfs}/dev/ush/load_modules.sh" gsi
 status=$?
 if [[ ${status} -ne 0 ]]; then
-  exit "${status}"
+    exit "${status}"
 fi
 
 export job="epos"
@@ -33,6 +33,5 @@ done
 
 ###############################################################
 # Exit out cleanly
-
 
 exit 0

@@ -72,30 +72,30 @@ function(AddJJOBTest)
                        "${novals}" "${singlevals}" "${multivals}"
                         ${ARGN})
 
-  set(TEST_NAME ${ARG_CASE}_${ARG_JOB})
+  set(TEST_NAME ${ARG_CASE}-${ARG_JOB})
   set(CASE_PATH ${HOMEgfs}/dev/ci/cases/pr)
   set(CASE_YAML ${CASE_PATH}/${ARG_CASE}.yaml)
 
   add_test(NAME test_${TEST_NAME}_setup
     COMMAND ./setup.sh ${TEST_NAME} ${CASE_YAML} ${ARG_TEST_DATE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE}_${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE}-${ARG_JOB}")
 
   add_test(NAME test_${TEST_NAME}_stage
       COMMAND ./stage.sh ${ARG_CASE} ${TEST_NAME} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_stage PROPERTIES DEPENDS test_${TEST_NAME}_setup LABELS "${ARG_CASE}_${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_stage PROPERTIES DEPENDS test_${TEST_NAME}_setup LABELS "${ARG_CASE}-${ARG_JOB}")
 
   add_test(NAME test_${TEST_NAME}_execute
       COMMAND ./execute.sh ${TEST_NAME} ${ARG_JOB} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${ARG_CASE}_${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${ARG_CASE}-${ARG_JOB}")
 
   # TODO - This is a stub for the validation step
   add_test(NAME test_${TEST_NAME}_validate
       COMMAND ./validate.sh ${ARG_CASE} ${TEST_NAME} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${ARG_CASE}_${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${ARG_CASE}-${ARG_JOB}")
 endfunction()
 
 AddJJOBTest(
@@ -105,7 +105,31 @@ AddJJOBTest(
 )
 
 AddJJOBTest(
+  CASE "C48_ATM"
+  JOB "gfs_atmos_prod_f000-f002"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
   CASE "C48_S2SW"
   JOB "gfs_fcst_seg0"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_ice_prod_f006"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_ocean_prod_f006"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SWA_gefs"
+  JOB "gefs_fcst_mem001_seg0"
   TEST_DATE "2021032312"
 )
