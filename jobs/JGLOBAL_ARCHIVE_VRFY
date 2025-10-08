@@ -28,10 +28,10 @@ done
 #else
 #    ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
 #fi
-if [[ -v GLOBALARCHIVESH]]; then
+if [[ -v GLOBALARCHIVESH ]]; then
      ${GLOBALARCHIVESH}
 else
-     "${PYCMD}" "${SCRgfs}"exglobal_archive_vrfy.py ${PYEXTRAARGS}
+     "${PYCMD}" "${SCRgfs}"/exglobal_archive_vrfy.py ${PYEXTRAARGS}
 fi
 err=$?
 if [[ ${err} -ne 0 ]]; then
