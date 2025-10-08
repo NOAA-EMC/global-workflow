@@ -57,7 +57,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                         gsi_utils.make_dir(CalcAnlDir)
                     if not os.path.exists(CalcAnlDir6):
                         gsi_utils.make_dir(CalcAnlDir6)
-                    gsi_utils.link_file(ComOut + '/' + APrefix + 'analysis.atm.i' + format(fh, '03') + '.nc',
+                    gsi_utils.link_file(ComOut + '/' + APrefix + 'anl.atm.i' + format(fh, '03') + '.nc',
                                         CalcAnlDir6 + '/anl.' + format(fh, '02'))
                     gsi_utils.link_file(RunDir + '/siga' + format(fh, '02'),
                                         CalcAnlDir6 + '/anl.' + format(fh, '02'))

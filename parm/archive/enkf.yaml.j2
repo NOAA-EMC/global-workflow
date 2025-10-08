@@ -109,10 +109,10 @@ enkf:
         {% if do_calc_increment %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean.anl.atm.nc"
         {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}increment.ensmean.atm.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean.increment.atm.nc"
         {% endif %}
         {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_anl.ensmean.atm.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean.anl.cs_atm.nc"
         {% endif %}
 
         # soil DA increments
@@ -135,7 +135,7 @@ enkf:
         {% endif %}
         {% endif %}
         {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid.anl.ensmean.atm.i{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean.anl.cs_atm.i{{ '%03d' % fhr }}.nc"
         {% endif %}
 
         # soil DA increments

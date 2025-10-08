@@ -116,7 +116,7 @@ for imem in $(seq 1 ${NMEM_ENS}); do
    ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atm.f00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
    if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
       if [[ ${FHR} -eq 6 ]]; then
-         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}atm.anl.nc" "./atmanl_${memchar}"
+         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}anl.atm.nc" "./atmanl_${memchar}"
       else
          ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}anl.atm.i00${FHR}.nc" "./atmanl_${memchar}"
       fi

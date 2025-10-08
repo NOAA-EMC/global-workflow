@@ -34,7 +34,7 @@ enkf_restarta_grp:
         # Member atmospheric analysis data
         {% if DO_JEDIATMENS %}
         {% for itile in range(6) %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_recenter.increment.atm.tile{{ itile+1 }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}recenter.increment.cs_atm.tile{{ itile+1 }}.nc"
         {% endfor %}
         {% else %}
         {% if do_calc_increment %}
