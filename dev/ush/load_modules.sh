@@ -37,7 +37,7 @@ ulimit_s=$(ulimit -S -s)
 # Test if HOMEgfs is defined.  If not, then try to determine it with git rev-parse
 _unset_homegfs="NO"
 if [[ -z ${HOMEgfs+x} ]]; then
-  echo "INFO HOMEgfs is not defined.  Attempting to find the global-workflow root directory"
+  echo "INFO: HOMEgfs is not defined.  Attempting to find the global-workflow root directory"
   # HOMEgfs will be removed from the environment at the end of this script
   _unset_homegfs="YES"
 
@@ -49,11 +49,11 @@ if [[ -z ${HOMEgfs+x} ]]; then
     is_git_dir=$(cd -- "${script_dir}" &> /dev/null && git rev-parse --is-inside-work-tree)
     git_stat=$?
     if [[ ${git_stat} -ne 0 || ${is_git_dir} != "true" ]]; then
-      echo "FATAL ERROR unable to determine the root because it is not a git repository."
+      echo "FATAL ERROR: unable to determine the root because it is not a git repository."
     else
-      echo "FATAL ERROR unable to determine the root because git rev-parse --show-toplevel failed for an unknown reason"
+      echo "FATAL ERROR: unable to determine the root because git rev-parse --show-toplevel failed for an unknown reason"
     fi
-    echo "            Unable to load modules.  Exiting"
+    echo "FATAL ERROR: Unable to load modules.  Exiting"
     exit 1
   fi
 fi
@@ -118,7 +118,7 @@ case "${MODULE_TYPE}" in
         export NETCDF
         ;;
       ("acorn")
-        echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
+        echo WARNING: UFSDA NOT SUPPORTED ON 'acorn'
         ;;
       *)
         echo "WARNING: UNKNOWN PLATFORM"
@@ -160,7 +160,7 @@ case "${MODULE_TYPE}" in
     if [[ -f "${HOMEgfs}/versions/run.ver" ]]; then
       source "${HOMEgfs}/versions/run.ver"
     else
-      echo "FATAL ERROR ${HOMEgfs}/versions/run.ver does not exist!"
+      echo "FATAL ERROR: ${HOMEgfs}/versions/run.ver does not exist!"
       echo "HINT: Run link_workflow.sh first."
       exit 1
     fi
