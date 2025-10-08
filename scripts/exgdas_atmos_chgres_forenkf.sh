@@ -26,9 +26,10 @@ GDUMP=${GDUMP:-"gdas"}
 # Derived base variables
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export GDATE
 BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 3 hours")
-bPDY=${BDATE:0:8}
-bcyc=${BDATE:8:2}
+export bPDY=${BDATE:0:8}
+export bcyc=${BDATE:8:2}
 
 # Utilities
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
@@ -75,7 +76,7 @@ USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
 
 if [[ "${DOHYBVAR}" == "YES" ]]; then
-    l_hyb_ens=.true.
+    export l_hyb_ens=.true.
     export l4densvar=${l4densvar:-".false."}
     export lwrite4danl=${lwrite4danl:-".false."}
 else

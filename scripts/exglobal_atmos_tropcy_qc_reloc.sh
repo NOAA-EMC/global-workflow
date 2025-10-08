@@ -19,7 +19,7 @@ cdate10=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${tmhr} hours")
 NET_uc=${RUN^^}
 tmmark_uc=${tmmark^^}
 
-iflag=0
+export iflag=0
 if [[ "${RUN}" = ndas ]]; then
     if [[ "${DO_RELOCATE}" = NO ]]; then
         echo "CENTER PROCESSING TIME FOR NDAS TROPICAL CYCLONE QC IS ${cdate10}"

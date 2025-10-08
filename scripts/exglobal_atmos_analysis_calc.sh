@@ -86,7 +86,7 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
     export l4densvar=${l4densvar:-".false."}
     export lwrite4danl=${lwrite4danl:-".false."}
 else
-    l_hyb_ens=.false.
+    export l_hyb_ens=.false.
     export l4densvar=.false.
     export lwrite4danl=.false.
 fi
@@ -151,7 +151,7 @@ if [[ "${DO_CALC_ANALYSIS}" == "YES" ]]; then
 
     # Link hourly backgrounds (if present)
     if [[ -f "${ATMG04}" && -f "${ATMG05}" && -f "${ATMG07}" && -f "${ATMG08}" ]]; then
-        nhr_obsbin=1
+        export nhr_obsbin=1
     fi
 
     ${CALCANLPY}

@@ -29,9 +29,10 @@ GDUMP=${GDUMP:-"gdas"}
 # Derived base variables
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export GDATE
 BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 3 hours")
-bPDY=${BDATE:0:8}
-bcyc=${BDATE:8:2}
+export bPDY=${BDATE:0:8}
+export bcyc=${BDATE:8:2}
 
 # Utilities
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
@@ -260,6 +261,7 @@ res=${CASE_HIST:1}
 JCAP_CASE=$((res * 2 - 2))
 LATB_CASE=$((res * 2))
 LONB_CASE=$((res * 4))
+export JCAP_CASE LATB_CASE LONB_CASE
 
 # Set analysis resolution information
 if [[ ${DOHYBVAR} == "YES" ]]; then

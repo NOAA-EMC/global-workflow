@@ -59,8 +59,8 @@ fi
 ymdh_end=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} + ${FHMAX_WAV} hours")
 time_beg=$(date --utc -d "${ymdh_beg:0:8} ${ymdh_beg:8:2}" +"%Y%m%d %H0000")
 time_end=$(date --utc -d "${ymdh_end:0:8} ${ymdh_end:8:2}" +"%Y%m%d %H0000")
-ymdh_beg_out="${PDY}${cyc}"
-time_beg_out="${PDY} ${cyc}0000"
+export ymdh_beg_out="${PDY}${cyc}"
+export time_beg_out="${PDY} ${cyc}0000"
 
 # Restart file times (already has IAU_FHROT in WAVHINDH)
 RSTOFFSET=$((WAVHCYC - WAVHINDH))
@@ -80,6 +80,7 @@ else
     ymdh_rst1_end=$(date --utc +%Y%m%d%H -d "${ymdh_rst_ini} + ${RST1OFFSET} hours")
     time_rst1_end="${ymdh_rst1_end:0:8} ${ymdh_rst1_end:8:2}0000"
 fi
+export time_rst1_end
 # Second restart file for checkpointing
 if [[ "${RSTTYPE_WAV}" == "T" ]]; then
     time_rst2_ini="${ymdh_rst2_ini:0:8} ${ymdh_rst2_ini:8:2}0000"
@@ -95,6 +96,7 @@ else
     time_rst2_end=
     DT_2_RST_WAV=
 fi
+export time_rst2_end
 cat << EOF
 
 Times in wave model format :

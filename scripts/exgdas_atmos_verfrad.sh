@@ -62,6 +62,7 @@ if [[ ${cyc} = "00" ]]; then
 else
     use_tankdir=${TANKverf_rad}
 fi
+export use_tankdir
 
 echo satype_file = "${satype_file}"
 SATYPE=$(cat "${satype_file}")
