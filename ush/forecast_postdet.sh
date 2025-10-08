@@ -742,11 +742,12 @@ MOM6_out() {
    
   # Do Monthly Average ocean output and move to output ocean history directory (valid up to 12 month forecasts only)
   if [[ "${RUN}" == sfs ]]; then
-    local last_fh_output=$(ls -f "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.${FHOUT_OCN}hr_avg.f${FHMAX_GFS}.nc" )
+    local last_fh_output files f_name 
+    last_fh_output=$(ls -f "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.${FHOUT_OCN}hr_avg.f${FHMAX_GFS}.nc" )
     if [[ -f ${last_fh_output} ]]; then
-       local files=$(ls -f "${DATAoutput}/MOM6_OUTPUT/ocn_????_??_28_12.nc" )
+       files=$(ls -f "${DATAoutput}/MOM6_OUTPUT/ocn_????_??_28_12.nc" )
        for f in ${files}; do
-         local f_name=$( basename "${f}" )
+         f_name=$( basename "${f}" )
          cdo mergetime "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_??_12.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_dailymean.nc"
          cdo monavg "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_dailymean.nc" "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
        done
@@ -869,11 +870,12 @@ CICE_out() {
   esac
   # Copy the Monthly Average output from SFS
   if [[ "${RUN}" == sfs ]]; then
-    local last_fh_output=$( ls -f "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc" )
+    local last_fh_output files f_name
+    last_fh_output=$( ls -f "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc" )
     if [[ -f ${last_fh_output} ]]; then
-       local files=$(ls -f "${DATAoutput}/CICE_OUTPUT/iceh_24h.????_??_28_12.nc" )
+       files=$(ls -f "${DATAoutput}/CICE_OUTPUT/iceh_24h.????_??_28_12.nc" )
        for f in ${files}; do
-        local f_name=$( basename "${f}" )
+        f_name=$( basename "${f}" )
         ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h.${f_name:9:4}_${f_name:14:2}_??_12.nc" "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${current_cycle}.monthly_avg.${f_name:9:4}-${f_name:14:2}.nc"
        done
     fi
