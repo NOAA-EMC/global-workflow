@@ -869,12 +869,12 @@ CICE_out() {
   esac
   # Copy the Monthly Average output from SFS
   if [[ "${RUN}" == sfs ]]; then
-    local last_fh_output=$(ls -f ${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc )
+    local last_fh_output=$( ls -f "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc" )
     if [[ -f ${last_fh_output} ]]; then
-       local files=$(ls -f ${DATAoutput}/CICE_OUTPUT/iceh_24h.????_??_28_12.nc )
+       local files=$(ls -f "${DATAoutput}/CICE_OUTPUT/iceh_24h.????_??_28_12.nc" )
        for f in ${files}; do
-        local f_name=$( basename ${f} )
-        ncra ${DATAoutput}/CICE_OUTPUT/iceh_24h.${f_name:9:4}_${f_name:14:2}_??_12.nc ${COMOUT_ICE_HISTORY}/${RUN}.ice.t${current_cycle}.monthly_avg.${f_name:9:4}-${f_name:14:2}.nc
+        local f_name=$( basename "${f}" )
+        ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h.${f_name:9:4}_${f_name:14:2}_??_12.nc" "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${current_cycle}.monthly_avg.${f_name:9:4}-${f_name:14:2}.nc"
        done
     fi
   fi
