@@ -196,11 +196,6 @@ if [[ -s "atparse.bash" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
 
-# Temporarilly link load_gw_run_modules.sh to load_fv3gfs_modules.sh
-# TODO: Use load_gw_run_modules.sh everywhere
-cd "${HOMEgfs}/dev/ush" || exit 1
-${LINK_OR_COPY} "${HOMEgfs}/dev/ush/load_gw_run_modules.sh" load_fv3gfs_modules.sh
-
 # add ufs_utils parm dir
 if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
   cd "${HOMEgfs}/parm" || exit 1
