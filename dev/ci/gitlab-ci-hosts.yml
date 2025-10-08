@@ -248,7 +248,13 @@ finalize_success-ursa:
   stage: run_tests
   parallel:
     matrix:
-      - CTEST_NAME: ['C48_ATM_gfs_fcst_seg0', 'C48_S2SW_gfs_fcst_seg0']
+      - CTEST_NAME:
+        - C48_ATM-gfs_fcst_seg0
+        - C48_ATM-gfs_atmos_prod_f000-f002
+        - C48_S2SW-gfs_fcst_seg0
+        - C48_S2SW-gfs_ocean_prod_f006
+        - C48_S2SW-gfs_ice_prod_f006
+        - C48_S2SWA_gefs-gefs_fcst_mem001_seg0
 
 # Host-specific CTest setup jobs
 setup_ctests-hera:
