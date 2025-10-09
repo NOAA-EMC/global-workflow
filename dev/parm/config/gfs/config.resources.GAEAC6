@@ -14,7 +14,7 @@ case ${step} in
         export tasks_per_node=180
         ;;
       "C1152")
-        export tasks_per_node=144
+        export tasks_per_node=160
         ;;
       *)
         # Nothing to do for other resolutions
