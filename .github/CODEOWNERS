@@ -173,11 +173,7 @@ ush/interp_atmos_master.sh @aerorahul @WenMeng-NOAA
 ush/interp_atmos_sflux.sh @aerorahul @WenMeng-NOAA
 ush/jjob_header.sh
 ush/link_crtm_fix.sh
-ush/load_fv3gfs_modules.sh @aerorahul
-ush/load_gw_run_modules.sh @aerorahul @DavidHuber-NOAA
-ush/load_gw_gsi_modules.sh @aerorahul @DavidHuber-NOAA @RussTreadon-NOAA
-ush/load_ufsda_modules.sh @aerorahul @CoryMartin-NOAA
-ush/load_ufswm_modules.sh @aerorahul @JessicaMeixner-NOAA
+dev/ush/load_modules.sh @aerorahul @DavidHuber-NOAA @RussTreadon-NOAA @JessicaMeixner-NOAA
 ush/merge_fv3_aerosol_tile.py
 ush/minmon_xtrct_*.pl @EdwardSafford-NOAA
 ush/module-setup.sh @aerorahul
