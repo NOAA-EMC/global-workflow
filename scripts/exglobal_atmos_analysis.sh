@@ -293,14 +293,14 @@ fi
 # GSI Fix files
 BERROR=${BERROR:-${FIXgfs}/gsi/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
 SATANGL=${SATANGL:-${FIXgfs}/gsi/global_satangbias.txt}
-#SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
+SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
 RADCLOUDINFO=${RADCLOUDINFO:-${FIXgfs}/gsi/cloudy_radiance_info.txt}
 ATMSFILTER=${ATMSFILTER:-${FIXgfs}/gsi/atms_beamwidth.txt}
 ANAVINFO=${ANAVINFO:-${FIXgfs}/gsi/global_anavinfo.l${LEVS}.txt}
-#CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
+CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
 vqcdat=${vqcdat:-${FIXgfs}/gsi/vqctp001.dat}
 INSITUINFO=${INSITUINFO:-${FIXgfs}/gsi/global_insituinfo.txt}
-#OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
+OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
 PCPINFO=${PCPINFO:-${FIXgfs}/gsi/global_pcpinfo.txt}
 AEROINFO=${AEROINFO:-${FIXgfs}/gsi/global_aeroinfo.txt}
 SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
