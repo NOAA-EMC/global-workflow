@@ -51,7 +51,6 @@ do
    cat > "${run_model_script}" << EOF_MODEL
 #!/bin/bash
 
-#source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 source /usr/lmod/lmod/init/bash
 module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
 module load gfsutils_container.intel

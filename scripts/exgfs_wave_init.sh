@@ -17,7 +17,7 @@
 #
 ###############################################################################
 #
-source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
+source "${HOMEgfs}/dev/ush/load_modules.sh"
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 

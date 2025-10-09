@@ -22,7 +22,7 @@
 
 # 0.a Basic modes of operation
 
-source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
+source "${HOMEgfs}/dev/ush/load_modules.sh"
 
 grdID=$1
 valid_time=$2

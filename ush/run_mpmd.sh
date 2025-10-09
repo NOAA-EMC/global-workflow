@@ -28,7 +28,7 @@
 #
 ################################################################################
 
-source "${HOMEgfs}"/dev/ush/load_gw_run_modules.sh
+source "${HOMEgfs}"/dev/ush/load_modules.sh
 
 cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in MPMD/serial mode"}
 

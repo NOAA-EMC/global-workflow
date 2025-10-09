@@ -52,13 +52,12 @@ elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    rocotocmd=$(command -v rocotorun)
 fi
 
-mkdir -p "${rundir}"
+set -x
 
-# cd "${HOMEDIR}/dev/workflow" || exit 1
-if ! cd "${HOMEDIR}/dev/workflow"; then
-  echo "Error: Could not change to the workflow directory. Aborting." >&2
-  exit 1
-fi
+mkdir -p "${rundir}"
+mkdir -p "${HOMEDIR}"/ush/container
+
+cd "${HOMEDIR}/dev/workflow" || exit 1
 
 if [[ "${run_with_container}" == "YES" ]]; then
    "${HOMEDIR}/dev/container/utils/gen-wrapper.sh" -H "${HOMEDIR}" -c "${container}" -b "${bindings}" -v
