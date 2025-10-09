@@ -549,7 +549,7 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
    # Link ensemble members
    mkdir -p ensemble_data
 
-   ENKF_SUFFIX="smooth"
+   ENKF_SUFFIX="smooth."
    if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
        ENKF_SUFFIX=""
    fi
@@ -566,7 +566,7 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
 	      COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
       for fhr in ${fhrs}; do
-         ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}.${ENKF_SUFFIX}.atm.f0${fhr}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
+         ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}${ENKF_SUFFIX}atm.f0${fhr}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
          if [[ ${cnvw_option} == ".true." ]]; then
             ${NLN} ${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}sfc.f0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${memchar}
          fi
