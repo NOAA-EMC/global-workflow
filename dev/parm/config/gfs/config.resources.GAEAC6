@@ -5,7 +5,6 @@
 
 unset memory
 unset "memory_${RUN}"
-export FI_CXI_RX_MATCH_MODE=hybrid
 
 case ${step} in
   "fcst" | "efcs")
@@ -48,7 +47,7 @@ case ${step} in
       "C1152")
         export threads_per_task=16
         ;;
-      *) 
+      *)
         ;;
     esac
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
@@ -69,7 +68,7 @@ case ${step} in
   "marinebmat")
     case ${OCNRES} in
       "025")
-        tasks_per_node=$(( max_tasks_per_node / 4 )) 
+        tasks_per_node=$(( max_tasks_per_node / 4 ))
         ;;
       *)
         ;;
@@ -117,6 +116,6 @@ case ${step} in
     NTASKS=${ntasks}
     ;;
 
-  *) 
+  *)
     ;;
 esac
