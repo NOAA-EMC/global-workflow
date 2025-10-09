@@ -20,7 +20,7 @@ load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
 setenv("WGRIB2", "/contrib/spack-stack/spack-stack-1.6.0/envs/unified-env-rocky8/install/intel/2021.5.0/wgrib2-2.0.8-nauzcdx/bin/wgrib2")
 prepend_path("PATH", "/contrib/spack-stack/spack-stack-1.6.0/envs/unified-env-rocky8/install/intel/2021.5.0/wgrib2-2.0.8-nauzcdx/bin/wgrib2")
 
-prepend_path("MODULEPATH", pathJoin("/scratch3/NCEPDEV/global/role.glopara/git_hera/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/scratch3/NCEPDEV/global/David.Huber/PREP/prepobs_rename_hera/modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
 prepend_path("MODULEPATH", pathJoin("/scratch3/NCEPDEV/global/role.glopara/git_hera/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
