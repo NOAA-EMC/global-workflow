@@ -25,7 +25,6 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${HOMEgfs}/dev/ush/load_modules.sh"
 
 # Script inputs
 grdID=$1

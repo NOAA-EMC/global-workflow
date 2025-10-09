@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_products" -c "base atmos_products"
+#source "${HOMEgfs}/ush/preamble.sh"
+echo "RUN_WITH_CONTAINER: ${RUN_WITH_CONTAINER}"
 
 ##############################################
 # Begin JOB SPECIFIC work

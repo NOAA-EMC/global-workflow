@@ -41,7 +41,7 @@
 #                     [default: $$]
 
 _calling_script="${BASH_SOURCE[1]}"
-source "${HOMEgfs}/dev/ush/load_modules.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 OPTIND=1
 while getopts "c:e:" option; do

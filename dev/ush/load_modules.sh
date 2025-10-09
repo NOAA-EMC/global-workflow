@@ -62,6 +62,8 @@ fi
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/ush/module-setup.sh"
 
+echo "MACHINE_ID: ${MACHINE_ID}"
+
 # Handle different module types
 case "${MODULE_TYPE}" in
   "ufswm")
@@ -173,6 +175,16 @@ case "${MODULE_TYPE}" in
       exit 1
     fi
 
+    if [[ "${MACHINE_ID}" = "container" ]]; then
+      source /usr/lmod/lmod/init/bash
+      module purge
+      module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
+      module load gfsutils_container.intel
+      module load wgrib2
+      module load prod_util
+      export UTILROOT=${prod_util_ROOT}
+    else
+
     # Load our modules:
     module use "${HOMEgfs}/modulefiles"
 
@@ -197,6 +209,7 @@ case "${MODULE_TYPE}" in
     else
       echo "FATAL ERROR: Could not determine target module for MODULE_TYPE='${MODULE_TYPE}' and MACHINE_ID='${MACHINE_ID}'"
       exit 1
+    fi
     fi
 
     module list

@@ -26,10 +26,6 @@ if [[ ${MACHINE_ID} = ursa* ]] ; then
 
    module load rocoto/1.3.7
    rocotocmd=$(command -v rocotorun)
-
-   if [[ "${run_with_container}" == "YES" ]]; then
-      cp "${HOMEgfs}/env/URSA.env.container" "${HOMEgfs}/env/URSA.env"
-   fi
 elif [[ ${MACHINE_ID} = gaea* ]] ; then
    container=/gpfs/f6/scratch/Wei.Huang/container/${img}
    rundir=/gpfs/f6/scratch/${USER}/run
@@ -37,9 +33,6 @@ elif [[ ${MACHINE_ID} = gaea* ]] ; then
    HPC_ACCOUNT=bil-fire8
 
    rocotocmd=/autofs/ncrc-svm1_home2/Christopher.W.Harrop/rocoto-1.3.7/bin/rocotorun
-   if [[ "${run_with_container}" == "YES" ]]; then
-      cp "${HOMEgfs}/env/GAEAC6.env.container" "${HOMEgfs}/env/GAEAC6.env"
-   fi
 elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    TOPICDIR=/bucket/global-workflow-shared-data/ICSDIR
    container=/contrib/containers/${img}
