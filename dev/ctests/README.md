@@ -1,63 +1,263 @@
-# CTest Framework for NOAA Global Workflow
+# CTest Framework Quick Start
 
-This directory contains the CTest framework for testing Rocoto JJOBS. The framework allows you to stage, execute, and validate individual JJOBS independently from other jobs in the workflow. Each test requires its own YAML definition of inputs and configurations.
+This directory contains the CTest framework for testing Rocoto workflow jobs (JJOBS) independently. Each test runs in an isolated environment with staged input files from nightly baseline runs.
 
-## Overview
+> **📖 Complete Documentation**: See the [comprehensive testing documentation](../../docs/source/testing.rst) for detailed information on framework architecture, YAML configuration, test patterns, CI/CD integration, and troubleshooting.
 
-The CTest framework consists of the following scripts:
-- **setup.sh.in**: Prepares the environment and creates the experiment.
-- **stage.sh.in**: Stages the input files needed to run a JJOB.
-- **execute.sh.in**: Executes the JJOB and monitors its status.
-- **validate.sh.in**: Validates the results of the JJOB.
+## Quick Start Guide
 
-**NOTE:** So far only test C48_ATM *gfs_fcst_set0* has `output_files` for the validation step using a basic chksum for testing. Further development using grib and NETCDF comparison tools is pending.
+### Prerequisites
 
-## Usage
+The following environment variables must be set (either in your environment or via platform configuration):
 
-### CMake Configuration
+```bash
+HPC_ACCOUNT       # Your HPC allocation account
+STAGED_CTESTS     # Path to nightly baseline COMROOT
+ICSDIR_ROOT       # Path to initial condition files
+```
 
-To configure the **CTest** framework using **CMake**, you need to provide several environment variables. Here is an example of how to configure and build the project:
+These are typically defined in `$HOMEgfs/dev/ci/platforms/config.$MACHINE_ID`.
 
-**NOTE**: The the specific values for these three enviroment variables can be found in `$HOMEgfs/dev/ci/platforms/config.$MACHINE_ID` and may also be added to the `cmake` command line with the `-D` option
+### Configure and Build
 
-# Run CMake to configure the ctest framework
-```shell
+```bash
 cd $HOMEgfs/dev/ctests
-mkdir build
+mkdir -p build
 cd build
-cmake ../..
+
+# Configure using environment variables from config.$MACHINE_ID
+cmake ../../..
+
+# Or configure with explicit command-line options
+cmake -DHPC_ACCOUNT=myaccount \
+      -DSTAGED_CTESTS=/path/to/baselines/RUNTESTS \
+      -DICSDIR_ROOT=/path/to/ics \
+      ../../..
 ```
 
-### Running Tests with CTest
-
-Once the project is configured, you can run the tests using CTest. Here are some examples:
-
-#### Run All Tests
+### Run Tests
 
 ```bash
-cd /path/to/build
+# Run all tests
 ctest
+
+# Run tests for a specific configuration case
+ctest -L C48_ATM
+
+# Run test for a specific JJOB
+cest -L C48_ATM-gfs_atmos_prod_f000-f002
+
+# Run a specific test with verbose output
+ctest -R test_C48_ATM-gfs_fcst_seg0_execute -V
+
+# Run tests in parallel (4 concurrent tests)
+ctest -j 4
+
+# Show test list without running
+ctest -N
 ```
 
-#### Run Tests for a Specific Case
+### Common CTest Options
 
-You can use the `-L` option with CTest to run tests for a specific case. For example, to run tests for the `C48_ATM` case:
+| Option | Description |
+|--------|-------------|
+| `-V` | Verbose output |
+| `-VV` | Extra verbose output |
+| `-N` | Dry run (list tests without executing) |
+| `-L <label>` | Run tests matching label (e.g., `-L C48_ATM`) |
+| `-R <regex>` | Run tests matching regex pattern |
+| `-j <N>` | Run N tests in parallel |
+| `--output-on-failure` | Show output only for failed tests |
+| `--rerun-failed` | Rerun only previously failed tests |
+
+## Test Structure
+
+Each test consists of four phases executed sequentially:
+
+1. **Setup**: Creates experiment directory and configuration
+2. **Stage**: Stages input files from baseline into test COMROOT
+3. **Execute**: Runs the job script and monitors execution
+4. **Validate**: Compares outputs against baseline results
+
+Test phases are automatically chained via CMake dependencies.
+
+## Validation Modes
+
+Control validation behavior with the `CTEST_VALIDATION_MODE` environment variable:
 
 ```bash
-cd /path/to/build
-ctest -L C48_ATM
-```
-Or simply use the '-R' switch to run any individual test:
-```
-ctest -R test_C48_S2SW_gfs_fcst_seg0_execute -V
+# PRESENCE_ONLY (default): Verify files exist, no checksum validation
+export CTEST_VALIDATION_MODE=PRESENCE_ONLY
+ctest -R validate
+
+# STRICT: All files must exist AND checksums must match
+export CTEST_VALIDATION_MODE=STRICT
+ctest -R validate
+
+# CHECKSUM_ONLY: Validate checksums for existing files, ignore missing files
+export CTEST_VALIDATION_MODE=CHECKSUM_ONLY
+ctest -R validate
 ```
 
-To add a new test use the **AddJJOBTest()** function at the end of the `$HOMEgfs/dev/ctest/CMakeLists.txt` file as follows:
+## Available Tests
+
+Current test cases include:
+
+| Test Name | Configuration | Component | Description |
+|-----------|--------------|-----------|-------------|
+| `C48_ATM-gfs_fcst_seg0` | C48_ATM | Atmosphere | Atmosphere-only forecast |
+| `C48_ATM-gfs_atmos_prod_f000-f002` | C48_ATM | Products | Atmosphere product generation |
+| `C48_S2SW-gfs_fcst_seg0` | C48_S2SW | Coupled | Coupled forecast (atmos-ocean-ice-wave) |
+| `C48_S2SW-gfs_ocean_prod_f006` | C48_S2SW | Products | Ocean product generation |
+| `C48_S2SW-gfs_ice_prod_f006` | C48_S2SW | Products | Ice product generation |
+| `C48_S2SWA_gefs-gefs_fcst_mem001_seg0` | C48_S2SWA_gefs | Ensemble | GEFS ensemble member forecast |
+
+## Adding New Tests
+
+### 1. Add test definition to `CMakeLists.txt`:
+
 ```cmake
 AddJJOBTest(
-  CASE "C48_ATM"
-  JOB  "gfs_fcst_seg0"
-  TEST_DATE "2021032312"
+  CASE "C48_ATM"              # Configuration case
+  JOB  "gfs_analysis"         # Job identifier
+  TEST_DATE "2021032312"      # Test cycle (YYYYMMDDHH)
 )
 ```
-Then create a new YAML file with the required staged input files as is done with this example found in `$HOMEgfs/dev/ctests/cases/C48_ATM_gfs_fcts_seg0.yaml`
+
+### 2. Create YAML file `cases/C48_ATM-gfs_analysis.yaml`:
+
+```yaml
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set PDY = TEST_DATE | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+
+input_files:
+    mkdir:
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input
+    
+    copy:
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc,
+           {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc]
+        # Add additional required files...
+
+output_files:
+    cmpfiles:
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/analysis/atminc.nc,
+           {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/analysis/atminc.nc]
+        # Add additional output files...
+```
+
+### 3. Build and test:
+
+```bash
+cd build
+cmake ../../..
+ctest -L C48_S2SW -j 3
+```
+
+## Naming Convention
+
+Test names follow the pattern: `CASE-JOB.yaml`
+
+**Examples:**
+- `C48_ATM-gfs_fcst_seg0.yaml` - Atmosphere forecast
+- `C48_S2SW-gfs_ocean_prod_f006.yaml` - Ocean products
+- `C48_S2SWA_gefs-gefs_fcst_mem001_seg0.yaml` - Ensemble member forecast
+
+## Troubleshooting
+
+### Missing Input Files
+
+```bash
+# Compare baseline with test environment
+ls ${STAGED_CTESTS}/COMROOT/${PSLOT}/gfs.${PDY}/${cyc}/
+ls ${RUNTESTS}/COMROOT/${TEST_NAME}/gfs.${PDY}/${cyc}/
+```
+
+Add missing files to the YAML `input_files.copy` section.
+
+### Checksum Validation Failures
+
+For development, use presence-only validation:
+```bash
+export CTEST_VALIDATION_MODE=PRESENCE_ONLY
+ctest -R validate
+```
+
+### Verbose Debugging
+
+```bash
+# Enable debug logging
+export LOGGING_LEVEL=DEBUG
+
+# Run with maximum verbosity
+ctest -R test_name -VV
+
+# Check test logs
+tail -f ${RUNTESTS}/COMROOT/${TEST_NAME}_*/EXPDIR/logs/*.log
+```
+
+### Manual Execution
+
+Run test phases manually for debugging:
+
+```bash
+cd build/scripts
+./setup.sh TEST_NAME CASE_YAML TEST_DATE
+./stage.sh CASE_NAME TEST_NAME TEST_DATE
+./execute.sh TEST_NAME JOB_NAME TEST_DATE
+./validate.sh CASE_NAME TEST_NAME TEST_DATE
+```
+
+## Key Directories
+
+```
+$HOMEgfs/dev/ctests/              # Framework root
+├── build/                        # CMake build directory (create this)
+├── cases/                        # YAML test definitions
+├── scripts/                      # Test phase scripts
+└── CMakeLists.txt                # Test configuration
+
+$HOMEgfs/dev/ci/platforms/        # Platform-specific configuration
+└── config.$MACHINE_ID            # Machine settings (STAGED_CTESTS, HPC_ACCOUNT, etc.)
+
+${STAGED_CTESTS}/COMROOT/         # Nightly baseline outputs (input source)
+${RUNTESTS}/COMROOT/              # Test execution environments (created by tests)
+```
+
+## Platform Configuration
+
+Platform-specific settings are in `$HOMEgfs/dev/ci/platforms/config.$MACHINE_ID`:
+
+```bash
+# Example from config.hera
+export GFS_CI_ROOT=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT
+export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
+export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
+export ICSDIR_ROOT=/scratch1/NCEPDEV/global/glopara/data/ICSDIR
+export HPC_ACCOUNT=nems
+```
+
+Source the appropriate configuration before running CMake:
+
+```bash
+source $HOMEgfs/ush/detect_machine.sh
+source $HOMEgfs/dev/ci/platforms/config.$MACHINE_ID
+```
+
+## Additional Resources
+
+- **Complete Documentation**: `docs/source/testing.rst`
+- **Test Case Examples**: `cases/*.yaml`
+- **CI/CD Pipeline**: `../ci/gitlab-ci-hosts.yml`
+- **Job Scripts**: `../../jobs/JGLOBAL_*`
+- **Platform Configuration**: `../ci/platforms/config.*`
+
+---
+
+**Framework Version**: 1.0  
+**Last Updated**: October 2025  
+**Status**: Active Development
+
+For detailed architecture, YAML templating, CI/CD integration, and comprehensive troubleshooting, see the [full testing documentation](../../docs/source/testing.rst).

@@ -9,29 +9,25 @@ import gzip
 import tarfile
 import numpy as np
 from netCDF4 import Dataset
-
-from wxflow import (AttrDict,
-                    FileHandler,
+from pygfs.task.analysis import Analysis
+from pygfs.jedi import Jedi
+from wxflow import (AttrDict, Executable, FileHandler, WorkflowException,
                     to_fv3time, to_YMD, to_YMDH, to_timedelta, add_to_datetime,
                     to_julian,
                     rm_p, cp,
                     parse_j2yaml, save_as_yaml,
                     Jinja,
-                    Task,
-                    logit,
-                    Executable,
-                    WorkflowException)
-from pygfs.jedi import Jedi
+                    logit)
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class SnowAnalysis(Task):
+class SnowAnalysis(Analysis):
     """
     Class for JEDI-based global snow analysis tasks
     """
 
-    @logit(logger, name="SnowAnalysis")
+    @logit(logger, name="Analysis")
     def __init__(self, config: Dict[str, Any]):
         """Constructor global snow analysis task
 
@@ -52,39 +48,34 @@ class SnowAnalysis(Task):
         super().__init__(config)
 
         _res = int(self.task_config['CASE'][1:])
-        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
 
-        # fix ocnres
-        self.task_config.OCNRES = f"{self.task_config.OCNRES:03d}"
+        # if 00z, do SCF preprocessing
+        _ims_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}imssnow96.asc')
+        logger.info(f"Checking for IMS file: {_ims_file}")
+        if self.task_config.cyc == 0 and os.path.exists(_ims_file):
+            _DO_IMS_SCF = True
+        else:
+            _DO_IMS_SCF = False
 
-        # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
+        # Extend task_config with variables repeatedly used across this class
+        self.task_config.update(AttrDict(
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
-                'SNOW_WINDOW_BEGIN': _window_begin,
-                'SNOW_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
-                'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'snow_obsdatain_path': os.path.join(self.task_config.DATA, 'obs'),
-                'snow_obsdataout_path': os.path.join(self.task_config.DATA, 'diags'),
                 'snow_bkg_path': os.path.join('.', 'bkg/'),
-                'res': _res,
+                'ims_file': _ims_file,
+                'DO_IMS_SCF': _DO_IMS_SCF,  # Boolean to decide if IMS snow cover processing is done
             }
-        )
+        ))
 
-        # Extend task_config with local_dict
-        self.task_config = AttrDict(**self.task_config, **local_dict)
+        # Extend task_config with content of config yaml for this task
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
         expected_keys = ['scf_to_ioda', 'snowanlvar']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
-
-        # Boolean to decide if IMS snow cover processing is done
-        self.task_config.DO_IMS_SCF = False
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -92,12 +83,8 @@ class SnowAnalysis(Task):
 
         This method will initialize a global snow analysis.
         This includes:
-        - initialize JEDI application
-        - staging model backgrounds
-        - staging observation files
-        - staging FV3-JEDI fix files
-        - staging B error files
-        - creating output directories
+        - stage input files from COM and create output directories
+        - initialize JEDI applications
 
         Parameters
         ----------
@@ -108,56 +95,15 @@ class SnowAnalysis(Task):
         None
         """
 
-        # stage backgrounds
-        logger.info(f"Staging background files from {self.task_config.STAGE_BKG_YAML}")
-        bkg_staging_dict = parse_j2yaml(self.task_config.STAGE_BKG_YAML, self.task_config)
-        FileHandler(bkg_staging_dict).sync()
-        logger.debug(f"Background files:\n{pformat(bkg_staging_dict)}")
-
-        # stage observations
-        logger.info(f"Staging list of observation files generated from JEDI config")
-        obs_dict = self.jedi_dict['snowanlvar'].render_jcb(self.task_config, 'snow_obs_staging')
-        FileHandler(obs_dict).sync()
-        logger.debug(f"Observation files:\n{pformat(obs_dict)}")
-
-        # stage GTS bufr2ioda mapping YAML files
-        logger.info(f"Staging GTS bufr2ioda mapping YAML files from {self.task_config.STAGE_GTS_YAML}")
-        gts_mapping_list = parse_j2yaml(self.task_config.STAGE_GTS_YAML, self.task_config)
-        FileHandler(gts_mapping_list).sync()
-
-        # stage FV3-JEDI fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_dict).sync()
-        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
-
-        # staging B error files
-        logger.info("Stage files for static background error")
-        berror_staging_dict = parse_j2yaml(self.task_config.STAGE_BERROR_YAML, self.task_config)
-        FileHandler(berror_staging_dict).sync()
-        logger.debug(f"Background error files:\n{pformat(berror_staging_dict)}")
-
-        # need output dir for diags and anl
-        logger.debug("Create empty output [anl, diags] directories to receive output from executable")
-        newdirs = [
-            os.path.join(self.task_config.DATA, 'anl'),
-            os.path.join(self.task_config.DATA, 'diags'),
-        ]
-        FileHandler({'mkdir': newdirs}).sync()
-
-        # if 00z, do SCF preprocessing
-        if self.task_config.cyc == 0:
-            ims_scf_to_ioda_staging_dict = parse_j2yaml(self.task_config.STAGE_IMS_SCF2IODA_YAML, self.task_config)
-            FileHandler(ims_scf_to_ioda_staging_dict).sync()
-            self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
-            # Check if file exists
-            ims_file = ims_scf_to_ioda_staging_dict['copy_opt'][0][1]
-            if os.path.exists(ims_file):
-                self.task_config.DO_IMS_SCF = True
+        # Stage files from COM
+        logger.info(f"Staging files from COM and creating output directories")
+        FileHandler(self.task_config.data_in).sync()
 
         # initialize JEDI variational application
-        logger.info(f"Initializing JEDI variational DA application")
+        logger.info(f"Initializing JEDI applications")
         self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=False)
+        if self.task_config.DO_IMS_SCF:
+            self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -181,10 +127,8 @@ class SnowAnalysis(Task):
     def finalize(self) -> None:
         """Performs closing actions of the Snow analysis task
         This method:
-        - tar and gzip the output diag files and place in COM/
-        - copy the generated YAML file from initialize to the COM/
-        - copy the analysis files to the COM/
-        - copy the increment files to the COM/
+        - compress and tar output diag files in COM
+        - save output files and YAMLs to COM
 
         Parameters
         ----------
@@ -192,67 +136,13 @@ class SnowAnalysis(Task):
             Instance of the SnowAnalysis object
         """
 
-        # ---- tar up diags
-        # path of output tar statfile
-        snowstat = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, f"{self.task_config.APREFIX}snowstat.tgz")
+        # Compress and tar diag files into COM directory
+        self.tar_diag_files(self.task_config.COMOUT_SNOW_ANALYSIS,
+                            f"{self.task_config.APREFIX}snowstat.tgz")
 
-        # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
-
-        logger.info(f"Compressing {len(diags)} diag files to {snowstat}")
-
-        # gzip the files first
-        logger.debug(f"Gzipping {len(diags)} diag files")
-        for diagfile in diags:
-            with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
-                f_out.writelines(f_in)
-
-        # open tar file for writing
-        logger.debug(f"Creating tar file {snowstat} with {len(diags)} gzipped diag files")
-        with tarfile.open(snowstat, "w|gz") as archive:
-            for diagfile in diags:
-                diaggzip = f"{diagfile}.gz"
-                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
-
-        # get list of yamls to copy to ROTDIR
-        yamls = glob.glob(os.path.join(self.task_config.DATA, '*snow*yaml'))
-
-        # copy full YAML from executable to ROTDIR
-        for src in yamls:
-            yaml_base = os.path.splitext(os.path.basename(src))[0]
-            dest_yaml_name = f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.{yaml_base}.yaml"
-            dest = os.path.join(self.task_config.COMOUT_CONF, dest_yaml_name)
-            logger.debug(f"Copying {src} to {dest}")
-            yaml_copy = {
-                'copy': [[src, dest]]
-            }
-            FileHandler(yaml_copy).sync()
-
-        logger.info("Copy analysis to COM")
-        bkgtimes = []
-        if self.task_config.DOIAU:
-            # need both beginning and middle of window
-            bkgtimes.append(self.task_config.SNOW_WINDOW_BEGIN)
-        bkgtimes.append(self.task_config.current_cycle)
-        anllist = []
-        for bkgtime in bkgtimes:
-            template = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
-            for itile in range(1, self.task_config.ntiles + 1):
-                filename = template.format(tilenum=itile)
-                src = os.path.join(self.task_config.DATA, 'anl', filename)
-                dest = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, filename)
-                anllist.append([src, dest])
-        FileHandler({'copy': anllist}).sync()
-
-        logger.info('Copy increments to COM')
-        template = f'snowinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
-        inclist = []
-        for itile in range(1, self.task_config.ntiles + 1):
-            filename = template.format(tilenum=itile)
-            src = os.path.join(self.task_config.DATA, 'anl', filename)
-            dest = os.path.join(self.task_config.COMOUT_SNOW_ANALYSIS, filename)
-            inclist.append([src, dest])
-        FileHandler({'copy': inclist}).sync()
+        # Save files to COM
+        logger.info(f"Saving files to COM")
+        FileHandler(self.task_config.data_out).sync()
 
     @logit(logger)
     def add_increments(self) -> None:
@@ -269,7 +159,7 @@ class SnowAnalysis(Task):
         bkgtimes = []
         if self.task_config.DOIAU:
             # want analysis at beginning and middle of window
-            bkgtimes.append(self.task_config.SNOW_WINDOW_BEGIN)
+            bkgtimes.append(self.task_config.WINDOW_BEGIN)
         bkgtimes.append(self.task_config.current_cycle)
         anllist = []
         for bkgtime in bkgtimes:
@@ -284,7 +174,7 @@ class SnowAnalysis(Task):
         if self.task_config.DOIAU:
             logger.info("Copying increments to beginning of window")
             template_in = f'snowinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
-            template_out = f'snowinc.{to_fv3time(self.task_config.SNOW_WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
+            template_out = f'snowinc.{to_fv3time(self.task_config.WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
             inclist = []
             for itile in range(1, self.task_config.ntiles + 1):
                 filename_in = template_in.format(tilenum=itile)
