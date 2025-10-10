@@ -616,11 +616,11 @@ MOM6_postdet() {
   # Copy increment (only when RERUN=NO)
   if [[ "${RERUN}" == "NO" ]]; then
     if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
-      cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocean_inc.nc" "${DATA}/INPUT/mom6_increment.nc"
+      cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.increment.ocean.nc" "${DATA}/INPUT/mom6_increment.nc"
     fi
 
-    if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-      cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocean_inc.nc" "${DATA}/INPUT/mom6_increment.nc"
+    if [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
+      cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.increment.ocean.nc" "${DATA}/INPUT/mom6_increment.nc"
     fi
   fi  # if [[ "${RERUN}" == "NO" ]]; then
 
