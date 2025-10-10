@@ -318,11 +318,13 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_verfrad']:
                         task_names[run] += ['verfrad']
 
+                # Only do analysis statistics for gdas cycles
+                if run == "gdas":
+                    if options['do_anlstat']:
+                        task_names[run] += ['anlstat']
+
                 if options['do_vminmon']:
                     task_names[run] += ['vminmon']
-
-                if options['do_anlstat']:
-                    task_names[run] += ['anlstat']
 
                 # gfs-only verification/tracking
                 if run == 'gfs':
