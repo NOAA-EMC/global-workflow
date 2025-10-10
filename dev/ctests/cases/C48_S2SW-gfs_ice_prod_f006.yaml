@@ -1,0 +1,54 @@
+{% set H_offset = '-6H' %}
+{% set H_timedelta = H_offset | to_timedelta %}
+{% set TEST_DATE_offset = TEST_DATE | add_to_datetime(H_timedelta) %}
+
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set cyc_offset = TEST_DATE_offset | strftime('%H') %}
+
+{% set PDY = TEST_DATE | to_YMD %}
+{% set PDY_offset = TEST_DATE_offset | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+
+# =============================================================================
+# C48_S2SW Ice Products Test Case
+# =============================================================================
+# This test validates the gfs_ice_prod_f006 task from the S2SW workflow.
+# Tests sea ice products generation at forecast hour f006 using the coupled
+# Sea-to-Sea-to-Wave (S2SW) system.
+#
+# Workflow Context:
+# - Task: gfs_ice_prod_f006 (from metatask gfs_ice_prod)
+# - Job: oceanice_products.sh with COMPONENT=ice
+# - FHR_LIST: 6 (single forecast hour)
+#
+# Source Logic: scripts/exglobal_oceanice_products.py
+# - Uses pygfs.task.oceanice_products.OceanIceProducts class
+# - Creates GRIB2 products on 5p00 grid (mx500 model resolution)
+# - Generates native netCDF subsets
+#
+# Configuration: parm/post/oceanice_products_gfs.yaml
+# - Ice section (lines 52-79): GRIB2 + native netCDF
+# - Uses 6-hour averaged ice history files as input
+# - Product grid determined by model_grid (mx500 → 5p00)
+# =============================================================================
+
+input_files:
+    mkdir:
+        - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ice/restart
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf
+
+    copy:
+        # Ice history files from forecast (6-hour averaged output for f006)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history/gfs.ice.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history/gfs.ice.t{{ cyc }}z.6hr_avg.f006.nc]
+
+output_files:
+    cmpfiles:
+        # Ice GRIB2 products at 5.0 degree resolution for f006 (mx500 model grid)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2.idx]
+
+        # Ice native netCDF products
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc]
