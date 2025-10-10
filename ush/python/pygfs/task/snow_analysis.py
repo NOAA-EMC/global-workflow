@@ -60,10 +60,10 @@ class SnowAnalysis(Analysis):
         # Check if SNOCVR or SNOMAD file exists, do SNOCVR_SNOMAD preprocessing
         _snocvr_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d')
         _snomad_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snomad.tm00.bufr_d')
-        if os.path.exists(_snocvr_file) or os.path.exists(_snomad_file):
-            _DO_SNOCVR_SNOMAD = True
-        else:
-            _DO_SNOCVR_SNOMAD = False
+        _DO_SNOCVR_SNOMAD = any(
+            ob == "snocvr_snomad" and (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file))
+            for ob in self.task_config.observations
+        )
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
@@ -168,15 +168,9 @@ class SnowAnalysis(Analysis):
         None
         """
 
-        # create a temporary dict of all keys needed in this method
-        localconf = AttrDict()
-        keys = ['DATA', 'PARMgfs', 'COMIN_OBS', 'OPREFIX', 'snow_prepobs_path']
-        for key in keys:
-            localconf[key] = self.task_config[key]
-
         # Read and render the prep_snocvr_snomad.yaml.j2
         logger.info(f"Reading {self.task_config.PREP_SNOCVR_SNOMAD_YAML}")
-        prep_snocvr_snomad_config = parse_j2yaml(self.task_config.PREP_SNOCVR_SNOMAD_YAML, localconf)
+        prep_snocvr_snomad_config = parse_j2yaml(self.task_config.PREP_SNOCVR_SNOMAD_YAML, self.task_config)
         logger.debug(f"{self.task_config.PREP_SNOCVR_SNOMAD_YAML}:\n{pformat(prep_snocvr_snomad_config)}")
 
         # define these locations in gdas/snow/prep/prep_snocvr_snomad.yaml.j2
@@ -186,10 +180,10 @@ class SnowAnalysis(Analysis):
         # Execute obsBuilder to create the combined snocvr and snomad in IODA format
         logger.info("Create the combined snocvr and snomad data in IODA format")
 
-        input_snocvr = f'{localconf.OPREFIX}snocvr.tm00.bufr_d'
-        input_snomad = f'{localconf.OPREFIX}snomad.tm00.bufr_d'
-        output_file = f'{localconf.OPREFIX}snocvr_snomad.tm00.nc'
-        if os.path.exists(f"{os.path.join(localconf.DATA, output_file)}"):
+        input_snocvr = f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d'
+        input_snomad = f'{self.task_config.OPREFIX}snomad.tm00.bufr_d'
+        output_file = f'{self.task_config.OPREFIX}snocvr_snomad.tm00.nc'
+        if os.path.exists(f"{os.path.join(self.task_config.DATA, output_file)}"):
             rm_p(output_file)
 
         logger.info("Link OBSBUILDER into DATA/")
@@ -201,10 +195,10 @@ class SnowAnalysis(Analysis):
 
         exe = Executable(exe_dest)
         if os.path.exists(input_snocvr):
-            exe.add_default_arg(["--input_snocvr", f"{os.path.join(localconf.DATA, input_snocvr)}"])
-        exe.add_default_arg(["--output", f"{os.path.join(localconf.DATA, output_file)}"])
+            exe.add_default_arg(["--input_snocvr", f"{os.path.join(self.task_config.DATA, input_snocvr)}"])
+        exe.add_default_arg(["--output", f"{os.path.join(self.task_config.DATA, output_file)}"])
         if os.path.exists(input_snomad):
-            exe.add_default_arg(["--input_snomad", f"{os.path.join(localconf.DATA, input_snomad)}"])
+            exe.add_default_arg(["--input_snomad", f"{os.path.join(self.task_config.DATA, input_snomad)}"])
         try:
             logger.debug(f"Executing {exe}")
             exe()
@@ -217,7 +211,7 @@ class SnowAnalysis(Analysis):
 
         # Ensure the IODA snow depth SNOCVR+SNOMAD file is produced by the obsBuilder
         # If so, copy to DATA/prep/
-        if not os.path.isfile(f"{os.path.join(localconf.DATA, output_file)}"):
+        if not os.path.isfile(f"{os.path.join(self.task_config.DATA, output_file)}"):
             logger.warning(f"{output_file} not produced - continuing without it.")
         else:
             logger.info(f"Copy {output_file} successfully generated")
