@@ -5,33 +5,25 @@
 
 echo "BEGIN: config.atmanl"
 
-export JCB_ALGO_YAML_VAR="{{ JCB_ALGO_YAML_VAR }}"
-export JCB_ALGO_YAML_FV3INC="{{ JCB_ALGO_YAML_FV3INC }}"
-
+export OBS_LIST_YAML="{{ OBS_LIST_YAML }}"
+export VAR_JEDI_TEST_YAML="{{ VAR_JEDI_TEST_YAML }}"
+export FV3INC_JEDI_TEST_YAML="{{ FV3INC_JEDI_TEST_YAML }}"
 export STATICB_TYPE="{{ STATICB_TYPE }}"
+export layout_x_atmanl="{{ LAYOUT_X_ATMANL }}"
+export layout_y_atmanl="{{ LAYOUT_Y_ATMANL }}"
+export io_layout_x="{{ IO_LAYOUT_X }}"
+export io_layout_y="{{ IO_LAYOUT_Y }}"
+
+export TASK_CONFIG_YAML="${PARMgfs}/gdas/atm/atm_det_config.yaml.j2"
+export BIAS_FILES_YAML="${PARMgfs}/gdas/atm/atm_bias_files.yaml.j2"
+
 export LOCALIZATION_TYPE="bump"
-export INTERP_METHOD='barycentric'
 
 if [[ ${DOHYBVAR} = "YES" ]]; then
     # shellcheck disable=SC2153
     export CASE_ANL=${CASE_ENS}
-    export BERROR_YAML="atmosphere_background_error_hybrid_${STATICB_TYPE}_${LOCALIZATION_TYPE}"
 else
     export CASE_ANL=${CASE}
-    export BERROR_YAML="atmosphere_background_error_static_${STATICB_TYPE}"
 fi
-
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/atm/atm_det_jedi_config.yaml.j2"
-export STAGE_CRTM_COEFF_YAML="${PARMgfs}/gdas/atm/atm_stage_crtm_coeff.yaml.j2"
-export STAGE_JEDI_FIX_YAML="${PARMgfs}/gdas/atm/atm_stage_jedi_fix.yaml.j2"
-export STAGE_BKG_YAML="${PARMgfs}/gdas/atm/atm_det_stage_bkg.yaml.j2"
-export STAGE_BERROR_YAML="${PARMgfs}/gdas/atm/atm_det_stage_berror_${STATICB_TYPE}.yaml.j2"
-export STAGE_FV3ENS_YAML="${PARMgfs}/gdas/atm/atm_det_stage_fv3ens.yaml.j2"
-
-export layout_x_atmanl="{{ LAYOUT_X_ATMANL }}"
-export layout_y_atmanl="{{ LAYOUT_Y_ATMANL }}"
-
-export io_layout_x="{{ IO_LAYOUT_X }}"
-export io_layout_y="{{ IO_LAYOUT_Y }}"
 
 echo "END: config.atmanl"

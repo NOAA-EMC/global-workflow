@@ -18,6 +18,10 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_CONF:COM_CONF_TMPL \
     COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
 
+mkdir -m 755 -p "${COMOUT_CHEM_ANALYSIS}"
+mkdir -m 755 -p "${COMOUT_ATMOS_RESTART}"
+mkdir -m 755 -p "${COMOUT_CONF}"
+
 ###############################################################
 # Run relevant script
 

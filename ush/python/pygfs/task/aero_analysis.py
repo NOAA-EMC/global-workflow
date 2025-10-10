@@ -1,28 +1,24 @@
 #!/usr/bin/env python3
 
 import os
-import glob
-import gzip
-import tarfile
 from logging import getLogger
-from pprint import pformat
 from netCDF4 import Dataset
 from typing import Dict, List
-
-from wxflow import (AttrDict,
-                    FileHandler,
-                    add_to_datetime, to_fv3time, to_timedelta,
-                    to_fv3time,
-                    Task,
-                    YAMLFile, parse_j2yaml,
-                    logit)
+from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
+from wxflow import (
+    AttrDict,
+    FileHandler,
+    to_fv3time, to_timedelta,
+    YAMLFile, parse_j2yaml,
+    logit
+)
 import numpy as np
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AerosolAnalysis(Task):
+class AerosolAnalysis(Analysis):
     """
     Class for JEDI-based global aerosol analysis tasks
     """
@@ -48,36 +44,40 @@ class AerosolAnalysis(Task):
 
         _res = int(self.task_config['CASE'][1:])
         _res_anl = int(self.task_config['CASE_ANL'][1:])
-        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
 
-        # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
+        if self.task_config.DOIAU:
+            _anl_time = self.task_config.WINDOW_BEGIN
+        else:
+            _anl_time = self.task_config.current_cycle
+
+        _bkg_times = []
+        for hour in self.task_config.aero_bkg_times:
+            _bkg_times.append(self.task_config.WINDOW_BEGIN + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2)
+
+        # Extend task_config with variables repeatedly used across this class
+        self.task_config.update(AttrDict(
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
-                'npz': self.task_config.LEVS - 1,
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
                 'npz_anl': self.task_config['LEVS'] - 1,
-                'AERO_WINDOW_BEGIN': _window_begin,
-                'AERO_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
-                'aero_bkg_fhr': [fh - 3 for fh in self.task_config['aero_bkg_times']],
-                'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gcdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'aero_obsdatain_path': f"{self.task_config.DATA}/obs/",
-                'aero_obsdataout_path': f"{self.task_config.DATA}/diags/",
-                'BKG_TSTEP': "PT3H"  # FGAT
+                'npz': self.task_config.LEVS - 1,
+                'BKG_TSTEP': "PT3H",  # FGAT
+                'BERROR_YAML': f'aero_background_error_static_{self.task_config.STATICB_TYPE}',
+                'AERO_BMATRIX_RESCALE_YAML': 'aero_gen_bmatrix_rescale_default.yaml.j2',
+                'anl_time': _anl_time,
+                'bkg_times': _bkg_times,
             }
-        )
+        ))
 
-        # Extend task_config with local_dict
-        self.task_config = AttrDict(**self.task_config, **local_dict)
+        # Extend task_config with content of config yaml for this task
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of Jedi objects
         expected_keys = ['aeroanlvar']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -85,55 +85,18 @@ class AerosolAnalysis(Task):
 
         This method will initialize a global aerosol analysis using JEDI.
         This includes:
-        - initialize JEDI applications
-        - staging observation files
-        - staging bias correction files
-        - staging CRTM fix files
-        - staging FV3-JEDI fix files
-        - staging B error files
-        - staging model backgrounds
-        - creating output directories
+        - stage input files from COM and create output directories
+        - extract bias corrections from tar files
+        - initialize JEDI application
         """
 
-        # stage observations
-        logger.info(f"Staging list of observation files generated from JEDI config")
-        obs_dict = self.jedi_dict['aeroanlvar'].render_jcb(self.task_config, 'aero_obs_staging')
-        FileHandler(obs_dict).sync()
-        logger.debug(f"Observation files:\n{pformat(obs_dict)}")
+        # Stage files from COM
+        logger.info(f"Staging files from COM")
+        FileHandler(self.task_config.data_in).sync()
 
-        # # stage bias corrections
-        logger.info(f"Staging list of bias correction files")
-        bias_dict = self.jedi_dict['aeroanlvar'].render_jcb(self.task_config, 'aero_bias_staging')
-
-        if bias_dict['copy'] is None:
-            logger.info(f"No bias correction files to stage")
-        else:
-            try:
-                bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
-                FileHandler(bias_dict).sync()
-                logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
-
-                # extract bias corrections
-                Jedi.extract_tar_from_filehandler_dict(bias_dict)
-            except FileNotFoundError:
-                logger.error(f"Bias correction files or directories do not exist:\n{pformat(bias_dict)}")
-
-        # stage CRTM fix files
-        logger.info(f"Staging CRTM fix files from {self.task_config.STAGE_CRTM_COEFF_YAML}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.STAGE_CRTM_COEFF_YAML, self.task_config)
-        FileHandler(crtm_fix_dict).sync()
-        logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
-
-        # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_dict).sync()
-        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
-
-        # stage files from COM and create working directories
-        logger.info(f"Staging files prescribed from {self.task_config.STAGE_YAML}")
-        stage_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
-        FileHandler(stage_dict).sync()
+        # Extract bias corrections from tar files
+        logger.info(f"Extracting bias corrections from tar files")
+        self.untar_bias_corrections()
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
@@ -161,56 +124,28 @@ class AerosolAnalysis(Task):
 
         This method will finalize a global aerosol analysis using JEDI.
         This includes:
-        - tarring up output diag files and place in ROTDIR
-        - copying the generated YAML file from initialize to the ROTDIR
-        - copying the guess files to the ROTDIR
-        - applying the increments to the original RESTART files
-        - moving the increment files to the ROTDIR
+        - apply increments to the original RESTART files
+        - compress and tar output diag files in COM
+        - tar radiative bias correction files in COM
+        - save output files and YAMLs to COM
 
         """
-        # ---- tar up diags
-        # path of output tar statfile
-        logger.info('Preparing observation space diagnostics for archiving')
-        aerostat = os.path.join(self.task_config.COMOUT_CHEM_ANALYSIS, f"{self.task_config['APREFIX']}aerostat.tgz")
-
-        # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc'))
-
-        # gzip the files first
-        for diagfile in diags:
-            logger.info(f'Adding {diagfile} to tar file')
-            with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
-                f_out.writelines(f_in)
 
         # ---- add increments to RESTART files
         logger.info('Adding increments to RESTART files')
         self._add_fms_cube_sphere_increments()
 
-        # tar up bias correction files
-        bfile = f"{self.task_config.APREFIX}aero_varbc_params.tar"
-        aertar = os.path.join(self.task_config.COMOUT_CHEM_ANALYSIS, bfile)
+        # Compress and tar diag files in COM directory
+        self.tar_diag_files(self.task_config.COMOUT_CHEM_ANALYSIS,
+                            f"{self.task_config['APREFIX']}aerostat.tgz")
 
-        # get lists of aerosol bias correction files to add to tarball
-        satlist = glob.glob(os.path.join(self.task_config.DATA, 'bc', '*satbias*nc'))
+        # Tar radiative bias correction files into COM directory
+        self.tar_radiative_bias_corrections(self.task_config.COMOUT_CHEM_ANALYSIS,
+                                            f"{self.task_config.APREFIX}aero_varbc_params.tar")
 
-        # copy files back to COM
-        logger.info(f"Copying files to COM based on {self.task_config.SAVE_YAML}")
-        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
-        FileHandler(save_dict).sync()
-
-        # tar aerosol bias correction files to ROTDIR
-        logger.info(f"Creating aerosol bias correction tar file {aertar}")
-        with tarfile.open(aertar, 'w') as aerbcor:
-            for satfile in satlist:
-                aerbcor.add(satfile, arcname=os.path.basename(satfile))
-            logger.info(f"Add {aerbcor.getnames()}")
-
-        # open tar file for writing
-        with tarfile.open(aerostat, "w|gz") as archive:
-            for diagfile in diags:
-                diaggzip = f"{diagfile}.gz"
-                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
-        logger.info(f'Saved diags to {aerostat}')
+        # Save files from COM
+        logger.info(f"Saving files to COM")
+        FileHandler(self.task_config.data_out).sync()
 
     def clean(self):
         super().clean()
