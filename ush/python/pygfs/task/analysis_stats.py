@@ -282,4 +282,3 @@ class AnalysisStats(Task):
         logger.info(f"Copying {iodastatzipfile} to {dest}")
         FileHandler({'copy_opt': [[iodastatzipfile, dest]]}).sync()
         logger.info("Finished copying GSI IODA tar file to COMOUT")
-
