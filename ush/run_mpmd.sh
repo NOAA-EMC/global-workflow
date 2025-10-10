@@ -28,8 +28,6 @@
 #
 ################################################################################
 
-source "${HOMEgfs}"/dev/ush/load_modules.sh
-
 cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in MPMD/serial mode"}
 
 # If USE_CFP is not set, run in serial mode

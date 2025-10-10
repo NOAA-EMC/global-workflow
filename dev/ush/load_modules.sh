@@ -90,6 +90,7 @@ case "${MODULE_TYPE}" in
       module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
       module load gfsutils_container.intel
       module load wgrib2
+      module load gettext
       module load prod_util
       export UTILROOT=${prod_util_ROOT}
     else
@@ -181,6 +182,7 @@ case "${MODULE_TYPE}" in
       module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
       module load gfsutils_container.intel
       module load wgrib2
+      module load gettext
       module load prod_util
       export UTILROOT=${prod_util_ROOT}
     else

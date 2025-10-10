@@ -47,7 +47,8 @@ fi
 #   pdlib=pdlib_OFF
 #fi
 
-for nm in gint grib grid ounf ounp outf outp prep prnc
+#for nm in gint grib grid ounf ounp outf outp prep prnc
+for nm in gint grib ounf ounp outf outp prep prnc
 do
    model=ww3_${nm}
   #echo "model: $model"

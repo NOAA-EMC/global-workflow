@@ -48,6 +48,7 @@ fi
 set -x
 
 mkdir -p "${rundir}"
+mkdir -p "${HOMEDIR}"/exec
 mkdir -p "${HOMEDIR}"/ush/container
 
 cd "${HOMEDIR}/dev/workflow" || exit 1
