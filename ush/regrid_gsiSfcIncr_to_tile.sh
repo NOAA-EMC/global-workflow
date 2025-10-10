@@ -130,7 +130,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 	      fi
 
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.tile${n}.nc"
+            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i006.tile${n}.nc"
         done
 	    
     fi

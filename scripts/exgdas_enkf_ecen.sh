@@ -115,42 +115,22 @@ for imem in $(seq 1 ${NMEM_ENS}); do
 
    ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atm.f00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
    if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
-      if [[ ${FHR} -eq 6 ]]; then
-         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}anl.atm.nc" "./atmanl_${memchar}"
-      else
-         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}anl.atm.i00${FHR}.nc" "./atmanl_${memchar}"
-      fi
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}analysis.atm.i00${FHR}.nc" "./atmanl_${memchar}"
    fi
    mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
-   if [[ ${FHR} -eq 6 ]]; then
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}increment.atm.nc" "./atminc_${memchar}"
-   else
       ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}increment.atm.i00${FHR}.nc" "./atminc_${memchar}"
-   fi
    if [[ ${RECENTER_ENKF} = "YES" ]]; then
       if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
-         if [[ ${FHR} -eq 6 ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recenter.anl.atm.nc" "./ratmanl_${memchar}"
-         else
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recenter.anl.i00${FHR}.nc" "./ratmanl_${memchar}"
-         fi
-     else
-         if [[ ${FHR} -eq 6 ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recenter.increment.atm.nc" "./ratminc_${memchar}"
-         else
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recenter.increment.atm.i00${FHR}.nc" "./ratminc_${memchar}"
-         fi
-     fi
+         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recentered_analysis.atm.i006.nc" "./ratmanl_${memchar}"
+      else
+         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recentered_increment.atm.i00${FHR}.nc" "./ratminc_${memchar}"
+      fi
    fi
 done
 
 if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
    # Link ensemble mean analysis
-   if [[ ${FHR} -eq 6 ]]; then
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensres.anl.atm.nc" "./atmanl_ensmean"
-   else
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean.anl.atm.i00${FHR}.nc" "./atmanl_ensmean"
-   fi
+   ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean.anl.atm.i00${FHR}.nc" "./atmanl_ensmean"
 
    # Compute ensemble mean analysis
    DATAPATH="./"
@@ -169,11 +149,7 @@ if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
    fi
 else
    # Link ensemble mean increment
-   if [[ ${FHR} -eq 6 ]]; then
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean.increment.atm.nc" "./atminc_ensmean"
-   else
-      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean.increment.atm.i00${FHR}.nc" "./atminc_ensmean"
-   fi
+   ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean.increment.atm.i00${FHR}.nc" "./atminc_ensmean"
 
    # Compute ensemble mean increment
    DATAPATH="./"
@@ -235,13 +211,8 @@ fi
 if [[ ${RECENTER_ENKF} = "YES" ]]; then
 
    # GSI EnVar analysis
-   if [[ ${FHR} -eq 6 ]]; then
-     ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}anl.atm.nc"
-     ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}ensres.anl.atm.nc"
-   else
-     ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}anl.atm.i00${FHR}.nc"
-     ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}ensres.anl.atm.i00${FHR}.nc"
-   fi
+   ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}analysis.atm.i00${FHR}.nc"
+   ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}ensres_analysis.atm.i00${FHR}.nc"
 
    # if we already have a ensemble resolution GSI analysis then just link to it
    if [[ -f ${ATMANL_GSI_ENSRES} ]]; then

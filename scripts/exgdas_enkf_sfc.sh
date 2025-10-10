@@ -125,7 +125,7 @@ else
 fi
 
 if [[ "${DONST}" == "YES" ]]; then
-  export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}anl.dtf.nc}
+  export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}analysis.dtf.i006.nc}
 else
   export NST_FILE="NULL"
 fi
@@ -202,7 +202,7 @@ if [[ "$DOIAU" == "YES" ]]; then
             cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-                 cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/sfci00${LFHR}.tile${n}.nc" \
+                 cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${LFHR}.tile${n}.nc" \
                    "${DATA}/soil_xainc.${cmem}"
             fi
 
@@ -277,7 +277,7 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-                 cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/sfci00${LFHR}.tile${n}.nc" \
+                 cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${LFHR}.tile${n}.nc" \
                    "${DATA}/soil_xainc.${cmem}"
             fi
         done

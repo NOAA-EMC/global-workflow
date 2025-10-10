@@ -19,12 +19,12 @@ analysis:
   data_in:
     copy:
       - ["{{ PARMgfs }}/post/gfs/postxconfig-NT-gfs-anl.txt", "{{ DATA }}/postxconfig-NT.txt"]
-      - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.anl.atm.nc", "{{ DATA }}/{{ atmos_filename }}"]
-      - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.anl.sfc.nc", "{{ DATA }}/{{ flux_filename }}"]
+      - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.atm.i006.nc", "{{ DATA }}/{{ atmos_filename }}"]
+      - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.sfc.i006.nc", "{{ DATA }}/{{ flux_filename }}"]
   data_out:
     copy:
-      - ["{{ DATA }}/GFSPRS.GrbF00", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.anl.grib2"]
-      - ["{{ DATA }}/GFSPRS.GrbF00.idx", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.anl.grib2.idx"]
+      - ["{{ DATA }}/GFSPRS.GrbF00", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.analysis.grib2"]
+      - ["{{ DATA }}/GFSPRS.GrbF00.idx", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.analysis.grib2.idx"]
 
 forecast:
   config:
@@ -36,8 +36,8 @@ forecast:
       {% else %}
       - ["{{ PARMgfs }}/post/gfs/postxconfig-NT-gfs-two.txt", "{{ DATA }}/postxconfig-NT.txt"]
       {% endif %}
-      - ["{{ COMIN_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atm.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ atmos_filename }}"]
-      - ["{{ COMIN_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfc.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/{{ flux_filename }}"]
+      - ["{{ COMIN_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.atm.f{{ '%03d' % forecast_hour }}.i006.nc", "{{ DATA }}/{{ atmos_filename }}"]
+      - ["{{ COMIN_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfc.f{{ '%03d' % forecast_hour }}.i006.nc", "{{ DATA }}/{{ flux_filename }}"]
   data_out:
     copy:
       - ["{{ DATA }}/GFSPRS.GrbF{{ '%02d' % forecast_hour }}", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.f{{ '%03d' % forecast_hour }}.grib2"]

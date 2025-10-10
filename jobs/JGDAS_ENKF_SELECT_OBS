@@ -66,10 +66,10 @@ fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
 # Deterministic analysis and increment files
-export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}anl.sfc.nc"
-export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}anl.dtf.nc"
-export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}anl.atm.nc"
-export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.atm.nc"
+export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.sfc.i006.nc"
+export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.dtf.i006.nc"
+export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.atm.i006.nc"
+export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.atm.i006.nc"
 
 # Guess Bias correction coefficients related to control
 export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias.txt
