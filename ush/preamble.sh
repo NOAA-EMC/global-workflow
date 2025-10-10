@@ -189,16 +189,6 @@ else
     export PYEXTRAARGS=""
 fi
 
-if [[ "${RUN_WITH_CONTAINER}" == "YES" ]]; then
-    # if within container, will run python executbale inside container,
-    # also need to tell some scripts that it is run in container, with "-c" option.
-    export PYCMD="${HOMEgfs}"/exec/run_python.sh
-    export PYEXTRAARGS=" -c -v"
-else
-    export PYCMD=python
-    export PYEXTRAARGS=""
-fi
-
 # Turn on our settings
 export SHELLOPTS
 declare -xf set_strict
