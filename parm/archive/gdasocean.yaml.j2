@@ -4,10 +4,10 @@ gdasocean:
     # the FHMIN-hour forecast is skipped when DOIAU="NO"
     required:
         {% if DOIAU %}
-        - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ RUN }}.t{{ cycle_HH }}z.ocean_inst.f{{ '%03d' % FHMIN }}.nc"
+        - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ RUN }}.t{{ cycle_HH }}z.inst.f{{ '%03d' % FHMIN }}.nc"
         {% endif %}
         {% for fhr in range(FHMIN + FHOUT_OCN, FHMAX + 1, FHOUT_OCN) %}
-        - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ RUN }}.t{{ cycle_HH }}z.ocean_inst.f{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ RUN }}.t{{ cycle_HH }}z.inst.f{{ '%03d' % fhr }}.nc"
         {% endfor %}
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.MOM_input'
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/MOM_parameter_doc.all'

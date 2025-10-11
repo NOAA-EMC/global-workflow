@@ -683,7 +683,7 @@ class GFSTasks(Tasks):
         dmpdir = self._configs['prepoceanobs']["DMPDIR"]
 
         deps = []
-        data = f'{ocean_hist_path}/gdas.t@Hz.ocean_inst.f009.nc'
+        data = f'{ocean_hist_path}/gdas.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/{self.run}.t@Hz.obsforge_marine_status.log'
@@ -742,7 +742,7 @@ class GFSTasks(Tasks):
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
 
         deps = []
-        data = f'{ocean_hist_path}/gdas.t@Hz.ocean_inst.f009.nc'
+        data = f'{ocean_hist_path}/gdas.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
@@ -1221,10 +1221,10 @@ class GFSTasks(Tasks):
                                    'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.ocean_6hr_avg.f#fhr3_next#.nc'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_next#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.run}.t@Hz.ice_6hr_avg.f#fhr3_last#.nc'}}
+                                 'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_last#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
