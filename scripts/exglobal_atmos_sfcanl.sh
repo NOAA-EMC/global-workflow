@@ -29,7 +29,7 @@ NTHREADS_CYCLE="${NTHREADS_CYCLE:-24}"
 APRUN_CYCLE="${APRUN_CYCLE:-${APRUN:-""}}"
 
 # Surface cycle related parameters
-export SNOW_NUDGE_COEFF="${SNOW_NUDGE_COEFF:-'-2.'}"
+export SNOW_NUDGE_COEFF="${SNOW_NUDGE_COEFF:--2.}"
 export CYCLVARS="${CYCLVARS:-""}"
 export FHOUR="${FHOUR:-0}"
 export DELTSFC="${DELTSFC:-6}"

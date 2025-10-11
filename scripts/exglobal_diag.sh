@@ -51,6 +51,10 @@ if [[ "${netcdf_diag}" == ".true." ]]; then
     DIAG_SUFFIX="${DIAG_SUFFIX}.nc4"
 fi
 DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
+COMPRESS_SUFFIX=${COMPRESS_SUFFIX:-""}
+if [[ ${DIAG_COMPRESS} == "YES" ]]; then
+    COMPRESS_SUFFIX="${COMPRESS_SUFFIX}.gz"
+fi
 DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
@@ -88,14 +92,9 @@ if [[ "${GENDIAG}" == "YES" ]]; then
     diagfile[2]="${OZNSTAT}"
     diagfile[3]="${RADSTAT}"
 
-    numfile[0]=0
-    numfile[1]=0
-    numfile[2]=0
-    numfile[3]=0
-
     # Set diagnostic file prefix based on lrun_subdirs variable
     if [[ "${lrun_subdirs}" == ".true." ]]; then
-        prefix=" dir.*/"
+        prefix="dir.*/"
     else
         prefix="pe*"
     fi
@@ -113,18 +112,19 @@ cyc=\$7
 DIAG_COMPRESS=\$8
 DIAG_SUFFIX=\$9
 if [[ "\${lrun_subdirs}" == ".true." ]]; then
-   prefix=" dir.*/"
+    prefix="dir.*/"
 else
-   prefix="pe*"
+    prefix="pe*"
 fi
-file=diag_\${type}_\${string}.\${PDY}\${cyc}\${DIAG_SUFFIX}
-if [[ "\${binary_diag}" == ".true." ]]; then
-   cat \${prefix}\${type}_\${loop}* > \$file
-else
-   ${CATEXEC} -o \$file \${prefix}\${type}_\${loop}*
+count=\$(find -L ./ -path "./\${prefix}\${type}_\${loop}*" -type f -printf '.' | wc -c)
+file="diag_\${type}_\${string}.\${PDY}\${cyc}\${DIAG_SUFFIX}"
+if [[ "\${binary_diag}" == ".true." ]] || [[ "\${count}" -eq 1 ]]; then
+    cat \${prefix}\${type}_\${loop}* > "\${file}"
+else    
+    ${CATEXEC} -o "\${file}" \${prefix}\${type}_\${loop}*
 fi
 if [[ "\${DIAG_COMPRESS}" == "YES" ]]; then
-   ${COMPRESS} "\${file}"
+    ${COMPRESS} "\${file}"
 fi
 EOFdiag
     chmod 755 "${DATA}/diag.sh"
@@ -152,18 +152,10 @@ EOFdiag
         for ((n = 0; n < ${#diagtype[@]}; n++)); do
             for type in ${diagtype[n]}; do
                 # shellcheck disable=SC2312
-                count=$(find ./ -name "${prefix}${type}_${loop}*" -type f -printf '.' | wc -c)
-                if [[ "${count}" -gt 1 ]]; then
+                count=$(find -L ./ -path "./${prefix}${type}_${loop}*" -type f -printf '.' | wc -c)
+                if [[ "${count}" -gt 0 ]]; then
                     echo "${DATA}/diag.sh ${lrun_subdirs} ${binary_diag} ${type} ${loop} ${string} ${PDY} ${cyc} ${DIAG_COMPRESS} ${DIAG_SUFFIX}" | tee -a "${DATA}/mp_diag.sh"
-                    echo "diag_${type}_${string}.${PDY}${cyc}*" >> "${diaglist[n]}"
-                    numfile[n]=$((numfile[n] + 1))
-                elif [[ "${count}" -eq 1 ]]; then
-                    cat "${prefix}${type}_${loop}"* > "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}"
-                    if [[ "${DIAG_COMPRESS}" == "YES" ]]; then
-                        ${COMPRESS} "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}"
-                    fi
-                    echo "diag_${type}_${string}.${PDY}${cyc}"* >> "${diaglist[n]}"
-                    numfile[n]=$((numfile[n] + 1))
+                    echo "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX}${COMPRESS_SUFFIX}" >> "${diaglist[n]}"
                 fi
             done
         done
@@ -172,12 +164,15 @@ EOFdiag
     done
 
     # We should already be in $DATA, but extra cd to be sure.
-    cd "${DATA}" || exit
+    cd "${DATA}" || exit 1
 
-    chmod 755 "${DATA}/mp_diag.sh"
-    "${USHgfs}/run_mpmd.sh" "${DATA}/mp_diag.sh" && true
-    # Delay err exit to avoid rstprod leakage
-    export err=$?
+    export err=0
+    if [[ -s "${DATA}/mp_diag.sh" ]]; then
+        chmod 755 "${DATA}/mp_diag.sh"
+        "${USHgfs}/run_mpmd.sh" "${DATA}/mp_diag.sh" && true
+        # Delay err exit to avoid rstprod leakage
+        err=$?
+    fi
 
     # Restrict diagnostic files containing rstprod data
     if [[ "${CHGRP_RSTPROD}" == "YES" ]]; then
@@ -205,7 +200,7 @@ EOFdiag
             if [[ ! -s "${diagfile[n]}" ]]; then
                 TAROPTS="-cvf"
             fi
-            if [[ ${numfile[n]} -gt 0 ]]; then
+            if [[ -s "${diaglist[n]}" ]]; then
                 tar "${TAROPTS}" "${diagfile[n]}" -T "${diaglist[n]}"
                 export err=$?
                 if [[ ${err} -ne 0 ]]; then
