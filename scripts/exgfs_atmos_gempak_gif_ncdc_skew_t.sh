@@ -43,7 +43,7 @@ fi
 
 cd "${DATA}" || exit 1
 
-export RSHPDY="${PDY:4:}${PDY:2:2}"
+export RSHPDY="${PDY:4}${PDY:2:2}"
 
 cpreq "${HOMEgfs}/gempak/dictionaries/sonde.land.tbl" sonde.land.tbl
 cpreq "${HOMEgfs}/gempak/dictionaries/metar.tbl" metar.tbl
