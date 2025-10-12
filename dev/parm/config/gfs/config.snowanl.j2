@@ -12,12 +12,8 @@ source "${EXPDIR}/config.resources" snowanl
 export APPLY_INCR_EXE="${EXECgfs}/gdas_apply_incr.x"
 export APPLY_INCR_NML_TMPL="${PARMgfs}/gdas/snow/apply_incr_nml.j2"
 
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/snow/snow_det_jedi_config.yaml.j2"
-export STAGE_JEDI_FIX_YAML="${PARMgfs}/gdas/snow/snow_stage_jedi_fix.yaml.j2"
-export STAGE_BKG_YAML="${PARMgfs}/gdas/snow/snow_det_stage_bkg.yaml.j2"
-export STAGE_BERROR_YAML="${PARMgfs}/gdas/snow/snow_stage_berror.yaml.j2"
-export STAGE_GTS_YAML="${PARMgfs}/gdas/snow/obs/config/bufr2ioda_mapping.yaml.j2"
-export STAGE_IMS_SCF2IODA_YAML="${PARMgfs}/gdas/snow/snow_stage_ims_scf2ioda.yaml.j2"
+export TASK_CONFIG_YAML="${PARMgfs}/gdas/snow/snow_det_config.yaml.j2"
+export OBS_LIST_YAML="${PARMgfs}/gdas/snow/snow_obs_list.yaml.j2"
 
 export io_layout_x="{{ IO_LAYOUT_X }}"
 export io_layout_y="{{ IO_LAYOUT_Y }}"
