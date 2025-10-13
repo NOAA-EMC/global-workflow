@@ -2,7 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products"
 
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
@@ -28,7 +27,7 @@ fi
 # Final processing
 ##############################################
 if [[ -e "${pgmout}" ]]; then
-  cat "${pgmout}"
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -38,6 +37,5 @@ cd "${DATAROOT}" || exit 1
 if [[ "${KEEPDATA:-NO}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0
