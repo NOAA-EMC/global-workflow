@@ -75,3 +75,29 @@ EOF_RUN_PYTHON
 sed -i 's/RUN_WITH_CONTAINER=NO/RUN_WITH_CONTAINER=YES/g' "${HOMEgfs}/ush/preamble.sh"
 chmod +x "${exec_python_script}"
 chmod +x "${run_python_script}"
+
+for item in JGLOBAL_WAVE_INIT
+do
+  exec_script="${HOMEgfs}"/exec/"${item}"
+
+cat > "${exec_script}" << EOF_SCRIPT
+#!/bin/bash
+#Need these lines on AWS to run more than one node.
+#export I_MPI_DEBUG=10
+#export I_MPI_FABRICS=shm:ofi
+#export I_MPI_OFI_PROVIDER=tcp
+#export FI_PROVIDER=tcp
+#export FI_TCP_IFACE=eth0
+
+ LD_LIBRARY_PATH=\$(dirname "${container}")
+ export LD_LIBRARY_PATH
+
+ singularity exec \\
+        ${bindings} \\
+        ${container} \\
+        ${HOMEgfs}/jobs/${item}
+EOF_SCRIPT
+
+  chmod +x "${exec_script}"
+done
+

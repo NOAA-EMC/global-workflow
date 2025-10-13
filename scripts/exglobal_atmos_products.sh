@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
+source "${HOMEgfs}/dev/ush/load_modules.sh"
 
 # Scripts used
 INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/interp_atmos_master.sh"}

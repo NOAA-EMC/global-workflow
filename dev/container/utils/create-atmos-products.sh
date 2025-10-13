@@ -42,12 +42,12 @@ fi
 eap_script="${HOMEgfs}"/exec/exglobal_atmos_products.sh
 cat > "${eap_script}" << EOF_ATMOS_PRODUCTS
 #!/bin/bash
- LD_LIBRARY_PATH=\$(dirname ${container})
+ LD_LIBRARY_PATH=\$(dirname ${HOMEgfs})
  export LD_LIBRARY_PATH
 
  singularity exec \\
         ${bindings} \\
-        ${container}? \\
+        ${container} \\
         ${HOMEgfs}/scripts/exglobal_atmos_products.sh "\$@"
 EOF_ATMOS_PRODUCTS
 
