@@ -43,7 +43,9 @@ if [[ "${DO_LAND_IAU}" = ".true." ]]; then
     IFS=',' read -ra landifhrs <<< "${IAUFHRS}"
 fi
 export in_fname="'enkfgdas.sfci'"
-export dir_mask_in="'${DATA}/'"
+export out_fname="'sfci'"
+export in_dir=""
+export dir_mask_in="'./'"
 export fname_mask_in="'NULL'"
 export ires=${LONB_CASE_IN}
 export jres=${LATB_CASE_IN}
@@ -82,7 +84,6 @@ for n in $(seq 1 "${ntiles}"); do
           "${DATA}/${CASE_OUT}_grid.tile${n}.nc"
 done
 
-export in_dir=""
 for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
     memchar="mem${cmem}"
