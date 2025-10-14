@@ -228,10 +228,11 @@ class AnalysisStats(Task):
         diag_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ges')
         diag_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi_anl')
         diag_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi_diags')
-        FileHandler({'mkdir': [diag_dir_ges_path, diag_dir_anl_path]}).sync()
+        FileHandler({'mkdir': [diag_dir_path, diag_dir_ges_path, diag_dir_anl_path]}).sync()
         diag_ioda_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda_ges')
         diag_ioda_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda_anl')
-        FileHandler({'mkdir': [diag_ioda_dir_ges_path, diag_ioda_dir_anl_path]}).sync()
+        output_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda')
+        FileHandler({'mkdir': [diag_ioda_dir_ges_path, diag_ioda_dir_anl_path, output_dir_path]}).sync()
         diag_tar_copy_list = []
         for diag in diag_tars:
             input_tar_basename = f"{self.task_config.APREFIX}{diag}"
@@ -273,13 +274,25 @@ class AnalysisStats(Task):
         gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_ges_path, DiagDir=diag_dir_ges_path)
         gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_anl_path, DiagDir=diag_dir_anl_path)
 
+        # now we need to combine the two sets of ioda files into one file
+        # by adding certain groups from the anl file to the ges file
+        ges_ioda_files = glob.glob(os.path.join(diag_ioda_dir_ges_path, '*nc4'))
+        for ges_ioda_file in ges_ioda_files:
+            anl_ioda_file = ges_ioda_file.replace('_ges_', '_anl_').replace(diag_ioda_dir_ges_path, diag_ioda_dir_anl_path)
+            if os.path.exists(anl_ioda_file):
+                logger.info(f"Combining {ges_ioda_file} and {anl_ioda_file}")
+                out_ioda_file = os.path.join(output_dir_path, os.path.basename(ges_ioda_file).replace('_ges_', '_gsi_'))
+                gsid.combine_ges_anl_ioda(ges_ioda_file, anl_ioda_file, out_ioda_file)
+            else:
+                logger.warning(f"WARNING: {anl_ioda_file} does not exist to combine with {ges_ioda_file}")
+                logger.warning("Skipping this file ...")
+
         # Tar up the ioda files
-        iodastatzipfile = os.path.join(self.task_config.DATA, 'atmos_gsi_diags',
+        iodastatzipfile = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda',
                                        f"{self.task_config.APREFIX}atmos_gsi_ioda_diags.tgz")
         logger.info(f"Compressing GSI IODA files to {iodastatzipfile}")
         # get list of iodastat files to put in tarball
-        iodastatfiles = glob.glob(os.path.join(diag_ioda_dir_ges_path, '*nc4')) + \
-            glob.glob(os.path.join(diag_ioda_dir_anl_path, '*nc4'))
+        iodastatfiles = glob.glob(os.path.join(output_dir_path, '*nc4'))
         logger.info(f"Gathering {len(iodastatfiles)} GSI IODA files to {iodastatzipfile}")
         with tarfile.open(iodastatzipfile, "w|gz") as archive:
             for targetfile in iodastatfiles:
