@@ -149,7 +149,7 @@ if [[ ${DO_CALC_INCREMENT} = "YES" ]]; then
    fi
 else
    # Link ensemble mean increment
-   ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean.increment.atm.i00${FHR}.nc" "./atminc_ensmean"
+   ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_increment.atm.i00${FHR}.nc" "./atminc_ensmean"
 
    # Compute ensemble mean increment
    DATAPATH="./"
