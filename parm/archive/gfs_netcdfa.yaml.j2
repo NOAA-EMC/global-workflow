@@ -5,7 +5,7 @@ gfs_netcdfa:
     required:
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
-        {% if DO_JEDIATMVAR %}
+        {% if DO_JEDIATMVAR and not (ATMINC_GRID == 'gaussian') %}
         {% for itile in range(6) %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc"
         {% endfor %}

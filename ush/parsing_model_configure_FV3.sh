@@ -32,7 +32,7 @@ local WRITE_GROUP=${WRITE_GROUP:-1}
 local WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-24}
 local ITASKS=1
 local OUTPUT_HISTORY=${OUTPUT_HISTORY:-".true."}
-if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
+if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
   local HISTORY_FILE_ON_NATIVE_GRID=".true."
 else
   local HISTORY_FILE_ON_NATIVE_GRID=".false."

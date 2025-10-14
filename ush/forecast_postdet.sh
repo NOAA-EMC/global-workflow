@@ -210,6 +210,11 @@ EOF
           inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
           increment_file_on_native_grid=".true."
           res_latlon_dynamics="atminc"
+          if [[ "${DO_JEDIATMENS:-NO}" == "NO" ]]; then
+            inc_files=("atminc.nc")
+            res_latlon_dynamics="atminc.nc"
+            increment_file_on_native_grid=".false."
+          fi	  
         else
           inc_files=("atminc.nc")
           res_latlon_dynamics="atminc.nc"
@@ -232,6 +237,9 @@ EOF
       for inc_file in "${inc_files[@]}"; do
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
           increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
+          if [[ "${DO_JEDIATMENS:-NO}" == "NO" ]]; then
+            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          fi
         else
           if [[ "${RUN}" == "gcafs" ]]; then
             increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
@@ -313,7 +321,7 @@ EOF
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
-        if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
+        if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
           ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
           ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
           fi

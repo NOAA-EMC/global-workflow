@@ -43,7 +43,7 @@ export esmf_ver=8.8.0
 export util_shared_ver=1.4.0
 export ncdiag_ver=1.1.2
 export g2tmpl_ver=1.10.2
-export crtm_ver=2.4.0.1
+export crtm_ver=2.4.0.2
 export met_ver=9.1.3
 export metplus_ver=3.1.1
 

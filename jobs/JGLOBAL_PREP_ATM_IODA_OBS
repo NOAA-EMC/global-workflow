@@ -1,0 +1,38 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmiodaobs" -c "base atmanl prepatmiodaobs"
+
+##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+  COMOUT_OBS:COM_OBS_TMPL
+
+###############################################################
+# Run relevant script
+EXSCRIPT=${EXPREPATMIODAPY:-${SCRgfs}/exglobal_prep_atm_ioda_obs.py}
+${EXSCRIPT} && true
+export err=$?
+set +x
+if [[ ${err} -ne 0 ]]; then
+  err_exit "Error executing ${EXSCRIPT}"
+fi
+set_trace
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+  cat "${pgmout}"
+fi
+
+exit 0

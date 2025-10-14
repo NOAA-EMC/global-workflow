@@ -36,7 +36,8 @@ RUN=${RUN_local} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMOUT_OBS_PREV:COM_OBS_TMPL \
-    COMINobsproc_PREV:COM_OBSPROC_TMPL
+    COMINobsproc_PREV:COM_OBSPROC_TMPL \
+    COMOUT_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
 
 mkdir -p "${COMOUT_OBS}"
 
@@ -94,6 +95,16 @@ if [[ ${PROCESS_TROPCY} == "YES" ]]; then
 else
     cpfs "${COMINobsproc}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00" "${COMOUT_OBS}/"
 fi
+
+
+###############################################################
+# If requested copy bias correction files from source to comroot
+if [[ ${COPY_BIASCOR:-"NO"} == "YES" ]]; then
+    for file in abias abias_pc abias_air; do
+        cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}"
+    done
+fi
+
 
 ###############################################################
 # Generate prepbufr files from dumps and prior gdas guess
