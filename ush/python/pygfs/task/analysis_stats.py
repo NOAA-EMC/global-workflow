@@ -225,10 +225,13 @@ class AnalysisStats(Task):
         logger.info("Converting GSI diag files to IODA files for analysis stats")
         # copy GSI diag files to DATA path
         diag_tars = ['cnvstat', 'radstat', 'oznstat']
-        diag_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi')
-        FileHandler({'mkdir': [diag_dir_path]}).sync()
-        diag_ioda_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda')
-        FileHandler({'mkdir': [diag_ioda_dir_path]}).sync()
+        diag_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ges')
+        diag_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi_anl')
+        diag_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi_diags')
+        FileHandler({'mkdir': [diag_dir_ges_path, diag_dir_anl_path]}).sync()
+        diag_ioda_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda_ges')
+        diag_ioda_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda_anl')
+        FileHandler({'mkdir': [diag_ioda_dir_ges_path, diag_ioda_dir_anl_path]}).sync()
         diag_tar_copy_list = []
         for diag in diag_tars:
             input_tar_basename = f"{self.task_config.APREFIX}{diag}"
@@ -254,15 +257,29 @@ class AnalysisStats(Task):
                     f_out.write(f_in.read())
             os.remove(diag)
 
+        # Copy diag files to ges or anl directory
+        anl_diags = glob.glob(os.path.join(diag_dir_path, "diag_*_anl*.nc4"))
+        ges_diags = glob.glob(os.path.join(diag_dir_path, "diag_*_ges*.nc4"))
+        copy_anl_diags = []
+        for diag in anl_diags:
+            copy_anl_diags.append([diag, os.path.join(diag_dir_anl_path, os.path.basename(diag))])
+        FileHandler({'copy_opt': copy_anl_diags}).sync()
+        copy_ges_diags = []
+        for diag in ges_diags:
+            copy_ges_diags.append([diag, os.path.join(diag_dir_ges_path, os.path.basename(diag))])
+        FileHandler({'copy_opt': copy_ges_diags}).sync()
+
         # Convert GSI diag files to ioda files using gsincdiag2ioda converter scripts
-        gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_path, DiagDir=diag_dir_path)
+        gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_ges_path, DiagDir=diag_dir_ges_path)
+        gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_anl_path, DiagDir=diag_dir_anl_path)
 
         # Tar up the ioda files
-        iodastatzipfile = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda',
+        iodastatzipfile = os.path.join(self.task_config.DATA, 'atmos_gsi_diags',
                                        f"{self.task_config.APREFIX}atmos_gsi_ioda_diags.tgz")
         logger.info(f"Compressing GSI IODA files to {iodastatzipfile}")
         # get list of iodastat files to put in tarball
-        iodastatfiles = glob.glob(os.path.join(diag_ioda_dir_path, '*nc4'))
+        iodastatfiles = glob.glob(os.path.join(diag_ioda_dir_ges_path, '*nc4')) + \
+            glob.glob(os.path.join(diag_ioda_dir_anl_path, '*nc4'))
         logger.info(f"Gathering {len(iodastatfiles)} GSI IODA files to {iodastatzipfile}")
         with tarfile.open(iodastatzipfile, "w|gz") as archive:
             for targetfile in iodastatfiles:
