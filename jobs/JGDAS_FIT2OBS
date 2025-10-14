@@ -20,8 +20,8 @@ export COM_VRFYARCH=${COM_VRFYARCH:-${ROTDIR}/vrfyarch}
 
 export PRPI=${COMIN_OBS}/${RUN}.t${vcyc}z.prepbufr
 # shellcheck disable=SC2153
-export sig1=${COMIN_ANALYSIS}/${RUN}.t${vcyc}z.anl.atm.nc
-export sfc1=${COMIN_ANALYSIS}/${RUN}.t${vcyc}z.anl.atm.nc
+export sig1=${COMIN_ANALYSIS}/${RUN}.t${vcyc}z.analysis.atm.i006.nc
+export sfc1=${COMIN_ANALYSIS}/${RUN}.t${vcyc}z.analysis.atm.i006.nc
 export CNVS=${COMIN_ANALYSIS}/${RUN}.t${vcyc}z.cnvstat.tar
 
 export OUTPUT_FILETYPE=${OUTPUT_FILETYPE:-netcdf}

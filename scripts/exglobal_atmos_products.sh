@@ -18,7 +18,7 @@ cd "${DATA}" || exit 1
 # Determine if supplemental products (PGBS) (1-degree and 1/2-degree) should be generated
 if [[ ${FORECAST_HOUR} -le 0 ]]; then
   if [[ ${FORECAST_HOUR} -lt 0 ]]; then
-    fhr3="anl"
+    fhr3="analysis"
     paramlista="${paramlista_anl}"
     FLXGF="NO"
   elif [[ ${FORECAST_HOUR} == 0 ]]; then
@@ -239,10 +239,10 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
     fi
   fi
 
-  if [[ "${fhr3}" == "anl" ]]; then
+  if [[ "${fhr3}" == "analysis" ]]; then
 
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_MSC_sfcanl" "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}sfc${fhr3}.nc"
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SA"         "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}atm${fhr3}.nc"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_MSC_sfcanl" "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}analysis.sfc.i006.nc"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SA"         "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}analysis.atm.i006.nc"
 
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGA_GB2"      "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2"
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGA_GB2_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2.idx"
@@ -253,16 +253,16 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB_GB2"        "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2"
       "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB_GB2_WIDX"   "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2.idx"
       if (( FORECAST_HOUR % 3 == 0 )); then
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF"           "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm${fhr3}.nc"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF"           "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc${fhr3}.nc"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF"           "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.${fhr3}.nc"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF"           "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc.${fhr3}.nc"
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2"      "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2"
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2.idx"
       fi
     elif [[ "${RUN}" == "gfs" ]]; then
 
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm${fhr3}.nc"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.${fhr3}.nc"
       if [[ ${fhr} -gt 0 && ${fhr} -le 84 || ${fhr} -eq 120 ]]; then
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc${fhr3}.nc"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc.${fhr3}.nc"
       fi
 
       if [[ -s "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2" ]]; then
@@ -271,9 +271,9 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
       fi
     elif [[ "${RUN}" == "gcafs" ]]; then
 
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF" "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}atm${fhr3}.nc"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF" "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}atm.f${fhr3}.nc"
       if [[ ${fhr} -gt 0 && ${fhr} -le 84 || ${fhr} == 120 ]]; then
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}sfc${fhr3}.nc"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}sfc.f${fhr3}.nc"
       fi
 
       if [[ -s "${COM_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2" ]]; then

@@ -128,9 +128,9 @@ FV3_postdet() {
       if (( MEMBER == 0 )); then
         inc_files=()
       else
-        inc_files=("increment.atm.nc")
+        inc_files=("increment.atm.i006.nc")
         read_increment=".true."
-        res_latlon_dynamics="increment.atm.nc"
+        res_latlon_dynamics="increment.atm.i006.nc"
       fi
       increment_file_on_native_grid=".false."
       local increment_file
@@ -183,20 +183,12 @@ EOF
         for iaufhr in "${iaufhrs[@]}"; do
           if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
             for tile in {1..6}; do
-              if (( iaufhr == 6 )); then
-                inc_file="increment.atm.tile${tile}.nc"
-              else
-                inc_file="increment.atm.i$(printf %03i "${iaufhr}").tile${tile}.nc"
-              fi
+              inc_file="increment.atm.i$(printf %03i "${iaufhr}").tile${tile}.nc"
               inc_files+=("${inc_file}")
               IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
             done
           else
-            if (( iaufhr == 6 )); then
-              inc_file="increment.atm.nc"
-            else
-              inc_file="increment.atm.i$(printf %03i "${iaufhr}").nc"
-            fi
+            inc_file="increment.atm.i$(printf %03i "${iaufhr}").nc"
             inc_files+=("${inc_file}")
             IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
           fi
@@ -209,18 +201,18 @@ EOF
         # JEDI writes increment files in the cubed-sphere grid, denoted by cs_
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
           inc_files=( \
-                     "increment.cs_atm.tile1.nc" \
-                     "increment.cs_atm.tile2.nc" \
-                     "increment.cs_atm.tile3.nc" \
-                     "increment.cs_atm.tile4.nc" \
-                     "increment.cs_atm.tile5.nc" \
-                     "increment.cs_atm.tile6.nc" \
+                     "increment.cs_atm.i006.tile1.nc" \
+                     "increment.cs_atm.i006.tile2.nc" \
+                     "increment.cs_atm.i006.tile3.nc" \
+                     "increment.cs_atm.i006.tile4.nc" \
+                     "increment.cs_atm.i006.tile5.nc" \
+                     "increment.cs_atm.i006.tile6.nc" \
                      )
           increment_file_on_native_grid=".true."
           res_latlon_dynamics="atminc"
         else
-          inc_files=("increment.atm.nc")
-          res_latlon_dynamics="increment.atm.nc"
+          inc_files=("increment.atm.i006.nc")
+          res_latlon_dynamics="increment.atm.i006.nc"
           increment_file_on_native_grid=".false."
         fi
         if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
@@ -250,7 +242,7 @@ EOF
       if [[ ${DO_LAND_IAU} = ".true." ]]; then
         local TN sfc_increment_file
         for TN in $(seq 1 "${ntiles}"); do
-          sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/increment.tile${TN}.sfc.nc"
+          sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/increment.sfc.i006.tile${TN}.nc"
           if [[ ! -f "${sfc_increment_file}" ]]; then
             echo "FATAL ERROR: DO_LAND_IAU=${DO_LAND_IAU}, but missing increment file ${sfc_increment_file}, ABORT!"
             exit 1

@@ -72,12 +72,12 @@ ATMG09=${ATMG09:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f009.nc}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-SFCANL=${SFCANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.sfc.nc}
-DTFANL=${DTFANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.dtf.nc}
-ATMANL=${ATMANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.nc}
+SFCANL=${SFCANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.i006.nc}
+DTFANL=${DTFANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.dtf.i006.nc}
+ATMANL=${ATMANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.i006.nc}
 
 # Increment files
-ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.nc}
+ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -94,17 +94,17 @@ fi
 
 # Set 4D-EnVar specific variables
 if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
-   ATMA03=${ATMA03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i003.nc}
+   ATMA03=${ATMA03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.i003.nc}
    ATMI03=${ATMI03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i003.nc}
-   ATMA04=${ATMA04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i004.nc}
+   ATMA04=${ATMA04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.i004.nc}
    ATMI04=${ATMI04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i004.nc}
-   ATMA05=${ATMA05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i005.nc}
+   ATMA05=${ATMA05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.i005.nc}
    ATMI05=${ATMI05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i005.nc}
-   ATMA07=${ATMA07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i007.nc}
+   ATMA07=${ATMA07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.i007.nc}
    ATMI07=${ATMI07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i007.nc}
-   ATMA08=${ATMA08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i008.nc}
+   ATMA08=${ATMA08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.i008.nc}
    ATMI08=${ATMI08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i008.nc}
-   ATMA09=${ATMA09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}anl.atm.i009.nc}
+   ATMA09=${ATMA09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.i009.nc}
    ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i009.nc}
 fi
 

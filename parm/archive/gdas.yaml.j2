@@ -42,25 +42,22 @@ gdas:
             {% endif %}
 
         # Analysis GRIB2 (sub-sampled) data
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.anl.grib2"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.anl.grib2.idx"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.anl.grib2"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.anl.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2.idx"
 
         # Analysis netCDF (raw) data
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}anl.atm.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}anl.sfc.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.i006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.i006.nc"
 
             {% if DOHYBVAR %}
         # Ensemble-resolution analysis
-            {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ensres.anl.atm.nc"
-            {% endif %}
                 {% if DOIAU %}
         # Ensemble-resolution IAU analyses
-                    {% for fhr in IAUFHRS if fhr != 6 %}
+                    {% for fhr in IAUFHRS %}
                        {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ensres.anl.atm.i{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ensres_analysis.atm.i{{ '%03d' % fhr }}.nc"
                        {% endif %}
                     {% endfor %}
                 {% endif %}
@@ -181,10 +178,10 @@ gdas:
                         {% set suffix = "" %}
                     {% endif %}
                     {% for type in oznmon_types %}
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.ctl"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.anl.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.ctl"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.ges.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.analysis.ctl"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.analysis.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.guess.ctl"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.guess.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
                     {% endfor %}
                 {% endfor %}
             {% endif %}

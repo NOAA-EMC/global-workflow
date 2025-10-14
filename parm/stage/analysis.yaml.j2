@@ -14,9 +14,16 @@ analysis:
         {% if DO_JEDIATMVAR %}
 
         {% for itile in range(6) %}
-        {% for ftype in ["atminc", "atmi009", "atmi003", "ratminc", "ratmi009", "ratmi003"] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.cubed_sphere_grid_" ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.cubed_sphere_grid_{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        {% for ftype in [
+                         "increment.cs_atm.i003",
+                         "increment.cs_atm.i006",
+                         "increment.cs_atm.i006",
+                         "recentered_increment.cs_atm.i003",
+                         "recentered_increment.cs_atm.i006",
+                         "recentered_increment.cs_atm.i009"
+                         ] %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endif %}
         {% endfor %}
         {% endfor %}
@@ -35,19 +42,21 @@ analysis:
 
         {% else %}
 
-        {% for source_ftype, dest_ftype in [
-            ("atminc.nc", "increment.atm.nc"),
+        {% for source_ftype, dest_ftype in
+        [
+            ("atminc.nc", "increment.atm.i006.nc"),
             ("atmi009.nc", "increment.atm.i009.nc"),
             ("atmi003.nc", "increment.atm.i003.nc"),
-            ("ratminc.nc", "recenter.increment.atm.nc"),
-            ("ratmi009.nc", "recenter.increment.atm.i009.nc"),
-            ("ratmi003.nc", "recenter.increment.atm.i003.nc"),
+            ("ratmi009.nc", "recentered_increment.atm.i009.nc"),
+            ("ratminc.nc", "recentered_increment.atm.i006.nc"),
+            ("ratmi003.nc", "recentered_increment.atm.i003.nc"),
             ("abias", "abias.txt"),
             ("radstat", "radstat.tar"),
             ("abias_air", "abias_air.txt"),
             ("abias_int", "abias_int.txt"),
             ("abias_pc", "abias_pc.txt"),
-            ("rad_varbc_params.tar", "rad_varbc_params.tar")] %}
+            ("rad_varbc_params.tar", "rad_varbc_params.tar")
+        ] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ source_ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ source_ftype }}",
            "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ dest_ftype }}"]
@@ -57,17 +66,22 @@ analysis:
         {% endif %}
 
         {% if DO_GSISOILDA %}
-        {% for ftype in ["sfci003.nc", "sfci006.nc", "sfci009.nc"] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}",
-           "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        {% for source_ftype, dest_ftype in
+        [
+            ("sfci003.nc", "increment.sfc.i003.nc"),
+            ("sfci006.nc", "increment.sfc.i006.nc"),
+            ("sfci009.nc", "increment.sfc.i009.nc")
+        ] %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ source_ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ source_type }}",
+           "{{ COMOUT_ATMOS_ANALYSIS_MEM }}{{ RUN }}.t{{ current_cycle_HH }}z.{{ dest_ftype }}"]
         {% endif %}
         {% endfor %}
 
         {% if DO_LAND_IAU %}
         {% for itile in range(1,7) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc",
-           "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/sfc_inc.tile{{ itile }}.nc",
+           "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/increment.sfc.i006.tile{{tile}}.nc"]
         {% endfor %}
         {% endif %}
         {% endif %}
