@@ -133,8 +133,8 @@ class ChemFireEmissions(Task):
             else:
                 logger.info("AERO_EMIS_FIRE_DIR not set, constructing from AERO_INPUTS_DIR and AERO_EMIS_FIRE")
                 AERO_EMIS_FIRE_DIR = os.path.join(aero_inputs_dir,
-                                                "nexus",
-                                                aero_emis_fire.upper())
+                                                  "nexus",
+                                                  aero_emis_fire.upper())
 
             logger.info(f'Final AERO_EMIS_FIRE_DIR: {AERO_EMIS_FIRE_DIR}')
 
@@ -385,10 +385,10 @@ class ChemFireEmissions(Task):
             if file_path not in seen:
                 unique_files.append(file_path)
                 seen.add(file_path)
-        
+
         if len(unique_files) < len(matching_files):
             logger.info(f"Found {len(unique_files)} unique GBBEPx NRT files (removed {len(matching_files) - len(unique_files)} duplicates)")
-        
+
         return unique_files
 
     @logit(logger)
@@ -480,7 +480,7 @@ class ChemFireEmissions(Task):
             if file_path not in seen:
                 unique_files.append(file_path)
                 seen.add(file_path)
-        
+
         logger.info(f"Found {len(unique_files)} unique GBBEPx files (removed {len(files_found) - len(unique_files)} duplicates)")
         return unique_files
 
@@ -567,7 +567,7 @@ class ChemFireEmissions(Task):
                 if file_path not in seen:
                     unique_files.append(file_path)
                     seen.add(file_path)
-            
+
             if len(unique_files) < len(files_found):
                 logger.info(f"Found {len(unique_files)} unique QFED files (removed {len(files_found) - len(unique_files)} duplicates)")
             files_found = unique_files
@@ -840,7 +840,7 @@ class ChemFireEmissions(Task):
 
                 ds = self.GBBEPx_to_COARDS(date_file)
 
-                if ds is None: # file was already in COARDS format
+                if ds is None:  # file was already in COARDS format
                     logger.info(f"File {date_file} already in COARDS format, copying to {outfile}")
                     shutil.copy(date_file, outfile)
                 else:
