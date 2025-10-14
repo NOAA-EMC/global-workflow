@@ -6,6 +6,7 @@ import fnmatch
 import datetime
 import xarray as xr
 import numpy as np
+import shutil
 from logging import getLogger
 from typing import Dict, Any, Union, List
 from dateutil.rrule import DAILY, rrule
@@ -17,7 +18,6 @@ from wxflow import (AttrDict,
                     to_timedelta,
                     WorkflowException,
                     Executable, which)
-from pprint import pprint
 logger = getLogger(__name__.split('.')[-1])
 
 
@@ -127,9 +127,14 @@ class ChemFireEmissions(Task):
             if not os.path.exists(fire_emission_template):
                 raise WorkflowException(f"Fire emission template file not found: {fire_emission_template}")
 
-            AERO_EMIS_FIRE_DIR = os.path.join(aero_inputs_dir,
-                                              "nexus",
-                                              aero_emis_fire.upper())
+            if os.path.exists(self.task_config.FIRE_EMIS_DIR):
+                logger.info(f"AERO_EMIS_FIRE_DIR already set: {self.task_config.FIRE_EMIS_DIR}")
+                AERO_EMIS_FIRE_DIR = self.task_config.FIRE_EMIS_DIR
+            else:
+                logger.info("AERO_EMIS_FIRE_DIR not set, constructing from AERO_INPUTS_DIR and AERO_EMIS_FIRE")
+                AERO_EMIS_FIRE_DIR = os.path.join(aero_inputs_dir,
+                                                "nexus",
+                                                aero_emis_fire.upper())
 
             logger.info(f'Final AERO_EMIS_FIRE_DIR: {AERO_EMIS_FIRE_DIR}')
 
@@ -193,7 +198,6 @@ class ChemFireEmissions(Task):
                 dt.strftime("FIRE_EMIS_%Y%m%d.nc")
             )
 
-        # pprint(self.task_config)
         # Debug output for chemistry history directory
         logger.info(f"Outputing files prescribed to {self.task_config.COMOUT_CHEM_INPUT}")
         tmpl_dict = {
@@ -374,10 +378,21 @@ class ChemFireEmissions(Task):
                 matching_files.append(full_path)
                 logger.debug(f"Found GBBEPx NRT fire file: {full_path}")
 
-        return matching_files
+        # Remove duplicates while preserving order (safety check)
+        unique_files = []
+        seen = set()
+        for file_path in matching_files:
+            if file_path not in seen:
+                unique_files.append(file_path)
+                seen.add(file_path)
+        
+        if len(unique_files) < len(matching_files):
+            logger.info(f"Found {len(unique_files)} unique GBBEPx NRT files (removed {len(matching_files) - len(unique_files)} duplicates)")
+        
+        return unique_files
 
     @logit(logger)
-    def _find_gbbepx_files(self, dates, version='v5r0'):
+    def _find_gbbepx_files(self, dates, aero_emis_fire_dir=None, version='v5r0'):
         """Find GBBEPx files for the given date
 
         Parameters
@@ -406,7 +421,7 @@ class ChemFireEmissions(Task):
         # Find all possible files
         for mon in months:
             try:
-                emis_file_dir = self.task_config.AERO_EMIS_FIRE_DIR
+                emis_file_dir = aero_emis_fire_dir
                 if not os.path.exists(emis_file_dir):
                     logger.warning(f"Directory does not exist: {emis_file_dir}")
                     continue
@@ -458,7 +473,16 @@ class ChemFireEmissions(Task):
             except (FileNotFoundError, PermissionError) as e:
                 logger.warning(f"Error accessing directory {emis_file_dir}: {e}")
 
-        return files_found
+        # Remove duplicates while preserving order
+        unique_files = []
+        seen = set()
+        for file_path in files_found:
+            if file_path not in seen:
+                unique_files.append(file_path)
+                seen.add(file_path)
+        
+        logger.info(f"Found {len(unique_files)} unique GBBEPx files (removed {len(files_found) - len(unique_files)} duplicates)")
+        return unique_files
 
     @logit(logger)
     def _find_qfed_files(self, dates, vars, version='061', aero_emis_fire_dir=None):
@@ -535,6 +559,18 @@ class ChemFireEmissions(Task):
 
         if not files_found:
             logger.warning(f"No QFED files found for dates {date_strings} and variables {vars}")
+        else:
+            # Remove duplicates while preserving order
+            unique_files = []
+            seen = set()
+            for file_path in files_found:
+                if file_path not in seen:
+                    unique_files.append(file_path)
+                    seen.add(file_path)
+            
+            if len(unique_files) < len(files_found):
+                logger.info(f"Found {len(unique_files)} unique QFED files (removed {len(files_found) - len(unique_files)} duplicates)")
+            files_found = unique_files
 
         return files_found
 
@@ -555,6 +591,10 @@ class ChemFireEmissions(Task):
         logger.info(f"Converting {fname} to COARDS format")
         f = xr.open_dataset(fname, decode_cf=False)
         f = f[['OC', 'BC', 'SO2', 'NOx', 'CO', 'NH3']]
+        if 'time' in f.dims and 'lon' in f.dims and 'lat' in f.dims:
+            logger.info("File already in COARDS format")
+            return None  # Already in COARDS format
+
         # Handle time dimension
         if 'Time' in f.dims:
             f = f.rename({"Time": 'time'})
@@ -789,37 +829,31 @@ class ChemFireEmissions(Task):
             else:
                 logger.warning("No raw GBBEPx files found for non-historical processing")
         else:
+            logger.info(f"RAWFILES for historical GBBEPx processing: {self.task_config.rawfiles}")
             for forecast_date, date_file in zip(self.forecast_dates, self.task_config.rawfiles):
                 date_str = forecast_date.strftime('%Y%m%d')
-                logger.info(f"Processing GBBEPx files for date {date_str}")
+                logger.info(f"Processing GBBEPx files for date {date_str} from file {date_file}")
 
-                # Filter files for this date - implement date filtering if needed
-                date_files = []
-                for file in self.task_config.rawfiles:
-                    # Add logic here to filter files by date if needed
-                    date_files.append(file)
+                # Create output filename with date
+                outfile_name = f"FIRE_EMIS_{date_str}.nc"
+                outfile = os.path.join(workdir, outfile_name)
 
-                if date_file:
-                    # Process files for this date
-                    ds = self.GBBEPx_to_COARDS(date_file)  # Use the first file for this date
+                ds = self.GBBEPx_to_COARDS(date_file)
 
-                    # Create output filename with date
-                    outfile_name = f"FIRE_EMIS_{date_str}.nc"
-                    outfile = os.path.join(workdir, outfile_name)
-
+                if ds is None: # file was already in COARDS format
+                    logger.info(f"File {date_file} already in COARDS format, copying to {outfile}")
+                    shutil.copy(date_file, outfile)
+                else:
                     # Save the processed dataset
                     comp = dict(zlib=True, complevel=2)
                     encoding = {var: comp for var in ds.data_vars}
                     ds.to_netcdf(outfile, encoding=encoding, unlimited_dims=['time'])
                     logger.info(f"Processed emission file saved to {outfile}")
 
-                    # Add to processed files list
-                    processed_files.append(outfile)
-
                     # Close dataset
                     ds.close()
-                else:
-                    logger.warning(f"No GBBEPx files found for date {date_str}")
+
+                processed_files.append(outfile)
 
         return processed_files
 
