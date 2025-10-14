@@ -16,6 +16,7 @@ export REDERR=${REDERR:-'2>'}
 export PGM=${REGRID_EXEC}
 export pgm=${PGM}
 
+NMEM_REGRID=${NMEM_REGRID:-1}
 CASE_IN=${CASE_IN:-${CASE_ENS}}
 LFHR=${LFHR:-6}
 
@@ -51,7 +52,6 @@ export ires=${LONB_CASE_IN}
 export jres=${LATB_CASE_IN}
 export ireso=${CASE_OUT:1}
 export jreso=${CASE_OUT:1}
-NMEM_REGRID=${NMEM_REGRID:-1}
 
 regrid_nml_tmpl="${PARMgfs}/regrid_sfc/regrid.nml_tmpl" 
 
