@@ -2,11 +2,9 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "epos" -c "base epos"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
-
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -15,8 +13,7 @@ export GFS_NCIO=${GFS_NCIO:-"YES"}
 
 export PREFIX="${RUN}.t${cyc}z."
 
-export LEVS=$((LEVS-1))
-
+export LEVS=$((LEVS - 1))
 
 ###############################################################
 # Run relevant script
@@ -34,8 +31,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -45,6 +42,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

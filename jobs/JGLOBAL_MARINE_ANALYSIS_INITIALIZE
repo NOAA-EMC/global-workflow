@@ -5,7 +5,6 @@ export DATAens="${DATAjob}/ensdata"
 export DATA="${DATAjob}/marineanlvar"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlinit" -c "base marineanl marineanlinit"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -22,16 +21,16 @@ export GDUMP=${GDUMP:-"gdas"}
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-   COMIN_OBS:COM_OBS_TMPL
+    COMIN_OBS:COM_OBS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-   COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-   COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL \
-   COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
+    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL \
+    COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-   COMIN_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
-   COMIN_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
+    COMIN_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
+    COMIN_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
 
 ###############################################################
 # Run relevant script
@@ -50,8 +49,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 exit 0
