@@ -13,9 +13,10 @@
 [submodule "sorc/verif-global.fd"]
   path = sorc/verif-global.fd
   url = https://github.com/NOAA-EMC/EMC_verif-global.git
+# TODO: Point back to NOAA-EMC
 [submodule "sorc/gsi_enkf.fd"]
   path = sorc/gsi_enkf.fd
-  url = https://github.com/NOAA-EMC/GSI.git
+  url = https://github.com/DavidHuber-NOAA/GSI.git
 [submodule "sorc/gdas.cd"]
   path = sorc/gdas.cd
   url = https://github.com/NOAA-EMC/GDASApp.git
