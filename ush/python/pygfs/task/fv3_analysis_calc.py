@@ -4,22 +4,20 @@ from datetime import datetime
 from logging import getLogger
 import netCDF4 as nc
 import os
-from pprint import pformat
 from pygfs.jedi import Jedi
-from wxflow import (AttrDict, FileHandler, Task,
-                    parse_j2yaml,
-                    to_timedelta, add_to_datetime, to_fv3time, to_isotime,
-                    logit)
+from pygfs.task.analysis import Analysis
+from typing import Dict, Any
+from wxflow import AttrDict, FileHandler, to_fv3time, parse_j2yaml, logit
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class FV3AnalysisCalc(Task):
+class FV3AnalysisCalc(Analysis):
     """
     Class for analysis calculation
     """
     @logit(logger, name="FV3AnalysisCalc")
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, Any]):
         """Constructor for analysis calculation task
 
         This method will construct an analysis calculation
@@ -39,30 +37,23 @@ class FV3AnalysisCalc(Task):
         super().__init__(config)
 
         _res = int(self.task_config.CASE[1:])
-        _res_anl = int(self.task_config.CASE_ANL[1:])
-        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
+        _res_anl = int(self.task_config['CASE_ANL'][1:])
 
         # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
+        self.task_config.update(AttrDict(
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
-                'npz': self.task_config.LEVS - 1,
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
                 'npz_anl': self.task_config.LEVS - 1,
-                'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
-                'ATM_WINDOW_BEGIN': _window_begin,
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'APREFIX_ENS': f"enkf{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
+                'npz': self.task_config.LEVS - 1,
             }
-        )
+        ))
 
-        # Extend task_config with local_dict
-        self.task_config = AttrDict(**self.task_config, **local_dict)
+        # Extend task_config with content of config yaml for this task
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of Jedi objects
         expected_keys = ['atm_addincrement']
@@ -70,7 +61,7 @@ class FV3AnalysisCalc(Task):
             expected_keys.append('aero_addincrement')
         if self.task_config.DO_JEDISNOWDA:
             expected_keys.append('snow_addincrement')
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -78,9 +69,8 @@ class FV3AnalysisCalc(Task):
 
         This method will initialize the analysis calculation task.
         This includes:
-        - initializing the JEDI addincrement application
-        - staging JEDI fix files
-        - staging backgrounds and increments
+        - stage input files from COM and create output directories
+        - initialize JEDI applications
 
         Parameters
         ----------
@@ -91,6 +81,10 @@ class FV3AnalysisCalc(Task):
         None
         """
 
+        # Stage files from COM
+        logger.info(f"Staging files from COM")
+        FileHandler(self.task_config.data_in).sync()
+
         # Initialize GDASApp JEDI addincrement application
         logger.info(f"Initializing GDASApp JEDI addincrement applications")
         self.jedi_dict['atm_addincrement'].initialize(self.task_config)
@@ -98,17 +92,6 @@ class FV3AnalysisCalc(Task):
             self.jedi_dict['aero_addincrement'].initialize(self.task_config)
         if self.task_config.DO_JEDISNOWDA:
             self.jedi_dict['snow_addincrement'].initialize(self.task_config)
-
-        # Stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_dict).sync()
-        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
-
-        # Stage background and increment files
-        logger.info(f"Staging background and increment files from COM")
-        fh_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
-        FileHandler(fh_dict).sync()
 
     @logit(logger)
     def execute(self) -> None:
@@ -165,7 +148,8 @@ class FV3AnalysisCalc(Task):
 
         This method will finalize the analysis calculation task.
         This includes:
-        - Move analysis files to the comrot directory
+        - write analysis log file
+        - save output files and YAMLs to COM
 
         Parameters
         ----------
@@ -176,32 +160,16 @@ class FV3AnalysisCalc(Task):
         None
         """
 
-        # Copy analyses to COM
-        fh_dict = {'copy': []}
-        src_prefix = f"{self.task_config.DATA}/{self.task_config.GPREFIX}"
-        dest_prefix = f"{self.task_config.COMOUT_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
-        fh_dict['copy'].append([f"{src_prefix}atmf006.nc",
-                                f"{dest_prefix}atmanl.nc"])
-        fh_dict['copy'].append([f"{src_prefix}sfcf006.nc",
-                                f"{dest_prefix}sfcanl.nc"])
-
-        # Copy YAMLs to COM
-        for app_name in self.jedi_dict.keys():
-            src = os.path.join(self.task_config.DATA,
-                               f"{app_name}.yaml")
-            dest = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS,
-                                f"{self.task_config.APREFIX}{app_name}.yaml")
-            fh_dict['copy'].append([src, dest])
-
-        # Call FileHandler
-        FileHandler(fh_dict).sync()
-
         # Write analysis log file
         formatted_date = datetime.now().strftime("%a %b %d %H:%M:%S %Z%Y")
         log_file = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.RUN}.t{self.task_config.cyc}z.loganl.txt")
         message = f"{self.task_config.rCDUMP} {self.task_config.PDY}{self.task_config.cyc} atmanl and sfcanl done at {formatted_date}"
         with open(log_file, "w") as file:
             file.write(f"{message}\n")
+
+        # Save files from COM
+        logger.info(f"Saving files to COM")
+        FileHandler(self.task_config.data_out).sync()
 
 
 @logit(logger)

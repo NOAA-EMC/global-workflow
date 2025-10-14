@@ -3,11 +3,11 @@ Load environment to run GFS on NOAA cloud
 ]])
 
 -- Test that HOMEgfs is set.
--- If not, load_gw_run_modules.sh was not sourced to load this module.
+-- If not, load_modules.sh was not sourced to load this module.
 local homegfssdir=os.getenv("HOMEgfs") or "None"
 if (homegfssdir == "None") then
     LmodError("FATAL ERROR HOMEgfs variable is unset.\n" ..
-              "Please \"source ush/load_gw_run_modules.sh\" rather than loading this module directly.\n")
+              "Please \"source dev/ush/load_modules.sh\" rather than loading this module directly.\n")
 end
 
 load(pathJoin("perl", (os.getenv("perl_ver") or "None")))

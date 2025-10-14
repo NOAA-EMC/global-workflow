@@ -18,16 +18,12 @@ case ${CASE} in
     exit 4
 esac
 export CASE_ANL
-export JCB_ALGO_YAML_VAR=${PARMgfs}/gdas/aero/jcb-prototype_3dvar.yaml.j2
-export STATICB_TYPE='diffusion'
-export BERROR_YAML="aero_background_error_static_${STATICB_TYPE}"
-export BERROR_DATA_DIR="${FIXgfs}/gdas/aero/clim_b"
 
-export JEDI_CONFIG_YAML="${PARMgfs}/gdas/aero/aero_det_jedi_config.yaml.j2"
-export STAGE_CRTM_COEFF_YAML="${PARMgfs}/gdas/aero/aero_stage_crtm_coeff.yaml.j2"
-export STAGE_JEDI_FIX_YAML="${PARMgfs}/gdas/aero/aero_stage_jedi_fix.yaml.j2"
-export STAGE_YAML="${PARMgfs}/gdas/aero/aero_det_stage.yaml.j2"
-export SAVE_YAML="${PARMgfs}/gdas/aero/aero_det_save.yaml.j2"
+export STATICB_TYPE='diffusion'
+
+export TASK_CONFIG_YAML="${PARMgfs}/gdas/aero/aero_det_config.yaml.j2"
+export OBS_LIST_YAML="${PARMgfs}/gdas/aero/aero_obs_list.yaml.j2"
+export BIAS_FILES_YAML="${PARMgfs}/gdas/aero/aero_bias_files.yaml.j2"
 
 export io_layout_x="{{ IO_LAYOUT_X }}"
 export io_layout_y="{{ IO_LAYOUT_Y }}"
