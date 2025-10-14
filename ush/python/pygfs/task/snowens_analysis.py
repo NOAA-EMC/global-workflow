@@ -65,7 +65,7 @@ class SnowEnsAnalysis(Analysis):
         _snomad_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snomad.tm00.bufr_d')
         _DO_SNOCVR_SNOMAD = (
             "snocvr_snomad" in self.task_config.observations and
-            (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file)
+            (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file))
         )
 
         # Extend task_config with variables repeatedly used across this class
