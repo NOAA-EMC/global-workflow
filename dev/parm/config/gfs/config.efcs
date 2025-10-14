@@ -91,7 +91,7 @@ export FHZERO=6
 
 # Set PREFIX_ATMINC to r when recentering on
 if [[ ${RECENTER_ENKF:-"YES"} == "YES" ]]; then
-   export PREFIX_ATMINC="recenter."
+   export PREFIX_ATMINC="recentered_"
 fi
 
 # Set restart interval to enable restarting forecasts after failures
