@@ -42,7 +42,7 @@ MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
 # Get inventory from ${MASTER_FILE} that matches patterns from ${paramlista}
 # Extract this inventory from ${MASTER_FILE} into a smaller tmpfile or tmpfileb based on paramlista or paramlistb
 # shellcheck disable=SC2312
-${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlista}" | ${WGRIB2} -i -grib "tmpfile_${fhr3}" "${MASTER_FILE}" && true
+${WGRIB2} "${MASTER_FILE}" | grep -F -f "${paramlista}" | ${WGRIB2} -i -grib "tmpfilea_${fhr3}" "${MASTER_FILE}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
    err_exit "wgrib2 failed to create intermediate grib2 file from ${MASTER_FILE} using ${paramlista}"
@@ -84,7 +84,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   fi
 
   # process grib2 chunkfiles to interpolate using MPMD
-  tmpfile="tmpfile_${fhr3}"
+  tmpfile="tmpfile_${grp}${fhr3}"
 
   # shellcheck disable=SC2312
   ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
