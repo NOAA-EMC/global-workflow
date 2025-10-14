@@ -202,7 +202,7 @@ if [[ "$DOIAU" == "YES" ]]; then
             cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-                 cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/${GDUMP_ENS}.increment.sfc.i00${LFHR}.tile${n}.nc" \
+                 cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/increment.sfc.i00${LFHR}.tile${n}.nc" \
                    "${DATA}/soil_xainc.${cmem}"
             fi
 
