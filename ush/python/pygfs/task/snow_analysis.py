@@ -60,9 +60,9 @@ class SnowAnalysis(Analysis):
         # Check if SNOCVR or SNOMAD file exists, do SNOCVR_SNOMAD preprocessing
         _snocvr_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d')
         _snomad_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snomad.tm00.bufr_d')
-        _DO_SNOCVR_SNOMAD = any(
-            ob == "snocvr_snomad" and (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file))
-            for ob in self.task_config.observations
+        _DO_SNOCVR_SNOMAD = (
+            "snocvr_snomad" in self.task_config.observations and
+            (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file)
         )
 
         # Extend task_config with variables repeatedly used across this class
