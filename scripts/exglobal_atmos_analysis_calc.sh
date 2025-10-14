@@ -41,9 +41,6 @@ binary_diag=${binary_diag:-".false."}
 DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6,"}
 
-# Microphysics options
-export imp_physics=${imp_physics:-"8"}
-
 # Dependent Scripts and Executables
 export NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
 export APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
