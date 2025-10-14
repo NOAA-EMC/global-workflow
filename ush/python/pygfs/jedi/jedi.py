@@ -181,13 +181,13 @@ class Jedi:
 
     @staticmethod
     @logit(logger)
-    def get_jedi_dict(jedi_config_yaml: str, task_config: AttrDict, expected_block_names: Optional[list] = None):
+    def get_jedi_dict(jedi_config_dict: dict, task_config: AttrDict, expected_block_names: Optional[list] = None):
         """Get dictionary of Jedi objects from YAML specifying their configuration dictionaries
 
         Parameters
         ----------
-        jedi_config_yaml : str
-            path to YAML specifying configuration dictionaries for Jedi objects
+        jedi_config_dict : dict
+            dictionary parsed from a J2-YAML file specifying configuration dictionaries for JEDI objects
         task_config : str
             attribute-dictionary of all configuration variables associated with a GDAS task
         expected_block_names (optional) : str
@@ -200,9 +200,6 @@ class Jedi:
 
         # Initialize dictionary of Jedi objects
         jedi_dict = AttrDict()
-
-        # Parse J2-YAML file for dictionary of JEDI configuration dictionaries
-        jedi_config_dict = parse_j2yaml(jedi_config_yaml, task_config)
 
         # Loop through dictionary of Jedi configuration dictionaries
         for block_name in jedi_config_dict:
@@ -266,9 +263,9 @@ class Jedi:
             observers.clear()
             observers.extend(cleaned_observers)
 
-            # If no observers left in list, raise error
+            # Warn if no observers left in list
             if observers == []:
-                raise WorkflowException(f"No observers found in JEDI input config")
+                logger.warning(f"No observers found in JEDI input config")
 
     @staticmethod
     @logit(logger)

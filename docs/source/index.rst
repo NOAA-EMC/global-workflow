@@ -35,6 +35,7 @@ Table of Contents
    :maxdepth: 3
 
    development.rst
+   testing.rst
    components.rst
    jobs.rst
    hpc.rst

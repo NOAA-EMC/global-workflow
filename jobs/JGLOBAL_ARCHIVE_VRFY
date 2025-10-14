@@ -2,7 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_vrfy"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -18,7 +17,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 for grid in "0p25" "0p50" "1p00"; do
     YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
-       "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
 ###############################################################
@@ -38,14 +37,17 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
+cd "${DATAROOT}" || (
+    echo "${DATAROOT} does not exist. ABORT!"
+    exit 1
+)
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
