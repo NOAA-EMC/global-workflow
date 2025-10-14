@@ -84,7 +84,7 @@ for (( nset=1 ; nset <= downset ; nset++ )); do
   fi
 
   # process grib2 chunkfiles to interpolate using MPMD
-  tmpfile="tmpfile_${grp}${fhr3}"
+  tmpfile="tmpfile${grp}_${fhr3}"
 
   # shellcheck disable=SC2312
   ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
