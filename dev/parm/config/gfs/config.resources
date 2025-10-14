@@ -1319,9 +1319,8 @@ case ${step} in
     walltime="01:15:00"
     ntasks=$(( NMEM_ENS * 6))
     threads_per_task=1
-    node_frac = 0.5
-    tasks_per_node=$(( floor(max_tasks_per_node*node_frac/6)*6 ))
-    #tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    node_frac=2
+    tasks_per_node=$(( max_tasks_per_node/(node_frac*6)*6 ))
 
     threads_per_task_cycle=${threads_per_task}
     tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
