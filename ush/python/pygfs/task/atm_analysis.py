@@ -145,7 +145,6 @@ class AtmAnalysis(Analysis):
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.data_out).sync()
 
-
     @logit(logger)
     def generate_ioda_obs(self) -> None:
         """
@@ -182,4 +181,4 @@ class AtmAnalysis(Analysis):
         logger.info(f"Staging list of IODA observation files from {self.task_config.COMINobsforge}")
         obs_dict = parse_j2yaml(self.task_config.STAGE_COM_IODA_OBS_YAML, self.task_config)
         FileHandler(obs_dict).sync()
-        logger.debug(f"Staged IODA observation files:\n{pformat(obs_dict)}")        
+        logger.debug(f"Staged IODA observation files:\n{pformat(obs_dict)}")
