@@ -69,7 +69,7 @@ export dnats_aero=2
 # none: Disable fire emissions.
 # Used in prep_emissions scripts to fetch/interpolate data to model grid.
 #---------------------------------------------------------------------------------------------------
-export AERO_EMIS_FIRE="qfed"
+export AERO_EMIS_FIRE="gbbepx"
 export AERO_EMIS_FIRE_VERSION="061"
 
 # Version of the selected fire emissions dataset (e.g., for QFEDv2.5, version 061).
@@ -84,7 +84,7 @@ export AERO_EMIS_FIRE_HIST=1 # Use historical fire emissions | 1 = true 0 = fals
 # Processed by scripts like exglobal_prep_emissions.py to generate input files for GOCART.
 #---------------------------------------------------------------------------------------------------
 export FIRE_EMIS_NRT_DIR="" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
-
+export FIRE_EMIS_DIR="" # Directory containing historical fire emissions
 
 
 #===============================================================================
