@@ -75,8 +75,6 @@ gdas:
             {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_air"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_pc"
@@ -160,6 +158,9 @@ gdas:
         {% endfor %}
     optional:
         {% if MODE == "cycled" %}
+            # Ozone and Radiance diagnostic files may not always be created
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
             # Radiance verification (only created if there are problems)
             {% if DO_VERFRAD %}
         - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
