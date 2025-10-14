@@ -3,7 +3,7 @@
 set -x
 
 ###############################################################
-source "${HOMEgfs}/dev/ush/load_fv3gfs_modules.sh"
+source "${HOMEgfs}/dev/ush/load_modules.sh" run
 err=$?
 if [[ "${err}" -ne 0 ]]; then
     exit "${err}"

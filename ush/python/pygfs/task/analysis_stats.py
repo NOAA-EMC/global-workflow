@@ -74,7 +74,8 @@ class AnalysisStats(Task):
         # Expected keys are what must be included from the JEDI config file. We can
         # then loop through ob space list from scripts/exglobal_analysis_stats.py
         expected_keys = ['aero', 'atmos', 'snow']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        jedi_config_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
+        self.jedi_dict = Jedi.get_jedi_dict(jedi_config_dict, self.task_config, expected_keys)
 
         logger.info(f"Copying files to {self.task_config.DATA}/stats")
 
