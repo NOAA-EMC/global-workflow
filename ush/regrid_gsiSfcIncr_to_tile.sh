@@ -43,16 +43,13 @@ if [[ "${DO_LAND_IAU}" = ".true." ]]; then
     IFS=',' read -ra landifhrs <<< "${IAUFHRS}"
 fi
 export in_fname="'enkfgdas.sfci'"
-export dir_coord_in="'${DATA}/'"
-export dir_coord_out="'${DATA}/'"
 export dir_mask_in="'${DATA}/'"
-export dir_mask_out="'${DATA}/'"
 export fname_mask_in="'NULL'"
 export ires=${LONB_CASE_IN}
 export jres=${LATB_CASE_IN}
 export ireso=${CASE_OUT:1}
 export jreso=${CASE_OUT:1}
-export nmem_regrid="${NMEM_ENS}"
+NMEM_REGRID=${NMEM_REGRID:-1}
 
 regrid_nml_tmpl="${PARMgfs}/regrid_sfc/regrid.nml_tmpl" 
 
@@ -86,20 +83,21 @@ for n in $(seq 1 "${ntiles}"); do
 done
 
 export in_dir=""
-for imem in $(seq 1 "${NMEM_ENS}"); do
+for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
     memchar="mem${cmem}"
 
-    # Create run directory for this member
-    memdir="./${memchar}"
-    mkdir -p "${memdir}"
-
-    if (( NMEM_ENS > 1 )); then
+    if (( NMEM_REGRID > 1 )); then
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
             COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
             COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+
+        memdir="${DATA}/${memchar}"
+        mkdir -p "${memdir}"
+    else
+        memdir="${DATA}"
     fi
 
     # Append to input directory list
@@ -164,17 +162,20 @@ fi
 # Save regridded files to COMOUT
 #
 
-for imem in $(seq 1 "${NMEM_ENS}"); do
+for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
     memchar="mem${cmem}"
-    memdir="${DATA}/${memchar}"
 
-    if (( NMEM_ENS > 1 )); then
+    if (( NMEM_REGRID > 1 )); then
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
             COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
             COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+
+        memdir="${DATA}/${memchar}"
+    else
+        memdir="${DATA}"
     fi
 
     for FHR in "${soilinc_fhrs[@]}"; do
