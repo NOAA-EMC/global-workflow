@@ -5,7 +5,6 @@ import re
 import fnmatch
 import datetime
 import xarray as xr
-import numpy as np
 import shutil
 from logging import getLogger
 from typing import Dict, Any, Union, List
