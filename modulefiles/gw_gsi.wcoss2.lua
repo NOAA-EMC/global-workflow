@@ -22,6 +22,8 @@ load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
 load(pathJoin("ncdiag-A", (os.getenv("ncdiag_ver") or "None")))
 load(pathJoin("crtm", (os.getenv("crtm_ver") or "None")))
 
+setenv("CRTM_FIX","/lfs/h2/emc/global/noscrub/emc.global/FIX/fix/crtm/v2.4.0.2")
+
 -- Perl is needed by the GSI monitor
 load(pathJoin("perl", (os.getenv("perl_ver") or "None")))
 
