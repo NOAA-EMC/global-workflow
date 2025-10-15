@@ -39,6 +39,7 @@ class Analysis(Task):
 
         # Get assimilation window times
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
+        _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _next_cycle = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H"))
 
         # Get specific assimilation times within the assimulation window
@@ -68,6 +69,8 @@ class Analysis(Task):
         self.task_config.update(AttrDict(
             {
                 'WINDOW_BEGIN': _window_begin,
+                'WINDOW_MIDDLE': self.task_config.current_cycle,
+                'WINDOW_END': _window_end,
                 'WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
                 'next_cycle': _next_cycle,
                 'OPREFIX': f"{self.task_config.RUN.replace('enkf','')}.t{self.task_config.cyc:02d}z.",
