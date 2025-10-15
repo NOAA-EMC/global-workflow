@@ -717,7 +717,7 @@ fi # if [[ $USE_RADSTAT == "YES" ]
 if [[ ${DOHYBVAR} == "YES" ]]; then
    HYBRID_ENSEMBLE="n_ens=${NMEM_ENS},jcap_ens=${JCAP_ENKF},nlat_ens=${NLAT_ENKF},nlon_ens=${NLON_ENKF},jcap_ens_test=${JCAP_ENKF},${HYBRID_ENSEMBLE}"
    if [[ ${l4densvar} == ".true." ]]; then
-      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=${l4densvar},lwrite4danl=${lwrite4danl},${SETUP}"
+      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,gmi_method=4,l4densvar=${l4densvar},lwrite4danl=${lwrite4danl},${SETUP}"
       JCOPTS="ljc4tlevs=.true.,${JCOPTS}"
       STRONGOPTS="tlnmc_option=3,${STRONGOPTS}"
       OBSQC="c_varqc=0.04,${OBSQC}"

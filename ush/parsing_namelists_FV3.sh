@@ -296,6 +296,7 @@ local CPLWAV2ATM=${cplwav2atm:-".false."}
 local USE_MED_FLUX=${use_med_flux:-".false."}
 local CPLLND=${cpllnd:-".false."}
 local CPLLND2ATM=${cpllnd2atm:-".false."}
+local USE_OCEANUV=${use_oceanuv:-".false."}
 
 # CPL CHM options
 if [[ ${cplchm} = ".true." ]]; then
