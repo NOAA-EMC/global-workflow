@@ -12,7 +12,7 @@ declare -rx HOMEgfs
 file1=${1:?}
 file2=${2:?}
 
-source "${HOMEgfs}/ush/load_fv3gfs_modules.sh" 1>/dev/null 2>&1
+source "${HOMEgfs}/dev/ush/load_modules.sh" 1>/dev/null 2>&1
 
 # Use wgrib2 to compute correlations and print any record that does not have corr=1 for mismatch
 #shellcheck disable=SC2312
