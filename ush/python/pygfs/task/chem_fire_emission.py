@@ -2,7 +2,6 @@
 
 import os
 import re
-import fnmatch
 import datetime
 import xarray as xr
 import shutil
