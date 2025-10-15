@@ -79,7 +79,7 @@ The primary configuration file for aerosol settings, containing:
 
    export AERO_INPUTS_DIR="/path/to/aerosol/data"    # Base directory for aerosol input data
    export AERO_CONFIG_DIR="${PARMgfs}/ufs/gocart"    # GOCART configuration files
-   export fscav_aero="'*:0.3','so2:0.0',..."        # Convective scavenging factors
+   export fscav_aero="'*:0.3','so2:0.0',..."         # Convective scavenging factors
    export dnats_aero=2                               # Number of diagnostic tracers
 
 **Fire Emissions Settings:**
