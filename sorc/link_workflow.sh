@@ -266,6 +266,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_yaml.py"    .
   cd "${HOMEgfs}/ush" || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"    .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py"         .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
   declare -a gdasapp_ocn_insitu_profile_platforms=("argo" "bathy" "glider" "marinemammal" "tesac" "xbtctd")
   for platform in "${gdasapp_ocn_insitu_profile_platforms[@]}"; do
