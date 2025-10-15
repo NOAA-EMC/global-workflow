@@ -513,7 +513,7 @@ case ${step} in
     ;;
 
   "marinebmatinit")
-    walltime="00:10:00"
+    walltime="00:20:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=${max_tasks_per_node}
@@ -869,7 +869,7 @@ case ${step} in
     MEDPETS=${MEDPETS:-${FV3PETS}}
     (( MEDPETS = FV3PETS ))
     (( MEDTHREADS = FV3THREADS )) 
-    (( "${MEDPETS}" > 24000 )) && MEDPETS=1200
+    (( "${MEDPETS}" > 4800 )) && MEDPETS=4800
     export MEDPETS MEDTHREADS
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
@@ -1327,7 +1327,7 @@ case ${step} in
   "epos")
     walltime="00:15:00"
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
-        walltime="00:25:00"
+        walltime="00:35:00"
     fi
     ntasks=80
     threads_per_task=1
