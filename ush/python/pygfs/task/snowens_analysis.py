@@ -54,10 +54,19 @@ class SnowEnsAnalysis(Analysis):
 
         # if 00z, do SCF preprocessing
         _ims_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}imssnow96.asc')
+        logger.info(f"Checking for IMS file: {_ims_file}")
         if self.task_config.cyc == 0 and os.path.exists(_ims_file):
             _DO_IMS_SCF = True
         else:
             _DO_IMS_SCF = False
+
+        # Check if SNOCVR or SNOMAD file exists, do SNOCVR_SNOMAD preprocessing
+        _snocvr_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d')
+        _snomad_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snomad.tm00.bufr_d')
+        _DO_SNOCVR_SNOMAD = (
+            "snocvr_snomad" in self.task_config.observations and
+            (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file))
+        )
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
@@ -70,6 +79,7 @@ class SnowEnsAnalysis(Analysis):
                 'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
                 'ims_file': _ims_file,
                 'DO_IMS_SCF': _DO_IMS_SCF,  # Boolean to decide if IMS snow cover processing is done
+                'DO_SNOCVR_SNOMAD': _DO_SNOCVR_SNOMAD,  # Boolean to decide if SNOCVR_SNOMAD processing is done
             }
         ))
 
@@ -147,6 +157,69 @@ class SnowEnsAnalysis(Analysis):
         # Save files to COM
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.data_out).sync()
+
+    @logit(logger)
+    def prepare_SNOCVR_SNOMAD(self) -> None:
+        """Prepare the combined SNOCVR and SNOMAD data for a global snow analysis
+        This includes:
+        - creating combined SNOCVR and SNOMAD snowdepth data in IODA format.
+        Parameters
+        ----------
+        self : Analysis
+            Instance of the SnowAnalysis object
+        Returns
+        ----------
+        None
+        """
+
+        # Read and render the prep_snocvr_snomad.yaml.j2
+        logger.info(f"Reading {self.task_config.PREP_SNOCVR_SNOMAD_YAML}")
+        prep_snocvr_snomad_config = parse_j2yaml(self.task_config.PREP_SNOCVR_SNOMAD_YAML, self.task_config)
+        logger.debug(f"{self.task_config.PREP_SNOCVR_SNOMAD_YAML}:\n{pformat(prep_snocvr_snomad_config)}")
+
+        # define these locations in gdas/snow/prep/prep_snocvr_snomad.yaml.j2
+        logger.info("Copying SNOCVR and SNOMAD obs to DATA")
+        FileHandler(prep_snocvr_snomad_config.stage).sync()
+
+        # Execute obsBuilder to create the combined snocvr and snomad in IODA format
+        logger.info("Create the combined snocvr and snomad data in IODA format")
+
+        input_snocvr = f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d'
+        input_snomad = f'{self.task_config.OPREFIX}snomad.tm00.bufr_d'
+        output_file = f'{self.task_config.OPREFIX}snocvr_snomad.tm00.nc'
+        if os.path.exists(f"{os.path.join(self.task_config.DATA, output_file)}"):
+            rm_p(output_file)
+
+        logger.info("Link OBSBUILDER into DATA/")
+        exe_src = self.task_config.OBSBUILDER
+        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+
+        exe = Executable(exe_dest)
+        if os.path.exists(input_snocvr):
+            exe.add_default_arg(["--input_snocvr", f"{os.path.join(self.task_config.DATA, input_snocvr)}"])
+        exe.add_default_arg(["--output", f"{os.path.join(self.task_config.DATA, output_file)}"])
+        if os.path.exists(input_snomad):
+            exe.add_default_arg(["--input_snomad", f"{os.path.join(self.task_config.DATA, input_snomad)}"])
+        try:
+            logger.debug(f"Executing {exe}")
+            exe()
+        except OSError:
+            logger.exception(f"Failed to execute {exe}")
+            raise
+        except Exception as err:
+            logger.exception(f"An error occured during execution of {exe}")
+            raise WorkflowException(f"An error occured during execution of {exe}") from err
+
+        # Ensure the IODA snow depth SNOCVR+SNOMAD file is produced by the obsBuilder
+        # If so, copy to DATA/prep/
+        if not os.path.isfile(f"{os.path.join(self.task_config.DATA, output_file)}"):
+            logger.warning(f"{output_file} not produced - continuing without it.")
+        else:
+            logger.info(f"Copy {output_file} successfully generated")
+            FileHandler(prep_snocvr_snomad_config.netcdf).sync()
 
     @logit(logger)
     def add_increments(self) -> None:
