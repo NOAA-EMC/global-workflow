@@ -97,15 +97,16 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 
         memdir="${DATA}/${memchar}"
         mkdir -p "${memdir}"
+
+        if [ $imem -gt 1 ]; then
+            in_dir+=", "
+        fi
+        in_dir+="\"./${memchar}/\""        
     else
         memdir="${DATA}"
-    fi
 
-    # Append to input directory list
-    if [ $imem -gt 1 ]; then
-        in_dir+=", "
+        in_dir="'./'"
     fi
-    in_dir+="\"${memdir}\""
 
     for FHR in "${soilinc_fhrs[@]}"; do
         cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
@@ -121,7 +122,6 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 done
 
 # Finish defining input/output directory list
-#in_dir+=")"
 export out_dir="${in_dir}"
 
 #
