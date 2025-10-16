@@ -173,12 +173,12 @@ ush/jediinc2fv3.py
 ush/imsfv3_scf2ioda.py
 ush/bufr_snocvr_snomad.py
 ush/atparse.bash
-ush/run_bufr2ioda.py
 ush/bufr2ioda_insitu*
 ush/python/ufsda
 ush/python/soca
 ush/python/gen_bufr2ioda_json.py
 ush/python/gen_bufr2ioda_yaml.py
+ush/python/run_bufr2ioda.py
 ush/spoc
 # ush log file
 ush/fetch-fix-data.log
