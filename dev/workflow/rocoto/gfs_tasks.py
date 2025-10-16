@@ -315,7 +315,10 @@ class GFSTasks(Tasks):
     def analcalc(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
+        if self.options['do_jediatmvar'] and not self.options['do_jediatmens']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -3092,7 +3095,7 @@ class GFSTasks(Tasks):
         if 'enkfgdas' in self.run:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if not self.options['do_jediatmvar']:
+            if not self.options['do_jediatmens']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
