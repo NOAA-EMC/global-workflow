@@ -740,17 +740,20 @@ MOM6_out() {
       ;;
   esac
    
-  # Do Monthly Average ocean output and move to output ocean history directory (valid up to 12 month forecasts only)
+  # Do Monthly Average ocean output and move to output ocean history directory
   if [[ "${RUN}" == sfs ]]; then
-    local last_fh_output files f_name 
-    last_fh_output=$(ls -f "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.${FHOUT_OCN}hr_avg.f${FHMAX_GFS}.nc" )
+    local last_fh_output file_list file_list_mon f_name
+    last_fh_output="${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.${FHOUT_OCN}hr_avg.f${FHMAX_GFS}.nc"
     if [[ -f ${last_fh_output} ]]; then
-       files=$(ls -f "${DATAoutput}/MOM6_OUTPUT/ocn_????_??_28_12.nc" )
-       for f in ${files}; do
+       file_list="${DATAoutput}/MOM6_OUTPUT/ocn_[1-2]*28_12.nc"
+       file_list_mon="$( ls ${file_list} )"
+       for f in ${file_list_mon}; do
          f_name=$( basename "${f}" )
-         cdo mergetime "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_??_12.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_dailymean.nc"
-         cdo monavg "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_dailymean.nc" "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
+         cdo mergetime "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_??_12.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_merge.nc"
+         cdo monavg "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_merge.nc" "${COMOUT_OCEAN_HISTORY}/${RUN}.ocn.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
        done
+     else
+       echo "Forecast jobs are not finished! Continue to do forecasting"
     fi
   fi
 }
@@ -868,16 +871,39 @@ CICE_out() {
       exit 25
       ;;
   esac
-  # Copy the Monthly Average output from SFS
+# To easily pool daily files for each month, new file names are linked to the output history files
   if [[ "${RUN}" == sfs ]]; then
-    local last_fh_output files f_name
-    last_fh_output=$( ls -f "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc" )
+     local ori_file new_file vdate_mid vdate_mid_str fhr fhr3 interval midpoint last_fhr
+     for fhr in "${CICE_OUTPUT_FH[@]}"; do
+       if [[ -z ${last_fhr:-} ]]; then
+       last_fhr=${fhr}
+       continue
+       fi
+       fhr3=$(printf %03i "${fhr}")
+       (( interval = fhr - last_fhr ))
+       (( midpoint = last_fhr + interval/2 ))
+       vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
+       vdate_mid_str="${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}"
+       new_file="iceh_24h.${vdate_mid_str}.nc"
+       ori_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+       ${NLN} "${COMOUT_ICE_HISTORY}/${ori_file}" "${DATAoutput}/CICE_OUTPUT/${new_file}"
+       last_fhr=${fhr}
+     done
+ fi
+# Do Monthly Average and saved at output ice history directory when all forecasts are done
+  if [[ "${RUN}" == sfs ]]; then
+    local last_fh_output files  file_list file_list_mon f_name
+    last_fh_output="${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc"
     if [[ -f ${last_fh_output} ]]; then
-       files=$(ls -f "${DATAoutput}/CICE_OUTPUT/iceh_24h.????_??_28_12.nc" )
-       for f in ${files}; do
+       file_list="${DATAoutput}/CICE_OUTPUT/iceh_24h.[1-2]*28_12.nc"
+       file_list_mon="$( ls ${file_list} )"
+       for f in ${file_list_mon}; do
         f_name=$( basename "${f}" )
-        ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h.${f_name:9:4}_${f_name:14:2}_??_12.nc" "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${current_cycle}.monthly_avg.${f_name:9:4}-${f_name:14:2}.nc"
+        cdo mergetime "${DATAoutput}/CICE_OUTPUT/iceh_24h.${f_name:9:4}_${f_name:14:2}_??_12.nc" "${DATAoutput}/CICE_OUTPUT/iceh_24h.${f_name:9:4}_${f_name:14:2}_merge.nc"
+        ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h.${f_name:9:4}_${f_name:14:2}_merge.nc" "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${current_cycle}.monthly_avg.${f_name:9:4}-${f_name:14:2}.nc"
        done
+    else
+       echo "Forecast jobs are not finished! Continue to do forecasting"
     fi
   fi
 }
