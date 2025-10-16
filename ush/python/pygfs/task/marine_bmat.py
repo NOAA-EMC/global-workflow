@@ -4,7 +4,7 @@ import os
 import glob
 from logging import getLogger
 import pygfs.utils.marine_da_utils as mdau
-from pygfs.task import Analysis
+from pygfs.task.analysis import Analysis
 from wxflow import (AttrDict, FileHandler, Executable,
                     add_to_datetime, to_timedelta, to_isotime,
                     chdir,
@@ -67,7 +67,7 @@ class MarineBMat(Analysis):
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
-    def initialize(self: Task) -> None:
+    def initialize(self) -> None:
         """Initialize a global B-matrix
 
         This method will initialize a global B-Matrix.
@@ -163,7 +163,7 @@ class MarineBMat(Analysis):
             self.jedi_dict['soca_ensweights'].execute()
 
     @logit(logger)
-    def finalize(self: Task) -> None:
+    def finalize(self) -> None:
         """Finalize the global B-matrix job
 
         This method will finalize the global B-matrix job.

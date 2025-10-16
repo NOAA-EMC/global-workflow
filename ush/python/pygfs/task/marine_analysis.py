@@ -5,9 +5,11 @@ from logging import getLogger
 import os
 import pygfs.utils.marine_da_utils as mdau
 from pygfs.jedi import Jedi
-from pygfs.task import Analysis
+from pygfs.task.analysis import Analysis
 from wxflow import (AttrDict, FileHandler,
-                    to_timedelta, parse_j2yaml, logit)
+                    to_timedelta, to_fv3time,
+                    parse_j2yaml, 
+                    logit)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -68,19 +70,19 @@ class MarineAnalysis(Analysis):
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3)),
                 'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS,
                 'marine_pseudo_model_states': mdau.gen_bkg_list(bkg_path='./bkg',
-                                                                window_begin=_window_begin)
+                                                                window_begin=self.task_config.WINDOW_BEGIN)
             }
         ))
 
         # Extend task_config with content of config yaml for this task
-        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config)
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Construct dictionary of JEDI objects, one for each JEDI application need for the analysis
         expected_keys = ['var', 'soca_incpostproc', 'soca_diag_stats']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
-    def initialize(self: Task) -> None:
+    def initialize(self) -> None:
         """Initialize the marine analysis task
 
         This method will initialize the marine analysis.
@@ -117,7 +119,7 @@ class MarineAnalysis(Analysis):
                             simple_geom=True, mom_input="./anl_geom/MOM_input")
 
         # assert that dates of the history files are correct
-        mdau.test_hist_date('./INPUT/MOM.res.nc', self.task_config.MARINE_WINDOW_BEGIN)
+        mdau.test_hist_date('./INPUT/MOM.res.nc', self.task_config.WINDOW_BEGIN)
         for state in self.task_config.marine_pseudo_model_states:
             mdau.test_hist_date(state['basename'] + state['ocn_filename'],
                                 datetime.strptime(state['date'], '%Y-%m-%dT%H:%M:%SZ'))
@@ -151,7 +153,7 @@ class MarineAnalysis(Analysis):
         self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
-    def finalize(self: Task) -> None:
+    def finalize(self) -> None:
         """Finalize a global marine analysis
 
         This method will finalize a global marine analysis.
