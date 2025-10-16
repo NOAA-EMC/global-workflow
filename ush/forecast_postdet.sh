@@ -625,9 +625,6 @@ MOM6_postdet() {
   fi  # if [[ "${RERUN}" == "NO" ]]; then
 
   # Link output files
-  # ocean.stats file
-  ${NLN} "${COMOUT_OCEAN_HISTORY}/ocean.stats" "${DATAoutput}/MOM6_OUTPUT/ocean.stats"
-
   case ${RUN} in
     gfs|enkfgfs|gefs|sfs|gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
       # Looping over MOM6 output hours
