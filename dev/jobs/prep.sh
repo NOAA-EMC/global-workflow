@@ -98,7 +98,7 @@ fi
 
 
 ###############################################################
-# If requested copy bias correction files from source to comroot
+# If requested, copy bias correction files from source to comroot
 if [[ ${COPY_BIASCOR:-"NO"} == "YES" ]]; then
     for file in abias abias_pc abias_air; do
         cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}"
@@ -169,6 +169,23 @@ done
 export err
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to obtain/create ${files}, ABORT!"
+fi
+
+################################################################################ 
+# If requested, create radiance bias correction files for JEDI
+if [[ ${CONVERT_BIASCOR:-"NO"} == "YES" ]]; then
+    cd ${DATAROOT}
+    ${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit "JOBSPROC_GLOBAL_PREP job failed, ABORT!"
+    fi
+    
+    # Remove temporary working directory
+    cd "${DATAROOT}" || true
+    if [[ "${KEEPDATA}" == "NO" ]]; then
+	rm -rf "${DATA}"
+    fi    
 fi
 
 ################################################################################
