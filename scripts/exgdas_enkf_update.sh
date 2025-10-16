@@ -197,7 +197,7 @@ for imem in $(seq 1 ${NMEM_ENS}); do
             "sfgsfc_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       fi
       if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}analysis.atm.i00${FHR}.nc" \
+         ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}analysis.atm.a00${FHR}.nc" \
             "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}"
       else
          ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc" \

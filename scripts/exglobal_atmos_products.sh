@@ -241,8 +241,8 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
 
   if [[ "${fhr3}" == "analysis" ]]; then
 
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_MSC_sfcanl" "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}analysis.sfc.i006.nc"
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SA"         "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}analysis.atm.i006.nc"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_MSC_sfcanl" "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}analysis.sfc.a006.nc"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SA"         "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}analysis.atm.a006.nc"
 
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGA_GB2"      "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2"
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGA_GB2_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2.idx"

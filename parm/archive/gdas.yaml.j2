@@ -48,8 +48,8 @@ gdas:
         - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2.idx"
 
         # Analysis netCDF (raw) data
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.i006.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.i006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
 
             {% if DOHYBVAR %}
         # Ensemble-resolution analysis
@@ -57,7 +57,7 @@ gdas:
         # Ensemble-resolution IAU analyses
                     {% for fhr in IAUFHRS %}
                        {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ensres_analysis.atm.i{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ensres_analysis.atm.a{{ '%03d' % fhr }}.nc"
                        {% endif %}
                     {% endfor %}
                 {% endif %}

@@ -125,7 +125,7 @@ else
 fi
 
 if [[ "${DONST}" == "YES" ]]; then
-  export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}analysis.dtf.i006.nc}
+  export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}analysis.dtf.a006.nc}
 else
   export NST_FILE="NULL"
 fi
