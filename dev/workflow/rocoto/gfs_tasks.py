@@ -881,7 +881,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'enkf{self.run}_marineanlecen'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_mergensst']:
-            data = f'&ROTDIR;/{self.run}.@Y@m@d/@H/atmos/{self.run}.t@Hz.analysis.sfc.i006.nc'
+            data = f'&ROTDIR;/{self.run}.@Y@m@d/@H/atmos/{self.run}.t@Hz.analysis.sfc.a006.nc'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -1092,10 +1092,10 @@ class GFSTasks(Tasks):
 
         atm_anl_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
         deps = []
-        data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.atm.i006.nc'
+        data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.atm.a006.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.sfc.i006.nc'
+        data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.sfc.a006.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_anl_path}/{self.run}.t@Hz.done.txt'
