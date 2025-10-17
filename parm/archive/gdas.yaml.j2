@@ -72,6 +72,7 @@ gdas:
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}atmanlvar.yaml"
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}atmanlfv3inc.yaml"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
+        - "{{ COMIN_ATMOS_ANLMON | relpath(ROTDIR) }}/{{ head }}atmos_iodastat.tgz"
             {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
