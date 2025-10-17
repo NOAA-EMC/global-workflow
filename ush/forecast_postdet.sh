@@ -183,7 +183,11 @@ EOF
         for iaufhr in "${iaufhrs[@]}"; do
           if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
             for tile in {1..6}; do
-              inc_file="increment.atm.i$(printf %03i "${iaufhr}").tile${tile}.nc"
+              if (( iaufhr == 6 )); then
+                inc_file="atminc.tile${tile}.nc"
+              else
+                inc_file="atmi$(printf %03i "${iaufhr}").tile${tile}.nc"
+              fi
               inc_files+=("${inc_file}")
               IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
             done
@@ -198,16 +202,8 @@ EOF
       else  # "${DOIAU}" == "NO"
         read_increment=".true."
 
-        # JEDI writes increment files in the cubed-sphere grid, denoted by cs_
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
-          inc_files=( \
-                     "increment.cs_atm.i006.tile1.nc" \
-                     "increment.cs_atm.i006.tile2.nc" \
-                     "increment.cs_atm.i006.tile3.nc" \
-                     "increment.cs_atm.i006.tile4.nc" \
-                     "increment.cs_atm.i006.tile5.nc" \
-                     "increment.cs_atm.i006.tile6.nc" \
-                     )
+          inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
           increment_file_on_native_grid=".true."
           res_latlon_dynamics="atminc"
         else
@@ -230,10 +226,14 @@ EOF
 
       local increment_file
       for inc_file in "${inc_files[@]}"; do
-        if [[ "${RUN}" == "gcafs" ]]; then
-          increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+        if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
+          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
         else
-          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          if [[ "${RUN}" == "gcafs" ]]; then
+            increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          else
+            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          fi
         fi
         cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
       done

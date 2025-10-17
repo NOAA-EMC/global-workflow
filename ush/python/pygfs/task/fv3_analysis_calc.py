@@ -160,26 +160,6 @@ class FV3AnalysisCalc(Analysis):
         None
         """
 
-        # Copy analyses to COM
-        fh_dict = {'copy': []}
-        src_prefix = f"{self.task_config.DATA}/{self.task_config.GPREFIX}"
-        dest_prefix = f"{self.task_config.COMOUT_ATMOS_ANALYSIS}/{self.task_config.APREFIX}"
-        fh_dict['copy'].append([f"{src_prefix}atm.f006.nc",
-                                f"{dest_prefix}anl.atm.nc"])
-        fh_dict['copy'].append([f"{src_prefix}sfc.f006.nc",
-                                f"{dest_prefix}anl.sfc.nc"])
-
-        # Copy YAMLs to COM
-        for app_name in self.jedi_dict.keys():
-            src = os.path.join(self.task_config.DATA,
-                               f"{app_name}.yaml")
-            dest = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS,
-                                f"{self.task_config.APREFIX}{app_name}.yaml")
-            fh_dict['copy'].append([src, dest])
-
-        # Call FileHandler
-        FileHandler(fh_dict).sync()
-
         # Write analysis log file
         formatted_date = datetime.now().strftime("%a %b %d %H:%M:%S %Z%Y")
         log_file = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.RUN}.t{self.task_config.cyc}z.done.txt")

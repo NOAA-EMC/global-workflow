@@ -14,16 +14,9 @@ analysis:
         {% if DO_JEDIATMVAR %}
 
         {% for itile in range(6) %}
-        {% for ftype in [
-                         "increment.cs_atm.i003",
-                         "increment.cs_atm.i006",
-                         "increment.cs_atm.i006",
-                         "recentered_increment.cs_atm.i003",
-                         "recentered_increment.cs_atm.i006",
-                         "recentered_increment.cs_atm.i009"
-                         ] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        {% for ftype in ["atminc", "atmi009", "atmi003", "ratminc", "ratmi009", "ratmi003"] %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.cubed_sphere_grid_" ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.cubed_sphere_grid_{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endif %}
         {% endfor %}
         {% endfor %}
