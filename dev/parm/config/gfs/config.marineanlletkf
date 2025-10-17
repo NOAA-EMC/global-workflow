@@ -8,7 +8,7 @@ echo "BEGIN: config.marineanlletkf"
 # Get task specific resources
 source "${EXPDIR}/config.resources" marineanlletkf
 
-export TASK_CONFIG_YAML="${PARMgfs}/gdas/marine/marine_ecen_config.yaml.j2"
-export DIST_HALO_SIZE=3500000
+export OBS_LIST_YAML="{{ SOCA_OBS_LIST }}"
+export TASK_CONFIG_YAML="${PARMgfs}/gdas/marine/marine_ens_config.yaml.j2"
 
 echo "END: config.marineanlletkf"

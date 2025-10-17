@@ -5,10 +5,11 @@ import pygfs.utils.marine_da_utils as mdau
 from logging import getLogger
 import os
 from pygfs.task.analysis import Analysis
+from pygfs.jedi import Jedi
 from typing import Dict
 from wxflow import (AttrDict, Executable, FileHandler,
-                    parse_j2yaml,
-                    to_timedelta, to_YMDH
+                    parse_j2yaml, save_as_yaml,
+                    to_timedelta, to_YMDH,
                     logit)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -40,13 +41,14 @@ class MarineLETKF(Analysis):
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
-                'mom_input_nml_tmpl': os.path.join(self.task_config.DATA, 'mom_input.nml.tmpl')
-                'mom_input_nml': os.path.join(self.task_config.DATA, 'mom_input.nml')
-                'obs_dir': os.path.join(self.task_config.DATA, 'obs')
-                'ENSPERT_RELPATH': _enspert_relpath
-                'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine')
-                'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS
-                'letkf_app':  "true"
+                'mom_input_nml_tmpl': os.path.join(self.task_config.DATA, 'mom_input.nml.tmpl'),
+                'mom_input_nml': os.path.join(self.task_config.DATA, 'mom_input.nml'),
+                'obs_dir': os.path.join(self.task_config.DATA, 'obs'),
+                'ENSPERT_RELPATH': _enspert_relpath,
+                'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
+                'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS,
+                'letkf_app':  'true',
+                'DIST_HALO_SIZE': 3500000,
             }
         ))
 
@@ -74,6 +76,7 @@ class MarineLETKF(Analysis):
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
+        self.jedi_dict['gridgen'].initialize(self.task_config)
         self.jedi_dict['letkf'].initialize(self.task_config, clean_empty_obsspaces=True)
 
         # TODO(AFE) get rid of this, I think
@@ -87,7 +90,7 @@ class MarineLETKF(Analysis):
             nml.write(self.task_config.mom_input_nml, force=True)  # force to overwrite if necessary
 
     @logit(logger)
-    def execute(self, jedi_dict_key: str) -> None:
+    def execute(self) -> None:
         """Execute JEDI application of marine analysis
 
         Parameters
@@ -100,7 +103,14 @@ class MarineLETKF(Analysis):
         None
         """
 
-        self.jedi_dict[jedi_dict_key].execute()
+        # Temporary fix to add halo distribution to all obs spaces
+        for observer in self.jedi_dict['letkf'].jedi_config.input_config['observations']['observers']:
+            if 'distribution' not in observer['obs space']:
+                observer['obs space']['distribution'] = {'name': 'Halo', 'halo size': self.task_config['DIST_HALO_SIZE']}
+        save_as_yaml(self.jedi_dict['letkf'].jedi_config.input_config, self.jedi_dict['letkf'].jedi_config.yaml)
+
+        self.jedi_dict['gridgen'].execute()
+        self.jedi_dict['letkf'].execute()
 
     @logit(logger)
     def finalize(self):
@@ -113,33 +123,6 @@ class MarineLETKF(Analysis):
         None
         """
 
-        logger.info("finalize")
-
-        letkfsaveconf = AttrDict()
-        keys = ['current_cycle', 'DATA', 'NMEM_ENS', 'WINDOW_BEGIN', 'GDUMP_ENS',
-                'PARMgfs', 'ROTDIR', 'COM_OCEAN_LETKF_TMPL', 'COM_ICE_LETKF_TMPL',
-                'COMOUT_OCEAN_LETKF', 'COMOUT_ICE_LETKF', 'WINDOW_MIDDLE',
-                'OBS_LIST_YAML', 'COMOUT_CONF', 'letkf_yaml_file']
-        for key in keys:
-            letkfsaveconf[key] = self.task_config[key]
-
-        # get the list of obs output file - letkf yaml is already complete
-        letkf_config = parse_j2yaml(self.task_config.letkf_yaml_file, AttrDict())
-        obs_files = []
-        for observer in letkf_config['observations']['observers']:
-            obs_files.append(observer['obs space']['obsdataout']['engine']['obsfile'])
-        obs_files_to_copy = []
-        # copy files from diags to COMOUT
-        for obs_src in obs_files:
-            obs_dst = os.path.join(letkfsaveconf.COMOUT_OCEAN_LETKF, 'diags',
-                                   os.path.basename(obs_src))
-            if os.path.exists(obs_src):
-                obs_files_to_copy.append([obs_src, obs_dst])
-        FileHandler({'mkdir': [os.path.join(letkfsaveconf.COMOUT_OCEAN_LETKF, 'diags')]}).sync()
-        FileHandler({'copy': obs_files_to_copy}).sync()
-        # yaml configurations
-        yamls_to_copy = []
-        yamls_to_copy.append([letkfsaveconf.letkf_yaml_file, os.path.join(letkfsaveconf.COMOUT_CONF, 'soca_letkf.yaml')])
-        FileHandler({'copy': yamls_to_copy}).sync()
-        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, letkfsaveconf)
-        FileHandler(save_dict).sync()
+        # Save files from COM
+        logger.info(f"Saving files to COM")
+        FileHandler(self.task_config.data_out).sync()
