@@ -21,6 +21,10 @@ skip_ci_on_hosts:
   - orion
   - hercules
   - awsepicglobalworkflow
+  # TODO: Reenable these when the GDASApp is updated to handle the new EE2-compliant changes
+  - hera
+  - ursa
+  - wcoss2
 
 workflow:
   engine: rocoto
