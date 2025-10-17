@@ -128,9 +128,9 @@ fi
 # Create grib2 subgrid if this is the source grid
 if [[ "${grdID}" == "${WAV_SUBGRBSRC}" ]]; then
     for subgrb in ${WAV_SUBGRB}; do
-        subgrbref=$(echo ${!subgrb} | cut -d " " -f 1-20)
-        subgrbnam=$(echo ${!subgrb} | cut -d " " -f 21)
-        subgrbres=$(echo ${!subgrb} | cut -d " " -f 22)
+        subgrbref=$(echo "${!subgrb}" | cut -d " " -f 1-20)
+        subgrbnam=$(echo "${!subgrb}" | cut -d " " -f 21)
+        subgrbres=$(echo "${!subgrb}" | cut -d " " -f 22)
         subfnam="${RUN}.t${cyc}z.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
 
         ${COPYGB2} -g "${subgrbref}" -i0 -x "${outfile}" "${subfnam}"

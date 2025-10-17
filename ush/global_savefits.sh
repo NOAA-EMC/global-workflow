@@ -10,7 +10,7 @@ export fh1=06
 export fh2=00
 #
 #dir=${FIT_DIR}/${EXP}
-dir=${FIT_DIR}
+dir="${FIT_DIR}"
 mkdir -p "${dir}"
 cd "${dir}" || exit 8
 cpreq "${COMOUT}/f${fh1}.raob.${PDY}${cyc}" .
@@ -24,8 +24,8 @@ cpreq "${COMOUT}/f${fh2}.acft.${PDY}${cyc}" .
 
 export typ=anl
 #dir=${HORZ_DIR}/${EXP}/${typ}
-dir=${HORZ_DIR}/${typ}
-mkdir -p ${dir}
+dir="${HORZ_DIR}/${typ}"
+mkdir -p "${dir}"
 cd "${dir}" || exit 8
 cpreq "${COMOUT}/adpupa.mand.${typ}.${PDY}${cyc}" "adpupa.mand.${PDY}${cyc}"
 cpreq "${COMOUT}/adpsfc.${typ}.${PDY}${cyc}" "adpsfc.${PDY}${cyc}"
@@ -45,7 +45,7 @@ if [[ "${cyc}" == "00" || "${cyc}" == "12" ]]; then
         export fh2=36
     fi
     #dir=${FIT_DIR}/${EXP}
-    dir=${FIT_DIR}
+    dir="${FIT_DIR}"
     mkdir -p "${dir}"
     cd "${dir}" || exit 8
     cpreq "${COMOUT}/f${fh1}.raob.${PDY}${cyc}" .
@@ -58,7 +58,7 @@ if [[ "${cyc}" == "00" || "${cyc}" == "12" ]]; then
     cpreq "${COMOUT}/f${fh2}.acft.${PDY}${cyc}" .
     export typ=fcs
     #dir=${HORZ_DIR}/${EXP}/${typ}
-    dir=${HORZ_DIR}/${typ}
+    dir="${HORZ_DIR}/${typ}"
     mkdir -p "${dir}"
     cd "${dir}" || exit 8
     cpreq "${COMOUT}/adpupa.mand.${typ}.${PDY}${cyc}" "adpupa.mand.${PDY}${cyc}"

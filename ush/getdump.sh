@@ -25,9 +25,9 @@ fi
 prefix="${RUN}.t${HH}z."
 
 # Link dump files from SOURCE_DIR to TARGET_DIR
-cd "${SOURCE_DIR}"
+cd "${SOURCE_DIR}" || exit 1
 if [[ -s "${prefix}updated.status.tm00.bufr_d" ]]; then
-    for file in $(ls ${prefix}*); do
+    for file in "${prefix}"*; do
         ${NLN} "${SOURCE_DIR}/${file}" "${TARGET_DIR}/${file}"
     done
 else

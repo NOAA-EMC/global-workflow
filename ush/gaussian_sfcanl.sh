@@ -104,16 +104,16 @@ CASE_HIST=${CASE_HIST:-${CASE}}
 resh=${CASE_HIST:1}
 LONB_CASE=$((resh * 4))
 LATB_CASE=$((resh * 2))
-LONB_SFC=${LONB_SFC:-$LONB_CASE}
-LATB_SFC=${LATB_SFC:-$LATB_CASE}
+LONB_SFC=${LONB_SFC:-${LONB_CASE}}
+LATB_SFC=${LATB_SFC:-${LATB_CASE}}
 DONST=${DONST:-"NO"}
 LEVS=${LEVS:-64}
-LEVSP1=$(($LEVS + 1))
+LEVSP1=$((LEVS + 1))
 FIXWGTS=${FIXWGTS:-${FIXorog}/${CASE}/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
 
 #  Filenames.
 XC=${XC:-}
-GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.x}
+GAUSFCANLEXE=${GAUSFCANLEXE:-${EXECgfs}/gaussian_sfcanl.x}
 SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVSP1}.txt}
 
 #  Other variables.
@@ -133,9 +133,9 @@ fi
 
 ################################################################################
 #  Make surface analysis
-export PGM=$GAUSFCANLEXE
-export pgm=$PGM
-$LOGSCRIPT
+export PGM=${GAUSFCANLEXE}
+export pgm=${PGM}
+${LOGSCRIPT}
 
 iy=${PDY:0:4}
 im=${PDY:4:2}
@@ -196,6 +196,6 @@ fi
 
 ################################################################################
 #  Postprocessing
-cd "${pwd}"
+cd "${pwd}" || exit 1
 
 exit 0

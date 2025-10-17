@@ -9,11 +9,11 @@ WW3_namelists() {
     # --------------------------------------------------------------------------- #
     # Buoy location file
 
-    if [ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]; then
+    if [[ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]]; then
         cpreq "${PARMgfs}/wave/wave_${NET}.buoys" "${DATA}/ww3_points.list"
     fi
 
-    if [ -f "${DATA}/ww3_points.list" ]; then
+    if [[ -f "${DATA}/ww3_points.list" ]]; then
         set +x
         echo "ww3_points.list copied (${PARMgfs}/wave/wave_${NET}.buoys)."
         set_trace
@@ -33,6 +33,11 @@ WW3_namelists() {
         'CPL')
             WW3_ICE="C"
             ;;
+        *)
+            msg="FATAL: Unknown WW3ICEIMP ${WW3ICEINP}"
+            export err=100
+            err_exit "${msg}"
+            ;;
     esac
 
     case ${WW3CURINP} in
@@ -41,6 +46,11 @@ WW3_namelists() {
             ;;
         'CPL')
             WW3_CUR="C"
+            ;;
+        *)
+            msg="FATAL: Unknown WW3CURINP ${WW3CURINP}"
+            export err=100
+            err_exit "${msg}"
             ;;
     esac
 

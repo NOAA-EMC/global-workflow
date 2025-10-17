@@ -55,7 +55,6 @@ outfile=${7:-${outfile:?}}
 
 # Other variables
 err=0
-RADMON_SUFFIX=${RADMON_SUFFIX}
 
 have_diag_rpt=0
 if [[ -s "${diag_rpt}" ]]; then
@@ -70,7 +69,7 @@ echo "have_diag_rpt = ${have_diag_rpt}"
 #  search $file2 for the same satname, channel, and region
 #  if same combination is in both files, add the values to the output file
 #
-{ while read myline; do
+{ while read -r myline; do
     echo "myline = ${myline}"
     bound=""
 
@@ -91,20 +90,20 @@ echo "have_diag_rpt = ${have_diag_rpt}"
     diag_match=""
     diag_match_len=0
 
-    if [[ ${have_diag_rpt} == 1 ]]; then
+    if [[ "${have_diag_rpt}" -eq 1 ]]; then
         diag_match=$(gawk "/${satname}/" "${diag_rpt}")
-        diag_match_len=$(echo ${#diag_match})
+        diag_match_len=${#diag_match}
     fi
 
-    if [[ ${diag_match_len} == 0 ]]; then
+    if [[ "${diag_match_len}" -eq 0 ]]; then
 
-        if [[ ${type} == "chan" ]]; then
+        if [[ "${type}" == "chan" ]]; then
             echo "looking for match for ${satname} and ${channel}"
-            { while read myline2; do
+            { while read -r myline2; do
                 satname2=$(echo "${myline2}" | gawk '{print $1}')
                 channel2=$(echo "${myline2}" | gawk '{print $3}')
 
-                if [[ ${satname} == ${satname2} && ${channel} == ${channel2} ]]; then
+                if [[ "${satname}" == "${satname2}" && "${channel}" == "${channel2}" ]]; then
                     match="${satname}  channel=  ${channel}"
                     echo "match from gawk = ${match}"
                     break
@@ -118,19 +117,19 @@ echo "have_diag_rpt = ${have_diag_rpt}"
             match=$(gawk "/${satname}/ && /channel= ${channel} / && /region= ${region} /" "${file2}")
             echo match = "${match}"
 
-            match_len=$(echo ${#match})
+            match_len=${#match}
             if ((match_len > 0)); then
                 channel2=$(echo "${match}" | gawk '{print $3}')
 
-                if [[ ${channel2} != ${channel} ]]; then
+                if [[ "${channel2}" != "${channel}" ]]; then
                     match=""
                 fi
             fi
 
         fi
-        match_len=$(echo ${#match})
+        match_len=${#match}
 
-        if ((match_len > 0)); then
+        if [[ match_len -gt 0 ]]; then
 
             value2=$(echo "${match}" | gawk '{print $7}')
             bound2=$(echo "${match}" | gawk '{print $9}')
@@ -156,7 +155,7 @@ echo "have_diag_rpt = ${have_diag_rpt}"
             echo "${line1}" >> "${outfile}"
 
             if [[ ${type} != "chan" ]]; then
-                tmpc=$(echo "${tmpa}" | sed 's/[a-z]/ /g' | sed 's/[0-9]/ /g' | sed 's/=/ /g' | sed 's/_/ /g' | sed 's/-/ /g')
+                tmpc="${tmpa//[a-z0-9\-_\=]/}"
 
                 if [[ ${type} == "pen" || ${type} == "cnt" ]]; then
                     line2=" ${tmpc} ${cycle2}         	${value2}	${bound2}"
@@ -171,7 +170,7 @@ echo "have_diag_rpt = ${have_diag_rpt}"
             # add hyperlink to warning entry
             #
             line3="   http://www.emc.ncep.noaa.gov/gmb/gdas/radiance/es_rad/${RADMON_SUFFIX}/index.html?sat=${satname}&region=${region}&channel=${channel}&stat=${type}"
-            if [[ ${channel} -gt 0 ]]; then
+            if [[ "${channel}" -gt 0 ]]; then
                 echo "${line3}" >> "${outfile}"
                 echo "" >> "${outfile}"
             fi
@@ -182,4 +181,4 @@ done; } < "${file1}"
 ################################################################################
 #  Post processing
 
-exit ${err}
+exit "${err}"

@@ -12,29 +12,29 @@
 #  file gfs_collective*.list (1-9) contains the list of stations to
 #  put in a particular collective output file.
 export m=$1
-mkdir $DATA/$m
-cd $DATA/$m
-cpreq ${FIXgfs}/product/gfs_collective${m}.list $DATA/$m/.
+mkdir -p "${DATA}/${m}"
+cd "${DATA}/${m}" || exit 2
+cpreq "${FIXgfs}/product/gfs_collective${m}.list" "${DATA}/${m}/"
 CCCC=KWBC
 file_list=gfs_collective${m}.list
 
-if [ $m -le 2 ]; then
-    WMOHEAD=JUSA4$m
-elif [ $m -le 6 ]; then
-    WMOHEAD=JUSB4$m
+if [[ ${m} -le 2 ]]; then
+    WMOHEAD="JUSA4${m}"
+elif [[ ${m} -le 6 ]]; then
+    WMOHEAD="JUSB4${m}"
 else
-    WMOHEAD=JUSX4$m
+    WMOHEAD="JUSX4${m}"
 fi
 
-for stn in $(cat $file_list); do
+while IFS= read -r stn; do
     cpreq "${COMOUT_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
     export pgm=tocsbufr.x
     #. prep_step
-    export FORT11=$DATA/${m}/bufrin
+    export FORT11="${DATA}/${m}/bufrin"
     export FORT51=./bufrout
-    ${EXECgfs}/${pgm} << EOF
+    "${EXECgfs}/${pgm}" << EOF
  &INPUT
-  BULHED="$WMOHEAD",KWBX="$CCCC",
+  BULHED="${WMOHEAD}",KWBX="${CCCC}",
   NCEP2STD=.TRUE.,
   SEPARATE=.TRUE.,
   MAXFILESIZE=600000
@@ -48,7 +48,7 @@ EOF
 
     cat "${DATA}/${m}/bufrout" >> "${DATA}/${m}/gfs_collective${m}.fil"
     rm -f "${DATA}/${m}/bufrin" "${DATA}/${m}/bufrout"
-done
+done < "${file_list}"
 
 if [[ ${SENDDBN} == 'YES' ]]; then
     cpfs "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"

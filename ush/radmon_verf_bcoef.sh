@@ -60,7 +60,7 @@
 ####################################################################
 
 netcdf_boolean=".false."
-if [[ ${RADMON_NETCDF} -eq 1 ]]; then
+if [[ "${RADMON_NETCDF}" -eq 1 ]]; then
     netcdf_boolean=".true."
 fi
 echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, ${netcdf_boolean}"
@@ -79,7 +79,7 @@ USE_ANL=${USE_ANL:-0}
 
 bcoef_exec=radmon_bcoef.x
 
-if [[ ${USE_ANL} -eq 1 ]]; then
+if [[ "${USE_ANL}" -eq 1 ]]; then
     gesanl="ges anl"
 else
     gesanl="ges"
@@ -88,13 +88,13 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program and supporting files to working directory
 
-cpreq "${EXECgfs}/${bcoef_exec}" ./${bcoef_exec}
+cpreq "${EXECgfs}/${bcoef_exec}" "./${bcoef_exec}"
 cpreq "${biascr}" ./biascr.txt
 
 #--------------------------------------------------------------------
 #   Run program for given time
 
-export pgm=${bcoef_exec}
+export pgm="${bcoef_exec}"
 
 iyy="${PDY:0:4}"
 imm="${PDY:4:2}"
@@ -106,7 +106,7 @@ npredr=5
 
 for type in ${SATYPE}; do
 
-    if [[ ! -s ${type} ]]; then
+    if [[ ! -s "${type}" ]]; then
         echo "ZERO SIZED:  ${type}"
         continue
     fi
@@ -115,20 +115,20 @@ for type in ${SATYPE}; do
 
         source prep_step
 
-        if [[ ${dtype} == "anl" ]]; then
+        if [[ "${dtype}" == "anl" ]]; then
             data_file="${type}_anl.${PDY}${cyc}.ieee_d"
-            ctl_file=${type}_anl.ctl
-            bcoef_ctl=bcoef.${ctl_file}
+            ctl_file="${type}_anl.ctl"
+            bcoef_ctl="bcoef.${ctl_file}"
         else
             data_file="${type}.${PDY}${cyc}.ieee_d"
-            ctl_file=${type}.ctl
-            bcoef_ctl=bcoef.${ctl_file}
+            ctl_file="${type}.ctl"
+            bcoef_ctl="bcoef.${ctl_file}"
         fi
 
-        if [[ ${REGIONAL_RR} -eq 1 ]]; then
-            bcoef_file=${rgnHH}.bcoef.${data_file}.${rgnTM}
+        if [[ "${REGIONAL_RR}" -eq 1 ]]; then
+            bcoef_file="${rgnHH}.bcoef.${data_file}.${rgnTM}"
         else
-            bcoef_file=bcoef.${data_file}
+            bcoef_file="bcoef.${data_file}"
         fi
 
         if [[ -f input ]]; then
@@ -153,9 +153,9 @@ for type in ${SATYPE}; do
  /
 EOF
         startmsg
-        ./${bcoef_exec} < input >> "${pgmout}" 2>> errfile
+        "./${bcoef_exec}" < input >> "${pgmout}" 2>> errfile
         export err=$?
-        if [[ ${err} -ne 0 ]]; then
+        if [[ "${err}" -ne 0 ]]; then
             echo "FATAL ERROR: ${bcoef_exec} failed for instrument ${type} and datatype ${dtype}"
             exit "${err}"
         fi
@@ -164,11 +164,11 @@ EOF
         #  move data, control, and stdout files to $TANKverf_rad and compress
         #
 
-        if [[ -s ${bcoef_file} ]]; then
+        if [[ -s "${bcoef_file}" ]]; then
             ${COMPRESS} "${bcoef_file}"
         fi
 
-        if [[ -s ${bcoef_ctl} ]]; then
+        if [[ -s "${bcoef_ctl}" ]]; then
             ${COMPRESS} "${bcoef_ctl}"
         fi
 
@@ -179,8 +179,8 @@ done     # type in $SATYPE loop
 
 if compgen -G "bcoef*.ieee_d*" > /dev/null || compgen -G "bcoef*.ctl*" > /dev/null; then
     tar_file=radmon_bcoef.tar
-    tar -cf ${tar_file} bcoef*.ieee_d* bcoef*.ctl*
-    ${COMPRESS} ${tar_file}
+    tar -cf "${tar_file}" bcoef*.ieee_d* bcoef*.ctl*
+    ${COMPRESS} "${tar_file}"
     mv "${tar_file}.${Z}" "${TANKverf_rad}"
 
     if [[ ${RAD_AREA} = "rgn" ]]; then

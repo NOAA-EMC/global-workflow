@@ -38,9 +38,7 @@ check_diag_files() {
     printf "\n\n--> check_diag_files\n"
 
     for type in ${found_satype}; do
-        len_check=$(echo "${avail_satype}" | grep "${type}" | wc -c)
-
-        if [[ ${len_check} -le 1 ]]; then
+        if grep -q "${type}" <<< "${avail_satype}"; then
             echo "missing diag file -- diag_${type}_ges.${pdate}.gz not found" >> "./${out_file}"
         fi
     done
@@ -97,12 +95,18 @@ ozn_ptype=${ozn_ptype:-"ges anl"}
 #  a problem, reported by an iret value of 2
 #
 
-avail_satype=$(ls -1 d*ges* | sed -e 's/_/ /g;s/\./ /' | gawk '{ print $2 "_" $3 }')
+declare -a avail_satype
+ges_file_pattern='(diag_)(.*)(_ges)'
+for ges_file in *; do
+    if [[ "${ges_file}" =~ ${ges_file_pattern} ]]; then
+        avail_satype+=("${BASH_REMATCH[2]}")
+    fi
+done
 
 if [[ ${DO_DATA_RPT} -eq 1 ]]; then
     if [[ -e ${SATYPE_FILE} ]]; then
         satype=$(cat "${SATYPE_FILE}")
-        check_diag_files "${PDY}${cyc}" "${satype}" "${avail_satype}"
+        check_diag_files "${PDY}${cyc}" "${satype}" "${avail_satype[*]}"
     else
         echo "WARNING:  missing ${SATYPE_FILE}"
     fi
@@ -111,7 +115,7 @@ fi
 len_satype=$(echo -n "${satype}" | wc -c)
 
 if [[ ${len_satype} -le 1 ]]; then
-    satype=${avail_satype}
+    satype="${avail_satype[*]}"
 fi
 
 echo "${satype}"
@@ -139,7 +143,7 @@ else
         idd="${PDY:6:2}"
         ihh=${cyc}
 
-        for type in ${avail_satype}; do
+        for type in "${avail_satype[@]}"; do
             if [[ -f "diag_${type}_${ptype}.${PDY}${cyc}.gz" ]]; then
                 mv "diag_${type}_${ptype}.${PDY}${cyc}.gz" "${type}.${ptype}.gz"
                 gunzip "./${type}.${ptype}.gz"
@@ -238,4 +242,4 @@ EOF
     cpfs "stdout.time.tar.${Z}" "${TANKverf_ozn}/time/"
 fi
 
-exit ${iret}
+exit "${iret}"

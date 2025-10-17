@@ -26,7 +26,7 @@ CICE_namelists() {
 
     # Get correct MPI options for NPROC and grid
     local processor_shape=${cice6_processor_shape:-'slenderX2'}
-    local shape=${processor_shape#${processor_shape%?}}
+    local shape=${processor_shape#"${processor_shape%?}"}
     local NPX=$((ntasks_cice6 / shape)) #number of processors in x direction
     local NPY=$((ntasks_cice6 / NPX))   #number of processors in y direction
     if (($((NX_GLB % NPX)) == 0)); then

@@ -69,7 +69,7 @@ cat ww3_gint.inp
 export pgm="${NET,,}_ww3_gint.x"
 source prep_step
 echo "INFO: Executing '${pgm}'"
-"${EXECgfs}/${pgm}" > grid_interp.${grdID}.out 2>&1
+"${EXECgfs}/${pgm}" > "grid_interp.${grdID}.out" 2>&1
 cat "grid_interp.${grdID}.out"
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: '${pgm}' failed!"

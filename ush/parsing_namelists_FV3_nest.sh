@@ -716,7 +716,7 @@ EOF
 
     # Add namelist for stochastic physics options
     echo "" >> "${nml_file}"
-    #if [ $MEMBER -gt 0 ]; then
+    #if [[ $MEMBER -gt 0 ]]; then
     if [[ "${DO_SPPT}" = "YES" || "${DO_SHUM}" = "YES" || "${DO_SKEB}" = "YES" || "${DO_LAND_PERT}" = "YES" ]]; then
 
         cat >> "${nml_file}" << EOF

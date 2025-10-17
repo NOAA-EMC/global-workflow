@@ -31,7 +31,7 @@
 
 rm -rf ice
 mkdir ice
-cd ice
+cd ice || exit 1
 ${NLN} "${DATA}/postmsg" postmsg
 
 # 0.b Define directories and the search path.
@@ -43,10 +43,10 @@ cat << EOF
 +--------------------------------+
 !         Make ice fields        |
 +--------------------------------+
-   Model TAG       : $WAV_MOD_TAG
+   Model TAG       : ${WAV_MOD_TAG}
    Model ID        : ${RUN}.wave
-   Ice grid ID     : $WAVEICE_FID
-   Ice file        : $WAVICEFILE
+   Ice grid ID     : ${WAVEICE_FID}
+   Ice file        : ${WAVICEFILE}
 
 Making ice fields.
 EOF
@@ -61,23 +61,24 @@ fi
 
 # 0.c Links to working directory
 
-${NLN} ${DATA}/mod_def.$WAVEICE_FID mod_def.ww3
+${NLN} "${DATA}/mod_def.${WAVEICE_FID}" mod_def.ww3
 
 # --------------------------------------------------------------------------- #
 # 1.  Get the necessary files
 # 1.a Copy the ice data file
 
-file=${COMIN_OBS}/${WAVICEFILE}
+file="${COMIN_OBS}/${WAVICEFILE}"
 
-if [ -f $file ]; then
-    cp $file ice.grib
+if [[ -f "${file}" ]]; then
+    cp "${file}" ice.grib
 fi
 
-if [ -f ice.grib ]; then
-    echo "   ice.grib copied ($file)."
+if [[ -f ice.grib ]]; then
+    echo "   ice.grib copied (${file})."
 else
-    echo "ERROR: NO ICE FILE $file"
-    exit 2
+    msg="FATAL ERROR: NO ICE FILE ${file}"
+    export err=2
+    err_exit "${msg}"
 fi
 
 # --------------------------------------------------------------------------- #
@@ -86,11 +87,11 @@ fi
 
 echo '   Extracting data from ice.grib ...'
 
-$WGRIB2 ice.grib -netcdf icean_5m.nc 2>&1 > wgrib.out
+${WGRIB2} ice.grib -netcdf icean_5m.nc wgrib.out 2>&1
 
 err=$?
 
-if [ "$err" != '0' ]; then
+if [[ "${err}" != '0' ]]; then
     cat wgrib.out
     echo 'ERROR: FAILURE WHILE UNPACKING GRIB ICE FILE *** '
     exit 3
@@ -104,17 +105,17 @@ rm -f ice.index
 
 printf "   Run through preprocessor ...\n"
 
-cp -f ${DATA}/ww3_prnc.ice.$WAVEICE_FID.inp.tmpl ww3_prnc.inp
+cp -f "${DATA}/ww3_prnc.ice.${WAVEICE_FID}.inp.tmpl" ww3_prnc.inp
 
 export pgm="${NET,,}_ww3_prnc.x"
 source prep_step
 
-"${EXECgfs}/${pgm}" 1> prnc_${WAVEICE_FID}_${cycle}.out 2>&1
+"${EXECgfs}/${pgm}" 1> "prnc_${WAVEICE_FID}_${cycle}.out" 2>&1
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    cat prnc_${WAVEICE_FID}_${cycle}.out
-    echo "ERROR: failure in ${pgm}"
-    exit 4
+    cat "prnc_${WAVEICE_FID}_${cycle}.out"
+    msg="FATAL ERROR: failure in ${pgm}"
+    err_exit "${msg}"
 fi
 
 rm -f wave_prep.out ww3_prep.inp ice.raw mod_def.ww3
@@ -125,10 +126,10 @@ rm -f wave_prep.out ww3_prep.inp ice.raw mod_def.ww3
 # Ice file name will have ensemble member number if WW3ATMIENS=T
 # and only WAV_MOD_ID if WW3ATMIENS=F
 #
-if [ "${WW3ATMIENS}" = "T" ]; then
-    icefile=${WAV_MOD_TAG}.${WAVEICE_FID}.$cycle.ice
-elif [ "${WW3ATMIENS}" = "F" ]; then
-    icefile=${RUN}.wave.${WAVEICE_FID}.$cycle.ice
+if [[ "${WW3ATMIENS}" == "T" ]]; then
+    icefile="${WAV_MOD_TAG}.${WAVEICE_FID}.${cycle}.ice"
+elif [[ "${WW3ATMIENS}" == "F" ]]; then
+    icefile="${RUN}.wave.${WAVEICE_FID}.${cycle}.ice"
 fi
 
 echo "   Saving ice.ww3 as ${COMOUT_WAVE_PREP}/${icefile}"

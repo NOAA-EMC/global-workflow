@@ -73,11 +73,11 @@ USE_ANL=${USE_ANL:-0}
 bcor_exec=radmon_bcor.x
 
 netcdf_boolean=".false."
-if [[ ${RADMON_NETCDF} -eq 1 ]]; then
+if [[ "${RADMON_NETCDF}" -eq 1 ]]; then
     netcdf_boolean=".true."
 fi
 
-if [[ ${USE_ANL} -eq 1 ]]; then
+if [[ "${USE_ANL}" -eq 1 ]]; then
     gesanl="ges anl"
 else
     gesanl="ges"
@@ -86,12 +86,12 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program to working directory
 
-cpreq "${EXECgfs}/${bcor_exec}" ./${bcor_exec}
+cpreq "${EXECgfs}/${bcor_exec}" "./${bcor_exec}"
 
 #--------------------------------------------------------------------
 #   Run program for given time
 
-export pgm=${bcor_exec}
+export pgm="${bcor_exec}"
 
 iyy="${PDY:0:4}"
 imm="${PDY:4:2}"
@@ -111,16 +111,12 @@ for type in ${SATYPE}; do
             bcor_file=bcor.${data_file}
             ctl_file=${type}_anl.ctl
             bcor_ctl=bcor.${ctl_file}
-            stdout_file=stdout.${type}_anl
-            bcor_stdout=bcor.${stdout_file}
             input_file=${type}_anl
         else
             data_file="${type}.${PDY}${cyc}.ieee_d"
             bcor_file=bcor.${data_file}
             ctl_file=${type}.ctl
             bcor_ctl=bcor.${ctl_file}
-            stdout_file=stdout.${type}
-            bcor_stdout=bcor.${stdout_file}
             input_file=${type}
         fi
 
@@ -153,22 +149,22 @@ for type in ${SATYPE}; do
 EOF
 
             startmsg
-            ./${bcor_exec} < input >> "${pgmout}" 2>> errfile
+            "./${bcor_exec}" < input >> "${pgmout}" 2>> errfile
             export err=$?
-            if [[ ${err} -ne 0 ]]; then
-                echo "FATAL ERROR: ${bcor_exec} failed for instrument ${type} and datatype ${dtype}!"
-                exit "${err}"
+            if [[ "${err}" -ne 0 ]]; then
+                msg="FATAL ERROR: ${bcor_exec} failed for instrument ${type} and datatype ${dtype}!"
+                err_exit "${msg}"
             fi
 
             #-------------------------------------------------------------------
             #  move data, control, and stdout files to $TANKverf_rad and compress
             #
 
-            if [[ -s ${bcor_file} ]]; then
+            if [[ -s "${bcor_file}" ]]; then
                 ${COMPRESS} "${bcor_file}"
             fi
 
-            if [[ -s ${bcor_ctl} ]]; then
+            if [[ -s "${bcor_ctl}" ]]; then
                 ${COMPRESS} "${bcor_ctl}"
             fi
 
@@ -181,7 +177,7 @@ tar_file=radmon_bcor.tar
 
 if compgen -G "bcor*.ieee_d*" > /dev/null || compgen -G "bcor*.ctl*" > /dev/null; then
     tar -cf "${tar_file}" bcor*.ieee_d* bcor*.ctl*
-    ${COMPRESS} ${tar_file}
+    ${COMPRESS} "${tar_file}"
     mv "${tar_file}.${Z}" "${TANKverf_rad}/."
 
     if [[ ${RAD_AREA} = "rgn" ]]; then

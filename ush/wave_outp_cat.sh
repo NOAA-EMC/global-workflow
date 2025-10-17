@@ -68,7 +68,7 @@ while [[ ${fhr} -le ${MAXHOUR} ]]; do
     fi
 
     if [[ -f "${outfilefhr}" ]]; then
-        if [[ "$specdir" == "bull" ]]; then
+        if [[ "${specdir}" == "bull" ]]; then
             cat "${outfilefhr}" >> "${STA_DIR}/${specdir}/${WAV_MOD_TAG}.${buoy}.bull"
             cat "${coutfilefhr}" >> "${STA_DIR}/c${specdir}/${WAV_MOD_TAG}.${buoy}.cbull"
             rm -f "${outfilefhr}" "${coutfilefhr}"

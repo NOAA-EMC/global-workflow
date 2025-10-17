@@ -500,7 +500,8 @@ WW3_postdet() {
 
     # Loop for gridded output (uses FHINC)
     local fhr fhr3 FHINC
-    fhr=${FHMIN_WAV}
+    # shellcheck disable=SC2153
+    fhr="${FHMIN_WAV}"
     if [[ ${FHMAX_HF_WAV} -gt 0 && ${FHOUT_HF_WAV} -gt 0 && ${fhr} -lt ${FHMAX_HF_WAV} ]]; then
         fhinc=${FHOUT_HF_WAV}
     else

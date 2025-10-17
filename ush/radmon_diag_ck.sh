@@ -68,23 +68,22 @@ zero_len_diag=""
 #---------------------------------------------
 #  get list of diag files in the radstat file
 #
-radstat_contents=$(tar -tf "${radstat_file}" | grep '_ges' |
-    gawk -F"diag_" '{print $2}' |
-    gawk -F"_ges" '{print $1}')
+# shellcheck disable=SC2312
+radstat_contents=$(tar -tf "${radstat_file}" | grep -Po '(?<=diag_).*(?=_ges.*)')
 
 #---------------------------------------------
 #  load contents of satype_file into an array
 #
-satype_contents=$(cat "${satype_file}")
+readarray -t satype_contents < "${satype_file}"
 
 #-------------------------------------------------
 #  compare $satype_contents and $radstat_contents
 #    report anything missing
 #
-for sat in ${satype_contents}; do
-    content_count=$(echo "${radstat_contents}" | grep -c "${sat}" || true)
+for sat in "${satype_contents[@]}"; do
+    content_count=$(echo "${radstat_contents}" | grep -c "${sat}")
 
-    if ((content_count <= 0)); then
+    if [[ content_count -le 0 ]]; then
         missing_diag="${missing_diag} ${sat}"
     fi
 
@@ -108,18 +107,18 @@ echo ""
 #  uncompressed size of 0 goes on the zero_len_diag list.
 #
 
-# TODO Rewrite these array parsing commands to avoid using Bash's sloppy word splitting
-# File sizes contain only digits and immediately precede the date
-# shellcheck disable=SC2207
-sizes=($(tar -vtf "${radstat_file}" --wildcards '*_ges*' | grep -P -o '(\d)+(?= \d{4}-\d{2}-\d{2})'))
-# Filenames are the last group of non-whitespace characters
-# shellcheck disable=SC2207
-filenames=($(tar -vtf "${radstat_file}" --wildcards '*_ges*' | grep -P -o '\S+$'))
-# shellcheck disable=
+declare -A file_sizes
 
-for file_num in "${!filenames[@]}"; do
-    file_name="${filenames[${file_num}]}"
-    file_size="${sizes[${file_num}]}"
+# Parse the filename and filesize from tar's verbose output and store in an associative array
+# Field $6 of verbose tar output is the filename, field $3 is the size
+# Caution: this method is not robust if the filename contains spaces
+# shellcheck disable=SC2312
+while IFS='|' read -r name size; do
+    file_sizes[${name}]=${size}
+done < <(tar -vtf "${radstat_file}" --wildcards '*_ges*' | awk '$3 ~ /^[0-9]+$/ { print $6 "|" $3 }')
+
+for file_name in "${!file_sizes[@]}"; do
+    file_size="${file_sizes["${file_name}"]}"
 
     if ((file_size <= 1000)); then
         tar -xf "${radstat_file}" "${file_name}"

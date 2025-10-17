@@ -51,11 +51,11 @@ if [[ -z "${PDY+0}" || -z "${cyc+0}" || -z "${dtspec+0}" || -z "${EXECgfs+0}" ||
     exit 3
 fi
 
-cd "${workdir}"
+cd "${workdir}" || exit 1
 
 rm -rf "${specdir}_${buoy}"
 mkdir -p "${specdir}_${buoy}"
-cd "${specdir}_${buoy}"
+cd "${specdir}_${buoy}" || exit 1
 
 cat << EOF
 

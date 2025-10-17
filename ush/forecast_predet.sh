@@ -260,7 +260,7 @@ FV3_predet() {
     # blocking factor used for threading and general physics performance
     #nyblocks=$(expr \( $npy - 1 \) \/ $layout_y )
     #nxblocks=$(expr \( $npx - 1 \) \/ $layout_x \/ 32)
-    #if [ $nxblocks -le 0 ]; then nxblocks=1 ; fi
+    #if [[ $nxblocks -le 0 ]]; then nxblocks=1 ; fi
     blocksize=${blocksize:-32}
 
     # variables for controlling initialization of NCEP/NGGPS ICs
