@@ -10,13 +10,13 @@ gfsocean_analysis:
         {% endif %}
         {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
         # analysis and analysis increments
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.jedi.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.jedi.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.ocean.nc'
-        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.cice_model_anl.res.nc'
-        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.jedi.nc'
-        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.jedi.nc'
-        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.pp.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.i006.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}mom6_increment.i006.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.analysis.cice_model.res.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.i006.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}pp_increment.i006.nc'
 
         # static background error
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_parametric_stddev.nc'
