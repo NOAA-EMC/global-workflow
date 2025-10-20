@@ -430,7 +430,7 @@ RELOCATION PROCESSING"
 
    echo "NO RECORDS to process" > "${COMOUT_OBS}/${RUN}.${cycle}.tropcy_relocation_status.${tmmark}"
    if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}" ]]; then
-      cpfs "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+      touch "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
    fi
 else
 

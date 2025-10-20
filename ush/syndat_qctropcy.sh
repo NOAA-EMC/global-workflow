@@ -105,10 +105,10 @@ positional parameter 1"
 #  (Note: Only do so if files don't already exist)
 
    if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
-       cpfs "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+       touch "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
    fi
    if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}" ]]; then
-       cpfs "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+       touch "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
    fi
 
    exit
@@ -277,10 +277,10 @@ if [ "$errqct" -gt '0' ];then
 #  (Note: Only do so if files don't already exist)
 
    if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
-       cpfs "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+       touch "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
    fi
    if [[ ! -s ${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark} ]]; then
-       cpfs "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+       touch "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
    fi
 
    exit
