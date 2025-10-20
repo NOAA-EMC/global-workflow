@@ -6,7 +6,7 @@
 HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/../.." && pwd -P)
 declare -rx HOMEgfs
 
-source "${HOMEgfs}/dev/ush/load_modules.sh" run 1>/dev/null 2>&1
+source "${HOMEgfs}/dev/ush/load_modules.sh" run
 
 file1=${1:?}
 file2=${2:?}
