@@ -98,7 +98,6 @@ gdas:
             {% if DO_JEDISNOWDA %}
                 {% for itile in range(1,7) %}
         - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/snowinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
-        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
                 {% endfor %}
         - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}snowanlvar.yaml"
