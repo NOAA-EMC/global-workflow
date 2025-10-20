@@ -4,8 +4,11 @@ import os
 from collections import defaultdict
 import xarray as xr
 from logging import getLogger
+from datetime import datetime
 from typing import Dict, Any, Union, List
 from dateutil.rrule import DAILY, HOURLY, rrule
+from collections import defaultdict
+from datetime import timedelta
 from wxflow import (AttrDict,
                     FileHandler,
                     parse_j2yaml,
@@ -425,8 +428,7 @@ def _write_txt_file(content: str, file_path: Union[str, os.PathLike]) -> None:
     with open(file_path, 'w') as f:
         f.write(content)
 
-
-def _get_day_indices(datetimes):
+def _get_day_indices(datetimes: List[datetime]) -> Dict[datetime, List[int]]:
     """
     Group indices of datetimes by day, including midnight in both days.
 
@@ -442,8 +444,6 @@ def _get_day_indices(datetimes):
         Each day includes all hours from 00:00 of that day through 00:00 of the next day,
         and the midnight index is included in both days.
     """
-    from collections import defaultdict
-    from datetime import timedelta
 
     grouped = defaultdict(list)
 
