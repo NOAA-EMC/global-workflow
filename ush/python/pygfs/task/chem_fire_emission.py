@@ -618,14 +618,14 @@ class ChemFireEmissions(Task):
         f.lat.attrs.update({'long_name': 'Latitude', 'units': 'degrees_north'})
 
         # remove unnessicary attributes
-        del f['lat'].attrs.pop('valid_range', None)
-        del f['lat'].attrs.pop('scale_factor', None)
-        del f['lat'].attrs.pop('add_offset', None)
-        del f['lat'].attrs.pop('_FillValue', None)
-        del f['time'].attrs.pop('begin_date', None)
-        del f['time'].attrs.pop('begin_time', None)
-        del f['time'].attrs.pop('time_increment', None)
-        del f['time'].attrs.pop('calendar', None)
+        f['lat'].attrs.pop('valid_range', None)
+        f['lat'].attrs.pop('scale_factor', None)
+        f['lat'].attrs.pop('add_offset', None)
+        f['lat'].attrs.pop('_FillValue', None)
+        f['time'].attrs.pop('begin_date', None)
+        f['time'].attrs.pop('begin_time', None)
+        f['time'].attrs.pop('time_increment', None)
+        f['time'].attrs.pop('calendar', None)
 
         # Remove Element dimension if present
         if 'Element' in f.dims:
