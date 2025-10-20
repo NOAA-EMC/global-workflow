@@ -30,10 +30,7 @@ gdasocean_analysis:
         #- '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.recentering_error.nc'
         #- '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_ens_stddev.nc'
         #- '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_ens_stddev.nc'
-        #{% for diag_type in ["ssh_steric_stddev", "ssh_unbal_stddev", "ssh_total_stddev", "steric_explained_variance"] %}
-        {% for diag_type in ["steric_explained_variance"] %}
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.{{ diag_type }}.nc'
-        {% endfor %}
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.steric_explained_variance.nc'
         {% endif %}
 
         # runtime configs
