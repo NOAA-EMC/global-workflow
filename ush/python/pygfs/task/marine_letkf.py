@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import f90nml
+import os
 import pygfs.utils.marine_da_utils as mdau
 from logging import getLogger
-import os
 from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
 from typing import Dict
@@ -41,12 +40,8 @@ class MarineLETKF(Analysis):
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
-                'mom_input_nml_tmpl': os.path.join(self.task_config.DATA, 'mom_input.nml.tmpl'),
-                'mom_input_nml': os.path.join(self.task_config.DATA, 'mom_input.nml'),
-                'obs_dir': os.path.join(self.task_config.DATA, 'obs'),
-                'ENSPERT_RELPATH': _enspert_relpath,
                 'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
-                'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS,
+                'ENSPERT_RELPATH': _enspert_relpath,
                 'letkf_app': 'true',
                 'DIST_HALO_SIZE': 3500000,
             }
@@ -79,15 +74,9 @@ class MarineLETKF(Analysis):
         self.jedi_dict['gridgen'].initialize(self.task_config)
         self.jedi_dict['letkf'].initialize(self.task_config, clean_empty_obsspaces=True)
 
-        # TODO(AFE) get rid of this, I think
-        # swap date and stack size in mom_input.nml
-        domain_stack_size = self.task_config.DOMAIN_STACK_SIZE
-        ymdhms = [int(s) for s in self.task_config.WINDOW_BEGIN.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
-        with open(self.task_config.mom_input_nml_tmpl, 'r') as nml_file:
-            nml = f90nml.read(nml_file)
-            nml['ocean_solo_nml']['date_init'] = ymdhms
-            nml['fms_nml']['domains_stack_size'] = int(domain_stack_size)
-            nml.write(self.task_config.mom_input_nml, force=True)  # force to overwrite if necessary
+        # prepare the ensemble MOM6 input.nml
+        logger.info(f"Preparing ensemble MOM6 input namelist")
+        mdau.prep_input_nml(self.task_config)
 
     @logit(logger)
     def execute(self) -> None:
