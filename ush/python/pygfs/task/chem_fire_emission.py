@@ -421,9 +421,9 @@ class ChemFireEmissions(Task):
         if not os.path.exists(aero_emis_fire_dir):
             logger.warning(f"Directory does not exist: {aero_emis_fire_dir}")
             return files_found
-        
+
         for mon in months:
-            
+
             emis_file_dir = aero_emis_fire_dir
 
             all_files = os.listdir(emis_file_dir)
