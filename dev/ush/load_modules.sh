@@ -151,7 +151,8 @@ case "${MODULE_TYPE}" in
     # TODO: a better solution should be created for setting paths to package python scripts
     # shellcheck disable=SC2311
     pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
-    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}:${pyiodaPATH}"
+    pybufrPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/site-packages/"
+    PYTHONPATH="${pyiodaPATH}:${pybufrPATH}${PYTHONPATH:+:${PYTHONPATH}}"
     export PYTHONPATH
     ;;
 
