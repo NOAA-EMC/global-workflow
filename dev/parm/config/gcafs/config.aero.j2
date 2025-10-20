@@ -73,14 +73,15 @@ export AERO_EMIS_FIRE="gbbepx"
 # Version of the selected fire emissions dataset (e.g., for QFEDv2.5, version 061).
 # Determines which historical or NRT files to load from input directories.
 export AERO_EMIS_FIRE_VERSION="061"
-#---------------------------------------------------------------------------------------------------
-export AERO_EMIS_FIRE_HIST=1 # Use historical fire emissions | 1 = true 0 = false
 
 # Flag to enable historical (climatological) fire emissions instead of NRT for testing/spin-up.
 # When true, uses fixed-year data; false uses real-time from FIRE_EMIS_NRT_DIR.
 # Path to near-real-time (NRT) fire emissions data, updated daily (e.g., from satellites like MODIS).
 # On WCOSS2, points to DCOM (Data Communication) root for operational runs; empty for testing.
 # Processed by scripts like exglobal_prep_emissions.py to generate input files for GOCART.
+#---------------------------------------------------------------------------------------------------
+export AERO_EMIS_FIRE_HIST=1 # Use historical fire emissions | 1 = true 0 = false
+
 #---------------------------------------------------------------------------------------------------
 export FIRE_EMIS_NRT_DIR="" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
 export FIRE_EMIS_DIR="" # Directory containing historical fire emissions

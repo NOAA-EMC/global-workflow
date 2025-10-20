@@ -8,6 +8,7 @@ import shutil
 from logging import getLogger
 from typing import Dict, Any, Union, List
 from dateutil.rrule import DAILY, rrule
+import traceback
 from wxflow import (AttrDict,
                     parse_j2yaml,
                     FileHandler,
@@ -417,59 +418,58 @@ class ChemFireEmissions(Task):
 
         files_found = []
         # Find all possible files
+        if not os.path.exists(aero_emis_fire_dir):
+            logger.warning(f"Directory does not exist: {aero_emis_fire_dir}")
+            return files_found
+        
         for mon in months:
-            try:
-                emis_file_dir = aero_emis_fire_dir
-                if not os.path.exists(emis_file_dir):
-                    logger.warning(f"Directory does not exist: {emis_file_dir}")
-                    continue
+            
+            emis_file_dir = aero_emis_fire_dir
 
-                all_files = os.listdir(emis_file_dir)
+            all_files = os.listdir(emis_file_dir)
 
-                matching_files = []
+            matching_files = []
 
-                # Look for both file patterns:
-                # Pattern 1: "GBBEPx-all01GRID_v4r0_blend_s202302240000000_e202302242359590_c202302250134090.nc"
-                # Pattern 2: "GBBEPx_all01GRID.emissions_v004_20150716.nc"
-                for file_name in all_files:
-                    match_found = False
+            # Look for both file patterns:
+            # Pattern 1: "GBBEPx-all01GRID_v4r0_blend_s202302240000000_e202302242359590_c202302250134090.nc"
+            # Pattern 2: "GBBEPx_all01GRID.emissions_v004_20150716.nc"
+            for file_name in all_files:
+                match_found = False
 
-                    # Try pattern 1 with s/e/c date format
-                    pattern1 = r"GBBEPx-all01GRID.*_s(\d{8}).*_e(\d{8}).*\.nc"
-                    match = re.match(pattern1, file_name)
+                # Try pattern 1 with s/e/c date format
+                pattern1 = r"GBBEPx-all01GRID.*_s(\d{8}).*_e(\d{8}).*\.nc"
+                match = re.match(pattern1, file_name)
+                if match:
+                    start_date = match.group(1)
+                    # end_date = match.group(2)
+                    create_date = match.group(3)
+
+                    # Check if the file's date matches any of our target dates
+                    for date_str in date_strings:
+                        # Match if the file start date is within our target dates
+                        if date_str in start_date:
+                            full_path = os.path.join(emis_file_dir, file_name)
+                            matching_files.append(full_path)
+                            logger.debug(f"Found GBBEPx file (pattern 1): {full_path}")
+                            match_found = True
+                            break
+
+                # If no match yet, try pattern 2 with YYYYMMDD format at the end
+                if not match_found and "GBBEPx" in file_name:
+                    pattern2 = r".*_(\d{8})\.nc"
+                    match = re.match(pattern2, file_name)
                     if match:
-                        start_date = match.group(1)
-                        # end_date = match.group(2)
-                        create_date = match.group(3)
+                        file_date = match.group(1)
 
                         # Check if the file's date matches any of our target dates
                         for date_str in date_strings:
-                            # Match if the file start date is within our target dates
-                            if date_str in start_date:
+                            if date_str in file_date:
                                 full_path = os.path.join(emis_file_dir, file_name)
                                 matching_files.append(full_path)
-                                logger.debug(f"Found GBBEPx file (pattern 1): {full_path}")
-                                match_found = True
+                                logger.debug(f"Found GBBEPx file (pattern 2): {full_path}")
                                 break
 
-                    # If no match yet, try pattern 2 with YYYYMMDD format at the end
-                    if not match_found and "GBBEPx" in file_name:
-                        pattern2 = r".*_(\d{8})\.nc"
-                        match = re.match(pattern2, file_name)
-                        if match:
-                            file_date = match.group(1)
-
-                            # Check if the file's date matches any of our target dates
-                            for date_str in date_strings:
-                                if date_str in file_date:
-                                    full_path = os.path.join(emis_file_dir, file_name)
-                                    matching_files.append(full_path)
-                                    logger.debug(f"Found GBBEPx file (pattern 2): {full_path}")
-                                    break
-
-                files_found.extend(matching_files)
-            except (FileNotFoundError, PermissionError) as e:
-                logger.warning(f"Error accessing directory {emis_file_dir}: {e}")
+            files_found.extend(matching_files)
 
         # Remove duplicates while preserving order
         unique_files = []
@@ -618,14 +618,14 @@ class ChemFireEmissions(Task):
         f.lat.attrs.update({'long_name': 'Latitude', 'units': 'degrees_north'})
 
         # remove unnessicary attributes
-        del f['lat'].attrs['valid_range']
-        del f['lat'].attrs['scale_factor']
-        del f['lat'].attrs['add_offset']
-        del f['lat'].attrs['_FillValue']
-        del f['time'].attrs['begin_date']
-        del f['time'].attrs['begin_time']
-        del f['time'].attrs['time_increment']
-        del f['time'].attrs['calendar']
+        del f['lat'].attrs.pop('valid_range', None)
+        del f['lat'].attrs.pop('scale_factor', None)
+        del f['lat'].attrs.pop('add_offset', None)
+        del f['lat'].attrs.pop('_FillValue', None)
+        del f['time'].attrs.pop('begin_date', None)
+        del f['time'].attrs.pop('begin_time', None)
+        del f['time'].attrs.pop('time_increment', None)
+        del f['time'].attrs.pop('calendar', None)
 
         # Remove Element dimension if present
         if 'Element' in f.dims:
@@ -773,7 +773,6 @@ class ChemFireEmissions(Task):
 
         except Exception as e:
             logger.error(f"Error combining QFED files: {e}")
-            import traceback
             logger.error(f"Traceback: {traceback.format_exc()}")
             return None
 
