@@ -27,7 +27,8 @@ class MarineBMat(Analysis):
         This method will construct the marine B-matrix task object
         This includes:
         - extending the task_config AttrDict to include parameters required for this task
-        - instantiate the Jedi attribute objects
+        - loading the task configuration YAML
+        - instantiating the Jedi attribute objects
 
         Parameters
         ----------
@@ -70,13 +71,10 @@ class MarineBMat(Analysis):
 
         This method will initialize a global B-Matrix.
         This includes:
-        - staging the deterministic backgrounds
-        - staging SOCA fix files
-        - staging static ensemble members (optional)
-        - staging ensemble members (optional)
+        - staging input files from COM and create output directories
+        - initializing input namelists for MOM6
         - initializing the soca_vtscales Python script
         - initializing the JEDI applications
-        - creating output directories
 
         Parameters
         ----------
@@ -163,10 +161,7 @@ class MarineBMat(Analysis):
 
         This method will finalize the global B-matrix job.
         This includes:
-        - copy the generated static, but cycle dependent background error files to the ROTDIR
-        - copy the generated YAML file from initialize to the ROTDIR
-        - keep the re-balanced ensemble perturbation files in DATAenspert
-        - ...
+        - saving output files and YAMLs to COM
 
         Parameters
         ----------

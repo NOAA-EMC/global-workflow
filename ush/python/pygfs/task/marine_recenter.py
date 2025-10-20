@@ -22,6 +22,13 @@ class MarineRecenter(Analysis):
     @logit(logger, name="MarineRecenter")
     def __init__(self, config: Dict) -> None:
         """Constructor for ocean recentering task
+
+        This method will construct a marine analysis task
+        This includes:
+        - extending the task_config attribute AttrDict to include parameters required for this task
+        - loading the task configuration YAML
+        - instantiating the dictionary of Jedi objects for each JEDI application
+
         Parameters:
         ------------
         config: Dict
@@ -61,6 +68,13 @@ class MarineRecenter(Analysis):
     @logit(logger)
     def initialize(self):
         """Method initialize for ocean recentering task
+
+        This method will initialize the marine analysis.
+        This includes:
+        - staging input files from COM and create output directories
+        - preparing the namelist for MOM6
+        - initializing all the JEDI applications required for the marine recentering
+
         Parameters:
         ------------
         None
@@ -100,6 +114,11 @@ class MarineRecenter(Analysis):
     @logit(logger)
     def finalize(self):
         """Method finalize for ocean recentering task
+
+        This method will finalize a global marine analysis.
+        This includes:
+        - Saving output files to COM
+        
         Parameters:
         ------------
         None

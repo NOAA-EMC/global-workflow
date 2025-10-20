@@ -22,6 +22,13 @@ class MarineLETKF(Analysis):
     @logit(logger, name="MarineLETKF")
     def __init__(self, config: Dict) -> None:
         """Constructor for ocean and sea ice LETKF task
+
+        This method will construct a marine analysis task
+        This includes:
+        - extending the task_config attribute AttrDict to include parameters required for this task
+        - loading the task configuration YAML
+        - instantiating the dictionary of Jedi objects for each JEDI application
+
         Parameters:
         ------------
         config: Dict
@@ -57,6 +64,13 @@ class MarineLETKF(Analysis):
     @logit(logger)
     def initialize(self):
         """Method initialize for ocean and sea ice LETKF task
+
+        This method will initialize the marine analysis.
+        This includes:
+        - staging input files from COM and create output directories
+        - preparing the namelist for MOM6
+        - initializing all the JEDI applications required for marine LETKF
+
         Parameters:
         ------------
         None
@@ -69,14 +83,14 @@ class MarineLETKF(Analysis):
         logger.info(f"Staging files from COM and creating input/output directories")
         FileHandler(self.task_config.data_in).sync()
 
+        # prepare the ensemble MOM6 input.nml
+        logger.info(f"Preparing ensemble MOM6 input namelist")
+        mdau.prep_input_nml(self.task_config)
+
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['gridgen'].initialize(self.task_config)
         self.jedi_dict['letkf'].initialize(self.task_config, clean_empty_obsspaces=True)
-
-        # prepare the ensemble MOM6 input.nml
-        logger.info(f"Preparing ensemble MOM6 input namelist")
-        mdau.prep_input_nml(self.task_config)
 
     @logit(logger)
     def execute(self) -> None:
@@ -84,8 +98,7 @@ class MarineLETKF(Analysis):
 
         Parameters
         ----------
-        jedi_dict_key
-            key specifying particular Jedi object in self.jedi_dict
+        None
 
         Returns
         ----------
@@ -98,6 +111,11 @@ class MarineLETKF(Analysis):
     @logit(logger)
     def finalize(self):
         """Method finalize for ocean and sea ice LETKF task
+
+        This method will finalize a global marine analysis.
+        This includes:
+        - Saving output files to COM
+
         Parameters:
         ------------
         None

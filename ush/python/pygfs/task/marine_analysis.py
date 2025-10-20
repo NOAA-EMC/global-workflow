@@ -25,7 +25,8 @@ class MarineAnalysis(Analysis):
         This method will construct a marine analysis task
         This includes:
         - extending the task_config attribute AttrDict to include parameters required for this task
-        - instantiate the dictionary of Jedi objects for each JEDI application
+        - loading the task configuration YAML
+        - instantiating the dictionary of Jedi objects for each JEDI application
 
         Parameters
         ----------
@@ -87,14 +88,11 @@ class MarineAnalysis(Analysis):
 
         This method will initialize the marine analysis.
         This includes:
-        - staging SOCA fix files
+        - staging input files from COM and create output directories
         - preparing the namelists for deterministic MOM6 and analysis geometry
-        - staging observations
-        - staging input YAMLs for SOCA utilities
-        - staging the deterministic backgrounds (middle of window)
-        - staging files and link directories from B-matrix job needed for deterministic analysis
-        - generating list of model pseudo states
+        - asserting that dates of the history files are correct
         - initializing all the JEDI applications required for the marine analysis
+        - initialize obs stats application
 
         Parameters
         ----------
