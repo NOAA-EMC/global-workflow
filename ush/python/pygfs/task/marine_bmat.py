@@ -53,8 +53,6 @@ class MarineBMat(Analysis):
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES)),
-                #'date_init': [int(s) for s in task_config.WINDOW_END.strftime('%Y,%m,%d,%H,%M,%S').split(',')],
-                #'mom_input_nml_tmpl': os.path.join(task_config.PARMmarine, 'fms', 'input.nml.j2')
             }
         ))
 
@@ -92,9 +90,6 @@ class MarineBMat(Analysis):
         # stage files from COM
         logger.info(f"Staging files from COM and creating input/output directories")
         FileHandler(self.task_config.data_in).sync()
-
-        #save_as_yaml(parse_j2yaml(self.task_config.mom_input_nml_tmpl, self.task_config), 'mom_input.nml')
-        #save_as_yaml(parse_j2yaml(self.task_config.mom_input_nml_tmpl, self.task_config), './anl_geom/mom_input.nml')
 
         # prepare the deterministic MOM6 input.nml
         mdau.prep_input_nml(self.task_config)

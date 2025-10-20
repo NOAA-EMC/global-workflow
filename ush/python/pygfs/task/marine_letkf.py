@@ -47,7 +47,7 @@ class MarineLETKF(Analysis):
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
                 'app_path_observations': self.task_config.MARINE_JCB_GDAS_OBS,
-                'letkf_app':  'true',
+                'letkf_app': 'true',
                 'DIST_HALO_SIZE': 3500000,
             }
         ))
@@ -102,12 +102,6 @@ class MarineLETKF(Analysis):
         ----------
         None
         """
-
-        # Temporary fix to add halo distribution to all obs spaces
-        #for observer in self.jedi_dict['letkf'].jedi_config.input_config['observations']['observers']:
-        #    if 'distribution' not in observer['obs space']:
-        #        observer['obs space']['distribution'] = {'name': 'Halo', 'halo size': self.task_config['DIST_HALO_SIZE']}
-        #save_as_yaml(self.jedi_dict['letkf'].jedi_config.input_config, self.jedi_dict['letkf'].jedi_config.yaml)
 
         self.jedi_dict['gridgen'].execute()
         self.jedi_dict['letkf'].execute()
