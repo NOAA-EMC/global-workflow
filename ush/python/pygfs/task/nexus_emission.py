@@ -428,6 +428,7 @@ def _write_txt_file(content: str, file_path: Union[str, os.PathLike]) -> None:
     with open(file_path, 'w') as f:
         f.write(content)
 
+
 def _get_day_indices(datetimes: List[datetime]) -> Dict[datetime, List[int]]:
     """
     Group indices of datetimes by day, including midnight in both days.
