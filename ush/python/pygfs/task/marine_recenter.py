@@ -118,7 +118,7 @@ class MarineRecenter(Analysis):
         This method will finalize a global marine analysis.
         This includes:
         - Saving output files to COM
-        
+
         Parameters:
         ------------
         None
