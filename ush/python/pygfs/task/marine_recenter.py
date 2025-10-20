@@ -34,7 +34,7 @@ class MarineRecenter(Analysis):
         super().__init__(config)
 
         _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
-        
+
         if self.task_config.DOIAU:
             # forecast initialized at the begining of the DA window
             _cice_rst_date = to_fv3time(self.task_config.WINDOW_BEGIN)
