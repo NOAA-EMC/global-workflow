@@ -1,24 +1,15 @@
 #!/usr/bin/env python3
 
-import os
-import glob
-import gzip
-import tarfile
 from logging import getLogger
-from pprint import pformat
-from typing import Dict, Any
-
-from wxflow import (AttrDict, FileHandler, Task,
-                    add_to_datetime, to_timedelta, to_YMD,
-                    parse_j2yaml,
-                    logit,
-                    Template, TemplateConstants)
+from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
+from typing import Dict, Any
+from wxflow import AttrDict, FileHandler, parse_j2yaml, logit
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AtmEnsAnalysis(Task):
+class AtmEnsAnalysis(Analysis):
     """
     Class for JEDI-based global atmens analysis tasks
     """
@@ -43,34 +34,24 @@ class AtmEnsAnalysis(Task):
         super().__init__(config)
 
         _res = int(self.task_config.CASE_ENS[1:])
-        _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
         # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
+        self.task_config.update(AttrDict(
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
-                'ATM_WINDOW_BEGIN': _window_begin,
-                'ATM_WINDOW_LENGTH': f"PT{self.task_config.assim_freq}H",
-                'OPREFIX': f"{self.task_config.EUPD_CYC}.t{self.task_config.cyc:02d}z.",
-                'APREFIX': f"{self.task_config.RUN.replace('enkf', '')}.t{self.task_config.cyc:02d}z.",
-                'APREFIX_ENS': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'GPREFIX_ENS': f"enkfgdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'atm_obsdatain_path': f"./obs/",
-                'atm_obsdataout_path': f"./diags/",
-                'BKG_TSTEP': "PT1H"  # Placeholder for 4D applications
-            }
+                'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
+            })
         )
 
-        # Extend task_config with local_dict
-        self.task_config = AttrDict(**self.task_config, **local_dict)
+        # Extend task_config with content of config yaml for this task
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of JEDI objects
         expected_keys = ['atmensanlobs', 'atmensanlsol', 'atmensanlfv3inc', 'atmensanlletkf']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -78,13 +59,9 @@ class AtmEnsAnalysis(Task):
 
         This method will initialize a global atmens analysis.
         This includes:
-        - initialize JEDI LETKF observer and FV3 increment converter applications
-        - staging observation files
-        - staging bias correction files
-        - staging CRTM fix files
-        - staging FV3-JEDI fix files
-        - staging model backgrounds
-        - creating output directories
+        - stage input files from COM and create output directories
+        - extract bias corrections from tar files
+        - initialize JEDI applications
 
         Parameters
         ----------
@@ -95,58 +72,18 @@ class AtmEnsAnalysis(Task):
         None
         """
 
-        # stage observations
-        logger.info(f"Staging list of observation files")
-        obs_dict = self.jedi_dict['atmensanlobs'].render_jcb(self.task_config, 'atm_obs_staging')
-        FileHandler(obs_dict).sync()
-        logger.debug(f"Observation files:\n{pformat(obs_dict)}")
+        # Stage files from COM
+        logger.info(f"Staging files from COM")
+        FileHandler(self.task_config.data_in).sync()
 
-        # stage bias corrections
-        logger.info(f"Staging list of bias correction files")
-        bias_dict = self.jedi_dict['atmensanlobs'].render_jcb(self.task_config, 'atm_bias_staging')
-        bias_dict['copy'] = Jedi.remove_redundant(bias_dict['copy'])
-        FileHandler(bias_dict).sync()
-        logger.debug(f"Bias correction files:\n{pformat(bias_dict)}")
+        # Extract bias corrections from tar files
+        logger.info(f"Extracting bias corrections from tar files")
+        self.untar_bias_corrections()
 
-        # extract bias corrections
-        Jedi.extract_tar_from_filehandler_dict(bias_dict)
-
-        # stage CRTM fix files
-        logger.info(f"Staging CRTM fix files from {self.task_config.STAGE_CRTM_COEFF_YAML}")
-        crtm_fix_dict = parse_j2yaml(self.task_config.STAGE_CRTM_COEFF_YAML, self.task_config)
-        FileHandler(crtm_fix_dict).sync()
-        logger.debug(f"CRTM fix files:\n{pformat(crtm_fix_dict)}")
-
-        # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
-        jedi_fix_dict = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_dict).sync()
-        logger.debug(f"JEDI fix files:\n{pformat(jedi_fix_dict)}")
-
-        # stage backgrounds
-        logger.info(f"Stage ensemble member background files")
-        bkg_staging_dict = parse_j2yaml(self.task_config.STAGE_BKG_YAML, self.task_config)
-        FileHandler(bkg_staging_dict).sync()
-        logger.debug(f"Ensemble member background files:\n{pformat(bkg_staging_dict)}")
-
-        # need output dir for diags and anl
-        logger.debug("Create empty output [anl, diags] directories to receive output from executable")
-        newdirs = [
-            os.path.join(self.task_config.DATA, 'anl'),
-            os.path.join(self.task_config.DATA, 'diags'),
-        ]
-        FileHandler({'mkdir': newdirs}).sync()
-
-        # initialize JEDI LETKF observer application
+        # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")
         self.jedi_dict['atmensanlobs'].initialize(self.task_config, clean_empty_obsspaces=True)
-
-        # initialize JEDI LETKF solver application
-        logger.info(f"Initializing JEDI LETKF solver application")
         self.jedi_dict['atmensanlsol'].initialize(self.task_config)
-
-        # initialize JEDI FV3 increment conversion application
-        logger.info(f"Initializing JEDI FV3 increment conversion application")
         self.jedi_dict['atmensanlfv3inc'].initialize(self.task_config)
 
     @logit(logger)
@@ -189,8 +126,8 @@ class AtmEnsAnalysis(Task):
 
         This method will finalize a global atmens analysis using JEDI.
         This includes:
-        - tar output diag files and place in ROTDIR
-        - copy the generated YAML file from initialize to the ROTDIR
+        - compress and tar output diag files and place in COM
+        - save output files and YAMLs to COM
 
         Parameters
         ----------
@@ -201,76 +138,10 @@ class AtmEnsAnalysis(Task):
         None
         """
 
-        # ---- tar up diags
-        # path of output tar statfile
-        atmensstat = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS, f"{self.task_config.APREFIX_ENS}atmensstat")
+        # Compress and tar diag files in COM directory
+        self.tar_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS,
+                            f"{self.task_config.APREFIX_ENS}atmensstat")
 
-        # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
-
-        logger.info(f"Compressing {len(diags)} diag files to {atmensstat}.gz")
-
-        # gzip the files first
-        logger.debug(f"Gzipping {len(diags)} diag files")
-        for diagfile in diags:
-            with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
-                f_out.writelines(f_in)
-
-        # open tar file for writing
-        logger.debug(f"Creating tar file {atmensstat} with {len(diags)} gzipped diag files")
-        with tarfile.open(atmensstat, "w") as archive:
-            for diagfile in diags:
-                diaggzip = f"{diagfile}.gz"
-                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
-
-        # get list of yamls to cop to ROTDIR
-        yamls = glob.glob(os.path.join(self.task_config.DATA, '*atmens*yaml'))
-
-        # copy full YAML from executable to ROTDIR
-        for src in yamls:
-            logger.info(f"Copying {src} to {self.task_config.COMOUT_CONF}")
-            yaml_base = os.path.splitext(os.path.basename(src))[0]
-            dest_yaml_name = f"{self.task_config.APREFIX_ENS}{yaml_base}.yaml"
-            dest = os.path.join(self.task_config.COMOUT_CONF, dest_yaml_name)
-            logger.debug(f"Copying {src} to {dest}")
-            yaml_copy = {
-                'copy': [[src, dest]]
-            }
-            FileHandler(yaml_copy).sync()
-
-        # create template dictionaries
-        template_inc = self.task_config.COM_ATMOS_ANALYSIS_TMPL
-        tmpl_inc_dict = {
-            'ROTDIR': self.task_config.ROTDIR,
-            'RUN': self.task_config.RUN,
-            'YMD': to_YMD(self.task_config.current_cycle),
-            'HH': self.task_config.current_cycle.strftime('%H')
-        }
-
-        # copy ensemble mean analysis to comrot
-        logger.info("Copy ensemble mean analysis")
-        fh_dict = {'copy': [[f"{self.task_config.DATA}/anl/{self.task_config.APREFIX_ENS}cubed_sphere_grid_atmanl.ensmean.nc",
-                             f"{self.task_config.COMOUT_ATMOS_ANALYSIS_ENS}"]]}
-        FileHandler(fh_dict).sync()
-
-        # copy FV3 atm increment to comrot directory
-        logger.info("Copy UFS model readable atm increment file")
-
-        # loop over ensemble members
-        inc_copy = {'copy': []}
-        for imem in range(1, self.task_config.NMEM_ENS + 1):
-            memchar = f"mem{imem:03d}"
-
-            # create output path for member analysis increment
-            tmpl_inc_dict['MEMDIR'] = memchar
-            incdir = Template.substitute_structure(template_inc, TemplateConstants.DOLLAR_CURLY_BRACE, tmpl_inc_dict.get)
-            src = os.path.join(self.task_config.DATA, 'anl', memchar,
-                               f"{self.task_config.APREFIX_ENS}cubed_sphere_grid_atminc.nc")
-            dest = incdir
-            inc_copy['copy'].append([src, dest])
-
-        logger.debug(f"Copying increments")
-        FileHandler(inc_copy).sync()
-
-    def clean(self):
-        super().clean()
+        # Save files from COM
+        logger.info(f"Saving files to COM")
+        FileHandler(self.task_config.data_out).sync()

@@ -51,7 +51,6 @@ do
    cat > "${run_model_script}" << EOF_MODEL
 #!/bin/bash
 
-#source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 source /usr/lmod/lmod/init/bash
 module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
 module load gfsutils_container.intel
@@ -84,11 +83,9 @@ rm -f "${direct_model_script}"
 cat > "${direct_model_script}" << EOF_DIRECT
 #!/bin/bash
 
-#source "${HOMEgfs}/dev/ush/load_gw_run_modules.sh"
 source /usr/lmod/lmod/init/bash
 module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
 module load gfsutils_container.intel
-module load wgrib2/3.6.0
 module load wgrib2/3.6.0
 
 ${HOMEgfs}/sorc/gfs_utils.fd/install/bin/ocnicepost.x "\$@"

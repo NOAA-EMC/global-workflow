@@ -6,6 +6,7 @@ HOMEgfs="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 source "${HOMEgfs}/ush/detect_machine.sh"
 
 run_with_container="YES"
+#run_with_container="NO"
 
  casetype="pr"
 #yamllist="C48_ATM"
@@ -26,10 +27,6 @@ if [[ ${MACHINE_ID} = ursa* ]] ; then
 
    module load rocoto/1.3.7
    rocotocmd=$(command -v rocotorun)
-
-   if [[ "${run_with_container}" == "YES" ]]; then
-      cp "${HOMEgfs}/env/URSA.env.container" "${HOMEgfs}/env/URSA.env"
-   fi
 elif [[ ${MACHINE_ID} = gaea* ]] ; then
    container=/gpfs/f6/scratch/Wei.Huang/container/${img}
    rundir=/gpfs/f6/scratch/${USER}/run
@@ -37,9 +34,6 @@ elif [[ ${MACHINE_ID} = gaea* ]] ; then
    HPC_ACCOUNT=bil-fire8
 
    rocotocmd=/autofs/ncrc-svm1_home2/Christopher.W.Harrop/rocoto-1.3.7/bin/rocotorun
-   if [[ "${run_with_container}" == "YES" ]]; then
-      cp "${HOMEgfs}/env/GAEAC6.env.container" "${HOMEgfs}/env/GAEAC6.env"
-   fi
 elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    TOPICDIR=/bucket/global-workflow-shared-data/ICSDIR
    container=/contrib/containers/${img}
@@ -52,13 +46,13 @@ elif [[ ${MACHINE_ID} = noaacloud* ]] ; then
    rocotocmd=$(command -v rocotorun)
 fi
 
-mkdir -p "${rundir}"
+set -x
 
-# cd "${HOMEDIR}/dev/workflow" || exit 1
-if ! cd "${HOMEDIR}/dev/workflow"; then
-  echo "Error: Could not change to the workflow directory. Aborting." >&2
-  exit 1
-fi
+mkdir -p "${rundir}"
+mkdir -p "${HOMEDIR}"/exec
+mkdir -p "${HOMEDIR}"/ush/container
+
+cd "${HOMEDIR}/dev/workflow" || exit 1
 
 if [[ "${run_with_container}" == "YES" ]]; then
    "${HOMEDIR}/dev/container/utils/gen-wrapper.sh" -H "${HOMEDIR}" -c "${container}" -b "${bindings}" -v

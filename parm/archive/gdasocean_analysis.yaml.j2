@@ -19,8 +19,8 @@ gdasocean_analysis:
         {% endfor %}
 
         # static background error
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_ens_stddev.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_ens_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_parametric_stddev.nc'
+        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_parametric_stddev.nc'
 
         # ensemble background error
         {% if NMEM_ENS > 2 %}
@@ -28,6 +28,8 @@ gdasocean_analysis:
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.ens_weights.nc'
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.recentering_error.nc'
         - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.recentering_error.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_ens_stddev.nc'
+        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_ens_stddev.nc'
         {% for diag_type in ["ssh_steric_stddev", "ssh_unbal_stddev", "ssh_total_stddev", "steric_explained_variance"] %}
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.{{ diag_type }}.nc'
         {% endfor %}

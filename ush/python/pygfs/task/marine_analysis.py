@@ -81,7 +81,8 @@ class MarineAnalysis(Task):
 
         # Construct dictionary of JEDI objects, one for each JEDI application need for the analysis
         expected_keys = ['var', 'soca_incpostproc', 'soca_diag_stats']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML_DET, self.task_config, expected_keys)
+        jedi_config_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML_DET, self.task_config)
+        self.jedi_dict = Jedi.get_jedi_dict(jedi_config_dict, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self: Task) -> None:

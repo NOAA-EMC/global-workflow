@@ -1,18 +1,14 @@
 #!/usr/bin/env python3
 
-import os
 from logging import getLogger
-from typing import List, Dict
-
-from wxflow import (AttrDict, FileHandler,
-                    add_to_datetime, to_timedelta,
-                    parse_j2yaml, logit, Task)
+from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
+from wxflow import AttrDict, FileHandler, add_to_datetime, to_timedelta, parse_j2yaml, logit
 
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AerosolBMatrix(Task):
+class AerosolBMatrix(Analysis):
     """
     Class for global aerosol BMatrix tasks
     """
@@ -40,46 +36,37 @@ class AerosolBMatrix(Task):
         _res_anl = int(self.task_config['CASE_ANL'][1:])
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
 
-        # fix ocnres
-        self.task_config.OCNRES = f"{self.task_config.OCNRES:03d}"
-
-        # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
+        # Extend task_config with variables repeatedly used across this class
+        self.task_config.update(AttrDict(
             {
                 'npx_ges': _res + 1,
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
-                'npz': self.task_config.LEVS - 1,
                 'npx_anl': _res_anl + 1,
                 'npy_anl': _res_anl + 1,
                 'npz_anl': self.task_config['LEVS'] - 1,
-                'AERO_WINDOW_BEGIN': _window_begin,
-                'AERO_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
-                'aero_bkg_fhr': map(int, str(self.task_config['aero_bkg_times']).split(',')),
-                'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'GPREFIX': f"gdas.t{self.task_config.previous_cycle.hour:02d}z.",
-                'aero_obsdatain_path': f"{self.task_config.DATA}/obs/",
-                'aero_obsdataout_path': f"{self.task_config.DATA}/diags/",
+                'npz': self.task_config.LEVS - 1,
+                'BERROR_YAML': f'aero_background_error_static_{self.task_config.STATICB_TYPE}',
+                'BERROR_DATA_DIR': f'{self.task_config.FIXgfs}/gdas/aero/clim_b',
+                'AERO_BMATRIX_RESCALE_YAML': 'aero_gen_bmatrix_rescale_default.yaml.j2',
             }
-        )
+        ))
 
-        # task_config is everything that this task should need
-        self.task_config = AttrDict(**self.task_config, **local_dict)
+        # Extend task_config with content of config yaml for this task
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of Jedi objects
         expected_keys = ['aero_interpbkg', 'aero_diagb', 'aero_diffusion']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.JEDI_CONFIG_YAML, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
-    def initialize(self: Task) -> None:
+    def initialize(self) -> None:
         """Initialize a global aerosol B-matrix
 
         This method will initialize a global aerosol B-Matrix.
         This includes:
-        - staging the determinstic backgrounds
-        - staging fix files
-        - initializing the JEDI applications
+        - stage input files from COM and create output directories
+        - initialize JEDI applications
 
         Parameters
         ----------
@@ -90,17 +77,12 @@ class AerosolBMatrix(Task):
         None
         """
 
-        # stage fix files
-        logger.info(f"Staging JEDI fix files from {self.task_config.STAGE_JEDI_FIX_YAML}")
-        jedi_fix_list = parse_j2yaml(self.task_config.STAGE_JEDI_FIX_YAML, self.task_config)
-        FileHandler(jedi_fix_list).sync()
-
-        # stage files from COM and create working directories
-        logger.info(f"Staging files from COM and creating working directories {self.task_config.STAGE_YAML}")
-        stage_dict = parse_j2yaml(self.task_config.STAGE_YAML, self.task_config)
-        FileHandler(stage_dict).sync()
+        # Stage files from COM
+        logger.info(f"Staging files from COM")
+        FileHandler(self.task_config.data_in).sync()
 
         # initialize JEDI applications
+        logger.info(f"Initializing JEDI applications")
         self.jedi_dict['aero_interpbkg'].initialize(self.task_config)
         self.jedi_dict['aero_diagb'].initialize(self.task_config)
         self.jedi_dict['aero_diffusion'].initialize(self.task_config)
@@ -137,11 +119,10 @@ class AerosolBMatrix(Task):
 
         This method will finalize a global aerosol bmatrix using JEDI.
         This includes:
-        - copying the bmatrix files to COM
-        - copying YAMLs to COM
+        - save output files and YAMLs to COM
 
         """
-        # save files to COMOUT
-        logger.info(f"Saving files to COMOUT based on {self.task_config.SAVE_YAML}")
-        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
-        FileHandler(save_dict).sync()
+
+        # Save files to COM
+        logger.info(f"Saving files to COM")
+        FileHandler(self.task_config.data_out).sync()

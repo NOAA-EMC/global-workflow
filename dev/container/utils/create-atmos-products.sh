@@ -39,10 +39,17 @@ if [[ "${verbose}" == "true" ]]; then
    echo "bindings: ${bindings}"
 fi
 
-sed -e "s?HOMEgfs?${HOMEgfs}?g" \
-    -e "s?SIF?${container}?g" \
-    -e "s?BINDINGS?${bindings}?g" \
-   "${HOMEgfs}/dev/container/utils/exec.exglobal_atmos_products.sh" > "${HOMEgfs}/exec/exglobal_atmos_products.sh"
+eap_script="${HOMEgfs}"/exec/exglobal_atmos_products.sh
+cat > "${eap_script}" << EOF_ATMOS_PRODUCTS
+#!/bin/bash
+ LD_LIBRARY_PATH=\$(dirname ${HOMEgfs})
+ export LD_LIBRARY_PATH
 
-chmod +x "${HOMEgfs}/exec/exglobal_atmos_products.sh"
+ singularity exec \\
+        ${bindings} \\
+        ${container} \\
+        ${HOMEgfs}/scripts/exglobal_atmos_products.sh "\$@"
+EOF_ATMOS_PRODUCTS
+
+chmod +x "${eap_script}"
 

@@ -109,44 +109,6 @@ function wait_for_file() {
     set_trace
     return 1
 }
- 
-function cpreq() {
-    if ! cp "$@"; then
-        err_exit "The copy $* operation failed."
-    fi
-}
- 
-function cpfs() {
-    if [[ "$#" -ne "2" ]]; then
-       echo "This script requires two arguments: a source file and a destination file path."
-       exit 16
-    fi
-
-    if [[ "$2" = '.' || "$2" = './' ]]; then
-       cpdstfile=${PWD:?}/$(basename "$1")
-    elif [[ -d "$2" ]]; then
-       cpdstfile=${2%/}/$(basename "$1")
-    else
-       cpdstfile=$2
-    fi
-
-    if ! cp "$1" "${cpdstfile}.cptmp"; then
-       err_exit "$1 is missing or was not copied successfully."
-    fi
-
-    #${FSYNC} $cpdstfile.cptmp
-    #if [ $? -ne 0 ]; then
-    #   >&2 echo "WARNING: ${FSYNC} $cpdstfile.cptmp failed."
-    #fi
-
-   #mv "${cpdstfile}.cptmp" ${cpdstfile}
-   #if [[ "$?" -ne "0" ]] ; then
-   #   err_exit "${cpdstfile}.cptmp is missing or was not moved successfully."
-   #fi
-   if ! mv "${cpdstfile}.cptmp" "${cpdstfile}"; then
-       err_exit "Failed to rename '${cpdstfile}.cptmp' to '${cpdstfile}'."
-   fi
-}
 
 # shellcheck disable=
 
