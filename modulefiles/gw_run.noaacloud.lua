@@ -24,4 +24,6 @@ load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None"))) -- TODO: Remove on
 
 -- load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
 
+setenv("CRTM_FIX", "/contrib/global-workflow-shared-data/fix/crtm/v2.4.0.2")
+
 whatis("Description: GFS run environment")

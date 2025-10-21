@@ -22,6 +22,7 @@ base:
   SDATE_GFS: 2024111512
   FHMAX_GFS: 384
   FHMAX_HF_GFS: 120
+  CASE_HIST: "C768"
 
 prepoceanobs:
   use_exp_obs: "YES"
