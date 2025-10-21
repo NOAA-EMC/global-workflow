@@ -181,6 +181,8 @@ cat <<EOF > fort.41
   igaus=${LONB_SFC},
   jgaus=${LATB_SFC},
   donst=${do_nst},
+  imp_physics=${imp_physics:-8},
+  landsfcmdl=${landsfcmdl:-2},
  /
 EOF
 
