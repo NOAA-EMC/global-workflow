@@ -715,7 +715,7 @@ class Archive(Task):
                 return True
 
             # Archive warm atmosphere ICs if requested
-            elif tar_type == "gdas_restartb" and arch_warm_ics:
+            elif (tar_type == "gdas_restartb" or tar_type == "gdaswave_restart") and arch_warm_ics:
                 return True
 
             else:
