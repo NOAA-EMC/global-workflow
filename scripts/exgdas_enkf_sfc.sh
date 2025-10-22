@@ -157,7 +157,7 @@ export MAX_TASKS_CY=$NMEM_ENS
 
 if [[ "$DOIAU" == "YES" ]]; then
     # Update surface restarts at beginning of window when IAU is ON
-    # For now assume/hold anl.dtf.nc is valid at beginning of window.
+    # For now assume/hold analysis.dtf.nc is valid at beginning of window.
 
     for n in $(seq 1 $ntiles); do
 
