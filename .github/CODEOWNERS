@@ -210,19 +210,19 @@ ush/python/pygfs/task/aero_bmatrix.py @DavidNew-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/aero_emissions.py @bbakernoaa
 ush/python/pygfs/task/aero_prepobs.py @CoryMartin-NOAA
 ush/python/pygfs/task/analysis.py @DavidNew-NOAA @RussTreadon-NOAA
-ush/python/pygfs/task/analysis_stats.py @CoryMartin-NOAA
+ush/python/pygfs/task/analysis_stats.py @CoryMartin-NOAA @DavidNew-NOAA
 ush/python/pygfs/task/archive.py @DavidHuber-NOAA
 ush/python/pygfs/task/atm_analysis.py @DavidNew-NOAA @RussTreadon-NOAA
 ush/python/pygfs/task/atmens_analysis.py @DavidNew-NOAA @RussTreadon-NOAA
 ush/python/pygfs/task/bmatrix.py @DavidNew-NOAA
 ush/python/pygfs/task/gfs_forecast.py @aerorahul
-ush/python/pygfs/task/marine_analysis.py @guillaumevernieres @AndrewEichmann-NOAA
-ush/python/pygfs/task/marine_bmat.py @guillaumevernieres @AndrewEichmann-NOAA
-ush/python/pygfs/task/marine_letkf.py @guillaumevernieres @AndrewEichmann-NOAA
-ush/python/pygfs/task/oceanice_products.py @aerorahul @JesseMeng-NOAA @ChristopherHill-NOAA
+ush/python/pygfs/task/marine_analysis.py @guillaumevernieres @AndrewEichmann-NOAA @DavidNew-NOAA
+ush/python/pygfs/task/marine_bmat.py @guillaumevernieres @AndrewEichmann-NOAA @DavidNew-NOAA
+ush/python/pygfs/task/marine_letkf.py @guillaumevernieres @AndrewEichmann-NOAA @DavidNew-NOAA
+ush/python/pygfs/task/oceanice_products.py @aerorahul @JesseMeng-NOAA @ChristopherHill-NOAA @DavidNew-NOAA
 ush/python/pygfs/task/offline_analysis.py @CoryMartin-NOAA
-ush/python/pygfs/task/snow_analysis.py @jiaruidong2017
-ush/python/pygfs/task/snowens_analysis.py @jiaruidong2017
+ush/python/pygfs/task/snow_analysis.py @jiaruidong2017 @DavidNew-NOAA
+ush/python/pygfs/task/snowens_analysis.py @jiaruidong2017 @DavidNew-NOAA
 ush/python/pygfs/task/stage_ic.py @DavidHuber-NOAA @aerorahul
 ush/python/pygfs/task/upp.py @aerorahul @WenMeng-NOAA
 ush/python/pygfs/ufswm/__init__.py @aerorahul
