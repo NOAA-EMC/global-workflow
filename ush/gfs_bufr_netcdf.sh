@@ -47,7 +47,6 @@ else
    bufrflag=".false."
 fi
 
-SFCF="sfc"
 CLASS="class1fv3"
 cat << EOF > gfsparm
  &NAMMET
@@ -84,7 +83,7 @@ do
 
 #------------------------------------------------------------------
    ${NLN} $COMIN/${RUN}.${cycle}.atm.f${hh2}.nc sigf${hh}
-   ${NLN} $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nc flxf${hh}
+   ${NLN} $COMIN/${RUN}.${cycle}.sfc.f${hh2}.nc flxf${hh}
 
    hh=$( expr $hh + $FINT )
    if test $hh -lt 10
