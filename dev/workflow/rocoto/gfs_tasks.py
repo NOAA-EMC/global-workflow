@@ -683,7 +683,7 @@ class GFSTasks(Tasks):
         dmpdir = self._configs['prepoceanobs']["DMPDIR"]
 
         deps = []
-        data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
+        data = f'{ocean_hist_path}/gdas.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/{self.run}.t@Hz.obsforge_marine_status.log'
@@ -742,7 +742,7 @@ class GFSTasks(Tasks):
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
 
         deps = []
-        data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
+        data = f'{ocean_hist_path}/gdas.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
@@ -1221,10 +1221,10 @@ class GFSTasks(Tasks):
                                    'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.6hr_avg.f#fhr3_next#.nc'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_next#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.6hr_avg.f#fhr3_last#.nc'}}
+                                 'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_last#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -1891,6 +1891,9 @@ class GFSTasks(Tasks):
         if self.options['do_jediatmvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_analdiag'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jediocnvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -1909,7 +1912,7 @@ class GFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': self.run,
+                     'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/dev/jobs/anlstat.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -2143,9 +2146,6 @@ class GFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
                 if self.options['do_vminmon']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
-                    deps.append(rocoto.add_dependency(dep_dict))
-                if self.options['do_anlstat']:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                     deps.append(rocoto.add_dependency(dep_dict))
             elif self.run in ['gdas']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}

@@ -615,12 +615,8 @@ MOM6_postdet() {
 
   # Copy increment (only when RERUN=NO)
   if [[ "${RERUN}" == "NO" ]]; then
-    if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
-      cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
-    fi
-
-    if (( MEMBER > 0 )) && [[ "${ODA_INCUPD:-False}" == "True" ]]; then
-      cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
+    if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] || [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
+      cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.mom6_increment.i006.nc" "${DATA}/INPUT/mom6_increment.nc"
     fi
   fi  # if [[ "${RERUN}" == "NO" ]]; then
 
@@ -654,7 +650,7 @@ MOM6_postdet() {
         else
           source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
         fi
-        dest_file="${RUN}.ocean.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+        dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
         ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
 
         last_fhr=${fhr}
@@ -668,7 +664,7 @@ MOM6_postdet() {
       for fhr in ${MOM6_OUTPUT_FH}; do
         fhr3=$(printf %03i "${fhr}")
         vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-        ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
+        ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
       done
       ;;
     *)
@@ -754,12 +750,12 @@ CICE_postdet() {
     restart_date="${model_start_date_current_cycle}"
     cice_restart_file="${COMIN_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
     if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
-      if (( MEMBER == 0 )); then
+      if [[ ${MEMBER} -eq 0 ]]; then
         # Start the deterministic from the JEDI/SOCA analysis if the Marine DA in ON
-        cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
-      elif (( MEMBER > 0 ))  && [[ "${DO_STARTMEM_FROM_JEDIICE:-NO}" == "YES" ]]; then
+        cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"
+      elif [[ ${MEMBER} -gt 0 && "${DO_STARTMEM_FROM_JEDIICE:-NO}" == "YES" ]]; then
         # Ignore the JEDI/SOCA ensemble analysis for the ensemble members if DO_START_FROM_JEDIICE is OFF
-        cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model_anl.res.nc"
+        cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"
       fi
     fi
   fi
@@ -772,7 +768,7 @@ CICE_postdet() {
   local vdate seconds vdatestr fhr fhr3 interval last_fhr
   seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000")  # convert HHMMSS to seconds
   vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
-  ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+  ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
 
   # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM
   local source_file dest_file
@@ -793,15 +789,15 @@ CICE_postdet() {
     case "${RUN}" in
       gdas|enkfgdas)
         source_file="iceh_inst.${vdatestr}.nc"
-        dest_file="${RUN}.ice.t${cyc}z.inst.f${fhr3}.nc"
+        dest_file="${RUN}.t${cyc}z.inst.f${fhr3}.nc"
         ;;
       gfs|enkfgfs|sfs|gcafs)
         source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
-        dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+        dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
         ;;
       gefs)
         source_file="iceh.${vdatestr}.nc"
-        dest_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+        dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
         ;;
       *)
         echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet"
