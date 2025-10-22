@@ -56,7 +56,6 @@ gfsa:
             {% endfor %}
         - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}snowanlvar.yaml"
-        - "{{ COMIN_SNOW_ANLMON | relpath(ROTDIR) }}/{{ head }}snow_iodastat.tgz"
         {% endif %}
 
         # BUFR inputs

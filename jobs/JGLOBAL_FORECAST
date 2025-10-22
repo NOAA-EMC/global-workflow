@@ -22,7 +22,6 @@ if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Restart conditions for GFS cycle come from GDAS
 # Restart conditions for GCAFS cycle come from GCDAS
-rCDUMP="${RUN}"
 rCDUMP="${RUN/gfs/gdas}"
 export rCDUMP="${rCDUMP/gcafs/gcdas}"
 
