@@ -15,11 +15,11 @@ enkf_marine_grp:
         # Forecast data
         {% if is_gdas %}
         {% for fhr in range(3, 10, 3) %}
-        - "{{ COMIN_OCEAN_HISTORY_MEM | relpath(ROTDIR) }}/{{ head_ocean }}inst.f{{ "%03d" % fhr }}.nc"
+        - "{{ COMIN_OCEAN_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}inst.f{{ "%03d" % fhr }}.nc"
         {% endfor %}
 
         {% for body in ["ic", "inst.f006", "inst.f009"] %}
-        - "{{ COMIN_ICE_HISTORY_MEM | relpath(ROTDIR) }}/{{ head_ice }}{{ body }}.nc"
+        - "{{ COMIN_ICE_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}{{ body }}.nc"
         {% endfor %}
         {% endif %}
 
@@ -30,11 +30,11 @@ enkf_marine_grp:
         {% set anl_delta = "0H" | to_timedelta %}
         {% endif %}
         {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
-        - "{{ COMIN_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ocninc.nc"
-        - "{{ COMIN_ICE_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.cice_model_anl.res.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}mom6_increment.i006.nc"
+        - "{{ COMIN_ICE_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.analysis.cice_model.res.nc"
         {% if DOLETKF_OCN %}
-        - "{{ COMIN_OCEAN_LETKF_MEM | relpath(ROTDIR) }}/{{ head_ocean }}analysis.nc"
-        - "{{ COMIN_ICE_LETKF_MEM | relpath(ROTDIR) }}/{{ head_ice }}analysis.nc"
+        - "{{ COMIN_OCEAN_LETKF_MEM | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc"
+        - "{{ COMIN_ICE_LETKF_MEM | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc"
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/soca_letkf.yaml"
         {% endif %}
         {% endfor %}  # first_group_mem to last_group_mem
