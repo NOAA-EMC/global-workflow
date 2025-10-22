@@ -128,20 +128,22 @@ export out_dir="${in_dir}"
 # Regrid soil increments and save to COMOUT
 #
 
-for FHR in "${soilinc_fhrs[@]}"; do
-    export add_time_dim=".false."
-    export time_list="${FHR}"
-    export out_fname="'sfci00${FHR}'"
+if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
+    for FHR in "${soilinc_fhrs[@]}"; do
+        export add_time_dim=".false."
+        export time_list="${FHR}"
+        export out_fname="'sfci00${FHR}'"
 
-    rm -f "regrid.nml"
-    atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
+        rm -f "regrid.nml"
+        atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
-    ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
-	export err=$?
+        ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+    	export err=$?
 	if [[ ${err} -ne 0 ]]; then
 	    err_exit "${REGRID_EXEC} failed, ABORT!"
 	fi
-done
+    done
+fi
 
 if [[ "${DO_LAND_IAU}" = ".true." ]]; then
     export add_time_dim=".true."
@@ -179,15 +181,17 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         memdir="${DATA}"
     fi
 
-    for FHR in "${soilinc_fhrs[@]}"; do
-        for n in $(seq 1 "${ntiles}"); do
-            cpfs "${memdir}/sfci00${FHR}.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
+    if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
+        for FHR in "${soilinc_fhrs[@]}"; do
+            for n in $(seq 1 "${ntiles}"); do
+                cpfs "${memdir}/sfci00${FHR}.mem${imem}.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
+            done
         done
-    done
+    fi
 
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${memdir}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
+            cpfs "${memdir}/sfci.mem${imem}.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
         done
     fi
 done
