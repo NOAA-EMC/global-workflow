@@ -114,8 +114,8 @@ enkf:
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atmanl.ensmean.nc"
         {% endif %}
-        
-        # soil DA increments  
+
+        # soil DA increments
         {% if DO_GSISOILDA %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfci006.nc"
         {% endif %}
@@ -138,8 +138,8 @@ enkf:
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atma{{ '%03d' % fhr }}.ensmean.nc"
         {% endif %}
 
-        # soil DA increments  
-        {% if DO_GSISOILDA %} 
+        # soil DA increments
+        {% if DO_GSISOILDA %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}sfci{{ '%03d' % fhr }}.nc"
         {% endif %}
 
@@ -149,6 +149,6 @@ enkf:
         # End of analysis mean increments/analyses
 
         {% if DOHYBVAR_OCN %}
-        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head_ocean }}bg_ensvar.nc"
-        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head_ice }}bg_ensvar.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}bg_ensvar.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}bg_ensvar.nc"
         {% endif %}
