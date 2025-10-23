@@ -77,7 +77,7 @@ if( (-e $infile) ) {
 
    if( -e $outfile ) {
       my $newfile = "${tankdir}/${outfile}";
-      system("cpfs -f $outfile $newfile");
+      system("cpfs $outfile $newfile");
    }
 
 } else {				# $infile does not exist

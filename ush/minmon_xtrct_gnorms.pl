@@ -111,7 +111,7 @@ sub updateGnormData {
    print OUTFILE @filearray;
    close( OUTFILE );
 
-   system("cpfs -f $outfile $gdfile");
+   system("cpfs $outfile $gdfile");
 
 }
 
@@ -419,17 +419,17 @@ if( $rc == 0 ) {
       }
 
       if( -e $filename2 ) {
-         system("cpfs -f $filename2 ${tankdir}/.");
+         system("cpfs $filename2 ${tankdir}/.");
       }
 
       my $gdfile  = "gnorm_data.txt";
       if( -e $gdfile ) {
-         system("cpfs -f $gdfile ${tankdir}/.");
+         system("cpfs $gdfile ${tankdir}/.");
       }
 
       my $errmsg = "${cdate}.errmsg.txt";
       if( -e $errmsg ) {
-         system("cpfs -f $errmsg ${tankdir}/.");
+         system("cpfs $errmsg ${tankdir}/.");
       }
 
    }				# $rc still == 0 after reading gmon_gnorm.txt

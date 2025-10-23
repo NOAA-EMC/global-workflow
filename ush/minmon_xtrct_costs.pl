@@ -214,11 +214,11 @@ if( (-e $infile) ) {
 
       if( -e $filename2 ) {
          my $newfile2 = "${tankdir}/${filename2}";
-         system("cpreq -f $filename2 $newfile2");
+         system("cpfs $filename2 $newfile2");
       }
       if( -e $filename3 ) {
          my $newfile3 = "${tankdir}/${filename3}";
-         system("cpreq -f $filename3 $newfile3");
+         system("cpfs $filename3 $newfile3");
       }
 
    }				# $rc still == 0 after reading gmon_cost.txt
