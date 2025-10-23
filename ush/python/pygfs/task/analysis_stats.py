@@ -171,23 +171,22 @@ class AnalysisStats(Task):
 
         analysis_config_dict = parse_j2yaml(self.task_config.BASE_CONFIG_YAML, self.task_config)
 
+        if jedi_dict_key == 'atmos_gsi':
+            outdir = self.task_config['COMOUT_ATMOS_ANLMON']
+            anldir = self.task_config['COMOUT_ATMOS_ANALYSIS']
+        else:
+            outdir = self.task_config['COMOUT_' + jedi_dict_key.upper() + '_ANLMON']
+            anldir = self.task_config['COMOUT_' + jedi_dict_key.upper() + '_ANALYSIS']
+        # Check if the directory exists; if not, create it
+        if not os.path.exists(outdir):
+            FileHandler({'mkdir': [outdir]}).sync()
+        
+        copy_list = []
         for obsspace_dict in analysis_config_dict[jedi_dict_key]['obs spaces']:
             statfile = os.path.join(self.task_config.DATA, obsspace_dict['output file'])
-            if jedi_dict_key == 'atmos_gsi':
-                outdir = self.task_config['COMOUT_ATMOS_ANLMON']
-            else:
-                outdir = self.task_config['COMOUT_' + jedi_dict_key.upper() + '_ANLMON']
-
-            # Check if the directory exists; if not, create it
-            if not os.path.exists(outdir):
-                FileHandler({'mkdir': [outdir]}).sync()
-
             dest = os.path.join(outdir, f"{obsspace_dict['output file']}")
-            logger.debug(f"copying {statfile} to {dest}")
-            stat_copy = {
-                'copy_opt': [[statfile, dest]]
-            }
-            FileHandler(stat_copy).sync()
+            copy_list.append((statfile, dest))
+        FileHandler({'copy_opt': copy_list}).sync()
 
         # path of output tar statfile
         iodastatzipfile = os.path.join(outdir, f"{self.task_config.APREFIX}{jedi_dict_key}_iodastat.tgz")
@@ -204,12 +203,13 @@ class AnalysisStats(Task):
                 archive.add(targetfile, arcname=os.path.basename(targetfile))
 
         # concatenate text files into one summary file
-        summaryfile = os.path.join(outdir, f"{self.task_config.APREFIX}{jedi_dict_key}_stats.txt")
+        summaryfile = os.path.join(anldir, f"{self.task_config.APREFIX}{jedi_dict_key}_stats.txt")
         with open(summaryfile, 'w') as outfile:
             for obsspace_dict in analysis_config_dict[jedi_dict_key]['obs spaces']:
                 obsspace_name = obsspace_dict['name']
                 textfile = os.path.join(self.task_config.DATA, f"{obsspace_name}_ioda_stats.txt")
                 if os.path.exists(textfile):
+                    logger.info(f"Concatenating {textfile} to {summaryfile}")
                     with open(textfile, 'r') as infile:
                         outfile.write(infile.read())
                 else:
@@ -317,7 +317,7 @@ class AnalysisStats(Task):
                 archive.add(targetfile, arcname=os.path.basename(targetfile))
         logger.info(f"Finished compressing GSI IODA files to {iodastatzipfile}")
         # copy to COMOUT
-        outdir = self.task_config.COMOUT_ATMOS_ANLMON
+        outdir = self.task_config.COMOUT_ATMOS_ANALYSIS
         if not os.path.exists(outdir):
             FileHandler({'mkdir': [outdir]}).sync()
         dest = os.path.join(outdir, os.path.basename(iodastatzipfile))
