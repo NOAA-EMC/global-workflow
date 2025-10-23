@@ -57,6 +57,10 @@ snowanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
+marineanlbmat:
+  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
+
 marineanl:
   SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
   SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
@@ -64,6 +68,8 @@ marineanl:
   SOCA_NINNER: 100
 
 marineanlletkf:
+  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
   SOCA_OBS_LIST: "${PARMgfs}/gdas/marine/obs/obs_list.yaml.j2"
 
 prepoceanobs:
