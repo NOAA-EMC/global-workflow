@@ -10,29 +10,30 @@ gdasocean_analysis:
         {% endif %}
         {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
         # analysis and analysis increments
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocninc.nc'
-        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.cice_model_anl.res.nc'
-        {% for domain in ["ocn", "ice"] %}
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.incr.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ice.incr.postproc.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.ana.nc'
-        {% endfor %}
+        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.i006.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}mom6_increment.i006.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.analysis.cice_model.res.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.i006.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}pp_increment.i006.nc'
 
         # static background error
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_parametric_stddev.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_parametric_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_parametric_stddev.nc'
+        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_parametric_stddev.nc'
 
         # ensemble background error
         {% if NMEM_ENS > 2 %}
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.ens_weights.nc'
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.ens_weights.nc'
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.recentering_error.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.recentering_error.nc'
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_ens_stddev.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_ens_stddev.nc'
-        {% for diag_type in ["ssh_steric_stddev", "ssh_unbal_stddev", "ssh_total_stddev", "steric_explained_variance"] %}
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.{{ diag_type }}.nc'
-        {% endfor %}
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ens_weights.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}recentering_error.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_ens_stddev.nc'
+        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ens_weights.nc'
+        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}recentering_error.nc'
+        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_ens_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_steric_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_unbal_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_total_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_explained_variance.nc'
         {% endif %}
 
         # runtime configs

@@ -60,6 +60,7 @@ parm/gdas/spoc
 parm/gdas/stat
 parm/gdas/jcb-gdas
 parm/gdas/jcb-algorithms
+parm/gdas/spoc
 parm/monitor
 parm/post/nam_micro_lookup.dat
 parm/post/optics_luts_DUST.dat
@@ -164,8 +165,6 @@ ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_filter_topo.sh
 ush/fv3gfs_make_grid.sh
 ush/fv3gfs_make_orog.sh
-ush/bufr2ioda_insitu_profile*.py
-ush/bufr2ioda_insitu_surface*.py
 ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle_driver.sh
@@ -175,7 +174,9 @@ ush/bufr_snocvr_snomad.py
 ush/atparse.bash
 ush/run_bufr2ioda.py
 ush/bufr2ioda_insitu*
+ush/python/gsincdiag_to_ioda
 ush/python/ufsda
+ush/python/pyiodaconv
 ush/python/soca
 ush/python/gen_bufr2ioda_json.py
 ush/python/gen_bufr2ioda_yaml.py
