@@ -34,6 +34,8 @@ gdasocean_analysis:
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_unbal_stddev.nc'
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_total_stddev.nc'
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_explained_variance.nc'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_ensb.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_ensweights.yaml'
         {% endif %}
 
         # runtime configs
@@ -42,10 +44,8 @@ gdasocean_analysis:
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_diagb.yaml'
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}gridgen.yaml'
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_vtscales.yaml'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_ensweights.yaml'
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}bmat_fields_metadata.yaml'
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/var.yaml'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_ensb.yaml'
         # soca_parameters_diffusion_vt, and soca_parameters_diffusion_hz when present
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_parameters_diffusion_??.yaml'
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/soca_incpostproc.yaml'
