@@ -20,7 +20,7 @@ prepoceanobs:
   # will not work for realtime or retros
   dmpdir_exp: "${BASE_DATA}/experimental_obs"
 
-marineanlbmat:
+marinebmat:
   SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
   SOCA_ANL_GEOM: {{ HOMEgfs }}/fix/gdas/soca/720x540x75/soca
 

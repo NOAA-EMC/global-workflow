@@ -51,6 +51,7 @@ class MarineLETKF(Analysis):
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'letkf_app': 'true',
                 'DIST_HALO_SIZE': 3500000,
+                'DOMAIN_STACK_SIZE': 116640000,  # TODO: Make the stack size resolution dependent
             }
         ))
 

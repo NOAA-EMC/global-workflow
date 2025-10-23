@@ -69,7 +69,7 @@ class MarineAnalysis(Analysis):
                 'rst_date': _rst_date,
                 'cice_rst_date': _cice_rst_date,
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3)),
-                'DOMAIN_STACK_SIZE': 116640000  # TODO: Make the stack size resolution dependent
+                'DOMAIN_STACK_SIZE': 116640000,  # TODO: Make the stack size resolution dependent
                 'marine_pseudo_model_states': mdau.gen_bkg_list(bkg_path='./bkg',
                                                                 window_begin=self.task_config.WINDOW_BEGIN)
             }

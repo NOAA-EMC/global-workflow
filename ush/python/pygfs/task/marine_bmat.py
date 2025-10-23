@@ -54,6 +54,7 @@ class MarineBMat(Analysis):
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
                 'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES)),
+                'DOMAIN_STACK_SIZE': 116640000,  # TODO: Make the stack size resolution dependent
             }
         ))
 
