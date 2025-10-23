@@ -69,20 +69,33 @@ fi
 # Stage input files
 #
 
+# Create master MPMD command file
+rm -f cmdfile
+touch cmdfile
+chmod 744 cmdfile
+
+# Create MDMP command file for fixed files
+rm -f cmdfile.0
+touch cmdfile.0
+chmod 744 cmdfile.0
+
 # input, fixed files
-cpreq "${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc" \
-      "${DATA}/gaussian_scrip.nc"
+echo "cpreq ${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc \
+            ${DATA}/gaussian_scrip.nc" >> cmdfile.0
 
 # output, fixed files
-cpreq "${FIXorog}/${CASE_OUT}/${CASE_OUT}_mosaic.nc" \
-      "${DATA}/${CASE_OUT}_mosaic.nc"
+echo "cpreq ${FIXorog}/${CASE_OUT}/${CASE_OUT}_mosaic.nc \
+            ${DATA}/${CASE_OUT}_mosaic.nc" >> cmdfile.0
 
 for n in $(seq 1 "${ntiles}"); do
-    cpreq "${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc" \
-          "${DATA}/vegetation_type.tile${n}.nc"
-    cpreq "${FIXorog}/${CASE_OUT}/${CASE_OUT}_grid.tile${n}.nc" \
-          "${DATA}/${CASE_OUT}_grid.tile${n}.nc"
+    echo "cpreq ${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc \
+                ${DATA}/vegetation_type.tile${n}.nc" >> cmdfile.0
+    echo "cpreq ${FIXorog}/${CASE_OUT}/${CASE_OUT}_grid.tile${n}.nc \
+                ${DATA}/${CASE_OUT}_grid.tile${n}.nc" >> cmdfile.0
 done
+
+# Append fixed files command file to master command file
+"cmdfile.0" >> cmdfile
 
 for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
@@ -108,18 +121,29 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         in_dir="'./'"
     fi
 
+    # Create MPMD command file for this member
+    rm -f "cmdfile.${imem}"
+    touch "cmdfile.${imem}"
+    chmod 744 "cmdfile.${imem}"
+
     for FHR in "${soilinc_fhrs[@]}"; do
-        cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
-               "${memdir}/enkfgdas.sfci00${FHR}.nc"
+        echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc \
+                    ${memdir}/enkfgdas.sfci00${FHR}.nc" >> "cmdfile.${imem}"
     done 
 
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then 
         for FHI in "${landifhrs[@]}"; do
-            cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHI}.nc" \
-                  "${memdir}/enkfgdas.sfci00${FHI}.nc"
+            echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHI}.nc \
+                        ${memdir}/enkfgdas.sfci00${FHI}.nc" >> "cmdfile.${imem}"
         done
     fi
+
+    # Append this member's command file to master command file
+    "cmdfile.${imem}" >> cmdfile
 done
+
+# Run MPMD to stage input files
+${APRUN_REGRID} cmdfile
 
 # Finish defining input/output directory list
 export out_dir="${in_dir}"
@@ -165,6 +189,11 @@ fi
 # Save regridded files to COMOUT
 #
 
+# Create master MPMD command file
+rm -f cmdfile
+touch cmdfile
+chmod 744 cmdfile
+
 for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
     memchar="mem${cmem}"
@@ -181,19 +210,32 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         memdir="${DATA}"
     fi
 
+    # Create MPMD command file for this member
+    rm -f "cmdfile.${imem}"
+    touch "cmdfile.${imem}"
+    chmod 744 "cmdfile.${imem}"
+
     if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
         for FHR in "${soilinc_fhrs[@]}"; do
             for n in $(seq 1 "${ntiles}"); do
-                cpfs "${memdir}/sfci00${FHR}.mem${imem}.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
+                echo "cpfs ${memdir}/sfci00${FHR}.mem${imem}.tile${n}.nc \
+                      ${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" >> "cmdfile.${imem}"
             done
         done
     fi
 
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${memdir}/sfci.mem${imem}.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
+            echo "cpfs ${memdir}/sfci.mem${imem}.tile${n}.nc \
+                  ${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc" >> "cmdfile.${imem}"
         done
     fi
+
+    # Append this member's command file to master command file
+    "cmdfile.${imem}" >> cmdfile
 done
+
+# Run MPMD to save output files
+${APRUN_REGRID} cmdfile
 
 exit 0
