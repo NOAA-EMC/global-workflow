@@ -202,7 +202,7 @@ class AnalysisStats(Task):
         with tarfile.open(iodastatzipfile, "w|gz") as archive:
             for targetfile in iodastatfiles:
                 archive.add(targetfile, arcname=os.path.basename(targetfile))
-        
+
         # concatenate text files into one summary file
         summaryfile = os.path.join(outdir, f"{self.task_config.APREFIX}{jedi_dict_key}_stats.txt")
         with open(summaryfile, 'w') as outfile:
