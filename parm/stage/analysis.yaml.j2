@@ -21,6 +21,7 @@ analysis:
         {% endfor %}
         {% endfor %}
 
+        # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
         {% for source_ftype, dest_ftype in [
             ("abias", "abias.txt"),
             ("abias_air", "abias_air.txt"),
@@ -35,6 +36,7 @@ analysis:
 
         {% else %}
 
+        # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
         {% for source_ftype, dest_ftype in
         [
             ("atminc.nc", "increment.atm.i006.nc"),
@@ -58,6 +60,7 @@ analysis:
 
         {% endif %}
 
+        # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
         {% if DO_GSISOILDA %}
         {% for source_ftype, dest_ftype in
         [

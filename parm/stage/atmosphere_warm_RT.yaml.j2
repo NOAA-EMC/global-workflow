@@ -11,6 +11,7 @@ atmosphere_warm_RT:
         {% set increment_destination_path = COMOUT_ATMOS_ANALYSIS_MEM %}
 
         # Include increment files
+        # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
         {% for source_ftype, dest_ftype in
         [
             ("ratmi003.nc", "recentered_increment.atm.i003.nc"),
