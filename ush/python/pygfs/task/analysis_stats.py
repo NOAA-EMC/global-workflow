@@ -180,7 +180,7 @@ class AnalysisStats(Task):
         # Check if the directory exists; if not, create it
         if not os.path.exists(outdir):
             FileHandler({'mkdir': [outdir]}).sync()
-        
+
         copy_list = []
         for obsspace_dict in analysis_config_dict[jedi_dict_key]['obs spaces']:
             statfile = os.path.join(self.task_config.DATA, obsspace_dict['output file'])
