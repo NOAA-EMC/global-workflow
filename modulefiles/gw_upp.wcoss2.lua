@@ -8,8 +8,6 @@ prepend_path("MODULEPATH", pathJoin(homegfs,"/sorc/ufs_model.fd/UFSATM/upp/modul
 load("wcoss2_intel")
 
 load(pathJoin("cray-pals", "1.0.17"))
-load(pathJoin("cfp", "2.0.4"))
-setenv("USE_CFP","YES")
 
 -- Load workflow modules
 load(pathJoin("prod_util", "2.0.9"))
