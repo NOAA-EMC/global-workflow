@@ -26,7 +26,7 @@ UFS_det(){
     IAU_OFFSET=0
     model_start_date_current_cycle=${current_cycle}
 
-    DO_LAND_IAU=".false."           
+    DO_LAND_IAU=".false."
 
     # It is still possible that a restart is available from a previous forecast attempt
     # So we have to continue checking for restarts
@@ -80,9 +80,22 @@ UFS_det(){
       if [[ ! -f "${DATArestart}/CMEPS_RESTART/ufs.cpld.cpl.r.${rdate:0:4}-${rdate:4:2}-${rdate:6:2}-${seconds}.nc" ]]; then
         cmeps_rst_ok="NO"
       fi
-      if [[ ! -f "${DATArestart}/MOM6_RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" ]]; then
       # TODO: add checks for other MOM6 restarts as well
+      if [[ ! -f "${DATArestart}/MOM6_RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" ]]; then
         mom6_rst_ok="NO"
+      else
+        # Also check for MOM6 history file availability
+        # TODO: Need to adapt for SFS where averaging period may be different, need to generalize
+        hdate=$(date -u -d "${rdate:0:8} ${rdate:8:2}:00:00 + 3 hours" +"%Y_%m_%d_%H")  # MOM6 history is averaged 6 hrs
+        if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdate:0:4}_${hdate:4:2}_${hdate:6:2}_${hdate:8:2}.nc" ]]; then
+          mom6_rst_ok="NO"
+        else
+          # Also check for the next MOM6 history file (hdate + 6 hours)
+          hdatep1=$(date -u -d "${hdate:0:4}-${hdate:4:2}-${hdate:6:2} ${hdate:8:2}:00:00 + 6 hours" +"%Y_%m_%d_%H")
+          if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdatep1:0:4}_${hdatep1:4:2}_${hdatep1:6:2}_${hdatep1:8:2}.nc" ]]; then
+            mom6_rst_ok="NO"
+          fi
+        fi
       fi
       MOM6_RESTART_SETTING='r'
       MOM6_INIT_FROM_Z=True
