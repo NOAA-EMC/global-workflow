@@ -23,4 +23,4 @@ setenv("WGRIB2","wgrib2")
 prepend_path("MODULEPATH", "/apps/dev/modulefiles")
 load(pathJoin("ve","gw", "1.0"))
 
-whatis("Description: GFS run environment")
+whatis("Description: UPP run environment")
