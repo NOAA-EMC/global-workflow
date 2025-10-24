@@ -1221,7 +1221,7 @@ class GFSTasks(Tasks):
                                    'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_next#.nc'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_nextp1#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
                                  'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_last#.nc'}}
@@ -1241,6 +1241,13 @@ class GFSTasks(Tasks):
             fhrs.remove(0)
 
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Delay triggering ocean products task to next next forecast hour to ensure all data is available
+        if component == 'ocean':
+            fhr3_next = fhr_var_dict['fhr3_next'].split(' ')
+            fhr3_nextp1 = fhr3_next[1:]
+            fhr3_nextp1.append(fhr3_next[-1])  # repeat last forecast hour to maintain same number of groups
+            fhr_var_dict['fhr3_nextp1'] = ' '.join(fhr3_nextp1)
 
         # Adjust walltime based on the largest group
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
