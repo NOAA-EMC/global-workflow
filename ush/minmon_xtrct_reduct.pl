@@ -42,13 +42,13 @@ if( (-e $infile) ) {
 
    while( my $line = <INFILE> ) {
       if( $line =~ /$reduct_target/ ) {
-         my @reduct_ln  = split( / +/, $line ); 
+         my @reduct_ln  = split( / +/, $line );
          $iter_gradient = $reduct_ln[$gradient_num];
          if( $initial_gradient == -999.0 ){
             $initial_gradient = $iter_gradient;
          }
-        
-         $reduct = $iter_gradient / $initial_gradient;          
+
+         $reduct = $iter_gradient / $initial_gradient;
 
          push( @reduct_array, $reduct );
       }
@@ -77,7 +77,7 @@ if( (-e $infile) ) {
 
    if( -e $outfile ) {
       my $newfile = "${tankdir}/${outfile}";
-      system("cp -f $outfile $newfile");
+      system("cpfs $outfile $newfile");
    }
 
 } else {				# $infile does not exist
