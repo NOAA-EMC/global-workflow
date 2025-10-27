@@ -17,7 +17,7 @@ enkf_marine_grp:
         - "{{ COMIN_OCEAN_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}inst.f009.nc"
 
         {% for body in ["ic", "inst.f009"] %}
-        - "{{ COMIN_ICE_HISTORY_MEM | relpath(ROTDIR) }}/{{ head_ice }}{{ body }}.nc"
+        - "{{ COMIN_ICE_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}{{ body }}.nc"
         {% endfor %}
         {% endif %}
 
