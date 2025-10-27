@@ -252,11 +252,7 @@ export FSICS="0"
 
 #---------------------------------------------------------------------
 # Write more variables to output
-if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-  export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_replay"
-else
-  export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
-fi
+export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
 
 # Write gfs restart files to rerun fcst from any break point
 export restart_interval=${restart_interval_gfs:-12}
