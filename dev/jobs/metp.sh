@@ -3,9 +3,9 @@
 set -x
 
 ###############################################################
-source "${HOMEgfs}/dev/ush/load_gw_verif_modules.sh"
+source "${HOMEgfs}/dev/ush/load_modules.sh" verif
 status=$?
-if (( status != 0 )); then exit "${status}"; fi
+if ((status != 0)); then exit "${status}"; fi
 
 export job="metp${METPCASE}"
 export jobid="${job}.$$"

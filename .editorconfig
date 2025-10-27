@@ -22,6 +22,20 @@ indent_style = tab
 indent_size = 4
 max_line_length = 79
 
+[jobs/*]
+indent_style = space
+indent_size = 4
+shell_variant = bash
+switch_case_indent = true
+space_redirects = true
+
+[*.{sh,bash}]
+indent_style = space
+indent_size = 4
+shell_variant = bash
+switch_case_indent = true
+space_redirects = true
+
 [*.{diff}]
 trim_trailing_whitespace = false
 

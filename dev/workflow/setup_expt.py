@@ -130,7 +130,7 @@ def map_inputs_to_configs(inputs):
             "SDATE": to_YMDH(inputs.idate),
             "EDATE": to_YMDH(inputs.edate),
             "CASE_CTL": f'C{inputs.resdetatmos}',
-            "OCNRES": f"{int(100.*inputs.resdetocean):03d}",
+            "OCNRES": f"{int(100. * inputs.resdetocean):03d}",
             "EXPDIR": inputs.expdir,
             "COMROOT": inputs.comroot,
             "EXP_WARM_START": warm_start_map[inputs.start],

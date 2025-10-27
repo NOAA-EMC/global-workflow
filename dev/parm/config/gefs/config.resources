@@ -53,6 +53,15 @@ case ${step} in
     export memory="4096M"
     ;;
 
+  "wave_stat" | "wave_stat_pnt")
+    export walltime="00:15:00"
+    export ntasks=12
+    export threads_per_task=1
+    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    export NTASKS=${ntasks}
+    export memory="2GB"
+    ;;
+
   "gen_control_ic")
     export walltime="00:15:00"
     export ntasks=12
@@ -280,47 +289,6 @@ case ${step} in
     export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export NTASKS=${ntasks}
     export memory="10GB"
-    ;;
-
-  # The wavepost*pnt* jobs are I/O heavy and do not scale well to large nodes.
-  # Limit the number of tasks/node to 40.
-  "wavepostbndpnt")
-    export walltime="03:00:00"
-    export ntasks=240
-    export threads_per_task=1
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
-    if [[ ${tasks_per_node} -gt 40 ]]; then
-        export tasks_per_node=40
-        export is_exclusive=False
-    fi
-    export NTASKS=${ntasks}
-    ;;
-
-  "wavepostbndpntbll")
-    export walltime="01:00:00"
-    export ntasks=448
-    export threads_per_task=1
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
-    if [[ ${tasks_per_node} -gt 40 ]]; then
-        export tasks_per_node=40
-        export is_exclusive=False
-    fi
-    export NTASKS=${ntasks}
-    ;;
-
-  "wavepostpnt")
-    export walltime="04:00:00"
-    export ntasks=200
-    export threads_per_task=1
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
-    if [[ ${tasks_per_node} -gt 40 ]]; then
-        export tasks_per_node=40
-        export is_exclusive=False
-    fi
-    export NTASKS=${ntasks}
     ;;
 
   "gempak")
