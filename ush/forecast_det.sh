@@ -35,7 +35,7 @@ UFS_det(){
   # Lets assume this is was not run before and hence this is not a RERUN
   RERUN="NO"
 
-  # RERUN is only available for RUN=gfs|gefs It is not available for RUN=gdas|enkfgdas|enkfgfs
+  # RERUN is only available for RUN=gfs|gefs.  It is not available for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" ]] || [[ "${RUN}" == "enkfgfs" ]]; then
     echo "RERUN is not available for RUN='${RUN}'"
     return 0
@@ -46,15 +46,19 @@ UFS_det(){
   # shellcheck disable=SC2312
   mapfile -t file_array < <(find "${DATArestart}/FV3_RESTART" -name "????????.??0000.coupler.res" | sort)
   nrestarts=${#file_array[@]}
-  if (( nrestarts == 0 )); then
+  if [[ ${nrestarts} -eq 0 ]]; then
     echo "No restarts found in '${DATArestart}/FV3_RESTART', RERUN='${RERUN}'"
     return 0
+  else
+    echo "Found ${nrestarts} restarts in '${DATArestart}/FV3_RESTART' to check for RERUN"
+    ls -1 "${DATArestart}/FV3_RESTART/"????????.??0000.coupler.res
   fi
 
   # Look in reverse order of file_array to determine available restart times
   local ii filepath filename
   local rdate seconds
   local fv3_rst_ok cmeps_rst_ok mom6_rst_ok cice6_rst_ok ww3_rst_ok
+  local hdate hdatep1 fhout_ocn_by_2
   for (( ii=nrestarts-1; ii>=0; ii-- )); do
 
     filepath="${file_array[ii]}"
@@ -85,13 +89,13 @@ UFS_det(){
         mom6_rst_ok="NO"
       else
         # Also check for MOM6 history file availability
-        # TODO: Need to adapt for SFS where averaging period may be different, need to generalize
-        hdate=$(date -u -d "${rdate:0:8} ${rdate:8:2}:00:00 + 3 hours" +"%Y_%m_%d_%H")  # MOM6 history is averaged 6 hrs
+        fhout_ocn_by_2=$((FHOUT_OCN / 2))
+        hdate=$(date -u -d "${rdate:0:8} ${rdate:8:2} + ${fhout_ocn_by_2} hours" +"%Y%m%d%H")
         if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdate:0:4}_${hdate:4:2}_${hdate:6:2}_${hdate:8:2}.nc" ]]; then
           mom6_rst_ok="NO"
         else
-          # Also check for the next MOM6 history file (hdate + 6 hours)
-          hdatep1=$(date -u -d "${hdate:0:4}-${hdate:4:2}-${hdate:6:2} ${hdate:8:2}:00:00 + 6 hours" +"%Y_%m_%d_%H")
+          # Also check for the next MOM6 history file (hdate + FHOUT_OCN hours)
+          hdatep1=$(date -u -d "${hdate:0:8} ${hdate:8:2} + ${FHOUT_OCN} hours" +"%Y%m%d%H")
           if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdatep1:0:4}_${hdatep1:4:2}_${hdatep1:6:2}_${hdatep1:8:2}.nc" ]]; then
             mom6_rst_ok="NO"
           fi
