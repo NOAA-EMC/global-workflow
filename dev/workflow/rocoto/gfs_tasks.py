@@ -686,7 +686,7 @@ class GFSTasks(Tasks):
         dmpdir = self._configs['prepoceanobs']["DMPDIR"]
 
         deps = []
-        data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
+        data = f'{ocean_hist_path}/gdas.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/{self.run}.t@Hz.obsforge_marine_status.log'
@@ -745,7 +745,7 @@ class GFSTasks(Tasks):
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
 
         deps = []
-        data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
+        data = f'{ocean_hist_path}/gdas.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
@@ -1224,10 +1224,10 @@ class GFSTasks(Tasks):
                                    'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.6hr_avg.f#fhr3_next#.nc'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_nextp1#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.6hr_avg.f#fhr3_last#.nc'}}
+                                 'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_last#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -1244,6 +1244,13 @@ class GFSTasks(Tasks):
             fhrs.remove(0)
 
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
+
+        # Delay triggering ocean products task to next next forecast hour to ensure all data is available
+        if component == 'ocean':
+            fhr3_next = fhr_var_dict['fhr3_next'].split(' ')
+            fhr3_nextp1 = fhr3_next[1:]
+            fhr3_nextp1.append(fhr3_next[-1])  # repeat last forecast hour to maintain same number of groups
+            fhr_var_dict['fhr3_nextp1'] = ' '.join(fhr3_nextp1)
 
         # Adjust walltime based on the largest group
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
@@ -1894,6 +1901,9 @@ class GFSTasks(Tasks):
         if self.options['do_jediatmvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_analdiag'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jediocnvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -1912,7 +1922,7 @@ class GFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
-                     'cycledef': self.run,
+                     'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEgfs}/dev/jobs/anlstat.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -2146,9 +2156,6 @@ class GFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
                 if self.options['do_vminmon']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
-                    deps.append(rocoto.add_dependency(dep_dict))
-                if self.options['do_anlstat']:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_anlstat'}
                     deps.append(rocoto.add_dependency(dep_dict))
             elif self.run in ['gdas']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
@@ -3098,6 +3105,9 @@ class GFSTasks(Tasks):
             if not self.options['do_jediatmens']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
                 deps.append(rocoto.add_dependency(dep_dict))
+            if self._base.get('DOLETKF_OCN', True):
+                dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlletkf'}
+                deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:  # early cycle enkf run (enkfgfs)
             dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
@@ -3108,6 +3118,9 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'enkfgfs_marineanlecen'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'task', 'name': f'gfs_marineanlfinal'}
+                deps.append(rocoto.add_dependency(dep_dict))
+            if self._base.get('DOLETKF_OCN', True):
+                dep_dict = {'type': 'task', 'name': f'enkfgfs_marineanlletkf'}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

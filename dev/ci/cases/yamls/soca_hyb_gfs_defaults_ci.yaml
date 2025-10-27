@@ -3,6 +3,6 @@ defaults:
 base:
   DO_JEDIOCNVAR: "YES"
   DOHYBVAR_OCN: "YES"
-  DOLETKF_OCN: "NO"
+  DOLETKF_OCN: "YES"
 marineanl:
   SOCA_NINNER: 1

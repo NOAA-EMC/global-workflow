@@ -1,0 +1,17 @@
+#!/bin/bash
+
+########## config.marineanlletkf ##########
+# Ocn Analysis specific
+
+echo "BEGIN: config.marineanlletkf"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" marineanlletkf
+
+export INPUT_FIX_DIR="{{ SOCA_INPUT_FIX_DIR }}"
+export ANL_GEOM="{{ SOCA_ANL_GEOM }}"
+
+export OBS_LIST_YAML="{{ SOCA_OBS_LIST }}"
+export TASK_CONFIG_YAML="${PARMgfs}/gdas/marine/marine_ens_config.yaml.j2"
+
+echo "END: config.marineanlletkf"

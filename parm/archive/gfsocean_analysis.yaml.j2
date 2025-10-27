@@ -10,21 +10,21 @@ gfsocean_analysis:
         {% endif %}
         {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
         # analysis and analysis increments
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ocninc.nc'
-        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.cice_model_anl.res.nc'
-        {% for domain in ["ocn", "ice"] %}
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.incr.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ice.incr.postproc.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}{{domain}}.ana.nc'
-        {% endfor %}
+        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.i006.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}mom6_increment.i006.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.analysis.cice_model.res.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.i006.nc'
+        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}pp_increment.i006.nc'
 
         # static background error
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ocean.bkgerr_parametric_stddev.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ice.bkgerr_parametric_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_parametric_stddev.nc'
+        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_parametric_stddev.nc'
 
         # runtime configs
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/*.yaml'
-    optional:        
+    optional:
         # obs space diags
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/{{ head }}ocn.*.stats.csv'
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/*.nc'
