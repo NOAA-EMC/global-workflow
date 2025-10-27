@@ -8,20 +8,11 @@ echo "BEGIN: config.marineanl"
 # TODO: This should be sourced in a config file specific to marine deterministic analysis
 #       and renamed to remove _DET
 
-export JCB_ALGO_YAML_VAR="{{ JCB_ALGO_YAML_VAR }}"
-
-export OBS_LIST_YAML="{{ SOCA_OBS_LIST }}"
 export INPUT_FIX_DIR="{{ SOCA_INPUT_FIX_DIR }}"
 export ANL_GEOM="{{ SOCA_ANL_GEOM }}"
 export NINNER="{{ SOCA_NINNER }}"
 
-export DOMAIN_STACK_SIZE=116640000  #TODO: Make the stack size resolution dependent
-export MARINE_JCB_GDAS_OBS="${PARMgfs}/gdas/jcb-gdas/observations/marine"
-
-export JEDI_CONFIG_YAML_DET="${PARMgfs}/gdas/marine/marine_det_jedi_config.yaml.j2"
-export STAGE_FIX_YAML="${PARMgfs}/gdas/marine/marine_stage_fix_${OCNRES}.yaml.j2"
-export STAGE_UTILITIES_YAML="${PARMgfs}/gdas/marine/marine_stage_utilities.yaml.j2"
-export STAGE_DET_BKG_YAML="${PARMgfs}/gdas/marine/marine_det_stage_bkg.yaml.j2"
-export STAGE_ENS_BKG_YAML="${PARMgfs}/gdas/marine/marine_ens_stage_bkg.yaml.j2"
+export OBS_LIST_YAML="{{ SOCA_OBS_LIST }}"
+export TASK_CONFIG_YAML="${PARMgfs}/gdas/marine/marine_det_config.yaml.j2"
 
 echo "END: config.marineanl"

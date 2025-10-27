@@ -10,7 +10,7 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 # module load mpt
 #fi
 
-# Variable "gribver" defines if input GRIB data is in 
+# Variable "gribver" defines if input GRIB data is in
 # GRIB1 (gribver=1) or GRIB2 (gribver=2) format.
 export gribver=${gribver:-1}
 
@@ -33,11 +33,11 @@ fi
 
 cd $vdir
 
-# This script kicks off the hurricane tracker system.  You have the option of 
-# running the tracker on several operational models (the system will 
+# This script kicks off the hurricane tracker system.  You have the option of
+# running the tracker on several operational models (the system will
 # automatically search in the appropriate operational directories for the
-# data), or on your own model data.  In either case, the current system 
-# will ONLY be able to read GRIB data.  To run the tracker, fill in the 
+# data), or on your own model data.  In either case, the current system
+# will ONLY be able to read GRIB data.  To run the tracker, fill in the
 # required fields below on the "export" lines, then llsubmit this script.
 
 
@@ -45,12 +45,12 @@ cd $vdir
 #     1. ENTER MODEL TYPE
 #     -------------------
 #
-#     Enter the name of the model that you're running the tracker on.  The 
-#     tracker is already hard-wired to read the operational GFS, MRF, UKMET, 
-#     ECMWF, NGM, Early NAM and NAVGEM files in their operational directories 
-#     on /com.  If your model is one of these, *AND* the data files are still 
-#     on /com (data on the SP sits on /com for ~10 days), enter one of the 
-#     following below:  GFS, MRF, UKMET, ECMWF, NGM, NAM, NGPS.  Otherwise, 
+#     Enter the name of the model that you're running the tracker on.  The
+#     tracker is already hard-wired to read the operational GFS, MRF, UKMET,
+#     ECMWF, NGM, Early NAM and NAVGEM files in their operational directories
+#     on /com.  If your model is one of these, *AND* the data files are still
+#     on /com (data on the SP sits on /com for ~10 days), enter one of the
+#     following below:  GFS, MRF, UKMET, ECMWF, NGM, NAM, NGPS.  Otherwise,
 #     enter OTHER below:
 #
 #     Example:  export CMODEL=gfs
@@ -62,36 +62,36 @@ export CMODEL=${CMODEL:-$RUN}
 #     2. ENTER FILE NAME
 #     -------------------
 #
-#     If you entered an operational model above, then skip this step, as the 
-#     script already knows the filename and directory location .  Otherwise, 
-#     you must enter the full name (include directory) of one of your GRIB 
-#     forecast files.  Also, your 00h forecast file must have the characters 
-#     "00" in the name, not just "anl".  
+#     If you entered an operational model above, then skip this step, as the
+#     script already knows the filename and directory location .  Otherwise,
+#     you must enter the full name (include directory) of one of your GRIB
+#     forecast files.  Also, your 00h forecast file must have the characters
+#     "00" in the name, not just "anl".
 #
 #     Finally, and this is important, in the export statement below, in the
 #     character positions where the forecast hour characters "00" would appear
-#     replace those characters with the characters "XX".  This allows the 
-#     tracker script to manipulate the file names, and to avoid confusion of 
+#     replace those characters with the characters "XX".  This allows the
+#     tracker script to manipulate the file names, and to avoid confusion of
 #     the forecast hour "00" with the initial hour "00" that may be in a name.
 #
 #     Example: If the actual name of your datafile is
 #              /ptmp/wx20tm/trakdat/ngm.1997110700.pgrb.f00, then enter below:
 #
 #              export INPFILE=/ptmp/wx20tm/trakdat/ngm.1997110700.pgrb.fXX
- 
+
 export INPFILE=${INPFILE:-}
- 
+
 
 #     -------------------------------
 #     3. ENTER FORECAST HOUR INTERVAL
 #     -------------------------------
 #
 #     If above you entered an operational model from an operational directory,
-#     then skip this step, as the script already knows the forecast hour 
-#     interval.  Otherwise, enter the integer number of hours between 
+#     then skip this step, as the script already knows the forecast hour
+#     interval.  Otherwise, enter the integer number of hours between
 #     successive forecasts.  By the way, there are a couple of caveats:
-#      a) Your forecast hours must be evenly spaced (i.e., if you start out 
-#         with 00, 06, 12,... etc, and then after 48 you skip to 60, the 
+#      a) Your forecast hours must be evenly spaced (i.e., if you start out
+#         with 00, 06, 12,... etc, and then after 48 you skip to 60, the
 #         program will stop after 48 hours).
 #      b) Currently, a maximum of 14 forecast times can be handled (this is
 #         enough to get you 6h forecast intervals from 00 to 78h, or 12h
@@ -123,24 +123,24 @@ export INPSTORM=
 #     6. ENTER NAME OF AUXILIARY TC VITALS FILE
 #     -----------------------------------------
 #
-#     If you are going to use this script to track a storm that has been 
+#     If you are going to use this script to track a storm that has been
 #     tracked by an operational hurricane center (NHC, JTWC, etc.), then
 #     skip this step, as the TC Vitals files for 1991-1999 are online
 #     (except we're currently missing 1992) and will be used.
-#     However, if you're trying to track, for example, a midlatitude 
-#     synoptic storm or a subtropical low, then you need to create a TC 
-#     Vitals record for that storm that includes the following parameters 
+#     However, if you're trying to track, for example, a midlatitude
+#     synoptic storm or a subtropical low, then you need to create a TC
+#     Vitals record for that storm that includes the following parameters
 #     in the appropriate character positions: 3-character storm ID, Storm
 #     name, starting YYMMDD, starting HHMM, initial Lat, initial Lon,
 #     direction of storm movement, and speed of storm movement.  (See
 #     Tim Marchok or Steve Lord to get the exact format).  NOTE: the
-#     online TC Vitals files are the operational files, NOT Best Track. 
+#     online TC Vitals files are the operational files, NOT Best Track.
 #     If you want to use Best Track data, include that file name here and
 #     the tracker will use it instead of the operational file.  Enter the
 #     name of your auxiliary TC Vitals file:
 #
 #     Example: export AUXTCVIT=/ptmp/wx20tm/ecoast.wint97
- 
+
 export AUXTCVIT=
 
 
@@ -150,8 +150,8 @@ export AUXTCVIT=
 #
 #     This allows you to enter your own thresholds for mslp gradient and
 #     850 mb tangential winds.  These are used in subroutine is_it_a_storm
-#     at each forecast hour to verify that the center that you've found 
-#     at least resembles a storm.  It helps to have this check so that, 
+#     at each forecast hour to verify that the center that you've found
+#     at least resembles a storm.  It helps to have this check so that,
 #     in the case of weak storms that have dissipated, you don't end up
 #     latching onto some weak passing trough.  When this check was not in
 #     there in the original version of the tracker, we wound up with some
@@ -159,8 +159,8 @@ export AUXTCVIT=
 #     operational version, the values are hard-wired in as requiring a
 #     mslp gradient of at least 1 mb / 200 km (0.005 mb/km), and requiring
 #     the average cyclonic tangential winds at 850 mb within a specified
-#     radius (the radius depends on each model's grid resolution) to be 
-#     at least 5 m/s.  If you want different thresholds, then change the 
+#     radius (the radius depends on each model's grid resolution) to be
+#     at least 5 m/s.  If you want different thresholds, then change the
 #     default values below....
 #
 #     Example:
@@ -181,7 +181,7 @@ export BKGFREQ=${BKGFREQ:-1}
 # data files exist, it also pulls all of the needed data records out of the
 # various GRIB forecast files and puts them into one, consolidated GRIB file,
 # it also runs scripts that read the TC Vitals records for the input day and
-# updates the TC Vitals (if necessary).  It then executes the gettrk 
+# updates the TC Vitals (if necessary).  It then executes the gettrk
 # executable, which actually does the tracking.
 
 
@@ -226,14 +226,14 @@ case ${shh} in
 esac
 
 #---------------------------------------------------#
-# Convert the input model to lowercase letters and 
+# Convert the input model to lowercase letters and
 # check to see if it's a valid model, and assign a
 # model ID number to it.
 #---------------------------------------------------#
 
 cmodel=$(echo ${cmodel} | tr "[A-Z]" "[a-z]")
 
-case ${cmodel} in 
+case ${cmodel} in
 
   gdas) set +x; echo " "; echo " ++ operational GDAS chosen"; set_trace;
        fcstlen=9                                       ;
@@ -314,17 +314,17 @@ case ${cmodel} in
 esac
 
 #-------------------------------------------------
-# Initialize the fh array that's used in 
+# Initialize the fh array that's used in
 # telling the fortran program the number of
-# forecast hours and what those forecast 
-# hours are.  If the model selected is an 
+# forecast hours and what those forecast
+# hours are.  If the model selected is an
 # operational model, the tracker already knows
 # what those hours are; it only needs this info
 # if the model is user-defined.
 #-------------------------------------------------
 
 fct=1
-while [ ${fct} -le 14 ]; 
+while [ ${fct} -le 14 ];
 do
   fh[${fct}]=99
   let fct=fct+1
@@ -333,20 +333,20 @@ done
 
 #------------------------------------------------------#
 # Set the directories for the operational files.  For
-# a user-specified model, we need to process the 
-# input file to get the necessary info about the 
+# a user-specified model, we need to process the
+# input file to get the necessary info about the
 # data directory, etc.....
 #------------------------------------------------------#
 
 if [ ${cmodel} = 'other' ]; then
 
 # This next bit of code tears apart the input file name to get the
-# data directory and data file names.  pos1, pos2, pos3 and pos4 
+# data directory and data file names.  pos1, pos2, pos3 and pos4
 # refer to character string positions in the filename string.  The
 # idea of this next bit of code is to pull the file name apart to
 # get a shell for the file name, so that if a user has a file
-# name such as pgbf00.97090100, the script knows where in the 
-# string to substitute the forecast hours.  IMPORTANT NOTE: The 
+# name such as pgbf00.97090100, the script knows where in the
+# string to substitute the forecast hours.  IMPORTANT NOTE: The
 # file name that the user enters must have the characters "XX" in
 # in place of the forecast hour characters "00" in order for this
 # to work.
@@ -358,7 +358,7 @@ if [ ${cmodel} = 'other' ]; then
 
   otherdir=$(dirname ${inpfile})
   fname=$(basename ${inpfile})
-  
+
   pos2=$(echo ${fname} | awk '{ match($0,/XX/); print RSTART }')
   pos4=$(echo ${fname} | awk '{ match($0,/$/); print RSTART }')
   let pos4=pos4-1
@@ -376,21 +376,21 @@ if [ ${cmodel} = 'other' ]; then
     set_trace
     exit 8
   fi
-  
+
   fnamebeg=$(echo ${fname} | cut -c1-${pos1})
   if [ ${pos4} -ge ${pos3} ]; then
     fnameend=$(echo ${fname} | cut -c${pos3}-${pos4})
   else
     fnameend=""
   fi
-  
+
   fflag='y'
   fhour=0
   fcsthrsother=''
   fhrct=0
-  while [ ${fflag} = 'y' ]; 
+  while [ ${fflag} = 'y' ];
   do
-  
+
     if [ ${fhrct} -eq 14 ]; then
       set +x
       echo " "
@@ -398,12 +398,12 @@ if [ ${cmodel} = 'other' ]; then
       echo " "
       set_trace
       break
-    fi 
-  
+    fi
+
     if [ ${fhour} -lt 10 ]; then
       fhour=0${fhour}
     fi
-  
+
     if [ -s ${otherdir}/${fnamebeg}${fhour}${fnameend} ]; then
       maxhour=${fhour}
       fcsthrsother=${fcsthrsother}" ${fhour}"
@@ -418,7 +418,7 @@ if [ ${cmodel} = 'other' ]; then
     fi
 
     let fhour=fhour+fhint
-  
+
   done
 
   if [ ! -s ${otherdir}/${fnamebeg}00${fnameend} ]; then
@@ -434,25 +434,25 @@ if [ ${cmodel} = 'other' ]; then
     set_trace
     exit 8
   fi
-  
+
   set +x
   echo " "
-  echo " Max forecast hour is $maxhour" 
+  echo " Max forecast hour is $maxhour"
   echo " List of forecast hours: $fcsthrsother"
   echo " "
   set_trace
 
 # --------------------------------------------------
-# In order for the fortran program to know how many 
+# In order for the fortran program to know how many
 # forecast times there are and what those forecast
 # hours are, we need to include this information in
 # the namelist file.  So first, put this information
-# into an array, then at the end of this script, 
+# into an array, then at the end of this script,
 # we'll put it into the namelist file.
 
   fhour=0
   fct=1
-  while [ ${fct} -le 14 ]; 
+  while [ ${fct} -le 14 ];
   do
 
     if [ ${fhour} -le ${maxhour} ]; then
@@ -468,7 +468,7 @@ if [ ${cmodel} = 'other' ]; then
 
 fi
 
-cp $DATA/tcvitals ${vdir}/vitals.${symd}${dishh}
+cpfs $DATA/tcvitals ${vdir}/vitals.${symd}${dishh}
 
 grep -v TEST ${vdir}/vitals.${symd}${dishh} | \
      awk 'substr($0,6,1) !~ /[8-9]/ {print $0}' >${vdir}/tempvit.nonameless
@@ -564,7 +564,7 @@ awk '
 
 mv ${TMPDIR}/vitals.${symd}${dishh}.y4 ${vdir}/vitals.${symd}${dishh}
 
-#cp $auxtcvit ${vdir}/vitals.${symd}${dishh}
+#cpfs $auxtcvit ${vdir}/vitals.${symd}${dishh}
 
 pgm=$(basename  $SUPVX)
 if [ -s $DATA/prep_step ]; then
@@ -702,12 +702,12 @@ done
 #
 # The utility /nwprod/util/exec/wgrib is used to cut out the
 # needed parms for the GFS, MRF, UKMET and NAVGEM files.
-# The utility /nwprod/util/exec/copygb is used to interpolate the 
-# NGM (polar stereographic) and NAM (Lambert Conformal) data from 
-# their grids onto lat/lon grids.  Note that while the lat/lon 
-# grid that I specify overlaps into areas that don't have any data 
-# on the original grid, Mark Iredell wrote the copygb software so 
-# that it will mask such "no-data" points with a bitmap (just be 
+# The utility /nwprod/util/exec/copygb is used to interpolate the
+# NGM (polar stereographic) and NAM (Lambert Conformal) data from
+# their grids onto lat/lon grids.  Note that while the lat/lon
+# grid that I specify overlaps into areas that don't have any data
+# on the original grid, Mark Iredell wrote the copygb software so
+# that it will mask such "no-data" points with a bitmap (just be
 # sure to check the lbms in your fortran program after getgb).
 #-----------------------------------------------------------------#
 
@@ -729,7 +729,7 @@ regflag=$(grep NHC ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} | wc -l)
 # ----------------------------
 #   Process NGM, if selected
 # ----------------------------
-  
+
 if [ ${model} -eq 5 ]; then
 
   grid='255 0 151 71 70000 190000 128 0000 340000 1000 1000 64'
@@ -774,8 +774,8 @@ if [ ${model} -eq 5 ]; then
     echo " "
     set_trace
 
-    g1=${ngmdir}/${ngmgfile}${fhour}       
-   
+    g1=${ngmdir}/${ngmgfile}${fhour}
+
     ${COPYGB:?} -g"$grid" -k'2*-1 104 -1 33 100 850' $g1 $x1 $TMPDIR/ngmllu850.grb.f${fhour}; rcc1=$?
     ${COPYGB:?} -g"$grid" -k'2*-1 104 -1 33 100 700' $g1 $x1 $TMPDIR/ngmllu700.grb.f${fhour}; rcc2=$?
     ${COPYGB:?} -g"$grid" -k'2*-1 104 -1 33 100 500' $g1 $x1 $TMPDIR/ngmllu500.grb.f${fhour}; rcc3=$?
@@ -819,7 +819,7 @@ fi
 # ----------------------------------
 #   Process Early NAM, if selected
 # ----------------------------------
-  
+
 if [ ${model} -eq 6 ]; then
 
   grid='255 0 301 141 70000 190000 128 0000 340000  500  500 64'
@@ -863,9 +863,9 @@ if [ ${model} -eq 6 ]; then
     echo " Extracting Early NAM GRIB data for forecast hour = $fhour"
     echo " "
     set_trace
-  
+
     g1=${namdir}/${namgfile}${fhour}.tm00
-     
+
     if [ -s $TMPDIR/namlatlon.pgrb ]; then rm $TMPDIR/namlatlon.pgrb; fi
     ${COPYGB:?} -g"$grid" -k'4*-1 33 100 850' $g1 $x1 $TMPDIR/namllu850.grb.f${fhour}; rcc1=$?
     ${COPYGB:?} -g"$grid" -k'4*-1 33 100 700' $g1 $x1 $TMPDIR/namllu700.grb.f${fhour}; rcc2=$?
@@ -897,7 +897,7 @@ if [ ${model} -eq 6 ]; then
         $TMPDIR/namllav850.grb.f${fhour} $TMPDIR/namllav700.grb.f${fhour} \
         $TMPDIR/namllu10m.grb.f${fhour} \
         >>${vdir}/namlatlon.pgrb.${symd}${dishh}
-  
+
   done
 
   ${GRBINDEX:?} ${vdir}/namlatlon.pgrb.${symd}${dishh} ${vdir}/namlatlon.pgrb.ix.${symd}${dishh}
@@ -912,18 +912,18 @@ fi
 # ------------------------------
 
 # ECMWF is not a regional grid, however they currently (6/98) only send us the
-# global belt from 35S to 35N.  Thus, it will have grid boundaries that may 
-# interfere with the tracking algorithm.  It is crucial to the proper 
-# functioning of the tracking program to give any regional grid dataset a 
-# buffer zone around the grid boundaries, with null values in that buffer 
-# zone that are bitmapped out.  That's why we use Mark Iredell's grib 
+# global belt from 35S to 35N.  Thus, it will have grid boundaries that may
+# interfere with the tracking algorithm.  It is crucial to the proper
+# functioning of the tracking program to give any regional grid dataset a
+# buffer zone around the grid boundaries, with null values in that buffer
+# zone that are bitmapped out.  That's why we use Mark Iredell's grib
 # interpolater here, to add a 5 degree buffer zone to the north and south of
 # the ECMWF grid boundary; his interpolater adds the null values in the
-# bitmap surrounding the area with valid data.  If ECMWF begins sending us 
+# bitmap surrounding the area with valid data.  If ECMWF begins sending us
 # the entire global data set, then this bit of code should
 # be taken out, and the data should then be processed as the other normal
 # full-coverage global models (ukmet, mrf, gfs, NAVGEM) currently are.
-  
+
 if [ ${model} -eq 4 ]; then
 
   if [ ! -s ${ecmwfdir}/${ecmwfgfile} ]; then
@@ -962,10 +962,10 @@ fi
 # ------------------------------
 #   Process GFS, if selected
 # ------------------------------
-  
+
 if [ ${model} -eq 1 ]; then
 
-  if [ -s ${vdir}/gfsgribfile.${symd}${dishh} ]; then 
+  if [ -s ${vdir}/gfsgribfile.${symd}${dishh} ]; then
     rm ${vdir}/gfsgribfile.${symd}${dishh}
   fi
 
@@ -1013,7 +1013,7 @@ fi
 # ------------------------------
 #   Process GDAS, if selected
 # ------------------------------
-  
+
 if [ ${model} -eq 8 ]; then
 
   export nest_type="fixed"
@@ -1022,9 +1022,9 @@ if [ ${model} -eq 8 ]; then
   export trkrnbd=85.0
   export trkrsbd=-85.0
   rundescr="xxxx"
-  atcfdescr="xxxx" 
+  atcfdescr="xxxx"
 
-  if [ -s ${vdir}/gdasgribfile.${symd}${dishh} ]; then 
+  if [ -s ${vdir}/gdasgribfile.${symd}${dishh} ]; then
     rm ${vdir}/gdasgribfile.${symd}${dishh}
   fi
 
@@ -1136,10 +1136,10 @@ fi
 # ------------------------------
 #   Process MRF, if selected
 # ------------------------------
-  
+
 if [ ${model} -eq 2 ]; then
 
-  if [ -s ${vdir}/mrfgribfile.${symd}${dishh} ]; then 
+  if [ -s ${vdir}/mrfgribfile.${symd}${dishh} ]; then
     rm ${vdir}/mrfgribfile.${symd}${dishh}
   fi
 
@@ -1189,10 +1189,10 @@ fi
 # ------------------------------
 #   Process UKMET, if selected
 # ------------------------------
-  
+
 if [ ${model} -eq 3 ]; then
 
-  if [ -s ${vdir}/ukmetgribfile.${symd}${dishh} ]; then 
+  if [ -s ${vdir}/ukmetgribfile.${symd}${dishh} ]; then
     rm ${vdir}/ukmetgribfile.${symd}${dishh}
   fi
 
@@ -1296,9 +1296,9 @@ fi
 if [ ${model} -eq 9 ]; then
 
 # We need to first check whether or not the data in the file are stored
-# on a lat/lon grid or not.  We do this by scanning the analysis file 
-# with Wesley's grib utility, and checking the value of the "Data 
-# Representation Type", which is stored in byte #6 in the GDS of each 
+# on a lat/lon grid or not.  We do this by scanning the analysis file
+# with Wesley's grib utility, and checking the value of the "Data
+# Representation Type", which is stored in byte #6 in the GDS of each
 # grib file.  A value of 0 indicates an equidistant lat/lon grid.
 
   if [ -s ${vdir}/otherlatlon.pgrb.${symdh} ]; then
@@ -1310,13 +1310,13 @@ if [ ${model} -eq 9 ]; then
 
   if [ ${gridtyp} -eq 0 ]; then
 
-#   The data are already on a lat/lon grid, we do not need to 
+#   The data are already on a lat/lon grid, we do not need to
 #   interpolate the data, just pull out the records that we need
 #   using wgrib.
 
     for fhour in ${fcsthrsother}
     do
-  
+
       if [ ! -s ${otherdir}/${fnamebeg}${fhour}${fnameend} ]; then
         set +x
         echo " "
@@ -1327,7 +1327,7 @@ if [ ${model} -eq 9 ]; then
         set_trace
         continue
       fi
-  
+
       gfile=${otherdir}/${fnamebeg}${fhour}${fnameend}
       ${WGRIB:?} -s $gfile >$TMPDIR/other.ix
 
@@ -1347,9 +1347,9 @@ if [ ${model} -eq 9 ]; then
         esac
 
       done
-  
+
     done
-  
+
   else
 
 #   The data are on a grid that is something other than a lat/lon grid.
@@ -1377,7 +1377,7 @@ if [ ${model} -eq 9 ]; then
       x1=$TMPDIR/tmpixfile
 
       g1=${otherdir}/${fnamebeg}${fhour}${fnameend}
-  
+
       ${COPYGB:?} -g"$othergrid" -k'4*-1 33 100 850' $g1 $x1 $TMPDIR/otherllu850.grb.f${fhour}; rcc1=$?
       ${COPYGB:?} -g"$othergrid" -k'4*-1 33 100 700' $g1 $x1 $TMPDIR/otherllu700.grb.f${fhour}; rcc2=$?
       ${COPYGB:?} -g"$othergrid" -k'4*-1 33 100 500' $g1 $x1 $TMPDIR/otherllu500.grb.f${fhour}; rcc3=$?
@@ -1448,7 +1448,7 @@ done
 
 namelist=${vdir}/gettrk.input.${cmodel}.${symdh}
 ATCFNAME=$( echo "${atcfname}" | tr '[a-z]' '[A-Z]')
-  
+
 export atcfymdh=${scc}${syy}${smm}${sdd}${shh}
 contour_interval=100.0
 write_vit=n
@@ -1490,7 +1490,7 @@ echo "          wait_min_size=100,"                              >>${namelist}
 echo "          wait_max_wait=1800,"                             >>${namelist}
 echo "          wait_sleeptime=5,"                               >>${namelist}
 echo "          per_fcst_command=''/"                            >>${namelist}
-  
+
 pgm=$(basename  $GETTX)
 if [ -s $DATA/prep_step ]; then
    . $DATA/prep_step
