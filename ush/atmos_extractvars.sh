@@ -33,15 +33,7 @@ for outtype in "f2d" "f3d"; do
      mkdir -p "${outdirpre}"
   fi
 
-  if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-    if [[ "${outtype}" == "f2d" ]]; then
-      nh=${OFFSET_START_HOUR}
-    elif [[ "${outtype}" == "f3d" ]]; then
-      nh=${FHOUT_GFS}
-    fi
-  else
-    nh=${FHMIN}
-  fi
+  nh=${FHMIN}
 
   while (( nh <= FHMAX_GFS )); do
     fnh=$(printf "%3.3d" "${nh}")
