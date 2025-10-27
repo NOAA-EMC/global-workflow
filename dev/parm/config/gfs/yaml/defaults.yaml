@@ -57,12 +57,24 @@ snowanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
+marinebmat:
+  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
+
 marineanl:
   SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
   SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
   SOCA_OBS_LIST: "${PARMgfs}/gdas/marine/obs/obs_list.yaml.j2"  # TODO: This is also repeated in oceanprepobs
   SOCA_NINNER: 100
-  JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/marine/jcb-prototype_3dfgat.yaml.j2"
+
+marineanlecen:
+  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
+
+marineanlletkf:
+  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_OBS_LIST: "${PARMgfs}/gdas/marine/obs/obs_list.yaml.j2"
 
 prepoceanobs:
   use_exp_obs: "YES"

@@ -11,7 +11,7 @@ if [[ ! -d "${DATAstaticb}" ]]; then mkdir -p "${DATAstaticb}"; fi
 
 # source config.base, config.ocnanal and config.marinebmatinit
 # and pass marinebmat to ${machine}.env
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmatinit" -c "base marineanl marinebmatinit"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmatinit" -c "base marinebmat marinebmatinit"
 
 ##############################################
 # Set variables used in the script
