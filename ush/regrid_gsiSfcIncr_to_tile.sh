@@ -16,6 +16,13 @@ export REDERR=${REDERR:-'2>'}
 export PGM=${REGRID_EXEC}
 export pgm=${PGM}
 
+# Use CFP for ensemble job
+if [[ "$RUN" == *"enkf"* ]]; then
+    export USE_CFP=YES
+else
+    export USE_CFP=NO
+fi
+
 NMEM_REGRID=${NMEM_REGRID:-1}
 CASE_IN=${CASE_IN:-${CASE_ENS}}
 LFHR=${LFHR:-6}
@@ -72,12 +79,13 @@ fi
 # Create master MPMD command file
 rm -f cmdfile
 touch cmdfile
-chmod 744 cmdfile
+chmod 755 cmdfile
 
 # Create MDMP command file for fixed files
 rm -f cmdfile.0
 touch cmdfile.0
-chmod 744 cmdfile.0
+chmod 755 cmdfile.0
+echo "#!/bin/bash" > cmdfile.0
 
 # input, fixed files
 echo "cpreq ${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc \
@@ -95,7 +103,7 @@ for n in $(seq 1 "${ntiles}"); do
 done
 
 # Append fixed files command file to master command file
-"cmdfile.0" >> cmdfile
+echo "${DATA}/cmdfile.0" >> cmdfile
 
 for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
@@ -124,7 +132,8 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     # Create MPMD command file for this member
     rm -f "cmdfile.${imem}"
     touch "cmdfile.${imem}"
-    chmod 744 "cmdfile.${imem}"
+    chmod 755 "cmdfile.${imem}"
+    echo "#!/bin/bash" > "cmdfile.${imem}"
 
     for FHR in "${soilinc_fhrs[@]}"; do
         echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc \
@@ -139,11 +148,15 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     fi
 
     # Append this member's command file to master command file
-    "cmdfile.${imem}" >> cmdfile
+    echo "${DATA}/cmdfile.${imem}" >> cmdfile
 done
 
 # Run MPMD to stage input files
-${APRUN_REGRID} cmdfile
+"${USHgfs}/run_mpmd.sh" "cmdfile" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "run_mpmd.sh failed!"
+fi
 
 # Finish defining input/output directory list
 export out_dir="${in_dir}"
@@ -192,7 +205,7 @@ fi
 # Create master MPMD command file
 rm -f cmdfile
 touch cmdfile
-chmod 744 cmdfile
+chmod 755 cmdfile
 
 for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
@@ -213,7 +226,8 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     # Create MPMD command file for this member
     rm -f "cmdfile.${imem}"
     touch "cmdfile.${imem}"
-    chmod 744 "cmdfile.${imem}"
+    chmod 755 "cmdfile.${imem}"
+    echo "#!/bin/bash" > "cmdfile.${imem}"
 
     if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
         for FHR in "${soilinc_fhrs[@]}"; do
@@ -232,10 +246,14 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     fi
 
     # Append this member's command file to master command file
-    "cmdfile.${imem}" >> cmdfile
+    echo "${DATA}/cmdfile.${imem}" >> cmdfile
 done
 
 # Run MPMD to save output files
-${APRUN_REGRID} cmdfile
+"${USHgfs}/run_mpmd.sh" "cmdfile" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "run_mpmd.sh failed!"
+fi
 
 exit 0
