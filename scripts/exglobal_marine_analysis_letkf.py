@@ -20,5 +20,5 @@ if __name__ == '__main__':
     # Instantiate the marine letkf task
     MarineLetkf = MarineLETKF(config)
     MarineLetkf.initialize()
-    MarineLetkf.run()
+    MarineLetkf.execute()
     MarineLetkf.finalize()
