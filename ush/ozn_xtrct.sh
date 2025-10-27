@@ -4,26 +4,27 @@
 #
 #  This script performs the data extraction from the oznstat
 #  diagnostic files.  The resulting data (*.ieee_d) files, GrADS
-#  control files and stdout files will be moved to the
-#  $TANKverf_ozn.
+#  control files and stdout files will be moved to the 
+#  $TANKverf_ozn.  
 #
-#  Calling scripts must define:
+#  Calling scripts must define: 
 #	$TANKverf_ozn
 #	$HOMEoznmon
 #	$PDATE
 #
-#  Return values are
-#	0 = normal
+#  Return values are 
+#	0 = normal 
 #	2 = unable to generate satype list; may indicate no diag
 #		files found in oznstat file
 #------------------------------------------------------------------
 
 set -ax
 
+
 #--------------------------------------------------
 #  check_diag_files
-#
-#  Compare $satype (which contains the contents of
+#  
+#  Compare $satype (which contains the contents of 
 #  gdas_oznmon_satype.txt to $avail_satype which is
 #  determined by the contents of the oznstat file.
 #  Report any missing diag files in a file named
@@ -39,11 +40,11 @@ check_diag_files() {
    echo ""; echo ""; echo "--> check_diag_files"
 
    for type in ${found_satype}; do
-      check=`echo ${avail_satype} | grep ${type}`
+      check=`echo ${avail_satype} | grep ${type}`    
       len_check=`echo -n "${check}" | wc -c`
 
       if [[ ${len_check} -le 1 ]]; then
-         echo "missing diag file -- diag_${type}_ges.${pdate}.gz not found " >> ./${out_file}
+         echo "missing diag file -- diag_${type}_ges.${pdate}.gz not found " >> ./${out_file}   
       fi
    done
 
@@ -83,7 +84,7 @@ if [[ $VALIDATE_DATA -eq 1 ]]; then
    else
       validate=".TRUE."
       val_file=`basename ${ozn_val_file}`
-      ${NCP} $ozn_val_file $val_file
+      ${NCP} $ozn_val_file $val_file 
       tar -xvf $val_file
    fi
 fi
@@ -92,8 +93,8 @@ echo "VALIDATE_DATA, validate = $VALIDATE_DATA, $validate "
 
 
 #------------------------------------------------------------------
-# ozn_ptype here is the processing type which is intended to be "ges"
-# or "anl".  Default is "ges".
+# ozn_ptype here is the processing type which is intended to be "ges" 
+# or "anl".  Default is "ges".  
 #
 ozn_ptype=${ozn_ptype:-"ges anl"}
 
@@ -128,7 +129,7 @@ echo ${satype}
 len_satype=`echo -n "${satype}" | wc -c`
 
 if [[ ${DO_DATA_RPT} -eq 1 && ${len_satype} -lt 1 ]]; then
-   iret=2
+   iret=2 
 
 else
 
@@ -154,7 +155,7 @@ else
    for ptype in ${ozn_ptype}; do
       echo "ptype = ${ptype}"
 
-
+ 
       for type in ${satype}; do
          mv diag_${type}_${ptype}.${PDATE}.gz ${type}.${ptype}.gz
          gunzip ./${type}.${ptype}.gz
@@ -163,7 +164,7 @@ else
 
       #--------------------------------------------------------------------
       #   Run programs for given time
-
+   
       iyy=`echo ${PDATE} | cut -c1-4`
       imm=`echo ${PDATE} | cut -c5-6`
       idd=`echo ${PDATE} | cut -c7-8`
@@ -198,7 +199,7 @@ EOF
 
 
          echo "oznmon_time.x HAS STARTED ${type}"
-
+   
          ./oznmon_time.x < input >   stdout.time.${type}.${ptype}
 
          echo "oznmon_time.x HAS ENDED ${type}"
@@ -229,7 +230,7 @@ cat << EOF > input
 EOF
 
          echo "oznmon_horiz.x HAS STARTED ${type}"
-
+   
          ./oznmon_horiz.x < input >   stdout.horiz.${type}.${ptype}
 
          echo "oznmon_horiz.x HAS ENDED ${type}"
@@ -241,7 +242,7 @@ EOF
 
          $COMPRESS ${type}.${ptype}.${PDATE}.ieee_d
          $NCP ${type}.${ptype}.${PDATE}.ieee_d.${Z} ${TANKverf_ozn}/horiz/
-
+      
 
          echo "finished processing ptype, type:  $ptype, $type"
       done  # type in satype
@@ -262,7 +263,7 @@ fi
 #
 if [[ ${CLEAN_TANKDIR} -eq 1 ]]; then
    ${HOMEoznmon}/ush/clean_tankdir.sh glb 40
-fi
+fi 
 
 
 echo "ozn_xtrct.sh HAS ENDED, iret = ${iret}"
