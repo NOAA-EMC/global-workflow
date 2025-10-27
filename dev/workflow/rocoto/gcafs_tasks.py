@@ -916,11 +916,6 @@ class GCAFSTasks(Tasks):
 
         fhrs = self._get_forecast_hours(self.run, self._configs[config], component)
 
-        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
-        is_replay = self._configs[config]['REPLAY_ICS']
-        if is_replay and component in ['atmos'] and 0 in fhrs:
-            fhrs.remove(0)
-
         # ocean/ice components do not have fhr 0 as they are averaged output
         if component in ['ocean', 'ice'] and 0 in fhrs:
             fhrs.remove(0)
@@ -990,11 +985,6 @@ class GCAFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         fhrs = self._get_forecast_hours(self.run, self._configs['atmos_ensstat'])
-
-        # when replaying, atmos component does not have fhr 0, therefore remove 0 from fhrs
-        is_replay = self._configs['atmos_ensstat']['REPLAY_ICS']
-        if is_replay and 0 in fhrs:
-            fhrs.remove(0)
 
         max_tasks = self._configs['atmos_ensstat']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
