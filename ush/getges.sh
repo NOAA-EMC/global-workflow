@@ -1405,7 +1405,7 @@ if [[ -z "$gfile" ]];then
  echo ${ges}
  err=$?
 else
- cp ${ges} ${gfile}
+ cpfs ${ges} ${gfile}
  err=$?
 fi
 
