@@ -83,8 +83,8 @@ enkf_restarta_grp:
         #- "{{ COMIN_OCEAN_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.MOM.r*.nc"
         #- "{{ COMIN_ICE_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.cice_model.res.nc"
         - "{{ COMIN_MED_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.ufs.cpld.cpl.r.nc"
-        - "{{ COMIN_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ocninc.nc"
-        - "{{ COMIN_ICE_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.cice_model_anl.res.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}mom6_increment.i006.nc"
+        - "{{ COMIN_ICE_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.analysis.cice_model.res.nc"
         {% endif %} # DOHYBVAR_OCN
 
         {% endfor %}  # first_group_mem to last_group_mem
