@@ -4,10 +4,10 @@ set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_gw_gsi_modules.sh"
+source "${HOMEgfs}/dev/ush/load_modules.sh" gsi
 status=$?
 if [[ ${status} -ne 0 ]]; then
-  exit "${status}"
+    exit "${status}"
 fi
 
 ###############################################################
@@ -32,6 +32,5 @@ done
 
 ###############################################################
 # Exit out cleanly
-
 
 exit 0

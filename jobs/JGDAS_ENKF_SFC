@@ -2,7 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "esfc" -c "base esfc"
 
-
 ##############################################
 # Set variables used in the script
 ##############################################
@@ -17,25 +16,25 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
-export OPREFIX="${RUN/enkf}.t${cyc}z."
+export OPREFIX="${RUN/enkf/}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${RUN/enkf}.t${cyc}z."
+export APREFIX="${RUN/enkf/}.t${cyc}z."
 
 export CASE=${CASE_ENS}
 
-export OPREFIX="${RUN/enkf}.t${cyc}z."
-export APREFIX="${RUN/enkf}.t${cyc}z."
+export OPREFIX="${RUN/enkf/}.t${cyc}z."
+export APREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-RUN=${RUN/enkf} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-  COMIN_OBS:COM_OBS_TMPL \
-  COMIN_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
+RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_OBS:COM_OBS_TMPL \
+    COMIN_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-  COMIN_OBS_PREV:COM_OBS_TMPL \
-  COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
+    COMIN_OBS_PREV:COM_OBS_TMPL \
+    COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
 
 ###############################################################
 # Run relevant script
@@ -53,8 +52,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -64,6 +63,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

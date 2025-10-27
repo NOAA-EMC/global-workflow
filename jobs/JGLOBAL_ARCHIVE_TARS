@@ -2,8 +2,8 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_tars"
 if [[ "${DO_WAVE}" == "YES" ]]; then
-  source "${EXPDIR}/config.wave" 
-  source "${USHgfs}/wave_domain_grid.sh"
+    source "${EXPDIR}/config.wave"
+    source "${USHgfs}/wave_domain_grid.sh"
 fi
 
 ##############################################
@@ -54,7 +54,7 @@ if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 
 for grid in "0p25" "0p50" "1p00"; do
     YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
-       "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
 ###############################################################
@@ -97,14 +97,17 @@ set_strict
 ##############################################
 # Final processing
 ##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
+cd "${DATAROOT}" || (
+    echo "${DATAROOT} does not exist. ABORT!"
+    exit 1
+)
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

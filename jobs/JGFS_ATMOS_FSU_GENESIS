@@ -22,7 +22,7 @@ export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
 #############################################################
 # Execute the script
-${SCRIPTens_tracker}/exgfs_fsu_genesis.sh
+"${SCRIPTens_tracker}/exgfs_fsu_genesis.sh"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
@@ -31,8 +31,8 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -42,6 +42,5 @@ cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

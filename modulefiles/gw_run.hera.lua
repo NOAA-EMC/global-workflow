@@ -3,11 +3,11 @@ Load environment to run GFS on Hera
 ]])
 
 -- Test that HOMEgfs is set.
--- If not, load_gw_run_modules.sh was not sourced to load this module.
+-- If not, load_modules.sh was not sourced to load this module.
 local homegfssdir=os.getenv("HOMEgfs") or "None"
 if (homegfssdir == "None") then
     LmodError("FATAL ERROR HOMEgfs variable is unset.\n" ..
-              "Please \"source ush/load_gw_run_modules.sh\" rather than loading this module directly.\n")
+              "Please \"source dev/ush/load_modules.sh\" rather than loading this module directly.\n")
 end
 
 load("gw_run.common")
@@ -25,6 +25,8 @@ load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
 prepend_path("MODULEPATH", pathJoin("/scratch3/NCEPDEV/global/role.glopara/git_hera/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
+
+setenv("CRTM_FIX","/scratch3/NCEPDEV/global/role.glopara/fix/crtm/v2.4.0.2")
 
 whatis("Description: GFS run environment")
 
