@@ -5,8 +5,10 @@ gfsa:
     required:
         # Logs
         # TODO explicitly name all logs to include
-        {% for log in glob("logs/" ~ cycle_YMDH ~ "/gfs*.log") | reject('_tar_') %}
+        {% for log in glob("logs/" ~ cycle_YMDH ~ "/gfs*.log") %}
+        {% if not "tar" in log %}
         - "{{ log }}"
+        {% endif %}
         {% endfor %}
 
         # UFS configuration
