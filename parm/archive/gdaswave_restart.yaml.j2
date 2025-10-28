@@ -10,8 +10,7 @@ gdaswave_restart:
         {% set offset_dt = current_cycle | add_to_datetime("+3H" | to_timedelta) %}
         {% set prefix = offset_dt | strftime("%Y%m%d.%H0000") %}
         {% else %}
-        {% set offset_td = "+6H" | to_timedelta %}
-        {% set offset_dt = current_cycle | add_to_datetime(offset_td) %}
+        {% set offset_dt = current_cycle | add_to_datetime("+6H" | to_timedelta) %}
         {% set offset_YMD = offset_dt | to_YMD %}
         {% set offset_HH = offset_dt | strftime("%H") %}
         {% set prefix = offset_YMD + "." + offset_HH + "0000" %}
