@@ -70,8 +70,8 @@ case ${grid} in
 esac
 
 source_var="COMIN_ATMOS_GRIB_${grid_in}"
-export GRIBIN="${!source_var}/${RUN}.${cycle}.pgrb2.${grid_in}.f${fhr3}"
-GRIBIN_chk="${!source_var}/${RUN}.${cycle}.pgrb2.${grid_in}.f${fhr3}.idx"
+export GRIBIN="${!source_var}/${RUN}.${cycle}.pres_a.${grid_in}.f${fhr3}.grib2"
+GRIBIN_chk="${!source_var}/${RUN}.${cycle}.pres_a.${grid_in}.f${fhr3}.grib2.idx"
 
 if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
   export err=7
@@ -98,7 +98,7 @@ startmsg
 
 ${NAGRIB} << EOF
 GBFILE   = grib${fhr3}
-INDXFL   = 
+INDXFL   =
 GDOUTF   = ${GEMGRD}
 PROJ     = ${proj}
 GRDAREA  = ${grdarea}
@@ -108,7 +108,7 @@ CPYFIL   = ${cpyfil}
 GAREA    = ${garea}
 OUTPUT   = ${output}
 GBTBLS   = ${gbtbls}
-GBDIAG   = 
+GBDIAG   =
 PDSEXT   = ${pdsext}
 l
 r

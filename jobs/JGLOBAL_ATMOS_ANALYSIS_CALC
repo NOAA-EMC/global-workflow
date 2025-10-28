@@ -34,7 +34,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_OBS_PREV:COM_OBS_TMPL \
     COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
-export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006.nc"
+export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f006.nc"
 if [[ ! -f "${ATMGES}" ]]; then
     export err=1
     err_exit "FILE MISSING: ATMGES == ${ATMGES}"
