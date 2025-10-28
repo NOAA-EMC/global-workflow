@@ -9,9 +9,15 @@ atmosphere_warm_RT:
         {% set increment_mem_path = ICSDIR ~ '/' ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(gfs_member) ~ '/analysis/atmos/enkfgfs.t' ~ current_cycle_HH ~ 'z.' %}
 
         # Include increment files
-        {% for ftype in ["ratmi003.nc", "ratmi009.nc", "ratminc.nc"] %}
-            {% set file = increment_mem_path ~ ftype %}
-        - ["{{ file }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
+        {% for source_ftype, dest_ftype in
+        [
+            ("ratmi003.nc", "recentered_increment.atm.i003.nc"),
+            ("ratmi006.nc", "recentered_increment.atm.i006.nc"),
+            ("ratmi009.nc", "recentered_increment.atm.i009.nc")
+        ] %}
+            {% set source_file = increment_mem_path ~ source_ftype %}
+        - ["{{ source_file }}", "{{ increment_destination_path }}/enkfgfs.t{{ current_cycle_HH }}z.{{ dest_ftype }}"]
         {% endfor %}
 
         {% if path_exists(ICSDIR) %}

@@ -21,8 +21,7 @@ export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
 APREFIX_DET="${RUN/enkf/}.t${cyc}z."
 GPREFIX_DET="${GDUMP}.t${gcyc}z."
-
-export GSUFFIX=".ensmean.nc"
+export GSUFFIX="ensmean."
 
 # Generate COM variables from templates
 RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
@@ -43,7 +42,7 @@ RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -r \
 
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
-export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006${GSUFFIX}"
+export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}atm.f006.nc"
 if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     export err=1
     err_exit "FILE MISSING: ATMGES_ENSMEAN == ${ATMGES_ENSMEAN}"
@@ -67,28 +66,28 @@ fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
 # Deterministic analysis and increment files
-export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}sfcanl.nc"
-export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}dtfanl.nc"
-export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}atmanl.nc"
-export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}atminc.nc"
+export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.sfc.a006.nc"
+export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.dtf.a006.nc"
+export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.atm.a006.nc"
+export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.atm.i006.nc"
 
 # Guess Bias correction coefficients related to control
-export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias
-export GBIASPC=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc
-export GBIASAIR=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air
-export GRADSTAT=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat
+export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias.txt
+export GBIASPC=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc.txt
+export GBIASAIR=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air.txt
+export GRADSTAT=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat.tar
 
 # Bias correction coefficients related to ensemble mean
-export ABIAS="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias.ensmean"
-export ABIASPC="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc.ensmean"
-export ABIASAIR="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air.ensmean"
-export ABIASe="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_int.ensmean"
+export ABIAS="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias.txt"
+export ABIASPC="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc.txt"
+export ABIASAIR="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air.txt"
+export ABIASe="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_int.txt"
 
 # Diagnostics related to ensemble mean
-export GSISTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsistat.ensmean"
-export CNVSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat.ensmean"
-export OZNSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat.ensmean"
-export RADSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}radstat.ensmean"
+export GSISTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsistat.ensmean.tar"
+export CNVSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat.ensmean.tar"
+export OZNSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat.ensmean.tar"
+export RADSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}radstat.ensmean.tar"
 
 # Select observations based on ensemble mean
 export RUN_SELECT="YES"

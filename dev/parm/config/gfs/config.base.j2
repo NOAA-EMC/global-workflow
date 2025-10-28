@@ -428,7 +428,9 @@ if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} =
   export DO_LAND_IAU=".false."
 fi
 
-if [[ "${DOIAU_ENKF}" = "NO" ]]; then export IAUFHRS_ENKF="6,"; fi
+if [[ "${DOIAU_ENKF}" = "NO" ]]; then
+    export IAUFHRS_ENKF="6,"
+fi
 
 # Determine restart intervals
 # For IAU, write restarts at beginning of window also
