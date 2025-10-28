@@ -4,8 +4,6 @@ gdaswave:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave.tar"
     required:
         #Save HAFS restart file: 
-        - "{{ COMIN_WAVE_RESTART | relpath(ROTDIR) }}/*"
-
         {% set offset_td = "+6H" | to_timedelta %}
         {% set offset_dt = current_cycle | add_to_datetime(offset_td) %}
         {% set offset_YMD = offset_dt | to_YMD %}
