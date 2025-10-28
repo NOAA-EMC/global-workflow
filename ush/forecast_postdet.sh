@@ -183,11 +183,7 @@ EOF
         for iaufhr in "${iaufhrs[@]}"; do
           if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
             for tile in {1..6}; do
-              if (( iaufhr == 6 )); then
-                inc_file="atminc.tile${tile}.nc"
-              else
-                inc_file="atmi$(printf %03i "${iaufhr}").tile${tile}.nc"
-              fi
+              inc_file="jedi_increment.atm.i$(printf %03i '${iaufhr}').tile${tile}.nc"
               inc_files+=("${inc_file}")
               IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
             done
@@ -203,9 +199,9 @@ EOF
         read_increment=".true."
 
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
-          inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
+          inc_files=("jedi_increment.atm.i006.tile1.nc" "jedi_increment.atm.i006.tile2.nc" "jedi_increment.atm.i006.tile3.nc" "jedi_increment.atm.i006.tile4.nc" "jedi_increment.atm.i006.tile5.nc" "jedi_increment.atm.i006.tile6.nc")
           increment_file_on_native_grid=".true."
-          res_latlon_dynamics="atminc"
+          res_latlon_dynamics="jedi_increment.atm.i006"
         else
           inc_files=("increment.atm.i006.nc")
           res_latlon_dynamics="increment.atm.i006.nc"
@@ -227,7 +223,7 @@ EOF
       local increment_file
       for inc_file in "${inc_files[@]}"; do
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
-          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
+          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
         else
           if [[ "${RUN}" == "gcafs" ]]; then
             increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
@@ -310,8 +306,8 @@ EOF
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
         if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
+          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
+          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
         fi
       fi
       if [[ "${WRITE_DOPOST}" == ".true." ]]; then
