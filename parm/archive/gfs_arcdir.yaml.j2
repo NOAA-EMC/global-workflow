@@ -46,8 +46,8 @@
     {% endif %}
 
     {% if DO_JEDISNOWDA == True %}
-        {% do det_anl_files.append([COMIN_SNOW_ANALYSIS ~ "/" ~ head ~ "snowstat.tgz",
-                                    ARCDIR ~ "/snowstat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
+        {% do det_anl_files.append([COMIN_SNOW_ANALYSIS ~ "/" ~ head ~ "stat.tar.gz",
+                                    ARCDIR ~ "/snowstat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tar.gz"]) %}
     {% endif %}
 
     {% if DO_AERO_ANL %}
