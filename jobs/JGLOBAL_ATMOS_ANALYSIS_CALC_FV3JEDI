@@ -44,7 +44,7 @@ if [[ ${err} -ne 0 ]]; then
 fi
 
 # Write analysis log file
-echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.loganl.txt"
+echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.done.txt"
 
 ##############################################
 # End JOB SPECIFIC work

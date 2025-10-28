@@ -126,21 +126,21 @@ class FV3AnalysisCalc(Analysis):
         logger.info(f"Inserting analysis variables into atmospheric analysis file")
         insert_analysis_variables(self.task_config.current_cycle,
                                   f"atmanl.{auxgrid_time_str}.nc4",
-                                  f"{self.task_config.GPREFIX}atmf006.nc")
+                                  f"{self.task_config.GPREFIX}atm.f006.nc")
 
         # Aerosols
         if self.task_config.DO_AERO_ANL:
             logger.info(f"Inserting analysis variables into aerosol analysis file")
             insert_analysis_variables(self.task_config.current_cycle,
                                       f"aeroanl.{auxgrid_time_str}.nc4",
-                                      f"{self.task_config.GPREFIX}atmf006.nc")
+                                      f"{self.task_config.GPREFIX}atm.f006.nc")
 
         # Snow
         if self.task_config.DO_JEDISNOWDA:
             logger.info(f"Inserting analysis variables into snow analysis file")
             insert_analysis_variables(self.task_config.current_cycle,
                                       f"snowanl.{auxgrid_time_str}.nc4",
-                                      f"{self.task_config.GPREFIX}sfcf006.nc")
+                                      f"{self.task_config.GPREFIX}sfc.f006.nc")
 
     @logit(logger)
     def finalize(self) -> None:
@@ -162,7 +162,7 @@ class FV3AnalysisCalc(Analysis):
 
         # Write analysis log file
         formatted_date = datetime.now().strftime("%a %b %d %H:%M:%S %Z%Y")
-        log_file = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.RUN}.t{self.task_config.cyc}z.loganl.txt")
+        log_file = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.RUN}.t{self.task_config.cyc}z.done.txt")
         message = f"{self.task_config.rCDUMP} {self.task_config.PDY}{self.task_config.cyc} atmanl and sfcanl done at {formatted_date}"
         with open(log_file, "w") as file:
             file.write(f"{message}\n")
