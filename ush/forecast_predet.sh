@@ -169,9 +169,11 @@ FV3_predet(){
   fi
   FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
-  # If, FHOUT_HF == FHOUT, the FV3_OUTPUT_FH can be cast as:
+  # If, FHOUT_HF == FHOUT, the FV3_OUTPUT_FH_NML can be cast as:
   if [[ ${FHOUT_HF} -eq ${FHOUT} ]]; then
-    FV3_OUTPUT_FH="${FHOUT} -1"
+    FV3_OUTPUT_FH_NML="${FHOUT} -1"
+  else
+    FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH}"
   fi
 
   # Other options
