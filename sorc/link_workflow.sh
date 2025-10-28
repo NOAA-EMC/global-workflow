@@ -196,11 +196,6 @@ if [[ -s "atparse.bash" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
 
-# Temporarilly link load_gw_run_modules.sh to load_fv3gfs_modules.sh
-# TODO: Use load_gw_run_modules.sh everywhere
-cd "${HOMEgfs}/dev/ush" || exit 1
-${LINK_OR_COPY} "${HOMEgfs}/dev/ush/load_gw_run_modules.sh" load_fv3gfs_modules.sh
-
 # add ufs_utils parm dir
 if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
   cd "${HOMEgfs}/parm" || exit 1
@@ -269,8 +264,10 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_json.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_yaml.py"    .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/da-utils/ush/gsincdiag_to_ioda" .
   cd "${HOMEgfs}/ush" || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"    .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py"         .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
   declare -a gdasapp_ocn_insitu_profile_platforms=("argo" "bathy" "glider" "marinemammal" "tesac" "xbtctd")
   for platform in "${gdasapp_ocn_insitu_profile_platforms[@]}"; do

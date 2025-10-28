@@ -111,7 +111,7 @@ done
 # There is only a single NSST analysis at the middle of the window
 # For now use/assume it is the same at the beginning of the window if doing IAU
 if [[ "${DONST}" == "YES" ]]; then
-  cpreq "${COMIN_ATMOS_ANALYSIS}/${APREFIX}dtfanl.nc" "${DATA}/dtfanl"
+  cpreq "${COMIN_ATMOS_ANALYSIS}/${APREFIX}analysis.dtf.a006.nc" "${DATA}/dtfanl"
   export NST_FILE="dtfanl"
 else
   export NST_FILE="NULL"
@@ -158,7 +158,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
   if [[ "${DO_GSISOILDA}" == "YES" ]]; then
         for (( nn=1; nn <= ntiles; nn++ )); do
-        cpreq "${COMIN_ATMOS_ANALYSIS}/sfci00${FHR}.tile${nn}.nc" \
+           cpreq "${COMIN_ATMOS_ANALYSIS}/increment.sfc.i00${FHR}.tile${nn}.nc" \
            "${DATA}/soil_xainc.00${nn}"
         done
   fi
