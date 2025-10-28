@@ -128,9 +128,9 @@ FV3_postdet() {
       if (( MEMBER == 0 )); then
         inc_files=()
       else
-        inc_files=("atminc.nc")
+        inc_files=("increment.atm.i006.nc")
         read_increment=".true."
-        res_latlon_dynamics="atminc.nc"
+        res_latlon_dynamics="increment.atm.i006.nc"
       fi
       increment_file_on_native_grid=".false."
       local increment_file
@@ -192,11 +192,7 @@ EOF
               IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
             done
           else
-            if (( iaufhr == 6 )); then
-              inc_file="atminc.nc"
-            else
-              inc_file="atmi$(printf %03i "${iaufhr}").nc"
-            fi
+            inc_file="increment.atm.i$(printf %03i "${iaufhr}").nc"
             inc_files+=("${inc_file}")
             IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
           fi
@@ -211,8 +207,8 @@ EOF
           increment_file_on_native_grid=".true."
           res_latlon_dynamics="atminc"
         else
-          inc_files=("atminc.nc")
-          res_latlon_dynamics="atminc.nc"
+          inc_files=("increment.atm.i006.nc")
+          res_latlon_dynamics="increment.atm.i006.nc"
           increment_file_on_native_grid=".false."
         fi
         if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
@@ -246,7 +242,7 @@ EOF
       if [[ ${DO_LAND_IAU} = ".true." ]]; then
         local TN sfc_increment_file
         for TN in $(seq 1 "${ntiles}"); do
-          sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/sfc_inc.tile${TN}.nc"
+          sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/increment.sfc.i006.tile${TN}.nc"
           if [[ ! -f "${sfc_increment_file}" ]]; then
             echo "FATAL ERROR: DO_LAND_IAU=${DO_LAND_IAU}, but missing increment file ${sfc_increment_file}, ABORT!"
             exit 1
@@ -306,21 +302,21 @@ EOF
         local hhmmss_substring=${FV3_OUTPUT_FH_hhmmss/" ${FH3}-"*/} # Extract substring that contains all lead times up to the one space before target lead HHH-MM-SS
         local hhmmss_substring_len=$(( ${#hhmmss_substring} + 1 )) # Get the size of the substring and add 1 to account for space
         local f_hhmmss=${FV3_OUTPUT_FH_hhmmss:${hhmmss_substring_len}:9} # extract HHH-MM-SS for target lead time
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${f_hhmmss}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${f_hhmmss}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${f_hhmmss}"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${f_hhmmss}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${f_hhmmss}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${f_hhmmss}"
       else
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
         if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
           ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
           ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
-          fi
         fi
+      fi
       if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}"    "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
-        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2"    "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
         if [[ "${DO_NEST:-NO}" == "YES" ]]; then
           ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
           ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2"  "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"

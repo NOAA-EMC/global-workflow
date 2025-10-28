@@ -37,7 +37,7 @@ Jobs in the GFS Configuration
 |                   | analysis file on Gaussian grid.                                                                                       |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | analdiag          | Creates netCDF diagnostic files containing observation values, innovation (O-F), error, quality control, as well as   |
-|                   | other analysis-related quantities (cnvstat, radstat, ozstat files).                                                   |
+|                   | other analysis-related quantities (cnvstat.tar, radstat.tar, ozstat.tar files).                                                   |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | arch_vrfy         | Archives select files from the deterministic model and cleans up older data.                                          |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+

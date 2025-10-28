@@ -67,9 +67,9 @@ for outtype in "f2d" "f3d"; do
     fi
 
     com_var="COMIN_ATMOS_GRIB_${outres}"
-    infile1="${!com_var}/${RUN}.t${cyc}z.pgrb2.${outres}.f${fnh}"
-    infile2="${!com_var}/${RUN}.t${cyc}z.pgrb2b.${outres}.f${fnh}"
-    outfile="${outdirpre}/${RUN}.t${cyc}z.pgrb2.${outres}.f${fnh}"
+    infile1="${!com_var}/${RUN}.t${cyc}z.pres_a.${outres}.f${fnh}.grib2"
+    infile2="${!com_var}/${RUN}.t${cyc}z.pres_b.${outres}.f${fnh}.grib2"
+    outfile="${outdirpre}/${RUN}.t${cyc}z.pres_a.${outres}.f${fnh}.grib2"
     rm -f "${outfile}" #remove outfile if it already exists before extraction
 
     for infile in "${infile1}" "${infile2}"; do

@@ -5,25 +5,25 @@
 # Script Description:	Generate GFS BUFR sounding files
 # Script History Log:
 #   1) 2003-03-25       Hualu Pan       First Implementation
-#   2) 2010-05-25       V. Krishna Kumar Modified for the GFS 
+#   2) 2010-05-25       V. Krishna Kumar Modified for the GFS
 #                                  resolution upgrade
-#   3) 2014-08-01       D. Carlis Updated to vertical structure 
-#                                 and T1534 Resolution 
+#   3) 2014-08-01       D. Carlis Updated to vertical structure
+#                                 and T1534 Resolution
 #   4) 2016-11-01       H. Chuang Update to read new model nems output
 #   5) 2017-02-21       Guang Ping Lou setup mpmd to speedup the run
 #                                 and 1 & 3 hourly output
 #   6) 2018-03-22       Guang Ping Lou  Take FV3GFS configuration
-#                          parameters as input; make it work for 
+#                          parameters as input; make it work for
 #                          both FV3GFS and GFS
 #   7) 2018-07-18       Guang Ping Lou Generalize this version to other platforms
 #   8) 2019-10-18       Guang Ping Lou Transition to reading in NetCDF model data
 #   9) 2019-12-18       Guang Ping Lou generalizing to reading in NetCDF or nemsio
 #  10) 2024-08-08       Bo Cui Update to handle one forecast at a time
-#                          For GFSv17 bufr, total number of forecast hours is 141(num_hours=141) 
+#                          For GFSv17 bufr, total number of forecast hours is 141(num_hours=141)
 #                          it requires 7 nodes & allocate 21 processes per node(num_ppn=21)
 ################################################################
 
-runscript=${USHgfs}/gfs_bufr.sh 
+runscript=${USHgfs}/gfs_bufr.sh
 
 cd "${DATA}" || exit 2
 
@@ -46,7 +46,7 @@ export NEND1=${FHMAX_HF_GFS:-120}
 export NINT3=${FHOUT_GFS:-3}
 
 GETDIM="${USHgfs}/getncdimlen"
-LEVS=$(${GETDIM} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atmf000.${atmfm}" pfull)
+LEVS=$(${GETDIM} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f000.${atmfm}" pfull)
 declare -x LEVS
 
 # Initialize an empty list to store the hours
@@ -86,7 +86,7 @@ for fhr in "${hour_list[@]}"; do
   if [[ $((10#${fhr})) -gt $((10#${NEND1})) ]]; then
     export FINT=${NINT3}
   fi
-  if [[ $((10#${fhr})) -eq 0 ]]; then 
+  if [[ $((10#${fhr})) -eq 0 ]]; then
      export F00FLAG="YES"
   else
      export F00FLAG="NO"
@@ -103,7 +103,7 @@ for fhr in "${hour_list[@]}"; do
   fi
 
   # Format fhr_p with leading zeros
-  fhr_p="$(printf "%03d" "$fhr_p")" 
+  fhr_p="$(printf "%03d" "$fhr_p")"
 
   filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
   if [[ -z ${filename} ]]; then
@@ -113,7 +113,7 @@ for fhr in "${hour_list[@]}"; do
   fi
 done
 
-# Run with MPMD 
+# Run with MPMD
 "${USHgfs}/run_mpmd.sh" "${DATA}/poescript_bufr" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
@@ -135,7 +135,7 @@ done
 # start to generate bufr products at fhr=${ENDHOUR}
 
 export MAKEBUFR=YES
-export fhr="$(printf "%03d" "$ENDHOUR")" 
+export fhr="$(printf "%03d" "$ENDHOUR")"
 export FINT=${NINT1}
 ## 1-hourly output before $NEND1, 3-hourly output after
 if [[ $((10#${fhr})) -gt $((10#${NEND1})) ]]; then
@@ -146,7 +146,7 @@ if [[ $((10#${fhr})) -eq 0 ]]; then
 else
   export F00FLAG="NO"
 fi
-${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}" 
+${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}"
 
 ##############################################################
 # Tar and gzip the individual bufr files and send them to /com

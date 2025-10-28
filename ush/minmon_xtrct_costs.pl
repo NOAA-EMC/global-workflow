@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 #  minmon_xtrct_costs.pl
 #
-#  Extract cost data from gsistat file and load into cost 
+#  Extract cost data from gsistat file and load into cost
 #  and cost term files.
 #---------------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ if( (-e $infile) ) {
    my $jl_number = 8;
 
    my $costfile = $ENV{"mm_costfile"};
-   
+
    if( (-e $costfile) ) {
       open( COSTFILE, "<${costfile}" ) or die "Can't open ${costfile}: $!\n";
       my $line;
@@ -87,7 +87,7 @@ if( (-e $infile) ) {
 
    #------------------------------------------------------------------------
    #  Open the infile and search for the $costterms_target and $cost_target
-   #  strings.  If found, parse out the cost information and push into 
+   #  strings.  If found, parse out the cost information and push into
    #  holding arrays.
    #------------------------------------------------------------------------
    if( $rc == 0 ) {
@@ -107,14 +107,14 @@ if( (-e $infile) ) {
             $use_costterms = 1;
          }
 
-         if( $line =~ /$cost_target/ ) {   
+         if( $line =~ /$cost_target/ ) {
             my @costline = split( / +/, $line );
             push( @cost_array, $costline[$cost_number] );
          }
 
          if( $term_ctr > 0 ) {
             my @termline = split( / +/, $line );
-         
+
             if ( $term_ctr < 10 ) {
                push( @term_array, trim($termline[1]) );
                push( @term_array, trim($termline[2]) );
@@ -132,7 +132,7 @@ if( (-e $infile) ) {
             push( @term_array, trim($termline[3]) );
             push( @term_array, trim($termline[4]) );
             $term_ctr = 1;
-         } 
+         }
       }
 
       close( INFILE );
@@ -145,13 +145,13 @@ if( (-e $infile) ) {
       for my $i (0 .. $#cost_array) {
          my $iterline;
          if( $use_costterms == 1 ){
-            $iterline = sprintf ' %d,%e,%e,%e,%e,%e%s', 
-                       $i, $cost_array[$i], $jb_array[$i], $jo_array[$i], 
+            $iterline = sprintf ' %d,%e,%e,%e,%e,%e%s',
+                       $i, $cost_array[$i], $jb_array[$i], $jo_array[$i],
                        $jc_array[$i], $jl_array[$i], "\n";
          }
          else {
-            $iterline = sprintf ' %d,%e,%e,%e,%e,%e%s', 
-                       $i, $cost_array[$i], $no_data, $no_data, 
+            $iterline = sprintf ' %d,%e,%e,%e,%e,%e%s',
+                       $i, $cost_array[$i], $no_data, $no_data,
                        $no_data, $no_data, "\n";
          }
 
@@ -161,7 +161,7 @@ if( (-e $infile) ) {
       #---------------------------------------------------
       #  move term_array into all_cost_terms by iteration
       #---------------------------------------------------
-      if( @term_array > 0 ) {   
+      if( @term_array > 0 ) {
          my $nterms = 32;
          my $max_iter = ($#term_array+1)/$nterms;
          my $niter = $max_iter -1;
@@ -170,18 +170,18 @@ if( (-e $infile) ) {
             my $step = $iter * $nterms;
             my $iterline = sprintf '%d, %e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e,%e%s',
               $iter, $term_array[$step], $term_array[$step+1], $term_array[$step+2],
-                     $term_array[$step+3], $term_array[$step+4], $term_array[$step+5],      
-                     $term_array[$step+6], $term_array[$step+7], $term_array[$step+8],    
-                     $term_array[$step+9], $term_array[$step+10], $term_array[$step+11],    
-                     $term_array[$step+12], $term_array[$step+13], $term_array[$step+14],  
-                     $term_array[$step+15], $term_array[$step+16], $term_array[$step+17],  
-                     $term_array[$step+18], $term_array[$step+19], $term_array[$step+20],  
-                     $term_array[$step+21], $term_array[$step+22], $term_array[$step+23],  
-                     $term_array[$step+24], $term_array[$step+25], $term_array[$step+26],  
-                     $term_array[$step+27], $term_array[$step+28], $term_array[$step+29],  
+                     $term_array[$step+3], $term_array[$step+4], $term_array[$step+5],
+                     $term_array[$step+6], $term_array[$step+7], $term_array[$step+8],
+                     $term_array[$step+9], $term_array[$step+10], $term_array[$step+11],
+                     $term_array[$step+12], $term_array[$step+13], $term_array[$step+14],
+                     $term_array[$step+15], $term_array[$step+16], $term_array[$step+17],
+                     $term_array[$step+18], $term_array[$step+19], $term_array[$step+20],
+                     $term_array[$step+21], $term_array[$step+22], $term_array[$step+23],
+                     $term_array[$step+24], $term_array[$step+25], $term_array[$step+26],
+                     $term_array[$step+27], $term_array[$step+28], $term_array[$step+29],
                      $term_array[$step+30], $term_array[$step+31], "\n";
             push( @all_cost_terms, $iterline );
-         } 
+         }
       }
 
       #------------------------------------------
@@ -210,15 +210,15 @@ if( (-e $infile) ) {
       my $tankdir = $ENV{"M_TANKverf"};
       if(! -d $tankdir) {
          system( "mkdir -p $tankdir" );
-      } 
+      }
 
       if( -e $filename2 ) {
          my $newfile2 = "${tankdir}/${filename2}";
-         system("cp -f $filename2 $newfile2"); 
+         system("cpfs $filename2 $newfile2");
       }
       if( -e $filename3 ) {
          my $newfile3 = "${tankdir}/${filename3}";
-         system("cp -f $filename3 $newfile3"); 
+         system("cpfs $filename3 $newfile3");
       }
 
    }				# $rc still == 0 after reading gmon_cost.txt
