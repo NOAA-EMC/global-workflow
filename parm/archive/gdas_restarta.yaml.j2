@@ -5,24 +5,22 @@ gdas_restarta:
     required:
         # Deterministic analysis increments
         {% if DO_JEDIATMVAR %}
-        {% for itile in range(6) %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc"
-        {% endfor %}
-        {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
+            {% for itile in range(6) %}
+                - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc"
+            {% endfor %}
         {% endif %}
         # IAU increments
-        {% for iaufhr in IAUFHRS if iaufhr != 6 %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iaufhr }}.nc"
+        {% for iaufhr in IAUFHRS %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.atm.i{{ "%03d" % iaufhr }}.nc"
         {% endfor %}
-        
+
         # Soil DA increments
         {% if DO_GSISOILDA %}
-        {% if DO_LAND_IAU %}    #regridded tiles for land iau
-        {% for itile in range(1,7) %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/sfc_inc.tile{{ itile }}.nc"
-        {% endfor %}
-        {% endif %}
+            {% if DO_LAND_IAU %}    #regridded tiles for land iau
+                {% for itile in range(1,7) %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/increment.sfc.i006.tile{{ itile }}.nc"
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         # Surface analysis tiles
@@ -39,14 +37,14 @@ gdas_restarta:
 
         # Initial biases
         {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_air"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_pc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_int"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtfanl.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_air.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_pc.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat.tar"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat.tar"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_int.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.dtf.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.done.txt"
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}rad_varbc_params.tar"
         {% endif %}

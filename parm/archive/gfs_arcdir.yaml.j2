@@ -34,14 +34,14 @@
     # Deterministic analysis files (generated for cycled experiments)
     {% set det_anl_files = [] %}
     # Analysis data (if we are running in cycled mode)
-        {% do det_anl_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2.1p00.anl",
+        {% do det_anl_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pres_a.1p00.analysis.grib2",
                                     ARCDIR ~ "/pgbanl." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
 
     {% if DO_JEDIATMVAR == True %}
         {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "atmstat",
                                     ARCDIR ~ "/atmstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% else %}
-        {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "gsistat",
+        {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "gsistat.txt",
                                     ARCDIR ~ "/gsistat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% endif %}
 
@@ -65,7 +65,7 @@
     # GFS-specific files
     {% set gfs_files = [] %}
     {% for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS) %}
-        {% do gfs_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2.1p00.f" ~ '%03d'|format(fhr),
+        {% do gfs_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pres_a.1p00.f" ~ '%03d'|format(fhr) ~ ".grib2",
                                 ARCDIR ~ "/pgbf" ~ '%02d'|format(fhr) ~ "." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
     {% endfor %}
 
@@ -87,8 +87,8 @@
     # GFS Fit2Obs data
     {% set fit2obs_files = [] %}
     {% for fhr in range(0, FHMAX_FITS + 1, 6) %}
-        {% set sfcfile = "/" + head + "sfcf" + '%03d'|format(fhr) + ".nc" %}
-        {% set sigfile = "/" + head + "atmf" + '%03d'|format(fhr) + ".nc" %}
+        {% set sfcfile = "/" + head + "sfc.f" + '%03d'|format(fhr) + ".nc" %}
+        {% set sigfile = "/" + head + "atm.f" + '%03d'|format(fhr) + ".nc" %}
         {% do fit2obs_files.append([COMIN_ATMOS_HISTORY ~ "/" ~ sfcfile,
                                     VFYARC ~ "/" ~ RUN ~ "." ~ cycle_YMD ~ "/" ~ cycle_HH ~ "/" ~ sfcfile ]) %}
         {% do fit2obs_files.append([COMIN_ATMOS_HISTORY ~ "/" ~ sigfile,
@@ -98,7 +98,7 @@
     # GDAS-specific files
     {% set gdas_files = [] %}
     {% for fhr in range(0, FHMAX + 1, FHOUT) %}
-        {% do gdas_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pgrb2.1p00.f" ~ '%03d'|format(fhr),
+        {% do gdas_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pres_a.1p00.f" ~ '%03d'|format(fhr) ~ ".grib2",
                                  ARCDIR ~ "/pgbf" ~ '%02d'|format(fhr) ~ "." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
     {% endfor %}
 
@@ -128,9 +128,9 @@
         {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atmensstat",
                                  ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% else %}
-        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "enkfstat",
+        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "enkfstat.txt",
                                  ARCDIR ~ "/enkfstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
-        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "gsistat.ensmean",
+        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "gsistat.ensmean.tar",
                                  ARCDIR ~ "/gsistat." ~ RUN ~ "." ~ cycle_YMDH ~ ".ensmean"]) %}
     {% endif %}
 
