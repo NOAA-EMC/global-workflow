@@ -126,13 +126,11 @@ class Stage(Task):
         if self.task_config.current_cycle:
             if self.task_config.DOIAU and self.task_config.MODE == "cycled":
                 self.task_config.model_start_date_current_cycle = self.task_config.current_cycle + timedelta(hours=-self.task_config.half_window)
-        if hasattr(self.task_config, 'REPLAY_ICS'):
-            if self.task_config.REPLAY_ICS:
-                self.task_config.model_start_date_current_cycle = self.task_config.current_cycle + timedelta(hours=self.task_config.half_window)
             else:
-                self.task_config.model_start_date_current_cycle = self.task_config.current_cycle
-        else:
-            self.task_config.model_start_date_current_cycle = "No"
+                if 'REPLAY_ICS' in self.task_config and self.task_config['REPLAY_ICS']:
+                    self.task_config.model_start_date_current_cycle = self.task_config.current_cycle + timedelta(hours=self.task_config.half_window)
+                else:
+                    self.task_config.model_start_date_current_cycle = self.task_config.current_cycle
 
             # Calculate YMD and HH formats
             self.task_config.m_prefix = self.task_config.model_start_date_current_cycle.strftime("%Y%m%d.%H0000")
@@ -281,8 +279,8 @@ class Stage(Task):
         """
         self.calculate_member()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
-        current_cycle = {**self.current_cycle_dict, "${MEMDIR}": memdir}
-        previous_cycle = {**self.previous_cycle_dict, "${MEMDIR}": memdir}
+        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": memdir}
+        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": memdir}
 
         self.task_config['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
         self.task_config['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
@@ -403,15 +401,15 @@ class Stage(Task):
             if run == 'gefs':
                 gefstype = getattr(self.task_config, 'GEFSTYPE', None)
                 if gefstype == 'gefs-real-time':
-                    self.task_config.update(self.calculate_member_com_paths_gefs_rt(memdir))
+                    self.calculate_member_com_paths_gefs_rt(memdir)
                 elif gefstype == 'gefs-offline':
-                    self.task_config.update(self.calculate_member_com_paths_gefs_offline(memdir))
+                    self.calculate_member_com_paths_gefs_offline(memdir)
                 else:
                     raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
             elif run in ('gcafs', 'enkfgdas', 'gcdas'):
-                self.task_config.update(self.calculate_member_com_paths_gcafs(memdir))
+                self.calculate_member_com_paths_gcafs(memdir)
             elif run == 'gfs':
-                self.task_config.update(self.calculate_member_com_paths_gfs(memdir))
+                self.calculate_member_com_paths_gfs(memdir)
             else:
                 raise ValueError(f"Unknown RUN type: {run}")
         return self.task_config
