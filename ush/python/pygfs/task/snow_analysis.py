@@ -148,7 +148,7 @@ class SnowAnalysis(Analysis):
 
         # Compress and tar diag files into COM directory
         self.tar_diag_files(self.task_config.COMOUT_SNOW_ANALYSIS,
-                            f"{self.task_config.APREFIX}snowstat.tgz")
+                            f"{self.task_config.APREFIX}snow_analysis.ioda_hofx.tgz")
 
         # Save files to COM
         logger.info(f"Saving files to COM")
@@ -246,8 +246,8 @@ class SnowAnalysis(Analysis):
 
         if self.task_config.DOIAU:
             logger.info("Copying increments to beginning of window")
-            template_in = f'snowinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
-            template_out = f'snowinc.{to_fv3time(self.task_config.WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
+            template_in = f'{to_fv3time(self.task_config.current_cycle)}.snow_increment.sfc_data.tile{{tilenum}}.nc'
+            template_out = f'{to_fv3time(self.task_config.WINDOW_BEGIN)}.snow_increment.sfc_data.tile{{tilenum}}.nc'
             inclist = []
             for itile in range(1, self.task_config.ntiles + 1):
                 filename_in = template_in.format(tilenum=itile)

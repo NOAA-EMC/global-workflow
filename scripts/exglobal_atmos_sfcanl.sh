@@ -90,8 +90,10 @@ else
 fi
 
 # determine where the input snow restart files come from
+snow_prefix=""
 if [[ "${DO_JEDISNOWDA:-}" == "YES" ]]; then
     sfcdata_dir="${COMIN_SNOW_ANALYSIS}"
+    snow_prefix="snow_analysis."
 else
     sfcdata_dir="${COMIN_ATMOS_RESTART_PREV}"
 fi
@@ -165,7 +167,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
   # Copy inputs from COMIN to DATA
   for (( nn=1; nn <= ntiles; nn++ )); do
-    cpreq "${sfcdata_dir}/${datestr}.sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
+    cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
     cpreq "${DATA}/fnbgsi.00${nn}"                       "${DATA}/fnbgso.00${nn}"
   done
 
