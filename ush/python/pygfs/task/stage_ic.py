@@ -127,7 +127,7 @@ class Stage(Task):
             if self.task_config.DOIAU and self.task_config.MODE == "cycled":
                 self.task_config.model_start_date_current_cycle = self.task_config.current_cycle + timedelta(hours=-self.task_config.half_window)
             else:
-                if hasattr(self.task_config, 'REPLAY_ICS') and self.task_config.REPLAY_ICS:
+                if getattr(self.task_config, 'REPLAY_ICS', False):
                     self.task_config.model_start_date_current_cycle = self.task_config.current_cycle + timedelta(hours=self.task_config.half_window)
                 else:
                     self.task_config.model_start_date_current_cycle = self.task_config.current_cycle
