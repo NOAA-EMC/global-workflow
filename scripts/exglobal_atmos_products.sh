@@ -139,9 +139,7 @@ while [[ ${nset} -le ${downset:-1} ]]; do
   iproc=1
   while [[ ${iproc} -le ${nproc} ]]; do
     for grid in "${grids[@]}"; do
-      if [[ ! -s "pgb2${grp}file_${fhr3}_${iproc}_${grid}" ]]; then
-        echo "WARNING: Expected grib2 file 'pgb2${grp}file_${fhr3}_${iproc}_${grid}' is missing or empty; skipping concatenation for this processor and grid"
-      else
+      if [[ -s "pgb2${grp}file_${fhr3}_${iproc}_${grid}" ]]; then
         cat "pgb2${grp}file_${fhr3}_${iproc}_${grid}" >> "pgb2${grp}file_${fhr3}_${grid}"
         rm -f "pgb2${grp}file_${fhr3}_${iproc}_${grid}"
       fi
