@@ -17,7 +17,7 @@ export PGM=${REGRID_EXEC}
 export pgm=${PGM}
 
 # Use CFP for ensemble job
-if [[ "$RUN" == *"enkf"* ]]; then
+if [[ "${RUN}" == *"enkf"* ]]; then
     export USE_CFP=YES
 else
     export USE_CFP=NO
@@ -119,7 +119,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         memdir="${DATA}/${memchar}"
         mkdir -p "${memdir}"
 
-        if [ $imem -gt 1 ]; then
+        if [[ "${imem}" -gt 1 ]]; then
             in_dir+=", "
         fi
         in_dir+="\"./${memchar}/\""        
