@@ -127,7 +127,10 @@ class Stage(Task):
             if self.task_config.DOIAU and self.task_config.MODE == "cycled":
                 self.task_config.model_start_date_current_cycle = self.task_config.current_cycle + timedelta(hours=-self.task_config.half_window)
             else:
-                self.task_config.model_start_date_current_cycle = self.task_config.current_cycle
+                if hasattr(self.task_config, 'REPLAY_ICS') and self.task_config.REPLAY_ICS:
+                    self.task_config.model_start_date_current_cycle = self.task_config.current_cycle + timedelta(hours=self.task_config.half_window)
+                else:
+                    self.task_config.model_start_date_current_cycle = self.task_config.current_cycle
 
             # Calculate YMD and HH formats
             self.task_config.m_prefix = self.task_config.model_start_date_current_cycle.strftime("%Y%m%d.%H0000")
