@@ -10,10 +10,12 @@ cd "${DATA}" || exit 1
 if [[ ${FORECAST_HOUR} -le 0 ]]; then
   if [[ ${FORECAST_HOUR} -lt 0 ]]; then
     fhr3="analysis"
+    # shellcheck disable=SC2034  # paramlista is used later indirectly
     paramlista="${paramlista_anl}"
     FLXGF="NO"
   elif [[ ${FORECAST_HOUR} == 0 ]]; then
     fhr3=$(printf "f%03d" "${FORECAST_HOUR}")
+    # shellcheck disable=SC2034  # paramlista is used later indirectly
     paramlista="${paramlista_f000}"
   fi
   PGBS="YES"
@@ -58,7 +60,7 @@ while [[ ${nset} -le ${downset:-1} ]]; do
 
   tmpfile="tmpfile${grp}_${fhr3}"
   paramlist="paramlist${grp}"
-  parmfile=${!paramlist}
+  parmfile="${!paramlist}"
 
   # shellcheck disable=SC2312
   ${WGRIB2} "${MASTER_FILE}" | grep -F -f "${parmfile}" | ${WGRIB2} -i -grib "${tmpfile}" "${MASTER_FILE}" && true
