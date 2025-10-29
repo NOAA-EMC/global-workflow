@@ -3,84 +3,78 @@ enkf_restarta_grp:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_restarta_grp{{ ENSGRP }}.tar"
     required:
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
-        {% set imem = mem - first_group_mem %}
+            {% set imem = mem - first_group_mem %}
         # Construct the pertinent member COM directories
-        {% set COMIN_ATMOS_ANALYSIS_MEM = COMIN_ATMOS_ANALYSIS_MEM_list[imem] %}
-        {% set COMIN_ATMOS_HISTORY_MEM = COMIN_ATMOS_HISTORY_MEM_list[imem] %}
-        {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
-        {% set COMIN_OCEAN_RESTART_MEM = COMIN_OCEAN_RESTART_MEM_list[imem] %}
-        {% set COMIN_ICE_RESTART_MEM = COMIN_ICE_RESTART_MEM_list[imem] %}
-        {% set COMIN_MED_RESTART_MEM = COMIN_MED_RESTART_MEM_list[imem] %}
+            {% set COMIN_ATMOS_ANALYSIS_MEM = COMIN_ATMOS_ANALYSIS_MEM_list[imem] %}
+            {% set COMIN_ATMOS_HISTORY_MEM = COMIN_ATMOS_HISTORY_MEM_list[imem] %}
+            {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
+            {% set COMIN_OCEAN_RESTART_MEM = COMIN_OCEAN_RESTART_MEM_list[imem] %}
+            {% set COMIN_ICE_RESTART_MEM = COMIN_ICE_RESTART_MEM_list[imem] %}
+            {% set COMIN_MED_RESTART_MEM = COMIN_MED_RESTART_MEM_list[imem] %}
 
         # Store bias data
-        {% if not lobsdiag_forenkf %}
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias"
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_air"
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_int"
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_pc"
-        {% endif %}
+            {% if not lobsdiag_forenkf %}
+        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias.txt"
+        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_air.txt"
+        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_int.txt"
+        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_pc.txt"
+            {% endif %}
 
         # Member surface analysis data
-        {% if DOIAU_ENKF %}
-        {% set anl_delta = "-3H" | to_timedelta %}
-        {% else %}
-        {% set anl_delta = "0H" | to_timedelta %}
-        {% endif %}
-        {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
-        {% for itile in range(1, 7) %}
+            {% if DOIAU_ENKF %}
+                {% set anl_delta = "-3H" | to_timedelta %}
+            {% else %}
+                {% set anl_delta = "0H" | to_timedelta %}
+            {% endif %}
+            {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
+            {% for itile in range(1, 7) %}
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ itile }}.nc"
-        {% endfor %}
+            {% endfor %}
 
         # Member atmospheric analysis data
-        {% if DO_JEDIATMENS %}
-        {% for itile in range(6) %}
+            {% if DO_JEDIATMENS %}
+                {% for itile in range(6) %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_ratminc.tile{{ itile+1 }}.nc"
-        {% endfor %}
-        {% else %}
-        {% if do_calc_increment %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
-        {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
-        {% endif %}
-        {% endif %}
+                {% endfor %}
+            {% endif %}
 
         # Member increments
-        {% for iaufhr in IAUFHRS if iaufhr != 6 %}
-        {% set iaufhr = iaufhr %}
-        {% if do_calc_increment %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atma{{ '%03d' % iaufhr }}.nc"
-        {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
-        {% endif %}
-        {% endfor %}  # iaufhr in IAUFHRS
+            {% for iaufhr in IAUFHRS %}
+                {% set iaufhr = iaufhr %}
+                {% if do_calc_increment %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}analysis.atm.a{{ '%03d' % iaufhr }}.nc"
+                {% else %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}recentered_increment.atm.i{{ '%03d' % iaufhr }}.nc"
+                {% endif %}
+            {% endfor %}  # iaufhr in IAUFHRS
 
         # soil DA increments
-        {% if DO_GSISOILDA %}
-        {% for iaufhr in IAUFHRS %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}sfci{{ '%03d' % iaufhr }}.nc"
-        {% endfor %}  # iaufhr in IAUFHRS
-        {% if DO_LAND_IAU %}   #sfc inc tiles needed for warm start
-        {% for itile in range(1,7) %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/sfc_inc.tile{{ itile }}.nc"
-        {% endfor %}
-        {% endif %}
-        {% endif %}
+            {% if DO_GSISOILDA %}
+                {% for iaufhr in IAUFHRS %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}increment.sfc.i{{ '%03d' % iaufhr }}.nc"
+                {% endfor %}  # iaufhr in IAUFHRS
+                {% if DO_LAND_IAU %}   #sfc inc tiles needed for warm start
+                    {% for itile in range(1,7) %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/increment.sfc.i006.tile{{ itile }}.nc"
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
 
         # Conventional data
-        {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
+            {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}cnvstat"
-        {% endif %}
+            {% endif %}
 
-        {% if DOHYBVAR_OCN %}
-        {% if DOIAU_ENKF %}
-        {% set rst_delta = "+3H" | to_timedelta %}
-        {% else %}
-        {% set rst_delta = "+6H" | to_timedelta %}
-        {% endif %} # DOIAU_ENKF
-        {% set rst_time = current_cycle | add_to_datetime(rst_delta) %}
+            {% if DOHYBVAR_OCN %}
+                {% if DOIAU_ENKF %}
+                    {% set rst_delta = "+3H" | to_timedelta %}
+                {% else %}
+                    {% set rst_delta = "+6H" | to_timedelta %}
+                {% endif %} # DOIAU_ENKF
+                {% set rst_time = current_cycle | add_to_datetime(rst_delta) %}
         - "{{ COMIN_OCEAN_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.MOM.r*.nc"
         - "{{ COMIN_ICE_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.cice_model.res.nc"
         - "{{ COMIN_MED_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.ufs.cpld.cpl.r.nc"
-        {% endif %} # DOHYBVAR_OCN
+            {% endif %} # DOHYBVAR_OCN
 
         {% endfor %}  # first_group_mem to last_group_mem

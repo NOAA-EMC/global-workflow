@@ -3,45 +3,44 @@ enkf_grp:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_grp{{ ENSGRP }}.tar"
     required:
         {% for mem in range(first_group_mem, last_group_mem + 1) %}
-        {% set imem = mem - first_group_mem %}
+            {% set imem = mem - first_group_mem %}
         # Construct member COM directories
-        {% set COMIN_ATMOS_ANALYSIS_MEM = COMIN_ATMOS_ANALYSIS_MEM_list[imem] %}
-        {% set COMIN_ATMOS_HISTORY_MEM = COMIN_ATMOS_HISTORY_MEM_list[imem] %}
-        {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
+            {% set COMIN_ATMOS_ANALYSIS_MEM = COMIN_ATMOS_ANALYSIS_MEM_list[imem] %}
+            {% set COMIN_ATMOS_HISTORY_MEM = COMIN_ATMOS_HISTORY_MEM_list[imem] %}
+            {% set COMIN_ATMOS_RESTART_MEM = COMIN_ATMOS_RESTART_MEM_list[imem] %}
 
         # Forecast data
-        {% if is_gdas %}
-        {% for fhr in range(3, 10, 3) %}
-        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atmf{{ "%03d" % fhr }}.nc"
-        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfcf{{ "%03d" % fhr }}.nc"
-        {% endfor %}
-        {% endif %}
+            {% if is_gdas %}
+                {% for fhr in range(3, 10, 3) %}
+        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}atm.f{{ "%03d" % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}sfc.f{{ "%03d" % fhr }}.nc"
+                {% endfor %}
+            {% endif %}
 
         # Store the individual member analysis data
-        {% if not lobsdiag_forenkf %}
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat"
-        {% endif %}
-        {% if DO_JEDIATMENS %}
-        {% for itile in range(6) %}
+            {% if not lobsdiag_forenkf %}
+        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat.txt"
+            {% endif %}
+            {% if DO_JEDIATMENS %}
+                {% for itile in range(6) %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_ratminc.tile{{ itile+1 }}.nc"
-        {% endfor %}
-        {% else %}
-        {% if do_calc_increment %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
-        {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratminc.nc"
-        {% for iaufhr in IAUFHRS if iaufhr != 6 %}
-        {% set iaufhr = iaufhr %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}ratmi{{ '%03d' % iaufhr }}.nc"
-        {% endfor %}  # iaufhr in IAUFHRS
-        {% endif %}
-        {% endif %}
-        
-        # soil DA increments 
-        {% if is_gdas %} 
-        {% if DO_GSISOILDA %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}sfci006.nc"
-        {% endif %}
-        {% endif %}
+                {% endfor %}
+            {% else %}
+                {% if do_calc_increment %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
+                {% else %}
+                    {% for iaufhr in IAUFHRS %}
+                        {% set iaufhr = iaufhr %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}recentered_increment.atm.i{{ '%03d' % iaufhr }}.nc"
+                    {% endfor %}  # iaufhr in IAUFHRS
+                {% endif %}
+            {% endif %}
+
+        # soil DA increments
+            {% if is_gdas %}
+                {% if DO_GSISOILDA %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}increment.sfc.i006.nc"
+                {% endif %}
+            {% endif %}
 
         {% endfor %}  # first_group_mem to last_group_mem

@@ -3,26 +3,19 @@ gfs_netcdfa:
     name: "GFS_NETCDFA"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_netcdfa.tar"
     required:
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmanl.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}sfcanl.nc"
-        {% if DO_JEDIATMVAR %}
-        {% for itile in range(6) %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
+        {% for iauhr in IAUFHRS %}
+            {% if DO_JEDIATMVAR %}
+                {% for itile in range(6) %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc"
-        {% endfor %}
-        {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atminc.nc"
-        {% endif %}
-        {% for iauhr in IAUFHRS if iauhr != 6 %}
-        {% if DO_JEDIATMVAR %}
-        {% for itile in range(6) %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atmi{{ "%03d" % iauhr }}.tile{{ itile+1 }}.nc"
-        {% endfor %}
-        {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmi{{ "%03d" % iauhr }}.nc"
-        {% endif %}
+                {% endfor %}
+            {% else %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.atm.i{{ "%03d" % iauhr }}.nc"
+            {% endif %}
         {% endfor %}
     optional:
         {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}dtfanl.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}loginc.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.dtf.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.done.txt"
         {% endif %}
