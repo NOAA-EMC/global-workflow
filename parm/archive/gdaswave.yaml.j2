@@ -5,8 +5,7 @@ gdaswave:
     required:
         #Save HAFS restart file: 
         {% set offset_dt = current_cycle | add_to_datetime("+6H" | to_timedelta) %}
-        {% set prefix = offset_dt | strftime("%Y%m%d.%H0000") %}
-        - "{{ COMIN_WAVE_RESTART | relpath(ROTDIR) }}/{{ prefix }}.restart.ww3.nc"
+        - "{{ COMIN_WAVE_RESTART | relpath(ROTDIR) }}/{{ offest_dt | to_fv3time }}.restart.ww3.nc"
 
         # TODO explicitly name the wave grid files to archive
         {% set WAVE_OUT_GRIDS_list = WAVE_OUT_GRIDS.split(' ') %}
