@@ -18,12 +18,12 @@ cd "${DATA}" || exit 2
 #  FH           is the current forecast hour.
 #  SLEEP_TIME   is the number of seconds to sleep before exiting with error.
 #  SLEEP_INT    is the number of seconds to sleep between restrt file checks.
-#  restart_file is the name of the file to key off of to kick off pgrb 
+#  restart_file is the name of the file to key off of to kick off pgrb
 #               generation.
 ############################################################
 
 ############################################################
-# NO processing Analysis special Files 
+# NO processing Analysis special Files
 ############################################################
 
 # Set type of Interpolation for WGRIB2
@@ -86,7 +86,7 @@ if (( FHOUR > FHMAX_GFS )); then
 fi
 
 ############################################################
-# Loop Through the Post Forecast Files 
+# Loop Through the Post Forecast Files
 ############################################################
 for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
 
@@ -97,7 +97,7 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    # existence of the restart files
    ###############################
    export pgm="postcheck"
-   grib_file="${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}.idx"
+   grib_file="${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pres_b.0p50.f${fhr3}.grib2.idx"
    if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
       export err=9
       err_exit "0p50 grib file not available after max sleep time"
@@ -107,8 +107,8 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    # Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
    ######################################################################
    paramlist="${PARMgfs}/product/global_npoess_paramlist_g2"
-   cpreq "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2.0p50.f${fhr3}" tmpfile2
-   cpreq "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pgrb2b.0p50.f${fhr3}" tmpfile2b
+   cpreq "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pres_a.0p50.f${fhr3}.grib2" tmpfile2
+   cpreq "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pres_b.0p50.f${fhr3}.grib2" tmpfile2b
    cat tmpfile2 tmpfile2b > tmpfile
    # shellcheck disable=SC2312
    ${WGRIB2} tmpfile | grep -F -f "${paramlist}" | ${WGRIB2} -i -grib  pgb2file tmpfile && true
@@ -131,7 +131,7 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
 done
 
 ################################################################
-# Specify Forecast Hour Range F000 - F180 for GOESSIMPGRB files 
+# Specify Forecast Hour Range F000 - F180 for GOESSIMPGRB files
 ################################################################
 export SHOUR=${FHMIN_GFS}
 export FHOUR=${FHMAX_GOES}
@@ -146,18 +146,18 @@ for (( fhr=SHOUR; fhr <= FHOUR; fhr = fhr + FHINC )); do
    fhr3=$(printf "%03d" "${fhr}")
 
    ###############################
-   # Start Looping for the 
+   # Start Looping for the
    # existence of the restart files
    ###############################
    export pgm="postcheck"
    # grib_file="${COMIN_ATMOS_MASTER}/${RUN}.t${cyc}z.goesmasterf${fhr3}.grb2"
-   grib_file="${COMIN_ATMOS_MASTER}/${RUN}.t${cyc}z.special.grb2f${fhr3}"
+   grib_file="${COMIN_ATMOS_MASTER}/${RUN}.t${cyc}z.master-goes.f${fhr3}.grib2"
    if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
       export err=9
       err_exit "GOES master grib file ${grib_file} not available after max sleep time"
    fi
    ###############################
-   # Put restart files into /nwges 
+   # Put restart files into /nwges
    # for backup to start Model Fcst
    ###############################
    cpreq "${grib_file}" masterfile

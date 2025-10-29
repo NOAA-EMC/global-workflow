@@ -99,13 +99,13 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         rm -f "regrid.nml"
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
-        cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc" \
+        cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHR}.nc" \
                "${DATA}/enkfgdas.sfci00${FHR}.nc"
 
         ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc"
+            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i00${FHR}.tile${n}.nc"
         done
     done 
 
@@ -118,7 +118,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
         for FHI in "${landifhrs[@]}"; do
-            cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHI}.nc" \
+            cpreq "${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHI}.nc" \
                   "${DATA}/enkfgdas.sfci00${FHI}.nc"
         done
         
@@ -130,7 +130,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 	      fi
 
         for n in $(seq 1 "${ntiles}"); do
-            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc"
+            cpfs "${DATA}/sfci.tile${n}.nc"  "${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i006.tile${n}.nc"
         done
 	    
     fi

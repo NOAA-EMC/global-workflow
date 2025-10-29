@@ -300,7 +300,7 @@ if [[ "$netwk" = "gdas" ]];then
    $COMINgdas/gdas.t${cyc}z.atmf$gh.nemsio'
    ;;
   natgm3) geslist='
-   $COMINgdas/gdas.t${cyc}z.atmf$ghm3.nemsio'
+   $COMINgdas/gdas.t${cyc}z.atm.f$ghm3.nemsio'
    ;;
   natgm2) geslist='
    $COMINgdas/gdas.t${cyc}z.atmf$ghm2.nemsio'
@@ -614,7 +614,7 @@ elif [[ "$netwk" = "gfs" ]];then
    fhinc=06
    ;;
   natcur) geslist='
-   $COMINgfs/gfs.t${cyc}z.atmf$gh.nemsio'
+   $COMINgfs/gfs.t${cyc}z.atm.f$gh.nemsio'
    getlist00='
    $COMINgfs/gfs.t${cyc}z.atmanl.nemsio'
    fhbeg=00
@@ -1166,9 +1166,9 @@ elif [[ "$netwk" = "global" ]];then
    $COMINgfs/gfs.t${cyc}z.atmf$gh.nemsio'
    ;;
   natgm3) geslist='
-   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atmf$ghm3.nemsio
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.atm.f$ghm3.nemsio
    $COMINgdas/gdas.t${cyc}z.atmf$ghm3.nemsio
-   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atmf$ghm3.nemsio
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.atm.f$ghm3.nemsio
    $COMINgfs/gfs.t${cyc}z.atmf$ghm3.nemsio'
    ;;
   natgm2) geslist='
