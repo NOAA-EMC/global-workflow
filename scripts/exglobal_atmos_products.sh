@@ -1,16 +1,7 @@
 #! /usr/bin/env bash
 
-# Scripts used
-INTERP_ATMOS_MASTERSH=${INTERP_ATMOS_MASTERSH:-"${USHgfs}/interp_atmos_master.sh"}
-INTERP_ATMOS_SFLUXSH=${INTERP_ATMOS_SFLUXSH:-"${USHgfs}/interp_atmos_sflux.sh"}
-
 # Variables used in this job
-downset=${downset:-1}  # No. of groups of pressure grib2 products to create
-ntasks_atmos_products=${ntasks_atmos_products:-8}  # no. of processors available to process each group
-
-# WGNE related options
-WGNE=${WGNE:-NO}  # Create WGNE products
-FHMAX_WGNE=${FHMAX_WGNE:-0}  # WGNE products are created for first FHMAX_WGNE forecast hours (except 0)
+#ntasks_atmos_products=${ntasks_atmos_products:-8}  # no. of processors available to process each group
 
 cd "${DATA}" || exit 1
 
@@ -41,19 +32,19 @@ grid_string="0p25"
 if [[ "${PGBS:-}" == "YES" ]]; then
   grid_string="${grid_string}:0p50:1p00"
 else
-  echo "Supplemental product generation is disable for fhr = ${fhr3}"
+  echo "INFO: Supplemental product generation is disabled for fhr = ${fhr3}"
   PGBS="NO"  # Can't generate supplemental products if PGBS is not YES
 fi
 # Also transform the ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"
 
-# Files needed by ${INTERP_ATMOS_MASTERSH}
+# Files needed by ${USHgfs}/interp_atmos_master.sh
 MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
 
 nset=1
-while [[ ${nset} -le ${downset} ]]; do
+while [[ ${nset} -le ${downset:-1} ]]; do
 
-  echo "Begin processing nset = ${nset}"
+  echo "INFO: Begin processing nset = ${nset}"
 
   # Each set represents a group of files
   if [[ ${nset} == 1 ]]; then
@@ -83,7 +74,7 @@ while [[ ${nset} -le ${downset} ]]; do
   ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
   if [[ ${nproc} -gt ${ncount} ]]; then
     echo "WARNING: Total no. of available processors '${nproc}' exceeds no. of records '${ncount}' in ${tmpfile}"
-    echo "Reduce nproc to ${ncount} (or less) to not waste resources"
+    echo "WARNING: Reduce nproc to ${ncount} (or less) to not waste resources"
   fi
   inv=$(( ncount / nproc ))
   rm -f "${DATA}/cmdfile"
@@ -120,7 +111,7 @@ while [[ ${nset} -le ${downset} ]]; do
     fi
     input_file="${tmpfile}_${iproc}"
     output_file_prefix="pgb2${grp}file_${fhr3}_${iproc}"
-    echo "${INTERP_ATMOS_MASTERSH} ${input_file} ${output_file_prefix} ${grid_string}" >> "${DATA}/cmdfile"
+    echo "${USHgfs}/interp_atmos_master.sh ${input_file} ${output_file_prefix} ${grid_string}" >> "${DATA}/cmdfile"
 
     # if at final record and have not reached the final processor then write echo's to
     # cmdfile for remaining processors
@@ -145,7 +136,7 @@ while [[ ${nset} -le ${downset} ]]; do
 
   # Concatenate grib files from each processor into a single one
   # and clean-up as you go
-  echo "Concatenating processor-specific grib2 files into a single product file"
+  echo "INFO: Concatenating processor-specific grib2 files into a single product file"
   iproc=1
   while [[ ${iproc} -le ${nproc} ]]; do
     for grid in "${grids[@]}"; do
@@ -159,12 +150,13 @@ while [[ ${nset} -le ${downset} ]]; do
 
   # Move to COM and index the product grib files
   for grid in "${grids[@]}"; do
+    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "pgb2${grp}file_${fhr3}_${grid}.idx"
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    cpfs "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pres_${grp}.${grid}.${fhr3}.grib2"
-    ${WGRIB2} -s "pgb2${grp}file_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}pres_${grp}.${grid}.${fhr3}.grib2.idx"
+    cpfs "pgb2${grp}file_${fhr3}_${grid}"     "${!prod_dir}/${PREFIX}pres_${grp}.${grid}.${fhr3}.grib2"
+    cpfs "pgb2${grp}file_${fhr3}_${grid}.idx" "${!prod_dir}/${PREFIX}pres_${grp}.${grid}.${fhr3}.grib2.idx"
   done
 
-  echo "Finished processing nset = ${nset}"
+  echo "INFO: Finished processing nset = ${nset}"
 
   nset=$(( nset + 1 ))
 done # while [[ ${nset} -le ${downset} ]]; do
@@ -182,11 +174,11 @@ fi
 # move to COM and index it
 if [[ "${FLXGF:-}" == "YES" ]]; then
 
-  # Files needed by ${INTERP_ATMOS_SFLUXSH}
+  # Files needed by ${USHgfs}/interp_atmos_sflux.sh
   input_file="${FLUX_FILE}"
   output_file_prefix="sflux_${fhr3}"
   grid_string="1p00"
-  "${INTERP_ATMOS_SFLUXSH}" "${input_file}" "${output_file_prefix}" "${grid_string}" && true
+  "${USHgfs}/interp_atmos_sflux.sh" "${input_file}" "${output_file_prefix}" "${grid_string}" && true
   export err=$?
   if [[ ${err} -ne 0 ]]; then
      err_exit "Unable to interpolate the surface flux grib2 files!"
@@ -195,18 +187,21 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
   # Move to COM and index the product sflux file
   IFS=':' read -ra grids <<< "${grid_string}"
   for grid in "${grids[@]}"; do
+    ${WGRIB2} -s "sflux_${fhr3}_${grid}" > "sflux_${fhr3}_${grid}.idx"
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    cpfs "sflux_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.grib2"
-    ${WGRIB2} -s "sflux_${fhr3}_${grid}" > "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.grib2.idx"
+    cpfs "sflux_${fhr3}_${grid}"     "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.grib2"
+    cpfs "sflux_${fhr3}_${grid}.idx" "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.grib2.idx"
   done
 fi
 
 # Section creating 0.25 degree WGNE products for nset=1, and fhr <= FHMAX_WGNE
 if [[ "${WGNE:-}" == "YES" ]]; then
   grp="a"
-  if [[ ${FORECAST_HOUR} -gt 0 && ${FORECAST_HOUR} -le ${FHMAX_WGNE} ]]; then
+  if [[ ${FORECAST_HOUR} -gt 0 && ${FORECAST_HOUR} -le ${FHMAX_WGNE:-0} ]]; then
     # 598 is the message number for APCP in GFSv17 (it was 597 in GFSv16)
-    ${WGRIB2} "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2" -d "${APCP_MSG:-598}" -grib "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2"
+    ${WGRIB2} "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2" \
+              -d "${APCP_MSG:-598}" \
+              -grib "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2"
   fi
 fi
 

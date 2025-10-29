@@ -11,11 +11,6 @@ source "${EXPDIR}/config.resources" atmos_products
 ## Maximum number of rocoto tasks per member
 export MAX_TASKS=25
 
-# Scripts used by this job
-export INTERP_ATMOS_MASTERSH="${USHgfs}/interp_atmos_master.sh"
-export INTERP_ATMOS_SFLUXSH="${USHgfs}/interp_atmos_sflux.sh"
-
-export downset=2
 if [[ "${RUN:-}" == "gdas" ]]; then
   export FHOUT_PGBS=${FHOUT:-1}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
   export FLXGF="NO"  # Create interpolated sflux.1p00 file
@@ -28,7 +23,8 @@ elif [[ "${RUN:-}" == "gfs" ]]; then
   export FHMAX_WGNE=180
 fi
 
-# paramlist files for the different forecast hours and downsets
+# paramlist files for the different forecast hours and downsets (a, b)
+export downset=2
 export paramlista="${PARMgfs}/product/gfs.fFFF.paramlist.a.txt"
 export paramlista_anl="${PARMgfs}/product/gfs.anl.paramlist.a.txt"
 export paramlista_f000="${PARMgfs}/product/gfs.f000.paramlist.a.txt"
