@@ -21,7 +21,7 @@ fi
 # Because arrays cannot be exported, list is a single string of comma-
 # separated values. This string is split to form an array at runtime.
 case ${RUN} in
-	gdas | gfs)	exclude_string="*prepbufr*, *cnvstat*, *atmanl.nc" ;;
+	gdas | gfs)	exclude_string="*prepbufr*, *cnvstat.tar*, *analysis.atm.a*.nc" ;;
 	enkf*)      exclude_string="*f006.ens*" ;;
 	*)			exclude_string="" ;;
 esac

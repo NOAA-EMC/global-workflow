@@ -136,13 +136,13 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     echo "#!/bin/bash" > "cmdfile.${imem}"
 
     for FHR in "${soilinc_fhrs[@]}"; do
-        echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHR}.nc \
+        echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHR}.nc \
                     ${memdir}/enkfgdas.sfci00${FHR}.nc" >> "cmdfile.${imem}"
     done 
 
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then 
         for FHI in "${landifhrs[@]}"; do
-            echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}sfci00${FHI}.nc \
+            echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHI}.nc \
                         ${memdir}/enkfgdas.sfci00${FHI}.nc" >> "cmdfile.${imem}"
         done
     fi
@@ -233,7 +233,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         for FHR in "${soilinc_fhrs[@]}"; do
             for n in $(seq 1 "${ntiles}"); do
                 echo "cpfs ${memdir}/sfci00${FHR}.mem${imem}.tile${n}.nc \
-                      ${COMOUT_ATMOS_ANALYSIS_MEM}/sfci00${FHR}.tile${n}.nc" >> "cmdfile.${imem}"
+                      ${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i00${FHR}.tile${n}.nc" >> "cmdfile.${imem}"
             done
         done
     fi
@@ -241,7 +241,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then
         for n in $(seq 1 "${ntiles}"); do
             echo "cpfs ${memdir}/sfci.mem${imem}.tile${n}.nc \
-                  ${COMOUT_ATMOS_ANALYSIS_MEM}/sfc_inc.tile${n}.nc" >> "cmdfile.${imem}"
+                  ${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i006.tile${n}.nc" >> "cmdfile.${imem}"
         done
     fi
 
