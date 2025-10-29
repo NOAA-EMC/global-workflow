@@ -139,8 +139,12 @@ while [[ ${nset} -le ${downset:-1} ]]; do
   iproc=1
   while [[ ${iproc} -le ${nproc} ]]; do
     for grid in "${grids[@]}"; do
-      cat "pgb2${grp}file_${fhr3}_${iproc}_${grid}" >> "pgb2${grp}file_${fhr3}_${grid}"
-      rm  -f "pgb2${grp}file_${fhr3}_${iproc}_${grid}"
+      if [[ ! -s "pgb2${grp}file_${fhr3}_${iproc}_${grid}" ]]; then
+        echo "WARNING: Expected grib2 file 'pgb2${grp}file_${fhr3}_${iproc}_${grid}' is missing or empty; skipping concatenation for this processor and grid"
+      else
+        cat "pgb2${grp}file_${fhr3}_${iproc}_${grid}" >> "pgb2${grp}file_${fhr3}_${grid}"
+        rm -f "pgb2${grp}file_${fhr3}_${iproc}_${grid}"
+      fi
     done
     # There is no further use of the processor specific tmpfile; delete it
     rm -f "${tmpfile}_${iproc}"
@@ -257,7 +261,7 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
           "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2.idx"
         fi
         ;;
-      gfs|gcafs)
+      gfs)
         "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.${fhr3}.nc"
         if [[ ${fhr} -gt 0 && ${fhr} -le 84 || ${fhr} -eq 120 ]]; then
           "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc.${fhr3}.nc"
