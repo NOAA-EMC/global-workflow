@@ -8,9 +8,7 @@ gdaswave_restart:
         # If IAU is on, grab the beginning of the window.
         {% if DOIAU %}
         {% set offset_dt = current_cycle | add_to_datetime("+3H" | to_timedelta) %}
-        {% set prefix = offset_dt | strftime("%Y%m%d.%H0000") %}
         {% else %}
         {% set offset_dt = current_cycle | add_to_datetime("+6H" | to_timedelta) %}
-        {% set prefix = offset_dt | strftime("%Y%m%d.%H0000") %}
         {% endif %}
-        - "{{ COMIN_WAVE_RESTART | relpath(ROTDIR) }}/{{ prefix }}.restart.ww3.nc"
+        - "{{ COMIN_WAVE_RESTART | relpath(ROTDIR) }}/{{ offset_dt | to_fv3time }}.restart.ww3.nc"
