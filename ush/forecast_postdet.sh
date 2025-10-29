@@ -183,7 +183,7 @@ EOF
         for iaufhr in "${iaufhrs[@]}"; do
           if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
             for tile in {1..6}; do
-              inc_file="jedi_increment.atm.i$(printf %03i '${iaufhr}').tile${tile}.nc"
+              inc_file="jedi_increment.atm.i$(printf %03i "${iaufhr}").tile${tile}.nc"
               inc_files+=("${inc_file}")
               IAU_INC_FILES="${IAU_INC_FILES}${delimiter}'${inc_file}'"
             done
