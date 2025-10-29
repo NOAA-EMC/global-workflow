@@ -219,18 +219,9 @@ export FHOUT_AERO=3
 export INTERVAL_GFS="{{ INTERVAL_GFS }}" # Frequency of GFS forecast
 export SDATE_GFS="{{ SDATE_GFS }}"
 
-# set variables needed for use with REPLAY ICs
-export REPLAY_ICS="{{ REPLAY_ICS }}"
-if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-    export OFFSET_START_HOUR=$(( assim_freq / 2 ))
-    echo "WARNING: Replay ICs require perturbation files, ignoring any previous settings"
-    export USE_OCN_ENS_PERTURB_FILES="YES"
-    export USE_ATM_ENS_PERTURB_FILES="YES"
-else
-    export OFFSET_START_HOUR=0
-    export USE_OCN_ENS_PERTURB_FILES="{{ USE_OCN_ENS_PERTURB_FILES }}"
-    export USE_ATM_ENS_PERTURB_FILES="{{ USE_ATM_ENS_PERTURB_FILES }}"
-fi
+export OFFSET_START_HOUR=0
+export USE_OCN_ENS_PERTURB_FILES="{{ USE_OCN_ENS_PERTURB_FILES }}"
+export USE_ATM_ENS_PERTURB_FILES="{{ USE_ATM_ENS_PERTURB_FILES }}"
 
 # GFS output and frequency
 export FHMIN_GFS=0

@@ -51,12 +51,6 @@
 {% endfilter %}
 {% endif %}
 
-{% if REPLAY_ICS %}
-{% filter indent(width=4) %}
-{% include "atmosphere_perturbation.yaml.j2" %}
-{% endfilter %}
-{% endif %}
-
 {% if DO_ICE %}
 {% filter indent(width=4) %}
 {% include "ice.yaml.j2" %}
@@ -70,11 +64,6 @@
 {% if DO_JEDIOCNVAR %}
 {% filter indent(width=4) %}
 {% include "ocean_rerun.yaml.j2" %}
-{% endfilter %}
-{% endif %}
-{% if REPLAY_ICS %}
-{% filter indent(width=4) %}
-{% include "ocean_replay.yaml.j2" %}
 {% endfilter %}
 {% endif %}
 {% if EXP_WARM_START %}
