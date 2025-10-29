@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-# Variables used in this job
-#ntasks_atmos_products=${ntasks_atmos_products:-8}  # no. of processors available to process each group
-
 cd "${DATA}" || exit 1
 
 # Set paramlist files based on FORECAST_HOUR (-1, 0, 3, 6, etc.)
