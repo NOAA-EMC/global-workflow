@@ -305,7 +305,7 @@ class AerosolAnalysis(Analysis):
                 anlfile.variables[bkgname][:] = anl[:]
 
     @logit(logger)
-    def add_atm_gaussian_increments(self, inc_file: str, bkg_file: str, anl_file:str, incvars: List, bkgvars: List) -> None:
+    def add_atm_gaussian_increments(self, inc_file: str, bkg_file: str, anl_file: str, incvars: List, bkgvars: List) -> None:
         """Add atm gaussian increments to gaussian backgrounds
 
         Parameters
