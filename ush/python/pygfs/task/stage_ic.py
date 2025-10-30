@@ -229,7 +229,7 @@ class Stage(Task):
 
         Returns
         -------
-        None
+        Dict[str, Any]
           Updates the task_config with member-specific COM paths for GFS.
         """
         self.calculate_member()
@@ -274,7 +274,7 @@ class Stage(Task):
 
         Returns
         -------
-        None
+        Dict[str, Any]
           Updates the task_config with member-specific COM paths for GEFS offline.
         """
         self.calculate_member()
@@ -307,7 +307,7 @@ class Stage(Task):
 
         Returns
         -------
-        None
+        Dict[str, Any]
           Updates the task_config with member-specific COM paths for GEFS real-time.
         """
         self.calculate_member()
@@ -341,7 +341,7 @@ class Stage(Task):
 
         Returns
         -------
-        None
+        Dict[str, Any]
           Updates the task_config with member-specific COM paths for GCAFS.
         """
         self.calculate_member()
@@ -389,7 +389,7 @@ class Stage(Task):
         return replaced_com
 
     @logit(logger)
-    def calculate_stage_vars(self) -> Dict[str, Any]:
+    def execute_stage_member(self) -> None:
         """
         Prepare all required staging variables used to
         locate and sync files defined in the master YAML templates.
@@ -402,14 +402,17 @@ class Stage(Task):
                 gefstype = getattr(self.task_config, 'GEFSTYPE', None)
                 if gefstype == 'gefs-real-time':
                     self.calculate_member_com_paths_gefs_rt(memdir)
+                    self.execute_stage(self.task_config)
                 elif gefstype == 'gefs-offline':
                     self.calculate_member_com_paths_gefs_offline(memdir)
+                    self.execute_stage(self.task_config)
                 else:
                     raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
-            elif run in ('gcafs', 'enkfgdas', 'gcdas'):
+            elif run in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
                 self.calculate_member_com_paths_gcafs(memdir)
+                self.execute_stage(self.task_config)
             elif run == 'gfs':
                 self.calculate_member_com_paths_gfs(memdir)
+                self.execute_stage(self.task_config)
             else:
                 raise ValueError(f"Unknown RUN type: {run}")
-        return self.task_config
