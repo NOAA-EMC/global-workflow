@@ -196,7 +196,6 @@ def insert_analysis_variables(valid_time, fn_anl: str, fn_bkg: str) -> None:
     """
 
     try:
-        logger.info(f"foo: {fn_bkg}")
         with nc.Dataset(fn_anl, 'r') as nc_anl, nc.Dataset(fn_bkg, 'r+') as nc_bkg:
             # Change the units of the time coordinate since the units from the UFS history
             # file will break UPP
