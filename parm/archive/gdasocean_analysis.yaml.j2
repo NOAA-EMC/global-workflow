@@ -16,7 +16,6 @@ gdasocean_analysis:
         - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.analysis.cice_model.res.nc'
         - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc'
         - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.i006.nc'
-        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}pp_increment.i006.nc'
 
         # static background error
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_parametric_stddev.nc'
@@ -24,20 +23,22 @@ gdasocean_analysis:
 
         # ensemble background error
         {% if NMEM_ENS > 2 %}
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ens_weights.nc'
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}recentering_error.nc'
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_ens_stddev.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ens_weights.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}recentering_error.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_ens_stddev.nc'
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_steric_stddev.nc'
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_unbal_stddev.nc'
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_total_stddev.nc'
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ssh_explained_variance.nc'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_ensb.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_ensweights.yaml'
         {% endif %}
 
         # runtime configs
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/*.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_setcorscales.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_chgres.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_diagb.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}gridgen.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_vtscales.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}bmat_fields_metadata.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/var.yaml'
+        # soca_parameters_diffusion_vt, and soca_parameters_diffusion_hz when present
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_parameters_diffusion_??.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/soca_incpostproc.yaml'
     optional:
         # obs space diags
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/{{ head }}ocn.*.stats.csv'
