@@ -40,7 +40,6 @@ enkf_restarta_grp:
                 {% endfor %}
             {% else %}
                 {% for iaufhr in IAUFHRS %}
-                    {% set iaufhr = iaufhr %}
                     {% if do_calc_increment %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}analysis.atm.a{{ '%03d' % iaufhr }}.nc"
                     {% else %}

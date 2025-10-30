@@ -214,15 +214,21 @@ EOF
         fi
       fi
 
+      if [ "${RUN}" = "enkfgfs" ] || [ "${RUN}" = "enkfgdas" ]; then
+          prefix_atminc="recentered_"
+      else
+          prefix_atminc=""
+      fi
+
       local increment_file
       for inc_file in "${inc_files[@]}"; do
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
-          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+          increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${prefix_atminc}${inc_file}"
         else
           if [[ "${RUN}" == "gcafs" ]]; then
-            increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+            increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${prefix_atminc}${inc_file}"
           else
-            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}${inc_file}"
+            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${prefix_atminc}${inc_file}"
           fi
         fi
         cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
