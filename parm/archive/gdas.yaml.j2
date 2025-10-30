@@ -96,9 +96,9 @@ gdas:
                 {% for itile in range(1,7) %}
         - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.snow_increment.sfc_data.tile{{ itile }}.nc"
                 {% endfor %}
-        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snow_analysis.ioda_hofx.tgz"
+        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snow_analysis.ioda_hofx.tar"
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}snowanlvar.yaml"
-        - "{{ COMIN_SNOW_ANLMON | relpath(ROTDIR) }}/{{ head }}ioda_hofx_stats.tgz"
+        - "{{ COMIN_SNOW_ANLMON | relpath(ROTDIR) }}/{{ head }}ioda_hofx_stats.tar"
             {% endif %}
 
         # Ozone verification
