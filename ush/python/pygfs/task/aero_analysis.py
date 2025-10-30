@@ -10,8 +10,8 @@ from wxflow import (
     AttrDict,
     FileHandler,
     to_fv3time, to_timedelta,
-    YAMLFile, parse_j2yaml,Jinja,
-    logit
+    YAMLFile, parse_j2yaml,
+    Jinja, logit
 )
 import numpy as np
 from pygfs.task.upp import UPP
@@ -296,7 +296,7 @@ class AerosolAnalysis(Analysis):
         """
         with Dataset(inc_file, mode='r') as incfile, Dataset(bkg_file, mode='r') as rstfile, Dataset(anl_file, mode='a') as anlfile:
             for incname, bkgname in zip(incvars, bkgvars):
-                increment = incfile.variables[incname][:] 
+                increment = incfile.variables[incname][:]
                 # reordering the dimensions of increment (latitude, longitude, levels) to macth background (time, levs, lat, lon)
                 increment_reshape = np.transpose(increment, (2, 0, 1))
 
@@ -304,7 +304,7 @@ class AerosolAnalysis(Analysis):
                 anl = bkg + increment_reshape[np.newaxis, :, :, :]
                 anlfile.variables[bkgname][:] = anl[:]
 
-    #@logit(logger)
+    @logit(logger)
     def add_atm_gaussian_increments(self, inc_file: str, bkg_file: str, anl_file:str, incvars: List, bkgvars: List) -> None:
         """Add atm gaussian increments to gaussian backgrounds
 
