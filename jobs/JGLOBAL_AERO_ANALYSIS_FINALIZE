@@ -52,7 +52,6 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
-exit 0
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
