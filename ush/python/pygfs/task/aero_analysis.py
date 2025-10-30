@@ -4,14 +4,13 @@ import os
 from logging import getLogger
 from netCDF4 import Dataset
 from typing import Dict, List
-
 from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
 from wxflow import (
     AttrDict,
     FileHandler,
     to_fv3time, to_timedelta,
-    YAMLFile, parse_j2yaml,Jinja
+    YAMLFile, parse_j2yaml,Jinja,
     logit
 )
 import numpy as np
@@ -210,7 +209,7 @@ class AerosolAnalysis(Analysis):
         - Staging UPP fix files
         - Creating the 'upp_dict' for UPP object
         - Generating the upp namelist
-        - Adding atmos and aerosol increments to the background
+        - Add aerosol increments since the atmos analysis does not update aerosols
         - Execute upp.x
         """
 
@@ -235,7 +234,7 @@ class AerosolAnalysis(Analysis):
         for key in keys:
             upp_dict[key] = upp.task_config[key]
 
-        upp_dict['NET'] = 'gfs'   # set to 'gfs' so upp can recognize
+        upp_dict['NET'] = 'gfs'   # set to 'gfs' since upp doesn't recognize gcafs
         upp_dict['valid_datetime'] = self.task_config.current_cycle
         upp_dict['DATA'] = os.path.join(self.task_config.DATA, 'upp')
         upp_dict.update(upp_yaml['upp']['config'])
@@ -249,35 +248,37 @@ class AerosolAnalysis(Analysis):
         with open(nml_file, "w") as fho:
             fho.write(nml_data)
 
-        # ---- add aero increments to atmf000 files
+        # ---- add aero increments to atm analysis files
         logger.info('Adding aero increments to RESTART files')
-        bkg_file = os.path.join(upp_dict.DATA, f"{upp_dict.atmos_filename}")
+        bkg_file = os.path.join(upp_dict.DATA, f"{self.task_config.GPREFIX }atm.f006.nc")
         inc_filename = f"aeroinc_gauss.{self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%S')}Z.gaussian.modelLevels.nc"
         inc_file = os.path.join(self.task_config.DATA, 'anl', inc_filename)
+        anl_file = os.path.join(upp_dict.DATA, f"{upp_dict.atmos_filename}")
         allvars = upp_yaml['aeroincvars'][:]
         bkgvars = [var[0] for var in allvars]
         incvars = [var[1] for var in allvars]
-        self.add_aero_gaussian_increments(inc_file, bkg_file, incvars, bkgvars)
+        self.add_aero_gaussian_increments(inc_file, bkg_file, anl_file, incvars, bkgvars)
 
         # ---- add atmo increments to atmf000 files
         logger.info('Adding atmo increments to RESTART files')
-        inc_file = os.path.join(upp_dict.DATA, f"{self.task_config.APREFIX}atminc.nc")
+        inc_file = os.path.join(upp_dict.DATA, f"{self.task_config.APREFIX}increment.atm.i006.nc")
         allvars = upp_yaml['atmincvars'][:]
         bkgvars = [var[0] for var in allvars]
         incvars = [var[1] for var in allvars]
-        self.add_atm_gaussian_increments(inc_file, bkg_file, incvars, bkgvars)
+        self.add_atm_gaussian_increments(inc_file, bkg_file, anl_file, incvars, bkgvars)
 
         # reset time to 0 (analysis time)
         flux_file = os.path.join(upp_dict.DATA, f"{upp_dict.flux_filename}")
-        with Dataset(flux_file, mode='a') as rstfile:
-            time = rstfile.variables['time']
-            time[:] = 0.0
-            time.setncattr("units", f"hours since {self.task_config.current_cycle.strftime('%Y-%m-%d %H:%M:%S')}")
+        for file in [anl_file, flux_file]:
+            with Dataset(file, mode='a') as rstfile:
+                time = rstfile.variables['time']
+                time[:] = 0.0
+                time.setncattr("units", f"hours since {self.task_config.current_cycle.strftime('%Y-%m-%d %H:%M:%S')}")
 
         upp.execute(upp_dict.DATA, upp_dict.APRUN_AEROANLFINAL, upp_dict.forecast_hour)
 
     @logit(logger)
-    def add_aero_gaussian_increments(self, inc_file: str, bkg_file: str, incvars: List, bkgvars: List) -> None:
+    def add_aero_gaussian_increments(self, inc_file: str, bkg_file: str, anl_file: str, incvars: List, bkgvars: List) -> None:
         """Add aero gaussian increments to gaussian backgrounds
 
         Parameters
@@ -286,26 +287,25 @@ class AerosolAnalysis(Analysis):
            increment file
         bkg_file : str
            background file
+        anl_file : str
+           analysis file
         incvars : List
            List of increment variables to add to the background
         bkgvars : List
            List of background variables to which the increment variables will be added.
         """
-        with Dataset(inc_file, mode='r') as incfile, Dataset(bkg_file, mode='a') as rstfile:
+        with Dataset(inc_file, mode='r') as incfile, Dataset(bkg_file, mode='r') as rstfile, Dataset(anl_file, mode='a') as anlfile:
             for incname, bkgname in zip(incvars, bkgvars):
-                increment = incfile.variables[incname][:]
-                # reordering the dimensions of increment to macth background
+                increment = incfile.variables[incname][:] 
+                # reordering the dimensions of increment (latitude, longitude, levels) to macth background (time, levs, lat, lon)
                 increment_reshape = np.transpose(increment, (2, 0, 1))
 
                 bkg = rstfile.variables[bkgname][:]
                 anl = bkg + increment_reshape[np.newaxis, :, :, :]
-                rstfile.variables[bkgname][:] = anl[:]
-            time = rstfile.variables['time']
-            time[:] = 0.0
-            time.setncattr("units", f"hours since {self.task_config.current_cycle.strftime('%Y-%m-%d %H:%M:%S')}")
+                anlfile.variables[bkgname][:] = anl[:]
 
-    @logit(logger)
-    def add_atm_gaussian_increments(self, inc_file: str, bkg_file: str, incvars: List, bkgvars: List) -> None:
+    #@logit(logger)
+    def add_atm_gaussian_increments(self, inc_file: str, bkg_file: str, anl_file:str, incvars: List, bkgvars: List) -> None:
         """Add atm gaussian increments to gaussian backgrounds
 
         Parameters
@@ -314,18 +314,20 @@ class AerosolAnalysis(Analysis):
            increment file
         bkg_file : str
            background file
+        anl_file : str
+           analysis file
         incvars : List
            List of increment variables to add to the background
         bkgvars : List
            List of background variables to which the increment variables will be added.
         """
-        with Dataset(inc_file, mode='r') as incfile, Dataset(bkg_file, mode='a') as rstfile:
+        with Dataset(inc_file, mode='r') as incfile, Dataset(bkg_file, mode='a') as rstfile, Dataset(anl_file, mode='a') as anlfile:
             for incname, bkgname in zip(incvars, bkgvars):
                 increment = incfile.variables[incname][:]
-                # handel latitude inversion in atminc
+                # handel latitude inversion: atminc: lat=-90 to +90, atmbkg: lat=+90 to -90
                 lat_axis_index = 1
                 increment_lat_inversion = np.flip(increment, axis=lat_axis_index)
 
                 bkg = rstfile.variables[bkgname][:]
                 anl = bkg + increment_lat_inversion[np.newaxis, :, :, :]
-                rstfile.variables[bkgname][:] = anl[:]
+                anlfile.variables[bkgname][:] = anl[:]
