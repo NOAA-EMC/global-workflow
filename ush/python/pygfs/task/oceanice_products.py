@@ -170,11 +170,12 @@ class OceanIceProducts(Task):
         None
         """
 
-        # Run the ocnicepost.x executable
-        OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
+        # Run the ocnicepost.x executable if interpolated variables are wanted
+        if config.oceanice_yaml.ocnicepost.namelist.write_netcdf or config.oceanice_yaml.ocnicepost.namelist.write_grib2:
+            OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
 
-        # Index the interpolated grib2 file
-        OceanIceProducts.index(config, product_grid)
+           # Index the interpolated grib2 file
+            OceanIceProducts.index(config, product_grid)
 
     @staticmethod
     @logit(logger)
@@ -274,6 +275,8 @@ class OceanIceProducts(Task):
 
         input_file = f"{config.component}.nc"
         output_file = f"{config.component}_subset.nc"
+        compressed_file = f"{config.component}_compressed.nc"
+        
         varlist = config.oceanice_yaml[config.component].subset
 
         logger.info(f"Subsetting {varlist} from {input_file} to {output_file}")
@@ -281,15 +284,31 @@ class OceanIceProducts(Task):
         try:
             # open the netcdf file
             ds = xr.open_dataset(input_file)
-
-            # subset the variables
-            ds_subset = ds[varlist]
-
+            if config.component == 'ice':
+                varlist.extend(['tarea', 'tmask'])
+                # subset the variables
+                # remove coords that were carried from original file but not used
+                ds_subset = ds_subset.drop_vars('ELON', errors='ignore')
+                ds_subset = ds_subset.drop_vars('ELAT', errors='ignore')
+                ds_subset = ds_subset.drop_vars('NLON', errors='ignore')
+                ds_subset = ds_subset.drop_vars('NLAT', errors='ignore')
+            
+            if config.component == 'ocean':
+                # subset ocean variables for z_levels in products
+                levels = config.oceanice_yaml.ocean.namelist.ocean_levels
+                ds_subset = ds[varlist].sel(z_l = levels)
+ 
             # save global attributes from the old netcdf file into new netcdf file
             ds_subset.attrs = ds.attrs
 
-            # save subsetted variables to a new netcdf file
-            ds_subset.to_netcdf(output_file)
+            # save subsetted variables to a new netcdf file and compress
+            default_compression = {"zlib": True, "complevel": 8}
+            compress_encoding = {var_name: default_compression for var_name in ds_subset.data_vars}
+            ds_subset.to_netcdf(output_file, encoding=compress_encoding)
+            
+            # save compress original file
+            compress_encoding = {var_name: default_compression for var_name in ds.data_vars}
+            ds.to_netcdf(compressed_file, encoding=compress_encoding)
 
         except FileNotFoundError:
             logger.exception(f"FATAL ERROR: Input file not found: {input_file}")
@@ -326,6 +345,5 @@ class OceanIceProducts(Task):
 
         # Copy "component" specific generated data to COM/ directory
         data_out = config.oceanice_yaml[config.component].data_out
-
         logger.info(f"Copy processed data to COM/ directory")
         FileHandler(data_out).sync()

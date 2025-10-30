@@ -1,0 +1,8 @@
+ocean_subset:
+    {% set head = "gfs.ocean.t" + cycle_HH + "z." %}
+    name: "OCEAN_SUBSET"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_subset.tar"
+    required:
+        {% for fhr in range(6, FHMAX_GFS + 6, 6) %}
+        - "{{ COMIN_OCEAN_NATIVE | relpath(ROTDIR) }}/{{ head }}.native.f{{ '%03d' % fhr }}.nc"
+        {% endfor %}
