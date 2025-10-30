@@ -17,7 +17,10 @@ export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and '
 export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
 
 export ARCH_GAUSSIAN="YES"
-export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS:-}
+export ARCH_GAUSSIAN_FHMAX=0
+if [[ -z "${FHMAX_GFS+x}" ]]; then
+    export ARCH_GAUSSIAN_FHMAX=$(( FHMAX_GFS < 24 ? FHMAX_GFS : 24 ))
+fi
 export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS:-}
 
 # If we are running globus archiving, create tarballs in a temporary location
