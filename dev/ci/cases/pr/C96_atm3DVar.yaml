@@ -16,8 +16,8 @@ experiment:
 
 skip_ci_on_hosts:
   - gaeac5
-  - wcoss2
   - awsepicglobalworkflow
+  - wcoss2
 
 workflow:
   engine: rocoto
