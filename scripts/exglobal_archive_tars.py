@@ -38,7 +38,7 @@ def main():
             'restart_interval_gdas', 'restart_interval_gfs', 'DO_ARCHCOM',
             'DO_AERO_ANL', 'DO_AERO_FCST', 'DO_CA', 'DOBNDPNT_WAVE', 'DO_JEDIOCNVAR', 'DOHYBVAR_OCN',
             'DOLETKF_OCN', 'NMEM_ENS', 'DO_JEDIATMVAR', 'FHMAX_FITS', 'waveGRD',
-            'IAUFHRS', 'DO_FIT2OBS', 'NET', 'FHOUT_HF_GFS', 'FHMAX_HF_GFS', 'REPLAY_ICS',
+            'IAUFHRS', 'DO_FIT2OBS', 'NET', 'FHOUT_HF_GFS', 'FHMAX_HF_GFS',
             'OFFSET_START_HOUR', 'ARCH_EXPDIR', 'EXPDIR', 'ARCH_EXPDIR_FREQ', 'ARCH_HASHES',
             'ARCH_DIFFS', 'SDATE', 'EDATE', 'HOMEgfs', 'DO_GEMPAK', 'DATASETS_YAML',
             'WAVE_OUT_GRIDS', 'DO_GSISOILDA', 'DO_LAND_IAU', 'TARBALL_TYPE']
