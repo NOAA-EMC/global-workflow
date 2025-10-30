@@ -99,13 +99,13 @@ class Stage(Task):
         """
         super().__init__(config)
 
-        # assign rRUN to RUN
+        # assign rRUN to RUN for gfs cases
         self.task_config.rRUN = self.task_config.RUN
         # case specific rRUN
-        if self.task_config.RUN in ['gfs', 'gcdas', 'enkfgdas']:
+        if self.task_config.RUN in ['gfs']:
             self.task_config.rRUN = "gdas"
         else:
-            # RUN not gfs, gcdas, or enkfgdas; leave rRUN unchanged and continue
+            # RUN not gfs leave rRUN unchanged and continue
             logger.debug("No rRUN remap applied: RUN='%s' (rRUN stays '%s')", self.task_config.RUN, self.task_config.rRUN)
 
         if "OCNRES" in self.task_config:
