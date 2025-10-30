@@ -189,7 +189,7 @@ class AnalysisStats(Task):
         FileHandler({'copy_opt': copy_list}).sync()
 
         # path of output tar statfile
-        iodastatzipfile = os.path.join(outdir, f"{self.task_config.APREFIX}{jedi_dict_key}_iodastat.tgz")
+        iodastatzipfile = os.path.join(outdir, f"{self.task_config.APREFIX}{jedi_dict_key}_analysis.ioda_hofx_stats.tgz")
 
         logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
 
