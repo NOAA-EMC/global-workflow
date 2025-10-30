@@ -81,7 +81,7 @@ enkf:
                                         "correction_increment.yaml",
                                         "ensemble_recenter.yaml"] %}
             {% else %}
-                {% set da_stat_files = ["atmensstat"]%}
+                {% set da_stat_files = ["stat.atm.tar"]%}
                 {% set da_conf_files = ["atmensanlletkf.yaml",
                                         "atmensanlfv3inc.yaml",
                                         "correction_increment.yaml",
@@ -120,7 +120,7 @@ enkf:
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean_increment.atm.i{{ '%03d' % fhr }}.nc"
                 {% endif %}
             {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atma{{ '%03d' % fhr }}.ensmean.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}csg_ensmean_jedi_analysis.atm.a{{ '%03d' % fhr }}.nc"
             {% endif %}
 
         # soil DA increments

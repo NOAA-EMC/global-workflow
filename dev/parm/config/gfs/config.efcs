@@ -89,16 +89,6 @@ export dspheat=".true."
 export shal_cnv=".true."
 export FHZERO=6
 
-# Set PREFIX_ATMINC to r when recentering on
-if [[ ${RECENTER_ENKF:-"YES"} == "YES" ]]; then
-   # TODO: Change this to 'recentered' for both JEDI and GSI recentered increments when JEDI has been brought into EE2
-   if [[ "${DO_JEDIATMENS}" == "YES" ]]; then
-       export PREFIX_ATMINC="r"
-   else
-       export PREFIX_ATMINC="recentered_"
-   fi
-fi
-
 # Set restart interval to enable restarting forecasts after failures
 export restart_interval=${restart_interval_enkfgdas:-6}
 if [[ ${RUN} == "enkfgfs" ]]; then
