@@ -2281,7 +2281,6 @@ class GFSTasks(Tasks):
 
             if self.options['do_wave']:
                 tarball_types.append('gdaswave')
-                tarball_types.append('gdaswave_restart')
 
             if self.app_config.mode == 'cycled':
                 # Add restart archives (timing logic handled in template)
@@ -2291,6 +2290,8 @@ class GFSTasks(Tasks):
                     tarball_types.append('gdasice_restart')
                 if self.options['do_ocean']:
                     tarball_types.append('gdasocean_restart')
+                if self.options['do_wave']:
+                    tarball_types.append('gdaswave_restart')
 
         # Create a metatask that contains all the individual archive jobs
         dependencies = self._arch_tars_deps()
