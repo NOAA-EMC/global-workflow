@@ -5,6 +5,7 @@ base:
   DO_JEDIATMVAR: "YES"
   DO_JEDIATMENS: "YES"
   DO_TEST_MODE: "NO"
+  CASE_ANL: "C48"
 atmanl:
   LAYOUT_X_ATMANL: 4
   LAYOUT_Y_ATMANL: 4
@@ -23,5 +24,7 @@ esfc:
   DONST: "NO"
 nsst:
   NST_MODEL: "1"
+prepatmiodaobs:
+  DO_CONVERT_IODA: "YES"
 sfcanl:
   DONST: "NO"

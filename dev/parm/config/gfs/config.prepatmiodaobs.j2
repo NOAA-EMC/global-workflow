@@ -9,7 +9,7 @@ echo "BEGIN: config.prepatmiodaobs"
 . "${EXPDIR}/config.resources" prepatmiodaobs
 
 # Process observations in line (YES) or copy observations from ObsForge (NO)?
-export DO_CONVERT_IODA="NO"
+export DO_CONVERT_IODA="{{ DO_CONVERT_IODA | default('NO') }}"
 export STAGE_COM_IODA_OBS_YAML="${PARMgfs}/gdas/atm/atm_com_stage_ioda.yaml.j2"
 
 echo "END: config.prepatmiodaobs"
