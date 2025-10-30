@@ -89,15 +89,19 @@ UFS_det(){
         mom6_rst_ok="NO"
       else
         # Also check for MOM6 history file availability
-        fhout_ocn_by_2=$((FHOUT_OCN / 2))
-        hdate=$(date -u -d "${rdate:0:8} ${rdate:8:2} + ${fhout_ocn_by_2} hours" +"%Y%m%d%H")
-        if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdate:0:4}_${hdate:4:2}_${hdate:6:2}_${hdate:8:2}.nc" ]]; then
-          mom6_rst_ok="NO"
-        else
-          # Also check for the next MOM6 history file (hdate + FHOUT_OCN hours)
-          hdatep1=$(date -u -d "${hdate:0:8} ${hdate:8:2} + ${FHOUT_OCN} hours" +"%Y%m%d%H")
-          if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdatep1:0:4}_${hdatep1:4:2}_${hdatep1:6:2}_${hdatep1:8:2}.nc" ]]; then
+        # TODO: SFS runs with 24-hr averaging of ocean output, which causes issues with restart checks,
+        # TODO: so we will skip them for now, and revisit this logic later
+        if [[ ${FHOUT_OCN} -le 6 ]]; then
+          fhout_ocn_by_2=$((FHOUT_OCN / 2))
+          hdate=$(date -u -d "${rdate:0:8} ${rdate:8:2} + ${fhout_ocn_by_2} hours" +"%Y%m%d%H")
+          if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdate:0:4}_${hdate:4:2}_${hdate:6:2}_${hdate:8:2}.nc" ]]; then
             mom6_rst_ok="NO"
+          else
+            # Also check for the next MOM6 history file (hdate + FHOUT_OCN hours)
+            hdatep1=$(date -u -d "${hdate:0:8} ${hdate:8:2} + ${FHOUT_OCN} hours" +"%Y%m%d%H")
+            if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdatep1:0:4}_${hdatep1:4:2}_${hdatep1:6:2}_${hdatep1:8:2}.nc" ]]; then
+              mom6_rst_ok="NO"
+            fi
           fi
         fi
       fi
