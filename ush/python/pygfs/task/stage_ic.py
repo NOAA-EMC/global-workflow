@@ -102,7 +102,7 @@ class Stage(Task):
         # assign rRUN to RUN for gfs cases
         self.task_config.rRUN = self.task_config.RUN
         # case specific rRUN
-        if self.task_config.RUN in ['gfs']:
+        if self.task_config.RUN in ['gfs', 'gcafs']:
             self.task_config.rRUN = "gdas"
         else:
             # RUN not gfs leave rRUN unchanged and continue

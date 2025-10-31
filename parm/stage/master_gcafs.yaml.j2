@@ -30,8 +30,8 @@
 ###################################################################
 
 # always use GDAS for now, fix once we have staged GCDAS/GCAFS ICs
-# TODO: move this to calculate_case_specific_variables() function
-# in stage_ic.py once GCDAS/GCAFS ICs are available
+# TODO: move this to stage_ic.py
+# once GCDAS/GCAFS ICs are available
 {% set rRUN = "gdas" %}
 
 {% if MODE == "cycled" %}
