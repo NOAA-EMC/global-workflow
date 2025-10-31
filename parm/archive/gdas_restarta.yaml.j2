@@ -5,14 +5,17 @@ gdas_restarta:
     required:
         # Deterministic analysis increments
         {% if DO_JEDIATMVAR %}
-            {% for itile in range(6) %}
-                - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_atminc.tile{{ itile+1 }}.nc"
+            {% for iaufhr in IAUFHRS %}
+                {% for itile in range(6) %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.atm.i{{ "%03d" % iaufhr }}.tile{{ itile+1 }}.nc"
+                {% endfor %}
+            {% endfor %}
+        {% else %}
+        # IAU increments
+            {% for iaufhr in IAUFHRS %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.atm.i{{ "%03d" % iaufhr }}.nc"
             {% endfor %}
         {% endif %}
-        # IAU increments
-        {% for iaufhr in IAUFHRS %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.atm.i{{ "%03d" % iaufhr }}.nc"
-        {% endfor %}
 
         # Soil DA increments
         {% if DO_GSISOILDA %}

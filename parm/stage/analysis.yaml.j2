@@ -14,7 +14,7 @@ analysis:
         {% if DO_JEDIATMVAR %}
 
         {% for itile in range(6) %}
-        {% for ftype in ["increment.atm.i006", "increment.atm.i009", "increment.atm.i003", "recentered_increment.atm.i006", "recentered_increment.atm.i009", "recentered_increment.atm.i003"] %}
+        {% for ftype in ["jedi_increment.atm.i006", "jedi_increment.atm.i009", "jedi_increment.atm.i003", "recentered_jedi_increment.atm.i006", "recentered_jedi_increment.atm.i009", "recentered_jedi_increment.atm.i003"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.cubed_sphere_grid_" ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.cubed_sphere_grid_{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
         {% endif %}
