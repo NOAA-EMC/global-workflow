@@ -175,7 +175,6 @@ gdas:
 
         # Forecast Master GRIB2 data for F006
         - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.f006.grib2"
-        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.f006.grib2.idx"
     optional:
         {% if MODE == "cycled" %}
             # Radiance verification (only created if there are problems)
