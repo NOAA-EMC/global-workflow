@@ -300,6 +300,7 @@ case "${fv3_res}" in
         elif [[ "${RUN}" = gfs ]]; then
           export layout_x=32
           export layout_y=32
+          export blocksize=36 # Note, default is 32 and MOD((resolution/layout_x)*(resolution/layout_y),blocksize) == 0
           export WRITE_GROUP=8
           export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=50
         elif [[ "${RUN}" = *gcafs ]]; then
