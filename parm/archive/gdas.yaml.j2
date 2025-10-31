@@ -46,10 +46,19 @@ gdas:
         - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2.idx"
         - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2"
         - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.analysis.grib2.idx"
 
         # Analysis netCDF (raw) data
+            {% if DO_JEDIATMVAR %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.sfc.a006.nc"
+            {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
+            {% endif %}
 
             {% if DOHYBVAR %}
         # Ensemble-resolution analysis
@@ -68,7 +77,7 @@ gdas:
             {% if DO_JEDIATMVAR %}
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}anlvar.atm.yaml"
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}anlvar.fv3.atm.yaml"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmstat"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}stat.atm.tar"
             {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat.txt"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat.tar"
@@ -145,6 +154,10 @@ gdas:
         - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2.idx"
         - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2"
         - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.f{{ fhr3 }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.f{{ fhr3 }}.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.f{{ fhr3 }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.f{{ fhr3 }}.grib2.idx"
         # Forecast GRIB2 fluxes
         - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sflux.f{{ fhr3 }}.grib2"
         - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sflux.f{{ fhr3 }}.grib2.idx"

@@ -6,14 +6,10 @@
 echo "BEGIN: config.atmos_products"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" atmos_products
+source "${EXPDIR}/config.resources" atmos_products
 
 ## Maximum number of rocoto tasks per member
 export MAX_TASKS=25
-
-# Scripts used by this job
-export INTERP_ATMOS_MASTERSH="${USHgfs}/interp_atmos_master.sh"
-export INTERP_ATMOS_SFLUXSH="${USHgfs}/interp_atmos_sflux.sh"
 
 if [[ "${RUN:-}" == "gcdas" ]]; then
   export downset=1
@@ -28,8 +24,6 @@ elif [[ "${RUN:-}" == "gcafs" ]]; then
   export WGNE="NO"  # WGNE products are created for first FHMAX_WGNE forecast hours
   export FHMAX_WGNE=180
 fi
-
-export APCP_MSG="597"  # Message number for APCP in GFSv16.  Look for TODO in exglobal_atmos_products.sh
 
 # paramlist files for the different forecast hours and downsets
 export paramlista="${PARMgfs}/product/gfs.fFFF.paramlist.a.txt"
