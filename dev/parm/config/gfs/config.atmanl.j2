@@ -20,11 +20,10 @@ export BIAS_FILES_YAML="${PARMgfs}/gdas/atm/atm_bias_files.yaml.j2"
 export LOCALIZATION_TYPE="bump"
 
 export CASE_GSIBEC=${CASE_ANL}
-##if [[ ${DOHYBVAR} = "YES" ]]; then
-##    if [[ "${ATMINC_GRID}" = "gaussian" ]]; then
-##       # shellcheck disable=SC2153
-##       export CASE_GSIBEC=${CASE_ENS}
-##    fi
-##fi
+if [[ "${DOHYBVAR}" = "YES" && "${ATMINC_GRID}" = "gaussian" ]]; then
+    # shellcheck disable=SC2153
+    export CASE_GSIBEC=${CASE_HIST}
+    export CASE_HIST=${CASE_ANL}
+fi
 
 echo "END: config.atmanl"
