@@ -70,6 +70,9 @@ class AerosolAnalysis(Analysis):
                 'AERO_BMATRIX_RESCALE_YAML': 'aero_gen_bmatrix_rescale_default.yaml.j2',
                 'anl_time': _anl_time,
                 'bkg_times': _bkg_times,
+                'UPP_RUN': "analysis",
+                'FORECAST_HOUR': 0,
+                'UPP_CONFIG': self.task_config.UPP_CONFIG_YAML
             }
         ))
 
@@ -79,6 +82,7 @@ class AerosolAnalysis(Analysis):
         # Create dictionary of Jedi objects
         expected_keys = ['aeroanlvar']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, expected_keys)
+
 
     @logit(logger)
     def initialize(self) -> None:
@@ -213,14 +217,6 @@ class AerosolAnalysis(Analysis):
         - Execute upp.x
         """
 
-        local_dict = AttrDict(
-            {
-                'UPP_RUN': "analysis",
-                'FORECAST_HOUR': 0
-            }
-        )
-        self.task_config = AttrDict(**self.task_config, **local_dict)
-        self.task_config.UPP_CONFIG = self.task_config.UPP_CONFIG_YAML
         upp = UPP(self.task_config)
 
         upp_yaml = upp.task_config.upp_yaml
