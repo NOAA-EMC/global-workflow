@@ -115,6 +115,19 @@ export COMINgfs=${COMIN_ATMOS_HISTORY_GFS}
 
 export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
 
+if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+    RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ENKF_ATMOS_HISTORY_GDAS_PREV:COM_ENS_ATMOS_HISTORY_TMPL
+    RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ENKF_MEM001_ATMOS_HISTORY_GDAS_PREV:COM_ENS_MEM001_ATMOS_HISTORY_TMPL
+    RUN="gdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GDAS_PREV:COM_ATMOS_HISTORY_TMPL
+    mkdir -p $COMIN_ATMOS_HISTORY_GDAS_PREV
+    ln -sf $COMIN_ENKF_MEM001_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.log.f003.txt $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.log.f003.txt
+    ln -sf $COMIN_ENKF_MEM001_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.log.f006.txt $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.log.f006.txt
+    ln -sf $COMIN_ENKF_MEM001_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.log.f009.txt $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.log.f009.txt
+    ln -sf $COMIN_ENKF_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.ensmean.atm.f003.nc     $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.atm.f003.nc
+    ln -sf $COMIN_ENKF_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.ensmean.atm.f006.nc     $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.atm.f006.nc
+    ln -sf $COMIN_ENKF_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.ensmean.atm.f009.nc     $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.atm.f009.nc    
+fi
+
 # Create or Copy prepbufr, prepbufr.acft_profiles, nsstbufr files
 # Do not fail on external errors
 if [[ ${MAKE_PREPBUFR:-"YES"} == "YES" ]]; then

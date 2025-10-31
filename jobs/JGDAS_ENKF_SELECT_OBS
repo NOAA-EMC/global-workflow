@@ -37,8 +37,13 @@ MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
     COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
-RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -r \
-    COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
+if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+    RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+        COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ENS_ATMOS_ANALYSIS_TMPL
+else
+    RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -r \
+        COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
+fi
 
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
@@ -65,17 +70,34 @@ if [[ ${DONST} == "YES" ]]; then
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
-# Deterministic analysis and increment files
-export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.sfc.a006.nc"
-export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.dtf.a006.nc"
-export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.atm.a006.nc"
-export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.atm.i006.nc"
+if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+    # Ensemble analysis and increment files
+    export SFCANL="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc"
+    export DTFANL="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.dtf.a006.nc"
+    export ATMANL="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a006.nc"
+    export ATMINC="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc"
+    # Copy and untar GSI BC files for ensemble 
+    GSIBIAS_SRC=${GSIBIAS}/${GDATE}/gdas.t${gcyc}z.rad_varbc_params.tar
+    GSIBIAS_DET=${COMIN_ATMOS_ANALYSIS_DET_PREV}/GSIOPE/
+    mkdir -p ${GSIBIAS_DET}
+    tar -xvf ${GSIBIAS_SRC} -C ${GSIBIAS_DET}
+    export GBIAS=${GSIBIAS_DET}/${GPREFIX}abias.ensmean
+    export GBIASPC=${GSIBIAS_DET}/${GPREFIX}abias_pc.ensmean
+    export GBIASAIR=${GSIBIAS_DET}/${GPREFIX}abias_air.ensmean
+    export GRADSTAT=${GSIBIAS_DET}/${GPREFIX}radstat.ensmean
+else
+    # Deterministic analysis and increment files
+    export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.sfc.a006.nc"
+    export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.dtf.a006.nc"
+    export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.atm.a006.nc"
+    export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.atm.i006.nc"
 
-# Guess Bias correction coefficients related to control
-export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias.txt
-export GBIASPC=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc.txt
-export GBIASAIR=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air.txt
-export GRADSTAT=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat.tar
+    # Guess Bias correction coefficients related to control
+    export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias.txt
+    export GBIASPC=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc.txt
+    export GBIASAIR=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air.txt
+    export GRADSTAT=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat.tar
+fi
 
 # Bias correction coefficients related to ensemble mean
 export ABIAS="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias.txt"

@@ -35,6 +35,8 @@ class AtmEnsAnalysis(Analysis):
 
         _res = int(self.task_config.CASE_ENS[1:])
 
+        self.task_config.letkf_app = "true"
+
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {

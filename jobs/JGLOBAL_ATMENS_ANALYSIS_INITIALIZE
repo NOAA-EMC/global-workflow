@@ -19,8 +19,23 @@ GDUMP="gdas"
 RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_OBS:COM_OBS_TMPL
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
+if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+    RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+        COMIN_ATMOS_ANALYSIS_PREV:COM_ENS_ATMOS_ANALYSIS_TMPL
+else
+    RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+        COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
+fi
+
+
+# Copy GSI BC files
+if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+    GSIBIAS_SRC=${GSIBIAS}/${GDATE}/gdas.t${gcyc}z.rad_varbc_params.tar
+    # Need to Change
+    GSIBIAS_DET=${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/ensstat/analysis/atmos/gdas.t${gcyc}z.rad_varbc_params.tar
+
+    cp -r ${GSIBIAS_SRC} ${GSIBIAS_DET}
+fi
 
 ###############################################################
 # Run relevant script
