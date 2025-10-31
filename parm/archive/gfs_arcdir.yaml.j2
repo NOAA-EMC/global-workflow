@@ -38,7 +38,7 @@
                                     ARCDIR ~ "/pgbanl." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
 
     {% if DO_JEDIATMVAR == True %}
-        {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "atmstat",
+        {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "stat.atm.tar",
                                     ARCDIR ~ "/atmstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% else %}
         {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "gsistat.txt",
@@ -125,7 +125,7 @@
     # Ensemble analysis files
     {% set enkf_files = [] %}
     {% if DO_JEDIATMENS == True %}
-        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atmensstat",
+        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "stat.atm.tar",
                                  ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% else %}
         {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "enkfstat.txt",
