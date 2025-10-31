@@ -1092,10 +1092,16 @@ class GFSTasks(Tasks):
 
         atm_anl_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
         deps = []
-        data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.atm.a006.nc'
+        if self.options['do_jediatmvar']:
+            data = f'{atm_anl_path}/{self.run}.t@Hz.jedi_analysis.atm.a006.nc'
+        else:
+            data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.atm.a006.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.sfc.a006.nc'
+        if self.options['do_jediatmvar']:
+            data = f'{atm_anl_path}/{self.run}.t@Hz.jedi_analysis.sfc.a006.nc'
+        else:
+            data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.sfc.a006.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{atm_anl_path}/{self.run}.t@Hz.done.txt'
@@ -2281,7 +2287,6 @@ class GFSTasks(Tasks):
 
             if self.options['do_wave']:
                 tarball_types.append('gdaswave')
-                tarball_types.append('gdaswave_restart')
 
             if self.app_config.mode == 'cycled':
                 # Add restart archives (timing logic handled in template)
@@ -2291,6 +2296,8 @@ class GFSTasks(Tasks):
                     tarball_types.append('gdasice_restart')
                 if self.options['do_ocean']:
                     tarball_types.append('gdasocean_restart')
+                if self.options['do_wave']:
+                    tarball_types.append('gdaswave_restart')
 
         # Create a metatask that contains all the individual archive jobs
         dependencies = self._arch_tars_deps()

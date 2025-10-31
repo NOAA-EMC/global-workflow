@@ -132,7 +132,7 @@ class AtmAnalysis(Analysis):
 
         # Compress and tar diag files in COM directory
         self.tar_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS,
-                            f"{self.task_config.APREFIX}atmstat")
+                            f"{self.task_config.APREFIX}stat.atm.tar")
 
         # Tar radiative bias correction files into COM directory
         self.tar_radiative_bias_corrections(self.task_config.COMOUT_ATMOS_ANALYSIS,

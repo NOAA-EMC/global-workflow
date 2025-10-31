@@ -22,8 +22,10 @@ enkf_grp:
         - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat.txt"
             {% endif %}
             {% if DO_JEDIATMENS %}
-                {% for itile in range(6) %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}cubed_sphere_grid_ratminc.tile{{ itile+1 }}.nc"
+                {% for iaufhr in IAUFHRS %}
+                    {% for itile in range(6) %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ head }}recentered_jedi_increment.atm.i{{ '%03d' % iaufhr }}.tile{{ itile+1 }}.nc"
+                    {% endfor %}
                 {% endfor %}
             {% else %}
                 {% if do_calc_increment %}
