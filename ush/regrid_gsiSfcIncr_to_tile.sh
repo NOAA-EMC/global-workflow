@@ -50,7 +50,7 @@ done
 if [[ "${DO_LAND_IAU}" = ".true." ]]; then
     IFS=',' read -ra landifhrs <<< "${IAUFHRS}"
 fi
-export in_fname="'enkfgdas.sfci'"
+export in_fname="'sfci'"
 export out_fname="'sfci'"
 export in_dir=""
 export dir_mask_in="'./'"
@@ -137,13 +137,13 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 
     for FHR in "${soilinc_fhrs[@]}"; do
         echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHR}.nc \
-                    ${memdir}/enkfgdas.sfci00${FHR}.nc" >> "cmdfile.${imem}"
+                    ${memdir}/sfci00${FHR}.nc" >> "cmdfile.${imem}"
     done 
 
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then 
         for FHI in "${landifhrs[@]}"; do
             echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHI}.nc \
-                        ${memdir}/enkfgdas.sfci00${FHI}.nc" >> "cmdfile.${imem}"
+                        ${memdir}/sfci00${FHI}.nc" >> "cmdfile.${imem}"
         done
     fi
 

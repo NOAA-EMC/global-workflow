@@ -163,7 +163,7 @@ if [[ "$DOIAU" == "YES" ]]; then
 
         export TILE_NUM=$n
 
-	# Copy inputs from COMIN to DATA
+        # Copy inputs from COMIN to DATA
         for imem in $(seq 1 $NMEM_ENS); do
             smem=$((imem + mem_offset))
             if (( smem > NMEM_ENS_MAX )); then
@@ -207,13 +207,13 @@ if [[ "$DOIAU" == "YES" ]]; then
             fi
 
         done # ensembles
-         
-	"${CYCLESH}" && true
+
+        "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
            err_exit "Failed to update surface fields!"
         fi
-        
+
         # Copy outputs from DATA to COMOUT
         for imem in $(seq 1 $NMEM_ENS); do
             smem=$((imem + mem_offset))
@@ -281,7 +281,7 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
                    "${DATA}/soil_xainc.${cmem}"
             fi
         done
-        
+
         "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
