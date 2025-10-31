@@ -124,6 +124,8 @@ class Stage(Task):
 
         # Calculate current cycle variables
         if self.task_config.current_cycle:
+            self.task_config.current_cycle_HH = self.task_config.current_cycle.strftime("%H")
+            self.task_config.current_cycle_YMD = self.task_config.current_cycle.strftime("%Y%m%d")
             if self.task_config.DOIAU and self.task_config.MODE == "cycled":
                 self.task_config.model_start_date_current_cycle = self.task_config.current_cycle + timedelta(hours=-self.task_config.half_window)
             else:
