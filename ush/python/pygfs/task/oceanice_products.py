@@ -286,6 +286,7 @@ class OceanIceProducts(Task):
             ds = xr.open_dataset(input_file)
             if config.component == 'ice':
                 varlist.extend(['tarea', 'tmask'])
+                ds_subset = ds[varlist]
                 # subset the variables
                 # remove coords that were carried from original file but not used
                 ds_subset = ds_subset.drop_vars('ELON', errors='ignore')
