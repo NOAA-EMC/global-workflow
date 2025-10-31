@@ -139,6 +139,8 @@ class Stage(Task):
         if self.task_config.previous_cycle:
             self.task_config.m_index = self.task_config.current_cycle.hour // self.task_config.assim_freq
             self.task_config.p_prefix = self.task_config.previous_cycle.strftime("%Y%m%d.%H0000")
+            self.task_config.previous_cycle_HH = self.task_config.previous_cycle.strftime("%H")
+            self.task_config.previous_cycle_YMD = self.task_config.previous_cycle.strftime("%Y%m%d")
 
         # Define cycle directories to update com paths
         self.task_config.current_cycle_dict = {
