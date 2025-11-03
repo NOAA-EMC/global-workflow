@@ -174,7 +174,7 @@ class OceanIceProducts(Task):
         if config.oceanice_yaml.ocnicepost.namelist.write_netcdf or config.oceanice_yaml.ocnicepost.namelist.write_grib2:
             OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
 
-           # Index the interpolated grib2 file
+            # Index the interpolated grib2 file
             OceanIceProducts.index(config, product_grid)
 
     @staticmethod
@@ -293,12 +293,12 @@ class OceanIceProducts(Task):
                 ds_subset = ds_subset.drop_vars('ELAT', errors='ignore')
                 ds_subset = ds_subset.drop_vars('NLON', errors='ignore')
                 ds_subset = ds_subset.drop_vars('NLAT', errors='ignore')
-            
+
             if config.component == 'ocean':
                 # subset ocean variables for z_levels in products
                 levels = config.oceanice_yaml.ocean.namelist.ocean_levels
-                ds_subset = ds[varlist].sel(z_l = levels)
- 
+                ds_subset = ds[varlist].sel(z_l=levels) 
+            
             # save global attributes from the old netcdf file into new netcdf file
             ds_subset.attrs = ds.attrs
 
