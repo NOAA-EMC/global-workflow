@@ -42,9 +42,6 @@ ocean:
     mkdir:
       - "{{ COMOUT_OCEAN_NETCDF }}/native"
       {% for grid in product_grids %}
-      {% if write_netcdf %}
-      - "{{ COMOUT_OCEAN_NETCDF }}/{{ grid }}"
-      {% endif %}
       {% if write_grib2 %}
       - "{{ COMOUT_OCEAN_GRIB }}/{{ grid }}"
       {% endif %}
