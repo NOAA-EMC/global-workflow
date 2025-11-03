@@ -297,8 +297,8 @@ class OceanIceProducts(Task):
             if config.component == 'ocean':
                 # subset ocean variables for z_levels in products
                 levels = config.oceanice_yaml.ocean.namelist.ocean_levels
-                ds_subset = ds[varlist].sel(z_l=levels) 
-            
+                ds_subset = ds[varlist].sel(z_l=levels)
+ 
             # save global attributes from the old netcdf file into new netcdf file
             ds_subset.attrs = ds.attrs
 
@@ -306,7 +306,7 @@ class OceanIceProducts(Task):
             default_compression = {"zlib": True, "complevel": 8}
             compress_encoding = {var_name: default_compression for var_name in ds_subset.data_vars}
             ds_subset.to_netcdf(output_file, encoding=compress_encoding)
-            
+
             # save compress original file
             compress_encoding = {var_name: default_compression for var_name in ds.data_vars}
             ds.to_netcdf(compressed_file, encoding=compress_encoding)
