@@ -276,7 +276,7 @@ class OceanIceProducts(Task):
         input_file = f"{config.component}.nc"
         output_file = f"{config.component}_subset.nc"
         compressed_file = f"{config.component}_compressed.nc"
- 
+
         varlist = config.oceanice_yaml[config.component].subset
 
         logger.info(f"Subsetting {varlist} from {input_file} to {output_file}")
