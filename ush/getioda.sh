@@ -26,6 +26,10 @@ prefix="${RUN}.t${HH}z."
 for compdir in "${SOURCE_DIR}"/*/ ; do
     compdir=${compdir%*/}
     compdir=${compdir##*/}
+    # Skip if not a directory
+    if [[ ! -d "${SOURCE_DIR}/${compdir}/" ]]; then
+        continue
+    fi
     echo "Processing component directory: ${compdir}"
     # Create component directory in TARGET_DIR if it does not exist
     if [[ ! -s "${TARGET_DIR}/${compdir}" ]]; then
@@ -35,6 +39,10 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     for subdir in "${SOURCE_DIR}/${compdir}"/*/ ; do
         subdir=${subdir%*/}
         subdir=${subdir##*/}
+        # Skip if not a directory
+        if [[ ! -d "${SOURCE_DIR}/${compdir}/${subdir}" ]]; then
+            continue
+        fi
         echo "  Processing subdirectory: ${subdir}"
         # Create subdirectory in TARGET_DIR if it does not exist
         if [[ ! -s "${TARGET_DIR}/${compdir}/${subdir}" ]]; then
