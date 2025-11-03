@@ -96,10 +96,10 @@ enkf:
         {% endfor %}
 
         {% if DO_JEDISNOWDA %}
-        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}snowstat.tgz"
+        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}snow_analysis.ioda_hofx.ensmean.tar"
             {% for itile in range(1,7) %}
         # Snow analysis is 3dvar
-        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/snowinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.sfc_data.tile{{ itile }}.nc"
+        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.snow_increment.sfc_data.tile{{ itile }}.nc"
             {% endfor %}
         {% endif %}
 
