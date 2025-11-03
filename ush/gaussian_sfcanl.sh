@@ -9,7 +9,9 @@
 # Author:        George Gayno       Org: NP23         Date: 2018-01-30
 #
 # Abstract: This script makes a global gaussian grid surface analysis from
-#           fv3gfs surface analysis tiles
+#           fv3gfs surface analysis tiles.  The gaussian grid resolution is
+#           the gaussian equivalent of the history file resolution (may be
+#           different than restart resolution).
 #
 # Script history log:
 # 2018-01-30  Gayno  initial script
@@ -18,7 +20,8 @@
 # Usage:  gaussian_sfcanl.sh
 #
 #   Imported Shell Variables:
-#     CASE          Model resolution.  Defaults to C768.
+#     CASE          Forecast model and restart resolution.  Defaults to C768.
+#     CASE_HIST     History file output resolution.  Defaults to $CASE.
 #     DONST         Process NST fields when 'yes'.  Default is 'no'.
 #     OUTPUT_FILE   Output gaussian analysis file format.  Default is "nemsio"
 #                   Set to "netcdf" for netcdf output file
@@ -77,7 +80,7 @@
 #
 #     output data: $PGMOUT
 #                  $PGMERR
-#                  $COMOUT/${APREFIX}sfcanl.nc
+#                  $COMOUT/${APREFIX}analysis.sfc.a006.nc
 #
 # Remarks:
 #
@@ -97,9 +100,10 @@
 ################################################################################
 
 CASE=${CASE:-C768}
-res=$(echo $CASE | cut -c2-)
-LONB_CASE=$((res*4))
-LATB_CASE=$((res*2))
+CASE_HIST=${CASE_HIST:-${CASE}}
+resh=${CASE_HIST:1}
+LONB_CASE=$((resh*4))
+LATB_CASE=$((resh*2))
 LONB_SFC=${LONB_SFC:-$LONB_CASE}
 LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
@@ -162,7 +166,7 @@ ${NLN} "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile6.nc" "./orog.tile6.
 ${NLN} "${SIGLEVEL}" "./vcoord.txt"
 
 # output gaussian global surface analysis files
-${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc" "./sfc.gaussian.analysis.file"
+${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc" "./sfc.gaussian.analysis.file"
 
 # Namelist uses booleans now
 if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
@@ -177,6 +181,8 @@ cat <<EOF > fort.41
   igaus=${LONB_SFC},
   jgaus=${LATB_SFC},
   donst=${do_nst},
+  imp_physics=${imp_physics:-8},
+  landsfcmdl=${landsfcmdl:-2},
  /
 EOF
 

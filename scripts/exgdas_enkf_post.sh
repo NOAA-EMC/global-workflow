@@ -68,8 +68,8 @@ for imem in $(seq 1 ${NMEM_ENS}); do
 
    for fhr in $(seq ${FHMIN} ${FHOUT} ${FHMAX}); do
       fhrchar=$(printf %03i "${fhr}")
-      ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}sfcf${fhrchar}.nc" "sfcf${fhrchar}_${memchar}"
-      ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}.nc" "atmf${fhrchar}_${memchar}"
+      ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc.f${fhrchar}.nc" "sfcf${fhrchar}_${memchar}"
+      ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.f${fhrchar}.nc" "atmf${fhrchar}_${memchar}"
    done
 done
 
@@ -82,18 +82,18 @@ fi
 
 for fhr in $(seq ${FHMIN} ${FHOUT} ${FHMAX}); do
    fhrchar=$(printf %03i "${fhr}")
-   ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}sfcf${fhrchar}.ensmean.nc" "sfcf${fhrchar}.ensmean"
-   ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}atmf${fhrchar}.ensmean.nc" "atmf${fhrchar}.ensmean"
+   ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.sfc.f${fhrchar}.nc" "sfcf${fhrchar}.ensmean"
+   ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.atm.f${fhrchar}.nc" "atmf${fhrchar}.ensmean"
    if [[ "${SMOOTH_ENKF}" == "YES" ]]; then
       for imem in $(seq 1 ${NMEM_ENS}); do
          memchar="mem"$(printf %03i "${imem}")
          MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
              COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
-         ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
+         ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.f${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
       done
    fi
    if [[ "${ENKF_SPREAD}" == "YES" ]]; then
-       ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}atmf${fhrchar}.ensspread.nc" "atmf${fhrchar}.ensspread"
+       ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensspread.atm.f${fhrchar}.nc" "atmf${fhrchar}.ensspread"
    fi
 done
 
@@ -157,7 +157,7 @@ if [[ "${SENDDBN}" == "YES" ]]; then
       fhrchar=$(printf "%03i" "${fhr}")
       if [[ $(expr ${fhr} % 3) -eq 0 ]]; then
          if [[ -s "./sfcf${fhrchar}.ensmean" ]]; then
-             "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_ENKF" "${job}" "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}sfcf${fhrchar}.ensmean.nc"
+             "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_ENKF" "${job}" "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.sfc.f${fhrchar}.nc"
          fi
       fi
    done

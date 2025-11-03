@@ -12,11 +12,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "upp" -c "base upp"
 
 # Construct COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-   COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-   COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-   COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
-if [[ ! -d ${COMOUT_ATMOS_MASTER} ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
-
+    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
+    COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
+mkdir -p "${COMOUT_ATMOS_MASTER}"
 
 ###############################################################
 # Run relevant exglobal script
@@ -35,7 +34,7 @@ fi
 # Final processing
 ##############################################
 if [[ -e "${pgmout}" ]]; then
-  cat "${pgmout}"
+    cat "${pgmout}"
 fi
 
 ##########################################
@@ -45,6 +44,5 @@ cd "${DATAROOT}" || exit 1
 if [[ "${KEEPDATA:-NO}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
-
 
 exit 0

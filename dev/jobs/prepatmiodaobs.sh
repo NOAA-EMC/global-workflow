@@ -2,7 +2,7 @@
 
 ###############################################################
 # Source UFSDA workflow modules
-source "${HOMEgfs}/dev/ush/load_ufsda_modules.sh"
+source "${HOMEgfs}/dev/ush/load_modules.sh" ufsda
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"

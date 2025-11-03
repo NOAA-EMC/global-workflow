@@ -29,8 +29,12 @@ if __name__ == '__main__':
 
     # stage ensemble mean backgrounds
 
+    # Process SNOCVR and SNOMAD (if applicable)
+    if snow_ens_anl.task_config.DO_SNOCVR_SNOMAD:
+        snow_ens_anl.prepare_SNOCVR_SNOMAD()
+
     # Process IMS snow cover (if applicable)
-    if snow_ens_anl.task_config.cyc == 0:
+    if snow_ens_anl.task_config.DO_IMS_SCF:
         snow_ens_anl.execute('scf_to_ioda')
 
     # Execute JEDI snow analysis

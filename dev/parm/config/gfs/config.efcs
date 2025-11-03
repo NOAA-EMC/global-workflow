@@ -6,6 +6,7 @@
 echo "BEGIN: config.efcs"
 
 export CASE="${CASE_ENS}"
+export CASE_HIST="${CASE_ENS}"
 
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE}"
@@ -87,11 +88,6 @@ export ICO2=2
 export dspheat=".true."
 export shal_cnv=".true."
 export FHZERO=6
-
-# Set PREFIX_ATMINC to r when recentering on
-if [[ ${RECENTER_ENKF:-"YES"} == "YES" ]]; then
-   export PREFIX_ATMINC="r"
-fi
 
 # Set restart interval to enable restarting forecasts after failures
 export restart_interval=${restart_interval_enkfgdas:-6}

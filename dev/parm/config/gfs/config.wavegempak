@@ -18,6 +18,8 @@ export FHOUT_HF_WAV=3
 export FHMAX_HF_WAV=72
 export FHOUT_WAV=6
 export FHOUT_WAV_GFS=${FHOUT_WAV}
-export FHMAX_GFS=180  # Note: This is the maximum forecast hour for GFS wave gempak output
+if [[ ${FHMAX_GFS} -gt 180 ]]; then
+  export FHMAX_GFS=180  # Note: This is the maximum forecast hour for GFS wave gempak output
+fi
 
 echo "END: config.wavegempak"

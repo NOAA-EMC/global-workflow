@@ -50,7 +50,7 @@ export metplus_ver=3.1.1
 # Development-only below
 
 export obsproc_run_ver=1.2.0
-export prepobs_run_ver=1.1.2
+export prepobs_run_ver=1.1.3
 
-export ens_tracker_ver=v1.2.1
-export fit2obs_ver=1.1.9
+export ens_tracker_ver=v1.3.0
+export fit2obs_ver=1.1.10

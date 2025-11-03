@@ -12,7 +12,7 @@ export CLEANUP_COM="YES"   # NO=retain ROTDIR.  YES default in cleanup.sh
 export RMOLDSTD=144
 export RMOLDEND=24
 
-if [[ "${DO_GEMPAK}" == "YES" ]]; then
+if [[ "${DO_GEMPAK}" == "YES" && "${RUN}" == "gfs" ]]; then
     export RMOLDSTD=346
     export RMOLDEND=222
 fi
@@ -21,7 +21,7 @@ fi
 # Because arrays cannot be exported, list is a single string of comma-
 # separated values. This string is split to form an array at runtime.
 case ${RUN} in
-	gdas | gfs)	exclude_string="*prepbufr*, *cnvstat*, *atmanl.nc" ;;
+	gdas | gfs)	exclude_string="*prepbufr*, *cnvstat.tar*, *analysis.atm.a*.nc" ;;
 	enkf*)      exclude_string="*f006.ens*" ;;
 	*)			exclude_string="" ;;
 esac
