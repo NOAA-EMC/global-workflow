@@ -176,9 +176,6 @@ FV3_predet(){
     FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH}"
   fi
 
-  # Other options
-  PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
-
   # IAU options
   IAUFHRS=${IAUFHRS:-0}
   IAU_DELTHRS=${IAU_DELTHRS:-0}
