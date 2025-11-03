@@ -152,7 +152,7 @@ class SnowEnsAnalysis(Analysis):
 
         # Compress and tar diag files into COM directory
         self.tar_diag_files(self.task_config.COMOUT_SNOW_ANALYSIS,
-                            f"{self.task_config.APREFIX_ENS}snowstat.tgz")
+                            f"{self.task_config.APREFIX_ENS}snow_analysis.ioda_hofx.ensmean.tar")
 
         # Save files to COM
         logger.info(f"Saving files to COM")
