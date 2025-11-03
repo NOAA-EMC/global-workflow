@@ -117,11 +117,11 @@ class GFSTasks(Tasks):
         data = f'{dump_path}/{self.run}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
         if self.options['do_jediatmvar']:
-            data = f'{ioda_path}/chem/{self.run}.t@Hz.obsforge_atmos_bufr_status.log'
+            data = f'{ioda_path}/atmos/{self.run}.t@Hz.obsforge_atmos_bufr_status.log'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jediocnvar']:
-            data = f'{ioda_path}/chem/{self.run}.t@Hz.obsforge_marine_status.log'
+            data = f'{ioda_path}/ocean/{self.run}.t@Hz.obsforge_marine_status.log'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_aero_anl']:
