@@ -1,9 +1,9 @@
-ocean_subset:
+ocean_native:
     {% set NET = NET %}
     {% set FREQ = FHOUT_ICE_GFS %}
     {% set head = NET + ".t" + cycle_HH + "z" %}
-    name: "OCEAN_SUBSET"
-    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_subset.tar"
+    name: "OCEAN_NATIVE"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_native_subset.tar"
     required:
         {% for fhr in range(FREQ, FHMAX_GFS + FREQ, FREQ) %}
         - "{{ COMIN_OCEAN_NETCDF | relpath(ROTDIR) }}/native/{{ head }}.native.f{{ '%03d' % fhr }}.nc"

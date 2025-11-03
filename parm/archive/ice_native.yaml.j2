@@ -1,9 +1,9 @@
-ice_subset:
+ice_native:
     {% set NET = NET %}
     {% set FREQ = FHOUT_ICE_GFS %}
     {% set head = NET + ".t" + cycle_HH + "z" %}
-    name: "ICE_SUBSET"
-    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ice_subset.tar"
+    name: "ICE_NATIVE"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ice_native_subset.tar"
     required:
         {% for fhr in range(FREQ, FHMAX_GFS + FREQ, FREQ) %}
         - "{{ COMIN_ICE_NETCDF | relpath(ROTDIR) }}/native/{{ head }}.native.f{{ '%03d' % fhr }}.nc"
