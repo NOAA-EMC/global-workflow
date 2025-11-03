@@ -612,7 +612,7 @@ class SFSTasks(Tasks):
 
         return task
 
-    # Globus transfer for HPSS archiving 
+    # Globus transfer for HPSS archiving
     def globus(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
