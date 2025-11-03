@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-COMPONENT=${COMPONENT:-atmos}
-
 YMD=${1:-""}
 HH=${2:-""}
 RUN=${3:-""}
