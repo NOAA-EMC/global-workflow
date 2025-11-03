@@ -276,7 +276,7 @@ class OceanIceProducts(Task):
         input_file = f"{config.component}.nc"
         output_file = f"{config.component}_subset.nc"
         compressed_file = f"{config.component}_compressed.nc"
-        
+ 
         varlist = config.oceanice_yaml[config.component].subset
 
         logger.info(f"Subsetting {varlist} from {input_file} to {output_file}")
@@ -298,7 +298,7 @@ class OceanIceProducts(Task):
                 # subset ocean variables for z_levels in products
                 levels = config.oceanice_yaml.ocean.namelist.ocean_levels
                 ds_subset = ds[varlist].sel(z_l=levels)
- 
+
             # save global attributes from the old netcdf file into new netcdf file
             ds_subset.attrs = ds.attrs
 
