@@ -26,16 +26,16 @@ def calcinc_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, IAUHrs,
             if fh == 6:
                 gsi_utils.link_file('sigf06', 'atmges_mem' + format(nFH, '03'))
                 gsi_utils.link_file('siganl', 'atmanl_mem' + format(nFH, '03'))
-                gsi_utils.link_file(ComOut + '/' + APrefix + 'atminc.nc', 'atminc_mem' + format(nFH, '03'))
+                gsi_utils.link_file(ComOut + '/' + APrefix + 'increment.atm.nc', 'atminc_mem' + format(nFH, '03'))
             else:
                 gsi_utils.link_file('sigf' + format(fh, '02'), 'atmges_mem' + format(nFH, '03'))
                 gsi_utils.link_file('siga' + format(fh, '02'), 'atmanl_mem' + format(nFH, '03'))
-                gsi_utils.link_file(ComOut + '/' + APrefix + 'atmi' + format(fh, '03') + '.nc', 'atminc_mem' + format(nFH, '03'))
+                gsi_utils.link_file(ComOut + '/' + APrefix + 'increment.atm.i' + format(fh, '03') + '.nc', 'atminc_mem' + format(nFH, '03'))
     else:
         nFH = 1
         gsi_utils.link_file('sigf06', 'atmges_mem001')
         gsi_utils.link_file('siganl', 'atmanl_mem001')
-        gsi_utils.link_file(ComOut + '/' + APrefix + 'atminc', 'atminc_mem001')
+        gsi_utils.link_file(ComOut + '/' + APrefix + 'increment.atm', 'atminc_mem001')
     os.environ['OMP_NUM_THREADS'] = str(NThreads)
     os.environ['ncmd'] = str(nFH)
     shutil.copy(Exec, RunDir + '/calc_inc.x')

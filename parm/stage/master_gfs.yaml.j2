@@ -35,11 +35,7 @@
 {% if DOIAU and MODE == "cycled" %}
     {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_begin) %}
 {% else %}
-    {% if REPLAY_ICS %}
-        {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_end) %}
-    {% else %}
-        {% set model_start_date_current_cycle = current_cycle %}
-    {% endif %}
+    {% set model_start_date_current_cycle = current_cycle %}
 {% endif %}
 
 {% set current_cycle_YMD = current_cycle | to_YMD %}
@@ -154,12 +150,6 @@
 {% endfilter %}
 {% endif %}
 
-{% if REPLAY_ICS %}
-{% filter indent(width=4) %}
-{% include "atmosphere_perturbation.yaml.j2" %}
-{% endfilter %}
-{% endif %}
-
 {% if DO_ICE %}
 {% filter indent(width=4) %}
 {% include "ice.yaml.j2" %}
@@ -173,11 +163,6 @@
 {% if DO_JEDIOCNVAR %}
 {% filter indent(width=4) %}
 {% include "ocean_rerun.yaml.j2" %}
-{% endfilter %}
-{% endif %}
-{% if REPLAY_ICS %}
-{% filter indent(width=4) %}
-{% include "ocean_replay.yaml.j2" %}
 {% endfilter %}
 {% endif %}
 {% if EXP_WARM_START %}

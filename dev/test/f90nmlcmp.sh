@@ -2,13 +2,11 @@
 
 # Compare two F90 namelists (forward and backward)
 
-set -eu
-
 # shellcheck disable=SC2155,SC2312
 HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/../.." && pwd -P)
 declare -rx HOMEgfs
 
-source "${HOMEgfs}/dev/ush/load_modules.sh" 1>/dev/null 2>&1
+source "${HOMEgfs}/dev/ush/load_modules.sh" run
 
 file1=${1:?}
 file2=${2:?}
