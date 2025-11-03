@@ -196,9 +196,9 @@ EOF
         read_increment=".true."
 
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
-          inc_files=("jedi_increment.atm.i006.tile1.nc" "jedi_increment.atm.i006.tile2.nc" "jedi_increment.atm.i006.tile3.nc" "jedi_increment.atm.i006.tile4.nc" "jedi_increment.atm.i006.tile5.nc" "jedi_increment.atm.i006.tile6.nc")
+          inc_files=("csg_jedi_increment.atm.i006.tile1.nc" "csg_jedi_increment.atm.i006.tile2.nc" "csg_jedi_increment.atm.i006.tile3.nc" "csg_jedi_increment.atm.i006.tile4.nc" "csg_jedi_increment.atm.i006.tile5.nc" "csg_jedi_increment.atm.i006.tile6.nc")
           increment_file_on_native_grid=".true."
-          res_latlon_dynamics="jedi_increment.atm.i006"
+          res_latlon_dynamics="csg_jedi_increment.atm.i006"
         else
           inc_files=("increment.atm.i006.nc")
           res_latlon_dynamics="increment.atm.i006.nc"
@@ -215,7 +215,11 @@ EOF
       fi
 
       if [[ "${RUN}" = "enkfgfs" ]] || [[ "${RUN}" = "enkfgdas" ]]; then
-          prefix_atminc="recentered_"
+          if [[ "${DOENKFONLY_ATM}" = "YES" ]]; then
+              prefix_atminc=""
+          else
+              prefix_atminc="recentered_"
+	  fi
       else
           prefix_atminc=""
       fi
