@@ -41,6 +41,10 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanl.log"
             {% endif %}
 
+        # Analysis Master GRIB2 data
+        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.analysis.grib2"
+        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.analysis.grib2.idx"
+
         # Analysis GRIB2 (sub-sampled) data
         - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2"
         - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2.idx"
@@ -167,6 +171,11 @@ gdas:
         - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.f{{ fhr3 }}.nc"
         - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfc.f{{ fhr3 }}.nc"
         {% endfor %}
+
+
+        # Forecast Master GRIB2 data for F006
+        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.f003.grib2"
+        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.f006.grib2"
     optional:
         {% if MODE == "cycled" %}
             # Radiance verification (only created if there are problems)
