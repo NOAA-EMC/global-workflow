@@ -14,9 +14,17 @@ analysis:
         {% if DO_JEDIATMVAR %}
 
         {% for itile in range(6) %}
-        {% for ftype in ["atminc", "atmi009", "atmi003", "ratminc", "ratmi009", "ratmi003"] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.cubed_sphere_grid_" ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.cubed_sphere_grid_{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        {% for source_ftype, dest_ftype in 
+        [
+            ('atminc', 'jedi_increment.atm.i006'),
+            ('atmi009', 'jedi_increment.atm.i009'),
+            ('atmi003', 'jedi_increment.atm.i003'),
+            ('ratminc', 'recentered_jedi_increment.atm.i006'),
+            ('ratmi009', 'recentered_jedi_increment.atm.i009'),
+            ('ratmi003', 'recentered_jedi_increment.atm.i003')
+        ] %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.cubed_sphere_grid_" ~ source_ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.cubed_sphere_grid_{{ source_ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ dest_ftype }}.tile{{ itile+1 }}.nc"]
         {% endif %}
         {% endfor %}
         {% endfor %}

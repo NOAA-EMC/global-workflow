@@ -3,9 +3,7 @@
 set -x
 
 ###############################################################
-#source "${HOMEgfs}/dev/ush/load_modules.sh" run
-#source "${HOMEgfs}/dev/ush/load_modules.sh" ufswm
-source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/dev/ush/load_modules.sh" ufswm
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"

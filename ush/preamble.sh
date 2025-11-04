@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 
 #######
-# Preamble script to be SOURCED at the beginning of every script. Sets 
-#   useful PS4 and optionally turns on set -x and set -eu. Also sets up 
+# Preamble script to be SOURCED at the beginning of every script. Sets
+#   useful PS4 and optionally turns on set -x and set -eu. Also sets up
 #   crude script timing and provides a postamble that runs on exit.
 #
 # Syntax:
 #   preamble.sh
-#   
+#
 # Input environment variables:
 #   TRACE (YES/NO): Whether to echo every command (set -x) [default: "YES"]
 #   STRICT (YES/NO): Whether to exit immediately on error or undefined variable
@@ -26,7 +26,7 @@ start_time=$(date +%s)
 _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 # Announce the script has begun
-start_time_human=$(date -d"@${start_time}" -u)
+start_time_human=$(date -d"@${start_time}" -u +%H:%M:%S)
 echo "Begin ${_calling_script} at ${start_time_human}"
 
 declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'
@@ -39,8 +39,8 @@ set_strict() {
 }
 
 set_trace() {
-    # Print the script name and line number of each command as it is 
-    #   executed when using trace. 
+    # Print the script name and line number of each command as it is
+    #   executed when using trace.
     if [[ ${TRACE:-"YES"} == "YES" ]]; then
         set -x
     fi
@@ -48,7 +48,7 @@ set_trace() {
 
 postamble() {
     #
-    # Commands to execute when a script ends. 
+    # Commands to execute when a script ends.
     #
     # Syntax:
     #   postamble script start_time rc
@@ -98,7 +98,7 @@ function err_exit() {
     # Taken from NCO prod_util v2.1.0
     # SCRIPT NAME:  err_exit
     #
-    # ABSTRACT:  This script is to be used when a fatal error or condition 
+    # ABSTRACT:  This script is to be used when a fatal error or condition
     # has been reached and you want to terminate the job.
     #
     # USAGE:  To use this script one must export the following variables to the

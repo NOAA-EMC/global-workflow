@@ -15,16 +15,12 @@ experiment:
   start: warm
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/ufs_hybatmDA_defaults.ci.yaml
 
-# TODO: Reenable these when the GDASApp is updated to handle the new EE2-compliant changes
 skip_ci_on_hosts:
   - gaeac5
   - gaeac6
   - orion
   - hercules
   - awsepicglobalworkflow
-  - hera
-  - ursa
-  - wcoss2
 
 workflow:
   engine: rocoto
