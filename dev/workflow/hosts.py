@@ -15,7 +15,7 @@ class Host:
     Gather Host specific information.
     """
 
-    SUPPORTED_HOSTS = ['HERA', 'URSA', 'ORION', 'HERCULES', 'WCOSS2',
+    SUPPORTED_HOSTS = ['HERA', 'URSA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
                        'GAEAC5', 'GAEAC6', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
     def __init__(self, host=None):
@@ -45,6 +45,7 @@ class Host:
 
         machine_id = os.getenv('MACHINE_ID', 'UNKNOWN')
         pw_csp = os.getenv('PW_CSP', 'UNKNOWN')
+        container = os.getenv('SINGULARITY_NAME', None)
 
         # Detect the machine since MACHINE_ID is set,
         # Additionaly, if PW_CSP is set, then the machine is a cloud machine
@@ -64,11 +65,11 @@ class Host:
                 for line in f:
                     fields = line.strip().split()
                     mount_point = fields[4]
-                    if mount_point.find("/home") >= 0:
-                        mount_source = fields[9].lower()
-                        if mount_source.find("ursa") >= 0:
+                    if mount_point == "/apps":
+                        mount_source = fields[9]
+                        if "ursa" in mount_source.lower():
                             self.machine = "URSA"
-                        elif mount_source.find("hera") >= 0:
+                        elif "hera" in mount_source.lower():
                             self.machine = "HERA"
 
             # TODO: When Hera is no longer used, remove this check and switch to Ursa.
@@ -76,7 +77,7 @@ class Host:
             if self.machine != 'HERA' and self.machine != 'URSA':
                 machine = socket.gethostname().upper()
                 print(f'Detected host {machine}; assuming this is a GitHub runner.')
-                self.machine = 'URSA'
+                self.machine = 'HERA'
 
         elif os.path.exists('/work/noaa'):
             # Orion or Hercules
@@ -87,6 +88,8 @@ class Host:
             self.machine = 'GAEAC5'
         elif os.path.exists('/gpfs/f6'):
             self.machine = 'GAEAC6'
+        elif container is not None:
+            self.machine = 'CONTAINER'
         elif pw_csp != "UNKNOWN":
             if pw_csp.lower() not in ['azure', 'aws', 'google']:
                 raise ValueError(

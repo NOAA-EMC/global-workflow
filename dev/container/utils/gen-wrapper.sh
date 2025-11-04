@@ -82,12 +82,6 @@ do
 
 cat > "${exec_script}" << EOF_SCRIPT
 #!/bin/bash
-#Need these lines on AWS to run more than one node.
-#export I_MPI_DEBUG=10
-#export I_MPI_FABRICS=shm:ofi
-#export I_MPI_OFI_PROVIDER=tcp
-#export FI_PROVIDER=tcp
-#export FI_TCP_IFACE=eth0
 
  LD_LIBRARY_PATH=\$(dirname "${container}")
  export LD_LIBRARY_PATH

@@ -1,5 +1,5 @@
 # Global workflow comparison tools
-A collection of tools to compare two different global workflow experiments for bitwise identicality. 
+A collection of tools to compare two different global workflow experiments for bitwise identicality.
 
 ## Disclaimer
 
@@ -100,13 +100,13 @@ All fields are identical!
 
 And NetCDFs will look like this:
 ```
-=== atmf000.nc ===
+=== atm.f000.nc ===
 0 differences found
-=== atmf003.nc ===
+=== atm.f003.nc ===
 0 differences found
-=== atmf006.nc ===
+=== atm.f006.nc ===
 0 differences found
-=== atmf009.nc ===
+=== atm.f009.nc ===
 0 differences found
 
 ...

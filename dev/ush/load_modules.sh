@@ -109,7 +109,7 @@ case "${MODULE_TYPE}" in
     module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
     case "${MACHINE_ID}" in
-      ("hera" | "orion" | "hercules" | "wcoss2" | "gaeac5" | "gaeac6" | "ursa")
+      ("hera" | "orion" | "hercules" | "wcoss2" | "gaeac5" | "gaeac6" | "ursa" | "noaacloud")
         #TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
         if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
           export LMOD_TMOD_FIND_FIRST=yes
@@ -162,15 +162,15 @@ case "${MODULE_TYPE}" in
     # TODO: a better solution should be created for setting paths to package python scripts
     # shellcheck disable=SC2311
     pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
-    PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}:${pyiodaPATH}"
+    pybufrPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/site-packages/"
+    PYTHONPATH="${pyiodaPATH}:${pybufrPATH}${PYTHONPATH:+:${PYTHONPATH}}"
     export PYTHONPATH
     ;;
 
-  "run" | "gsi" | "verif" | "setup")
-    # Source versions file for runtime
-    if [[ -f "${HOMEgfs}/versions/run.ver" ]]; then
-      source "${HOMEgfs}/versions/run.ver"
-    else
+  "run" | "gsi" | "verif" | "setup" | "upp")
+
+    # Test that the version file exists
+    if [[ ! -f "${HOMEgfs}/versions/run.ver" ]]; then
       echo "FATAL ERROR: ${HOMEgfs}/versions/run.ver does not exist!"
       echo "HINT: Run link_workflow.sh first."
       exit 1
@@ -197,8 +197,16 @@ case "${MODULE_TYPE}" in
     if ! module is-avail "${target_module}" 2>/dev/null; then
       if [[ "${MODULE_TYPE}" != "run" ]]; then
         echo "INFO: ${target_module} module not available, falling back to gw_run.${MACHINE_ID}"
+        mod_type="run"
       fi
       target_module="gw_run.${MACHINE_ID}"
+    else
+      mod_type="${MODULE_TYPE}"
+    fi
+
+    # Source versions file (except for upp)
+    if [[ "${mod_type}" != "upp" ]]; then
+      source "${HOMEgfs}/versions/run.ver"
     fi
 
     if [[ -n "${target_module}" ]]; then

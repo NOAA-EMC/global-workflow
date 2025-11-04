@@ -38,7 +38,7 @@ local common_modules = {
   "gsi-ncdiag",
   "crtm",
   "bufr",
-  "wgrib2",
+  --"wgrib2",  temporarily disable wgrib2 until it is installed with ipolates
   "py-f90nml",
   "py-netcdf4",
   "py-pyyaml",

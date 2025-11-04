@@ -31,6 +31,9 @@ if __name__ == '__main__':
         AnlStats.task_config['STAT_ANALYSES'].append('snow')
     if AnlStats.task_config.DO_JEDIATMVAR:
         AnlStats.task_config['STAT_ANALYSES'].append('atmos')
+    else:
+        AnlStats.task_config['STAT_ANALYSES'].append('atmos_gsi')
+        AnlStats.convert_gsi_diags()
 
     # Initialize JEDI variational analysis
     AnlStats.initialize()
