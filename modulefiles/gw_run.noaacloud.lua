@@ -16,14 +16,12 @@ load(pathJoin("mkl", (os.getenv("mkl_ver") or "None")))
 load("gw_run.common")
 load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None"))) -- TODO: Remove once wgrib2 is loaded in gw_run.common
 
--- prepend_path("MODULEPATH", pathJoin("/contrib/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
--- load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
+prepend_path("MODULEPATH", pathJoin("/contrib/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
+load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
--- prepend_path("MODULEPATH", pathJoin("/contrib/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
--- load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
+prepend_path("MODULEPATH", pathJoin("/contrib/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
+load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
--- load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
-
-setenv("CRTM_FIX", "/contrib/global-workflow-shared-data/fix/crtm/v2.4.0.2")
+load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
 
 whatis("Description: GFS run environment")

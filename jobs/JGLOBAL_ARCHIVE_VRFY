@@ -23,16 +23,8 @@ done
 ###############################################################
 # Run archive script
 ###############################################################
-#if [[ "${RUN_WITH_CONTAINER}" == "YES" ]]; then
-#    "${HOMEgfs}/exec/run_python.sh" "${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}" -c -v
-#else
-#    ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
-#fi
-if [[ -v GLOBALARCHIVESH ]]; then
-     ${GLOBALARCHIVESH}
-else
-     "${PYCMD}" "${SCRgfs}"/exglobal_archive_vrfy.py ${PYEXTRAARGS}
-fi
+GLOBALARCHIVESH=${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrf.py}
+"${PYCMD}" "${GLOBALARCHIVESH}" ${PYEXTRAARGS}
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

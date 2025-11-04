@@ -86,6 +86,11 @@ case ${machine} in
     # TODO Supply a max mem/node value for GOOGLE
     mem_node_max=""
     ;;
+  "CONTAINER")
+    max_tasks_per_node=1
+    # TODO Supply a max mem/node value for a container
+    mem_node_max=""
+    ;;
   *)
     echo "FATAL ERROR: Unknown machine encountered by ${BASH_SOURCE[0]}"
     exit 2
@@ -508,7 +513,7 @@ case ${step} in
     ;;
 
   "marinebmatinit")
-    walltime="00:20:00"
+    walltime="00:10:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=${max_tasks_per_node}
@@ -864,7 +869,7 @@ case ${step} in
     MEDPETS=${MEDPETS:-${FV3PETS}}
     (( MEDPETS = FV3PETS ))
     (( MEDTHREADS = FV3THREADS )) 
-    (( "${MEDPETS}" > 4800 )) && MEDPETS=4800
+    (( "${MEDPETS}" > 24000 )) && MEDPETS=1200
     export MEDPETS MEDTHREADS
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
@@ -1322,7 +1327,7 @@ case ${step} in
   "epos")
     walltime="00:15:00"
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
-        walltime="00:35:00"
+        walltime="00:25:00"
     fi
     ntasks=80
     threads_per_task=1

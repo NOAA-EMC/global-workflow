@@ -13,11 +13,6 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMOUT_${COMPONENT^^}_NETCDF":"C
 
 ###############################################################
 # Run exglobal script
-#if [[ "${RUN_WITH_CONTAINER}" == "YES" ]]; then
-#    "${HOMEgfs}/exec/run_python.sh" "${SCRgfs}/exglobal_oceanice_products.py" -c -v
-#else
-#    "${SCRgfs}/exglobal_oceanice_products.py" && true
-#fi
 "${PYCMD}" "${SCRgfs}"/exglobal_oceanice_products.py ${PYEXTRAARGS} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
