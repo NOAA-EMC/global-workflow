@@ -711,25 +711,36 @@ class GCAFSTasks(Tasks):
     def _fcst_cycled(self):
 
         anldep = 'gcdas'
-        dep_dict = {'type': 'task', 'name': f'{anldep}_sfcanl'}
-        dep = rocoto.add_dependency(dep_dict)
-        dependencies = rocoto.create_dependency(dep=dep)
 
+        # Create the nested dependency structure
+        or_dependencies = []
+
+            # Always group sfcanl and aeroanlfinal together with AND
+        sfcanl_aero_deps = []
+        dep_dict = {'type': 'task', 'name': f'{anldep}_sfcanl'}
+        sfcanl_aero_deps.append(rocoto.add_dependency(dep_dict))
+        print("USE AERO ANL FLAG IS:", self.run, self.options['use_aero_anl'])
         if self.options['use_aero_anl']:
             dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+            sfcanl_aero_deps.append(rocoto.add_dependency(dep_dict))
 
+        sfcanl_aero_and = rocoto.create_dependency(dep_condition='and', dep=sfcanl_aero_deps)
+        or_dependencies.append(sfcanl_aero_and)
+        
         if self.run in ['gcdas']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+            or_dependencies.append(rocoto.add_dependency(dep_dict))
 
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+        # Create OR dependency between the analysis group and stage_ic
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=or_dependencies)
 
         if self.options['do_aero_fcst']:
+            # Wrap the OR dependency in a list for the AND condition
+            and_deps = [dependencies]
             dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+            and_deps.append(rocoto.add_dependency(dep_dict))
 
-            dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=and_deps)
 
         cycledef = 'gcdas_half,gcdas' if self.run in ['gcdas'] else self.run
 
