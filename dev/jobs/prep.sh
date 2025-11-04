@@ -42,15 +42,20 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 mkdir -p "${COMOUT_OBS}"
 
 ###############################################################
-# Copy dump files to ROTDIR
-"${HOMEgfs}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
+# Copy IODA files to ROTDIR
+"${HOMEgfs}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-# Copy IODA files to ROTDIR
-"${HOMEgfs}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
+if [[ "${RUN_local}" == "gcdas" ]]; then
+    echo "GCDAS only needs IODA files; exiting prep.sh"
+    exit 0
+fi
+
+# Copy dump files to ROTDIR
+"${HOMEgfs}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"

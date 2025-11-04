@@ -120,10 +120,11 @@ class GFSTasks(Tasks):
             data = f'{ioda_path}/atmos/{self.run}.t@Hz.obsforge_atmos_bufr_status.log'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jediocnvar']:
-            data = f'{ioda_path}/ocean/{self.run}.t@Hz.obsforge_marine_status.log'
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
+        # TODO enable this for marine observations when ready
+        # if self.options['do_jediocnvar']:
+        #     data = f'{ioda_path}/ocean/{self.run}.t@Hz.obsforge_marine_status.log'
+        #     dep_dict = {'type': 'data', 'data': data}
+        #     deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_aero_anl']:
             data = f'{ioda_path}/chem/{self.run}.t@Hz.obsforge_aod_status.log'
             dep_dict = {'type': 'data', 'data': data}

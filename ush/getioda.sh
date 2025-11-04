@@ -30,12 +30,19 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     if [[ ! -d "${SOURCE_DIR}/${compdir}/" ]]; then
         continue
     fi
+    # check if status file does not exist
+    # Check if any status log files exist using array expansion
+    status_files=("${SOURCE_DIR}/${compdir}/${prefix}"*status.log)
+    if [[ ! -e "${status_files[0]}" ]]; then
+        echo "***ERROR*** completion log file NOT FOUND in ${SOURCE_DIR}/${compdir}"
+        exit 99
+    fi
     echo "Processing component directory: ${compdir}"
     # Create component directory in TARGET_DIR if it does not exist
     if [[ ! -s "${TARGET_DIR}/${compdir}" ]]; then
        mkdir -p "${TARGET_DIR}/${compdir}"
     fi
-    # loop through secondary level directories (e.g. sfc, atm, sss, etc)
+    # loop through secondary level directories
     for subdir in "${SOURCE_DIR}/${compdir}"/*/ ; do
         subdir=${subdir%*/}
         subdir=${subdir##*/}
@@ -50,14 +57,9 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
         fi
         # Link files from SOURCE_DIR to TARGET_DIR
         cd "${SOURCE_DIR}/${compdir}/${subdir}"
-        if [[ -s "${prefix}?status.log" ]]; then
-            for file in $(ls ${prefix}*); do
-                ${NLN} "${SOURCE_DIR}/${compdir}/${subdir}/${file}" "${TARGET_DIR}/${compdir}/${subdir}/${file}"
-            done
-        else
-            echo "***ERROR*** completion log file NOT FOUND in ${SOURCE_DIR}/${compdir}/${subdir}"
-            exit 99
-        fi
+        for file in $(ls ${prefix}*); do
+            ${NLN} "${SOURCE_DIR}/${compdir}/${subdir}/${file}" "${TARGET_DIR}/${compdir}/${subdir}/${file}"
+        done
     done
 done
 
