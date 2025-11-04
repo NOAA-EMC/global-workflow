@@ -189,7 +189,7 @@ class AnalysisStats(Task):
         FileHandler({'copy_opt': copy_list}).sync()
 
         # path of output tar statfile
-        iodastatzipfile = os.path.join(outdir, f"{self.task_config.APREFIX}{jedi_dict_key}_iodastat.tgz")
+        iodastatzipfile = os.path.join(outdir, f"{self.task_config.APREFIX}{jedi_dict_key}_analysis.ioda_hofx_stats.tar.gz")
 
         logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
 
@@ -301,7 +301,7 @@ class AnalysisStats(Task):
 
         # Tar up the ioda files
         iodastatzipfile = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda',
-                                       f"{self.task_config.APREFIX}atmos_gsi_ioda_diags.tgz")
+                                       f"{self.task_config.APREFIX}atmos_gsi_ioda_diags.tar.gz")
         logger.info(f"Compressing GSI IODA files to {iodastatzipfile}")
         # get list of iodastat files to put in tarball
         iodastatfiles = glob.glob(os.path.join(output_dir_path, '*nc4'))
