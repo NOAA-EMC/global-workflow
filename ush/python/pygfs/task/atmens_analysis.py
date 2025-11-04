@@ -140,7 +140,7 @@ class AtmEnsAnalysis(Analysis):
 
         # Compress and tar diag files in COM directory
         self.tar_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS,
-                            f"{self.task_config.APREFIX_ENS}atmensstat")
+                            f"{self.task_config.APREFIX_ENS}stat.atm.tar")
 
         # Save files from COM
         logger.info(f"Saving files to COM")

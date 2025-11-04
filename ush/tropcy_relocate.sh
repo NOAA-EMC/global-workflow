@@ -20,7 +20,7 @@
 #   processing).  This script has been designed to be executed by either an
 #   operational job script, a test job script, a parallel job script, or a
 #   stand-alone batch run initiated by a user.
-# 
+#
 # Script history log:
 # 2006-06-12  Dennis A. Keyser -- Original version for implementation - split
 #      off from USH script prepobs_makeprepbufr.sh, this was done to allow
@@ -37,7 +37,7 @@
 #      guess (input to relocation) in /com (with .pre-relocate. qualifier) so
 #      it can be identified later
 # 2012-08-01  Luke Lin -- alerts inform.relocate, tcvitals.relocate, tropcy_relocation_status
-# 2012-12-03  J. Woollen -- transitioned to WCOSS system. Introduced mpi version of the      
+# 2012-12-03  J. Woollen -- transitioned to WCOSS system. Introduced mpi version of the
 #      relocate code which precesses three backgrounds in one run. Removed the older
 #      poe/cmdfile parallelism from the script.
 # 2013-10-11  D. Stokes -- Modified some variable names for reorganization.
@@ -112,7 +112,7 @@
 #                   Default is "-pgmmodel mpmd -ilevel 2 -labelio yes \
 #                   -stdoutmode ordered"
 #     RELOX         String indicating executable path for RELOCATE_MV_NVORTEX
-#                   program 
+#                   program
 #                   Default is "${EXECgfs}/relocate_mv_nvortex"
 #     SUPVX         String indicating executable path for SUPVIT utility
 #                   program
@@ -121,7 +121,7 @@
 #                   program
 #                   Default is "${EXECgfs}/gettrk"
 #     BKGFREQ       Frequency of background files for relocation
-#                   Default is "3" 
+#                   Default is "3"
 #     SENDDBN       String when set to "YES" alerts output files to $COMSP
 #
 #     These do not have to be exported to this script.  If they are, they will
@@ -135,7 +135,7 @@
 #                   run (this is passed to child script
 #                   tropcy_relocate_extrkr.sh - if "$CMODEL" is not set here,
 #                   it defaults to "$RUN")
-#   
+#
 #
 #   Modules and files referenced:
 #                  Herefile: RELOCATE_GES
@@ -175,7 +175,7 @@ qid=$$
 
 if [ $# -ne 1 ] ; then
       err0=1
-else 
+else
    run_date=$1
    if [ "${#run_date}" -ne '10' ]; then
       err0=1
@@ -348,7 +348,7 @@ to center relocation date/time;"
       if [ $fhr = "0"  ]; then
          "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${run_date}" \
           -t "${stype}" > "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
-         cp "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
+         cpfs "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
           "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
       fi
       set +x
@@ -389,9 +389,9 @@ echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 done
 
 if [ -f ${tstsp}syndata.tcvitals.$tmmark ]; then
-   cp ${tstsp}syndata.tcvitals.$tmmark tcvitals.now
+   cpreq ${tstsp}syndata.tcvitals.$tmmark tcvitals.now
 else
-   cp "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" "tcvitals.now"
+   cpreq "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" "tcvitals.now"
 fi
 
 
@@ -403,7 +403,7 @@ MP_PULSE=0
 MP_TIMEOUT=600
 GDATE10=$(date --utc +%Y%m%d%H -d "${run_date:0:8} ${run_date:8:2} - 6 hours")
 
-#  make unique combined tcvitals file for t-12, t-6 and t+0 -- 
+#  make unique combined tcvitals file for t-12, t-6 and t+0 --
 #  if tcvitals does not contains record from current time, skip relocation
 #  processing
 #  -----------------------------------------------------------------------
@@ -430,12 +430,12 @@ RELOCATION PROCESSING"
 
    echo "NO RECORDS to process" > "${COMOUT_OBS}/${RUN}.${cycle}.tropcy_relocation_status.${tmmark}"
    if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}" ]]; then
-      cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+      touch "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
    fi
 else
 
    cat VITL >>tcvitals
-   grep "${PDY} ${cyc}" VITL > tcvitals.now1 
+   grep "${PDY} ${cyc}" VITL > tcvitals.now1
 
 
 #  create model forecast track location file
@@ -492,7 +492,7 @@ else
 #  ------------------------------------------------------------------
 
    set +u
-   [ -z "$LONB" ] && LONB=0 
+   [ -z "$LONB" ] && LONB=0
    [ -z "$LATB" ] && LATB=0
    set -u
 
@@ -513,12 +513,12 @@ else
    export MP_USE_BULK_XFER=yes
    export RELOX_threads=${RELOX_threads:-16}
    export KMP_STACKSIZE=1024m
-   export OMP_NUM_THREADS=$RELOX_threads        
+   export OMP_NUM_THREADS=$RELOX_threads
    export MP_TASK_AFFINITY=core:$RELOX_threads
 
    ${APRNRELOC:-mpirun.lsf} $RELOX >stdo.prints
    errSTATUS=$?
-   
+
 #  copy relocation print output here and there
 #  -------------------------------------------
 
@@ -570,8 +570,8 @@ else
    rm -f RELOCATE_GES cmd
 
 
-   cp "rel_inform1" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-   cp "tcvitals" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+   cpfs "rel_inform1" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+   cpfs "tcvitals" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
    if [[ "${SENDDBN}" == "YES" ]]; then
        if test "$RUN" = "gdas1"
        then

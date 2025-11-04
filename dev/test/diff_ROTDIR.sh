@@ -28,8 +28,6 @@
 #     -h:             print usage message and exit
 #
 
-set -eu
-
 # shellcheck disable=SC2311  # TODO: #FIXME: remove this when this script is corrected
 
 usage() {

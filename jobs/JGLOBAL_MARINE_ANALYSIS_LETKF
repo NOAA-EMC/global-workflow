@@ -6,7 +6,7 @@ export DATA="${DATAjob}/marineanlletkf"
 export DATAens="${DATAjob}/ensdata"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf" -c "base marineanl marineanlletkf"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf" -c "base marineanlletkf"
 
 ##############################################
 # Set variables used in the script
@@ -43,6 +43,8 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 YMD=${PDY} HH=${cyc} MEMDIR="ensstat" declare_from_tmpl -rx \
     COMOUT_CONF:COM_CONF_TMPL
 
+if [[ ! -d "${COMOUT_OCEAN_LETKF}" ]]; then mkdir -p "${COMOUT_OCEAN_LETKF}"; fi
+if [[ ! -d "${COMOUT_ICE_LETKF}" ]]; then mkdir -p "${COMOUT_ICE_LETKF}"; fi
 if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 ##############################################
 # Begin JOB SPECIFIC work

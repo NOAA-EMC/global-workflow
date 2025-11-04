@@ -150,43 +150,43 @@ GSBBF=${GSBBF:-${COMIN_OBS}/${OPREFIX}gsbprf.tm00.bufr_d${OSUFFIX}}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
-GSUFFIX=${GSUFFIX:-".nc"}
-SFCG03=${SFCG03:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}sfcf003${GSUFFIX}}
-SFCG04=${SFCG04:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}sfcf004${GSUFFIX}}
-SFCG05=${SFCG05:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}sfcf005${GSUFFIX}}
-SFCGES=${SFCGES:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}sfcf006${GSUFFIX}}
-SFCG07=${SFCG07:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}sfcf007${GSUFFIX}}
-SFCG08=${SFCG08:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}sfcf008${GSUFFIX}}
-SFCG09=${SFCG09:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}sfcf009${GSUFFIX}}
-ATMG03=${ATMG03:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf003${GSUFFIX}}
-ATMG04=${ATMG04:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf004${GSUFFIX}}
-ATMG05=${ATMG05:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf005${GSUFFIX}}
-ATMGES=${ATMGES:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf006${GSUFFIX}}
-ATMG07=${ATMG07:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf007${GSUFFIX}}
-ATMG08=${ATMG08:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf008${GSUFFIX}}
-ATMG09=${ATMG09:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atmf009${GSUFFIX}}
-GBIAS=${GBIAS:-${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias}
-GBIASPC=${GBIASPC:-${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias_pc}
-GBIASAIR=${GBIASAIR:-${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias_air}
-GRADSTAT=${GRADSTAT:-${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}radstat}
+GSUFFIX=${GSUFFIX:-""}
+SFCG03=${SFCG03:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}sfc.f003.nc}
+SFCG04=${SFCG04:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}sfc.f004.nc}
+SFCG05=${SFCG05:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}sfc.f005.nc}
+SFCGES=${SFCGES:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}sfc.f006.nc}
+SFCG07=${SFCG07:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}sfc.f007.nc}
+SFCG08=${SFCG08:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}sfc.f008.nc}
+SFCG09=${SFCG09:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}sfc.f009.nc}
+ATMG03=${ATMG03:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}atm.f003.nc}
+ATMG04=${ATMG04:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}atm.f004.nc}
+ATMG05=${ATMG05:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}atm.f005.nc}
+ATMGES=${ATMGES:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}atm.f006.nc}
+ATMG07=${ATMG07:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}atm.f007.nc}
+ATMG08=${ATMG08:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}atm.f008.nc}
+ATMG09=${ATMG09:-${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}atm.f009.nc}
+GBIAS=${GBIAS:-${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias.txt}
+GBIASPC=${GBIASPC:-${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias_pc.txt}
+GBIASAIR=${GBIASAIR:-${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias_air.txt}
+GRADSTAT=${GRADSTAT:-${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}radstat.tar}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-SFCANL=${SFCANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}sfcanl.nc}
-DTFANL=${DTFANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}dtfanl.nc}
-ATMANL=${ATMANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmanl.nc}
-ABIAS=${ABIAS:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias}
-ABIASPC=${ABIASPC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc}
-ABIASAIR=${ABIASAIR:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air}
-ABIASe=${ABIASe:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_int}
-RADSTAT=${RADSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}radstat}
-GSISTAT=${GSISTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsistat}
+SFCANL=${SFCANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc}
+DTFANL=${DTFANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.dtf.a006.nc}
+ATMANL=${ATMANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a006.nc}
+ABIAS=${ABIAS:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias.txt}
+ABIASPC=${ABIASPC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc.txt}
+ABIASAIR=${ABIASAIR:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air.txt}
+ABIASe=${ABIASe:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_int.txt}
+RADSTAT=${RADSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}radstat.tar}
+GSISTAT=${GSISTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsistat.txt}
 PCPSTAT=${PCPSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}pcpstat}
-CNVSTAT=${CNVSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat}
-OZNSTAT=${OZNSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat}
+CNVSTAT=${CNVSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat.tar}
+OZNSTAT=${OZNSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat.tar}
 
 # Increment files
-ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atminc.nc}
+ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc}
 
 # Obs diag
 RUN_SELECT=${RUN_SELECT:-"NO"}
@@ -238,18 +238,18 @@ fi
 
 # Get header information from Ensemble Guess files
 if [[ "${DOHYBVAR}" == "YES" ]]; then
-    SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}sfcf006.ensmean.nc}
-    export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc}
+    SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}ensmean.sfc.f006.nc}
+    export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}ensmean.atm.f006.nc}
     LONB_ENKF=${LONB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_xt)} # get LONB_ENKF
     LATB_ENKF=${LATB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_yt)} # get LATB_ENFK
     LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" pfull)}   # get LATB_ENFK
     JCAP_ENKF=${JCAP_ENKF:--9999}                                   # again, no jcap in the netcdf files
     NLON_ENKF=${NLON_ENKF:-${LONB_ENKF}}
     NLAT_ENKF=${NLAT_ENKF:-$((LATB_ENKF + 2))}
-    if [[ ${JCAP_ENKF} -eq -9999 && ${LATB_ENKF} -ne -9999 ]]; then
+    if [[ "${JCAP_ENKF}" -eq -9999 && "${LATB_ENKF}" -ne -9999 ]]; then
         JCAP_ENKF=$((LATB_ENKF - 2))
     fi
-    if [[ ${LONB_ENKF} -eq -9999 || ${LATB_ENKF} -eq -9999 || ${LEVS_ENKF} -eq -9999 || ${JCAP_ENKF} -eq -9999 ]]; then
+    if [[ "${LONB_ENKF}" -eq -9999 || "${LATB_ENKF}" -eq -9999 || "${LEVS_ENKF}" -eq -9999 || "${JCAP_ENKF}" -eq -9999 ]]; then
         exit 9
     fi
 else
@@ -264,7 +264,7 @@ LONB_CASE=$((res * 4))
 export JCAP_CASE LATB_CASE LONB_CASE
 
 # Set analysis resolution information
-if [[ ${DOHYBVAR} == "YES" ]]; then
+if [[ "${DOHYBVAR}" == "YES" ]]; then
     JCAP_A=${JCAP_A:-${JCAP_ENKF:-${JCAP}}}
     LONA=${LONA:-${LONB_ENKF:-${LONB}}}
     LATA=${LATA:-${LATB_ENKF:-${LATB}}}
@@ -279,7 +279,7 @@ NLAT_A=${NLAT_A:-$((LATA + 2))}
 DELTIM=${DELTIM:-$((3600 / (JCAP_A / 20)))}
 
 # determine if writing or calculating increment
-if [[ ${DO_CALC_INCREMENT} == "YES" ]]; then
+if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
     write_fv3_increment=".false."
 else
     write_fv3_increment=".true."
@@ -325,7 +325,7 @@ NST=${NST:-""}
 
 #uGSI Namelist parameters
 lrun_subdirs=${lrun_subdirs:-".true."}
-if [[ ${DOHYBVAR} == "YES" ]]; then
+if [[ "${DOHYBVAR}" == "YES" ]]; then
     l_hyb_ens=.true.
     export l4densvar=${l4densvar:-".false."}
     export lwrite4danl=${lwrite4danl:-".false."}
@@ -336,19 +336,19 @@ else
 fi
 
 # Set 4D-EnVar specific variables
-if [[ ${DOHYBVAR} == "YES" && ${l4densvar} == ".true." && ${lwrite4danl} == ".true." ]]; then
-    ATMA03=${ATMA03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma003.nc}
-    ATMI03=${ATMI03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi003.nc}
-    ATMA04=${ATMA04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma004.nc}
-    ATMI04=${ATMI04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi004.nc}
-    ATMA05=${ATMA05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma005.nc}
-    ATMI05=${ATMI05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi005.nc}
-    ATMA07=${ATMA07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma007.nc}
-    ATMI07=${ATMI07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi007.nc}
-    ATMA08=${ATMA08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma008.nc}
-    ATMI08=${ATMI08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi008.nc}
-    ATMA09=${ATMA09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atma009.nc}
-    ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}atmi009.nc}
+if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
+    ATMA03=${ATMA03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a003.nc}
+    ATMI03=${ATMI03:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i003.nc}
+    ATMA04=${ATMA04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a004.nc}
+    ATMI04=${ATMI04:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i004.nc}
+    ATMA05=${ATMA05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a005.nc}
+    ATMI05=${ATMI05:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i005.nc}
+    ATMA07=${ATMA07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a007.nc}
+    ATMI07=${ATMI07:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i007.nc}
+    ATMA08=${ATMA08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a008.nc}
+    ATMI08=${ATMI08:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i008.nc}
+    ATMA09=${ATMA09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a009.nc}
+    ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i009.nc}
 fi
 
 ##############################################################
@@ -387,13 +387,12 @@ if [[ "${USE_CORRELATED_OBERRS}" == "YES" ]]; then
             done
             echo "using correlated obs error"
         else
-            echo "FATAL ERROR: Satellite error covariance files (Rcov) are missing."
-            echo "Check for the required Rcov files in ${ANAVINFO}"
-            exit 1
+            export err=1
+            err_exit "FATAL ERROR: Satellite error covariance files (Rcov) are missing. Check for the required Rcov files in ${ANAVINFO}"
         fi
     else
-        echo "FATAL ERROR: Satellite error covariance info missing in ${ANAVINFO}"
-        exit 1
+        export err=1
+        err_exit "FATAL ERROR: Satellite error covariance info missing in ${ANAVINFO}"
     fi
 
     # Correlated error utlizes mkl lapack.  Found it necesary to fix the
@@ -552,7 +551,7 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
     # Link ensemble members
     mkdir -p ensemble_data
 
-    ENKF_SUFFIX="s"
+    ENKF_SUFFIX="smooth"
     if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
         ENKF_SUFFIX=""
     fi
@@ -569,9 +568,9 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
             COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
         for fhr in ${fhrs}; do
-            ${NLN} "${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}atmf0${fhr}${ENKF_SUFFIX}.nc" "./ensemble_data/sigf${fhr}_ens_${memchar}"
+            ${NLN} "${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}${ENKF_SUFFIX}atm.f0${fhr}.nc" "./ensemble_data/sigf${fhr}_ens_${memchar}"
             if [[ "${cnvw_option}" == ".true." ]]; then
-                ${NLN} "${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}sfcf0${fhr}.nc" "./ensemble_data/sfcf${fhr}_ens_${memchar}"
+                ${NLN} "${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}sfc.f0${fhr}.nc" "./ensemble_data/sfcf${fhr}_ens_${memchar}"
             fi
         done
     done
@@ -1018,7 +1017,7 @@ if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
     ecflow_client --event release_fcst
 fi
 # shellcheck disable=SC2312
-echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}loginc.txt"
+echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.done.txt"
 
 ################################################################################
 

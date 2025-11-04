@@ -23,7 +23,7 @@
 #                          it requires 7 nodes & allocate 21 processes per node(num_ppn=21)
 ################################################################
 
-runscript="${USHgfs}/gfs_bufr.sh "
+runscript="${USHgfs}/gfs_bufr.sh"
 
 cd "${DATA}" || exit 2
 
@@ -46,7 +46,7 @@ export NEND1=${FHMAX_HF_GFS:-120}
 export NINT3=${FHOUT_GFS:-3}
 
 GETDIM="${USHgfs}/getncdimlen"
-LEVS=$(${GETDIM} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atmf000.${atmfm}" pfull)
+LEVS=$(${GETDIM} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f000.${atmfm}" pfull)
 declare -x LEVS
 
 # Initialize an empty list to store the hours
@@ -107,7 +107,7 @@ for fhr in "${hour_list[@]}"; do
 
     filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
     if [[ -z ${filename} ]]; then
-        err_exit "File ${filename} not found."
+        err_exit "FATAL ERROR: File ${filename} not found."
     else
         echo "${runscript} ${fhr} ${fhr_p} ${FINT} ${F00FLAG} ${DATA}/${fhr}" >> "${DATA}/poescript_bufr"
     fi

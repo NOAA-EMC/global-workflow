@@ -22,21 +22,21 @@ cd "${DATA}" || exit 2
 
 outfile_name="${COMOUT}/${RUN}.atmos.t${cyc}z.fbwind.pacific.ascii"
 
-set +x
-echo " "
-echo "#############################################################"
-echo " Process Bulletins of forecast winds and temps for Hawaii    "
-echo " and 15 sites outside of the Hawaiian Islands.               "
-echo "#############################################################"
-echo " "
-set_trace
+cat << EOF
+
+#############################################################
+ Process Bulletins of forecast winds and temps for Hawaii    
+ and 15 sites outside of the Hawaiian Islands.               
+#############################################################
+
+EOF
 
 export pgm=bulls_fbwndgfs
 source prep_step
 
 for fhr3 in 006 012 024; do
-    cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pgrb2.0p25.f${fhr3}" "tmp_pgrb2_0p25${fhr3}"
-    cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pgrb2b.0p25.f${fhr3}" "tmp_pgrb2b_0p25${fhr3}"
+    cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pres_a.0p25.f${fhr3}.grib2" "tmp_pgrb2_0p25${fhr3}"
+    cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pres_b.0p25.f${fhr3}.grib2" "tmp_pgrb2b_0p25${fhr3}"
     cat "tmp_pgrb2_0p25${fhr3}" "tmp_pgrb2b_0p25${fhr3}" > "tmp0p25filef${fhr3}"
     # shellcheck disable=SC2312
     ${WGRIB2} "tmp0p25filef${fhr3}" | grep -F -f "${PARMgfs}/product/gfs_fbwnd_parmlist_g2" |
