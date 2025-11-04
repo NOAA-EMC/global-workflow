@@ -109,10 +109,8 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
     memchar="mem${cmem}"
 
+    # If deterministic job, COMOUT_ATMOS_ANALYSIS_MEM is just COMOUT_ATMOS_ANALYSIS
     if (( NMEM_REGRID > 1 )); then
-        MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-            COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
-
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
             COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
@@ -124,6 +122,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
         fi
         in_dir+="\"./${memchar}/\""        
     else
+        # If deterministic job, memdir is just DATA
         memdir="${DATA}"
 
         in_dir="'./'"
@@ -167,29 +166,35 @@ export out_dir="${in_dir}"
 
 if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
     for FHR in "${soilinc_fhrs[@]}"; do
+        # Set namelist variables
         export add_time_dim=".false."
         export time_list="${FHR}"
         export out_fname="'sfci00${FHR}'"
 
+        # Create regrid namelist
         rm -f "regrid.nml"
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
+        # Run regrid executable
         ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
     	export err=$?
-	if [[ ${err} -ne 0 ]]; then
-	    err_exit "${REGRID_EXEC} failed, ABORT!"
-	fi
+	    if [[ ${err} -ne 0 ]]; then
+	        err_exit "${REGRID_EXEC} failed, ABORT!"
+	    fi
     done
 fi
 
 if [[ "${DO_LAND_IAU}" = ".true." ]]; then
+    # Set namelist variables
     export add_time_dim=".true."
     export time_list="${IAUFHRS}"
     export out_fname="'sfci'"
 
+    # Create regrid namelist
     rm -f "regrid.nml"
     atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
+    # Run regrid executable
     export pgm="${REGRID_EXEC}"
 	${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
 	export err=$?
@@ -211,15 +216,14 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
     memchar="mem${cmem}"
 
+    # If deterministic job, COMOUT_ATMOS_ANALYSIS_MEM is just COMOUT_ATMOS_ANALYSIS
     if (( NMEM_REGRID > 1 )); then
         MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
             COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
-        MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-            COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
-
         memdir="${DATA}/${memchar}"
     else
+        # If deterministic job, memdir is just DATA
         memdir="${DATA}"
     fi
 
