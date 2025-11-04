@@ -715,7 +715,7 @@ class GCAFSTasks(Tasks):
         # Create the nested dependency structure
         or_dependencies = []
 
-            # Always group sfcanl and aeroanlfinal together with AND
+        # Always group sfcanl and aeroanlfinal together with AND
         sfcanl_aero_deps = []
         dep_dict = {'type': 'task', 'name': f'{anldep}_sfcanl'}
         sfcanl_aero_deps.append(rocoto.add_dependency(dep_dict))
@@ -726,7 +726,7 @@ class GCAFSTasks(Tasks):
 
         sfcanl_aero_and = rocoto.create_dependency(dep_condition='and', dep=sfcanl_aero_deps)
         or_dependencies.append(sfcanl_aero_and)
-        
+
         if self.run in ['gcdas']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
             or_dependencies.append(rocoto.add_dependency(dep_dict))
