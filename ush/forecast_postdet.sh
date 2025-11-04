@@ -202,7 +202,7 @@ EOF
           if [[ "${DO_JEDIATMENS:-NO}" == "NO" ]]; then
             inc_files=("increment.atm.i006.nc")
             res_latlon_dynamics="increment.atm.i006.nc"
-            increment_file_on_native_grid=".false.
+            increment_file_on_native_grid=".false."
           fi
         else
           inc_files=("increment.atm.i006.nc")
