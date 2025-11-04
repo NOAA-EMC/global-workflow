@@ -43,7 +43,7 @@ source "${USHgfs}/product_functions.sh"
 ###############################################
 sleep_interval=10
 max_tries=180
-idxfile="${COMIN_ATMOS_GRIB_0p25}/${RUN}.${cycle}.pgrb2b.0p25.f${fcsthr}.idx"
+idxfile="${COMIN_ATMOS_GRIB_0p25}/${RUN}.${cycle}.pres_b.0p25.f${fcsthr}.grib2.idx"
 if ! wait_for_file "${idxfile}" "${sleep_interval}" "${max_tries}"; then
   msg="FATAL ERROR: No GFS pgrb2 file after waiting"
   err_exit "${msg}"
@@ -79,8 +79,8 @@ export opt28=' -new_grid_interpolation budget -fi '
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
 ###############################################################
 
-cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2.0p25.f${fcsthr}" "tmpfile2${fcsthr}"
-cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthr}" "tmpfile2b${fcsthr}"
+cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_a.0p25.f${fcsthr}.grib2" "tmpfile2${fcsthr}"
+cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_b.0p25.f${fcsthr}.grib2" "tmpfile2b${fcsthr}"
 cat "tmpfile2${fcsthr}" "tmpfile2b${fcsthr}" > "tmpfile${fcsthr}"
 ${WGRIB2} "tmpfile${fcsthr}" | grep -F -f "${PARMgfs}/product/gfs_awips_parmlist_g2" | \
    ${WGRIB2} -i -grib masterfile "tmpfile${fcsthr}" && true

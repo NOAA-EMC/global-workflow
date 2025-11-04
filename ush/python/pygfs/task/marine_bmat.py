@@ -4,8 +4,8 @@ import os
 import glob
 from logging import getLogger
 import pygfs.utils.marine_da_utils as mdau
-
-from wxflow import (AttrDict, FileHandler, Executable, Task,
+from pygfs.task.analysis import Analysis
+from wxflow import (AttrDict, FileHandler, Executable,
                     add_to_datetime, to_timedelta, to_isotime,
                     chdir,
                     parse_j2yaml, save_as_yaml,
@@ -16,7 +16,7 @@ from pygfs.jedi import Jedi
 logger = getLogger(__name__.split('.')[-1])
 
 
-class MarineBMat(Task):
+class MarineBMat(Analysis):
     """
     Class for global marine B-matrix tasks.
     """
@@ -27,7 +27,8 @@ class MarineBMat(Task):
         This method will construct the marine B-matrix task object
         This includes:
         - extending the task_config AttrDict to include parameters required for this task
-        - instantiate the Jedi attribute objects
+        - loading the task configuration YAML
+        - instantiating the Jedi attribute objects
 
         Parameters
         ----------
@@ -40,57 +41,41 @@ class MarineBMat(Task):
         """
         super().__init__(config)
 
-        _home_gdas = os.path.join(self.task_config.HOMEgfs, 'sorc', 'gdas.cd')
         _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'python', 'soca', 'calc_scales.py')
-        _window_begin = add_to_datetime(self.task_config.current_cycle,
-                                        -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
-        _window_end = add_to_datetime(self.task_config.current_cycle,
-                                      to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
         # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
         _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
 
         # Create a local dictionary that is repeatedly used across this class
-        local_dict = AttrDict(
+        self.task_config.update(AttrDict(
             {
                 'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
                 'CALC_SCALE_EXEC': _calc_scale_exec,
-                'MARINE_WINDOW_BEGIN': _window_begin,
-                'MARINE_WINDOW_MIDDLE': self.task_config.current_cycle,
-                'MARINE_WINDOW_END': _window_end,
-                'MARINE_WINDOW_LENGTH': f"PT{self.task_config['assim_freq']}H",
-                'MARINE_WINDOW_BEGIN_ISO': to_isotime(_window_begin),
-                'MARINE_WINDOW_MIDDLE_ISO': to_isotime(self.task_config.current_cycle),
-                'MARINE_WINDOW_END_ISO': to_isotime(_window_end),
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
-                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
-                'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES))
+                'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES)),
+                'DOMAIN_STACK_SIZE': 116640000,  # TODO: Make the stack size resolution dependent
             }
-        )
+        ))
 
-        # Extend task_config with local_dict
-        self.task_config = AttrDict(**self.task_config, **local_dict)
+        # Extend task_config with content of config yaml for this task
+        self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of Jedi objects
         expected_keys = ['gridgen', 'soca_diagb', 'soca_parameters_diffusion_vt', 'soca_setcorscales',
                          'soca_parameters_diffusion_hz', 'soca_ensb', 'soca_ensweights', 'soca_chgres']
-        jedi_config_dict = parse_j2yaml(self.task_config.JEDI_CONFIG_YAML, self.task_config)
-        self.jedi_dict = Jedi.get_jedi_dict(jedi_config_dict, self.task_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
-    def initialize(self: Task) -> None:
+    def initialize(self) -> None:
         """Initialize a global B-matrix
 
         This method will initialize a global B-Matrix.
         This includes:
-        - staging the deterministic backgrounds
-        - staging SOCA fix files
-        - staging static ensemble members (optional)
-        - staging ensemble members (optional)
+        - staging input files from COM and create output directories
+        - initializing input namelists for MOM6
         - initializing the soca_vtscales Python script
         - initializing the JEDI applications
-        - creating output directories
 
         Parameters
         ----------
@@ -101,10 +86,9 @@ class MarineBMat(Task):
         None
         """
 
-        # stage fix files
-        logger.info(f"Staging SOCA fix files from {self.task_config.INPUT_FIX_DIR}")
-        soca_fix_list = parse_j2yaml(self.task_config.STAGE_FIX_YAML, self.task_config)
-        FileHandler(soca_fix_list).sync()
+        # stage files from COM
+        logger.info(f"Staging files from COM and creating input/output directories")
+        FileHandler(self.task_config.data_in).sync()
 
         # prepare the deterministic MOM6 input.nml
         mdau.prep_input_nml(self.task_config)
@@ -112,17 +96,6 @@ class MarineBMat(Task):
         # prepare the input.nml for the analysis geometry
         mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml",
                             simple_geom=True, mom_input="./anl_geom/MOM_input")
-
-        # stage backgrounds
-        # TODO(G): Check ocean backgrounds dates for consistency
-        logger.info(f"Staging SOCA backgrounds")
-        bkg_list = parse_j2yaml(self.task_config.STAGE_DET_BKG_YAML, self.task_config)
-        FileHandler(bkg_list).sync()
-
-        # stage the soca utility yamls (fields and ufo mapping yamls)
-        logger.info(f"Staging SOCA utility yaml files")
-        soca_utility_list = parse_j2yaml(self.task_config.STAGE_UTILITIES_YAML, self.task_config)
-        FileHandler(soca_utility_list).sync()
 
         # initialize vtscales python script
         vtscales_config = self.jedi_dict['soca_parameters_diffusion_vt'].render_jcb(self.task_config, 'soca_vtscales')
@@ -138,16 +111,6 @@ class MarineBMat(Task):
         if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
             self.jedi_dict['soca_ensb'].initialize(self.task_config)
             self.jedi_dict['soca_ensweights'].initialize(self.task_config)
-
-        # stage ensemble members for the hybrid background error
-        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
-            logger.debug(f"Stage ensemble members for the hybrid background error")
-            letkf_stage_list = parse_j2yaml(self.task_config.STAGE_ENS_BKG_YAML, self.task_config)
-            FileHandler(letkf_stage_list).sync()
-
-        # create the symbolic link to the static B-matrix directory
-        FileHandler({'link': [[self.task_config.DATAstaticb,
-                               os.path.join(self.task_config.DATA, 'staticb')]]}).sync()
 
     @logit(logger)
     def execute(self) -> None:
@@ -194,15 +157,12 @@ class MarineBMat(Task):
             self.jedi_dict['soca_ensweights'].execute()
 
     @logit(logger)
-    def finalize(self: Task) -> None:
+    def finalize(self) -> None:
         """Finalize the global B-matrix job
 
         This method will finalize the global B-matrix job.
         This includes:
-        - copy the generated static, but cycle dependent background error files to the ROTDIR
-        - copy the generated YAML file from initialize to the ROTDIR
-        - keep the re-balanced ensemble perturbation files in DATAenspert
-        - ...
+        - saving output files and YAMLs to COM
 
         Parameters
         ----------
@@ -213,11 +173,6 @@ class MarineBMat(Task):
         None
         """
 
-        logger.info(f"Copying background error files to new filenames")
-        bkgerr_list = parse_j2yaml(self.task_config.COPY_BMAT_BKGERR_YAML, self.task_config)
-        FileHandler(bkgerr_list).sync()
-
-        # Save output files to COM
-        logger.info(f"Copy files to ROTDIR")
-        save_dict = parse_j2yaml(self.task_config.SAVE_YAML, self.task_config)
-        FileHandler(save_dict).sync()
+        # save files from COM
+        logger.info(f"Saving files to COM")
+        FileHandler(self.task_config.data_out).sync()

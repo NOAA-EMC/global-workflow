@@ -82,7 +82,7 @@ jobs/JGLOBAL_WAVE_* @JessicaMeixner-NOAA @sbanihash
 
 # System-specific modules
 modulefiles/gw_gsi_wcoss2.lua @RussTreadon-NOAA @CoryMartin-NOAA
-modulefiles/gw_gsi_wcoss2.lua @RussTreadon-NOAA @CoryMartin-NOAA
+modulefiles/gw_upp_wcoss2.lua @WenMeng-NOAA
 
 # scripts
 scripts/exgdas_aero_analysis_generate_bmatrix.py @CoryMartin-NOAA

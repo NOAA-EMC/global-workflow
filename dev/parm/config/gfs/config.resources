@@ -231,7 +231,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
     if [[ "${RUN}" = *gfs ]]; then
-      memory="1GB"
+      memory="2GB"
     fi
     ;;
 
@@ -382,7 +382,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    memory="3072M"
+    memory="4GB"
     ;;
 
   "aeroanlvar")
@@ -1065,7 +1065,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
-    memory="4G"
+    memory="6G"
     ;;
 
   "genesis")
@@ -1367,7 +1367,7 @@ case ${step} in
     ntasks=1
     tasks_per_node=1
     threads_per_task=1
-    memory="3GB"
+    memory="4GB"
     ;;
 
   "npoess")
@@ -1389,7 +1389,7 @@ case ${step} in
     elif [[ "${RUN}" = *gfs ]]; then
       ntasks=28
       tasks_per_node=28
-      memory="2GB"
+      memory="4GB"
     fi
     ;;
 
@@ -1397,7 +1397,7 @@ case ${step} in
     walltime="00:05:00"
     ntasks=1
     threads_per_task=1
-    memory="4GB"
+    memory="6GB"
     tasks_per_node=1
     ;;
 
