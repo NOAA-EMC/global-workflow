@@ -81,7 +81,7 @@ rm -f cmdfile
 touch cmdfile
 chmod 755 cmdfile
 
-# Create MDMP command file for fixed files
+# Create MDMD command file for fixed files
 rm -f cmdfile.0
 touch cmdfile.0
 chmod 755 cmdfile.0

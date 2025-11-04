@@ -1319,6 +1319,9 @@ case ${step} in
     walltime="01:15:00"
     ntasks=$(( NMEM_ENS * 6))
     threads_per_task=1
+
+    # Use node_numerator/node_denominator of the tasks in a node
+    # to leave enough memory for regridding
     node_numerator=1
     node_denominator=2
     tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
