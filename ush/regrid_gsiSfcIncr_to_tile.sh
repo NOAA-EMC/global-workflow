@@ -6,6 +6,7 @@ source "${HOMEgfs}/ush/atparse.bash"
 # Script to regrid surface increment from GSI grid
 # to fv3 tiles.
 # Clara Draper, Dec 2024
+# David New, Nov 2025 (parallelization updates)
 #-------------------------------------------------------------------------------------------------
 
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
