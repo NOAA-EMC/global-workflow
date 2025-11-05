@@ -57,8 +57,13 @@ gdas:
 
         # Analysis netCDF (raw) data
             {% if DO_JEDIATMVAR %}
+               {% if ATMINC_GRID == 'gaussian' %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
+               {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.atm.a006.nc"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.sfc.a006.nc"
+               {% endif %}
             {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
