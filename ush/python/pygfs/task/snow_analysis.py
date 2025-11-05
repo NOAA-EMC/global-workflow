@@ -109,6 +109,10 @@ class SnowAnalysis(Analysis):
         logger.info(f"Staging files from COM and creating output directories")
         FileHandler(self.task_config.data_in).sync()
 
+        # Stage observation files
+        logger.info(f"Staging observations")
+        self.jedi_dict['snowanlvar'].stage_obs()
+
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=False)

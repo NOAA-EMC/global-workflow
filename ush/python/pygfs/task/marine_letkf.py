@@ -84,6 +84,10 @@ class MarineLETKF(Analysis):
         logger.info(f"Staging files from COM and creating input/output directories")
         FileHandler(self.task_config.data_in).sync()
 
+        # Stage observation files
+        logger.info(f"Staging observations")
+        self.jedi_dict['letkf'].stage_obs()
+
         # prepare the ensemble MOM6 input.nml
         logger.info(f"Preparing ensemble MOM6 input namelist")
         mdau.prep_input_nml(self.task_config)

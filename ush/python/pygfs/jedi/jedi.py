@@ -54,7 +54,6 @@ class Jedi:
             {
                 'exe': config.exe_src,
                 'yaml': os.path.join(config.rundir, config.yaml_name + '.yaml'),
-                'input_config': None
             }
         )
         self.jedi_config = AttrDict(**config, **local_dict)
@@ -66,6 +65,10 @@ class Jedi:
 
         # Save a copy of jedi_config
         self._jedi_config = self.jedi_config.deepcopy()
+
+        # Initialize other attributes
+        self.jcb_config = None
+        self.input_config = None
 
     @logit(logger)
     def initialize(self, task_config: AttrDict, clean_empty_obsspaces=False) -> None:
@@ -92,8 +95,8 @@ class Jedi:
 
         # Render JEDI config dictionary
         logger.info(f"Generating JEDI YAML config: {self.jedi_config.yaml}")
-        self.jedi_config.input_config = self.render_jcb(task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.jedi_config.input_config)}")
+        self.input_config = self.render_jcb(task_config)
+        logger.debug(f"JEDI config:\n{pformat(self.input_config)}")
 
         # Remove obs spaces from JEDI config dictionary with missing obs files
         if clean_empty_obsspaces:
@@ -102,7 +105,7 @@ class Jedi:
 
         # Save JEDI config dictionary to YAML in run directory
         logger.debug(f"Writing JEDI YAML config to: {self.jedi_config.yaml}")
-        save_as_yaml(self.jedi_config.input_config, self.jedi_config.yaml)
+        save_as_yaml(self.input_config, self.jedi_config.yaml)
 
     @logit(logger)
     def execute(self) -> None:
@@ -133,6 +136,75 @@ class Jedi:
             raise WorkflowException(f"An error occurred during execution of {exec_cmd}:\n{e}") from e
 
     @logit(logger)
+    def stage_obs(self, stage_bias_corrections: bool = False, bias_file_dict: Optional[Dict[str, str]] = None) -> None:
+
+        """Stage observation data files specified in JEDI input configuration dictionary
+
+        This method will stage observation data files specified in the JEDI input
+        configuration dictionary using a FileHandler object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        # Model application path
+        model = app_path_model.split('/')[-1] + '_'
+
+        # Check that required keys are present in jcb_config
+        for file_type in ['obs', 'bias']:
+            key = f'{model}_{file_type}dataroot_path'
+            if key not in self.jcb_config:
+                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+
+            key = f'{model}_{file_type}datain_prefix'
+            if key not in self.jcb_config:
+                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+
+            key = f'{model}_{file_type}datain_suffix'
+            if key not in self.jcb_config:
+                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+
+        # Set destination paths
+        ob_dest = self.jcb_config[f'{model}_obsdatain_path']
+        bias_dest = self.jcb_config[f'{model}_obsbiasin_path']
+
+        # Initialize FileHandler input dictionary
+        fh_dict = {'mkdir': [], 'copy_opt': []}
+
+        # Make directories
+        fh_dict['mkdir'].append([self.jcb_config(f'{model}_obsdataroot_path')])
+        if stage_bias_corrections:
+            fh_dict['mkdir'].append(self.jcb_config(f'{model}_obsbiasroot_path'))
+
+        # Copy files
+        fh_dict['copy_opt'] = []
+        for observation_from_jcb in self.jcb_config['observations']:
+            # Observations
+            ob_src = os.path.join(self.jcb_config[f'{model}_obsdataroot_path'],
+                                  self.jcb_config[f'{model}_obsdatain_prefix'],
+                                  observation_from_jcb,
+                                  self.jcb_config[f'{model}_obsdatain_suffix'])
+
+            fh_dict['copy_opt'].append([ob_src, os_dest])
+
+            # Bias corrections
+            if stage_bias_corrections:
+                bias_src = os.path.join(self.jcb_config[f'{model}obsbiasroot_path'],
+                                                   self.jcb_config[f'{model}_obsbiasin_prefix'],
+                                                   bias_file_dict[observation_from_jcb'',
+                                                   self.jcb_config[f'{model}_obsbiasin_path'])
+
+                fh_dict['copy_opt'].append([bias_src, bias_dest])
+
+        # Execute FileHandler
+        FileHandler(fh_dict).sync()
+
+    @logit(logger)
     def render_jcb(self, task_config: AttrDict, algorithm_in: Optional[str] = None) -> AttrDict:
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
 
@@ -152,32 +224,32 @@ class Jedi:
 
         # Fill JCB base YAML template and build JCB config dictionary
         if self.jedi_config.jcb_base_yaml is not None:
-            jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
+            self.jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         else:
             raise WorkflowKeyError("JCB base YAML not specified as key 'jcb_base_yaml' in JEDI-class config dictionary")
 
         # Add JCB algorithm YAML, if it exists, to JCB config dictionary
         if self.jedi_config.jcb_algo_yaml is not None:
-            jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
+            self.jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
 
         # Set algorithm in JCB config dictionary (method input algorithm takes precedence)
         if algorithm_in is not None:
             algorithm = algorithm_in
         elif self.jedi_config.jcb_algo is not None:
             algorithm = self.jedi_config.jcb_algo
-        elif 'algorithm' in jcb_config:
-            algorithm = jcb_config.algorithm
+        elif 'algorithm' in self.jcb_config:
+            algorithm = self.jcb_config.algorithm
         else:
             raise WorkflowKeyError("JCB algorithm not specified")
-        jcb_config['algorithm'] = algorithm
+        self.jcb_config['algorithm'] = algorithm
 
         # Generate JEDI YAML config by rendering JCB config dictionary
         try:
-            jedi_input_config = render(jcb_config)
+            jedi_input_config = render(self.jcb_config)
         except Exception as e:
             raise WorkflowException(f"An error occurred while rendering JCB template for algorithm {algorithm}:\n{e}") from e
 
-        return jedi_input_config
+        return jedi_input_config        
 
     @staticmethod
     @logit(logger)
@@ -246,7 +318,7 @@ class Jedi:
         """
 
         # Get observers from JEDI input config
-        observers = find_value_in_nested_dict(self.jedi_config.input_config, 'observers')
+        observers = find_value_in_nested_dict(self.input_config, 'observers')
 
         # Check if observers list actually present
         if observers:

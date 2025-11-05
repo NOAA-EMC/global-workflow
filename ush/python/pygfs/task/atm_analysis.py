@@ -86,6 +86,10 @@ class AtmAnalysis(Analysis):
         logger.info(f"Staging files from COM and creating output directories")
         FileHandler(self.task_config.data_in).sync()
 
+        # Stage observation files
+        logger.info(f"Staging observation and bias correction files")
+        self.jedi_dict['atmanlvar'].stage_obs(stage_bias_corrections=True, self.task_config.bias_files)
+
         # Extract bias corrections from tar files
         logger.info(f"Extracting bias corrections from tar files")
         self.untar_bias_corrections()
