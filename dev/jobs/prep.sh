@@ -102,6 +102,7 @@ fi
 if [[ ${COPY_BIASCOR:-"NO"} == "YES" ]]; then
     for file in abias abias_pc abias_air; do
         cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}"
+	cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt"
     done
 fi
 
