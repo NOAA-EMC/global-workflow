@@ -59,6 +59,7 @@ if [[ "${DO_OCN_PERT_EPBL}" == "YES" ]]; then
 else
   local PERT_EPBL="False"
 fi
+local MOM6_HFREEZE=20.0
 # Ensure the template exists
 local template=${MOM6_INPUT_TEMPLATE:-"${PARMgfs}/ufs/MOM_input_${OCNRES}.IN"}
 if [[ ! -f "${template}" ]]; then
