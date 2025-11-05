@@ -138,6 +138,7 @@ def main(*argv):
         workflow_config.cyclethrottle = user_inputs.cyclethrottle
         workflow_config.taskthrottle = user_inputs.taskthrottle
         workflow_config.verbosity = user_inputs.verbosity
+        workflow_config.rocotorun = user_inputs.rocotorun
     elif workflow_engine == "ecflow":
         workflow_config.verbosity = user_inputs.verbosity
 
