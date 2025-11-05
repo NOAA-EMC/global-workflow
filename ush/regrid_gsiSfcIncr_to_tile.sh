@@ -164,6 +164,8 @@ export out_dir="${in_dir}"
 # Regrid soil increments and save to COMOUT
 #
 
+# Increments for offline analysis
+# If land IAU --> deterministic only. If no land IAU --> both deterministic and ensemble
 if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
     for FHR in "${soilinc_fhrs[@]}"; do
         # Set namelist variables
@@ -184,6 +186,8 @@ if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]
     done
 fi
 
+# Increments for forecast job with land IAU
+# If land IAU --> deterministic and ensemble
 if [[ "${DO_LAND_IAU}" = ".true." ]]; then
     # Set namelist variables
     export add_time_dim=".true."
