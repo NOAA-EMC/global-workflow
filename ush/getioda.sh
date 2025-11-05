@@ -42,24 +42,10 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     if [[ ! -s "${TARGET_DIR}/${compdir}" ]]; then
        mkdir -p "${TARGET_DIR}/${compdir}"
     fi
-    # loop through secondary level directories
-    for subdir in "${SOURCE_DIR}/${compdir}"/*/ ; do
-        subdir=${subdir%*/}
-        subdir=${subdir##*/}
-        # Skip if not a directory
-        if [[ ! -d "${SOURCE_DIR}/${compdir}/${subdir}" ]]; then
-            continue
-        fi
-        echo "  Processing subdirectory: ${subdir}"
-        # Create subdirectory in TARGET_DIR if it does not exist
-        if [[ ! -s "${TARGET_DIR}/${compdir}/${subdir}" ]]; then
-           mkdir -p "${TARGET_DIR}/${compdir}/${subdir}"
-        fi
-        # Link files from SOURCE_DIR to TARGET_DIR
-        cd "${SOURCE_DIR}/${compdir}/${subdir}"
-        for file in $(ls ${prefix}*); do
-            ${NLN} "${SOURCE_DIR}/${compdir}/${subdir}/${file}" "${TARGET_DIR}/${compdir}/${subdir}/${file}"
-        done
+    # Link files from SOURCE_DIR to TARGET_DIR
+    cd "${SOURCE_DIR}/${compdir}"
+    for file in $(ls ${prefix}*); do
+         ${NLN} "${SOURCE_DIR}/${compdir}/${file}" "${TARGET_DIR}/${compdir}/${file}"
     done
 done
 
