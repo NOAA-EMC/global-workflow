@@ -145,29 +145,35 @@ class Jedi:
 
         Parameters
         ----------
-        None
+        stage_bias_corrections: bool
+            Flag to stage bias correction files in addition to observation files.
+            Default is False.
+        bias_file_dict: Dict[str, str]
+            Dictionary mapping observation names to bias correction file names.
+            Required if stage_bias_corrections is True. Default is None.
 
         Returns
         ----------
         None
         """
 
-        # Model application path
-        model = app_path_model.split('/')[-1] + '_'
+        if stage_bias_corrections and bias_file_dict is None:
+            raise WorkflowKeyError("bias_file_dict must be provided when stage_bias_corrections is True")
+
+        # Check that app_path_model is present in jcb_config
+        key = 'app_path_model'
+        if key not in self.jcb_config:
+            raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+
+        # Get model
+        model = self.jcb_config['app_path_model'].split('/')[-1] + '_'
 
         # Check that required keys are present in jcb_config
         for file_type in ['obs', 'bias']:
-            key = f'{model}_{file_type}dataroot_path'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
-
-            key = f'{model}_{file_type}datain_prefix'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
-
-            key = f'{model}_{file_type}datain_suffix'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+            for suffix in ['dataroot_path', 'datain_prefix', 'datain_suffix']:
+                key = f'{model}_{file_type}{suffix}'
+                if key not in self.jcb_config:
+                    raise WorkflowKeyError(f"Required key {key} not found in JCB config")
 
         # Set destination paths
         ob_dest = self.jcb_config[f'{model}_obsdatain_path']
@@ -182,7 +188,6 @@ class Jedi:
             fh_dict['mkdir'].append(self.jcb_config(f'{model}_obsbiasroot_path'))
 
         # Copy files
-        fh_dict['copy_opt'] = []
         for observation_from_jcb in self.jcb_config['observations']:
             # Observations
             ob_src = os.path.join(self.jcb_config[f'{model}_obsdataroot_path'],
