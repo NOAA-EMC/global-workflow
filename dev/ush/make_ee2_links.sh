@@ -312,6 +312,12 @@ ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
 ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
 cd "${cwd}"
 
+cd C96C48/20250808/enkfgdas.20220515/06/ensstat/analysis/snow
+for tile in {1..6}; do
+  ln -s "snow_inc.20220515.060000.sfc_data.tile${tile}.nc" "20220515.060000.snow_increment.sfc_data.tile${tile}.nc"
+done
+cd "${cwd}"
+
 cd C96C48/20250808/enkfgdas.20220515/06
 cwd_9648=${PWD}
 for dir in mem*; do
@@ -327,6 +333,12 @@ for dir in mem*; do
   ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
   for tile in {1..6}; do
     ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
+  done
+  cd "${cwd_9648}"
+  cd "${dir}/analysis/snow"
+  for tile in {1..6}; do
+    ln -s "20220515.030000.sfc_data.tile${tile}.nc" "20220515.030000.snow_increment.sfc_data.tile${tile}.nc"
+    ln -s "20220515.060000.sfc_data.tile${tile}.nc" "20220515.060000.snow_analysis.sfc_data.tile${tile}.nc"
   done
   cd "${cwd_9648}"
 done
@@ -387,6 +399,12 @@ ln -s gdas.t06z.radstat gdas.t06z.radstat.tar
 ln -s gdas.t06z.sfcanl.nc gdas.t06z.analysis.sfc.a006.nc
 for tile in {1..6}; do
   ln -s "sfc_inc.tile${tile}.nc" "gdas.t06z.increment.sfc.i006.tile${tile}.nc"
+done
+cd "${cwd}"
+
+cd C96C48/20250808/gdas.20220515/06/analysis/snow
+for tile in {1..6}; do
+  ln -s "snow_inc.20220515.060000.sfc_data.tile${tile}.nc" "20220515.060000.snow_increment.sfc_data.tile${tile}.nc"
 done
 cd "${cwd}"
 
