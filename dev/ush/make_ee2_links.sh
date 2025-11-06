@@ -32,9 +32,9 @@ cd C48C48mx500/20250327/enkfgdas.20210324/12
 cwd_4848500=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
-  ln -s enkfgdas.t12z.ratmi003.nc enkfgdas.t12z.recentered_increment.i003.nc
-  ln -s enkfgdas.t12z.ratmi009.nc enkfgdas.t12z.recentered_increment.i009.nc
-  ln -s enkfgdas.t12z.ratminc.nc enkfgdas.t12z.recentered_increment.i006.nc
+  ln -s enkfgdas.t12z.ratmi003.nc enkfgdas.t12z.recentered_increment.atm.i003.nc
+  ln -s enkfgdas.t12z.ratmi009.nc enkfgdas.t12z.recentered_increment.atm.i009.nc
+  ln -s enkfgdas.t12z.ratminc.nc enkfgdas.t12z.recentered_increment.atm.i006.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
@@ -49,9 +49,9 @@ for dir in mem*; do
   ln -s enkfgdas.t18z.atmi003.nc enkfgdas.t18z.increment.atm.i003.nc
   ln -s enkfgdas.t18z.atmi009.nc enkfgdas.t18z.increment.atm.i009.nc
   ln -s enkfgdas.t18z.atminc.nc enkfgdas.t18z.increment.atm.i006.nc
-  ln -s enkfgdas.t18z.ratmi003.nc enkfgdas.t18z.recentered_increment.i003.nc
-  ln -s enkfgdas.t18z.ratmi009.nc enkfgdas.t18z.recentered_increment.i009.nc
-  ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.i006.nc
+  ln -s enkfgdas.t18z.ratmi003.nc enkfgdas.t18z.recentered_increment.atm.i003.nc
+  ln -s enkfgdas.t18z.ratmi009.nc enkfgdas.t18z.recentered_increment.atm.i009.nc
+  ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.atm.i006.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.mom_6increment.i006.nc
@@ -126,9 +126,9 @@ for dir in mem*; do
   ln -s enkfgdas.t18z.atmi003.nc enkfgdas.t18z.increment.atm.i003.nc
   ln -s enkfgdas.t18z.atmi009.nc enkfgdas.t18z.increment.atm.i009.nc
   ln -s enkfgdas.t18z.atminc.nc enkfgdas.t18z.increment.atm.i006.nc
-  ln -s enkfgdas.t18z.ratmi003.nc enkfgdas.t18z.recentered_increment.i003.nc
-  ln -s enkfgdas.t18z.ratmi009.nc enkfgdas.t18z.recentered_increment.i009.nc
-  ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.i006.nc
+  ln -s enkfgdas.t18z.ratmi003.nc enkfgdas.t18z.recentered_increment.atm.i003.nc
+  ln -s enkfgdas.t18z.ratmi009.nc enkfgdas.t18z.recentered_increment.atm.i009.nc
+  ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.atm.i006.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.mom6_increment.i006.nc
@@ -210,9 +210,9 @@ for dir in mem*; do
   ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
   ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
   ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
-  ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.i003.nc
-  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.i009.nc
-  ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.i006.nc
+  ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.atm.i003.nc
+  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
+  ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.atm.i006.nc
   ln -s enkfgdas.t06z.sfci003.nc enkfgdas.t06z.increment.sfc.i003.nc
   ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
   ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
@@ -305,9 +305,9 @@ ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
 ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
 ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
 ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
-ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.i003.nc
-ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.i009.nc
-ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.i006.nc
+ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.atm.i003.nc
+ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
+ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.atm.i006.nc
 ln -s enkfgdas.t06z.sfci003.nc enkfgdas.t06z.increment.sfc.i003.nc
 ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
 ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
@@ -377,9 +377,9 @@ for dir in mem*; do
   ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
   ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
   ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
-  ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.i003.nc
-  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.i009.nc
-  ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.i006.nc
+  ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.atm.i003.nc
+  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
+  ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.atm.i006.nc
   for tile in {1..6}; do
 	 ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
   done
