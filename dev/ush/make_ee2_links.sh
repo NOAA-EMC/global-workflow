@@ -5,7 +5,6 @@ set -eux
 cwd=${PWD}
 cd C384C192/20240610/gdas.20230401/18/analysis/atmos
 ln -s gdas.t18z.abias gdas.t18z.abias.txt
-ln -s gdas.t18z.abias gdas.t18z.abias.txt
 ln -s gdas.t18z.abias_air gdas.t18z.abias_air.txt
 ln -s gdas.t18z.abias_int gdas.t18z.abias_int.txt
 ln -s gdas.t18z.abias_pc gdas.t18z.abias_pc.txt
