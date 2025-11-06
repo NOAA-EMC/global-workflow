@@ -37,7 +37,7 @@ for dir in mem*; do
   ln -s enkfgdas.t12z.ratminc.nc enkfgdas.t12z.recentered_increment.i006.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
-  ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.increment.i006.nc
+  ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
   cd "${cwd_4848500}"
 done
 cd "${cwd}"
@@ -54,7 +54,7 @@ for dir in mem*; do
   ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.i006.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
-  ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.increment.i006.nc
+  ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.mom_6increment.i006.nc
   cd "${cwd_4848500}"
 done
 cd "${cwd}"
@@ -115,7 +115,7 @@ for dir in mem*; do
   ln -s enkfgdas.t12z.atminc.nc enkfgdas.t12z.increment.atm.i006.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
-  ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.increment.i006.nc
+  ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
   cd "${cwd_4848500}"
 done
 cd "${cwd}"
@@ -131,7 +131,7 @@ for dir in mem*; do
   ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.i006.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
-  ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.increment.i006.nc
+  ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.mom6_increment.i006.nc
   cd "${cwd_4848500}"
 done
 cd "${cwd}"
@@ -181,7 +181,7 @@ cd C96C48/20250327/enkfgdas.20211220/12
 cwd_9648=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/ocean"
-  ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.increment.i006.nc
+  ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
   cd "${cwd_9648}"
 done
 cd "${cwd}"
@@ -280,7 +280,7 @@ cd "${cwd}"
 cd C96C48/20250808/enkfgdas.20211220/12
 for dir in mem*; do
   cd "${dir}/analysis/ocean"
-  ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.increment.i006.nc
+  ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
   cd "${cwd_9648}"
 done
 cd "${cwd}"
@@ -371,7 +371,7 @@ cd "${cwd}"
 cd retro_ICs/enkfgdas.20241115/06
 for dir in mem*; do
   cd "${dir}/analysis/ocean"
-  ln -s enkfgdas.t06z.ocninc.nc enkfgdas.t06z.increment.i006.nc
+  ln -s enkfgdas.t06z.ocninc.nc enkfgdas.t06z.mom6_increment.i006.nc
   cd "${cwd_9648}"
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
