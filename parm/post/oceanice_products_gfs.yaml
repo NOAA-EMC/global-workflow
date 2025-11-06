@@ -3,6 +3,8 @@ ocnicepost:
   namelist:
     write_grib2: {{ write_grib2 }}
     write_netcdf: {{ write_netcdf }}
+    compress: True
+    compress_level: 9
     debug: False
   fix_data:
     mkdir:
@@ -48,7 +50,6 @@ ocean:
       {% endfor %}
     copy:
       - ["{{ DATA }}/ocean_subset.nc", "{{ COMOUT_OCEAN_NETCDF }}/native/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
-      - ["{{ DATA }}/ocean_compressed.nc", "{{ COMIN_OCEAN_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc"]
       {% if write_grib2 %}
       {% for grid in product_grids %}
       - ["{{ DATA }}/ocean.{{ grid }}.grib2", "{{ COMOUT_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
@@ -80,7 +81,6 @@ ice:
       {% endfor %}
     copy:
       - ["{{ DATA }}/ice_subset.nc", "{{ COMOUT_ICE_NETCDF }}/native/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
-      - ["{{ DATA }}/ice_compressed.nc", "{{ COMIN_ICE_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc"]
       {% for grid in product_grids %}
       {% if write_grib2 %}
       - ["{{ DATA }}/ice.{{ grid }}.grib2", "{{ COMOUT_ICE_GRIB }}/{{ grid }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]

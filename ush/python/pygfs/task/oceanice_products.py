@@ -275,7 +275,6 @@ class OceanIceProducts(Task):
 
         input_file = f"{config.component}.nc"
         output_file = f"{config.component}_subset.nc"
-        compressed_file = f"{config.component}_compressed.nc"
 
         varlist = config.oceanice_yaml[config.component].subset
 
@@ -303,13 +302,12 @@ class OceanIceProducts(Task):
             ds_subset.attrs = ds.attrs
 
             # save subsetted variables to a new netcdf file and compress
-            default_compression = {"zlib": True, "complevel": 8}
-            compress_encoding = {var_name: default_compression for var_name in ds_subset.data_vars}
-            ds_subset.to_netcdf(output_file, encoding=compress_encoding)
-
-            # save compress original file
-            compress_encoding = {var_name: default_compression for var_name in ds.data_vars}
-            ds.to_netcdf(compressed_file, encoding=compress_encoding)
+            if config.oceanice_yaml.ocnicepost.namelist.compress:
+                default_compression = {"zlib": True, "complevel": int(config.oceanice_yaml.ocnicepost.namelist.compress_level)}
+                compress_encoding = {var_name: default_compression for var_name in ds_subset.data_vars}
+                ds_subset.to_netcdf(output_file, encoding=compress_encoding)
+            else:
+                ds_subset.to_netcdf(output_file)
 
         except FileNotFoundError:
             logger.exception(f"FATAL ERROR: Input file not found: {input_file}")
