@@ -23,7 +23,7 @@ cd C48C48mx500/20250327/enkfgdas.20210323/12
 cwd_4848500=${pwd}
 for dir in mem*; do
   cd "${dir}/analysis/ocean"
-  ln -s gdas.t12z.ocninc.nc gdas.t12z.increment.i006.nc
+  ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
   cd "${cwd_4848500}"
 done
 cd "${cwd}"
@@ -68,7 +68,7 @@ ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
 cd "${cwd}"
 
 cd C48C48mx500/20250327/gdas.20210324/12/analysis/ocean
-ln -s gdas.t12z.ocninc.nc gdas.t12z.increment.i006.nc
+ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
 cd C48C48mx500/20250327/gdas.20210324/18/analysis/atmos
@@ -80,7 +80,7 @@ ln -s gdas.t12z.atmi003.nc gdas.t12z.increment.atm.i003.nc
 ln -s gdas.t12z.atmi009.nc gdas.t12z.increment.atm.i009.nc
 ln -s gdas.t12z.atminc.nc gdas.t12z.increment.atm.i006.nc
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
-ln -s gdas.t12z.ocninc.nc gdas.t12z.increment.i006.nc
+ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
 cd C48C48mx500/20250327/gdas.20210324/18/analysis/atmos
@@ -104,7 +104,7 @@ ln -s gdas.t18z.sfcanl.nc gdas.t18z.analysis.sfc.a006.nc
 cd "${cwd}"
 
 cd C48C48mx500/20250327/gdas.20210324/18/analysis/ocean
-ln -s gdas.t18z.ocninc.nc gdas.t18z.increment.i006.nc
+ln -s gdas.t18z.ocninc.nc gdas.t18z.mom6_increment.i006.nc
 cd "${cwd}"
 
 cd C48C48mx500/20250808/enkfgdas.20210324/12
@@ -137,7 +137,7 @@ done
 cd "${cwd}"
 
 cd C48C48mx500/20250808/gdas.20210323/12/analysis/ocean
-ln -s gdas.t12z.ocninc.nc gdas.t12z.increment.i006.nc
+ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
 cd C48C48mx500/20250808/gdas.20210324/12/analysis/atmos
@@ -150,7 +150,7 @@ ln -s gdas.t12z.atmi003.nc gdas.t12z.increment.atm.i003.nc
 ln -s gdas.t12z.atmi009.nc gdas.t12z.increment.atm.i009.nc
 ln -s gdas.t12z.atminc.nc gdas.t12z.increment.atm.i006.nc
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
-ln -s gdas.t12z.ocninc.nc gdas.t12z.increment.i006.nc
+ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
 cd C48C48mx500/20250808/gdas.20210324/18/analysis/atmos
@@ -174,7 +174,7 @@ ln -s gdas.t18z.sfcanl.nc gdas.t18z.analysis.sfc.a006.nc
 cd "${cwd}"
 
 cd C48C48mx500/20250808/gdas.20210324/18/analysis/ocean
-ln -s gdas.t18z.ocninc.nc gdas.t18z.increment.i006.nc
+ln -s gdas.t18z.ocninc.nc gdas.t18z.mom6_increment.i006.nc
 cd "${cwd}"
 
 cd C96C48/20250327/enkfgdas.20211220/12
@@ -240,7 +240,7 @@ ln -s gdas.t12z.abias_air gdas.t12z.abias_air.txt
 ln -s gdas.t12z.abias_int gdas.t12z.abias_int.txt
 ln -s gdas.t12z.abias_pc gdas.t12z.abias_pc.txt
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
-ln -s gdas.t12z.ocninc.nc gdas.t12z.increment.i006.nc
+ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
 cd C96C48/20250327/gdas.20211220/18/analysis/atmos
@@ -330,7 +330,7 @@ ln -s gdas.t12z.abias_air gdas.t12z.abias_air.txt
 ln -s gdas.t12z.abias_int gdas.t12z.abias_int.txt
 ln -s gdas.t12z.abias_pc gdas.t12z.abias_pc.txt
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
-ln -s gdas.t12z.ocninc.nc gdas.t12z.increment.i006.nc
+ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
 cd C96C48/20250808/gdas.20211220/18/analysis/atmos
@@ -414,7 +414,7 @@ ln -s sfc_inc.tile1.nc gdas.t06z.increment.sfc.i003.nc
 cd "${cwd}"
 
 cd retro_ICs/gdas.20241115/06/analysis/ocean
-ln -s gdas.t06z.ocninc.nc gdas.t06z.increment.i006.nc
+ln -s gdas.t06z.ocninc.nc gdas.t06z.mom6_increment.i006.nc
 cd "${cwd}"
 
 echo "Success!!"
