@@ -20,7 +20,7 @@ ln -s gdas.t00z.radstat gdas.t00z.radstat.tar
 cd "${cwd}"
 
 cd C48C48mx500/20250327/enkfgdas.20210323/12
-cwd_4848500=${pwd}
+cwd_4848500=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/ocean"
   ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
