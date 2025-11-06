@@ -160,24 +160,20 @@ class Jedi:
         if stage_bias_corrections and bias_file_dict is None:
             raise WorkflowKeyError("bias_file_dict must be provided when stage_bias_corrections is True")
 
-        # Check that app_path_model is present in jcb_config
+        # Check that "app_path_model" is present in jcb_config
         key = 'app_path_model'
         if key not in self.jcb_config:
             raise WorkflowKeyError(f"Required key {key} not found in JCB config")
 
-        # Get model
+        # Get model from "app_path_model"
         model = self.jcb_config['app_path_model'].split('/')[-1] + '_'
 
-        # Check that required keys are present in jcb_config
-        for file_type in ['obs', 'bias']:
-            for suffix in ['dataroot_path', 'datain_prefix', 'datain_suffix']:
-                key = f'{model}_{file_type}{suffix}'
+        # Check that other required keys are present in jcb_config
+        for file_type in ['data', 'bias']:
+            for stem in ['root_path', 'in_prefix', 'in_suffix']:
+                key = f'{model}_obs{file_type}{stem}'
                 if key not in self.jcb_config:
                     raise WorkflowKeyError(f"Required key {key} not found in JCB config")
-
-        # Set destination paths
-        ob_dest = self.jcb_config[f'{model}_obsdatain_path']
-        bias_dest = self.jcb_config[f'{model}_obsbiasin_path']
 
         # Initialize FileHandler input dictionary
         fh_dict = {'mkdir': [], 'copy_opt': []}
@@ -188,6 +184,9 @@ class Jedi:
             fh_dict['mkdir'].append(self.jcb_config(f'{model}_obsbiasroot_path'))
 
         # Copy files
+        bias_files_copied = []
+        ob_dest = self.jcb_config[f'{model}_obsdatain_path']
+        bias_dest = self.jcb_config[f'{model}_obsbiasin_path']
         for observation_from_jcb in self.jcb_config['observations']:
             # Observations
             ob_src = os.path.join(self.jcb_config[f'{model}_obsdataroot_path'],
@@ -199,12 +198,16 @@ class Jedi:
 
             # Bias corrections
             if stage_bias_corrections:
-                bias_src = os.path.join(self.jcb_config[f'{model}obsbiasroot_path'],
-                                                   self.jcb_config[f'{model}_obsbiasin_prefix'],
-                                                   bias_file_dict[observation_from_jcb'',
-                                                   self.jcb_config[f'{model}_obsbiasin_path'])
+                if observation_from_jcb not in bias_files_copied:
+                    bias_src = os.path.join(self.jcb_config[f'{model}obsbiasroot_path'],
+                                            self.jcb_config[f'{model}_obsbiasin_prefix'],
+                                            bias_file_dict[observation_from_jcb'',
+                                            self.jcb_config[f'{model}_obsbiasin_path'])
 
-                fh_dict['copy_opt'].append([bias_src, bias_dest])
+                    fh_dict['copy_opt'].append([bias_src, bias_dest])
+
+                    # Don't copy same file multiple times
+                    bias_files_copied.append(observation_from_jcb)
 
         # Execute FileHandler
         FileHandler(fh_dict).sync()
