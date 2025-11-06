@@ -4,11 +4,11 @@ set -eu
 cwd=${PWD}
 cd C384C192/20240610/gdas.20230401/18/analysis/atmos
 ln -s gdas.t18z.abias gdas.t18z.abias.txt
-ln -s gdas.t18z.abias C384C192/20240610/gdas.20230401/18/analysis/atmos/gdas.t18z.abias.txt
-ln -s gdas.t18z.abias_air C384C192/20240610/gdas.20230401/18/analysis/atmos/gdas.t18z.abias_air.txt
-ln -s gdas.t18z.abias_int C384C192/20240610/gdas.20230401/18/analysis/atmos/gdas.t18z.abias_int.txt
-ln -s gdas.t18z.abias_pc C384C192/20240610/gdas.20230401/18/analysis/atmos/gdas.t18z.abias_pc.txt
-ln -s gdas.t18z.radstat C384C192/20240610/gdas.20230401/18/analysis/atmos/gdas.t18z.radstat.tar
+ln -s gdas.t18z.abias gdas.t18z.abias.txt
+ln -s gdas.t18z.abias_air gdas.t18z.abias_air.txt
+ln -s gdas.t18z.abias_int gdas.t18z.abias_int.txt
+ln -s gdas.t18z.abias_pc gdas.t18z.abias_pc.txt
+ln -s gdas.t18z.radstat gdas.t18z.radstat.tar
 cd "${cwd}"
 
 cd C384mx025/20241120/gdas.20210701/00/analysis/atmos
