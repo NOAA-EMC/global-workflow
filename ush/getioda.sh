@@ -48,7 +48,7 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     # simply skips when no matches are found.
     shopt -s nullglob
     for file in "${prefix}"*; do
-         [ -e "${file}" ] || continue
+         [[ -e "${file}" ]] || continue
          ${NLN} "${SOURCE_DIR}/${compdir}/${file}" "${TARGET_DIR}/${compdir}/${file}"
     done
     shopt -u nullglob
