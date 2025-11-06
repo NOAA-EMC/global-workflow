@@ -170,7 +170,7 @@ class Jedi:
 
         # Check that other required keys are present in jcb_config
         for file_type in ['data', 'bias']:
-            for stem in ['root_path', 'in_prefix', 'in_suffix']:
+            for stem in ['in_path', 'out_path', 'root_path', 'in_prefix', 'in_suffix']:
                 key = f'{model}_obs{file_type}{stem}'
                 if key not in self.jcb_config:
                     raise WorkflowKeyError(f"Required key {key} not found in JCB config")
@@ -179,9 +179,11 @@ class Jedi:
         fh_dict = {'mkdir': [], 'copy_opt': []}
 
         # Make directories
-        fh_dict['mkdir'].append([self.jcb_config(f'{model}_obsdataroot_path')])
+        fh_dict['mkdir'].append([self.jcb_config(f'{model}_obsdatain_path')])
+        fh_dict['mkdir'].append([self.jcb_config(f'{model}_obsdataout_path')])
         if stage_bias_corrections:
-            fh_dict['mkdir'].append(self.jcb_config(f'{model}_obsbiasroot_path'))
+            fh_dict['mkdir'].append(self.jcb_config(f'{model}_obsbiasin_path'))
+            fh_dict['mkdir'].append(self.jcb_config(f'{model}_obsbiasout_path'))
 
         # Copy files
         bias_files_copied = []
@@ -194,7 +196,7 @@ class Jedi:
                                   observation_from_jcb,
                                   self.jcb_config[f'{model}_obsdatain_suffix'])
 
-            fh_dict['copy_opt'].append([ob_src, os_dest])
+            fh_dict['copy_opt'].append([ob_src, ob_dest])
 
             # Bias corrections
             if stage_bias_corrections:
