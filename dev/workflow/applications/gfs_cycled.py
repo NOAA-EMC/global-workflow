@@ -107,6 +107,9 @@ class GFSCycledAppConfig(AppConfig):
 
         configs = ['prep']
 
+        if options['do_enkfonly_atm']:
+            configs += ['fetch', 'prepatmopeanlbc']
+
         if options['do_prep_sfc']:
             configs += ['prep_sfc']
 
@@ -248,6 +251,7 @@ class GFSCycledAppConfig(AppConfig):
             # Common gdas and gfs tasks before fcst
             if run in ['gdas', 'gfs']:
                 task_names[run] += ['prep']
+                
                 if options['do_prep_sfc']:
                     task_names[run] += ['prep_sfc']
                 if options['do_jediatmvar']:
@@ -378,8 +382,9 @@ class GFSCycledAppConfig(AppConfig):
 
                 task_names[run] += ['cleanup']
 
-                # Remove unnecessary tasks if do_enkfonly_atm=true
+                # Add or remove (un)necessary tasks if do_enkfonly_atm=true
                 if options['do_enkfonly_atm']:
+                    task_names['gdas'] += ['fetch', 'prepatmopeanlbc']
                     rmtasks=['anlstat', 'sfcanl', 'analcalc', 'fcst', 'atmanlprod', 'stage_ic', 'arch_tars', 'arch_vrfy', 'atmos_prod', 'atmanlupp', 'cleanup']
                     if options['do_jediatmvar']:
                         rmtasks.extend(['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi'])
