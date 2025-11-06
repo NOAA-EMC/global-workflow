@@ -75,7 +75,7 @@ chmod 755 cmdfile.0
 
 # Append fixed files command file to master command file
 {
-echo "#!/bin/bash" > cmdfile.0
+echo "#!/bin/bash"
 
 # input, fixed files
 echo "cpreq ${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc \
@@ -123,7 +123,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
 
     # Create commands to stage input files
     {
-    echo "#!/bin/bash" > "cmdfile.${imem}"
+    echo "#!/bin/bash"
 
     for FHR in "${soilinc_fhrs[@]}"; do
         echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHR}.nc \
