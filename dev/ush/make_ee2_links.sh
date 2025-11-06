@@ -1,6 +1,7 @@
 #!/bin/bash
+PS4='+ $LINENO: '
 
-set -eu
+set -eux
 cwd=${PWD}
 cd C384C192/20240610/gdas.20230401/18/analysis/atmos
 ln -s gdas.t18z.abias gdas.t18z.abias.txt
@@ -121,6 +122,7 @@ done
 cd "${cwd}"
 
 cd C48C48mx500/20250808/enkfgdas.20210324/18
+cwd_4848500=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t18z.atmi003.nc enkfgdas.t18z.increment.atm.i003.nc
@@ -134,6 +136,7 @@ for dir in mem*; do
   ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.mom6_increment.i006.nc
   cd "${cwd_4848500}"
 done
+unset cwd_4848500
 cd "${cwd}"
 
 cd C48C48mx500/20250808/gdas.20210323/12/analysis/ocean
@@ -150,6 +153,8 @@ ln -s gdas.t12z.atmi003.nc gdas.t12z.increment.atm.i003.nc
 ln -s gdas.t12z.atmi009.nc gdas.t12z.increment.atm.i009.nc
 ln -s gdas.t12z.atminc.nc gdas.t12z.increment.atm.i006.nc
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
+cd "${cwd}"
+cd C48C48mx500/20250808/gdas.20210324/12/analysis/ocean
 ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
@@ -184,6 +189,7 @@ for dir in mem*; do
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
   cd "${cwd_9648}"
 done
+unset cwd_9648
 cd "${cwd}"
 
 cd C96C48/20250327/enkfgdas.20211221/06/ensstat/analysis/atmos
@@ -217,21 +223,24 @@ for dir in mem*; do
   ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
   ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
   for tile in {1..6}; do
-	 ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
+    ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
   done
   cd "${cwd_9648}"
 done
+unset cwd_9648
 cd "${cwd}"
 
 cd C96C48/20250327/enkfgdas.20240223/18
+cwd_9648=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   for tile in {1..6}; do
-	 ln -s "enkfgdas.t18z.cubed_sphere_grid_atminc.tile${tile}.nc" "enkfgdas.t18z.jedi_increment.atm.i006.tile${tile}.nc"
+    ln -s "enkfgdas.t18z.cubed_sphere_grid_ratminc.tile${tile}.nc" "enkfgdas.t18z.jedi_recentered_increment.atm.i006.tile${tile}.nc"
   done
-  ln -s enkfgdas.t18z.cubed_sphere_grid_ratminc.nc enkfgdas.t18z.recentered_jedi_increment.atm.i006.nc
+  ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.atm.i006.nc
   cd "${cwd_9648}"
 done
+unset cwd_9648
 cd "${cwd}"
 
 cd C96C48/20250327/gdas.20211220/12/analysis/atmos
@@ -240,6 +249,8 @@ ln -s gdas.t12z.abias_air gdas.t12z.abias_air.txt
 ln -s gdas.t12z.abias_int gdas.t12z.abias_int.txt
 ln -s gdas.t12z.abias_pc gdas.t12z.abias_pc.txt
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
+cd "${cwd}"
+cd C96C48/20250327/gdas.20211220/12/analysis/ocean
 ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
@@ -318,7 +329,7 @@ cd C96C48/20250808/enkfgdas.20220223/18
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   for tile in {1..6}; do
-	 ln -s "enkfgdas.t18z.cubed_sphere_grid_atminc.tile${tile}.nc" "enkfgdas.t18z.jedi_increment.atm.i006.tile${tile}.nc"
+    ln -s "enkfgdas.t18z.cubed_sphere_grid_atminc.tile${tile}.nc" "enkfgdas.t18z.jedi_increment.atm.i006.tile${tile}.nc"
   done
   cd "${cwd_9648}"
 done
@@ -381,7 +392,7 @@ for dir in mem*; do
   ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.atm.i006.nc
   for tile in {1..6}; do
-	 ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
+    ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
   done
   cd "${cwd_9648}"
 done
