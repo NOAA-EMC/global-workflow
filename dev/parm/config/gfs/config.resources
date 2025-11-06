@@ -1317,7 +1317,7 @@ case ${step} in
 
   "esfc")
     walltime="01:15:00"
-    ntasks=$(( NMEM_ENS * 6))
+    ntasks=$(( NMEM_ENS * 6)) # The regrid program requires tasks to be tiles times members
     threads_per_task=1
 
     # Use node_numerator/node_denominator of the tasks in a node
