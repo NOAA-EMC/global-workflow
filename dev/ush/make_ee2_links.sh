@@ -22,7 +22,7 @@ cd "${cwd}"
 cd C48C48mx500/20250327/enkfgdas.20210323/12
 cwd_4848500=${pwd}
 for dir in mem*; do
-  cd ${dir}/analysis/ocean
+  cd "${dir}/analysis/ocean"
   ln -s gdas.t12z.ocninc.nc gdas.t12z.increment.i006.nc
   cd "${cwd_4848500}"
 done
@@ -31,12 +31,12 @@ cd "${cwd}"
 cd C48C48mx500/20250327/enkfgdas.20210324/12
 cwd_4848500=${PWD}
 for dir in mem*; do
-  cd ${dir}/analysis/atmos
+  cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t12z.ratmi003.nc enkfgdas.t12z.recentered_increment.i003.nc
   ln -s enkfgdas.t12z.ratmi009.nc enkfgdas.t12z.recentered_increment.i009.nc
   ln -s enkfgdas.t12z.ratminc.nc enkfgdas.t12z.recentered_increment.i006.nc
   cd "${cwd_4848500}"
-  cd ${dir}/analysis/ocean
+  cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.increment.i006.nc
   cd "${cwd_4848500}"
 done
@@ -45,7 +45,7 @@ cd "${cwd}"
 cd C48C48mx500/20250327/enkfgdas.20210324/18
 cwd_4848500=${PWD}
 for dir in mem*; do
-  cd ${dir}/analysis/atmos
+  cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t18z.atmi003.nc enkfgdas.t18z.increment.atm.i003.nc
   ln -s enkfgdas.t18z.atmi009.nc enkfgdas.t18z.increment.atm.i009.nc
   ln -s enkfgdas.t18z.atminc.nc enkfgdas.t18z.increment.atm.i006.nc
@@ -53,7 +53,7 @@ for dir in mem*; do
   ln -s enkfgdas.t18z.ratmi009.nc enkfgdas.t18z.recentered_increment.i009.nc
   ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.i006.nc
   cd "${cwd_4848500}"
-  cd ${dir}/analysis/ocean
+  cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.increment.i006.nc
   cd "${cwd_4848500}"
 done
@@ -109,12 +109,12 @@ cd "${cwd}"
 
 cd C48C48mx500/20250808/enkfgdas.20210324/12
 for dir in mem*; do
-  cd ${dir}/analysis/atmos
+  cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t12z.atmi003.nc enkfgdas.t12z.increment.atm.i003.nc
   ln -s enkfgdas.t12z.atmi009.nc enkfgdas.t12z.increment.atm.i009.nc
   ln -s enkfgdas.t12z.atminc.nc enkfgdas.t12z.increment.atm.i006.nc
   cd "${cwd_4848500}"
-  cd ${dir}/analysis/ocean
+  cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.increment.i006.nc
   cd "${cwd_4848500}"
 done
@@ -122,7 +122,7 @@ cd "${cwd}"
 
 cd C48C48mx500/20250808/enkfgdas.20210324/18
 for dir in mem*; do
-  cd ${dir}/analysis/atmos
+  cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t18z.atmi003.nc enkfgdas.t18z.increment.atm.i003.nc
   ln -s enkfgdas.t18z.atmi009.nc enkfgdas.t18z.increment.atm.i009.nc
   ln -s enkfgdas.t18z.atminc.nc enkfgdas.t18z.increment.atm.i006.nc
@@ -130,7 +130,7 @@ for dir in mem*; do
   ln -s enkfgdas.t18z.ratmi009.nc enkfgdas.t18z.recentered_increment.i009.nc
   ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.i006.nc
   cd "${cwd_4848500}"
-  cd ${dir}/analysis/ocean
+  cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.increment.i006.nc
   cd "${cwd_4848500}"
 done
@@ -180,7 +180,7 @@ cd "${cwd}"
 cd C96C48/20250327/enkfgdas.20211220/12
 cwd_9648=${PWD}
 for dir in mem*; do
-  cd ${dir}/analysis/ocean
+  cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.increment.i006.nc
   cd "${cwd_9648}"
 done
@@ -206,7 +206,7 @@ cd "${cwd}"
 cd C96C48/20250327/enkfgdas.20211221/06
 cwd_9648=${PWD}
 for dir in mem*; do
-  cd ${dir}/analysis/atmos
+  cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
   ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
   ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
@@ -217,7 +217,7 @@ for dir in mem*; do
   ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
   ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
   for tile in {1..6}; do
-	ln -s sfc_inc.tile${tile}.nc enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc
+	 ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
   done
   cd "${cwd_9648}"
 done
@@ -225,9 +225,9 @@ cd "${cwd}"
 
 cd C96C48/20250327/enkfgdas.20240223/18
 for dir in mem*; do
-  cd ${dir}/analysis/atmos
+  cd "${dir}/analysis/atmos"
   for tile in {1..6}; do
-	ln -s enkfgdas.t18z.cubed_sphere_grid_atminc.tile${tile}.nc enkfgdas.t18z.jedi_increment.atm.i006.tile${tile}.nc
+	 ln -s "enkfgdas.t18z.cubed_sphere_grid_atminc.tile${tile}.nc" "enkfgdas.t18z.jedi_increment.atm.i006.tile${tile}.nc"
   done
   ln -s enkfgdas.t18z.cubed_sphere_grid_ratminc.nc enkfgdas.t18z.recentered_jedi_increment.atm.i006.nc
   cd "${cwd_9648}"
@@ -279,7 +279,7 @@ cd "${cwd}"
 
 cd C96C48/20250808/enkfgdas.20211220/12
 for dir in mem*; do
-  cd ${dir}/analysis/ocean
+  cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.increment.i006.nc
   cd "${cwd_9648}"
 done
@@ -316,9 +316,9 @@ cd "${cwd}"
 
 cd C96C48/20250808/enkfgdas.20220223/18
 for dir in mem*; do
-  cd ${dir}/analysis/atmos
+  cd "${dir}/analysis/atmos"
   for tile in {1..6}; do
-	ln -s enkfgdas.t18z.cubed_sphere_grid_atminc.tile${tile}.nc enkfgdas.t18z.jedi_increment.atm.i006.tile${tile}.nc
+	 ln -s "enkfgdas.t18z.cubed_sphere_grid_atminc.tile${tile}.nc" "enkfgdas.t18z.jedi_increment.atm.i006.tile${tile}.nc"
   done
   cd "${cwd_9648}"
 done
@@ -370,10 +370,10 @@ cd "${cwd}"
 
 cd retro_ICs/enkfgdas.20241115/06
 for dir in mem*; do
-  cd ${dir}/analysis/ocean
+  cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t06z.ocninc.nc enkfgdas.t06z.increment.i006.nc
   cd "${cwd_9648}"
-  cd ${dir}/analysis/atmos
+  cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
   ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
   ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
@@ -381,7 +381,7 @@ for dir in mem*; do
   ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.i009.nc
   ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.i006.nc
   for tile in {1..6}; do
-	ln -s sfc_inc.tile${tile}.nc enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc
+	 ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
   done
   cd "${cwd_9648}"
 done
