@@ -755,18 +755,31 @@ class GCAFSTasks(Tasks):
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        atm_anl_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
+        #atm_anl_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
+        #deps = []
+        #data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.atm.a006.nc'
+        #dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        #deps.append(rocoto.add_dependency(dep_dict))
+        #data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.sfc.a006.nc'
+        #dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        #deps.append(rocoto.add_dependency(dep_dict))
+        #data = f'{atm_anl_path}/{self.run}.t@Hz.done.txt'
+        #dep_dict = {'type': 'data', 'data': data, 'age': 60}
+
+        chem_anl_path = self._template_to_rocoto_cycstring(self._base["COM_CHEM_ANALYSIS_TMPL"])
+        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
         deps = []
-        data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.atm.a006.nc'
-        dep_dict = {'type': 'data', 'data': data, 'age': 120}
-        deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.sfc.a006.nc'
-        dep_dict = {'type': 'data', 'data': data, 'age': 120}
-        deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_anl_path}/{self.run}.t@Hz.done.txt'
+        data = f'{chem_anl_path}/{self.run}.t@Hz.analysis.atm.a006.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{atm_hist_path}/{self.run}.t@Hz.sfc.f000.nc'
+        dep_dict = {'type': 'data', 'data': data, 'age': 60}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
+        deps.append(rocoto.add_dependency(dep_dict))
+
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
         resources = self.get_resource('upp')
         task_name = f'{self.run}_atmanlupp'
         task_dict = {'task_name': task_name,
