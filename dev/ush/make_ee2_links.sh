@@ -279,21 +279,19 @@ ln -s gdas.t06z.loganl.txt gdas.t06z.analysis.done.txt
 ln -s gdas.t06z.loginc.txt gdas.t06z.increment.done.txt
 ln -s gdas.t06z.oznstat gdas.t06z.oznstat.tar
 ln -s gdas.t06z.sfcanl.nc gdas.t06z.analysis.sfc.a006.nc
-ln -s sfc_inc.tile1.nc gdas.t06z.increment.sfc.i003.nc
-cd "${cwd}"
-
-cd C96C48/20250327/gdas.20211221/18/analysis/atmos
-ln -s gdas.t18z.atminc.nc gdas.t18z.increment.atm.i006.nc
-ln -s gdas.t18z.cubed_sphere_grid_atminc.tile1.nc gdas.t18z.jedi_increment.atm.i006.tile1.nc
-ln -s gdas.t18z.cubed_sphere_grid_ratminc.tile1.nc gdas.t18z.recentered_jedi_increment.atm.i006.tile1.nc
+for tile in {1..6}; do
+  ln -s "sfc_inc.tile${tile}.nc" "gdas.t06z.increment.sfc.i006.tile${tile}.nc"
+done
 cd "${cwd}"
 
 cd C96C48/20250808/enkfgdas.20211220/12
+cwd_9648=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
   cd "${cwd_9648}"
 done
+unset cwd_9648
 cd "${cwd}"
 
 cd C96C48/20250808/enkfgdas.20220515/06/ensstat/analysis/atmos
@@ -313,26 +311,39 @@ ln -s enkfgdas.t06z.radstat.ensmean enkfgdas.t06z.radstat.ensmean.tar
 ln -s enkfgdas.t06z.sfci003.nc enkfgdas.t06z.increment.sfc.i003.nc
 ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
 ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
-ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
-ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
-ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
-ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.atm.i003.nc
-ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
-ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.atm.i006.nc
-ln -s enkfgdas.t06z.sfci003.nc enkfgdas.t06z.increment.sfc.i003.nc
-ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
-ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
-ln -s sfc_inc.tile1.nc enkfgdas.t06z.increment.sfc.i003.nc
 cd "${cwd}"
 
-cd C96C48/20250808/enkfgdas.20220223/18
+cd C96C48/20250808/enkfgdas.20220515/06
+cwd_9648=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
+  ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
+  ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
+  ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
+  ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.atm.i003.nc
+  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
+  ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.atm.i006.nc
+  ln -s enkfgdas.t06z.sfci003.nc enkfgdas.t06z.increment.sfc.i003.nc
+  ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
+  ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
   for tile in {1..6}; do
-    ln -s "enkfgdas.t18z.cubed_sphere_grid_atminc.tile${tile}.nc" "enkfgdas.t18z.jedi_increment.atm.i006.tile${tile}.nc"
+    ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
   done
   cd "${cwd_9648}"
 done
+unset cwd_9648
+cd "${cwd}"
+
+cd C96C48/20250808/enkfgdas.20240223/18
+cwd_9648=${PWD}
+for dir in mem*; do
+  cd "${dir}/analysis/atmos"
+  for tile in {1..6}; do
+    ln -s "enkfgdas.t18z.cubed_sphere_grid_ratminc.tile${tile}.nc" "enkfgdas.t18z.jedi_recentered_increment.atm.i006.tile${tile}.nc"
+  done
+  cd "${cwd_9648}"
+done
+unset cwd_9648
 cd "${cwd}"
 
 cd C96C48/20250808/gdas.20211220/12/analysis/atmos
@@ -341,6 +352,9 @@ ln -s gdas.t12z.abias_air gdas.t12z.abias_air.txt
 ln -s gdas.t12z.abias_int gdas.t12z.abias_int.txt
 ln -s gdas.t12z.abias_pc gdas.t12z.abias_pc.txt
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
+cd "${cwd}"
+
+cd C96C48/20250808/gdas.20211220/12/analysis/ocean
 ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
@@ -372,18 +386,17 @@ ln -s gdas.t06z.loginc.txt gdas.t06z.increment.done.txt
 ln -s gdas.t06z.oznstat gdas.t06z.oznstat.tar
 ln -s gdas.t06z.radstat gdas.t06z.radstat.tar
 ln -s gdas.t06z.sfcanl.nc gdas.t06z.analysis.sfc.a006.nc
-ln -s sfc_inc.tile1.nc gdas.t06z.increment.sfc.i003.nc
-cd "${cwd}"
-
-cd C96C48/20250808/gdas.20220515/18/analysis/atmos
-ln -s gdas.t18z.cubed_sphere_grid_atminc.tile1.nc gdas.t18z.jedi_increment.atm.i006.tile1.nc
+for tile in {1..6}; do
+  ln -s "sfc_inc.tile${tile}.nc" "gdas.t06z.increment.sfc.i006.tile${tile}.nc"
+done
 cd "${cwd}"
 
 cd retro_ICs/enkfgdas.20241115/06
+cwd_retro=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t06z.ocninc.nc enkfgdas.t06z.mom6_increment.i006.nc
-  cd "${cwd_9648}"
+  cd "${cwd_retro}"
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
   ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
@@ -394,18 +407,16 @@ for dir in mem*; do
   for tile in {1..6}; do
     ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
   done
-  cd "${cwd_9648}"
+  cd "${cwd_retro}"
 done
+unset cwd_retro
 cd "${cwd}"
 
 cd retro_ICs/gdas.20241115/06/analysis/atmos
 ln -s gdas.t06z.abias gdas.t06z.abias.txt
-ln -s gdas.t06z.abias.orig gdas.t06z.abias.orig.txt
 ln -s gdas.t06z.abias_air gdas.t06z.abias_air.txt
-ln -s gdas.t06z.abias_air.orig gdas.t06z.abias_air.orig.txt
 ln -s gdas.t06z.abias_int gdas.t06z.abias_int.txt
 ln -s gdas.t06z.abias_pc gdas.t06z.abias_pc.txt
-ln -s gdas.t06z.abias_pc.orig gdas.t06z.abias_pc.orig.txt
 ln -s gdas.t06z.atma003.ensres.nc gdas.t06z.ensres_analysis.atm.a003.nc
 ln -s gdas.t06z.atma009.ensres.nc gdas.t06z.ensres_analysis.atm.a009.nc
 ln -s gdas.t06z.atmanl.ensres.nc gdas.t06z.ensres_analysis.atm.a006.nc
@@ -421,7 +432,9 @@ ln -s gdas.t06z.loginc.txt gdas.t06z.increment.done.txt
 ln -s gdas.t06z.oznstat gdas.t06z.oznstat.tar
 ln -s gdas.t06z.radstat gdas.t06z.radstat.tar
 ln -s gdas.t06z.sfcanl.nc gdas.t06z.analysis.sfc.a006.nc
-ln -s sfc_inc.tile1.nc gdas.t06z.increment.sfc.i003.nc
+for tile in {1..6}; do
+  ln -s "sfc_inc.tile${tile}.nc" "gdas.t06z.increment.sfc.i006.tile${tile}.nc"
+done
 cd "${cwd}"
 
 cd retro_ICs/gdas.20241115/06/analysis/ocean
