@@ -11,18 +11,9 @@ source "${HOMEgfs}/ush/atparse.bash"
 
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
-export REDOUT=${REDOUT:-'1>'}
-export REDERR=${REDERR:-'2>'}
 
 export PGM=${REGRID_EXEC}
 export pgm=${PGM}
-
-# Use CFP for ensemble job
-if [[ "${RUN}" == *"enkf"* ]]; then
-    export USE_CFP=YES
-else
-    export USE_CFP=NO
-fi
 
 NMEM_REGRID=${NMEM_REGRID:-1}
 CASE_IN=${CASE_IN:-${CASE_ENS}}
@@ -77,34 +68,30 @@ fi
 # Stage input files
 #
 
-# Create master MPMD command file
-rm -f cmdfile
-touch cmdfile
-chmod 755 cmdfile
-
 # Create MDMD command file for fixed files
 rm -f cmdfile.0
 touch cmdfile.0
 chmod 755 cmdfile.0
+
+# Append fixed files command file to master command file
+{
 echo "#!/bin/bash" > cmdfile.0
 
 # input, fixed files
 echo "cpreq ${FIXorog}/${CASE_IN}/gaussian.${LONB_CASE_IN}.${LATB_CASE_IN}.nc \
-            ${DATA}/gaussian_scrip.nc" >> cmdfile.0
+            ${DATA}/gaussian_scrip.nc"
 
 # output, fixed files
 echo "cpreq ${FIXorog}/${CASE_OUT}/${CASE_OUT}_mosaic.nc \
-            ${DATA}/${CASE_OUT}_mosaic.nc" >> cmdfile.0
+            ${DATA}/${CASE_OUT}_mosaic.nc"
 
 for n in $(seq 1 "${ntiles}"); do
     echo "cpreq ${FIXorog}/${CASE_OUT}/sfc/${CASE_OUT}.mx${OCNRES_OUT}.vegetation_type.tile${n}.nc \
-                ${DATA}/vegetation_type.tile${n}.nc" >> cmdfile.0
+                ${DATA}/vegetation_type.tile${n}.nc"
     echo "cpreq ${FIXorog}/${CASE_OUT}/${CASE_OUT}_grid.tile${n}.nc \
-                ${DATA}/${CASE_OUT}_grid.tile${n}.nc" >> cmdfile.0
+                ${DATA}/${CASE_OUT}_grid.tile${n}.nc"
 done
-
-# Append fixed files command file to master command file
-echo "${DATA}/cmdfile.0" >> cmdfile
+} > cmdfile.0
 
 for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
@@ -133,23 +120,37 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     rm -f "cmdfile.${imem}"
     touch "cmdfile.${imem}"
     chmod 755 "cmdfile.${imem}"
+
+    # Create commands to stage input files
+    {
     echo "#!/bin/bash" > "cmdfile.${imem}"
 
     for FHR in "${soilinc_fhrs[@]}"; do
         echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHR}.nc \
-                    ${memdir}/sfci00${FHR}.nc" >> "cmdfile.${imem}"
+                    ${memdir}/sfci00${FHR}.nc"
     done 
 
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then 
         for FHI in "${landifhrs[@]}"; do
             echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHI}.nc \
-                        ${memdir}/sfci00${FHI}.nc" >> "cmdfile.${imem}"
+                        ${memdir}/sfci00${FHI}.nc"
         done
     fi
-
-    # Append this member's command file to master command file
-    echo "${DATA}/cmdfile.${imem}" >> cmdfile
+    } > "cmdfile.${imem}"
 done
+
+# Create master MPMD command file
+rm -f cmdfile
+touch cmdfile
+chmod 755 cmdfile
+
+# Append all members' command files to master command file
+{
+echo "${DATA}/cmdfile.0" # fixed files
+for imem in $(seq 1 "${NMEM_REGRID}"); do
+    echo "${DATA}/cmdfile.${imem}"
+done
+} >> cmdfile
 
 # Run MPMD to stage input files
 "${USHgfs}/run_mpmd.sh" "cmdfile" && true
@@ -179,7 +180,7 @@ if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
         # Run regrid executable
-        ${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+        ${APRUN_REGRID} "${REGRID_EXEC}" "1>${PGMOUT}" "2>${PGMERR}"
     	export err=$?
 	    if [[ ${err} -ne 0 ]]; then
 	        err_exit "${REGRID_EXEC} failed, ABORT!"
@@ -201,7 +202,7 @@ if [[ "${DO_LAND_IAU}" = ".true." ]]; then
 
     # Run regrid executable
     export pgm="${REGRID_EXEC}"
-	${APRUN_REGRID} "${REGRID_EXEC}" "${REDOUT}${PGMOUT}" "${REDERR}${PGMERR}"
+	${APRUN_REGRID} "${REGRID_EXEC}" "1>${PGMOUT}" "2>${PGMERR}"
 	export err=$?
 	if [[ ${err} -ne 0 ]]; then
 	    err_exit "${pgm} failed, ABORT!"
@@ -211,11 +212,6 @@ fi
 #
 # Save regridded files to COMOUT
 #
-
-# Create master MPMD command file
-rm -f cmdfile
-touch cmdfile
-chmod 755 cmdfile
 
 for imem in $(seq 1 "${NMEM_REGRID}"); do
     cmem=$(printf %03i "${imem}")
@@ -236,13 +232,15 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     rm -f "cmdfile.${imem}"
     touch "cmdfile.${imem}"
     chmod 755 "cmdfile.${imem}"
-    echo "#!/bin/bash" > "cmdfile.${imem}"
+
+    {
+    echo "#!/bin/bash"
 
     if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
         for FHR in "${soilinc_fhrs[@]}"; do
             for n in $(seq 1 "${ntiles}"); do
                 echo "cpfs ${memdir}/sfci00${FHR}.mem${imem}.tile${n}.nc \
-                      ${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i00${FHR}.tile${n}.nc" >> "cmdfile.${imem}"
+                      ${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i00${FHR}.tile${n}.nc"
             done
         done
     fi
@@ -250,13 +248,23 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then
         for n in $(seq 1 "${ntiles}"); do
             echo "cpfs ${memdir}/sfci.mem${imem}.tile${n}.nc \
-                  ${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i006.tile${n}.nc" >> "cmdfile.${imem}"
+                  ${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i006.tile${n}.nc"
         done
     fi
-
-    # Append this member's command file to master command file
-    echo "${DATA}/cmdfile.${imem}" >> cmdfile
+    } > "cmdfile.${imem}"
 done
+
+# Create master MPMD command file
+rm -f cmdfile
+touch cmdfile
+chmod 755 cmdfile
+
+# Append all members' command files to master command file
+{
+for imem in $(seq 1 "${NMEM_REGRID}"); do
+    echo "${DATA}/cmdfile.${imem}"
+done
+} >> cmdfile
 
 # Run MPMD to save output files
 "${USHgfs}/run_mpmd.sh" "cmdfile" && true
