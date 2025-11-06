@@ -180,7 +180,7 @@ if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]
         atparse < "${regrid_nml_tmpl}" >> "regrid.nml"
 
         # Run regrid executable
-        ${APRUN_REGRID} "${REGRID_EXEC}" 1>${PGMOUT}" 2>${PGMERR}"
+        ${APRUN_REGRID} "${REGRID_EXEC}" 1>"${PGMOUT}" 2>"${PGMERR}"
     	export err=$?
 	    if [[ ${err} -ne 0 ]]; then
 	        err_exit "${REGRID_EXEC} failed, ABORT!"
@@ -202,7 +202,7 @@ if [[ "${DO_LAND_IAU}" = ".true." ]]; then
 
     # Run regrid executable
     export pgm="${REGRID_EXEC}"
-	${APRUN_REGRID} "${REGRID_EXEC}" 1>${PGMOUT}" 2>${PGMERR}"
+	${APRUN_REGRID} "${REGRID_EXEC}" 1>"${PGMOUT}" 2>"${PGMERR}"
 	export err=$?
 	if [[ ${err} -ne 0 ]]; then
 	    err_exit "${pgm} failed, ABORT!"
