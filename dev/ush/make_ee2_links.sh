@@ -26,6 +26,7 @@ for dir in mem*; do
   ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
   cd "${cwd_4848500}"
 done
+unset cwd_4848500
 cd "${cwd}"
 
 cd C48C48mx500/20250327/enkfgdas.20210324/12
@@ -40,6 +41,7 @@ for dir in mem*; do
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
   cd "${cwd_4848500}"
 done
+unset cwd_4848500
 cd "${cwd}"
 
 cd C48C48mx500/20250327/enkfgdas.20210324/18
@@ -57,6 +59,7 @@ for dir in mem*; do
   ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.mom_6increment.i006.nc
   cd "${cwd_4848500}"
 done
+unset cwd_4848500
 cd "${cwd}"
 
 cd C48C48mx500/20250327/gdas.20210323/12/analysis/atmos
@@ -67,11 +70,11 @@ ln -s gdas.t12z.abias_pc gdas.t12z.abias_pc.txt
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
 cd "${cwd}"
 
-cd C48C48mx500/20250327/gdas.20210324/12/analysis/ocean
+cd C48C48mx500/20250327/gdas.20210323/12/analysis/ocean
 ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
-cd C48C48mx500/20250327/gdas.20210324/18/analysis/atmos
+cd C48C48mx500/20250327/gdas.20210324/12/analysis/atmos
 ln -s gdas.t12z.abias gdas.t12z.abias.txt
 ln -s gdas.t12z.abias_air gdas.t12z.abias_air.txt
 ln -s gdas.t12z.abias_int gdas.t12z.abias_int.txt
@@ -80,6 +83,9 @@ ln -s gdas.t12z.atmi003.nc gdas.t12z.increment.atm.i003.nc
 ln -s gdas.t12z.atmi009.nc gdas.t12z.increment.atm.i009.nc
 ln -s gdas.t12z.atminc.nc gdas.t12z.increment.atm.i006.nc
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
+cd "${cwd}"
+
+cd C48C48mx500/20250327/gdas.20210324/12/analysis/ocean
 ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
@@ -108,16 +114,18 @@ ln -s gdas.t18z.ocninc.nc gdas.t18z.mom6_increment.i006.nc
 cd "${cwd}"
 
 cd C48C48mx500/20250808/enkfgdas.20210324/12
+cwd_4848500=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
-  ln -s enkfgdas.t12z.atmi003.nc enkfgdas.t12z.increment.atm.i003.nc
-  ln -s enkfgdas.t12z.atmi009.nc enkfgdas.t12z.increment.atm.i009.nc
-  ln -s enkfgdas.t12z.atminc.nc enkfgdas.t12z.increment.atm.i006.nc
+  ln -s enkfgdas.t12z.ratmi003.nc enkfgdas.t12z.recentered_increment.atm.i003.nc
+  ln -s enkfgdas.t12z.ratmi009.nc enkfgdas.t12z.recentered_increment.atm.i009.nc
+  ln -s enkfgdas.t12z.ratminc.nc enkfgdas.t12z.recentered_increment.atm.i006.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
   cd "${cwd_4848500}"
 done
+unset cwd_4848500
 cd "${cwd}"
 
 cd C48C48mx500/20250808/enkfgdas.20210324/18
@@ -314,7 +322,7 @@ cd "${cwd}"
 
 cd C96C48/20250808/enkfgdas.20220515/06/ensstat/analysis/snow
 for tile in {1..6}; do
-  ln -s "snow_inc.20220515.060000.sfc_data.tile${tile}.nc" "20220515.060000.snow_increment.sfc_data.tile${tile}.nc"
+  ln -s "snowinc.20220515.060000.sfc_data.tile${tile}.nc" "20220515.060000.snow_increment.sfc_data.tile${tile}.nc"
 done
 cd "${cwd}"
 
@@ -404,7 +412,7 @@ cd "${cwd}"
 
 cd C96C48/20250808/gdas.20220515/06/analysis/snow
 for tile in {1..6}; do
-  ln -s "snow_inc.20220515.060000.sfc_data.tile${tile}.nc" "20220515.060000.snow_increment.sfc_data.tile${tile}.nc"
+  ln -s "snowinc.20220515.060000.sfc_data.tile${tile}.nc" "20220515.060000.snow_increment.sfc_data.tile${tile}.nc"
 done
 cd "${cwd}"
 
