@@ -184,6 +184,7 @@ if [[ "${RUN}" == "gfs" ]] ; then
 else
    export DOBNDPNT_WAVE="NO" 
 fi
+
 export FRAC_GRID=".true."
 export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
@@ -384,6 +385,8 @@ export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
 export DO_CALC_INCREMENT="NO"
+export USE_BUILD_GSINFO="YES"
+export BUILD_GSINFO_DIR="${PARMgfs}/gsinfo"
 
 # Early-cycle EnKF parameters
 export NMEM_ENS_GFS="{{ NMEM_ENS_GFS }}"

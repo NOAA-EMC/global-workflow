@@ -98,7 +98,7 @@ done
 
 # Link fix directories
 if [[ -n "${FIX_DIR}" ]]; then
-  if [[ ! -d "${HOMEgfs}/fix" ]]; then mkdir "${HOMEgfs}/fix" || exit 1; fi
+  mkdir -p "${HOMEgfs}/fix" || exit 1
 fi
 cd "${HOMEgfs}/fix" || exit 1
 for dir in aer \
@@ -209,9 +209,7 @@ fi
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/fix" || exit 1
-  if [[ ! -d gdas ]]; then
-      mkdir -p gdas
-  fi
+  mkdir -p gdas
   cd gdas || exit 1
   for gdas_sub in fv3jedi gsibec obs soca aero snow; do
     if [[ -d "${gdas_sub}" ]]; then
@@ -227,9 +225,7 @@ fi
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
   cd "${HOMEgfs}/parm" || exit 1
-  if [[ ! -d gdas ]]; then
-      mkdir -p gdas
-  fi
+  mkdir -p gdas
   cd gdas || exit 1
   declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
   for comp in "${gdasapp_comps[@]}"; do
@@ -306,11 +302,32 @@ if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd" ]]; then
   # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm" .
 fi
 
+#-------------------------------------------
+#--Add GSI conv, sat, and oz info parm files
+#-------------------------------------------
+if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd/fix/build_gsinfo" ]]; then
+
+  cd "${HOMEgfs}/parm" || exit 1
+
+  mkdir -p gsinfo
+
+  cd gsinfo || exit 1
+
+  for dir in convinfo satinfo ozinfo obs_input hirs_fix; do
+    if [[ -d "${dir}" ]]; then
+        rm -rf "${dir}"
+    fi
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_enkf.fd/fix/build_gsinfo/${dir}" "${dir}"
+  done
+fi
+
+
 #------------------------------
 #--link executables
 #------------------------------
 
-if [[ ! -d "${HOMEgfs}/exec" ]]; then mkdir "${HOMEgfs}/exec" || exit 1; fi
+mkdir -p "${HOMEgfs}/exec" || exit 1
+
 cd "${HOMEgfs}/exec" || exit 1
 
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
@@ -410,7 +427,7 @@ fi
 
 # GDASApp libraries
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
-  if [[ ! -d "${HOMEgfs}/lib" ]]; then mkdir "${HOMEgfs}/lib" || exit 1; fi
+  mkdir -p "${HOMEgfs}/lib" || exit 1
   cd "${HOMEgfs}/lib" || exit 1
   cp -af "${HOMEgfs}/sorc/gdas.cd/install/lib/." ./
 fi
