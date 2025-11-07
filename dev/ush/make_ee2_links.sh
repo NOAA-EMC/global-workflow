@@ -34,8 +34,8 @@ cwd_4848500=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t12z.ratmi003.nc enkfgdas.t12z.recentered_increment.atm.i003.nc
-  ln -s enkfgdas.t12z.ratmi009.nc enkfgdas.t12z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t12z.ratminc.nc enkfgdas.t12z.recentered_increment.atm.i006.nc
+  ln -s enkfgdas.t12z.ratmi009.nc enkfgdas.t12z.recentered_increment.atm.i009.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
@@ -49,11 +49,11 @@ cwd_4848500=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t18z.atmi003.nc enkfgdas.t18z.increment.atm.i003.nc
-  ln -s enkfgdas.t18z.atmi009.nc enkfgdas.t18z.increment.atm.i009.nc
   ln -s enkfgdas.t18z.atminc.nc enkfgdas.t18z.increment.atm.i006.nc
+  ln -s enkfgdas.t18z.atmi009.nc enkfgdas.t18z.increment.atm.i009.nc
   ln -s enkfgdas.t18z.ratmi003.nc enkfgdas.t18z.recentered_increment.atm.i003.nc
-  ln -s enkfgdas.t18z.ratmi009.nc enkfgdas.t18z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.atm.i006.nc
+  ln -s enkfgdas.t18z.ratmi009.nc enkfgdas.t18z.recentered_increment.atm.i009.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.mom_6increment.i006.nc
@@ -80,8 +80,8 @@ ln -s gdas.t12z.abias_air gdas.t12z.abias_air.txt
 ln -s gdas.t12z.abias_int gdas.t12z.abias_int.txt
 ln -s gdas.t12z.abias_pc gdas.t12z.abias_pc.txt
 ln -s gdas.t12z.atmi003.nc gdas.t12z.increment.atm.i003.nc
-ln -s gdas.t12z.atmi009.nc gdas.t12z.increment.atm.i009.nc
 ln -s gdas.t12z.atminc.nc gdas.t12z.increment.atm.i006.nc
+ln -s gdas.t12z.atmi009.nc gdas.t12z.increment.atm.i009.nc
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
 cd "${cwd}"
 
@@ -95,12 +95,12 @@ ln -s gdas.t18z.abias_air gdas.t18z.abias_air.txt
 ln -s gdas.t18z.abias_int gdas.t18z.abias_int.txt
 ln -s gdas.t18z.abias_pc gdas.t18z.abias_pc.txt
 ln -s gdas.t18z.atma003.ensres.nc gdas.t18z.ensres_analysis.atm.a003.nc
-ln -s gdas.t18z.atma009.ensres.nc gdas.t18z.ensres_analysis.atm.a009.nc
 ln -s gdas.t18z.atmanl.ensres.nc gdas.t18z.ensres_analysis.atm.a006.nc
+ln -s gdas.t18z.atma009.ensres.nc gdas.t18z.ensres_analysis.atm.a009.nc
 ln -s gdas.t18z.atmanl.nc gdas.t18z.analysis.atm.a006.nc
 ln -s gdas.t18z.atmi003.nc gdas.t18z.increment.atm.i003.nc
-ln -s gdas.t18z.atmi009.nc gdas.t18z.increment.atm.i009.nc
 ln -s gdas.t18z.atminc.nc gdas.t18z.increment.atm.i006.nc
+ln -s gdas.t18z.atmi009.nc gdas.t18z.increment.atm.i009.nc
 ln -s gdas.t18z.cnvstat gdas.t18z.cnvstat.tar
 ln -s gdas.t18z.dtfanl.nc gdas.t18z.analysis.dtf.a006.nc
 ln -s gdas.t18z.gsistat gdas.t18z.gsistat.txt
@@ -118,8 +118,8 @@ cwd_4848500=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t12z.ratmi003.nc enkfgdas.t12z.recentered_increment.atm.i003.nc
-  ln -s enkfgdas.t12z.ratmi009.nc enkfgdas.t12z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t12z.ratminc.nc enkfgdas.t12z.recentered_increment.atm.i006.nc
+  ln -s enkfgdas.t12z.ratmi009.nc enkfgdas.t12z.recentered_increment.atm.i009.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
@@ -133,11 +133,11 @@ cwd_4848500=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t18z.atmi003.nc enkfgdas.t18z.increment.atm.i003.nc
-  ln -s enkfgdas.t18z.atmi009.nc enkfgdas.t18z.increment.atm.i009.nc
   ln -s enkfgdas.t18z.atminc.nc enkfgdas.t18z.increment.atm.i006.nc
+  ln -s enkfgdas.t18z.atmi009.nc enkfgdas.t18z.increment.atm.i009.nc
   ln -s enkfgdas.t18z.ratmi003.nc enkfgdas.t18z.recentered_increment.atm.i003.nc
-  ln -s enkfgdas.t18z.ratmi009.nc enkfgdas.t18z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.atm.i006.nc
+  ln -s enkfgdas.t18z.ratmi009.nc enkfgdas.t18z.recentered_increment.atm.i009.nc
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.mom6_increment.i006.nc
@@ -157,8 +157,8 @@ ln -s gdas.t12z.abias_air gdas.t12z.abias_air.txt
 ln -s gdas.t12z.abias_int gdas.t12z.abias_int.txt
 ln -s gdas.t12z.abias_pc gdas.t12z.abias_pc.txt
 ln -s gdas.t12z.atmi003.nc gdas.t12z.increment.atm.i003.nc
-ln -s gdas.t12z.atmi009.nc gdas.t12z.increment.atm.i009.nc
 ln -s gdas.t12z.atminc.nc gdas.t12z.increment.atm.i006.nc
+ln -s gdas.t12z.atmi009.nc gdas.t12z.increment.atm.i009.nc
 ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
 cd "${cwd}"
 cd C48C48mx500/20250808/gdas.20210324/12/analysis/ocean
@@ -171,12 +171,12 @@ ln -s gdas.t18z.abias_air gdas.t18z.abias_air.txt
 ln -s gdas.t18z.abias_int gdas.t18z.abias_int.txt
 ln -s gdas.t18z.abias_pc gdas.t18z.abias_pc.txt
 ln -s gdas.t18z.atma003.ensres.nc gdas.t18z.ensres_analysis.atm.a003.nc
-ln -s gdas.t18z.atma009.ensres.nc gdas.t18z.ensres_analysis.atm.a009.nc
 ln -s gdas.t18z.atmanl.ensres.nc gdas.t18z.ensres_analysis.atm.a006.nc
+ln -s gdas.t18z.atma009.ensres.nc gdas.t18z.ensres_analysis.atm.a009.nc
 ln -s gdas.t18z.atmanl.nc gdas.t18z.analysis.atm.a006.nc
 ln -s gdas.t18z.atmi003.nc gdas.t18z.increment.atm.i003.nc
-ln -s gdas.t18z.atmi009.nc gdas.t18z.increment.atm.i009.nc
 ln -s gdas.t18z.atminc.nc gdas.t18z.increment.atm.i006.nc
+ln -s gdas.t18z.atmi009.nc gdas.t18z.increment.atm.i009.nc
 ln -s gdas.t18z.cnvstat gdas.t18z.cnvstat.tar
 ln -s gdas.t18z.dtfanl.nc gdas.t18z.analysis.dtf.a006.nc
 ln -s gdas.t18z.gsistat gdas.t18z.gsistat.txt
@@ -205,8 +205,8 @@ ln -s enkfgdas.t06z.abias_air.ensmean enkfgdas.t06z.abias_air.ensmean.txt
 ln -s enkfgdas.t06z.abias_int.ensmean enkfgdas.t06z.abias_int.ensmean.txt
 ln -s enkfgdas.t06z.abias_pc.ensmean enkfgdas.t06z.abias_pc.ensmean.txt
 ln -s enkfgdas.t06z.atmi003.ensmean.nc enkfgdas.t06z.ensmean_increment.atm.i003.nc
-ln -s enkfgdas.t06z.atmi009.ensmean.nc enkfgdas.t06z.ensmean_increment.atm.i009.nc
 ln -s enkfgdas.t06z.atminc.ensmean.nc enkfgdas.t06z.ensmean_increment.atm.i006.nc
+ln -s enkfgdas.t06z.atmi009.ensmean.nc enkfgdas.t06z.ensmean_increment.atm.i009.nc
 ln -s enkfgdas.t06z.enkfstat enkfgdas.t06z.enkfstat.txt
 ln -s enkfgdas.t06z.gsistat.ensmean enkfgdas.t06z.gsistat.ensmean.tar
 ln -s enkfgdas.t06z.loginc.txt enkfgdas.t06z.increment.done.txt
@@ -221,11 +221,11 @@ cwd_9648=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
-  ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
   ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
+  ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
   ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.atm.i003.nc
-  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.atm.i006.nc
+  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t06z.sfci003.nc enkfgdas.t06z.increment.sfc.i003.nc
   ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
   ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
@@ -274,12 +274,12 @@ ln -s gdas.t06z.abias_air gdas.t06z.abias_air.txt
 ln -s gdas.t06z.abias_int gdas.t06z.abias_int.txt
 ln -s gdas.t06z.abias_pc gdas.t06z.abias_pc.txt
 ln -s gdas.t06z.atma003.ensres.nc gdas.t06z.ensres_analysis.atm.a003.nc
-ln -s gdas.t06z.atma009.ensres.nc gdas.t06z.ensres_analysis.atm.a009.nc
 ln -s gdas.t06z.atmanl.ensres.nc gdas.t06z.ensres_analysis.atm.a006.nc
+ln -s gdas.t06z.atma009.ensres.nc gdas.t06z.ensres_analysis.atm.a009.nc
 ln -s gdas.t06z.atmanl.nc gdas.t06z.analysis.atm.a006.nc
 ln -s gdas.t06z.atmi003.nc gdas.t06z.increment.atm.i003.nc
-ln -s gdas.t06z.atmi009.nc gdas.t06z.increment.atm.i009.nc
 ln -s gdas.t06z.atminc.nc gdas.t06z.increment.atm.i006.nc
+ln -s gdas.t06z.atmi009.nc gdas.t06z.increment.atm.i009.nc
 ln -s gdas.t06z.dtfanl.nc gdas.t06z.analysis.dtf.a006.nc
 ln -s gdas.t06z.gsistat gdas.t06z.gsistat.txt
 ln -s gdas.t06z.loganl.txt gdas.t06z.analysis.done.txt
@@ -307,8 +307,8 @@ ln -s enkfgdas.t06z.abias_air.ensmean enkfgdas.t06z.abias_air.ensmean.txt
 ln -s enkfgdas.t06z.abias_int.ensmean enkfgdas.t06z.abias_int.ensmean.txt
 ln -s enkfgdas.t06z.abias_pc.ensmean enkfgdas.t06z.abias_pc.ensmean.txt
 ln -s enkfgdas.t06z.atmi003.ensmean.nc enkfgdas.t06z.ensmean_increment.atm.i003.nc
-ln -s enkfgdas.t06z.atmi009.ensmean.nc enkfgdas.t06z.ensmean_increment.atm.i009.nc
 ln -s enkfgdas.t06z.atminc.ensmean.nc enkfgdas.t06z.ensmean_increment.atm.i006.nc
+ln -s enkfgdas.t06z.atmi009.ensmean.nc enkfgdas.t06z.ensmean_increment.atm.i009.nc
 ln -s enkfgdas.t06z.cnvstat.ensmean enkfgdas.t06z.cnvstat.ensmean.tar
 ln -s enkfgdas.t06z.enkfstat enkfgdas.t06z.enkfstat.txt
 ln -s enkfgdas.t06z.gsistat.ensmean enkfgdas.t06z.gsistat.ensmean.tar
@@ -331,11 +331,11 @@ cwd_9648=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
-  ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
   ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
+  ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
   ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.atm.i003.nc
-  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.atm.i006.nc
+  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t06z.sfci003.nc enkfgdas.t06z.increment.sfc.i003.nc
   ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
   ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
@@ -391,12 +391,12 @@ ln -s gdas.t06z.abias_air gdas.t06z.abias_air.txt
 ln -s gdas.t06z.abias_int gdas.t06z.abias_int.txt
 ln -s gdas.t06z.abias_pc gdas.t06z.abias_pc.txt
 ln -s gdas.t06z.atma003.ensres.nc gdas.t06z.ensres_analysis.atm.a003.nc
-ln -s gdas.t06z.atma009.ensres.nc gdas.t06z.ensres_analysis.atm.a009.nc
 ln -s gdas.t06z.atmanl.ensres.nc gdas.t06z.ensres_analysis.atm.a006.nc
+ln -s gdas.t06z.atma009.ensres.nc gdas.t06z.ensres_analysis.atm.a009.nc
 ln -s gdas.t06z.atmanl.nc gdas.t06z.analysis.atm.a006.nc
 ln -s gdas.t06z.atmi003.nc gdas.t06z.increment.atm.i003.nc
-ln -s gdas.t06z.atmi009.nc gdas.t06z.increment.atm.i009.nc
 ln -s gdas.t06z.atminc.nc gdas.t06z.increment.atm.i006.nc
+ln -s gdas.t06z.atmi009.nc gdas.t06z.increment.atm.i009.nc
 ln -s gdas.t06z.cnvstat gdas.t06z.cnvstat.tar
 ln -s gdas.t06z.dtfanl.nc gdas.t06z.analysis.dtf.a006.nc
 ln -s gdas.t06z.gsistat gdas.t06z.gsistat.txt
@@ -424,11 +424,11 @@ for dir in mem*; do
   cd "${cwd_retro}"
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
-  ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
   ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
+  ln -s enkfgdas.t06z.atmi009.nc enkfgdas.t06z.increment.atm.i009.nc
   ln -s enkfgdas.t06z.ratmi003.nc enkfgdas.t06z.recentered_increment.atm.i003.nc
-  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.atm.i006.nc
+  ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
   for tile in {1..6}; do
     ln -s "sfc_inc.tile${tile}.nc" "increment.sfc.i006.tile${tile}.nc"
   done
@@ -443,12 +443,12 @@ ln -s gdas.t06z.abias_air gdas.t06z.abias_air.txt
 ln -s gdas.t06z.abias_int gdas.t06z.abias_int.txt
 ln -s gdas.t06z.abias_pc gdas.t06z.abias_pc.txt
 ln -s gdas.t06z.atma003.ensres.nc gdas.t06z.ensres_analysis.atm.a003.nc
-ln -s gdas.t06z.atma009.ensres.nc gdas.t06z.ensres_analysis.atm.a009.nc
 ln -s gdas.t06z.atmanl.ensres.nc gdas.t06z.ensres_analysis.atm.a006.nc
+ln -s gdas.t06z.atma009.ensres.nc gdas.t06z.ensres_analysis.atm.a009.nc
 ln -s gdas.t06z.atmanl.nc gdas.t06z.analysis.atm.a006.nc
 ln -s gdas.t06z.atmi003.nc gdas.t06z.increment.atm.i003.nc
-ln -s gdas.t06z.atmi009.nc gdas.t06z.increment.atm.i009.nc
 ln -s gdas.t06z.atminc.nc gdas.t06z.increment.atm.i006.nc
+ln -s gdas.t06z.atmi009.nc gdas.t06z.increment.atm.i009.nc
 ln -s gdas.t06z.cnvstat gdas.t06z.cnvstat.tar
 ln -s gdas.t06z.dtfanl.nc gdas.t06z.analysis.dtf.a006.nc
 ln -s gdas.t06z.gsistat gdas.t06z.gsistat.txt
