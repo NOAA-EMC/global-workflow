@@ -54,6 +54,7 @@ class Jedi:
             {
                 'exe': config.exe_src,
                 'yaml': os.path.join(config.rundir, config.yaml_name + '.yaml'),
+                'input_config': None
             }
         )
         self.jedi_config = AttrDict(**config, **local_dict)
@@ -259,7 +260,7 @@ class Jedi:
         except Exception as e:
             raise WorkflowException(f"An error occurred while rendering JCB template for algorithm {algorithm}:\n{e}") from e
 
-        return jedi_input_config        
+        return jedi_input_config
 
     @staticmethod
     @logit(logger)
