@@ -204,7 +204,7 @@ class Jedi:
                 if observation_from_jcb not in bias_files_copied:
                     bias_src = os.path.join(self.jcb_config[f'{model}obsbiasroot_path'],
                                             self.jcb_config[f'{model}_obsbiasin_prefix'],
-                                            bias_file_dict[observation_from_jcb'',
+                                            bias_file_dict[observation_from_jcb],
                                             self.jcb_config[f'{model}_obsbiasin_path'])
 
                     fh_dict['copy_opt'].append([bias_src, bias_dest])
