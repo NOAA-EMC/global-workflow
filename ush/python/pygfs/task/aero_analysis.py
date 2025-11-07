@@ -11,7 +11,7 @@ from wxflow import (
     FileHandler,
     to_fv3time, to_timedelta,
     YAMLFile, parse_j2yaml,
-    logit,to_isotime
+    logit, to_isotime
 )
 import numpy as np
 
@@ -149,7 +149,6 @@ class AerosolAnalysis(Analysis):
         logger.info('Adding aero increments to background file')
         self.add_aero_gaussian_increments()
 
-
         # Save files from COM
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.data_out).sync()
@@ -204,8 +203,8 @@ class AerosolAnalysis(Analysis):
                         rstfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
                     except (AttributeError, RuntimeError):
                         pass  # checksum is missing, move on
+
     @logit(logger)
-    #def add_aero_gaussian_increments(self, inc_file: str, bkg_file: str, anl_file: str, incvars: List, bkgvars: List) -> None:
     def add_aero_gaussian_increments(self) -> None:
         """Add aero gaussian increments to gaussian backgrounds
 
@@ -228,7 +227,6 @@ class AerosolAnalysis(Analysis):
         incvars_list_path = os.path.join(self.task_config['PARMgfs'], 'gdas', 'aero', 'aero_det_inc_vars.yaml')
         allvars = YAMLFile(path=incvars_list_path)['aeroincvars'][:]
         logger.info(f"aero vas: {allvars} {bkg_file} {inc_file} {anl_file}")
-        #allvars = upp_yaml['aeroincvars'][:]
         bkgvars = [var[0] for var in allvars]
         incvars = [var[1] for var in allvars]
         with Dataset(inc_file, mode='r') as incfile, Dataset(bkg_file, mode='r') as rstfile, Dataset(anl_file, mode='a') as anlfile:
@@ -241,9 +239,8 @@ class AerosolAnalysis(Analysis):
                 anl = bkg + increment_reshape[np.newaxis, :, :, :]
                 logger.info(f"anl update {bkgname} {incname}")
                 anlfile.variables[bkgname][:] = anl[:]
-
+        # reset time from 6 to 0
         with Dataset(anl_file, mode='a') as file:
-                time = file.variables['time']
-                time[:] = 0.0
-                time.setncattr("units", f"hours since {to_isotime(self.task_config.current_cycle)}")
-
+            time = file.variables['time']
+            time[:] = 0.0
+            time.setncattr("units", f"hours since {to_isotime(self.task_config.current_cycle)}")
