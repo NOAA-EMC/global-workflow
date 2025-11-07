@@ -111,7 +111,7 @@ class SnowAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observations")
-        self.jedi_dict['snowanlvar'].stage_obs()
+        self.jedi_dict['snowanlvar'].stage_observations()
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")

@@ -109,7 +109,7 @@ class MarineAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observations")
-        self.jedi_dict['var'].stage_obs()
+        self.jedi_dict['var'].stage_observations()
 
         # prepare the deterministic MOM6 input.nml
         logger.info(f"Preparing deterministic MOM6 input namelist")

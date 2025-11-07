@@ -24,7 +24,7 @@ class Jedi:
     """
 
     @logit(logger, name="Jedi")
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: Dict[str, Any], task_config: AttrDict) -> None:
         """Constructor for JEDI objects
 
         This method will construct a Jedi object.
@@ -34,8 +34,10 @@ class Jedi:
 
         Parameters
         ----------
-        config: AttrDict
-            Attribute-dictionary of all configuration variables required for the Jedi class
+        config: Dict[str, Any]
+            Dictionary of all configuration variables required for the Jedi class
+        task_config: AttrDict
+            Attribute-dictionary of all configuration variables associated with a GDAS task.
 
         Returns
         ----------
@@ -52,9 +54,7 @@ class Jedi:
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
             {
-                'exe': config.exe_src,
                 'yaml': os.path.join(config.rundir, config.yaml_name + '.yaml'),
-                'input_config': None
             }
         )
         self.jedi_config = AttrDict(**config, **local_dict)
@@ -67,12 +67,21 @@ class Jedi:
         # Save a copy of jedi_config
         self._jedi_config = self.jedi_config.deepcopy()
 
+        # Initialize JCB config dictionary attribute
+        if self.jedi_config.jcb_base_yaml is not None:
+            self.jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
+        else:
+            raise WorkflowKeyError("JCB base YAML not specified as key 'jcb_base_yaml' in JEDI-class config dictionary")
+
+        # Add JCB algorithm YAML to JCB config dictionary, if it exists
+        if self.jedi_config.jcb_algo_yaml is not None:
+            self.jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
+
         # Initialize other attributes
-        self.jcb_config = None
-        self.input_config = None
+        self.exe_config = None
 
     @logit(logger)
-    def initialize(self, task_config: AttrDict, clean_empty_obsspaces=False) -> None:
+    def initialize(self, clean_empty_obsspaces=False) -> None:
         """Initialize JEDI application
 
         This method will initialize a JEDI application.
@@ -83,8 +92,6 @@ class Jedi:
 
         Parameters
         ----------
-        task_config: AttrDict
-            Attribute-dictionary of all configuration variables associated with a GDAS task.
         clean_empty_obsspaces: bool
             Flag to clean empty observation spaces from JEDI input configuration dictionary.
             Default is False.
@@ -96,8 +103,8 @@ class Jedi:
 
         # Render JEDI config dictionary
         logger.info(f"Generating JEDI YAML config: {self.jedi_config.yaml}")
-        self.input_config = self.render_jcb(task_config)
-        logger.debug(f"JEDI config:\n{pformat(self.input_config)}")
+        self.exe_config = self.render_jcb_template()
+        logger.debug(f"JEDI config:\n{pformat(self.exe_config)}")
 
         # Remove obs spaces from JEDI config dictionary with missing obs files
         if clean_empty_obsspaces:
@@ -106,38 +113,10 @@ class Jedi:
 
         # Save JEDI config dictionary to YAML in run directory
         logger.debug(f"Writing JEDI YAML config to: {self.jedi_config.yaml}")
-        save_as_yaml(self.input_config, self.jedi_config.yaml)
+        save_as_yaml(self.exe_config, self.jedi_config.yaml)
 
     @logit(logger)
-    def execute(self) -> None:
-        """Execute JEDI application
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        None
-        """
-
-        chdir(self.jedi_config.rundir)
-
-        exec_cmd = Executable(self.jedi_config.mpi_cmd)
-        exec_cmd.add_default_arg(self.jedi_config.exe)
-        if self.jedi_config.jedi_args is not None:
-            for arg in self.jedi_config.jedi_args:
-                exec_cmd.add_default_arg(arg)
-        exec_cmd.add_default_arg(self.jedi_config.yaml)
-
-        logger.info(f"Executing {exec_cmd}")
-        try:
-            exec_cmd()
-        except Exception as e:
-            raise WorkflowException(f"An error occurred during execution of {exec_cmd}:\n{e}") from e
-
-    @logit(logger)
-    def stage_obs(self, stage_bias_corrections: bool = False, bias_file_dict: Optional[Dict[str, str]] = None) -> None:
+    def stage_observations(self, stage_bias_corrections: bool = False, bias_file_dict: Optional[Dict[str, str]] = None) -> None:
 
         """Stage observation data files specified in JEDI input configuration dictionary
 
@@ -146,10 +125,10 @@ class Jedi:
 
         Parameters
         ----------
-        stage_bias_corrections: bool
+        stage_bias_corrections (optional): bool
             Flag to stage bias correction files in addition to observation files.
             Default is False.
-        bias_file_dict: Dict[str, str]
+        bias_file_dict (optional): Dict[str, str]
             Dictionary mapping observation names to bias correction file names.
             Required if stage_bias_corrections is True. Default is None.
 
@@ -216,34 +195,50 @@ class Jedi:
         FileHandler(fh_dict).sync()
 
     @logit(logger)
-    def render_jcb(self, task_config: AttrDict, algorithm_in: Optional[str] = None) -> AttrDict:
+    def execute(self) -> None:
+        """Execute JEDI application
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        None
+        """
+
+        chdir(self.jedi_config.rundir)
+
+        exec_cmd = Executable(self.jedi_config.mpi_cmd)
+        exec_cmd.add_default_arg(self.jedi_config.exe_src)
+        if self.jedi_config.jedi_args is not None:
+            for arg in self.jedi_config.jedi_args:
+                exec_cmd.add_default_arg(arg)
+        exec_cmd.add_default_arg(self.jedi_config.yaml)
+
+        logger.info(f"Executing {exec_cmd}")
+        try:
+            exec_cmd()
+        except Exception as e:
+            raise WorkflowException(f"An error occurred during execution of {exec_cmd}:\n{e}") from e
+
+    @logit(logger)
+    def render_jcb_template(self, algorithm_in: Optional[str] = None) -> AttrDict:
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
 
         Parameters
         ----------
-        task_config : AttrDict
-            Dictionary of all configuration variables associated with a GDAS task.
         algorithm (optional) : str
             Name of the algorithm used to generate the JEDI configuration dictionary.
             It will override the algorithm set in the jedi_config.jcb_algo_yaml file.
 
         Returns
         ----------
-        jedi_input_config: AttrDict
+        exe_config: AttrDict
             Attribute-dictionary of JEDI configuration rendered from a template.
         """
 
-        # Fill JCB base YAML template and build JCB config dictionary
-        if self.jedi_config.jcb_base_yaml is not None:
-            self.jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
-        else:
-            raise WorkflowKeyError("JCB base YAML not specified as key 'jcb_base_yaml' in JEDI-class config dictionary")
-
-        # Add JCB algorithm YAML, if it exists, to JCB config dictionary
-        if self.jedi_config.jcb_algo_yaml is not None:
-            self.jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
-
-        # Set algorithm in JCB config dictionary (method input algorithm takes precedence)
+        # Set algorithm (method input algorithm takes precedence)
         if algorithm_in is not None:
             algorithm = algorithm_in
         elif self.jedi_config.jcb_algo is not None:
@@ -252,15 +247,18 @@ class Jedi:
             algorithm = self.jcb_config.algorithm
         else:
             raise WorkflowKeyError("JCB algorithm not specified")
-        self.jcb_config['algorithm'] = algorithm
+
+        # Make copy of JCB config dictionary to render and set algorithm its algorithm
+        _jcb_config = self.jcb_config.deepcopy()
+        _jcb_config['algorithm'] = algorithm
 
         # Generate JEDI YAML config by rendering JCB config dictionary
         try:
-            jedi_input_config = render(self.jcb_config)
+            jedi_exe_config = render(_jcb_config)
         except Exception as e:
             raise WorkflowException(f"An error occurred while rendering JCB template for algorithm {algorithm}:\n{e}") from e
 
-        return jedi_input_config
+        return exe_config
 
     @staticmethod
     @logit(logger)
@@ -271,8 +269,6 @@ class Jedi:
         ----------
         jedi_config_dict : dict
             dictionary parsed from a J2-YAML file specifying configuration dictionaries for JEDI objects
-        task_config : str
-            attribute-dictionary of all configuration variables associated with a GDAS task
         expected_block_names (optional) : str
             list of names of blocks expected to be in jedi_config_yaml YAML file
 
@@ -300,7 +296,7 @@ class Jedi:
                     jedi_config_dict[block_name][key] = None
 
             # Construct JEDI object
-            jedi_dict[block_name] = Jedi(jedi_config_dict[block_name])
+            jedi_dict[block_name] = Jedi(jedi_config_dict[block_name], task_config)
 
         # Make sure jedi_dict has the blocks we expect
         if expected_block_names:
@@ -329,7 +325,7 @@ class Jedi:
         """
 
         # Get observers from JEDI input config
-        observers = find_value_in_nested_dict(self.input_config, 'observers')
+        observers = find_value_in_nested_dict(self.exe_config, 'observers')
 
         # Check if observers list actually present
         if observers:

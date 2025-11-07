@@ -86,7 +86,7 @@ class MarineLETKF(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observations")
-        self.jedi_dict['letkf'].stage_obs()
+        self.jedi_dict['letkf'].stage_observations()
 
         # prepare the ensemble MOM6 input.nml
         logger.info(f"Preparing ensemble MOM6 input namelist")

@@ -77,7 +77,7 @@ class AerosolAnalysis(Analysis):
 
         # Create dictionary of Jedi objects
         expected_keys = ['aeroanlvar']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -96,7 +96,8 @@ class AerosolAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation and bias correction files")
-        self.jedi_dict['aeroanlvar'].stage_obs(stage_bias_corrections=True, self.task_config.bias_files)
+        self.jedi_dict['aeroanlvar'].stage_observations(stage_bias_corrections=True, 
+                                                        bias_file_dict=self.task_config.bias_files)
 
         # Extract bias corrections from tar files
         logger.info(f"Extracting bias corrections from tar files")
