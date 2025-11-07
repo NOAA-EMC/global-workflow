@@ -123,7 +123,7 @@ fi
 gcycle_dates=("${PDY}${cyc}")  # Always update surface restarts at middle of window
 soilinc_fhrs=("${assim_freq}") # increment file at middle of window
 LFHR=${assim_freq}
-if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
+if [[ "${DOIAU:-}" == "YES" && ${DO_LAND_IAU} == ".true." ]]; then #For ATM only IAU, update surface restarts at beginning of window
   half_window=$(( assim_freq / 2 ))
   soilinc_fhrs+=("${half_window}")
   LFHR=-1
@@ -158,7 +158,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
   datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
 
-  if [[ "${DO_GSISOILDA}" == "YES" ]]; then
+  if [[ "${DO_GSISOILDA}" == "YES" && "${GCYCLE_DO_SOILINCR}" == ".true." ]]; then
         for (( nn=1; nn <= ntiles; nn++ )); do
            cpreq "${COMIN_ATMOS_ANALYSIS}/increment.sfc.i00${FHR}.tile${nn}.nc" \
            "${DATA}/soil_xainc.00${nn}"
