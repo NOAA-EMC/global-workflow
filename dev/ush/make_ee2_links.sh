@@ -242,7 +242,7 @@ cwd_9648=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   for tile in {1..6}; do
-    ln -s "enkfgdas.t18z.cubed_sphere_grid_ratminc.tile${tile}.nc" "enkfgdas.t18z.jedi_recentered_increment.atm.i006.tile${tile}.nc"
+    ln -s "enkfgdas.t18z.cubed_sphere_grid_ratminc.tile${tile}.nc" "enkfgdas.t18z.recentered_jedi_increment.atm.i006.tile${tile}.nc"
   done
   ln -s enkfgdas.t18z.ratminc.nc enkfgdas.t18z.recentered_increment.atm.i006.nc
   cd "${cwd_9648}"
@@ -288,6 +288,12 @@ ln -s gdas.t06z.oznstat gdas.t06z.oznstat.tar
 ln -s gdas.t06z.sfcanl.nc gdas.t06z.analysis.sfc.a006.nc
 for tile in {1..6}; do
   ln -s "sfc_inc.tile${tile}.nc" "increment.sfc.i006.tile${tile}.nc"
+done
+cd "${cwd}"
+
+cd C96C48/20250808/gdas.20240223/18/analysis/atmos
+for tile in {1..6}; do
+  ln -s "gdas.t18z.cubed_sphere_grid_atminc.tile${tile}.nc" "gdas.t18z.jedi_increment.atm.i006.tile${tile}.nc"
 done
 cd "${cwd}"
 
@@ -358,7 +364,7 @@ cwd_9648=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/atmos"
   for tile in {1..6}; do
-    ln -s "enkfgdas.t18z.cubed_sphere_grid_ratminc.tile${tile}.nc" "enkfgdas.t18z.jedi_recentered_increment.atm.i006.tile${tile}.nc"
+    ln -s "enkfgdas.t18z.cubed_sphere_grid_ratminc.tile${tile}.nc" "enkfgdas.t18z.recentered_jedi_increment.atm.i006.tile${tile}.nc"
   done
   cd "${cwd_9648}"
 done
