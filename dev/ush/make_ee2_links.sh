@@ -230,7 +230,7 @@ for dir in mem*; do
   ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
   ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
   for tile in {1..6}; do
-    ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
+    ln -s "sfc_inc.tile${tile}.nc" "increment.sfc.i006.tile${tile}.nc"
   done
   cd "${cwd_9648}"
 done
@@ -287,7 +287,7 @@ ln -s gdas.t06z.loginc.txt gdas.t06z.increment.done.txt
 ln -s gdas.t06z.oznstat gdas.t06z.oznstat.tar
 ln -s gdas.t06z.sfcanl.nc gdas.t06z.analysis.sfc.a006.nc
 for tile in {1..6}; do
-  ln -s "sfc_inc.tile${tile}.nc" "gdas.t06z.increment.sfc.i006.tile${tile}.nc"
+  ln -s "sfc_inc.tile${tile}.nc" "increment.sfc.i006.tile${tile}.nc"
 done
 cd "${cwd}"
 
@@ -340,7 +340,7 @@ for dir in mem*; do
   ln -s enkfgdas.t06z.sfci006.nc enkfgdas.t06z.increment.sfc.i006.nc
   ln -s enkfgdas.t06z.sfci009.nc enkfgdas.t06z.increment.sfc.i009.nc
   for tile in {1..6}; do
-    ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
+    ln -s "sfc_inc.tile${tile}.nc" "increment.sfc.i006.tile${tile}.nc"
   done
   cd "${cwd_9648}"
   cd "${dir}/analysis/snow"
@@ -406,7 +406,7 @@ ln -s gdas.t06z.oznstat gdas.t06z.oznstat.tar
 ln -s gdas.t06z.radstat gdas.t06z.radstat.tar
 ln -s gdas.t06z.sfcanl.nc gdas.t06z.analysis.sfc.a006.nc
 for tile in {1..6}; do
-  ln -s "sfc_inc.tile${tile}.nc" "gdas.t06z.increment.sfc.i006.tile${tile}.nc"
+  ln -s "sfc_inc.tile${tile}.nc" "increment.sfc.i006.tile${tile}.nc"
 done
 cd "${cwd}"
 
@@ -430,7 +430,7 @@ for dir in mem*; do
   ln -s enkfgdas.t06z.ratmi009.nc enkfgdas.t06z.recentered_increment.atm.i009.nc
   ln -s enkfgdas.t06z.ratminc.nc enkfgdas.t06z.recentered_increment.atm.i006.nc
   for tile in {1..6}; do
-    ln -s "sfc_inc.tile${tile}.nc" "enkfgdas.t06z.increment.sfc.i006.tile${tile}.nc"
+    ln -s "sfc_inc.tile${tile}.nc" "increment.sfc.i006.tile${tile}.nc"
   done
   cd "${cwd_retro}"
 done
@@ -458,7 +458,7 @@ ln -s gdas.t06z.oznstat gdas.t06z.oznstat.tar
 ln -s gdas.t06z.radstat gdas.t06z.radstat.tar
 ln -s gdas.t06z.sfcanl.nc gdas.t06z.analysis.sfc.a006.nc
 for tile in {1..6}; do
-  ln -s "sfc_inc.tile${tile}.nc" "gdas.t06z.increment.sfc.i006.tile${tile}.nc"
+  ln -s "sfc_inc.tile${tile}.nc" "increment.sfc.i006.tile${tile}.nc"
 done
 cd "${cwd}"
 
