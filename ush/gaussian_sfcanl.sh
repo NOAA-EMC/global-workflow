@@ -111,14 +111,6 @@ LEVS=${LEVS:-64}
 LEVSP1=$(($LEVS+1))
 FIXWGTS=${FIXWGTS:-${FIXorog}/${CASE}/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
 
-# Soil increment settings
-GSANAL_DO_SOILINCR=".false."
-# add soil increments to gaussian sfcanal if they are not added by gcycle (i.e., landiau=true)
-if [[ "${DO_GSISOILDA:-NO}" == "YES" && "${DO_LAND_IAU:-.false.}" == ".true." ]]; then   # => ${GCYCLE_DO_SOILINCR}" == ".false." 
-	GSANAL_DO_SOILINCR=".true."
-fi
-LSOIL_INCR=${LSOIL_INCR:-2}
-
 #  Filenames.
 XC=${XC:-}
 GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.x}
@@ -176,16 +168,25 @@ ${NLN} "${SIGLEVEL}" "./vcoord.txt"
 # output gaussian global surface analysis files
 ${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc" "./sfc.gaussian.analysis.file"
 
-# sfc increment files
-${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.sfc.i006.tile1.nc" "./sfc_inc.tile1.nc"
-${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.sfc.i006.tile2.nc" "./sfc_inc.tile2.nc"
-${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.sfc.i006.tile3.nc" "./sfc_inc.tile3.nc"
-${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.sfc.i006.tile4.nc" "./sfc_inc.tile4.nc"
-${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.sfc.i006.tile5.nc" "./sfc_inc.tile5.nc"
-${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.sfc.i006.tile6.nc" "./sfc_inc.tile6.nc"
-
 # Namelist uses booleans now
 if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
+
+#Add soil increments to gdas gaussian sfcanal if they are not added by gcycle (i.e., landiau=true)
+GSANAL_DO_SOILINCR=".false."
+if [[ "${RUN}" == "gdas" && "${DO_GSISOILDA:-NO}" == "YES" && "${DO_LAND_IAU:-.false.}" == ".true." ]]; then   
+    GSANAL_DO_SOILINCR=".true."
+fi
+LSOIL_INCR=${LSOIL_INCR:-2}
+SFC_INC="./sfc_inc"
+# sfc increment files
+if [[ "${GSANAL_DO_SOILINCR}" == ".true." ]]; then 
+    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile1.nc" "./sfc_inc.tile1.nc"
+    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile2.nc" "./sfc_inc.tile2.nc"
+    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile3.nc" "./sfc_inc.tile3.nc"
+    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile4.nc" "./sfc_inc.tile4.nc"
+    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile5.nc" "./sfc_inc.tile5.nc"
+    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile6.nc" "./sfc_inc.tile6.nc"
+fi
 
 # Executable namelist
 cat <<EOF > fort.41
@@ -201,7 +202,7 @@ cat <<EOF > fort.41
   landsfcmdl=${landsfcmdl:-2},
   add_soil_inc=${GSANAL_DO_SOILINCR},
   lsoil_incr=${LSOIL_INCR},
-  sfc_inc_file=${SFC_INC:-"./sfc_inc"}
+  sfc_inc_file=${SFC_INC},
  /
 EOF
 
