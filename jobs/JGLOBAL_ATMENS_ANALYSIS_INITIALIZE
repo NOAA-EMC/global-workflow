@@ -27,16 +27,6 @@ else
         COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
 fi
 
-
-# Copy GSI BC files
-if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
-    GSIBIAS_SRC=${GSIBIAS}/${GDATE}/gdas.t${gcyc}z.rad_varbc_params.tar
-    # Need to Change
-    GSIBIAS_DET=${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/ensstat/analysis/atmos/gdas.t${gcyc}z.rad_varbc_params.tar
-
-    cp -r ${GSIBIAS_SRC} ${GSIBIAS_DET}
-fi
-
 ###############################################################
 # Run relevant script
 

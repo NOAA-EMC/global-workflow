@@ -1,0 +1,103 @@
+#! /usr/bin/env bash
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmopeanlbc" -c "base prepatmopeanlbc"
+
+##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+export GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export gyy=${GDATE:0:4}
+export gmm=${GDATE:4:2}
+export gdd=${GDATE:6:2}
+export GDUMP="gdas"
+
+# Generate COM variables from templates
+RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+    COMOUT_ENS_ATMOS_ANALYSIS_PRES:COM_ENS_ATMOS_ANALYSIS_TMPL
+COMIN_ATMOS_PREV=${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos
+OPEBIASFILES="${GDUMP}.t${gcyc}z.abias ${GDUMP}.t${gcyc}z.abias_int ${GDUMP}.t${gcyc}z.abias_pc ${GDUMP}.t${gcyc}z.radstat"
+
+EXSCRIPT_GEN_YAML=${RUNSATBIASCONVPY:-${USHgfs}/gen_run_satbias_conv_yaml.py}
+EXSCRIPT=${RUNSATBIASCONVPY:-${USHgfs}/run_satbias_conv.py}
+export EXYAML=${RUNSATBIASCONVYAML:-${USHgfs}/satbias_converter.yaml}
+export EXX=${RUNSATBIASCONVX:-${EXECgfs}/satbias2ioda.x}
+OUTPUT=${DATA}/output
+
+if [[ ! -d "${COMOUT_ENS_ATMOS_ANALYSIS_PRES}" ]]; then mkdir -p "${COMOUT_ENS_ATMOS_ANALYSIS_PRES}"; fi
+if [[ ! -d "${OUTPUT}" ]]; then mkdir -p "${OUTPUT}"; fi
+
+if [[ ${DO_JEDIATMENS} == "YES" ]]; then
+    # JEDI run
+    cd ${DATA}
+    cpreq ${EXYAML} ./
+
+# Generate YAML
+${EXSCRIPT_GEN_YAML} -i ${TASK_CONFIG_YAML} -o run_satbias_conv.yaml
+err=$?
+
+    if [[ ${err} -eq 0 ]]; then
+${EXSCRIPT} -c run_satbias_conv.yaml
+err=$?
+    else
+        err_exit "Error executing ${EXSCRIPT_GEN_YAML}"
+    fi
+    
+    if [[ ${err} -eq 0 ]]; then
+        cd output/${GDUMP}.${gPDY}/${gcyc}/atmos   
+        for file in ${OPEBIASFILES}; do
+            cpreq ${COMIN_ATMOS_PREV}/${file} ./${file}.ensmean
+            err=$?
+            if [[ ${err} -ne 0 ]]; then
+                err_exit "Error copying operational anl bias correction files"
+            fi
+	done
+        tar -cvf ${COMOUT_ENS_ATMOS_ANALYSIS_PRES}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar *
+        err=$?
+    else
+        err_exit "Error executing ${EXSCRIPT}"
+    fi
+
+else
+    # GSI run
+    for file in ${OPEBIASFILES}; do
+        cpreq ${COMIN_ATMOS_PREV}/${file} ${OUTPUT}/${file}.ensmean
+        err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "Error copying operational anl bias correction files"
+        fi
+    done
+    cd ${OUTPUT}
+    tar -cvf ${COMOUT_ENS_ATMOS_ANALYSIS_PRES}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar *
+    err=$?
+fi
+
+
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Error executing ${EXSCRIPT}"
+fi
+set_trace
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

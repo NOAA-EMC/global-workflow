@@ -267,6 +267,9 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/da-utils/ush/gsincdiag_to_ioda" .
   cd "${HOMEgfs}/ush" || exit 1
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"    .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/run_satbias_conv.py" ./
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/gen_run_satbias_conv_yaml.py" ./
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/iodaconv/test/testinput/satbias_converter.yaml" ./
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py"         .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
   declare -a gdasapp_ocn_insitu_profile_platforms=("argo" "bathy" "glider" "marinemammal" "tesac" "xbtctd")
@@ -404,6 +407,7 @@ fi
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
   cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas*           ./
   cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/bufr2ioda.x"     ./gdas_bufr2ioda.x
+  cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/satbias2ioda.x"  ./satbias2ioda.x
   cp -f  "${HOMEgfs}/sorc/gdas.cd/install/bin/calcfIMS.exe"   ./gdas_calcfIMS.x
   cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe"  ./gdas_apply_incr.x
 fi

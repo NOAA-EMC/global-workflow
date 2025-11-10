@@ -40,7 +40,6 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 
 mkdir -p "${COMOUT_OBS}"
 
-
 ###############################################################
 # Copy dump files to ROTDIR
 "${HOMEgfs}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
@@ -68,16 +67,6 @@ if [[ $(find "${COMINobsproc_PREV}" -xtype l | wc -l) -ge 1 ]]; then
 fi
 
 ###############################################################
-
-# Download GSI deterministic bias correction files for EnKF-only model from HPSS
-if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
-    "${HOMEgfs}/ush/get_gsi_det_bc.sh" "${gPDY}" "${gcyc}" "${RUN_local}"
-    #"${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
-    status=$?
-    if [[ ${status} -ne 0 ]]; then
-        exit "${status}"
-    fi
-fi
 
 ###############################################################
 # For running real-time parallels, execute tropcy_qc and
