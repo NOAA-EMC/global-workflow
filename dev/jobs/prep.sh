@@ -175,7 +175,7 @@ fi
 ################################################################################ 
 # If requested, create radiance bias correction files for JEDI
 if [[ ${CONVERT_BIASCOR:-"NO"} == "YES" ]]; then
-    cd ${DATAROOT}
+    cd "${DATAROOT}" || true
     ${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh
     export err=$?
     if [[ ${err} -ne 0 ]]; then
