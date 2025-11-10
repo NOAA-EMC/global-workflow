@@ -171,21 +171,25 @@ ${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc" "./sfc.gaussian
 # Namelist uses booleans now
 if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
 
-#Add soil increments to gdas gaussian sfcanal if they are not added by gcycle (i.e., landiau=true)
+#Add soil increments to gdas gaussian sfcanal if they are not added by gcycle (i.e., when landiau=true)
 GSANAL_DO_SOILINCR=".false."
 if [[ "${RUN}" == "gdas" && "${DO_GSISOILDA:-NO}" == "YES" && "${DO_LAND_IAU:-.false.}" == ".true." ]]; then   
     GSANAL_DO_SOILINCR=".true."
 fi
 LSOIL_INCR=${LSOIL_INCR:-2}
-SFC_INC="./sfc_inc"
+
 # sfc increment files
-if [[ "${GSANAL_DO_SOILINCR}" == ".true." ]]; then 
-    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile1.nc" "./sfc_inc.tile1.nc"
-    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile2.nc" "./sfc_inc.tile2.nc"
-    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile3.nc" "./sfc_inc.tile3.nc"
-    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile4.nc" "./sfc_inc.tile4.nc"
-    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile5.nc" "./sfc_inc.tile5.nc"
-    ${NLN} "${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile6.nc" "./sfc_inc.tile6.nc"
+if [[ "${GSANAL_DO_SOILINCR}" == ".true." ]]; then
+    local i sfc_inc
+    for i in $(seq 1 6); do
+	sfc_inc="${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile${i}.nc"
+        if [[ ! -f "${sfc_inc}" ]]; then
+            echo "Error! gaussian sfc analysis missing increment file ${sfc_inc}"
+            exit 1
+        else
+            ${NLN} "${sfc_inc}" "./sfc_inc.tile${i}.nc"
+        fi
+    done
 fi
 
 # Executable namelist
@@ -202,7 +206,7 @@ cat <<EOF > fort.41
   landsfcmdl=${landsfcmdl:-2},
   add_soil_inc=${GSANAL_DO_SOILINCR},
   lsoil_incr=${LSOIL_INCR},
-  sfc_inc_file=${SFC_INC},
+  sfc_inc_file="./sfc_inc",
  /
 EOF
 
