@@ -180,7 +180,6 @@ LSOIL_INCR=${LSOIL_INCR:-2}
 
 # sfc increment files
 if [[ "${GSANAL_DO_SOILINCR}" == ".true." ]]; then
-    local i sfc_inc
     for i in $(seq 1 6); do
 	sfc_inc="${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile${i}.nc"
         if [[ ! -f "${sfc_inc}" ]]; then
