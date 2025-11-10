@@ -40,6 +40,10 @@ for dir in mem*; do
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
   cd "${cwd_4848500}"
+  cd "${dir}/analysis/ice"
+  ln -s 20210324.090000.cice_model_anl.res.nc 20210324.090000.analysis.cice_model.res.nc
+  ln -s 20210324.150000.cice_model_anl.res.nc 20210324.150000.analysis.cice_model.res.nc
+  cd "${cwd_4848500}"
 done
 unset cwd_4848500
 cd "${cwd}"
@@ -89,6 +93,10 @@ cd C48C48mx500/20250327/gdas.20210324/12/analysis/ocean
 ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
 
+cd C48C48mx500/20250327/gdas.20210324/12/analysis/ice
+ln -s 20210324.090000.cice_model_anl.res.nc 20210324.090000.analysis.cice_model.res.nc
+cd "${cwd}"
+
 cd C48C48mx500/20250327/gdas.20210324/18/analysis/atmos
 ln -s gdas.t18z.abias gdas.t18z.abias.txt
 ln -s gdas.t18z.abias_air gdas.t18z.abias_air.txt
@@ -113,6 +121,10 @@ cd C48C48mx500/20250327/gdas.20210324/18/analysis/ocean
 ln -s gdas.t18z.ocninc.nc gdas.t18z.mom6_increment.i006.nc
 cd "${cwd}"
 
+cd C48C48mx500/20250327/gdas.20210324/18/analysis/ice
+ln -s 20210324.150000.cice_model_anl.res.nc 20210324.150000.analysis.cice_model.res.nc
+cd "${cwd}"
+
 cd C48C48mx500/20250808/enkfgdas.20210324/12
 cwd_4848500=${PWD}
 for dir in mem*; do
@@ -123,6 +135,9 @@ for dir in mem*; do
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
+  cd "${cwd_4848500}"
+  cd "${dir}/analysis/ice"
+  ln -s 20210324.090000.cice_model_anl.res.nc 20210324.090000.analysis.cice_model.res.nc
   cd "${cwd_4848500}"
 done
 unset cwd_4848500
@@ -141,6 +156,9 @@ for dir in mem*; do
   cd "${cwd_4848500}"
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t18z.ocninc.nc enkfgdas.t18z.mom6_increment.i006.nc
+  cd "${cwd_4848500}"
+  cd "${dir}/analysis/ice"
+  ln -s 20210324.150000.cice_model_anl.res.nc 20210324.150000.analysis.cice_model.res.nc
   cd "${cwd_4848500}"
 done
 unset cwd_4848500
@@ -163,6 +181,9 @@ ln -s gdas.t12z.radstat gdas.t12z.radstat.tar
 cd "${cwd}"
 cd C48C48mx500/20250808/gdas.20210324/12/analysis/ocean
 ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
+cd "${cwd}"
+cd C48C48mx500/20250808/gdas.20210324/12/analysis/ice
+ln -s 20210324.090000.cice_model_anl.res.nc 20210324.090000.analysis.cice_model.res.nc
 cd "${cwd}"
 
 cd C48C48mx500/20250808/gdas.20210324/18/analysis/atmos
@@ -189,11 +210,18 @@ cd C48C48mx500/20250808/gdas.20210324/18/analysis/ocean
 ln -s gdas.t18z.ocninc.nc gdas.t18z.mom6_increment.i006.nc
 cd "${cwd}"
 
+cd C48C48mx500/20250808/gdas.20210324/18/analysis/ice
+ln -s 20210324.150000.cice_model_anl.res.nc 20210324.150000.analysis.cice_model.res.nc
+cd "${cwd}"
+
 cd C96C48/20250327/enkfgdas.20211220/12
 cwd_9648=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
+  cd "${cwd_9648}"
+  cd "${dir}/analysis/ice"
+  ln -s 20211220.120000.cice_model_anl.res.nc 20211220.120000.analysis.cice_model.res.nc
   cd "${cwd_9648}"
 done
 unset cwd_9648
@@ -260,6 +288,9 @@ cd "${cwd}"
 cd C96C48/20250327/gdas.20211220/12/analysis/ocean
 ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
+cd C96C48/20250327/gdas.20211220/12/analysis/ice
+ln -s 20211220.120000.cice_model_anl.res.nc 20211220.120000.analysis.cice_model.res.nc
+cd "${cwd}"
 
 cd C96C48/20250327/gdas.20211220/18/analysis/atmos
 ln -s gdas.t18z.abias gdas.t18z.abias.txt
@@ -302,6 +333,9 @@ cwd_9648=${PWD}
 for dir in mem*; do
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t12z.ocninc.nc enkfgdas.t12z.mom6_increment.i006.nc
+  cd "${cwd_9648}"
+  cd "${dir}/analysis/ice"
+  ln -s 20211220.120000.cice_model_anl.res.nc 20211220.120000.analysis.cice_model.res.nc
   cd "${cwd_9648}"
 done
 unset cwd_9648
@@ -382,6 +416,9 @@ cd "${cwd}"
 cd C96C48/20250808/gdas.20211220/12/analysis/ocean
 ln -s gdas.t12z.ocninc.nc gdas.t12z.mom6_increment.i006.nc
 cd "${cwd}"
+cd C96C48/20250808/gdas.20211220/12/analysis/ice
+ln -s 20211220.120000.cice_model_anl.res.nc 20211220.120000.analysis.cice_model.res.nc
+cd "${cwd}"
 
 cd C96C48/20250808/gdas.20211220/18/analysis/atmos
 ln -s gdas.t18z.abias gdas.t18z.abias.txt
@@ -428,6 +465,9 @@ for dir in mem*; do
   cd "${dir}/analysis/ocean"
   ln -s enkfgdas.t06z.ocninc.nc enkfgdas.t06z.mom6_increment.i006.nc
   cd "${cwd_retro}"
+  cd "${dir}/analysis/ice"
+  ln -s 20241115.030000.cice_model_anl.res.nc 20241115.030000.analysis.cice_model.res.nc
+  cd "${cwd_retro}"
   cd "${dir}/analysis/atmos"
   ln -s enkfgdas.t06z.atmi003.nc enkfgdas.t06z.increment.atm.i003.nc
   ln -s enkfgdas.t06z.atminc.nc enkfgdas.t06z.increment.atm.i006.nc
@@ -470,6 +510,10 @@ cd "${cwd}"
 
 cd retro_ICs/gdas.20241115/06/analysis/ocean
 ln -s gdas.t06z.ocninc.nc gdas.t06z.mom6_increment.i006.nc
+cd "${cwd}"
+
+cd retro_ICs/gdas.20241115/06/analysis/ice
+ln -s 20241115.030000.cice_model_anl.res.nc 20241115.030000.analysis.cice_model.res.nc
 cd "${cwd}"
 
 echo "Success!!"
