@@ -21,7 +21,7 @@ import yaml
 class CIMatrixValidator:
     """
     Validates GitLab CI case matrices against skip_ci_on_hosts tags.
-    
+
     Compares static matrix definitions in gitlab-ci-hosts.yml against
     skip_ci_on_hosts tags in case files to ensure consistency.
     """
@@ -43,11 +43,11 @@ class CIMatrixValidator:
     def extract_matrices_from_config(self) -> Dict[str, Set[str]]:
         """
         Extract host case matrices from gitlab-ci-hosts.yml.
-        
+
         Parses YAML anchors like:
             .hera_cases_matrix: &hera_cases
               - caseName: ["case1", "case2", ...]
-        
+
         Returns:
             Dictionary mapping host names to sets of case names
         """
@@ -56,7 +56,7 @@ class CIMatrixValidator:
 
         host_matrices = {}
         pattern = r'\.(\w+)_cases_matrix:\s*&\1_cases\s*\n\s*-\s*caseName:\s*\[(.*?)\]'
-        
+
         for match in re.finditer(pattern, content, re.MULTILINE | re.DOTALL):
             host = match.group(1)
             cases_str = match.group(2)
@@ -71,10 +71,10 @@ class CIMatrixValidator:
     def extract_skip_hosts(self, case_file: Path) -> Set[str]:
         """
         Extract skip_ci_on_hosts list from a case YAML file.
-        
+
         Uses regex to extract only the skip section, avoiding Jinja2
         templating issues with full YAML parsing.
-        
+
         Returns:
             Set of host names that should skip this case
         """
@@ -94,10 +94,10 @@ class CIMatrixValidator:
     def build_expected_matrices(self, known_hosts: Set[str]) -> Dict[str, Set[str]]:
         """
         Build expected matrices based on skip_ci_on_hosts tags.
-        
+
         For each case file, determines which hosts should run it by
         checking which hosts are NOT in the case's skip list.
-        
+
         Returns:
             Dictionary mapping host names to expected sets of case names
         """
@@ -106,7 +106,7 @@ class CIMatrixValidator:
         for case_file in self.get_all_case_files():
             case_name = case_file.stem
             skip_hosts = self.extract_skip_hosts(case_file)
-            
+
             for host in known_hosts:
                 if host not in skip_hosts:
                     expected_matrices[host].add(case_name)
@@ -116,10 +116,10 @@ class CIMatrixValidator:
     def validate(self) -> tuple[bool, Dict[str, List[str]]]:
         """
         Validate actual matrices against expected matrices.
-        
+
         Compares matrices in gitlab-ci-hosts.yml against what should exist
         based on skip_ci_on_hosts tags in case files.
-        
+
         Returns:
             Tuple of (is_valid, errors) where errors maps hosts to error messages
         """
@@ -136,7 +136,7 @@ class CIMatrixValidator:
                 host_errors.append(f"Matrix includes cases that should skip this host: {sorted(extra_cases)}")
             if missing_cases:
                 host_errors.append(f"Matrix missing cases that should run on this host: {sorted(missing_cases)}")
-            
+
             if host_errors:
                 errors[host] = host_errors
 
@@ -166,7 +166,7 @@ def repo_root_path():
 def test_matrices_are_valid(validator):
     """
     Test that current case matrices are valid.
-    
+
     Validates that matrices in gitlab-ci-hosts.yml are consistent
     with skip_ci_on_hosts tags in all case files.
     """
@@ -184,39 +184,39 @@ def test_matrices_are_valid(validator):
 def test_detect_incorrectly_included_case(validator, repo_root_path):
     """
     Test validator detects cases incorrectly included in host matrix.
-    
+
     Simulates adding a skip tag to a case that's currently in a host's
     matrix, then verifies the validator catches the inconsistency.
     """
     actual_matrices = validator.extract_matrices_from_config()
-    
+
     if not actual_matrices:
         pytest.skip("No host matrices found")
-    
+
     test_host = sorted(actual_matrices.keys())[0]
     host_cases = actual_matrices[test_host]
-    
+
     if not host_cases:
         pytest.skip(f"No cases in matrix for {test_host}")
-    
+
     test_case_name = sorted(host_cases)[0]
     test_case_file = repo_root_path / 'dev' / 'ci' / 'cases' / 'pr' / f'{test_case_name}.yaml'
-    
+
     if not test_case_file.exists():
         pytest.skip(f"Case file not found: {test_case_file}")
-    
+
     original_content = test_case_file.read_text()
-    
+
     # Add skip tag for test host
     if 'skip_ci_on_hosts:' in original_content:
         modified_content = original_content.replace('skip_ci_on_hosts:', f'skip_ci_on_hosts:\n  - {test_host}')
     else:
         modified_content = original_content.replace('workflow:', f'skip_ci_on_hosts:\n  - {test_host}\n\nworkflow:')
-    
+
     try:
         test_case_file.write_text(modified_content)
         is_valid, errors = validator.validate()
-        
+
         assert not is_valid, "Validator should detect incorrectly included case"
         assert test_host in errors, f"Validator should report error for {test_host}"
         assert any(test_case_name in str(error) for error in errors[test_host]), \
@@ -228,7 +228,7 @@ def test_detect_incorrectly_included_case(validator, repo_root_path):
 def test_detect_missing_case(validator, repo_root_path):
     """
     Test validator detects cases missing from host matrix.
-    
+
     Simulates removing a case from a host's matrix while the case file
     doesn't skip that host, verifying the validator catches it.
     """
