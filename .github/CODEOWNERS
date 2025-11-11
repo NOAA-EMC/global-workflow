@@ -150,6 +150,7 @@ ush/bash_utils.sh
 ush/calcanl_gfs.py @CoryMartin-NOAA
 ush/calcinc_gfs.py @CoryMartin-NOAA
 ush/detect_machine.sh
+ush/create_gs_info.sh @jswhit2 @DavidHuber-NOAA
 ush/extractvars_tools.sh @EricSinsky-NOAA
 ush/file_utils.sh
 ush/forecast_det.sh @aerorahul
