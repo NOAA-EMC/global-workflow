@@ -14,6 +14,9 @@ atmanl:
   OBS_LIST_YAML: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/atm_obs_list_ufs_hybatmDA.yaml.j2"
   VAR_JEDI_TEST_YAML: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jedi-test_3dvar_ufs_hybatmDA.yaml.j2"
   FV3INC_JEDI_TEST_YAML: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jedi-test_3dvar-fv3inc_ufs_hybatmDA.yaml.j2"
+  NUMBER_OUTER_LOOPS: 2
+  NINNER_LOOP1: 2
+  NINNER_LOOP2: 4
 esfc:
   DONST: "NO"
 nsst:

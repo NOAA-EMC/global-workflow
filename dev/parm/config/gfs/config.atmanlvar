@@ -8,7 +8,4 @@ echo "BEGIN: config.atmanlvar"
 # Get task specific resources
 . "${EXPDIR}/config.resources" atmanlvar
 
-export NUMBER_OUTER_LOOPS="1"
-export NUMBER_INNER_LOOP_ITER_1="50"
-
 echo "END: config.atmanlvar"
