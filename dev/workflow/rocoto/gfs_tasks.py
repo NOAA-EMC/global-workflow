@@ -1095,13 +1095,13 @@ class GFSTasks(Tasks):
 
         atm_anl_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
         deps = []
-        if self.options['do_jediatmvar']:
+        if self.options['do_jediatmvar'] and self.options['do_jediatmens']:
             data = f'{atm_anl_path}/{self.run}.t@Hz.jedi_analysis.atm.a006.nc'
         else:
             data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.atm.a006.nc'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jediatmvar']:
+        if self.options['do_jediatmvar'] and self.options['do_jediatmens']:
             data = f'{atm_anl_path}/{self.run}.t@Hz.jedi_analysis.sfc.a006.nc'
         else:
             data = f'{atm_anl_path}/{self.run}.t@Hz.analysis.sfc.a006.nc'

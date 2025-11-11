@@ -13,6 +13,7 @@ analysis:
 
         {% if DO_JEDIATMVAR %}
 
+        {% if ATMINC_GRID == "cubed_sphere_grid" %}
         {% for itile in range(6) %}
         {% for source_ftype, dest_ftype in 
         [
@@ -28,6 +29,23 @@ analysis:
         {% endif %}
         {% endfor %}
         {% endfor %}
+        {% else %}
+        # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
+        {% for source_ftype, dest_ftype in
+        [
+            ("atminc.nc", "increment.atm.i006.nc"),
+            ("atmi009.nc", "increment.atm.i009.nc"),
+            ("atmi003.nc", "increment.atm.i003.nc"),
+            ("ratmi009.nc", "recentered_increment.atm.i009.nc"),
+            ("ratminc.nc", "recentered_increment.atm.i006.nc"),
+            ("ratmi003.nc", "recentered_increment.atm.i003.nc"),
+        ] %}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ source_ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ source_ftype }}",
+           "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ dest_ftype }}"]
+        {% endif %}
+        {% endfor %}
+        {% endif %}
 
         # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
         {% for source_ftype, dest_ftype in [

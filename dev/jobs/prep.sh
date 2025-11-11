@@ -32,7 +32,8 @@ RUN=${RUN_local} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_OBS:COM_OBS_TMPL \
     COMOUT_OBS:COM_OBS_TMPL \
     COMINobsproc:COM_OBSPROC_TMPL \
-    COMIN_TCVITAL:COM_TCVITAL_TMPL
+    COMIN_TCVITAL:COM_TCVITAL_TMPL \
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMOUT_OBS_PREV:COM_OBS_TMPL \
@@ -98,11 +99,22 @@ fi
 
 
 ###############################################################
-# If requested, copy bias correction files from source to comroot
-if [[ ${COPY_BIASCOR:-"NO"} == "YES" ]]; then
+# If requested, copy bias correction files from source or stait to analysis directories
+# TODO: remove this when JEDI ATM can cycle bias correction coefficents
+if [[ ${RUN} == "gdas" && ${COPY_BIASCOR_SOURCE:-"NO"} == "YES" ]]; then
     for file in abias abias_pc abias_air; do
-        cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}"
-	cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt"
+	if [[ -s "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" ]]; then
+            cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}"
+	    cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt"
+	fi
+    done
+fi
+if [[ ${RUN} == "gdas" && ${COPY_BIASCOR_STATIC:-"NO"} == "YES" ]]; then
+    for file in abias abias_pc abias_air; do
+	if [[ -s "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt" ]]; then
+	    mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
+	    cpreq "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt" "${COMOUT_ATMOS_ANALYSIS}/${GDUMP}.t${cyc}z.${file}.txt"
+	fi
     done
 fi
 
@@ -174,12 +186,12 @@ fi
 
 ################################################################################ 
 # If requested, create radiance bias correction files for JEDI
-if [[ ${CONVERT_BIASCOR:-"NO"} == "YES" ]]; then
+if [[ ${RUN} == "gdas" && ${CONVERT_BIASCOR:-"NO"} == "YES" ]]; then
     cd "${DATAROOT}" || true
-    "${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh"
+    "${HOMEgfs}/ush/gsi_satbias2ioda_all.sh"
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        err_exit "JOBSPROC_GLOBAL_PREP job failed, ABORT!"
+        err_exit "gsi_satbias2ioda failed, ABORT!"
     fi
     
     # Remove temporary working directory
