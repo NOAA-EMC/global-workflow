@@ -107,9 +107,6 @@ class GFSCycledAppConfig(AppConfig):
 
         configs = ['prep']
 
-        if options['do_enkfonly_atm']:
-            configs += ['fetch', 'prepatmanlsatbias']
-
         if options['do_prep_sfc']:
             configs += ['prep_sfc']
 

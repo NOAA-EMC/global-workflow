@@ -29,14 +29,13 @@ analysis:
         {% endfor %}
         {% endfor %}
 
-        ## TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
-        {% set ftypes = [
+        # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
+        {% for source_ftype, dest_ftype in [
             ("abias", "abias.txt"),
             ("abias_air", "abias_air.txt"),
             ("abias_int", "abias_int.txt"),
             ("abias_pc", "abias_pc.txt"),
             ("rad_varbc_params.tar", "rad_varbc_params.tar")] %}
-        {% for source_ftype, dest_ftype in ftypes %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ source_ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ source_ftype }}",
            "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ dest_ftype }}"]
@@ -46,7 +45,8 @@ analysis:
         {% else %}
 
         # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
-        {% set ftypes = [
+        {% for source_ftype, dest_ftype in
+        [
             ("atminc.nc", "increment.atm.i006.nc"),
             ("atmi009.nc", "increment.atm.i009.nc"),
             ("atmi003.nc", "increment.atm.i003.nc"),
@@ -58,8 +58,8 @@ analysis:
             ("abias_air", "abias_air.txt"),
             ("abias_int", "abias_int.txt"),
             ("abias_pc", "abias_pc.txt"),
-            ("rad_varbc_params.tar", "rad_varbc_params.tar") ] %}
-        {% for source_ftype, dest_ftype in ftypes %}
+            ("rad_varbc_params.tar", "rad_varbc_params.tar")
+        ] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ source_ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ source_ftype }}",
            "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ dest_ftype }}"]
