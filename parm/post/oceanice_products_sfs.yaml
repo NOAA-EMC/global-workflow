@@ -2,7 +2,7 @@ ocnicepost:
   executable: "ocnicepost.x"
   namelist:
     write_grib2: {{ write_grib2 }}
-    write_netcdf: False
+    write_netcdf: {{ write_netcdf }}
     debug: False
   fix_data:
     mkdir:
