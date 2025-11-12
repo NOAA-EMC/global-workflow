@@ -172,14 +172,14 @@ ${NLN} "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc" "./sfc.gaussian
 if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
 
 #Add soil increments to gdas gaussian sfcanal if they are not added by gcycle (i.e., when landiau=true)
-DO_GSANAL_SOILINCR=".false."
+DO_GSSOILINCR=".false."
 if [[ "${RUN}" == "gdas" && "${DO_LAND_IAU:-.false.}" == ".true." ]]; then   
-    DO_GSANAL_SOILINCR=".true."
+    DO_GSSOILINCR=".true."
 fi
 LSOIL_INCR=${LSOIL_INCR:-2}
 
 # sfc increment files
-if [[ "${DO_GSANAL_SOILINCR}" == ".true." ]]; then
+if [[ "${DO_GSSOILINCR}" == ".true." ]]; then
     for i in $(seq 1 6); do
 	sfc_inc="${COMOUT_ATMOS_ANALYSIS}/increment.sfc.i006.tile${i}.nc"
         if [[ ! -f "${sfc_inc}" ]]; then
@@ -203,7 +203,7 @@ cat <<EOF > fort.41
   donst=${do_nst},
   imp_physics=${imp_physics:-8},
   landsfcmdl=${landsfcmdl:-2},
-  add_soil_inc=${DO_GSANAL_SOILINCR},
+  add_soil_inc=${DO_GSSOILINCR},
   lsoil_incr=${LSOIL_INCR},
   sfc_inc_file="./sfc_inc",
  /
