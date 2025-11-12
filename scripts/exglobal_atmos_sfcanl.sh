@@ -123,7 +123,7 @@ fi
 gcycle_dates=("${PDY}${cyc}")  # Always update surface restarts at middle of window
 soilinc_fhrs=("${assim_freq}") # increment file at middle of window
 LFHR=${assim_freq}
-if [[ "${DOIAU:-}" == "YES" ]]; then  #Update surface restarts at beginning of window
+if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
   half_window=$(( assim_freq / 2 ))
   soilinc_fhrs+=("${half_window}")
   LFHR=-1
