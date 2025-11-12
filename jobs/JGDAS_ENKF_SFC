@@ -36,6 +36,9 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_OBS_PREV:COM_OBS_TMPL \
     COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
 
+# Use CFP to stage and save files in parallel
+ export USE_CFP=YES
+
 ###############################################################
 # Run relevant script
 
