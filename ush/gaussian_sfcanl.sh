@@ -173,7 +173,7 @@ if [[ ${DONST} == "YES" ]]; then do_nst='.true.'; else do_nst='.false.'; fi
 
 #Add soil increments to gdas gaussian sfcanal if they are not added by gcycle (i.e., when landiau=true)
 DO_GSSOILINCR=".false."
-if [[ "${RUN}" == "gdas" && "${DO_LAND_IAU:-.false.}" == ".true." ]]; then   
+if [[ "${RUN}" == "gfs" || "${RUN}" == "gdas" ]] && [[ "${DO_LAND_IAU:-.false.}" == ".true." ]]; then   
     DO_GSSOILINCR=".true."
 fi
 LSOIL_INCR=${LSOIL_INCR:-2}

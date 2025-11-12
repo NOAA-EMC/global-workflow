@@ -8,4 +8,10 @@ echo "BEGIN: config.analcalc"
 # Get task specific resources
 source "${EXPDIR}/config.resources" analcalc
 
+if [[ "${RUN}" == "gfs" ]]; then
+    echo "turning off gsi soilda for gfs analcalc"
+    DO_GSISOILDA="NO"
+    DO_LAND_IAU=".false."
+fi
+
 echo "END: config.analcalc"
