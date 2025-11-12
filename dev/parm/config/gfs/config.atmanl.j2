@@ -26,8 +26,8 @@ if [[ "${DOHYBVAR}" = "YES" && "${ATMINC_GRID}" = "gaussian" ]]; then
     export CASE_HIST=${CASE_ANL}
 fi
 
-export NUMBER_OUTER_LOOPS="{{ NUMBER_OUTER_LOOPS }}"
-export NINNER_LOOP1="{{ NINNER_LOOP1 }}"
-export NINNER_LOOP2="{{ NINNER_LOOP2 }}"
+export NUMBER_OUTER_LOOPS="{{ NUMBER_OUTER_LOOPS | default() }}"
+export NINNER_LOOP1="{{ NINNER_LOOP1 | default () }}"
+export NINNER_LOOP2="{{ NINNER_LOOP2 | default () }}"
 
 echo "END: config.atmanl"

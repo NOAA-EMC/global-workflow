@@ -14,6 +14,10 @@ def main():
 
     config = cast_strdict_as_dtypedict(os.environ)
 
+    # Set a default value for ATMINC_GRID if it is not in the environment
+    # This MUST be done *before* config is passed to the Stage constructor.
+    config.setdefault('ATMINC_GRID', '')
+
     # Instantiate the Stage object
     stage = Stage(config)
 
