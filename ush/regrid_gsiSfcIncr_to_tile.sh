@@ -58,7 +58,7 @@ if (( LFHR >= 0 )); then
     soilinc_fhrs=("${LFHR}")
 else # construct restart times for deterministic member
     soilinc_fhrs=("${assim_freq}") # increment file at middle of window
-    if [[ "${DOIAU:-}" == "YES" && ${DO_LAND_IAU} == ".true." ]]; then #For ATM only IAU, update surface restarts at beginning of window
+    if [[ "${DOIAU:-}" == "YES" ]]; then  #Update surface restarts at beginning of window
         half_window=$(( assim_freq / 2 ))
         soilinc_fhrs+=("${half_window}")
     fi
