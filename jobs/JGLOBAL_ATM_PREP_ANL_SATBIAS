@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmopeanlbc" -c "base prepatmopeanlbc"
+export WIPE_DATA="NO"
+export DATA=${DATA:-${DATAROOT}/${RUN}fetch_${cyc}}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmanlsatbias" -c "base prepatmanlsatbias"
 
 ##############################################
 # Set variables used in the script
@@ -17,19 +19,23 @@ export gdd=${GDATE:6:2}
 export GDUMP="gdas"
 
 # Generate COM variables from templates
-RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMOUT_ENS_ATMOS_ANALYSIS_PRES:COM_ENS_ATMOS_ANALYSIS_TMPL
-COMIN_ATMOS_PREV=${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos
-OPEBIASFILES="${GDUMP}.t${gcyc}z.abias ${GDUMP}.t${gcyc}z.abias_int ${GDUMP}.t${gcyc}z.abias_pc ${GDUMP}.t${gcyc}z.radstat"
+MEMDIR="ensstat" RUN="enkf${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+    COMOUT_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
+
+# Process bias corrections files grabbed from HPSS in task gdas_fetchatmanlsatbias
+SATBIASDIR=${DATA}/${GDUMP}.${gPDY}/${gcyc}/atmos
+SATBIASFILES="${GDUMP}.t${gcyc}z.abias ${GDUMP}.t${gcyc}z.abias_int ${GDUMP}.t${gcyc}z.abias_pc ${GDUMP}.t${gcyc}z.radstat"
 
 EXSCRIPT_GEN_YAML=${RUNSATBIASCONVPY:-${USHgfs}/gen_run_satbias_conv_yaml.py}
 EXSCRIPT=${RUNSATBIASCONVPY:-${USHgfs}/run_satbias_conv.py}
-export EXYAML=${RUNSATBIASCONVYAML:-${USHgfs}/satbias_converter.yaml}
+EXYAML=${RUNSATBIASCONVYAML:-${USHgfs}/satbias_converter.yaml}
 export EXX=${RUNSATBIASCONVX:-${EXECgfs}/satbias2ioda.x}
 OUTPUT=${DATA}/output
+PYRUNTMP=${DATA}/tmp
 
-if [[ ! -d "${COMOUT_ENS_ATMOS_ANALYSIS_PRES}" ]]; then mkdir -p "${COMOUT_ENS_ATMOS_ANALYSIS_PRES}"; fi
-if [[ ! -d "${OUTPUT}" ]]; then mkdir -p "${OUTPUT}"; fi
+if [[ ! -d "${COMOUT_ATMOS_ANALYSIS_PREV}" ]]; then mkdir -p "${COMOUT_ATMOS_ANALYSIS_PREV}"; fi
+if [[ -d "${OUTPUT}" ]]; then rm -rf "${OUTPUT}"; fi
+if [[ -d "${PYRUNTMP}" ]]; then rm -rf "${PYRUNTMP}"; fi
 
 if [[ ${DO_JEDIATMENS} == "YES" ]]; then
     # JEDI run
@@ -37,7 +43,7 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
     cpreq ${EXYAML} ./
 
 # Generate YAML
-${EXSCRIPT_GEN_YAML} -i ${TASK_CONFIG_YAML} -o run_satbias_conv.yaml
+${EXSCRIPT_GEN_YAML} -o run_satbias_conv.yaml
 err=$?
 
     if [[ ${err} -eq 0 ]]; then
@@ -48,15 +54,15 @@ err=$?
     fi
     
     if [[ ${err} -eq 0 ]]; then
-        cd output/${GDUMP}.${gPDY}/${gcyc}/atmos   
-        for file in ${OPEBIASFILES}; do
-            cpreq ${COMIN_ATMOS_PREV}/${file} ./${file}.ensmean
+        cd ${OUTPUT}/${GDUMP}.${gPDY}/${gcyc}/atmos   
+        for file in ${SATBIASFILES}; do
+            cpreq ${SATBIASDIR}/${file} ./${file}.ensmean
             err=$?
             if [[ ${err} -ne 0 ]]; then
                 err_exit "Error copying operational anl bias correction files"
             fi
 	done
-        tar -cvf ${COMOUT_ENS_ATMOS_ANALYSIS_PRES}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar *
+        tar -cvf ${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar *
         err=$?
     else
         err_exit "Error executing ${EXSCRIPT}"
@@ -64,15 +70,16 @@ err=$?
 
 else
     # GSI run
-    for file in ${OPEBIASFILES}; do
-        cpreq ${COMIN_ATMOS_PREV}/${file} ${OUTPUT}/${file}.ensmean
+    if [[ ! -d "${OUTPUT}" ]]; then mkdir -p "${OUTPUT}"; fi
+    for file in ${SATBIASFILES}; do
+        cpreq ${SATBIASDIR}/${file} ${OUTPUT}/${file}.ensmean
         err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Error copying operational anl bias correction files"
         fi
     done
     cd ${OUTPUT}
-    tar -cvf ${COMOUT_ENS_ATMOS_ANALYSIS_PRES}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar *
+    tar -cvf ${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar *
     err=$?
 fi
 

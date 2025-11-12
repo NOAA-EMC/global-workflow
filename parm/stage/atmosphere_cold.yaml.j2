@@ -5,14 +5,6 @@ atmosphere_cold:
         {% set COMOUT_ATMOS_INPUT_MEM = COMOUT_ATMOS_INPUT_MEM_list[imem] %}
         - "{{ COMOUT_ATMOS_INPUT_MEM }}"
         {% endfor %} # mem loop
-
-        {% if DOENKFONLY_ATM %}
-        {% for mem in range(first_mem, last_mem + 1) %}
-        {% set imem = mem - first_mem %}
-        {% set COMOUT_ENS_ATMOS_ANALYSIS_MEM = COMOUT_ENS_ATMOS_ANALYSIS_MEM_list[imem] %}
-        - "{{ COMOUT_ENS_ATMOS_ANALYSIS_MEM }}"
-        {% endfor %} # mem loop
-        {% endif %} 
     link_req:
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
@@ -24,13 +16,3 @@ atmosphere_cold:
         {% endfor %} # ntile
         {% endfor %} # ftype
         {% endfor %} # mem loop
-
-        {% if DOENKFONLY_ATM %}
-        {% for mem in range(first_mem, last_mem + 1) %}
-        {% set imem = mem - first_mem %}
-        {% set COMOUT_ENS_ATMOS_ANALYSIS_MEM = COMOUT_ENS_ATMOS_ANALYSIS_MEM_list[imem] %}
-        {% for ftype in ["abias.ensmean", "abias_air.ensmean", "abias_int.ensmean", "abias_pc.ensmean", "radstat.ensmean"] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ENS_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ENS_ATMOS_ANALYSIS_MEM }}"]
-        {% endfor %} # ftype
-        {% endfor %} # mem loop
-        {% endif %}

@@ -116,16 +116,16 @@ export COMINgfs=${COMIN_ATMOS_HISTORY_GFS}
 export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
 
 if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
-    RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ENKF_ATMOS_HISTORY_GDAS_PREV:COM_ENS_ATMOS_HISTORY_TMPL
-    RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ENKF_MEM001_ATMOS_HISTORY_GDAS_PREV:COM_ENS_MEM001_ATMOS_HISTORY_TMPL
-    RUN="gdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GDAS_PREV:COM_ATMOS_HISTORY_TMPL
-    mkdir -p $COMIN_ATMOS_HISTORY_GDAS_PREV
-    ln -sf $COMIN_ENKF_MEM001_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.log.f003.txt $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.log.f003.txt
-    ln -sf $COMIN_ENKF_MEM001_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.log.f006.txt $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.log.f006.txt
-    ln -sf $COMIN_ENKF_MEM001_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.log.f009.txt $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.log.f009.txt
-    ln -sf $COMIN_ENKF_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.ensmean.atm.f003.nc     $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.atm.f003.nc
-    ln -sf $COMIN_ENKF_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.ensmean.atm.f006.nc     $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.atm.f006.nc
-    ln -sf $COMIN_ENKF_ATMOS_HISTORY_GDAS_PREV/enkfgdas.t${gcyc}z.ensmean.atm.f009.nc     $COMIN_ATMOS_HISTORY_GDAS_PREV/gdas.t${gcyc}z.atm.f009.nc    
+    MEMDIR="ensstat" RUN="enkf${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_ENS_STAT_PREV:COM_ATMOS_HISTORY_TMPL
+    MEMDIR="mem001" RUN="enkf${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_ENS_MEM001_PREV:COM_ATMOS_HISTORY_TMPL
+    RUN="gdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMOUT_ATMOS_HISTORY_DET_PREV:COM_ATMOS_HISTORY_TMPL
+    mkdir -p $COMOUT_ATMOS_HISTORY_DET_PREV
+    ln -sf $COMIN_ATMOS_HISTORY_ENS_MEM001_PREV/enkfgdas.t${gcyc}z.log.f003.txt $COMOUT_ATMOS_HISTORY_DET_PREV/gdas.t${gcyc}z.log.f003.txt
+    ln -sf $COMIN_ATMOS_HISTORY_ENS_MEM001_PREV/enkfgdas.t${gcyc}z.log.f006.txt $COMOUT_ATMOS_HISTORY_DET_PREV/gdas.t${gcyc}z.log.f006.txt
+    ln -sf $COMIN_ATMOS_HISTORY_ENS_MEM001_PREV/enkfgdas.t${gcyc}z.log.f009.txt $COMOUT_ATMOS_HISTORY_DET_PREV/gdas.t${gcyc}z.log.f009.txt
+    ln -sf $COMIN_ATMOS_HISTORY_ENS_STAT_PREV/enkfgdas.t${gcyc}z.ensmean.atm.f003.nc     $COMOUT_ATMOS_HISTORY_DET_PREV/gdas.t${gcyc}z.atm.f003.nc
+    ln -sf $COMIN_ATMOS_HISTORY_ENS_STAT_PREV/enkfgdas.t${gcyc}z.ensmean.atm.f006.nc     $COMOUT_ATMOS_HISTORY_DET_PREV/gdas.t${gcyc}z.atm.f006.nc
+    ln -sf $COMIN_ATMOS_HISTORY_ENS_STAT_PREV/enkfgdas.t${gcyc}z.ensmean.atm.f009.nc     $COMOUT_ATMOS_HISTORY_DET_PREV/gdas.t${gcyc}z.atm.f009.nc    
 fi
 
 # Create or Copy prepbufr, prepbufr.acft_profiles, nsstbufr files
@@ -172,7 +172,6 @@ export err
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to obtain/create ${files}, ABORT!"
 fi
-
 
 ################################################################################
 # Exit out cleanly

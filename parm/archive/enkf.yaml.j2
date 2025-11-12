@@ -84,13 +84,12 @@ enkf:
             {% set da_conf_files = [] %}
         {% else %}
             {% if lobsdiag_forenkf %}
+                {% set da_stat_files = ["stat.atm.tar"] %}
                 {% if DOENKFONLY_ATM %}
-                   {% set da_stat_files = ["stat.atm.tar"] %}
                    {% set da_conf_files = ["atmensanlobs.yaml",
                                            "atmensanlsol.yaml",
                                            "atmensanlfv3inc.yaml"] %}
                 {% else %}
-                    {% set da_stat_files = [] %}
                     {% set da_conf_files = ["atmensanlobs.yaml",
                                             "atmensanlsol.yaml",
                                             "atmensanlfv3inc.yaml",
@@ -99,11 +98,11 @@ enkf:
                 {% endif %}
             {% else %}
                 {% if DOENKFONLY_ATM %}
-                    {% set da_stat_files = ["stat.atm.tar"]%}
+                    {% set da_stat_files = ["stat.atm.tar"] %}
                     {% set da_conf_files = ["atmensanlletkf.yaml",
                                             "atmensanlfv3inc.yaml"] %}
                 {% else %}
-                    {% set da_stat_files = ["stat.atm.tar"]%}
+                    {% set da_stat_files = ["stat.atm.tar"] %}
                     {% set da_conf_files = ["atmensanlletkf.yaml",
                                             "atmensanlfv3inc.yaml",
                                             "correction_increment.yaml",
@@ -133,7 +132,7 @@ enkf:
         {% endif %}
 
         # Atmospheric analyses/increment
-        {% for fhr in IAUFHRS  if fhr != 6 %}
+        {% for fhr in IAUFHRS %}
             {% if not DO_JEDIATMENS %}
                 {% if do_calc_increment %}
         # Store analyses instead of increments

@@ -48,7 +48,6 @@ declare -rx COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
 declare -rx COM_OBSPROC_TMPL COM_RTOFS_TMPL
 
 COM_BASE='${ROTDIR}/${RUN}.${YMD}/${HH}/${MEMDIR}'
-COM_BASE_NOMEM='${ROTDIR}/${RUN}.${YMD}/${HH}/'
 
 declare -rx COM_TOP_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}'
 
@@ -58,12 +57,9 @@ declare -rx COM_OBS_JEDI=${COM_BASE}'/obs_jedi'
 declare -rx COM_ATMOS_INPUT_TMPL=${COM_BASE}'/model/atmos/input'
 declare -rx COM_ATMOS_RESTART_TMPL=${COM_BASE}'/model/atmos/restart'
 declare -rx COM_ATMOS_ANALYSIS_TMPL=${COM_BASE}'/analysis/atmos'
-declare -rx COM_ENS_ATMOS_ANALYSIS_TMPL=${COM_BASE_NOMEM}'/ensstat/analysis/atmos'
 declare -rx COM_SNOW_ANALYSIS_TMPL=${COM_BASE}'/analysis/snow'
 declare -rx COM_SNOW_ANLMON_TMPL=${COM_BASE}'/products/snow/anlmon'
 declare -rx COM_ATMOS_HISTORY_TMPL=${COM_BASE}'/model/atmos/history'
-declare -rx COM_ENS_ATMOS_HISTORY_TMPL=${COM_BASE}'/ensstat/model/atmos/history'
-declare -rx COM_ENS_MEM001_ATMOS_HISTORY_TMPL=${COM_BASE}'/mem001/model/atmos/history'
 declare -rx COM_ATMOS_MASTER_TMPL=${COM_BASE}'/model/atmos/master'
 declare -rx COM_ATMOS_GRIB_TMPL=${COM_BASE}'/products/atmos/grib2'
 declare -rx COM_ATMOS_GRIB_GRID_TMPL=${COM_ATMOS_GRIB_TMPL}'/${GRID}'

@@ -1,19 +1,12 @@
 {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM_list[0] | relpath(ROTDIR)) %}
 analysis:
     mkdir:
-        {% if DOENKFONLY_ATM %}
-        {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[enssat] %}
-        - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
-        {% endif %}
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
         - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
         {% endfor %}
     link_req:
-        {% if DOENKFONLY_ATM %}
-        {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[enssat] %}
-        {% endif %}
         {% for mem in range(first_mem, last_mem + 1) %}
         {% set imem = mem - first_mem %}
         {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
@@ -36,22 +29,13 @@ analysis:
         {% endfor %}
         {% endfor %}
 
-        # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
-        {% if DOENKFONLY_ATM %}
-        {% set ftypes = [
-            ("abias", "abias.ensmean.txt"),
-            ("abias_air", "abias_air.ensmean.txt"),
-            ("abias_int", "abias_int.ensmean.txt"),
-            ("abias_pc", "abias_pc.ensmean.txt"),
-            ("rad_varbc_params.tar", "rad_varbc_params.tar")] %}
-        {% else %}
+        ## TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
         {% set ftypes = [
             ("abias", "abias.txt"),
             ("abias_air", "abias_air.txt"),
             ("abias_int", "abias_int.txt"),
             ("abias_pc", "abias_pc.txt"),
             ("rad_varbc_params.tar", "rad_varbc_params.tar")] %}
-        {% endif %}
         {% for source_ftype, dest_ftype in ftypes %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ source_ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ source_ftype }}",
@@ -62,21 +46,6 @@ analysis:
         {% else %}
 
         # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames
-	{% if DOENKFONLY_ATM %}
-        {% set ftypes = [
-            ("atminc.nc", "increment.atm.i006.nc"),
-            ("atmi009.nc", "increment.atm.i009.nc"),
-            ("atmi003.nc", "increment.atm.i003.nc"),
-            ("ratmi009.nc", "recentered_increment.atm.i009.nc"),
-            ("ratminc.nc", "recentered_increment.atm.i006.nc"),
-            ("ratmi003.nc", "recentered_increment.atm.i003.nc"),
-            ("abias", "abias.ensmean.txt"),
-            ("radstat", "radstat.tar"),
-            ("abias_air", "abias_air.ensmean.txt"),
-            ("abias_int", "abias_int.ensmean.txt"),
-            ("abias_pc", "abias_pc.ensmean.txt"),
-            ("rad_varbc_params.tar", "rad_varbc_params.tar") ] %}
-	{% else %}
         {% set ftypes = [
             ("atminc.nc", "increment.atm.i006.nc"),
             ("atmi009.nc", "increment.atm.i009.nc"),
@@ -90,7 +59,6 @@ analysis:
             ("abias_int", "abias_int.txt"),
             ("abias_pc", "abias_pc.txt"),
             ("rad_varbc_params.tar", "rad_varbc_params.tar") ] %}
-	{% endif %}
         {% for source_ftype, dest_ftype in ftypes %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ source_ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ source_ftype }}",
