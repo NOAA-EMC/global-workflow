@@ -11,7 +11,7 @@ ocnicepost:
       - "{{ DATA }}"
     copy:
       - ["{{ PARMgfs }}/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
-      {% if write_grib2 %}
+      {% if write_grib2 or write_netcdf %}
       - ["{{ PARMgfs }}/post/{{ component }}_gfs.csv", "{{ DATA }}/{{ component }}.csv"]
       - ["{{ EXECgfs }}/ocnicepost.x", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
