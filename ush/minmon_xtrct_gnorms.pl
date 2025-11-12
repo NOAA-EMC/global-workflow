@@ -9,7 +9,7 @@ use List::MoreUtils 'last_index';
 #---------------------------------------------------------------------------
 #  minmon_xtrct_gnorms.pl
 #
-#  Update the gnorm_data.txt file with data from a new cycle.  Add 
+#  Update the gnorm_data.txt file with data from a new cycle.  Add
 #  this new data to the last line of the gnorm_data.txt file.
 #
 #  Note:  If the gnorm_data.txt file does not exist, it will be created.
@@ -28,17 +28,17 @@ sub updateGnormData {
 
    my $rc        = 0;
    my @filearray;
- 
-   my $gdfile  = "gnorm_data.txt";  
+
+   my $gdfile  = "gnorm_data.txt";
 
    my $outfile = "new_gnorm_data.txt";
    my $yr      = substr( $cycle, 0, 4);
    my $mon     = substr( $cycle, 4, 2);
    my $day     = substr( $cycle, 6, 2);
    my $hr      = substr( $cycle, 8, 2);
- 
-   my $newln = sprintf ' %04d,%02d,%02d,%02d,%e,%e,%e,%e,%e%s', 
-                    $yr, $mon, $day, $hr, $igrad, $fgnorm,   
+
+   my $newln = sprintf ' %04d,%02d,%02d,%02d,%e,%e,%e,%e,%e%s',
+                    $yr, $mon, $day, $hr, $igrad, $fgnorm,
                     $avg_gnorm, $min_gnorm, $max_gnorm, "\n";
 
    #-------------------------------------------------------------
@@ -49,12 +49,12 @@ sub updateGnormData {
 
       @filearray = <INFILE>;
 
-#   This is the mechanism that limits the data to 30 days worth.  Should I 
+#   This is the mechanism that limits the data to 30 days worth.  Should I
 #   keep it or let the transfer script(s) truncate?  6/12/16 -- I'm going to keep
-#   it.  I can add this as a later change once I add a user mechanism to vary the 
+#   it.  I can add this as a later change once I add a user mechanism to vary the
 #   amount of data plotted (on the fly).
 
-      my $cyc_interval = $ENV{'CYCLE_INTERVAL'}; 
+      my $cyc_interval = $ENV{'CYCLE_INTERVAL'};
       if( $cyc_interval eq "" ) {
          $cyc_interval = 6;
       }
@@ -65,35 +65,35 @@ sub updateGnormData {
       if( $cyc_interval != 6 && $cyc_interval != 0 ) {
          my $cyc_per_day = 24 / $cyc_interval;
          $max_cyc = (30 * $cyc_per_day) - 1;
-      } 
-  
-      while( $#filearray > $max_cyc ) { 
+      }
+
+      while( $#filearray > $max_cyc ) {
          shift( @filearray );
       }
       close( INFILE );
    }
 
-   #  Here is the problem Russ encountered after re-running the MinMon:  
-   #     If the cycle time in $newln is the same as an existing record in 
+   #  Here is the problem Russ encountered after re-running the MinMon:
+   #     If the cycle time in $newln is the same as an existing record in
    #       *.gnorm_data.txt then we end up with 2+ rows for the same cycle time.
    #       In that case $newln should replace the first existing line
    #       in @filearray and all other lines that might match should be deleted.
-   #     Else when the cycle time doesn't already exist (the expected condition) 
+   #     Else when the cycle time doesn't already exist (the expected condition)
    #       it should be pushed into @filearray.
- 
-   # algorithm:  
+
+   # algorithm:
    # =========
    #   Establish $count of matches on "$yr,$mon,$day,$hr"
-   #     if $count > 0 
+   #     if $count > 0
    #       while $count > 1
    #          get last_index and remove with splice
    #       replace first_index with $newln
    #     else
    #       push $newln
-   # 
+   #
    my $srch_strng = "$yr,$mon,$day,$hr";
    my $count = true { /$srch_strng/ } @filearray;
- 
+
    if( $count > 0 ) {
       while( $count > 1 ) {
          my $l_index = last_index { /$srch_strng/ } @filearray;
@@ -106,19 +106,19 @@ sub updateGnormData {
    else {
       push( @filearray, $newln );
    }
-   
+
    open( OUTFILE, ">$outfile" ) or die "Can't open ${$outfile}: $!\n";
    print OUTFILE @filearray;
    close( OUTFILE );
 
-   system("cp -f $outfile $gdfile"); 
+   system("cpfs $outfile $gdfile");
 
 }
 
 #---------------------------------------------------------------------------
 #  makeErrMsg
 #
-#  Apply a gross check on the final value of the gnorm for a specific 
+#  Apply a gross check on the final value of the gnorm for a specific
 #  cycle.  If the final_gnorm value is greater than the gross_check value
 #  then put that in the error message file.  Also check for resets or a
 #  premature halt, and journal those events to the error message file too.
@@ -134,7 +134,7 @@ sub  makeErrMsg {
    my $reset_flag  = $_[5];
    my $reset_iter  = $_[6];  #reset iteration array
    my $infile      = $_[7];
-   my $gross_check = $_[8];  
+   my $gross_check = $_[8];
 
    my $mail_msg    ="";
    my $out_file = "${cycle}.errmsg.txt";
@@ -146,7 +146,7 @@ sub  makeErrMsg {
    }
 
    if( $reset_flag > 0 ) {
-      my $ctr=0; 
+      my $ctr=0;
       my $reset_msg = "\n Gnorm check detected $reset_flag reset(s):  suffix = $suffix, cycle = $cycle";
       $mail_msg .= $reset_msg;
       $mail_msg .= "\n";
@@ -175,7 +175,7 @@ sub  makeErrMsg {
       print OUTFILE $mail_msg;
       print OUTFILE "\n\n $mail_link";
       close( OUTFILE );
-   } 
+   }
 }
 
 
@@ -202,7 +202,7 @@ print "$scr Has Started\n";
 
 #
 # This needs to be redesigned to get the gnorm value from the gsistat file
-# using the line that starts "cost,grad,step,b,step?:".  The line formerly 
+# using the line that starts "cost,grad,step,b,step?:".  The line formerly
 # used for the gnorm and reduction values may not be available if the the
 # verbose output flag is set to FALSE.
 #
@@ -245,7 +245,7 @@ if( (-e $gnormfile) ) {
    $rc = 4;
 }
 
-if( $rc == 0 ) { 
+if( $rc == 0 ) {
    if( (-e $infile) ) {
       open( INFILE, "<${infile}" ) or die "Can't open ${infile}: $!\n";
 
@@ -271,21 +271,21 @@ if( $rc == 0 ) {
       while( $line = <INFILE> ) {
 
          ##############################################
-         #  if the reset_iter_flag is 1 then record the 
+         #  if the reset_iter_flag is 1 then record the
          #  current outer & inner iteration number
          ##############################################
          if( $reset_iter_flag == 1 ) {
             if( $line =~ /${igrad_target}/ ) {
-               my @iterline  = split( / +/, $line ); 
+               my @iterline  = split( / +/, $line );
                my $iter_str = $iterline[2] . "," . $iterline[3];
                push( @reset_iter, $iter_str);
-               $reset_iter_flag = 0;  
+               $reset_iter_flag = 0;
             }
          }
 
 
          if( $line =~ /${igrad_target}/ ) {
-            my @gradline  = split( / +/, $line ); 
+            my @gradline  = split( / +/, $line );
 
             my $grad = $gradline[$igrad_number];
 
@@ -297,7 +297,7 @@ if( $rc == 0 ) {
             my $igrad_sqr = $igrad**2;
             my $grad_sqr  = $grad**2;
             my $gnorm     = $grad_sqr/$igrad_sqr;
-          		
+
 	    push( @gnorm_array, $gnorm );
          }
 
@@ -318,7 +318,7 @@ if( $rc == 0 ) {
 
       ########################################################################
       #  If the stop_flag is >0 then record the last outer & inner
-      #  iteration number.  The trick is that it's the last iteration in the 
+      #  iteration number.  The trick is that it's the last iteration in the
       #  log file and we just passed it when we hit the stop warning message,
       #  so we have to reopen the file and get the last iteration number.
       ########################################################################
@@ -328,7 +328,7 @@ if( $rc == 0 ) {
          my @lines = reverse <INFILE>;
          foreach $line (@lines) {
             if( $line =~ /${igrad_target}/ ){
-               my @iterline  = split( / +/, $line ); 
+               my @iterline  = split( / +/, $line );
                $stop_iter = $iterline[2] . "," . $iterline[3];
                last;
             }
@@ -338,17 +338,17 @@ if( $rc == 0 ) {
 
 
       my @all_gnorm = @gnorm_array;
-   
-      ##############################################################################  
+
+      ##############################################################################
       ##
       ##  If the iterations were halted due to error then the @all_gnorm array won't
-      ##  be the expected size.  In that case we need to pad the array out with 
+      ##  be the expected size.  In that case we need to pad the array out with
       ##  RMISS values so GrADS won't choke when it tries to read the data file.
       ##
       ##  Note that we're padding @all_gnorm.  The @gnorm_array is examined below
       ##  and we don't want to pad that and mess up the min/max calculation.
-      ## 
-      ###############################################################################  
+      ##
+      ###############################################################################
       my $arr_size = @all_gnorm;
 
       if( $arr_size < $expected_gnorms ) {
@@ -378,19 +378,19 @@ if( $rc == 0 ) {
 
       $avg_gnorm = $sum_10_gnorm / 10;
 
-   
+
       #####################################################################
-      #  Update the gnorm_data.txt file with information on the 
-      #  initial gradient, final gnorm, and avg/min/max for the last 10 
+      #  Update the gnorm_data.txt file with information on the
+      #  initial gradient, final gnorm, and avg/min/max for the last 10
       #  iterations.
       #####################################################################
       updateGnormData( $cdate,$igrad,$final_gnorm,$avg_gnorm,$min_gnorm,$max_gnorm,$suffix );
 
 
       #####################################################################
-      #  Call makeErrMsg to build the error message file to record any     
+      #  Call makeErrMsg to build the error message file to record any
       #  abnormalities in the minimization.  This file can be mailed by
-      #  a calling script.            
+      #  a calling script.
       #####################################################################
       makeErrMsg( $suffix, $cdate, $final_gnorm, $stop_flag, $stop_iter, $reset_flag, \@reset_iter, $infile, $gross_check_val );
 
@@ -398,7 +398,7 @@ if( $rc == 0 ) {
       #########################################################
       # write to GrADS ready output data file
       #
-      #   Note:  this uses pack to achieve the same results as 
+      #   Note:  this uses pack to achieve the same results as
       #          an unformatted binary Fortran file.
       #########################################################
       my $filename2 = "${cdate}.gnorms.ieee_d";
@@ -417,21 +417,21 @@ if( $rc == 0 ) {
       if(! -d $tankdir) {
          system( "mkdir -p $tankdir" );
       }
-   
+
       if( -e $filename2 ) {
-         system("cp -f $filename2 ${tankdir}/.");
+         system("cpfs $filename2 ${tankdir}/.");
       }
 
-      my $gdfile  = "gnorm_data.txt";  
+      my $gdfile  = "gnorm_data.txt";
       if( -e $gdfile ) {
-         system("cp -f $gdfile ${tankdir}/.");
+         system("cpfs $gdfile ${tankdir}/.");
       }
 
       my $errmsg = "${cdate}.errmsg.txt";
       if( -e $errmsg ) {
-         system("cp -f $errmsg ${tankdir}/.");
+         system("cpfs $errmsg ${tankdir}/.");
       }
-   
+
    }				# $rc still == 0 after reading gmon_gnorm.txt
 
 }else {				# $infile does not exist

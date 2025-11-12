@@ -23,7 +23,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_ATMOS_MINMON_PREV:COM_ATMOS_MINMON_TMPL
 
-export gsistat="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.gsistat"
+export gsistat="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.gsistat.txt"
 export M_TANKverf=${M_TANKverf:-${COMOUT_ATMOS_MINMON}}
 export M_TANKverfM1=${M_TANKverfM1:-${COMIN_ATMOS_MINMON_PREV}}
 

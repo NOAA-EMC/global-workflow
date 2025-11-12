@@ -9,7 +9,7 @@ Status
 ======
 
 * State of develop (HEAD) branch: GFSv17+ development
-* State of operations (dev/gfs.v16 branch): GFS v16.3.24 `tag: [gfs.v16.3.24] <https://github.com/NOAA-EMC/global-workflow/releases/tag/gfs.v16.3.24>`_
+* State of operations (dev/gfs.v16 branch): GFS v16.3.28 `tag: [gfs.v16.3.28] <https://github.com/NOAA-EMC/global-workflow/releases/tag/gfs.v16.3.28>`_
 
 =============
 Code managers
