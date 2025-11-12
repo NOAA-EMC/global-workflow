@@ -190,6 +190,7 @@ local DO_GSL_DRAG_SS=${do_gsl_drag_ss:-".true."}
 local DO_GSL_DRAG_TOFD=${do_gsl_drag_tofd:-".true."}
 local DO_GWD_OPT_PSL=${do_gwd_opt_psl:-".false."}
 local DO_UGWP_V1_OROG_ONLY=${do_ugwp_v1_orog_only:-".false."}
+local DO_NGW_EC=${do_ngw_ec:-"false"}
 local MIN_LAKEICE=${min_lakeice:-"0.15"}
 local MIN_SEAICE=${min_seaice:-"0.15"}
 local USE_CICE_ALB=${use_cice_alb:-".false."}
@@ -215,6 +216,7 @@ local DSPHEAT=${dspheat:-".true."}
 local HYBEDMF=${hybedmf:-".false."}
 local SATMEDMF=${satmedmf:-".true."}
 local ISATMEDMF=${isatmedmf:-"1"}
+local TTE_EDMF=${tte_edmf:-".false."}
 local LHEATSTRG=${lheatstrg:-".false."}
 local LSEASPRAY=${lseaspray:-".true."}
 local RANDOM_CLDS=${random_clds:-".true."}
@@ -224,6 +226,7 @@ local XR_CNVCLD=${xr_cnvcld:-".true."}
 local IMFSHALCNV=${imfshalcnv:-"2"}
 local IMFDEEPCNV=${imfdeepcnv:-"2"}
 local PROGSIGMA=${progsigma:-".true."}
+local CSCALE=${cscale:-"1."}
 local BETASCU=${betascu:-"8.0"}
 local BETAMCU=${betamcu:-"1.0"}
 local BETADCU=${betadcu:-"2.0"}
@@ -424,6 +427,7 @@ local FNTSFA="'${FNTSFA:-}'"
 #fv_grid_nml options
 
 #nam stochy options
+local NEW_LSCALE=${new_lscale:-".false."}
 local STOCHINI=${stochini:-".false."}
 local SKEB=${SKEB:-0}
 local ISEED_SKEB=${ISEED_SKEB:-${ISEED}}
