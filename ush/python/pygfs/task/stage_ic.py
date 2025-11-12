@@ -52,6 +52,11 @@ class Stage(Task):
 
         # Parse staging yaml to get list of files to stage
         stage_set = parse_j2yaml(self.task_config.STAGE_IC_YAML_TMPL, stage_dict, allow_missing=False)
+        logger.info(stage_set)
+
+        # Write stage_set to a file in DATA for debugging
+        stage_set.save("./stage.yaml")
+        logger.debug("Staging yaml written to ./stage.yaml for debugging purposes.")
 
         # stage files to ROTDIR
         for key in stage_set.keys():
