@@ -9,9 +9,9 @@ echo "BEGIN: config.analcalc"
 source "${EXPDIR}/config.resources" analcalc
 
 if [[ "${RUN}" == "gfs" ]]; then
-    echo "turning off gsi soilda for gfs analcalc"
-    DO_GSISOILDA="NO"
-    DO_LAND_IAU=".false."
+    echo "turning off gsi soilda for gfs run"
+    export DO_GSISOILDA="NO"
+    export DO_LAND_IAU=".false."
 fi
 
 echo "END: config.analcalc"
