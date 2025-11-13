@@ -383,9 +383,9 @@ class GFSCycledAppConfig(AppConfig):
 
                 # Reset tasks to run enkf-only for atm if do_enkfonly_atm=true
                 if options['do_enkfonly_atm']:
-                    if run == 'gdas': 
-                        task_names[run] = []  
-                        task_names[run] += ['prep', 'fetch', 'prepatmanlsatbias']  
+                    if run == 'gdas':
+                        task_names[run] = []
+                        task_names[run] += ['prep', 'fetch', 'prepatmanlsatbias']
                         if options['do_jediatmvar']:
                             task_names[run] += ['prepatmiodaobs']
 

@@ -24,7 +24,7 @@ def main():
             'OCNRES', 'waveGRD', 'ntiles', 'DOIAU',
             'DO_JEDIOCNVAR', 'DO_STARTMEM_FROM_JEDIICE',
             'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA', 'DO_AERO_ANL',
-            'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'DO_GSISOILDA', 'DO_LAND_IAU', 
+            'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'DO_GSISOILDA', 'DO_LAND_IAU',
             'DOENKFONLY_ATM']
 
     stage_dict = AttrDict()

@@ -30,7 +30,7 @@ class GFSTasks(Tasks):
             task_name = f'{self.run}_fetchatmanlbias'
             task_dict = {'task_name': task_name,
                          'resources': resources,
-                         'dependency': dependencies, 
+                         'dependency': dependencies,
                          'envars': self.envars,
                          'cycledef': cycledef,
                          'command': f'{self.HOMEgfs}/dev/jobs/fetch.sh',
@@ -50,7 +50,7 @@ class GFSTasks(Tasks):
                          'command': f'{self.HOMEgfs}/dev/jobs/fetch.sh',
                          'job_name': f'{self.pslot}_{task_name}_@H',
                          'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                        'maxtries': '&MAXTRIES;'
+                         'maxtries': '&MAXTRIES;'
                          }
 
         task = rocoto.create_task(task_dict)
