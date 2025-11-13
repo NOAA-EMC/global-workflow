@@ -385,7 +385,7 @@ class GFSCycledAppConfig(AppConfig):
                 if options['do_enkfonly_atm']:
                     if run == 'gdas':
                         task_names[run] = []
-                        task_names[run] += ['prep', 'fetch', 'prepatmanlsatbias']
+                        task_names[run] += ['prep', 'fetch', 'prepatmanlbias']
                         if options['do_jediatmvar']:
                             task_names[run] += ['prepatmiodaobs']
 
