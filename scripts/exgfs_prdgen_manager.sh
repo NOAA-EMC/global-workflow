@@ -36,8 +36,8 @@ for fhr in "${pgrb2_hours[@]}"; do
     fhr3=$(sprintf "%03d" "${fhr}")
     master_file="${COMIN_ATMOS_MASTER}/gfs.${cycle}.master.grb2f${fhr3}"
     if ! wait_for_file "${master_file}" "${sleep_interval}" "${max_tries}"; then
-        msg="FATAL ERROR: After 2 hours of waiting for GFS POST hour ${fhr3}."
-        err_exit "${msg}"
+        export err=1
+        err_exit "After 2 hours of waiting for GFS POST hour ${fhr3}."
     fi
     ecflow_client --event "release_pgrb2_${fhr3}"
 done
