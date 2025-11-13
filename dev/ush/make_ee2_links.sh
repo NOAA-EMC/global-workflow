@@ -1,4 +1,5 @@
 #!/bin/bash
+#shellcheck disable=SC2207
 PS4='+ $LINENO: '
 set -eux
 
@@ -13,7 +14,7 @@ set -eux
 # WARNING: This script does not create all links needed for EE2 compatibility. It only creates links needed to
 #          restart an existing experiment.
 
-if [ "$#" -ne 1 ]; then
+if [[ $# -ne 1 ]]; then
   echo "Usage: $0 <target_directory>"
   exit 1
 fi
@@ -24,7 +25,7 @@ cd "${target_dir}" || exit 1
 # Check for existence of at least one of gdas.YYYYMMDD, gfs.YYYYMMDD, or enkfgdas.YYYYMMDD directories
 dir_list=($(ls -d gdas.* gfs.* enkfgdas.* || true ))
 
-if [ ${#dir_list[@]} -eq 0 ]; then
+if [[ ${#dir_list[@]} -eq 0 ]]; then
   echo "No gdas.*, gfs.*, or enkfgdas.* directories found in ${target_dir}."
   exit 1
 fi
@@ -50,7 +51,7 @@ for dir in "${gdas_list[@]}" "${gfs_list[@]}" "${gcdas_list[@]}" "${gcafs_list[@
     *) echo "Unknown directory prefix: ${dir}"; exit 1 ;;
   esac
 
-  cycle_list=($(ls -d ?? || true ))
+  cycle_list=($(ls -d ./?? || true ))
   for cyc in "${cycle_list[@]}"; do
     if [[ -d "${cwd}/${dir}/${cyc}/analysis/atmos" ]]; then
       cd "${cwd}/${dir}/${cyc}/analysis/atmos"
@@ -166,7 +167,7 @@ done
 
 for dir in "${enkfgdas_list[@]}" "${enkfgfs_list[@]}"; do
   cd "${dir}"
-  cycle_list=($(ls -d ?? || true ))
+  cycle_list=($(ls -d ./?? || true ))
   for cyc in "${cycle_list[@]}"; do
     mem_list=($(ls -d mem* || true ))
     for mem in "${mem_list[@]}"; do
