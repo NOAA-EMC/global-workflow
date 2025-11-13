@@ -719,7 +719,6 @@ class GCAFSTasks(Tasks):
         sfcanl_aero_deps = []
         dep_dict = {'type': 'task', 'name': f'{anldep}_sfcanl'}
         sfcanl_aero_deps.append(rocoto.add_dependency(dep_dict))
-        print("USE AERO ANL FLAG IS:", self.run, self.options['use_aero_anl'])
         if self.options['use_aero_anl']:
             dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
             sfcanl_aero_deps.append(rocoto.add_dependency(dep_dict))
