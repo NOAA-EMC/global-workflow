@@ -35,8 +35,8 @@ for fhr in "${posthours[@]}"; do
     fhr3=$(sprintf "%03d" "${fhr}")
     log_file="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr3}.txt"
     if ! wait_for_file "${log_file}" "${sleep_interval}" "${max_tries}"; then
-        msg="FATAL ERROR: After 2 hours of waiting for GFS FCST hour ${fhr3}."
-        err_exit "${msg}"
+        export err=1
+        err_exit "After 2 hours of waiting for GFS FCST hour ${fhr3}."
     fi
     if [[ ${fhr} -eq 0 ]]; then
         ecflow_client --event release_postanl
