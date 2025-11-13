@@ -3,9 +3,9 @@
 ########## config.prepatmiodaobs ##########
 # Atm Operational Anl Bias Correction specific
 
-echo "BEGIN: config.prepatmanlsatbias"
+echo "BEGIN: config.prepatmanlbias"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" prepatmanlsatbias
+. "${EXPDIR}/config.resources" prepatmanlbias
 
-echo "END: config.prepatmanlsatbias"
+echo "END: config.prepatmanlbias"

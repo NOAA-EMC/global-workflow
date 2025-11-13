@@ -27,7 +27,7 @@ class GFSTasks(Tasks):
             cycledef = self.run
 
             resources = self.get_resource('fetch')
-            task_name = f'{self.run}_fetchatmanlsatbias'
+            task_name = f'{self.run}_fetchatmanlbias'
             task_dict = {'task_name': task_name,
                          'resources': resources,
                          'dependency': dependencies, 
@@ -167,21 +167,21 @@ class GFSTasks(Tasks):
 
         return task
 
-    def prepatmanlsatbias(self):
+    def prepatmanlbias(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_fetchatmanlsatbias'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_fetchatmanlbias'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('prepatmanlsatbias')
-        task_name = f'{self.run}_prepatmanlsatbias'
+        resources = self.get_resource('prepatmanlbias')
+        task_name = f'{self.run}_prepatmanlbias'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/jobs/prepatmanlsatbias.sh',
+                     'command': f'{self.HOMEgfs}/dev/jobs/prepatmanlbias.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -2596,7 +2596,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_enkfonly_atm']:
-            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_prepatmanlsatbias'}
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_prepatmanlbias'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -2670,7 +2670,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_enkfonly_atm']:
-            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_prepatmanlsatbias'}
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_prepatmanlbias'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

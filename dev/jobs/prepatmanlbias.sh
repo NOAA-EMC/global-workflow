@@ -8,11 +8,11 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-export job="prepatmanlsatbias"
+export job="prepatmanlbias"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_ATM_PREP_ANL_SATBIAS"
+"${HOMEgfs}/jobs/JGLOBAL_ATM_PREP_ANL_BIAS"
 status=$?
 exit "${status}"

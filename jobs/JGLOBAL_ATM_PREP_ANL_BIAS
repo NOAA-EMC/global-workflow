@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}fetch_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmanlsatbias" -c "base prepatmanlsatbias"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmanlbias" -c "base prepatmanlbias"
 
 ##############################################
 # Set variables used in the script
@@ -22,9 +22,9 @@ export GDUMP="gdas"
 MEMDIR="ensstat" RUN="enkf${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
 
-# Process bias corrections files grabbed from HPSS in task gdas_fetchatmanlsatbias
-SATBIASDIR=${DATA}/${GDUMP}.${gPDY}/${gcyc}/atmos
-SATBIASFILES="${GDUMP}.t${gcyc}z.abias ${GDUMP}.t${gcyc}z.abias_int ${GDUMP}.t${gcyc}z.abias_pc ${GDUMP}.t${gcyc}z.radstat"
+# Process bias corrections files grabbed from HPSS in task gdas_fetchatmanlbias
+BIASDIR=${DATA}/${GDUMP}.${gPDY}/${gcyc}/atmos
+BIASFILES="${GDUMP}.t${gcyc}z.abias ${GDUMP}.t${gcyc}z.abias_air  ${GDUMP}.t${gcyc}z.abias_int ${GDUMP}.t${gcyc}z.abias_pc ${GDUMP}.t${gcyc}z.radstat"
 
 EXSCRIPT_GEN_YAML=${RUNSATBIASCONVPY:-${USHgfs}/gen_run_satbias_conv_yaml.py}
 EXSCRIPT=${RUNSATBIASCONVPY:-${USHgfs}/run_satbias_conv.py}
@@ -49,38 +49,33 @@ err=$?
     if [[ ${err} -eq 0 ]]; then
 ${EXSCRIPT} -c run_satbias_conv.yaml
 err=$?
-    else
-        err_exit "Error executing ${EXSCRIPT_GEN_YAML}"
     fi
     
     if [[ ${err} -eq 0 ]]; then
         cd ${OUTPUT}/${GDUMP}.${gPDY}/${gcyc}/atmos   
-        for file in ${SATBIASFILES}; do
-            cpreq ${SATBIASDIR}/${file} ./${file}.ensmean
+        for file in ${BIASFILES}; do
+            cpreq ${BIASDIR}/${file} ./enkf${file}.txt
             err=$?
             if [[ ${err} -ne 0 ]]; then
                 err_exit "Error copying operational anl bias correction files"
             fi
 	done
+        # TODO: Temporary solution and need to process abias_air for JEDI when ready 
+	tar -cvf ${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.air_varbc_params.tar enkf${GDUMP}.t${gcyc}z.abias_air.txt
+	rm -rf enkf${GDUMP}.t${gcyc}z.abias_air.txt
         tar -cvf ${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar *
         err=$?
-    else
-        err_exit "Error executing ${EXSCRIPT}"
     fi
 
 else
     # GSI run
-    if [[ ! -d "${OUTPUT}" ]]; then mkdir -p "${OUTPUT}"; fi
-    for file in ${SATBIASFILES}; do
-        cpreq ${SATBIASDIR}/${file} ${OUTPUT}/${file}.ensmean
+    for file in ${BIASFILES}; do
+        cpreq ${BIASDIR}/${file} ${COMOUT_ATMOS_ANALYSIS_PREV}/enkf${file}.txt
         err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Error copying operational anl bias correction files"
         fi
     done
-    cd ${OUTPUT}
-    tar -cvf ${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar *
-    err=$?
 fi
 
 
