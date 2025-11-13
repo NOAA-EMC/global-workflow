@@ -373,7 +373,7 @@ class NEXUSEmissions(Task):
                 dsets.append(ds)
 
             # concatenate all the files for this day
-            if dsets is None:
+            if len(dsets) == 0:
                 break
             else:
                 ds = xr.concat(dsets, dim='time')
