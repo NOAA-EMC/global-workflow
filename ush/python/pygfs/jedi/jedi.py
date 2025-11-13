@@ -46,8 +46,8 @@ class Jedi:
         """
 
         # Make sure input dictionary for Jedi class constructor has the required keys
-        if 'exe_config_yaml_name' not in config:
-            raise WorkflowKeyError(f"Required key 'exe_config_yaml_name' not found in config")
+        if 'jedi_app_name' not in config:
+            raise WorkflowKeyError(f"Required key 'jedi_app_name' not found in config")
         for key in required_jedi_keys:
             if key not in config:
                 raise WorkflowKeyError(f"Required key '{key}' not found in config")
@@ -57,7 +57,7 @@ class Jedi:
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
             {
-                'exe_config_yaml': os.path.join(config.rundir, config.exe_config_yaml_name + '.yaml'),
+                'exe_config_yaml': os.path.join(config.rundir, config.jedi_app_name + '.yaml'),
             }
         )
         self.jedi_config = AttrDict(**config, **local_dict)
@@ -273,8 +273,8 @@ class Jedi:
 
         # Loop through dictionary of Jedi configuration dictionaries
         for block_name in jedi_config_dict:
-            # exe_config_yaml_name key is set to name for this block
-            jedi_config_dict[block_name]['exe_config_yaml_name'] = block_name
+            # jedi_app_name key is set to name for this block
+            jedi_config_dict[block_name]['jedi_app_name'] = block_name
 
             # Make sure all required keys present
             for key in required_jedi_keys:
