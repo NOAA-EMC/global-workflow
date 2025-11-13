@@ -33,8 +33,14 @@
     
     # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
     # TODO: Remove this when upstream Rocoto PR is merged
-    export PATH="/mcp_rag_eib/global-workflow_MCP_node.js-RAG/dev/ci/scripts/utils/Rocoto/bin:$PATH"
-    echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
+    # Load platform-specific configuration first
+    source "${GW_HOMEgfs}/dev/ci/platforms/config.${machine}"
+    if [[ -n "${ROCOTO_TEST_PATH:-}" && -d "${ROCOTO_TEST_PATH}" ]]; then
+      export PATH="${ROCOTO_TEST_PATH}:$PATH"
+      echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
+    else
+      echo "ROCOTO_TEST_PATH not set or directory not found, using system Rocoto"
+    fi
     
     source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
     source "${GW_HOMEgfs}/dev/ci/platforms/config.${machine}"
@@ -59,12 +65,16 @@
   script: |
     echo "Using build directory ${GW_HOMEgfs} for running CTests"
     
+    source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
+    # Platform config loaded by gw_setup.sh, now check for custom Rocoto
     # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
     # TODO: Remove this when upstream Rocoto PR is merged
-    export PATH="/mcp_rag_eib/global-workflow_MCP_node.js-RAG/dev/ci/scripts/utils/Rocoto/bin:$PATH"
-    echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
-    
-    source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
+    if [[ -n "${ROCOTO_TEST_PATH:-}" && -d "${ROCOTO_TEST_PATH}" ]]; then
+      export PATH="${ROCOTO_TEST_PATH}:$PATH"
+      echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
+    else
+      echo "ROCOTO_TEST_PATH not set or directory not found, using system Rocoto"
+    fi
     cd "${GW_HOMEgfs}/dev/ctests/build" || exit 1
     echo "Running CTests with label: ${CTEST_NAME} in ${PWD}"
     num=$(ctest -N | grep "Total Tests" | awk "{print \$3}")
