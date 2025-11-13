@@ -30,6 +30,12 @@
   stage: setup_tests
   script: |
     echo "Setting up for ctests pipeline building in ${GW_HOMEgfs} on ${machine}"
+    
+    # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
+    # TODO: Remove this when upstream Rocoto PR is merged
+    export PATH="/mcp_rag_eib/global-workflow_MCP_node.js-RAG/dev/ci/scripts/utils/Rocoto/bin:$PATH"
+    echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
+    
     source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
     source "${GW_HOMEgfs}/dev/ci/platforms/config.${machine}"
     cd "${GW_HOMEgfs}/dev/ctests" || exit 1
@@ -52,6 +58,12 @@
   stage: run_tests
   script: |
     echo "Using build directory ${GW_HOMEgfs} for running CTests"
+    
+    # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
+    # TODO: Remove this when upstream Rocoto PR is merged
+    export PATH="/mcp_rag_eib/global-workflow_MCP_node.js-RAG/dev/ci/scripts/utils/Rocoto/bin:$PATH"
+    echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
+    
     source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
     cd "${GW_HOMEgfs}/dev/ctests/build" || exit 1
     echo "Running CTests with label: ${CTEST_NAME} in ${PWD}"

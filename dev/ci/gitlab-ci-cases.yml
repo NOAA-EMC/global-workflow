@@ -30,6 +30,12 @@
   script:
     - |
       echo "Using build directory ${GW_HOMEgfs} (dated ${DATE})"
+
+      # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
+      # TODO: Remove this when upstream Rocoto PR is merged
+      export PATH="/mcp_rag_eib/global-workflow_MCP_node.js-RAG/dev/ci/scripts/utils/Rocoto/bin:$PATH"
+      echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
+
       pslot=$("${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS_DIR}" "${caseName}")
       "${GW_HOMEgfs}/dev/ci/scripts/run_check_gitlab_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       exit $? 
