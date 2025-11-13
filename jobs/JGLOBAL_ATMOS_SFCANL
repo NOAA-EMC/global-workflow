@@ -32,6 +32,9 @@ RUN="enkfgdas" MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 mkdir -p "${COMOUT_ATMOS_RESTART}"
 
+# Use CFP to stage and save files in parallel
+ export USE_CFP=YES
+
 ###############################################################
 # Run relevant script
 

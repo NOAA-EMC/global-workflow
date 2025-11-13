@@ -26,7 +26,7 @@ UFS_det(){
     IAU_OFFSET=0
     model_start_date_current_cycle=${current_cycle}
 
-    DO_LAND_IAU=".false."           
+    DO_LAND_IAU=".false."
 
     # It is still possible that a restart is available from a previous forecast attempt
     # So we have to continue checking for restarts
@@ -35,7 +35,7 @@ UFS_det(){
   # Lets assume this is was not run before and hence this is not a RERUN
   RERUN="NO"
 
-  # RERUN is only available for RUN=gfs|gefs It is not available for RUN=gdas|enkfgdas|enkfgfs
+  # RERUN is only available for RUN=gfs|gefs.  It is not available for RUN=gdas|enkfgdas|enkfgfs
   if [[ "${RUN}" =~ "gdas" ]] || [[ "${RUN}" == "enkfgfs" ]]; then
     echo "RERUN is not available for RUN='${RUN}'"
     return 0
@@ -46,15 +46,19 @@ UFS_det(){
   # shellcheck disable=SC2312
   mapfile -t file_array < <(find "${DATArestart}/FV3_RESTART" -name "????????.??0000.coupler.res" | sort)
   nrestarts=${#file_array[@]}
-  if (( nrestarts == 0 )); then
+  if [[ ${nrestarts} -eq 0 ]]; then
     echo "No restarts found in '${DATArestart}/FV3_RESTART', RERUN='${RERUN}'"
     return 0
+  else
+    echo "Found ${nrestarts} restarts in '${DATArestart}/FV3_RESTART' to check for RERUN"
+    ls -1 "${DATArestart}/FV3_RESTART/"????????.??0000.coupler.res
   fi
 
   # Look in reverse order of file_array to determine available restart times
   local ii filepath filename
   local rdate seconds
   local fv3_rst_ok cmeps_rst_ok mom6_rst_ok cice6_rst_ok ww3_rst_ok
+  local hdate hdatep1 fhout_ocn_by_2
   for (( ii=nrestarts-1; ii>=0; ii-- )); do
 
     filepath="${file_array[ii]}"
@@ -80,9 +84,26 @@ UFS_det(){
       if [[ ! -f "${DATArestart}/CMEPS_RESTART/ufs.cpld.cpl.r.${rdate:0:4}-${rdate:4:2}-${rdate:6:2}-${seconds}.nc" ]]; then
         cmeps_rst_ok="NO"
       fi
-      if [[ ! -f "${DATArestart}/MOM6_RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" ]]; then
       # TODO: add checks for other MOM6 restarts as well
+      if [[ ! -f "${DATArestart}/MOM6_RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" ]]; then
         mom6_rst_ok="NO"
+      else
+        # Also check for MOM6 history file availability
+        # TODO: SFS runs with 24-hr averaging of ocean output, which causes issues with restart checks,
+        # TODO: so we will skip them for now, and revisit this logic later
+        if [[ ${FHOUT_OCN} -le 6 ]]; then
+          fhout_ocn_by_2=$((FHOUT_OCN / 2))
+          hdate=$(date -u -d "${rdate:0:8} ${rdate:8:2} + ${fhout_ocn_by_2} hours" +"%Y%m%d%H")
+          if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdate:0:4}_${hdate:4:2}_${hdate:6:2}_${hdate:8:2}.nc" ]]; then
+            mom6_rst_ok="NO"
+          else
+            # Also check for the next MOM6 history file (hdate + FHOUT_OCN hours)
+            hdatep1=$(date -u -d "${hdate:0:8} ${hdate:8:2} + ${FHOUT_OCN} hours" +"%Y%m%d%H")
+            if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdatep1:0:4}_${hdatep1:4:2}_${hdatep1:6:2}_${hdatep1:8:2}.nc" ]]; then
+              mom6_rst_ok="NO"
+            fi
+          fi
+        fi
       fi
       MOM6_RESTART_SETTING='r'
       MOM6_INIT_FROM_Z=True

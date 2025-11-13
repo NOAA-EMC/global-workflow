@@ -48,7 +48,6 @@ enkf_restartb_grp:
         {% set rst_delta = "+3H" | to_timedelta %}
         {% set rst_time = current_cycle | add_to_datetime(rst_delta) %}
         - "{{ COMIN_OCEAN_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.MOM.r*.nc"
-        - "{{ COMIN_ICE_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.cice_model.res.nc"
         - "{{ COMIN_MED_RESTART_MEM | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ rst_time | strftime("%H") }}0000.ufs.cpld.cpl.r.nc"
         {% endif %}
         {% endfor %}

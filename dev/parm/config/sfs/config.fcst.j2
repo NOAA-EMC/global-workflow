@@ -110,6 +110,7 @@ if [[ ${gwd_opt} -eq 2 ]]; then
     export do_gsl_drag_tofd=".true."
     export do_gwd_opt_psl=".true."
     export do_ugwp_v1_orog_only=".false."
+    export do_ngw_ec=".true."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level
 fi
@@ -124,11 +125,13 @@ export n_sponge=42
 export hybedmf=".false."
 export satmedmf=".true."
 export isatmedmf=1
+export tte_edmf=".true."
 tbf=""
 if [[ "${satmedmf}" == ".true." ]]; then tbf="_satmedmf" ; fi
 
 #Convection schemes
 export progsigma=".true."
+export cscale=0.5
 tbp=""
 if [[ "${progsigma}" == ".true." ]]; then tbp="_progsigma" ; fi
 
@@ -252,9 +255,7 @@ export FSICS="0"
 
 #---------------------------------------------------------------------
 # Write more variables to output
-if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-  export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_replay"
-elif [[ "${RUN}" == "sfs" ]]; then
+if [[ "${RUN}" == "sfs" ]]; then
   export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_sfs"
 else
   export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
