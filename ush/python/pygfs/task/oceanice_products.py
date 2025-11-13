@@ -174,6 +174,7 @@ class OceanIceProducts(Task):
         if config.oceanice_yaml.ocnicepost.namelist.write_netcdf or config.oceanice_yaml.ocnicepost.namelist.write_grib2:
             OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
 
+        if config.oceanice_yaml.ocnicepost.namelist.write_grib2:
             # Index the interpolated grib2 file
             OceanIceProducts.index(config, product_grid)
 
