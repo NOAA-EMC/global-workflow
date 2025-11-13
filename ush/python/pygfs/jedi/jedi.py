@@ -46,8 +46,8 @@ class Jedi:
         """
 
         # Make sure input dictionary for Jedi class constructor has the required keys
-        if 'yaml_name' not in config:
-            raise WorkflowKeyError(f"Required key 'yaml_name' not found in config")
+        if 'exe_config_yaml_name' not in config:
+            raise WorkflowKeyError(f"Required key 'exe_config_yaml_name' not found in config")
         for key in required_jedi_keys:
             if key not in config:
                 raise WorkflowKeyError(f"Required key '{key}' not found in config")
@@ -57,7 +57,7 @@ class Jedi:
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
             {
-                'exe_config_yaml': os.path.join(config.rundir, config.yaml_name + '.yaml'),
+                'exe_config_yaml': os.path.join(config.rundir, config.exe_config_yaml_name + '.yaml'),
             }
         )
         self.jedi_config = AttrDict(**config, **local_dict)
@@ -103,7 +103,6 @@ class Jedi:
         # Render JEDI executable config dictionary
         logger.info(f"Generating JEDI YAML config: {self.jedi_config.exe_config_yaml}")
         self.exe_config = self.render_jcb_template()
-        #logger.debug(f"JEDI config:\n{pformat(self.exe_config)}")
         logger.debug(f"JEDI config:\n{self.exe_config}")
 
         # Remove obs spaces from JEDI executable config dictionary with missing obs files
@@ -274,8 +273,8 @@ class Jedi:
 
         # Loop through dictionary of Jedi configuration dictionaries
         for block_name in jedi_config_dict:
-            # yaml_name key is set to name for this block
-            jedi_config_dict[block_name]['yaml_name'] = block_name
+            # exe_config_yaml_name key is set to name for this block
+            jedi_config_dict[block_name]['exe_config_yaml_name'] = block_name
 
             # Make sure all required keys present
             for key in required_jedi_keys:
