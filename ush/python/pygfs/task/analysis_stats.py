@@ -132,7 +132,7 @@ class AnalysisStats(Task):
 
             # initialize JEDI application
             logger.info(f"Initializing JEDI ioda-stats extraction application")
-            self.jedi_dict[analysis].initialize(self.task_config)
+            self.jedi_dict[analysis].initialize()
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:

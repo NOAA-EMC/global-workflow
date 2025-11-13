@@ -128,8 +128,8 @@ class MarineAnalysis(Analysis):
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['var'].initialize(self.task_config, clean_empty_obsspaces=True)
-        self.jedi_dict['soca_incpostproc'].initialize(self.task_config)
+        self.jedi_dict['var'].initialize(clean_empty_obsspaces=True)
+        self.jedi_dict['soca_incpostproc'].initialize()
 
         # This method is a bit of a hack that will be removed in the future when the anlstat
         # job fully replaces the SOCA obs_diag_stats application

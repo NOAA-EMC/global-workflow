@@ -94,8 +94,8 @@ class MarineLETKF(Analysis):
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['gridgen'].initialize(self.task_config)
-        self.jedi_dict['letkf'].initialize(self.task_config, clean_empty_obsspaces=True)
+        self.jedi_dict['gridgen'].initialize()
+        self.jedi_dict['letkf'].initialize(clean_empty_obsspaces=True)
 
     @logit(logger)
     def execute(self) -> None:

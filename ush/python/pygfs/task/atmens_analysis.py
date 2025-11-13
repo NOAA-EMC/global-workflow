@@ -78,8 +78,8 @@ class AtmEnsAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation and bias correction files")
-        self.jedi_dict['atmanlvar'].stage_observations(stage_bias_corrections=True, 
-                                                       bias_files_dict=self.task_config.bias_files)
+        self.jedi_dict['atmensanlvar'].stage_observations(stage_bias_corrections=True, 
+                                                          bias_file_dict=self.task_config.bias_files)
 
         # Extract bias corrections from tar files
         logger.info(f"Extracting bias corrections from tar files")
@@ -87,9 +87,9 @@ class AtmEnsAnalysis(Analysis):
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")
-        self.jedi_dict['atmensanlobs'].initialize(self.task_config, clean_empty_obsspaces=True)
-        self.jedi_dict['atmensanlsol'].initialize(self.task_config)
-        self.jedi_dict['atmensanlfv3inc'].initialize(self.task_config)
+        self.jedi_dict['atmensanlobs'].initialize(clean_empty_obsspaces=True)
+        self.jedi_dict['atmensanlsol'].initialize()
+        self.jedi_dict['atmensanlfv3inc'].initialize()
 
     @logit(logger)
     def initialize_letkf(self) -> None:

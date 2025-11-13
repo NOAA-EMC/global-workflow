@@ -118,10 +118,10 @@ class SnowEnsAnalysis(Analysis):
 
         # Initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['snowanlvar'].initialize(self.task_config, clean_empty_obsspaces=False)
-        self.jedi_dict['esnowanlensmean'].initialize(self.task_config)
+        self.jedi_dict['snowanlvar'].initialize(clean_empty_obsspaces=False)
+        self.jedi_dict['esnowanlensmean'].initialize()
         if self.task_config.DO_IMS_SCF:
-            self.jedi_dict['scf_to_ioda'].initialize(self.task_config)
+            self.jedi_dict['scf_to_ioda'].initialize()
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:

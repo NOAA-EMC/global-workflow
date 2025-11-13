@@ -14,8 +14,8 @@ from wxflow import (AttrDict, FileHandler, Task, Executable,
 
 logger = getLogger(__name__.split('.')[-1])
 
-required_jedi_keys = ['rundir', 'exe_src', 'mpi_cmd']
-optional_jedi_keys = ['jedi_args', 'jcb_base_yaml', 'jcb_algo', 'jcb_algo_yaml']
+required_jedi_keys = ['rundir', 'exe_src', 'mpi_cmd', 'jcb_base_yaml']
+optional_jedi_keys = ['jedi_args', 'jcb_algo', 'jcb_algo_yaml']
 
 
 class Jedi:
@@ -30,7 +30,8 @@ class Jedi:
         This method will construct a Jedi object.
         This includes:
         - create the jedi_config AttrDict and extend it with additional required entries
-        - save a copy of jedi_config
+        - create the jcb_config AttrDict by parsing the jcb_base_yaml and jcb_algo_yaml files
+        - save a copy of jedi_config and jcb_config
 
         Parameters
         ----------
@@ -50,11 +51,13 @@ class Jedi:
         for key in required_jedi_keys:
             if key not in config:
                 raise WorkflowKeyError(f"Required key '{key}' not found in config")
+        if not 'jcb_algo' in config and not 'jcb_algo_yaml' in config:
+            raise WorkflowKeyError("Either jcb_algo or jcb_algo_yaml must be specified in config")
 
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
             {
-                'yaml': os.path.join(config.rundir, config.yaml_name + '.yaml'),
+                'exe_config_yaml': os.path.join(config.rundir, config.yaml_name + '.yaml'),
             }
         )
         self.jedi_config = AttrDict(**config, **local_dict)
@@ -64,21 +67,17 @@ class Jedi:
             if key not in self.jedi_config:
                 self.jedi_config[key] = None
 
-        # Save a copy of jedi_config
-        self._jedi_config = self.jedi_config.deepcopy()
-
-        # Initialize JCB config dictionary attribute
-        if self.jedi_config.jcb_base_yaml is not None:
-            self.jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
-        else:
-            raise WorkflowKeyError("JCB base YAML not specified as key 'jcb_base_yaml' in JEDI-class config dictionary")
-
-        # Add JCB algorithm YAML to JCB config dictionary, if it exists
+        # Initialize JCB config dictionary, adding JCB algorithm YAML if it exists
+        self.jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         if self.jedi_config.jcb_algo_yaml is not None:
             self.jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
 
         # Initialize other attributes
         self.exe_config = None
+
+        # Save a copy of jedi_config and jcb_config
+        self._jedi_config = self.jedi_config.deepcopy()
+        self._jcb_config = self.jcb_config.deepcopy()
 
     @logit(logger)
     def initialize(self, clean_empty_obsspaces=False) -> None:
@@ -87,8 +86,8 @@ class Jedi:
         This method will initialize a JEDI application.
         This includes:
         - generating JEDI input YAML config
+        - cleaning empty observation spaces from JEDI input config dictionary
         - saving JEDI input YAML config to run directory
-        - linking the JEDI executable to run directory
 
         Parameters
         ----------
@@ -101,19 +100,20 @@ class Jedi:
         None
         """
 
-        # Render JEDI config dictionary
-        logger.info(f"Generating JEDI YAML config: {self.jedi_config.yaml}")
+        # Render JEDI executable config dictionary
+        logger.info(f"Generating JEDI YAML config: {self.jedi_config.exe_config_yaml}")
         self.exe_config = self.render_jcb_template()
-        logger.debug(f"JEDI config:\n{pformat(self.exe_config)}")
+        #logger.debug(f"JEDI config:\n{pformat(self.exe_config)}")
+        logger.debug(f"JEDI config:\n{self.exe_config}")
 
-        # Remove obs spaces from JEDI config dictionary with missing obs files
+        # Remove obs spaces from JEDI executable config dictionary with missing obs files
         if clean_empty_obsspaces:
-            logger.info(f"Clean empty obs spaces from JEDI YAML config: {self.jedi_config.yaml}")
+            logger.info(f"Clean empty obs spaces from JEDI YAML config: {self.jedi_config.exe_config_yaml}")
             self.clean_empty_obsspaces()
 
-        # Save JEDI config dictionary to YAML in run directory
-        logger.debug(f"Writing JEDI YAML config to: {self.jedi_config.yaml}")
-        save_as_yaml(self.exe_config, self.jedi_config.yaml)
+        # Save JEDI exectuable config dictionary to YAML in run directory
+        logger.debug(f"Writing JEDI YAML config to: {self.jedi_config.exe_config_yaml}")
+        save_as_yaml(self.exe_config, self.jedi_config.exe_config_yaml)
 
     @logit(logger)
     def stage_observations(self, stage_bias_corrections: bool = False, bias_file_dict: Optional[Dict[str, str]] = None) -> None:
@@ -138,7 +138,7 @@ class Jedi:
         """
 
         if stage_bias_corrections and bias_file_dict is None:
-            raise WorkflowKeyError("bias_file_dict must be provided when stage_bias_corrections is True")
+            raise WorkflowKeyError(f"bias_file_dict={bias_file_dict} must be provided when stage_bias_corrections={stage_bias_corrections} is True")
 
         # Check that "app_path_model" is present in jcb_config
         key = 'app_path_model'
@@ -146,7 +146,7 @@ class Jedi:
             raise WorkflowKeyError(f"Required key {key} not found in JCB config")
 
         # Get model from "app_path_model"
-        model = self.jcb_config['app_path_model'].split('/')[-1] + '_'
+        model = self.jcb_config['app_path_model'].split('/')[-1]
 
         # Check that other required keys are present in jcb_config
         for file_type in ['data', 'bias']:
@@ -159,37 +159,33 @@ class Jedi:
         fh_dict = {'mkdir': [], 'copy_opt': []}
 
         # Make directories
-        fh_dict['mkdir'].append([self.jcb_config(f'{model}_obsdatain_path')])
-        fh_dict['mkdir'].append([self.jcb_config(f'{model}_obsdataout_path')])
+        fh_dict['mkdir'].append(self.jcb_config[f'{model}_obsdatain_path'])
+        fh_dict['mkdir'].append(self.jcb_config[f'{model}_obsdataout_path'])
         if stage_bias_corrections:
-            fh_dict['mkdir'].append(self.jcb_config(f'{model}_obsbiasin_path'))
-            fh_dict['mkdir'].append(self.jcb_config(f'{model}_obsbiasout_path'))
+            fh_dict['mkdir'].append(self.jcb_config[f'{model}_obsbiasin_path'])
+            fh_dict['mkdir'].append(self.jcb_config[f'{model}_obsbiasout_path'])
 
         # Copy files
-        bias_files_copied = []
+        files_already_copied = []
         ob_dest = self.jcb_config[f'{model}_obsdatain_path']
         bias_dest = self.jcb_config[f'{model}_obsbiasin_path']
         for observation_from_jcb in self.jcb_config['observations']:
             # Observations
             ob_src = os.path.join(self.jcb_config[f'{model}_obsdataroot_path'],
-                                  self.jcb_config[f'{model}_obsdatain_prefix'],
-                                  observation_from_jcb,
-                                  self.jcb_config[f'{model}_obsdatain_suffix'])
+                                  self.jcb_config[f'{model}_obsdatain_prefix'] + observation_from_jcb + self.jcb_config[f'{model}_obsdatain_suffix'])
 
             fh_dict['copy_opt'].append([ob_src, ob_dest])
 
             # Bias corrections
             if stage_bias_corrections:
-                if observation_from_jcb not in bias_files_copied:
-                    bias_src = os.path.join(self.jcb_config[f'{model}obsbiasroot_path'],
-                                            self.jcb_config[f'{model}_obsbiasin_prefix'],
-                                            bias_file_dict[observation_from_jcb],
-                                            self.jcb_config[f'{model}_obsbiasin_path'])
+                if observation_from_jcb in bias_file_dict and observation_from_jcb not in files_already_copied:
+                    bias_src = os.path.join(self.jcb_config[f'{model}_obsbiasroot_path'],
+                                            self.jcb_config[f'{model}_obsbiasin_prefix'] + bias_file_dict[observation_from_jcb])
 
                     fh_dict['copy_opt'].append([bias_src, bias_dest])
 
                     # Don't copy same file multiple times
-                    bias_files_copied.append(observation_from_jcb)
+                    files_already_copied.append(observation_from_jcb)
 
         # Execute FileHandler
         FileHandler(fh_dict).sync()
@@ -214,7 +210,7 @@ class Jedi:
         if self.jedi_config.jedi_args is not None:
             for arg in self.jedi_config.jedi_args:
                 exec_cmd.add_default_arg(arg)
-        exec_cmd.add_default_arg(self.jedi_config.yaml)
+        exec_cmd.add_default_arg(self.jedi_config.exe_config_yaml)
 
         logger.info(f"Executing {exec_cmd}")
         try:
@@ -248,13 +244,9 @@ class Jedi:
         else:
             raise WorkflowKeyError("JCB algorithm not specified")
 
-        # Make copy of JCB config dictionary to render and set algorithm its algorithm
-        _jcb_config = self.jcb_config.deepcopy()
-        _jcb_config['algorithm'] = algorithm
-
         # Generate JEDI YAML config by rendering JCB config dictionary
         try:
-            jedi_exe_config = render(_jcb_config)
+            exe_config = render({**self.jcb_config, 'algorithm': algorithm})
         except Exception as e:
             raise WorkflowException(f"An error occurred while rendering JCB template for algorithm {algorithm}:\n{e}") from e
 
@@ -345,89 +337,6 @@ class Jedi:
             # Warn if no observers left in list
             if observers == []:
                 logger.warning(f"No observers found in JEDI input config")
-
-    @staticmethod
-    @logit(logger)
-    def remove_redundant(input_list: List) -> List:
-        """Remove reduncancies from list with possible redundant, non-mutable elements
-
-        Parameters
-        ----------
-        input_list : List
-            List with possible redundant, non-mutable elements
-
-        Returns
-        ----------
-        output_list : List
-            Input list but with redundancies removed
-        """
-
-        output_list = []
-        for item in input_list:
-            if item not in output_list:
-                output_list.append(item)
-
-        return output_list
-
-    @staticmethod
-    @logit(logger)
-    def extract_tar_from_filehandler_dict(filehandler_dict) -> None:
-        """Extract tarballs from FileHandler input dictionary
-
-        This method extracts files from tarballs specified in a FileHander
-        input dictionary for the 'copy' action.
-
-        Parameters
-        ----------
-        filehandler_dict
-            Input dictionary for FileHandler
-
-        Returns
-        ----------
-        None
-        """
-
-        for item in filehandler_dict['copy']:
-            # Use the filename from the destination entry if it's a file path
-            # Otherwise, it's a directory, so use the source entry filename
-            if os.path.isfile(item[1]):
-                filename = os.path.basename(item[1])
-            else:
-                filename = os.path.basename(item[0])
-
-            # Check if file is a tar ball
-            if os.path.splitext(filename)[1] == '.tar':
-                tar_file = f"{os.path.dirname(item[1])}/{filename}"
-
-                # Extract tarball
-                logger.info(f"Extract files from {tar_file}")
-                extract_tar(tar_file)
-
-
-@logit(logger)
-def extract_tar(tar_file: str) -> None:
-    """Extract files from a tarball
-
-    This method extract files from a tarball
-
-    Parameters
-    ----------
-    tar_file
-        path/name of tarball
-
-    Returns
-    ----------
-    None
-    """
-
-    # extract files from tar file
-    tar_path = os.path.dirname(tar_file)
-    try:
-        with tarfile.open(tar_file, "r") as tarball:
-            tarball.extractall(path=tar_path)
-            logger.info(f"Extract {tarball.getnames()}")
-    except Exception as e:
-        raise WorkflowException(f"An error occurred while extracting {tar_file}:\n{e}") from e
 
 
 @logit(logger)

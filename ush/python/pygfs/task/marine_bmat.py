@@ -102,15 +102,15 @@ class MarineBMat(Analysis):
         save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
 
         # initialize JEDI applications
-        self.jedi_dict['gridgen'].initialize(self.task_config)
-        self.jedi_dict['soca_diagb'].initialize(self.task_config)
-        self.jedi_dict['soca_chgres'].initialize(self.task_config)
-        self.jedi_dict['soca_parameters_diffusion_vt'].initialize(self.task_config)
-        self.jedi_dict['soca_setcorscales'].initialize(self.task_config)
-        self.jedi_dict['soca_parameters_diffusion_hz'].initialize(self.task_config)
+        self.jedi_dict['gridgen'].initialize()
+        self.jedi_dict['soca_diagb'].initialize()
+        self.jedi_dict['soca_chgres'].initialize()
+        self.jedi_dict['soca_parameters_diffusion_vt'].initialize()
+        self.jedi_dict['soca_setcorscales'].initialize()
+        self.jedi_dict['soca_parameters_diffusion_hz'].initialize()
         if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
-            self.jedi_dict['soca_ensb'].initialize(self.task_config)
-            self.jedi_dict['soca_ensweights'].initialize(self.task_config)
+            self.jedi_dict['soca_ensb'].initialize()
+            self.jedi_dict['soca_ensweights'].initialize()
 
     @logit(logger)
     def execute(self) -> None:
