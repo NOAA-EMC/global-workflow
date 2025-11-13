@@ -1,0 +1,25 @@
+experiment:
+  net: gfs
+  mode: cycled
+  pslot: {{ 'pslot' | getenv }}
+  app: S2SW
+  resdetatmos: 1152
+  resensatmos: 384
+  resdetocean: 0.25
+  nens: 80
+  interval: 6
+  start: warm
+  comroot: /gpfs/f6/gfs-cpu/world-shared/role.glopara/RETRO_GFSv17/comroot
+  expdir: /gpfs/f6/gfs-cpu/world-shared/role.glopara/RETRO_GFSv17/expdir
+  idate: 2024021506
+  edate: 2024053118
+  icsdir: /gpfs/f6/gfs-cpu/world-shared/role.glopara/RETRO_GFSv17/IC/v3
+  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw_stream1b.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
