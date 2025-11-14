@@ -98,7 +98,7 @@ class MarineBMat(Analysis):
                             simple_geom=True, mom_input="./anl_geom/MOM_input")
 
         # initialize vtscales python script
-        vtscales_config = self.jedi_dict['soca_parameters_diffusion_vt'].render_jcb(self.task_config, 'soca_vtscales')
+        vtscales_config = self.jedi_dict['soca_parameters_diffusion_vt'].render_jcb_template('soca_vtscales')
         save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
 
         # initialize JEDI applications

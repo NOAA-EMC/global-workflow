@@ -78,7 +78,7 @@ class AtmEnsAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation and bias correction files")
-        self.jedi_dict['atmensanlvar'].stage_observations(stage_bias_corrections=True, 
+        self.jedi_dict['atmensanlobs'].stage_observations(stage_bias_corrections=True, 
                                                           bias_file_dict=self.task_config.bias_files)
 
         # Extract bias corrections from tar files

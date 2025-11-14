@@ -148,7 +148,11 @@ class Jedi:
         model = self.jcb_config['app_path_model'].split('/')[-1]
 
         # Check that other required keys are present in jcb_config
-        for file_type in ['data', 'bias']:
+        if stage_bias_corrections:
+            file_types = ['data', 'bias']
+        else:
+            file_types = ['data']
+        for file_type in file_types:
             for stem in ['in_path', 'out_path', 'root_path', 'in_prefix', 'in_suffix']:
                 key = f'{model}_obs{file_type}{stem}'
                 if key not in self.jcb_config:
@@ -167,7 +171,8 @@ class Jedi:
         # Copy files
         files_already_copied = []
         ob_dest = self.jcb_config[f'{model}_obsdatain_path']
-        bias_dest = self.jcb_config[f'{model}_obsbiasin_path']
+        if stage_bias_corrections:
+            bias_dest = self.jcb_config[f'{model}_obsbiasin_path']
         for observation_from_jcb in self.jcb_config['observations']:
             # Observations
             ob_src = os.path.join(self.jcb_config[f'{model}_obsdataroot_path'],
