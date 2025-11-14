@@ -47,7 +47,7 @@ link_file() {
         echo "Error: Targeted link ${link} exists and is not a symbolic link. Not overwriting data files."
         return 1
     fi
-    ln -sf "$target" "$link"
+    ln -sf "${target}" "${link}"
     return 0
 }
 
