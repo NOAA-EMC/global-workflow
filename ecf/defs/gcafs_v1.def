@@ -1,7 +1,7 @@
 suite gcafs_v1
   family primary
-    edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%EMC_USER%/para/packages/gcafs.%gcafs_ver%'
-    edit OUTPUTDIR '/lfs/h2/emc/ptmp/%EMC_USER%/%PSLOT%/para/com/output/%ENVIR%/today'
+    edit PACKAGEHOME '/scratch3/NCEPDEV/stmp/Cory.R.Martin/nov2025/ecflow_gcafs/global-workflow'
+    edit OUTPUTDIR '/scratch3/NCEPDEV/stmp/Cory.R.Martin/nov2025/ecflow_gcafs/output'
     edit gcafs_ver 'v1.0.0'
     edit QUEUE 'dev'
     edit QUEUE_ARCH 'dev_transfer'
@@ -14,39 +14,39 @@ suite gcafs_v1
         edit NET 'gcafs'
         edit PROJ 'GCAFS'
         family v1.0
-          family gcafs
-          edit RUN 'gcdas'
-          edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gcdas'
-          family atmos
-            family init
-              task jgcdas_atmos_initialize
-                # TODO trigger gdas analysis == complete
-              task jgcdas_surface_initialize
-                trigger ./jgcdas_atmos_initialize == complete
+          family gcdas
+            edit RUN 'gcdas'
+            edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gcdas'
+            family atmos
+              family init
+                task jgcdas_atmos_initialize
+                  # TODO trigger gdas analysis == complete
+                task jgcdas_surface_initialize
+                  trigger ./jgcdas_atmos_initialize == complete
+              endfamily
             endfamily
-          endfamily
-          family chem
-            family analysis
-              task jgcdas_aerosol_analysis_initialize
-                # TODO trigger obsforge == complete
-              task jgcdas_aerosol_analysis_variational
-                trigger ./jgcdas_aerosol_analysis_initialize == complete
-              task jgcdas_aerosol_analysis_finalize
-                trigger ./jgcdas_aerosol_analysis_variational == complete
-              task jgcdas_aerosol_analysis_stats
-                trigger ./jgcdas_aerosol_analysis_finalize == complete
-              task jgcdas_aerosol_analysis_generate_bmatrix
-                trigger ../../jgcdas_forecast == complete
+            family chem
+              family analysis
+                task jgcdas_aerosol_analysis_initialize
+                  # TODO trigger obsforge == complete
+                task jgcdas_aerosol_analysis_variational
+                  trigger ./jgcdas_aerosol_analysis_initialize == complete
+                task jgcdas_aerosol_analysis_finalize
+                  trigger ./jgcdas_aerosol_analysis_variational == complete
+                task jgcdas_aerosol_analysis_stats
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete
+                task jgcdas_aerosol_analysis_generate_bmatrix
+                  trigger ../../jgcdas_forecast == complete
+              endfamily
+              task jgcdas_prep_emissions
+                time 07:00
             endfamily
-            task jgcdas_prep_emissions
-              time 07:00
-            endfamily
-          endfamily
-          task jgcdas_forecast
-            trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
-          # TODO add products
-        endfamily
-      endfamily
-    endfamily
-  endfamily
-endsuite
+            task jgcdas_forecast
+              trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
+            # TODO add products
+          endfamily # gcafs gcdas
+        endfamily # gcafs v1.0
+      endfamily # gcafs
+    endfamily # 00
+  endfamily # primary
+endsuite # prod
