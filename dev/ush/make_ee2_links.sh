@@ -14,16 +14,24 @@ set -eux
 # WARNING: This script does not create all links needed for EE2 compatibility. It only creates links needed to
 #          restart an existing experiment.
 
-# Make a function from the following pseudocode:
-# link_file():
-#{
-#  target=$1
-#  link=$2
-#  if ! -f $target; then error(target doesn't exist); fi
-#  if -f $link and ! is_link($link); then error(do not overwrite data files); return; fi
-#  ln -sf $target $link
-#  return 0
-#}
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 <target_directory>"
+    exit 1
+fi
+
+target_dir=$1
+cd "${target_dir}" || exit 1
+
+# Check for existence of at least one of gdas.YYYYMMDD, gfs.YYYYMMDD, or enkfgdas.YYYYMMDD directories
+dir_list=($(ls -d gdas.* gfs.* enkfgdas.* || true ))
+
+if [[ ${#dir_list[@]} -eq 0 ]]; then
+    echo "No gdas.*, gfs.*, or enkfgdas.* directories found in ${target_dir}."
+    exit 1
+fi
+
+# A helper function to create symbolic links with error checking
 link_file() {
     if [[ $# -ne 2 ]]; then
         echo "Error: link_file requires exactly 2 arguments: target and link."
@@ -42,22 +50,6 @@ link_file() {
     ln -sf "$target" "$link"
     return 0
 }
-
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <target_directory>"
-    exit 1
-fi
-
-target_dir=$1
-cd "${target_dir}" || exit 1
-
-# Check for existence of at least one of gdas.YYYYMMDD, gfs.YYYYMMDD, or enkfgdas.YYYYMMDD directories
-dir_list=($(ls -d gdas.* gfs.* enkfgdas.* || true ))
-
-if [[ ${#dir_list[@]} -eq 0 ]]; then
-    echo "No gdas.*, gfs.*, or enkfgdas.* directories found in ${target_dir}."
-    exit 1
-fi
 
 gdas_list=($(ls -d gdas.* || true ))
 gfs_list=($(ls -d gfs.* || true ))
