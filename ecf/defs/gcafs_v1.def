@@ -21,14 +21,56 @@ suite gcafs_v1
               family init
                 task jgcdas_atmos_initialize
                   # TODO trigger gdas analysis == complete
+                  time 07:00
                 task jgcdas_surface_initialize
                   trigger ./jgcdas_atmos_initialize == complete
               endfamily
+              family post
+                task jgcdas_atmos_post_manager
+                  trigger ../../jgcdas_forecast == active
+                  event 1 release_postanl
+                  event 2 release_post000
+                  event 3 release_post003
+                  event 4 release_post006
+                  event 5 release_post009
+                task jgcdas_atmos_post_anl
+                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../analysis/jgdas_atmos_analysis_calc == complete
+                  edit FHRGRP '000'
+                  edit FHRLST 'anl'
+                  edit HR 'anl'
+                  edit FHR 'anl'
+                task jgcdas_atmos_post_f000
+                  trigger ./jgcdas_atmos_post_manager:release_post000
+                  edit FHR 'f000'
+                  edit HR '000'
+                  edit FHRGRP '001'
+                  edit FHRLST 'f000'
+                task jgcdas_atmos_post_f003
+                  trigger ./jgcdas_atmos_post_manager:release_post003
+                  edit FHR 'f003'
+                  edit HR '003'
+                  edit FHRGRP '002'
+                  edit FHRLST 'f003'
+                task jgcdas_atmos_post_f006
+                  trigger ./jgcdas_atmos_post_manager:release_post006
+                  edit FHR 'f006'
+                  edit HR '006'
+                  edit FHRGRP '003'
+                  edit FHRLST 'f006'
+                task jgcdas_atmos_post_f009
+                  trigger ./jgcdas_atmos_post_manager:release_post009
+                  edit FHR 'f009'
+                  edit HR '009'
+                  edit FHRGRP '004'
+                  edit FHRLST 'f009'
+              endfamily # gcafs gcdas atmos post
             endfamily
             family chem
               family analysis
+                task jgcdas_prepare_obs
+                  time 07:00
                 task jgcdas_aerosol_analysis_initialize
-                  # TODO trigger obsforge == complete
+                  trigger ./jgcdas_prepare_obs == complete
                 task jgcdas_aerosol_analysis_variational
                   trigger ./jgcdas_aerosol_analysis_initialize == complete
                 task jgcdas_aerosol_analysis_finalize
@@ -43,10 +85,252 @@ suite gcafs_v1
             endfamily
             task jgcdas_forecast
               trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
-            # TODO add products
           endfamily # gcafs gcdas
         endfamily # gcafs v1.0
       endfamily # gcafs
     endfamily # 00
+    family 06
+      edit CYC '06'
+      family gcafs
+        edit NET 'gcafs'
+        edit PROJ 'GCAFS'
+        family v1.0
+          family gcdas
+            edit RUN 'gcdas'
+            edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gcdas'
+            family atmos
+              family init
+                task jgcdas_atmos_initialize
+                  # TODO trigger gdas analysis == complete
+                  time 13:00
+                task jgcdas_surface_initialize
+                  trigger ./jgcdas_atmos_initialize == complete
+              endfamily
+              family post
+                task jgcdas_atmos_post_manager
+                  trigger ../../jgcdas_forecast == active
+                  event 1 release_postanl
+                  event 2 release_post000
+                  event 3 release_post003
+                  event 4 release_post006
+                  event 5 release_post009
+                task jgcdas_atmos_post_anl
+                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../analysis/jgdas_atmos_analysis_calc == complete
+                  edit FHRGRP '000'
+                  edit FHRLST 'anl'
+                  edit HR 'anl'
+                  edit FHR 'anl'
+                task jgcdas_atmos_post_f000
+                  trigger ./jgcdas_atmos_post_manager:release_post000
+                  edit FHR 'f000'
+                  edit HR '000'
+                  edit FHRGRP '001'
+                  edit FHRLST 'f000'
+                task jgcdas_atmos_post_f003
+                  trigger ./jgcdas_atmos_post_manager:release_post003
+                  edit FHR 'f003'
+                  edit HR '003'
+                  edit FHRGRP '002'
+                  edit FHRLST 'f003'
+                task jgcdas_atmos_post_f006
+                  trigger ./jgcdas_atmos_post_manager:release_post006
+                  edit FHR 'f006'
+                  edit HR '006'
+                  edit FHRGRP '003'
+                  edit FHRLST 'f006'
+                task jgcdas_atmos_post_f009
+                  trigger ./jgcdas_atmos_post_manager:release_post009
+                  edit FHR 'f009'
+                  edit HR '009'
+                  edit FHRGRP '004'
+                  edit FHRLST 'f009'
+              endfamily # gcafs gcdas atmos post
+            endfamily
+            family chem
+              family analysis
+                task jgcdas_prepare_obs
+                  time 13:00
+                task jgcdas_aerosol_analysis_initialize
+                  trigger ./jgcdas_prepare_obs == complete
+                task jgcdas_aerosol_analysis_variational
+                  trigger ./jgcdas_aerosol_analysis_initialize == complete
+                task jgcdas_aerosol_analysis_finalize
+                  trigger ./jgcdas_aerosol_analysis_variational == complete
+                task jgcdas_aerosol_analysis_stats
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete
+                task jgcdas_aerosol_analysis_generate_bmatrix
+                  trigger ../../jgcdas_forecast == complete
+              endfamily
+              task jgcdas_prep_emissions
+                time 13:00
+            endfamily
+            task jgcdas_forecast
+              trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
+          endfamily # gcafs gcdas
+        endfamily # gcafs v1.0
+      endfamily # gcafs
+    endfamily # 06
+    family 12
+      edit CYC '12'
+      family gcafs
+        edit NET 'gcafs'
+        edit PROJ 'GCAFS'
+        family v1.0
+          family gcdas
+            edit RUN 'gcdas'
+            edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gcdas'
+            family atmos
+              family init
+                task jgcdas_atmos_initialize
+                  # TODO trigger gdas analysis == complete
+                  time 19:00
+                task jgcdas_surface_initialize
+                  trigger ./jgcdas_atmos_initialize == complete
+              endfamily
+              family post
+                task jgcdas_atmos_post_manager
+                  trigger ../../jgcdas_forecast == active
+                  event 1 release_postanl
+                  event 2 release_post000
+                  event 3 release_post003
+                  event 4 release_post006
+                  event 5 release_post009
+                task jgcdas_atmos_post_anl
+                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../analysis/jgdas_atmos_analysis_calc == complete
+                  edit FHRGRP '000'
+                  edit FHRLST 'anl'
+                  edit HR 'anl'
+                  edit FHR 'anl'
+                task jgcdas_atmos_post_f000
+                  trigger ./jgcdas_atmos_post_manager:release_post000
+                  edit FHR 'f000'
+                  edit HR '000'
+                  edit FHRGRP '001'
+                  edit FHRLST 'f000'
+                task jgcdas_atmos_post_f003
+                  trigger ./jgcdas_atmos_post_manager:release_post003
+                  edit FHR 'f003'
+                  edit HR '003'
+                  edit FHRGRP '002'
+                  edit FHRLST 'f003'
+                task jgcdas_atmos_post_f006
+                  trigger ./jgcdas_atmos_post_manager:release_post006
+                  edit FHR 'f006'
+                  edit HR '006'
+                  edit FHRGRP '003'
+                  edit FHRLST 'f006'
+                task jgcdas_atmos_post_f009
+                  trigger ./jgcdas_atmos_post_manager:release_post009
+                  edit FHR 'f009'
+                  edit HR '009'
+                  edit FHRGRP '004'
+                  edit FHRLST 'f009'
+              endfamily # gcafs gcdas atmos post
+            endfamily
+            family chem
+              family analysis
+                task jgcdas_prepare_obs
+                  time 19:00
+                task jgcdas_aerosol_analysis_initialize
+                  trigger ./jgcdas_prepare_obs == complete
+                task jgcdas_aerosol_analysis_variational
+                  trigger ./jgcdas_aerosol_analysis_initialize == complete
+                task jgcdas_aerosol_analysis_finalize
+                  trigger ./jgcdas_aerosol_analysis_variational == complete
+                task jgcdas_aerosol_analysis_stats
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete
+                task jgcdas_aerosol_analysis_generate_bmatrix
+                  trigger ../../jgcdas_forecast == complete
+              endfamily
+              task jgcdas_prep_emissions
+                time 19:00
+            endfamily
+            task jgcdas_forecast
+              trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
+          endfamily # gcafs gcdas
+        endfamily # gcafs v1.0
+      endfamily # gcafs
+    endfamily # 12
+    family 18
+      edit CYC '18'
+      family gcafs
+        edit NET 'gcafs'
+        edit PROJ 'GCAFS'
+        family v1.0
+          family gcdas
+            edit RUN 'gcdas'
+            edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gcdas'
+            family atmos
+              family init
+                task jgcdas_atmos_initialize
+                  # TODO trigger gdas analysis == complete
+                  time 01:00
+                task jgcdas_surface_initialize
+                  trigger ./jgcdas_atmos_initialize == complete
+              endfamily
+              family post
+                task jgcdas_atmos_post_manager
+                  trigger ../../jgcdas_forecast == active
+                  event 1 release_postanl
+                  event 2 release_post000
+                  event 3 release_post003
+                  event 4 release_post006
+                  event 5 release_post009
+                task jgcdas_atmos_post_anl
+                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../analysis/jgdas_atmos_analysis_calc == complete
+                  edit FHRGRP '000'
+                  edit FHRLST 'anl'
+                  edit HR 'anl'
+                  edit FHR 'anl'
+                task jgcdas_atmos_post_f000
+                  trigger ./jgcdas_atmos_post_manager:release_post000
+                  edit FHR 'f000'
+                  edit HR '000'
+                  edit FHRGRP '001'
+                  edit FHRLST 'f000'
+                task jgcdas_atmos_post_f003
+                  trigger ./jgcdas_atmos_post_manager:release_post003
+                  edit FHR 'f003'
+                  edit HR '003'
+                  edit FHRGRP '002'
+                  edit FHRLST 'f003'
+                task jgcdas_atmos_post_f006
+                  trigger ./jgcdas_atmos_post_manager:release_post006
+                  edit FHR 'f006'
+                  edit HR '006'
+                  edit FHRGRP '003'
+                  edit FHRLST 'f006'
+                task jgcdas_atmos_post_f009
+                  trigger ./jgcdas_atmos_post_manager:release_post009
+                  edit FHR 'f009'
+                  edit HR '009'
+                  edit FHRGRP '004'
+                  edit FHRLST 'f009'
+              endfamily # gcafs gcdas atmos post
+            endfamily
+            family chem
+              family analysis
+                task jgcdas_prepare_obs
+                  time 01:00
+                task jgcdas_aerosol_analysis_initialize
+                  trigger ./jgcdas_prepare_obs == complete
+                task jgcdas_aerosol_analysis_variational
+                  trigger ./jgcdas_aerosol_analysis_initialize == complete
+                task jgcdas_aerosol_analysis_finalize
+                  trigger ./jgcdas_aerosol_analysis_variational == complete
+                task jgcdas_aerosol_analysis_stats
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete
+                task jgcdas_aerosol_analysis_generate_bmatrix
+                  trigger ../../jgcdas_forecast == complete
+              endfamily
+              task jgcdas_prep_emissions
+                time 01:00
+            endfamily
+            task jgcdas_forecast
+              trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
+          endfamily # gcafs gcdas
+        endfamily # gcafs v1.0
+      endfamily # gcafs
+    endfamily # 18
   endfamily # primary
 endsuite # prod
