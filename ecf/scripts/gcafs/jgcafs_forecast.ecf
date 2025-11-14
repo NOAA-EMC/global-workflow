@@ -3,9 +3,9 @@
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:10:00
-#PBS -l select=1:mpiprocs=1:ompthreads=128:ncpus=128
-#PBS -l place=vscatter:shared
+#PBS -l walltime=01:00:00
+#PBS -l select=18:mpiprocs=128:ompthreads=1:ncpus=128
+#PBS -l place=vscatter:exclhost
 #PBS -l debug=true
 
 model=gcafs
@@ -25,34 +25,32 @@ module load craype/${craype_ver}
 module load intel/${intel_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
-module load cfp/${cfp_ver}
-export USE_CFP="YES"
-
-module load python/${python_ver}
-module use /apps/dev/modulefiles
-module load ve/gw/${gw_ve_ver}
-
-module load gempak/${gempak_ver}
-module load perl/${perl_ver}
-module load libjpeg/${libjpeg_ver}
-module load udunits/${udunits_ver}
-module load gsl/${gsl_ver}
-module load cdo/${cdo_ver}
-module load imagemagick/${imagemagick_ver}
-
+module load cmake/${cmake_ver}
+module load jasper/${jasper_ver}
+module load zlib/${zlib_ver}
+module load libpng/${libpng_ver}
 module load hdf5-D/${hdf5_ver}
-module load pnetcdf-D/${pnetcdf_ver}
 module load netcdf-D/${netcdf_ver}
+module load pio-D/${pio_ver}
 module load esmf-D/${esmf_ver}
-
-module load nco/${nco_ver}
-module load prod_util/${prod_util_ver}
-module load grib_util/${grib_util_ver}
-module load bufr_dump/${bufr_dump_ver}
-module load util_shared/${util_shared_ver}
-module load g2tmpl/${g2tmpl_ver}
-module load ncdiag-A/${ncdiag_ver}
+module load fms-D/${fms_ver}
+module load bacio/${bacio_ver}
 module load crtm/${crtm_ver}
+module load g2/${g2_ver}
+module load g2tmpl/${g2tmpl_ver}
+module load ip/${ip_ver}
+module load sp/${sp_ver}
+module load w3emc/${w3emc_ver}
+module load gftl-shared/${gftl_shared_ver}
+module load mapl-D/${mapl_ver}
+module load pnetcdf-D/${pnetcdf_ver}
+module load scotch/${scotch_ver}
+module load zstd/${zstd_ver}
+module load cfp/${cfp_ver}
+module load libjpeg/${libjpeg_ver}
+module load craype-network-ucx/${craype_network_ucx_ver}
+module load cray-mpich-ucx
+module load python/${python_ver}
 module load wgrib2/${wgrib2_ver}
 
 module list
@@ -72,7 +70,7 @@ export PYTHONPATH
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgcafs}/jobs/JGLOBAL_OFFLINE_ATMOS_ANALYSIS
+${HOMEgcafs}/jobs/JGLOBAL_FORECAST
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
