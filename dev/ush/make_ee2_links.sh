@@ -70,7 +70,7 @@ for dir in "${gdas_list[@]}" "${gfs_list[@]}" "${gcdas_list[@]}" "${gcafs_list[@
         *) echo "Unknown directory prefix: ${dir}"; exit 1 ;;
     esac
 
-    cycle_list=($(ls -d ./?? || true ))
+    cycle_list=($(ls -d -- ?? || true ))
     for cyc in "${cycle_list[@]}"; do
         if [[ -d "${cwd}/${dir}/${cyc}/analysis/atmos" ]]; then
             cd "${cwd}/${dir}/${cyc}/analysis/atmos"
@@ -186,7 +186,7 @@ done
 
 for dir in "${enkfgdas_list[@]}" "${enkfgfs_list[@]}"; do
     cd "${dir}"
-    cycle_list=($(ls -d ./?? || true ))
+    cycle_list=($(ls -d -- ?? || true ))
     for cyc in "${cycle_list[@]}"; do
         cd "${cwd}/${dir}/${cyc}"
         mem_list=($(ls -d mem* || true ))
