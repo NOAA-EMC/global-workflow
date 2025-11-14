@@ -7,9 +7,9 @@ set -eu
 # TODO: Modify this script to accept a different number of ensemble groups.
 # TODO: Enable ATM-only and other coupled configurations
 # TODO: Extend support to additional systems.
-# Usage : get_warm_s2sw_restart_tarballs.sh YYYYMMDDHH HPSS_ROOT_DIR UNTAR_ROOT_DIR
+# Usage : get_warm_s2sw_restart_tarballs.sh YYYYMMDDHH HPSS_ROOT_DIR UNTAR_DIR
 if [[ $# -ne 4 ]]; then
-    echo "Usage: $0 YYYYMMDDHH HPSS_ROOT_DIR UNTAR_ROOT_DIR HPC_ACCOUNT"
+    echo "Usage: $0 YYYYMMDDHH HPSS_ROOT_DIR UNTAR_DIR HPC_ACCOUNT"
     exit 1
 fi
 # Cycle is in YYYYMMDDHH format and is passed as an argument.
@@ -17,7 +17,7 @@ cycle=$1
 # The location on HPSS where the tarballs are stored
 hpss_root_dir=$2
 # The local directory where the tarballs will be untarred
-untar_root_dir=$3
+untar_dir=$3
 # HPC account for sbatch jobs
 hpc_account=$4
 # The previous cycle is 6 hours earlier
@@ -26,22 +26,18 @@ pcycle=$(date -d "${cycle:0:8} ${cycle:8:2} -6 hours" +%Y%m%d%H)
 hpss_dir="${hpss_root_dir}/${cycle}"
 phpss_dir="${hpss_root_dir}/${pcycle}"
 
-if ! mkdir -p "${untar_root_dir}"; then
-    echo "Error: Unable to create untar directory ${untar_root_dir}"
+if ! mkdir -p "${untar_dir}"; then
+    echo "Error: Unable to create untar directory ${untar_dir}"
     exit 1
 fi
 
-untar_dir="${untar_root_dir}/${cycle}"
-puntar_dir="${untar_root_dir}/${pcycle}"
-
-mkdir -p "${untar_dir}"
-mkdir -p "${puntar_dir}"
+cd "${untar_dir}"
 
 ptargets=( "enkfgdas_restartb_grp1.tar" "enkfgdas_restartb_grp2.tar" "enkfgdas_restartb_grp3.tar" "enkfgdas_restartb_grp4.tar" "enkfgdas_restartb_grp5.tar" "enkfgdas_restartb_grp6.tar" "enkfgdas_restartb_grp7.tar" "enkfgdas_restartb_grp8.tar" "gdas_restartb.tar" "gdasocean_restart.tar" "gdaswave_restart.tar" )
 
 targets=( "enkfgdas_restarta_grp1.tar" "enkfgdas_restarta_grp2.tar" "enkfgdas_restarta_grp3.tar" "enkfgdas_restarta_grp4.tar" "enkfgdas_restarta_grp5.tar" "enkfgdas_restarta_grp6.tar" "enkfgdas_restarta_grp7.tar" "enkfgdas_restarta_grp8.tar" "gdas_restarta.tar" "gdasocean_analysis.tar")
 
-# Construct a wrapper script in a loop to submit to the sbatch system
+# This is all specific to Gaea C6
 clusters="es"
 partition="dtn_f5_f6"
 constraint="f6"
@@ -50,6 +46,7 @@ time="12:00:00"
 nodes=1
 tasks=1
 
+# Construct a wrapper script in a loop to submit to the sbatch system
 for tarball in "${targets[@]}"; do
   sbatch << EOF
 #!/bin/bash
@@ -81,7 +78,6 @@ for tarball in "${targets[@]}"; do
   fi
 EOF
 done
-
 
 # Now do the same for the previous cycle tarballs
 for tarball in "${ptargets[@]}"; do
