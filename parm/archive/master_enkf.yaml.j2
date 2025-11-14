@@ -86,13 +86,6 @@ datasets:
 {% include "enkf_grp.yaml.j2" %}
     {% endfilter %}
 
-    # Archive marine member data
-    {% if DOHYBVAR_OCN %}
-        {% filter indent(width=4) %}
-{% include "enkf_marine_grp.yaml.j2" %}
-        {% endfilter %}
-    {% endif %}
-
     # Determine if restarts should be saved
     {% set save_warm_start_forecast, save_warm_start_cycled = ( False, False ) %}
 

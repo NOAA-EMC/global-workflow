@@ -99,10 +99,10 @@ positional parameter 1"
     #  (Note: Only do so if files don't already exist)
 
     if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
-        cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+        touch "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
     fi
     if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}" ]]; then
-        cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+        touch "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
     fi
 
     exit
@@ -120,20 +120,21 @@ year=${run_date:0:4}
 
 #  Copy the seasonal statistics from archive directory to local
 
-cp "${ARCHSYND}/syndat_akavit" akavit
+cpreq "${ARCHSYND}/syndat_akavit" akavit
 touch akavit
-cp "${ARCHSYND}/syndat_dateck" dateck
-cp "${ARCHSYND}/syndat_stmcat".scr stmcat.scr
+cpreq "${ARCHSYND}/syndat_dateck" dateck
+cpreq "${ARCHSYND}/syndat_stmcat.scr" stmcat.scr
 touch stmcat.scr
-cp "${ARCHSYND}/syndat_stmcat" stmcat
+cpreq "${ARCHSYND}/syndat_stmcat" stmcat
 touch stmcat
-cp "${ARCHSYND}/syndat_sthisto" sthisto
-cp "${ARCHSYND}/syndat_sthista" sthista
+cpreq "${ARCHSYND}/syndat_sthisto" sthisto
+cpreq "${ARCHSYND}/syndat_sthista" sthista
 
 touch dateck
 dateck_size=$(find ./ -name dateck -printf "%s")
+
 if [[ ${dateck_size} -lt 10 ]]; then
-    msg="***WARNING: Archive run date check file not available or shorter than expected.\
+    msg="WARNING: Archive run date check file not available or shorter than expected.\
   Using dummy date 1900010100 to allow code to continue"
     echo 1900010100 > dateck
     set +x
@@ -155,15 +156,16 @@ if [[ "${RUN}" == 'ndas' ]]; then
 elif [[ "${RUN}" == 'gdas' ]]; then
     files=T,
 fi
+
 if [[ -n "${files_override}" ]]; then # for testing, typically want FILES=F
     files_override=${files_override^^}
     files_override=${files_override//./}
     files_override=${files_override:0:1}
     if [[ "${files_override}" == 'T' || "${files_override}" == 'F' ]]; then
-        msg="***WARNING: Variable files setting will be overriden from ${files} to ${files_override}. Override expected if testing."
+        msg="WARNING: Variable files setting will be overriden from ${files} to ${files_override}. Override expected if testing."
         files=${files_override}
     else
-        msg="***WARNING: Invalid attempt to override files setting. Will stay with default for this job"
+        msg="WARNING: Invalid attempt to override files setting. Will stay with default for this job"
     fi
     set +x
     echo -e "\n${msg}\n"
@@ -175,8 +177,8 @@ cat "${PARMgfs}/relo/syndat_qctropcy.${RUN}.parm" >> vitchk.inp
 
 #  Copy the fixed fields
 
-cp "${FIXgfs}/am/syndat_fildef.vit" fildef.vit
-cp "${FIXgfs}/am/syndat_stmnames" stmnames
+cpreq "${FIXgfs}/am/syndat_fildef.vit" fildef.vit
+cpreq "${FIXgfs}/am/syndat_stmnames" stmnames
 
 rm -f nhc fnoc lthistry
 
@@ -202,7 +204,7 @@ fi
 mv -f nhc nhc1
 "${USHgfs}/parse-storm-type.pl" nhc1 > nhc
 
-cp -p nhc nhc.ORIG
+cpreq -p nhc nhc.ORIG
 # JTWC/FNOC ... execute syndat_getjtbul script to write into working directory
 #               as fnoc; copy to archive
 "${USHgfs}/syndat_getjtbul.sh" "${run_date}"
@@ -220,7 +222,7 @@ fi
 
 #########################################################################
 
-cp "${slmask}" slmask.126
+cpreq "${slmask}" slmask.126
 
 #  Execute program syndat_qctropcy
 
@@ -267,10 +269,10 @@ if [[ "${errqct}" -gt '0' ]]; then
     #  (Note: Only do so if files don't already exist)
 
     if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
-        cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+        touch "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
     fi
     if [[ ! -s ${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark} ]]; then
-        cp "/dev/null" "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+        touch "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
     fi
 
     exit
@@ -285,12 +287,12 @@ set_trace
 
 if [[ "${copy_back}" == 'YES' ]]; then
     cat lthistry >> "${ARCHSYND}/syndat_lthistry.${year}"
-    cp akavit "${ARCHSYND}/syndat_akavit"
-    cp dateck "${ARCHSYND}/syndat_dateck"
-    cp stmcat.scr "${ARCHSYND}/syndat_stmcat.scr"
-    cp stmcat "${ARCHSYND}/syndat_stmcat"
-    cp sthisto "${ARCHSYND}/syndat_sthisto"
-    cp sthista "${ARCHSYND}/syndat_sthista"
+    cpfs akavit "${ARCHSYND}/syndat_akavit"
+    cpfs dateck "${ARCHSYND}/syndat_dateck"
+    cpfs stmcat.scr "${ARCHSYND}/syndat_stmcat.scr"
+    cpfs stmcat "${ARCHSYND}/syndat_stmcat"
+    cpfs sthisto "${ARCHSYND}/syndat_sthisto"
+    cpfs sthista "${ARCHSYND}/syndat_sthista"
 fi
 
 diff nhc nhc.ORIG > /dev/null
@@ -304,7 +306,7 @@ if [[ "${errdiff}" -ne 0 ]]; then
 
     if [[ "${copy_back}" == 'YES' && ${envir} == 'prod' ]]; then
         if [[ -s "${HOMENHC}/tcvitals" ]]; then
-            cp nhc "${HOMENHC}/tcvitals"
+            cpfs nhc "${HOMENHC}/tcvitals"
         fi
 
         err=$?
@@ -339,7 +341,7 @@ fi
 ###################################
 
 #  This is the file that connects to the later RELOCATE and/or PREP scripts
-cp current "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+cpfs current "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
 
 #  Create the DBNet alert
 if [[ "${SENDDBN}" == "YES" ]]; then
@@ -347,6 +349,6 @@ if [[ "${SENDDBN}" == "YES" ]]; then
 fi
 
 #  Write JTWC/FNOC Tcvitals to /com path since not saved anywhere else
-cp fnoc "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+cpfs fnoc "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
 
 exit

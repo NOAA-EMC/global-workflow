@@ -70,7 +70,7 @@ ${NLN} "${DATA}/mod_def.${WAVEICE_FID}" mod_def.ww3
 file="${COMIN_OBS}/${WAVICEFILE}"
 
 if [[ -f "${file}" ]]; then
-    cp "${file}" ice.grib
+    cpreq "${file}" ice.grib
 fi
 
 if [[ -f ice.grib ]]; then
@@ -105,7 +105,7 @@ rm -f ice.index
 
 printf "   Run through preprocessor ...\n"
 
-cp -f "${DATA}/ww3_prnc.ice.${WAVEICE_FID}.inp.tmpl" ww3_prnc.inp
+cpreq -f "${DATA}/ww3_prnc.ice.${WAVEICE_FID}.inp.tmpl" ww3_prnc.inp
 
 export pgm="${NET,,}_ww3_prnc.x"
 source prep_step
@@ -133,7 +133,7 @@ elif [[ "${WW3ATMIENS}" == "F" ]]; then
 fi
 
 echo "   Saving ice.ww3 as ${COMOUT_WAVE_PREP}/${icefile}"
-cp ice.ww3 "${COMOUT_WAVE_PREP}/${icefile}"
+cpfs ice.ww3 "${COMOUT_WAVE_PREP}/${icefile}"
 rm -f ice.ww3
 
 # --------------------------------------------------------------------------- #

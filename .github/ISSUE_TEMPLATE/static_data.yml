@@ -9,8 +9,8 @@ assignees:
 body:
   - type: markdown
     attributes:
-      description: |
-        Process:
+      value: |
+        **Process:**
         - Stage data on Ursa or WCOSS2
         - Make sure permissions are set properly (global read access)
         - CMs will push data and ask for verification
@@ -23,9 +23,9 @@ body:
         - Initial conditions: ICs needed to run one of global-workflow's included tests
         - Experimental data: Temporary datasets needed for development that will be replaced by other sources for operations (e.g. data that will be in DCOM)
       options:
-        - Fix
-        - Initial conditions
-        - Experimental data
+        - label: "Fix"
+        - label: "Initial conditions"
+        - label: "Experimental data"
     validations:
       required: true
 
@@ -33,45 +33,44 @@ body:
     attributes:
       label: Target directory
       options:
-        - "Fix: aer"
-        - "Fix: am"
-        - "Fix: chem"
-        - "Fix: cice"
-        - "Fix: cpl"
-        - "Fix: datm"
-        - "Fix: gdas/aero"
-        - "Fix: gdas/crtm"
-        - "Fix: gdas/fv3jedi"
-        - "Fix: gdas/gsibec"
-        - "Fix: gdas/obs"
-        - "Fix: gdas/snow"
-        - "Fix: gdas/soca"
-        - "Fix: gldas"
-        - "Fix: glwu"
-        - "Fix: gsi"
-        - "Fix: lut"
-        - "Fix: mom6"
-        - "Fix: orog"
-        - "Fix: raw"
-        - "Fix: reg2grb2"
-        - "Fix: sfc_climo"
-        - "Fix: ugwd"
-        - "Fix: verif"
-        - "Fix: wave"
-        - "Fix: *NEW*"
-        - "ICs: C48/C48 mx500"
-        - "ICs: C96/C48"
-        - "ICs: C96 mx100"
-        - "ICs: C384/C192"
-        - "ICs: C384 mx025"
-        - "ICs: C768 mx025"
-        - "ICs: C1152 mx025"
-        - "ICs: *NEW RESOLUTION*"
-        - "Exp Data: Experimental obs"
-        - "Exp Data: GOCART emissions"
-        - "Exp Data: JEDI obs"
-        - "Exp Data: *NEW*"
-      multiple: true
+        - label: "Fix: aer"
+        - label: "Fix: am"
+        - label: "Fix: chem"
+        - label: "Fix: cice"
+        - label: "Fix: cpl"
+        - label: "Fix: datm"
+        - label: "Fix: gdas/aero"
+        - label: "Fix: gdas/crtm"
+        - label: "Fix: gdas/fv3jedi"
+        - label: "Fix: gdas/gsibec"
+        - label: "Fix: gdas/obs"
+        - label: "Fix: gdas/snow"
+        - label: "Fix: gdas/soca"
+        - label: "Fix: gldas"
+        - label: "Fix: glwu"
+        - label: "Fix: gsi"
+        - label: "Fix: lut"
+        - label: "Fix: mom6"
+        - label: "Fix: orog"
+        - label: "Fix: raw"
+        - label: "Fix: reg2grb2"
+        - label: "Fix: sfc_climo"
+        - label: "Fix: ugwd"
+        - label: "Fix: verif"
+        - label: "Fix: wave"
+        - label: "Fix: *NEW*"
+        - label: "ICs: C48/C48 mx500"
+        - label: "ICs: C96/C48"
+        - label: "ICs: C96 mx100"
+        - label: "ICs: C384/C192"
+        - label: "ICs: C384 mx025"
+        - label: "ICs: C768 mx025"
+        - label: "ICs: C1152 mx025"
+        - label: "ICs: *NEW RESOLUTION*"
+        - label: "Exp Data: Experimental obs"
+        - label: "Exp Data: GOCART emissions"
+        - label: "Exp Data: JEDI obs"
+        - label: "Exp Data: *NEW*"
     validations:
       required: true
 
@@ -92,10 +91,10 @@ body:
       description: |
         ANY fix or IC change other than adding files will require at least a new version.
       options:
-        - No change needed
-        - Fix/IC version update only
-        - Fix/IC version update + additional changes
-        - Non-version changes only
+        - label: "No change needed"
+        - label: "Fix/IC version update only"
+        - label: "Fix/IC version update + additional changes"
+        - label: "Non-version changes only"
     validations:
       required: true
 
@@ -140,7 +139,7 @@ body:
 
   - type: checkboxes
     attributes:
-      label: Checklist for GW CM Only: Sync to supported platforms
+      label: Checklist for GW CM Only -- Sync to supported platforms
       options:
         - label: WCOSS2
         - label: Gaea C6

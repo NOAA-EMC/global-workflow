@@ -4,7 +4,7 @@
 # shellcheck disable=SC2034
 MOM6_namelists() {
 
-    # ================================================================
+    # ----------------------------------------------------------------
     # MOM_input
     # ---------
     # Prepare local variables for use in MOM_input.IN from UFSWM
@@ -59,6 +59,7 @@ MOM6_namelists() {
     else
         local PERT_EPBL="False"
     fi
+    local MOM6_HFREEZE=20.0
     # Ensure the template exists
     local template=${MOM6_INPUT_TEMPLATE:-"${PARMgfs}/ufs/MOM_input_${OCNRES}.IN"}
     if [[ ! -f "${template}" ]]; then
@@ -70,7 +71,7 @@ MOM6_namelists() {
     echo "Rendered MOM_input:"
     cat "${DATA}/INPUT/MOM_input"
 
-    # ================================================================
+    # ----------------------------------------------------------------
     # data_table
     # ----------
     # Prepare local variables for use in MOM6_data_table.IN from UFSWM

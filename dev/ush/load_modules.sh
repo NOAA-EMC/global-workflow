@@ -74,7 +74,7 @@ case "${MODULE_TYPE}" in
             exit 1
         fi
         module load prod_util
-        if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
+        if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
             module load cray-pals
             module load cfp
             module load libjpeg
@@ -156,11 +156,10 @@ case "${MODULE_TYPE}" in
         export PYTHONPATH
         ;;
 
-    "run" | "gsi" | "verif" | "setup")
-        # Source versions file for runtime
-        if [[ -f "${HOMEgfs}/versions/run.ver" ]]; then
-            source "${HOMEgfs}/versions/run.ver"
-        else
+    "run" | "gsi" | "verif" | "setup" | "upp")
+
+        # Test that the version file exists
+        if [[ ! -f "${HOMEgfs}/versions/run.ver" ]]; then
             echo "FATAL ERROR: ${HOMEgfs}/versions/run.ver does not exist!"
             echo "HINT: Run link_workflow.sh first."
             exit 1
@@ -176,8 +175,16 @@ case "${MODULE_TYPE}" in
         if ! module is-avail "${target_module}" 2> /dev/null; then
             if [[ "${MODULE_TYPE}" != "run" ]]; then
                 echo "INFO: ${target_module} module not available, falling back to gw_run.${MACHINE_ID}"
+                mod_type="run"
             fi
             target_module="gw_run.${MACHINE_ID}"
+        else
+            mod_type="${MODULE_TYPE}"
+        fi
+
+        # Source versions file (except for upp)
+        if [[ "${mod_type}" != "upp" ]]; then
+            source "${HOMEgfs}/versions/run.ver"
         fi
 
         if [[ -n "${target_module}" ]]; then
@@ -206,8 +213,8 @@ case "${MODULE_TYPE}" in
     *)
         echo "FATAL ERROR: Unknown module type '${MODULE_TYPE}'"
         echo "Valid types: run, gsi, verif, ufsda, ufswm, setup"
-        exit 1
         ;;
+
 esac
 
 # Set up the PYTHONPATH to include wxflow from HOMEgfs

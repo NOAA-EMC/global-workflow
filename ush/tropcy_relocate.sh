@@ -332,7 +332,7 @@ EOF
         if [[ ${fhr} -eq 0 ]]; then
             "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${run_date}" \
                 -t "${stype}" > "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
-            cp "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
+            cpfs "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
                 "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
         fi
         cat << EOF
@@ -368,9 +368,9 @@ EOF
 done
 
 if [[ -f "${tstsp}syndata.tcvitals.${tmmark}" ]]; then
-    cp "${tstsp}syndata.tcvitals.${tmmark}" tcvitals.now
+    cpreq "${tstsp}syndata.tcvitals.${tmmark}" tcvitals.now
 else
-    cp "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" "tcvitals.now"
+    cpreq "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" "tcvitals.now"
 fi
 
 if [[ -s tcvitals.m12 ]]; then cat tcvitals.m12 > VITL; fi
@@ -539,8 +539,8 @@ else
     fi
     rm -f RELOCATE_GES cmd
 
-    cp "rel_inform1" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
-    cp "tcvitals" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
+    cpfs "rel_inform1" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
+    cpfs "tcvitals" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"
     if [[ "${SENDDBN}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" "MODEL" "${RUN^^}_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.inform.relocate.${tmmark}"
         "${DBNROOT}/bin/dbn_alert" "MODEL" "${RUN^^}_TCI" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.tcvitals.relocate.${tmmark}"

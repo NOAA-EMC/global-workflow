@@ -42,18 +42,6 @@ FV3_namelists() {
     local CHOUR=${current_cycle:8:2}
     local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
 
-    if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-        local current_cycle_p1
-        current_cycle_p1=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHOUT_OCN} hours" +%Y%m%d%H)
-        local current_cycle_offset
-        current_cycle_offset=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${OFFSET_START_HOUR} hours" +%Y%m%d%H)
-        local SYEAR1=${current_cycle_p1:0:4}
-        local SMONTH1=${current_cycle_p1:4:2}
-        local SDAY1=${current_cycle_p1:6:2}
-        local CHOUR1=${current_cycle_p1:8:2}
-        local CHOUR_offset=${current_cycle_offset:8:2}
-    fi
-
     atparse < "${template}" >> "diag_table"
 
     # copy data table
@@ -491,13 +479,18 @@ FV3_namelists() {
     local LAND_IAU_DP_STCSMC_ADJ=".true."
     local LAND_IAU_MIN_T_INC=0.0001
 
-    # Check will need to be modified in the future
-    # once GW is ready to add in land IAU
-    if [[ "${DO_LAND_IAU}" = ".true." ]]; then
-        local HIDE_LIAU=" "
-    else
-        local HIDE_LIAU="!"
-    fi
+    # Land IAU defaults
+    local DO_LAND_IAU=${DO_LAND_IAU:-".false."}
+    local LAND_IAU_FHRS=${IAUFHRS}
+    local LAND_IAU_DELHRS=${IAU_DELTHRS}
+    local LAND_IAU_INC_FILES="'sfc_inc',''"
+    local LSOIL_INCR=${LSOIL_INCR:-2}
+    local LAND_IAU_FILTER_INC=".false."
+    local LAND_IAU_UPD_STC=".true."
+    local LAND_IAU_UPD_SLC=".true."
+    local LAND_IAU_DO_STCSMC_ADJ=".true."
+    local LAND_IAU_MIN_T_INC=0.0001
+    local LAND_IAU_MIN_SLC_INC=0.000001
 
     local global_template="${HOMEgfs}/parm/ufs/global_control.nml.IN"
     atparse < "${global_template}" >> "input.nml"

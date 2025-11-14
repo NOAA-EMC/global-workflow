@@ -26,7 +26,7 @@ start_time=$(date +%s)
 _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 # Announce the script has begun
-start_time_human=$(date -d"@${start_time}" -u)
+start_time_human=$(date -d"@${start_time}" -u +%H:%M:%S)
 echo "Begin ${_calling_script} at ${start_time_human}"
 
 declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'

@@ -456,7 +456,7 @@ EOF
     done
 fi
 
-cp "${DATA}/tcvitals" "${vdir}/vitals.${symd}${dishh}"
+cpfs "${DATA}/tcvitals" "${vdir}/vitals.${symd}${dishh}"
 
 # shellcheck disable=SC2312
 grep -v TEST "${vdir}/vitals.${symd}${dishh}" |
@@ -557,7 +557,6 @@ mv "${TMPDIR}/vitals.${symd}${dishh}.y4" "${vdir}/vitals.${symd}${dishh}"
 pgm=$(basename "${SUPVX}")
 if [[ -s "${DATA}/prep_step" ]]; then
     source "${DATA}/prep_step"
-    set_strict
 else
     [[ -f errfile ]] && rm errfile
     export XLFUNITS=0
@@ -907,7 +906,6 @@ fi
 # full-coverage global models (ukmet, mrf, gfs, NAVGEM) currently are.
 
 if [[ "${model}" -eq 4 ]]; then
-
     if [[ ! -s "${ecmwfdir}/${ecmwfgfile}" ]]; then
         msg=$(
             cat << EOF
@@ -1094,6 +1092,7 @@ fi
 # ------------------------------
 #   Process MRF, if selected
 # ------------------------------
+
 if [[ "${model}" -eq 2 ]]; then
 
     rm -f "${vdir}/mrfgribfile.${symd}${dishh}"
@@ -1249,7 +1248,6 @@ if [[ "${model}" -eq 9 ]]; then
         #   using wgrib.
 
         for fhour in ${fcsthrsother}; do
-
             if [[ ! -s "${otherdir}/${fnamebeg}${fhour}${fnameend}" ]]; then
                 cat << EOF
 
@@ -1379,6 +1377,7 @@ done
 namelist="${vdir}/gettrk.input.${cmodel}.${symdh}"
 
 export atcfymdh="${scc}${syy}${smm}${sdd}${shh}"
+
 contour_interval=100.0
 write_vit=n
 want_oci=.TRUE.

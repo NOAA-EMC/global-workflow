@@ -55,6 +55,7 @@ FV3_model_configure() {
     local JMO=${LATB_JMO}
     local OUTPUT_FH=${FV3_OUTPUT_FH_NML}
     local IAU_OFFSET=${IAU_OFFSET:-0}
+    local USE_FV3_ROUTEHANDLES=.false.
 
     #set FV3 output directory:
     local FV3ATM_OUTPUT_DIR="./FV3ATM_OUTPUT"

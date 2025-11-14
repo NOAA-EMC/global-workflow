@@ -112,11 +112,7 @@ common_predet() {
         model_start_date_current_cycle="${current_cycle_begin}"
         model_start_date_next_cycle="${next_cycle_begin}"
     else
-        if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-            model_start_date_current_cycle=${current_cycle_end}
-        else
-            model_start_date_current_cycle=${current_cycle}
-        fi
+        model_start_date_current_cycle=${current_cycle}
         if [[ "${DO_AERO_ANL:-NO}" == "YES" ]]; then
             # even without IAU we want 3-hourly restarts for FGAT
             model_start_date_next_cycle="${next_cycle_begin}"
@@ -131,7 +127,7 @@ common_predet() {
     FHMAX_HF=${FHMAX_HF:-0}
     FHOUT_HF=${FHOUT_HF:-1}
 
-    if [[ ! -d "${COMOUT_CONF}" ]]; then mkdir -p "${COMOUT_CONF}"; fi
+    mkdir -p "${COMOUT_CONF}"
 
     cd "${DATA}" && true
     err=$?
@@ -141,7 +137,7 @@ common_predet() {
     fi
 
     # Several model components share DATA/INPUT for input data
-    if [[ ! -d "${DATA}/INPUT" ]]; then mkdir -p "${DATA}/INPUT"; fi
+    mkdir -p "${DATA}/INPUT"
 
 }
 
@@ -167,47 +163,17 @@ FV3_predet() {
     # Create an FV3 fhr list to be used in the filenames
     FV3_OUTPUT_FH=""
     local fhr=${FHMIN}
-    if ((FHOUT_HF > 0 && FHMAX_HF > 0)); then
+    if [[ "${FHOUT_HF}" -gt 0 && "${FHMAX_HF}" -gt 0 ]]; then
         FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN}" "${FHOUT_HF}" "${FHMAX_HF}")"
         fhr=${FHMAX_HF}
     fi
     FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
-    # Create an FV3 fhr list to be used in the namelist
-    # The FV3 fhr list for the namelist and the FV3 fhr list for the filenames
-    # are only different when REPLAY_ICS is set to YES
-    if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-        local FV3_OUTPUT_FH_s
-        FV3_OUTPUT_FH_NML="$(echo "scale=5; ${OFFSET_START_HOUR}+(${DELTIM}/3600)" | bc -l)"
-        FV3_OUTPUT_FH_s=$((OFFSET_START_HOUR * 3600 + DELTIM))
-        local fhr=${FHOUT}
-        if ((FHOUT_HF > 0 && FHMAX_HF > 0)); then
-            FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "$((OFFSET_START_HOUR + FHOUT_HF))" "${FHOUT_HF}" "${FHMAX_HF}")"
-            FV3_OUTPUT_FH_s="${FV3_OUTPUT_FH_s} $(seq -s ' ' "$((OFFSET_START_HOUR * 3600 + FHOUT_HF * 3600))" "$((FHOUT_HF * 3600))" "$((FHMAX_HF * 3600))")"
-            fhr=${FHMAX_HF}
-        fi
-        FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH_NML} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
-        FV3_OUTPUT_FH_s="${FV3_OUTPUT_FH_s} $(seq -s ' ' "$((fhr * 3600))" "$((FHOUT * 3600))" "$((FHMAX * 3600))")"
-        local hh mm ss s_total
-        FV3_OUTPUT_FH_hhmmss=""
-        for s_total in ${FV3_OUTPUT_FH_s}; do
-            # Convert seconds to HHH:MM:SS
-            ((ss = s_total, mm = ss / 60, ss %= 60, hh = mm / 60, mm %= 60)) || true
-            FV3_OUTPUT_FH_hhmmss="${FV3_OUTPUT_FH_hhmmss} $(printf "%03d-%02d-%02d" "${hh}" "${mm}" "${ss}")"
-        done
-        # Create a string from an array
-    else # If non-replay ICs are being used
-        # The FV3 fhr list for the namelist and the FV3 fhr list for the filenames
-        # are identical when REPLAY_ICS is set to NO
+    if [[ "${FHOUT_HF}" -eq "${FHOUT}" ]]; then
+        FV3_OUTPUT_FH_NML="${FHOUT} -1"
+    else
         FV3_OUTPUT_FH_NML="${FV3_OUTPUT_FH}"
     fi
-    # If, FHOUT_HF == FHOUT, the FV3_OUTPUT_FH_NML can be cast as:
-    if [[ ${FHOUT_HF} -eq ${FHOUT} ]]; then
-        FV3_OUTPUT_FH_NML="${FHOUT} -1"
-    fi
-
-    # Other options
-    PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
     # IAU options
     IAUFHRS=${IAUFHRS:-0}
@@ -288,7 +254,7 @@ FV3_predet() {
     # Scan suite file to determine whether it uses Noah-MP
     local num_noahmpdrv
     num_noahmpdrv=$(grep -c noahmpdrv "${suite_file}")
-    if ((num_noahmpdrv > 0)); then
+    if [[ "${num_noahmpdrv}" -gt 0 ]]; then
         lsm="2"
         lheatstrg=".false."
         landice=".false."
