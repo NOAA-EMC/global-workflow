@@ -39,8 +39,8 @@ if [[ -d "${PYRUNTMP}" ]]; then rm -rf "${PYRUNTMP}"; fi
 
 if [[ ${DO_JEDIATMENS} == "YES" ]]; then
     # JEDI run
-    cd ${DATA}
-    cpreq ${EXYAML} ./
+    cd "${DATA}" || exit
+    cpreq "${EXYAML}" "./"
 
 # Generate YAML
 ${EXSCRIPT_GEN_YAML} -o run_satbias_conv.yaml
@@ -52,25 +52,25 @@ err=$?
     fi
     
     if [[ ${err} -eq 0 ]]; then
-        cd ${OUTPUT}/${GDUMP}.${gPDY}/${gcyc}/atmos   
+        cd "${OUTPUT}/${GDUMP}.${gPDY}/${gcyc}/atmos" || exit
         for file in ${BIASFILES}; do
-            cpreq ${BIASDIR}/${file} ./enkf${file}.txt
+            cpreq "${BIASDIR}/${file}" "./enkf${file}.txt"
             err=$?
             if [[ ${err} -ne 0 ]]; then
                 err_exit "Error copying operational anl bias correction files"
             fi
 	done
         # TODO: Temporary solution and need to process abias_air for JEDI when ready 
-	tar -cvf ${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.air_varbc_params.tar enkf${GDUMP}.t${gcyc}z.abias_air.txt
-	rm -rf enkf${GDUMP}.t${gcyc}z.abias_air.txt
-        tar -cvf ${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar *
+	tar -cvf "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.air_varbc_params.tar" "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
+	rm -rf "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
+        tar -cvf "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar" "./*.txt ./*.nc"
         err=$?
     fi
 
 else
     # GSI run
     for file in ${BIASFILES}; do
-        cpreq ${BIASDIR}/${file} ${COMOUT_ATMOS_ANALYSIS_PREV}/enkf${file}.txt
+        cpreq "${BIASDIR}/${file}" "${COMOUT_ATMOS_ANALYSIS_PREV}/enkf${file}.txt"
         err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Error copying operational anl bias correction files"
