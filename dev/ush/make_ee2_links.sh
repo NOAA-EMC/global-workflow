@@ -49,10 +49,13 @@ gcdas_list=($(ls -d gcdas.* || true ))
 gcafs_list=($(ls -d gcafs.* || true ))
 enkfgdas_list=($(ls -d enkfgdas.* || true ))
 enkfgfs_list=($(ls -d enkfgfs.* || true ))
+enkfgcdas_list=($(ls -d enkfgcdas.* || true ))
 
 # If the length of all of the arrays is zero, exit with a message
-if [[ ${#gdas_list[@]} -eq 0 && ${#gfs_list[@]} -eq 0 && ${#gcdas_list[@]} -eq 0 && ${#gcafs_list[@]} -eq 0 && ${#enkfgdas_list[@]} -eq 0 && ${#enkfgfs_list[@]} -eq 0 ]]; then
-    echo "No gdas, gfs, gcdas, gcafs, enkfgdas, or enkfgfs directories found in ${target_dir}. Exiting."
+if [[ ${#gdas_list[@]} -eq 0 && ${#gfs_list[@]} -eq 0 && ${#gcdas_list[@]} -eq 0 &&
+      ${#gcafs_list[@]} -eq 0 && ${#enkfgdas_list[@]} -eq 0 &&
+      ${#enkfgfs_list[@]} -eq 0 && ${#enkfgcdas_list[@]} -eq 0 ]]; then
+    echo "No gdas, gfs, gcdas, gcafs, enkfgdas, enkfgfs, or enkfgcdas directories found. Exiting."
     exit 0
 fi
 
@@ -187,6 +190,14 @@ done
 for dir in "${enkfgdas_list[@]}" "${enkfgfs_list[@]}"; do
     cd "${dir}"
     cycle_list=($(ls -d -- ?? || true ))
+    # Determine the system prefix
+    system_prefix=""
+    case "${dir}" in
+        enkfgdas.*) system_prefix="enkfgdas" ;;
+        enkfgfs.*) system_prefix="enkfgfs" ;;
+        enkfgcdas.*) system_prefix="enkfgcdas" ;;
+        *) echo "Unknown directory prefix: ${dir}"; exit 1 ;;
+    esac
     for cyc in "${cycle_list[@]}"; do
         cd "${cwd}/${dir}/${cyc}"
         mem_list=($(ls -d mem* || true ))
