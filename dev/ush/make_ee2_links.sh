@@ -23,14 +23,6 @@ fi
 target_dir=$1
 cd "${target_dir}" || exit 1
 
-# Check for existence of at least one of gdas.YYYYMMDD, gfs.YYYYMMDD, or enkfgdas.YYYYMMDD directories
-dir_list=($(ls -d gdas.* gfs.* enkfgdas.* || true ))
-
-if [[ ${#dir_list[@]} -eq 0 ]]; then
-    echo "No gdas.*, gfs.*, or enkfgdas.* directories found in ${target_dir}."
-    exit 1
-fi
-
 # A helper function to create symbolic links with error checking
 link_file() {
     if [[ $# -ne 2 ]]; then
@@ -57,6 +49,12 @@ gcdas_list=($(ls -d gcdas.* || true ))
 gcafs_list=($(ls -d gcafs.* || true ))
 enkfgdas_list=($(ls -d enkfgdas.* || true ))
 enkfgfs_list=($(ls -d enkfgfs.* || true ))
+
+# If the length of all of the arrays is zero, exit with a message
+if [[ ${#gdas_list[@]} -eq 0 && ${#gfs_list[@]} -eq 0 && ${#gcdas_list[@]} -eq 0 && ${#gcafs_list[@]} -eq 0 && ${#enkfgdas_list[@]} -eq 0 && ${#enkfgfs_list[@]} -eq 0 ]]; then
+    echo "No gdas, gfs, gcdas, gcafs, enkfgdas, or enkfgfs directories found in ${target_dir}. Exiting."
+    exit 0
+fi
 
 cwd=${PWD}
 # Loop through the gdas, gfs, gcdas, and gcafs directories
@@ -190,7 +188,7 @@ for dir in "${enkfgdas_list[@]}" "${enkfgfs_list[@]}"; do
     cd "${dir}"
     cycle_list=($(ls -d ./?? || true ))
     for cyc in "${cycle_list[@]}"; do
-            cd "${cwd}/${dir}/${cyc}"
+        cd "${cwd}/${dir}/${cyc}"
         mem_list=($(ls -d mem* || true ))
         for mem in "${mem_list[@]}"; do
             # atmos
