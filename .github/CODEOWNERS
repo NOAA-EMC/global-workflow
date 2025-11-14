@@ -74,7 +74,6 @@ jobs/JGLOBAL_MARINE_* @guillaumevernieres @AndrewEichmann-NOAA
 jobs/JGLOBAL_OCEANICE_PRODUCTS @JesseMeng-NOAA @ChristopherHill-NOAA
 jobs/JGLOBAL_OFFLINE_ATMOS_ANALYSIS @CoryMartin-NOAA
 jobs/JGLOBAL_PREP_EMISSIONS @bbakernoaa
-jobs/JGLOBAL_PREP_OBS_AERO @CoryMartin-NOAA
 jobs/JGLOBAL_PREP_OCEAN_OBS @guillaumevernieres @AndrewEichmann-NOAA
 jobs/JGLOBAL_*SNOW* @jiaruidong2017
 jobs/JGLOBAL_STAGE_IC @DavidHuber-NOAA @aerorahul
@@ -209,7 +208,6 @@ ush/python/pygfs/task/__init__.py @aerorahul
 ush/python/pygfs/task/aero_analysis.py @DavidNew-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/aero_bmatrix.py @DavidNew-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/aero_emissions.py @bbakernoaa
-ush/python/pygfs/task/aero_prepobs.py @CoryMartin-NOAA
 ush/python/pygfs/task/analysis.py @DavidNew-NOAA @RussTreadon-NOAA
 ush/python/pygfs/task/analysis_stats.py @CoryMartin-NOAA @DavidNew-NOAA
 ush/python/pygfs/task/archive.py @DavidHuber-NOAA

@@ -111,9 +111,9 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_jediatmvar']:
             if options['do_jediatmens']:
-                configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
+                configs += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
             else:
-                configs += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc']
+                configs += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc']
         else:
             configs += ['anal', 'analdiag', 'analcalc']
 
@@ -195,8 +195,6 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_aero_anl']:
             configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-            if options['do_prep_obs_aero']:
-                configs += ['prepobsaero']
 
         if options['do_jedisnowda']:
             configs += ['snowanl']
@@ -254,9 +252,9 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['prep_sfc']
                 if options['do_jediatmvar']:
                     if options['do_jediatmens']:
-                        task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
+                        task_names[run] += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
                     else:
-                        task_names[run] += ['prepatmiodaobs', 'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc']
+                        task_names[run] += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc']
                 else:
                     task_names[run] += ['anal', 'analcalc']
 
@@ -288,9 +286,6 @@ class GFSCycledAppConfig(AppConfig):
 
                 if options['do_aero_anl']:
                     task_names[run] += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-
-                    if options['do_prep_obs_aero']:
-                        task_names[run] += ['prepobsaero']
 
                 # Staging is gdas-specific
                 if run == 'gdas':
