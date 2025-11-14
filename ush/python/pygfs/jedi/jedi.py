@@ -403,12 +403,6 @@ def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     result = find_value_in_nested_dict(nested_dict, user_key)
     """
 
-    print(f" ")
-    print(f"nested_dict is {nested_dict}")
-    print(f" ")
-    print(f"target_key is {target_key}")
-    print(f" ")
-
     if not isinstance(nested_dict, dict):
         raise WorkflowTypeError(f"Input is not of type(dict)")
 
