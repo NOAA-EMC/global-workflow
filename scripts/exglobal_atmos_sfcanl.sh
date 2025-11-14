@@ -114,8 +114,12 @@ done
 # For now use/assume it is the same at the beginning of the window if doing IAU
 if [[ "${DONST}" == "YES" ]]; then
   export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS}/${APREFIX}analysis.dtf.a006.nc}
-  cpreq "${NST_FILE}" "${DATA}/dtfanl"
-  export NST_FILE="dtfanl"
+  if [[ -s "${NST_FILE}" ]]; then
+      cpreq "${NST_FILE}" "${DATA}/dtfanl"
+      export NST_FILE="dtfanl"
+  else
+      export NST_FILE="NULL"
+  fi
 else
   export NST_FILE="NULL"
 fi

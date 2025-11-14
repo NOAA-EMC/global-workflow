@@ -32,12 +32,14 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     fi
     # check if status file does not exist
     # Check if any status log files exist using array expansion
+    set +f
     status_files=("${SOURCE_DIR}/${compdir}/${prefix}"*status.log)
     if [[ ! -e "${status_files[0]}" ]]; then
         echo "***ERROR*** completion log file NOT FOUND in ${SOURCE_DIR}/${compdir}"
         exit 99
     fi
     echo "Processing component directory: ${compdir}"
+    set -f
     # Create component directory in TARGET_DIR if it does not exist
     if [[ ! -s "${TARGET_DIR}/${compdir}" ]]; then
        mkdir -p "${TARGET_DIR}/${compdir}"
@@ -46,12 +48,14 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     cd "${SOURCE_DIR}/${compdir}" || exit 99
     # Use shell globbing instead of iterating over ls output. Enable nullglob so the loop
     # simply skips when no matches are found.
+    set +f
     shopt -s nullglob
     for file in "${prefix}"*; do
          [[ -e "${file}" ]] || continue
          ${NLN} "${SOURCE_DIR}/${compdir}/${file}" "${TARGET_DIR}/${compdir}/${file}"
     done
     shopt -u nullglob
+    set -f
 done
 
 exit 0
