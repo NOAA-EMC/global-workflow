@@ -28,9 +28,8 @@ analysis:
   data_in:
     copy:
       - ["{{ PARMgfs }}/post/gcafs/postxconfig-NT-gcafs.txt", "{{ DATA }}/postxconfig-NT.txt"]
-      - ["{{ COMIN_CHEM_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.aero.a006.nc", "{{ DATA }}/{{ atmos_filename }}"]
-      # Use sfc.f000 to approximate the surface analysis
-      - ["{{ COMIN_ATMOS_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.sfc.f000.nc", "{{ DATA }}/{{ flux_filename }}"]
+      - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.atm.a006.nc", "{{ DATA }}/{{ atmos_filename }}"]
+      - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.sfc.a006.nc", "{{ DATA }}/{{ flux_filename }}"]
   data_out:
     copy:
       - ["{{ DATA }}/GFSPRS.GrbF00", "{{ COMOUT_ATMOS_MASTER }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.master.analysis.grib2"]

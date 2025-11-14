@@ -462,6 +462,32 @@ class GCAFSTasks(Tasks):
 
         return task
 
+    def analcalc(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_offlineanl'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('analcalc')
+        task_name = f'{self.run}_analcalc'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEgfs}/dev/jobs/analcalc.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def aerosol_init(self):
         """
         Create a task for aerosol initialization.
@@ -755,16 +781,8 @@ class GCAFSTasks(Tasks):
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        chem_anl_path = self._template_to_rocoto_cycstring(self._base["COM_CHEM_ANALYSIS_TMPL"])
-        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
         deps = []
-        data = f'{chem_anl_path}/{self.run}.t@Hz.analysis.aero.a006.nc'
-        dep_dict = {'type': 'data', 'data': data, 'age': 60}
-        deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_hist_path}/{self.run}.t@Hz.sfc.f000.nc'
-        dep_dict = {'type': 'data', 'data': data, 'age': 60}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')

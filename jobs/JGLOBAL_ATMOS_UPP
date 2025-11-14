@@ -18,7 +18,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "upp" -c "base upp"
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
     COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-    COMIN_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
     COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
 mkdir -p "${COMOUT_ATMOS_MASTER}"
 
@@ -33,6 +32,7 @@ if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 
+exit 0
 ##############################################
 # End JOB SPECIFIC work
 ##############################################
