@@ -171,14 +171,14 @@ for dir in "${gdas_list[@]}" "${gfs_list[@]}" "${gcdas_list[@]}" "${gcafs_list[@
       cd "${cwd}"
         if [[ -d "${cwd}/${dir}/${cyc}/analysis/snow" ]]; then
             cd "${cwd}/${dir}/${cyc}/analysis/snow"
-            for snow_file in *.sfc_data.tile1.nc; do
+            for snow_file in snowinc*.sfc_data.tile1.nc; do
                 if [[ -f "${snow_file}" ]]; then
                     prefix=$(echo "${snow_file}" | cut -d. -f1-3)
                     # Keep the date fields of the prefix (the last two fields)
                     # Lop off the "snowinc."
                     prefix_new=$(echo "${prefix}" | cut -d. -f2-)
                     for tile in {1..6}; do
-                        link_file "${prefix}.tile${tile}.nc" "${prefix_new}.snow_increment.sfc_data.tile${tile}.nc"
+                        link_file "${prefix}.sfc_data.tile${tile}.nc" "${prefix_new}.snow_increment.sfc_data.tile${tile}.nc"
                     done
                 fi
             done
@@ -278,12 +278,12 @@ for dir in "${enkfgdas_list[@]}" "${enkfgfs_list[@]}"; do
             # snow
             if [[ -d "${cwd}/${dir}/${cyc}/${mem}/analysis/snow" ]]; then
                 cd "${cwd}/${dir}/${cyc}/${mem}/analysis/snow"
-                for snow_file in *.sfc_data.tile1.nc; do
+                for snow_file in snowinc.*.sfc_data.tile1.nc; do
                 if [[ -f "${snow_file}" ]]; then
                     prefix=$(echo "${snow_file}" | cut -d. -f1-3)
                     prefix_new=$(echo "${prefix}" | cut -d. -f2-)
                     for tile in {1..6}; do
-                        link_file "${prefix}.tile${tile}.nc" "${prefix_new}.snow_analysis.sfc_data.tile${tile}.nc"
+                        link_file "${prefix}.sfc_data.tile${tile}.nc" "${prefix_new}.snow_analysis.sfc_data.tile${tile}.nc"
                     done
                 fi
                 done
@@ -323,12 +323,12 @@ for dir in "${enkfgdas_list[@]}" "${enkfgfs_list[@]}"; do
         # snow ensstat
         if [[ -d "${cwd}/${dir}/${cyc}/ensstat/analysis/snow" ]]; then
             cd "${cwd}/${dir}/${cyc}/ensstat/analysis/snow"
-            for snow_file in *.sfc_data.tile1.nc; do
+            for snow_file in snowinc*.sfc_data.tile1.nc; do
                 if [[ -f "${snow_file}" ]]; then
                     prefix=$(echo "${snow_file}" | cut -d. -f1-3)
                     prefix_new=$(echo "${prefix}" | cut -d. -f2-)
                     for tile in {1..6}; do
-                        link_file "${prefix}.tile${tile}.nc" "${prefix_new}.snow_increment.sfc_data.tile${tile}.nc"
+                        link_file "${prefix}.sfc_data.tile${tile}.nc" "${prefix_new}.snow_increment.sfc_data.tile${tile}.nc"
                     done
                 fi
             done
