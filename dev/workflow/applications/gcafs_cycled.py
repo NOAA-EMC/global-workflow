@@ -211,7 +211,6 @@ class GCAFSCycledAppConfig(AppConfig):
                 if options['do_anlstat']:
                     task_names[run] += ['anlstat']
 
-
             # some are common across both
             if run in ['gcdas', 'gcafs']:
 

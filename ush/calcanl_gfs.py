@@ -17,10 +17,11 @@ import numpy as np
 
 python2fortran_bool = {True: '.true.', False: '.false.'}
 
+
 def calcanl_gcafs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
-                ComIn_Ges, GPrefix,
-                FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
-                ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, run, JEDI):
+                  ComIn_Ges, GPrefix,
+                  FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
+                  ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, run, JEDI):
     print('calcanl_gcafs beginning at: ', datetime.datetime.utcnow())
 
     IAUHH = IAUHrs
@@ -36,26 +37,26 @@ def calcanl_gcafs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
         gsi_utils.link_file(RunDir + '/sigf06', CalcAnlDir + '/ges.06')
         gsi_utils.link_file(RunDir + '/siganl', CalcAnlDir + '/anl.06')
 
-
+        # iovars and incvars for aerosol in gsi-utils do not match correctly,
+        # hard-coded here.
         iovars = ['so4', 'bc1', 'bc2', 'oc1', 'oc2',
                   'dust1', 'dust2', 'dust3', 'dust4', 'dust5',
                   'seas2', 'seas3', 'seas4', 'seas5']
 
-        incvars = [  'mass_fraction_of_sulfate_in_air',
-                     'mass_fraction_of_hydrophobic_black_carbon_in_air',
-                      'mass_fraction_of_hydrophilic_black_carbon_in_air',
-                      'mass_fraction_of_hydrophobic_organic_carbon_in_air',
-                      'mass_fraction_of_hydrophilic_organic_carbon_in_air',
-                      'mass_fraction_of_dust001_in_air', 'mass_fraction_of_dust002_in_air',
-                      'mass_fraction_of_dust003_in_air', 'mass_fraction_of_dust004_in_air',
-                      'mass_fraction_of_dust005_in_air', 'mass_fraction_of_sea_salt001_in_air',
-                      'mass_fraction_of_sea_salt002_in_air', 'mass_fraction_of_sea_salt003_in_air',
-                      'mass_fraction_of_sea_salt004_in_air']
-
+        incvars = ['mass_fraction_of_sulfate_in_air',
+                   'mass_fraction_of_hydrophobic_black_carbon_in_air',
+                   'mass_fraction_of_hydrophilic_black_carbon_in_air',
+                   'mass_fraction_of_hydrophobic_organic_carbon_in_air',
+                   'mass_fraction_of_hydrophilic_organic_carbon_in_air',
+                   'mass_fraction_of_dust001_in_air', 'mass_fraction_of_dust002_in_air',
+                   'mass_fraction_of_dust003_in_air', 'mass_fraction_of_dust004_in_air',
+                   'mass_fraction_of_dust005_in_air', 'mass_fraction_of_sea_salt001_in_air',
+                   'mass_fraction_of_sea_salt002_in_air', 'mass_fraction_of_sea_salt003_in_air',
+                   'mass_fraction_of_sea_salt004_in_air']
 
         inc_file = os.path.join(CalcAnlDir, 'siginc.nc.06')
         anl_file = os.path.join(CalcAnlDir, 'anl.06')
-        ges_file = os.path.join(CalcAnlDir,'ges.06')
+        ges_file = os.path.join(CalcAnlDir, 'ges.06')
         with Dataset(inc_file, mode='r') as incfile, Dataset(ges_file, mode='r') as gesfile, Dataset(anl_file, mode='a') as anlfile:
             for incname, ioname in zip(incvars, iovars):
                 increment = incfile.variables[incname][:]
@@ -65,16 +66,12 @@ def calcanl_gcafs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 bkg = gesfile.variables[ioname][:]
                 anl = bkg + increment_reshape[np.newaxis, :, :, :]
                 anlfile.variables[ioname][:] = anl[:]
-        # reset time from 6 to 0
-        #with Dataset(anl_file, mode='a') as file:
-        #    time = file.variables['time']
-        #    time[:] = 0.0
-            #time.setncattr("units", f"hours since {to_isotime(self.task_config.current_cycle)}")
     else:
         print('Condition not recognized, exiting...')
         sys.exit(1)
 
     print('calcanl_gcafs successfully completed at: ', datetime.datetime.utcnow())
+
 
 # function to calculate analysis from a given increment file and background
 def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
@@ -167,14 +164,11 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
     AnlDims = gsi_utils.get_ncdims('siginc.nc')
     GesDims = gsi_utils.get_ncdims('sigf06')
 
-    #levs = AnlDims['lev']
-    #LonA = AnlDims['lon']
-    #LatA = AnlDims['lat']
+    levs = AnlDims['lev']
+    LonA = AnlDims['lon']
+    LatA = AnlDims['lat']
     LonB = GesDims['grid_xt']
     LatB = GesDims['grid_yt']
-    levs = AnlDims['levels']
-    LonA = AnlDims['longitude']
-    LatA = AnlDims['latitude']
 
     # vertical coordinate info
     levs2 = levs + 1
@@ -310,10 +304,10 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             if launcher == 'srun':
                 os.environ['SLURM_HOSTFILE'] = CalcAnlDir + '/hosts'
             print('interp_inc', fh, namelist)
-          #  job = subprocess.Popen(ExecCMDMPI13_host + ' ' + CalcAnlDir + '/chgres_inc.x', shell=True, cwd=CalcAnlDir)
+            job = subprocess.Popen(ExecCMDMPI13_host + ' ' + CalcAnlDir + '/chgres_inc.x', shell=True, cwd=CalcAnlDir)
             print(ExecCMDMPI13_host + ' ' + CalcAnlDir + '/chgres_inc.x submitted on ' + hosts[ihost])
             sys.stdout.flush()
-          #  ec = job.wait()
+            ec = job.wait()
             ec = 0
             if ec != 0:
                 print('Error with chgres_inc.x at forecast hour: f' + format(fh, '03'))
