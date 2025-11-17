@@ -11,7 +11,7 @@
 ############################################################################
 
 # Make sure we are in the $DATA directory
-cd "${DATA}" || exit
+cd "${DATA}" || exit 1
 
 tmhr=${tmmark:2:2}
 cdate10=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${tmhr} hours")
@@ -19,13 +19,11 @@ cdate10=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${tmhr} hours")
 NET_uc=${RUN^^}
 tmmark_uc=${tmmark^^}
 
-export iflag=0
 if [[ "${RUN}" = ndas ]]; then
     if [[ "${DO_RELOCATE}" = NO ]]; then
         echo "CENTER PROCESSING TIME FOR NDAS TROPICAL CYCLONE QC IS ${cdate10}"
         echo "Output tcvitals files will be copied forward in time to proper \
 output file directory path locations"
-        iflag=1
     else
         echo "CENTER PROCESSING TIME FOR ${tmmark_uc} NDAS TROPICAL CYCLONE \
 RELOCATION IS ${cdate10}"

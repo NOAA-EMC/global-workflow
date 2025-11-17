@@ -22,18 +22,18 @@
 # Derived base variables
 
 # Dependent Scripts and Executables
-CYCLESH="${CYCLESH:-${USHgfs}/global_cycle.sh}"
-REGRIDSH="${REGRIDSH:-${USHgfs}/regrid_gsiSfcIncr_to_tile.sh}"
-export CYCLEXEC="${CYCLEXEC:-${EXECgfs}/global_cycle}"
-NTHREADS_CYCLE="${NTHREADS_CYCLE:-24}"
-APRUN_CYCLE="${APRUN_CYCLE:-${APRUN:-""}}"
+CYCLESH=${CYCLESH:-"${USHgfs}/global_cycle.sh"}
+REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
+export CYCLEXEC=${CYCLEXEC:-"${EXECgfs}/global_cycle"}
+NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
+APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 
 # Surface cycle related parameters
-export SNOW_NUDGE_COEFF="${SNOW_NUDGE_COEFF:--2.}"
-export CYCLVARS="${CYCLVARS:-""}"
-export FHOUR="${FHOUR:-0}"
-export DELTSFC="${DELTSFC:-6}"
-export COUPLED="${COUPLED:-".false."}"
+export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:--2.}
+export CYCLVARS=${CYCLVARS:-""}
+export FHOUR=${FHOUR:-0}
+export DELTSFC=${DELTSFC:-6}
+export COUPLED=${COUPLED:-".false."}
 
 # Other info used in this script
 # Ignore possible spelling error (nothing is misspelled)
@@ -46,15 +46,15 @@ ntiles=6
 
 ##############################################################
 # Get dimension information based on CASE
-res="${CASE:1}"
+res=${CASE:1}
 JCAP_CASE=$((res * 2 - 2))
 LATB_CASE=$((res * 2))
 LONB_CASE=$((res * 4))
 
 # Global cycle requires these files
-export FNTSFA="${FNTSFA:-${COMIN_OBS}/${OPREFIX}rtgssthr.grb}"
-export FNACNA="${FNACNA:-${COMIN_OBS}/${OPREFIX}seaice.5min.blend.grb}"
-export FNSNOA="${FNSNOA:-${COMIN_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}"
+export FNTSFA=${FNTSFA:-"${COMIN_OBS}/${OPREFIX}rtgssthr.grb"}
+export FNACNA=${FNACNA:-"${COMIN_OBS}/${OPREFIX}seaice.5min.blend.grb"}
+export FNSNOA=${FNSNOA:-"${COMIN_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}"}
 # Check if resolution specific FNSNOA exists, if not use t1534 version
 if [[ ! -f "${FNSNOA}" ]]; then
     export FNSNOA="${COMIN_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
@@ -64,7 +64,7 @@ if [[ ! -f "${FNSNOA}" ]]; then
 else
     echo "INFO: Current cycle snow file is ${FNSNOA}"
 fi
-export FNSNOG="${FNSNOG:-${COMIN_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}"
+export FNSNOG=${FNSNOG:-"${COMIN_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}"}
 # Check if resolution specific FNSNOG exists, if not use t1534 version
 if [[ ! -f "${FNSNOG}" ]]; then
     export FNSNOG="${COMIN_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
@@ -79,11 +79,11 @@ fi
 # shellcheck disable=SC2312
 if [[ ! -f "${FNSNOA}" ]] || [[ ! -f "${FNSNOG}" ]]; then
     export FNSNOA=" "
-    export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+    export CYCLVARS=FSNOL=99999.,FSNOS=99999.,
 # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
 elif [[ "$(${WGRIB} -4yr "${FNSNOA}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')" -le "$(${WGRIB} -4yr "${FNSNOG}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')" ]]; then
     export FNSNOA=" "
-    export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+    export CYCLVARS=FSNOL=99999.,FSNOS=99999.,
 else
     export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},${CYCLVARS}"
 fi
@@ -131,7 +131,7 @@ if [[ "${DOIAU:-}" == "YES" ]]; then # Update surface restarts at beginning of w
 fi
 
 # if doing GSI soil anaysis, copy increment file and re-grid it to native model resolution
-if [[ "${DO_GSISOILDA}" = "YES" ]]; then
+if [[ "${DO_GSISOILDA}" == "YES" ]]; then
 
     export COMIN_SOIL_ANALYSIS_MEM="${COMIN_ATMOS_ENKF_ANALYSIS_STAT}"
     export COMOUT_ATMOS_ANALYSIS_MEM="${COMIN_ATMOS_ANALYSIS}"
