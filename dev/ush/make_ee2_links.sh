@@ -295,15 +295,29 @@ for dir in "${enkfgdas_list[@]}" "${enkfgfs_list[@]}"; do
             cd "${cwd}/${dir}/${cyc}/ensstat/analysis/atmos"
             if [[ -f "${system_prefix}.t${cyc}z.abias.ensmean" ]]; then
                 link_file "${system_prefix}.t${cyc}z.abias.ensmean" "${system_prefix}.t${cyc}z.abias.ensmean.txt"
+            fi
+            if [[ -f "${system_prefix}.t${cyc}z.abias_air.ensmean" ]]; then
                 link_file "${system_prefix}.t${cyc}z.abias_air.ensmean" "${system_prefix}.t${cyc}z.abias_air.ensmean.txt"
+            fi
+            if [[ -f "${system_prefix}.t${cyc}z.abias_int.ensmean" ]]; then
                 link_file "${system_prefix}.t${cyc}z.abias_int.ensmean" "${system_prefix}.t${cyc}z.abias_int.ensmean.txt"
+            fi
+            if [[ -f "${system_prefix}.t${cyc}z.abias_pc.ensmean" ]]; then
                 link_file "${system_prefix}.t${cyc}z.abias_pc.ensmean" "${system_prefix}.t${cyc}z.abias_pc.ensmean.txt"
             fi
             if [[ -f "${system_prefix}.t${cyc}z.cnvstat.ensmean" ]]; then
                 link_file "${system_prefix}.t${cyc}z.cnvstat.ensmean" "${system_prefix}.t${cyc}z.cnvstat.ensmean.tar"
+            fi
+            if [[ -f "${system_prefix}.t${cyc}z.enkfstat" ]]; then
                 link_file "${system_prefix}.t${cyc}z.enkfstat" "${system_prefix}.t${cyc}z.enkfstat.txt"
+            fi
+            if [[ -f "${system_prefix}.t${cyc}z.gsistat.ensmean" ]]; then
                 link_file "${system_prefix}.t${cyc}z.gsistat.ensmean" "${system_prefix}.t${cyc}z.gsistat.ensmean.tar"
+            fi
+            if [[ -f "${system_prefix}.t${cyc}z.oznstat.ensmean" ]]; then
                 link_file "${system_prefix}.t${cyc}z.oznstat.ensmean" "${system_prefix}.t${cyc}z.oznstat.ensmean.tar"
+            fi
+            if [[ -f "${system_prefix}.t${cyc}z.radstat.ensmean" ]]; then
                 link_file "${system_prefix}.t${cyc}z.radstat.ensmean" "${system_prefix}.t${cyc}z.radstat.ensmean.tar"
             fi
             # Surface increments
