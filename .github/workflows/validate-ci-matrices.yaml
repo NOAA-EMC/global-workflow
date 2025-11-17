@@ -1,0 +1,47 @@
+name: Validate CI Case Matrices
+
+on:
+  pull_request:
+    paths:
+      - 'dev/ci/cases/pr/*.yaml'
+      - 'dev/ci/gitlab-ci-hosts.yml'
+      - '.github/workflows/validate-ci-matrices.yaml'
+  push:
+    branches:
+      - develop
+    paths:
+      - 'dev/ci/cases/pr/*.yaml'
+      - 'dev/ci/gitlab-ci-hosts.yml'
+      - '.github/workflows/validate-ci-matrices.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-matrices:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pyyaml
+
+      - name: Validate CI matrices
+        run: pytest dev/ci/scripts/unittests/test_ci_matrix_validation.py -v
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results
+          path: pytest-results.xml
+          if-no-files-found: ignore

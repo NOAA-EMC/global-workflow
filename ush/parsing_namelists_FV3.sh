@@ -178,6 +178,9 @@ local ICLOUD_BL=${icloud_bl:-"1"}
 local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
 local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
 local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
+local TTE_EDMF=${tte_edmf:-".false."}
+local CSCALE=${cscale:-"1.0"}
+local DO_NGW_EC=${do_ngw_ec:-".false."}
 local DO_UGWP=${do_ugwp:-".false."}
 local DO_TOFD=${do_tofd:-".false."}
 local GWD_OPT=${gwd_opt:-"2"}
@@ -424,6 +427,7 @@ local FNTSFA="'${FNTSFA:-}'"
 #fv_grid_nml options
 
 #nam stochy options
+local NEW_LSCALE=${new_lscale:-".false."}
 local STOCHINI=${stochini:-".false."}
 local SKEB=${SKEB:-0}
 local ISEED_SKEB=${ISEED_SKEB:-${ISEED}}
@@ -476,8 +480,9 @@ local LSOIL_INCR=${LSOIL_INCR:-2}
 local LAND_IAU_FILTER_INC=".false."
 local LAND_IAU_UPD_STC=".true."
 local LAND_IAU_UPD_SLC=".true."
-local LAND_IAU_DP_STCSMC_ADJ=".true."
+local LAND_IAU_DO_STCSMC_ADJ=".true."
 local LAND_IAU_MIN_T_INC=0.0001
+local LAND_IAU_MIN_SLC_INC=0.000001
 
 # Check will need to be modified in the future
 # once GW is ready to add in land IAU
