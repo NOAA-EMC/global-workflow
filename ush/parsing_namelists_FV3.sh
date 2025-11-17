@@ -178,6 +178,9 @@ local ICLOUD_BL=${icloud_bl:-"1"}
 local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
 local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
 local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
+local TTE_EDMF=${tte_edmf:-".false."}
+local CSCALE=${cscale:-"1.0"}
+local DO_NGW_EC=${do_ngw_ec:-".false."}
 local DO_UGWP=${do_ugwp:-".false."}
 local DO_TOFD=${do_tofd:-".false."}
 local GWD_OPT=${gwd_opt:-"2"}
@@ -424,6 +427,7 @@ local FNTSFA="'${FNTSFA:-}'"
 #fv_grid_nml options
 
 #nam stochy options
+local NEW_LSCALE=${new_lscale:-".false."}
 local STOCHINI=${stochini:-".false."}
 local SKEB=${SKEB:-0}
 local ISEED_SKEB=${ISEED_SKEB:-${ISEED}}
