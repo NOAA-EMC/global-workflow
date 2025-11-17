@@ -318,7 +318,6 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
             print(ExecCMDMPI13_host + ' ' + CalcAnlDir + '/chgres_inc.x submitted on ' + hosts[ihost])
             sys.stdout.flush()
             ec = job.wait()
-            ec = 0
             if ec != 0:
                 print('Error with chgres_inc.x at forecast hour: f' + format(fh, '03'))
                 print('Error with chgres_inc.x, exit code=' + str(ec))
