@@ -178,6 +178,9 @@ FV3_namelists() {
     local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
     local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
     local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
+    local TTE_EDMF=${tte_edmf:-".false."}
+    local CSCALE=${cscale:-"1.0"}
+    local DO_NGW_EC=${do_ngw_ec:-".false."}
     local DO_UGWP=${do_ugwp:-".false."}
     local DO_TOFD=${do_tofd:-".false."}
     local GWD_OPT=${gwd_opt:-"2"}
@@ -288,7 +291,7 @@ FV3_namelists() {
 
     # CPL CHM options
     if [[ "${cplchm}" = ".true." ]]; then
-        local FSCAV_AERO="${fscav_aero:-'*:0.0'}"
+        local FSCAV_AERO=${fscav_aero:-'*:0.0'}
     else
         local FSCAV_AERO='"*:0.3","so2:0.0","msa:0.0","dms:0.0","nh3:0.4","nh4:0.6","bc1:0.6","bc2:0.6","oc1:0.4","oc2:0.4","dust1:0.6","dust2:0.6","dust3:0.6","dust4:0.6","dust5:0.6","seas1:0.5","seas2:0.5","seas3:0.5","seas4:0.5","seas5:0.5"'
     fi
@@ -322,7 +325,7 @@ FV3_namelists() {
     local PERT_RADTEND=${PERT_RADTEND:-".false."}
     local PERT_CLDS=${PERT_CLDS:-".false."}
 
-    if [[ ${DO_SPPT} = ".true." ]]; then
+    if [[ "${DO_SPPT}" = ".true." ]]; then
         local PERT_CLDS=".true."
     fi
 
@@ -333,10 +336,10 @@ FV3_namelists() {
     fi
 
     #GWP options
-    if [[ ${knob_ugwp_version} -eq 0 ]]; then
+    if [[ "${knob_ugwp_version}" -eq 0 ]]; then
         local HIDE_UGWPV0=" "
         local HIDE_UGWPV1="!"
-    elif [[ ${knob_ugwp_version} -eq 1 ]]; then
+    elif [[ "${knob_ugwp_version}" -eq 1 ]]; then
         local HIDE_UGWPV0="!"
         local HIDE_UGWPV1=" "
     else
@@ -424,6 +427,7 @@ FV3_namelists() {
     #fv_grid_nml options
 
     #nam stochy options
+    local NEW_LSCALE=${new_lscale:-".false."}
     local STOCHINI=${stochini:-".false."}
     local SKEB=${SKEB:-0}
     local ISEED_SKEB=${ISEED_SKEB:-${ISEED}}
@@ -476,21 +480,17 @@ FV3_namelists() {
     local LAND_IAU_FILTER_INC=".false."
     local LAND_IAU_UPD_STC=".true."
     local LAND_IAU_UPD_SLC=".true."
-    local LAND_IAU_DP_STCSMC_ADJ=".true."
-    local LAND_IAU_MIN_T_INC=0.0001
-
-    # Land IAU defaults
-    local DO_LAND_IAU=${DO_LAND_IAU:-".false."}
-    local LAND_IAU_FHRS=${IAUFHRS}
-    local LAND_IAU_DELHRS=${IAU_DELTHRS}
-    local LAND_IAU_INC_FILES="'sfc_inc',''"
-    local LSOIL_INCR=${LSOIL_INCR:-2}
-    local LAND_IAU_FILTER_INC=".false."
-    local LAND_IAU_UPD_STC=".true."
-    local LAND_IAU_UPD_SLC=".true."
     local LAND_IAU_DO_STCSMC_ADJ=".true."
     local LAND_IAU_MIN_T_INC=0.0001
     local LAND_IAU_MIN_SLC_INC=0.000001
+
+    # Check will need to be modified in the future
+    # once GW is ready to add in land IAU
+    if [[ "${DO_LAND_IAU}" = ".true." ]]; then
+        local HIDE_LIAU=" "
+    else
+        local HIDE_LIAU="!"
+    fi
 
     local global_template="${HOMEgfs}/parm/ufs/global_control.nml.IN"
     atparse < "${global_template}" >> "input.nml"
