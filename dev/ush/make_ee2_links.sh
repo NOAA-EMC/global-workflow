@@ -278,12 +278,12 @@ for dir in "${enkfgdas_list[@]}" "${enkfgfs_list[@]}"; do
             # snow
             if [[ -d "${cwd}/${dir}/${cyc}/${mem}/analysis/snow" ]]; then
                 cd "${cwd}/${dir}/${cyc}/${mem}/analysis/snow"
-                for snow_file in snowinc.*.sfc_data.tile1.nc; do
+                # The old snow analysis files start with YYYYMMDD.HHMMSS, which we want to keep
+                for snow_file in ????????.??????.sfc_data.tile1.nc; do
                 if [[ -f "${snow_file}" ]]; then
-                    prefix=$(echo "${snow_file}" | cut -d. -f1-3)
-                    prefix_new=$(echo "${prefix}" | cut -d. -f2-)
+                    prefix=$(echo "${snow_file}" | cut -d. -f1-2)
                     for tile in {1..6}; do
-                        link_file "${prefix}.sfc_data.tile${tile}.nc" "${prefix_new}.snow_analysis.sfc_data.tile${tile}.nc"
+                        link_file "${prefix}.sfc_data.tile${tile}.nc" "${prefix}.snow_analysis.sfc_data.tile${tile}.nc"
                     done
                 fi
                 done
