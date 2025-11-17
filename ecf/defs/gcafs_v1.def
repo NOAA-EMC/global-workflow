@@ -34,7 +34,7 @@ suite gcafs_v1
                   event 4 release_post006
                   event 5 release_post009
                 task jgcdas_atmos_post_anl
-                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../analysis/jgdas_atmos_analysis_calc == complete
+                  trigger ./jgcdas_atmos_post_manager:release_postanl
                   edit FHRGRP '000'
                   edit FHRLST 'anl'
                   edit HR 'anl'
@@ -86,6 +86,309 @@ suite gcafs_v1
             task jgcdas_forecast
               trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
           endfamily # gcafs gcdas
+          family gcafs
+            edit RUN 'gcafs'
+            edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gcafs'
+            family atmos
+              family post
+                task jgcafs_atmos_post_manager
+                  trigger ../../jgcafs_forecast == active
+                  event 1 release_post000
+                  event 2 release_post003
+                  event 3 release_post006
+                  event 4 release_post009
+                  event 5 release_post012
+                  event 6 release_post015
+                  event 7 release_post018
+                  event 8 release_post021
+                  event 9 release_post024
+                  event 10 release_post027
+                  event 11 release_post030
+                  event 12 release_post033
+                  event 13 release_post036
+                  event 14 release_post039
+                  event 15 release_post042
+                  event 16 release_post045
+                  event 17 release_post048
+                  event 18 release_post051
+                  event 19 release_post054
+                  event 20 release_post057
+                  event 21 release_post060
+                  event 22 release_post063
+                  event 23 release_post066
+                  event 24 release_post069
+                  event 25 release_post072
+                  event 26 release_post075
+                  event 27 release_post078
+                  event 28 release_post081
+                  event 29 release_post084
+                  event 30 release_post087
+                  event 31 release_post090
+                  event 32 release_post093
+                  event 33 release_post096
+                  event 34 release_post099
+                  event 35 release_post102
+                  event 36 release_post105
+                  event 37 release_post108
+                  event 38 release_post111
+                  event 39 release_post114
+                  event 40 release_post117
+                  event 41 release_post120
+                task jgcafs_atmos_post_f000
+                  trigger ./jgcafs_atmos_post_manager:release_post000
+                  edit FHR 'f000'
+                  edit HR '000'
+                  edit FHRGRP '001'
+                  edit FHRLST 'f000'
+                task jgcafs_atmos_post_f003
+                  trigger ./jgcafs_atmos_post_manager:release_post003
+                  edit FHR 'f003'
+                  edit HR '003'
+                  edit FHRGRP '002'
+                  edit FHRLST 'f003'
+                task jgcafs_atmos_post_f006
+                  trigger ./jgcafs_atmos_post_manager:release_post006
+                  edit FHR 'f006'
+                  edit HR '006'
+                  edit FHRGRP '003'
+                  edit FHRLST 'f006'
+                task jgcafs_atmos_post_f009
+                  trigger ./jgcafs_atmos_post_manager:release_post009
+                  edit FHR 'f009'
+                  edit HR '009'
+                  edit FHRGRP '004'
+                  edit FHRLST 'f009'
+                task jgcafs_atmos_post_f012
+                  trigger ./jgcafs_atmos_post_manager:release_post012
+                  edit FHR 'f012'
+                  edit HR '012'
+                  edit FHRGRP '005'
+                  edit FHRLST 'f012'
+                task jgcafs_atmos_post_f015
+                  trigger ./jgcafs_atmos_post_manager:release_post015
+                  edit FHR 'f015'
+                  edit HR '015'
+                  edit FHRGRP '006'
+                  edit FHRLST 'f015'
+                task jgcafs_atmos_post_f018
+                  trigger ./jgcafs_atmos_post_manager:release_post018
+                  edit FHR 'f018'
+                  edit HR '018'
+                  edit FHRGRP '007'
+                  edit FHRLST 'f018'
+                task jgcafs_atmos_post_f021
+                  trigger ./jgcafs_atmos_post_manager:release_post021
+                  edit FHR 'f021'
+                  edit HR '021'
+                  edit FHRGRP '008'
+                  edit FHRLST 'f021'
+                task jgcafs_atmos_post_f024
+                  trigger ./jgcafs_atmos_post_manager:release_post024
+                  edit FHR 'f024'
+                  edit HR '024'
+                  edit FHRGRP '009'
+                  edit FHRLST 'f024'
+                task jgcafs_atmos_post_f027
+                  trigger ./jgcafs_atmos_post_manager:release_post027
+                  edit FHR 'f027'
+                  edit HR '027'
+                  edit FHRGRP '010'
+                  edit FHRLST 'f027'
+                task jgcafs_atmos_post_f030
+                  trigger ./jgcafs_atmos_post_manager:release_post030
+                  edit FHR 'f030'
+                  edit HR '030'
+                  edit FHRGRP '011'
+                  edit FHRLST 'f030'
+                task jgcafs_atmos_post_f033
+                  trigger ./jgcafs_atmos_post_manager:release_post033
+                  edit FHR 'f033'
+                  edit HR '033'
+                  edit FHRGRP '012'
+                  edit FHRLST 'f033'
+                task jgcafs_atmos_post_f036
+                  trigger ./jgcafs_atmos_post_manager:release_post036
+                  edit FHR 'f036'
+                  edit HR '036'
+                  edit FHRGRP '013'
+                  edit FHRLST 'f036'
+                task jgcafs_atmos_post_f039
+                  trigger ./jgcafs_atmos_post_manager:release_post039
+                  edit FHR 'f039'
+                  edit HR '039'
+                  edit FHRGRP '014'
+                  edit FHRLST 'f039'
+                task jgcafs_atmos_post_f042
+                  trigger ./jgcafs_atmos_post_manager:release_post042
+                  edit FHR 'f042'
+                  edit HR '042'
+                  edit FHRGRP '015'
+                  edit FHRLST 'f042'
+                task jgcafs_atmos_post_f045
+                  trigger ./jgcafs_atmos_post_manager:release_post045
+                  edit FHR 'f045'
+                  edit HR '045'
+                  edit FHRGRP '016'
+                  edit FHRLST 'f045'
+                task jgcafs_atmos_post_f048
+                  trigger ./jgcafs_atmos_post_manager:release_post048
+                  edit FHR 'f048'
+                  edit HR '048'
+                  edit FHRGRP '017'
+                  edit FHRLST 'f048'
+                task jgcafs_atmos_post_f051
+                  trigger ./jgcafs_atmos_post_manager:release_post051
+                  edit FHR 'f051'
+                  edit HR '051'
+                  edit FHRGRP '018'
+                  edit FHRLST 'f051'
+                task jgcafs_atmos_post_f054
+                  trigger ./jgcafs_atmos_post_manager:release_post054
+                  edit FHR 'f054'
+                  edit HR '054'
+                  edit FHRGRP '019'
+                  edit FHRLST 'f054'
+                task jgcafs_atmos_post_f057
+                  trigger ./jgcafs_atmos_post_manager:release_post057
+                  edit FHR 'f057'
+                  edit HR '057'
+                  edit FHRGRP '020'
+                  edit FHRLST 'f057'
+                task jgcafs_atmos_post_f060
+                  trigger ./jgcafs_atmos_post_manager:release_post060
+                  edit FHR 'f060'
+                  edit HR '060'
+                  edit FHRGRP '021'
+                  edit FHRLST 'f060'
+                task jgcafs_atmos_post_f063
+                  trigger ./jgcafs_atmos_post_manager:release_post063
+                  edit FHR 'f063'
+                  edit HR '063'
+                  edit FHRGRP '022'
+                  edit FHRLST 'f063'
+                task jgcafs_atmos_post_f066
+                  trigger ./jgcafs_atmos_post_manager:release_post066
+                  edit FHR 'f066'
+                  edit HR '066'
+                  edit FHRGRP '023'
+                  edit FHRLST 'f066'
+                task jgcafs_atmos_post_f069
+                  trigger ./jgcafs_atmos_post_manager:release_post069
+                  edit FHR 'f069'
+                  edit HR '069'
+                  edit FHRGRP '024'
+                  edit FHRLST 'f069'
+                task jgcafs_atmos_post_f072
+                  trigger ./jgcafs_atmos_post_manager:release_post072
+                  edit FHR 'f072'
+                  edit HR '072'
+                  edit FHRGRP '025'
+                  edit FHRLST 'f072'
+                task jgcafs_atmos_post_f075
+                  trigger ./jgcafs_atmos_post_manager:release_post075
+                  edit FHR 'f075'
+                  edit HR '075'
+                  edit FHRGRP '026'
+                  edit FHRLST 'f075'
+                task jgcafs_atmos_post_f078
+                  trigger ./jgcafs_atmos_post_manager:release_post078
+                  edit FHR 'f078'
+                  edit HR '078'
+                  edit FHRGRP '027'
+                  edit FHRLST 'f078'
+                task jgcafs_atmos_post_f081
+                  trigger ./jgcafs_atmos_post_manager:release_post081
+                  edit FHR 'f081'
+                  edit HR '081'
+                  edit FHRGRP '028'
+                  edit FHRLST 'f081'
+                task jgcafs_atmos_post_f084
+                  trigger ./jgcafs_atmos_post_manager:release_post084
+                  edit FHR 'f084'
+                  edit HR '084'
+                  edit FHRGRP '029'
+                  edit FHRLST 'f084'
+                task jgcafs_atmos_post_f087
+                  trigger ./jgcafs_atmos_post_manager:release_post087
+                  edit FHR 'f087'
+                  edit HR '087'
+                  edit FHRGRP '030'
+                  edit FHRLST 'f087'
+                task jgcafs_atmos_post_f090
+                  trigger ./jgcafs_atmos_post_manager:release_post090
+                  edit FHR 'f090'
+                  edit HR '090'
+                  edit FHRGRP '031'
+                  edit FHRLST 'f090'
+                task jgcafs_atmos_post_f093
+                  trigger ./jgcafs_atmos_post_manager:release_post093
+                  edit FHR 'f093'
+                  edit HR '093'
+                  edit FHRGRP '032'
+                  edit FHRLST 'f093'
+                task jgcafs_atmos_post_f096
+                  trigger ./jgcafs_atmos_post_manager:release_post096
+                  edit FHR 'f096'
+                  edit HR '096'
+                  edit FHRGRP '033'
+                  edit FHRLST 'f096'
+                task jgcafs_atmos_post_f099
+                  trigger ./jgcafs_atmos_post_manager:release_post099
+                  edit FHR 'f099'
+                  edit HR '099'
+                  edit FHRGRP '034'
+                  edit FHRLST 'f099'
+                task jgcafs_atmos_post_f102
+                  trigger ./jgcafs_atmos_post_manager:release_post102
+                  edit FHR 'f102'
+                  edit HR '102'
+                  edit FHRGRP '035'
+                  edit FHRLST 'f102'
+                task jgcafs_atmos_post_f105
+                  trigger ./jgcafs_atmos_post_manager:release_post105
+                  edit FHR 'f105'
+                  edit HR '105'
+                  edit FHRGRP '036'
+                  edit FHRLST 'f105'
+                task jgcafs_atmos_post_f108
+                  trigger ./jgcafs_atmos_post_manager:release_post108
+                  edit FHR 'f108'
+                  edit HR '108'
+                  edit FHRGRP '037'
+                  edit FHRLST 'f108'
+                task jgcafs_atmos_post_f111
+                  trigger ./jgcafs_atmos_post_manager:release_post111
+                  edit FHR 'f111'
+                  edit HR '111'
+                  edit FHRGRP '038'
+                  edit FHRLST 'f111'
+                task jgcafs_atmos_post_f114
+                  trigger ./jgcafs_atmos_post_manager:release_post114
+                  edit FHR 'f114'
+                  edit HR '114'
+                  edit FHRGRP '039'
+                  edit FHRLST 'f114'
+                task jgcafs_atmos_post_f117
+                  trigger ./jgcafs_atmos_post_manager:release_post117
+                  edit FHR 'f117'
+                  edit HR '117'
+                  edit FHRGRP '040'
+                  edit FHRLST 'f117'
+                task jgcafs_atmos_post_f120
+                  trigger ./jgcafs_atmos_post_manager:release_post120
+                  edit FHR 'f120'
+                  edit HR '120'
+                  edit FHRGRP '041'
+                  edit FHRLST 'f120'
+              endfamily # gcafs gcafs atmos post
+            endfamily # gcafs gcafs atmos
+            family chem
+              task jgcafs_prep_emissions
+                time 07:00
+            endfamily
+            task jgcdas_forecast
+              trigger /gcafs_v1/primary/00/gcafs/v1.0/gcdas/atmos/init/jgcdas_surface_initialize == complete and /gcafs_v1/primary/00/gcafs/v1.0/gcdas/chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcafs_prep_emissions == complete
+          endfamily # gcafs gcafs
         endfamily # gcafs v1.0
       endfamily # gcafs
     endfamily # 00
@@ -115,7 +418,7 @@ suite gcafs_v1
                   event 4 release_post006
                   event 5 release_post009
                 task jgcdas_atmos_post_anl
-                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../analysis/jgdas_atmos_analysis_calc == complete
+                  trigger ./jgcdas_atmos_post_manager:release_postanl
                   edit FHRGRP '000'
                   edit FHRLST 'anl'
                   edit HR 'anl'
@@ -196,7 +499,7 @@ suite gcafs_v1
                   event 4 release_post006
                   event 5 release_post009
                 task jgcdas_atmos_post_anl
-                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../analysis/jgdas_atmos_analysis_calc == complete
+                  trigger ./jgcdas_atmos_post_manager:release_postanl
                   edit FHRGRP '000'
                   edit FHRLST 'anl'
                   edit HR 'anl'
@@ -248,6 +551,309 @@ suite gcafs_v1
             task jgcdas_forecast
               trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
           endfamily # gcafs gcdas
+          family gcafs
+            edit RUN 'gcafs'
+            edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gcafs'
+            family atmos
+              family post
+                task jgcafs_atmos_post_manager
+                  trigger ../../jgcafs_forecast == active
+                  event 1 release_post000
+                  event 2 release_post003
+                  event 3 release_post006
+                  event 4 release_post009
+                  event 5 release_post012
+                  event 6 release_post015
+                  event 7 release_post018
+                  event 8 release_post021
+                  event 9 release_post024
+                  event 10 release_post027
+                  event 11 release_post030
+                  event 12 release_post033
+                  event 13 release_post036
+                  event 14 release_post039
+                  event 15 release_post042
+                  event 16 release_post045
+                  event 17 release_post048
+                  event 18 release_post051
+                  event 19 release_post054
+                  event 20 release_post057
+                  event 21 release_post060
+                  event 22 release_post063
+                  event 23 release_post066
+                  event 24 release_post069
+                  event 25 release_post072
+                  event 26 release_post075
+                  event 27 release_post078
+                  event 28 release_post081
+                  event 29 release_post084
+                  event 30 release_post087
+                  event 31 release_post090
+                  event 32 release_post093
+                  event 33 release_post096
+                  event 34 release_post099
+                  event 35 release_post102
+                  event 36 release_post105
+                  event 37 release_post108
+                  event 38 release_post111
+                  event 39 release_post114
+                  event 40 release_post117
+                  event 41 release_post120
+                task jgcafs_atmos_post_f000
+                  trigger ./jgcafs_atmos_post_manager:release_post000
+                  edit FHR 'f000'
+                  edit HR '000'
+                  edit FHRGRP '001'
+                  edit FHRLST 'f000'
+                task jgcafs_atmos_post_f003
+                  trigger ./jgcafs_atmos_post_manager:release_post003
+                  edit FHR 'f003'
+                  edit HR '003'
+                  edit FHRGRP '002'
+                  edit FHRLST 'f003'
+                task jgcafs_atmos_post_f006
+                  trigger ./jgcafs_atmos_post_manager:release_post006
+                  edit FHR 'f006'
+                  edit HR '006'
+                  edit FHRGRP '003'
+                  edit FHRLST 'f006'
+                task jgcafs_atmos_post_f009
+                  trigger ./jgcafs_atmos_post_manager:release_post009
+                  edit FHR 'f009'
+                  edit HR '009'
+                  edit FHRGRP '004'
+                  edit FHRLST 'f009'
+                task jgcafs_atmos_post_f012
+                  trigger ./jgcafs_atmos_post_manager:release_post012
+                  edit FHR 'f012'
+                  edit HR '012'
+                  edit FHRGRP '005'
+                  edit FHRLST 'f012'
+                task jgcafs_atmos_post_f015
+                  trigger ./jgcafs_atmos_post_manager:release_post015
+                  edit FHR 'f015'
+                  edit HR '015'
+                  edit FHRGRP '006'
+                  edit FHRLST 'f015'
+                task jgcafs_atmos_post_f018
+                  trigger ./jgcafs_atmos_post_manager:release_post018
+                  edit FHR 'f018'
+                  edit HR '018'
+                  edit FHRGRP '007'
+                  edit FHRLST 'f018'
+                task jgcafs_atmos_post_f021
+                  trigger ./jgcafs_atmos_post_manager:release_post021
+                  edit FHR 'f021'
+                  edit HR '021'
+                  edit FHRGRP '008'
+                  edit FHRLST 'f021'
+                task jgcafs_atmos_post_f024
+                  trigger ./jgcafs_atmos_post_manager:release_post024
+                  edit FHR 'f024'
+                  edit HR '024'
+                  edit FHRGRP '009'
+                  edit FHRLST 'f024'
+                task jgcafs_atmos_post_f027
+                  trigger ./jgcafs_atmos_post_manager:release_post027
+                  edit FHR 'f027'
+                  edit HR '027'
+                  edit FHRGRP '010'
+                  edit FHRLST 'f027'
+                task jgcafs_atmos_post_f030
+                  trigger ./jgcafs_atmos_post_manager:release_post030
+                  edit FHR 'f030'
+                  edit HR '030'
+                  edit FHRGRP '011'
+                  edit FHRLST 'f030'
+                task jgcafs_atmos_post_f033
+                  trigger ./jgcafs_atmos_post_manager:release_post033
+                  edit FHR 'f033'
+                  edit HR '033'
+                  edit FHRGRP '012'
+                  edit FHRLST 'f033'
+                task jgcafs_atmos_post_f036
+                  trigger ./jgcafs_atmos_post_manager:release_post036
+                  edit FHR 'f036'
+                  edit HR '036'
+                  edit FHRGRP '013'
+                  edit FHRLST 'f036'
+                task jgcafs_atmos_post_f039
+                  trigger ./jgcafs_atmos_post_manager:release_post039
+                  edit FHR 'f039'
+                  edit HR '039'
+                  edit FHRGRP '014'
+                  edit FHRLST 'f039'
+                task jgcafs_atmos_post_f042
+                  trigger ./jgcafs_atmos_post_manager:release_post042
+                  edit FHR 'f042'
+                  edit HR '042'
+                  edit FHRGRP '015'
+                  edit FHRLST 'f042'
+                task jgcafs_atmos_post_f045
+                  trigger ./jgcafs_atmos_post_manager:release_post045
+                  edit FHR 'f045'
+                  edit HR '045'
+                  edit FHRGRP '016'
+                  edit FHRLST 'f045'
+                task jgcafs_atmos_post_f048
+                  trigger ./jgcafs_atmos_post_manager:release_post048
+                  edit FHR 'f048'
+                  edit HR '048'
+                  edit FHRGRP '017'
+                  edit FHRLST 'f048'
+                task jgcafs_atmos_post_f051
+                  trigger ./jgcafs_atmos_post_manager:release_post051
+                  edit FHR 'f051'
+                  edit HR '051'
+                  edit FHRGRP '018'
+                  edit FHRLST 'f051'
+                task jgcafs_atmos_post_f054
+                  trigger ./jgcafs_atmos_post_manager:release_post054
+                  edit FHR 'f054'
+                  edit HR '054'
+                  edit FHRGRP '019'
+                  edit FHRLST 'f054'
+                task jgcafs_atmos_post_f057
+                  trigger ./jgcafs_atmos_post_manager:release_post057
+                  edit FHR 'f057'
+                  edit HR '057'
+                  edit FHRGRP '020'
+                  edit FHRLST 'f057'
+                task jgcafs_atmos_post_f060
+                  trigger ./jgcafs_atmos_post_manager:release_post060
+                  edit FHR 'f060'
+                  edit HR '060'
+                  edit FHRGRP '021'
+                  edit FHRLST 'f060'
+                task jgcafs_atmos_post_f063
+                  trigger ./jgcafs_atmos_post_manager:release_post063
+                  edit FHR 'f063'
+                  edit HR '063'
+                  edit FHRGRP '022'
+                  edit FHRLST 'f063'
+                task jgcafs_atmos_post_f066
+                  trigger ./jgcafs_atmos_post_manager:release_post066
+                  edit FHR 'f066'
+                  edit HR '066'
+                  edit FHRGRP '023'
+                  edit FHRLST 'f066'
+                task jgcafs_atmos_post_f069
+                  trigger ./jgcafs_atmos_post_manager:release_post069
+                  edit FHR 'f069'
+                  edit HR '069'
+                  edit FHRGRP '024'
+                  edit FHRLST 'f069'
+                task jgcafs_atmos_post_f072
+                  trigger ./jgcafs_atmos_post_manager:release_post072
+                  edit FHR 'f072'
+                  edit HR '072'
+                  edit FHRGRP '025'
+                  edit FHRLST 'f072'
+                task jgcafs_atmos_post_f075
+                  trigger ./jgcafs_atmos_post_manager:release_post075
+                  edit FHR 'f075'
+                  edit HR '075'
+                  edit FHRGRP '026'
+                  edit FHRLST 'f075'
+                task jgcafs_atmos_post_f078
+                  trigger ./jgcafs_atmos_post_manager:release_post078
+                  edit FHR 'f078'
+                  edit HR '078'
+                  edit FHRGRP '027'
+                  edit FHRLST 'f078'
+                task jgcafs_atmos_post_f081
+                  trigger ./jgcafs_atmos_post_manager:release_post081
+                  edit FHR 'f081'
+                  edit HR '081'
+                  edit FHRGRP '028'
+                  edit FHRLST 'f081'
+                task jgcafs_atmos_post_f084
+                  trigger ./jgcafs_atmos_post_manager:release_post084
+                  edit FHR 'f084'
+                  edit HR '084'
+                  edit FHRGRP '029'
+                  edit FHRLST 'f084'
+                task jgcafs_atmos_post_f087
+                  trigger ./jgcafs_atmos_post_manager:release_post087
+                  edit FHR 'f087'
+                  edit HR '087'
+                  edit FHRGRP '030'
+                  edit FHRLST 'f087'
+                task jgcafs_atmos_post_f090
+                  trigger ./jgcafs_atmos_post_manager:release_post090
+                  edit FHR 'f090'
+                  edit HR '090'
+                  edit FHRGRP '031'
+                  edit FHRLST 'f090'
+                task jgcafs_atmos_post_f093
+                  trigger ./jgcafs_atmos_post_manager:release_post093
+                  edit FHR 'f093'
+                  edit HR '093'
+                  edit FHRGRP '032'
+                  edit FHRLST 'f093'
+                task jgcafs_atmos_post_f096
+                  trigger ./jgcafs_atmos_post_manager:release_post096
+                  edit FHR 'f096'
+                  edit HR '096'
+                  edit FHRGRP '033'
+                  edit FHRLST 'f096'
+                task jgcafs_atmos_post_f099
+                  trigger ./jgcafs_atmos_post_manager:release_post099
+                  edit FHR 'f099'
+                  edit HR '099'
+                  edit FHRGRP '034'
+                  edit FHRLST 'f099'
+                task jgcafs_atmos_post_f102
+                  trigger ./jgcafs_atmos_post_manager:release_post102
+                  edit FHR 'f102'
+                  edit HR '102'
+                  edit FHRGRP '035'
+                  edit FHRLST 'f102'
+                task jgcafs_atmos_post_f105
+                  trigger ./jgcafs_atmos_post_manager:release_post105
+                  edit FHR 'f105'
+                  edit HR '105'
+                  edit FHRGRP '036'
+                  edit FHRLST 'f105'
+                task jgcafs_atmos_post_f108
+                  trigger ./jgcafs_atmos_post_manager:release_post108
+                  edit FHR 'f108'
+                  edit HR '108'
+                  edit FHRGRP '037'
+                  edit FHRLST 'f108'
+                task jgcafs_atmos_post_f111
+                  trigger ./jgcafs_atmos_post_manager:release_post111
+                  edit FHR 'f111'
+                  edit HR '111'
+                  edit FHRGRP '038'
+                  edit FHRLST 'f111'
+                task jgcafs_atmos_post_f114
+                  trigger ./jgcafs_atmos_post_manager:release_post114
+                  edit FHR 'f114'
+                  edit HR '114'
+                  edit FHRGRP '039'
+                  edit FHRLST 'f114'
+                task jgcafs_atmos_post_f117
+                  trigger ./jgcafs_atmos_post_manager:release_post117
+                  edit FHR 'f117'
+                  edit HR '117'
+                  edit FHRGRP '040'
+                  edit FHRLST 'f117'
+                task jgcafs_atmos_post_f120
+                  trigger ./jgcafs_atmos_post_manager:release_post120
+                  edit FHR 'f120'
+                  edit HR '120'
+                  edit FHRGRP '041'
+                  edit FHRLST 'f120'
+              endfamily # gcafs gcafs atmos post
+            endfamily # gcafs gcafs atmos
+            family chem
+              task jgcafs_prep_emissions
+                time 19:00
+            endfamily
+            task jgcdas_forecast
+              trigger /gcafs_v1/primary/12/gcafs/v1.0/gcdas/atmos/init/jgcdas_surface_initialize == complete and /gcafs_v1/primary/12/gcafs/v1.0/gcdas/chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcafs_prep_emissions == complete
+          endfamily # gcafs gcafs
         endfamily # gcafs v1.0
       endfamily # gcafs
     endfamily # 12
@@ -277,7 +883,7 @@ suite gcafs_v1
                   event 4 release_post006
                   event 5 release_post009
                 task jgcdas_atmos_post_anl
-                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../analysis/jgdas_atmos_analysis_calc == complete
+                  trigger ./jgcdas_atmos_post_manager:release_postanl
                   edit FHRGRP '000'
                   edit FHRLST 'anl'
                   edit HR 'anl'
