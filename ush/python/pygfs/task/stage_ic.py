@@ -143,7 +143,7 @@ class Stage(Task):
             self.task_config.p_prefix = self.task_config.previous_cycle.strftime("%Y%m%d.%H0000")
             self.task_config.previous_cycle_HH = self.task_config.previous_cycle.strftime("%H")
             self.task_config.previous_cycle_YMD = self.task_config.previous_cycle.strftime("%Y%m%d")
-
+            self.task_config.mid_cyc = int(self.task_config.previous_cycle_HH) + int(self.task_config.half_window)
         # Define cycle directories to update com paths
         self.task_config.current_cycle_dict = {
             "${ROTDIR}": self.task_config.ROTDIR,
