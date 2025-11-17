@@ -386,7 +386,7 @@ suite gcafs_v1
               task jgcafs_prep_emissions
                 time 07:00
             endfamily
-            task jgcdas_forecast
+            task jgcafs_forecast
               trigger /gcafs_v1/primary/00/gcafs/v1.0/gcdas/atmos/init/jgcdas_surface_initialize == complete and /gcafs_v1/primary/00/gcafs/v1.0/gcdas/chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcafs_prep_emissions == complete
           endfamily # gcafs gcafs
         endfamily # gcafs v1.0
@@ -851,7 +851,7 @@ suite gcafs_v1
               task jgcafs_prep_emissions
                 time 19:00
             endfamily
-            task jgcdas_forecast
+            task jgcafs_forecast
               trigger /gcafs_v1/primary/12/gcafs/v1.0/gcdas/atmos/init/jgcdas_surface_initialize == complete and /gcafs_v1/primary/12/gcafs/v1.0/gcdas/chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcafs_prep_emissions == complete
           endfamily # gcafs gcafs
         endfamily # gcafs v1.0
