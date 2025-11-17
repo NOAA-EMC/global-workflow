@@ -611,8 +611,8 @@ class SFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
 
         return task
-    
-    # Globus transfer for HPSS archiving 
+
+    # Globus transfer for HPSS archiving
     def globus(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
