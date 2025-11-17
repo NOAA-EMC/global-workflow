@@ -12,7 +12,7 @@ import gsi_utils
 from collections import OrderedDict
 import datetime
 from wxflow import cast_as_dtype
-from netCDF4 import Dataset
+from netCDF4 import Dataset, num2date
 import numpy as np
 
 python2fortran_bool = {True: '.true.', False: '.false.'}
@@ -66,6 +66,16 @@ def calcanl_gcafs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
                 bkg = gesfile.variables[ioname][:]
                 anl = bkg + increment_reshape[np.newaxis, :, :, :]
                 anlfile.variables[ioname][:] = anl[:]
+            # update time (from 6 to 0) and time units in anlfile so UPP can create anl variables
+            time = gesfile.variables['time']
+            time_val = time[:]
+            time_units = time.units
+            time_calendar = getattr(time, "calendar", "standard")
+            cycle_time = num2date(time_val, units=time_units, calendar=time_calendar)
+            time_units_new = f"hours since {cycle_time[0]}"
+            anlfile.variables['time'][:] = 0.0
+            anlfile.variables['time'].setncattr("units", time_units_new)
+
     else:
         print('Condition not recognized, exiting...')
         sys.exit(1)
