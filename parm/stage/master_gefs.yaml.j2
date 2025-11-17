@@ -35,11 +35,7 @@
 {% if DOIAU and MODE == "cycled" %}
     {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_begin) %}
 {% else %}
-    {% if REPLAY_ICS %}
-        {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_end) %}
-    {% else %}
-        {% set model_start_date_current_cycle = current_cycle %}
-    {% endif %}
+    {% set model_start_date_current_cycle = current_cycle %}
 {% endif %}
 
 {% set current_cycle_YMD = current_cycle | to_YMD %}

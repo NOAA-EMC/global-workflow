@@ -34,18 +34,18 @@ datasets:
             - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmos_upp_f{{ fhr3 }}.log"
                 {% endif %}  ## not WRITE_DOPOST
             # Forecast GRIB2 data
-            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ fhr3 }}"
-            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pgrb2.0p25.f{{ fhr3 }}.idx"
-            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ fhr3 }}"
-            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pgrb2.1p00.f{{ fhr3 }}.idx"
+            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2"
+            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2.idx"
+            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2"
+            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2.idx"
             # Forecast GRIB2 fluxes
-            - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ fhr3 }}.grib2"
-            - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sfluxgrbf{{ fhr3 }}.grib2.idx"
+            - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sflux.f{{ fhr3 }}.grib2"
+            - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sflux.f{{ fhr3 }}.grib2.idx"
             # FV3 log
-            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.logf{{ fhr3 }}.txt"
+            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}log.f{{ fhr3 }}.txt"
             # Raw netCDF forecasts
-            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atmf{{ fhr3 }}.nc"
-            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfcf{{ fhr3 }}.nc"
+            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.f{{ fhr3 }}.nc"
+            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfc.f{{ fhr3 }}.nc"
             {% endfor %}
             # Now get the restart files.
             {% for r_time in range(restart_interval_gdas, FHMAX + 1, restart_interval_gdas) %}

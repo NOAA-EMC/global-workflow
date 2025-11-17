@@ -42,18 +42,6 @@ local SDAY=${current_cycle:6:2}
 local CHOUR=${current_cycle:8:2}
 local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
 
-if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-  local current_cycle_p1
-  current_cycle_p1=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHOUT_OCN} hours" +%Y%m%d%H)
-  local current_cycle_offset
-  current_cycle_offset=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${OFFSET_START_HOUR} hours" +%Y%m%d%H)
-  local SYEAR1=${current_cycle_p1:0:4}
-  local SMONTH1=${current_cycle_p1:4:2}
-  local SDAY1=${current_cycle_p1:6:2}
-  local CHOUR1=${current_cycle_p1:8:2}
-  local CHOUR_offset=${current_cycle_offset:8:2}
-fi
-
 atparse < "${template}" >> "diag_table"
 
 
@@ -190,6 +178,9 @@ local ICLOUD_BL=${icloud_bl:-"1"}
 local BL_MYNN_EDMF=${bl_mynn_edmf:-"1"}
 local BL_MYNN_TKEADVECT=${bl_mynn_tkeadvect:-".true."}
 local BL_MYNN_EDMF_MOM=${bl_mynn_edmf_mom:-"1"}
+local TTE_EDMF=${tte_edmf:-".false."}
+local CSCALE=${cscale:-"1.0"}
+local DO_NGW_EC=${do_ngw_ec:-".false."}
 local DO_UGWP=${do_ugwp:-".false."}
 local DO_TOFD=${do_tofd:-".false."}
 local GWD_OPT=${gwd_opt:-"2"}
@@ -436,6 +427,7 @@ local FNTSFA="'${FNTSFA:-}'"
 #fv_grid_nml options
 
 #nam stochy options
+local NEW_LSCALE=${new_lscale:-".false."}
 local STOCHINI=${stochini:-".false."}
 local SKEB=${SKEB:-0}
 local ISEED_SKEB=${ISEED_SKEB:-${ISEED}}
@@ -488,8 +480,9 @@ local LSOIL_INCR=${LSOIL_INCR:-2}
 local LAND_IAU_FILTER_INC=".false."
 local LAND_IAU_UPD_STC=".true."
 local LAND_IAU_UPD_SLC=".true."
-local LAND_IAU_DP_STCSMC_ADJ=".true."
+local LAND_IAU_DO_STCSMC_ADJ=".true."
 local LAND_IAU_MIN_T_INC=0.0001
+local LAND_IAU_MIN_SLC_INC=0.000001
 
 # Check will need to be modified in the future
 # once GW is ready to add in land IAU

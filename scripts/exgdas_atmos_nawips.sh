@@ -41,7 +41,7 @@ pdsext=no
 
 GEMGRD="${RUN}_${grid}_${PDY}${cyc}f${fhr3}"
 source_dirvar="COMOUT_ATMOS_GRIB_${grid}"
-export GRIBIN="${!source_dirvar}/${RUN}.${cycle}.pgrb2.${grid}.f${fhr3}"
+export GRIBIN="${!source_dirvar}/${RUN}.${cycle}.pres_a.${grid}.f${fhr3}.grib2"
 GRIBIN_chk="${GRIBIN}.idx"
 
 if [[ ! -r "${GRIBIN_chk}" ]]; then
@@ -55,7 +55,7 @@ startmsg
 
 ${NAGRIB} << EOF
 GBFILE   = grib${fhr3}
-INDXFL   = 
+INDXFL   =
 GDOUTF   = ${GEMGRD}
 PROJ     = ${proj}
 GRDAREA  = ${grdarea}
@@ -65,7 +65,7 @@ CPYFIL   = ${cpyfil}
 GAREA    = ${garea}
 OUTPUT   = ${output}
 GBTBLS   = ${gbtbls}
-GBDIAG   = 
+GBDIAG   =
 PDSEXT   = ${pdsext}
 l
 r
