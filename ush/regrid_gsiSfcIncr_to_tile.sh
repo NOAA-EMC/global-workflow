@@ -248,7 +248,7 @@ for imem in $(seq 1 "${NMEM_REGRID}"); do
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then
         for n in $(seq 1 "${ntiles}"); do
             echo "cpfs ${memdir}/sfci.mem${imem}.tile${n}.nc \
-                  ${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i006.tile${n}.nc"
+                  ${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.tile${n}.nc"
         done
     fi
     } > "cmdfile.${imem}"
