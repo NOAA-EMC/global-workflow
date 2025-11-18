@@ -1,51 +1,43 @@
+# CTest Case: C48_ATM-gfs_tracker
+#
+# Purpose: Validate the execution of the tropical cyclone tracking algorithm
+# on a series of atmospheric forecast history files. This test ensures that
+# the JGFS_ATMOS_CYCLONE_TRACKER job correctly identifies vortices and
+# produces valid tracker output files (a-deck and b-deck).
+#
+# Source pedigree: consumes the baseline gfs_fcst_seg0 history in
+# `model/atmos/history` under STAGED_CTESTS and compares tracker products
+# dropped in `products/atmos/cyclone/tracks`.
+
 {% set cyc = TEST_DATE | strftime('%H') %}
 {% set PDY = TEST_DATE | to_YMD %}
 {% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
 {% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+{% set SRC_HISTORY_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/history' %}
+{% set DST_HISTORY_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/history' %}
+{% set SRC_TRACKS_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/cyclone/tracks' %}
+{% set DST_TRACKS_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/cyclone/tracks' %}
 
-# CTest Case: C48_ATM-gfs_tracker
-#
-# Purpose: Validate tropical cyclone tracking against the frozen
-# COMROOT baseline by reusing the true forecast history directory
-# (model/atmos/history) instead of bespoke staged paths.
+input_files:
+    # Stage the same forecast history that fed the ops tracker run.
+    mkdir:
+        - {{ DST_HISTORY_DIR }}
+        - {{ DST_TRACKS_DIR }}
 
-name: C48_ATM-gfs_tracker
-suite: C48_ATM
-platform: [hera, hercules, orion]
+    copy:
+        # Files originate from {{ SRC_HISTORY_DIR }} inside the staged COMROOT.
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf000.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf000.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf001.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf001.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf002.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf002.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf003.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf003.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf004.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf004.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf005.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf005.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf006.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf006.nc]
 
-job:
-  name: gfs_tracker
-  script: jobs/JGFS_ATMOS_CYCLONE_TRACKER
-  config: config.tracker
-
-input:
-  source_cycle: {{ PDY }}{{ cyc }}
-  source_dir: {{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history
-  files:
-    # The tracker consumes the full forecast history set; list the
-    # first few hours explicitly and rely on the staged directory for the rest.
-    - gfs.t{{ cyc }}z.atmf000.nc
-    - gfs.t{{ cyc }}z.atmf001.nc
-    - gfs.t{{ cyc }}z.atmf002.nc
-    - gfs.t{{ cyc }}z.atmf003.nc
-    - gfs.t{{ cyc }}z.atmf004.nc
-    - gfs.t{{ cyc }}z.atmf005.nc
-    - gfs.t{{ cyc }}z.atmf006.nc
-    - gfs.t{{ cyc }}z.atmf120.nc
-
-output:
-  target_dir: {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/cyclone/tracks
-  files:
-    - gfs.t{{ cyc }}z.adeck
-    - gfs.t{{ cyc }}z.bdeck
-    - gfs.t{{ cyc }}z.adeck.invest
-    - gfs.t{{ cyc }}z.bdeck.invest
-
-validation:
-  - script: validate.py
-    args:
-      - "--file_exists"
-      - "--file_non_empty"
-      - "--content_regex"
-      - "adeck:^AL, 9"
-      - "bdeck:^AL, 9"
+output_files:
+    # Tracker outputs should match the authoritative COMROOT products.
+    cmpfiles:
+        - [{{ SRC_TRACKS_DIR }}/gfs.t{{ cyc }}z.adeck, {{ DST_TRACKS_DIR }}/gfs.t{{ cyc }}z.adeck]
+        - [{{ SRC_TRACKS_DIR }}/gfs.t{{ cyc }}z.bdeck, {{ DST_TRACKS_DIR }}/gfs.t{{ cyc }}z.bdeck]
+        - [{{ SRC_TRACKS_DIR }}/gfs.t{{ cyc }}z.adeck.invest, {{ DST_TRACKS_DIR }}/gfs.t{{ cyc }}z.adeck.invest]
+        - [{{ SRC_TRACKS_DIR }}/gfs.t{{ cyc }}z.bdeck.invest, {{ DST_TRACKS_DIR }}/gfs.t{{ cyc }}z.bdeck.invest]

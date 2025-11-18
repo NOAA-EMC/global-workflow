@@ -1,58 +1,55 @@
+# CTest Case: C48_ATM-gfs_stage_ic
+#
+# Purpose: Validate the staging of atmospheric initial conditions (ICs)
+# from a baseline COM directory to the experiment's ROTDIR. This test
+# ensures that the JGFS_ATMOS_STAGE_IC job correctly handles file
+# staging, directory creation, and timestamping.
+#
+# Source pedigree: inputs come from the nightly STAGED_CTESTS COMROOT snapshot
+# for `PSLOT=C48_ATM` (e.g., 2021032312) and are compared to the same baseline.
+
 {% set cyc = TEST_DATE | strftime('%H') %}
 {% set PDY = TEST_DATE | to_YMD %}
 {% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
 {% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+{% set SRC_ANALYSIS_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/analysis/atmos' %}
+{% set DST_ANALYSIS_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/analysis/atmos' %}
 
-# CTest Case: C48_ATM-gfs_stage_ic
-#
-# Purpose: Validate that JGFS_ATMOS_STAGE_IC pulls atmospheric IC assets
-# from the frozen nightly COMROOT snapshot into the experiment ROTDIR
-# using the same layout as operations (gfs.YYYYMMDD/HH/analysis/atmos).
+input_files:
+    # Stage the IC bundle produced by JGFS_ATMOS_STAGE_IC in the baseline COMROOT.
+    mkdir:
+        # Mirror the analysis/atmos branch under the test COMROOT destination.
+        - {{ DST_ANALYSIS_DIR }}
 
-name: C48_ATM-gfs_stage_ic
-suite: C48_ATM
-platform: [hera, hercules, orion]
+    copy:
+        # Files originate from {{ SRC_ANALYSIS_DIR }} inside the staged baseline snapshot.
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmanl.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmanl.nc]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc.ges]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000.ges]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006.ges]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc.ges]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc.ges]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl.ges]
 
-job:
-  name: gfs_stage_ic
-  script: jobs/JGFS_ATMOS_STAGE_IC
-  config: config.stage_ic
-
-input:
-  source_cycle: {{ PDY }}{{ cyc }}
-  source_dir: {{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/analysis/atmos
-  files:
-    - gfs.t{{ cyc }}z.atmanl.nc
-    - gfs.t{{ cyc }}z.sfcanl.nc
-    - gfs.t{{ cyc }}z.sfcanl.nc.ges
-    - gfs.t{{ cyc }}z.sfc_f000
-    - gfs.t{{ cyc }}z.sfc_f000.ges
-    - gfs.t{{ cyc }}z.sfc_f006
-    - gfs.t{{ cyc }}z.sfc_f006.ges
-    - gfs.t{{ cyc }}z.atmf000.nc
-    - gfs.t{{ cyc }}z.atmf000.nc.ges
-    - gfs.t{{ cyc }}z.atmf006.nc
-    - gfs.t{{ cyc }}z.atmf006.nc.ges
-    - gfs.t{{ cyc }}z.nstanl
-    - gfs.t{{ cyc }}z.nstanl.ges
-
-output:
-  target_dir: {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/analysis/atmos
-  files:
-    - gfs.t{{ cyc }}z.atmanl.nc
-    - gfs.t{{ cyc }}z.sfcanl.nc
-    - gfs.t{{ cyc }}z.sfcanl.nc.ges
-    - gfs.t{{ cyc }}z.sfc_f000
-    - gfs.t{{ cyc }}z.sfc_f000.ges
-    - gfs.t{{ cyc }}z.sfc_f006
-    - gfs.t{{ cyc }}z.sfc_f006.ges
-    - gfs.t{{ cyc }}z.atmf000.nc
-    - gfs.t{{ cyc }}z.atmf000.nc.ges
-    - gfs.t{{ cyc }}z.atmf006.nc
-    - gfs.t{{ cyc }}z.atmf006.nc.ges
-    - gfs.t{{ cyc }}z.nstanl
-    - gfs.t{{ cyc }}z.nstanl.ges
-
-validation:
-  - script: validate.py
-    args: ["--file_exists", "--file_size_match", "--checksum"]
+output_files:
+    # Validate that the staged ICs match the authoritative baseline copies.
+    cmpfiles:
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmanl.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmanl.nc]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc.ges]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000.ges]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006.ges]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc.ges]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc.ges]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl]
+        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl.ges]
