@@ -378,5 +378,3 @@ This script converts filenames from the older (pre-EE2) naming convention to EE2
 
     cd $ROTDIR
     /path/to/global-workflow/dev/ush/make_ee2_links.sh .
-
-.. _gfsv17-warmstarts:
