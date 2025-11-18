@@ -21,7 +21,7 @@ gdas_restarta:
         {% if DO_GSISOILDA %}
             {% if DO_LAND_IAU %}    #regridded tiles for land iau
                 {% for itile in range(1,7) %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/increment.sfc.i006.tile{{ itile }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc"
                 {% endfor %}
             {% endif %}
         {% endif %}

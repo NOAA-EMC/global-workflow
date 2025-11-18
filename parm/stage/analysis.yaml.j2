@@ -49,6 +49,7 @@ analysis:
         {% endif %}
 
         {% if DO_GSISOILDA %}
+
         {% for ftype in ["increment.sfc.i003.nc", "increment.sfc.i006.nc", "increment.sfc.i009.nc"] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
@@ -57,7 +58,9 @@ analysis:
 
         {% if DO_LAND_IAU %}
         {% for itile in range(1,7) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/increment.sfc.i006.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
+        # TODO Restage the increment.sfc.i006.tile* files without an `i006` timestamp as they contain 3 times
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/increment.sfc.i006.tile{{ itile }}.nc",
+           "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/increment.sfc.tile{{ itile }}.nc"]
         {% endfor %}
         {% endif %}
         {% endif %}
