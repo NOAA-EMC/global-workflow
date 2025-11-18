@@ -122,7 +122,7 @@ class GCAFSTasks(Tasks):
 
         dep_dict = {'type': 'metatask', 'name': 'gcdas_atmos_prod', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{atm_hist_path}/gcdas.t@Hz.atmf009.nc'
+        data = f'{atm_hist_path}/gcdas.t@Hz.atm.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{ioda_path}/chem/{self.run}.t@Hz.obsforge_aod_status.log'
@@ -782,7 +782,7 @@ class GCAFSTasks(Tasks):
 
         atm_master_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_MASTER_TMPL"])
         deps = []
-        data = f'{atm_master_path}/{self.run}.t@Hz.master.grb2anl'
+        data = f'{atm_master_path}/{self.run}.t@Hz.master.analysis.grib2'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
@@ -894,7 +894,7 @@ class GCAFSTasks(Tasks):
         fhout_ice_gfs = self._configs['base']['FHOUT_ICE_GFS']
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.master.grb2f#fhr3_last#'}}
+                                   'history_file_tmpl': f'{self.run}.t@Hz.master.f#fhr3_last#.grib2'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
