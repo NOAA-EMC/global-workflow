@@ -71,7 +71,7 @@ providing entry/exit logging.
 """
 import os
 from logging import getLogger
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 from datetime import timedelta
 from wxflow import FileHandler, Task, logit, parse_j2yaml, AttrDict
 
@@ -221,98 +221,131 @@ class Stage(Task):
             self.task_config.first_mem = -1
             self.task_config.last_mem = -1
 
+    def _paths_from_templates(self, com_path_tuples: Tuple[Tuple[str, str, Dict[str, Any]], ...]) -> Dict[str, str]:
+        """Generate COM paths from template configurations.
+
+        Parameters
+        ----------
+        com_path_tuples : Tuple[Tuple[str, str, Dict[str, Any]], ...]
+            Tuple of tuples, each containing:
+            - COM path key (e.g., 'COMOUT_MED_RESTART_PREV_MEM')
+            - Template key from task_config (e.g., 'COM_MED_RESTART_TMPL')
+            - Variable substitution dictionary (e.g., previous_cycle_mem_dict)
+
+        Returns
+        -------
+        Dict[str, str]
+            Dictionary mapping COM path keys to resolved file paths
+
+        Examples
+        --------
+        >>> com_paths = self._paths_from_templates((
+        ...     ('COMOUT_ATMOS_RESTART', 'COM_ATMOS_RESTART_TMPL', current_cycle_dict),
+        ...     ('COMIN_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle_dict),
+        ... ))
+        >>> print(com_paths['COMOUT_ATMOS_RESTART'])
+        """
+        path_dict = {}
+        for com_key, template_key, substitution_dict in com_path_tuples:
+            template_str = getattr(self.task_config, template_key, '')
+            if not template_str:
+                logger.warning("Template key '%s' not found in task_config for COM key '%s'", template_key, com_key)
+                path_dict[com_key] = ''
+            else:
+                path_dict[com_key] = self._replace_template_vars(template_str, substitution_dict)
+        return path_dict
+
     @logit(logger)
     def calculate_member_com_paths_gfs(self, memdir) -> None:
-        """
-        Calculate member COM paths for GFS
+        """Calculate member COM paths for GFS
 
         Parameters
         ----------
         memdir : int
-          The member directory number
+            The member directory number
 
         Returns
         -------
-        Dict[str, Any]
-          Updates the task_config with member-specific COM paths for GFS.
+        None
+            Updates the task_config with member-specific COM paths for GFS.
         """
         self.calculate_member()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
         current_cycle_mem_dict = {**self.task_config.current_cycle_dict, "${MEMDIR}": memdir}
         previous_cycle_mem_dict = {**self.task_config.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": self.task_config.rRUN}
 
-        self.task_config['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle_mem_dict)
-        self.task_config['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_ICE_RESTART_TMPL', ''), previous_cycle_mem_dict)
-        self.task_config['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle_mem_dict)
-        self.task_config['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_MED_RESTART_TMPL', ''), previous_cycle_mem_dict)
-        self.task_config['COMOUT_CHEM_ANALYSIS_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_CHEM_ANALYSIS_TMPL', ''), current_cycle_mem_dict)
-        self.task_config['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(
-            getattr(self.task_config, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle_mem_dict)
+        # Define all COM path mappings as tuple of tuples
+        com_paths = (
+            ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
+            ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
+            ('COMOUT_ATMOS_RESTART_PREV_MEM', 'COM_ATMOS_RESTART_TMPL', previous_cycle_mem_dict),
+            ('COMOUT_ATMOS_RESTART_MEM', 'COM_ATMOS_RESTART_TMPL', current_cycle_mem_dict),
+            ('COMOUT_ATMOS_ANALYSIS_MEM', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle_mem_dict),
+            ('COMOUT_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL', current_cycle_mem_dict),
+            ('COMOUT_ICE_RESTART_PREV_MEM', 'COM_ICE_RESTART_TMPL', previous_cycle_mem_dict),
+            ('COMOUT_OCEAN_RESTART_PREV_MEM', 'COM_OCEAN_RESTART_TMPL', previous_cycle_mem_dict),
+            ('COMOUT_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle_mem_dict),
+            ('COMOUT_MED_RESTART_PREV_MEM', 'COM_MED_RESTART_TMPL', previous_cycle_mem_dict),
+            ('COMOUT_CHEM_ANALYSIS_MEM', 'COM_CHEM_ANALYSIS_TMPL', current_cycle_mem_dict),
+            ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle_mem_dict),
+        )
+
+        # Generate paths and update task_config with returned dictionary
+        com_path_dict = self._paths_from_templates(com_paths)
+        self.task_config.update(com_path_dict)
 
     @logit(logger)
     def calculate_member_com_paths_gefs_offline(self, memdir) -> None:
-        """
-        Calculate member COM paths for GEFS offline
+        """Calculate member COM paths for GEFS offline
 
         Parameters
         ----------
         memdir : int
-          The member directory number
+            The member directory number
 
         Returns
         -------
-        Dict[str, Any]
-          Updates the task_config with member-specific COM paths for GEFS offline.
+        None
+            Updates the task_config with member-specific COM paths for GEFS offline.
         """
         self.calculate_member()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
         current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": memdir}
         previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": memdir}
 
-        self.task_config['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ATMOS_HISTORY_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_HISTORY_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
+        # Define all COM path mappings as tuple of tuples
+        com_paths = (
+            ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
+            ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
+            ('COMOUT_ATMOS_RESTART_PREV_MEM', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
+            ('COMOUT_ATMOS_RESTART_MEM', 'COM_ATMOS_RESTART_TMPL', current_cycle),
+            ('COMOUT_ATMOS_ANALYSIS_MEM', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ATMOS_HISTORY_MEM', 'COM_ATMOS_HISTORY_TMPL', previous_cycle),
+            ('COMOUT_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ICE_RESTART_PREV_MEM', 'COM_ICE_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_RESTART_PREV_MEM', 'COM_OCEAN_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_MED_RESTART_PREV_MEM', 'COM_MED_RESTART_TMPL', previous_cycle),
+            ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
+        )
+
+        # Generate paths and update task_config with returned dictionary
+        com_path_dict = self._paths_from_templates(com_paths)
+        self.task_config.update(com_path_dict)
 
     @logit(logger)
     def calculate_member_com_paths_gefs_rt(self, memdir) -> None:
-        """
-        Calculate member COM paths for GEFS real-time
+        """Calculate member COM paths for GEFS real-time
 
         Parameters
         ----------
         memdir : int
-          The member directory number
+            The member directory number
 
         Returns
         -------
-        Dict[str, Any]
-          Updates the task_config with member-specific COM paths for GEFS real-time.
+        None
+            Updates the task_config with member-specific COM paths for GEFS real-time.
         """
         self.calculate_member()
         if memdir != 0:
@@ -321,55 +354,65 @@ class Stage(Task):
         current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": memdir}
         previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": memdir}
 
-        self.task_config['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ATMOS_HISTORY_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_HISTORY_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
+        # Define all COM path mappings as tuple of tuples
+        com_paths = (
+            ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
+            ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
+            ('COMOUT_ATMOS_RESTART_PREV_MEM', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
+            ('COMOUT_ATMOS_ANALYSIS_MEM', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ATMOS_HISTORY_MEM', 'COM_ATMOS_HISTORY_TMPL', previous_cycle),
+            ('COMOUT_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ICE_RESTART_PREV_MEM', 'COM_ICE_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_RESTART_PREV_MEM', 'COM_OCEAN_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_MED_RESTART_PREV_MEM', 'COM_MED_RESTART_TMPL', previous_cycle),
+            ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
+        )
+
+        # Generate paths and update task_config with returned dictionary
+        com_path_dict = self._paths_from_templates(com_paths)
+        self.task_config.update(com_path_dict)
 
     @logit(logger)
     def calculate_member_com_paths_gcafs(self, memdir) -> None:
-        """
-        Calculate member COM paths for GCAFS
+        """Calculate member COM paths for GCAFS
 
         Parameters
         ----------
         memdir : int
-          The member directory number
+            The member directory number
 
         Returns
         -------
-        Dict[str, Any]
-          Updates the task_config with member-specific COM paths for GCAFS.
+        None
+            Updates the task_config with member-specific COM paths for GCAFS.
         """
         self.calculate_member()
         memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
 
-        # Three contexts:
-        # - current (RUN) for outputs
+        # Three contexts for GCAFS path generation
         current_cycle_in = {**self.task_config.current_cycle_dict, "${MEMDIR}": memdir, "${RUN}": self.task_config.rRUN}
-        # - current (rRUN) for inputs
         current_cycle = {**current_cycle_in, "${RUN}": self.task_config.rRUN}
-        # - previous (rRUN) for prev-cycle restarts
         previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": self.task_config.rRUN}
 
-        self.task_config['COMIN_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle_in)
-        self.task_config['COMOUT_ATMOS_INPUT_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_INPUT_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ATMOS_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_ATMOS_RESTART_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_RESTART_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ATMOS_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ATMOS_ANALYSIS_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ICE_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ICE_ANALYSIS_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_ICE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_ICE_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_OCEAN_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_OCEAN_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_OCEAN_ANALYSIS_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_OCEAN_ANALYSIS_TMPL', ''), current_cycle)
-        self.task_config['COMOUT_MED_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_MED_RESTART_TMPL', ''), previous_cycle)
-        self.task_config['COMOUT_WAVE_RESTART_PREV_MEM'] = self._replace_template_vars(getattr(self.task_config, 'COM_WAVE_RESTART_TMPL', ''), previous_cycle)
+        # Define all COM path mappings as tuple of tuples
+        com_paths = (
+            ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_in),
+            ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
+            ('COMOUT_ATMOS_RESTART_PREV_MEM', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
+            ('COMOUT_ATMOS_RESTART_MEM', 'COM_ATMOS_RESTART_TMPL', current_cycle),
+            ('COMOUT_ATMOS_ANALYSIS_MEM', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ICE_RESTART_PREV_MEM', 'COM_ICE_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_RESTART_PREV_MEM', 'COM_OCEAN_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_MED_RESTART_PREV_MEM', 'COM_MED_RESTART_TMPL', previous_cycle),
+            ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
+        )
+
+        # Generate paths and update task_config with returned dictionary
+        com_path_dict = self._paths_from_templates(com_paths)
+        self.task_config.update(com_path_dict)
 
     @staticmethod
     def _replace_template_vars(template: str, var_dict: Dict[str, Any]) -> str:
