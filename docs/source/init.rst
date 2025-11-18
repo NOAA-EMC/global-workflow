@@ -93,10 +93,10 @@ Start date = 2021122018
                |   |-- sfc_data.tile4.nc
                |   |-- sfc_data.tile5.nc
                |   `-- sfc_data.tile6.nc
-               |-- gdas.t18z.abias
-               |-- gdas.t18z.abias_air
-               |-- gdas.t18z.abias_pc
-               `-- gdas.t18z.radstat
+               |-- gdas.t18z.abias.txt
+               |-- gdas.t18z.abias_air.txt
+               |-- gdas.t18z.abias_pc.txt
+               `-- gdas.t18z.radstat.tar
 
 .. _staged_ics_cycled_coupled:
 
@@ -296,6 +296,10 @@ Manual Generation
 
 .. _coldstarts:
 
+----------------------------------------
+Cold-start Initial Conditions Generation
+----------------------------------------
+
 The following information is for users needing to generate cold-start initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C1152C384L127).
 
 The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users should see the `documentation to generation initial conditions in the UFS_UTILS repository <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#gdas-init>`_. The ``chgres_cube`` code/scripts currently support the following GFS inputs:
@@ -306,6 +310,36 @@ The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://gi
 * GFSv16
 
 See instructions in UFS_UTILS to clone, build and generate initial conditions: https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#gdas-init
+
+.. _warmstarts:
+
+----------------------------------------
+Warm-start Initial Conditions Generation
+----------------------------------------
+Warm-start initial conditions are taken from either the GFS in production or an experiment "warmed" up (at least one cycle in). Below is a list of tarballs required for a warm-start cycled experiment.
+
+ATM:
+* Previous cycle:
+  * enkfgdas_restartb_grp#.tar (where # = ensemble group number, 1-8 for 80 members at C384)
+  * gdas_restartb.tar
+* Current cycle:
+  * enkfgdas_restarta_grp#.tar (where # = ensemble group number, 1-8 for 80 members at C384)
+  * gdas_restarta.tar
+
+Ocean/Ice:
+* Previous cycle:
+  * gdasocean_restart.tar
+* Current cycle:
+  * gdasocean_analysis.tar
+
+Waves:
+* Previous cycle:
+  * gdaswave_restart.tar
+
+
+If you are restarting an experiment that you are currently running (e.g. you had a failure and need to rewind a few cycles), then untar these tarballs directly into your ROTDIR.
+
+If you are starting a new experiment that requires warm-start initial conditions, retrieve them into a separate directory and then, when running ``setup_expt.py``, point the ``--icsdir`` argument to that directory so that the experiment setup can link to the correct files. A utility script is provided below to help retrieve and extract the necessary tarballs from HPSS.
 
 .. _warmstart-utility-scripts:
 
