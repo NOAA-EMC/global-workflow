@@ -136,20 +136,20 @@ Start date = 2021032312
    │       ├── mem001
    │       │   └── analysis
    │       │       └── ocean
-   │       │           └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
    │       ├── mem002
    │       │   └── analysis
    │       │       └── ocean
-   │       │           └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
    │       ├── mem003
    │       │   └── analysis
    │       │       └── ocean
-   │       │           └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
    ...
    │       └── mem080
    │           └── analysis
    │               └── ocean
-   │                   └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   │                   └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
    └── gdas.20210323
        ├── 06
        │   └── model
@@ -205,13 +205,13 @@ Start date = 2021032312
        └── 12
            └── analysis
                ├── atmos
-               │   ├── gdas.t12z.abias
-               │   ├── gdas.t12z.abias_air
-               │   ├── gdas.t12z.abias_int
-               │   ├── gdas.t12z.abias_pc
-               │   └── gdas.t12z.radstat
+               │   ├── gdas.t12z.abias.txt
+               │   ├── gdas.t12z.abias_air.txt
+               │   ├── gdas.t12z.abias_int.txt
+               │   ├── gdas.t12z.abias_pc.txt
+               │   └── gdas.t12z.radstat.tar
                └── ocean
-                   └── gdas.t12z.ocninc.nc
+                   └── gdas.t12z.mom6_increment.i006.nc
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Prepare Initial Conditions
@@ -394,7 +394,7 @@ This script converts filenames from the older (pre-EE2) naming convention to EE2
 
   Where ``<target_directory>`` is the directory containing your warm restart files (typically your ROTDIR).
 
-* **Description:** The script scans the target directory for gdas, gfs, gcdas, gcafs, enkfgdas, enkfgfs, and enkfgcdas directories, and creates symbolic links to convert old filename formats to EE2-compliant names. This includes:
+* **Description:** The script scans the target directory for RUN.YYYYMMDD directories, and creates symbolic links to convert old filename formats to EE2-compliant names. This includes:
 
   - Analysis files (atmanl, sfcanl, ocninc, etc.)
   - Increment files (atminc, sfcinc, etc.)
