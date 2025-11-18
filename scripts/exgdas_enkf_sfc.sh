@@ -203,7 +203,7 @@ if [[ "$DOIAU" == "YES" ]]; then
             cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"     "${DATA}/fngrid.${cmem}"
             cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
-            if [[ "${DO_GSISOILDA}" == "YES" ]] && [[ "${DO_LAND_IAU}" == ".false." ]]; then
+            if [[ "${DO_GSISOILDA}" == "YES" && "${GCYCLE_DO_SOILINCR}" == ".true." ]]; then
                  cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/increment.sfc.i00${LFHR}.tile${n}.nc" \
                    "${DATA}/soil_xainc.${cmem}"
             fi
@@ -280,7 +280,7 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc"      "${DATA}/fngrid.${cmem}"
             cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
-            if [[ "${DO_GSISOILDA}" == "YES" ]]; then
+            if [[ "${DO_GSISOILDA}" == "YES" && "${GCYCLE_DO_SOILINCR}" == ".true." ]]; then
                  cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${LFHR}.tile${n}.nc" \
                    "${DATA}/soil_xainc.${cmem}"
             fi
