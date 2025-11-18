@@ -125,7 +125,7 @@ class AerosolObsPrep(Task):
             'output file': str(ready_file),
         }
         save_as_yaml(summary_dict, os.path.join(self.task_config.DATA, "stats.yaml"))
-        exec_cmd = Executable(os.path.join(self.task_config.HOMEobsforge, "build", "bin", "ioda-dump.x"))
+        exec_cmd = Executable(os.path.join(self.task_config.HOMEgcafs, "exec", "ioda-dump.x"))
         exec_cmd.add_default_arg(os.path.join(self.task_config.DATA, "stats.yaml"))
         try:
             logger.info(f"Creating summary file {ready_file}")
