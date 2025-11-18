@@ -339,7 +339,9 @@ Waves:
 
 If you are restarting an experiment that you are currently running (e.g. you had a failure and need to rewind a few cycles), then untar these tarballs directly into your ROTDIR.
 
-If you are starting a new experiment that requires warm-start initial conditions, retrieve them into a separate directory and then, when running ``setup_expt.py``, point the ``--icsdir`` argument to that directory so that the experiment setup can link to the correct files. A utility script is provided below to help retrieve and extract the necessary tarballs from HPSS.
+If you are starting a new experiment that requires warm-start initial conditions, retrieve them into a separate directory and then, when running ``setup_expt.py``, point the ``--icsdir`` argument to that directory so that the experiment setup can link to the correct files.
+
+Two utility scripts are available to assist with warm restart processing for retrospective and realtime tests: :ref:`get_warm_s2sw_restart_tarballs.sh<warmstart-utility-scripts>` for retrieving and extracting tarballs from HPSS, and :ref:`make_ee2_links.sh<warmstart-utility-scripts>` for converting old (pre-EE2) filenames to EE2-compliant names by creating symbolic links.
 
 .. _warmstart-utility-scripts:
 
