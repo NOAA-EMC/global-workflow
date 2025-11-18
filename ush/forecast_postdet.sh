@@ -295,29 +295,18 @@ EOF
   #============================================================================
 
   #============================================================================
-  if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "gaussian_grid" ]]; then
+  if [[ "${QUILTING}" = ".true." ]] && [[ "${OUTPUT_GRID}" = "global_latlon" ]]; then
     local FH2 FH3
     for fhr in ${FV3_OUTPUT_FH}; do
       FH3=$(printf %03i "${fhr}")
       FH2=$(printf %02i "${fhr}")
-      # When replaying, the time format outputted by model in filename is HH-MM-SS
-      # because first fhr is a decimal number
-      if [[ ${REPLAY_ICS:-NO} == "YES" ]] && (( fhr >= OFFSET_START_HOUR )); then
-        local hhmmss_substring=${FV3_OUTPUT_FH_hhmmss/" ${FH3}-"*/} # Extract substring that contains all lead times up to the one space before target lead HHH-MM-SS
-        local hhmmss_substring_len=$(( ${#hhmmss_substring} + 1 )) # Get the size of the substring and add 1 to account for space
-        local f_hhmmss=${FV3_OUTPUT_FH_hhmmss:${hhmmss_substring_len}:9} # extract HHH-MM-SS for target lead time
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${f_hhmmss}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${f_hhmmss}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${f_hhmmss}"
-      else
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
-        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
-        if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
-          ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
-          fi
-        fi
+      ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
+      ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
+      ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
+      if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
+        ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
+      fi
       if [[ "${WRITE_DOPOST}" == ".true." ]]; then
         ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}"    "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
         ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
@@ -739,20 +728,6 @@ MOM6_out() {
       exit 25
       ;;
   esac
-   
-  # Do Monthly Average ocean output and move to output ocean history directory (valid up to 12 month forecasts only)
-  if [[ "${RUN}" == sfs ]]; then
-    local last_fh_output files f_name 
-    last_fh_output=$(ls -f "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${cyc}z.${FHOUT_OCN}hr_avg.f${FHMAX_GFS}.nc" )
-    if [[ -f ${last_fh_output} ]]; then
-       files=$(ls -f "${DATAoutput}/MOM6_OUTPUT/ocn_????_??_28_12.nc" )
-       for f in ${files}; do
-         f_name=$( basename "${f}" )
-         cdo mergetime "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_??_12.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_dailymean.nc"
-         cdo monavg "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_dailymean.nc" "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
-       done
-    fi
-  fi
 }
 
 CICE_postdet() {
@@ -868,18 +843,6 @@ CICE_out() {
       exit 25
       ;;
   esac
-  # Copy the Monthly Average output from SFS
-  if [[ "${RUN}" == sfs ]]; then
-    local last_fh_output files f_name
-    last_fh_output=$( ls -f "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc" )
-    if [[ -f ${last_fh_output} ]]; then
-       files=$(ls -f "${DATAoutput}/CICE_OUTPUT/iceh_24h.????_??_28_12.nc" )
-       for f in ${files}; do
-        f_name=$( basename "${f}" )
-        ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h.${f_name:9:4}_${f_name:14:2}_??_12.nc" "${COMOUT_ICE_HISTORY}/${RUN}.ice.t${current_cycle}.monthly_avg.${f_name:9:4}-${f_name:14:2}.nc"
-       done
-    fi
-  fi
 }
 
 GOCART_rc() {

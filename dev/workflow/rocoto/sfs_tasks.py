@@ -175,6 +175,82 @@ class SFSTasks(Tasks):
 
         # return task
 
+    #For SFS only:
+    def atmos_post(self):
+        deps = []
+        for member in range(0, self.nmem + 1):
+            task = f'{self.run}_fcst_mem{member:03d}'
+            dep_dict = {'type': 'metatask', 'name': task}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('atmos_post')
+        task_name = f'{self.run}_atmos_post'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': self.run,
+                     'dependency': dependencies,
+                     'command': f'{self.HOMEgfs}/dev/jobs/atmos_post.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def ocn_post(self):
+        deps = []
+        for member in range(0, self.nmem + 1):
+            task = f'{self.run}_fcst_mem{member:03d}'
+            dep_dict = {'type': 'metatask', 'name': task}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('ocn_post')
+        task_name = f'{self.run}_ocn_post'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': self.run,
+                     'dependency': dependencies,
+                     'command': f'{self.HOMEgfs}/dev/jobs/ocn_post.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def ice_post(self):
+        deps = []
+        for member in range(0, self.nmem + 1):
+            task = f'{self.run}_fcst_mem{member:03d}'
+            dep_dict = {'type': 'metatask', 'name': task}
+            deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('ice_post')
+        task_name = f'{self.run}_ice_post'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'envars': self.envars,
+                     'cycledef': self.run,
+                     'dependency': dependencies,
+                     'command': f'{self.HOMEgfs}/dev/jobs/ice_post.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def atmos_prod(self):
         return self._atmosoceaniceprod('atmos')
 
@@ -653,9 +729,15 @@ class SFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+#        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+#        deps.append(rocoto.add_dependency(dep_dict))
+#        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+#        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_post'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_ocn_post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}_ice_post'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ice']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}

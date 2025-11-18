@@ -214,6 +214,30 @@ case ${step} in
     unset NTASKS_TOT
     ;;
 
+  "atmos_post")
+    export walltime="01:00:00"
+    export ntasks=1
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
+    export memory="96GB"
+    ;;
+
+  "ocn_post")
+    export walltime="01:00:00"
+    export ntasks=24
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
+    export memory="96GB"
+    ;;
+
+  "ice_post")
+    export walltime="01:00:00"
+    export ntasks=24
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
+    export memory="96GB"
+    ;;
+
   "atmos_products")
     # Walltime is per forecast hour; will be multipled by group size
     export walltime="00:15:00"

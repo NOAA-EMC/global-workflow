@@ -9,7 +9,7 @@ experiment:
   resensatmos: 96
   resdetocean: 1
   start: 'cold'
-  nens: 10
+  nens: 2
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'TOPICDIR' | getenv }}/REPLAY/C96mx100

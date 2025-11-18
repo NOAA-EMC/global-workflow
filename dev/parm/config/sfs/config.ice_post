@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.ice_post ##########
+# Generate monthly mean ice netcdf products when run with segs
+
+echo "BEGIN: config.ice_post"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" ice_post
+
+# Maximum number of rocoto tasks per member
+export MAX_TASKS=25
+
+echo "END: config.ice_post"

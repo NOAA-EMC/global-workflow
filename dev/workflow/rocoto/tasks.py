@@ -27,6 +27,7 @@ class Tasks:
                    'snowanl', 'esnowanl',
                    'offlineanl',
                    'fcst',
+                   'atmos_post', 'ocn_post', 'ice_post',
                    'upp', 'atmanlprod', 'atmupp', 'goesupp',
                    'atmos_products', 'oceanice_products',
                    'verfozn', 'verfrad', 'vminmon', 'anlstat',

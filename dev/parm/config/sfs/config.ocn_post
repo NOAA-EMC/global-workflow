@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.ocn_post ##########
+# Generate monthly mean ocean netcdf products when run with segs
+
+echo "BEGIN: config.ocn_post"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" ocn_post
+
+# Maximum number of rocoto tasks per member
+export MAX_TASKS=25
+
+echo "END: config.ocn_post"

@@ -238,8 +238,19 @@ FV3_predet(){
   LONB=${LONB:-${LONB_CASE}}
   LATB=${LATB:-${LATB_CASE}}
 
-  LONB_IMO=${LONB_IMO:-${LONB_CASE_HIST}}
-  LATB_JMO=${LATB_JMO:-${LATB_CASE_HIST}}
+  #LONB_IMO=${LONB_IMO:-${LONB_CASE_HIST}}
+  #LATB_JMO=${LATB_JMO:-${LATB_CASE_HIST}}
+  # for SFS runs
+  if [ $res -eq 96 ];then
+     LONB_IMO=360
+     LATB_JMO=181
+  elif [ $res -eq 192 ];then
+     LONB_IMO=360
+     LATB_JMO=181
+  else
+     LONB_IMO=${LONB_IMO:-${LONB_CASE}}
+     LATB_JMO=${LATB_JMO:-${LATB_CASE}}
+  fi
 
   # NSST Options
   # nstf_name contains the NSST related parameters
@@ -745,6 +756,8 @@ MOM6_predet(){
   # MOM_channels is configurable based on resolution, but is treated as a fix file
   # MOM_override is a template that allows user to override default namelist settings, but is also treated as a fix file
   cpreq "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
+  # Yangxing is testing new ocean vertical levels (32L instead of 40L)
+  cpreq "/ncrc/home1/Yangxing.Zheng/WORK/python/interpolate_zgrid_32L.nc" "${DATA}/INPUT/"
 
   # Add to the MOM_override file, to have ISO timestamp
   cat >> "${DATA}/INPUT/MOM_override" << EOF
