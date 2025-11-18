@@ -15,8 +15,13 @@ def main():
     # Instantiate the Stage object
     stage = Stage(cast_strdict_as_dtypedict(os.environ))
 
-    # Stage ICs
-    stage.execute_stage_member()
+    # Calculate member configuration
+    stage.calculate_member()
+
+    # Loop through members and stage ICs for each
+    for member in range(stage.task_config.first_mem, stage.task_config.last_mem + 1):
+        logger.info(f"Staging initial conditions for member: {member}")
+        stage.execute_stage(stage.task_config, member=member)
 
 
 if __name__ == '__main__':
