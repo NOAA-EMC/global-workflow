@@ -1,0 +1,46 @@
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set PDY = TEST_DATE | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+
+# CTest Case: C48_ATM-gfs_genesis
+#
+# Purpose: Validate the tropical cyclone genesis detector using the
+# COMROOT-consistent forecast history inputs and verifying the
+# generated basin/east/west bilstat & GRIB2 products.
+
+name: C48_ATM-gfs_genesis
+suite: C48_ATM
+platform: [hera, hercules, orion]
+
+job:
+  name: gfs_genesis
+  script: jobs/JGFS_ATMOS_CYCLONE_GENESIS
+  config: config.genesis
+
+input:
+  source_cycle: {{ PDY }}{{ cyc }}
+  source_dir: {{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history
+  files:
+    - gfs.t{{ cyc }}z.atmf000.nc
+    - gfs.t{{ cyc }}z.atmf006.nc
+    - gfs.t{{ cyc }}z.atmf012.nc
+    - gfs.t{{ cyc }}z.atmf018.nc
+    - gfs.t{{ cyc }}z.atmf024.nc
+    - gfs.t{{ cyc }}z.atmf120.nc
+
+output:
+  target_dir: {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/atmos/cyclone/genesis_vital
+  files:
+    - gfs.t{{ cyc }}z.genesis.all.bs
+    - gfs.t{{ cyc }}z.genesis.east.bs
+    - gfs.t{{ cyc }}z.genesis.west.bs
+    - gfs.t{{ cyc }}z.genesis.all.grb2
+    - gfs.t{{ cyc }}z.genesis.east.grb2
+    - gfs.t{{ cyc }}z.genesis.west.grb2
+
+validation:
+  - script: validate.py
+    args:
+      - "--file_exists"
+      - "--file_non_empty"

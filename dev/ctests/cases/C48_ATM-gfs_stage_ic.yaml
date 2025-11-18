@@ -1,0 +1,58 @@
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set PDY = TEST_DATE | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+
+# CTest Case: C48_ATM-gfs_stage_ic
+#
+# Purpose: Validate that JGFS_ATMOS_STAGE_IC pulls atmospheric IC assets
+# from the frozen nightly COMROOT snapshot into the experiment ROTDIR
+# using the same layout as operations (gfs.YYYYMMDD/HH/analysis/atmos).
+
+name: C48_ATM-gfs_stage_ic
+suite: C48_ATM
+platform: [hera, hercules, orion]
+
+job:
+  name: gfs_stage_ic
+  script: jobs/JGFS_ATMOS_STAGE_IC
+  config: config.stage_ic
+
+input:
+  source_cycle: {{ PDY }}{{ cyc }}
+  source_dir: {{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/analysis/atmos
+  files:
+    - gfs.t{{ cyc }}z.atmanl.nc
+    - gfs.t{{ cyc }}z.sfcanl.nc
+    - gfs.t{{ cyc }}z.sfcanl.nc.ges
+    - gfs.t{{ cyc }}z.sfc_f000
+    - gfs.t{{ cyc }}z.sfc_f000.ges
+    - gfs.t{{ cyc }}z.sfc_f006
+    - gfs.t{{ cyc }}z.sfc_f006.ges
+    - gfs.t{{ cyc }}z.atmf000.nc
+    - gfs.t{{ cyc }}z.atmf000.nc.ges
+    - gfs.t{{ cyc }}z.atmf006.nc
+    - gfs.t{{ cyc }}z.atmf006.nc.ges
+    - gfs.t{{ cyc }}z.nstanl
+    - gfs.t{{ cyc }}z.nstanl.ges
+
+output:
+  target_dir: {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/analysis/atmos
+  files:
+    - gfs.t{{ cyc }}z.atmanl.nc
+    - gfs.t{{ cyc }}z.sfcanl.nc
+    - gfs.t{{ cyc }}z.sfcanl.nc.ges
+    - gfs.t{{ cyc }}z.sfc_f000
+    - gfs.t{{ cyc }}z.sfc_f000.ges
+    - gfs.t{{ cyc }}z.sfc_f006
+    - gfs.t{{ cyc }}z.sfc_f006.ges
+    - gfs.t{{ cyc }}z.atmf000.nc
+    - gfs.t{{ cyc }}z.atmf000.nc.ges
+    - gfs.t{{ cyc }}z.atmf006.nc
+    - gfs.t{{ cyc }}z.atmf006.nc.ges
+    - gfs.t{{ cyc }}z.nstanl
+    - gfs.t{{ cyc }}z.nstanl.ges
+
+validation:
+  - script: validate.py
+    args: ["--file_exists", "--file_size_match", "--checksum"]

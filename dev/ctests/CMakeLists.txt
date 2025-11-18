@@ -133,3 +133,21 @@ AddJJOBTest(
   JOB "gefs_fcst_mem001_seg0"
   TEST_DATE "2021032312"
 )
+
+AddJJOBTest(
+  CASE "C48_ATM"
+  JOB "gfs_stage_ic"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_ATM"
+  JOB "gfs_tracker"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_ATM"
+  JOB "gfs_genesis"
+  TEST_DATE "2021032312"
+)
