@@ -71,7 +71,7 @@ providing entry/exit logging.
 """
 import os
 from logging import getLogger
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
 from datetime import timedelta
 from wxflow import FileHandler, Task, logit, parse_j2yaml, AttrDict
 
@@ -112,11 +112,11 @@ class Stage(Task):
             self.task_config.OCNRES = f"{int(self.task_config.OCNRES):03d}"
 
         # START_ICE_FROM_ANA logic (only if DO_ICE is True)
-        if getattr(self.task_config, "DO_ICE", False):
+        if self.task_config.get("DO_ICE", False):
             self.task_config.START_ICE_FROM_ANA = False
-            if getattr(self.task_config, "DO_JEDIOCNVAR", False) and self.task_config.RUN == "gdas":
+            if self.task_config.get("DO_JEDIOCNVAR", False) and self.task_config.RUN == "gdas":
                 self.task_config.START_ICE_FROM_ANA = True
-            if getattr(self.task_config, "DO_STARTMEM_FROM_JEDIICE", False) and self.task_config.RUN == "enkfgdas":
+            if self.task_config.get("DO_STARTMEM_FROM_JEDIICE", False) and self.task_config.RUN == "enkfgdas":
                 self.task_config.START_ICE_FROM_ANA = True
 
                 # Calculate half window variables
@@ -159,13 +159,19 @@ class Stage(Task):
         }
 
     @logit(logger)
-    def execute_stage(self, stage_dict: Dict[str, Any]) -> None:
+    def execute_stage(self, stage_dict: AttrDict, member: Optional[int] = None) -> None:
         """Perform local staging of initial condition files.
+
+        This method calculates member-specific COM paths if member is provided,
+        then performs file staging based on the YAML template configuration.
 
         Parameters
         ----------
-        stage_dict : Dict[str, Any]
-            Configuration dictionary
+        stage_dict : AttrDict
+            Configuration dictionary with attribute-style access
+        member : int, optional
+            Member directory number. If provided, calculates member-specific COM paths.
+            If None, skips member COM path calculation (for deterministic runs).
 
         Returns
         -------
@@ -174,6 +180,26 @@ class Stage(Task):
 
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
+
+        # Calculate member-specific COM paths if member is provided
+        if member is not None:
+            self.task_config.member = member
+            run = self.task_config.get('RUN', None)
+
+            if run == 'gefs':
+                gefstype = self.task_config.get('GEFSTYPE', None)
+                if gefstype == 'gefs-real-time':
+                    self.calculate_member_com_paths_gefs_rt(member)
+                elif gefstype == 'gefs-offline':
+                    self.calculate_member_com_paths_gefs_offline(member)
+                else:
+                    raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
+            elif run in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
+                self.calculate_member_com_paths_gcafs(member)
+            elif run == 'gfs':
+                self.calculate_member_com_paths_gfs(member)
+            else:
+                raise ValueError(f"Unknown RUN type: {run}")
 
         # Add the os.path.exists function to the dict for yaml parsing
         stage_dict['path_exists'] = os.path.exists
@@ -247,7 +273,7 @@ class Stage(Task):
         """
         path_dict = {}
         for com_key, template_key, substitution_dict in com_path_tuples:
-            template_str = getattr(self.task_config, template_key, '')
+            template_str = self.task_config.get(template_key, '')
             if not template_str:
                 logger.warning("Template key '%s' not found in task_config for COM key '%s'", template_key, com_key)
                 path_dict[com_key] = ''
@@ -256,12 +282,12 @@ class Stage(Task):
         return path_dict
 
     @logit(logger)
-    def calculate_member_com_paths_gfs(self, memdir) -> None:
+    def calculate_member_com_paths_gfs(self, member) -> None:
         """Calculate member COM paths for GFS
 
         Parameters
         ----------
-        memdir : int
+        member : int
             The member directory number
 
         Returns
@@ -270,9 +296,9 @@ class Stage(Task):
             Updates the task_config with member-specific COM paths for GFS.
         """
         self.calculate_member()
-        memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
-        current_cycle_mem_dict = {**self.task_config.current_cycle_dict, "${MEMDIR}": memdir}
-        previous_cycle_mem_dict = {**self.task_config.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": self.task_config.rRUN}
+        member = f"mem{member:03d}" if member >= 0 else ''
+        current_cycle_mem_dict = {**self.task_config.current_cycle_dict, "${MEMDIR}": member}
+        previous_cycle_mem_dict = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member, "${RUN}": self.task_config.rRUN}
 
         # Define all COM path mappings as tuple of tuples
         com_paths = (
@@ -295,12 +321,12 @@ class Stage(Task):
         self.task_config.update(com_path_dict)
 
     @logit(logger)
-    def calculate_member_com_paths_gefs_offline(self, memdir) -> None:
+    def calculate_member_com_paths_gefs_offline(self, member) -> None:
         """Calculate member COM paths for GEFS offline
 
         Parameters
         ----------
-        memdir : int
+        member : int
             The member directory number
 
         Returns
@@ -309,9 +335,9 @@ class Stage(Task):
             Updates the task_config with member-specific COM paths for GEFS offline.
         """
         self.calculate_member()
-        memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
-        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": memdir}
-        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": memdir}
+        member = f"mem{member:03d}" if member >= 0 else ''
+        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": member}
+        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member}
 
         # Define all COM path mappings as tuple of tuples
         com_paths = (
@@ -334,12 +360,12 @@ class Stage(Task):
         self.task_config.update(com_path_dict)
 
     @logit(logger)
-    def calculate_member_com_paths_gefs_rt(self, memdir) -> None:
+    def calculate_member_com_paths_gefs_rt(self, member) -> None:
         """Calculate member COM paths for GEFS real-time
 
         Parameters
         ----------
-        memdir : int
+        member : int
             The member directory number
 
         Returns
@@ -348,11 +374,11 @@ class Stage(Task):
             Updates the task_config with member-specific COM paths for GEFS real-time.
         """
         self.calculate_member()
-        if memdir != 0:
-            self.task_config.gfs_member = self.task_config.cyc_ranges[self.task_config.m_index][(memdir - 1)]
-        memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
-        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": memdir}
-        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": memdir}
+        if member != 0:
+            self.task_config.gfs_member = self.task_config.cyc_ranges[self.task_config.m_index][(member - 1)]
+        member = f"mem{member:03d}" if member >= 0 else ''
+        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": member}
+        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member}
 
         # Define all COM path mappings as tuple of tuples
         com_paths = (
@@ -374,12 +400,12 @@ class Stage(Task):
         self.task_config.update(com_path_dict)
 
     @logit(logger)
-    def calculate_member_com_paths_gcafs(self, memdir) -> None:
+    def calculate_member_com_paths_gcafs(self, member) -> None:
         """Calculate member COM paths for GCAFS
 
         Parameters
         ----------
-        memdir : int
+        member : int
             The member directory number
 
         Returns
@@ -388,12 +414,12 @@ class Stage(Task):
             Updates the task_config with member-specific COM paths for GCAFS.
         """
         self.calculate_member()
-        memdir = f"mem{memdir:03d}" if memdir >= 0 else ''
+        member = f"mem{member:03d}" if member >= 0 else ''
 
         # Three contexts for GCAFS path generation
-        current_cycle_in = {**self.task_config.current_cycle_dict, "${MEMDIR}": memdir, "${RUN}": self.task_config.rRUN}
+        current_cycle_in = {**self.task_config.current_cycle_dict, "${MEMDIR}": member, "${RUN}": self.task_config.rRUN}
         current_cycle = {**current_cycle_in, "${RUN}": self.task_config.rRUN}
-        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": memdir, "${RUN}": self.task_config.rRUN}
+        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member, "${RUN}": self.task_config.rRUN}
 
         # Define all COM path mappings as tuple of tuples
         com_paths = (
@@ -434,32 +460,3 @@ class Stage(Task):
         for var, value in var_dict.items():
             replaced_com = replaced_com.replace(var, value)
         return replaced_com
-
-    @logit(logger)
-    def execute_stage_member(self) -> None:
-        """
-        Prepare all required staging variables used to
-        locate and sync files defined in the master YAML templates.
-        """
-        self.calculate_member()
-        run = getattr(self.task_config, 'RUN', None)
-        for memdir in range(self.task_config.first_mem, self.task_config.last_mem + 1):
-            self.task_config.memdir = memdir
-            if run == 'gefs':
-                gefstype = getattr(self.task_config, 'GEFSTYPE', None)
-                if gefstype == 'gefs-real-time':
-                    self.calculate_member_com_paths_gefs_rt(memdir)
-                    self.execute_stage(self.task_config)
-                elif gefstype == 'gefs-offline':
-                    self.calculate_member_com_paths_gefs_offline(memdir)
-                    self.execute_stage(self.task_config)
-                else:
-                    raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
-            elif run in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
-                self.calculate_member_com_paths_gcafs(memdir)
-                self.execute_stage(self.task_config)
-            elif run == 'gfs':
-                self.calculate_member_com_paths_gfs(memdir)
-                self.execute_stage(self.task_config)
-            else:
-                raise ValueError(f"Unknown RUN type: {run}")
