@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
 # Scripts used
-SFS_6HRLY_VARSSH=${SFS_6HRLY_VARSSH:-"${HOMEgfs}/sorc/gfs_utils.fd/ush/sfs_6hrly_vars.sh"}
-SFS_ATMOS_DAILYSH=${SFS_ATMOS_DAILYSH:-"${HOMEgfs}/sorc/gfs_utils.fd/ush/sfs_atmos_daily.sh"}
-SFS_ATMOS_MONTHLYSH=${SFS_ATMOS_MONTHLYSH:-"${HOMEgfs}/sorc/gfs_utils.fd/ush/sfs_atmos_monthly.sh"}
+SFS_6HRLY_VARSSH=${SFS_6HRLY_VARSSH:-"${USHgfs}/sfs_6hrly_vars.sh"}
+SFS_ATMOS_DAILYSH=${SFS_ATMOS_DAILYSH:-"${USHgfs}/sfs_atmos_daily.sh"}
+SFS_ATMOS_MONTHLYSH=${SFS_ATMOS_MONTHLYSH:-"${USHgfs}/sfs_atmos_monthly.sh"}
 
 ##############################################
 # Begin JOB SPECIFIC work
