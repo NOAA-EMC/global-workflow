@@ -39,39 +39,44 @@ class Stage(Task):
             Dictionary with base configuration values
         """
         base_keys = [
-            'RUN', 'ROTDIR', 'assim_freq', 'MODE', 'DOIAU',
-            'current_cycle', 'previous_cycle', 'NMEM_ENS', 'STAGE_IC_YAML_TMPL'
+            'RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
+            'assim_freq', 'current_cycle', 'previous_cycle',
+            'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR',
+            'OCNRES', 'waveGRD', 'ntiles', 'DOIAU',
+            'DO_JEDIOCNVAR', 'DO_STARTMEM_FROM_JEDIICE',
+            'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA', 'DO_AERO_ANL',
+            'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'DO_GSISOILDA', 'DO_LAND_IAU'
         ]
         return {key: self.task_config[key] for key in base_keys if key in self.task_config}
 
-    def _calculate_config_vars(self) -> Dict[str, Any]:
+    def _get_config_vars(self) -> Dict[str, Any]:
         """Calculate derived configuration variables
 
         Returns
         -------
         Dict[str, Any]
-            Dictionary with derived configuration values (rRUN, OCNRES, START_ICE_FROM_ANA, half_window)
+            Dictionary with derived configuration values (rRUN, OCNRES, START_ICE_FROM_ANA)
         """
-        derived = {}
+        config_vars = {}
 
         # Determine rRUN
-        derived['rRUN'] = "gdas" if self.task_config.RUN in ['gfs', 'gcafs'] else self.task_config.RUN
+        config_vars['rRUN'] = "gdas" if self.task_config.RUN in ['gfs', 'gcafs'] else self.task_config.RUN
 
         # OCNRES formatting
         if "OCNRES" in self.task_config:
-            derived['OCNRES'] = f"{int(self.task_config.OCNRES):03d}"
+            config_vars['OCNRES'] = f"{int(self.task_config.OCNRES):03d}"
 
         # START_ICE_FROM_ANA logic
         if self.task_config.get("DO_ICE", False):
-            derived['START_ICE_FROM_ANA'] = False
+            config_vars['START_ICE_FROM_ANA'] = False
             if self.task_config.get("DO_JEDIOCNVAR", False) and self.task_config.RUN == "gdas":
-                derived['START_ICE_FROM_ANA'] = True
+                config_vars['START_ICE_FROM_ANA'] = True
             if self.task_config.get("DO_STARTMEM_FROM_JEDIICE", False) and self.task_config.RUN == "enkfgdas":
-                derived['START_ICE_FROM_ANA'] = True
+                config_vars['START_ICE_FROM_ANA'] = True
 
-        return derived
+        return config_vars
 
-    def _calculate_cycle_vars(self) -> Dict[str, Any]:
+    def _get_cycle_vars(self) -> Dict[str, Any]:
         """Calculate current and previous cycle variables
 
         Returns
@@ -164,10 +169,10 @@ class Stage(Task):
         stage_dict.update(self._copy_base_config())
 
         # Calculate derived configuration
-        stage_dict.update(self._calculate_config_vars())
+        stage_dict.update(self._get_config_vars())
 
         # Calculate current and previous cycle variables
-        stage_dict.update(self._calculate_cycle_vars())
+        stage_dict.update(self._get_cycle_vars())
 
         # Create cycle directories for template substitution
         stage_dict.update(self._create_cycle_dicts(stage_dict.ROTDIR, stage_dict.RUN))

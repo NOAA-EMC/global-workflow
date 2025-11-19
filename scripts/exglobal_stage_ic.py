@@ -26,8 +26,7 @@ def main():
         logger.info(f"Staging initial conditions for member: {member}")
 
         # Get member-specific COM paths and merge into stage_dict
-        member_com_paths = stage.get_member_com_paths(stage_dict, member)
-        stage_dict.update(member_com_paths)
+        stage_dict.update(stage.get_member_com_paths(stage_dict, member))
 
         # Execute staging
         stage.execute_stage(stage_dict)
