@@ -45,14 +45,19 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
        mkdir -p "${TARGET_DIR}/${compdir}"
     fi
     # Link files from SOURCE_DIR to TARGET_DIR
-    cd "${SOURCE_DIR}/${compdir}" || exit 99
+    if [[ ! -d "${SOURCE_DIR}/${compdir}" ]]; then
+        exit 99
+    fi
     # Use shell globbing instead of iterating over ls output. Enable nullglob so the loop
     # simply skips when no matches are found.
     set +f
     shopt -s nullglob
-    for file in "${prefix}"*; do
-         [[ -e "${file}" ]] || continue
-         ${NLN} "${SOURCE_DIR}/${compdir}/${file}" "${TARGET_DIR}/${compdir}/${file}"
+    for source_file in "${SOURCE_DIR}/${compdir}/${prefix}"*; do
+         if [[ ! -e "${file}" ]]; then
+             continue
+         fi
+         targ_file=$(basename "${source_file}")
+         ${NLN} "${source_file}" "${TARGET_DIR}/${compdir}/${targ_file}"
     done
     shopt -u nullglob
     set -f
